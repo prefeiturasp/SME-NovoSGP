@@ -2,6 +2,8 @@
 {
     public class RotasRabbitSgpAEE
     {
+        protected RotasRabbitSgpAEE() { }
+
         public const string RotaNotificacaoRegistroConclusaoEncaminhamentoAEE = "notificacao.registro.conclusao.encaminhamentoaee";
         public const string RotaNotificacaoEncerramentoEncaminhamentoAEE = "notificacao.encerramento.encaminhamentoaee";
         public const string RotaNotificacaoDevolucaoEncaminhamentoAEE = "notificacao.devolucao.encaminhamentoaee"; 

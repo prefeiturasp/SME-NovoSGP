@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Moq;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -50,8 +51,9 @@ namespace SME.SGP.Aplicacao.Teste.Queries
             mediator.Setup(x => x.Send(It.IsAny<ObterIndicativoPendenciasAulasPorTipoQuery>(), It.IsAny<CancellationToken>()))
                .ReturnsAsync(new Infra.PendenciaPaginaInicialListao() { PendenciaDiarioBordo = false });
 
+            var turma = new Turma() { CodigoTurma = "1", ModalidadeCodigo = Modalidade.EducacaoInfantil };
             // Act
-            var retornoConsulta = await query.Handle(new ObterIndicativoPendenciasAulasPorTipoQuery("512", "1", 2022, 1, true), new CancellationToken());
+            var retornoConsulta = await query.Handle(new ObterIndicativoPendenciasAulasPorTipoQuery(turma, new Usuario(), "512", 2022, 1), new CancellationToken());
 
             // Assert
             Assert.NotNull(retornoConsulta);

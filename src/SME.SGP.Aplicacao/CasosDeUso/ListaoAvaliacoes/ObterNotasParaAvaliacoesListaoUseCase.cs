@@ -1,11 +1,7 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
-using SME.SGP.Aplicacao.Queries;
-using SME.SGP.Dados;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -262,7 +258,8 @@ namespace SME.SGP.Aplicacao
             {
                 var notaTipo = await mediator.Send(new ObterTipoNotaPorTurmaQuery(turmaCompleta, new DateTime(filtro.AnoLetivo, 3, 1)));
                 retorno.NotaTipo = notaTipo;
-                ObterValoresDeAuditoria(dataUltimaNotaConceitoInserida, dataUltimaNotaConceitoAlterada, usuarioRfUltimaNotaConceitoInserida, usuarioRfUltimaNotaConceitoAlterada, notaTipo, retorno, nomeAvaliacaoAuditoriaInclusao, nomeAvaliacaoAuditoriaAlteracao);
+                CarregarValoresDeAuditoriaInserido(dataUltimaNotaConceitoInserida, usuarioRfUltimaNotaConceitoInserida, notaTipo, retorno, nomeAvaliacaoAuditoriaInclusao);
+                CarregarValoresDeAuditoriaAlterada(dataUltimaNotaConceitoAlterada, usuarioRfUltimaNotaConceitoAlterada, notaTipo, retorno, nomeAvaliacaoAuditoriaAlteracao);
             }
             else
             {
@@ -315,15 +312,23 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private void ObterValoresDeAuditoria(DateTime? dataUltimaNotaConceitoInserida, DateTime? dataUltimaNotaConceitoAlterada, string usuarioInseriu, string usuarioAlterou, TipoNota tipoNota, NotasConceitosListaoRetornoDto notasConceitosRetornoDto, string nomeAvaliacaoInclusao, string nomeAvaliacaoAlteracao)
+        private void CarregarValoresDeAuditoriaInserido(DateTime? dataUltimaNotaConceitoInserida, string usuarioInseriu, TipoNota tipoNota, NotasConceitosListaoRetornoDto notasConceitosRetornoDto, string nomeAvaliacaoInclusao)
         {
-            var tituloNotasOuConceitos = tipoNota == TipoNota.Conceito ? "Conceitos" : "Notas";
-
             if (dataUltimaNotaConceitoInserida.HasValue)
-                notasConceitosRetornoDto.AuditoriaInserido = $"{tituloNotasOuConceitos} da avaliação {nomeAvaliacaoInclusao} inseridos por {usuarioInseriu} em {dataUltimaNotaConceitoInserida.Value.ToString("dd/MM/yyyy")}, às {dataUltimaNotaConceitoInserida.Value.ToString("HH:mm")}.";
-            if (dataUltimaNotaConceitoAlterada.HasValue)
-                notasConceitosRetornoDto.AuditoriaAlterado = $"{tituloNotasOuConceitos} da avaliação {nomeAvaliacaoAlteracao} alterados por {usuarioAlterou} em {dataUltimaNotaConceitoAlterada.Value.ToString("dd/MM/yyyy")}, às {dataUltimaNotaConceitoAlterada.Value.ToString("HH:mm")}.";
+                notasConceitosRetornoDto.AuditoriaInserido = $"{ObterDescricaoTipoNota(tipoNota)} da avaliação {nomeAvaliacaoInclusao} inseridos por {usuarioInseriu} em {dataUltimaNotaConceitoInserida.Value.ToString("dd/MM/yyyy")}, às {dataUltimaNotaConceitoInserida.Value.ToString("HH:mm")}.";
         }
+
+        private void CarregarValoresDeAuditoriaAlterada(DateTime? dataUltimaNotaConceitoAlterada, string usuarioAlterou, TipoNota tipoNota, NotasConceitosListaoRetornoDto notasConceitosRetornoDto, string nomeAvaliacaoAlteracao)
+        {
+            if (dataUltimaNotaConceitoAlterada.HasValue)
+                notasConceitosRetornoDto.AuditoriaAlterado = $"{ObterDescricaoTipoNota(tipoNota)} da avaliação {nomeAvaliacaoAlteracao} alterados por {usuarioAlterou} em {dataUltimaNotaConceitoAlterada.Value.ToString("dd/MM/yyyy")}, às {dataUltimaNotaConceitoAlterada.Value.ToString("HH:mm")}.";
+        }
+
+        private string ObterDescricaoTipoNota(TipoNota tipoNota)
+        {
+            return tipoNota == TipoNota.Conceito ? "Conceitos" : "Notas";
+        }
+
         private async Task ValidaMinimoAvaliacoesBimestrais(DisciplinaDto componenteCurricular, IEnumerable<DisciplinaResposta> disciplinasRegencia, TipoAvaliacao tipoAvaliacaoBimestral, NotasConceitosBimestreListaoRetornoDto bimestreDto, IEnumerable<AtividadeAvaliativa> atividadeAvaliativas, int bimestre)
         {
             var atividadesBimestrais = atividadeAvaliativas.Where(a => a.TipoAvaliacaoId == (long)TipoAvaliacaoCodigo.AvaliacaoBimestral);

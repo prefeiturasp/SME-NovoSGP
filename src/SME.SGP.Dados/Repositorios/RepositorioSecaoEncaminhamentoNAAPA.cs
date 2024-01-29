@@ -22,7 +22,7 @@ namespace SME.SGP.Dados.Repositorios
             
         }
 
-        public async Task<IEnumerable<SecaoQuestionarioDto>> ObterSecoesQuestionarioDto(int modalidade, long? encaminhamentoNAAPAId)
+        public async Task<IEnumerable<SecaoQuestionarioDto>> ObterSecoesQuestionarioDto(int modalidade, long? encaminhamentoNAAPAId = null)
         {
             var query = @$"SELECT sea.id
 	                            , sea.nome
@@ -45,7 +45,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<SecaoQuestionarioDto>(query, new { modalidade, tipoQuestionario = (int)TipoQuestionario.EncaminhamentoNAAPA, encaminhamentoNAAPAId = encaminhamentoNAAPAId ?? 0 });
         }
 
-        public async Task<IEnumerable<SecaoEncaminhamentoNAAPA>> ObterSecoesEncaminhamentoPorModalidade(int? modalidade, long? encaminhamentoNAAPAId)
+        public async Task<IEnumerable<SecaoEncaminhamentoNAAPA>> ObterSecoesEncaminhamentoPorModalidade(int? modalidade, long? encaminhamentoNAAPAId = null)
         {
             var query = new StringBuilder(@$"SELECT sea.*, eas.*, q.*
                                             FROM secao_encaminhamento_naapa sea 
@@ -125,9 +125,9 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<SecaoQuestionarioDto> ObterSecaoQuestionarioDtoPorId(long secaoId)
         {
             var query = @"SELECT sea.id
-	                            , sea.nome
-	                            , sea.questionario_id as questionarioId
-	                            , sea.etapa
+                                , sea.nome
+                                , sea.questionario_id as questionarioId
+                                , sea.etapa
                                 , sea.ordem
                                 , sea.nome_componente as nomeComponente
                          FROM secao_encaminhamento_naapa sea
@@ -227,7 +227,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<EncaminhamentoNAAPAItineranciaAtendimentoDto> ObterAtendimentoSecaoItinerancia(long secaoId)
         {
             var query = @"select ens.encaminhamento_naapa_id EncaminhamentoId, 
-                        		ens.secao_encaminhamento_id SecaoEncaminhamentoNAAPAId, 
+                                ens.secao_encaminhamento_id SecaoEncaminhamentoNAAPAId, 
                                 to_date(enr.texto,'yyyy-mm-dd') DataAtendimento    
                         from encaminhamento_naapa_secao ens   
                         join encaminhamento_naapa_questao enq on ens.id = enq.encaminhamento_naapa_secao_id  
@@ -265,6 +265,37 @@ namespace SME.SGP.Dados.Repositorios
             return Enumerable.Empty<AtendimentosProfissionalEncaminhamentoNAAPAConsolidadoDto>();
 
         }
-       
+
+        public async Task<IEnumerable<SecaoQuestionarioDto>> ObterSecoesEncaminhamentoPorModalidades(TipoQuestionario tipoQuestionario, int[] modalidades = null)
+        {
+            var query = new StringBuilder($@"SELECT sea.id, sea.nome, 
+	                                          q.id as QuestionarioId,
+	                                          sea.etapa, 
+	                                          sea.nome_componente as NomeComponente,
+	                                          sea.ordem,
+	                                          q.tipo as TipoQuestionario,
+	                                          COALESCE(array_agg(senm.modalidade_codigo) FILTER (WHERE senm.modalidade_codigo IS NOT NULL), '{{}}'::int[]) as ModalidadesCodigo  
+	                                        FROM secao_encaminhamento_naapa sea 
+    	                                    join questionario q on q.id = sea.questionario_id 
+    	                                    left join secao_encaminhamento_naapa_modalidade senm on senm.secao_encaminhamento_id = sea.id 
+	                                        WHERE not sea.excluido 
+	  	                                        and q.tipo = @tipoQuestionario
+                                                {(modalidades.PossuiRegistros() ?
+                                                 $@" and exists (select seaAux.id from secao_encaminhamento_naapa seaAux 
+    	                                                         left join secao_encaminhamento_naapa_modalidade senm on senm.secao_encaminhamento_id = seaAux.id 
+    	                                                         where seaAux.id = sea.id and
+                  	                                                  ((senm.modalidade_codigo = any(@modalidades)) or (senm.modalidade_codigo is null)))" : string.Empty) }  
+	                                        GROUP BY
+    	                                        sea.id, sea.nome, q.id, sea.etapa, sea.nome_componente, sea.ordem, q.tipo
+	                                        ORDER BY 
+    	                                        sea.etapa, sea.ordem; ");
+
+            return await database.Conexao.QueryAsync<SecaoQuestionarioDto>(
+                    query.ToString(), new
+                    {
+                        tipoQuestionario = (int)tipoQuestionario,
+                        modalidades
+                    });           
+        }
     }
 }

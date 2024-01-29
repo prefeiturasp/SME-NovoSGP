@@ -75,7 +75,7 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         public async Task<IEnumerable<AtribuicaoCJ>> ObterPorFiltros(Modalidade? modalidade, string turmaId, string ueId, long componenteCurricularId,
-            string usuarioRf, string usuarioNome, bool? substituir, string dreCodigo = "", string[] turmaCodigos = null, int? anoLetivo = 0, bool? historico = null)
+            string usuarioRf, string usuarioNome, bool? substituir, string dreCodigo = "", string[] turmaCodigos = null, int anoLetivo = 0, bool? historico = null)
         {
             var query = new StringBuilder();
 
@@ -162,7 +162,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql.ToString(), new { turmaCodigo, rfProfessor, disciplinaId });
         }
 
-        public async Task<bool> RemoverRegistros(string dreCodigo, string ueCodigo, string turmaCodigo, string professorRf, long disciplinaId)
+        public async Task<bool> RemoverRegistros(string dreCodigo, string ueCodigo, string turmaCodigo, string professorRf, long disciplinaId = 0)
         {
             StringBuilder sql = new StringBuilder();
 

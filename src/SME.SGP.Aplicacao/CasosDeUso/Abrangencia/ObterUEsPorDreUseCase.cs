@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Dominio;
 using SME.SGP.Dto;
+using SME.SGP.Infra.Dtos;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,19 +14,12 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<AbrangenciaUeRetorno>> Executar(string codigoDre, Modalidade? modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, bool consideraNovasUEs = false, bool filtrarTipoEscolaPorAnoLetivo = false, string filtro = "")
+        public async Task<IEnumerable<AbrangenciaUeRetorno>> Executar(UEsPorDreDto dto)
         {
             var login = await mediator.Send(ObterLoginAtualQuery.Instance);
             var perfil = await mediator.Send(ObterPerfilAtualQuery.Instance);
-            var filtroEhCodigo = false;
 
-            if (!string.IsNullOrWhiteSpace(filtro))
-            {
-                if (filtro.All(char.IsDigit))
-                    filtroEhCodigo = true;
-            }
-
-            return await mediator.Send(new ObterUEsPorDREQuery(codigoDre, login, perfil, modalidade, periodo, consideraHistorico, anoLetivo, consideraNovasUEs, filtrarTipoEscolaPorAnoLetivo, filtro, filtroEhCodigo));
+            return await mediator.Send(new ObterUEsPorDREQuery(dto, login, perfil));
         }
     }
 }

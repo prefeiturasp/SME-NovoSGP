@@ -11,13 +11,10 @@ namespace SME.SGP.Aplicacao
     public class ObterNotaTipoPorAnoModalidadeDataReferenciaQueryHandler
         : IRequestHandler<ObterNotaTipoPorAnoModalidadeDataReferenciaQuery, NotaTipoValor>
     {
-        private readonly IRepositorioNotaTipoValorConsulta _repositorioNotaTipoValor;
         private readonly IMediator mediator;
 
-        public ObterNotaTipoPorAnoModalidadeDataReferenciaQueryHandler(
-            IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor,IMediator mediator)
+        public ObterNotaTipoPorAnoModalidadeDataReferenciaQueryHandler(IMediator mediator)
         {
-            _repositorioNotaTipoValor = repositorioNotaTipoValor;
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         public async Task<NotaTipoValor> Handle(ObterNotaTipoPorAnoModalidadeDataReferenciaQuery request, CancellationToken cancellationToken)

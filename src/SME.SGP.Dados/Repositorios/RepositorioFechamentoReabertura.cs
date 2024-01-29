@@ -34,7 +34,7 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.ExecuteAsync("DELETE FROM FECHAMENTO_REABERTURA_NOTIFICACAO WHERE FECHAMENTO_REABERTURA_ID = @fechamentoReaberturaId", new { fechamentoReaberturaId });
         }
 
-        public async Task<IEnumerable<FechamentoReabertura>> ObterPorIds(long[] ids = null)
+        public async Task<IEnumerable<FechamentoReabertura>> ObterPorIds(long[] ids)
         {
             return await database.Conexao.QueryAsync<FechamentoReabertura>("select * from fechamento_reabertura where id = ANY(@ids)", new { ids });
         }

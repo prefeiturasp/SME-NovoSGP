@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
                 var professores = await mediator
                     .Send(new ObterProfessoresTitularesPorTurmaIdQuery(request.Turma.Id), cancellationToken);
 
-                var professor = professores.FirstOrDefault(p => p.DisciplinasId.Contains(request.ComponenteCurricularIdBase));
+                var professor = professores.FirstOrDefault(p => p.DisciplinasId().Contains(request.ComponenteCurricularIdBase));
                 if (professor != null && !string.IsNullOrWhiteSpace(professor.ProfessorRf))
                 {
                     var componentesProfessor = await mediator

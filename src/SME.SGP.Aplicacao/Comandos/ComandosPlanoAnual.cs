@@ -17,7 +17,6 @@ namespace SME.SGP.Aplicacao
     public class ComandosPlanoAnual : IComandosPlanoAnual
     {
         private readonly IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem;
-        private readonly IConsultasProfessor consultasProfessor;
         private readonly IConsultasTurma consultasTurma;
         private readonly IConsultasPlanoAnual consultasPlanoAnual;
         private readonly IRepositorioComponenteCurricularJurema repositorioComponenteCurricular;
@@ -32,20 +31,19 @@ namespace SME.SGP.Aplicacao
                                   IRepositorioObjetivoAprendizagemPlano repositorioObjetivoAprendizagemPlano,
                                   IRepositorioComponenteCurricularJurema repositorioComponenteCurricular,
                                   IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
-                                  IConsultasProfessor consultasProfessor,
                                   IConsultasTurma consultasTurma,
                                   IConsultasPlanoAnual consultasPlanoAnual,
                                   IUnitOfWork unitOfWork,
-                                  IServicoUsuario servicoUsuario, IMediator mediator,
+                                  IServicoUsuario servicoUsuario, 
+                                  IMediator mediator,
                                   IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
         {
             this.repositorioPlanoAnual = repositorioPlanoAnual ?? throw new ArgumentNullException(nameof(repositorioPlanoAnual));
             this.repositorioObjetivoAprendizagemPlano = repositorioObjetivoAprendizagemPlano ?? throw new ArgumentNullException(nameof(repositorioObjetivoAprendizagemPlano));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem ?? throw new ArgumentNullException(nameof(consultasObjetivoAprendizagem));
-            this.consultasProfessor = consultasProfessor ?? throw new ArgumentNullException(nameof(consultasProfessor));
             this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
-            this.consultasPlanoAnual = consultasPlanoAnual ?? throw new ArgumentNullException(nameof(consultasProfessor));
+            this.consultasPlanoAnual = consultasPlanoAnual ?? throw new ArgumentNullException(nameof(consultasPlanoAnual));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));

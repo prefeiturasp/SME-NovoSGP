@@ -113,14 +113,14 @@ namespace SME.SGP.Dados.Repositorios
         public IEnumerable<Ue> ObterTodas()
         {
             var query = @"select
-	                        id,
-	                        ue_id,
-	                        dre_id,
-	                        nome,
-	                        tipo_escola,
-	                        data_atualizacao
+                            id,
+                            ue_id,
+                            dre_id,
+                            nome,
+                            tipo_escola,
+                            data_atualizacao
                         from
-	                        ue";
+                            ue";
 
             return contexto.Query<Ue>(query);
         }
@@ -128,16 +128,16 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<Ue>> ObterPorDre(long dreId)
         {
             var query = @"select
-	                        id,
-	                        ue_id,
-	                        dre_id,
-	                        nome,
-	                        tipo_escola,
-	                        data_atualizacao
+                            id,
+                            ue_id,
+                            dre_id,
+                            nome,
+                            tipo_escola,
+                            data_atualizacao
                         from
-	                        ue
+                            ue
                         where
-	                        dre_id = @dreId";
+                            dre_id = @dreId";
 
             return await contexto.QueryAsync<Ue>(query, new { dreId });
         }
@@ -266,9 +266,9 @@ namespace SME.SGP.Dados.Repositorios
                               where t.modalidade_codigo = any(@modalidades)
                                 and t.ano_letivo = @ano
                                 and not exists (select 1
-    		                            from periodo_fechamento pf
-    		                            inner join periodo_fechamento_bimestre pb on pb.periodo_fechamento_id = pf.id
-    		                            where pb.periodo_escolar_id = @periodoEscolarId
+                                        from periodo_fechamento pf
+                                        inner join periodo_fechamento_bimestre pb on pb.periodo_fechamento_id = pf.id
+                                        where pb.periodo_escolar_id = @periodoEscolarId
                                             and TO_DATE(pf.inicio::TEXT, 'yyyy/mm/dd') <= TO_DATE(@dataReferencia, 'yyyy/mm/dd')
                                             and TO_DATE(pf.fim::TEXT, 'yyyy/mm/dd') >= TO_DATE(@dataReferencia, 'yyyy/mm/dd')
                             )";
@@ -370,25 +370,6 @@ namespace SME.SGP.Dados.Repositorios
             return contexto.Conexao.QueryAsync<long>(query);
         }
 
-        public async Task<IEnumerable<Ue>> ObterUEsComDREsPorModalidadeTipoCalendarioQuery(int[] modalidades, int anoLetivo = 0)
-        {
-            var query = @"select distinct ue.*, dre.*
-                          from turma t
-                         inner join ue on ue.id = t.ue_id
-                         inner join dre on dre.id = ue.dre_id
-                         where t.modalidade_codigo = ANY(@modalidades) ";
-
-            if (anoLetivo > 0)
-                query += "and ano_letivo = @anoLetivo";
-
-            return await contexto.Conexao.QueryAsync<Ue, Dre, Ue>(query, (ue, dre) =>
-            {
-                ue.Dre = dre;
-
-                return ue;
-            }, new { modalidades, anoLetivo });
-        }
-
         public async Task<IEnumerable<Ue>> ObterUEsComDREsPorCodigoUes(string[] codigoUes)
         {
             var query = @"select distinct u.*, d.*
@@ -408,17 +389,17 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select
                                 p.id as PendenciaId,
-		                        t.ue_id as UeId,
-	                            t.ano_letivo as AnoLetivo
+                                t.ue_id as UeId,
+                                t.ano_letivo as AnoLetivo
                         from pendencia p
-	                        join pendencia_aula pa on p.id = pa.pendencia_id
-	                        inner join aula a on a.id = pa.aula_id
-	                        inner join turma t on t.turma_id = a.turma_id
+                            join pendencia_aula pa on p.id = pa.pendencia_id
+                            inner join aula a on a.id = pa.aula_id
+                            inner join turma t on t.turma_id = a.turma_id
                         where
-	                        not p.excluido
-	                        and p.tipo in (11,12,13)
-	                        and p.situacao in (1,3)
-	                        and t.ano_letivo = @anoLetivo ";
+                            not p.excluido
+                            and p.tipo in (11,12,13)
+                            and p.situacao in (1,3)
+                            and t.ano_letivo = @anoLetivo ";
             return await contexto.QueryAsync<TodosUesIdsComPendenciaCalendarioDto>(query, new {anoLetivo});
         }
 

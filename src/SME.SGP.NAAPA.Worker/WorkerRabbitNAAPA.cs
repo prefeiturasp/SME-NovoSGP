@@ -9,7 +9,7 @@ using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.NAAPA.Worker
 {
-    public class WorkerRabbitNAAPA : WorkerRabbitMQBase
+    public class WorkerRabbitNAAPA : WorkerRabbitAplicacao
     {
         public WorkerRabbitNAAPA(
             IServiceScopeFactory serviceScopeFactory,
@@ -23,7 +23,7 @@ namespace SME.SGP.NAAPA.Worker
         {
         }
 
-        protected override void RegistrarUseCasesDoWorker()
+        protected override void RegistrarUseCases()
         {
             Comandos.Add(RotasRabbitSgpNAAPA.ExecutarAtualizacaoDasInformacoesEncaminhamentoNAAPA, new ComandoRabbit("Atualiza informações do encaminhamento NAAPA", typeof(IAtualizarInformacoesDoEncaminhamentoNAAPAUseCase), true));
             Comandos.Add(RotasRabbitSgpNAAPA.ExecutarAtualizacaoDaTurmaDoEncaminhamentoNAAPA, new ComandoRabbit("Atualiza turma do encaminhamento NAAPA", typeof(IAtualizarTurmaDoEncaminhamentoNAAPAUseCase), true));

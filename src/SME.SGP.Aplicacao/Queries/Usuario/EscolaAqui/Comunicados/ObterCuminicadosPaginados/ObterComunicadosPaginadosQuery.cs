@@ -7,21 +7,21 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterComunicadosPaginadosQuery : IRequest<PaginacaoResultadoDto<ComunicadoListaPaginadaDto>>
     {
-        public ObterComunicadosPaginadosQuery(int anoLetivo, string dreCodigo, string ueCodigo, int[] modalidades, int semestre, DateTime? dataEnvioInicio, DateTime? dataEnvioFim, DateTime? dataExpiracaoInicio, DateTime? dataExpiracaoFim, string titulo, string[] turmasCodigo, string[] anosEscolares, int[] tiposEscolas)
+        public ObterComunicadosPaginadosQuery(FiltroComunicadoDto filtro)
         {
-            AnoLetivo = anoLetivo;
-            DreCodigo = dreCodigo;
-            UeCodigo = ueCodigo;
-            Modalidades = modalidades;
-            Semestre = semestre;
-            DataEnvioInicio = dataEnvioInicio;
-            DataEnvioFim = dataEnvioFim;
-            DataExpiracaoInicio = dataExpiracaoInicio;
-            DataExpiracaoFim = dataExpiracaoFim;
-            Titulo = titulo;
-            TurmasCodigo = turmasCodigo;
-            AnosEscolares = anosEscolares;
-            TiposEscolas = tiposEscolas;
+            AnoLetivo = filtro.AnoLetivo;
+            DreCodigo = filtro.DreCodigo;
+            UeCodigo = filtro.UeCodigo;
+            Modalidades = filtro.Modalidades;
+            Semestre = filtro.Semestre;
+            DataEnvioInicio = filtro.DataEnvioInicio;
+            DataEnvioFim = filtro.DataEnvioFim;
+            DataExpiracaoInicio = filtro.DataExpiracaoInicio;
+            DataExpiracaoFim = filtro.DataExpiracaoFim;
+            Titulo = filtro.Titulo;
+            TurmasCodigo = filtro.TurmasCodigo;
+            AnosEscolares = filtro.AnosEscolares;
+            TiposEscolas = filtro.TiposEscolas;
         }
 
         public int AnoLetivo { get; set; }

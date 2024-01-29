@@ -77,9 +77,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             return resultadoEncaminhamento;
         }
 
-        private Task<bool> EhUsuarioResponsavelPeloEncaminhamento(Usuario usuarioLogado, long? responsavelId)
-            => Task.FromResult(responsavelId.HasValue && usuarioLogado.Id == responsavelId.Value);
-
         private async Task<bool> ParametroGeracaoPendenciaAtivo()
         {
             var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.GerarPendenciasEncaminhamentoAEE, DateTime.Today.Year));
@@ -114,18 +111,34 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 }
             }
         }
+
+        private async Task ExcluirPendenciasEncaminhamentoAEE(SituacaoAEE situacaoEncaminhamentoAEE, EncaminhamentoAEE encaminhamentoAEE)
+        {
+            if (situacaoEncaminhamentoAEE.PermiteExclusaoPendenciasEncaminhamentoAEE())
+                await mediator.Send(new ExcluirPendenciasEncaminhamentoAEECPCommand(encaminhamentoAEE.TurmaId, encaminhamentoAEE.Id));
+        }
+
+        private async Task AlterarQuestoesExistentes(QuestaoEncaminhamentoAEE questaoExistente, IGrouping<long, EncaminhamentoAEESecaoQuestaoDto> questoesRespostas)
+        {
+            if (questaoExistente.Excluido)
+                await AlterarQuestaoExcluida(questaoExistente);
+            await ExcluirRespostasEncaminhamento(questaoExistente, questoesRespostas);
+            await AlterarRespostasEncaminhamento(questaoExistente, questoesRespostas);
+            await IncluirRespostasEncaminhamento(questaoExistente, questoesRespostas);
+        }
+
+        private async Task ExcluirQuestoesExistentes(IEnumerable<QuestaoEncaminhamentoAEE> questoesRemovidas)
+        {
+            foreach (var questao in questoesRemovidas)
+                await mediator.Send(new ExcluirQuestaoEncaminhamentoAEEPorIdCommand(questao.Id));
+        }
+
         public async Task AlterarEncaminhamento(EncaminhamentoAeeDto encaminhamentoAEEDto, EncaminhamentoAEE encaminhamentoAEE)
         {
             encaminhamentoAEE.Situacao = encaminhamentoAEEDto.Situacao;
             await mediator.Send(new SalvarEncaminhamentoAEECommand(encaminhamentoAEE));
-
-            if (encaminhamentoAEEDto.Situacao != SituacaoAEE.Encaminhado &&
-                encaminhamentoAEEDto.Situacao != SituacaoAEE.Analise &&
-                encaminhamentoAEEDto.Situacao != SituacaoAEE.Rascunho)
-            {
-                await mediator.Send(new ExcluirPendenciasEncaminhamentoAEECPCommand(encaminhamentoAEE.TurmaId, encaminhamentoAEE.Id));
-            }
-
+            await ExcluirPendenciasEncaminhamentoAEE(encaminhamentoAEEDto.Situacao, encaminhamentoAEE);
+            
             foreach (var secao in encaminhamentoAEEDto.Secoes)
             {
                 if (!secao.Questoes.Any())
@@ -154,20 +167,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                         await RegistrarRespostaEncaminhamento(questoes, resultadoEncaminhamentoQuestao);
                     }
                     else
-                    {
-                        if (questaoExistente.Excluido)
-                            await AlterarQuestaoExcluida(questaoExistente);
-
-                        await ExcluirRespostasEncaminhamento(questaoExistente, questoes);
-
-                        await AlterarRespostasEncaminhamento(questaoExistente, questoes);
-
-                        await IncluirRespostasEncaminhamento(questaoExistente, questoes);
-                    }
+                        await AlterarQuestoesExistentes(questaoExistente, questoes);
                 }
-
-                foreach (var questao in secaoExistente.Questoes.Where(x => !secao.Questoes.Any(s => s.QuestaoId == x.QuestaoId)))
-                    await mediator.Send(new ExcluirQuestaoEncaminhamentoAEEPorIdCommand(questao.Id));
+                await ExcluirQuestoesExistentes(secaoExistente.Questoes.Where(x => !secao.Questoes.Any(s => s.QuestaoId == x.QuestaoId)));
             }
         }
 
@@ -178,7 +180,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         }
 
         private async Task IncluirRespostasEncaminhamento(QuestaoEncaminhamentoAEE questaoExistente, IGrouping<long, EncaminhamentoAEESecaoQuestaoDto> respostas)
-            => await RegistrarRespostaEncaminhamento(ObterRespostasAIncluir(questaoExistente, respostas), questaoExistente.Id);
+            => await RegistrarRespostaEncaminhamento(ObterRespostasAIncluir(respostas), questaoExistente.Id);
 
         private async Task RegistrarRespostaEncaminhamento(IEnumerable<EncaminhamentoAEESecaoQuestaoDto> questoes, long questaoEncaminhamentoId)
         {
@@ -200,7 +202,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 await mediator.Send(new ExcluirRespostaEncaminhamentoAEECommand(respostasExcluir));
         }
 
-        private IEnumerable<EncaminhamentoAEESecaoQuestaoDto> ObterRespostasAIncluir(QuestaoEncaminhamentoAEE questaoExistente, IGrouping<long, EncaminhamentoAEESecaoQuestaoDto> respostas)
+        private IEnumerable<EncaminhamentoAEESecaoQuestaoDto> ObterRespostasAIncluir(IGrouping<long, EncaminhamentoAEESecaoQuestaoDto> respostas)
             => respostas.Where(c => c.RespostaEncaminhamentoId == 0);
 
         private IEnumerable<RespostaEncaminhamentoAEE> ObterRespostasAExcluir(QuestaoEncaminhamentoAEE questaoExistente, IGrouping<long, EncaminhamentoAEESecaoQuestaoDto> respostasEncaminhamento)
@@ -241,42 +243,51 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             return questao.Obrigatorio &&
                     !NaoNuloEContemRegistros(questao.Resposta);
         }
+
+        private bool QuestaoRespondida(QuestaoDto questao)
+        {
+            return NaoNuloEContemRegistros(questao.OpcaoResposta)
+                   && NaoNuloEContemRegistros(questao.Resposta);
+        }
+
+        private string ObterOrdemQuestao(QuestaoDto questao, string questaoPaiOrdem = "")
+        {
+            return (questaoPaiOrdem != "" ? $"{questaoPaiOrdem}.{questao.Ordem.ToString()}" : questao.Ordem.ToString());
+        }
         private void ValidaRecursivo(string secao, string questaoPaiOrdem, IEnumerable<QuestaoDto> questoes, List<dynamic> questoesObrigatoriasNaoRespondidas)
         {
             foreach (var questao in questoes)
             {
-                var ordem = (questaoPaiOrdem != "" ? $"{questaoPaiOrdem}.{questao.Ordem.ToString()}" : questao.Ordem.ToString());
+                var ordem = ObterOrdemQuestao(questao, questaoPaiOrdem);
 
                 if (EhQuestaoObrigatoriaNaoRespondida(questao))
-                {
                     questoesObrigatoriasNaoRespondidas.Add(new { Secao = secao, Ordem = ordem });
-                }
-                else
-                if (NaoNuloEContemRegistros(questao.OpcaoResposta)
-                    && NaoNuloEContemRegistros(questao.Resposta))
-                {
-                    foreach (var resposta in questao.Resposta)
+                else if (QuestaoRespondida(questao))
                     {
-                        var opcao = questao.OpcaoResposta.Where(opcao => opcao.Id == Convert.ToInt64(resposta.Texto)).FirstOrDefault();
-                        if (opcao.NaoEhNulo() && opcao.QuestoesComplementares.Any())
+                        foreach (var resposta in questao.Resposta)
                         {
-                            ValidaRecursivo(secao, ordem, opcao.QuestoesComplementares, questoesObrigatoriasNaoRespondidas);
+                            var opcao = questao.OpcaoResposta.FirstOrDefault(opcao => opcao.Id == Convert.ToInt64(resposta.Texto));
+                            if (opcao?.QuestoesComplementares.Any() ?? false)
+                            {
+                                ValidaRecursivo(secao, ordem, opcao.QuestoesComplementares, questoesObrigatoriasNaoRespondidas);
+                            }
                         }
                     }
-                }
             }
         }
 
         private async Task<IEnumerable<RespostaQuestaoObrigatoriaDto>> ObterRespostasEncaminhamentoAEE(long? encaminhamentoAEEId)
         {
-            return encaminhamentoAEEId.HasValue ? (await repositorioQuestaoEncaminhamento.ObterRespostasEncaminhamento(encaminhamentoAEEId.Value))
-                 .Select(resposta => new RespostaQuestaoObrigatoriaDto
-                 {
-                     QuestaoId = resposta.QuestaoId,
-                     Resposta = (resposta.RespostaId ?? 0) != 0 ? resposta.RespostaId?.ToString() : resposta.Texto,
-                     Persistida = true
-                 })
-                 : Enumerable.Empty<RespostaQuestaoObrigatoriaDto>();
+            if (encaminhamentoAEEId.HasValue)
+                return (await repositorioQuestaoEncaminhamento.ObterRespostasEncaminhamento(encaminhamentoAEEId.Value))
+                     .Select(resposta => new RespostaQuestaoObrigatoriaDto
+                     {
+                         QuestaoId = resposta.QuestaoId,
+                         Resposta = resposta.RespostaId.HasValue ? resposta.RespostaId?.ToString() : resposta.Texto,
+                         Persistida = true
+                     });
+
+            return Enumerable.Empty<RespostaQuestaoObrigatoriaDto>();
         }
 
         private async Task ValidarQuestoesObrigatoriasNaoPreechidas(EncaminhamentoAeeDto encaminhamentoAEEDto)

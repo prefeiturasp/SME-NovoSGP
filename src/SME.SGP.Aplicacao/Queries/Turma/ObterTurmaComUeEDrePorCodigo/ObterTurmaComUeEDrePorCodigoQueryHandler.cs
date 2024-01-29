@@ -13,14 +13,11 @@ namespace SME.SGP.Aplicacao
     public class ObterTurmaComUeEDrePorCodigoQueryHandler : IRequestHandler<ObterTurmaComUeEDrePorCodigoQuery, Turma>
     {
         private readonly IRepositorioTurmaConsulta repositorioTurma;
-        private readonly IMediator mediator;
 
         public ObterTurmaComUeEDrePorCodigoQueryHandler(
-                        IRepositorioTurmaConsulta repositorioTurma, 
-                        IMediator mediator) 
+                        IRepositorioTurmaConsulta repositorioTurma) 
         {
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<Turma> Handle(ObterTurmaComUeEDrePorCodigoQuery request, CancellationToken cancellationToken)

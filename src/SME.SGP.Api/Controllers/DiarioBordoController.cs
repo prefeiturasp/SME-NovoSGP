@@ -70,9 +70,9 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("devolutivas/{devolutivaId}")]
         [ProducesResponseType(typeof(DiarioBordoDto), 200)]
         [Permissao(Permissao.DDB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterPorDevolutiva([FromServices] IObterDiariosBordoPorDevolutiva useCase, long devolutivaId)
+        public async Task<IActionResult> ObterPorDevolutiva([FromServices] IObterDiariosBordoPorDevolutiva useCase, long devolutivaId, [FromQuery] int anoLetivo)
         {
-            return Ok(await useCase.Executar(devolutivaId));
+            return Ok(await useCase.Executar(devolutivaId, anoLetivo));
         }
 
         [HttpGet("{diarioBordoId}/observacoes")]

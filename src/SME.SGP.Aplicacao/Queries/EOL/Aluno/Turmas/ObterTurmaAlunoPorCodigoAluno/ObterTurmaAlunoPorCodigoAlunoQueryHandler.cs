@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
             {
 
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao obter os dados do aluno no EOL - Código:{request.CodidoAluno},  Erro:{e.Message}", LogNivel.Negocio, LogContexto.Turma, e.Message));
-                throw e;
+                throw;
             }
         }
     }

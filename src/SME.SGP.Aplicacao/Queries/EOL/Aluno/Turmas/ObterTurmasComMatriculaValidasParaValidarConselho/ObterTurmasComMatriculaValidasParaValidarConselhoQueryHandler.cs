@@ -1,10 +1,10 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,22 +26,31 @@ namespace SME.SGP.Aplicacao
             foreach(var turmaCodigo in request.TurmasCodigos)
             {
                 var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
+                
                 if (turma.NaoEhNulo())
                 {
                     var matriculasAluno = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(turmaCodigo, request.AlunoCodigo));
-                    if (matriculasAluno.NaoEhNulo() && matriculasAluno.Any())
-                    {
-                        if (matriculasAluno.Any(m => m.PossuiSituacaoAtiva() || 
-                           (m.CodigoSituacaoMatricula != SituacaoMatriculaAluno.VinculoIndevido && (!m.PossuiSituacaoAtiva() && m.DataSituacao >= request.PeriodoInicio && m.DataSituacao <= request.PeriodoFim) 
-                           || (!m.PossuiSituacaoAtiva() && m.DataMatricula <= request.PeriodoFim && m.DataSituacao > request.PeriodoFim))))
-                        {
-                            if (turma.TipoTurma != TipoTurma.EdFisica || turma.TipoTurma == TipoTurma.EdFisica && !matriculasAluno.Any(m => m.CodigoSituacaoMatricula == SituacaoMatriculaAluno.DispensadoEdFisica))
-                                turmasCodigosComMatriculasValidas.Add(turma.CodigoTurma);
-                        }
-                    }
+                    
+                    if (PodeAdicionarTurma(matriculasAluno, turma, request))
+                        turmasCodigosComMatriculasValidas.Add(turma.CodigoTurma);
                 }
             }
             return turmasCodigosComMatriculasValidas;
+        }
+
+        private bool PodeAdicionarTurma(IEnumerable<AlunoPorTurmaResposta> matriculasAluno,
+                                        Turma turma,
+                                        ObterTurmasComMatriculaValidasParaValidarConselhoQuery request)
+        {
+            var existeMatricula = matriculasAluno.Any(m => m.PossuiSituacaoAtiva() || (m.CodigoSituacaoMatricula != SituacaoMatriculaAluno.VinculoIndevido &&
+                                                           (!m.PossuiSituacaoAtiva() && m.DataSituacao >= request.PeriodoInicio && m.DataSituacao <= request.PeriodoFim) ||
+                                                           (!m.PossuiSituacaoAtiva() && m.DataMatricula <= request.PeriodoFim && m.DataSituacao > request.PeriodoFim)));
+            if (existeMatricula)
+                return turma.TipoTurma != TipoTurma.EdFisica ||
+                       turma.TipoTurma == TipoTurma.EdFisica &&
+                       !matriculasAluno.Any(m => m.CodigoSituacaoMatricula == SituacaoMatriculaAluno.DispensadoEdFisica);
+
+            return false;
         }
     }
 }

@@ -21,10 +21,10 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder query = new StringBuilder();
             query.AppendLine("select");
-            query.AppendLine("	tc.id,");
-            query.AppendLine("	tc.descricao");
+            query.AppendLine("    tc.id,");
+            query.AppendLine("    tc.descricao");
             query.AppendLine("from");
-            query.AppendLine("	tipo_ciclo tc");
+            query.AppendLine("    tipo_ciclo tc");
             query.AppendLine("inner join tipo_ciclo_ano tca on");
             query.AppendLine("  tc.id = tca.tipo_ciclo_id");
             query.AppendLine("where");
@@ -48,11 +48,11 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder query = new StringBuilder();
             query.AppendLine("SELECT distinct");
-            query.AppendLine("	tc.id,");
-            query.AppendLine("	tc.descricao,");
-            query.AppendLine("	1 AS Selecionado");
+            query.AppendLine("    tc.id,");
+            query.AppendLine("    tc.descricao,");
+            query.AppendLine("    1 AS Selecionado");
             query.AppendLine("from ");
-            query.AppendLine("	tipo_ciclo tc inner join tipo_ciclo_ano tca on tc.id = tca.tipo_ciclo_id ");
+            query.AppendLine("    tipo_ciclo tc inner join tipo_ciclo_ano tca on tc.id = tca.tipo_ciclo_id ");
             query.AppendLine("WHERE ");
             query.AppendLine($"  tca.Ano = @anoSelecionado");
             query.AppendLine($"  AND modalidade = @modalidade");
@@ -66,11 +66,11 @@ namespace SME.SGP.Dados.Repositorios
 
             query.Clear();
             query.AppendLine("SELECT distinct");
-            query.AppendLine("	tc.id,");
-            query.AppendLine("	tc.descricao,");
-            query.AppendLine("	0 AS Selecionado");
+            query.AppendLine("    tc.id,");
+            query.AppendLine("    tc.descricao,");
+            query.AppendLine("    0 AS Selecionado");
             query.AppendLine("from ");
-            query.AppendLine("	tipo_ciclo tc inner join tipo_ciclo_ano tca on tc.id = tca.tipo_ciclo_id ");
+            query.AppendLine("    tipo_ciclo tc inner join tipo_ciclo_ano tca on tc.id = tca.tipo_ciclo_id ");
             query.AppendLine("WHERE ");
             query.AppendLine($"  tca.Ano = ANY(@anos)");
             query.AppendLine($"  AND modalidade = @modalidade");

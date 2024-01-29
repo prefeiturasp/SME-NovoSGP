@@ -1,8 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Infra.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,9 +15,9 @@ namespace SME.SGP.Aplicacao
             this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));
         }
 
-        public async Task<string> Handle(ObterTokenAtualQuery request, CancellationToken cancellationToken)
+        public Task<string> Handle(ObterTokenAtualQuery request, CancellationToken cancellationToken)
         {
-            return contextoAplicacao.ObterVariavel<string>("TokenAtual");
+            return Task.FromResult(contextoAplicacao.ObterVariavel<string>("TokenAtual"));
         }
     }
 }

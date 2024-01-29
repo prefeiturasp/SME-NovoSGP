@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -15,22 +16,19 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioAulaConsulta repositorioAula;
-        private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoAbrangencia servicoAbrangencia;
-        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
 
-        public ServicoAtribuicaoCJ(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IServicoAbrangencia servicoAbrangencia, IRepositorioTurma repositorioTurma,
-            IRepositorioAbrangencia repositorioAbrangencia, IRepositorioAulaConsulta repositorioAula, IServicoUsuario servicoUsuario, IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular, IMediator mediator)
+        public ServicoAtribuicaoCJ(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IServicoAbrangencia servicoAbrangencia,
+            IRepositorioAbrangencia repositorioAbrangencia, IRepositorioAulaConsulta repositorioAula, IServicoUsuario servicoUsuario, 
+            IMediator mediator)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.servicoAbrangencia = servicoAbrangencia ?? throw new ArgumentNullException(nameof(servicoAbrangencia));
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
-            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -38,7 +36,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             await ValidaComponentesCurricularesQueNaoPodemSerSubstituidos(atribuicaoCJ);
 
-            if (professoresTitularesDisciplinasEol.NaoEhNulo() && professoresTitularesDisciplinasEol.Any(c => c.ProfessorRf.Contains(atribuicaoCJ.ProfessorRf) && c.DisciplinasId.Contains(atribuicaoCJ.DisciplinaId)))
+            if (professoresTitularesDisciplinasEol.NaoEhNulo() && professoresTitularesDisciplinasEol.Any(c => c.ProfessorRf.Contains(atribuicaoCJ.ProfessorRf) && c.DisciplinasId().Contains(atribuicaoCJ.DisciplinaId)))
                 throw new NegocioException("Não é possível realizar substituição na turma onde o professor já é o titular.");
 
             if (atribuicoesAtuais.EhNulo())
@@ -71,48 +69,42 @@ namespace SME.SGP.Dominio.Servicos
         private async Task TratarAbrangencia(AtribuicaoCJ atribuicaoCJ, IEnumerable<AtribuicaoCJ> atribuicoesAtuais)
         {
             var perfil = atribuicaoCJ.Modalidade == Modalidade.EducacaoInfantil ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
-
             var abrangenciasAtuais = await repositorioAbrangencia.ObterAbrangenciaSintetica(atribuicaoCJ.ProfessorRf, perfil, atribuicaoCJ.TurmaId);
 
             if (atribuicaoCJ.Substituir)
             {
-                var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(atribuicaoCJ.TurmaId));
-              
-                if (abrangenciasAtuais.NaoEhNulo() && !abrangenciasAtuais.Any())
+                var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(atribuicaoCJ.TurmaId))
+                            ?? throw new NegocioException($"Não foi possível localizar a turma {atribuicaoCJ.TurmaId} da abrangência.");
+                if (abrangenciasAtuais.NaoPossuiRegistros())
                 {
-                 
-                    if (turma.EhNulo())
-                        throw new NegocioException($"Não foi possível localizar a turma {atribuicaoCJ.TurmaId} da abrangência.");
-                 
-                    var abrangencias = new Abrangencia[] { new Abrangencia() { Perfil = perfil, TurmaId = turma.Id , Historico  = turma.Historica } };
-
+                    var abrangencias = new Abrangencia[] { new Abrangencia() { Perfil = perfil, TurmaId = turma.Id, Historico = turma.Historica } };
                     await servicoAbrangencia.SalvarAbrangencias(abrangencias, atribuicaoCJ.ProfessorRf);
                 }
-
-                if (abrangenciasAtuais.NaoEhNulo())
+                else
                 {
-                    var abrangenciaDaTurma = abrangenciasAtuais.Where(x => x.TurmaId == turma.Id).FirstOrDefault();
-                    if (abrangenciaDaTurma.NaoEhNulo() && abrangenciaDaTurma.Historico != turma.Historica)
+                    var abrangenciaDaTurma = abrangenciasAtuais.FirstOrDefault(x => x.TurmaId == turma.Id);
+                    if (abrangenciaDaTurma.NaoEhNulo()
+                        && abrangenciaDaTurma.Historico != turma.Historica)
                     {
                         var abangencia = new long[] { abrangenciaDaTurma.Id };
                         await repositorioAbrangencia.AtualizaAbrangenciaHistorica(abangencia);
                     }
 
                 }
-
-
             }
-            else if ((abrangenciasAtuais.NaoEhNulo() && abrangenciasAtuais.Any()) &&
-                     (!atribuicoesAtuais.Any(a => a.Id != atribuicaoCJ.Id && a.Substituir)))
+            else await RemoverAbrangenciasAtribuicoesCJ(abrangenciasAtuais, atribuicoesAtuais, atribuicaoCJ);
+        }
+
+        private async Task RemoverAbrangenciasAtribuicoesCJ(IEnumerable<AbrangenciaSinteticaDto> abrangenciasAtuais,
+                                                            IEnumerable<AtribuicaoCJ> atribuicoesAtuais, AtribuicaoCJ atribuicaoCJ)
+        {
+            var atribuicaoPresenteNasAtribuicoesAtuais = atribuicoesAtuais.Any(a => a.Id != atribuicaoCJ.Id && a.Substituir);
+            if (abrangenciasAtuais.PossuiRegistros() 
+                && !atribuicaoPresenteNasAtribuicoesAtuais)
             {
                 await servicoAbrangencia.RemoverAbrangencias(abrangenciasAtuais.Select(a => a.Id).ToArray());
-
                 await repositorioAtribuicaoCJ.RemoverRegistros(atribuicaoCJ.DreId, atribuicaoCJ.UeId, atribuicaoCJ.TurmaId, atribuicaoCJ.ProfessorRf, atribuicaoCJ.DisciplinaId);
             }
-
-           
-
-
         }
 
         private async Task ValidaComponentesCurricularesQueNaoPodemSerSubstituidos(AtribuicaoCJ atribuicaoCJ)

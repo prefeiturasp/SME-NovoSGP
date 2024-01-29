@@ -14,20 +14,15 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasFechamentoTurmaDisciplina : IConsultasFechamentoTurmaDisciplina
     {
-        private readonly IConsultasAulaPrevista consultasAulaPrevista;
         private readonly IConsultasDisciplina consultasDisciplina;
-        private readonly IConsultasPeriodoFechamento consultasFechamento;
-        private readonly IConsultasFechamentoAluno consultasFechamentoAluno;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasTurma consultasTurma;
         private readonly IRepositorioConceitoConsulta repositorioConceito;
         private readonly IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina;
-        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IRepositorioSintese repositorioSintese;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
-        private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoAluno servicoAluno;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
@@ -35,18 +30,13 @@ namespace SME.SGP.Aplicacao
 
         public ConsultasFechamentoTurmaDisciplina(IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina,
             IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
-            IRepositorioTurma repositorioTurma,
             IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
-            IConsultasAulaPrevista consultasAulaPrevista,
             IConsultasPeriodoEscolar consultasPeriodoEscolar,
             IServicoUsuario servicoUsuario,
             IServicoAluno servicoAluno,
             IRepositorioConceitoConsulta repositorioConceito,
             IRepositorioSintese repositorioSintese,
-            IRepositorioParametrosSistema repositorioParametrosSistema,
-            IConsultasPeriodoFechamento consultasFechamento,
             IConsultasDisciplina consultasDisciplina,
-            IConsultasFechamentoAluno consultasFechamentoAluno,
             IConsultasPeriodoFechamento consultasPeriodoFechamento,
             IConsultasTurma consultasTurma,
             IMediator mediator
@@ -54,18 +44,13 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
-            this.consultasAulaPrevista = consultasAulaPrevista ?? throw new ArgumentNullException(nameof(consultasAulaPrevista));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.servicoAluno = servicoAluno ?? throw new ArgumentNullException(nameof(servicoAluno));
             this.repositorioConceito = repositorioConceito ?? throw new ArgumentNullException(nameof(repositorioConceito));
             this.repositorioSintese = repositorioSintese ?? throw new ArgumentNullException(nameof(repositorioSintese));
-            this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
-            this.consultasFechamento = consultasFechamento ?? throw new ArgumentNullException(nameof(consultasFechamento));
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
-            this.consultasFechamentoAluno = consultasFechamentoAluno ?? throw new ArgumentNullException(nameof(consultasFechamentoAluno));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -253,7 +238,7 @@ namespace SME.SGP.Aplicacao
                 var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(codigosAlunos, turma.AnoLetivo);
                 foreach (var aluno in alunosValidosComOrdenacao)
                 {
-                    var fechamentoTurma = fechamentosTurmasAlunos.Where(c => c.AlunoCodigo == aluno.CodigoAluno).FirstOrDefault();
+                    var fechamentoTurma = fechamentosTurmasAlunos.FirstOrDefault(c => c.AlunoCodigo == aluno.CodigoAluno);
 
                     var alunoDto = new NotaConceitoAlunoBimestreDto
                     {
@@ -265,8 +250,8 @@ namespace SME.SGP.Aplicacao
                         EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == aluno.CodigoAluno)
                     };
 
-                    var anotacaoAluno = anotacoesAlunos.Where(c => c.FechamentoAluno.FechamentoTurmaDisciplinaId == fechamentoTurma?.FechamentoTurmaDisciplinaId &&
-                        c.FechamentoAluno.AlunoCodigo == aluno.CodigoAluno).FirstOrDefault();
+                    var anotacaoAluno = anotacoesAlunos.FirstOrDefault(c => c.FechamentoAluno.FechamentoTurmaDisciplinaId == fechamentoTurma?.FechamentoTurmaDisciplinaId &&
+                        c.FechamentoAluno.AlunoCodigo == aluno.CodigoAluno);
 
                     alunoDto.TemAnotacao = anotacaoAluno.NaoEhNulo() && anotacaoAluno.Anotacao.NaoEhNulo() &&
                         !string.IsNullOrEmpty(anotacaoAluno.Anotacao.Trim());

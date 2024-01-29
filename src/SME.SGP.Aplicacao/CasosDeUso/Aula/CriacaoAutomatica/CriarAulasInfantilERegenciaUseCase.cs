@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -21,7 +20,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            var jsonComando = await repositorioCache.ObterAsync(mensagemRabbit.Mensagem?.ToString()) ?? null;
+            var jsonComando = await repositorioCache.ObterAsync(mensagemRabbit.Mensagem?.ToString());
 
             if (string.IsNullOrWhiteSpace(jsonComando))
                 return false;

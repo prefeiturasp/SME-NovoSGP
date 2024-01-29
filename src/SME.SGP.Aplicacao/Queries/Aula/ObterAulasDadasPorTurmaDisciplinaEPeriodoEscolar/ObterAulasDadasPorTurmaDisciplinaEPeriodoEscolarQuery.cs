@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
         public long TipoCalendarioId { get; set; }
         public string Professor { get; set; }
 
-        private ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(string turmaCodigo, long[] componentesCurricularesId, long tipoCalendarioId, string professor = null)
+        private ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(string turmaCodigo, long[] componentesCurricularesId, long tipoCalendarioId)
         {
             TurmaCodigo = turmaCodigo;
             ComponentesCurricularesId = componentesCurricularesId;

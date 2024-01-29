@@ -21,7 +21,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PaginacaoResultadoDto<EncaminhamentoAEEAlunoTurmaDto>> ListarPaginado(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, string responsavelRf, int anoLetivo, string[] turmasCodigos, Paginacao paginacao, bool exibirEncerrados)
         {
-            var query = MontaQueryCompleta(paginacao, dreId, ueId, turmaId, alunoCodigo, situacao, responsavelRf, anoLetivo, turmasCodigos, exibirEncerrados);
+            var query = MontaQueryCompleta(paginacao, ueId, turmaId, alunoCodigo, situacao, responsavelRf, turmasCodigos, exibirEncerrados);
             var situacoesEncerrado = new int[] { (int)SituacaoAEE.Encerrado, (int)SituacaoAEE.EncerradoAutomaticamente };
             var parametros = new { dreId, ueId, turmaId, alunoCodigo, situacao, responsavelRf, anoLetivo, turmasCodigos, situacoesEncerrado };
             var retorno = new PaginacaoResultadoDto<EncaminhamentoAEEAlunoTurmaDto>();
@@ -37,7 +37,7 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
-        private static string MontaQueryCompleta(Paginacao paginacao, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, string responsavelRf, int anoLetivo, string[] turmasCodigos, bool exibirEncerrados)
+        private static string MontaQueryCompleta(Paginacao paginacao, long ueId, long turmaId, string alunoCodigo, int? situacao, string responsavelRf, string[] turmasCodigos, bool exibirEncerrados)
         {
             StringBuilder sql = new StringBuilder();
 
@@ -235,7 +235,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterResponsaveis(long dreId, long ueId, long turmaId, string alunoCodigo, int anoLetivo, int? situacao, bool exibirEncerrados)
         {
             var sql = new StringBuilder(@"select distinct u.rf_codigo as CodigoRf
-	                                    , u.nome as NomeServidor
+                                        , u.nome as NomeServidor
                                       from encaminhamento_aee ea 
                                      inner join turma t on t.id = ea.turma_id
                                      inner join ue on t.ue_id = ue.id
@@ -322,19 +322,19 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<EncaminhamentoAEECodigoArquivoDto>> ObterCodigoArquivoPorEncaminhamentoAEEId(long encaminhamentoId)
         {
             var sql = @"select
-	                        a.codigo
+                            a.codigo
                         from
-	                        encaminhamento_aee ea
+                            encaminhamento_aee ea
                         inner join encaminhamento_aee_secao eas on
-	                        ea.id = eas.encaminhamento_aee_id
+                            ea.id = eas.encaminhamento_aee_id
                         inner join questao_encaminhamento_aee qea on
-	                        eas.id = qea.encaminhamento_aee_secao_id
+                            eas.id = qea.encaminhamento_aee_secao_id
                         inner join resposta_encaminhamento_aee rea on
-	                        qea.id = rea.questao_encaminhamento_id
+                            qea.id = rea.questao_encaminhamento_id
                         inner join arquivo a on
-	                        rea.arquivo_id = a.id
+                            rea.arquivo_id = a.id
                         where
-	                        ea.id = @encaminhamentoId";
+                            ea.id = @encaminhamentoId";
 
             return await database.Conexao.QueryAsync<EncaminhamentoAEECodigoArquivoDto>(sql.ToString(), new { encaminhamentoId });
         }

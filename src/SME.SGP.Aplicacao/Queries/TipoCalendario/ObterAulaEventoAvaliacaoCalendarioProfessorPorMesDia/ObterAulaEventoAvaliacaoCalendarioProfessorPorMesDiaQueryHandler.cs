@@ -44,8 +44,8 @@ namespace SME.SGP.Aplicacao
                     }
 
                     var professorTitular = professoresTitulares?
-                        .FirstOrDefault(p => p.DisciplinasId.Contains(discplinaIdAula) ||
-                        (componenteCurricular.NaoEhNulo() && (p.DisciplinasId.Contains(componenteCurricular.Id) || p.DisciplinasId.Contains(componenteCurricular.CodigoComponenteCurricularTerritorioSaber))));
+                        .FirstOrDefault(p => p.DisciplinasId().Contains(discplinaIdAula) ||
+                        (componenteCurricular.NaoEhNulo() && (p.DisciplinasId().Contains(componenteCurricular.Id) || p.DisciplinasId().Contains(componenteCurricular.CodigoComponenteCurricularTerritorioSaber))));
 
                     var eventoAulaDto = new EventoAulaDto()
                     {

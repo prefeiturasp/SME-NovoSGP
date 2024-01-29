@@ -113,9 +113,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterUrlServicoArmazenamento(string nomeArquivo, bool ehPastaTemporaria,[FromServices] IObterServicoArmazenamentoUseCase useCase)
+        public IActionResult ObterUrlServicoArmazenamento(string nomeArquivo, bool ehPastaTemporaria,[FromServices] IObterServicoArmazenamentoUseCase useCase)
         {
-            return Ok(await useCase.Executar(nomeArquivo,ehPastaTemporaria));
+            return Ok(useCase.Executar(nomeArquivo,ehPastaTemporaria));
         }
     }
 }

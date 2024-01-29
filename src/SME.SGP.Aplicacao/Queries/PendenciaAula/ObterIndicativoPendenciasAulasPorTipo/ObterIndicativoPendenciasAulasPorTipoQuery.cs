@@ -1,36 +1,30 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterIndicativoPendenciasAulasPorTipoQuery : IRequest<PendenciaPaginaInicialListao>
     {
-        public ObterIndicativoPendenciasAulasPorTipoQuery(string disciplinaId,
-                                                          string turmaId,
+        public ObterIndicativoPendenciasAulasPorTipoQuery(Turma turma, 
+                                                          Usuario usuario, 
+                                                          string disciplinaId,
                                                           int anoLetivo,
-                                                          int bimestre,
-                                                          bool verificaDiarioBordo = false,
-                                                          bool verificaFrequencia = false,
-                                                          bool verificaAvaliacao = false,
-                                                          bool verificaPlanoAula = false,
-                                                          bool professorCj = false,
-                                                          bool professorNaoCj = false,
-                                                          string professorRf = "",
-                                                          bool ehGestor = false)
+                                                          int bimestre)
         {
             DisciplinaId = disciplinaId;
-            TurmaId = turmaId;
+            TurmaId = turma.CodigoTurma;
             AnoLetivo = anoLetivo;
             Bimestre = bimestre;
-            VerificaDiarioBordo = verificaDiarioBordo;
-            VerificaFrequencia = verificaFrequencia;
-            VerificaAvaliacao = verificaAvaliacao;
-            VerificaPlanoAula = verificaPlanoAula;
-            ProfessorCj = professorCj;
-            ProfessorNaoCj = professorNaoCj;
-            ProfessorRf = professorRf;
-            EhGestor = ehGestor;
+            VerificaDiarioBordo = turma.EhTurmaInfantil && !usuario.EhProfessorCjInfantil();
+            VerificaFrequencia = !turma.EhTurmaInfantil || !usuario.EhProfessorCjInfantil();
+            VerificaAvaliacao = !turma.EhTurmaInfantil;
+            VerificaPlanoAula = !turma.EhTurmaInfantil;
+            ProfessorCj = usuario.EhProfessorCj();
+            ProfessorNaoCj = usuario.EhProfessor();
+            ProfessorRf = usuario.CodigoRf;
+            EhGestor = usuario.EhGestorEscolar();
 
         }
 

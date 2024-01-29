@@ -6,6 +6,8 @@ namespace SME.SGP.Api
 {
     public class Program
     {
+        protected Program() { }
+
         public static void Main(string[] args)
         {
             WebHost.CreateDefaultBuilder(args)

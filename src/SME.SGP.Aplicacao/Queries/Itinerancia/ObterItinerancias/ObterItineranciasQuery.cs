@@ -8,17 +8,17 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterItineranciasQuery : IRequest<PaginacaoResultadoDto<ItineranciaRetornoQueryDto>>
     {
-        public ObterItineranciasQuery(long dreId, long ueId, long turmaId, int anoLetivo, string alunoCodigo, DateTime? dataInicio, DateTime? dataFim, SituacaoItinerancia situacao, string criadoRf)
+        public ObterItineranciasQuery(FiltroPesquisaItineranciasDto filtro)
         {
-            DreId = dreId;
-            UeId = ueId;
-            TurmaId = turmaId;
-            AnoLetivo = anoLetivo;
-            AlunoCodigo = alunoCodigo;
-            DataInicio = dataInicio;
-            DataFim = dataFim;
-            Situacao = situacao;
-            CriadoRf = criadoRf;
+            DreId = filtro.DreId;
+            UeId = filtro.UeId;
+            TurmaId = filtro.TurmaId;
+            AnoLetivo = filtro.AnoLetivo;
+            AlunoCodigo = filtro.AlunoCodigo;
+            DataInicio = filtro.DataInicio;
+            DataFim = filtro.DataFim;
+            Situacao = filtro.Situacao;
+            CriadoRf = filtro.CriadoRf;
         }
 
         public long DreId { get; set; }

@@ -16,6 +16,9 @@ namespace SME.SGP.Dominio
             StatusCode = (int)statusCode;
         }
 
+        public NegocioException(string mensagem, Exception innerException) : base(mensagem, innerException)
+        { }
+
         public int StatusCode { get; }
         public bool EhInformatico { get; }
     }

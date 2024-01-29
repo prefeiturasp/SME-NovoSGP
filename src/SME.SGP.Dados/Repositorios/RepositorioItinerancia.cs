@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using Dommel;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
@@ -23,8 +22,8 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<ItineranciaObjetivosBaseDto>> ObterObjetivosBase()
         {
             var query = @"select id as ItineranciaObjetivoBaseId,
-	                             nome,
-	                             tem_descricao as TemDescricao
+                                 nome,
+                                 tem_descricao as TemDescricao
                             from itinerancia_objetivo_base iob  
                            where not excluido 
                            order by ordem  ";
@@ -70,7 +69,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<ItineranciaAlunoDto>> ObterItineranciaAlunoPorId(long id)
         {
             var query = @" select id,
- 		                          codigo_aluno as CodigoAluno,
+                                   codigo_aluno as CodigoAluno,
                                   turma_id as TurmaId
                              from itinerancia_aluno ia 
                             where itinerancia_id = @id
@@ -203,7 +202,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             ObtenhaCabecalho(sql, contador, dreId, ueId, turmaId, alunoCodigo);
 
-            ObtenhaFiltro(sql, dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo, dataInicio, dataFim, criadoRf);
+            ObtenhaFiltro(sql, ueId, turmaId, alunoCodigo, situacao, dataInicio, dataFim, criadoRf);
 
             if (!contador)
                 sql.AppendLine(" order by i.data_visita desc ");
@@ -232,14 +231,14 @@ namespace SME.SGP.Dados.Repositorios
             if (dreId > 0 || ueId > 0)
             {
                 sql.AppendLine(@" inner join ue  on i.ue_id  = ue.id 
-	                              inner join dre on ue.dre_id = dre.id ");
+                                  inner join dre on ue.dre_id = dre.id ");
             }
 
             if (turmaId > 0 || !string.IsNullOrEmpty(alunoCodigo))
                 sql.AppendLine(@" inner join itinerancia_aluno ia on ia.itinerancia_id = i.id ");
         }
 
-        private static void ObtenhaFiltro(StringBuilder sql, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, int anoLetivo, DateTime? dataInicio, DateTime? dataFim, string criadoRf)
+        private static void ObtenhaFiltro(StringBuilder sql, long ueId, long turmaId, string alunoCodigo, int? situacao, DateTime? dataInicio, DateTime? dataFim, string criadoRf)
         {
             sql.AppendLine(" where ue.dre_id = @dreId and not i.excluido ");
             sql.AppendLine(" and i.ano_letivo = @anoLetivo ");

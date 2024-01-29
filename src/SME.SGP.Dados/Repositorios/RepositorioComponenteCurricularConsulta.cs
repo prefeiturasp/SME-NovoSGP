@@ -29,9 +29,9 @@ namespace SME.SGP.Dados.Repositorios
                                 case                     
                                 when (cc.descricao_sgp is not null and cc.descricao_sgp  != '' and cc.descricao_sgp != ' ')
                                 then
-                                	cc.descricao_sgp
+                                    cc.descricao_sgp
                                 else
-                                 	cc.descricao 
+                                     cc.descricao 
                                 end as Nome,
                                 descricao_infantil as NomeComponenteInfantil,
                                 cc.eh_base_nacional as EhBaseNacional,
@@ -74,24 +74,24 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<ComponenteCurricularDto>> ListarComponentesCurriculares()
         {
             var query = $@"select
-	                    id as Codigo,
+                        id as Codigo,
                         permite_lancamento_nota as LancaNota,
                         coalesce(descricao_infantil,descricao_sgp) as descricao,
                         descricao as DescricaoEol,
                         eh_regencia Regencia
                     from
-	                    componente_curricular";
+                        componente_curricular";
 
             return await database.Conexao.QueryAsync<ComponenteCurricularDto>(query, new { });
         }
         public async Task<long[]> ListarCodigosJuremaPorComponenteCurricularId(long id)
         {
             var query = $@"select
-	                            distinct codigo
+                                distinct codigo
                             from
-	                            componente_curriculo_cidade ccc
+                                componente_curriculo_cidade ccc
                             inner join componente_curricular cc on
-	                            ccc.componente_curricular_id = cc.id
+                                ccc.componente_curricular_id = cc.id
                             WHERE ccc.componente_curricular_id = @id;";
 
             return (await database.Conexao.QueryAsync<long>(query, new { id })).ToArray();
@@ -100,11 +100,11 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<bool> VerificaPossuiObjetivosAprendizagemPorComponenteCurricularId(long id)
         {
             var query = $@"select
-	                           distinct 1
+                               distinct 1
                             from
-	                            componente_curriculo_cidade ccc
+                                componente_curriculo_cidade ccc
                             inner join componente_curricular cc on
-	                            ccc.componente_curricular_id = cc.id
+                                ccc.componente_curricular_id = cc.id
                             inner join objetivo_aprendizagem oa on
                                 ccc.codigo = oa.componente_curricular_id
                             WHERE ccc.componente_curricular_id = @id;";
@@ -115,28 +115,28 @@ namespace SME.SGP.Dados.Repositorios
         public Task<IEnumerable<DisciplinaDto>> ObterComponentesCurricularesRegenciaPorAnoETurno(long ano, long turno)
         {
             var query = $@"select
-	                    distinct cc.id as CodigoComponenteCurricular,
-	                    cc.area_conhecimento_id as AreaConhecimentoId,
-	                    cc.componente_curricular_pai_id as CdComponenteCurricularPai,
-	                    case
-		                    when cc.descricao_sgp is not null then cc.descricao_sgp
-		                    else cc.descricao
-	                    end as Nome,
-	                    cc.eh_base_nacional as EhBaseNacional,
-	                    cc.eh_compartilhada as Compartilhada,
-	                    cc.eh_regencia as Regencia,
-	                    cc.eh_territorio as TerritorioSaber,
-	                    cc.grupo_matriz_id as GrupoMatrizId,
-	                    cc.permite_lancamento_nota as LancaNota,
-	                    cc.permite_registro_frequencia as RegistraFrequencia
+                        distinct cc.id as CodigoComponenteCurricular,
+                        cc.area_conhecimento_id as AreaConhecimentoId,
+                        cc.componente_curricular_pai_id as CdComponenteCurricularPai,
+                        case
+                            when cc.descricao_sgp is not null then cc.descricao_sgp
+                            else cc.descricao
+                        end as Nome,
+                        cc.eh_base_nacional as EhBaseNacional,
+                        cc.eh_compartilhada as Compartilhada,
+                        cc.eh_regencia as Regencia,
+                        cc.eh_territorio as TerritorioSaber,
+                        cc.grupo_matriz_id as GrupoMatrizId,
+                        cc.permite_lancamento_nota as LancaNota,
+                        cc.permite_registro_frequencia as RegistraFrequencia
                     from
-	                    componente_curricular_regencia ccr
+                        componente_curricular_regencia ccr
                     inner join componente_curricular cc on
-	                    ccr.componente_curricular_id = cc.id
+                        ccr.componente_curricular_id = cc.id
                     where
-	                    (turno = @turno
-	                    and ano = @ano)
-	                    or turno is null";
+                        (turno = @turno
+                        and ano = @ano)
+                        or turno is null";
 
             return database.Conexao.QueryAsync<DisciplinaDto>(query, new { turno, ano });
         }
@@ -146,7 +146,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = $@"select
                             eh_regencia
                         from
-	                        componente_curricular WHERE id = @id;";
+                            componente_curricular WHERE id = @id;";
             return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { id }));
         }        
         public async Task<bool> LancaNota(long id)
@@ -156,23 +156,23 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<ComponenteCurricularDto>> ObterComponentesComNotaDeFechamentoOuConselhoPorAlunoEBimestre(int anoLetivo, string[] turmasId, int? bimestre, string codigoAluno)
         {
-            var query = $@"	select distinct *
+            var query = $@"    select distinct *
                            from
                            (
                            select
-		                        fn.disciplina_id as Codigo,
-		                        comp.descricao as Descricao,
-		                        comp.permite_lancamento_nota as LancaNota
-	                        from fechamento_turma ft
-	                            left join periodo_escolar pe on pe.id = ft.periodo_escolar_id
-	                            inner join turma t on t.id = ft.turma_id
-	                            inner join ue on ue.id = t.ue_id
-	                            inner join fechamento_turma_disciplina ftd on ftd.fechamento_turma_id = ft.id
-	                            inner join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id
-	                            inner join fechamento_nota fn on fn.fechamento_aluno_id = fa.id
-	                            inner join componente_curricular comp  on comp.id = fn.disciplina_id
-	                        where
-		                       {(bimestre.HasValue && bimestre.Value > 0 ? " pe.bimestre = @bimestre " : " pe.bimestre is null ")} 
+                                fn.disciplina_id as Codigo,
+                                comp.descricao as Descricao,
+                                comp.permite_lancamento_nota as LancaNota
+                            from fechamento_turma ft
+                                left join periodo_escolar pe on pe.id = ft.periodo_escolar_id
+                                inner join turma t on t.id = ft.turma_id
+                                inner join ue on ue.id = t.ue_id
+                                inner join fechamento_turma_disciplina ftd on ftd.fechamento_turma_id = ft.id
+                                inner join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id
+                                inner join fechamento_nota fn on fn.fechamento_aluno_id = fa.id
+                                inner join componente_curricular comp  on comp.id = fn.disciplina_id
+                            where
+                               {(bimestre.HasValue && bimestre.Value > 0 ? " pe.bimestre = @bimestre " : " pe.bimestre is null ")} 
                                and fa.aluno_codigo = @codigoAluno
                                and t.ano_letivo = @anoLetivo
                                and t.turma_id = ANY(@turmasId)
@@ -180,11 +180,11 @@ namespace SME.SGP.Dados.Repositorios
                            union all
                            
                            select
-	                            ccn.componente_curricular_codigo as Codigo,
-	                            comp.descricao as Descricao,
-	                            comp.permite_lancamento_nota as LancaNota
+                                ccn.componente_curricular_codigo as Codigo,
+                                comp.descricao as Descricao,
+                                comp.permite_lancamento_nota as LancaNota
                             from
-	                            fechamento_turma ft
+                                fechamento_turma ft
                                 left join periodo_escolar pe on pe.id = ft.periodo_escolar_id
                                 inner join turma t on t.id = ft.turma_id
                                 inner join ue on ue.id = t.ue_id
@@ -210,14 +210,14 @@ namespace SME.SGP.Dados.Repositorios
                                then 
                                     descricao_infantil 
                                else 
-           		                    case
-           		                     when descricao_sgp != null and descricao_sgp != '' and descricao_sgp != ' '
-           		                        then 
+                                       case
+                                        when descricao_sgp != null and descricao_sgp != '' and descricao_sgp != ' '
+                                           then 
                                             descricao_sgp
-           		                        else 
-           		                            descricao
-           		                    end 
-           	                    end
+                                           else 
+                                               descricao
+                                       end 
+                                   end
                            from componente_curricular cc where id = @id";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { id });
@@ -263,9 +263,9 @@ namespace SME.SGP.Dados.Repositorios
                                 case                     
                                 when (cc.descricao_sgp is not null and cc.descricao_sgp  != '' and cc.descricao_sgp != ' ')
                                 then
-                                	cc.descricao_sgp
+                                    cc.descricao_sgp
                                 else
-                                 	cc.descricao 
+                                     cc.descricao 
                                 end as Nome,
                                 descricao_infantil as NomeComponenteInfantil,
                                 cc.eh_regencia as EhRegencia,

@@ -187,19 +187,6 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             return ServiceProvider.GetService<ISalvarAcompanhamentoAlunoUseCase>();
         }
         
-        protected async Task CriarPeriodoEscolarCustomizadoQuartoBimestre(bool periodoEscolarValido = false)
-        {
-            var dataReferencia = DateTimeExtension.HorarioBrasilia();
-
-            await CriarPeriodoEscolar(dataReferencia.AddDays(-285), dataReferencia.AddDays(-210), BIMESTRE_1, TIPO_CALENDARIO_1);
-
-            await CriarPeriodoEscolar(dataReferencia.AddDays(-200), dataReferencia.AddDays(-125), BIMESTRE_2, TIPO_CALENDARIO_1);
-
-            await CriarPeriodoEscolar(dataReferencia.AddDays(-115), dataReferencia.AddDays(-40), BIMESTRE_3, TIPO_CALENDARIO_1);
-
-            await CriarPeriodoEscolar(dataReferencia.AddDays(-20), periodoEscolarValido ? dataReferencia : dataReferencia.AddDays(-5), BIMESTRE_4, TIPO_CALENDARIO_1);
-        }
-        
         protected async Task CriarPeriodoEscolarCustomizadoSegundoBimestre(bool periodoValido = false)
         {
             var dataReferencia = DateTimeExtension.HorarioBrasilia();

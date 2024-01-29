@@ -22,11 +22,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(ExcluirQuestaoEncaminhamentoNAAPAPorIdCommand request, CancellationToken cancellationToken)
         {
             await repositorioQuestaoEncaminhamentoNAAPA.RemoverLogico(request.QuestaoId);
-
-            var questoesIds = await repositorioQuestaoEncaminhamentoNAAPA.ObterQuestoesPorSecaoId(request.QuestaoId);
-
-            foreach (var questaoId in questoesIds)
-                await mediator.Send(new ExcluirRespostaEncaminhamentoAEEPorQuestaoIdCommand(questaoId));
+            await mediator.Send(new ExcluirRespostaEncaminhamentoNAAPAPorQuestaoIdCommand(request.QuestaoId));
 
             return true;
         }

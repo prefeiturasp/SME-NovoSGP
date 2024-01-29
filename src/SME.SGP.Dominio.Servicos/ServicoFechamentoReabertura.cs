@@ -15,11 +15,7 @@ namespace SME.SGP.Dominio.Servicos
     public class ServicoFechamentoReabertura : IServicoFechamentoReabertura
     {
         private readonly IComandosWorkflowAprovacao comandosWorkflowAprovacao;
-        private readonly IRepositorioEvento repositorioEvento;
-        private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
-        private readonly IRepositorioEventoTipo repositorioEventoTipo;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
-        private readonly IServicoEvento servicoEvento;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
@@ -27,17 +23,13 @@ namespace SME.SGP.Dominio.Servicos
 
         public ServicoFechamentoReabertura(IRepositorioFechamentoReabertura repositorioFechamentoReabertura, IUnitOfWork unitOfWork,
             IComandosWorkflowAprovacao comandosWorkflowAprovacao, IServicoUsuario servicoUsuario, IServicoNotificacao servicoNotificacao,
-            IRepositorioEventoTipo repositorioEventoTipo, IServicoEvento servicoEvento, IRepositorioEvento repositorioEvento, IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre, IMediator mediator)
+            IMediator mediator)
         {
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoReabertura));
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
             this.comandosWorkflowAprovacao = comandosWorkflowAprovacao ?? throw new ArgumentNullException(nameof(comandosWorkflowAprovacao));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
-            this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
-            this.servicoEvento = servicoEvento ?? throw new ArgumentNullException(nameof(servicoEvento));
-            this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
-            this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -88,7 +80,7 @@ namespace SME.SGP.Dominio.Servicos
                 mensagemRetorno = "Reabertura de Fechamento alterado e será válido após aprovação.";
             }
             else
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaNotificacaoFechamentoReabertura, MapearFechamentoReaberturaNotificacao(fechamentoReabertura, usuarioAtual), new System.Guid(), usuarioAtual));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaNotificacaoFechamentoReabertura, MapearFechamentoReaberturaNotificacao(fechamentoReabertura, usuarioAtual), Guid.NewGuid(), usuarioAtual));
 
             
             unitOfWork.PersistirTransacao();
@@ -201,7 +193,7 @@ namespace SME.SGP.Dominio.Servicos
             else
             {
                 fechamentoReabertura.Bimestres.ToList().ForEach(f => f.FechamentoAbertura = null);
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaNotificacaoFechamentoReabertura, MapearFechamentoReaberturaNotificacao(fechamentoReabertura, usuarioAtual), new System.Guid(), usuarioAtual));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaNotificacaoFechamentoReabertura, MapearFechamentoReaberturaNotificacao(fechamentoReabertura, usuarioAtual), Guid.NewGuid(), usuarioAtual));
             }
 
             unitOfWork.PersistirTransacao();

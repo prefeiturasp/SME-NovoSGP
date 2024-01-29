@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
                     {
                         matricula.TurmaId = turmaId;
 
-                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.ConsolidacaoMatriculasTurmasSync, matricula, new Guid(), null));
+                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.ConsolidacaoMatriculasTurmasSync, matricula, Guid.NewGuid(), null));
 
                     }
                 }

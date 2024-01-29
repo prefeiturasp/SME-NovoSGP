@@ -63,8 +63,8 @@ namespace SME.SGP.Aplicacao
                     var turmaModalidade = alunoFechamentoStatus.FirstOrDefault().Modalidade;
 
                     var fechamento = new FechamentoSituacaoPorEstudanteDto();
-                    fechamento.AdicionarQuantidadeCompleto(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.Completo).Count());
-                    fechamento.AdicionarQuantidadeParcial(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.Parcial).Count());
+                    fechamento.AdicionarQuantidadeCompleto(alunoFechamentoStatus.Count(a => a.Situacao == SituacaoFechamentoAluno.Completo));
+                    fechamento.AdicionarQuantidadeParcial(alunoFechamentoStatus.Count(a => a.Situacao == SituacaoFechamentoAluno.Parcial));
                     fechamento.AdicionarQuantidadeSemRegistro(await TotalAlunosSemRegistroPorTurma(new long[] { alunoFechamentoStatus.FirstOrDefault().TurmaId }, param.Bimestre, "0", 
                                                                 (fechamento.QuantidadeParcial + fechamento.QuantidadeCompleto), param.UeId, param.DreId));
 
@@ -84,8 +84,8 @@ namespace SME.SGP.Aplicacao
                     var turmaModalidade = alunoFechamentoStatus.FirstOrDefault().Modalidade;
 
                     var fechamento = new FechamentoSituacaoPorEstudanteDto();
-                    fechamento.AdicionarQuantidadeCompleto(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.Completo).Count());
-                    fechamento.AdicionarQuantidadeParcial(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.Parcial).Count());
+                    fechamento.AdicionarQuantidadeCompleto(alunoFechamentoStatus.Count(a => a.Situacao == SituacaoFechamentoAluno.Completo));
+                    fechamento.AdicionarQuantidadeParcial(alunoFechamentoStatus.Count(a => a.Situacao == SituacaoFechamentoAluno.Parcial));
                     fechamento.AdicionarQuantidadeSemRegistro(await TotalAlunosSemRegistroPorTurma(alunoFechamentoStatus.GroupBy(c => c.TurmaId).Select(a=> a.Key).ToArray(), param.Bimestre, turmaAno,
                                                                                             (fechamento.QuantidadeParcial + fechamento.QuantidadeCompleto), param.UeId, param.DreId));;
 

@@ -27,17 +27,5 @@ namespace SME.SGP.Aplicacao
 
             return true;
         }
-
-        private Task<IEnumerable<string>> CarregarUesPorDreId(long dreId)
-            => mediator.Send(new ObterUesCodigosPorDreQuery(dreId));
-
-        private async Task<IEnumerable<string>> CarregarUePorId(long ueId)
-        {
-            var ueCodigo = await mediator.Send(new ObterUeCodigoPorIdQuery(ueId));
-            if (string.IsNullOrEmpty(ueCodigo))
-                throw new NegocioException("Código da escola não localizado pelo identificador");
-
-            return new List<string>() { ueCodigo };
-        }
     }
 }

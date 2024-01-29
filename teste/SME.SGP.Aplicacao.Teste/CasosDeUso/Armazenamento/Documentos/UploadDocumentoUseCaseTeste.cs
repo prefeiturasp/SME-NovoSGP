@@ -1,11 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
-using SME.SGP.Dominio;
-using System;
-using System.IO;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -25,7 +20,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         }
 
         [Fact]
-        public async Task Deve_Fazer_Upload_PDF()
+        public Task Deve_Fazer_Upload_PDF()
         {
             //var fileNewName = Guid.NewGuid();
 
@@ -57,6 +52,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             //mediator.Verify(x => x.Send(It.IsAny<UploadArquivoCommand>(), It.IsAny<CancellationToken>()), Times.Once);
 
             //Assert.IsType<Guid>(retorno);
+
+            return Task.CompletedTask;
         }
     }
 }

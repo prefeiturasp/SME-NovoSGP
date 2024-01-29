@@ -103,6 +103,26 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Conceito);
         }
 
+        [Fact(DisplayName = "Conselho de classe - Deve alterar nota conceito final de turma celp")]
+        public async Task Deve_lancar_nota_conceito_final_turma_celp()
+        {
+            await CriarDados(ObterPerfilProfessor(),
+                COMPONENTE_CURRICULAR_INGLES_ID_9,
+                TipoNota.Conceito,
+                ANO_1,
+                Modalidade.CELP,
+                ModalidadeTipoCalendario.CELP,
+                false,
+                SituacaoConselhoClasse.EmAndamento,
+                true);
+
+            await CriarConselhoClasseTodosBimestres(COMPONENTE_CURRICULAR_INGLES_ID_9, TipoNota.Conceito);
+
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_INGLES_ID_9, TipoNota.Conceito, FECHAMENTO_TURMA_ID_5, BIMESTRE_FINAL);
+
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false, TipoNota.Conceito);
+        }
+
         private async Task CriarDados(string perfil, long componente, TipoNota tipo, string anoTurma, Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, bool anoAnterior, SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado, bool criarFechamentoDisciplinaAlunoNota = false)
         {
             var dataAula = anoAnterior ? DATA_03_10_INICIO_BIMESTRE_4.AddYears(-1) : DATA_03_10_INICIO_BIMESTRE_4;

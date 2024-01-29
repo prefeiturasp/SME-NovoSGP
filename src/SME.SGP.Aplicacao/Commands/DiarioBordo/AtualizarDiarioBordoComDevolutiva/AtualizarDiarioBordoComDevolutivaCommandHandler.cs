@@ -11,13 +11,10 @@ namespace SME.SGP.Aplicacao
 {
     public class AtualizarDiarioBordoComDevolutivaCommandHandler : IRequestHandler<AtualizarDiarioBordoComDevolutivaCommand, bool>
     {
-        private readonly IMediator mediator;
         private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
 
-        public AtualizarDiarioBordoComDevolutivaCommandHandler(IMediator mediator,
-                                                IRepositorioDiarioBordo repositorioDiarioBordo)
+        public AtualizarDiarioBordoComDevolutivaCommandHandler(IRepositorioDiarioBordo repositorioDiarioBordo)
         {
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioDiarioBordo = repositorioDiarioBordo ?? throw new ArgumentNullException(nameof(repositorioDiarioBordo));
         }
 

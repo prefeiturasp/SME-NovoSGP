@@ -17,5 +17,8 @@ namespace SME.SGP.Dto
         public long TurmaId { get; set; }
         public long TurmaRecuperacaoParalelaId { get; set; }
         public bool EhAtendidoAEE { get; set; }
+
+        public bool EhParecerConclusisoPromocao()
+        => ParecerConclusivo.HasValue && char.GetNumericValue(ParecerConclusivo.Value) <= 3;
     }
 }

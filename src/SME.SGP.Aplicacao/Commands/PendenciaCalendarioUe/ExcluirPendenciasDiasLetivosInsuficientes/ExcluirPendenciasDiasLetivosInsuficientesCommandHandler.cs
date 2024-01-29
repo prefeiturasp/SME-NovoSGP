@@ -11,12 +11,10 @@ namespace SME.SGP.Aplicacao
     public class ExcluirPendenciasDiasLetivosInsuficientesCommandHandler : IRequestHandler<ExcluirPendenciasDiasLetivosInsuficientesCommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly IRepositorioPendenciaCalendarioUe repositorioPendenciaCalendarioUe;
 
-        public ExcluirPendenciasDiasLetivosInsuficientesCommandHandler(IMediator mediator, IRepositorioPendenciaCalendarioUe repositorioPendenciaCalendarioUe)
+        public ExcluirPendenciasDiasLetivosInsuficientesCommandHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.repositorioPendenciaCalendarioUe = repositorioPendenciaCalendarioUe ?? throw new ArgumentNullException(nameof(repositorioPendenciaCalendarioUe));
         }
 
         public async Task<bool> Handle(ExcluirPendenciasDiasLetivosInsuficientesCommand request, CancellationToken cancellationToken)

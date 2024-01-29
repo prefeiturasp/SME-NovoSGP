@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -13,7 +10,7 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<PaginacaoResultadoDto<DiarioBordoDevolutivaDto>> Executar(long devolutivaId)
-            => await mediator.Send(new ObterDiariosBordoPorDevolutivaQuery(devolutivaId));
+        public async Task<PaginacaoResultadoDto<DiarioBordoDevolutivaDto>> Executar(long devolutivaId, int anoLetivo)
+            => await mediator.Send(new ObterDiariosBordoPorDevolutivaQuery(devolutivaId, anoLetivo));
     }
 }

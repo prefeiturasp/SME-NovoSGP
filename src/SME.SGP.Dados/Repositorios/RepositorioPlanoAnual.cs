@@ -21,20 +21,20 @@ namespace SME.SGP.Dados.Repositorios
             StringBuilder query = new StringBuilder();
 
             query.AppendLine("select");
-            query.AppendLine("	pa.ano as AnoLetivo, pa.*, pa.migrado, ");
-            query.AppendLine("	string_agg(distinct cast(oap.objetivo_aprendizagem_jurema_id as text), ',') as ObjetivosAprendizagemPlano");
+            query.AppendLine("    pa.ano as AnoLetivo, pa.*, pa.migrado, ");
+            query.AppendLine("    string_agg(distinct cast(oap.objetivo_aprendizagem_jurema_id as text), ',') as ObjetivosAprendizagemPlano");
             query.AppendLine("from");
-            query.AppendLine("	plano_anual pa");
+            query.AppendLine("    plano_anual pa");
             query.AppendLine("left join objetivo_aprendizagem_plano oap on");
-            query.AppendLine("	pa.id = oap.plano_id");
+            query.AppendLine("    pa.id = oap.plano_id");
             query.AppendLine("where");
-            query.AppendLine("	pa.ano = @ano");
-            query.AppendLine("	and pa.bimestre = @bimestre");
-            query.AppendLine("	and pa.escola_id = @escolaId");
-            query.AppendLine("	and pa.turma_id = @turmaId");
-            query.AppendLine("	and pa.componente_curricular_eol_id = @componenteCurricularEolId");
+            query.AppendLine("    pa.ano = @ano");
+            query.AppendLine("    and pa.bimestre = @bimestre");
+            query.AppendLine("    and pa.escola_id = @escolaId");
+            query.AppendLine("    and pa.turma_id = @turmaId");
+            query.AppendLine("    and pa.componente_curricular_eol_id = @componenteCurricularEolId");
             query.AppendLine("group by");
-            query.AppendLine("	pa.id");
+            query.AppendLine("    pa.id");
 
             return database.Conexao.QueryFirstOrDefault<PlanoAnualCompletoDto>(query.ToString(), new { ano, escolaId, turmaId = Convert.ToInt32(turmaId), bimestre, componenteCurricularEolId });
         }
@@ -44,19 +44,19 @@ namespace SME.SGP.Dados.Repositorios
             StringBuilder query = new StringBuilder();
 
             query.AppendLine("select");
-            query.AppendLine("	pa.ano as AnoLetivo, pa.*, pa.migrado, pa.objetivos_opcionais as ObjetivosAprendizagemOpcionais, ");
-            query.AppendLine("	string_agg(distinct cast(oap.objetivo_aprendizagem_jurema_id as text), ',') as ObjetivosAprendizagemPlano");
+            query.AppendLine("    pa.ano as AnoLetivo, pa.*, pa.migrado, pa.objetivos_opcionais as ObjetivosAprendizagemOpcionais, ");
+            query.AppendLine("    string_agg(distinct cast(oap.objetivo_aprendizagem_jurema_id as text), ',') as ObjetivosAprendizagemPlano");
             query.AppendLine("from");
-            query.AppendLine("	plano_anual pa");
+            query.AppendLine("    plano_anual pa");
             query.AppendLine("left join objetivo_aprendizagem_plano oap on");
-            query.AppendLine("	pa.id = oap.plano_id");
+            query.AppendLine("    pa.id = oap.plano_id");
             query.AppendLine("where");
-            query.AppendLine("	pa.ano = @ano");
-            query.AppendLine("	and pa.escola_id = @ueId");
-            query.AppendLine("	and pa.turma_id = @turmaId");
-            query.AppendLine("	and pa.componente_curricular_eol_id = @componenteCurricularEolId");
+            query.AppendLine("    pa.ano = @ano");
+            query.AppendLine("    and pa.escola_id = @ueId");
+            query.AppendLine("    and pa.turma_id = @turmaId");
+            query.AppendLine("    and pa.componente_curricular_eol_id = @componenteCurricularEolId");
             query.AppendLine("group by");
-            query.AppendLine("	pa.id");
+            query.AppendLine("    pa.id");
 
             return database.Conexao.Query<PlanoAnualCompletoDto>(query.ToString(), new { ano, ueId, turmaId = int.Parse(turmaId), componenteCurricularEolId });
         }
@@ -90,16 +90,16 @@ namespace SME.SGP.Dados.Repositorios
         public PlanoAnualObjetivosDisciplinaDto ObterPlanoObjetivosEscolaTurmaDisciplina(int ano, string escolaId, string turmaId, int bimestre, long componenteCurricularEolId, long disciplinaId)
         {
             string query = @"select
-                    	pa.ano as AnoLetivo, pa.Bimestre,
-                    	string_agg(distinct cast(oap.objetivo_aprendizagem_jurema_id as text), ',') as ObjetivosAprendizagemPlano
+                        pa.ano as AnoLetivo, pa.Bimestre,
+                        string_agg(distinct cast(oap.objetivo_aprendizagem_jurema_id as text), ',') as ObjetivosAprendizagemPlano
                     from plano_anual pa
                     left join objetivo_aprendizagem_plano oap on
-                    	pa.id = oap.plano_id
+                        pa.id = oap.plano_id
                     where pa.ano = @ano
-                    	and pa.bimestre = @bimestre
-                    	and pa.escola_id = @escolaId
-                    	and pa.turma_id = @turmaId
-                    	and pa.componente_curricular_eol_id = @componenteEolId
+                        and pa.bimestre = @bimestre
+                        and pa.escola_id = @escolaId
+                        and pa.turma_id = @turmaId
+                        and pa.componente_curricular_eol_id = @componenteEolId
                         and oap.componente_curricular_id = @disciplinaId
                     group by pa.id";
 
@@ -119,15 +119,15 @@ namespace SME.SGP.Dados.Repositorios
         public bool ValidarPlanoExistentePorAnoEscolaTurmaEBimestre(int ano, string escolaId, string turmaId, int bimestre, long componenteCurricularEolId)
         {
             var query = @"select
-	                            1
+                                1
                             from
-	                            plano_anual
+                                plano_anual
                             where
-	                            ano = @ano
-	                            and escola_id = @escolaId
-	                            and bimestre = @bimestre
-	                            and turma_id = @turmaId
-	                            and componente_curricular_eol_id = @componenteCurricularEolId";
+                                ano = @ano
+                                and escola_id = @escolaId
+                                and bimestre = @bimestre
+                                and turma_id = @turmaId
+                                and componente_curricular_eol_id = @componenteCurricularEolId";
 
             return database.Conexao.Query<bool>(query, new { ano, escolaId, turmaId, bimestre, componenteCurricularEolId }).SingleOrDefault();
         }

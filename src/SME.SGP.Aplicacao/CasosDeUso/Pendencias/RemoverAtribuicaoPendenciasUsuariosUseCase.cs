@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -31,11 +30,11 @@ namespace SME.SGP.Aplicacao
 
                 var pendenciasSemUes = pendenciaFuncionarios.Where(w => !w.UeId.HasValue).Select(s => s.PendenciaId).Distinct();
                 foreach (var pendencia in pendenciasSemUes)
-                    throw new Exception($"Erro na remoção de atribuição de Pendência Perfil Usuário.");
+                    throw new NegocioException($"Erro na remoção de atribuição de Pendência Perfil Usuário.");
             }
             catch (Exception)
             {
-                throw new Exception($"Erro na remoção de atribuição de Pendência Perfil Usuário.");
+                throw new NegocioException($"Erro na remoção de atribuição de Pendência Perfil Usuário.");
             }
             return true;
         }

@@ -45,6 +45,10 @@
         public const string ExecutarMigracaoRelatorioSemestralPAP = "sgp.executar.migracao.relatorio.semestral.pap";
         public const string ExecutarMigracaoRelatorioSemestralPAPPorAnoLetivo = "sgp.executar.migracao.relatorio.semestral.pap.ano.letivo";
         public const string ExecutarMigracaoRelatorioSemestralPAPPorId = "sgp.executar.migracao.relatorio.semestral.pap.id";
+        public const string RotaNotificacaoInformativo = "sgp.notificacao.informativo";
+        public const string RotaNotificacaoInformativoUsuario = "sgp.notificacao.informativo.usuario";
+        public const string RotaExcluirNotificacaoInformativo = "sgp.notificacao.informativo.excluir";
+        public const string RotaExcluirNotificacaoInformativoUsuario = "sgp.notificacao.informativo.usuario.excluir";
 
         #region Relatórios
 
@@ -129,6 +133,7 @@
         public const string RemoverAtribuicaoResponsaveisSupervisorPorDre = "sgp.remover.atribuicao.responsaveis.supervisor.dre";
         public const string RemoverAtribuicaoResponsaveisPAAIPorDre = "sgp.remover.atribuicao.responsaveis.paai.dre";
         public const string RemoverAtribuicaoResponsaveisASPPorDre = "sgp.remover.atribuicao.responsaveis.aspp.dre";
+        public const string GerarCacheAtribuicaoResponsaveis = "sgp.gerar.atribuicao.responsaveis.cache";
 
         #endregion
 

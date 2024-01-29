@@ -19,7 +19,6 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IRepositorioTipoCalendarioConsulta> repositorioTipoCalendario;
         private readonly Mock<IRepositorioFechamentoTurmaConsulta> repositorioFechamentoTurma;
         private readonly Mock<IConsultasTurma> consultasTurma;
-        private readonly Mock<IConsultasPeriodoEscolar> consultasPeriodoEscolar;
         private readonly Mock<IConsultasPeriodoFechamento> consultasPeriodoFechamento;
         private readonly Mock<IConsultasFechamentoTurma> consultasFechamentoTurma;
         private readonly Mock<IServicoDeNotasConceitos> servicoDeNotasConceitos;
@@ -35,7 +34,6 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioTipoCalendario = new Mock<IRepositorioTipoCalendarioConsulta>();
             repositorioFechamentoTurma = new Mock<IRepositorioFechamentoTurmaConsulta>();
             consultasTurma = new Mock<IConsultasTurma>();
-            consultasPeriodoEscolar = new Mock<IConsultasPeriodoEscolar>();
             consultasPeriodoFechamento = new Mock<IConsultasPeriodoFechamento>();
             consultasFechamentoTurma = new Mock<IConsultasFechamentoTurma>();
             servicoDeNotasConceitos = new Mock<IServicoDeNotasConceitos>();
@@ -48,14 +46,13 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                                                                   repositorioTipoCalendario.Object,
                                                                   repositorioFechamentoTurma.Object,                                                                  
                                                                   consultasTurma.Object,
-                                                                  consultasPeriodoEscolar.Object,
                                                                   consultasPeriodoFechamento.Object,
                                                                   consultasFechamentoTurma.Object,
                                                                   mediator.Object);
         }
 
         [Fact]
-        public async Task DeveObterResultado()
+        public Task DeveObterResultado()
         {
             consultasTurma.Setup(t => t.ObterComUeDrePorCodigo(It.IsAny<string>())).Returns(Task.FromResult(ObterTurma()));
             consultasFechamentoTurma.Setup(f => f.ObterPorTurmaCodigoBimestreAsync(It.IsAny<string>(), It.IsAny<int>())).Returns(Task.FromResult(ObterFechamentoTurma()));
@@ -64,6 +61,8 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioParametrosSistema.Setup(m => m.ObterValorPorTipoEAno(It.IsAny<TipoParametroSistema>(),null)).Returns(Task.FromResult("10"));
             repositorioConselhoClasseAluno.Setup(c => c.ObterPorConselhoClasseAlunoCodigoAsync(It.IsAny<long>(), It.IsAny<string>())).Returns(Task.FromResult(new ConselhoClasseAluno()));
             Assert.NotNull(consultasConselhoClasse.ObterConselhoClasseTurma("", "", 0, true, false));
+
+            return Task.CompletedTask;
         }
 
         [Fact]
@@ -121,7 +120,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         }
 
         [Fact]
-        public async Task DeveObterResultadoAnoAnterior()
+        public Task DeveObterResultadoAnoAnterior()
         {
             var turma = ObterTurma();
             turma.AnoLetivo = DateTime.Today.Year - 1;
@@ -134,6 +133,8 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioParametrosSistema.Setup(m => m.ObterValorPorTipoEAno(It.IsAny<TipoParametroSistema>(), null)).Returns(Task.FromResult("10"));
             repositorioConselhoClasseAluno.Setup(c => c.ObterPorConselhoClasseAlunoCodigoAsync(It.IsAny<long>(), It.IsAny<string>())).Returns(Task.FromResult(new ConselhoClasseAluno()));
             Assert.NotNull(consultasConselhoClasse.ObterConselhoClasseTurma("", "", 0, true, false));
+
+            return Task.CompletedTask;
         }
 
         private Turma ObterTurma()

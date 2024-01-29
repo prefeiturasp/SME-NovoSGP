@@ -1,4 +1,10 @@
-﻿namespace SME.SGP.Infra
+﻿using Minio.DataModel;
+using SME.SGP.Infra.Dtos;
+using StackExchange.Redis;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace SME.SGP.Infra
 {
     public class PendenciaPerfilUsuarioDto
     {
@@ -14,5 +20,11 @@
     {
         public int PerfilCodigo { get; set; }
         public long UeId { get; set; }
+    }
+
+    public static class PendenciaPerfilUsuarioExtension
+    {
+        public static bool FuncionarioPossuiPendenciaPerfil(this IEnumerable<PendenciaPerfilUsuarioDto> pendenciasPerfilUsuario, string rfFuncionario)
+        => pendenciasPerfilUsuario.Any(p => p.CodigoRf.Equals(rfFuncionario));
     }
 }
