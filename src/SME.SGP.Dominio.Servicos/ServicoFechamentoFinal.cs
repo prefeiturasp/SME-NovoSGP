@@ -73,6 +73,9 @@ namespace SME.SGP.Dominio.Servicos
             var consolidacaoNotasAlunos = new List<ConsolidacaoNotaAlunoDto>();
             conselhosClasseAlunos = (await mediator.Send(new ObterConselhoClasseAlunosNotaPorFechamentoIdQuery(fechamentoFinal.FechamentoTurmaId))).ToList();
 
+            if (fechamentoFinal.FechamentoAlunos.Any())
+                VerificaSeEhNotaValida(fechamentoFinal.FechamentoAlunos);
+
             unitOfWork.IniciarTransacao();
             try
             {
@@ -192,6 +195,11 @@ namespace SME.SGP.Dominio.Servicos
                 unitOfWork.Rollback();
                 throw;
             }
+        }
+        private void VerificaSeEhNotaValida(IEnumerable<FechamentoAluno> fechamentoAlunos)
+        {
+            if (fechamentoAlunos.Any(f => f.FechamentoNotas.Any(f => f.Nota.NaoEhNulo() && f.Nota > 10)))
+                throw new NegocioException(MensagensNegocioLancamentoNota.NOTA_NUMERICA_DEVE_SER_MENOR_OU_IGUAL_A_10);
         }
 
         private async Task SalvarHistoricoNotaFechamento(FechamentoNota fechamentoNota, TipoNota tipoNota, string criadoRf, string criadoPor,double? notaAnterior, long? conceitoIdAnterior)
