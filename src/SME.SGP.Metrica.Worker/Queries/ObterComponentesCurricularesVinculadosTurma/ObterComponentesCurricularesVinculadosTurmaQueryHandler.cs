@@ -23,10 +23,10 @@ namespace SME.SGP.Metrica.Worker.Queries
         public async Task<IEnumerable<string>> Handle(ObterComponentesCurricularesVinculadosTurmaQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
-            var resposta = await httpClient.GetAsync(ServicosEolConstants.URL_COMPONENTES_CURRICULARES_TURMAS_REGULARES + $"?codigoTurmas={request.CodigoTurma}");
+            var resposta = await httpClient.GetAsync(ServicosEolConstants.URL_COMPONENTES_CURRICULARES_TURMAS + $"?codigoTurmas={request.CodigoTurma}", cancellationToken);
             if (resposta.IsSuccessStatusCode)
             {
-                var json = await resposta.Content.ReadAsStringAsync();
+                var json = await resposta.Content.ReadAsStringAsync(cancellationToken);
                 var retorno = JsonConvert.DeserializeObject<List<ComponenteCurricularEol>>(json);
                 return retorno.Select(cc => cc.Codigo.ToString());
             }
