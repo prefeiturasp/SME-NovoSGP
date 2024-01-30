@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -108,14 +109,15 @@ namespace SME.SGP.Dados.Repositorios
                         lookup.Add(componenteId, retorno);
                     }
 
-                    retorno.ObjetivosAprendizagem.Add(new ObjetivoAprendizagemDto()
-                    {
-                        Id = objetivoAprendizagem.Id,
-                        Ano = objetivoAprendizagem.Ano.ToString(),
-                        Codigo = objetivoAprendizagem.Codigo,
-                        IdComponenteCurricular = objetivoAprendizagem.ComponenteCurricularId,
-                        Descricao = objetivoAprendizagem.Descricao
-                    });
+                    if(!retorno.ObjetivosAprendizagem.Any(ob=> ob.Id == objetivoAprendizagem.Id))
+                        retorno.ObjetivosAprendizagem.Add(new ObjetivoAprendizagemDto()
+                        {
+                            Id = objetivoAprendizagem.Id,
+                            Ano = objetivoAprendizagem.Ano.ToString(),
+                            Codigo = objetivoAprendizagem.Codigo,
+                            IdComponenteCurricular = objetivoAprendizagem.ComponenteCurricularId,
+                            Descricao = objetivoAprendizagem.Descricao
+                        });
 
                     return componenteId;
                 }
