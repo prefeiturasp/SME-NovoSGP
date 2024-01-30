@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
             var turmasItinerarioEnsinoMedio = (await mediator.Send(ObterTurmaItinerarioEnsinoMedioQuery.Instance, cancellationToken)).ToList();
 
             //Se for dos tipos 2 e 7, deve utilizar o fechamento da turma do tipo 1.
-            //Caso não exista, gerar;
+            //Caso não exista, gerar
             if (fechamentoTurma.Turma.EhTurmaEdFisicaOuItinerario() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)fechamentoTurma.Turma.TipoTurma))
             {
                 //Obter a turma do tipo 1 do aluno

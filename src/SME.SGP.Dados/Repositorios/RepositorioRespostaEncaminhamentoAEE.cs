@@ -15,22 +15,22 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<bool> RemoverPorArquivoId(long arquivoId)
         {
-			await Task.CompletedTask;
+            await Task.CompletedTask;
 
-			var sql =
-				$@"
-					update resposta_encaminhamento_aee 
+            var sql =
+                $@"
+                    update resposta_encaminhamento_aee 
                         set excluido = true,
                             arquivo_id = null
-					where arquivo_id = @arquivoId 
+                    where arquivo_id = @arquivoId 
                 ";
 
-			return (
-				await database
-				.Conexao
-				.ExecuteAsync(sql, new { arquivoId })
-				) > 0;
-    		}
+            return (
+                await database
+                .Conexao
+                .ExecuteAsync(sql, new { arquivoId })
+                ) > 0;
+            }
         
         public async Task<IEnumerable<long>> ObterArquivosPorQuestaoId(long questaoEncaminhamentoAEEId)
         {

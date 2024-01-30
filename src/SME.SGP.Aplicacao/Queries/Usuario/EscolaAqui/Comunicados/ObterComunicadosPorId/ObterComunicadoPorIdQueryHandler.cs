@@ -12,11 +12,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterComunicadoPorIdQueryHandler : IRequestHandler<ObterComunicadoPorIdQuery, ComunicadoCompletoDto>
     {
-        private const string TODAS = "todas";
         private readonly IRepositorioComunicado repositorioComunicado;
         private readonly IRepositorioComunicadoTurma repositorioComunicadoTurma;
         private readonly IRepositorioComunicadoAluno repositorioComunicadoAluno;
-        private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IRepositorioComunicadoModalidade repositorioComunicadoModalidade;
         private readonly IRepositorioComunicadoAnoEscolar repositorioComunicadoAnoEscolar;
         private readonly IRepositorioComunicadoTipoEscola repositorioComunicadoTipoEscola;
@@ -26,7 +24,6 @@ namespace SME.SGP.Aplicacao
               IRepositorioComunicado repositorioComunicado
             , IRepositorioComunicadoTurma repositorioComunicadoTurma
             , IRepositorioComunicadoAluno repositorioComunicadoAluno
-            , IConsultasAbrangencia consultasAbrangencia
             , IRepositorioComunicadoModalidade repositorioComunicadoModalidade
             , IRepositorioComunicadoAnoEscolar repositorioComunicadoAnoEscolar
             , IRepositorioComunicadoTipoEscola repositorioComunicadoTipoEscola
@@ -35,7 +32,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioComunicado = repositorioComunicado ?? throw new ArgumentNullException(nameof(repositorioComunicado));
             this.repositorioComunicadoTurma = repositorioComunicadoTurma ?? throw new ArgumentNullException(nameof(repositorioComunicadoTurma));
             this.repositorioComunicadoAluno = repositorioComunicadoAluno ?? throw new ArgumentNullException(nameof(repositorioComunicadoAluno));
-            this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
             this.repositorioComunicadoModalidade = repositorioComunicadoModalidade ?? throw new ArgumentNullException(nameof(repositorioComunicadoModalidade));
             this.repositorioComunicadoAnoEscolar = repositorioComunicadoAnoEscolar ?? throw new ArgumentNullException(nameof(repositorioComunicadoAnoEscolar));
             this.repositorioComunicadoTipoEscola = repositorioComunicadoTipoEscola ?? throw new ArgumentNullException(nameof(repositorioComunicadoTipoEscola));

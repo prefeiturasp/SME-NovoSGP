@@ -3,9 +3,7 @@ using Microsoft.Extensions.Configuration;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dto;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -26,7 +24,6 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioFeriadoCalendario repositorioFeriadoCalendario;
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
-        private readonly IServicoLog servicoLog;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
@@ -41,7 +38,7 @@ namespace SME.SGP.Dominio.Servicos
                              IRepositorioTipoCalendario repositorioTipoCalendario,
                              IComandosWorkflowAprovacao comandosWorkflowAprovacao,
                              IRepositorioAbrangencia repositorioAbrangencia, IConfiguration configuration,
-                             IUnitOfWork unitOfWork, IServicoNotificacao servicoNotificacao, IServicoLog servicoLog, IMediator mediator,
+                             IUnitOfWork unitOfWork, IServicoNotificacao servicoNotificacao, IMediator mediator,
                              IRepositorioEventoBimestre repositorioEventoBimestre)
         {
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
@@ -55,7 +52,6 @@ namespace SME.SGP.Dominio.Servicos
             this.configuration = configuration;
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
-            this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioEventoBimestre = repositorioEventoBimestre ?? throw new ArgumentNullException(nameof(repositorioEventoBimestre));
         }
@@ -132,11 +128,9 @@ namespace SME.SGP.Dominio.Servicos
 
             // Envia para workflow apenas na Inclusão ou alteração apos aprovado
             var enviarParaWorkflow = !string.IsNullOrWhiteSpace(evento.UeId) && devePassarPorWorkflowLiberacaoExcepcional;
-            if (!ehAlteracao || (evento.Status == EntidadeStatus.Aprovado))
-            {
-                if (enviarParaWorkflow)
-                    await PersistirWorkflowEvento(evento, devePassarPorWorkflowLiberacaoExcepcional);
-            }
+            
+            if ((!ehAlteracao || (evento.Status == EntidadeStatus.Aprovado)) && enviarParaWorkflow)
+                await PersistirWorkflowEvento(evento, devePassarPorWorkflowLiberacaoExcepcional);
 
             if (!unitOfWorkJaEmUso)
                 unitOfWork.PersistirTransacao();
@@ -329,7 +323,6 @@ namespace SME.SGP.Dominio.Servicos
                 catch (Exception ex)
                 {
                     notificacoesFalha.Add($"{novoEvento.DataInicio.ToShortDateString()} - Ocorreu um erro interno.");
-                    servicoLog.Registrar(ex);
                 }
             }
             var usuarioLogado = servicoUsuario.ObterUsuarioLogado().Result;

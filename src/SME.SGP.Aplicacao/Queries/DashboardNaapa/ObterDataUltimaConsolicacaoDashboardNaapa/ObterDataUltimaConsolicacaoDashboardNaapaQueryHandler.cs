@@ -20,12 +20,10 @@ namespace SME.SGP.Aplicacao
         {
             var tipos = new long[] { (long)request.Tipo };
             var parametroSistema = (await mediator.Send(new ObterParametrosSistemaPorTiposQuery() { Tipos = tipos })).FirstOrDefault();
-            if (parametroSistema.NaoEhNulo())
-            {
-                if (!string.IsNullOrEmpty(parametroSistema.Valor))
-                    return DateTime.Parse(parametroSistema.Valor);
-            }
-
+            
+            if (parametroSistema.NaoEhNulo() && !string.IsNullOrEmpty(parametroSistema.Valor))
+                return DateTime.Parse(parametroSistema.Valor);
+            
             return null;
         }
     }

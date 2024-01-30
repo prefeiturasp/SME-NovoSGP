@@ -3,8 +3,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,7 +18,8 @@ namespace SME.SGP.Aplicacao
             this.repositorioDiarioBordo = repositorioDiarioBordo ?? throw new ArgumentNullException(nameof(repositorioDiarioBordo));
         }
 
-        public async Task<PaginacaoResultadoDto<DiarioBordoDevolutivaDto>> Handle(ObterDiariosBordoPorDevolutivaQuery request, CancellationToken cancellationToken)
-            => await repositorioDiarioBordo.ObterDiariosBordoPorDevolutivaPaginado(request.DevolutivaId, Paginacao);
+        public Task<PaginacaoResultadoDto<DiarioBordoDevolutivaDto>> Handle(ObterDiariosBordoPorDevolutivaQuery request, CancellationToken cancellationToken)
+            => repositorioDiarioBordo.ObterDiariosBordoPorDevolutivaPaginado(request.DevolutivaId, request.AnoLetivo, Paginacao);
+
     }
 }

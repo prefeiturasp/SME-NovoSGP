@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao.Interfaces
 {
     public interface IObterAlunoPorCodigoEolEAnoLetivoUseCase
     {
-        Task<AlunoReduzidoDto> Executar(string codigoAluno, int anoLetivo, string codigoTurma);
+        Task<AlunoReduzidoDto> Executar(string codigoAluno, int anoLetivo, string codigoTurma, bool carregarDadosResponsaveis = false);
     }
 }

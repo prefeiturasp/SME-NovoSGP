@@ -4,30 +4,28 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
     public class ValidarGradeAulaCommand: IRequest<(bool resultado, string mensagem)>
     {
-        public ValidarGradeAulaCommand(string turmaCodigo,
-                                       Modalidade turmaModalidade,
+        public ValidarGradeAulaCommand(Turma turma,
                                        long[] componentesCurricularesCodigo,
                                        DateTime data,
-                                       string usuarioRf,
+                                       Usuario usuario,
                                        int quantidade,
                                        bool ehRegencia,
-                                       IEnumerable<AulaConsultaDto> aulasExistentes, bool ehGestor = false)
+                                       IEnumerable<AulaConsultaDto> aulasExistentes)
         {
-            TurmaCodigo = turmaCodigo;
-            TurmaModalidade = turmaModalidade;
+            TurmaCodigo = turma.CodigoTurma;
+            TurmaModalidade = turma.ModalidadeCodigo;
             ComponenteCurricularesCodigo = componentesCurricularesCodigo;
             Data = data;
-            UsuarioRf = usuarioRf;
+            UsuarioRf = usuario.CodigoRf;
             Quantidade = quantidade;
             EhRegencia = ehRegencia;
             AulasExistentes = aulasExistentes;
-            EhGestor = ehGestor;
+            EhGestor = usuario.EhGestorEscolar();
         }
 
         public string TurmaCodigo { get; set; }

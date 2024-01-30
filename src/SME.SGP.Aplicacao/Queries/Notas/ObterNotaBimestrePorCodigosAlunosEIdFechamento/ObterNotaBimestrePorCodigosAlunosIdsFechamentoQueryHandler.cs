@@ -13,11 +13,9 @@ namespace SME.SGP.Aplicacao
 
     public class ObterNotaBimestrePorCodigosAlunosIdsFechamentoQueryHandler : IRequestHandler<ObterNotaBimestrePorCodigosAlunosIdsFechamentoQuery, IEnumerable<FechamentoNotaDto>>
     {
-        private readonly IConsultasFechamentoTurmaDisciplina consultasFechamentoTurmaDisciplina;
         private readonly IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplinaConsulta;
-        public ObterNotaBimestrePorCodigosAlunosIdsFechamentoQueryHandler(IConsultasFechamentoTurmaDisciplina consultasFechamentoTurmaDisciplina, IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplinaConsulta)
+        public ObterNotaBimestrePorCodigosAlunosIdsFechamentoQueryHandler(IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplinaConsulta)
         {
-            this.consultasFechamentoTurmaDisciplina = consultasFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(consultasFechamentoTurmaDisciplina));
             this.repositorioFechamentoTurmaDisciplinaConsulta = repositorioFechamentoTurmaDisciplinaConsulta ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplinaConsulta));
         }
 

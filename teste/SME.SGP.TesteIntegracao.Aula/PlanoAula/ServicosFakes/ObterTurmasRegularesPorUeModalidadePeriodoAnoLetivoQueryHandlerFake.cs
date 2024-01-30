@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dto;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.PlanoAula.ServicosFakes
 {
     public class ObterTurmasRegularesPorUeModalidadePeriodoAnoLetivoQueryHandlerFake  : IRequestHandler<ObterTurmasRegularesPorUeModalidadePeriodoAnoLetivoQuery,IEnumerable<AbrangenciaTurmaRetorno>>
     {
-        public async Task<IEnumerable<AbrangenciaTurmaRetorno>> Handle(ObterTurmasRegularesPorUeModalidadePeriodoAnoLetivoQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<AbrangenciaTurmaRetorno>> Handle(ObterTurmasRegularesPorUeModalidadePeriodoAnoLetivoQuery request, CancellationToken cancellationToken)
         {
             var retorno = new List<AbrangenciaTurmaRetorno>()
             {
@@ -30,7 +29,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.ServicosFakes
                 }
             };
 
-            return await Task.FromResult(retorno);
+            return Task.FromResult<IEnumerable<AbrangenciaTurmaRetorno>>(retorno);
         }
     }
 }

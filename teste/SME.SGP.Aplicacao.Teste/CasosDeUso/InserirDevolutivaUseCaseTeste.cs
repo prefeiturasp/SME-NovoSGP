@@ -14,11 +14,13 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
     {
         private readonly InserirDevolutivaUseCase inserirDevolutivaUseCase;
         private readonly Mock<IMediator> mediator;
+        private readonly Mock<IConsultasDisciplina> consultaDisciplina;
 
         public InserirDevolutivaUseCaseTeste()
         {
             mediator = new Mock<IMediator>();
-            inserirDevolutivaUseCase = new InserirDevolutivaUseCase(mediator.Object);
+            consultaDisciplina = new Mock<IConsultasDisciplina>();
+            inserirDevolutivaUseCase = new InserirDevolutivaUseCase(mediator.Object, consultaDisciplina.Object);
         }
 
         [Fact]

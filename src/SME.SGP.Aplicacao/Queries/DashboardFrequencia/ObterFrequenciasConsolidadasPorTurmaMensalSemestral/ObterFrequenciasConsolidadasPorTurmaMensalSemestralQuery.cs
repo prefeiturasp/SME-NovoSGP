@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
@@ -7,18 +8,18 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterFrequenciasConsolidadasPorTurmaMensalSemestralQuery : IRequest<IEnumerable<FrequenciaGlobalMensalSemanalDto>>
     {
-        public ObterFrequenciasConsolidadasPorTurmaMensalSemestralQuery(int anoLetivo, long dreId, long ueId, int modalidade, string anoTurma, DateTime dataInicio, DateTime dataFim, int tipoConsolidadoFrequencia, int semestre, bool visaoDre)
+        public ObterFrequenciasConsolidadasPorTurmaMensalSemestralQuery(FrequenciasConsolidadacaoPorTurmaEAnoDto frequenciaDto, DateTime dataInicio, DateTime dataFim, int tipoConsolidadoFrequencia)
         {
-            AnoLetivo = anoLetivo;
-            DreId = dreId;
-            UeId = ueId;
-            Modalidade = modalidade;
-            AnoTurma = anoTurma;
+            AnoLetivo = frequenciaDto.AnoLetivo;
+            DreId = frequenciaDto.DreId;
+            UeId = frequenciaDto.UeId;
+            Modalidade = frequenciaDto.Modalidade;
+            AnoTurma = frequenciaDto.AnoTurma;
             DataInicio = dataInicio;
             DataFim = dataFim;
             TipoConsolidadoFrequencia = tipoConsolidadoFrequencia;
-            VisaoDre = visaoDre;
-            Semestre = semestre;
+            VisaoDre = frequenciaDto.VisaoDre;
+            Semestre = frequenciaDto.Semestre;
         }
 
         public int AnoLetivo { get; set; }

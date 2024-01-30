@@ -1,8 +1,8 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -19,8 +19,16 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AtribuicaoCJListaRetornoDto>> Executar(AtribuicaoCJListaFiltroDto filtroDto)
         {
-            var listaRetorno = (await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(null, null, filtroDto.UeId, 0,
-                filtroDto.UsuarioRf, filtroDto.UsuarioNome, true, anoLetivo: filtroDto.AnoLetivo, historico: filtroDto.Historico))).ToList();
+            var dto = new AtribuicoesPorTurmaEProfessorDto()
+            {
+                UeId = filtroDto.UeId,
+                UsuarioRf = filtroDto.UsuarioRf,
+                UsuarioNome = filtroDto.UsuarioNome,
+                Substituir = true,
+                AnoLetivo = filtroDto.AnoLetivo,
+                Historico = filtroDto.Historico
+            };
+            var listaRetorno = (await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(dto))).ToList();
 
             if (listaRetorno.Any())
                 return await TransformaEntidadesEmDtosListaRetorno(listaRetorno);
@@ -67,7 +75,7 @@ namespace SME.SGP.Aplicacao
                     ? disciplinasDescricoes.Select(d => d.NomeComponenteInfantil ?? d.Nome).Distinct().ToArray()
                     : disciplinasDescricoes.Select(d => d.Nome).Distinct().ToArray(),
                     DisciplinasId = disciplinasIds.ToArray(),
-                    ProfessorRf = professorDisciplina.ProfessorRf
+                    ProfessorRf = professorDisciplina?.ProfessorRf
                 };
 
                 listRetorno.Add(atribuicaoDto);

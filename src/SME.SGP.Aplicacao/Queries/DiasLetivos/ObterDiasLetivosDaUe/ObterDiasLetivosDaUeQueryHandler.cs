@@ -1,8 +1,5 @@
 ﻿using MediatR;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,8 +17,8 @@ namespace SME.SGP.Aplicacao
                                 // Eventos Ue
                                 || (x.DreIds.Contains(request.DreCodigo) && x.UesIds.Contains(request.UeCodigo)));
 
-            var diasLetivos = diasLetivosENaoLetivosDaUe.Where(c => c.EhLetivo).Count();
-            var diasNaoLetivos = diasLetivosENaoLetivosDaUe.Where(c => c.EhNaoLetivo).Count();
+            var diasLetivos = diasLetivosENaoLetivosDaUe.Count(c => c.EhLetivo);
+            var diasNaoLetivos = diasLetivosENaoLetivosDaUe.Count(c => c.EhNaoLetivo);
 
             return Task.FromResult( diasLetivos - diasNaoLetivos );
         }

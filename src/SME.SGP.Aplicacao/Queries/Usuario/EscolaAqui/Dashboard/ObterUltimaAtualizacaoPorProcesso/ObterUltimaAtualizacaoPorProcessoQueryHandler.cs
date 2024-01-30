@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Net;
@@ -36,7 +37,7 @@ namespace SME.SGP.Aplicacao
                 return JsonConvert.DeserializeObject<UltimaAtualizaoWorkerPorProcessoResultado>(json);
             }
 
-            throw new Exception("Não foi possível obter dados de adesão do aplicativo.");
+            throw new NegocioException("Não foi possível obter dados de adesão do aplicativo.");
         }
     }
 }

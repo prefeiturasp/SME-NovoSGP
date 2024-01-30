@@ -53,25 +53,33 @@ namespace SME.SGP.Aplicacao
             var descricaoUe = $"{ue.TipoEscola.ShortName()} {ue.Nome} ({ue.Dre.Abreviacao})";
             var titulo = $"Validação bimestral de frequência {siglasComponentesUe} - {periodoEscolarEncerrado.Bimestre}º Bimestre - {descricaoUe}";
             var mensagem = $"Segue o relatório de frequência dos componentes de {nomesComponentesUe} do <b>{periodoEscolarEncerrado.Bimestre}º Bimestre</b> da <b>{descricaoUe}</b> para sua validação.<br/><br/>Clique no botão abaixo para fazer o download do arquivo.<br/><br/>";
-            mensagem += await MontarBotaoDownload(codigoRelatorio);
+            mensagem += MontarBotaoDownload(codigoRelatorio);
 
             await mediator.Send(new EnviarNotificacaoCommand(titulo, mensagem, NotificacaoCategoria.Workflow_Aprovacao, NotificacaoTipo.Frequencia, ObterCargos(), ue.Dre.CodigoDre, ue.CodigoUe));
         }
 
         private string OterNomesComponentes(IEnumerable<ComponenteCurricularDto> componentesUe)
         {
-            return string.Join(", ",
-                            componentesUe.Select(a => a.Codigo == "1060" ? "Sala de Leitura" :
-                                                      a.Codigo == "1061" ? "Informática" :
-                                                       "PAP"));
+            return string.Join(", ", componentesUe.Select(a => ObterSiglaNomeComponente(a.Codigo)));
         }
 
         private string ObterSiglasComponentes(IEnumerable<ComponenteCurricularDto> componentesUe)
         {
-            return string.Join(", ",
-                            componentesUe.Select(a => a.Codigo == "1060" ? "OSL" :
-                                                      a.Codigo == "1061" ? "OIE" :
-                                                       "PAP"));
+            return string.Join(", ", componentesUe.Select(a => ObterSiglaNomeComponente(a.Codigo, true)));
+        }
+
+        private string ObterSiglaNomeComponente(string codigo, bool sigla = false)
+        {
+            var dicionario = new Dictionary<string, (string sigla, string descricao)>()
+            {
+                {"1060",("OSL", "Sala de Leitura") },
+                {"1061",("OIE", "Informática") }
+            };
+
+            if (dicionario.ContainsKey(codigo))
+                return sigla ? dicionario[codigo].sigla : dicionario[codigo].descricao;
+
+            return "PAP";
         }
 
         private async Task<IEnumerable<ComponenteCurricularDto>> VerificaComponentesUe(Ue ue)
@@ -85,7 +93,7 @@ namespace SME.SGP.Aplicacao
         private Cargo[] ObterCargos()
             => new Cargo[] { Cargo.Diretor, Cargo.Supervisor };
 
-        private async Task<string> MontarBotaoDownload(Guid codigoRelatorio)
+        private string MontarBotaoDownload(Guid codigoRelatorio)
         {
             var urlRedirecionamentoBase = configuration.GetSection("UrlServidorRelatorios").Value;
             var urlNotificacao = $"{urlRedirecionamentoBase}api/v1/downloads/sgp/pdf/RelatorioFaltasFrequencia.pdf/{codigoRelatorio}";

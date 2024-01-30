@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
     public class GerarParecerConclusivoAlunoCommandHandler : IRequestHandler<GerarParecerConclusivoAlunoCommand, ParecerConclusivoDto>
     {
         private readonly IMediator mediator;
-
+        
         public GerarParecerConclusivoAlunoCommandHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -27,7 +27,8 @@ namespace SME.SGP.Aplicacao
             var emAprovacao = await EnviarParaAprovacao(turma);
 
             // Se não possui notas de fechamento nem de conselho retorna um Dto vazio
-            if (!await VerificaNotasTodosComponentesCurriculares(conselhoClasseAluno.AlunoCodigo, turma, null))
+            if (turma.EhCELP() || 
+                !await VerificaNotasTodosComponentesCurriculares(conselhoClasseAluno.AlunoCodigo, turma, null))
                 return new ParecerConclusivoDto();
 
             var pareceresDaTurma = await ObterPareceresDaTurma(turma);
@@ -81,14 +82,12 @@ namespace SME.SGP.Aplicacao
 
             var pareceresEmAprovacaoAtual = await mediator.Send(new ObterParecerConclusivoEmAprovacaoPorConselhoClasseAlunoQuery(conselhoClasseAluno.Id));
             if (!pareceresEmAprovacaoAtual.Any(parecer => parecer.ConselhoClasseParecerId == parecerConclusivoId))
-                await mediator.Send(new GerarWFAprovacaoParecerConclusivoCommand(conselhoClasseAluno.Id,
-                                                                 turma,
-                                                                 conselhoClasseAluno.AlunoCodigo,
-                                                                 parecerConclusivoId,
-                                                                 parecerAnterior,
-                                                                 parecerNovo,
-                                                                 usuarioSolicitanteId,
-                                                                 conselhoClasseAluno.ConselhoClasseParecerId));
+                await mediator.Send(new GerarWFAprovacaoParecerConclusivoCommand(conselhoClasseAluno,
+                                                                                 turma,
+                                                                                 parecerConclusivoId,
+                                                                                 parecerAnterior,
+                                                                                 parecerNovo,
+                                                                                 usuarioSolicitanteId));
 
             return true;
         }

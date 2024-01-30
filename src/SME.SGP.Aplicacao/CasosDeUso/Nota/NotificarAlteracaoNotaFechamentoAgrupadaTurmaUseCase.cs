@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -24,7 +23,7 @@ namespace SME.SGP.Aplicacao
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(dados.FirstOrDefault().TurmaId));
             var lancaNota = !dados.FirstOrDefault().WfAprovacao.ConceitoId.HasValue;
             var notaConceitoMensagem = lancaNota ? "nota(s)" : "conceito(s)";
-            var mensagem = await MontaMensagemWfAprovacao(dados, lancaNota, turma);
+            var mensagem = MontaMensagemWfAprovacao(dados, lancaNota, turma);
 
             var wfAprovacao = new WorkflowAprovacaoDto
             {
@@ -59,7 +58,7 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
-        private async Task<string> MontaMensagemWfAprovacao(IEnumerable<WfAprovacaoNotaFechamentoTurmaDto> notasAprovacao, bool lancaNota, Turma turma)
+        private string MontaMensagemWfAprovacao(IEnumerable<WfAprovacaoNotaFechamentoTurmaDto> notasAprovacao, bool lancaNota, Turma turma)
         {
             int? bimestreNota = notasAprovacao.FirstOrDefault().Bimestre;
             var bimestre = (bimestreNota ?? 0) == 0 ? "bimestre final" : $"{bimestreNota}º bimestre";

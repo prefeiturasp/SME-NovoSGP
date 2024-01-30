@@ -15,11 +15,11 @@ namespace SME.SGP.Aplicacao
             this.repositorioItineranciaAlunoQuestao = repositorioItineranciaAlunoQuestao ?? throw new ArgumentNullException(nameof(repositorioItineranciaAlunoQuestao));
         }
 
-        public async Task<bool> Handle(ExcluirItineranciaAlunoQuestaoCommand request, CancellationToken cancellationToken)
+        public Task<bool> Handle(ExcluirItineranciaAlunoQuestaoCommand request, CancellationToken cancellationToken)
         {
             repositorioItineranciaAlunoQuestao.Remover(request.Id);
 
-            return true;
+            return Task.FromResult(true);
         }
     }
 }

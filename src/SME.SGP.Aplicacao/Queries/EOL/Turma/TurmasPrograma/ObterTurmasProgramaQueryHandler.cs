@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
             catch (Exception e)
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao obter as turmas de programa no EOL - Códigos:{String.Join(",", request.CodigosTurmas)}", LogNivel.Negocio, LogContexto.Turma, e.Message));
-                throw e;
+                throw;
             }
         }
     }

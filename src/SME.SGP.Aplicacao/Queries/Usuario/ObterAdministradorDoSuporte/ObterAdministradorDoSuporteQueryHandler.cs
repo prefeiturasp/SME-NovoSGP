@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao.Queries.Usuario.ObterAdministradorDoSuporte
             this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));
         }
 
-        public async Task<AdministradorSuporte> Handle(ObterAdministradorDoSuporteQuery request, CancellationToken cancellationToken)
+        public Task<AdministradorSuporte> Handle(ObterAdministradorDoSuporteQuery request, CancellationToken cancellationToken)
         {
             var administrador = new AdministradorSuporte()
             {
@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao.Queries.Usuario.ObterAdministradorDoSuporte
                 Nome = this.contextoAplicacao.ObterVariavel<string>("NomeAdministrador") ?? string.Empty
             };
 
-            return administrador;
+            return Task.FromResult(administrador);
         }
     }
 }

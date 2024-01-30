@@ -29,32 +29,19 @@ namespace SME.SGP.Aplicacao
                 var psicoPedagogosSGP = await mediator.Send(new ObterSupervisoresPorDreAsyncQuery(dre, TipoResponsavelAtribuicao.Psicopedagogo));
 
                 var funcionariosSGP = new List<SupervisorEscolasDreDto>();
-
-                if (assitenteSocialSGP.NaoEhNulo() && assitenteSocialSGP.Any())
-                    funcionariosSGP.AddRange(assitenteSocialSGP);
-
-                if (psicologosSGP.NaoEhNulo() && psicologosSGP.Any())
-                    funcionariosSGP.AddRange(psicologosSGP);
-
-                if (psicoPedagogosSGP.NaoEhNulo() && psicoPedagogosSGP.Any())
-                    funcionariosSGP.AddRange(psicoPedagogosSGP);
+                funcionariosSGP.AddRange(assitenteSocialSGP);
+                funcionariosSGP.AddRange(psicologosSGP);
+                funcionariosSGP.AddRange(psicoPedagogosSGP);
 
                 if (funcionariosSGP.Any())
                 {
-                    var funcionariosEOL = new List<UsuarioEolRetornoDto>();
-
                     var funcionariosPsicoloEscolarEOL = await mediator.Send(new ObterFuncionarioCoreSSOPorPerfilDreQuery(Perfis.PERFIL_PSICOLOGO_ESCOLAR, dre));
                     var funcionariosPsicoPedagogosEOL = await mediator.Send(new ObterFuncionarioCoreSSOPorPerfilDreQuery(Perfis.PERFIL_PSICOPEDAGOGO, dre));
                     var funcionariosAssistenteSocialEOL = await mediator.Send(new ObterFuncionarioCoreSSOPorPerfilDreQuery(Perfis.PERFIL_ASSISTENTE_SOCIAL, dre));
-
-                    if (funcionariosPsicoloEscolarEOL.NaoEhNulo() && funcionariosPsicoloEscolarEOL.Any())
-                        funcionariosEOL.AddRange(funcionariosPsicoloEscolarEOL);
-
-                    if (funcionariosPsicoPedagogosEOL.NaoEhNulo() && funcionariosPsicoPedagogosEOL.Any())
-                        funcionariosEOL.AddRange(funcionariosPsicoPedagogosEOL);
-
-                    if (funcionariosAssistenteSocialEOL.NaoEhNulo() && funcionariosAssistenteSocialEOL.Any())
-                        funcionariosEOL.AddRange(funcionariosAssistenteSocialEOL);
+                    var funcionariosEOL = new List<UsuarioEolRetornoDto>();
+                    funcionariosEOL.AddRange(funcionariosPsicoloEscolarEOL);
+                    funcionariosEOL.AddRange(funcionariosPsicoPedagogosEOL);
+                    funcionariosEOL.AddRange(funcionariosAssistenteSocialEOL);
 
                     return await RemoverASPPCoreSSoSemAtribuicao(funcionariosSGP, funcionariosEOL);
                 }

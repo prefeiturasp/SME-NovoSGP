@@ -17,19 +17,21 @@ namespace SME.SGP.Aplicacao
 
         public async Task<CadastroAulaDto> Executar(FiltroPodeCadastrarAulaDto filtro)
         {
-            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);           
-
-            if (CriandoAula(filtro.AulaId) || await AlterandoDataAula(filtro.AulaId, filtro.DataAula))
-            {                
-                if (!await mediator.Send(new PodeCadastrarAulaNoDiaQuery(filtro.DataAula, filtro.TurmaCodigo, filtro.ComponentesCurriculares, filtro.TipoAula, usuarioLogado.Login)))
-                    throw new NegocioException($"Não é possível cadastrar aula do tipo '{filtro.TipoAula.Name()}' para o dia selecionado!");
-            }
-
+            if (await NaoEhPossivelCadastrarAula(filtro))             
+                throw new NegocioException($"Não é possível cadastrar aula do tipo '{filtro.TipoAula.Name()}' para o dia selecionado!");
+   
             return new CadastroAulaDto()
             {
                 PodeCadastrarAula = true,
                 Grade = filtro.TipoAula == TipoAula.Reposicao ? null : await mediator.Send(new ObterGradeAulasPorTurmaEProfessorQuery(filtro.TurmaCodigo, filtro.ComponentesCurriculares, filtro.DataAula, ehRegencia: filtro.EhRegencia))
             };
+        }
+
+        private async Task<bool> NaoEhPossivelCadastrarAula(FiltroPodeCadastrarAulaDto filtro)
+        {
+            var podeCadastrar = CriandoAula(filtro.AulaId) || await AlterandoDataAula(filtro.AulaId, filtro.DataAula);
+
+            return podeCadastrar && !await mediator.Send(new PodeCadastrarAulaNoDiaQuery(filtro.DataAula, filtro.TurmaCodigo, filtro.ComponentesCurriculares, filtro.TipoAula));
         }
 
         private async Task<bool> AlterandoDataAula(long aulaId, DateTime dataAula)

@@ -33,14 +33,14 @@ namespace SME.SGP.Aplicacao
             if (pareceresDoServico.EhNulo() || !pareceresDoServico.Any())
                 return false;
 
-            if (!pareceresDoServico.Where(c => c.Aprovado).Any())
+            if (!pareceresDoServico.Any(c => c.Aprovado))
                 throw new NegocioException($"Não localizado parecer conclusivo aprovado para o calculo por {nomeClasseCalculo}");
-            if (pareceresDoServico.Where(c => c.Aprovado).Count() > 1)
+            if (pareceresDoServico.Count(c => c.Aprovado) > 1)
                 throw new NegocioException($"Encontrado mais de 1 parecer conclusivo aprovado para o calculo por {nomeClasseCalculo}");
 
-            if (!pareceresDoServico.Where(c => !c.Aprovado).Any())
+            if (!pareceresDoServico.Any(c => !c.Aprovado))
                 throw new NegocioException($"Não localizado parecer conclusivo reprovado para o calculo por {nomeClasseCalculo}");
-            if (pareceresDoServico.Where(c => !c.Aprovado).Count() > 1)
+            if (pareceresDoServico.Count(c => !c.Aprovado) > 1)
                 throw new NegocioException($"Encontrado mais de 1 parecer conclusivo reprovado para o calculo por {nomeClasseCalculo}");
 
             return true;

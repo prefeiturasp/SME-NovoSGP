@@ -16,22 +16,16 @@ namespace SME.SGP.Aplicacao.Teste
     {
         private readonly ObterDatasAulasPorTurmaEComponenteUseCase useCase;
         private readonly Mock<IMediator> mediator;
-        private readonly Mock<IServicoUsuario> servicoUsuario;
 
         public ObterDatasAulasPorTurmaEComponenteUseCaseTeste()
         {
             mediator = new Mock<IMediator>();
-            servicoUsuario = new Mock<IServicoUsuario>();
-            useCase = new ObterDatasAulasPorTurmaEComponenteUseCase(mediator.Object, servicoUsuario.Object);
+            useCase = new ObterDatasAulasPorTurmaEComponenteUseCase(mediator.Object);
         }
 
         [Fact]
         public async Task Deve_Consultar_Datas_Aulas_Por_Turma_E_Componente()
         {
-            // Arrange
-            servicoUsuario.Setup(a => a.ObterUsuarioLogado())
-                .ReturnsAsync(new Dominio.Usuario());
-
             mediator.Setup(a => a.Send(It.IsAny<ObterDatasAulasPorProfessorEComponenteQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<DatasAulasDto>());
 

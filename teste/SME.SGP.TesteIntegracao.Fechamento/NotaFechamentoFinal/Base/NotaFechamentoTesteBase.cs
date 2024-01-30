@@ -927,41 +927,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
             };
         }
 
-        private async Task CrieConceitoValores()
-        {
-
-            await InserirNaBase(new Conceito()
-            {
-                Valor = PLENAMENTE_SATISFATORIO,
-                InicioVigencia = DATA_01_01,
-                Ativo = true,
-                Descricao = ConceitoValores.P.GetAttribute<DisplayAttribute>().Name,
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-            });
-            await InserirNaBase(new Conceito()
-            {
-                Valor = SATISFATORIO,
-                InicioVigencia = DATA_01_01,
-                Ativo = true,
-                Descricao = ConceitoValores.S.GetAttribute<DisplayAttribute>().Name,
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-            });
-            await InserirNaBase(new Conceito()
-            {
-                Valor = NAO_SATISFATORIO,
-                InicioVigencia = DATA_01_01,
-                Ativo = true,
-                Descricao = ConceitoValores.NS.GetAttribute<DisplayAttribute>().Name,
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-            });
-        }
-
         private async Task CriarParametrosSistema()
         {
             await InserirNaBase(new ParametrosSistema
@@ -1049,10 +1014,22 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
 
             var usuarioLogado = ObterTodos<Usuario>().FirstOrDefault();
 
-            var commando = new IncluirFilaGeracaoPendenciasFechamentoCommand(
-                long.Parse(filtroNotaFechamentoDto.ComponenteCurricular),
-                TURMA_CODIGO_1, TURMA_NOME_1, DATA_01_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1,
-                usuarioLogado, NUMERO_1, string.Empty, SISTEMA_CODIGO_RF, long.Parse(TURMA_CODIGO_1), true);
+            var fechamentoDto = new FechamentoTurmaDisciplinaPendenciaDto()
+            {
+                DisciplinaId = long.Parse(filtroNotaFechamentoDto.ComponenteCurricular),
+                CodigoTurma = TURMA_CODIGO_1,
+                NomeTurma = TURMA_NOME_1,
+                PeriodoInicio = DATA_01_01_INICIO_BIMESTRE_1,
+                PeriodoFim = DATA_01_05_FIM_BIMESTRE_1,
+                Bimestre = BIMESTRE_1,
+                UsuarioId = usuarioLogado.Id,
+                Id = NUMERO_1,
+                Justificativa = string.Empty,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                TurmaId = TURMA_ID_1
+            };
+
+            var commando = new IncluirFilaGeracaoPendenciasFechamentoCommand(fechamentoDto, true);
 
             await servicoMediator.Send(commando);
 

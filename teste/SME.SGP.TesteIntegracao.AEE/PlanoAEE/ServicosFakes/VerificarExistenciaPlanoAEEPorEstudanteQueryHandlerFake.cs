@@ -9,9 +9,9 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
 {
     public class VerificarExistenciaPlanoAEEPorEstudanteQueryHandlerFake : IRequestHandler<VerificarExistenciaPlanoAEEPorEstudanteQuery, PlanoAEEResumoDto>
     {
-        public async Task<PlanoAEEResumoDto> Handle(VerificarExistenciaPlanoAEEPorEstudanteQuery request, CancellationToken cancellationToken)
+        public Task<PlanoAEEResumoDto> Handle(VerificarExistenciaPlanoAEEPorEstudanteQuery request, CancellationToken cancellationToken)
         {
-            return await Task.FromResult(new PlanoAEEResumoDto()
+            return Task.FromResult(new PlanoAEEResumoDto()
             {
                 Id =1,
                 Numero = 1,

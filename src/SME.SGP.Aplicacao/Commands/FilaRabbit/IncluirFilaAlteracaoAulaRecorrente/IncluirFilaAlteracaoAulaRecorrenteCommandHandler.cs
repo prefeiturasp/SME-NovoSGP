@@ -17,18 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(IncluirFilaAlteracaoAulaRecorrenteCommand request, CancellationToken cancellationToken)
         {
-            var command = new AlterarAulaRecorrenteCommand(request.Usuario,
-                                                           request.AulaId,
-                                                           request.DataAula,
-                                                           request.Quantidade,
-                                                           request.CodigoTurma,
-                                                           request.ComponenteCurricularId,
-                                                           request.NomeComponenteCurricular,
-                                                           request.TipoCalendarioId,
-                                                           request.TipoAula,
-                                                           request.CodigoUe,
-                                                           request.EhRegencia,
-                                                           request.RecorrenciaAula);
+            var command = new AlterarAulaRecorrenteCommand(request);
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaAlterarAulaRecorrencia, command, Guid.NewGuid(), request.Usuario));
 

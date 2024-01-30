@@ -9,10 +9,17 @@ namespace SME.SGP.Infra.Dtos
         public string AnoTurma { get; set; }
         public string Nome { get; set; }
         public string Descricao { get; set; }
-        public int Ordem { get => Modalidade == Modalidade.EducacaoInfantil ? 1 :
-                Modalidade == Modalidade.Fundamental ? 2 :
-                Modalidade == Modalidade.Medio ? 3 :
-                4;
+        public int Ordem { get => ObterOrdem(); }
+
+        private int ObterOrdem()
+        {
+            switch (Modalidade)
+            {
+                case Modalidade.EducacaoInfantil: return 1;
+                case Modalidade.Fundamental: return 2;
+                case Modalidade.Medio: return 3;
+                default: return 4;
+            }
         }
     }
 }

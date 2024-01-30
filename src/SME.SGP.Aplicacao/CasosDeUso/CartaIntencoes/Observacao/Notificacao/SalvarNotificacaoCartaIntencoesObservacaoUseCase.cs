@@ -15,15 +15,13 @@ namespace SME.SGP.Aplicacao
     public class SalvarNotificacaoCartaIntencoesObservacaoUseCase : ISalvarNotificacaoCartaIntencoesObservacaoUseCase
     {
         private readonly IMediator mediator;
-        private readonly IConfiguration configuration;
         private readonly IRepositorioNotificacaoCartaIntencoesObservacao repositorioNotificacaoCartaIntencoesObservacao;
         private readonly IServicoNotificacao servicoNotificacao;
 
-        public SalvarNotificacaoCartaIntencoesObservacaoUseCase(IMediator mediator, IConfiguration configuration, IServicoNotificacao servicoNotificacao,
+        public SalvarNotificacaoCartaIntencoesObservacaoUseCase(IMediator mediator, IServicoNotificacao servicoNotificacao,
             IRepositorioNotificacaoCartaIntencoesObservacao repositorioNotificacaoCartaIntencoesObservacao)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.repositorioNotificacaoCartaIntencoesObservacao = repositorioNotificacaoCartaIntencoesObservacao ?? throw new ArgumentNullException(nameof(repositorioNotificacaoCartaIntencoesObservacao));
         }

@@ -23,22 +23,40 @@ namespace SME.SGP.Aplicacao
         public DateTime PeriodoEscolarInicio { get; set; }
         public string AnosInfantilDesconsiderar { get; set; }
 
-        public ObterTurmasComComponentesQuery(string ueCodigo, string dreCodigo, string turmaCodigo, int anoLetivo, int qtdeRegistros, int qtdeRegistrosIgnorados, int? bimestre, Modalidade? modalidade, int? semestre, bool ehProfessor, string codigoRf, bool consideraHistorico, DateTime periodoEscolarInicio, string anosInfantilDesconsiderar)
+        public ObterTurmasComComponentesQuery(FiltroTurmaDto filtro, int qtdeRegistros, int qtdeRegistrosIgnorados, Usuario usuario, DateTime periodoEscolarInicio, string anosInfantilDesconsiderar)
         {
-            UeCodigo = ueCodigo;
-            DreCodigo = dreCodigo;
-            Bimestre = bimestre;
-            TurmaCodigo = turmaCodigo;
-            AnoLetivo = anoLetivo;
+            UeCodigo = filtro.UeCodigo;
+            DreCodigo = filtro.DreCodigo;
+            Bimestre = filtro.Bimestre;
+            TurmaCodigo = filtro.TurmaCodigo;
+            AnoLetivo = filtro.AnoLetivo;
             QtdeRegistros = qtdeRegistros;
             QtdeRegistrosIgnorados = qtdeRegistrosIgnorados;
-            Modalidade = modalidade;
-            Semestre = semestre;
-            EhProfessor = ehProfessor;
-            CodigoRf = codigoRf;
-            ConsideraHistorico = consideraHistorico;
+            Modalidade = filtro.Modalidade;
+            Semestre = filtro.Semestre;
+            EhProfessor = usuario.EhPerfilProfessor();
+            CodigoRf = usuario.CodigoRf;
+            ConsideraHistorico = filtro.ConsideraHistorico;
             PeriodoEscolarInicio = periodoEscolarInicio;
             AnosInfantilDesconsiderar = anosInfantilDesconsiderar;
+        }
+
+        public ObterTurmasComComponentesQuery(Turma turma, int qtdeRegistros, int qtdeRegistrosIgnorados, DateTime periodoEscolarInicio)
+        {
+            UeCodigo = turma.Ue.CodigoUe;
+            DreCodigo = turma.Ue.Dre.CodigoDre;
+            Bimestre = null;
+            TurmaCodigo = turma.CodigoTurma;
+            AnoLetivo = turma.AnoLetivo;
+            QtdeRegistros = qtdeRegistros;
+            QtdeRegistrosIgnorados = qtdeRegistrosIgnorados;
+            Modalidade = turma.ModalidadeCodigo;
+            Semestre = turma.Semestre;
+            EhProfessor = false;
+            CodigoRf = string.Empty;
+            ConsideraHistorico = turma.Historica;
+            PeriodoEscolarInicio = periodoEscolarInicio;
+            AnosInfantilDesconsiderar = string.Empty;
         }
 
         public class ObterTurmasComComponentesQueryValidator : AbstractValidator<ObterTurmasComComponentesQuery>

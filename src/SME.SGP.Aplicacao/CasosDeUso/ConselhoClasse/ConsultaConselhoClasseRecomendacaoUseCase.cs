@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
             if (turma.EhNulo())
                 throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
-            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(recomendacaoDto.FechamentoTurmaId, recomendacaoDto.AlunoCodigo, turma.EhAnoAnterior()));
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(recomendacaoDto.FechamentoTurmaId, recomendacaoDto.AlunoCodigo));
 
             var periodoEscolar = fechamentoTurma?.PeriodoEscolar;
 

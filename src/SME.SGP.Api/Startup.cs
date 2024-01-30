@@ -9,17 +9,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Prometheus;
-using SME.SGP.Infra.Utilitarios;
+using SME.SGP.Api.Configuracoes;
+using SME.SGP.Infra;
 using SME.SGP.IoC;
-using System;
+using SME.SGP.IoC.Extensions;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.IO.Compression;
-using System.Threading;
-using SME.SGP.Infra;
-using SME.SGP.Api.Configuracoes;
-using SME.SGP.IoC.Extensions;
 
 namespace SME.SGP.Api
 {

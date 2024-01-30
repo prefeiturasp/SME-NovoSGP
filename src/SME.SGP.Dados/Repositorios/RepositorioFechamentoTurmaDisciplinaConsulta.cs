@@ -232,13 +232,13 @@ namespace SME.SGP.Dados.Repositorios
             ObterFechamentosComSituacaoEmProcessamentoPorAnoLetivo(int anoLetivo)
         {
             var sqlQuery = @"select distinct ftd.*
-	                         from fechamento_turma_disciplina ftd 
-		                        inner join fechamento_turma ft
-			                        on ftd.fechamento_turma_id = ft.id
-		                        inner join turma t
-			                        on ft.turma_id = t.id
+                             from fechamento_turma_disciplina ftd 
+                                inner join fechamento_turma ft
+                                    on ftd.fechamento_turma_id = ft.id
+                                inner join turma t
+                                    on ft.turma_id = t.id
                              where t.ano_letivo = @anoLetivo and
-	                              ftd.situacao = @situacao";
+                                  ftd.situacao = @situacao";
 
             return await database.Conexao.QueryAsync<FechamentoTurmaDisciplina>(sqlQuery,
                 new { anoLetivo, situacao = SituacaoFechamento.EmProcessamento });
@@ -265,8 +265,8 @@ namespace SME.SGP.Dados.Repositorios
 
             var sqlQuery = $@"select Situacao, sum(x.Quantidade) as Quantidade,
                                     x.AnoTurma,
-	                                x.Ano,
-	                                x.Modalidade
+                                    x.Ano,
+                                    x.Modalidade
                                from (
                                      select  case  when cfct.status in (0, 1) then 0 else cfct.status end as Situacao,
                                                count(cfct.id) as Quantidade, 
@@ -324,8 +324,8 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sqlQuery = $@"select Situacao, sum(x.Quantidade) as Quantidade,
                                     x.AnoTurma,
-	                                x.Ano,
-	                                x.Modalidade
+                                    x.Ano,
+                                    x.Modalidade
                                from (
                                      select  case  when cfct.status in (0, 1) then 0 else cfct.status end as Situacao,
                                                count(cfct.id) as Quantidade, 
@@ -580,14 +580,14 @@ namespace SME.SGP.Dados.Repositorios
 
             sqlQuery.AppendLine(", tmp_fechamento_disciplinas_duplicados_sequenciados as");
             sqlQuery.AppendLine("(select ftd.id fechamento_turma_disciplina_id,");
-            sqlQuery.AppendLine("	    row_number() over (partition by ft.turma_id, ft.periodo_escolar_id, ftd.disciplina_id order by ftd.id desc) sequencia");
-            sqlQuery.AppendLine("	from fechamento_turma_disciplina ftd");
-            sqlQuery.AppendLine("		inner join fechamento_turma ft");
-            sqlQuery.AppendLine("			on ftd.fechamento_turma_id = ft.id");
-            sqlQuery.AppendLine("		inner join tmp_fechamento_disciplinas_duplicados tmp_fdd");
-            sqlQuery.AppendLine("			on ft.turma_id = tmp_fdd.turma_id and");
-            sqlQuery.AppendLine("			   ft.periodo_escolar_id = tmp_fdd.periodo_escolar_id and");
-            sqlQuery.AppendLine("			   ftd.disciplina_id = tmp_fdd.disciplina_id");
+            sqlQuery.AppendLine("        row_number() over (partition by ft.turma_id, ft.periodo_escolar_id, ftd.disciplina_id order by ftd.id desc) sequencia");
+            sqlQuery.AppendLine("    from fechamento_turma_disciplina ftd");
+            sqlQuery.AppendLine("        inner join fechamento_turma ft");
+            sqlQuery.AppendLine("            on ftd.fechamento_turma_id = ft.id");
+            sqlQuery.AppendLine("        inner join tmp_fechamento_disciplinas_duplicados tmp_fdd");
+            sqlQuery.AppendLine("            on ft.turma_id = tmp_fdd.turma_id and");
+            sqlQuery.AppendLine("               ft.periodo_escolar_id = tmp_fdd.periodo_escolar_id and");
+            sqlQuery.AppendLine("               ftd.disciplina_id = tmp_fdd.disciplina_id");
             sqlQuery.AppendLine("where ftd.criado_em::date >= @dataInicio::date)");
             sqlQuery.AppendLine("select fechamento_turma_disciplina_id");
             sqlQuery.AppendLine("  from tmp_fechamento_disciplinas_duplicados_sequenciados");
@@ -603,19 +603,19 @@ namespace SME.SGP.Dados.Repositorios
             ConsultaRegistrosFechamentosTurmaDisciplinaDuplicados(sqlQuery);
 
             sqlQuery.AppendLine("select distinct ftd.id fechamentoTurmaDisciplinaId,");
-            sqlQuery.AppendLine("				 ft.periodo_escolar_id as periodoEscolarId,");
-            sqlQuery.AppendLine("				 coalesce(ftd.alterado_rf, ftd.criado_rf) codigo_rf");
-            sqlQuery.AppendLine("	from fechamento_turma_disciplina ftd");
-            sqlQuery.AppendLine("		inner join fechamento_turma ft");
-            sqlQuery.AppendLine("			on ftd.fechamento_turma_id = ft.id");
+            sqlQuery.AppendLine("                 ft.periodo_escolar_id as periodoEscolarId,");
+            sqlQuery.AppendLine("                 coalesce(ftd.alterado_rf, ftd.criado_rf) codigo_rf");
+            sqlQuery.AppendLine("    from fechamento_turma_disciplina ftd");
+            sqlQuery.AppendLine("        inner join fechamento_turma ft");
+            sqlQuery.AppendLine("            on ftd.fechamento_turma_id = ft.id");
             sqlQuery.AppendLine("where ftd.situacao = @situacaoFechamentoTurmaDisciplina and");
-            sqlQuery.AppendLine("	   ftd.criado_em::date >= @dataInicio::date and");
-            sqlQuery.AppendLine($"	   coalesce(ftd.alterado_em, ftd.criado_em)::timestamp < (current_timestamp - interval '{tempoConsideradoExpiracaoMinutos} minutes') and");
-            sqlQuery.AppendLine("	   not exists (select 1");
-            sqlQuery.AppendLine("	  		      	 from tmp_fechamento_disciplinas_duplicados tmp_fdd");
-            sqlQuery.AppendLine("	  		       where tmp_fdd.turma_id = ft.turma_id and");
-            sqlQuery.AppendLine("	  		      	     tmp_fdd.periodo_escolar_id = ft.periodo_escolar_id and");
-            sqlQuery.AppendLine("	  		      	     tmp_fdd.disciplina_id = ftd.disciplina_id)");
+            sqlQuery.AppendLine("       ftd.criado_em::date >= @dataInicio::date and");
+            sqlQuery.AppendLine($"       coalesce(ftd.alterado_em, ftd.criado_em)::timestamp < (current_timestamp - interval '{tempoConsideradoExpiracaoMinutos} minutes') and");
+            sqlQuery.AppendLine("       not exists (select 1");
+            sqlQuery.AppendLine("                         from tmp_fechamento_disciplinas_duplicados tmp_fdd");
+            sqlQuery.AppendLine("                     where tmp_fdd.turma_id = ft.turma_id and");
+            sqlQuery.AppendLine("                             tmp_fdd.periodo_escolar_id = ft.periodo_escolar_id and");
+            sqlQuery.AppendLine("                             tmp_fdd.disciplina_id = ftd.disciplina_id)");
             sqlQuery.AppendLine("order by 1;");
 
             return await database.Conexao.QueryAsync<(long, long, string)>(sqlQuery.ToString(), new
@@ -641,15 +641,15 @@ namespace SME.SGP.Dados.Repositorios
         {
             sqlQuery.AppendLine(";with tmp_fechamento_disciplinas_duplicados as");
             sqlQuery.AppendLine("(select ft.turma_id,");
-            sqlQuery.AppendLine("	    ft.periodo_escolar_id,");
+            sqlQuery.AppendLine("        ft.periodo_escolar_id,");
             sqlQuery.AppendLine("       ftd.disciplina_id");
-            sqlQuery.AppendLine("	from fechamento_turma_disciplina ftd");
-            sqlQuery.AppendLine("		inner join fechamento_turma ft");
-            sqlQuery.AppendLine("			on ftd.fechamento_turma_id = ft.id");
+            sqlQuery.AppendLine("    from fechamento_turma_disciplina ftd");
+            sqlQuery.AppendLine("        inner join fechamento_turma ft");
+            sqlQuery.AppendLine("            on ftd.fechamento_turma_id = ft.id");
             sqlQuery.AppendLine("where ftd.criado_em::date >= @dataInicio::date");
             sqlQuery.AppendLine("group by ft.turma_id,");
-            sqlQuery.AppendLine("		  ft.periodo_escolar_id,");
-            sqlQuery.AppendLine("		  ftd.disciplina_id");
+            sqlQuery.AppendLine("          ft.periodo_escolar_id,");
+            sqlQuery.AppendLine("          ftd.disciplina_id");
             sqlQuery.AppendLine("having count(0) > 1)");
         }
 
@@ -667,19 +667,19 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<FechamentoTurmaDisciplinaPendenciaDto> ObterFechamentoTurmaDisciplinaDTOPorTurmaDisciplinaBimestre(string turmaCodigo, long disciplinaId, int bimestre, SituacaoFechamento[] situacoesFechamento)
         {
             var query = new StringBuilder(@"select f.id,
-		                                    f.disciplina_id as DisciplinaId,
-		                                    f.situacao as SituacaoFechamento, 
-		                                    ft.turma_id as TurmaId,
-		                                    t.turma_id as CodigoTurma,
-		                                    t.nome as NomeTurma,
-		                                    p.periodo_inicio as PeriodoInicio,
-		                                    p.periodo_fim  as PeriodoFim,
-		                                    p.bimestre as bimestre,
-		                                    f.justificativa,
-		                                    f.criado_rf as CriadoRF,
-		                                    f.alterado_rf as AlteradoRF,
-		                                    u.id as UsuarioId,
-		                                    t.tipo_turma as TipoTurma
+                                            f.disciplina_id as DisciplinaId,
+                                            f.situacao as SituacaoFechamento, 
+                                            ft.turma_id as TurmaId,
+                                            t.turma_id as CodigoTurma,
+                                            t.nome as NomeTurma,
+                                            p.periodo_inicio as PeriodoInicio,
+                                            p.periodo_fim  as PeriodoFim,
+                                            p.bimestre as bimestre,
+                                            f.justificativa,
+                                            f.criado_rf as CriadoRF,
+                                            f.alterado_rf as AlteradoRF,
+                                            u.id as UsuarioId,
+                                            t.tipo_turma as TipoTurma
                                      from fechamento_turma_disciplina f
                                     inner join fechamento_turma ft on ft.id = f.fechamento_turma_id
                                     inner join periodo_escolar p on p.id = ft.periodo_escolar_id
@@ -711,19 +711,19 @@ namespace SME.SGP.Dados.Repositorios
         public Task<IEnumerable<FechamentoTurmaDisciplinaPendenciaDto>> ObterFechamentosTurmaDisciplinaDTOPorUeSituacao(long idUe, SituacaoFechamento[] situacoesFechamento, long[] fechamentoTurmaDisciplinaIdsIgnorados = null)
         {
             var query = new StringBuilder(@"select f.id,
-		                                    f.disciplina_id as DisciplinaId,
-		                                    f.situacao as SituacaoFechamento, 
-		                                    ft.turma_id as TurmaId,
-		                                    t.turma_id as CodigoTurma,
-		                                    t.nome as NomeTurma,
-		                                    p.periodo_inicio as PeriodoInicio,
-		                                    p.periodo_fim  as PeriodoFim,
-		                                    p.bimestre as bimestre,
-		                                    f.justificativa,
-		                                    f.criado_rf as CriadoRF,
-		                                    f.alterado_rf as AlteradoRF,
-		                                    u.id as UsuarioId,
-		                                    t.tipo_turma as TipoTurma
+                                            f.disciplina_id as DisciplinaId,
+                                            f.situacao as SituacaoFechamento, 
+                                            ft.turma_id as TurmaId,
+                                            t.turma_id as CodigoTurma,
+                                            t.nome as NomeTurma,
+                                            p.periodo_inicio as PeriodoInicio,
+                                            p.periodo_fim  as PeriodoFim,
+                                            p.bimestre as bimestre,
+                                            f.justificativa,
+                                            f.criado_rf as CriadoRF,
+                                            f.alterado_rf as AlteradoRF,
+                                            u.id as UsuarioId,
+                                            t.tipo_turma as TipoTurma
                                      from fechamento_turma_disciplina f
                                     inner join fechamento_turma ft on ft.id = f.fechamento_turma_id
                                     inner join periodo_escolar p on p.id = ft.periodo_escolar_id
@@ -760,7 +760,7 @@ namespace SME.SGP.Dados.Repositorios
                           left join periodo_escolar p on p.id = ft.periodo_escolar_id
                           left join turma t on t.id = ft.turma_id
                           where 
-	                        t.turma_id = any(@turmasCodigos)
+                            t.turma_id = any(@turmasCodigos)
                         and fa.aluno_codigo = @alunoCodigo";
 
             if (bimestre > 0)

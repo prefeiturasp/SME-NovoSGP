@@ -14,9 +14,9 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
         private readonly string RESPONSAVEL = "RESPONSAVEL";
         private readonly string TIPO_RESPONSAVEL_4 = "4";
         private readonly string CELULAR_RESPONSAVEL = "11111111111";
-        public async Task<AlunoPorTurmaResposta> Handle(ObterAlunoPorCodigoEolQuery request, CancellationToken cancellationToken)
+        public Task<AlunoPorTurmaResposta> Handle(ObterAlunoPorCodigoEolQuery request, CancellationToken cancellationToken)
         {
-            return await Task.FromResult(new AlunoPorTurmaResposta
+            return Task.FromResult(new AlunoPorTurmaResposta
             {
                 Ano = 0,
                 CodigoAluno = request.CodigoAluno,

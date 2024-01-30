@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Infra.Escopo
 {
-    public class WorkerServiceScope
+    public static class WorkerServiceScope
     {
         static WorkerServiceScope()
         {
@@ -41,15 +41,13 @@ namespace SME.SGP.Infra.Escopo
             List<IDisposable> services = null;
             WorkerContext context = null;
 
-            if (TransientServices.TryRemove(WorkerContext.ContextIdentifier, out services))
+            if (TransientServices.TryRemove(WorkerContext.ContextIdentifier, out services) && services.NaoEhNulo())
             {
-                if (services.NaoEhNulo())
-                {
-                    foreach (var item in services)
-                        if (item.NaoEhNulo())
-                            item.Dispose();
-                }
+                foreach (var item in services)
+                    if (item.NaoEhNulo())
+                        item.Dispose();
             }
+
             if (TransientContexts.TryRemove(WorkerContext.ContextIdentifier, out context))
                 context.Dispose();
         }

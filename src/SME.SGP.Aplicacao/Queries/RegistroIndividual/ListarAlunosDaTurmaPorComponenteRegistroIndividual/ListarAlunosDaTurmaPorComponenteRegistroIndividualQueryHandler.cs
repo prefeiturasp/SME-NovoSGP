@@ -13,14 +13,12 @@ namespace SME.SGP.Aplicacao
     public class ListarAlunosDaTurmaPorComponenteRegistroIndividualQueryHandler : IRequestHandler<ListarAlunosDaTurmaPorComponenteRegistroIndividualQuery, IEnumerable<AlunoDadosBasicosDto>>
     {
         private readonly IMediator mediator;
-        private readonly IRepositorioRegistroIndividual repositorioRegistroIndividual;
         private readonly IRepositorioEventoFechamentoConsulta repositorioEventoFechamento;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
 
-        public ListarAlunosDaTurmaPorComponenteRegistroIndividualQueryHandler(IRepositorioRegistroIndividual repositorioRegistroIndividual, IMediator mediator,
+        public ListarAlunosDaTurmaPorComponenteRegistroIndividualQueryHandler(IMediator mediator,
                                                             IRepositorioEventoFechamentoConsulta repositorioEventoFechamento, IRepositorioTipoCalendarioConsulta repositorioTipoCalendario)
         {
-            this.repositorioRegistroIndividual = repositorioRegistroIndividual ?? throw new System.ArgumentNullException(nameof(repositorioRegistroIndividual));
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
             this.repositorioEventoFechamento = repositorioEventoFechamento ?? throw new ArgumentNullException(nameof(repositorioEventoFechamento));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));

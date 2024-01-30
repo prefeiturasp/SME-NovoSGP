@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var ue in ues)
                 {
                     periodoIniciando.PeriodoFechamento.Ue = ue;
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaNotificacaoInicioPeriodoFechamentoUE, new FiltroFechamentoPeriodoAberturaDto(periodoIniciando, modalidade), new Guid(), null));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaNotificacaoInicioPeriodoFechamentoUE, new FiltroFechamentoPeriodoAberturaDto(periodoIniciando, modalidade), Guid.NewGuid(), null));
                 }
             }
 
@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var ue in ues)
                 {
                     periodoEncerrando.PeriodoFechamento.Ue = ue;
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaNotificacaoFimPeriodoFechamentoUE, new FiltroFechamentoPeriodoAberturaDto(periodoEncerrando, modalidade), new Guid(), null));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaNotificacaoFimPeriodoFechamentoUE, new FiltroFechamentoPeriodoAberturaDto(periodoEncerrando, modalidade), Guid.NewGuid(), null));
                 }
             }
         }

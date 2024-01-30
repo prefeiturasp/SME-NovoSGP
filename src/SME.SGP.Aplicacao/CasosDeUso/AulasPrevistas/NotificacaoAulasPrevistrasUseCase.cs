@@ -24,9 +24,8 @@ namespace SME.SGP.Aplicacao
             // Busca Professor/Gestor/Supervisor da Turma ou Ue
             var usuarioId = await BuscaProfessorAula(turmaDivergente);
 
-            if (usuarioId > 0)
-                if (! await UsuarioNotificado(usuarioId, turmaDivergente.Bimestre, turmaDivergente.CodigoTurma, turmaDivergente.DisciplinaId))
-                    await NotificaRegistroDivergencia(usuarioId, turmaDivergente);
+            if (usuarioId > 0 && !await UsuarioNotificado(usuarioId, turmaDivergente.Bimestre, turmaDivergente.CodigoTurma, turmaDivergente.DisciplinaId))
+                await NotificaRegistroDivergencia(usuarioId, turmaDivergente);
 
             return true;
         }
@@ -51,15 +50,10 @@ namespace SME.SGP.Aplicacao
             mensagemUsuario.Append($"<a href='{hostAplicacao}diario-classe/aula-dada-aula-prevista'>Clique aqui para visualizar os detalhes.</a>");
 
             await mediator.Send(new SalvarNotificacaoAulaPrevistaCommand(
+                registroAulaPrevistaDivergente,
                 tituloMensagem,
                 mensagemUsuario.ToString(),
-                registroAulaPrevistaDivergente.ProfessorRf,
-                registroAulaPrevistaDivergente.CodigoDre,
-                registroAulaPrevistaDivergente.CodigoUe,
-                registroAulaPrevistaDivergente.CodigoTurma,
-                usuarioId,
-                registroAulaPrevistaDivergente.Bimestre,
-                registroAulaPrevistaDivergente.DisciplinaId));
+                usuarioId));
         }
     }
 }
