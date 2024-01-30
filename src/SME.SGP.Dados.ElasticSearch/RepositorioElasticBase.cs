@@ -16,14 +16,17 @@ namespace SME.SGP.Dados.ElasticSearch
         private const int QUANTIDADE_RETORNO = 200;
         private readonly IElasticClient _elasticClient;
         private readonly IServicoTelemetria servicoTelemetria;
+        private readonly string indicePadraoRepositorio;
         private readonly ElasticOptions elasticOptions;
 
         protected RepositorioElasticBase(IElasticClient elasticClient,
                                          IServicoTelemetria servicoTelemetria,
-                                         IOptions<ElasticOptions> elasticOptions)
+                                         IOptions<ElasticOptions> elasticOptions, 
+                                         string indicePadraoRepositorio = "")
         {
             _elasticClient = elasticClient;
             this.servicoTelemetria = servicoTelemetria;
+            this.indicePadraoRepositorio = indicePadraoRepositorio;
             this.elasticOptions = elasticOptions.Value ?? throw new ArgumentNullException(nameof(elasticOptions));
         }
 
@@ -37,7 +40,7 @@ namespace SME.SGP.Dados.ElasticSearch
                                                                                         parametro?.ToString());
 
             if (!response.IsValid)
-                throw new Exception(response.ServerError?.ToString(), response.OriginalException);
+                throw new InvalidOperationException(response.ServerError?.ToString(), response.OriginalException);
 
             return response.Exists;
         }
@@ -84,7 +87,7 @@ namespace SME.SGP.Dados.ElasticSearch
                                                                                        parametro?.ToString());
 
             if (!response.IsValid)
-                throw new Exception(response.ServerError?.ToString(), response.OriginalException);
+                throw new InvalidOperationException(response.ServerError?.ToString(), response.OriginalException);
 
             listaDeRetorno.AddRange(response.Documents);
 
@@ -115,7 +118,7 @@ namespace SME.SGP.Dados.ElasticSearch
                                                                                 parametro?.ToString());
 
             if (!response.IsValid)
-                throw new Exception(response.ServerError?.ToString(), response.OriginalException);
+                throw new InvalidOperationException(response.ServerError?.ToString(), response.OriginalException);
 
             return response.Hits.Select(hit => hit.Source).ToList();
         }
@@ -150,7 +153,7 @@ namespace SME.SGP.Dados.ElasticSearch
                     JsonConvert.SerializeObject(entidade));
 
                 if (!response.IsValid)
-                    throw new Exception(response.ServerError?.ToString(), response.OriginalException);
+                    throw new InvalidOperationException(response.ServerError?.ToString(), response.OriginalException);
             }
 
             return true;
@@ -158,10 +161,12 @@ namespace SME.SGP.Dados.ElasticSearch
 
         private string ObterNomeIndice(string indice = "")
         {
-            var nomeIndice = string.IsNullOrEmpty(indice) ?
-                elasticOptions.IndicePadrao :
-                indice;
+            var nomeIndice = indice;
 
+            if (string.IsNullOrEmpty(indice))
+                nomeIndice = string.IsNullOrEmpty(indicePadraoRepositorio) ?
+                    elasticOptions.IndicePadrao : indicePadraoRepositorio;
+            
             return $"{elasticOptions.Prefixo}{nomeIndice}";
         }
 
@@ -171,6 +176,41 @@ namespace SME.SGP.Dados.ElasticSearch
             Type construtor = tipoGenerico.MakeGenericType(typeof(TEntidade));
 
             return (List<TEntidade>)Activator.CreateInstance(construtor);
+        }
+
+        public async Task ExcluirTodos(string indice = "")
+        {
+            var nomeIndice = ObterNomeIndice(indice);
+            DeleteByQueryResponse response = await servicoTelemetria.RegistrarComRetornoAsync<DeleteByQueryResponse>(async () =>
+                await _elasticClient.DeleteByQueryAsync<TEntidade>(q => q
+                      .Index(nomeIndice)
+                      .Query(rq => rq.MatchAll())),
+                "Elastic",
+                $"Excluir Todos [{nomeIndice}]",
+                indice);
+
+            if (!response.IsValid)
+                throw new InvalidOperationException(response.ServerError?.ToString(), response.OriginalException);
+        }
+
+        public async Task ExcluirPorId(string id, string indice = "")
+        {
+            var nomeIndice = ObterNomeIndice(indice);
+            DeleteByQueryResponse response = await servicoTelemetria.RegistrarComRetornoAsync<DeleteByQueryResponse>(async () =>
+                await _elasticClient.DeleteByQueryAsync<TEntidade>(q => q
+                      .Index(nomeIndice)
+                      .Query(q => q
+                        .Term(t => t
+                            .Field("_id")
+                            .Value(id)
+                        )
+                    )),
+                "Elastic",
+                $"Excluir Id [{nomeIndice}-{id}]",
+                indice);
+
+            if (!response.IsValid)
+                throw new InvalidOperationException(response.ServerError?.ToString(), response.OriginalException);
         }
     }
 }

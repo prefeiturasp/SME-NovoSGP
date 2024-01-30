@@ -43,7 +43,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CP_C, Policy = "Bearer")]
         public async Task<IActionResult> ListarTotalEstudantes([FromQuery]FiltroRecuperacaoParalelaResumoDto filtro)
         {
-            return Ok(await consultaRecuperacaoParalela.TotalEstudantes(filtro.Periodo, filtro.DreId, filtro.UeId, filtro.CicloId, filtro.TurmaId, filtro.Ano, filtro.AnoLetivo));
+            return Ok(await consultaRecuperacaoParalela.TotalEstudantes(filtro));
         }
 
         [HttpGet("grafico/frequencia")]
@@ -53,7 +53,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CP_C, Policy = "Bearer")]
         public async Task<IActionResult> ListarTotalEstudantesPorFrequencia([FromQuery]FiltroRecuperacaoParalelaResumoDto filtro)
         {
-            return Ok(await consultaRecuperacaoParalela.TotalEstudantesPorFrequencia(filtro.Periodo, filtro.DreId, filtro.UeId, filtro.CicloId, filtro.TurmaId, filtro.Ano, filtro.AnoLetivo));
+            return Ok(await consultaRecuperacaoParalela.TotalEstudantesPorFrequencia(filtro));
         }
 
         [HttpGet("resultado")]
@@ -63,7 +63,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CP_C, Policy = "Bearer")]
         public async Task<IActionResult> ListarTotalResultado([FromQuery]FiltroRecuperacaoParalelaResumoDto filtro)
         {
-            return Ok(await consultaRecuperacaoParalela.ListarTotalResultado(filtro.Periodo, filtro.DreId, filtro.UeId, filtro.CicloId, filtro.TurmaId, filtro.Ano, filtro.AnoLetivo, filtro.NumeroPagina));
+            return Ok(await consultaRecuperacaoParalela.ListarTotalResultado(filtro));
         }
 
         [HttpGet("resultado/encaminhamento")]
@@ -72,7 +72,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CP_C, Policy = "Bearer")]
         public async Task<IActionResult> ListarTotalResultadoEncaminhamento([FromQuery]FiltroRecuperacaoParalelaResumoDto filtro)
         {
-            return Ok(await consultaRecuperacaoParalela.ListarTotalResultadoEncaminhamento(filtro.Periodo, filtro.DreId, filtro.UeId, filtro.CicloId, filtro.TurmaId, filtro.Ano, filtro.AnoLetivo, filtro.NumeroPagina));
+            return Ok(await consultaRecuperacaoParalela.ListarTotalResultadoEncaminhamento(filtro));
         }
 
         [HttpPost]

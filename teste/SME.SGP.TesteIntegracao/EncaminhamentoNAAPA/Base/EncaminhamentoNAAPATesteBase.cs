@@ -6,6 +6,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
@@ -179,6 +180,10 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected const long ID_OPCAO_RESPOSTA_DOENCA_CRONICA_OU_EM_TRATAMENTO_DE_LONGA_DURACAO_75_1103 = 75;
         protected const long ID_QUESTAO_COMPLEMENTAR_SELECIONE_UM_FILTRO_DOENCA_CRONICA_OU_EM_TRATAMENTO_DE_LONGA_DURACAO_29_304 = 29;
 
+        protected const string NOME_SECAO_ENCAMINHAMENTO_NAAPA_INFORMACOES_ESTUDANTE = "INFORMACOES_ESTUDANTE";
+        protected const string NOME_SECAO_ENCAMINHAMENTO_NAAPA_QUESTOES_APRESENTADAS_INFANTIL = "QUESTOES_APRESENTADAS_INFANTIL";
+        protected const string NOME_SECAO_ENCAMINHAMENTO_NAAPA_QUESTOES_APRESENTADAS_FUNDAMENTAL = "QUESTOES_APRESENTADAS_FUNDAMENTAL";
+
         public EncaminhamentoNAAPATesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -201,8 +206,44 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             await CriarRespostas();
             await CriarRespostasComplementares();
             await CriarSecaoEncaminhamentoNAAPAQuestionario();
+            await CriarSecaoEncaminhamentoNAAPAModalidade();
         }
 
+        private async Task CriarSecaoEncaminhamentoNAAPAModalidade()
+        {
+            var questionarios = ObterTodos<Questionario>();
+            questionarios = questionarios.Where(q => q.Tipo == TipoQuestionario.RelatorioDinamicoEncaminhamentoNAAPA).ToList();
+            var secoes = ObterTodos<SecaoEncaminhamentoNAAPA>();
+            secoes = secoes.Where(s => questionarios.Any(q => q.Id == s.QuestionarioId)).ToList(); 
+
+            var secaoPublicacaoModalidade = secoes.FirstOrDefault(s => s.NomeComponente == NOME_SECAO_ENCAMINHAMENTO_NAAPA_QUESTOES_APRESENTADAS_FUNDAMENTAL);
+            await InserirNaBase(new SecaoEncaminhamentoNAAPAModalidade()
+            {
+                Modalidade = Modalidade.Fundamental,
+                SecaoEncaminhamentoNAAPAId = secaoPublicacaoModalidade.Id,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+            await InserirNaBase(new SecaoEncaminhamentoNAAPAModalidade()
+            {
+                Modalidade = Modalidade.Medio,
+                SecaoEncaminhamentoNAAPAId = secaoPublicacaoModalidade.Id,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            secaoPublicacaoModalidade = secoes.FirstOrDefault(s => s.NomeComponente == NOME_SECAO_ENCAMINHAMENTO_NAAPA_QUESTOES_APRESENTADAS_INFANTIL);
+            await InserirNaBase(new SecaoEncaminhamentoNAAPAModalidade()
+            {
+                Modalidade = Modalidade.EducacaoInfantil,
+                SecaoEncaminhamentoNAAPAId = secaoPublicacaoModalidade.Id,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+        }
 
         private async Task CriarSecaoEncaminhamentoNAAPAQuestionario()
         {
@@ -211,7 +252,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             {
                 QuestionarioId = 1,
                 Nome = "Informações do Estudante",
-                NomeComponente = "INFORMACOES_ESTUDANTE",
+                NomeComponente = NOME_SECAO_ENCAMINHAMENTO_NAAPA_INFORMACOES_ESTUDANTE,
                 Etapa = 1, Ordem = 1,
                 CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
             });
@@ -221,7 +262,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             {
                 QuestionarioId = 2,
                 Nome = "Questões apresentadas",
-                NomeComponente = "QUESTOES_APRESENTADAS_INFANTIL",
+                NomeComponente = NOME_SECAO_ENCAMINHAMENTO_NAAPA_QUESTOES_APRESENTADAS_INFANTIL,
                 Etapa = 1,
                 Ordem = 2,
                 CriadoPor = SISTEMA_NOME,
@@ -242,32 +283,32 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoEm = DateTime.Now
             });
 
-            //Id 20
+            //Id 4
             await InserirNaBase(new SecaoEncaminhamentoNAAPA()
             {
                 QuestionarioId = QUESTIONARIO_RELATORIO_DINAMICO_ENCAMINHAMENTO_NAAPA_4,
-                Nome = "Informações do Estudante Relatório dinâmico",
-                NomeComponente = "INFORMACOES_ESTUDANTE",
+                Nome = "Informações do Estudante",
+                NomeComponente = NOME_SECAO_ENCAMINHAMENTO_NAAPA_INFORMACOES_ESTUDANTE,
                 Etapa = 1, Ordem = 1,
                 CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
             });
 
-            //Id 21
+            //Id 5
             await InserirNaBase(new SecaoEncaminhamentoNAAPA()
             {
                 QuestionarioId = QUESTIONARIO_RELATORIO_DINAMICO_ENCAMINHAMENTO_NAAPA_INFANTIL_5,
-                Nome = "Questões apresentadas infantil Relatório dinâmico",
-                NomeComponente = "QUESTOES_APRESENTADAS_INFANTIL",
+                Nome = "Questões apresentadas - Somente infantil",
+                NomeComponente = NOME_SECAO_ENCAMINHAMENTO_NAAPA_QUESTOES_APRESENTADAS_INFANTIL,
                 Etapa = 1, Ordem = 2,
                 CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
             });
 
-            //Id 22
+            //Id 6
             await InserirNaBase(new SecaoEncaminhamentoNAAPA()
             {
                 QuestionarioId = QUESTIONARIO_RELATORIO_DINAMICO_ENCAMINHAMENTO_NAAPA_EF_EJA_CIEJA_MOVA_CMCT_ETEC_6,
-                Nome = "Questões apresentadas fundamental Relatório dinâmico",
-                NomeComponente = "QUESTOES_APRESENTADAS_FUNDAMENTAL",
+                Nome = "Questões apresentadas - Todos exceto infantil",
+                NomeComponente = NOME_SECAO_ENCAMINHAMENTO_NAAPA_QUESTOES_APRESENTADAS_FUNDAMENTAL,
                 Etapa = 1, Ordem = 2,
                 CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
             });

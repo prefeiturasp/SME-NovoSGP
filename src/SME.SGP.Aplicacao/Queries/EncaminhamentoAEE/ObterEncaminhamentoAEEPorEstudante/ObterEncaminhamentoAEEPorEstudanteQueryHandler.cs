@@ -25,13 +25,17 @@ namespace SME.SGP.Aplicacao
         }
 
         private EncaminhamentoAEEResumoDto MapearParaDto(EncaminhamentoAEEAlunoTurmaDto encaminhamento)
-            => encaminhamento.EhNulo() ? null :
-            new EncaminhamentoAEEResumoDto()
-            {
-                Id = encaminhamento.Id,
-                Situacao = encaminhamento.Situacao != 0 ? encaminhamento.Situacao.Name() : "",
-                SituacaoTipo = encaminhamento.Situacao,
-                Turma = $"{encaminhamento.TurmaModalidade.ShortName()} - {encaminhamento.TurmaNome}"
-            };
+        {
+            if (encaminhamento.NaoEhNulo())
+                return new EncaminhamentoAEEResumoDto()
+                {
+                    Id = encaminhamento.Id,
+                    Situacao = encaminhamento.Situacao != 0 ? encaminhamento.Situacao.Name() : "",
+                    SituacaoTipo = encaminhamento.Situacao,
+                    Turma = $"{encaminhamento.TurmaModalidade.ShortName()} - {encaminhamento.TurmaNome}"
+                };
+
+            return null;
+        }
     }
 }

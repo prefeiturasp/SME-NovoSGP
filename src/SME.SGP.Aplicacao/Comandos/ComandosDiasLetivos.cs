@@ -10,16 +10,11 @@ namespace SME.SGP.Aplicacao
     public class ComandosDiasLetivos : IComandosDiasLetivos
     {
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
-        private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;        
 
         public ComandosDiasLetivos(
-            IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
-            IRepositorioEvento repositorioEvento,
-            IRepositorioTipoCalendario repositorioTipoCalendario,
-            IRepositorioParametrosSistemaConsulta repositorioParametrosSistema)
+            IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar)
         {
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
-            this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
         }
 
         public async Task<List<DateTime>> BuscarDiasLetivos(long tipoCalendarioId)

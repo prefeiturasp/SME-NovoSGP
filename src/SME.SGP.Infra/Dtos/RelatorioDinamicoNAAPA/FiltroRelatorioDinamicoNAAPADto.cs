@@ -9,7 +9,7 @@ namespace SME.SGP.Infra
         public int AnoLetivo { get; set; }
         public long? DreId { get; set; }
         public long? UeId { get; set; }
-        public Modalidade? Modalidade { get; set; }
+        public Modalidade[] Modalidades { get; set; }
         public List<string> Anos { get; set; }
         public List<FiltroComponenteRelatorioDinamicoNAAPA> FiltroAvancado { get; set; }
     }

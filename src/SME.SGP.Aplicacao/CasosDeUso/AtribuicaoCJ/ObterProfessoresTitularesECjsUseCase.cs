@@ -1,7 +1,7 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +24,16 @@ namespace SME.SGP.Aplicacao
 
             var professoresTitularesDisciplinasEol = (await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(turmaId, dataReferencia, professorRf, false))).ToList();
 
-            var listaAtribuicoes = (await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(modalidadeId, turmaId, ueId, 0, professorRf, string.Empty, null, "", null, anoLetivo))).ToList();
+            var dto = new AtribuicoesPorTurmaEProfessorDto()
+            {
+                Modalidade = modalidadeId,
+                TurmaId = turmaId,
+                UeId = ueId,
+                UsuarioRf = professorRf,
+                AnoLetivo = anoLetivo
+            };
+
+            var listaAtribuicoes = (await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(dto))).ToList();
 
             if (professoresTitularesDisciplinasEol.Any())
                 return TransformaEntidadesEmDtosAtribuicoesProfessoresRetorno(listaAtribuicoes, professoresTitularesDisciplinasEol);
@@ -36,12 +45,12 @@ namespace SME.SGP.Aplicacao
             var listaProfessorDisciplina = new List<ProfessorTitularDisciplinaEol>();
             foreach (var disciplina in disciplinas)
             {
-                if (professoresTitularesEol.Any(p => p.DisciplinasId.Contains(disciplina.CodigoComponenteCurricular)))
+                if (professoresTitularesEol.Any(p => p.DisciplinasId().Contains(disciplina.CodigoComponenteCurricular)))
                 {
-                    var dadosProfessorTitular = professoresTitularesEol.FirstOrDefault(p => p.DisciplinasId.Contains(disciplina.CodigoComponenteCurricular));
+                    var dadosProfessorTitular = professoresTitularesEol.FirstOrDefault(p => p.DisciplinasId().Contains(disciplina.CodigoComponenteCurricular));
                     listaProfessorDisciplina.Add(new ProfessorTitularDisciplinaEol()
                     {
-                        DisciplinasId = new long[] { disciplina.Id },
+                        CodigosDisciplinas = disciplina.Id.ToString(),
                         DisciplinaNome = disciplina.NomeComponenteInfantil,
                         ProfessorNome = dadosProfessorTitular.ProfessorNome,
                         ProfessorRf = dadosProfessorTitular.ProfessorRf
@@ -51,7 +60,7 @@ namespace SME.SGP.Aplicacao
                 {
                     listaProfessorDisciplina.Add(new ProfessorTitularDisciplinaEol()
                     {
-                        DisciplinasId = new long[] { disciplina.Id },
+                        CodigosDisciplinas = disciplina.Id.ToString(),
                         DisciplinaNome = disciplina.NomeComponenteInfantil,
                         ProfessorNome = "Não há professor titular",
                         ProfessorRf = ""
@@ -68,12 +77,12 @@ namespace SME.SGP.Aplicacao
 
             foreach (var disciplinaProfessorTitular in professoresTitularesDisciplinasEol)
             {
-                var atribuicao = listaAtribuicoes.FirstOrDefault(b => disciplinaProfessorTitular.DisciplinasId.Contains(b.DisciplinaId));
+                var atribuicao = listaAtribuicoes.FirstOrDefault(b => disciplinaProfessorTitular.DisciplinasId().Contains(b.DisciplinaId));
 
                 listaRetorno.Itens.Add(new AtribuicaoCJTitularesRetornoItemDto()
                 {
                     Disciplina = disciplinaProfessorTitular.DisciplinaNome,
-                    DisciplinaId = disciplinaProfessorTitular.DisciplinasId.First(),
+                    DisciplinaId = disciplinaProfessorTitular.DisciplinasId().First(),
                     ProfessorTitular = disciplinaProfessorTitular.ProfessorNome,
                     ProfessorTitularRf = disciplinaProfessorTitular.ProfessorRf,
                     Substituir = atribuicao is {Substituir: true}

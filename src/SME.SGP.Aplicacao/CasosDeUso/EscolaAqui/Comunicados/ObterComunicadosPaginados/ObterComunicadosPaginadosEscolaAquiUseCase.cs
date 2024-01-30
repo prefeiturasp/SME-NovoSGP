@@ -12,18 +12,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<PaginacaoResultadoDto<ComunicadoListaPaginadaDto>> Executar(FiltroComunicadoDto filtro)
-            => await mediator.Send(new ObterComunicadosPaginadosQuery(filtro.AnoLetivo,
-                                                                      filtro.DreCodigo,
-                                                                      filtro.UeCodigo,
-                                                                      filtro.Modalidades,
-                                                                      filtro.Semestre,
-                                                                      filtro.DataEnvioInicio,
-                                                                      filtro.DataEnvioFim,
-                                                                      filtro.DataExpiracaoInicio,
-                                                                      filtro.DataExpiracaoFim,
-                                                                      filtro.Titulo,
-                                                                      filtro.TurmasCodigo,
-                                                                      filtro.AnosEscolares,
-                                                                      filtro.TiposEscolas));
+            => await mediator.Send(new ObterComunicadosPaginadosQuery(filtro));
     }
 }

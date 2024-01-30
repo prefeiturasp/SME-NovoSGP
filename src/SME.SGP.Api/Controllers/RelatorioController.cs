@@ -294,7 +294,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.RESON_C, Policy = "Bearer")]
         public IActionResult ObterTipoSondagem()
         {
-            var lista = EnumExtensao.ListarDto<TipoSondagem>().ToList().OrderBy(tipo => tipo.Descricao);
+            var lista = EnumExtensao.ListarDto<TipoSondagem>().OrderBy(tipo => tipo.Descricao);
 
             return Ok(lista);
         }

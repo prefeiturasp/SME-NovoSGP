@@ -12,7 +12,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
 {
     public class ObterMatriculasAlunoPorCodigoEAnoQueryHandlerFake : IRequestHandler<ObterMatriculasAlunoPorCodigoEAnoQuery, IEnumerable<AlunoPorTurmaResposta>>
     {
-        public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterMatriculasAlunoPorCodigoEAnoQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterMatriculasAlunoPorCodigoEAnoQuery request, CancellationToken cancellationToken)
         {
             var dataAtual = DateTimeExtension.HorarioBrasilia();
             
@@ -260,7 +260,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
                 },
             };
 
-            return await Task.FromResult(alunoPorTurmaResposta.Where(x => x.CodigoAluno == request.CodigoAluno));
+            return Task.FromResult(alunoPorTurmaResposta.Where(x => x.CodigoAluno == request.CodigoAluno));
         }
     }
 }

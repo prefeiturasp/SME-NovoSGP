@@ -1,12 +1,11 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao 
+namespace SME.SGP.Aplicacao
 {
     public class ObterDreMaterializarCodigosQueryHandler : IRequestHandler<ObterDreMaterializarCodigosQuery, (IEnumerable<Dre> Dres, string[] CodigosDresNaoEncontrados)>
     {
@@ -17,9 +16,9 @@ namespace SME.SGP.Aplicacao
             this.repositorioDre = repositorio;
         }
 
-        public async Task<(IEnumerable<Dre> Dres, string[] CodigosDresNaoEncontrados)> Handle(ObterDreMaterializarCodigosQuery request, CancellationToken cancellationToken)
+        public Task<(IEnumerable<Dre> Dres, string[] CodigosDresNaoEncontrados)> Handle(ObterDreMaterializarCodigosQuery request, CancellationToken cancellationToken)
         {
-            return repositorioDre.MaterializarCodigosDre(request.IdDres);
+            return Task.FromResult(repositorioDre.MaterializarCodigosDre(request.IdDres));
         }
             
     }

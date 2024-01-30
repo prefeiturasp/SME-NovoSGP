@@ -10,7 +10,7 @@ using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Worker.Avaliacao
 {
-    public class WorkerRabbitAvaliacao : WorkerRabbitMQBase
+    public class WorkerRabbitAvaliacao : WorkerRabbitAplicacao
     {
         public WorkerRabbitAvaliacao(IServiceScopeFactory serviceScopeFactory,
             IServicoTelemetria servicoTelemetria,
@@ -24,7 +24,7 @@ namespace SME.SGP.Worker.Avaliacao
         {
         }
 
-        protected override void RegistrarUseCasesDoWorker()
+        protected override void RegistrarUseCases()
         {
             Comandos.Add(RotasRabbitSgpAvaliacao.RotaExecutaExclusaoPendenciasAusenciaAvaliacao, new ComandoRabbit("Executa exclusão de pendências de ausencia de avaliação", typeof(IExecutarExclusaoPendenciasAusenciaAvaliacaoUseCase)));
             Comandos.Add(RotasRabbitSgpAvaliacao.RotaAtividadesSync, new ComandoRabbit("Importar atividades avaliativas do GSA", typeof(IImportarAtividadesGsaUseCase)));

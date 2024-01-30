@@ -59,9 +59,8 @@ namespace SME.SGP.Aplicacao
             domingo = domingo.AddDays(7);
             sabado = sabado.AddDays(7);
 
-            periodoBimestre.PeriodoFim = exibirDataFutura
-                ? periodoBimestre.PeriodoFim
-                : periodoBimestre.PeriodoFim < DateTimeExtension.HorarioBrasilia()
+            if (!exibirDataFutura)
+                periodoBimestre.PeriodoFim = periodoBimestre.PeriodoFim < DateTimeExtension.HorarioBrasilia()
                                     ? periodoBimestre.PeriodoFim
                                     : DateTimeExtension.HorarioBrasilia();
 
@@ -104,9 +103,8 @@ namespace SME.SGP.Aplicacao
             var quantidadeExata = datasConsideradas.Count % 5 == 0;
             foreach (var dataAula in datasConsideradas)
             {
-                if (qtdeDiasAulas == 0)
-                    if (dataInicioPeriodo == DateTime.MinValue)
-                        dataInicioPeriodo = dataAula;
+                if (qtdeDiasAulas == 0 && dataInicioPeriodo == DateTime.MinValue)
+                    dataInicioPeriodo = dataAula;
 
                 if (qtdeDiasAulas < 5)
                     qtdeDiasAulas++;

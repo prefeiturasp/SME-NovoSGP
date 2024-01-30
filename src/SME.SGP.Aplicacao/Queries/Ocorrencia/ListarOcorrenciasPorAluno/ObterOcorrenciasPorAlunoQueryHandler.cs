@@ -20,24 +20,24 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<OcorrenciasPorAlunoDto>> Handle(ObterOcorrenciasPorAlunoQuery request, CancellationToken cancellationToken)
         {
-            return await MapearParaDto(await repositorioOcorrencia.ObterOcorrenciasPorTurmaAlunoEPeriodoPaginadas(request.TurmaId, 
+            return MapearParaDto(await repositorioOcorrencia.ObterOcorrenciasPorTurmaAlunoEPeriodoPaginadas(request.TurmaId, 
                                                                                                                   request.AlunoCodigo, 
                                                                                                                   request.PeriodoInicio, 
                                                                                                                   request.PeriodoFim,
                                                                                                                   Paginacao));
         }
 
-        private async Task<PaginacaoResultadoDto<OcorrenciasPorAlunoDto>> MapearParaDto(PaginacaoResultadoDto<OcorrenciasPorAlunoDto> resultadoDto)
+        private PaginacaoResultadoDto<OcorrenciasPorAlunoDto> MapearParaDto(PaginacaoResultadoDto<OcorrenciasPorAlunoDto> resultadoDto)
         {
             return new PaginacaoResultadoDto<OcorrenciasPorAlunoDto>()
             {
                 TotalPaginas = resultadoDto.TotalPaginas,
                 TotalRegistros = resultadoDto.TotalRegistros,
-                Items = await MapearParaDto(resultadoDto.Items)
+                Items = MapearParaDto(resultadoDto.Items)
             };
         }
 
-        private async Task<IEnumerable<OcorrenciasPorAlunoDto>> MapearParaDto(IEnumerable<OcorrenciasPorAlunoDto> ocorrencias)
+        private IEnumerable<OcorrenciasPorAlunoDto> MapearParaDto(IEnumerable<OcorrenciasPorAlunoDto> ocorrencias)
         {
             var listaOcorrenciasDto = new List<OcorrenciasPorAlunoDto>();
             foreach (var ocorrencia in ocorrencias)

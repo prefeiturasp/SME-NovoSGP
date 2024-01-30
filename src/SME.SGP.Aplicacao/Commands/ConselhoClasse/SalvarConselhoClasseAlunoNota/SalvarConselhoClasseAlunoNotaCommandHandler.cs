@@ -10,10 +10,10 @@ namespace SME.SGP.Aplicacao
         SalvarConselhoClasseAlunoNotaCommandHandler : IRequestHandler<SalvarConselhoClasseAlunoNotaCommand,
             ConselhoClasseNotaRetornoDto>
     {
-        public async Task<ConselhoClasseNotaRetornoDto> Handle(SalvarConselhoClasseAlunoNotaCommand request,
+        public Task<ConselhoClasseNotaRetornoDto> Handle(SalvarConselhoClasseAlunoNotaCommand request,
             CancellationToken cancellationToken)
         {
-            return new ConselhoClasseNotaRetornoDto(); //FAZER
+            return Task.FromResult(new ConselhoClasseNotaRetornoDto());
         }
     }
 }

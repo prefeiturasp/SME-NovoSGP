@@ -9,9 +9,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee.ServicosFake
 {
     public class ObterNecessidadesEspeciaisAlunoEolQueryHandlerFake : IRequestHandler<ObterNecessidadesEspeciaisAlunoEolQuery, InformacoesEscolaresAlunoDto>
     {
-        public async Task<InformacoesEscolaresAlunoDto> Handle(ObterNecessidadesEspeciaisAlunoEolQuery request, CancellationToken cancellationToken)
+        public Task<InformacoesEscolaresAlunoDto> Handle(ObterNecessidadesEspeciaisAlunoEolQuery request, CancellationToken cancellationToken)
         {
-            return await Task.FromResult(new InformacoesEscolaresAlunoDto()
+            return Task.FromResult(new InformacoesEscolaresAlunoDto()
             {
                 CodigoAluno = "1",
                 FrequenciaGlobal = "95",

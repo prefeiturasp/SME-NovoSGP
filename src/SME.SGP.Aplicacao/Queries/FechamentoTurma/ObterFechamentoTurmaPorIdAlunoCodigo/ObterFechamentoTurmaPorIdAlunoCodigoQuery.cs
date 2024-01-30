@@ -6,17 +6,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterFechamentoTurmaPorIdAlunoCodigoQuery : IRequest<FechamentoTurma>
     {
-        public ObterFechamentoTurmaPorIdAlunoCodigoQuery(long fechamentoTurmaId, string alunoCodigo,
-            bool ehAnoAnterior = false)
+        public ObterFechamentoTurmaPorIdAlunoCodigoQuery(long fechamentoTurmaId, string alunoCodigo)
         {
             FechamentoTurmaId = fechamentoTurmaId;
             AlunoCodigo = alunoCodigo;
-            EhAnoAnterior = ehAnoAnterior;
         }
 
         public long FechamentoTurmaId { get; }
         public string AlunoCodigo { get; }
-        public bool EhAnoAnterior { get; }
     }
     
     public class ObterFechamentoTurmaPorIdAlunoCodigoQueryValidator : AbstractValidator<ObterFechamentoTurmaPorIdAlunoCodigoQuery>

@@ -11,8 +11,7 @@ namespace SME.SGP.Aplicacao
                                                           int quantidadeAcimaMinimoFrequencia, 
                                                           int quantidadeAbaixoMinimoFrequencia, 
                                                           TipoConsolidadoFrequencia tipoConsolidacao,
-                                                          DateTime? periodoInicio,
-                                                          DateTime? periodoFim,
+                                                          (DateTime? DataInicio, DateTime? DataFim) periodo,
                                                           int totalAulas, 
                                                           int totalFrequencias)
         {
@@ -20,8 +19,8 @@ namespace SME.SGP.Aplicacao
             QuantidadeAcimaMinimoFrequencia = quantidadeAcimaMinimoFrequencia;
             QuantidadeAbaixoMinimoFrequencia = quantidadeAbaixoMinimoFrequencia;
             TipoConsolidacao = tipoConsolidacao;
-            PeriodoInicio = periodoInicio;
-            PeriodoFim = periodoFim;
+            PeriodoInicio = periodo.DataInicio;
+            PeriodoFim = periodo.DataFim;
             TotalAulas = totalAulas;
             TotalFrequencias = totalFrequencias;
         }

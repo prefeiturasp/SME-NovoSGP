@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
             {
                 retorno.Add(new ProfessorTitularDisciplinaEol
                 {
-                    DisciplinasId = professor.DisciplinasId,
+                    CodigosDisciplinas = professor.CodigosDisciplinas,
                     DisciplinaNome = professor.DisciplinaNome,
                     ProfessorNome = professorNome[index].Trim(),
                     ProfessorRf = professorRfs[index].Trim(),

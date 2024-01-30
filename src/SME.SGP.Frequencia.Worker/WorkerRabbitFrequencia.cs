@@ -10,7 +10,7 @@ using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Frequencia.Worker
 {
-    public class WorkerRabbitFrequencia : WorkerRabbitMQBase
+    public class WorkerRabbitFrequencia : WorkerRabbitAplicacao
     {
         private const int TENTATIVA_REPROCESSAR_10 = 10;
         public WorkerRabbitFrequencia(IServiceScopeFactory serviceScopeFactory,
@@ -25,7 +25,7 @@ namespace SME.SGP.Frequencia.Worker
         {
         }
 
-        protected override void RegistrarUseCasesDoWorker()
+        protected override void RegistrarUseCases()
         {
             Comandos.Add(RotasRabbitSgpFrequencia.RotaConciliacaoCalculoFrequenciaPorTurmaComponente, new ComandoRabbit("Conciliação de Cálculo de frequência por Turma e Componente", typeof(ICalculoFrequenciaTurmaDisciplinaUseCase), true));
             Comandos.Add(RotasRabbitSgpFrequencia.RotaConsolidacaoFrequenciaAlunoPorTurmaMensal, new ComandoRabbit("Consolidação de frequência do aluno por turma mensal", typeof(IConsolidarFrequenciaAlunoPorTurmaEMesUseCase), true, TENTATIVA_REPROCESSAR_10, ExchangeSgpRabbit.SgpDeadLetterTTL_3));

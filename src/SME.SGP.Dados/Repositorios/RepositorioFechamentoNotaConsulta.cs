@@ -13,11 +13,11 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioFechamentoNotaConsulta : RepositorioBase<FechamentoNota>, IRepositorioFechamentoNotaConsulta
     {
         const string queryPorFechamento = @"with lista as (select fa.aluno_codigo as AlunoCodigo
-	                                        , n.disciplina_id as ComponenteCurricularId
-	                                        , coalesce(wf.nota, n.nota) as Nota
-	                                        , coalesce(wf.conceito_id, n.conceito_id) as ConceitoId
-	                                        , pe.bimestre
-	                                        , wf.id as EmAprovacao
+                                            , n.disciplina_id as ComponenteCurricularId
+                                            , coalesce(wf.nota, n.nota) as Nota
+                                            , coalesce(wf.conceito_id, n.conceito_id) as ConceitoId
+                                            , pe.bimestre
+                                            , wf.id as EmAprovacao
                                             , row_number() over (partition by ft.turma_id, fa.aluno_codigo, pe.id, n.disciplina_id order by n.id desc) sequencia
                                          from fechamento_nota n
                                         inner join fechamento_aluno fa on fa.id = n.fechamento_aluno_id
@@ -159,19 +159,19 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<AlunosFechamentoNotaDto>> ObterComNotaLancadaPorPeriodoEscolarUE(long ueId, long periodoEscolarId)
         {
             const string query = @"select distinct 
-	                            ftd.disciplina_id as ComponenteCurricularId,
-	                            cc.descricao as ComponenteCurricularDescricao,
-	                            nota as Nota,
-	                            cv.valor as NotaConceito,
+                                ftd.disciplina_id as ComponenteCurricularId,
+                                cc.descricao as ComponenteCurricularDescricao,
+                                nota as Nota,
+                                cv.valor as NotaConceito,
                                 cv.aprovado as NotaConceitoAprovado,
                                 case when nota is not null then false else true end as EhConceito,
-	                            fa.aluno_codigo as AlunoCodigo,
+                                fa.aluno_codigo as AlunoCodigo,
                                 ftd.criado_rf as ProfessorRf,
                                 ftd.criado_por as ProfessorNome,
-	                            ftd.justificativa as Justificativa,
-	                            t.id as TurmaId,
-	                            t.ue_id as UeId,
-	                            bimestre
+                                ftd.justificativa as Justificativa,
+                                t.id as TurmaId,
+                                t.ue_id as UeId,
+                                bimestre
                             from fechamento_nota fn
                             left join fechamento_aluno fa ON fn.fechamento_aluno_id = fa.id
                             inner join fechamento_turma_disciplina ftd on fa.fechamento_turma_disciplina_id = ftd.id 

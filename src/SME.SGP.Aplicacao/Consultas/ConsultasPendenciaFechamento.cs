@@ -14,16 +14,13 @@ namespace SME.SGP.Aplicacao
     public class ConsultasPendenciaFechamento : ConsultasBase, IConsultasPendenciaFechamento
     {
         private readonly IRepositorioPendenciaFechamento repositorioPendenciaFechamento;
-        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IMediator mediator;
 
         public ConsultasPendenciaFechamento(IContextoAplicacao contextoAplicacao
                                 , IRepositorioPendenciaFechamento repositorioPendenciaFechamento,
-                        IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
                                                         IMediator mediator) : base(contextoAplicacao)
         {
             this.repositorioPendenciaFechamento = repositorioPendenciaFechamento ?? throw new ArgumentNullException(nameof(repositorioPendenciaFechamento));
-            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 

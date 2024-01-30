@@ -116,14 +116,14 @@ namespace SME.SGP.Dados.Repositorios
                 await conexao.OpenAsync();
 
                 var query = @"INSERT
-	                        INTO
-	                        objetivo_aprendizagem (ano_turma,
-	                        atualizado_em,
-	                        codigo,
-	                        componente_curricular_id,
-	                        criado_em,
-	                        descricao,
-	                        id)
+                            INTO
+                            objetivo_aprendizagem (ano_turma,
+                            atualizado_em,
+                            codigo,
+                            componente_curricular_id,
+                            criado_em,
+                            descricao,
+                            id)
                         VALUES (@anoTurma,
                         @atualizadoEm,
                         @codigo,

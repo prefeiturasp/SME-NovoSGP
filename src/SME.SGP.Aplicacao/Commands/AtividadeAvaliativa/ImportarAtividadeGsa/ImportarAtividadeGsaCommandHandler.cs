@@ -38,29 +38,12 @@ namespace SME.SGP.Aplicacao
 
         private async Task SalvarAtividadeInfantil(ImportarAtividadeGsaCommand request, DataAulaDto aula)
         {
-            await mediator.Send(new SalvarAtividadeInfantilCommand(aula.AulaId,
-                                                                  request.AtividadeGsa.UsuarioRf,
-                                                                  request.AtividadeGsa.Titulo,
-                                                                  request.AtividadeGsa.Descricao,
-                                                                  request.AtividadeGsa.DataCriacao,
-                                                                  request.AtividadeGsa.DataAlteracao,
-                                                                  request.AtividadeGsa.AtividadeClassroomId,
-                                                                  request.AtividadeGsa.Email
-                                                                  ));
+            await mediator.Send(new SalvarAtividadeInfantilCommand(aula.AulaId, request.AtividadeGsa));
         }
 
         private async Task SalvarAtividadeAvaliativa(ImportarAtividadeGsaCommand request, DataAulaDto aula)
         {
-            await mediator.Send(new SalvarAtividadeAvaliativaGsaCommand(aula.DataAula,
-                                                                  request.AtividadeGsa.UsuarioRf,
-                                                                  request.AtividadeGsa.TurmaId,
-                                                                  request.AtividadeGsa.ComponenteCurricularId,
-                                                                  request.AtividadeGsa.Titulo,
-                                                                  request.AtividadeGsa.Descricao,
-                                                                  request.AtividadeGsa.DataCriacao,
-                                                                  request.AtividadeGsa.DataAlteracao,
-                                                                  request.AtividadeGsa.AtividadeClassroomId
-                                                                  ));
+            await mediator.Send(new SalvarAtividadeAvaliativaGsaCommand(aula.DataAula,request.AtividadeGsa));
         }
 
         private async Task ValidarLancamentoNotaComponente(long componenteCurricularId)
@@ -78,7 +61,7 @@ namespace SME.SGP.Aplicacao
 
             var parametroInicioImportacao = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.AtualizacaoDeAtividadesAvaliativas, anoAtual));
             if (!DateTime.TryParse(parametroInicioImportacao.Valor, out var dataInicioImportacao))
-                throw new Exception("Erro ao obter parâmetro de data de início de integração das atividades classroom");
+                throw new NegocioException("Erro ao obter parâmetro de data de início de integração das atividades classroom");
 
             if (dataCriacao < dataInicioImportacao)
                 throw new NegocioException($"Atividade Avaliativa Classroom com data anterior ao parâmetro de início da integração de atividades não será importada para o SGP. Data Atividade: {dataCriacao:dd/MM/yyyy}");

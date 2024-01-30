@@ -7,19 +7,18 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterComunicadosParaFiltroDaDashboardQuery : IRequest<IEnumerable<ComunicadoParaFiltroDaDashboardDto>>
     {
-        public ObterComunicadosParaFiltroDaDashboardQuery(int anoLetivo, string codigoDre, string codigoUe, int[] modalidades, short? semestre,
-            string anoEscolar, string codigoTurma, DateTime? dataEnvioInicial, DateTime? dataEnvioFinal, string descricao)
+        public ObterComunicadosParaFiltroDaDashboardQuery(ObterComunicadosParaFiltroDaDashboardDto comunicadosFiltroDto)
         {
-            AnoLetivo = anoLetivo;
-            CodigoDre = codigoDre;
-            CodigoUe = codigoUe;
-            Modalidades = modalidades;
-            Semestre = semestre;
-            AnoEscolar = anoEscolar;
-            CodigoTurma = codigoTurma;
-            DataEnvioInicial = dataEnvioInicial;
-            DataEnvioFinal = dataEnvioFinal;
-            Descricao = descricao;
+            AnoLetivo = comunicadosFiltroDto.AnoLetivo;
+            CodigoDre = comunicadosFiltroDto.CodigoDre;
+            CodigoUe = comunicadosFiltroDto.CodigoUe;
+            Modalidades = comunicadosFiltroDto.Modalidades;
+            Semestre = comunicadosFiltroDto.Semestre;
+            AnoEscolar = comunicadosFiltroDto.AnoEscolar;
+            CodigoTurma = comunicadosFiltroDto.CodigoTurma;
+            DataEnvioInicial = comunicadosFiltroDto.DataEnvioInicial;
+            DataEnvioFinal = comunicadosFiltroDto.DataEnvioFinal;
+            Descricao = comunicadosFiltroDto.Descricao;
         }
 
         public int AnoLetivo { get; set; }

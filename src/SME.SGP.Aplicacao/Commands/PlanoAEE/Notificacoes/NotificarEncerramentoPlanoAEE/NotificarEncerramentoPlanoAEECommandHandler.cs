@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
                             </ul>
                             <a href='{hostAplicacao}aee/plano/editar/{plano.Id}'>Clique aqui</a> para acessar o plano. ";
 
-            var usuariosIds = await ObterUsuarios(plano.Turma.Ue.CodigoUe, plano.Turma.Ue.Dre.CodigoDre, plano.CriadoRF);
+            var usuariosIds = await ObterUsuarios(plano.Turma.Ue.CodigoUe, plano.CriadoRF);
 
             if (usuariosIds.Any())
                 await mediator.Send(new GerarNotificacaoPlanoAEECommand(plano.Id, usuariosIds, titulo, descricao, NotificacaoPlanoAEETipo.PlanoReestruturado, NotificacaoCategoria.Aviso));
@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
-        private async Task<IEnumerable<long>> ObterUsuarios(string ueCodigo, string dreCodigo, string rfCriador)
+        private async Task<IEnumerable<long>> ObterUsuarios(string ueCodigo, string rfCriador)
         {
             var usuariosRFs = await ObterCoordenadoresUe(ueCodigo);
             usuariosRFs.Add(rfCriador);

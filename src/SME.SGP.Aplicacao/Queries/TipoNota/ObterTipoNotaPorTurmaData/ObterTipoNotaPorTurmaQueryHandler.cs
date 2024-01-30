@@ -12,12 +12,10 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTipoNotaPorTurmaQueryHandler : IRequestHandler<ObterTipoNotaPorTurmaQuery, TipoNota>
     {
-        private readonly IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor;
         private readonly IMediator mediator;
 
-        public ObterTipoNotaPorTurmaQueryHandler(IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor, IMediator mediator)
+        public ObterTipoNotaPorTurmaQueryHandler(IMediator mediator)
         {
-            this.repositorioNotaTipoValor = repositorioNotaTipoValor ?? throw new ArgumentNullException(nameof(repositorioNotaTipoValor));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -29,6 +27,9 @@ namespace SME.SGP.Aplicacao
             // Para turma tipo 2 o padrão é nota.
             if (turmaEOL.TipoTurma == TipoTurma.EdFisica)
                 return TipoNota.Nota;
+
+            if (request.Turma.NaoEhNulo() && request.Turma.EhCELP())
+                return TipoNota.Conceito;
 
             var anoCicloModalidade = string.Empty;
             if (request.Turma.NaoEhNulo())

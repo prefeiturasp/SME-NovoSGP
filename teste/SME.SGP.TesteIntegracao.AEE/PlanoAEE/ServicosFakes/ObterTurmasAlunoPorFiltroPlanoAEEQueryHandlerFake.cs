@@ -16,7 +16,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
         private readonly string RESPONSAVEL = "RESPONSAVEL";
         private readonly string TIPO_RESPONSAVEL_4 = "4";
         private readonly string CELULAR_RESPONSAVEL = "11111111111";
-        public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterTurmasAlunoPorFiltroQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterTurmasAlunoPorFiltroQuery request, CancellationToken cancellationToken)
         {
             var lista = new List<AlunoPorTurmaResposta>()
             {
@@ -39,7 +39,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
                     DataAtualizacaoContato = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
                 }
             };
-            return await Task.FromResult(lista.Where(x => x.CodigoAluno == request.CodigoAluno));
+
+            return Task.FromResult(lista.Where(x => x.CodigoAluno == request.CodigoAluno));
         }
     }
 }

@@ -4,7 +4,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -55,14 +54,9 @@ namespace SME.SGP.Aplicacao
         private async Task NotificarUsuarios(IEnumerable<long> usuarios, PlanoAEE planoAEE, Usuario usuarioAtual, long observacaoId, string observacao)
         {
             await mediator.Send(new NotificarObservacaoPlanoAEECommand(observacaoId,
-                                                                       planoAEE.Id,
-                                                                       usuarioAtual.Nome,
-                                                                       usuarioAtual.CodigoRf,
-                                                                       planoAEE.AlunoNome,
-                                                                       planoAEE.AlunoCodigo,
+                                                                       planoAEE,
+                                                                       usuarioAtual,
                                                                        observacao,
-                                                                       planoAEE.Turma.Ue.Dre.Abreviacao,
-                                                                       $"{planoAEE.Turma.Ue.TipoEscola.ShortName()} {planoAEE.Turma.Ue.Nome}",
                                                                        usuarios));
         }
 

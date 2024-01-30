@@ -23,22 +23,7 @@ namespace SME.SGP.Aplicacao
 
             await ValidarAbrangenciaUsuario(comunicado, usuarioLogado);
 
-            var retorno = await mediator.Send(new AlterarComunicadoCommand(id
-                                                                         , comunicado.Titulo
-                                                                         , comunicado.Descricao
-                                                                         , comunicado.DataEnvio
-                                                                         , comunicado.DataExpiracao
-                                                                         , comunicado.AnoLetivo
-                                                                         , comunicado.SeriesResumidas
-                                                                         , comunicado.CodigoDre
-                                                                         , comunicado.CodigoUe
-                                                                         , comunicado.Turmas
-                                                                         , comunicado.TipoCalendarioId
-                                                                         , comunicado.EventoId
-                                                                         , comunicado.AlunosEspecificados
-                                                                         , comunicado.Modalidades
-                                                                         , comunicado.Semestre
-                                                                         , comunicado.Alunos));
+            var retorno = await mediator.Send(new AlterarComunicadoCommand(id, comunicado));
 
             if(retorno)
                 return "Comunicado alterado com sucesso";

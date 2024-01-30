@@ -4,21 +4,17 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterAtividadesNotasAlunoPorTurmaPeriodoUseCase : AbstractUseCase, IObterAtividadesNotasAlunoPorTurmaPeriodoUseCase
     {
-        private readonly IMediator mediator;
 
         public ObterAtividadesNotasAlunoPorTurmaPeriodoUseCase(IMediator mediator) : base(mediator)
         {
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<IEnumerable<AvaliacaoNotaAlunoDto>> Executar(FiltroTurmaAlunoPeriodoEscolarDto param)

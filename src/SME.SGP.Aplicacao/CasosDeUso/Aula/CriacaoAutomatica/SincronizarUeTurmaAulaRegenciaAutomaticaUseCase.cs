@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            var jsonDadosCriacao = await repositorioCache.ObterAsync(mensagemRabbit.Mensagem?.ToString()) ?? null;
+            var jsonDadosCriacao = await repositorioCache.ObterAsync(mensagemRabbit.Mensagem?.ToString());
 
             if (string.IsNullOrWhiteSpace(jsonDadosCriacao))
                 return false;

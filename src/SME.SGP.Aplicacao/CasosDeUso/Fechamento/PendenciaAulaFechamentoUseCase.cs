@@ -78,19 +78,7 @@ namespace SME.SGP.Aplicacao
                 var disciplina = disciplinaEol ?? throw new NegocioException("Não foi possível localizar o componente curricular no EOL.");
 
                 if (fechamentoTurmaDisciplina.TipoTurma != TipoTurma.Programa)
-                    await PublicarMsgGeracaoPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId,
-                        fechamentoTurmaDisciplina.CodigoTurma,
-                        fechamentoTurmaDisciplina.NomeTurma,
-                        fechamentoTurmaDisciplina.PeriodoInicio,
-                        fechamentoTurmaDisciplina.PeriodoFim,
-                        fechamentoTurmaDisciplina.Bimestre,
-                        new Usuario() {Id = fechamentoTurmaDisciplina.UsuarioId},
-                        fechamentoTurmaDisciplina.Id,
-                        fechamentoTurmaDisciplina.Justificativa,
-                        fechamentoTurmaDisciplina.CriadoRF,
-                        fechamentoTurmaDisciplina.TurmaId,
-                        false,
-                        disciplina.RegistraFrequencia);
+                    await PublicarMsgGeracaoPendenciasFechamento(fechamentoTurmaDisciplina, disciplina.RegistraFrequencia);
 
                 return fechamentoTurmaDisciplina.Id;
             }
@@ -108,19 +96,7 @@ namespace SME.SGP.Aplicacao
                     : disciplinasEol.FirstOrDefault();
 
                 if (fechamentoTurmaDisciplina.TipoTurma != TipoTurma.Programa)
-                    await PublicarMsgGeracaoPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId,
-                        fechamentoTurmaDisciplina.CodigoTurma,
-                        fechamentoTurmaDisciplina.NomeTurma,
-                        fechamentoTurmaDisciplina.PeriodoInicio,
-                        fechamentoTurmaDisciplina.PeriodoFim,
-                        fechamentoTurmaDisciplina.Bimestre,
-                        new Usuario() { Id = fechamentoTurmaDisciplina.UsuarioId },
-                        fechamentoTurmaDisciplina.Id,
-                        fechamentoTurmaDisciplina.Justificativa,
-                        fechamentoTurmaDisciplina.CriadoRF,
-                        fechamentoTurmaDisciplina.TurmaId,
-                        false,
-                        disciplina.RegistraFrequencia);
+                    await PublicarMsgGeracaoPendenciasFechamento(fechamentoTurmaDisciplina, disciplina.RegistraFrequencia);
 
                 return fechamentoTurmaDisciplina.Id;
             }
@@ -146,22 +122,9 @@ namespace SME.SGP.Aplicacao
                 retorno.AddRange(aulas);
         }
 
-        private async Task PublicarMsgGeracaoPendenciasFechamento(long componenteCurricularId, string turmaCodigo, string turmaNome, DateTime periodoEscolarInicio, DateTime periodoEscolarFim, int bimestre, Usuario usuario, long fechamentoTurmaDisciplinaId, string justificativa, string criadoRF, long turmaId, bool componenteSemNota = false, bool registraFrequencia = true)
+        private async Task PublicarMsgGeracaoPendenciasFechamento(FechamentoTurmaDisciplinaPendenciaDto fechamentoDto, bool registraFrequencia = true)
         {
-            await mediator.Send(new IncluirFilaGeracaoPendenciasFechamentoCommand(
-                componenteCurricularId,
-                turmaCodigo,
-                turmaNome,
-                periodoEscolarInicio,
-                periodoEscolarFim,
-                bimestre,
-                usuario,
-                fechamentoTurmaDisciplinaId,
-                justificativa,
-                criadoRF,
-                turmaId,
-                componenteSemNota,
-                registraFrequencia));
+            await mediator.Send(new IncluirFilaGeracaoPendenciasFechamentoCommand(fechamentoDto, false, registraFrequencia));
         }
     }
 }

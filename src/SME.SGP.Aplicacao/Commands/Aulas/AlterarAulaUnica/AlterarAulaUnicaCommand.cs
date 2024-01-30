@@ -3,36 +3,24 @@ using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
     public class AlterarAulaUnicaCommand: IRequest<RetornoBaseDto>
     {
-        public AlterarAulaUnicaCommand(Usuario usuario,
-                                       long id,
-                                       DateTime dataAula,
-                                       int quantidade,
-                                       string codigoTurma,
-                                       long componenteCurricularCodigo,
-                                       string componenteCurricularNome,
-                                       long tipoCalendarioId,
-                                       TipoAula tipoAula,
-                                       string codigoUe,
-                                       bool ehRegencia)
+        public AlterarAulaUnicaCommand(Usuario usuario, PersistirAulaDto aulaDto)
         {
             Usuario = usuario;
-            Id = id;
-            DataAula = dataAula;
-            CodigoTurma = codigoTurma;
-            ComponenteCurricularCodigo = componenteCurricularCodigo;
-            ComponenteCurricularNome = componenteCurricularNome;
-            TipoCalendarioId = tipoCalendarioId;
-            TipoAula = tipoAula;
-            CodigoUe = codigoUe;
-            EhRegencia = ehRegencia;
-            Quantidade = quantidade;
+            Id = aulaDto.Id;
+            DataAula = aulaDto.DataAula;
+            CodigoTurma = aulaDto.CodigoTurma;
+            ComponenteCurricularCodigo = aulaDto.CodigoComponenteCurricular;
+            ComponenteCurricularNome = aulaDto.NomeComponenteCurricular;
+            TipoCalendarioId = aulaDto.TipoCalendarioId;
+            TipoAula = aulaDto.TipoAula;
+            CodigoUe = aulaDto.CodigoUe;
+            EhRegencia = aulaDto.EhRegencia;
+            Quantidade = aulaDto.Quantidade;
         }
 
         public Usuario Usuario { get; set; }
