@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
             var resposta = await httpClient.PostAsync(string.Format(ServicosEolConstants.URL_FUNCIONARIOS_UNIDADE, request.CodigoDre), json);
 
             if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
-                return null;
+                return Enumerable.Empty<UsuarioEolRetornoDto>();
 
             var jsonRetorno = await resposta.Content.ReadAsStringAsync();
 

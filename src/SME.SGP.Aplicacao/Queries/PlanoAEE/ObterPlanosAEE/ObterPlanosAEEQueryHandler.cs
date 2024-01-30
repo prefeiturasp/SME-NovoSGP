@@ -14,14 +14,12 @@ namespace SME.SGP.Aplicacao
     public class ObterPlanosAEEQueryHandler : ConsultasBase, IRequestHandler<ObterPlanosAEEQuery, PaginacaoResultadoDto<PlanoAEEResumoDto>>
     {        
         private readonly IRepositorioPlanoAEEConsulta repositorioPlanoAEE;
-        private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IMediator mediator;
 
         public ObterPlanosAEEQueryHandler(IContextoAplicacao contextoAplicacao, IRepositorioPlanoAEEConsulta repositorioPlanoAEE, 
-                                          IConsultasAbrangencia consultasAbrangencia, IMediator mediator) : base(contextoAplicacao)
+                                          IMediator mediator) : base(contextoAplicacao)
         {            
             this.repositorioPlanoAEE = repositorioPlanoAEE ?? throw new ArgumentNullException(nameof(repositorioPlanoAEE));
-            this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 

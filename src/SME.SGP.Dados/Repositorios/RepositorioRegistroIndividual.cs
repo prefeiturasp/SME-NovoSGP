@@ -16,19 +16,19 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<RegistroIndividual> ObterPorAlunoData(long turmaId, long componenteCurricularId, long alunoCodigo, DateTime data)
         {
             var query = @"select id,
-	                            turma_id,
-	                            aluno_codigo,
-	                            componente_curricular_id,
-	                            data_registro,
-	                            registro,
-	                            criado_em,
-	                            criado_por,
-	                            criado_rf,
-	                            alterado_em,
-	                            alterado_por,
-	                            alterado_rf,
-	                            excluido,
-	                            migrado
+                                turma_id,
+                                aluno_codigo,
+                                componente_curricular_id,
+                                data_registro,
+                                registro,
+                                criado_em,
+                                criado_por,
+                                criado_rf,
+                                alterado_em,
+                                alterado_por,
+                                alterado_rf,
+                                excluido,
+                                migrado
                         from registro_individual 
                        where not excluido 
                         and turma_id = @turmaId
@@ -42,8 +42,8 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<RegistroIndividualResumoDto>> ObterDescricaoRegistrosIndividuaisPorPeriodo(long turmaId, long componenteCurricularId, long alunoCodigo, DateTime dataInicio, DateTime dataFim)
         {
             var query = $@"select 
-	                          data_registro as DataRegistro,
-	                          registro as Registro
+                              data_registro as DataRegistro,
+                              registro as Registro
                         from registro_individual 
                        where not excluido 
                         and turma_id = @turmaId
@@ -136,7 +136,7 @@ namespace SME.SGP.Dados.Repositorios
                         and 
                             not excluido
                         group by 
-	                        turma_id , aluno_codigo ";
+                            turma_id , aluno_codigo ";
 
             return await database.Conexao.QueryAsync<UltimoRegistroIndividualAlunoTurmaDto>(query, new { turmaId });
         }
@@ -181,12 +181,12 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @" select 
                                 distinct
-	                            ri.turma_id as turmaId, 
-	                            tu.ano_letivo as anoLetivo
+                                ri.turma_id as turmaId, 
+                                tu.ano_letivo as anoLetivo
                             from registro_individual ri 
                             inner join turma tu on ri.turma_id = tu.id 
                             where not ri.excluido 
-	                            and tu.ano_letivo = @anoLetivo
+                                and tu.ano_letivo = @anoLetivo
                                 and tu.modalidade_codigo = ANY(@modalidades)
                             order by ri.turma_id ";
 
@@ -198,13 +198,13 @@ namespace SME.SGP.Dados.Repositorios
             var query = @" select 
                                 distinct
                                 tu.id as turmaId,
-	                            ri.aluno_codigo as AlunoCodigo
+                                ri.aluno_codigo as AlunoCodigo
                             from registro_individual ri 
                             inner join turma tu on ri.turma_id = tu.id 
                             where not ri.excluido 
-	                            and tu.ano_letivo = @anoLetivo
+                                and tu.ano_letivo = @anoLetivo
                                 and ri.turma_id = @turmaCodigo
-	                            and tu.modalidade_codigo = ANY(@modalidades)
+                                and tu.modalidade_codigo = ANY(@modalidades)
                             order by tu.id ";
 
             return await database.Conexao.QueryAsync<AlunoInfantilComRegistroIndividualDTO>(query, new { turmaCodigo, anoLetivo, modalidades });
@@ -214,14 +214,14 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @" select 
                                 distinct
-	                            ri.aluno_codigo as AlunoCodigo,
+                                ri.aluno_codigo as AlunoCodigo,
                                 ri.data_registro as DataRegistro
                             from registro_individual ri 
                             inner join turma tu on ri.turma_id = tu.id 
                             where not ri.excluido 
                                 and ri.turma_id = @turmaCodigo
                                 and ri.aluno_codigo = @codigoAluno
-	                            and tu.modalidade_codigo = ANY(@modalidades)
+                                and tu.modalidade_codigo = ANY(@modalidades)
                             order by ri.data_registro ";
 
             return await database.Conexao.QueryAsync<RegistroIndividualAlunoDTO>(query, new { turmaCodigo, codigoAluno, modalidades });
@@ -231,36 +231,36 @@ namespace SME.SGP.Dados.Repositorios
         {
             var condicaoDre = dreId > 0 ? "and ue.dre_id = @dreId" : "";
             var query = $@"select sum(z.quantidade_matriculas) - sum(z.quantidade_registros) quantidade,
-	                              z.ano,
-	                              z.modalidade
+                                  z.ano,
+                                  z.modalidade
                              from
-		                           (
-		                            select count(distinct(ri.aluno_codigo))as quantidade_registros,
-		                                   0 as quantidade_matriculas,
-				                           t.ano,
-				                           t.modalidade_codigo as modalidade
-		                              from registro_individual ri
-		                              inner join turma t on t.id = ri.turma_id
-		                              inner join ue on ue.id = t.ue_id
-		                              where data_registro between @dataInicial and now()
-			                            and t.ano = '7'
-			                            and t.modalidade_codigo = @modalidade
+                                   (
+                                    select count(distinct(ri.aluno_codigo))as quantidade_registros,
+                                           0 as quantidade_matriculas,
+                                           t.ano,
+                                           t.modalidade_codigo as modalidade
+                                      from registro_individual ri
+                                      inner join turma t on t.id = ri.turma_id
+                                      inner join ue on ue.id = t.ue_id
+                                      where data_registro between @dataInicial and now()
+                                        and t.ano = '7'
+                                        and t.modalidade_codigo = @modalidade
                                         {condicaoDre}
-		                           group by t.ano, t.modalidade_codigo
-		                           union
-		                           select 0 as quantidade_registros,
-			                              sum(cmt.quantidade) quantidade_matriculas, 
-			                              t.ano, 
-			                              t.modalidade_codigo as modalidade
-		                            from consolidacao_matricula_turma cmt 
-		                           inner join turma t on t.id = cmt.turma_id 
-		                           inner join ue on ue.id = t.ue_id 
-		                           where t.modalidade_codigo = @modalidade
-		                             and t.ano = '7'
-		                             and t.ano_letivo = @anoLetivo
-                                     {condicaoDre}	
-		                           group by t.ano, t.modalidade_codigo 
-		                           )z
+                                   group by t.ano, t.modalidade_codigo
+                                   union
+                                   select 0 as quantidade_registros,
+                                          sum(cmt.quantidade) quantidade_matriculas, 
+                                          t.ano, 
+                                          t.modalidade_codigo as modalidade
+                                    from consolidacao_matricula_turma cmt 
+                                   inner join turma t on t.id = cmt.turma_id 
+                                   inner join ue on ue.id = t.ue_id 
+                                   where t.modalidade_codigo = @modalidade
+                                     and t.ano = '7'
+                                     and t.ano_letivo = @anoLetivo
+                                     {condicaoDre}    
+                                   group by t.ano, t.modalidade_codigo 
+                                   )z
                            group by z.ano, z.modalidade
                            order by z.ano, z.modalidade";
             return await database.Conexao.QueryAsync<RegistroItineranciaPorAnoDto>(query, new { anoLetivo, dreId, modalidade, dataInicial });
@@ -268,30 +268,30 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<GraficoBaseDto>> ObterQuantidadeDeAunosSemRegistroPorPeriodoUeAsync(int anoLetivo, long ueId, Modalidade modalidade, DateTime dataInicial)
         {
             var query = $@" select z.nome as descricao,
-	                               sum(z.quantidade_matriculas) - sum(z.quantidade_registros) quantidade
+                                   sum(z.quantidade_matriculas) - sum(z.quantidade_registros) quantidade
                               from
-		                            (select count(distinct(ri.aluno_codigo))as quantidade_registros,
-		                                    0 as quantidade_matriculas,
-				                            t.nome
-		                               from registro_individual ri
-		                               inner join turma t on t.id = ri.turma_id
-		                               where data_registro between @dataInicial and now()
-			                             and t.modalidade_codigo = @modalidade
-		  	                             and t.ue_id = @ueId
-			                             and t.ano = '7'
-		                            group by t.nome
-		                            union
-		                            select 0 as quantidade_registros,
-			                               sum(cmt.quantidade) quantidade_matriculas, 
-			                               t.nome
-		                             from consolidacao_matricula_turma cmt 
-		                            inner join turma t on t.id = cmt.turma_id 
-		                            where t.modalidade_codigo = @modalidade
-		                              and t.ue_id = @ueId
+                                    (select count(distinct(ri.aluno_codigo))as quantidade_registros,
+                                            0 as quantidade_matriculas,
+                                            t.nome
+                                       from registro_individual ri
+                                       inner join turma t on t.id = ri.turma_id
+                                       where data_registro between @dataInicial and now()
+                                         and t.modalidade_codigo = @modalidade
+                                           and t.ue_id = @ueId
+                                         and t.ano = '7'
+                                    group by t.nome
+                                    union
+                                    select 0 as quantidade_registros,
+                                           sum(cmt.quantidade) quantidade_matriculas, 
+                                           t.nome
+                                     from consolidacao_matricula_turma cmt 
+                                    inner join turma t on t.id = cmt.turma_id 
+                                    where t.modalidade_codigo = @modalidade
+                                      and t.ue_id = @ueId
                                       and t.ano_letivo = @anoLetivo
-		                              and t.ano = '7'
-		                            group by t.nome
-		                            )z
+                                      and t.ano = '7'
+                                    group by t.nome
+                                    )z
                             group by z.nome
                             order by z.nome";
             return await database.Conexao.QueryAsync<GraficoBaseDto>(query, new { anoLetivo, ueId, modalidade, dataInicial });
@@ -301,8 +301,8 @@ namespace SME.SGP.Dados.Repositorios
         {
             var filtroAno = !string.IsNullOrEmpty(ano) ? "and t.ano = @ano" : "";
             var query = $@"select
-	                        dre.abreviacao as Descricao,
-	                        count(ri.id) as Quantidade
+                            dre.abreviacao as Descricao,
+                            count(ri.id) as Quantidade
                         from registro_individual ri 
                         inner join turma t on t.id = ri.turma_id 
                         inner join ue on ue.id = t.ue_id

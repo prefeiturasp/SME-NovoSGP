@@ -1,7 +1,5 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -13,12 +11,10 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterComponentesCurricularesPorIdsUsuarioLogadoQueryHandler : IRequestHandler<ObterComponentesCurricularesPorIdsUsuarioLogadoQuery, IEnumerable<DisciplinaDto>>
     {
-        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IMediator mediator;
 
-        public ObterComponentesCurricularesPorIdsUsuarioLogadoQueryHandler(IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular, IMediator mediator)
+        public ObterComponentesCurricularesPorIdsUsuarioLogadoQueryHandler(IMediator mediator)
         {
-            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -45,10 +41,10 @@ namespace SME.SGP.Aplicacao
                                                                                  d.CodigoComponenteTerritorioSaber.Equals(id));
 
                 if (componenteUsuarioTurma.EhNulo())
-                {
-                    if (usuarioLogado.EhProfessorCjInfantil())
-                        if (!componentesCurricularesDoProfessorCJInfantil.Any(c => c.DisciplinaId == id))
-                            continue;
+                { 
+                    if (usuarioLogado.EhProfessorCjInfantil() &&
+                        !componentesCurricularesDoProfessorCJInfantil.Any(c => c.DisciplinaId == id))
+                        continue;
 
                     disciplinasRetorno.Add(disciplinasPorIds.FirstOrDefault(d => d.CodigoComponenteCurricular.Equals(id)));
                 }

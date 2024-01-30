@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -33,7 +34,7 @@ namespace SME.SGP.Aplicacao
                 return JsonConvert.DeserializeObject<IEnumerable<FuncionarioUnidadeDto>>(json);
             }
 
-            throw new Exception($"Não foi possível localizar os logins: {string.Join(",", request.Logins)}.");
+            throw new NegocioException($"Não foi possível localizar os logins: {string.Join(",", request.Logins)}.");
         }
     }
 }

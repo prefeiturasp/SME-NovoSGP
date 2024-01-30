@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Api.Middlewares;
 using SME.SGP.Infra;
-using System.Text.Json.Serialization;
 
 namespace SME.SGP.Api.Configuracoes
 {
@@ -32,7 +31,7 @@ namespace SME.SGP.Api.Configuracoes
             })
                 .AddNewtonsoftJson()
                 .AddFluentValidation()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
         }
     }
 }

@@ -24,9 +24,9 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select rea.Id
                             , qea.questao_id as QuestaoId
-	                        , rea.resposta_id as RespostaId
-	                        , rea.texto 
-	                        , a.*
+                            , rea.resposta_id as RespostaId
+                            , rea.texto 
+                            , a.*
                           from encaminhamento_aee_secao eas 
                          inner join questao_encaminhamento_aee qea on qea.encaminhamento_aee_secao_id = eas.id
                          inner join resposta_encaminhamento_aee rea on rea.questao_encaminhamento_id = qea.id

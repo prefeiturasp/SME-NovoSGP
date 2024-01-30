@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
 
             var parametroTipoAtividade = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.TipoAtividadeAvaliativaClassroom, ano));
             if (parametroTipoAtividade is null)
-                throw new Exception($"Parametro de tipo de atividade avaliativa do classroom não localizado para o ano {ano}");
+                throw new NegocioException($"Parametro de tipo de atividade avaliativa do classroom não localizado para o ano {ano}");
 
             int.TryParse(parametroTipoAtividade.Valor, out int codigoTipoAtividade);
             var tipoAvaliacaoId = await mediator.Send(new ObterTipoAvaliacaoPorCodigoQuery(codigoTipoAtividade));

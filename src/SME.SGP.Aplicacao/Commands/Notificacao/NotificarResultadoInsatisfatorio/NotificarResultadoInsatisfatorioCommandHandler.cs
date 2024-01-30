@@ -146,20 +146,6 @@ namespace SME.SGP.Aplicacao
             return alunos;
         }
 
-        private async Task<IEnumerable<long>> ObterCargosGestaoEscola(Ue ue)
-        {
-            var usuarios = await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(ue.CodigoUe, new List<Guid> { Perfis.PERFIL_AD, Perfis.PERFIL_CP, Perfis.PERFIL_DIRETOR }));
-
-            var listaUsuarios = new List<long>();
-            foreach (var usuario in usuarios.Distinct())
-            {
-                if (usuario.Login != "")
-                    listaUsuarios.Add(await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(usuario.Login)));
-            }
-
-            return listaUsuarios.Distinct();
-        }
-
         private string MontarLinhaDaTurma(NotificarResultadoInsatisfatorioDto dto)
         {
             var mensagem = new StringBuilder();
@@ -170,7 +156,7 @@ namespace SME.SGP.Aplicacao
                 mensagem.Append("<tr style='padding:4px;'>");
                 if (primeiroComponente)
                 {
-                    mensagem.Append($"<td style='padding:4px;' rowspan='{dto.ComponentesCurriculares.Count()}'>{dto.TurmaNome}</td>");
+                    mensagem.Append($"<td style='padding:4px;' rowspan='{dto.ComponentesCurriculares.Count}'>{dto.TurmaNome}</td>");
                     primeiroComponente = false;
                 }
                 mensagem.Append($"<td style='padding:4px;'>{componenteCurricular.ComponenteCurricularNome}</td>");

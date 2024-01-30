@@ -12,12 +12,10 @@ namespace SME.SGP.Aplicacao
     public class ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivoQueryHandler : IRequestHandler<ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivoQuery, IEnumerable<TurmaDto>>
     {
         private readonly IHttpClientFactory httpClientFactory;
-        private readonly IMediator mediator;
 
-        public ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivoQueryHandler(IHttpClientFactory httpClientFactory, IMediator mediator)
+        public ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivoQueryHandler(IHttpClientFactory httpClientFactory)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         public async Task<IEnumerable<TurmaDto>> Handle(ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivoQuery request, CancellationToken cancellationToken)
         {

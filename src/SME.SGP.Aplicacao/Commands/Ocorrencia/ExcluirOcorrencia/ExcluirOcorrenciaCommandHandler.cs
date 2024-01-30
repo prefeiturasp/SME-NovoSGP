@@ -10,14 +10,12 @@ namespace SME.SGP.Aplicacao
     public class ExcluirOcorrenciaCommandHandler : IRequestHandler<ExcluirOcorrenciaCommand, RetornoBaseDto>
     {
         private readonly IRepositorioOcorrencia repositorioOcorrencia;
-        private readonly IRepositorioOcorrenciaServidor _repositorioOcorrenciaServidor;
         private readonly IMediator mediator;
 
-        public ExcluirOcorrenciaCommandHandler(IRepositorioOcorrencia repositorioOcorrencia,  IRepositorioOcorrenciaServidor repositorioOcorrenciaServidor,IMediator mediator)
+        public ExcluirOcorrenciaCommandHandler(IRepositorioOcorrencia repositorioOcorrencia,  IMediator mediator)
         {
             this.repositorioOcorrencia = repositorioOcorrencia ?? throw new ArgumentNullException(nameof(repositorioOcorrencia));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _repositorioOcorrenciaServidor = repositorioOcorrenciaServidor ?? throw new ArgumentNullException(nameof(repositorioOcorrenciaServidor));
         }
 
         public async Task<RetornoBaseDto> Handle(ExcluirOcorrenciaCommand request, CancellationToken cancellationToken)

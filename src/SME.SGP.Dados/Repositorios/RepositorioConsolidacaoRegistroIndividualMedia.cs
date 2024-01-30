@@ -31,8 +31,8 @@ namespace SME.SGP.Dominio
                                                 from registro_individual ri 
                                                 inner join turma tu on ri.turma_id = tu.id 
                                                 where not ri.excluido 
-	                                                and tu.ano_letivo = @anoLetivo
-	                                                and tu.modalidade_codigo in (1,2)
+                                                    and tu.ano_letivo = @anoLetivo
+                                                    and tu.modalidade_codigo in (1,2)
                                                 order by ri.turma_id )";
 
             await database.Conexao.ExecuteScalarAsync(query, new { anoLetivo });
@@ -41,8 +41,8 @@ namespace SME.SGP.Dominio
         public async Task<IEnumerable<RegistroIndividualMediaPorAnoDto>> ObterRegistrosItineranciasMediaPorAnoAsync(int anoLetivo, long dreId, Modalidade modalidade)
         {
             var query = new StringBuilder($@"select (sum(cr.quantidade)/count(t.ano)) as quantidade, 
-	                                                t.ano,
-	                                                t.modalidade_codigo as modalidade
+                                                    t.ano,
+                                                    t.modalidade_codigo as modalidade
                                                from consolidacao_registro_individual_media cr 
                                               inner join turma t on t.id = cr.turma_id 
                                               inner join ue on ue.id = t.ue_id 
@@ -61,7 +61,7 @@ namespace SME.SGP.Dominio
         public async Task<IEnumerable<GraficoBaseQuantidadeDoubleDto>> ObterRegistrosItineranciasMediaPorTurmaAsync(int anoLetivo, long ueId, Modalidade modalidade)
         {
             var query = @" select cr.quantidade as quantidade, 
-	                              t.nome as descricao
+                                  t.nome as descricao
                              from consolidacao_registro_individual_media cr 
                             inner join turma t on t.id = cr.turma_id 
                             where t.modalidade_codigo = @modalidade

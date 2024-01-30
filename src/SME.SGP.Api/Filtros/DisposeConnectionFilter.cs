@@ -25,7 +25,7 @@ namespace SME.SGP.Api.Filtros
 
         public void OnActionExecuting(ActionExecutingContext context)
         {
-
+            //Sem lógica de interceptação
         }
     }
 }

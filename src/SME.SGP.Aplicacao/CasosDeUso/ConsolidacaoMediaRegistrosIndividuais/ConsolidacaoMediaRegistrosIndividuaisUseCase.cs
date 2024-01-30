@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
         private static int CalcularMediaRegistroIndividualPorCrianca(List<DateTime> datas)
         {
             if (datas.Count > 2)
-                return ((int)datas.ToList().LastOrDefault().Subtract(datas.FirstOrDefault()).TotalDays / (datas.ToList().Count - 1));
+                return ((int)datas.LastOrDefault().Subtract(datas.FirstOrDefault()).TotalDays / (datas.Count - 1));
             else
                 return (int)datas.LastOrDefault().Subtract(datas.FirstOrDefault()).TotalDays;
         }

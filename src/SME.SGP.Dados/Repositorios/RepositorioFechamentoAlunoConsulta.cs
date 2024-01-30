@@ -25,7 +25,7 @@ namespace SME.SGP.Dados.Repositorios
             var sqlQuery = new StringBuilder(@"select
                                 t.id as TurmaId,
                                 fa.aluno_codigo as AlunoCodigo,
-	                            count(fa.fechamento_turma_disciplina_id) as QuantidadeDisciplinaFechadas
+                                count(fa.fechamento_turma_disciplina_id) as QuantidadeDisciplinaFechadas
                                 from fechamento_aluno fa
                             inner join fechamento_turma_disciplina ftd on fa.fechamento_turma_disciplina_id = ftd.id 
                             inner join fechamento_turma ft on ftd.fechamento_turma_id = ft.id 

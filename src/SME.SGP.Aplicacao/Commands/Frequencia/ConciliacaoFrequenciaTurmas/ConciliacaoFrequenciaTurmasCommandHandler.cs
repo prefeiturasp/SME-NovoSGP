@@ -27,22 +27,8 @@ namespace SME.SGP.Aplicacao
                 foreach (var modalidade in periodosPorModalidade)
                 {
                     var turmasDaModalidade = (await ObterTurmasPorModalidade(modalidade.Key, request.Data.Year, request.TurmaCodigo)).ToList();
-
-                    if (turmasDaModalidade.NaoEhNulo() && turmasDaModalidade.Any())
-                    {
-                        if (request.Bimestral)
-                        {
-                            foreach (var periodoEscolar in modalidade)
-                                await PublicarFilaConciliacaoPeriodo(turmasDaModalidade, periodoEscolar.Bimestre, periodoEscolar.DataInicio, periodoEscolar.DataFim, request.ComponenteCurricularId);
-                        }
-
-                        if (request.Mensal)
-                        {
-                            foreach (var mes in ObterMesesAnteriores(request.Data))
-                                await PublicarFilaConciliacaoMensal(turmasDaModalidade, mes);
-                        }
-                    }
-
+                    await TratarConciliacaoBimestral(request, turmasDaModalidade, modalidade);
+                    await TratarConciliacaoMensal(request, turmasDaModalidade);
                 };
 
                 return true;
@@ -51,6 +37,26 @@ namespace SME.SGP.Aplicacao
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Erro na consolidação de Frequência da turma.", LogNivel.Critico, LogContexto.Frequencia, ex.Message));
                 throw;
+            }
+        }
+        private async Task TratarConciliacaoMensal(ConciliacaoFrequenciaTurmasCommand request, List<string> turmasDaModalidade)
+        {
+            if (turmasDaModalidade.PossuiRegistros() 
+                && request.Mensal)
+            {
+                foreach (var mes in ObterMesesAnteriores(request.Data))
+                    await PublicarFilaConciliacaoMensal(turmasDaModalidade, mes);
+            }
+        }
+
+        private async Task TratarConciliacaoBimestral(ConciliacaoFrequenciaTurmasCommand request, List<string> turmasDaModalidade,
+                                                      IGrouping<ModalidadeTipoCalendario, PeriodoEscolarModalidadeDto> periodosModalidade)
+        {
+            if (turmasDaModalidade.PossuiRegistros()
+                && request.Bimestral)
+            {
+                foreach (var periodoEscolar in periodosModalidade)
+                    await PublicarFilaConciliacaoPeriodo(turmasDaModalidade, periodoEscolar.Bimestre, periodoEscolar.DataInicio, periodoEscolar.DataFim, request.ComponenteCurricularId);
             }
         }
 
@@ -69,14 +75,12 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<string>> ObterTurmasPorModalidade(ModalidadeTipoCalendario modalidadeTipoCalendario, int ano, string turmaCodigo)
         {
             var modalidades = modalidadeTipoCalendario.ObterModalidades();
-
             return await mediator.Send(new ObterCodigosTurmasPorAnoModalidadeQuery(ano, modalidades, turmaCodigo));
         }
 
         private async Task<IEnumerable<IGrouping<ModalidadeTipoCalendario, PeriodoEscolarModalidadeDto>>> ObterPeriodosPassadosPorModalidade(DateTime data)
         {
             var modalidadesPeriodosPassados = await mediator.Send(new ObterModalidadeEPeriodosPassadosNoAnoQuery(data));
-
             return modalidadesPeriodosPassados.GroupBy(a => a.Modalidade);
         }
 

@@ -17,7 +17,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public RepositorioRegistroFrequenciaAlunoConsulta(ISgpContextConsultas sgpContextConsultas)
         {
-	        this.sgpContextConsultas = sgpContextConsultas ?? throw new ArgumentNullException(nameof(sgpContextConsultas));
+            this.sgpContextConsultas = sgpContextConsultas ?? throw new ArgumentNullException(nameof(sgpContextConsultas));
         }
 
         public async Task<IEnumerable<FrequenciaAlunoSimplificadoDto>> ObterFrequenciasPorAulaId(long aulaId)
@@ -57,11 +57,11 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"           
                     select
-	                count(distinct(rfa.registro_frequencia_id*rfa.numero_aula)) as TotalAusencias,
-	                p.id as PeriodoEscolarId,
-	                p.periodo_inicio as PeriodoInicio,
-	                p.periodo_fim as PeriodoFim,
-	                p.bimestre,
+                    count(distinct(rfa.registro_frequencia_id*rfa.numero_aula)) as TotalAusencias,
+                    p.id as PeriodoEscolarId,
+                    p.periodo_inicio as PeriodoInicio,
+                    p.periodo_fim as PeriodoFim,
+                    p.bimestre,
                     rfa.codigo_aluno as AlunoCodigo,
                     a.disciplina_id as ComponenteCurricularId                    
                 from
@@ -71,21 +71,21 @@ namespace SME.SGP.Dados.Repositorios
                 inner join periodo_escolar p on
                     a.tipo_calendario_id = p.tipo_calendario_id
                 where
-	                not rfa.excluido
-	                and not a.excluido
-	                and rfa.codigo_aluno = any(@codigoAlunos)	                
-	                and a.turma_id = any(@turmasId)
-	                and p.periodo_inicio <= @dataAula
-	                and p.periodo_fim >= @dataAula
-	                and a.data_aula >= p.periodo_inicio
-	                and a.data_aula <= p.periodo_fim
+                    not rfa.excluido
+                    and not a.excluido
+                    and rfa.codigo_aluno = any(@codigoAlunos)                    
+                    and a.turma_id = any(@turmasId)
+                    and p.periodo_inicio <= @dataAula
+                    and p.periodo_fim >= @dataAula
+                    and a.data_aula >= p.periodo_inicio
+                    and a.data_aula <= p.periodo_fim
                     and rfa.valor = @tipoFrequencia
                     and rfa.numero_aula <= a.quantidade 
                 group by
-	                p.id,
-	                p.periodo_inicio,
-	                p.periodo_fim,
-	                p.bimestre,
+                    p.id,
+                    p.periodo_inicio,
+                    p.periodo_fim,
+                    p.bimestre,
                     rfa.codigo_aluno,
                     a.disciplina_id";
 
@@ -111,9 +111,9 @@ namespace SME.SGP.Dados.Repositorios
                             and a.data_aula <= p.periodo_fim                    
                             and rfa.numero_aula <= a.quantidade                            
                         order by a.disciplina_id,
-		                         a.turma_id,
-		                         p.periodo_fim,
-		                         rfa.codigo_aluno";
+                                 a.turma_id,
+                                 p.periodo_fim,
+                                 rfa.codigo_aluno";
 
             return await sgpContextConsultas.Conexao.QueryAsync<RegistroFrequenciaGeralPorDisciplinaAlunoTurmaDataDto>(query, new { ano });
         }
@@ -122,13 +122,13 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @$"           
                 select
-	                count(distinct(rfa.aula_id*rfa.numero_aula)) filter (where rfa.valor = 1 and not rfa.excluido) as TotalPresencas,
+                    count(distinct(rfa.aula_id*rfa.numero_aula)) filter (where rfa.valor = 1 and not rfa.excluido) as TotalPresencas,
                     count(distinct(rfa.aula_id*rfa.numero_aula)) filter (where rfa.valor = 2 and not rfa.excluido) as TotalAusencias,
                     count(distinct(rfa.aula_id*rfa.numero_aula)) filter (where rfa.valor = 3 and not rfa.excluido) as TotalRemotos,
-	                p.id as PeriodoEscolarId,
-	                p.periodo_inicio as PeriodoInicio,
-	                p.periodo_fim as PeriodoFim,
-	                p.bimestre,
+                    p.id as PeriodoEscolarId,
+                    p.periodo_inicio as PeriodoInicio,
+                    p.periodo_fim as PeriodoFim,
+                    p.bimestre,
                     rfa.codigo_aluno as AlunoCodigo,
                     a.disciplina_id as ComponenteCurricularId
                 from registro_frequencia_aluno rfa
@@ -136,20 +136,20 @@ namespace SME.SGP.Dados.Repositorios
                 inner join periodo_escolar p on a.tipo_calendario_id = p.tipo_calendario_id
                 where
                     not a.excluido
-                    and rfa.codigo_aluno = any(@codigoAlunos)	                
-	                and a.turma_id = any(@turmasId)
-	                and p.periodo_inicio <= @dataAula
-	                and p.periodo_fim >= @dataAula
-	                and a.data_aula >= p.periodo_inicio
-	                and a.data_aula <= p.periodo_fim                    
+                    and rfa.codigo_aluno = any(@codigoAlunos)                    
+                    and a.turma_id = any(@turmasId)
+                    and p.periodo_inicio <= @dataAula
+                    and p.periodo_fim >= @dataAula
+                    and a.data_aula >= p.periodo_inicio
+                    and a.data_aula <= p.periodo_fim                    
                     and rfa.numero_aula <= a.quantidade
                     {(!string.IsNullOrWhiteSpace(professor) ? " and a.professor_rf = @professor " : string.Empty)}
                     {(idsRegistrosFrequenciaDesconsiderados != null && idsRegistrosFrequenciaDesconsiderados.Any() ? " and rfa.id <> any(@idsRegistrosFrequenciaDesconsiderados) " : string.Empty)}
                 group by
-	                p.id,
-	                p.periodo_inicio,
-	                p.periodo_fim,
-	                p.bimestre,
+                    p.id,
+                    p.periodo_inicio,
+                    p.periodo_fim,
+                    p.bimestre,
                     rfa.codigo_aluno,
                     a.disciplina_id";
 
@@ -169,15 +169,15 @@ namespace SME.SGP.Dados.Repositorios
         public Task<IEnumerable<FrequenciaAlunoAulaDto>> ObterFrequenciasDoAlunoNaAula(string codigoAluno, long aulaId)
         {
             var query = @"select
-	                        rfa.id as FrequenciaAlunoId,
-	                        rfa.valor TipoFrequencia,
-	                        rfa.numero_aula as NumeroAula,
-	                        rfa.codigo_aluno as AlunoCodigo 
+                            rfa.id as FrequenciaAlunoId,
+                            rfa.valor TipoFrequencia,
+                            rfa.numero_aula as NumeroAula,
+                            rfa.codigo_aluno as AlunoCodigo 
                         from registro_frequencia_aluno rfa
-	                        join aula a on rfa.aula_id = a.id
+                            join aula a on rfa.aula_id = a.id
                         where not rfa.excluido and not a.excluido
-	                        and rfa.codigo_aluno = @codigoAluno and a.id = @aulaId
-	                        order by rfa.id desc";
+                            and rfa.codigo_aluno = @codigoAluno and a.id = @aulaId
+                            order by rfa.id desc";
 
             return sgpContextConsultas.Conexao.QueryAsync<FrequenciaAlunoAulaDto>(query, new { aulaId, codigoAluno });
         }
@@ -215,10 +215,10 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine("and a.turma_id = any(@turmasId)");            
             query.AppendLine("and exists (select 1");
-            query.AppendLine("				from registro_frequencia_aluno rfa");
-            query.AppendLine("			  where a.id = rfa.aula_id and");
-            query.AppendLine("				  not a.excluido and");
-            query.AppendLine("				  rfa.numero_aula between 1 and a.quantidade);");
+            query.AppendLine("                from registro_frequencia_aluno rfa");
+            query.AppendLine("              where a.id = rfa.aula_id and");
+            query.AppendLine("                  not a.excluido and");
+            query.AppendLine("                  rfa.numero_aula between 1 and a.quantidade);");
 
             return query.ToString();
         }
@@ -227,7 +227,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             const string query = @"select a.turma_id TurmaId,
                                           count(distinct(rfa.aula_id*rfa.numero_aula)) as QuantidadeAulas,
-	                                      count(distinct(rfa.aula_id*rfa.numero_aula)) filter (where rfa.valor = 2) as QuantidadeAusencias,
+                                          count(distinct(rfa.aula_id*rfa.numero_aula)) filter (where rfa.valor = 2) as QuantidadeAusencias,
                                           count(caaa.id) as QuantidadeCompensacoes,
                                           rfa.codigo_aluno as AlunoCodigo,
                                           a.turma_id as TurmaId
@@ -268,22 +268,22 @@ namespace SME.SGP.Dados.Repositorios
         public Task<IEnumerable<RegistroFrequenciaAluno>> ObterRegistrosAusenciaPorIdRegistro(long registroFrequenciaId)
         {
             var query = @"SELECT
-							id,
-							valor,
-							codigo_aluno,
-							numero_aula,
-							registro_frequencia_id,
-							criado_em,
-							criado_por,
-							criado_rf,
-							alterado_em,
-							alterado_por,
-							alterado_rf,
-							excluido,
-							migrado,
-							aula_id
-						FROM
-							registro_frequencia_aluno
+                            id,
+                            valor,
+                            codigo_aluno,
+                            numero_aula,
+                            registro_frequencia_id,
+                            criado_em,
+                            criado_por,
+                            criado_rf,
+                            alterado_em,
+                            alterado_por,
+                            alterado_rf,
+                            excluido,
+                            migrado,
+                            aula_id
+                        FROM
+                            registro_frequencia_aluno
                         where not excluido 
                             and registro_frequencia_id = @registroFrequenciaId";
             return sgpContextConsultas.Conexao.QueryAsync<RegistroFrequenciaAluno>(query, new { registroFrequenciaId });
@@ -299,24 +299,24 @@ namespace SME.SGP.Dados.Repositorios
                 query += $@"
                     select a.id aula_id,
                            pe.id periodo_id,
-                      	   pe.periodo_inicio,
-                      	   pe.periodo_fim,
-                      	   pe.bimestre,
-                      	   coalesce(rfa.codigo_aluno, '{listaAlunos[i].codigo}') codigo_aluno,
-                      	   a.disciplina_id, 
-                      	   coalesce(rfa.valor, 1) valor,  	
-                      	   coalesce(rfa.criado_em, a.criado_em) criado_em,
+                             pe.periodo_inicio,
+                             pe.periodo_fim,
+                             pe.bimestre,
+                             coalesce(rfa.codigo_aluno, '{listaAlunos[i].codigo}') codigo_aluno,
+                             a.disciplina_id, 
+                             coalesce(rfa.valor, 1) valor,      
+                             coalesce(rfa.criado_em, a.criado_em) criado_em,
                            coalesce(rfa.numero_aula, 1) numero_aula,
-                           coalesce(rfa.id, 0) registro_frequencia_aluno_id                    	   
-                      	from aula a
-                      		inner join periodo_escolar pe
-                      			on a.tipo_calendario_id = pe.tipo_calendario_id
-                      		left join registro_frequencia_aluno rfa 
-                      			on a.id = rfa.aula_id and
-								   not rfa.excluido and
-								   rfa.codigo_aluno = '{listaAlunos[i].codigo}'
-                    where not a.excluido and                      	  
-                    	  a.turma_id = any(@turmasId) and
+                           coalesce(rfa.id, 0) registro_frequencia_aluno_id                           
+                          from aula a
+                              inner join periodo_escolar pe
+                                  on a.tipo_calendario_id = pe.tipo_calendario_id
+                              left join registro_frequencia_aluno rfa 
+                                  on a.id = rfa.aula_id and
+                                   not rfa.excluido and
+                                   rfa.codigo_aluno = '{listaAlunos[i].codigo}'
+                    where not a.excluido and                            
+                          a.turma_id = any(@turmasId) and
                           @dataAula::date between pe.periodo_inicio and pe.periodo_fim and
                           a.data_aula::date between pe.periodo_inicio and pe.periodo_fim and
                           a.data_aula::date > '{listaAlunos[i].dataMatricula:yyyy-MM-dd}'::date
@@ -330,22 +330,22 @@ namespace SME.SGP.Dados.Repositorios
                            row_number() over (partition by aula_id, codigo_aluno, numero_aula order by registro_frequencia_aluno_id desc) sequencia
                     from lista1)
                     select {(somenteAusencias ? string.Empty : "count(distinct (tmp.aula_id, tmp.numero_aula)) filter (where tmp.valor = 1) TotalPresencas,")}
-                    	   count(distinct (tmp.aula_id, tmp.numero_aula)) filter (where tmp.valor = 2) TotalAusencias,
-                    	   {(somenteAusencias ? string.Empty : "count(distinct (tmp.aula_id, tmp.numero_aula)) filter (where tmp.valor = 3) TotalRemotos,")}
-                    	   tmp.periodo_id as PeriodoEscolarId,
-                    	   tmp.periodo_inicio as PeriodoInicio,
-                    	   tmp.periodo_fim as PeriodoFim,
-                    	   tmp.bimestre,
+                           count(distinct (tmp.aula_id, tmp.numero_aula)) filter (where tmp.valor = 2) TotalAusencias,
+                           {(somenteAusencias ? string.Empty : "count(distinct (tmp.aula_id, tmp.numero_aula)) filter (where tmp.valor = 3) TotalRemotos,")}
+                           tmp.periodo_id as PeriodoEscolarId,
+                           tmp.periodo_inicio as PeriodoInicio,
+                           tmp.periodo_fim as PeriodoFim,
+                           tmp.bimestre,
                            tmp.codigo_aluno as AlunoCodigo,
                            tmp.disciplina_id as ComponenteCurricularId
-                    	from lista2 tmp
-                    where tmp.sequencia = 1	                               
+                        from lista2 tmp
+                    where tmp.sequencia = 1                                   
                     group by tmp.periodo_id,
-                        	 tmp.periodo_inicio,
-                        	 tmp.periodo_fim,
-                        	 tmp.bimestre,
-                        	 tmp.codigo_aluno,
-                        	 tmp.disciplina_id;";
+                             tmp.periodo_inicio,
+                             tmp.periodo_fim,
+                             tmp.bimestre,
+                             tmp.codigo_aluno,
+                             tmp.disciplina_id;";
 
             return await sgpContextConsultas.Conexao.QueryAsync<RegistroFrequenciaPorDisciplinaAlunoDto>(query, new { dataAula, turmasId }, commandTimeout: 120);
         }

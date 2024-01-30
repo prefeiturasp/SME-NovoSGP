@@ -15,15 +15,11 @@ namespace SME.SGP.Aplicacao.Commands.DeletarArquivo
 {
     public class DeletarArquivoDeRegistroExcluidoCommandHandler : IRequestHandler<DeletarArquivoDeRegistroExcluidoCommand, bool>
     {
-        private readonly IMediator mediator;
         private readonly IServicoArmazenamento servicoArmazenamento;
-        private readonly ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions;
 
-        public DeletarArquivoDeRegistroExcluidoCommandHandler(IMediator mediator, IServicoArmazenamento servicoArmazenamento, IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
+        public DeletarArquivoDeRegistroExcluidoCommandHandler(IServicoArmazenamento servicoArmazenamento)
         {
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.servicoArmazenamento = servicoArmazenamento ?? throw new ArgumentNullException(nameof(servicoArmazenamento));
-            this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions?.Value ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
         }
 
         public async Task<bool> Handle(DeletarArquivoDeRegistroExcluidoCommand request, CancellationToken cancellationToken)

@@ -28,18 +28,9 @@ namespace SME.SGP.Aplicacao
 
             foreach (var tipoEscola in tiposEscola)
             {
-                try
-                {
-                    var publicarTratamentoTipoEscola = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalTipoEscolaTratar, tipoEscola, param.CodigoCorrelacao, null));
-                    if (!publicarTratamentoTipoEscola)
-                    {
-                        await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível inserir o Tipo de Escola : {tipoEscola} na fila de sync.", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional));
-                    }
-                }
-                catch (Exception)
-                {
-                    
-                }
+                var publicarTratamentoTipoEscola = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalTipoEscolaTratar, tipoEscola, param.CodigoCorrelacao, null));
+                if (!publicarTratamentoTipoEscola)
+                    await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível inserir o Tipo de Escola : {tipoEscola} na fila de sync.", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional));
             }
 
             return true;

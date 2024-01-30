@@ -15,12 +15,10 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioPendenciaAulaConsulta : IRepositorioPendenciaAulaConsulta
     {
         private readonly ISgpContextConsultas database;
-        private readonly IRepositorioDreConsulta repositorioDre;
 
-        public RepositorioPendenciaAulaConsulta(ISgpContextConsultas database, IRepositorioDreConsulta repositorioDre)
+        public RepositorioPendenciaAulaConsulta(ISgpContextConsultas database)
         {
             this.database = database ?? throw new ArgumentNullException(nameof(database));
-            this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
         }
 
         public async Task<IEnumerable<Aula>> ListarPendenciasPorTipo(TipoPendencia tipoPendenciaAula, string tabelaReferencia, long[] modalidades, long dreId, long ueId, int anoLetivo,bool exibirRegistroSemPendencia = true)
@@ -29,10 +27,10 @@ namespace SME.SGP.Dados.Repositorios
             var sqlQuery = new StringBuilder();
 
             sqlQuery.AppendLine(" with vw_pendencia_aula as (select pa.id, pa.aula_id");
-            sqlQuery.AppendLine("  		from pendencia_aula pa");
-            sqlQuery.AppendLine("  		inner join pendencia p on p.id = pa.pendencia_id");
-            sqlQuery.AppendLine("  		where not p.excluido");
-            sqlQuery.AppendLine("  		      and p.tipo = @tipo) ");
+            sqlQuery.AppendLine("          from pendencia_aula pa");
+            sqlQuery.AppendLine("          inner join pendencia p on p.id = pa.pendencia_id");
+            sqlQuery.AppendLine("          where not p.excluido");
+            sqlQuery.AppendLine("                and p.tipo = @tipo) ");
             sqlQuery.AppendLine("select distinct a.id as Id,");
             sqlQuery.AppendLine("                a.disciplina_id DisciplinaId,");
             sqlQuery.AppendLine("                a.turma_id TurmaId,");
@@ -42,29 +40,29 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("                a.aula_cj AulaCJ,");
             sqlQuery.AppendLine("                t.id Id,");
             sqlQuery.AppendLine("                t.modalidade_codigo ModalidadeCodigo");
-            sqlQuery.AppendLine("  	from aula a");
-            sqlQuery.AppendLine("  		inner join tipo_calendario tc");
-            sqlQuery.AppendLine("  			on a.tipo_calendario_id = tc.id");
-            sqlQuery.AppendLine("  		inner join turma t");
-            sqlQuery.AppendLine("  			on a.turma_id = t.turma_id");
-            sqlQuery.AppendLine("  		inner join ue");
-            sqlQuery.AppendLine("  			on t.ue_id = ue.id");
-            sqlQuery.AppendLine("     	left join vw_pendencia_aula p on p.aula_id = a.id ");
-            sqlQuery.AppendLine($"  	left join {tabelaReferencia} tf");
-            sqlQuery.AppendLine($"  		on tf.aula_id = a.id");
+            sqlQuery.AppendLine("      from aula a");
+            sqlQuery.AppendLine("          inner join tipo_calendario tc");
+            sqlQuery.AppendLine("              on a.tipo_calendario_id = tc.id");
+            sqlQuery.AppendLine("          inner join turma t");
+            sqlQuery.AppendLine("              on a.turma_id = t.turma_id");
+            sqlQuery.AppendLine("          inner join ue");
+            sqlQuery.AppendLine("              on t.ue_id = ue.id");
+            sqlQuery.AppendLine("         left join vw_pendencia_aula p on p.aula_id = a.id ");
+            sqlQuery.AppendLine($"      left join {tabelaReferencia} tf");
+            sqlQuery.AppendLine($"          on tf.aula_id = a.id");
             if (tipoPendenciaAula == TipoPendencia.Frequencia)
-                sqlQuery.AppendLine("  		left join componente_curricular cc on a.disciplina_id::int8 = cc.id");
+                sqlQuery.AppendLine("          left join componente_curricular cc on a.disciplina_id::int8 = cc.id");
             sqlQuery.AppendLine("  where not a.excluido");
-            sqlQuery.AppendLine("	and a.data_aula < @hoje");
-            sqlQuery.AppendLine("	and ue.dre_id = @dreId");
+            sqlQuery.AppendLine("    and a.data_aula < @hoje");
+            sqlQuery.AppendLine("    and ue.dre_id = @dreId");
             sqlQuery.AppendLine("   and t.modalidade_codigo = ANY(@modalidades)");
             sqlQuery.AppendLine("   and t.ano_letivo = @anoLetivo");
             if (tipoPendenciaAula == TipoPendencia.Frequencia)
                 sqlQuery.AppendLine("   and coalesce(cc.permite_registro_frequencia, true)");
             
             if (exibirRegistroSemPendencia)
-               sqlQuery.AppendLine("	and p.id is null");
-            sqlQuery.AppendLine("	and tf.id is null ");
+               sqlQuery.AppendLine("    and p.id is null");
+            sqlQuery.AppendLine("    and tf.id is null ");
 
             if (ueId > 0)
                 sqlQuery.AppendLine("    and ue.id = @ueId ");
@@ -167,22 +165,22 @@ namespace SME.SGP.Dados.Repositorios
                         ) 
                     select distinct a.id, a.turma_id as TurmaId, a.disciplina_id, a.professor_rf, a.aula_cj as AulaCJ,
                                     a.tipo_calendario_id, a.data_aula, t.id Id, t.modalidade_codigo ModalidadeCodigo
-	                from atividade_avaliativa aa
+                    from atividade_avaliativa aa
                     inner join tipo_avaliacao ta on ta.id = aa.tipo_avaliacao_id
-	                inner join dre on dre.dre_id = aa.dre_id
-	                inner join atividade_avaliativa_disciplina aad
-		                on aa.id = aad.atividade_avaliativa_id
-	                inner join aula a
-		                on aa.turma_id = a.turma_id and
-		                    aa.data_avaliacao::date = a.data_aula::date and
-		                    aad.disciplina_id = a.disciplina_id and 
-		                    a.professor_rf = aa.professor_rf 
-	                inner join turma t on t.turma_id = a.turma_id
+                    inner join dre on dre.dre_id = aa.dre_id
+                    inner join atividade_avaliativa_disciplina aad
+                        on aa.id = aad.atividade_avaliativa_id
+                    inner join aula a
+                        on aa.turma_id = a.turma_id and
+                            aa.data_avaliacao::date = a.data_aula::date and
+                            aad.disciplina_id = a.disciplina_id and 
+                            a.professor_rf = aa.professor_rf 
+                    inner join turma t on t.turma_id = a.turma_id
                     inner join ue u on u.id = t.ue_id 
-	                left join notas_conceito nc 
-		                on nc.atividade_avaliativa = aa.id
-	                left join vw_pendencia p 
-		                on p.aula_id = a.id
+                    left join notas_conceito nc 
+                        on nc.atividade_avaliativa = aa.id
+                    left join vw_pendencia p 
+                        on p.aula_id = a.id
                 where not aa.excluido 
                     and not a.excluido 
                     and dre.id = @dreId
@@ -193,7 +191,7 @@ namespace SME.SGP.Dados.Repositorios
             if(exibirRegistroSemPendencia)
                 sqlQuery += "  and p.id is null ";
 
-                if (ueId > 0)
+            if (ueId > 0)
                 sqlQuery += " and u.id = @ueId";
 
             return await database.Conexao
@@ -267,8 +265,8 @@ namespace SME.SGP.Dados.Repositorios
                            join periodo_escolar pe on a.tipo_calendario_id = pe.tipo_calendario_id and a.data_aula between pe.periodo_inicio and pe.periodo_fim
                            join turma t on t.turma_id = a.turma_id
                            left join atividade_avaliativa aa on aa.turma_id = a.turma_id 
-   									and aa.data_avaliacao::date = a.data_aula::date    									
-									and a.professor_rf = aa.professor_rf and p.tipo = @tipoPendenciaAvaliacao                           
+                                       and aa.data_avaliacao::date = a.data_aula::date                                        
+                                    and a.professor_rf = aa.professor_rf and p.tipo = @tipoPendenciaAvaliacao                           
                           where pa.pendencia_id = @pendenciaId
                           order by a.data_aula desc";
 
@@ -334,9 +332,9 @@ namespace SME.SGP.Dados.Repositorios
                 sql = @$"SELECT 1 FROM aula
                         INNER JOIN turma ON aula.turma_id = turma.turma_id
                         LEFT JOIN componente_curricular cc ON cc.id = aula.disciplina_id::bigint
-	                    LEFT JOIN registro_frequencia_aluno rfa ON aula.id = rfa.aula_id and not rfa.excluido
+                        LEFT JOIN registro_frequencia_aluno rfa ON aula.id = rfa.aula_id and not rfa.excluido
                         WHERE NOT aula.excluido
-	                    AND aula.id = ANY(@aulas)
+                        AND aula.id = ANY(@aulas)
                         AND aula.data_aula::date < @hoje
                         AND rfa.id is null 
                         AND coalesce(cc.permite_registro_frequencia, true)
@@ -381,22 +379,22 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulaId(long aulaId)
         {
             var sql = @"select
-	                       1
+                           1
                         from
-	                        atividade_avaliativa aa
+                            atividade_avaliativa aa
                         inner join atividade_avaliativa_disciplina aad on
-	                        aad.atividade_avaliativa_id = aa.id
+                            aad.atividade_avaliativa_id = aa.id
                         left join notas_conceito n on
-	                        aa.id = n.atividade_avaliativa
+                            aa.id = n.atividade_avaliativa
                         inner join aula a on
-	                        aa.turma_id = a.turma_id
-	                        and aa.data_avaliacao::date = a.data_aula::date
-	                        and aad.disciplina_id = a.disciplina_id
+                            aa.turma_id = a.turma_id
+                            and aa.data_avaliacao::date = a.data_aula::date
+                            and aad.disciplina_id = a.disciplina_id
                         where
-	                        not a.excluido
-	                        and a.id = @aula
+                            not a.excluido
+                            and a.id = @aula
                             and a.data_aula::date < @hoje
-	                        and n.id is null";
+                            and n.id is null";
 
             return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aula = aulaId, hoje = DateTime.Today.Date }));
         }
@@ -408,19 +406,19 @@ namespace SME.SGP.Dados.Repositorios
             if (ehInfantil)
             {
                 sql.AppendLine($@"select
-	                          CASE WHEN rf.id is null and cc.permite_registro_frequencia THEN 1
+                              CASE WHEN rf.id is null and cc.permite_registro_frequencia THEN 1
                                     ELSE 0
                               END PossuiPendenciaFrequencia,
                               CASE WHEN pdb.id is not null THEN 1
                                     ELSE 0
                                END PossuiPendenciaDiarioBordo 
                            from
-	                            aula
+                                aula
                             inner join turma on 
-	                            aula.turma_id = turma.turma_id
+                                aula.turma_id = turma.turma_id
                             inner join componente_curricular cc on (aula.disciplina_id = cc.id::varchar {(disciplinaIdTerritorio.HasValue ? "or @disciplinaIdTerritorio = cc.id" : string.Empty)})
-	                        left join registro_frequencia rf on
-	                            aula.id = rf.aula_id
+                            left join registro_frequencia rf on
+                                aula.id = rf.aula_id
                             left join pendencia_diario_bordo pdb on
                                 aula.id =  pdb.aula_id
                             left join diario_bordo db on
@@ -430,29 +428,29 @@ namespace SME.SGP.Dados.Repositorios
                     sql.AppendLine(@" and pdb.professor_rf = @usuarioLogadoRf");
 
                 sql.AppendLine(@"  where
-	                            not aula.excluido
-	                            and aula.id = @aula
+                                not aula.excluido
+                                and aula.id = @aula
                                 and aula.data_aula::date < @hoje
                                 and (rf.id is null or (pdb.id is not null and db.id is null))");
             }
             else
             {
                 sql.AppendLine($@"select
-	                          CASE WHEN rf.id is null and cc.permite_registro_frequencia and turma.etapa_eja = 0 THEN 1
+                              CASE WHEN rf.id is null and cc.permite_registro_frequencia and turma.etapa_eja = 0 THEN 1
                                     ELSE 0
                               END PossuiPendenciaFrequencia,
                                0 PossuiPendenciaPlanoAula 
                            from
-	                            aula
+                                aula
                             inner join turma on 
-	                            aula.turma_id = turma.turma_id
+                                aula.turma_id = turma.turma_id
                             inner join componente_curricular cc on 
-	                        	(aula.disciplina_id = cc.id::varchar {(disciplinaIdTerritorio.HasValue ? "or @disciplinaIdTerritorio = cc.id" : string.Empty)})
-	                        left join registro_frequencia rf on
-	                            aula.id = rf.aula_id                            
+                                (aula.disciplina_id = cc.id::varchar {(disciplinaIdTerritorio.HasValue ? "or @disciplinaIdTerritorio = cc.id" : string.Empty)})
+                            left join registro_frequencia rf on
+                                aula.id = rf.aula_id                            
                             where
-	                            not aula.excluido
-	                            and aula.id = @aula
+                                not aula.excluido
+                                and aula.id = @aula
                                 and aula.data_aula::date < @hoje
                                 and rf.id is null");
             }

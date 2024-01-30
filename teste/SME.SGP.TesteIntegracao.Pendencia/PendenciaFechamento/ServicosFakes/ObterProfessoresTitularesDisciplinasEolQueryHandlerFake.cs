@@ -10,7 +10,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento.ServicosFakes
     public class ObterProfessoresTitularesDisciplinasEolQueryHandlerFake: IRequestHandler<ObterProfessoresTitularesDisciplinasEolQuery, IEnumerable<ProfessorTitularDisciplinaEol>>
     {
         private const string USUARIO_PROFESSOR_CODIGO_RF_2222222 = "2222222";
-        private const long DISCIPLINA_PORTUGUES_138 = 138;
+        private const string DISCIPLINA_PORTUGUES_138 = "138";
 
         public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> Handle(ObterProfessoresTitularesDisciplinasEolQuery request, CancellationToken cancellationToken)
         {
@@ -21,7 +21,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento.ServicosFakes
                     ProfessorRf = USUARIO_PROFESSOR_CODIGO_RF_2222222,
                     ProfessorNome ="PROFESSOR DE PORTUGUES",
                     DisciplinaNome = "LÍNGUA PORTUGUESA",
-                    DisciplinasId = new long[] { DISCIPLINA_PORTUGUES_138 }
+                    CodigosDisciplinas = DISCIPLINA_PORTUGUES_138 
                 },
             });
         }

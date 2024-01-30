@@ -4,7 +4,9 @@
     {
         public static string ObterCondicaoBimestre(int bimestre, bool ehModalidadeInfantil)
         {
-            return ehModalidadeInfantil ? (bimestre <= 2 ? " <=2 " : " > 2") : " = @bimestre";
+            var condicao = bimestre <= 2 ? " <=2 " : " > 2";
+
+            return ehModalidadeInfantil ? condicao : " = @bimestre";
         }
     }
 }

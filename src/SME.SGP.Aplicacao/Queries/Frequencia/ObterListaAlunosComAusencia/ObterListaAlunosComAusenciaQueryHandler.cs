@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
                 .Send(new ObterAlunosDentroPeriodoQuery(turma.CodigoTurma, (periodo.PeriodoInicio, periodo.PeriodoFim)));
             
             if (alunosAtivos.NaoEhNulo() && alunosAtivos.Any())
-                alunosAtivos = alunosAtivos.OrderByDescending(a => a.DataSituacao).ToList().DistinctBy(a => a.CodigoAluno);
+                alunosAtivos = alunosAtivos.OrderByDescending(a => a.DataSituacao).DistinctBy(a => a.CodigoAluno);
             else
                 throw new NegocioException("Não foram localizados alunos com matrícula ativa na turma, no período escolar selecionado.");
 

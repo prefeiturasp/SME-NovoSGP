@@ -17,11 +17,8 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioFrequenciaAlunoDisciplinaPeriodo : RepositorioBase<FrequenciaAluno>, IRepositorioFrequenciaAlunoDisciplinaPeriodo
     {
-        private readonly string connectionString;
-
         public RepositorioFrequenciaAlunoDisciplinaPeriodo(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
-            this.connectionString = database.ConnectionString;
         }
 
         public async Task SalvarVariosAsync(IEnumerable<FrequenciaAluno> entidades)
