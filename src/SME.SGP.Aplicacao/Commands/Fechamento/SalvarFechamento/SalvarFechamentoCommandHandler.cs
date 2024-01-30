@@ -111,6 +111,9 @@ namespace SME.SGP.Aplicacao
             var acimaDiasPermitidosAlteracao = parametroDiasAlteracao.NaoEhNulo() && diasAlteracao > int.Parse(parametroDiasAlteracao);
             var alunosComNotaAlterada = "";
 
+            if (fechamentoAlunos.Any())
+                VerificaSeEhNotaValida(fechamentoAlunos);
+
             //salvar para todos
             unitOfWork.IniciarTransacao();
             try
@@ -148,9 +151,6 @@ namespace SME.SGP.Aplicacao
                                 .FirstOrDefault(x => x.CodigoAluno == fechamentoAluno.AlunoCodigo && x.DisciplinaId == fechamentoNota.DisciplinaId);                            
                             
                             var semFechamentoNota = (fechamentoNota.Id == 0);
-
-                            if (fechamentoNota.Nota.NaoEhNulo() && fechamentoNota.Nota > 10)
-                                throw new NegocioException(MensagensNegocioLancamentoNota.NOTA_NUMERICA_DEVE_SER_MENOR_OU_IGUAL_A_10);
 
                             //-> Caso não estiver em aprovação ou estiver em aprovação e não houver qualquer lançamento de nota de fechamento,
                             //   deve gerar o registro do fechamento da nota inicial.
@@ -202,9 +202,6 @@ namespace SME.SGP.Aplicacao
                         }
                         catch (NegocioException e)
                         {
-                            if (e.Message.Equals(MensagensNegocioLancamentoNota.NOTA_NUMERICA_DEVE_SER_MENOR_OU_IGUAL_A_10))
-                                throw e;
-
                             var mensagem = $"Não foi possível salvar a nota do componente [{fechamentoNota.DisciplinaId}] aluno [{fechamentoAluno.AlunoCodigo}]";
                             await LogarErro(mensagem, e, LogNivel.Negocio);
                         }
@@ -307,6 +304,11 @@ namespace SME.SGP.Aplicacao
             }
         }
 
+        private void VerificaSeEhNotaValida(IEnumerable<FechamentoAluno> fechamentoAlunos)
+        {
+            if (fechamentoAlunos.Any(f=> f.FechamentoNotas.Any(f=> f.Nota.NaoEhNulo() && f.Nota > 10)))
+                throw new NegocioException(MensagensNegocioLancamentoNota.NOTA_NUMERICA_DEVE_SER_MENOR_OU_IGUAL_A_10);
+        }
         private async Task SalvarHistoricoNotaFechamentoNovo(FechamentoNota fechamentoNota, TipoNota tipoNota,string criadoRf, string criadoPor, double? notaAnterior, long? conceitoIdAnterior)
         {
             if (tipoNota == TipoNota.Nota)

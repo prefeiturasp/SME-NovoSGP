@@ -15,6 +15,8 @@ using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.Fechamento.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.Fechamento.NotaFechamentoBimestre.ServicosFakes;
+using Microsoft.CodeAnalysis.CSharp;
+using System;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 {
@@ -340,7 +342,69 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             historicoNotas.Any(w=> w.Id == 9 && w.NotaAnterior == NOTA_10 && w.NotaNova == NOTA_6).ShouldBeTrue();
             historicoNotas.Any(w=> w.Id == 10 && w.NotaAnterior == NOTA_2 && w.NotaNova == NOTA_7).ShouldBeTrue();
         }
-        
+
+        [Fact(DisplayName = "Fechamento Bimestre Final - Não deve permitir lançar notas maiores do que 10")]
+        public async Task Nao_deve_permitir_lancamento_nota_numerica_maior_que_10()
+        {
+            var filtroNotaFechamento = ObterFiltroNotasFechamento(
+                ObterPerfilProfessor(),
+                TipoNota.Nota, ANO_7,
+                Modalidade.Fundamental,
+                ModalidadeTipoCalendario.FundamentalMedio,
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
+
+            await CriarDadosBase(filtroNotaFechamento);
+            await CriarDadosFechamentoNotaIncorreta();
+
+            var fechamentoFinalSalvarDto = ObterFechamentoFinalNotaIncorretaSalvar(filtroNotaFechamento);
+
+            var comandosFechamentoFinal = ServiceProvider.GetService<IComandosFechamentoFinal>();
+
+            var excecao = await Assert.ThrowsAsync<NegocioException>(() => comandosFechamentoFinal.SalvarAsync(fechamentoFinalSalvarDto));
+
+            excecao.Message.ShouldBe("A nota final inserida deve ser menor ou igual a 10.");
+        }
+
+        private async Task CriarDadosFechamentoNotaIncorreta()
+        {
+            await InserirNaBase(new FechamentoTurma()
+            {
+                TurmaId = TURMA_ID_1,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new FechamentoTurmaDisciplina()
+            {
+                DisciplinaId = 138,
+                FechamentoTurmaId = FECHAMENTO_TURMA_ID_1,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new FechamentoAluno()
+            {
+                FechamentoTurmaDisciplinaId = FECHAMENTO_TURMA_DISCIPLINA_ID_1,
+                AlunoCodigo = CODIGO_ALUNO_1,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new FechamentoNota()
+            {
+                DisciplinaId = 138,
+                FechamentoAlunoId = FECHAMENTO_ALUNO_ID_1,
+                Nota = 85,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+        }
+
         private FechamentoFinalSalvarDto ObterFechamentoFinalSalvar(FiltroNotaFechamentoDto filtroNotaFechamento)
         {
             return new FechamentoFinalSalvarDto()
@@ -355,6 +419,49 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
                         AlunoRf = ALUNO_CODIGO_1,
                         ComponenteCurricularCodigo = long.Parse(filtroNotaFechamento.ComponenteCurricular),
                         Nota = NOTA_6
+                    },
+                    new ()
+                    {
+                        AlunoRf = ALUNO_CODIGO_2,
+                        ComponenteCurricularCodigo = long.Parse(filtroNotaFechamento.ComponenteCurricular),
+                        Nota = NOTA_5
+                    },
+                    new ()
+                    {
+                        AlunoRf = ALUNO_CODIGO_3,
+                        ComponenteCurricularCodigo = long.Parse(filtroNotaFechamento.ComponenteCurricular),
+                        Nota = NOTA_8
+                    },
+                    new ()
+                    {
+                        AlunoRf = ALUNO_CODIGO_4,
+                        ComponenteCurricularCodigo = long.Parse(filtroNotaFechamento.ComponenteCurricular),
+                        Nota = NOTA_10
+                    },
+                    new ()
+                    {
+                        AlunoRf = ALUNO_CODIGO_5,
+                        ComponenteCurricularCodigo = long.Parse(filtroNotaFechamento.ComponenteCurricular),
+                        Nota = NOTA_2
+                    }
+                }
+            };
+        }
+
+        private FechamentoFinalSalvarDto ObterFechamentoFinalNotaIncorretaSalvar(FiltroNotaFechamentoDto filtroNotaFechamento)
+        {
+            return new FechamentoFinalSalvarDto()
+            {
+                DisciplinaId = filtroNotaFechamento.ComponenteCurricular,
+                EhRegencia = filtroNotaFechamento.EhRegencia,
+                TurmaCodigo = TURMA_CODIGO_1,
+                Itens = new List<FechamentoFinalSalvarItemDto>()
+                {
+                    new ()
+                    {
+                        AlunoRf = ALUNO_CODIGO_1,
+                        ComponenteCurricularCodigo = long.Parse(filtroNotaFechamento.ComponenteCurricular),
+                        Nota = 85
                     },
                     new ()
                     {
