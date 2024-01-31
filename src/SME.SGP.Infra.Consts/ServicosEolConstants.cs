@@ -96,6 +96,8 @@
 
         public const string URL_COMPONENTES_CURRICULARES_DADOS_AULA_TURMA = "/api/v1/componentes-curriculares/dados-aula-turma";
 
+        public const string URL_COMPONENTES_CURRICULARES_TURMAS_REGULARES = "v1/componentes-curriculares/turmas/regulares";
+
         public const string URL_COMPONENTES_CURRICULARES_UES_TURMAS = "/api/v1/componentes-curriculares/ues/{0}/turmas";
 
         public const string URL_COMPONENTES_CURRICULARES_TURMAS = "v1/componentes-curriculares/turmas";
