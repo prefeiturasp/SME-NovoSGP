@@ -80,6 +80,10 @@ namespace SME.SGP.Aplicacao
                 var turmasRegularesDoAluno = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tiposParaConsulta, semestre: turma.Semestre != 0 ? turma.Semestre : null));
                 
                 var turmaRegularCodigo = turmasRegularesDoAluno.FirstOrDefault();
+
+                if (turmaRegularCodigo.EhNulo())
+                    throw new NegocioException($"Não foi possível obter a turma regular do aluno(a) {alunoCodigo}");
+
                 var turmaRegularId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(turmaRegularCodigo));
 
                 var fechamentoDaTurmaRegular = await mediator.Send(new ObterFechamentoPorTurmaPeriodoQuery
