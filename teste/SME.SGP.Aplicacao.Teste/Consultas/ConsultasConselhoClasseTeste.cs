@@ -146,7 +146,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioConselhoClasseAluno.Setup(c => c.ObterPorConselhoClasseAlunoCodigoAsync(It.IsAny<long>(), It.IsAny<string>())).Returns(Task.FromResult(new ConselhoClasseAluno()));
             Assert.NotNull(consultasConselhoClasse.ObterConselhoClasseTurma("", "", 0, true, false));
 
-            return Task.CompletedTask;
+            await Task.CompletedTask;
         }
 
         private Turma ObterTurma()
