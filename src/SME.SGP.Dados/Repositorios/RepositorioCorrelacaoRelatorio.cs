@@ -26,13 +26,13 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<RelatorioCorrelacao> ObterCorrelacaoJasperPorCodigoAsync(Guid codigoCorrelacao)
         {
             var query = @"select
-	                        rc.*,rcj.*
+                            rc.*,rcj.*
                         from
-	                        relatorio_correlacao rc
+                            relatorio_correlacao rc
                         left join relatorio_correlacao_jasper rcj on
-	                        rc.id = rcj.relatorio_correlacao_id
+                            rc.id = rcj.relatorio_correlacao_id
                         where
-	                        rc.codigo = @codigoCorrelacao";
+                            rc.codigo = @codigoCorrelacao";
 
             var result = await contexto.Conexao.QueryAsync<RelatorioCorrelacao, RelatorioCorrelacaoJasper, RelatorioCorrelacao>(query,
                 (correlacao, jasper) =>

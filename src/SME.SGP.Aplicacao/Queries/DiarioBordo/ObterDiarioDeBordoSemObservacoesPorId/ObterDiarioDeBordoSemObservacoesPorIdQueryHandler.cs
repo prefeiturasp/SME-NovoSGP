@@ -12,18 +12,15 @@ namespace SME.SGP.Aplicacao
     public class ObterDiarioDeBordoSemObservacoesPorIdQueryHandler : IRequestHandler<ObterDiarioDeBordoSemObservacoesPorIdQuery, DiarioBordoListaoDto>
     {
         private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
-        private readonly IMediator mediator;
 
-        public ObterDiarioDeBordoSemObservacoesPorIdQueryHandler(IRepositorioDiarioBordo repositorioDiarioBordo, IMediator mediator)
+        public ObterDiarioDeBordoSemObservacoesPorIdQueryHandler(IRepositorioDiarioBordo repositorioDiarioBordo)
         {
             this.repositorioDiarioBordo = repositorioDiarioBordo ?? throw new ArgumentNullException(nameof(repositorioDiarioBordo));
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<DiarioBordoListaoDto> Handle(ObterDiarioDeBordoSemObservacoesPorIdQuery request, CancellationToken cancellationToken)
         {
             var diarioBordo = await repositorioDiarioBordo.ObterPorIdAsync(request.Id);
-
             return MapearParaDto(diarioBordo);
         }
 

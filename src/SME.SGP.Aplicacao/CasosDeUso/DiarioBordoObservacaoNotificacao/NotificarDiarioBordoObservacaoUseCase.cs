@@ -1,5 +1,6 @@
 ﻿using MediatR;
-using Microsoft.Extensions.Configuration;
+using SME.SGP.Dados.Repositorios;
+using SME.SGP.Dados;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -8,23 +9,21 @@ using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
     public class NotificarDiarioBordoObservacaoUseCase : INotificarDiarioBordoObservacaoUseCase
     {
         private readonly IMediator mediator;
-        private readonly IConfiguration configuration;
         private readonly IRepositorioDiarioBordoObservacaoNotificacao repositorioDiarioBordoObservacaoNotificacao;
         private readonly IUnitOfWork unitOfWork;
 
         public NotificarDiarioBordoObservacaoUseCase(IMediator mediator,
-                                                      IConfiguration configuration,
                                                       IRepositorioDiarioBordoObservacaoNotificacao repositorioDiarioBordoObservacaoNotificacao,
                                                       IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.repositorioDiarioBordoObservacaoNotificacao = repositorioDiarioBordoObservacaoNotificacao ?? throw new ArgumentNullException(nameof(repositorioDiarioBordoObservacaoNotificacao));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
@@ -45,76 +44,51 @@ namespace SME.SGP.Aplicacao
 
             var titulo = $"Nova observação no Diário de bordo da turma {diarioBordo.Aula.Turma.Nome} ({dataAtual})";
 
-            if (dadosMensagem.UsuariosNotificacao.NaoEhNulo() && dadosMensagem.UsuariosNotificacao.Any())
+            if (dadosMensagem.UsuariosNotificacao.PossuiRegistros())
             {
-                foreach (var usuarioRf in dadosMensagem.UsuariosNotificacao)
-                {
-                    if (usuarioRf != usuarioLogado.CodigoRf)
-                    {
-                        unitOfWork.IniciarTransacao();
-                        try
-                        {
-                            var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(titulo,
-                                                                                mensagem.ToString(),
-                                                                                usuarioRf,
-                                                                                NotificacaoCategoria.Aviso,
-                                                                                NotificacaoTipo.Planejamento));
-
-
-                            var diarioBordoObservacaoNotificacao = new DiarioBordoObservacaoNotificacao(dadosMensagem.ObservacaoId, notificacaoId);
-
-                            await repositorioDiarioBordoObservacaoNotificacao.Salvar(diarioBordoObservacaoNotificacao);
-                            unitOfWork.PersistirTransacao();
-                        }
-                        catch
-                        {
-                            unitOfWork.Rollback();
-                        }
-                    }
-                }
+                await GerarNotificacoesUsuarioDiarioClasse(dadosMensagem.UsuariosNotificacao.Where(rf => rf != usuarioLogado.CodigoRf),
+                                                          titulo, mensagem.ToString(), dadosMensagem.ObservacaoId);
                 return true;
             }
 
             var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(diarioBordo.Aula.Turma.CodigoTurma));
-            var titulares = professoresTitulares?.Select(x => x.ProfessorRf);
-            if (titulares.NaoEhNulo())
+            var titulares = professoresTitulares?.Select(x => x.ProfessorRf.Trim()).Where(x => !string.IsNullOrEmpty(x));
+            if (titulares.PossuiRegistros())
             {
-                titulares = titulares.Where(t => !string.IsNullOrEmpty(t));
-
                 if (titulares.Count() == 1)
-                    titulares = titulares.FirstOrDefault().Split(',');
+                    titulares = titulares.FirstOrDefault().Split(',').Select(rf => rf.Trim()).Where(rf => !string.IsNullOrEmpty(rf));
 
-                foreach (var titular in titulares)
-                {
-                    var codigoRf = titular.Trim();
-
-                    if (codigoRf != usuarioLogado.CodigoRf)
-                    {
-                        unitOfWork.IniciarTransacao();
-                        try
-                        {
-                            var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(codigoRf));
-                            var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(titulo,
-                                                                            mensagem.ToString(),
-                                                                            codigoRf,
-                                                                            NotificacaoCategoria.Aviso,
-                                                                            NotificacaoTipo.Planejamento));
-
-
-                            var diarioBordoObservacaoNotificacao = new DiarioBordoObservacaoNotificacao(dadosMensagem.ObservacaoId, notificacaoId);
-
-                            await repositorioDiarioBordoObservacaoNotificacao.Salvar(diarioBordoObservacaoNotificacao);
-                            unitOfWork.PersistirTransacao();
-                        }
-                        catch
-                        {
-                            unitOfWork.Rollback();
-                        }
-                    }
-                }
+                await GerarNotificacoesUsuarioDiarioClasse(titulares.Where(rf => rf != usuarioLogado.CodigoRf),
+                                                           titulo, mensagem.ToString(), dadosMensagem.ObservacaoId);
                 return true;
             }
             return false;
+        }
+
+        private async Task GerarNotificacoesUsuarioDiarioClasse(IEnumerable<string> rfUsuariosNotificacao, string titulo, string mensagem, long observacaoId)
+        {
+            foreach (var usuarioRf in rfUsuariosNotificacao)
+            {
+                unitOfWork.IniciarTransacao();
+                try
+                {
+                    var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(titulo,
+                                                                        mensagem,
+                                                                        usuarioRf,
+                                                                        NotificacaoCategoria.Aviso,
+                                                                        NotificacaoTipo.Planejamento));
+
+
+                    var diarioBordoObservacaoNotificacao = new DiarioBordoObservacaoNotificacao(observacaoId, notificacaoId);
+
+                    await repositorioDiarioBordoObservacaoNotificacao.Salvar(diarioBordoObservacaoNotificacao);
+                    unitOfWork.PersistirTransacao();
+                }
+                catch
+                {
+                    unitOfWork.Rollback();
+                }
+            }
         }
     }
 }

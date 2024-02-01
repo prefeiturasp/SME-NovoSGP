@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 
-namespace SME.SGP.Aplicacao.Commands
+namespace SME.SGP.Aplicacao
 {
     public class AtualizarEncaminhamentoAEEEncerrarAutomaticoCommand : IRequest<EncaminhamentoAEE>
     {

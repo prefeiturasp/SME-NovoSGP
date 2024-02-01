@@ -29,10 +29,10 @@ namespace SME.SGP.Dados.Repositorios
             var totalRegistrosDaQuery = await database.Conexao.QueryFirstAsync<int>(query, new { turmaCodigo, componenteCurricularCodigo = componenteCurricularCodigo, dataReferencia });
 
             query = $@"select distinct d.Id
-	                         , d.periodo_inicio as PeriodoInicio
-	                         , d.periodo_fim as PeriodoFim
-	                         , d.criado_em as CriadoEm
-	                         , CONCAT(d.criado_por, ' (', d.criado_rf, ')') as CriadoPor
+                             , d.periodo_inicio as PeriodoInicio
+                             , d.periodo_fim as PeriodoFim
+                             , d.criado_em as CriadoEm
+                             , CONCAT(d.criado_por, ' (', d.criado_rf, ')') as CriadoPor
                        {ObterQuery(dataReferencia)}
                     offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only ";
 
@@ -104,8 +104,8 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<ConsolidacaoDevolutivaTurmaDTO> ObterDevolutivasPorTurmaEAnoLetivo(string turmaCodigo, int anoLetivo)
         {
             var query = @" select 
-	                            ue.ue_id as ueId,
-	                            ue.dre_id as dreId,
+                                ue.ue_id as ueId,
+                                ue.dre_id as dreId,
                                 a.turma_id as turmaId,
                                 count(distinct d.id) as quantidadeRegistradaDevolutivas
                             from devolutiva d 
@@ -114,10 +114,10 @@ namespace SME.SGP.Dados.Repositorios
                              inner join turma t on t.turma_id = a.turma_id 
                              inner join ue ue on ue.id = t.ue_id 
                             where not d.excluido 
-	                            and not db.excluido 
-	                            and t.ano_letivo = @anoLetivo 
-	                            and t.turma_id = @turmaCodigo
-	                            and a.data_aula < current_date
+                                and not db.excluido 
+                                and t.ano_letivo = @anoLetivo 
+                                and t.turma_id = @turmaCodigo
+                                and a.data_aula < current_date
                             group by a.turma_id, ue.ue_id, ue.dre_id ";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<ConsolidacaoDevolutivaTurmaDTO>(query, new { turmaCodigo, anoLetivo });
@@ -140,26 +140,38 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<DevolutivaTurmaDTO>(query, new { anoLetivo, ueId }, commandTimeout: 60);
         }
 
+        public async Task<IEnumerable<long>> ObterTurmasInfantilComDevolutivasPorTurmaIdAula(string turmaId)
+        {
+            var query = @" SELECT  a.turma_id::int8  
+                           FROM diario_bordo db 
+                           inner join aula a on a.id = db.aula_id
+                           WHERE not db.excluido 
+                           AND NOT a.excluido 
+                           and a.turma_id = @turmaId ";
+
+            return await database.Conexao.QueryAsync<long>(query, new { turmaId });
+        }
+
         public async Task<QuantidadeDiarioBordoRegistradoPorAnoletivoTurmaDTO> ObterDiariosDeBordoComDevolutivasPorTurmaEAnoLetivo(long turmaId, int anoLetivo)
         {
             var query = @" select 
-	                            ue.ue_id as ueid,
-	                            ue.dre_id as dreId,
+                                ue.ue_id as ueid,
+                                ue.dre_id as dreId,
                                 t.id as turmaid,
                                 count(distinct db.id) as QtdeDiarioBordoRegistrados,
                                 count(d.id) as QtdeRegistradaDevolutivas 
                             from diario_bordo db
-	                            inner join aula a on a.id = db.aula_id
-	                            inner join turma t on t.turma_id = a.turma_id 
-	                            inner join ue ue on ue.id = t.ue_id	
+                                inner join aula a on a.id = db.aula_id
+                                inner join turma t on t.turma_id = a.turma_id 
+                                inner join ue ue on ue.id = t.ue_id    
                                 left join devolutiva d on db.devolutiva_id = d.id
                             where not db.excluido
                                 and t.ano_letivo = @anoLetivo 
                                 and t.id = @turmaId
                                 and a.data_aula < current_date 
                             group by
-	                            ue.ue_id,
-	                            ue.dre_id,
+                                ue.ue_id,
+                                ue.dre_id,
                                 t.id";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<QuantidadeDiarioBordoRegistradoPorAnoletivoTurmaDTO>(query, new { turmaId, anoLetivo });

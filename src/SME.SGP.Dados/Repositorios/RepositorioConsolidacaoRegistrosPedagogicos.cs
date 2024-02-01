@@ -55,7 +55,7 @@ namespace SME.SGP.Dados
 
         public async Task<IEnumerable<ConsolidacaoRegistrosPedagogicosDto>> GerarRegistrosPedagogicos(long ueId, int anoLetivo)
         {
-            const string query = @"select 					      
+            const string query = @"select                           
                                     pe.id as PeriodoEscolarId 
                                     , pe.bimestre as Bimestre
                                     , t.id as TurmaId
@@ -154,7 +154,7 @@ namespace SME.SGP.Dados
                                     ),
                                     countDiarioBordo as (
                                         select cc.AulaId,
-                                               cc.ComponenteCurricularId,	       
+                                               cc.ComponenteCurricularId,           
                                                cc.data_aula,
                                                db.criado_em,
                                                db.id
@@ -208,6 +208,26 @@ namespace SME.SGP.Dados
                                         a.DisciplinaId, a.RFProfessor, a.NomeProfessor, a.ModalidadeCodigo ";
                 
             return await database.Conexao.QueryAsync<ConsolidacaoRegistrosPedagogicosDto>(query, new { turmaCodigo, anoLetivo, componentesCurricularesIds });
+        }
+
+        public async Task AtualizarConsolidacaoRegistrosPedagogicos(long id, ConsolidacaoRegistrosPedagogicos consolidacao)
+        {
+            consolidacao.Id = id;
+            await database.Conexao.UpdateAsync(consolidacao);
+        }
+
+        public async Task<long> ObterIdConsolidacaoRegistrosPedagogicos(long turmaId, long componenteCurricularId, long periodoEscolarId, int anoLetivo, string rfProfessor)
+        {
+            var query = @"SELECT id  
+                        FROM
+	                        consolidacao_registros_pedagogicos
+                        WHERE turma_id = @turmaId
+	                        AND componente_curricular_id = @componenteCurricularId
+	                        AND periodo_escolar_id = @periodoEscolarId
+	                        AND ano_letivo = @anoLetivo
+	                        AND rf_professor = @rfProfessor ";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaId, componenteCurricularId, periodoEscolarId, anoLetivo, rfProfessor });
         }
     }
 }

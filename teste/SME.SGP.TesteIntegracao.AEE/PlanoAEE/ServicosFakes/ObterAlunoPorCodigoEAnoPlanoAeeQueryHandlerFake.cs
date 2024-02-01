@@ -10,9 +10,9 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
 {
     public class ObterAlunoPorCodigoEAnoPlanoAeeQueryHandlerFake : IRequestHandler<ObterAlunoPorCodigoEAnoPlanoAeeQuery, AlunoReduzidoDto>
     {
-        public async Task<AlunoReduzidoDto> Handle(ObterAlunoPorCodigoEAnoPlanoAeeQuery request, CancellationToken cancellationToken)
+        public Task<AlunoReduzidoDto> Handle(ObterAlunoPorCodigoEAnoPlanoAeeQuery request, CancellationToken cancellationToken)
         {
-            return await Task.FromResult(new AlunoReduzidoDto()
+            return Task.FromResult(new AlunoReduzidoDto()
             {
                 CodigoAluno = "1",
                 Nome = "Nome Aluno",

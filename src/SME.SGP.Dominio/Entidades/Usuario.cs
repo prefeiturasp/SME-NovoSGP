@@ -215,6 +215,10 @@ namespace SME.SGP.Dominio
             if (possuiPerfilPrioritario)
                 return Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL;
 
+            possuiPerfilPrioritario = PossuiPerfilProfessor() && PossuiPerfilCJInfantil() && PossuiPerfilAD() && !possuiTurmaAtiva;
+            if (possuiPerfilPrioritario)
+                return Dominio.Perfis.PERFIL_AD;
+
             possuiPerfilPrioritario = PossuiPerfilProfessor() && PossuiPerfilCJInfantil() && !possuiTurmaAtiva;
             if (possuiPerfilPrioritario)
                 return Dominio.Perfis.PERFIL_AD;
@@ -242,24 +246,36 @@ namespace SME.SGP.Dominio
         {
             if (evento.CriadoRF != this.CodigoRf)
             {
-                if (string.IsNullOrEmpty(evento.DreId) && string.IsNullOrEmpty(evento.UeId) && !PossuiPerfilSme())
-                    throw new NegocioException("Evento da SME só pode ser editado por usuario com perfil SME.");
-
+                ConsistirEdicaoEventoSME(evento);
                 if (!PossuiPerfilSme())
                 {
                     if (evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.DRE)
                     {
                         if (evento.TipoPerfilCadastro == TipoPerfil.SME)
-                        {
-                            if (evento.TipoPerfilCadastro != ObterTipoPerfilAtual())
-                                throw new NegocioException("Você não tem permissão para alterar este evento.");
-                        }
-                        else if (PerfilAtual != Dominio.Perfis.PERFIL_DIRETOR && PerfilAtual != Dominio.Perfis.PERFIL_AD 
-                                 && PerfilAtual != Dominio.Perfis.PERFIL_CP && PerfilAtual != Dominio.Perfis.PERFIL_COORDENADOR_CELP)
-                            throw new NegocioException("Você não tem permissão para alterar este evento.");
+                            ConsistirEdicaoEventoPerfilAtualDiferenteSME();
+                        else ConsistirEdicaoEventoPerfilAtualDiferenteGestao();
                     }
                 }
             }
+        }
+
+        private void ConsistirEdicaoEventoPerfilAtualDiferenteSME()
+        {
+            if (TipoPerfil.SME != ObterTipoPerfilAtual())
+                throw new NegocioException("Você não tem permissão para alterar este evento.");
+        }
+        private void ConsistirEdicaoEventoPerfilAtualDiferenteGestao()
+        {
+            if (PerfilAtual != Dominio.Perfis.PERFIL_DIRETOR && PerfilAtual != Dominio.Perfis.PERFIL_AD
+                                 && PerfilAtual != Dominio.Perfis.PERFIL_CP && PerfilAtual != Dominio.Perfis.PERFIL_COORDENADOR_CELP)
+                throw new NegocioException("Você não tem permissão para alterar este evento.");
+        }
+        private void ConsistirEdicaoEventoSME(Evento evento)
+        {
+            if (string.IsNullOrEmpty(evento.DreId) 
+                && string.IsNullOrEmpty(evento.UeId) 
+                && !PossuiPerfilSme())
+                throw new NegocioException("Evento da SME só pode ser editado por usuario com perfil SME.");
         }
 
         public void PodeCriarEvento(Evento evento)
@@ -335,6 +351,9 @@ namespace SME.SGP.Dominio
 
         public bool PossuiPerfilCJInfantil()
            => Perfis.NaoEhNulo() && Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_CJ_INFANTIL);
+
+        public bool PossuiPerfilAD()
+           => Perfis != null && Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_AD);
 
         public bool PossuiPerfilProfessor()
            => Perfis.NaoEhNulo() && Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_PROFESSOR);

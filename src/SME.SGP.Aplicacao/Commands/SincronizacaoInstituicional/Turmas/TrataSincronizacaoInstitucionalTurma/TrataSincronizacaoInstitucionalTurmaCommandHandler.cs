@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -28,37 +29,35 @@ namespace SME.SGP.Aplicacao
             var turmaSGP = request.TurmaSGP;
 
             if (request.TurmaSGP.EhNulo())
-                return await IncluirTurmaAsync(turmaEOL, request.TurmaSGP);
+                return await IncluirTurmaAsync(turmaEOL, turmaSGP);
 
-            if (turmaEOL.Situacao == "C")
+            switch (turmaEOL.Situacao)
             {
-                Modalidade modalidade = turmaEOL.CodigoModalidade != turmaSGP.ModalidadeCodigo ? turmaEOL.CodigoModalidade : 0;
-                int? semestre = turmaEOL.CodigoModalidade == Modalidade.CELP && turmaEOL.Semestre != turmaSGP.Semestre ? turmaEOL.Semestre : null;
-                var turmaAtualizadaComSucesso = await AtualizarTurmaParaHistoricaAsync(turmaEOL.Codigo.ToString(), modalidade, semestre);
-
-                if (turmaAtualizadaComSucesso)
-                {
-                    var professoresComAbragenciaTurma = await mediator.Send(new ObterProfessoresTurmaAbrangenciaQuery(request.TurmaSGP.CodigoTurma));
-
-                    if (professoresComAbragenciaTurma.Any())
-                    {
-                        foreach (var professorRf in professoresComAbragenciaTurma)
-                        {
-                            await mediator.Send(new TrataAbrangenciaHistoricaTurmaCommand(request.TurmaSGP.AnoLetivo, professorRf, request.TurmaSGP.Id));
-                        }
-                    }
-                   
+                case ("C"):
+                    return await AtualizarTurmaHistoricaAsync(turmaEOL, turmaSGP);
+                case ("E"):
+                    return await VerificarTurmaExtintaAsync(turmaEOL, turmaSGP.Id);
+                case ("O"):
+                case ("A"):
+                    return await IncluirTurmaAsync(turmaEOL, turmaSGP);
+                default:
                     return true;
-                }
+            }            
+        }
 
-            }
+        private async Task<bool> AtualizarTurmaHistoricaAsync(TurmaParaSyncInstitucionalDto turmaEol, Turma turmaSgp)
+        {
+            Modalidade modalidade = turmaEol.CodigoModalidade != turmaSgp.ModalidadeCodigo ? turmaEol.CodigoModalidade : 0;
+            int? semestre = turmaEol.CodigoModalidade == Modalidade.CELP && turmaEol.Semestre != turmaSgp.Semestre ? turmaEol.Semestre : null;
+            var turmaAtualizadaComSucesso = await AtualizarTurmaParaHistoricaAsync(turmaEol.Codigo.ToString(), modalidade, semestre);
 
-            if (turmaEOL.Situacao == "E")
-                return await VerificarTurmaExtintaAsync(turmaEOL, request.TurmaSGP.Id);
-
-            if (turmaEOL.Situacao == "O" || turmaEOL.Situacao == "A")
-                return await IncluirTurmaAsync(turmaEOL, request.TurmaSGP);
-
+            if (!turmaAtualizadaComSucesso)
+                return false;
+            
+            var professoresComAbragenciaTurma = await mediator.Send(new ObterProfessoresTurmaAbrangenciaQuery(turmaSgp.CodigoTurma));
+            if (professoresComAbragenciaTurma.Any())
+                foreach (var professorRf in professoresComAbragenciaTurma)
+                    await mediator.Send(new TrataAbrangenciaHistoricaTurmaCommand(turmaSgp.AnoLetivo, professorRf, turmaSgp.Id));
             return true;
         }
 

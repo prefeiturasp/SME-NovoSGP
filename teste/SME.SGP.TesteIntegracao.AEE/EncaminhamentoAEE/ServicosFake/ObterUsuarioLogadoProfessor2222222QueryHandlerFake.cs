@@ -10,9 +10,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake
 {
     public class ObterUsuarioLogadoProfessor2222222QueryHandlerFake: IRequestHandler<ObterUsuarioLogadoQuery, Usuario>
     {
-        public async Task<Usuario> Handle(ObterUsuarioLogadoQuery request, CancellationToken cancellationToken)
+        public Task<Usuario> Handle(ObterUsuarioLogadoQuery request, CancellationToken cancellationToken)
         {
-            return await Task.FromResult(new Usuario()
+            return Task.FromResult(new Usuario()
             {
                 Id = 1,
                 CodigoRf = "2222222",

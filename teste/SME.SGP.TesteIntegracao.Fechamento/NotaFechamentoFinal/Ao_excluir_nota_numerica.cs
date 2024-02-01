@@ -365,7 +365,8 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
                 {
                     AlunoRf = fechamentoAluno.AlunoCodigo,
                     ComponenteCurricularCodigo = long.Parse(filtroNotaFechamento.ComponenteCurricular),
-                    Nota = null
+                    Nota = null,
+                    ConceitoId = (int)ConceitoValores.P
                 });
             }
 
@@ -412,26 +413,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
                         Nota = NOTA_2
                     }
                 }
-            };
-        }
-
-        private FiltroNotaFechamentoDto ObterFiltroNotasFechamento(string perfil, TipoNota tipoNota, string anoTurma,Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, string componenteCurricular , bool considerarAnoAnterior = false, bool ehRegencia = false)
-        {
-            return new FiltroNotaFechamentoDto()
-            {
-                Perfil = perfil,
-                Modalidade = modalidade,
-                TipoCalendario = modalidadeTipoCalendario,
-                Bimestre = BIMESTRE_1,
-                ComponenteCurricular = componenteCurricular,
-                TipoCalendarioId = TIPO_CALENDARIO_1,
-                CriarPeriodoEscolar = true,
-                CriarPeriodoAbertura = true,
-                TipoNota = tipoNota,
-                AnoTurma = anoTurma,
-                ConsiderarAnoAnterior = considerarAnoAnterior,
-                ProfessorRf = USUARIO_PROFESSOR_LOGIN_2222222,
-                EhRegencia = ehRegencia
             };
         }
     }

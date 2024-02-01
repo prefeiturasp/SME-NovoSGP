@@ -109,7 +109,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(double), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [Permissao(Permissao.PDA_C, Policy = "Bearer")]
+        [Permissao(Permissao.PDA_C, Permissao.CCEA_NAAPA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo)
              => Ok(await mediator.Send(new ObterConsultaFrequenciaGeralAlunoQuery(alunoCodigo, turmaCodigo)));
 

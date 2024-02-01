@@ -17,12 +17,10 @@ namespace SME.SGP.Aplicacao
     internal class ObterFuncionariosPorUeEFuncaoExternaQueryHandler : IRequestHandler<ObterFuncionariosPorUeEFuncaoExternaQuery, IEnumerable<FuncionarioDTO>>
     {
         private readonly IHttpClientFactory httpClientFactory;
-        private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
 
-        public ObterFuncionariosPorUeEFuncaoExternaQueryHandler(IHttpClientFactory httpClientFactory, IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre)
+        public ObterFuncionariosPorUeEFuncaoExternaQueryHandler(IHttpClientFactory httpClientFactory)
         {
             this.httpClientFactory = httpClientFactory ?? throw new System.ArgumentNullException(nameof(httpClientFactory));
-            this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
         }
         public async Task<IEnumerable<FuncionarioDTO>> Handle(ObterFuncionariosPorUeEFuncaoExternaQuery request, CancellationToken cancellationToken)
         {

@@ -44,7 +44,7 @@ namespace SME.SGP.Dados.Repositorios
                                     set situacao = @situacaoPendencia
                                     from pendencia_fechamento f
                                     where f.pendencia_id = p.id
-	                                and p.tipo = @tipoPendencia
+                                    and p.tipo = @tipoPendencia
                                     and f.fechamento_turma_disciplina_id = @fechamentoId
                                     and not p.excluido ";
 
@@ -60,9 +60,22 @@ namespace SME.SGP.Dados.Repositorios
                                     and p.situacao = 1
                                     and p.id = f.pendencia_id
                                     and p.tipo = @tipoPendencia
-	                                and f.fechamento_turma_disciplina_id = @fechamentoId";
+                                    and f.fechamento_turma_disciplina_id = @fechamentoId";
 
             await database.Conexao.ExecuteAsync(query, new { fechamentoId, tipoPendencia });
+        }
+
+        private async Task<IEnumerable<long>> ObterIdPendenciasParaExclusao(long fechamentoId, TipoPendencia tipoPendencia)
+        {
+            var query = @"SELECT p.id    
+                                 from pendencia_fechamento f
+                                 JOIN pendencia p ON f.pendencia_id =p.id 
+                            where not p.excluido
+                              and p.situacao = 1
+                              and p.id = f.pendencia_id
+                              and p.tipo = @tipoPendencia
+	                          and f.fechamento_turma_disciplina_id = @fechamentoId ";
+            return await database.Conexao.QueryAsync<long>(query, new { fechamentoId, tipoPendencia });
         }
 
         public async Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuarioSemFiltro(long usuarioId, Paginacao paginacao)
@@ -70,54 +83,54 @@ namespace SME.SGP.Dados.Repositorios
             const SituacaoPendencia situacao = SituacaoPendencia.Pendente;
 
             const string query = @" select distinct * from (select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
-		                            from pendencia p 
-		                                inner join pendencia_perfil pp on pp.pendencia_id  = p.id 
-		                                inner join pendencia_perfil_usuario ppu on ppu.pendencia_perfil_id = pp.id
-		                            where not p.excluido 
-		                            and ppu.usuario_id = @usuarioId 
-		                            and situacao = @situacao
+                                    from pendencia p 
+                                        inner join pendencia_perfil pp on pp.pendencia_id  = p.id 
+                                        inner join pendencia_perfil_usuario ppu on ppu.pendencia_perfil_id = pp.id
+                                    where not p.excluido 
+                                    and ppu.usuario_id = @usuarioId 
+                                    and situacao = @situacao
                                     union all 
                                     select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
-		                            from pendencia p 
-		                                inner join pendencia_usuario pu on pu.pendencia_id = p.id
-		                                inner join pendencia_aula pa on p.id = pa.pendencia_id
-		                            where not p.excluido 
-		                            and pu.usuario_id = @usuarioId
-		                            and situacao = @situacao
+                                    from pendencia p 
+                                        inner join pendencia_usuario pu on pu.pendencia_id = p.id
+                                        inner join pendencia_aula pa on p.id = pa.pendencia_id
+                                    where not p.excluido 
+                                    and pu.usuario_id = @usuarioId
+                                    and situacao = @situacao
                                     union all
                                     select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
-		                            from pendencia p 
-		                                inner join pendencia_usuario pu on pu.pendencia_id = p.id
-		                                inner join pendencia_professor pp on p.id = pp.pendencia_id
-		                            where not p.excluido 
-		                            and pu.usuario_id = @usuarioId
-		                            and situacao = @situacao
+                                    from pendencia p 
+                                        inner join pendencia_usuario pu on pu.pendencia_id = p.id
+                                        inner join pendencia_professor pp on p.id = pp.pendencia_id
+                                    where not p.excluido 
+                                    and pu.usuario_id = @usuarioId
+                                    and situacao = @situacao
                                     union all
                                     select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
-		                            from pendencia p 
-		                                inner join pendencia_usuario pu on pu.pendencia_id = p.id
-		                                inner join pendencia_fechamento pf on p.id = pf.pendencia_id
-		                            where not p.excluido 
-		                            and pu.usuario_id = @usuarioId
-		                            and situacao = @situacao
-		                            union all
+                                    from pendencia p 
+                                        inner join pendencia_usuario pu on pu.pendencia_id = p.id
+                                        inner join pendencia_fechamento pf on p.id = pf.pendencia_id
+                                    where not p.excluido 
+                                    and pu.usuario_id = @usuarioId
+                                    and situacao = @situacao
+                                    union all
                                     select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
-		                            from pendencia p 
-		                                inner join pendencia_usuario pu on pu.pendencia_id = p.id
-		                                inner join pendencia_diario_bordo pdb on p.id = pdb.pendencia_id
+                                    from pendencia p 
+                                        inner join pendencia_usuario pu on pu.pendencia_id = p.id
+                                        inner join pendencia_diario_bordo pdb on p.id = pdb.pendencia_id
                                         inner join aula a on a.id = pdb.aula_id
-		                            where not p.excluido 
+                                    where not p.excluido 
                                     and not a.excluido
-		                            and pu.usuario_id = @usuarioId
-		                            and situacao = @situacao 
-		                            union all
-		                            select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
-		                            from pendencia p 
-		                                inner join pendencia_usuario pu on pu.pendencia_id = p.id
-		                                inner join pendencia_devolutiva pd on p.id = pd.pendencia_id
-		                            where not p.excluido 
-		                            and pu.usuario_id = @usuarioId
-		                            and situacao = @situacao 
+                                    and pu.usuario_id = @usuarioId
+                                    and situacao = @situacao 
+                                    union all
+                                    select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
+                                    from pendencia p 
+                                        inner join pendencia_usuario pu on pu.pendencia_id = p.id
+                                        inner join pendencia_devolutiva pd on p.id = pd.pendencia_id
+                                    where not p.excluido 
+                                    and pu.usuario_id = @usuarioId
+                                    and situacao = @situacao 
                                     union all
                                     select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
                                     from pendencia p                                                      
@@ -313,8 +326,8 @@ namespace SME.SGP.Dados.Repositorios
                 {
                     case TipoPendenciaAssunto.PendenciaFechamento:
                         query.Append(@" INNER JOIN pendencia_fechamento pf ON pf.pendencia_id = p.id
-	                        LEFT JOIN fechamento_turma_disciplina ftd ON ftd.id = pf.fechamento_turma_disciplina_id
-	                        LEFT JOIN fechamento_turma ft ON ft.id = ftd.fechamento_turma_id
+                            LEFT JOIN fechamento_turma_disciplina ftd ON ftd.id = pf.fechamento_turma_disciplina_id
+                            LEFT JOIN fechamento_turma ft ON ft.id = ftd.fechamento_turma_id
                             LEFT JOIN turma t ON t.id = ft.turma_id ");
                         
                         query.Append(@" WHERE p.id = any(@pendenciasIdsFechamento) ");
@@ -440,29 +453,29 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(@"      inner join pendencia p on pf.pendencia_id  = p.id");
                 sql.AppendLine(@"      inner join pendencia_fechamento_aula pfa on pf.id = pfa.pendencia_fechamento_id ");
                 sql.AppendLine(@"      inner join aula a on a.id = pfa.aula_id ");
-                sql.AppendLine(@"      inner join turma t on t.turma_id  = a.turma_id 	");
+                sql.AppendLine(@"      inner join turma t on t.turma_id  = a.turma_id     ");
                 sql.AppendLine(@"     where  not p.excluido and not a.excluido  ");
                 sql.AppendLine(@"         and t.ano_letivo = @anoLetivoInformado ");
                 sql.AppendLine(@"         and t.ue_id = @ueid ");
                 sql.AppendLine(@"      and p.tipo = any(@tiposPendenciaFechamento)");
                 sql.AppendLine(@"       and p.situacao = any(@situacoesPendencia)");
-                sql.AppendLine(@"      group by p.id	                       ");
-                sql.AppendLine(@"	union all	                    ");
+                sql.AppendLine(@"      group by p.id                           ");
+                sql.AppendLine(@"    union all                        ");
                 sql.AppendLine(@"     select distinct ");
-                sql.AppendLine(@"     	p.id as PendenciaId,");
+                sql.AppendLine(@"         p.id as PendenciaId,");
                 sql.AppendLine(@"      count(a.data_aula) as QuantidadeDias,");
                 sql.AppendLine(@"      sum(a.quantidade) as QuantidadeAula");
                 sql.AppendLine(@"  from pendencia_aula pa");
                 sql.AppendLine(@"      inner join pendencia p on pa.pendencia_id  = p.id");
                 sql.AppendLine(@"      inner join aula a on a.id  = pa.aula_id");
-                sql.AppendLine(@" 	    inner join turma t  on t.turma_id = a.turma_id ");
+                sql.AppendLine(@"         inner join turma t  on t.turma_id = a.turma_id ");
                 sql.AppendLine(@"     where not p.excluido and not a.excluido  ");
                 sql.AppendLine(@"      and t.ano_letivo = @anoLetivoInformado ");
                 sql.AppendLine(@"      and t.ue_id = @ueid ");
                 sql.AppendLine(@"      and p.tipo = any(@tiposPendenciaAula)");
                 sql.AppendLine(@"       and p.situacao = any(@situacoesPendencia)");
                 sql.AppendLine(@"      group by p.id ");
-                sql.AppendLine(" union all	 ");
+                sql.AppendLine(" union all     ");
                 sql.AppendLine(QuantidadeDiasPendenciasDiarioBordo());
                 return await database.Conexao.QueryAsync<AulasDiasPendenciaDto>(sql.ToString(), new { anoLetivoInformado,ueid,situacoesPendencia,tiposPendenciaFechamento,tiposPendenciaDiarioBordo,tiposPendenciaAula },commandTimeout:60);
         }
@@ -471,17 +484,17 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = new StringBuilder(); 
             sql.AppendLine(@"select distinct ");
-            sql.AppendLine(@"   	p.id  as PendenciaId,");
-            sql.AppendLine(@"   	count(a.data_aula) as QuantidadeDias,");
+            sql.AppendLine(@"       p.id  as PendenciaId,");
+            sql.AppendLine(@"       count(a.data_aula) as QuantidadeDias,");
             sql.AppendLine(@"    sum(a.quantidade) as QuantidadeAula");
             sql.AppendLine(@"from pendencia p");
             sql.AppendLine(@"inner join pendencia_diario_bordo pdb on pdb.pendencia_id = p.id ");
             sql.AppendLine(@"join aula a on a.id = pdb.aula_id");
             sql.AppendLine(@"join turma t on t.turma_id = a.turma_id ");
             sql.AppendLine(@"where t.ano_letivo = @anoLetivoInformado ");
-            sql.AppendLine(@"	and t.ue_id = @ueid ");
-            sql.AppendLine(@"	and p.tipo = any(@tiposPendenciaDiarioBordo)");
-            sql.AppendLine(@"	and p.situacao = any(@situacoesPendencia)");
+            sql.AppendLine(@"    and t.ue_id = @ueid ");
+            sql.AppendLine(@"    and p.tipo = any(@tiposPendenciaDiarioBordo)");
+            sql.AppendLine(@"    and p.situacao = any(@situacoesPendencia)");
             sql.AppendLine(@"group by p.id  ");
             return sql.ToString();
         }
@@ -515,10 +528,10 @@ namespace SME.SGP.Dados.Repositorios
                             and not p.excluido",
                 TipoPendenciaGrupo.DiarioClasse => $@"
                             select distinct p.id
-							from pendencia p 
+                            from pendencia p 
                                 inner join pendencia_usuario pu on pu.pendencia_id = p.id
                                 inner join pendencia_aula pa on p.id = pa.pendencia_id
-	                            inner join aula a on pa.aula_id = a.id
+                                inner join aula a on pa.aula_id = a.id
                                 {(!string.IsNullOrEmpty(turmaCodigo) ? " join turma t ON t.turma_id = a.turma_id " : string.Empty)}
                             WHERE pu.pendencia_id = any(@pendencias) and p.turma_id is null
                             and situacao = 1
@@ -527,7 +540,7 @@ namespace SME.SGP.Dados.Repositorios
                             and not p.excluido
                             UNION ALL
                             select distinct p.id
-							from pendencia p 
+                            from pendencia p 
                                 inner join pendencia_usuario pu on pu.pendencia_id = p.id
                                 {(!string.IsNullOrEmpty(turmaCodigo) ? " join turma t ON t.id = p.turma_id " : string.Empty)}
                             WHERE pu.pendencia_id = any(@pendencias) and p.turma_id is not null
@@ -537,7 +550,7 @@ namespace SME.SGP.Dados.Repositorios
                             and not p.excluido ",
                 TipoPendenciaGrupo.AEE => $@"
                             select distinct p.id
-							from pendencia p 
+                            from pendencia p 
                                 inner join pendencia_plano_aee ppa on ppa.pendencia_id = p.id
                                 {(!string.IsNullOrEmpty(turmaCodigo) ? " inner join plano_aee pa on pa.id = ppa.plano_aee_id inner join turma t on t.id = pa.turma_id " : string.Empty)}
                             WHERE ppa.pendencia_id = any(@pendencias)
@@ -565,10 +578,10 @@ namespace SME.SGP.Dados.Repositorios
                                     select distinct ppf.pendencia_id
                                     from pendencia_professor ppf
                                     left join pendencia_aula pa ON pa.pendencia_id = ppf.pendencia_id
-	                                inner join turma t ON t.id = ppf.turma_id 
-	                                where ppf.pendencia_id = any(@pendencias) 
+                                    inner join turma t ON t.id = ppf.turma_id 
+                                    where ppf.pendencia_id = any(@pendencias) 
                                     AND t.turma_id = @turmaCodigo
-	                                
+                                    
                                     union all 
                                     select distinct pa.pendencia_id
                                     from pendencia_aula pa 

@@ -103,7 +103,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<NotaConceitoFechamentoConselhoFinalDto>(query, new { alunoCodigo, turmasCodigos, periodoEscolarId });
         }
         
-        public async Task<IEnumerable<NotaConceitoFechamentoConselhoFinalDto>> ObterNotasFinaisAlunoAsync(string[] turmasCodigos, string alunoCodigo)
+        public async Task<IEnumerable<NotaConceitoFechamentoConselhoFinalDto>> ObterNotasFinaisAlunoAsync(string[] turmasCodigos, string alunoCodigo, bool validaNota, bool validaConceito)
         {
             var query = $@"select distinct * from (SELECT 0                AS ConselhoClasseAlunoId,
                                    fn.disciplina_id AS ComponenteCurricularCodigo,
@@ -125,6 +125,8 @@ namespace SME.SGP.Dados.Repositorios
                             WHERE  t.turma_id = ANY(@turmasCodigos)
                                    AND fa.aluno_codigo = @alunoCodigo
                                    AND pe.bimestre IS NULL
+                                   {(validaNota ? "AND fn.nota is not null" : string.Empty)}
+                                   {(validaConceito ? "AND fn.conceito_id is not null" : string.Empty)}
                                    and ccr.permite_lancamento_nota
                             UNION
                             SELECT cca.id                                    AS ConselhoClasseAlunoId,
@@ -155,6 +157,8 @@ namespace SME.SGP.Dados.Repositorios
                             WHERE  t.turma_id = ANY(@turmasCodigos)
                                    AND cca.aluno_codigo = @alunoCodigo
                                    AND bimestre IS NULL 
+                                   {(validaNota ? "AND ccn.nota is not null" : string.Empty)}
+                                   {(validaConceito ? "AND ccn.conceito_id is not null" : string.Empty)}
                                    and ccr.permite_lancamento_nota)  x";
 
             return await database.Conexao.QueryAsync<NotaConceitoFechamentoConselhoFinalDto>(query, new { turmasCodigos, alunoCodigo });
@@ -164,18 +168,18 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder(@"select coalesce(ccn.componente_curricular_codigo, ftd.disciplina_id) as ComponenteCurricularId 
                             from conselho_classe_aluno cca 
-	                        left join conselho_classe_nota ccn
-		                        on ccn.conselho_classe_aluno_id  = cca.id and not ccn.excluido
-	                        inner join conselho_classe cc 
-		                        on cca.conselho_classe_id = cc.id
-	                        inner join fechamento_turma ft 
-		                        on cc.fechamento_turma_id  = ft.id 
+                            left join conselho_classe_nota ccn
+                                on ccn.conselho_classe_aluno_id  = cca.id and not ccn.excluido
+                            inner join conselho_classe cc 
+                                on cca.conselho_classe_id = cc.id
+                            inner join fechamento_turma ft 
+                                on cc.fechamento_turma_id  = ft.id 
                             inner join fechamento_turma_disciplina ftd
-		                    	on ft.id = ftd.fechamento_turma_id
-	                        left join periodo_escolar pe 
-		                        on ft.periodo_escolar_id = pe.id 
-	                        where cca.aluno_codigo = @alunoCodigo
-	                        and ft.turma_id  = @turmaId");
+                                on ft.id = ftd.fechamento_turma_id
+                            left join periodo_escolar pe 
+                                on ft.periodo_escolar_id = pe.id 
+                            where cca.aluno_codigo = @alunoCodigo
+                            and ft.turma_id  = @turmaId");
 
             if (bimestre > 0)
                 query.AppendLine(" and pe.bimestre = @bimestre ");
@@ -199,17 +203,17 @@ namespace SME.SGP.Dados.Repositorios
         {
             string sqlQuery = @";with tmp_conselhos_ajuste_parecer as
                                 (select distinct cca.conselho_classe_id,
-			                        cc.fechamento_turma_id,
-				                    cca.aluno_codigo
-	                            from conselho_classe_aluno cca
-		                        inner join conselho_classe cc
-			                        on cca.conselho_classe_id = cc.id
-		                        inner join fechamento_turma ft
-			                        on cc.fechamento_turma_id = ft.id
-		                        inner join turma t
-			                        on ft.turma_id = t.id
-		                        inner join ue
-			                        on t.ue_id = ue.id
+                                    cc.fechamento_turma_id,
+                                    cca.aluno_codigo
+                                from conselho_classe_aluno cca
+                                inner join conselho_classe cc
+                                    on cca.conselho_classe_id = cc.id
+                                inner join fechamento_turma ft
+                                    on cc.fechamento_turma_id = ft.id
+                                inner join turma t
+                                    on ft.turma_id = t.id
+                                inner join ue
+                                    on t.ue_id = ue.id
                                 where t.turma_id = @turmaCodigo)
 
                             select conselho_classe_id as ConselhoClasseId,
@@ -224,18 +228,18 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder(@"select distinct coalesce(ccn.componente_curricular_codigo, ftd.disciplina_id) as ComponenteCurricularId 
                             from conselho_classe_aluno cca 
-	                        left join conselho_classe_nota ccn
-		                        on ccn.conselho_classe_aluno_id  = cca.id and not ccn.excluido
-	                        inner join conselho_classe cc 
-		                        on cca.conselho_classe_id = cc.id
-	                        inner join fechamento_turma ft 
-		                        on cc.fechamento_turma_id  = ft.id 
+                            left join conselho_classe_nota ccn
+                                on ccn.conselho_classe_aluno_id  = cca.id and not ccn.excluido
+                            inner join conselho_classe cc 
+                                on cca.conselho_classe_id = cc.id
+                            inner join fechamento_turma ft 
+                                on cc.fechamento_turma_id  = ft.id 
                             inner join fechamento_turma_disciplina ftd
-		                    	on ft.id = ftd.fechamento_turma_id
-	                        left join periodo_escolar pe 
-		                        on ft.periodo_escolar_id = pe.id 
-	                        where cca.aluno_codigo = @alunoCodigo
-	                        and ft.turma_id  = @turmaId");
+                                on ft.id = ftd.fechamento_turma_id
+                            left join periodo_escolar pe 
+                                on ft.periodo_escolar_id = pe.id 
+                            where cca.aluno_codigo = @alunoCodigo
+                            and ft.turma_id  = @turmaId");
 
             if (bimestre.HasValue && bimestre.Value > 0)
                 query.AppendLine(" and pe.bimestre = @bimestre ");

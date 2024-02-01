@@ -102,8 +102,8 @@ namespace SME.SGP.Aplicacao
                        disciplinas.Any(d => d.CodigoComponenteCurricularTerritorioSaber == long.Parse(aula.DisciplinaId)) ||
                        disciplinas.Any(d => d.CdComponenteCurricularPai == long.Parse(aula.DisciplinaId));                
             }
-
-            var disciplina = componentesUsuario?.FirstOrDefault(x => x.Codigo.ToString().Equals(aula.DisciplinaId));
+            
+            var disciplina = componentesUsuario?.FirstOrDefault(x => (x.Codigo % (10000)).ToString().Equals(aula.DisciplinaId, StringComparison.Ordinal));
 
             return disciplina.NaoEhNulo();
         }
@@ -136,7 +136,6 @@ namespace SME.SGP.Aplicacao
                 SomenteLeitura = !usuarioAcessoAoComponente || !temEventoDeRecesso ? !temPeriodoAberto : false,
                 EmManutencao = aulaEmManutencao,
                 PodeEditar = (usuarioLogado.EhProfessorCj() && aula.AulaCJ)
-                          || (!aula.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar()))
                           || (!aula.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar() || usuarioLogado.EhProfessorPoed()
                           || usuarioLogado.EhProfessorPosl()))
                           || (usuarioLogado.EhProfessorPap() && aula.EhPAP),

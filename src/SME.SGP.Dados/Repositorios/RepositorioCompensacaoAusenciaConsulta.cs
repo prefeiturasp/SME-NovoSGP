@@ -92,15 +92,15 @@ namespace SME.SGP.Dados
                 query.AppendLine("t.ano as DescricaoAnoTurma, ");
 
             query.AppendLine(@"t.modalidade_codigo as ModalidadeCodigo,
-           		               sum(caa.qtd_faltas_compensadas) as Quantidade           		   
-	                      from compensacao_ausencia_aluno caa 
-	                     inner join compensacao_ausencia ca on ca.id = caa.compensacao_ausencia_id
-	                     inner join turma t on t.id = ca.turma_id 
-     		             inner join ue on ue.id = t.ue_id 
-     		             inner join dre on dre.id = ue.dre_id 
-     		             where t.ano_letivo = @anoLetivo
-     		               and not caa.excluido
-       		               and t.modalidade_codigo = @modalidade ");
+                                  sum(caa.qtd_faltas_compensadas) as Quantidade                      
+                          from compensacao_ausencia_aluno caa 
+                         inner join compensacao_ausencia ca on ca.id = caa.compensacao_ausencia_id
+                         inner join turma t on t.id = ca.turma_id 
+                          inner join ue on ue.id = t.ue_id 
+                          inner join dre on dre.id = ue.dre_id 
+                          where t.ano_letivo = @anoLetivo
+                            and not caa.excluido
+                              and t.modalidade_codigo = @modalidade ");
 
             if (dreId != -99)
                 query.AppendLine("and dre.id = @dreId ");
@@ -136,19 +136,19 @@ namespace SME.SGP.Dados
         {
             var query = new StringBuilder(@"select max(totalaulas) as totalaulas, max(totalcompensacoes) as totalcompensacoes from ");
             query.AppendLine(@"(select
-	                                    t.ano_letivo as anoLetivo,
-	                                    sum(0) as TotalAulas,
-	                                    sum(caa.qtd_faltas_compensadas) as TotalCompensacoes
+                                        t.ano_letivo as anoLetivo,
+                                        sum(0) as TotalAulas,
+                                        sum(caa.qtd_faltas_compensadas) as TotalCompensacoes
                                     from
-	                                    compensacao_ausencia_aluno caa
+                                        compensacao_ausencia_aluno caa
                                     inner join compensacao_ausencia ca on
-	                                    ca.id = caa.compensacao_ausencia_id
+                                        ca.id = caa.compensacao_ausencia_id
                                     inner join turma t on
-	                                    t.id = ca.turma_id
+                                        t.id = ca.turma_id
                                     inner join ue on
-	                                    ue.id = t.ue_id
+                                        ue.id = t.ue_id
                                     inner join dre on
-	                                    dre.id = ue.dre_id
+                                        dre.id = ue.dre_id
                                     where t.ano_letivo = @anoLetivo and not caa.excluido ");
             if (dreId != -99)
                 query.AppendLine(" and dre.id = @dreId ");
@@ -167,23 +167,23 @@ namespace SME.SGP.Dados
             query.AppendLine(@"group by t.ano_letivo 
                                     union
                                     select
-	                                    t.ano_letivo as anoLetivo,
-	                                    count(a.id) as TotalAulas,
-	                                    sum(0) as TotalCompensacoes
+                                        t.ano_letivo as anoLetivo,
+                                        count(a.id) as TotalAulas,
+                                        sum(0) as TotalCompensacoes
                                     from
-	                                    aula a
+                                        aula a
                                     inner join turma t on
-	                                    a.turma_id = t.turma_id
+                                        a.turma_id = t.turma_id
                                     left join registro_frequencia rf on
-	                                    a.id = rf.aula_id
+                                        a.id = rf.aula_id
                                     inner join ue on
-	                                    ue.id = t.ue_id
+                                        ue.id = t.ue_id
                                     inner join dre on
-	                                    dre.id = ue.dre_id                                   
+                                        dre.id = ue.dre_id                                   
                                     inner join periodo_escolar pe on
                                         a.tipo_calendario_id = pe.tipo_calendario_id 
                                     left join componente_curricular cc on
-	                                    cc.id = cast(a.disciplina_id as bigint)
+                                        cc.id = cast(a.disciplina_id as bigint)
                                     where t.ano_letivo = @anoLetivo and not a.excluido and coalesce(cc.permite_registro_frequencia, true) ");
 
             if (dreId != -99)
@@ -215,14 +215,14 @@ namespace SME.SGP.Dados
                 query.AppendLine("t.ano as DescricaoAnoTurma, ");
 
             query.AppendLine(@"t.modalidade_codigo as ModalidadeCodigo,
-           		               count(ca.id) as Quantidade FROM
+                                  count(ca.id) as Quantidade FROM
                             compensacao_ausencia ca
-	                     inner join turma t on t.id = ca.turma_id 
-     		             inner join ue on ue.id = t.ue_id 
-     		             inner join dre on dre.id = ue.dre_id 
-     		             where t.ano_letivo = @anoLetivo
-     		               and not ca.excluido
-       		               and t.modalidade_codigo = @modalidade ");
+                         inner join turma t on t.id = ca.turma_id 
+                          inner join ue on ue.id = t.ue_id 
+                          inner join dre on dre.id = ue.dre_id 
+                          where t.ano_letivo = @anoLetivo
+                            and not ca.excluido
+                              and t.modalidade_codigo = @modalidade ");
 
             if (dreId != -99)
                 query.AppendLine("and dre.id = @dreId ");
@@ -252,6 +252,34 @@ namespace SME.SGP.Dados
             };
 
             return await database.Conexao.QueryAsync<Infra.TotalCompensacaoAusenciaDto>(query.ToString(), paramentros);
+        }
+
+        public async Task<IEnumerable<CompensacaoDataAlunoDto>> ObterAusenciaParaCompensacaoPorAlunos(long compensacaoAusenciaId, string[] codigosAlunos, string[] disciplinasId, int bimestre, string turmacodigo, string professor = null)
+        {
+            var query = @$"select
+							    caaa.id  as CompensacaoAusenciaAlunoAulaId,
+								rfa.aula_id as AulaId,
+								caaa.data_aula as DataAula,
+								'Aula ' || caaa.numero_aula as Descricao,
+								caaa.registro_frequencia_aluno_id as RegistroFrequenciaAlunoId,
+								rfa.codigo_aluno as CodigoAluno
+							from compensacao_ausencia_aluno_aula caaa
+							join compensacao_ausencia_aluno caa on caaa.compensacao_ausencia_aluno_id = caa.id
+							join registro_frequencia_aluno rfa on rfa.id = caaa.registro_frequencia_aluno_id
+							join aula a on a.id = rfa.aula_id
+							inner join periodo_escolar p on a.tipo_calendario_id = p.tipo_calendario_id
+							where not caaa.excluido 
+							    and rfa.codigo_aluno = any(@codigosAlunos)
+								and a.disciplina_id = any(@disciplinasId)
+								and p.bimestre = @bimestre
+								and a.turma_id = @turmacodigo
+								and rfa.valor = 2
+								and caa.compensacao_ausencia_id = @compensacaoAusenciaId
+								{(!string.IsNullOrWhiteSpace(professor) ? " and a.professor_rf = @professor " : string.Empty)}
+								order by caaa.data_aula ";
+
+            var parametros = new { compensacaoAusenciaId, codigosAlunos, disciplinasId, bimestre, turmacodigo, professor };
+            return await database.Conexao.QueryAsync<CompensacaoDataAlunoDto>(query, parametros);
         }
     }
 }

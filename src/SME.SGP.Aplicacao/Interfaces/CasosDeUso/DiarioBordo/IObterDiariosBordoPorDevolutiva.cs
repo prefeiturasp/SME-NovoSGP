@@ -1,11 +1,10 @@
 ﻿using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IObterDiariosBordoPorDevolutiva : IUseCase<long, PaginacaoResultadoDto<DiarioBordoDevolutivaDto>>
+    public interface IObterDiariosBordoPorDevolutiva
     {
+        Task<PaginacaoResultadoDto<DiarioBordoDevolutivaDto>> Executar(long devolutivaId, int anoLetivo);
     }
 }

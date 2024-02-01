@@ -1,24 +1,25 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 
 namespace SME.SGP.Aplicacao
 {
     public class InserirComunicadoMensagemAutomaticaCommand : IRequest<bool>
     {
-        public InserirComunicadoMensagemAutomaticaCommand(string descricao, string titulo, int anoLetivo, string turma, int modalidade, int semestre, string aluno, Guid codigoArquivo, string urlRedirecionamentoBase, TipoRelatorio tipoRelatorio, string nomeRelatorio)
+        public InserirComunicadoMensagemAutomaticaCommand(string descricao, string titulo, MensagemRelatorioAutomaticoEscolaAquiDto relatorioDto, string urlRedirecionamentoBase, TipoRelatorio tipoRelatorio, string nomeRelatorio)
         {
             DataEnvio = DateTime.Now;
             DataExpiracao = DateTime.Now;
             Descricao = descricao;
             Titulo = titulo;
-            AnoLetivo = anoLetivo;
-            Turma = turma;
+            AnoLetivo = relatorioDto.AnoLetivo;
+            Turma = relatorioDto.TurmaCodigo;
             AlunoEspecificado = true;
-            Modalidade = modalidade;
-            Semestre = semestre;
-            Aluno = aluno;
-            CodigoArquivo = codigoArquivo;
+            Modalidade = relatorioDto.Modalidade;
+            Semestre = relatorioDto.Semestre;
+            Aluno = relatorioDto.AlunoCodigo;
+            CodigoArquivo = relatorioDto.CodigoArquivo;
             UrlRedirecionamentoBase = urlRedirecionamentoBase;
             TipoRelatorio = tipoRelatorio;
             NomeRelatorio = nomeRelatorio;

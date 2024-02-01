@@ -146,9 +146,6 @@ namespace SME.SGP.Dados
 
         public static IEnumerable<TEntity> GetAll<TEntity>(this IDbConnection connection, bool buffered = true) where TEntity : class
         {
-            //Descobrir como obter a classe;;
-            //var entidade = this. TEntity?.GetType()?.Name;
-
             var result = servicoTelemetria.RegistrarComRetorno<TEntity>(() => Dommel.DommelMapper.GetAll<TEntity>(connection, buffered: buffered), "Postgres", $"GetAll Entidade ??", "GetAll");
 
             return result;
@@ -172,8 +169,6 @@ namespace SME.SGP.Dados
         }
         public static TEntity Get<TEntity>(this IDbConnection connection, object id) where TEntity : class
         {
-            //var entidade = entity?.GetType()?.Name;
-
             var result = servicoTelemetria.RegistrarComRetorno<TEntity>(() => Dommel.DommelMapper.Get<TEntity>(connection, id), "Postgres", $"Get Entidade ??", "Get");
 
             return result;
@@ -188,8 +183,6 @@ namespace SME.SGP.Dados
         }
         public static async Task<TEntity> GetAsync<TEntity>(this IDbConnection connection, object id) where TEntity : class
         {
-            //var entidade = entity?.GetType()?.Name;
-
             var result = await servicoTelemetria.RegistrarComRetornoAsync<TEntity>(async () => await Dommel.DommelMapper.GetAsync<TEntity>(connection, id), "Postgres", $"GetAsync Entidade ??", "GetAsync");
 
             return result;

@@ -3,7 +3,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,7 +10,7 @@ namespace SME.SGP.Aplicacao.Queries.FechamentoAcompanhamento.Situacao
 {
     public class ObterSituacoesFechamentoQueryHandler : IRequestHandler<ObterSituacoesFechamentoQuery, List<SituacaoDto>>
     {
-        public async Task<List<SituacaoDto>> Handle(ObterSituacoesFechamentoQuery request, CancellationToken cancellationToken)
+        public Task<List<SituacaoDto>> Handle(ObterSituacoesFechamentoQuery request, CancellationToken cancellationToken)
         {
             var listaSituacoes = new List<SituacaoDto>();
             foreach (var status in Enum.GetValues(typeof(SituacaoFechamento)))
@@ -26,7 +25,8 @@ namespace SME.SGP.Aplicacao.Queries.FechamentoAcompanhamento.Situacao
 
             if (request.UnificarNaoIniciado)
                 listaSituacoes.RemoveAt((int)(SituacaoFechamento.EmProcessamento));
-            return listaSituacoes;
+
+            return Task.FromResult(listaSituacoes);
         }
     }
 }

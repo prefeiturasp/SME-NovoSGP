@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
         {
             var notificacoes = await repositorioNotificacaoConsulta.ObterUsuariosNotificacoesPorIds(new[] { request.Id });
             if (notificacoes.EhNulo())
-                throw new Exception("Não localizado usuário da notificação");
+                throw new NegocioException("Não localizado usuário da notificação");
 
             var notificacao = notificacoes.First();
 

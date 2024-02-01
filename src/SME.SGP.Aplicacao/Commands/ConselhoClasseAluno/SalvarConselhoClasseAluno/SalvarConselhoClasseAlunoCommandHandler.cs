@@ -19,16 +19,14 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private readonly IRepositorioConselhoClasse repositorioConselhoClasse;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
-        private readonly IConsultasConselhoClasse consultasConselhoClasse;
 
         public SalvarConselhoClasseAlunoCommandHandler(IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,IMediator mediator,IRepositorioConselhoClasse repositorioConselhoClasse,
-            IConsultasPeriodoFechamento consultasPeriodoFechamento,IConsultasConselhoClasse consultasConselhoClasse)
+            IConsultasPeriodoFechamento consultasPeriodoFechamento)
         {
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.repositorioConselhoClasse = repositorioConselhoClasse ?? throw new ArgumentNullException(nameof(repositorioConselhoClasse));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
-            this.consultasConselhoClasse = consultasConselhoClasse ?? throw new ArgumentNullException(nameof(consultasConselhoClasse));
         }
 
         public async Task<long> Handle(SalvarConselhoClasseAlunoCommand request,CancellationToken cancellationToken)
@@ -52,7 +50,7 @@ namespace SME.SGP.Aplicacao
             catch (PostgresException ex)
             {
                 await LogarExcecao(ex);
-                throw new Exception("Erro ao salvar o conselho de classe do aluno.");
+                throw new ErroInternoException("Erro ao salvar o conselho de classe do aluno.");
             }
 
             await mediator.Send(new InserirTurmasComplementaresCommand(fechamentoTurma.TurmaId, conselhoClasseAlunoId, request.ConselhoClasseAluno.AlunoCodigo), cancellationToken);

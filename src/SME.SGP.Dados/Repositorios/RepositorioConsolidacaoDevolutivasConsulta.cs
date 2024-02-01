@@ -33,7 +33,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("select t.ano,");
             query.AppendLine("       cd.quantidade_estimada_devolutivas,");
             query.AppendLine("       cd.quantidade_registrada_devolutivas,");
-            query.AppendLine("	     row_number() over(partition by cd.turma_id order by cd.id desc) sequencia");
+            query.AppendLine("         row_number() over(partition by cd.turma_id order by cd.id desc) sequencia");
             query.AppendLine("  from consolidacao_devolutivas cd");
             query.AppendLine("      inner join turma t");
             query.AppendLine("          on cd.turma_id = t.id");
@@ -53,13 +53,13 @@ namespace SME.SGP.Dados.Repositorios
 
             if (possuiFiltroUe)
             {
-                query.AppendLine("	     quantidade_estimada_devolutivas DevolutivasEstimadas,");
-                query.AppendLine("	     quantidade_registrada_devolutivas DevolutivasRegistradas");
+                query.AppendLine("         quantidade_estimada_devolutivas DevolutivasEstimadas,");
+                query.AppendLine("         quantidade_registrada_devolutivas DevolutivasRegistradas");
             }
             else
             {
-                query.AppendLine("	     sum(quantidade_estimada_devolutivas) DevolutivasEstimadas,");
-                query.AppendLine("	     sum(quantidade_registrada_devolutivas) DevolutivasRegistradas");
+                query.AppendLine("         sum(quantidade_estimada_devolutivas) DevolutivasEstimadas,");
+                query.AppendLine("         sum(quantidade_registrada_devolutivas) DevolutivasRegistradas");
             }            
 
             query.AppendLine("  from lista");
@@ -93,8 +93,8 @@ namespace SME.SGP.Dados.Repositorios
         {
             var filtroAno = !string.IsNullOrEmpty(ano) ? "and t.ano = @ano" : "";
             var query = $@"select
-	                        dre.abreviacao AS descricao,
-	                        sum(cd.quantidade_registrada_devolutivas) AS Quantidade
+                            dre.abreviacao AS descricao,
+                            sum(cd.quantidade_registrada_devolutivas) AS Quantidade
                         from consolidacao_devolutivas cd
                         inner join turma t on cd.turma_id = t.id
                         inner join ue u on t.ue_id = u.id

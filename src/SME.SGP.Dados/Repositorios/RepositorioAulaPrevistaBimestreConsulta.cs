@@ -35,7 +35,7 @@ namespace SME.SGP.Dados.Repositorios
                           inner join tipo_calendario tp on p.tipo_calendario_id = tp.id
                           inner join aula_prevista ap on ap.tipo_calendario_id = p.tipo_calendario_id
                            left join aula_prevista_bimestre apb on ap.id = apb.aula_prevista_id and p.bimestre = apb.bimestre and not apb.excluido 
-                           left join aula a on a.turma_id = ap.turma_id and		
+                           left join aula a on a.turma_id = ap.turma_id and        
                                             (a.disciplina_id = ap.disciplina_id{0}) and
                                             a.tipo_calendario_id = p.tipo_calendario_id and
                                             a.data_aula BETWEEN p.periodo_inicio AND p.periodo_fim
@@ -44,7 +44,7 @@ namespace SME.SGP.Dados.Repositorios
                                 left join componente_curricular cc on ap.disciplina_id::int8 = cc.id  ";
 
         const string GroupOrderBy = @" group by p.bimestre, p.periodo_inicio, p.periodo_fim, apb.aulas_previstas, apb.Id,
-                         	   ap.criado_em, ap.criado_por, ap.alterado_em , ap.alterado_por,
+                                ap.criado_em, ap.criado_por, ap.alterado_em , ap.alterado_por,
                                ap.alterado_rf, ap.criado_rf, coalesce(cc.permite_registro_frequencia, true), ap.disciplina_id; ";
 
         public RepositorioAulaPrevistaBimestreConsulta(ISgpContextConsultas conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
@@ -122,51 +122,51 @@ namespace SME.SGP.Dados.Repositorios
         }
         public async Task<IEnumerable<AulaPrevistaTurmaComponenteDto>> ObterBimestresAulasTurmasComponentesCumpridasAsync(string[] turmasCodigos, string[] componentesCurricularesId, long tipoCalendarioId, int[] bimestres)
         {
-
             var query = new StringBuilder(@"select
                             p.id PeriodoEscolarId,
-	                        p.bimestre,
-	                        ap.turma_id as TurmaCodigo,
-	                        ap.disciplina_id as ComponenteCurricularCodigo,	
-	                        SUM(a.quantidade) filter (
-	                        where a.tipo_aula = 1
-	                        and rf.id is not null) as AulasQuantidade                            
+                            p.bimestre,
+                            ap.turma_id as TurmaCodigo,
+                            ap.disciplina_id as ComponenteCurricularCodigo,    
+                            SUM(a.quantidade) filter (
+                            where a.tipo_aula = 1
+                            and rf.id is not null) as AulasQuantidade                            
                         from
-	                        periodo_escolar p
+                            periodo_escolar p
                         inner join tipo_calendario tp on
-	                        p.tipo_calendario_id = tp.id
+                            p.tipo_calendario_id = tp.id
                         left join aula_prevista ap on
-	                        ap.tipo_calendario_id = p.tipo_calendario_id
+                            ap.tipo_calendario_id = p.tipo_calendario_id
                         left join aula_prevista_bimestre apb on
-	                        ap.id = apb.aula_prevista_id
-	                        and p.bimestre = apb.bimestre
+                            ap.id = apb.aula_prevista_id
+                            and p.bimestre = apb.bimestre
                             and not apb.excluido
                         left join aula a on
-	                        a.turma_id = ap.turma_id
-	                        and a.disciplina_id = ap.disciplina_id
-	                        and a.tipo_calendario_id = p.tipo_calendario_id
-	                        and a.data_aula between p.periodo_inicio and p.periodo_fim
-	                        and (a.id is null
-	                        or not a.excluido)
+                            a.turma_id = ap.turma_id
+                            and a.disciplina_id = ap.disciplina_id
+                            and a.tipo_calendario_id = p.tipo_calendario_id
+                            and a.data_aula between p.periodo_inicio and p.periodo_fim
+                            and (a.id is null
+                            or not a.excluido)
                         left join registro_frequencia rf on
-	                        a.id = rf.aula_id
+                            a.id = rf.aula_id
                         where
-	                        tp.situacao
-	                        and not tp.excluido
-	                        and ap.tipo_calendario_id = @tipoCalendarioId
-	                        and ap.turma_id = ANY(@turmasCodigos)
-	                        and ap.disciplina_id = ANY(@componentesCurricularesId)");
+                            tp.situacao
+                            and not tp.excluido
+                            and ap.tipo_calendario_id = @tipoCalendarioId
+                            and ap.turma_id = ANY(@turmasCodigos)
+                            and ap.disciplina_id = ANY(@componentesCurricularesId)");
 
             if (bimestres.Length > 0)
                 query.AppendLine(" AND p.bimestre = any(@bimestres)");
 
             query.AppendLine(@" group by
                             p.id,
-	                        p.bimestre,
-	                        ap.turma_id,
-	                        ap.disciplina_id;");
+                            p.bimestre,
+                            ap.turma_id,
+                            ap.disciplina_id;");
 
-            return (await database.Conexao.QueryAsync<AulaPrevistaTurmaComponenteDto>(query.ToString(), new { bimestres, turmasCodigos, componentesCurricularesId, tipoCalendarioId }));
+            return await database.Conexao
+                .QueryAsync<AulaPrevistaTurmaComponenteDto>(query.ToString(), new { bimestres, turmasCodigos, componentesCurricularesId, tipoCalendarioId });
         }
 
     }

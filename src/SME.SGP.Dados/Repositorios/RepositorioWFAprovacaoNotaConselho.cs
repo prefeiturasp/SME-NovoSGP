@@ -98,11 +98,11 @@ namespace SME.SGP.Dados
         private string ObterQueryNotaEmAprovacaoPorWorkflow()
         {
             return @"select nwf.*
-	                    , ccn.*
-	                    , cca.*
-	                    , cc.*
-	                    , ft.*
-	                    , t.*
+                        , ccn.*
+                        , cca.*
+                        , cc.*
+                        , ft.*
+                        , t.*
                         , pe.*
                       from wf_aprovacao_nota_conselho nwf
                      inner join conselho_classe_nota ccn on ccn.id = nwf.conselho_classe_nota_id

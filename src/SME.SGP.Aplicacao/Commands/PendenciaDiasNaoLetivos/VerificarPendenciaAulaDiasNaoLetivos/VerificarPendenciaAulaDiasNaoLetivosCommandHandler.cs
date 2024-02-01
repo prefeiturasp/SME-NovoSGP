@@ -28,23 +28,23 @@ namespace SME.SGP.Aplicacao
                 var anoAtual = DateTime.Now.Year;
                 var tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Modalidade.Fundamental, anoAtual, 0));
                 if (tipoCalendarioId > 0)
-                    await VerificaPendenciasAulaDiasNaoLetivos(tipoCalendarioId, ModalidadeTipoCalendario.FundamentalMedio, anoAtual);
+                    await VerificaPendenciasAulaDiasNaoLetivos(tipoCalendarioId);
 
                 tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Modalidade.EJA, anoAtual, 1));
                 if (tipoCalendarioId > 0)
-                    await VerificaPendenciasAulaDiasNaoLetivos(tipoCalendarioId, ModalidadeTipoCalendario.EJA, anoAtual);
+                    await VerificaPendenciasAulaDiasNaoLetivos(tipoCalendarioId);
 
                 tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Modalidade.EJA, anoAtual, 2));
                 if (tipoCalendarioId > 0)
-                    await VerificaPendenciasAulaDiasNaoLetivos(tipoCalendarioId, ModalidadeTipoCalendario.EJA, anoAtual);
+                    await VerificaPendenciasAulaDiasNaoLetivos(tipoCalendarioId);
                 
                 tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Modalidade.CELP, anoAtual, 1));
                 if (tipoCalendarioId > 0)
-                    await VerificaPendenciasAulaDiasNaoLetivos(tipoCalendarioId, ModalidadeTipoCalendario.CELP, anoAtual);
+                    await VerificaPendenciasAulaDiasNaoLetivos(tipoCalendarioId);
 
                 tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Modalidade.CELP, anoAtual, 2));
                 if (tipoCalendarioId > 0)
-                    await VerificaPendenciasAulaDiasNaoLetivos(tipoCalendarioId, ModalidadeTipoCalendario.CELP, anoAtual);
+                    await VerificaPendenciasAulaDiasNaoLetivos(tipoCalendarioId);
 
                 return true;
 
@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task VerificaPendenciasAulaDiasNaoLetivos(long tipoCalendarioId, ModalidadeTipoCalendario modalidadeCalendario, int anoAtual)
+        private async Task VerificaPendenciasAulaDiasNaoLetivos(long tipoCalendarioId)
         {
             var periodosEscolares = await mediator.Send(new ObterPeridosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
             var diasLetivosENaoLetivos = await mediator.Send(new ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(periodosEscolares, tipoCalendarioId));

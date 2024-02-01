@@ -138,31 +138,34 @@ namespace SME.SGP.Aplicacao
         {
             var bimestre = bimestres.FirstOrDefault();
 
-            return aulaPrevista.EhNulo() ? null : new AulasPrevistasDadasAuditoriaDto
-            {
-                Id = aulaPrevista.Id,
-                AlteradoEm = bimestre?.AlteradoEm ?? DateTime.MinValue,
-                AlteradoPor = bimestre?.AlteradoPor ?? "",
-                AlteradoRF = bimestre?.AlteradoRF ?? "",
-                CriadoEm = bimestre?.CriadoEm ?? aulaPrevista.CriadoEm,
-                CriadoPor = bimestre?.CriadoPor ?? aulaPrevista.CriadoPor,
-                CriadoRF = bimestre?.CriadoRF ?? aulaPrevista.CriadoRF,
-                AulasPrevistasPorBimestre = bimestres?.Select(x => new AulasPrevistasDadasDto
+            if (aulaPrevista.NaoEhNulo())
+                return new AulasPrevistasDadasAuditoriaDto
                 {
-                    Bimestre = x.Bimestre,
-                    Criadas = new AulasQuantidadePorProfessorDto()
+                    Id = aulaPrevista.Id,
+                    AlteradoEm = bimestre?.AlteradoEm ?? DateTime.MinValue,
+                    AlteradoPor = bimestre?.AlteradoPor ?? "",
+                    AlteradoRF = bimestre?.AlteradoRF ?? "",
+                    CriadoEm = bimestre?.CriadoEm ?? aulaPrevista.CriadoEm,
+                    CriadoPor = bimestre?.CriadoPor ?? aulaPrevista.CriadoPor,
+                    CriadoRF = bimestre?.CriadoRF ?? aulaPrevista.CriadoRF,
+                    AulasPrevistasPorBimestre = bimestres?.Select(x => new AulasPrevistasDadasDto
                     {
-                        QuantidadeCJ = x.CriadasCJ,
-                        QuantidadeTitular = x.CriadasTitular
-                    },
-                    Cumpridas = x.LancaFrequencia || x.Cumpridas > 0 ? x.Cumpridas : x.CumpridasSemFrequencia,
-                    Inicio = x.Inicio,
-                    Fim = x.Fim,
-                    Previstas = new AulasPrevistasDto() { Quantidade = x.Previstas },
-                    Reposicoes = x.LancaFrequencia || x.Reposicoes != 0 ? x.Reposicoes : x.ReposicoesSemFrequencia,
-                    PodeEditar = periodosAbertos.NaoEhNulo() ? periodosAbertos.FirstOrDefault(p => p.Bimestre == x.Bimestre).Aberto : false
-                }).ToList()
-            };
+                        Bimestre = x.Bimestre,
+                        Criadas = new AulasQuantidadePorProfessorDto()
+                        {
+                            QuantidadeCJ = x.CriadasCJ,
+                            QuantidadeTitular = x.CriadasTitular
+                        },
+                        Cumpridas = x.LancaFrequencia || x.Cumpridas > 0 ? x.Cumpridas : x.CumpridasSemFrequencia,
+                        Inicio = x.Inicio,
+                        Fim = x.Fim,
+                        Previstas = new AulasPrevistasDto() { Quantidade = x.Previstas },
+                        Reposicoes = x.LancaFrequencia || x.Reposicoes != 0 ? x.Reposicoes : x.ReposicoesSemFrequencia,
+                        PodeEditar = periodosAbertos.NaoEhNulo() ? periodosAbertos.FirstOrDefault(p => p.Bimestre == x.Bimestre).Aberto : false
+                    }).ToList()
+                };
+
+            return null;
         }
 
         private IEnumerable<AulaPrevistaBimestreQuantidade> MapearPeriodoParaBimestreDto(IEnumerable<PeriodoEscolar> periodoEscolares)

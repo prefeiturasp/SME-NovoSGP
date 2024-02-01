@@ -25,7 +25,6 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IUnitOfWork unitOfWork;
-        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IMediator mediator;
         private readonly IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions;
 
@@ -35,7 +34,6 @@ namespace SME.SGP.Dominio.Servicos
             IConsultasPeriodoEscolar consultasPeriodoEscolar,
             IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
             IRepositorioTurmaConsulta repositorioTurmaConsulta,
-            IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
             IConsultasDisciplina consultasDisciplina,
             IUnitOfWork unitOfWork,
             IMediator mediator,
@@ -50,7 +48,6 @@ namespace SME.SGP.Dominio.Servicos
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new System.ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
         }
 
@@ -127,6 +124,8 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task MoverRemoverExcluidos(string novo, string atual)
         {
+            var caminho = string.Empty;
+
             if (!string.IsNullOrEmpty(novo))
                 await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.CompensacaoAusencia, atual, novo));
 

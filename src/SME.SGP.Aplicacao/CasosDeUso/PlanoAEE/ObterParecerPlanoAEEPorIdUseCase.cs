@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
                 PodeEditarParecerCoordenacao = await PodeEditarParecerCP(planoAEE, usuario, turma),
                 PodeEditarParecerPAAI = PodeEditarParecerPAAI(planoAEE, usuario),
                 PodeAtribuirResponsavel = await PodeAtribuirResponsavel(planoAEE, usuario, turma),
-                PodeDevolverPlanoAEE = await PodeDevolverPlanoAEE(usuario, planoAEE.SituacaoPodeDevolverPlanoAEE()),
+                PodeDevolverPlanoAEE = PodeDevolverPlanoAEE(usuario, planoAEE.SituacaoPodeDevolverPlanoAEE()),
             };
         }
 
@@ -97,7 +97,7 @@ namespace SME.SGP.Aplicacao
         private async Task<Usuario> ObterResponsavel(long responsavelId)
             => await mediator.Send(new ObterUsuarioPorIdQuery(responsavelId));
 
-        private async Task<bool> PodeDevolverPlanoAEE(Usuario usuario, bool situacaoPodeDevolverPlanoAEE)
+        private bool PodeDevolverPlanoAEE(Usuario usuario, bool situacaoPodeDevolverPlanoAEE)
         {            
             if (usuario.EhNulo())
                 throw new NegocioException("Usuário não localizado");

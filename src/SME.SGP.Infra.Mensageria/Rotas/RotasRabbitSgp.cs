@@ -37,11 +37,18 @@
         public const string ConsolidarRegistrosPedagogicos = "sgp.consolidacao.registros.pedagogicos";
         public const string RotaAgendamentoTratar = "sgp.agendamento.tratar";
         public const string RemoverArquivoArmazenamento = "sgp.armazenamento.remover.arquivo";
+        // TODO: Essas rotas não possuem o registro
+        //public const string ConsolidarDevolutivasPorTurmaInfantilTurma = "sgp.consolidacao.devolutivas.turma.infantil.turma";
+        public const string ConsolidarDevolutivasPorTurmaInfantilAula = "sgp.consolidacao.devolutivas.turma.infantil.aula";
         public const string ExecutarAtualizacaoDasInformacoesPlanoAEE = "sgp.atualizar.informacoes.plano.aee";
         public const string ExecutarAtualizacaoDaTurmaDoPlanoAEE = "sgp.atualizar.turma.plano.aee";
         public const string ExecutarMigracaoRelatorioSemestralPAP = "sgp.executar.migracao.relatorio.semestral.pap";
         public const string ExecutarMigracaoRelatorioSemestralPAPPorAnoLetivo = "sgp.executar.migracao.relatorio.semestral.pap.ano.letivo";
         public const string ExecutarMigracaoRelatorioSemestralPAPPorId = "sgp.executar.migracao.relatorio.semestral.pap.id";
+        public const string RotaNotificacaoInformativo = "sgp.notificacao.informativo";
+        public const string RotaNotificacaoInformativoUsuario = "sgp.notificacao.informativo.usuario";
+        public const string RotaExcluirNotificacaoInformativo = "sgp.notificacao.informativo.excluir";
+        public const string RotaExcluirNotificacaoInformativoUsuario = "sgp.notificacao.informativo.usuario.excluir";
 
         #region Relatórios
 
@@ -126,6 +133,7 @@
         public const string RemoverAtribuicaoResponsaveisSupervisorPorDre = "sgp.remover.atribuicao.responsaveis.supervisor.dre";
         public const string RemoverAtribuicaoResponsaveisPAAIPorDre = "sgp.remover.atribuicao.responsaveis.paai.dre";
         public const string RemoverAtribuicaoResponsaveisASPPorDre = "sgp.remover.atribuicao.responsaveis.aspp.dre";
+        public const string GerarCacheAtribuicaoResponsaveis = "sgp.gerar.atribuicao.responsaveis.cache";
 
         #endregion
 

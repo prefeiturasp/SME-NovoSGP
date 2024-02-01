@@ -18,18 +18,15 @@ namespace SME.SGP.Aplicacao
         private readonly IUnitOfWork unitOfWork;
         private readonly IConfiguration configuration;
         private readonly IRepositorioPendencia repositorioPendencia;
-        private readonly IRepositorioPendenciaUsuario repositorioPendenciaUsuario;
         private readonly IRepositorioPendenciaEncaminhamentoAEE repositorioPendenciaEncaminhamentoAEE;
 
         public GerarPendenciaCPEncaminhamentoAEECommandHandler(IMediator mediator, IUnitOfWork unitOfWork, IConfiguration configuration,
-            IRepositorioPendencia repositorioPendencia, IRepositorioPendenciaUsuario repositorioPendenciaUsuario,
-            IRepositorioPendenciaEncaminhamentoAEE repositorioPendenciaEncaminhamentoAEE)
+            IRepositorioPendencia repositorioPendencia, IRepositorioPendenciaEncaminhamentoAEE repositorioPendenciaEncaminhamentoAEE)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.repositorioPendencia = repositorioPendencia ?? throw new ArgumentNullException(nameof(repositorioPendencia));
-            this.repositorioPendenciaUsuario = repositorioPendenciaUsuario ?? throw new ArgumentNullException(nameof(repositorioPendenciaUsuario));
             this.repositorioPendenciaEncaminhamentoAEE = repositorioPendenciaEncaminhamentoAEE ?? throw new ArgumentNullException(nameof(repositorioPendenciaEncaminhamentoAEE));
         }
 
@@ -39,8 +36,6 @@ namespace SME.SGP.Aplicacao
 
             if (encaminhamentoAEE.EhNulo())
                 throw new NegocioException("Não foi possível localizar o EncaminhamentoAEE");
-
-
 
             if (encaminhamentoAEE.Situacao == SituacaoAEE.Encaminhado)
             {
@@ -59,16 +54,18 @@ namespace SME.SGP.Aplicacao
                     try
                     {
                         var pendenciaExiste = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdQuery(encaminhamentoAEE.Id));
+                        
                         var pendencia = new Pendencia(TipoPendencia.AEE, titulo, descricao, null, null, turma.UeId, turma.Id);
-                        if (pendenciaExiste.EhNulo())
-                        {
-                            pendencia.Id = await repositorioPendencia.SalvarAsync(pendencia);
 
-                            var pendenciaEncaminhamento = new PendenciaEncaminhamentoAEE { PendenciaId = pendencia.Id, EncaminhamentoAEEId = encaminhamentoAEE.Id };
-                            await repositorioPendenciaEncaminhamentoAEE.SalvarAsync(pendenciaEncaminhamento);
+                        if(pendenciaExiste.NaoEhNulo())
+                            await ExcluirPendenciasEncaminhamentoAEE(encaminhamentoAEE.Id);
 
-                            await mediator.Send(new SalvarPendenciaPerfilCommand(pendencia.Id, new List<PerfilUsuario> { PerfilUsuario.CP }));
-                        }
+                        pendencia.Id = await repositorioPendencia.SalvarAsync(pendencia);
+
+                        var pendenciaEncaminhamento = new PendenciaEncaminhamentoAEE { PendenciaId = pendencia.Id, EncaminhamentoAEEId = encaminhamentoAEE.Id };
+                        var pendenciaUsuario = new PendenciaUsuario { PendenciaId = pendencia.Id, Pendencia = pendencia, };
+                        await repositorioPendenciaEncaminhamentoAEE.SalvarAsync(pendenciaEncaminhamento);
+                        await mediator.Send(new SalvarPendenciaPerfilCommand(pendencia.Id, new List<PerfilUsuario> { PerfilUsuario.CP }));
 
                         unitOfWork.PersistirTransacao();
 
@@ -85,6 +82,17 @@ namespace SME.SGP.Aplicacao
                 }
             }
             return false;
+        }
+        private async Task ExcluirPendenciasEncaminhamentoAEE(long encaminhamentoId)
+        {
+            var pendenciasEncaminhamentoAEE = await mediator.Send(new ObterPendenciasDoEncaminhamentoAEEPorIdQuery(encaminhamentoId));
+            if (pendenciasEncaminhamentoAEE != null && pendenciasEncaminhamentoAEE.Any())
+            {
+                foreach (var pendenciaEncaminhamentoAEE in pendenciasEncaminhamentoAEE)
+                {
+                    await mediator.Send(new ExcluirPendenciaEncaminhamentoAEECommand(pendenciaEncaminhamentoAEE.PendenciaId));
+                }
+            }
         }
     }
 }

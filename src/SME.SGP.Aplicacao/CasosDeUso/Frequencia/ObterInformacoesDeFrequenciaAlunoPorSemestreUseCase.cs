@@ -39,72 +39,57 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<FrequenciaAlunoBimestreDto>> ObterFrequenciaAlunoBimestre(Turma turma,
             string alunoCodigo, int semestre, long tipoCalendarioId, long componenteCurricularId)
         {
-            var dados1 = new FrequenciaAlunoBimestreDto();
-            var dados2 = new FrequenciaAlunoBimestreDto();
-
-            var periodosEscolares =
-                await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
-
-            if (periodosEscolares.EhNulo() || !periodosEscolares.Any())
-                throw new NegocioException("Não foi possível encontrar o período escolar da turma.");
-
+            var periodosEscolares = await ObterPeriodosEscolares(tipoCalendarioId);
             var bimestres = new List<FrequenciaAlunoBimestreDto>();
+            var bimestresSemestre = ObterBimestresSemestre(semestre);
 
-            if(turma.ModalidadeCodigo == Modalidade.EducacaoInfantil)
+            if (turma.ModalidadeCodigo == Modalidade.EducacaoInfantil)
             {
-                if (semestre == 1)
-                {
-                    dados1 = await ObterInformacoesBimestre(turma, alunoCodigo, tipoCalendarioId,
-                        periodosEscolares.First(a => a.Bimestre == 1), componenteCurricularId);
-                    dados2 = await ObterInformacoesBimestre(turma, alunoCodigo, tipoCalendarioId,
-                        periodosEscolares.First(a => a.Bimestre == 2), componenteCurricularId);
-                }
-                else
-                {
-                    dados1 = await ObterInformacoesBimestre(turma, alunoCodigo, tipoCalendarioId,
-                        periodosEscolares.First(a => a.Bimestre == 3), componenteCurricularId);
-                    dados2 = await ObterInformacoesBimestre(turma, alunoCodigo, tipoCalendarioId,
-                        periodosEscolares.First(a => a.Bimestre == 4), componenteCurricularId);
-                }
-
+                FrequenciaAlunoBimestreDto dados1 = await ObterInformacoesBimestre(turma, alunoCodigo, tipoCalendarioId,
+                    periodosEscolares.First(a => a.Bimestre == bimestresSemestre.PrimeiroBimestre), componenteCurricularId);
+                FrequenciaAlunoBimestreDto dados2 = await ObterInformacoesBimestre(turma, alunoCodigo, tipoCalendarioId,
+                    periodosEscolares.First(a => a.Bimestre == bimestresSemestre.SegundoBimestre), componenteCurricularId);
+                
                 if(dados1.NaoEhNulo() || dados2.NaoEhNulo())
                     bimestres = TratarMediaBimestresParaSemestreInfantil(dados1, dados2, semestre == 1 ? 1 : 3);
-        
             }
             else
             {
-                if (semestre == 1)
-                {
-                    bimestres.Add(await ObterInformacoesBimestre(turma, alunoCodigo, tipoCalendarioId,
-                        periodosEscolares.First(a => a.Bimestre == 1), componenteCurricularId));
-                    bimestres.Add(await ObterInformacoesBimestre(turma, alunoCodigo, tipoCalendarioId,
-                        periodosEscolares.First(a => a.Bimestre == 2), componenteCurricularId));
-
-                }
-                else
-                {
-                    bimestres.Add(await ObterInformacoesBimestre(turma, alunoCodigo, tipoCalendarioId,
-                        periodosEscolares.First(a => a.Bimestre == 3), componenteCurricularId));
-                    bimestres.Add(await ObterInformacoesBimestre(turma, alunoCodigo, tipoCalendarioId,
-                        periodosEscolares.First(a => a.Bimestre == 4), componenteCurricularId));
-                }
+                bimestres.Add(await ObterInformacoesBimestre(turma, alunoCodigo, tipoCalendarioId,
+                    periodosEscolares.First(a => a.Bimestre == bimestresSemestre.PrimeiroBimestre), componenteCurricularId));
+                bimestres.Add(await ObterInformacoesBimestre(turma, alunoCodigo, tipoCalendarioId,
+                    periodosEscolares.First(a => a.Bimestre == bimestresSemestre.SegundoBimestre), componenteCurricularId));                
             }
             
             return bimestres.Where(bimestre => bimestre.NaoEhNulo());
         }
 
+        private (int PrimeiroBimestre, int SegundoBimestre) ObterBimestresSemestre(int semestre)
+        {
+            if (semestre == 1)
+                return (1, 2);
+            return (3, 4);
+        }
+
+        private async Task<IEnumerable<PeriodoEscolar>> ObterPeriodosEscolares(long tipoCalendarioId)
+        {
+            var periodosEscolares =
+                await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
+
+            if (periodosEscolares.NaoPossuiRegistros())
+                throw new NegocioException("Não foi possível encontrar o período escolar da turma.");
+
+            return periodosEscolares;
+        }
+
         public List<FrequenciaAlunoBimestreDto> TratarMediaBimestresParaSemestreInfantil(FrequenciaAlunoBimestreDto dados1, FrequenciaAlunoBimestreDto dados2, int bimestreReferencia)
         {
-            int somatorioAusencias = 0;
-            int somatorioAulasRealizadas = 0;
-            int somatorioCompensacoes = 0;
-            double? mediaFrequencia;
             var bimestres = new List<FrequenciaAlunoBimestreDto>();
 
-            somatorioAulasRealizadas = (dados1.EhNulo() ? 0 : dados1.AulasRealizadas) + (dados2.EhNulo() ? 0 : dados2.AulasRealizadas);
-            somatorioAusencias = (dados1.EhNulo() ? 0 : dados1.Ausencias) + (dados2.EhNulo() ? 0 : dados2.Ausencias);
-            somatorioCompensacoes = (dados1.EhNulo() ? 0 : dados1.Compensacoes) + (dados2.EhNulo() ? 0 : dados2.Compensacoes);
-            mediaFrequencia = (dados1 ?? dados2).CalcularPercentualFrequencia(somatorioAulasRealizadas, somatorioAusencias - somatorioCompensacoes);
+            int somatorioAulasRealizadas = (dados1.EhNulo() ? 0 : dados1.AulasRealizadas) + (dados2.EhNulo() ? 0 : dados2.AulasRealizadas);
+            int somatorioAusencias = (dados1.EhNulo() ? 0 : dados1.Ausencias) + (dados2.EhNulo() ? 0 : dados2.Ausencias);
+            int somatorioCompensacoes = (dados1.EhNulo() ? 0 : dados1.Compensacoes) + (dados2.EhNulo() ? 0 : dados2.Compensacoes);
+            double? mediaFrequencia = (dados1 ?? dados2).CalcularPercentualFrequencia(somatorioAulasRealizadas, somatorioAusencias - somatorioCompensacoes);
 
             mediaFrequencia = mediaFrequencia.NaoEhNulo() ? Math.Round(mediaFrequencia.Value, 2) : mediaFrequencia;
 

@@ -1,17 +1,16 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Enumerados;
-using Minio.DataModel;
 
 namespace SME.SGP.Dominio
 {
@@ -69,7 +68,7 @@ namespace SME.SGP.Dominio
                         on a.CodigoAluno equals nc.AlunoId
                     join aa in atividadesAvaliativas
                         on nc.AtividadeAvaliativaID equals aa.Id
-                    where a.EstaAtivo(aa.DataAvaliacao)
+                    where a.EstaAtivo(aa.DataAvaliacao) 
                     select a).Distinct();
 
                 if (!usuario.EhGestorEscolar())
@@ -79,13 +78,10 @@ namespace SME.SGP.Dominio
                 foreach (var notasPorAvaliacao in notasPorAvaliacoes)
                 {
                     var avaliacao = atividadesAvaliativas.FirstOrDefault(x => x.Id == notasPorAvaliacao.Key);
-                    entidadesSalvar.AddRange(await ValidarEObter(notasPorAvaliacao.ToList(), avaliacao, alunos, professorRf,
-                        disciplinaId, usuario, turma));
+                    entidadesSalvar.AddRange(await ValidarEObter(notasPorAvaliacao.ToList(), avaliacao, alunos, disciplinaId, usuario, turma));
                 }
 
-                var criadoPor = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
-
-                await SalvarNoBanco(entidadesSalvar, criadoPor, turma.CodigoTurma);
+                await SalvarNoBanco(entidadesSalvar, turma.CodigoTurma);
 
                 var alunosId = alunos
                     .Select(a => a.CodigoAluno)
@@ -107,9 +103,13 @@ namespace SME.SGP.Dominio
             var turmaEOL = await mediator.Send(new ObterDadosTurmaEolPorCodigoQuery(atividadeAvaliativa.TurmaId));
 
             if (turmaEOL.TipoTurma == Enumerados.TipoTurma.EdFisica)
-                return await mediator.Send(
-                    new ObterNotaTipoValorPorTurmaIdQuery(Convert.ToInt64(atividadeAvaliativa.TurmaId),
-                        Enumerados.TipoTurma.EdFisica));
+            {
+                var turma = await mediator.Send(new ObterTurmaPorIdQuery(Convert.ToInt64(atividadeAvaliativa.TurmaId)));
+                
+                return await mediator.Send(new ObterNotaTipoValorPorTurmaIdQuery(turma));
+            }
+            if (await ModalidadeTurmaEhCelp(turmaEOL))
+                return new NotaTipoValor() { TipoNota = TipoNota.Conceito }; 
 
             var notaTipo = await ObterNotaTipo(atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao,
                 consideraHistorico);
@@ -118,6 +118,18 @@ namespace SME.SGP.Dominio
                 throw new NegocioException(MensagensNegocioLancamentoNota.Nao_foi_encontrado_tipo_de_nota_para_a_avaliacao);
 
             return notaTipo;
+        }
+
+        private async Task<bool> ModalidadeTurmaEhCelp(DadosTurmaEolDto turmaEOL)
+        {
+            if (turmaEOL.TipoTurma == TipoTurma.Programa)
+            {
+                var modalidade = await mediator.Send(new ObterModalidadeTurmaPorCodigoQuery(turmaEOL.Codigo.ToString()));
+
+                return modalidade == Modalidade.CELP;
+            }
+
+            return false;
         }
 
         private static void ValidarSeAtividadesAvaliativasExistem(IEnumerable<long> avaliacoesAlteradasIds,
@@ -158,9 +170,11 @@ namespace SME.SGP.Dominio
             if (turma.EhNulo())
                 throw new NegocioException(MensagensNegocioLancamentoNota.Nao_foi_encontrada_a_turma_informada);
 
-            string anoCicloModalidade = !String.IsNullOrEmpty(turma?.Ano)
-                ? turma.Ano == AnoCiclo.Alfabetizacao.Name() ? AnoCiclo.Alfabetizacao.Description() : turma.Ano
-                : string.Empty;
+            string anoCicloModalidade = string.Empty;
+
+            if (!String.IsNullOrEmpty(turma?.Ano))
+                anoCicloModalidade = turma.Ano == AnoCiclo.Alfabetizacao.Name() ? AnoCiclo.Alfabetizacao.Description() : turma.Ano;
+
             var ciclo = await mediator.Send(new ObterCicloPorAnoModalidadeQuery(anoCicloModalidade, turma.Modalidade));
 
             if (ciclo.EhNulo())
@@ -170,7 +184,7 @@ namespace SME.SGP.Dominio
             return retorno;
         }
 
-        private async Task SalvarNoBanco(IEnumerable<NotaConceito> EntidadesSalvar, Usuario criadoPor, string codigoTurma)
+        private async Task SalvarNoBanco(IEnumerable<NotaConceito> EntidadesSalvar, string codigoTurma)
         {
             var notaConceitoParaInserir = Enumerable.Empty<NotaConceito>();
             var notaConceitoParaRemover = Enumerable.Empty<NotaConceito>();
@@ -220,7 +234,7 @@ namespace SME.SGP.Dominio
             string professorRf, string disciplinaId, IEnumerable<ProfessorTitularDisciplinaEol> disciplinasEol,
             bool gestorEscolar)
         {
-            if (atividadesAvaliativas.Where(x => x.DataAvaliacao.Date > DateTime.Today).Any())
+            if (atividadesAvaliativas.Any(x => x.DataAvaliacao.Date > DateTime.Today))
                 throw new NegocioException(
                     "Não é possivel atribuir notas/conceitos para avaliação(es) com data(s) futura(s)");
 
@@ -230,7 +244,8 @@ namespace SME.SGP.Dominio
             {
                 if (disciplinasEol.NaoEhNulo() && disciplinasEol.Any())
                     ehTitular = disciplinasEol.Any(d =>
-                        d.DisciplinasId.ToString() == disciplinaId && d.ProfessorRf == professorRf);
+                        d.DisciplinasId().Contains(long.Parse(disciplinaId))
+                        && d.ProfessorRf == professorRf);
 
                 var usuarioLogado = await mediator.Send(new ObterUsuarioPorRfQuery(professorRf));
 
@@ -253,8 +268,7 @@ namespace SME.SGP.Dominio
         }
 
         private async Task<IEnumerable<NotaConceito>> ValidarEObter(IEnumerable<NotaConceito> notasConceitos,
-            AtividadeAvaliativa atividadeAvaliativa, IEnumerable<AlunoPorTurmaResposta> alunos, string professorRf,
-            string disciplinaId,
+            AtividadeAvaliativa atividadeAvaliativa, IEnumerable<AlunoPorTurmaResposta> alunos, string disciplinaId,
             Usuario usuario, Turma turma)
         {
                 var notasMultidisciplina = new List<NotaConceito>();

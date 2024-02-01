@@ -64,13 +64,11 @@ namespace SME.SGP.Aplicacao
                     var notasParaAdicionar = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhosClassesId, filtro.AlunoCodigo, bimestre));
                     notasConselhoClasseAluno.AddRange(notasParaAdicionar);
                 }
-            }
+            }            
 
-            List<Turma> turmas;
-
-            if (turmasCodigos.Length > 0)
-                turmas = (await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigos))).ToList();
-            else turmas = new List<Turma>() { turma };
+            var turmas = turmasCodigos.Length > 0 ?
+                (await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigos))).ToList() : 
+                new List<Turma>() { turma };
 
             //Verificar as notas finais
             var notasFechamentoAluno = fechamentoTurma.NaoEhNulo() && fechamentoTurma.PeriodoEscolarId.HasValue ?
@@ -148,7 +146,7 @@ namespace SME.SGP.Aplicacao
                                                                         periodoEscolar,
                                                                         turma,
                                                                         notasConselhoClasseAluno,
-                                                                        notasFechamentoAluno, filtro.Bimestre, turma.AnoLetivo));
+                                                                        notasFechamentoAluno, filtro.Bimestre));
                     }
                 }
             }
@@ -220,7 +218,7 @@ namespace SME.SGP.Aplicacao
             var lstDetalhesNotas = new List<DetalhamentoComponentesCurricularesAlunoDto>();
 
             foreach (var componenteRegencia in componentesRegencia)
-                lstDetalhesNotas.Add(ObterNotasRegencia(componenteRegencia.Descricao, componenteRegencia.Codigo, periodoEscolar, notasConselhoClasseAluno, notasFechamentoAluno, frequenciaAluno?.TotalAusencias, frequenciaAluno?.TotalCompensacoes, percentualFrequenciaFormatado));
+                lstDetalhesNotas.Add(ObterNotasRegencia(componenteRegencia, periodoEscolar, notasConselhoClasseAluno, notasFechamentoAluno, frequenciaAluno, percentualFrequenciaFormatado));
 
             return lstDetalhesNotas;
         }
@@ -228,7 +226,7 @@ namespace SME.SGP.Aplicacao
         private async Task<DetalhamentoComponentesCurricularesAlunoDto> ObterNotasFrequenciaComponente(DisciplinaDto componenteCurricular,
             FrequenciaAluno frequenciaAluno,
             PeriodoEscolar periodoEscolar, Turma turma, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno,
-            IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, int bimestre, int anoLetivo)
+            IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, int bimestre)
         {
             var percentualFrequencia = frequenciaAluno.TotalAulas > 0 ? frequenciaAluno.PercentualFrequencia : 0;
             var percentualFrequenciaFormatado = frequenciaAluno.PercentualFrequenciaFormatado;
@@ -243,10 +241,13 @@ namespace SME.SGP.Aplicacao
             var notasFechamento = ObterNotasComponente(componenteCurricular.CodigoComponenteCurricular, periodoEscolar, notasFechamentoAluno);
             var notaPosConselho = ObterNotaPosConselho(componenteCurricular.CodigoComponenteCurricular, periodoEscolar?.Bimestre, notasConselhoClasseAluno, notasFechamentoAluno);
 
-            var parecerFinal = bimestre == 0 ? await mediator.Send(new ObterSinteseAlunoQuery(percentualFrequencia, componenteCurricular, anoLetivo)) : null;
+            var parecerFinal = bimestre == 0 ? await mediator.Send(new ObterSinteseAlunoQuery(percentualFrequencia, componenteCurricular, turma.AnoLetivo)) : null;
 
-            var notaFechamento = !componenteCurricular.LancaNota ? parecerFinal?.Valor : (notasFechamento.NaoEhNulo() && notasFechamento.Any() &&
-                                 notasFechamento.FirstOrDefault().NotaConceito.NaoEhNulo() ? String.Format("{0:0.0}", notasFechamento.FirstOrDefault().NotaConceito) : null);
+            var notaFechamento = parecerFinal?.Valor;
+
+            if (componenteCurricular.LancaNota)
+               notaFechamento = notasFechamento.NaoEhNulo() && notasFechamento.Any() &&
+                                 notasFechamento.FirstOrDefault().NotaConceito.NaoEhNulo() ? notasFechamento.FirstOrDefault().NotaConceitoFormatado : null;
 
             var conselhoClasseComponente = new DetalhamentoComponentesCurricularesAlunoDto()
             {
@@ -256,25 +257,31 @@ namespace SME.SGP.Aplicacao
                 QuantidadeCompensacoes = frequenciaAluno?.TotalCompensacoes ?? 0,
                 percentualFrequenciaFormatado = percentualFrequenciaFormatado,
                 NotaFechamento = notaFechamento,
-                NotaPosConselho = notaPosConselho.NaoEhNulo() && (notaPosConselho?.Nota).NaoEhNulo() ? String.Format("{0:0.0}", notaPosConselho.Nota) : null
+                NotaPosConselho = notaPosConselho.NaoEhNulo() && notaPosConselho.Nota.NaoEhNulo() ? notaPosConselho.NotaConceito : null
             };
 
             return conselhoClasseComponente;
         }
 
-        private DetalhamentoComponentesCurricularesAlunoDto ObterNotasRegencia(string componenteCurricularNome, long componenteCurricularCodigo, PeriodoEscolar periodoEscolar, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, int? totalAusencias, int? totalCompensacoes, string percentualFrequencia)
+        private DetalhamentoComponentesCurricularesAlunoDto ObterNotasRegencia(
+                                                                    ComponenteCurricularEol componenteCurricular, 
+                                                                    PeriodoEscolar periodoEscolar, 
+                                                                    IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno, 
+                                                                    IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, 
+                                                                    FrequenciaAluno frequenciaAluno,
+                                                                    string percentualFrequencia)
         {
-            var notasFechamento = ObterNotasComponente(componenteCurricularCodigo, periodoEscolar, notasFechamentoAluno);
-            var notaPosConselho = ObterNotaPosConselho(componenteCurricularCodigo, periodoEscolar?.Bimestre, notasConselhoClasseAluno, notasFechamentoAluno);
+            var notasFechamento = ObterNotasComponente(componenteCurricular.Codigo, periodoEscolar, notasFechamentoAluno);
+            var notaPosConselho = ObterNotaPosConselho(componenteCurricular.Codigo, periodoEscolar?.Bimestre, notasConselhoClasseAluno, notasFechamentoAluno);
 
             return new DetalhamentoComponentesCurricularesAlunoDto()
             {
-                QuantidadeAusencia = totalAusencias ?? 0,
-                QuantidadeCompensacoes = totalCompensacoes ?? 0,
+                QuantidadeAusencia = frequenciaAluno?.TotalAusencias ?? 0,
+                QuantidadeCompensacoes = frequenciaAluno?.TotalCompensacoes ?? 0,
                 percentualFrequenciaFormatado = percentualFrequencia,
-                NomeComponenteCurricular = componenteCurricularNome,
+                NomeComponenteCurricular = componenteCurricular.Descricao,
                 NotaFechamento = notasFechamento.NaoEhNulo() && notasFechamento.Any() &&
-                                 notasFechamento.FirstOrDefault().NotaConceito.NaoEhNulo() ? String.Format("{0:0.0}", notasFechamento.FirstOrDefault().NotaConceito) : null,
+                                 notasFechamento.First().NotaConceito.NaoEhNulo() ? notasFechamento.First().NotaConceitoFormatado : null,
                 NotaPosConselho = notaPosConselho.NaoEhNulo() && notaPosConselho.Nota.NaoEhNulo() ? String.Format("{0:0.0}", notaPosConselho.Nota) : null
             };
         }
@@ -306,23 +313,29 @@ namespace SME.SGP.Aplicacao
 
             return new NotaPosConselhoDto()
             {
-                Id = notaComponente?.ConselhoClasseId,
-                Nota = notaComponente?.NotaConceito
+                Id = notaComponente?.ConceitoId,
+                Nota = notaComponente?.NotaConceito,
+                NotaConceito = notaComponente?.NotaConceitoFormatado
             };
         }
 
         private NotaBimestreDto ObterNotaFinalComponentePeriodo(long codigoComponenteCurricular, int bimestre, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno)
         {
             double? notaConceito = null;
+            string notaConceitoFormatado = "";
             // Busca nota do FechamentoNota
             var notaFechamento = notasFechamentoAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == codigoComponenteCurricular);
             if (notaFechamento.NaoEhNulo())
+            { 
                 notaConceito = notaFechamento.NotaConceito;
+                notaConceitoFormatado = notaFechamento.NotaConceitoFormatado;
+            }
 
             return new NotaBimestreDto()
             {
                 Bimestre = bimestre,
-                NotaConceito = notaConceito
+                NotaConceito = notaConceito,
+                NotaConceitoFormatado = notaConceitoFormatado
             };
         }
 

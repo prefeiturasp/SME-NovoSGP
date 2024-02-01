@@ -17,9 +17,9 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.ServicosFakes
         private readonly string UE_CODIGO_1 = "1";
         private readonly string UE_NOME_1 = "NOME UE 1";
         
-        public async Task<AbrangenciaFiltroRetorno> Handle(ObterAbrangenciaPorTurmaEConsideraHistoricoQuery request,CancellationToken cancellationToken)
+        public Task<AbrangenciaFiltroRetorno> Handle(ObterAbrangenciaPorTurmaEConsideraHistoricoQuery request,CancellationToken cancellationToken)
         {
-            return await Task.FromResult(new AbrangenciaFiltroRetorno()
+            return Task.FromResult(new AbrangenciaFiltroRetorno()
             {
                 Modalidade = Modalidade.Fundamental,
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,

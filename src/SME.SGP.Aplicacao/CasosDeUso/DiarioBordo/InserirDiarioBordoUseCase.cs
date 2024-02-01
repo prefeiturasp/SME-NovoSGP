@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
             var disciplinas = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(turmaCodigo, false, false, false);
             if (disciplinas != null && disciplinas.Any())
             {
-                if (disciplinas.Count() > 1)
+                if (disciplinas.Count > 1)
                 {
                     var disciplina = disciplinas.Where(b => b.CodigoComponenteCurricular == componenteCurricularId);
 

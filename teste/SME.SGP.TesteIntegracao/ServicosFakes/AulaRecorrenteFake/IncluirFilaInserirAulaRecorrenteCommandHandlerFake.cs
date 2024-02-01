@@ -17,17 +17,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 
         public async Task<bool> Handle(IncluirFilaInserirAulaRecorrenteCommand request, CancellationToken cancellationToken)
         {
-            await mediator.Send(new InserirAulaRecorrenteCommand(request.Usuario,
-                                                           request.DataAula,
-                                                           request.Quantidade,
-                                                           request.CodigoTurma,
-                                                           request.ComponenteCurricularId,
-                                                           request.NomeComponenteCurricular,
-                                                           request.TipoCalendarioId,
-                                                           request.TipoAula,
-                                                           request.CodigoUe,
-                                                           request.EhRegencia,
-                                                           request.RecorrenciaAula));
+            await mediator.Send(new InserirAulaRecorrenteCommand(request));
 
             return true;
         }

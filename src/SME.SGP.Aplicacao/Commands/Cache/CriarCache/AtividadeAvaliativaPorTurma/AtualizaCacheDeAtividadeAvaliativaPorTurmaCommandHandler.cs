@@ -13,12 +13,10 @@ namespace SME.SGP.Aplicacao
     public class AtualizaCacheDeAtividadeAvaliativaPorTurmaCommandHandler : IRequestHandler<AtualizaCacheDeAtividadeAvaliativaPorTurmaCommand, IEnumerable<NotaConceito>>
     {
         private readonly IRepositorioCache repositorioCache;
-        private readonly IRepositorioNotasConceitosConsulta repositorioNotasConceitos;
 
-        public AtualizaCacheDeAtividadeAvaliativaPorTurmaCommandHandler(IRepositorioCache repositorioCache, IRepositorioNotasConceitosConsulta repositorioNotasConceitos)
+        public AtualizaCacheDeAtividadeAvaliativaPorTurmaCommandHandler(IRepositorioCache repositorioCache)
         {
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
-            this.repositorioNotasConceitos = repositorioNotasConceitos ?? throw new ArgumentNullException(nameof(repositorioNotasConceitos));
         }
 
         public async Task<IEnumerable<NotaConceito>> Handle(AtualizaCacheDeAtividadeAvaliativaPorTurmaCommand request, CancellationToken cancellationToken)
@@ -30,8 +28,9 @@ namespace SME.SGP.Aplicacao
             if (atividadeAvaliativas.EhNulo())
                 return null;
 
-            foreach (var excluir in request.EntidadesExcluir)
-                atividadeAvaliativas.Remove(excluir);
+            if (request.EntidadesExcluir.Count() > 0)
+                foreach (var excluir in request.EntidadesExcluir)
+                    atividadeAvaliativas.Remove(excluir);
 
             foreach (var inserir in request.EntidadesSalvar)
             {

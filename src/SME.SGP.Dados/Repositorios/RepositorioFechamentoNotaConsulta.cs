@@ -13,11 +13,11 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioFechamentoNotaConsulta : RepositorioBase<FechamentoNota>, IRepositorioFechamentoNotaConsulta
     {
         const string queryPorFechamento = @"with lista as (select fa.aluno_codigo as AlunoCodigo
-	                                        , n.disciplina_id as ComponenteCurricularId
-	                                        , coalesce(wf.nota, n.nota) as Nota
-	                                        , coalesce(wf.conceito_id, n.conceito_id) as ConceitoId
-	                                        , pe.bimestre
-	                                        , wf.id as EmAprovacao
+                                            , n.disciplina_id as ComponenteCurricularId
+                                            , coalesce(wf.nota, n.nota) as Nota
+                                            , coalesce(wf.conceito_id, n.conceito_id) as ConceitoId
+                                            , pe.bimestre
+                                            , wf.id as EmAprovacao
                                             , row_number() over (partition by ft.turma_id, fa.aluno_codigo, pe.id, n.disciplina_id order by n.id desc) sequencia
                                          from fechamento_nota n
                                         inner join fechamento_aluno fa on fa.id = n.fechamento_aluno_id
@@ -42,7 +42,20 @@ namespace SME.SGP.Dados.Repositorios
                          inner join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id
                          inner join fechamento_nota fn on fn.fechamento_aluno_id = fa.id
                          inner join componente_curricular cc on cc.id = fn.disciplina_id
-                         where cc.permite_lancamento_nota ";
+                         where not fn.excluido
+                               and cc.permite_lancamento_nota ";
+
+        const string queryNotasConceitoFechamento = @"select fn.disciplina_id as ComponenteCurricularCodigo, fn.conceito_id as ConceitoId, fn.nota, pe.bimestre, cv.valor as conceito
+                                                        from fechamento_turma ft
+                                                       inner join turma t on t.id = ft.turma_id 
+                                                        left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
+                                                       inner join fechamento_turma_disciplina ftd on ftd.fechamento_turma_id = ft.id
+                                                       inner join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id
+                                                       inner join fechamento_nota fn on fn.fechamento_aluno_id = fa.id
+                                                       inner join componente_curricular cc on cc.id = fn.disciplina_id
+                                                        left join conceito_valores cv on cv.id = fn.conceito_id
+                                                       where cc.permite_lancamento_nota 
+                                                         ";
 
         public RepositorioFechamentoNotaConsulta(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
@@ -89,7 +102,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoPorTurmasCodigosBimestreAsync(string[] turmasCodigos, string alunoCodigo, int bimestre, DateTime? dataMatricula = null, DateTime? dataSituacao = null, int? anoLetivo = null)
         {
-            var query = $@"{queryNotasFechamento}
+            var query = $@"{queryNotasConceitoFechamento}
                            and t.turma_id = ANY(@turmasCodigos)
                            and fa.aluno_codigo = @alunoCodigo";
 
@@ -103,9 +116,7 @@ namespace SME.SGP.Dados.Repositorios
             if (bimestre == 0)
                 query += $@" and pe.bimestre is null";
             else
-                query += $@" and pe.bimestre = @bimestre";
-
-            query += ") select * from lista where sequencia = 1;";
+                query += $@" and pe.bimestre = @bimestre";            
 
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { turmasCodigos, alunoCodigo, bimestre, dataMatricula, dataSituacao });
         }
@@ -156,22 +167,29 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QueryAsync<FechamentoNotaAlunoAprovacaoDto>(query, new { fechamentosTurmaDisciplinaId });
         }
 
+        public Task<IEnumerable<FechamentoNotaAlunoAprovacaoDto>> ObterPorFechamentosTurmaAlunoCodigo(long[] fechamentosTurmaDisciplinaId, string alunoCodigo)
+        {
+            string query = queryPorFechamento;
+            query += @" and fa.aluno_codigo = @alunoCodigo) select * from lista where sequencia = 1;";
+            return database.Conexao.QueryAsync<FechamentoNotaAlunoAprovacaoDto>(query, new { fechamentosTurmaDisciplinaId, alunoCodigo });
+        }
+
         public async Task<IEnumerable<AlunosFechamentoNotaDto>> ObterComNotaLancadaPorPeriodoEscolarUE(long ueId, long periodoEscolarId)
         {
             const string query = @"select distinct 
-	                            ftd.disciplina_id as ComponenteCurricularId,
-	                            cc.descricao as ComponenteCurricularDescricao,
-	                            nota as Nota,
-	                            cv.valor as NotaConceito,
+                                ftd.disciplina_id as ComponenteCurricularId,
+                                cc.descricao as ComponenteCurricularDescricao,
+                                nota as Nota,
+                                cv.valor as NotaConceito,
                                 cv.aprovado as NotaConceitoAprovado,
                                 case when nota is not null then false else true end as EhConceito,
-	                            fa.aluno_codigo as AlunoCodigo,
+                                fa.aluno_codigo as AlunoCodigo,
                                 ftd.criado_rf as ProfessorRf,
                                 ftd.criado_por as ProfessorNome,
-	                            ftd.justificativa as Justificativa,
-	                            t.id as TurmaId,
-	                            t.ue_id as UeId,
-	                            bimestre
+                                ftd.justificativa as Justificativa,
+                                t.id as TurmaId,
+                                t.ue_id as UeId,
+                                bimestre
                             from fechamento_nota fn
                             left join fechamento_aluno fa ON fn.fechamento_aluno_id = fa.id
                             inner join fechamento_turma_disciplina ftd on fa.fechamento_turma_disciplina_id = ftd.id 
@@ -224,13 +242,6 @@ namespace SME.SGP.Dados.Repositorios
                 dataSituacao,
                 tipoCalendario
             });
-        }
-
-        public Task<IEnumerable<FechamentoNotaAlunoAprovacaoDto>> ObterPorFechamentosTurmaAlunoCodigo(long[] fechamentosTurmaDisciplinaId, string alunoCodigo)
-        {
-            string query = queryPorFechamento;
-            query += @" and fa.aluno_codigo = @alunoCodigo) select * from lista where sequencia = 1;";
-            return database.Conexao.QueryAsync<FechamentoNotaAlunoAprovacaoDto>(query, new { fechamentosTurmaDisciplinaId, alunoCodigo });
-        }
+        }        
     }
 }

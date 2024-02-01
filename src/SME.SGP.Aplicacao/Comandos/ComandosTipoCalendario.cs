@@ -19,10 +19,10 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoEvento servicoEvento;
         private readonly IServicoFeriadoCalendario servicoFeriadoCalendario;
 
-        public ComandosTipoCalendario(IRepositorioTipoCalendario repositorioTipoCalendario, 
-                                      IServicoFeriadoCalendario servicoFeriadoCalendario, 
+        public ComandosTipoCalendario(IRepositorioTipoCalendario repositorioTipoCalendario,
+                                      IServicoFeriadoCalendario servicoFeriadoCalendario,
                                       IServicoEvento servicoEvento,
-                                      IRepositorioEvento repositorioEvento, 
+                                      IRepositorioEvento repositorioEvento,
                                       IMediator mediator,
                                       IUnitOfWork unitOfWork)
         {
@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
         {
             if (tipoCalendarioDto.Modalidade.EhEjaOuCelp() && !tipoCalendarioDto.Semestre.HasValue)
                 throw new NegocioException(MensagemNegocioComuns.TIPO_CALENDARIO_EJA_OU_CELP_DEVE_TER_SEMESTRE);
-            
+
             if (tipoCalendarioDto.Modalidade.NaoEhEjaOuCelp() && tipoCalendarioDto.Semestre.HasValue)
                 throw new NegocioException(MensagemNegocioComuns.TIPO_CALENDARIO_DIFERENTE_EJA_OU_CELP_NAO_DEVE_TER_SEMESTRE);
         }
@@ -81,7 +81,7 @@ namespace SME.SGP.Aplicacao
             try
             {
                 ValidarSemestreParaEjaECelp(tipoCalendarioDto);
-                
+
                 var tipoCalendario = MapearParaDominio(tipoCalendarioDto);
 
                 bool ehRegistroExistente = await mediator.Send(new VerificarRegistroExistenteTipoCalendarioQuery(0, tipoCalendarioDto.Nome));
@@ -99,14 +99,14 @@ namespace SME.SGP.Aplicacao
             {
                 unitOfWork.Rollback();
                 throw;
-            }            
+            }
         }
 
         public TipoCalendario MapearParaDominio(TipoCalendarioDto tipoCalendarioDto, long? id = null)
         {
             var tipoCalendario = id.HasValue ? repositorioTipoCalendario.ObterPorId(id.Value) : new TipoCalendario();
             bool possuiEventos = id.HasValue && repositorioEvento.ExisteEventoPorTipoCalendarioId(id.Value);
-                
+
             tipoCalendario.Nome = tipoCalendarioDto.Nome;
             tipoCalendario.Situacao = tipoCalendarioDto.Situacao;
             tipoCalendario.Semestre = tipoCalendarioDto.Semestre;
@@ -127,44 +127,46 @@ namespace SME.SGP.Aplicacao
             foreach (long id in ids)
             {
                 var tipoCalendario = repositorioTipoCalendario.ObterPorId(id);
-                if (tipoCalendario.NaoEhNulo())
-                {
-                    var possuiEventos = repositorioEvento.ExisteEventoPorTipoCalendarioId(id);
-                    if (possuiEventos)
-                    {
-                        tiposInvalidos.Append($"{tipoCalendario.Nome}, ");
-                    }
-                    else
-                    {
-                        tipoCalendario.Excluido = true;
-                        repositorioTipoCalendario.Salvar(tipoCalendario);
-                    }
-                }
-                else
-                {
-                    idsInvalidos.Append($"{id}, ");
-                }
+                MarcarExcluido(id, tipoCalendario, idsInvalidos, tiposInvalidos);
             }
 
             if (idsInvalidos.ToString().EstaPreenchido())
+                throw new NegocioException(ObterMsgErroIdsInvalidos(idsInvalidos));
+
+            if (tiposInvalidos.ToString().EstaPreenchido())
+                throw new NegocioException(ObterMsgErroTiposInvalidos(tiposInvalidos));
+        }
+
+        private string ObterMsgErroTiposInvalidos(StringBuilder tiposInvalidos)
+        {
+            string erroTipos = tiposInvalidos.ToString().TrimEnd(',');
+            if (tiposInvalidos.ToString().IndexOf(',') > -1)
+                return $"Houve um erro ao excluir os tipos de calendário '{erroTipos}'. Os tipos de calendário possuem eventos vinculados. Excluia primeiro os eventos para depois remover o tipo de calendário escolar";
+            return $"Houve um erro ao excluir o tipo de calendário '{erroTipos}'. O tipo de calendário possui eventos vinculados. Excluia primeiro os eventos para depois remover o tipo de calendário escolar";
+        }
+
+        private string ObterMsgErroIdsInvalidos(StringBuilder idsInvalidos)
+        {
+            string erroIds = idsInvalidos.ToString().TrimEnd(',');
+            if (erroIds.IndexOf(',') > -1)
+                return $"Houve um erro ao excluir os tipos de calendário ids '{erroIds}'. Um dos tipos de calendário não existe";
+            return $"Houve um erro ao excluir o tipo de calendário ids '{erroIds}'. O tipo de calendário não existe";
+        }
+        private void MarcarExcluido(long id, TipoCalendario tipoCalendario, StringBuilder idsInvalidos, StringBuilder tiposInvalidos)
+        {
+            if (tipoCalendario.NaoEhNulo())
             {
-                string erroIds = idsInvalidos.ToString().TrimEnd(',');
-
-                if (erroIds.IndexOf(',') > -1)
-                    throw new NegocioException($"Houve um erro ao excluir os tipos de calendário ids '{erroIds}'. Um dos tipos de calendário não existe");
+                var possuiEventos = repositorioEvento.ExisteEventoPorTipoCalendarioId(id);
+                if (possuiEventos)
+                    tiposInvalidos.Append($"{tipoCalendario.Nome}, ");
                 else
-                    throw new NegocioException($"Houve um erro ao excluir o tipo de calendário ids '{erroIds}'. O tipo de calendário não existe");
+                {
+                    tipoCalendario.Excluido = true;
+                    repositorioTipoCalendario.Salvar(tipoCalendario);
+                }
             }
-
-            if (!string.IsNullOrEmpty(tiposInvalidos.ToString()))
-            {
-                string erroTipos = tiposInvalidos.ToString().TrimEnd(',');
-
-                if (tiposInvalidos.ToString().IndexOf(',') > -1)
-                    throw new NegocioException($"Houve um erro ao excluir os tipos de calendário '{erroTipos}'. Os tipos de calendário possuem eventos vinculados. Excluia primeiro os eventos para depois remover o tipo de calendário escolar");
-                else
-                    throw new NegocioException($"Houve um erro ao excluir o tipo de calendário '{erroTipos}'. O tipo de calendário possui eventos vinculados. Excluia primeiro os eventos para depois remover o tipo de calendário escolar");
-            }
+            else
+                idsInvalidos.Append($"{id}, ");
         }
     }
 }

@@ -2,8 +2,10 @@
 
 namespace SME.SGP.Benchmarks
 {
-    internal class Program
+    public class Program
     {
+        protected Program() { }
+
         private static void Main(string[] args)
         {
             BenchmarkRunner.Run<RedisGZipBenchMark>();

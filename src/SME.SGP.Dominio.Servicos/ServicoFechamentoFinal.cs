@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -9,8 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes;
-using System.Threading;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -23,7 +22,6 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IServicoUsuario servicoUsuario;
-        private readonly IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
         private readonly IRepositorioCache repositorioCache;
@@ -38,7 +36,6 @@ namespace SME.SGP.Dominio.Servicos
                                       IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                                       IRepositorioEvento repositorioEvento,
                                       IServicoUsuario servicoUsuario,
-                                      IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor,
                                       IUnitOfWork unitOfWork,
                                       IMediator mediator,
                                       IRepositorioCache repositorioCache)
@@ -50,7 +47,6 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
-            this.repositorioNotaTipoValor = repositorioNotaTipoValor ?? throw new ArgumentNullException(nameof(repositorioNotaTipoValor));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
@@ -65,17 +61,20 @@ namespace SME.SGP.Dominio.Servicos
                 await VerificaSeProfessorPodePersistirTurma(turma.CodigoTurma, fechamentoFinal.DisciplinaId, usuarioLogado);
 
             var mesmoAnoLetivo = turma.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year;
-            var bimestre = turma.EhEJA() ? BIMESTRE_2 : BIMESTRE_4;
+            var bimestre = turma.EhSemestral() ? BIMESTRE_2 : BIMESTRE_4;
             var temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTimeExtension.HorarioBrasilia().Date, bimestre, mesmoAnoLetivo));
 
             if (!temPeriodoAberto)
                 throw new NegocioException(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
 
             await ObterComponenteCurricular(fechamentoFinal.DisciplinaId, turma.CodigoTurma);
-            var tipoNota = await repositorioNotaTipoValor.ObterPorTurmaIdAsync(turma.Id, turma.TipoTurma);
+            var tipoNota = await mediator.Send(new ObterNotaTipoValorPorTurmaIdQuery(turma)); 
 
             var consolidacaoNotasAlunos = new List<ConsolidacaoNotaAlunoDto>();
             conselhosClasseAlunos = (await mediator.Send(new ObterConselhoClasseAlunosNotaPorFechamentoIdQuery(fechamentoFinal.FechamentoTurmaId))).ToList();
+
+            if (fechamentoFinal.FechamentoAlunos.Any())
+                VerificaSeEhNotaValida(fechamentoFinal.FechamentoAlunos);
 
             unitOfWork.IniciarTransacao();
             try
@@ -194,8 +193,13 @@ namespace SME.SGP.Dominio.Servicos
                 await LogarErro("Erro ao persistir notas de fechamento final", e, LogNivel.Critico);
 
                 unitOfWork.Rollback();
-                throw e;
+                throw;
             }
+        }
+        private void VerificaSeEhNotaValida(IEnumerable<FechamentoAluno> fechamentoAlunos)
+        {
+            if (fechamentoAlunos.Any(f => f.FechamentoNotas.Any(f => f.Nota.NaoEhNulo() && f.Nota > 10)))
+                throw new NegocioException(MensagensNegocioLancamentoNota.NOTA_NUMERICA_DEVE_SER_MENOR_OU_IGUAL_A_10);
         }
 
         private async Task SalvarHistoricoNotaFechamento(FechamentoNota fechamentoNota, TipoNota tipoNota, string criadoRf, string criadoPor,double? notaAnterior, long? conceitoIdAnterior)
@@ -305,8 +309,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             if (notaDto.ConceitoId.HasValue && notaDto.ConceitoId.Value == 3)
                 throw new NegocioException("Não é possível atribuir conceito NS (Não Satisfatório) pois em 2020 não há retenção dos estudantes conforme o Art 5º da LEI Nº 17.437 DE 12 DE AGOSTO DE 2020.");
-            else
-            if (!notaDto.SinteseId.HasValue && notaDto.Nota < 5)
+            else if (!notaDto.SinteseId.HasValue && notaDto.Nota < 5)
                 throw new NegocioException("Não é possível atribuir uma nota menor que 5 pois em 2020 não há retenção dos estudantes conforme o Art 5º da LEI Nº 17.437 DE 12 DE AGOSTO DE 2020.");
         }
 

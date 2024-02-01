@@ -1,8 +1,5 @@
-﻿using Elastic.Apm.Api;
-using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
-using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
@@ -252,7 +249,6 @@ namespace SME.SGP.Aplicacao
 
                 notaConceitoAluno.Marcador = await mediator
                     .Send(new ObterMarcadorAlunoQuery(aluno, periodoInicio, turmaCompleta.EhTurmaInfantil));
-
                 notaConceitoAluno.NotasAvaliacoes = notasAvaliacoes;
 
                 var fechamentoTurma = (from ft in fechamentosNotasDaTurma
@@ -309,10 +305,10 @@ namespace SME.SGP.Aplicacao
                         else
                         {
                             //para casos onde teve uma inserção de nota, saiu da tela, e inseriu outra nota, mas em outro aluno.
-                            if (fechamentoTurma.FechamentoAlunos.Count() > 1)
+                            if (fechamentoTurma.FechamentoAlunos.Count > 1)
                             {
                                 var ultimoDadoDeAuditoria = fechamentoTurma.FechamentoAlunos
-                                                               .SelectMany(a => a.FechamentoNotas).ToList()
+                                                               .SelectMany(a => a.FechamentoNotas)
                                                                .OrderByDescending(nc => nc.CriadoEm)
                                                                .Select(nc => new
                                                                {
@@ -473,8 +469,8 @@ namespace SME.SGP.Aplicacao
                 var notaTipo = await mediator.Send(new ObterTipoNotaPorTurmaQuery(turmaCompleta, new DateTime(filtro.AnoLetivo, 3, 1)));
                 retorno.NotaTipo = notaTipo;
 
-                ObterValoresDeAuditoria(dataUltimaNotaConceitoInserida, dataUltimaNotaConceitoAlterada, usuarioRfUltimaNotaConceitoInserida, usuarioRfUltimaNotaConceitoAlterada,
-                    notaTipo, retorno, nomeAvaliacaoAuditoriaInclusao, nomeAvaliacaoAuditoriaAlteracao);
+                CarregarValoresDeAuditoriaInserido(dataUltimaNotaConceitoInserida, usuarioRfUltimaNotaConceitoInserida, notaTipo, retorno, nomeAvaliacaoAuditoriaInclusao);
+                CarregarValoresDeAuditoriaAlterada(dataUltimaNotaConceitoAlterada, usuarioRfUltimaNotaConceitoAlterada, notaTipo, retorno, nomeAvaliacaoAuditoriaAlteracao);
             }
             else
             {
@@ -490,18 +486,13 @@ namespace SME.SGP.Aplicacao
         {
             return await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(turma.AnoLetivo, alunosCodigos));
         }
+
         private bool ChecarSeProfessorCJTitularPodeEditarNota(Usuario dadosUsuario, AtividadeAvaliativa dadosAvaliacao)
         {
             if (dadosUsuario.EhProfessor() || dadosUsuario.EhProfessorCj())
                 return dadosUsuario.EhProfessorCj() && dadosAvaliacao.EhCj || dadosUsuario.EhProfessor() && !dadosAvaliacao.EhCj;
 
             return true;
-        }
-
-        private bool VerificaSeEsteveAtivoUmDiaNaTurma(AlunoPorTurmaResposta aluno, DateTime periodoInicio, DateTime periodoFim)
-        {
-            return !aluno.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido) && aluno.DataSituacao >= periodoInicio
-                   && aluno.DataMatricula <= periodoFim;
         }
 
         private void VerificaNotaEmAprovacao(double notaConceitoAprovacaoWf, FechamentoNotaRetornoDto notasConceito)
@@ -552,15 +543,24 @@ namespace SME.SGP.Aplicacao
                 };
             }
         }
-        private void ObterValoresDeAuditoria(DateTime? dataUltimaNotaConceitoInserida, DateTime? dataUltimaNotaConceitoAlterada, string usuarioInseriu, string usuarioAlterou, TipoNota tipoNota, NotasConceitosRetornoDto notasConceitosRetornoDto, string nomeAvaliacaoInclusao, string nomeAvaliacaoAlteracao)
-        {
-            var tituloNotasOuConceitos = tipoNota == TipoNota.Conceito ? "Conceitos" : "Notas";
 
+        private void CarregarValoresDeAuditoriaInserido(DateTime? dataUltimaNotaConceitoInserida, string usuarioInseriu, TipoNota tipoNota, NotasConceitosRetornoDto notasConceitosRetornoDto, string nomeAvaliacaoInclusao)
+        {
             if (dataUltimaNotaConceitoInserida.HasValue)
-                notasConceitosRetornoDto.AuditoriaInserido = $"{tituloNotasOuConceitos} da avaliação {nomeAvaliacaoInclusao} inseridos por {usuarioInseriu} em {dataUltimaNotaConceitoInserida.Value.ToString("dd/MM/yyyy")}, às {dataUltimaNotaConceitoInserida.Value.ToString("HH:mm")}.";
-            if (dataUltimaNotaConceitoAlterada.HasValue)
-                notasConceitosRetornoDto.AuditoriaAlterado = $"{tituloNotasOuConceitos} da avaliação {nomeAvaliacaoAlteracao} alterados por {usuarioAlterou} em {dataUltimaNotaConceitoAlterada.Value.ToString("dd/MM/yyyy")}, às {dataUltimaNotaConceitoAlterada.Value.ToString("HH:mm")}.";
+                notasConceitosRetornoDto.AuditoriaInserido = $"{ObterDescricaoTipoNota(tipoNota)} da avaliação {nomeAvaliacaoInclusao} inseridos por {usuarioInseriu} em {dataUltimaNotaConceitoInserida.Value.ToString("dd/MM/yyyy")}, às {dataUltimaNotaConceitoInserida.Value.ToString("HH:mm")}.";
         }
+
+        private void CarregarValoresDeAuditoriaAlterada(DateTime? dataUltimaNotaConceitoAlterada, string usuarioAlterou, TipoNota tipoNota, NotasConceitosRetornoDto notasConceitosRetornoDto, string nomeAvaliacaoAlteracao)
+        {
+            if (dataUltimaNotaConceitoAlterada.HasValue)
+                notasConceitosRetornoDto.AuditoriaAlterado = $"{ObterDescricaoTipoNota(tipoNota)} da avaliação {nomeAvaliacaoAlteracao} alterados por {usuarioAlterou} em {dataUltimaNotaConceitoAlterada.Value.ToString("dd/MM/yyyy")}, às {dataUltimaNotaConceitoAlterada.Value.ToString("HH:mm")}.";
+        }
+
+        private string ObterDescricaoTipoNota(TipoNota tipoNota)
+        {
+            return tipoNota == TipoNota.Conceito ? "Conceitos" : "Notas";
+        }
+
         private async Task ValidaMinimoAvaliacoesBimestrais(DisciplinaDto componenteCurricular, IEnumerable<DisciplinaResposta> disciplinasRegencia, TipoAvaliacao tipoAvaliacaoBimestral, NotasConceitosBimestreRetornoDto bimestreDto, IEnumerable<AtividadeAvaliativa> atividadeAvaliativas, int bimestre)
         {
             var atividadesBimestrais = atividadeAvaliativas.Where(a => a.TipoAvaliacaoId == (long)TipoAvaliacaoCodigo.AvaliacaoBimestral);
@@ -596,10 +596,6 @@ namespace SME.SGP.Aplicacao
                 if ((avaliacoes.EhNulo()) || (avaliacoes.Count() < tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre))
                     bimestreDto.Observacoes.Add($"O componente curricular [{componenteCurricular.Nome}] não tem o número mínimo de avaliações bimestrais no bimestre {bimestre}");
             }
-        }
-        private async Task<bool> VerificaPeriodoFechamentoEmAberto(Turma turma, int bimestre)
-        {
-            return await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTimeExtension.HorarioBrasilia(), bimestre, true));
         }
 
         private static NotaConceito ObterNotaParaVisualizacao(IEnumerable<NotaConceito> notas, AlunoPorTurmaResposta aluno, AtividadeAvaliativa atividadeAvaliativa)

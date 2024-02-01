@@ -147,7 +147,7 @@ namespace SME.SGP.Dados.Repositorios
                         fechamentoTurmaDisciplinaLista = fechamentoTurmaDiscplina;
                         fechammentosTurmaDisciplina.Add(fechamentoTurmaDiscplina);
                     }
-                    
+
                     fechamentoTurmaDisciplinaLista.FechamentoAlunos.Add(fechamentoAluno);
 
                     fechamentoTurmaDisciplinaLista.AdicionarNota(fechamentoNota);
@@ -166,14 +166,14 @@ namespace SME.SGP.Dados.Repositorios
                     where ft.turma_id = @turmaId and 
                         ftd.disciplina_id = @componenteCurricularId and 
                         ft.periodo_escolar_id = @periodoEscolarId  ");
-            
+
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query.ToString(), new { turmaId, componenteCurricularId, periodoEscolarId });
         }
 
         public Task<FechamentoTurmaPeriodoEscolarDto> ObterIdEPeriodoPorTurmaBimestre(long turmaId, int? bimestre)
         {
             var query = @"select ft.id as FechamentoTurmaId
-	                        , pe.id as PeriodoEscolarId
+                            , pe.id as PeriodoEscolarId
                           from fechamento_turma ft
                          left join periodo_escolar pe on pe.id = ft.periodo_escolar_id
                         where ft.turma_id = @turmaId

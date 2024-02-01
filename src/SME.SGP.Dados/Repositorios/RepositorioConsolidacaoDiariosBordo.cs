@@ -30,10 +30,9 @@ namespace SME.SGP.Dados.Repositorios
                             , count(a.id) filter (where db.id is not null) as QuantidadePreenchidos
                             , count(a.id) filter (where db.id is null and a.data_aula < NOW()) as QuantidadePendentes
                           from aula a
-                          left join diario_bordo db on db.aula_id = a.id and not db.excluido 
-                         inner join turma t on t.turma_id = a.turma_id 
-                         where not a.excluido 
-                           and t.ue_id = @ueId
+                          left join diario_bordo db on db.aula_id = a.id and not db.excluido and not a.excluido 
+                          inner join turma t on t.turma_id = a.turma_id 
+                          where t.ue_id = @ueId
                            and t.ano_letivo = @anoLetivo
                         group by t.id, t.ano_letivo";
 
@@ -54,10 +53,10 @@ namespace SME.SGP.Dados.Repositorios
 
             var query = $@"select * from (
                     select dre.abreviacao as Dre
-	                    , RIGHT(dre.abreviacao,2) as Grupo
-	                    , dre.dre_id as DreId
-	                    , sum(c.quantidade_pendentes) as Quantidade
-	                    , 'Pendentes' as Descricao
+                        , RIGHT(dre.abreviacao,2) as Grupo
+                        , dre.dre_id as DreId
+                        , sum(c.quantidade_pendentes) as Quantidade
+                        , 'Pendentes' as Descricao
                       from consolidacao_diarios_bordo c
                      inner join turma t on t.id = c.turma_id 
                      inner join ue on ue.id = t.ue_id 
@@ -69,10 +68,10 @@ namespace SME.SGP.Dados.Repositorios
                     union all
 
                     select dre.abreviacao as Dre
-	                    , RIGHT(dre.abreviacao,2) as Grupo
-	                    , dre.dre_id as DreId
-	                    , sum(c.quantidade_preenchidos) as Quantidade
-	                    , 'Preenchidos' as Descricao
+                        , RIGHT(dre.abreviacao,2) as Grupo
+                        , dre.dre_id as DreId
+                        , sum(c.quantidade_preenchidos) as Quantidade
+                        , 'Preenchidos' as Descricao
                       from consolidacao_diarios_bordo c
                      inner join turma t on t.id = c.turma_id 
                      inner join ue on ue.id = t.ue_id 

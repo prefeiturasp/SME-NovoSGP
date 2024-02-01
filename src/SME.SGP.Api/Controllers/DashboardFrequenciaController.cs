@@ -90,7 +90,19 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.DF_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterFrequenciasConsolidadacaoDiariaPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, string anoTurma, [FromQuery] int semestre, DateTime dataAula, bool visaoDre, [FromServices] IObterDadosDashboardFrequenciaDiariaPorAnoTurmaUseCase useCase)
         {
-            return Ok(await useCase.Executar(anoLetivo, dreId, ueId, modalidade, semestre, anoTurma, dataAula, visaoDre));
+            var dto = new FrequenciasConsolidadacaoPorTurmaEAnoDto()
+            {
+                AnoLetivo = anoLetivo,
+                AnoTurma = anoTurma,
+                Semestre = semestre,
+                DataAula = dataAula,
+                DreId = dreId,
+                Modalidade = modalidade,
+                UeId = ueId,
+                VisaoDre = visaoDre
+            };
+
+            return Ok(await useCase.Executar(dto));
         }       
         
         [HttpGet("anos/{anoLetivo}/dres/{dreId}/ues/{ueId}/modalidades/{modalidade}/anoTurma/{anoTurma}/consolidado-semanal-mensal")]
@@ -100,17 +112,28 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.DF_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterFrequenciasConsolidacaoSemanalMensalPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, TipoConsolidadoFrequencia tipoConsolidadoFrequencia, string anoTurma, [FromQuery] int semestre,DateTime? dataInicio, DateTime? datafim, int? mes, bool visaoDre, [FromServices] IObterDadosDashboardFrequenciaSemanalMensalPorAnoTurmaUseCase useCase)
         {
-            return Ok(await useCase.Executar(anoLetivo, dreId, ueId, modalidade, anoTurma, dataInicio, datafim,mes, tipoConsolidadoFrequencia,semestre, visaoDre));
+            var dto = new FrequenciasConsolidadacaoPorTurmaEAnoDto()
+            {
+                AnoLetivo = anoLetivo,
+                AnoTurma = anoTurma,
+                Semestre = semestre,
+                DreId = dreId,
+                Modalidade = modalidade,
+                UeId = ueId,
+                VisaoDre = visaoDre
+            };
+
+            return Ok(await useCase.Executar(dto, dataInicio, datafim,mes, tipoConsolidadoFrequencia));
         }    
 
-        [HttpGet("filtro/anos/{anoLetivo}/semanas")]
+        [HttpGet("filtro/anos/{anoLetivo}/modalidadeTurma/{modalidade}/semanas")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(IEnumerable<GraficoAusenciasComJustificativaResultadoDto>), 200)]
         [Permissao(Permissao.DF_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterSemanasFiltro(int anoLetivo, [FromServices] IObterFiltroSemanaUseCase useCase)
+        public async Task<IActionResult> ObterSemanasFiltro(int anoLetivo, int modalidade, [FromQuery] int semestre, [FromServices] IObterFiltroSemanaUseCase useCase)
         {
-            return Ok(await useCase.Executar(anoLetivo));
+            return Ok(await useCase.Executar(anoLetivo, modalidade, semestre));
         }
 
         [HttpPost("consolidar")]

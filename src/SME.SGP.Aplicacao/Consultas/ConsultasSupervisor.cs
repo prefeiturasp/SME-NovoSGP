@@ -104,7 +104,7 @@ namespace SME.SGP.Aplicacao
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
             var listaCodigoSupervisor = filtro.SupervisorId.NaoEhNulo() ? filtro.SupervisorId.Split(",").ToArray() : new string[] { };
 
-            if (responsavelEscolaDreDto.Count() > 0)
+            if (responsavelEscolaDreDto.Count > 0)
             {
                 for (int i = 0; i < responsavelEscolaDreDto.Count; i++)
                 {
@@ -250,25 +250,6 @@ namespace SME.SGP.Aplicacao
             return tipoDescricao.NaoEhNulo() ? tipoDescricao : null;
         }
 
-        private static SupervisorEscolaDre MapearDtoParaEntidade(SupervisorEscolasDreDto dto)
-        {
-            return new SupervisorEscolaDre()
-            {
-                DreId = dto.DreId,
-                SupervisorId = dto.SupervisorId,
-                EscolaId = dto.EscolaId,
-                Id = dto.AtribuicaoSupervisorId,
-                Excluido = dto.AtribuicaoExcluida,
-                AlteradoEm = dto.AlteradoEm,
-                AlteradoPor = dto.AlteradoPor,
-                AlteradoRF = dto.AlteradoRF,
-                CriadoEm = dto.CriadoEm,
-                CriadoPor = dto.CriadoPor,
-                CriadoRF = dto.CriadoRF,
-                Tipo = dto.TipoAtribuicao
-            };
-        }
-
         private async Task TratarRegistrosComResponsaveis(IEnumerable<AbrangenciaUeRetorno> escolasPorDre, IEnumerable<SupervisorEscolasDreDto> supervisoresEscolasDres, List<ResponsavelEscolasDto> listaRetorno)
         {
             if (supervisoresEscolasDres.Any())
@@ -297,33 +278,6 @@ namespace SME.SGP.Aplicacao
                         responsavelEscolasDto.Escolas = escolas.ToList();
 
                         listaRetorno.Add(responsavelEscolasDto);
-                    }
-                }
-            }
-        }
-
-        private void RemoverSupervisorSemAtribuicao(IEnumerable<SupervisorEscolasDreDto> supervisoresEscolasDres,
-            IEnumerable<SupervisoresRetornoDto> supervisoresEol)
-        {
-            var supervisoresSemAtribuicao = supervisoresEscolasDres;
-
-            if (supervisoresEol.NaoEhNulo())
-            {
-                supervisoresSemAtribuicao = supervisoresEscolasDres
-                    .Where(s => s.TipoAtribuicao == (int)TipoResponsavelAtribuicao.SupervisorEscolar &&
-                        !supervisoresEol.Select(e => e.CodigoRf)
-                    .Contains(s.SupervisorId));
-            }
-
-            if (supervisoresSemAtribuicao.NaoEhNulo() && supervisoresSemAtribuicao.Any())
-            {
-                foreach (var supervisor in supervisoresSemAtribuicao)
-                {
-                    if (supervisor.TipoAtribuicao == (int)TipoResponsavelAtribuicao.SupervisorEscolar)
-                    {
-                        var supervisorEntidadeExclusao = MapearDtoParaEntidade(supervisor);
-                        supervisorEntidadeExclusao.Excluir();
-                        repositorioSupervisorEscolaDre.Salvar(supervisorEntidadeExclusao);
                     }
                 }
             }

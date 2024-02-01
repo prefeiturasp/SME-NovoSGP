@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Net.Http;
@@ -31,7 +32,7 @@ namespace SME.SGP.Aplicacao
                 return JsonConvert.DeserializeObject<ProfessorResumoDto>(json);
             }
             else
-                throw new Exception($"Não foi possível obter o resumo do professor rf : {request.CodigoRF} no ano letivo {request.AnoLetivo}.");
+                throw new NegocioException($"Não foi possível obter o resumo do professor rf : {request.CodigoRF} no ano letivo {request.AnoLetivo}.");
         }
     }
 }

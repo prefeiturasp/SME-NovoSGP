@@ -7,6 +7,6 @@ namespace SME.SGP.Aplicacao
 
     public interface IObterNotasFrequenciaUseCase 
     {
-        Task<ConselhoClasseAlunoNotasConceitosRetornoDto> Executar(ConselhoClasseNotasFrequenciaDto conselhoClasseNotasFrequenciaDto);
+        Task<ConselhoClasseAlunoNotasConceitosRetornoDto> Executar(ConselhoClasseNotasFrequenciaDto notasFrequenciaDto);
     }
 }

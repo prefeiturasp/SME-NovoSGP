@@ -38,6 +38,7 @@
         public const string NOTA_CONCEITO_FECHAMENTO_TURMA_ALUNO_BIMESTRES_E_FINAL = "nota-conceito-fechamento-turmacodigo-aluno-bimestres-e-final:{0}-{1}";
         public const string NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE_ALUNO = "nota-conceito-conselho-classe-turmacodigo-bimestre-aluno:{0}-{1}-{2}";      
         public const string QUESTIONARIO = "questionario:{0}";
+        public const string NOME_CHAVE_COMPENSACAO_TURMA_BIMESTRE = "compensacao-ausencia-turma:turma-{0}-bimestre-{1}";
         public const string REGISTROS_FREQUENCIA_ALUNO_EXCLUIDOS_TURMA = "registros-frequencia-aluno-excluidos-turma:{0}";
         public const string DRE_CODIGO = "dre-codigo:{0}";
         public const string TIPO_CALENDARIO_ANO_LETIVO_MODALIDADE_SEMESTRE = "tipo-calendario:{0}-{1}-{2}";
@@ -46,5 +47,7 @@
         public const string DIAS_LETIVOS_E_NAO_LETIVOS_PERIODO_ESCOLAR_IDS_CONSIDERADOS_DESCONSIDERA_CRIACAO_DIA_LETIVO_PROXIMAS_UES = "eventos-letivos-nao-letivos-periodos-escolares:{0}-{1}";
         public const string DADOS_CRIACAO_AULAS_AUTOMATICAS_REGENCIA_UE_TIPO_CALENDARIO_MODALIDADE = "dados-criacao-aulas-automaticas-regencia:{0}-{1}-{2}";
         public const string DADOS_CRIACAO_AULA_AUTOMATICA_INFANTIL_REGENCIA_TURMA = "dados-criacao-aula-automatica-infantil-regencia-turma:{0}";
+        public const string ATRIBUICOES_RESPONSAVEIS_ATIVAS = "atribuicoes-responsaveis-tipo:{0}";
+        public const string ATRIBUICOES_ESPORADICAS_ATIVAS = "atribuicoes-esporadicas";
     }
 }

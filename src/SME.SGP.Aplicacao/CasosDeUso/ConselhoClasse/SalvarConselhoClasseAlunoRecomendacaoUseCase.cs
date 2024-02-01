@@ -3,7 +3,6 @@ using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -27,8 +26,7 @@ namespace SME.SGP.Aplicacao
             if (fechamentoTurma.EhNulo())
                 throw new NegocioException(MensagemNegocioFechamentoNota.FECHAMENTO_TURMA_NAO_LOCALIZADO);
 
-            var bimestre = fechamentoTurma.PeriodoEscolarId.HasValue ? fechamentoTurma.PeriodoEscolar.Bimestre :
-                fechamentoTurma.Turma.EhTurmaModalidadeSemestral() ? BIMESTRE_FINAL_EJA_CELP : BIMESTRE_FINAL_FUNDAMENTAL_MEDIO;
+            var bimestre = ObterBimestre(fechamentoTurma);
 
             var periodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(fechamentoTurma.Turma, dataAtual.Date, bimestre,
                 fechamentoTurma.Turma.AnoLetivo == dataAtual.Year));
@@ -48,11 +46,13 @@ namespace SME.SGP.Aplicacao
             if (alunoConselho.EhNulo())
                 throw new NegocioException(MensagemNegocioConselhoClasse.ALUNO_NAO_ENCONTRADO_PARA_SALVAR_CONSELHO_CLASSE);
 
-            var permiteEdicao = alunoConselho.EstaAtivo(periodoEscolar.PeriodoFim) || await EstaInativoDentroPeriodoAberturaReabertura(alunoConselho, bimestre, periodoEscolar.TipoCalendarioId, fechamentoTurma.Turma);
+            var alunoEstaAtivo = alunoConselho.EstaAtivo(periodoEscolar.PeriodoFim);
+            
+            var permiteEdicao = alunoEstaAtivo || await EstaInativoDentroPeriodoAberturaReabertura(alunoConselho, bimestre, periodoEscolar.TipoCalendarioId, fechamentoTurma.Turma);
 
             if (!permiteEdicao)
                 throw new NegocioException(MensagemNegocioFechamentoNota.ALUNO_INATIVO_ANTES_PERIODO_ESCOLAR);
-            
+
             var bimestreParaValidacaoNotasPreenchidas = fechamentoTurma.PeriodoEscolarId.HasValue ? bimestre : BIMESTRE_FINAL_CONSULTA_NOTA;
 
             var existeConselhoClasseBimestre = await mediator
@@ -68,6 +68,14 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new SalvarConselhoClasseAlunoRecomendacaoCommand(conselhoClasseAlunoDto.RecomendacaoAlunoIds, conselhoClasseAlunoDto.RecomendacaoFamiliaIds, conselhoClasseAluno.Id));
 
             return conselhoClasseAluno;
+        }
+
+        private int ObterBimestre(FechamentoTurma fechamentoTurma)
+        {
+            if (fechamentoTurma.PeriodoEscolarId.HasValue)
+                return fechamentoTurma.PeriodoEscolar.Bimestre;
+
+            return fechamentoTurma.Turma.EhTurmaModalidadeSemestral() ? BIMESTRE_FINAL_EJA_CELP : BIMESTRE_FINAL_FUNDAMENTAL_MEDIO;
         }
         
         private async Task<bool> EstaInativoDentroPeriodoAberturaReabertura(AlunoPorTurmaResposta dadosAluno, int bimestre, long tipoCalendarioId, Turma turma)

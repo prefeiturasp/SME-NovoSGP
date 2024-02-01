@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Consts;
 using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,6 @@ namespace SME.SGP.Dados.Repositorios
         public const int QUESTAO_PRIORIDADE_ORDEM = 1;
         public const int SECAO_ETAPA_1 = 1;
         public const int SECAO_INFORMACOES_ALUNO_ORDEM = 1;
-        public const string SECAO_ITINERANCIA_NOME = "QUESTOES_ITINERACIA";
         public const string QUESTAO_DATA_DO_ATENDIMENTO = "DATA_DO_ATENDIMENTO";
 
         public RepositorioEncaminhamentoNAAPA(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
@@ -29,7 +29,7 @@ namespace SME.SGP.Dados.Repositorios
             string codigoUe, string nomeAluno, DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, 
             int situacao, long prioridade, long[] turmasIds, Paginacao paginacao, bool exibirEncerrados)
         {
-            var query = MontaQueryCompleta(paginacao, dreId, codigoUe, nomeAluno, dataAberturaQueixaInicio, 
+            var query = MontaQueryCompleta(paginacao, codigoUe, nomeAluno, dataAberturaQueixaInicio, 
                 dataAberturaQueixaFim, situacao,prioridade , turmasIds, exibirEncerrados);
             var situacoesEncerrado = (int)SituacaoNAAPA.Encerrado ;
 
@@ -52,7 +52,8 @@ namespace SME.SGP.Dados.Repositorios
 
             return retorno;
         }
-        private string MontaQueryCompleta(Paginacao paginacao, long dreId, string codigoUe, string nomeAluno, 
+
+        private string MontaQueryCompleta(Paginacao paginacao, string codigoUe, string nomeAluno, 
             DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, int situacao, long prioridade, long[] turmasIds, bool exibirEncerrados)
         {
             var sql = new StringBuilder();
@@ -87,7 +88,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sqlSelect = $@"with vw_resposta_data as (
                         select ens.encaminhamento_naapa_id, 
-		                       enr.texto DataAberturaQueixaInicio	
+                               enr.texto DataAberturaQueixaInicio    
                         from encaminhamento_naapa_secao ens   
                         join encaminhamento_naapa_questao enq on ens.id = enq.encaminhamento_naapa_secao_id  
                         join questao q on enq.questao_id = q.id 
@@ -98,8 +99,8 @@ namespace SME.SGP.Dados.Repositorios
                         ),
                         vw_resposta_prioridade as (
                         select ens.encaminhamento_naapa_id, 
-		                        opr.nome as Prioridade,
-		                        enr.resposta_id  as PrioridadeId
+                                opr.nome as Prioridade,
+                                enr.resposta_id  as PrioridadeId
                         from encaminhamento_naapa_secao ens   
                         join encaminhamento_naapa_questao enq on ens.id = enq.encaminhamento_naapa_secao_id  
                         join questao q on enq.questao_id = q.id 
@@ -298,19 +299,19 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<EncaminhamentoNAAPACodigoArquivoDto>> ObterCodigoArquivoPorEncaminhamentoNAAPAId(long encaminhamentoId)
         {
             var sql = @"select
-	                        a.codigo
+                            a.codigo
                         from
-	                        encaminhamento_naapa ea
+                            encaminhamento_naapa ea
                         inner join encaminhamento_naapa_secao eas on
-	                        ea.id = eas.encaminhamento_naapa_id
+                            ea.id = eas.encaminhamento_naapa_id
                         inner join encaminhamento_naapa_questao qea on
-	                        eas.id = qea.encaminhamento_naapa_secao_id
+                            eas.id = qea.encaminhamento_naapa_secao_id
                         inner join encaminhamento_naapa_resposta rea on
-	                        qea.id = rea.questao_encaminhamento_id
+                            qea.id = rea.questao_encaminhamento_id
                         inner join arquivo a on
-	                        rea.arquivo_id = a.id
+                            rea.arquivo_id = a.id
                         where
-	                        ea.id = @encaminhamentoId";
+                            ea.id = @encaminhamentoId";
 
             return await database.Conexao.QueryAsync<EncaminhamentoNAAPACodigoArquivoDto>(sql.ToString(), new { encaminhamentoId });
         }   
@@ -343,16 +344,16 @@ namespace SME.SGP.Dados.Repositorios
                         WHERE NOT ens.excluido and sen.nome_componente = @secaoNome
                                 and ens.encaminhamento_naapa_id = @id";
 
-            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { id = encaminhamentoId, secaoNome = SECAO_ITINERANCIA_NOME }));           
+            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { id = encaminhamentoId, secaoNome = EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA }));           
         }
 
         public async Task<IEnumerable<EncaminhamentosNAAPAConsolidadoDto>> ObterQuantidadeSituacaoEncaminhamentosPorUeAnoLetivo(long ueId, int anoLetivo)
         {
            var query =@"select 
-	                        t.ue_id UeId,
-	                        t.ano_letivo AnoLetivo, 
-	                        en.situacao,
-	                        count(en.id)quantidade
+                            t.ue_id UeId,
+                            t.ano_letivo AnoLetivo, 
+                            en.situacao,
+                            count(en.id)quantidade
                         from encaminhamento_naapa en
                         inner join turma t on en.turma_id = t.id 
                         where not en.excluido  
@@ -395,7 +396,7 @@ namespace SME.SGP.Dados.Repositorios
                         and not ens.excluido and 
                         en.id = @encaminhamentoId";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { situacao = (int)SituacaoNAAPA.AguardandoAtendimento, encaminhamentoId, secaoNome = SECAO_ITINERANCIA_NOME });
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { situacao = (int)SituacaoNAAPA.AguardandoAtendimento, encaminhamentoId, secaoNome = EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA });
         }
 
         public async Task<IEnumerable<EncaminhamentoNAAPADto>> ObterEncaminhamentosComSituacaoDiferenteDeEncerrado()
@@ -444,7 +445,7 @@ namespace SME.SGP.Dados.Repositorios
                 inner join encaminhamento_naapa_secao ens on ens.encaminhamento_naapa_id = en.id
                 where not exists(select 1
                                  from secao_encaminhamento_naapa sen
-                                 where sen.nome_componente = '{SECAO_ITINERANCIA_NOME}'
+                                 where sen.nome_componente = '{EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA}'
                                    and not sen.excluido 
                                    and sen.id = ens.secao_encaminhamento_id)
                 and en.situacao = any(@situacoes)
@@ -455,7 +456,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine($@"select en.aluno_codigo AlunoCodigo, en.aluno_nome AlunoNome, en.turma_id TurmaId, en.id EncaminhamentoId
                 from encaminhamento_naapa en
                 inner join encaminhamento_naapa_secao ens on ens.encaminhamento_naapa_id = en.id
-                inner join secao_encaminhamento_naapa sen on sen.id = ens.secao_encaminhamento_id and sen.nome_componente = '{SECAO_ITINERANCIA_NOME}'
+                inner join secao_encaminhamento_naapa sen on sen.id = ens.secao_encaminhamento_id and sen.nome_componente = '{EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA}'
                 inner join questionario qto on qto.id = sen.questionario_id
                 inner join(select max(texto::date) dataAtendimento, enq.encaminhamento_naapa_secao_id
                            from encaminhamento_naapa_resposta enr

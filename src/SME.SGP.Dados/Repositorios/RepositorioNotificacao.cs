@@ -74,24 +74,24 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<NotificacaoBasicaDto>> ObterNotificacoesPorRfAsync(string usuarioRf, int limite = 5)
         {
             var sql = @"select
-	                        n.id,
-	                        n.categoria,
-	                        n.codigo ,
-	                        n.criado_em as Data,
-	                        n.mensagem as DescricaoStatus,
-	                        n.status,
-	                        n.tipo,
-	                        n.titulo
+                            n.id,
+                            n.categoria,
+                            n.codigo ,
+                            n.criado_em as Data,
+                            n.mensagem as DescricaoStatus,
+                            n.status,
+                            n.tipo,
+                            n.titulo
                         from
-	                        notificacao n
+                            notificacao n
                         left join usuario u on
-	                        n.usuario_id = u.id
+                            n.usuario_id = u.id
                         where
-	                        (u.rf_codigo = @usuarioRf or u.login = @usuarioRf)
-	                        and not excluida
+                            (u.rf_codigo = @usuarioRf or u.login = @usuarioRf)
+                            and not excluida
                         order by
-	                        n.status asc,
-	                        n.criado_em desc
+                            n.status asc,
+                            n.criado_em desc
                         limit @limite";
             return await database.Conexao.QueryAsync<NotificacaoBasicaDto>(sql, new {usuarioRf, limite });
         }
@@ -111,9 +111,9 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<long[]> ObterIdsAsync(string turmaCodigo, NotificacaoCategoria categoria, NotificacaoTipo tipo, int ano)
         {
             var sql = @"select
-	                        n.id
+                            n.id
                         from
-	                        notificacao n
+                            notificacao n
                         where not n.excluida
                         and n.turma_id = @turmaCodigo
                         and n.categoria = @categoria

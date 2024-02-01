@@ -20,18 +20,18 @@ namespace SME.SGP.Aplicacao
         public Paginacao Paginacao { get; set; }
         public int Tipo { get; set; }
 
-        public ObterNotificacoesQuery(string dreId, string ueId, int status, string turmaId, string usuarioRf, int tipo, int categoria, string titulo, long codigo, int anoLetivo, Paginacao paginacao)
+        public ObterNotificacoesQuery(NotificacaoFiltroDto filtro, Paginacao paginacao)
         {
-            DreId = dreId;
-            UeId = ueId;
-            Status = status;
-            TurmaId = turmaId;
-            UsuarioRf = usuarioRf;
-            Tipo = tipo;
-            Categoria = categoria;
-            Titulo = titulo;
-            Codigo = codigo;
-            AnoLetivo = anoLetivo;
+            DreId = filtro.DreId;
+            UeId = filtro.UeId;
+            Status = (int)filtro.Status;
+            TurmaId = filtro.TurmaId;
+            UsuarioRf = filtro.UsuarioRf;
+            Tipo = (int)filtro.Tipo;
+            Categoria = (int)filtro.Categoria;
+            Titulo = filtro.Titulo;
+            Codigo = filtro.Codigo;
+            AnoLetivo = filtro.AnoLetivo;
             Paginacao = paginacao;
         }
     }

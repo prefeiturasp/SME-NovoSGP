@@ -32,8 +32,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<RetornoRecuperacaoParalela>(query.ToString(), new { turmaId = turmaId, periodoId });
         }
 
-        public async Task<IEnumerable<RetornoRecuperacaoParalelaTotalAlunosAnoDto>> ListarTotalAlunosSeries(int? periodoId, string dreId, string ueId, int? cicloId, string turmaId, 
-            string ano, int anoLetivo)
+        public async Task<IEnumerable<RetornoRecuperacaoParalelaTotalAlunosAnoDto>> ListarTotalAlunosSeries(FiltroRecuperacaoParalelaResumoDto filtro)
         {
             
             var query = new StringBuilder();
@@ -49,60 +48,77 @@ namespace SME.SGP.Dados.Repositorios
                                 inner join ue on ue.id = turma.ue_id
                                 inner join dre on dre.id = ue.dre_id");
 
-            MontarWhere(query, dreId, ueId, cicloId, ano, periodoId, turmaId, null);
+            MontarWhere(query, filtro);
             query.Append(@" group by
                                 turma.ano,
                                 tipo_ciclo.descricao");
-            var parametros = new { dreId, ueId, cicloId, turmaId, ano, periodoId, anoLetivo };
+
+            var parametros = new
+            {
+                dreId = filtro.DreId,
+                ueId = filtro.UeId,
+                cicloId = filtro.CicloId,
+                turmaId = filtro.TurmaId,
+                ano = filtro.Ano,
+                periodoId = filtro.Periodo,
+                anoLetivo = filtro.AnoLetivo
+            };
             return await database.Conexao.QueryAsync<RetornoRecuperacaoParalelaTotalAlunosAnoDto>(query.ToString(), parametros);
         }
 
-        public async Task<IEnumerable<RetornoRecuperacaoParalelaTotalAlunosAnoFrequenciaDto>> ListarTotalEstudantesPorFrequencia(int? periodoId, string dreId, string ueId, int? cicloId, 
-            string turmaId, string ano, int anoLetivo)
+        public async Task<IEnumerable<RetornoRecuperacaoParalelaTotalAlunosAnoFrequenciaDto>> ListarTotalEstudantesPorFrequencia(FiltroRecuperacaoParalelaResumoDto filtro)
         {
             var query = new StringBuilder();
             query.Append(@"select
-	                            count(distinct aluno_id) as total,
-	                            turma.ano,
-	                            tipo_ciclo.descricao as Ciclo,
+                                count(distinct aluno_id) as total,
+                                turma.ano,
+                                tipo_ciclo.descricao as Ciclo,
                                 tipo_ciclo.id as CicloId,
                                 rpr.id as RespostaId,
-	                            rpr.nome as frequencia
+                                rpr.nome as frequencia
                             from recuperacao_paralela rp
-	                            inner join turma on rp.turma_id = turma.id
-	                            inner join tipo_ciclo_ano tca on turma.modalidade_codigo = tca.modalidade and turma.ano = tca.ano
-	                            inner join tipo_ciclo on tca.tipo_ciclo_id = tipo_ciclo.id
-	                            inner join recuperacao_paralela_periodo_objetivo_resposta rpp on rp.id = rpp.recuperacao_paralela_id
-	                            inner join recuperacao_paralela_resposta rpr on rpp.resposta_id = rpr.id
+                                inner join turma on rp.turma_id = turma.id
+                                inner join tipo_ciclo_ano tca on turma.modalidade_codigo = tca.modalidade and turma.ano = tca.ano
+                                inner join tipo_ciclo on tca.tipo_ciclo_id = tipo_ciclo.id
+                                inner join recuperacao_paralela_periodo_objetivo_resposta rpp on rp.id = rpp.recuperacao_paralela_id
+                                inner join recuperacao_paralela_resposta rpr on rpp.resposta_id = rpr.id
                                 inner join  ue on ue.id = turma.ue_id
                                 inner join dre on dre.id = ue.dre_id");
-            MontarWhere(query, dreId, ueId, cicloId, ano, periodoId, turmaId, null);
+            MontarWhere(query, filtro);
             query.AppendLine("and rpp.objetivo_id = 4");
             query.Append(@"group by
-	                            turma.nome,
-	                            turma.ano,
-	                            tipo_ciclo.descricao,
-	                            rpr.nome,
+                                turma.nome,
+                                turma.ano,
+                                tipo_ciclo.descricao,
+                                rpr.nome,
                                 rpr.id,
                                 tipo_ciclo.id
                             order by rpr.ordem");
 
-            var parametros = new { dreId, ueId, cicloId, turmaId, ano, periodoId, anoLetivo };
+            var parametros = new
+            {
+                dreId = filtro.DreId,
+                ueId = filtro.UeId,
+                cicloId = filtro.CicloId,
+                turmaId = filtro.TurmaId,
+                ano = filtro.Ano,
+                periodoId = filtro.Periodo,
+                anoLetivo = filtro.AnoLetivo
+            };
 
             return await database.Conexao.QueryAsync<RetornoRecuperacaoParalelaTotalAlunosAnoFrequenciaDto>(query.ToString(), parametros);
         }
 
-        public async Task<PaginacaoResultadoDto<RetornoRecuperacaoParalelaTotalResultadoDto>> ListarTotalResultado(int? periodoId, string dreId, string ueId, int? cicloId, string turmaId, 
-            string ano, int anoLetivo, int? pagina)
+        public async Task<PaginacaoResultadoDto<RetornoRecuperacaoParalelaTotalResultadoDto>> ListarTotalResultado(FiltroRecuperacaoParalelaResumoDto filtro)
         {
             //a paginação desse ítem é diferente das outras, pois ela é determinada pela paginação da coluna pagina
             //ela não tem uma quantidade exata de ítens por página, apenas os objetivos daquele eixo, podendo variar para cada um
-            if (pagina == 0) pagina = 1;
+            if (filtro.NumeroPagina == 0) filtro.NumeroPagina = 1;
             StringBuilder query = new StringBuilder();
             query.AppendLine("select");
             MontarCamposResumo(query);
             MontarFromResumo(query);
-            MontarWhere(query, dreId, ueId, cicloId, ano, periodoId, turmaId, pagina);
+            MontarWhere(query, filtro);
             query.AppendLine("and e.id NOT IN (1,2)");
             query.AppendLine("and e.excluido = false");
             query.AppendLine("and o.excluido = false");
@@ -125,7 +141,16 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("rpr.ordem;");
             query.AppendLine("select max(pagina) from recuperacao_paralela_objetivo;");
 
-            var parametros = new { dreId, ueId, cicloId, turmaId, ano, periodoId, pagina, anoLetivo };
+            var parametros = new { 
+                dreId = filtro.DreId,            
+                ueId = filtro.UeId,                 
+                cicloId = filtro.CicloId,                   
+                turmaId = filtro.TurmaId,                
+                ano = filtro.Ano, 
+                periodoId = filtro.Periodo, 
+                pagina = filtro.NumeroPagina, 
+                anoLetivo = filtro.AnoLetivo
+            };
             var retorno = new PaginacaoResultadoDto<RetornoRecuperacaoParalelaTotalResultadoDto>();
 
             using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), parametros))
@@ -139,14 +164,13 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
-        public async Task<IEnumerable<RetornoRecuperacaoParalelaTotalResultadoDto>> ListarTotalResultadoEncaminhamento(int? periodoId, string dreId, string ueId, int? cicloId, string turmaId, string ano, int anoLetivo, 
-            int? pagina)
+        public async Task<IEnumerable<RetornoRecuperacaoParalelaTotalResultadoDto>> ListarTotalResultadoEncaminhamento(FiltroRecuperacaoParalelaResumoDto filtro)
         {
             StringBuilder query = new StringBuilder();
             query.AppendLine("select");
             MontarCamposResumo(query);
             MontarFromResumo(query);
-            MontarWhere(query, dreId, ueId, cicloId, ano, periodoId, turmaId, pagina);
+            MontarWhere(query, filtro);
             query.AppendLine("and e.id = 1");
             query.AppendLine("and e.excluido = false");
             query.AppendLine("and o.excluido = false");
@@ -168,7 +192,18 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("o.ordem,");
             query.AppendLine("rpr.ordem;");
 
-            var parametros = new { dreId, ueId, cicloId, turmaId, ano, pagina, periodoId, anoLetivo };
+            var parametros = new
+            {
+                dreId = filtro.DreId,
+                ueId = filtro.UeId,
+                cicloId = filtro.CicloId,
+                turmaId = filtro.TurmaId,
+                ano = filtro.Ano,
+                periodoId = filtro.Periodo,
+                pagina = filtro.NumeroPagina,
+                anoLetivo = filtro.AnoLetivo
+            };
+
             return await database.Conexao.QueryAsync<RetornoRecuperacaoParalelaTotalResultadoDto>(query.ToString(), parametros);
         }
 
@@ -202,22 +237,22 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("inner join dre on dre.id = ue.dre_id");
         }
 
-        private static void MontarWhere(StringBuilder query, string dreId, string ueId, int? cicloId, string ano, int? periodoId, string turmaId, int? pagina)
+        private static void MontarWhere(StringBuilder query, FiltroRecuperacaoParalelaResumoDto filtro)
         {
             query.AppendLine(" where rp.excluido = false ");
-            if (!string.IsNullOrEmpty(dreId) && dreId != "0")
+            if (!string.IsNullOrEmpty(filtro.DreId) && filtro.DreId != "0")
                 query.AppendLine(" and dre.dre_id = @dreId");
-            if (!string.IsNullOrEmpty(ueId) && ueId != "0")
+            if (!string.IsNullOrEmpty(filtro.UeId) && filtro.UeId != "0")
                 query.AppendLine(" and ue.ue_id = @ueId");
-            if (cicloId.NaoEhNulo() && cicloId != 0)
+            if (filtro.CicloId.NaoEhNulo() && filtro.CicloId != 0)
                 query.AppendLine(" and tca.tipo_ciclo_id = @cicloId");
-            if (!string.IsNullOrEmpty(ano) && ano != "0")
+            if (!string.IsNullOrEmpty(filtro.Ano) && filtro.Ano != "0")
                 query.AppendLine("and turma.ano = @ano");
-            if (periodoId.NaoEhNulo() && periodoId != 0)
+            if (filtro.Periodo.NaoEhNulo() && filtro.Periodo != 0)
                 query.AppendLine(" and rpp.periodo_recuperacao_paralela_id = @periodoId");
-            if (!string.IsNullOrEmpty(turmaId) && turmaId != "0")
+            if (!string.IsNullOrEmpty(filtro.TurmaId) && filtro.TurmaId != "0")
                 query.AppendLine(" and turma.turma_id = @turmaId");
-            if (pagina.HasValue)
+            if (filtro.NumeroPagina.HasValue)
                 query.AppendLine(" and o.pagina = @pagina");
 
             query.AppendLine(" and rp.ano_letivo = @anoLetivo");
@@ -228,17 +263,17 @@ namespace SME.SGP.Dados.Repositorios
         {
             return @"select
                         rec.id ,
-	                    rec.aluno_id AS AlunoId,
-	                    rec.turma_id AS TurmaId,
+                        rec.aluno_id AS AlunoId,
+                        rec.turma_id AS TurmaId,
                         rec.criado_por,
                         rec.criado_em,
                         rec.criado_rf,
                         rec.alterado_por,
                         rec.alterado_em,
                         rec.alterado_rf,
-	                    recRel.objetivo_id AS ObjetivoId,
-	                    recRel.resposta_id AS RespostaId,
-	                    recRel.periodo_recuperacao_paralela_id AS PeriodoRecuperacaoParalelaId,
+                        recRel.objetivo_id AS ObjetivoId,
+                        recRel.resposta_id AS RespostaId,
+                        recRel.periodo_recuperacao_paralela_id AS PeriodoRecuperacaoParalelaId,
                         re.ordem as OrdenacaoResposta,
                         rpp.bimestre_edicao as BimestreEdicao";
         }

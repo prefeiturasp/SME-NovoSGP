@@ -58,20 +58,26 @@ namespace SME.SGP.Infra
                     }).Contains(SituacaoCodigo);
 
         public bool EstaAtivo() => !EstaInativo();
+
         public static explicit operator AlunoDadosBasicosDto(AlunoPorTurmaResposta dadosAluno)
-            => dadosAluno.EhNulo() ? null : new AlunoDadosBasicosDto()
-            {
-                Nome = dadosAluno.NomeValido(),
-                NumeroChamada = dadosAluno.ObterNumeroAlunoChamada(),
-                DataNascimento = dadosAluno.DataNascimento,
-                CodigoEOL = dadosAluno.CodigoAluno,
-                SituacaoCodigo = dadosAluno.CodigoSituacaoMatricula,
-                Situacao = dadosAluno.SituacaoMatricula,
-                DataSituacao = dadosAluno.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Rematriculado ? dadosAluno.DataMatricula : dadosAluno.DataSituacao,
-                NomeResponsavel = dadosAluno.NomeResponsavel,
-                TipoResponsavel = dadosAluno.TipoResponsavel,
-                CelularResponsavel = dadosAluno.CelularResponsavel,
-                DataAtualizacaoContato = dadosAluno.DataAtualizacaoContato
-            };
+        {
+            if (dadosAluno.NaoEhNulo())
+                return new AlunoDadosBasicosDto()
+                {
+                    Nome = dadosAluno.NomeValido(),
+                    NumeroChamada = dadosAluno.ObterNumeroAlunoChamada(),
+                    DataNascimento = dadosAluno.DataNascimento,
+                    CodigoEOL = dadosAluno.CodigoAluno,
+                    SituacaoCodigo = dadosAluno.CodigoSituacaoMatricula,
+                    Situacao = dadosAluno.SituacaoMatricula,
+                    DataSituacao = dadosAluno.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Rematriculado ? dadosAluno.DataMatricula : dadosAluno.DataSituacao,
+                    NomeResponsavel = dadosAluno.NomeResponsavel,
+                    TipoResponsavel = dadosAluno.TipoResponsavel,
+                    CelularResponsavel = dadosAluno.CelularResponsavel,
+                    DataAtualizacaoContato = dadosAluno.DataAtualizacaoContato
+                };
+
+            return null;
+        }
     }
 }

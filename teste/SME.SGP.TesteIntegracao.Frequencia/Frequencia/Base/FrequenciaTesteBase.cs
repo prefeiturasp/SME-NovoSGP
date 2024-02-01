@@ -54,7 +54,7 @@ namespace SME.SGP.TesteIntegracao
         protected const double PERCENTUAL_100 = 100.0;
         protected const double PERCENTUAL_ZERO = 0.00;
 
-        protected readonly DateTime DATA_03_08 = new(DateTimeExtension.HorarioBrasilia().Year - 6, 03, 07);
+        protected DateTime DATA_07_03 = new(DateTimeExtension.HorarioBrasilia().Year - 6, 03, 07);
 
         protected FrequenciaTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
