@@ -120,7 +120,19 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         }
 
         [Fact]
-        public Task DeveObterResultadoAnoAnterior()
+        public async Task DeveTerErroCasoNaoTenhaTurmaRegularObtida()
+        {
+            var turma = ObterTurmaItinerario();
+            turma.AnoLetivo = DateTime.Today.Year - 1;
+            consultasTurma.Setup(t => t.ObterComUeDrePorCodigo(It.IsAny<string>())).Returns(Task.FromResult(turma));
+            consultasFechamentoTurma.Setup(f => f.ObterPorTurmaCodigoBimestreAsync(It.IsAny<string>(), It.IsAny<int>())).Returns(Task.FromResult(ObterFechamentoTurma()));
+            mediator.Setup(a => a.Send(It.IsAny<ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new string[] {null});
+            mediator.Setup(a => a.Send(It.IsAny<ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestreTipoCalendarioQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new FechamentoTurma());
+            await Assert.ThrowsAsync<NegocioException>(() => consultasConselhoClasse.ObterConselhoClasseTurma("", "", 1, false, false));
+        }
+
+        [Fact]
+        public async Task DeveObterResultadoAnoAnterior()
         {
             var turma = ObterTurma();
             turma.AnoLetivo = DateTime.Today.Year - 1;
@@ -140,6 +152,12 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private Turma ObterTurma()
         {
             var turma = new Turma();
+            return turma;
+        }
+
+        private Turma ObterTurmaItinerario()
+        {
+            var turma = new Turma() { TipoTurma = Dominio.Enumerados.TipoTurma.Itinerarios2AAno};
             return turma;
         }
 
