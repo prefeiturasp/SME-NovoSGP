@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Minio.DataModel;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -30,56 +31,30 @@ namespace SME.SGP.Aplicacao
                     case Dominio.PerfilUsuario.CP:
                     case Dominio.PerfilUsuario.AD:
                     case Dominio.PerfilUsuario.DIRETOR:
-                        var dreUe = await ObterCodigoDREUE(filtro.UeId);
-
-                       if (!(await AtribuirPerfisUsuarioPorCargo(dreUe.UeCodigo, pendenciaPerfil.PerfilCodigo, pendenciaPerfil.Id)))
-                            await AtribuirPerfisUsuarioPorFuncaoExterna(dreUe.UeCodigo, pendenciaPerfil.PerfilCodigo, pendenciaPerfil.Id);
+                       await TratarAtribuicaoPerfisGestao(filtro.UeId, pendenciaPerfil.PerfilCodigo, pendenciaPerfil.Id);
                        break;
-
                     case Dominio.PerfilUsuario.CEFAI:
                         var dre = await ObterCodigoDREUE(filtro.UeId);
                         var CEFAIs = await mediator.Send(new ObtemUsuarioCEFAIDaDreQuery(dre.DreCodigo));
-
-                        if (CEFAIs.NaoEhNulo() && CEFAIs.Any())
-                        {
-                            foreach (var cefai in CEFAIs)
-                                await AtribuirPerfilUsuario(cefai, pendenciaPerfil.PerfilCodigo, pendenciaPerfil.Id);
-                        }
+                        await TratarAtribuicaoPerfilCEFAI(CEFAIs, pendenciaPerfil.PerfilCodigo, pendenciaPerfil.Id);
                         break;
 
                     case Dominio.PerfilUsuario.ADMUE:
                         var ue = await ObterCodigoDREUE(filtro.UeId);
                         var admsUE = await ObterAdministradoresPorUE(ue.UeCodigo);
-
-                        if (admsUE.NaoEhNulo() && admsUE.Any())
-                        {
-                            foreach (var adm in admsUE)
-                                await AtribuirPerfilUsuario(adm, pendenciaPerfil.PerfilCodigo, pendenciaPerfil.Id);
-                        }                            
-
+                        await TratarAtribuicaoPerfilAdmUe(admsUE, pendenciaPerfil.PerfilCodigo, pendenciaPerfil.Id);
                         break;
                     case Dominio.PerfilUsuario.ADMSME:
-                        break;
                     case Dominio.PerfilUsuario.ADMCOTIC:
-                        break;
                     case Dominio.PerfilUsuario.ADMDRE:
-                        break;
                     case Dominio.PerfilUsuario.POA:
-                        break;
                     case Dominio.PerfilUsuario.SECRETARIO:
-                        break;
                     case Dominio.PerfilUsuario.SUPERVISOR:
-                        break;
                     case Dominio.PerfilUsuario.PAEE:
-                        break;
                     case Dominio.PerfilUsuario.PAP:
-                        break;
                     case Dominio.PerfilUsuario.POEI:
-                        break;
                     case Dominio.PerfilUsuario.POED:
-                        break;
                     case Dominio.PerfilUsuario.POSL:
-                        break;
                     case Dominio.PerfilUsuario.COMUNICADOS_UE:
                         break;
                     default:
@@ -89,6 +64,26 @@ namespace SME.SGP.Aplicacao
             }
 
             return true;
+        }
+
+        private async Task TratarAtribuicaoPerfisGestao(long ueId, PerfilUsuario perfilUsuario, long pendenciaPerfilId)
+        {
+            var dreUe = await ObterCodigoDREUE(ueId);
+            var atribuiuPerfisPorCargo = await AtribuirPerfisUsuarioPorCargo(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
+            if (!atribuiuPerfisPorCargo)
+                await AtribuirPerfisUsuarioPorFuncaoExterna(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
+        }
+
+        private async Task TratarAtribuicaoPerfilCEFAI(IEnumerable<long> CEFAIs, PerfilUsuario perfilUsuario, long pendenciaPerfilId)
+        {
+            foreach (var cefai in CEFAIs)
+                await AtribuirPerfilUsuario(cefai, perfilUsuario, pendenciaPerfilId);
+        }
+
+        private async Task TratarAtribuicaoPerfilAdmUe(IEnumerable<long> AdmsUe, PerfilUsuario perfilUsuario, long pendenciaPerfilId)
+        {
+            foreach (var adm in AdmsUe)
+                await AtribuirPerfilUsuario(adm, perfilUsuario, pendenciaPerfilId);
         }
 
         private async Task<long> ObterUsuarioId(string rf)

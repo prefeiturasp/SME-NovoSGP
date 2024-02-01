@@ -23,12 +23,5 @@ namespace SME.SGP.Aplicacao
 
             return (AuditoriaDto)request.itinerancia;
         }
-
-        private Itinerancia MapearParaEntidade(AlterarItineranciaCommand request)
-           => new Itinerancia()
-           {
-               Id = request.itinerancia.Id,
-               
-           };
     }
 }

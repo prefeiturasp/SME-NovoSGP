@@ -19,7 +19,6 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;
         private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;
         private readonly IConsultasTurma consultasTurma;
-        private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasFechamentoTurma consultasFechamentoTurma;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
@@ -32,7 +31,6 @@ namespace SME.SGP.Aplicacao
                                        IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                                        IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma,
                                        IConsultasTurma consultasTurma,
-                                       IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                        IConsultasPeriodoFechamento consultasPeriodoFechamento,
                                        IConsultasFechamentoTurma consultasFechamentoTurma,
                                        IMediator mediator)
@@ -44,7 +42,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
             this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
-            this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.consultasFechamentoTurma = consultasFechamentoTurma ?? throw new ArgumentNullException(nameof(consultasFechamentoTurma));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -136,7 +133,7 @@ namespace SME.SGP.Aplicacao
 
             var periodoFechamentoVigente = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamentoVigente(turma, DateTimeExtension.HorarioBrasilia().Date, bimestreFechamento);
 
-            var tipoNota = await ObterTipoNota(turma, periodoFechamentoVigente, consideraHistorico);
+            var tipoNota = await ObterTipoNota(turma, periodoFechamentoVigente);
 
             var mediaAprovacao = double.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
 
@@ -195,7 +192,7 @@ namespace SME.SGP.Aplicacao
             var periodoFechamentoBimestre = await consultasPeriodoFechamento
                 .TurmaEmPeriodoDeFechamentoVigente(turma, DateTimeExtension.HorarioBrasilia().Date, ultimoBimestre.Bimestre);
 
-            var tipoNota = await ObterTipoNota(turma, periodoFechamentoBimestre, consideraHistorico);
+            var tipoNota = await ObterTipoNota(turma, periodoFechamentoBimestre);
 
             return new ConselhoClasseAlunoResumoDto()
             {
@@ -206,8 +203,11 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private async Task<TipoNota> ObterTipoNota(Turma turma, PeriodoFechamentoVigenteDto periodoFechamentoVigente, bool consideraHistorico = false)
+        private async Task<TipoNota> ObterTipoNota(Turma turma, PeriodoFechamentoVigenteDto periodoFechamentoVigente)
         {
+            if (turma.EhCELP())
+                return TipoNota.Conceito;
+
             var dataReferencia = periodoFechamentoVigente?.PeriodoFechamentoFim ?? (await ObterPeriodoUltimoBimestre(turma)).PeriodoFim;
 
             var tipoNota = await mediator.Send(new ObterNotaTipoPorAnoModalidadeDataReferenciaQuery(turma.Ano, turma.ModalidadeCodigo, dataReferencia));

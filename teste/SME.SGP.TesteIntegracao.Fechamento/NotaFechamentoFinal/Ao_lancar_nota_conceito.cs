@@ -409,5 +409,26 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(0);
         }
+
+        [Fact(DisplayName = "Fechamento Bimestre Final - Deve lançar nota conceito para turma celp")]
+        public async Task Deve_Lancar_nota_conceito_para_turma_celp()
+        {
+            await CriarDadosBase(ObterFiltroNotas(ObterPerfilProfessor(), ANO_1, COMPONENTE_CURRICULAR_INGLES_ID_9.ToString(), TipoNota.Conceito, Modalidade.CELP, ModalidadeTipoCalendario.CELP, false));
+
+            await ExecutarComandosFechamentoFinalComValidacaoNota(ObterFechamentoFinalConceitoDto(COMPONENTE_CURRICULAR_INGLES_ID_9, true));
+
+            var historicoNotas = ObterTodos<HistoricoNota>();
+            historicoNotas.Count.ShouldBe(3);
+
+            var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
+            historicoNotasNotaFechamentos.Count.ShouldBe(3);
+
+            historicoNotas.Count(w => !w.ConceitoAnteriorId.HasValue).ShouldBe(3);
+            historicoNotas.Count(w => w.ConceitoNovoId.HasValue).ShouldBe(3);
+
+            historicoNotas.Any(w => w.Id == 1 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.NS).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 2 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.S).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 3 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.P).ShouldBeTrue();
+        }
     }
 }

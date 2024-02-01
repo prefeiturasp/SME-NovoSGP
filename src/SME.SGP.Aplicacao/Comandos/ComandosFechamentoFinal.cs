@@ -16,7 +16,6 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina;
         private readonly IServicoFechamentoFinal servicoFechamentoFinal;
         private readonly IMediator mediator;
-        private readonly IRepositorioCache repositorioCache;
 
         public ComandosFechamentoFinal(
             IServicoFechamentoFinal servicoFechamentoFinal,
@@ -24,8 +23,7 @@ namespace SME.SGP.Aplicacao
             IRepositorioFechamentoAlunoConsulta repositorioFechamentoAluno,
             IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma,            
             IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina,
-            IMediator mediator,
-            IRepositorioCache repositorioCache)
+            IMediator mediator)
         {
             this.servicoFechamentoFinal = servicoFechamentoFinal ?? throw new ArgumentNullException(nameof(servicoFechamentoFinal));
             this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
@@ -33,7 +31,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
             this.repositorioFechamentoAluno = repositorioFechamentoAluno ?? throw new ArgumentNullException(nameof(repositorioFechamentoAluno));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
         public async Task<AuditoriaPersistenciaDto> SalvarAsync(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)

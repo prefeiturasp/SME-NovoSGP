@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
             if (turma.EhNulo())
                 throw new NegocioException(MensagemNegocioTurma.NAO_FOI_POSSIVEL_OBTER_DADOS_TURMA);
             
-            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(parecerConclusivoConsultaDto.FechamentoTurmaId, parecerConclusivoConsultaDto.AlunoCodigo, turma.AnoLetivo != DateTime.Now.Year));
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(parecerConclusivoConsultaDto.FechamentoTurmaId, parecerConclusivoConsultaDto.AlunoCodigo));
             
             if (fechamentoTurma.EhNulo())
             {

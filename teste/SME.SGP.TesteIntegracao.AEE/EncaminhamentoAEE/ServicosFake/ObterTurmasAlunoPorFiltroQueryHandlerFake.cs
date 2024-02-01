@@ -12,11 +12,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake
     public class ObterTurmasAlunoPorFiltroQueryHandlerFake  : IRequestHandler<ObterTurmasAlunoPorFiltroQuery, IEnumerable<AlunoPorTurmaResposta>>
     {
 
-        public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterTurmasAlunoPorFiltroQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterTurmasAlunoPorFiltroQuery request, CancellationToken cancellationToken)
         {
             var dataRefencia = DateTimeExtension.HorarioBrasilia();
 
-            return await Task.FromResult(new List<AlunoPorTurmaResposta>()
+            return Task.FromResult<IEnumerable<AlunoPorTurmaResposta>>(new List<AlunoPorTurmaResposta>()
               {
                   new AlunoPorTurmaResposta() {
                       Ano = DateTime.Now.Year ,

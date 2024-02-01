@@ -23,8 +23,11 @@ namespace SME.SGP.Infra.Utilitarios
                     ? $"({fechamentoTurmaDisciplina.CriadoRF})"
                     : "";
 
+            var descricaoNotaConceito = ehNota ? "Notas" : "Conceitos";
+            var descricaoIncluida = ehNota ? "incluídas" : "incluídos";
+
             return fechamentoTurmaDisciplina.NaoEhNulo()
-                ? $"{(ehNota ? "Notas" : "Conceitos")} finais {(ehNota ? "incluídas" : "incluídos")} por {fechamentoTurmaDisciplina.CriadoPor}{criadorRf} em {fechamentoTurmaDisciplina.CriadoEm:dd/MM/yyyy}, às {fechamentoTurmaDisciplina.CriadoEm:HH:mm}."
+                ? $"{descricaoNotaConceito} finais {descricaoIncluida} por {fechamentoTurmaDisciplina.CriadoPor}{criadorRf} em {fechamentoTurmaDisciplina.CriadoEm:dd/MM/yyyy}, às {fechamentoTurmaDisciplina.CriadoEm:HH:mm}."
                 : string.Empty;
         }        
     }

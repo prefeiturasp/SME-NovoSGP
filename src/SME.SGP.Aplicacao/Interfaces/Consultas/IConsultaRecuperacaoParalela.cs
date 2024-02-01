@@ -9,13 +9,12 @@ namespace SME.SGP.Aplicacao
     {
         Task<RecuperacaoParalelaListagemDto> Listar(FiltroRecuperacaoParalelaDto filtro);
 
-        Task<PaginacaoResultadoDto<RecuperacaoParalelaTotalResultadoDto>> ListarTotalResultado(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, string ano, int anoLetivo, int? pagina);
+        Task<PaginacaoResultadoDto<RecuperacaoParalelaTotalResultadoDto>> ListarTotalResultado(FiltroRecuperacaoParalelaResumoDto filtro);
 
-        Task<IEnumerable<RecuperacaoParalelaTotalResultadoDto>> ListarTotalResultadoEncaminhamento(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, string ano, 
-            int anoLetivo, int? numeroPagina);
+        Task<IEnumerable<RecuperacaoParalelaTotalResultadoDto>> ListarTotalResultadoEncaminhamento(FiltroRecuperacaoParalelaResumoDto filtro);
 
-        Task<RecuperacaoParalelaTotalEstudanteDto> TotalEstudantes(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, string ano, int anoLetivo);
+        Task<RecuperacaoParalelaTotalEstudanteDto> TotalEstudantes(FiltroRecuperacaoParalelaResumoDto filtro);
 
-        Task<RecuperacaoParalelaTotalEstudantePorFrequenciaDto> TotalEstudantesPorFrequencia(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, string ano, int anoLetivo);
+        Task<RecuperacaoParalelaTotalEstudantePorFrequenciaDto> TotalEstudantesPorFrequencia(FiltroRecuperacaoParalelaResumoDto filtro);
     }
 }

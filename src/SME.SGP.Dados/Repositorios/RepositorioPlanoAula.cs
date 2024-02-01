@@ -64,9 +64,9 @@ namespace SME.SGP.Dados.Repositorios
         public bool ValidarPlanoExistentePorTurmaDataEDisciplina(DateTime data, string turmaId, string disciplinaId)
         {
             var query = @"select
-	                        1
+                            1
                         from
-	                        plano_aula pa
+                            plano_aula pa
                         inner join aula a on a.Id = pa.aula_id
                         where not a.excluido 
                             and not pa.excluido 
@@ -147,7 +147,7 @@ namespace SME.SGP.Dados.Repositorios
                 retorno.Adicionar(objetivoComponente);
             }
 
-            if (objetivoComponente.NaoEhNulo() && objetivoAprendizagemDto.NaoEhNulo())
+            if (objetivoComponente.NaoEhNulo() && objetivoAprendizagemDto.NaoEhNulo() && !objetivoComponente.ObjetivosAprendizagem.Any(ob=> ob.Id == objetivoAprendizagemDto.Id))
             {
                 objetivoComponente.ObjetivosAprendizagem.Add(objetivoAprendizagemDto);
             }

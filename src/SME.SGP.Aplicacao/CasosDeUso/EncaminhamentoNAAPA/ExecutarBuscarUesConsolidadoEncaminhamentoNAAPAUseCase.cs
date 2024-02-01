@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
         private async Task PublicarExclusaoConsolidacao(long ueId, int anoLetivo, IEnumerable<EncaminhamentosNAAPAConsolidadoDto> encaminhamentosConsolidacao)
         {
             var situacoesEncaminhamentosConsolidacao = encaminhamentosConsolidacao.Select(e => e.Situacao).Distinct();
-            var situacoesNAAPA = EnumExtensao.ListarDto<SituacaoNAAPA>().ToList().Select(s => s.Id);
+            var situacoesNAAPA = EnumExtensao.ListarDto<SituacaoNAAPA>().Select(s => s.Id);
             if (situacoesNAAPA.Except(situacoesEncaminhamentosConsolidacao.Select(s => (int)s)).Any())
             {
                 var param = new FiltroExcluirUesConsolidadoEncaminhamentoNAAPADto(ueId, anoLetivo, situacoesEncaminhamentosConsolidacao.ToArray());

@@ -17,8 +17,8 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<RegistroAulaPrevistaDivergenteDto>> ObterTurmasAulasPrevistasDivergentes(int limiteDias)
         {
             var query = @"select a.turma_id as CodigoTurma, t.nome as NomeTurma
-	                        , ue.ue_id as CodigoUe, ue.nome as NomeUe
-	                        , dre.dre_id as CodigoDre, dre.nome as NomeDre
+                            , ue.ue_id as CodigoUe, ue.nome as NomeUe
+                            , dre.dre_id as CodigoDre, dre.nome as NomeDre
                             , a.disciplina_id as DisciplinaId, a.professor_rf as ProfessorRf, pe.bimestre
                            from aula a
                           inner join turma t on t.turma_id = a.turma_id
@@ -40,7 +40,7 @@ namespace SME.SGP.Dados.Repositorios
                            and a.tipo_aula = 1
 
                          group by
-                         	a.turma_id, t.nome, ue.ue_id , ue.nome, dre.dre_id, dre.nome, a.disciplina_id,  a.professor_rf, pe.bimestre, apb.aulas_previstas
+                             a.turma_id, t.nome, ue.ue_id , ue.nome, dre.dre_id, dre.nome, a.disciplina_id,  a.professor_rf, pe.bimestre, apb.aulas_previstas
                          having COUNT(a.id) <> coalesce(apb.aulas_previstas, 0)
                         order by dre.dre_id, ue.ue_id, a.turma_id";
 

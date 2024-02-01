@@ -2,6 +2,8 @@
 {
     public class ServicosEolConstants
     {
+        protected ServicosEolConstants() { }
+
         public const string SERVICO = "servicoEOL";
 
         public const string URL_AUTENTICACAO_ALTERAR_SENHA = "v1/autenticacao/AlterarSenha/";
@@ -85,6 +87,10 @@
         public const string URL_ALUNOS_NECESSIDADES_ESPECIAIS = "alunos/{0}/necessidades-especiais";
 
         public const string URL_ALUNOS_TURMAS_ATIVOS = "alunos/turmas/{0}/ativos";
+
+        public const string URL_ALUNOS_RESPONSAVEIS = "alunos/responsaveis/{0}";
+
+        public const string URL_ALUNOS_ATUALIZAR_RESPONSAVEIS = "alunos/{0}/responsaveis/{1}";
 
         public const string URL_ALUNOS_TURMAS_ANO_LETIVO_MATRICULA_TURMA_TIPO_TURMA = "alunos/{0}/turmas/anosLetivos/{1}/matriculaTurma/{2}/tipoTurma/{3}";
 
@@ -194,7 +200,9 @@
         public const string URL_ALUNOS_UES_ANOS_LETIVOS_AUTOCOMPLETE = "alunos/ues/{0}/anosLetivos/{1}/autocomplete";
         
         public const string URL_ALUNOS_TURMAS_ANOS_LETIVOS_HISTORICO_FILTRAR_SITUACAO_TIPO_TURMA = "alunos/{0}/turmas/anosLetivos/{1}/historico/{2}/filtrar-situacao/{3}/tipo-turma/{4}";
-        
+
+        public const string URL_DADOS_RESPONSAVEIS_FILIACAO_ALUNO = "alunos/{0}/responsaveis/filiacao";
+
         public const string URL_DRES = "dres";
         
         public const string URL_FUNCIONARIOS = "funcionarios";
@@ -232,5 +240,11 @@
         public const string URL_COMPONENTES_CURRICULARES_UES_MODALIDADES_ANOS_ANOS_ESCOLARES = "v1/componentes-curriculares/ues/{0}/modalidades/{1}/anos/{2}/anos-escolares";
         
         public const string URL_AUTENTICACAO_SGP_CARREGAR_DADOS_ACESSO_USUARIOS_PERFIS = "AutenticacaoSgp/CarregarDadosAcesso/usuarios/{0}/perfis/{1}";
+
+        public const string URL_GRUPOS_USUARIOS = "grupos-usuarios/tipo-perfil/{0}";
+
+        public const string URL_ABRANGENCIAS_PERFIS_USUARIO = "abrangencia/perfis/usuarios";
+        
+        public const string URL_COMPONENTES_CURRICULARES_TURMA_SEM_ATRIBUICAO_AULA = "v1/componentes-curriculares/turmas/{0}/sem-atribuicao/{1}";
     }
 }

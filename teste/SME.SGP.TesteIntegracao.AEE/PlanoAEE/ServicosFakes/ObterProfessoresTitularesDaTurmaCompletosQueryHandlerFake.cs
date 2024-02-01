@@ -11,9 +11,9 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
     {
         protected const string USUARIO_CP_LOGIN_3333333 = "3333333";
 
-        public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> Handle(ObterProfessoresTitularesDaTurmaCompletosQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<ProfessorTitularDisciplinaEol>> Handle(ObterProfessoresTitularesDaTurmaCompletosQuery request, CancellationToken cancellationToken)
         {
-            return await Task.FromResult(new List<ProfessorTitularDisciplinaEol>
+            return Task.FromResult<IEnumerable<ProfessorTitularDisciplinaEol>>(new List<ProfessorTitularDisciplinaEol>
             {
                 new ProfessorTitularDisciplinaEol()
                 {

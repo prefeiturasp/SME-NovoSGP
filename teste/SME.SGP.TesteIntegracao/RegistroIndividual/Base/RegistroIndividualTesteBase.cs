@@ -101,20 +101,6 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
             });
         }
 
-        protected async Task CriarPeriodoEscolarCustomizadoQuartoBimestre(bool periodoEscolarValido = false)
-        {
-            var dataReferencia = DateTimeExtension.HorarioBrasilia();
-
-            await CriarPeriodoEscolar(dataReferencia.AddDays(-285), dataReferencia.AddDays(-210), BIMESTRE_1, TIPO_CALENDARIO_1);
-
-            await CriarPeriodoEscolar(dataReferencia.AddDays(-200), dataReferencia.AddDays(-125), BIMESTRE_2, TIPO_CALENDARIO_1);
-
-            await CriarPeriodoEscolar(dataReferencia.AddDays(-115), dataReferencia.AddDays(-40), BIMESTRE_3, TIPO_CALENDARIO_1);
-
-            await CriarPeriodoEscolar(dataReferencia.AddDays(-20), periodoEscolarValido ? dataReferencia.AddDays(5) : dataReferencia.AddDays(-5), BIMESTRE_4, TIPO_CALENDARIO_1);
-        }
-
-
         protected Dictionary<int, string> ObterDicionarioDeSugestao()
         {
             var sugestaoDeTopicosDic = new Dictionary<int, string>();

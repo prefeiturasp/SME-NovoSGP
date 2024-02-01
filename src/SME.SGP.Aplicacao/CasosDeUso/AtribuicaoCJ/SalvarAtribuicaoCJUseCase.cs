@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,33 +16,41 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task Executar(AtribuicaoCJPersistenciaDto atribuicaoCJPersistenciaDto)
+        public async Task Executar(AtribuicaoCJPersistenciaDto persistenciaDto)
         {
-            var anoLetivo = int.Parse(atribuicaoCJPersistenciaDto.AnoLetivo);
+            var anoLetivo = int.Parse(persistenciaDto.AnoLetivo);
 
-            var atribuicoesAtuais = await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(atribuicaoCJPersistenciaDto.Modalidade, atribuicaoCJPersistenciaDto.TurmaId,
-                atribuicaoCJPersistenciaDto.UeId, 0, atribuicaoCJPersistenciaDto.UsuarioRf, string.Empty, null, "", null, anoLetivo));
+            var dto = new AtribuicoesPorTurmaEProfessorDto()
+            {
+                Modalidade = persistenciaDto.Modalidade,
+                TurmaId = persistenciaDto.TurmaId,
+                UeId = persistenciaDto.UeId,
+                UsuarioRf = persistenciaDto.UsuarioRf,
+                AnoLetivo = anoLetivo
+            };
+
+            var atribuicoesAtuais = await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(dto));
 
             var atribuiuCj = false;
 
-            await RemoverDisciplinasCache(atribuicaoCJPersistenciaDto);
-            await RemoverAtribuicaoAtivaCache(atribuicaoCJPersistenciaDto.UsuarioRf);
+            await RemoverDisciplinasCache(persistenciaDto);
+            await RemoverAtribuicaoAtivaCache(persistenciaDto.UsuarioRf);
 
-            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(atribuicaoCJPersistenciaDto.TurmaId));
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(persistenciaDto.TurmaId));
 
             var professoresTitularesDisciplinasEol = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(turma.Id));
-            var excluiAbrangencia = atribuicaoCJPersistenciaDto.Disciplinas.All(a => a.Substituir == false);
+            var excluiAbrangencia = persistenciaDto.Disciplinas.All(a => a.Substituir == false);
 
-            foreach (var atribuicaoDto in atribuicaoCJPersistenciaDto.Disciplinas)
+            foreach (var atribuicaoDto in persistenciaDto.Disciplinas)
             {
-                var atribuicao = TransformaDtoEmEntidade(atribuicaoCJPersistenciaDto, atribuicaoDto);
+                var atribuicao = TransformaDtoEmEntidade(persistenciaDto, atribuicaoDto);
 
                 var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
-                await mediator.Send(new InserirAtribuicaoCJCommand(atribuicao, professoresTitularesDisciplinasEol, atribuicoesAtuais, usuario, atribuicaoCJPersistenciaDto.Historico,excluiAbrangencia));
+                await mediator.Send(new InserirAtribuicaoCJCommand(atribuicao, professoresTitularesDisciplinasEol, atribuicoesAtuais, usuario, persistenciaDto.Historico,excluiAbrangencia));
 
                 var perfilCJ = atribuicao.Modalidade == Modalidade.EducacaoInfantil ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
 
-                atribuiuCj = await AtribuirPerfilCJ(atribuicaoCJPersistenciaDto, perfilCJ, atribuiuCj);
+                atribuiuCj = await AtribuirPerfilCJ(persistenciaDto, perfilCJ, atribuiuCj);
 
                 if (DateTime.Now.Year == anoLetivo)
                     await PublicarAtribuicaoNoGoogleClassroomApiAsync(atribuicao);

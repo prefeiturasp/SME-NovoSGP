@@ -105,20 +105,6 @@ namespace SME.SGP.Aplicacao
         private async Task<long> ObterTipoCalendario(long? eventoId)
             => eventoId.HasValue ? await mediator.Send(new ObterTipoCalendarioIdPorEventoQuery(eventoId.Value)) : 0;
 
-        private IEnumerable<ItineranciaUeDto> MontarUes(IEnumerable<Ue> ues, Itinerancia itinerancia)
-        {
-            return ues.Select(ue =>
-             {
-                 return new ItineranciaUeDto
-                 {
-                     UeId = ue.Id,
-                     Descricao = $"{ue.TipoEscola.ShortName()} - {ue.Nome}",
-                     CodigoUe = ue.CodigoUe,
-                     CodigoDre = ue.Dre.CodigoDre,
-                 };
-             });
-        }
-
         private async Task<IEnumerable<ItineranciaQuestaoDto>> MontarQuestoesItinerancia(Itinerancia itinerancia, ItineranciaQuestoesBaseDto questoesBase)
         {            
             var tiposQuestoes = await mediator.Send(new ObterTipoDaQuestaoItineranciaQuery(itinerancia.Id));

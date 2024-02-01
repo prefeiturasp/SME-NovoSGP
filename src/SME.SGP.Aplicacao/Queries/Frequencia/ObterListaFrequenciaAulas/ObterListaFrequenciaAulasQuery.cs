@@ -8,37 +8,23 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterListaFrequenciaAulasQuery : IRequest<RegistroFrequenciaPorDataPeriodoDto>
     {
-        public ObterListaFrequenciaAulasQuery(Turma turma,
-                                              IEnumerable<AlunoPorTurmaResposta> alunosDaTurma,
-                                              IEnumerable<Aula> aulas,
-                                              IEnumerable<FrequenciaAluno> frequenciaAlunos,
-                                              IEnumerable<RegistroFrequenciaAlunoPorAulaDto> registrosFrequenciaAlunos,
-                                              IEnumerable<AnotacaoAlunoAulaDto> anotacoesTurma,
-                                              IEnumerable<FrequenciaPreDefinidaDto> frequenciasPreDefinidas,
-                                              IEnumerable<CompensacaoAusenciaAlunoAulaSimplificadoDto> compensacaoAusenciaAlunoAulas,
-                                              PeriodoEscolar periodoEscolar,
-                                              bool registraFrequencia,
-                                              bool turmaPossuiFrequenciaRegistrada,
-                                              DateTime dataInicio,
-                                              DateTime dataFim,
-                                              int percentualAlerta,
-                                              int percentualCritico)
+        public ObterListaFrequenciaAulasQuery(FiltroFrequenciaAulasDto filtro)
         {
-            Turma = turma;
-            AlunosDaTurma = alunosDaTurma;
-            Aulas = aulas;
-            FrequenciaAlunos = frequenciaAlunos;
-            RegistrosFrequenciaAlunos = registrosFrequenciaAlunos;
-            AnotacoesTurma = anotacoesTurma;
-            FrequenciasPreDefinidas = frequenciasPreDefinidas;
-            CompensacaoAusenciaAlunoAulas = compensacaoAusenciaAlunoAulas;
-            PeriodoEscolar = periodoEscolar;
-            RegistraFrequencia = registraFrequencia;
-            TurmaPossuiFrequenciaRegistrada = turmaPossuiFrequenciaRegistrada;
-            DataInicio = dataInicio;
-            DataFim = dataFim;
-            PercentualAlerta = percentualAlerta;
-            PercentualCritico = percentualCritico;
+            Turma = filtro.Turma;
+            AlunosDaTurma = filtro.AlunosDaTurma;
+            Aulas = filtro.Aulas;
+            FrequenciaAlunos = filtro.FrequenciaAlunos;
+            RegistrosFrequenciaAlunos = filtro.RegistrosFrequenciaAlunos;
+            AnotacoesTurma = filtro.AnotacoesTurma;
+            FrequenciasPreDefinidas = filtro.FrequenciasPreDefinidas;
+            CompensacaoAusenciaAlunoAulas = filtro.CompensacaoAusenciaAlunoAulas;
+            PeriodoEscolar = filtro.PeriodoEscolar;
+            RegistraFrequencia = filtro.RegistraFrequencia;
+            TurmaPossuiFrequenciaRegistrada = filtro.TurmaPossuiFrequenciaRegistrada;
+            DataInicio = filtro.DataInicio;
+            DataFim = filtro.DataFim;
+            PercentualAlerta = filtro.PercentualAlerta;
+            PercentualCritico = filtro.PercentualCritico;
         }
 
         public Turma Turma { get; }

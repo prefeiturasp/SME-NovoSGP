@@ -36,8 +36,8 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<AlunoTemRecomandacaoDto>> VerificarSeExisteRecomendacaoPorTurma(string[] turmasId,int bimestre)
         {
             var query = @"select
-	                        distinct cca.aluno_codigo AluncoCodigo,
-	                        ccr.id is not null or coalesce(cca.recomendacoes_aluno, '') <> '' or coalesce(cca.recomendacoes_familia, '') <> '' TemRecomendacao
+                            distinct cca.aluno_codigo AluncoCodigo,
+                            ccr.id is not null or coalesce(cca.recomendacoes_aluno, '') <> '' or coalesce(cca.recomendacoes_familia, '') <> '' TemRecomendacao
                         from conselho_classe_aluno cca
                         join conselho_classe cc on cc.id = cca.conselho_classe_id
                         join fechamento_turma ft on ft.id = cc.fechamento_turma_id
@@ -46,7 +46,7 @@ namespace SME.SGP.Dados.Repositorios
                         left join conselho_classe_aluno_recomendacao ccar on ccar.conselho_classe_aluno_id = cca.id
                         left join conselho_classe_recomendacao ccr on ccr.id = ccar.conselho_classe_recomendacao_id
                         where not cca.excluido
-	                        and t.turma_id = any(@turmasId)";
+                            and t.turma_id = any(@turmasId)";
 
             if (bimestre > 0)
                 query += " and pe.bimestre = @bimestre ";
@@ -60,27 +60,27 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = new StringBuilder(); 
             sql.AppendLine(@"select distinct ");
-            sql.AppendLine(@"	cccat.aluno_codigo as AlunoCodigo,");
-            sql.AppendLine(@"	coalesce(cccatn.nota,cccatn.conceito_id)  as Nota,");
-            sql.AppendLine(@"	cccatn.componente_curricular_id as ComponenteCurricularId,");
-            sql.AppendLine(@"	cc.descricao_sgp as Descricao");
+            sql.AppendLine(@"    cccat.aluno_codigo as AlunoCodigo,");
+            sql.AppendLine(@"    coalesce(cccatn.nota,cccatn.conceito_id)  as Nota,");
+            sql.AppendLine(@"    cccatn.componente_curricular_id as ComponenteCurricularId,");
+            sql.AppendLine(@"    cc.descricao_sgp as Descricao");
             sql.AppendLine(@"from");
-            sql.AppendLine(@"	consolidado_conselho_classe_aluno_turma_nota cccatn");
+            sql.AppendLine(@"    consolidado_conselho_classe_aluno_turma_nota cccatn");
             sql.AppendLine(@"join consolidado_conselho_classe_aluno_turma cccat on");
-            sql.AppendLine(@"	cccat.id = cccatn.consolidado_conselho_classe_aluno_turma_id");
+            sql.AppendLine(@"    cccat.id = cccatn.consolidado_conselho_classe_aluno_turma_id");
             sql.AppendLine(@"join turma t on");
-            sql.AppendLine(@"	t.id = cccat.turma_id");
+            sql.AppendLine(@"    t.id = cccat.turma_id");
             sql.AppendLine(@"join componente_curricular cc on");
-            sql.AppendLine(@"	cc.id = cccatn.componente_curricular_id");
+            sql.AppendLine(@"    cc.id = cccatn.componente_curricular_id");
             sql.AppendLine(@"where");
-            sql.AppendLine(@"	not cccat.excluido");
-            sql.AppendLine(@"	and not cccat.excluido");
-            sql.AppendLine(@"	and t.turma_id = any(@turmasCodigos) ");
+            sql.AppendLine(@"    not cccat.excluido");
+            sql.AppendLine(@"    and not cccat.excluido");
+            sql.AppendLine(@"    and t.turma_id = any(@turmasCodigos) ");
             
             if (bimestre > 0)
-                sql.AppendLine(@"	and cccatn.bimestre = @bimestre ");
+                sql.AppendLine(@"    and cccatn.bimestre = @bimestre ");
             else
-                sql.AppendLine(@"	and coalesce(cccatn.bimestre, 0) = 0 ");
+                sql.AppendLine(@"    and coalesce(cccatn.bimestre, 0) = 0 ");
 
             return await database.Conexao.QueryAsync<ConselhoClasseAlunoNotaDto>(sql.ToString(), new { turmasCodigos,bimestre });
         }

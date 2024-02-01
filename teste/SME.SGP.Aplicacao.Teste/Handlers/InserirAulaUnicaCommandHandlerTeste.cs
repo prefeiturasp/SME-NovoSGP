@@ -27,13 +27,23 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
         }
 
         [Fact]
-        public async Task Deve_Inserir_Aula()
+        public Task Deve_Inserir_Aula()
         {
             // Arrange
             var usuario = new Usuario() { Id = 1, CodigoRf = "1234", PerfilAtual = Perfis.PERFIL_PROFESSOR };
             var turma = new Turma() { CodigoTurma = "1234", Ue = new Ue { CodigoUe = "321", Dre = new Dre { CodigoDre = "1" } } };
             var podeCadastrarAula = new PodeCadastrarAulaPorDataRetornoDto(true);
-            var inserirAulaUnicaCommand = new InserirAulaUnicaCommand(usuario, DateTime.Today, 1, "1234", 139, "Arte", 123, TipoAula.Normal, "321", false);
+            var persistirAuladto = new PersistirAulaDto() {
+                DataAula = DateTime.Today,
+                Quantidade = 1,
+                CodigoTurma = "1234",
+                CodigoComponenteCurricular = 139,
+                NomeComponenteCurricular = "Arte",
+                TipoCalendarioId = 123,
+                TipoAula = TipoAula.Normal,
+                CodigoUe = "321"
+            };
+            var inserirAulaUnicaCommand = new InserirAulaUnicaCommand(usuario, persistirAuladto);
 
             mediator.Setup(a => a.Send(It.IsAny<ObterTurmaComUeEDrePorCodigoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(turma);
@@ -59,6 +69,8 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             // Assert
             repositorioAula.Verify(x => x.SalvarAsync(It.IsAny<Aula>()), Times.Once);
             Assert.True(auditoriaDto.Id > 0);
+
+            return Task.CompletedTask;
         }
 
         [Fact]
@@ -69,7 +81,18 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             var aulasConsulta = new List<AulaConsultaDto>();
             var turma = new Turma() { CodigoTurma = "1234", Ue = new Ue { CodigoUe = "321", Dre = new Dre { CodigoDre = "1" } } };
             var podeCadastrarAula = new PodeCadastrarAulaPorDataRetornoDto(false, "Apenas é possível consultar este registro pois existe um evento de dia não letivo");
-            var inserirAulaUnicaCommand = new InserirAulaUnicaCommand(usuario, DateTime.Today, 1, "1234", 139, "Arte", 123, TipoAula.Normal, "321", false);
+            var persistirAuladto = new PersistirAulaDto()
+            {
+                DataAula = DateTime.Today,
+                Quantidade = 1,
+                CodigoTurma = "1234",
+                CodigoComponenteCurricular = 139,
+                NomeComponenteCurricular = "Arte",
+                TipoCalendarioId = 123,
+                TipoAula = TipoAula.Normal,
+                CodigoUe = "321"
+            };
+            var inserirAulaUnicaCommand = new InserirAulaUnicaCommand(usuario, persistirAuladto);
 
             mediator.Setup(a => a.Send(It.IsAny<ObterTurmaComUeEDrePorCodigoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(turma);
@@ -101,7 +124,18 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             var aulasConsulta = new List<AulaConsultaDto>() { new AulaConsultaDto() { Id = 1, TipoAula = TipoAula.Normal, ProfessorRf = "1234" } };
             var turma = new Turma() { CodigoTurma = "1234", Ue = new Ue { CodigoUe = "321", Dre = new Dre { CodigoDre = "1" } } };
             var podeCadastrarAula = new PodeCadastrarAulaPorDataRetornoDto(false);
-            var inserirAulaUnicaCommand = new InserirAulaUnicaCommand(usuario, DateTime.Today, 1, "1234", 139, "Arte", 123, TipoAula.Normal, "321", false);
+            var persistirAuladto = new PersistirAulaDto()
+            {
+                DataAula = DateTime.Today,
+                Quantidade = 1,
+                CodigoTurma = "1234",
+                CodigoComponenteCurricular = 139,
+                NomeComponenteCurricular = "Arte",
+                TipoCalendarioId = 123,
+                TipoAula = TipoAula.Normal,
+                CodigoUe = "321"
+            };
+            var inserirAulaUnicaCommand = new InserirAulaUnicaCommand(usuario, persistirAuladto);
 
             mediator.Setup(a => a.Send(It.IsAny<ObterTurmaComUeEDrePorCodigoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(turma);
@@ -133,7 +167,18 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             var aulasConsulta = new List<AulaConsultaDto>() { new AulaConsultaDto() { Id = 1, TipoAula = TipoAula.Normal, ProfessorRf = "1234" } };
             var turma = new Turma() { CodigoTurma = "1234", Ue = new Ue { CodigoUe = "321", Dre = new Dre { CodigoDre = "1" } } };
             var podeCadastrarAula = new PodeCadastrarAulaPorDataRetornoDto(false);
-            var inserirAulaUnicaCommand = new InserirAulaUnicaCommand(usuario, DateTime.Today, 1, "1234", 139, "Arte", 123, TipoAula.Normal, "321", false);
+            var persistirAuladto = new PersistirAulaDto()
+            {
+                DataAula = DateTime.Today,
+                Quantidade = 1,
+                CodigoTurma = "1234",
+                CodigoComponenteCurricular = 139,
+                NomeComponenteCurricular = "Arte",
+                TipoCalendarioId = 123,
+                TipoAula = TipoAula.Normal,
+                CodigoUe = "321"
+            };
+            var inserirAulaUnicaCommand = new InserirAulaUnicaCommand(usuario, persistirAuladto);
 
             mediator.Setup(a => a.Send(It.IsAny<ObterTurmaComUeEDrePorCodigoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(turma);
@@ -164,14 +209,25 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
         }
 
         [Fact]
-        public async Task Diretor_Deve_Inserir_Aula_Reposicao()
+        public Task Diretor_Deve_Inserir_Aula_Reposicao()
         {
             // Arrange
             var usuario = new Usuario() { Id = 1, CodigoRf = "1234", PerfilAtual = Perfis.PERFIL_DIRETOR };
             var aulasConsulta = new List<AulaConsultaDto>() { new AulaConsultaDto() { Id = 1, TipoAula = TipoAula.Reposicao, ProfessorRf = "1234" } };
             var turma = new Turma() { CodigoTurma = "1234", Ue = new Ue { CodigoUe = "321", Dre = new Dre { CodigoDre = "1" } } };
             var podeCadastrarAula = new PodeCadastrarAulaPorDataRetornoDto(true);
-            var inserirAulaUnicaCommand = new InserirAulaUnicaCommand(usuario, DateTime.Today, 1, "1234", 139, "Arte", 123, TipoAula.Reposicao, "321", false);
+            var persistirAuladto = new PersistirAulaDto()
+            {
+                DataAula = DateTime.Today,
+                Quantidade = 1,
+                CodigoTurma = "1234",
+                CodigoComponenteCurricular = 139,
+                NomeComponenteCurricular = "Arte",
+                TipoCalendarioId = 123,
+                TipoAula = TipoAula.Reposicao,
+                CodigoUe = "321"
+            };
+            var inserirAulaUnicaCommand = new InserirAulaUnicaCommand(usuario, persistirAuladto);
 
             mediator.Setup(a => a.Send(It.IsAny<ObterTurmaComUeEDrePorCodigoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(turma);
@@ -203,6 +259,8 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             // Assert
             repositorioAula.Verify(x => x.SalvarAsync(It.IsAny<Aula>()), Times.Once);
             Assert.True(auditoriaDto.Id > 0);
+
+            return Task.CompletedTask;
         }
 
         [Fact(DisplayName = "Valida o cadastro de 2 aulas de reposição com 1 existente deve inviar para aprovação > 3")]
@@ -213,7 +271,18 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             var aulasConsulta = new List<AulaConsultaDto>() { new AulaConsultaDto() { Id = 1, TipoAula = TipoAula.Reposicao, ProfessorRf = "1234" } };
             var turma = new Turma() { CodigoTurma = "1234", Ue = new Ue { CodigoUe = "321", Dre = new Dre { CodigoDre = "1" } } };
             var podeCadastrarAula = new PodeCadastrarAulaPorDataRetornoDto(true);
-            var inserirAulaUnicaCommand = new InserirAulaUnicaCommand(usuario, DateTime.Today, 2, "1234", 139, "Arte", 123, TipoAula.Reposicao, "321", false);
+            var persistirAuladto = new PersistirAulaDto()
+            {
+                DataAula = DateTime.Today,
+                Quantidade = 2,
+                CodigoTurma = "1234",
+                CodigoComponenteCurricular = 139,
+                NomeComponenteCurricular = "Arte",
+                TipoCalendarioId = 123,
+                TipoAula = TipoAula.Reposicao,
+                CodigoUe = "321"
+            };
+            var inserirAulaUnicaCommand = new InserirAulaUnicaCommand(usuario, persistirAuladto);
             var aulasExistentes = new List<AulaConsultaDto>() { new AulaConsultaDto() { DataAula = DateTime.Today, TipoAula = TipoAula.Normal, Quantidade = 2 } };
 
             mediator.Setup(a => a.Send(It.IsAny<ObterTurmaComUeEDrePorCodigoQuery>(), It.IsAny<CancellationToken>()))

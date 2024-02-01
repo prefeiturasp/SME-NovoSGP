@@ -13,11 +13,6 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasObjetivoAprendizagem : IConsultasObjetivoAprendizagem
     {
-        private readonly Dictionary<int, string> Anos = new Dictionary<int, string>
-        {
-           {1,"first"},{2,"second"},{3,"third"},{4,"fourth"},{5,"fifth"},{6,"sixth"},{7,"seventh"},{8,"eighth"},{9,"nineth"}
-        };
-
         private readonly IConfiguration configuration;
         private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioComponenteCurricularJurema repositorioComponenteCurricular;
@@ -25,24 +20,18 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioObjetivoAprendizagemPlano repositorioObjetivosPlano;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IConsultasTurma consultasTurma;
-        private readonly IServicoJurema servicoJurema;
-        private readonly IServicoUsuario servicoUsuario;
-
-        public ConsultasObjetivoAprendizagem(IServicoJurema servicoJurema,
-                                                     IRepositorioCache repositorioCache,
+        
+        public ConsultasObjetivoAprendizagem(IRepositorioCache repositorioCache,
                                                      IRepositorioComponenteCurricularJurema repositorioComponenteCurricular,
                                                      IRepositorioObjetivoAprendizagemPlano repositorioObjetivosPlano,
                                                      IConfiguration configuration,
-                                                     IServicoUsuario servicoUsuario,
                                                      IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                                      IConsultasTurma consultasTurma,
                                                      IRepositorioObjetivoAprendizagem repositorioObjetivoAprendizagem)
         {
-            this.servicoJurema = servicoJurema ?? throw new ArgumentNullException(nameof(servicoJurema));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
             this.repositorioObjetivoAprendizagem = repositorioObjetivoAprendizagem ?? throw new ArgumentNullException(nameof(repositorioObjetivoAprendizagem));
@@ -118,8 +107,12 @@ namespace SME.SGP.Aplicacao
         public long ObterIdPorObjetivoAprendizagemJurema(long planoId, long objetivoAprendizagemJuremaId)
         {
             return repositorioObjetivosPlano.ObterIdPorObjetivoAprendizagemJurema(planoId, objetivoAprendizagemJuremaId);
-        }    
+        }
 
+        public bool ComponentePossuiObjetivosOpcionais(long componenteCurricularCodigo, bool regencia, bool turmaEspecial)
+        {
+            return turmaEspecial && (regencia || new long[] { 218, 138, 1116 }.Contains(componenteCurricularCodigo));
+        }
 
         private async Task<int> ObterBimestreAtual(DateTime dataReferencia, string turmaId)
         {
@@ -173,11 +166,6 @@ namespace SME.SGP.Aplicacao
             IEnumerable<ComponenteCurricularJurema> componentesFiltro = componentesCurriculares.Where(c => componentesCurricularesIds.Contains(c.CodigoEOL));
             IEnumerable<long> componentesJurema = componentesFiltro.Select(c => c.CodigoJurema);
             return componentesJurema;
-        }
-
-        public async Task<bool> ComponentePossuiObjetivosOpcionais(long componenteCurricularCodigo, bool regencia, bool turmaEspecial)
-        {
-            return turmaEspecial && (regencia || new long[] { 218, 138, 1116 }.Contains(componenteCurricularCodigo));
         }
     }
 }

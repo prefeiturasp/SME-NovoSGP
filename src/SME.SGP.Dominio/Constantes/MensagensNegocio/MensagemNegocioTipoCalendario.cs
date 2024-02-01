@@ -2,6 +2,8 @@ namespace SME.SGP.Dominio.Constantes.MensagensNegocio
 {
     public class MensagemNegocioTipoCalendario
     {
+        protected MensagemNegocioTipoCalendario() { }
+
         public const string TIPO_CALENDARIO_NAO_ENCONTRADO =
             "Tipo de calendário não encontrado";
         public const string TIPO_CALENDARIO_NAO_ENCONTRADO_TURMA =

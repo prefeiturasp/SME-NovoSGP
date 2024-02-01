@@ -10,7 +10,7 @@ using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Fechamento.Worker
 {
-    public class WorkerRabbitFechamento : WorkerRabbitMQBase
+    public class WorkerRabbitFechamento : WorkerRabbitAplicacao
     {
         private const int TENTATIVA_REPROCESSAR_10 = 10;
 
@@ -26,7 +26,7 @@ namespace SME.SGP.Fechamento.Worker
         {
         }
 
-        protected override void RegistrarUseCasesDoWorker()
+        protected override void RegistrarUseCases()
         {
             Comandos.Add(RotasRabbitSgpFechamento.ConsolidarTurmaFechamentoSync, new ComandoRabbit("Consolidação fechamento - Sincronizar Componentes da Turma", typeof(IExecutarConsolidacaoTurmaFechamentoUseCase), true));
             Comandos.Add(RotasRabbitSgpFechamento.ConsolidarTurmaFechamentoComponenteTratar, new ComandoRabbit("Consolidação fechamento - Consolidar Componentes da Turma", typeof(IExecutarConsolidacaoTurmaFechamentoComponenteUseCase), true));

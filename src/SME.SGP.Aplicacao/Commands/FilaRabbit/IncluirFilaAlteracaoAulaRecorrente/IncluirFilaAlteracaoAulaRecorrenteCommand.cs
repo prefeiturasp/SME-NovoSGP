@@ -1,39 +1,27 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
     public class IncluirFilaAlteracaoAulaRecorrenteCommand: IRequest<bool>
     {
-        public IncluirFilaAlteracaoAulaRecorrenteCommand(Usuario usuario,
-                                       long aulaId,
-                                       DateTime dataAula,
-                                       int quantidade,
-                                       string codigoTurma,
-                                       long componenteCurricularId,
-                                       string nomeComponenteCurricular,
-                                       long tipoCalendarioId,
-                                       TipoAula tipoAula,
-                                       string codigoUe,
-                                       bool ehRegencia,
-                                       RecorrenciaAula recorrenciaAula)
+        public IncluirFilaAlteracaoAulaRecorrenteCommand(Usuario usuario, PersistirAulaDto aulaDto)
         {
             Usuario = usuario;
-            AulaId = aulaId;
-            DataAula = dataAula;
-            Quantidade = quantidade;
-            CodigoTurma = codigoTurma;
-            ComponenteCurricularId = componenteCurricularId;
-            NomeComponenteCurricular = nomeComponenteCurricular;
-            TipoCalendarioId = tipoCalendarioId;
-            TipoAula = tipoAula;
-            CodigoUe = codigoUe;
-            EhRegencia = ehRegencia;
-            RecorrenciaAula = recorrenciaAula;
+            AulaId = aulaDto.Id;
+            DataAula = aulaDto.DataAula;
+            Quantidade = aulaDto.Quantidade;
+            CodigoTurma = aulaDto.CodigoTurma;
+            ComponenteCurricularId = aulaDto.CodigoComponenteCurricular;
+            NomeComponenteCurricular = aulaDto.NomeComponenteCurricular;
+            TipoCalendarioId = aulaDto.TipoCalendarioId;
+            TipoAula = aulaDto.TipoAula;
+            CodigoUe = aulaDto.CodigoUe;
+            EhRegencia = aulaDto.EhRegencia;
+            RecorrenciaAula = aulaDto.RecorrenciaAula;
         }
 
         public Usuario Usuario { get; set; }

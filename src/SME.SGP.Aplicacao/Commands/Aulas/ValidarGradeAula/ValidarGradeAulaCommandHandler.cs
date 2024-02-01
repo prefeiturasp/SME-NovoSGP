@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Linq;
 using System.Threading;
@@ -14,36 +15,51 @@ namespace SME.SGP.Aplicacao
         public ValidarGradeAulaCommandHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-
         }
 
         public async Task<(bool resultado, string mensagem)> Handle(ValidarGradeAulaCommand request, CancellationToken cancellationToken)
         {
             if (request.EhRegencia)
-            {
-                var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
-                if (request.AulasExistentes.NaoEhNulo() && request.AulasExistentes.Any(c => c.TipoAula != TipoAula.Reposicao) && !(usuarioLogado.EhProfessorCj() || usuarioLogado.EhProfessorCjInfantil()))
-                {
-                    if (request.TurmaModalidade == Modalidade.EJA)
-                        return (false, "Para regência de EJA só é permitido a criação de 5 aulas por dia.");
-                    else return (false, "Para regência de classe só é permitido a criação de 1 (uma) aula por dia.");
-                }
-            }
-            else
-            {
-                var gradeAulas = await mediator.Send(new ObterGradeAulasPorTurmaEProfessorQuery(request.TurmaCodigo, request.ComponenteCurricularesCodigo, request.Data, request.UsuarioRf, request.EhRegencia, request.EhGestor));
-                var quantidadeAulasRestantes = gradeAulas.EhNulo() ? int.MaxValue : gradeAulas.QuantidadeAulasRestante;
+                return await ValidarGradeAulaRegencia(request);
+            
+            var gradeAulas = await mediator.Send(new ObterGradeAulasPorTurmaEProfessorQuery(request.TurmaCodigo, request.ComponenteCurricularesCodigo, request.Data, request.UsuarioRf, request.EhRegencia, request.EhGestor));
+            return ValidarGradeAula(gradeAulas, request.Quantidade);
+        }
 
-                if (gradeAulas.NaoEhNulo())
-                {
-                    if (quantidadeAulasRestantes < request.Quantidade)
-                        return (false, "Quantidade de aulas superior ao limíte de aulas da grade.");
-                    if (!gradeAulas.PodeEditar && (request.Quantidade != gradeAulas.QuantidadeAulasRestante))
-                        return (false, "Quantidade de aulas não pode ser diferente do valor da grade curricular.");
-                }
+        private (bool resultado, string mensagem) ValidarGradeAula(GradeComponenteTurmaAulasDto gradeAulas, int quantidadeAulas)
+        {
+            if (gradeAulas.NaoEhNulo())
+            {
+                if (gradeAulas.QuantidadeAulasRestante < quantidadeAulas)
+                    return (false, "Quantidade de aulas superior ao limíte de aulas da grade.");
+                if (!gradeAulas.PodeEditar && (quantidadeAulas != gradeAulas.QuantidadeAulasRestante))
+                    return (false, "Quantidade de aulas não pode ser diferente do valor da grade curricular.");
             }
 
             return (true, string.Empty);
+        }
+
+        private async Task<(bool resultado, string mensagem)> ValidarGradeAulaRegencia(ValidarGradeAulaCommand request)
+        {
+            if (request.AulasExistentes.PossuiRegistros(c => c.TipoAula != TipoAula.Reposicao) 
+                && await UsuarioLogadoNaoEhProfCJ())
+                return (false, ObterMsgQdadeAulasGradeRegencia(request.TurmaModalidade));
+            return (true, string.Empty);
+        }
+
+        private async Task<bool> UsuarioLogadoEhProfCJ()
+        {
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
+            return usuarioLogado.EhProfessorCj() || usuarioLogado.EhProfessorCjInfantil();
+        }
+
+        private async Task<bool> UsuarioLogadoNaoEhProfCJ() => !(await UsuarioLogadoEhProfCJ());
+
+        private string ObterMsgQdadeAulasGradeRegencia(Modalidade modalidade)
+        {
+            if (modalidade == Modalidade.EJA)
+                return "Para regência de EJA só é permitido a criação de 5 aulas por dia.";
+            return "Para regência de classe só é permitido a criação de 1 (uma) aula por dia.";
         }
     }
 }

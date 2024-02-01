@@ -18,18 +18,15 @@ namespace SME.SGP.Aplicacao
         private readonly IUnitOfWork unitOfWork;
         private readonly IConfiguration configuration;
         private readonly IRepositorioPendencia repositorioPendencia;
-        private readonly IRepositorioPendenciaUsuario repositorioPendenciaUsuario;
         private readonly IRepositorioPendenciaEncaminhamentoAEE repositorioPendenciaEncaminhamentoAEE;
 
         public GerarPendenciaCPEncaminhamentoAEECommandHandler(IMediator mediator, IUnitOfWork unitOfWork, IConfiguration configuration,
-            IRepositorioPendencia repositorioPendencia, IRepositorioPendenciaUsuario repositorioPendenciaUsuario,
-            IRepositorioPendenciaEncaminhamentoAEE repositorioPendenciaEncaminhamentoAEE)
+            IRepositorioPendencia repositorioPendencia, IRepositorioPendenciaEncaminhamentoAEE repositorioPendenciaEncaminhamentoAEE)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.repositorioPendencia = repositorioPendencia ?? throw new ArgumentNullException(nameof(repositorioPendencia));
-            this.repositorioPendenciaUsuario = repositorioPendenciaUsuario ?? throw new ArgumentNullException(nameof(repositorioPendenciaUsuario));
             this.repositorioPendenciaEncaminhamentoAEE = repositorioPendenciaEncaminhamentoAEE ?? throw new ArgumentNullException(nameof(repositorioPendenciaEncaminhamentoAEE));
         }
 

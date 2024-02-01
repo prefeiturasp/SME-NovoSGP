@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Linq;
 
 namespace SME.SGP.Aplicacao
 {
@@ -94,7 +93,7 @@ namespace SME.SGP.Aplicacao
 
                 if (compensacaoDto.Alunos.Any() || (ehAlteracao && compensacoesJaExistentes.Any()))
                 {
-                    var compensacaoAusenciaAlunos = await GravarCompensacaoAlunos(ehAlteracao, compensacao.Id, turma, codigosComponentesConsiderados.ToArray(), compensacaoDto.Alunos, periodo, compensacoesJaExistentes);
+                    var compensacaoAusenciaAlunos = await GravarCompensacaoAlunos(compensacao.Id, turma, codigosComponentesConsiderados.ToArray(), compensacaoDto.Alunos, periodo, compensacoesJaExistentes);
                     codigosAlunosCompensacao = await GravarCompensacaoAlunoAulas(ehAlteracao, compensacao, turma, compensacaoAusenciaAlunos, compensacaoDto.Alunos);
                 }
 
@@ -171,7 +170,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<IEnumerable<CompensacaoAusenciaAluno>> GravarCompensacaoAlunos(bool alteracao, long compensacaoId, Turma turma, string[] disciplinasId, IEnumerable<CompensacaoAusenciaAlunoDto> compensacaoAusenciaAlunoDtos, PeriodoEscolar periodo, IEnumerable<CompensacaoAusenciaAluno> compensacoesJaExistentes)
+        private async Task<IEnumerable<CompensacaoAusenciaAluno>> GravarCompensacaoAlunos(long compensacaoId, Turma turma, string[] disciplinasId, IEnumerable<CompensacaoAusenciaAlunoDto> compensacaoAusenciaAlunoDtos, PeriodoEscolar periodo, IEnumerable<CompensacaoAusenciaAluno> compensacoesJaExistentes)
         {
             var mensagensExcessao = new StringBuilder();
             var listaPersistencia = new List<CompensacaoAusenciaAluno>();

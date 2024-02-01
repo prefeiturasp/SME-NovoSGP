@@ -1,14 +1,12 @@
-﻿using System;
-using MediatR;
+﻿using MediatR;
+using Microsoft.Extensions.Options;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
-using SME.SGP.Infra;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
-using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
+using System;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {

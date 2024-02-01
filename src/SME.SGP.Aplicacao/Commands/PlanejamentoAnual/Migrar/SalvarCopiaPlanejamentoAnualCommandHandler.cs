@@ -16,56 +16,35 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPlanejamentoAnualPeriodoEscolar repositorioPlanejamentoAnualPeriodoEscolar;
         private readonly IRepositorioPlanejamentoAnualComponente repositorioPlanejamentoAnualComponente;
         private readonly IRepositorioPlanejamentoAnualObjetivosAprendizagem repositorioPlanejamentoAnualObjetivosAprendizagem;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
 
         public SalvarCopiaPlanejamentoAnualCommandHandler(IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual,
                                                           IRepositorioPlanejamentoAnualPeriodoEscolar repositorioPlanejamentoAnualPeriodoEscolar,
                                                           IRepositorioPlanejamentoAnualComponente repositorioPlanejamentoAnualComponente,
                                                           IRepositorioPlanejamentoAnualObjetivosAprendizagem repositorioPlanejamentoAnualObjetivosAprendizagem,
-                                                          IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                                                           IMediator mediator) : base(mediator)
         {
             this.repositorioPlanejamentoAnual = repositorioPlanejamentoAnual ?? throw new ArgumentNullException(nameof(repositorioPlanejamentoAnual));
             this.repositorioPlanejamentoAnualPeriodoEscolar = repositorioPlanejamentoAnualPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPlanejamentoAnualPeriodoEscolar));
             this.repositorioPlanejamentoAnualComponente = repositorioPlanejamentoAnualComponente ?? throw new ArgumentNullException(nameof(repositorioPlanejamentoAnualComponente));
             this.repositorioPlanejamentoAnualObjetivosAprendizagem = repositorioPlanejamentoAnualObjetivosAprendizagem ?? throw new ArgumentNullException(nameof(repositorioPlanejamentoAnualObjetivosAprendizagem));
-            this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
         }
 
         public async Task<bool> Handle(SalvarCopiaPlanejamentoAnualCommand request, CancellationToken cancellationToken)
         {
-            var planejamentoAnualId = await repositorioPlanejamentoAnual
-                .ObterIdPorTurmaEComponenteCurricular(request.PlanejamentoAnual.TurmaId, request.PlanejamentoAnual.ComponenteCurricularId);
-
-            if (planejamentoAnualId == 0)
-                planejamentoAnualId = await repositorioPlanejamentoAnual.SalvarAsync(request.PlanejamentoAnual);
+            var planejamentoAnualId = await ObterIdPlanejamentoAnual(request.PlanejamentoAnual);
 
             foreach (var periodo in request.PlanejamentoAnual.PeriodosEscolares)
             {
-                var planejamentoAnualPeriodoEscolar = await repositorioPlanejamentoAnualPeriodoEscolar
-                    .ObterPorPlanejamentoAnualIdEPeriodoId(planejamentoAnualId, periodo.PeriodoEscolarId, true);
-
-                if (planejamentoAnualPeriodoEscolar.EhNulo())
-                    planejamentoAnualPeriodoEscolar = new PlanejamentoAnualPeriodoEscolar(periodo.PeriodoEscolarId, planejamentoAnualId);
-                else
-                    planejamentoAnualPeriodoEscolar.Excluido = false;
+                var planejamentoAnualPeriodoEscolar = await ObterPlanejamentoAnualPeriodoEscolar(planejamentoAnualId, periodo.PeriodoEscolarId);
 
                 var planejamentoAnualPeriodoEscolarId = await repositorioPlanejamentoAnualPeriodoEscolar
                     .SalvarAsync(planejamentoAnualPeriodoEscolar);
 
                 foreach (var componente in periodo.ComponentesCurriculares)
                 {
-                    var planejamentoAnualComponente = await repositorioPlanejamentoAnualComponente
-                        .ObterPorPlanejamentoAnualPeriodoEscolarId(componente.ComponenteCurricularId, planejamentoAnualPeriodoEscolarId, true);
-
-                    if (planejamentoAnualComponente.EhNulo())
-                        planejamentoAnualComponente = new PlanejamentoAnualComponente(componente.ComponenteCurricularId, componente.Descricao, planejamentoAnualPeriodoEscolarId);
-                    else
-                    {
-                        planejamentoAnualComponente.Excluido = false;
-                        planejamentoAnualComponente.Descricao = componente.Descricao;
-                    }
-
+                    var planejamentoAnualComponente = await ObterPlanejamentoAnualComponenteCurricular(componente.ComponenteCurricularId,
+                                                                                                       planejamentoAnualPeriodoEscolarId,
+                                                                                                       componente.Descricao);
                     var planejamentoAnualComponenteId = await repositorioPlanejamentoAnualComponente.SalvarAsync(planejamentoAnualComponente);
 
                     var listaPlanejamentoAnualObjetivoAprendizagemExistente = await repositorioPlanejamentoAnualObjetivosAprendizagem
@@ -73,14 +52,9 @@ namespace SME.SGP.Aplicacao
 
                     foreach (var objetivo in componente.ObjetivosAprendizagem)
                     {
-                        var planejamentoAnualObjetivoAprendizagem = listaPlanejamentoAnualObjetivoAprendizagemExistente
-                              .FirstOrDefault(oa => oa.ObjetivoAprendizagemId.Equals(objetivo.ObjetivoAprendizagemId));
-
-                        if (planejamentoAnualObjetivoAprendizagem.EhNulo())
-                            planejamentoAnualObjetivoAprendizagem = new PlanejamentoAnualObjetivoAprendizagem(planejamentoAnualComponenteId, objetivo.ObjetivoAprendizagemId);
-                        else
-                            planejamentoAnualObjetivoAprendizagem.Excluido = false;
-
+                        var planejamentoAnualObjetivoAprendizagem = await ObterPlanejamentoAnualObjetivoAprendizagem(listaPlanejamentoAnualObjetivoAprendizagemExistente,
+                                                                                                                    objetivo.ObjetivoAprendizagemId,
+                                                                                                                    planejamentoAnualComponenteId);
                         await repositorioPlanejamentoAnualObjetivosAprendizagem.SalvarAsync(planejamentoAnualObjetivoAprendizagem);
                     }
 
@@ -94,6 +68,58 @@ namespace SME.SGP.Aplicacao
             }
 
             return true;
+        }
+
+        private async Task<long> ObterIdPlanejamentoAnual(PlanejamentoAnual PlanejamentoAnual)
+        {
+            var planejamentoAnualId = await repositorioPlanejamentoAnual
+                .ObterIdPorTurmaEComponenteCurricular(PlanejamentoAnual.TurmaId, PlanejamentoAnual.ComponenteCurricularId);
+
+            if (planejamentoAnualId == 0)
+                planejamentoAnualId = await repositorioPlanejamentoAnual.SalvarAsync(PlanejamentoAnual);
+            return planejamentoAnualId;
+        }
+
+        private async Task<PlanejamentoAnualObjetivoAprendizagem> ObterPlanejamentoAnualObjetivoAprendizagem(IEnumerable<PlanejamentoAnualObjetivoAprendizagem> listaPlanejamentoAnualObjetivoAprendizagemExistente,
+                                                                                                        long objetivoAprendizagemId, long planejamentoAnualComponenteId)
+        {
+            var planejamentoAnualObjetivoAprendizagem = listaPlanejamentoAnualObjetivoAprendizagemExistente
+                              .FirstOrDefault(oa => oa.ObjetivoAprendizagemId.Equals(objetivoAprendizagemId));
+
+            if (planejamentoAnualObjetivoAprendizagem.EhNulo())
+                planejamentoAnualObjetivoAprendizagem = new PlanejamentoAnualObjetivoAprendizagem(planejamentoAnualComponenteId, objetivoAprendizagemId);
+            else
+                planejamentoAnualObjetivoAprendizagem.Excluido = false;
+            return planejamentoAnualObjetivoAprendizagem;
+        }
+
+        private async Task<PlanejamentoAnualPeriodoEscolar> ObterPlanejamentoAnualPeriodoEscolar(long id, long periodoEscolarId)
+        {
+            var planejamentoAnualPeriodoEscolar = await repositorioPlanejamentoAnualPeriodoEscolar
+                    .ObterPorPlanejamentoAnualIdEPeriodoId(id, periodoEscolarId, true);
+
+            if (planejamentoAnualPeriodoEscolar.EhNulo())
+                planejamentoAnualPeriodoEscolar = new PlanejamentoAnualPeriodoEscolar(periodoEscolarId, id);
+            else
+                planejamentoAnualPeriodoEscolar.Excluido = false;
+            return planejamentoAnualPeriodoEscolar;
+        }
+
+        private async Task<PlanejamentoAnualComponente> ObterPlanejamentoAnualComponenteCurricular(long componenteCurricularId, 
+                                                                                                   long planejamentoAnualPeriodoEscolarId, 
+                                                                                                   string componenteCurricularDescricao)
+        {
+            var planejamentoAnualComponente = await repositorioPlanejamentoAnualComponente
+                        .ObterPorPlanejamentoAnualPeriodoEscolarId(componenteCurricularId, planejamentoAnualPeriodoEscolarId, true);
+
+            if (planejamentoAnualComponente.EhNulo())
+                planejamentoAnualComponente = new PlanejamentoAnualComponente(componenteCurricularId, componenteCurricularDescricao, planejamentoAnualPeriodoEscolarId);
+            else
+            {
+                planejamentoAnualComponente.Excluido = false;
+                planejamentoAnualComponente.Descricao = componenteCurricularDescricao;
+            }
+            return planejamentoAnualComponente;
         }
     }
 }

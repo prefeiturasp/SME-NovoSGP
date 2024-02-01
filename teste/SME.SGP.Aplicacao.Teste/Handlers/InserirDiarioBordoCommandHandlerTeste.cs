@@ -1,16 +1,11 @@
-﻿using Moq;
+﻿using FluentValidation.TestHelper;
+using MediatR;
+using Moq;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra.Excecoes;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using FluentValidation.TestHelper;
-using Xunit;
-using MediatR;
 using System.Threading;
-using SME.SGP.Aplicacao.Integracoes;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.Handlers
 {
@@ -28,7 +23,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
         }
 
         [Fact]
-        public async Task Deve_Inserir_Diario_De_Bordo()
+        public Task Deve_Inserir_Diario_De_Bordo()
         {
             // Arrange
             mediator.Setup(a => a.Send(It.IsAny<AulaExisteQuery>(), It.IsAny<CancellationToken>()))
@@ -58,24 +53,30 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             // Assert
             repositorioDiarioBordo.Verify(x => x.SalvarAsync(It.IsAny<DiarioBordo>()), Times.Once);
             Assert.True(auditoriaDto.Id > 0);
+
+            return Task.CompletedTask;
         }
 
         [Fact]
-        public async Task Deve_Obrigar_Planejamento()
+        public Task Deve_Obrigar_Planejamento()
         {
             var command = new InserirDiarioBordoCommand(1, "", 1);
             var result = ValidarCommand(command);
 
             result.ShouldHaveValidationErrorFor(a => a.Planejamento);
+
+            return Task.CompletedTask;
         }
 
         [Fact]
-        public async Task Deve_Exigir_Planejamento_Com_200_Caracteres()
+        public Task Deve_Exigir_Planejamento_Com_200_Caracteres()
         {
             var command = new InserirDiarioBordoCommand(1, "teste de limite de caracteres", 1);
             var result = ValidarCommand(command);
 
             result.ShouldHaveValidationErrorFor(a => a.Planejamento);
+
+            return Task.CompletedTask;
         }
 
         private TestValidationResult<InserirDiarioBordoCommand> ValidarCommand(InserirDiarioBordoCommand command)

@@ -17,8 +17,8 @@ namespace SME.SGP.Dados.Repositorios
         {
             var relatorioSecao = new RelatorioPeriodicoPAPSecao();
             var query = @"select 
-						rpps.id, rpps.relatorio_periodico_pap_aluno_id, rpps.secao_relatorio_periodico_pap_id, rpps.criado_em, rpps.criado_por, rpps.criado_rf,
-						rppr.id, rppr.relatorio_periodico_pap_questao_id, rppr.resposta_id, rppr.arquivo_id, rppr.texto, rppr.excluido, rppr.criado_em, rppr.criado_por, rppr.criado_rf,
+                        rpps.id, rpps.relatorio_periodico_pap_aluno_id, rpps.secao_relatorio_periodico_pap_id, rpps.criado_em, rpps.criado_por, rpps.criado_rf,
+                        rppr.id, rppr.relatorio_periodico_pap_questao_id, rppr.resposta_id, rppr.arquivo_id, rppr.texto, rppr.excluido, rppr.criado_em, rppr.criado_por, rppr.criado_rf,
                         rppq.id, rppq.relatorio_periodico_pap_secao_id, rppq.questao_id, rppq.excluido,
                         q.id, q.questionario_id, q.ordem, q.nome, q.observacao, q.obrigatorio, q.tipo, q.opcionais, q.somente_leitura,
                         q.dimensao, q.tamanho, q.mascara, q.placeholder, q.nome_componente,
@@ -29,7 +29,7 @@ namespace SME.SGP.Dados.Repositorios
                         inner join relatorio_periodico_pap_resposta rppr on rppr.relatorio_periodico_pap_questao_id = rppq.id
                         left join opcao_resposta op on op.id = rppr.resposta_id and not op.excluido
                         where rpps.id = @id
-                           and not rpps.excluido	
+                           and not rpps.excluido    
                            and not rppq.excluido 
                            and not rppr.excluido";
 

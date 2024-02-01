@@ -25,11 +25,15 @@ namespace SME.SGP.Aplicacao
         }
 
         private SituacaoEncaminhamentoPorEstudanteDto MapearParaDto(EncaminhamentoAEEAlunoTurmaDto encaminhamento)
-            => encaminhamento.EhNulo() ? null :
-            new SituacaoEncaminhamentoPorEstudanteDto()
-            {
-                Id = encaminhamento.Id,
-                Situacao = encaminhamento.Situacao != 0 ? encaminhamento.Situacao.Name() : ""
-            };
+        {
+            if (encaminhamento.NaoEhNulo())
+                return new SituacaoEncaminhamentoPorEstudanteDto()
+                {
+                    Id = encaminhamento.Id,
+                    Situacao = encaminhamento.Situacao != 0 ? encaminhamento.Situacao.Name() : ""
+                };
+
+            return null;
+        }
     }
 }

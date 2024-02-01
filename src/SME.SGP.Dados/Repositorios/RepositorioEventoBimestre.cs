@@ -80,20 +80,6 @@ namespace SME.SGP.Dados.Repositorios
             return bimestres?.ToArray();
         }
 
-        public async Task<int[]> ObterBimestresPorCalendarioIdDiferenteEventoId(long eventoId)
-        {
-            string query = @"select bimestre
-                                      from evento_bimestre  eb
-                                 inner join evento e on eb.evento_id = e.id
-                                 where not e.excluido  
-                                       and eb.evento_id  = @eventoId
-                                       and e.tipo_evento_id = @tipoEvento";
-
-            var bimestres = await database.Conexao.QueryAsync<int>(query, new { eventoId, tipoEvento = (int)TipoEvento.LiberacaoBoletim });
-
-            return bimestres?.ToArray();
-        }
-
         public async Task<bool> VerificaSeExiteEventoPorTipoCalendarioDataReferencia(long tipoCalendarioId, DateTime dataReferencia)
         {
 

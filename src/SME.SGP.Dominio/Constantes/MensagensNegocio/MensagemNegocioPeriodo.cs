@@ -2,6 +2,8 @@
 {
     public class MensagemNegocioPeriodo
     {
+        protected MensagemNegocioPeriodo() { }
+
         public const string PERIODO_ESCOLAR_NAO_ENCONTRADO = "Período escolar não encontrado";
         public const string NAO_FORAM_ENCONTRADOS_PERIODOS_TIPO_CALENDARIO = "Não foram encontrados períodos escolares do tipo de calendário.";
         public const string NAO_FORAM_ENCONTRADOS_PERIODOS_TURMA = "Não foi possível localizar os períodos escolares da turma";

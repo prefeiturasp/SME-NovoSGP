@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Schema;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -138,9 +139,12 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder sql = new StringBuilder();
 
-            var bimestres = bimestre > 0
-                            ? new int[] { bimestre }
-                            : semestre.HasValue ? semestre.Value <= 2 ? new int[] { 1, 2 } : new int[] { 3, 4 } : null;
+            int[] bimestreSemestre = null;
+
+            if (semestre.HasValue)
+                bimestreSemestre = semestre.Value <= 2 ? new int[] { 1, 2 } : new int[] { 3, 4 };
+
+            var bimestres = bimestre > 0 ? new int[] { bimestre } : bimestreSemestre;
 
             MontaQueryObterPorTurmaAlunoComponenteCurricularBimestrePaginado(paginacao, sql, false, componenteCurricularId, bimestres);
 
