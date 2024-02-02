@@ -241,7 +241,7 @@ namespace SME.SGP.Aplicacao
         {
             var frequenciaAluno = await mediator.Send(new ObterConsultaFrequenciaGeralAlunoPorTurmasQuery(alunoCodigo, turmasCodigos));
             double? valorFrequenciaAluno = null;
-            if (frequenciaAluno != "")
+            if (frequenciaAluno.NaoEhNulo() && frequenciaAluno != "")
                 valorFrequenciaAluno = Convert.ToDouble(frequenciaAluno);
 
             var parametroFrequenciaGeral = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaCritico, anoLetivo)));
