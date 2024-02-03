@@ -76,7 +76,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 false);
 
             await CriaTurmaFechamentoAtual(TipoNota.Nota, NOTA_6, null);
-
+            await CriarFrequenciaAluno(TipoFrequenciaAluno.Geral, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, 2, 0, totalAusencias: 1);
             await ExecutarReprocessamentoParacerConclusivo(ObterConselhoClasseFechamentoAluno());
 
             var parecerConclusivo = ObterTodos<ConselhoClasseAluno>();
@@ -94,30 +94,33 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ano,
                 Modalidade.Fundamental,
                 ModalidadeTipoCalendario.FundamentalMedio,
-                false, 
+                false,
                 NOTA_3,
                 SituacaoConselhoClasse.EmAndamento,
                 false);
 
             await CriaTurmaFechamentoAtual(TipoNota.Nota, NOTA_3, null);
 
+            await CriarFrequenciaAluno(TipoFrequenciaAluno.Geral, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, 1, 0, totalAusencias: 1);
             //Gerando parecer como retido com frequência
             await ExecutarReprocessamentoParacerConclusivo(ObterConselhoClasseFechamentoAluno());
-            
+
             var parecerConclusivo = ObterTodos<ConselhoClasseAluno>();
-            parecerConclusivo.Any(f=> f.ConselhoClasseId == CONSELHO_CLASSE_ID_1 && f.ConselhoClasseParecerId == RETIDO_POR_FREQUENCIA).ShouldBeTrue();
-            
-            //Ajustando frequencia_aluno para ter compensação de ausência
-            await CriarFrequenciaAluno(TipoFrequenciaAluno.Geral,COMPONENTE_CURRICULAR_PORTUGUES_ID_138,1,1);
+            parecerConclusivo.Any(f => f.ConselhoClasseId == CONSELHO_CLASSE_ID_1 && f.ConselhoClasseParecerId == RETIDO_POR_FREQUENCIA).ShouldBeTrue();
+
+            //atualizar frequenciaAluno
+            var frequenciaAlunos = ObterTodos<Dominio.FrequenciaAluno>();
+            var frequenciaAluno = frequenciaAlunos.First();
+            await AtualizarFrequenciaAluno(frequenciaAluno);
             
             //Gerando parecer como retido
             await ExecutarReprocessamentoParacerConclusivo(ObterConselhoClasseFechamentoAluno());
-            
+
             parecerConclusivo = ObterTodos<ConselhoClasseAluno>();
             //Retido pq estamos colocando nota abaixo da média no conselho
-            parecerConclusivo.Any(f=> f.ConselhoClasseId == CONSELHO_CLASSE_ID_1 && f.ConselhoClasseParecerId == RETIDO).ShouldBeTrue();
+            parecerConclusivo.Any(f => f.ConselhoClasseId == CONSELHO_CLASSE_ID_1 && f.ConselhoClasseParecerId == RETIDO).ShouldBeTrue();
         }
-        
+      
         [Fact]
         public async Task Ao_validar_situacao_parecer_conclusivo_retido_por_estudante_com_algum_conceito_ns() 
         {
@@ -329,7 +332,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             retorno.ShouldBeTrue();
         }
 
-        private async Task CriarFrequenciaAluno(TipoFrequenciaAluno tipoFrequenciaAluno, long componenteCurricular, int totalAulas = 1, int totalCompensacoes = 0, int totalPresencas = 1, int totalRemotos = 0, TipoFrequencia tipoFrequencia = TipoFrequencia.C )
+        private async Task CriarFrequenciaAluno(TipoFrequenciaAluno tipoFrequenciaAluno, long componenteCurricular, int totalAulas = 1, int totalCompensacoes = 0, int totalPresencas = 1, int totalRemotos = 0, TipoFrequencia tipoFrequencia = TipoFrequencia.C, int totalAusencias = 0)
         {
             await InserirNaBase(new Dominio.FrequenciaAluno
             {
@@ -346,7 +349,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 TurmaId = TURMA_CODIGO_1,
                 PeriodoEscolarId = NUMERO_LONGO_1,
                 TotalPresencas = totalPresencas,
-                TotalRemotos = totalRemotos
+                TotalRemotos = totalRemotos,
+                TotalAusencias = totalAusencias
             });
             
             await InserirNaBase(new RegistroFrequencia
@@ -368,7 +372,30 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 CriadoRF = SISTEMA_CODIGO_RF
             });
         }
-        
+        private async Task AtualizarFrequenciaAluno(Dominio.FrequenciaAluno frequenciaAluno)
+        {
+           var frequenciaAlunoAtualizar = new Dominio.FrequenciaAluno()
+            {
+                Id = frequenciaAluno.Id,
+                CodigoAluno = frequenciaAluno.CodigoAluno,
+                Tipo = frequenciaAluno.Tipo,
+                DisciplinaId = frequenciaAluno.DisciplinaId,
+                PeriodoInicio = frequenciaAluno.PeriodoInicio,
+                PeriodoFim = frequenciaAluno.PeriodoFim,
+                Bimestre = frequenciaAluno.Bimestre,
+                TotalAulas = frequenciaAluno.TotalAulas,
+                TotalCompensacoes = 1,
+                CriadoEm = frequenciaAluno.CriadoEm,
+                CriadoPor = frequenciaAluno.CriadoPor,
+                CriadoRF = frequenciaAluno.CriadoRF,
+                TurmaId = frequenciaAluno.TurmaId,
+                PeriodoEscolarId = frequenciaAluno.PeriodoEscolarId,
+                TotalPresencas = frequenciaAluno.TotalPresencas,
+                TotalRemotos = frequenciaAluno.TotalRemotos,
+                TotalAusencias = frequenciaAluno.TotalAusencias
+            };
+            await AtualizarNaBase(frequenciaAlunoAtualizar);
+        }
         private async Task<IEnumerable<SalvarConselhoClasseAlunoNotaDto>> CriarConselhosClasseComNotasNaoAleatorias(TipoNota tipoNota = TipoNota.Nota, long conceitoId = NAO_SATISFATORIO_ID_3, double nota = NOTA_4)
         {
             var conselhosClasseParaPersistir = new List<SalvarConselhoClasseAlunoNotaDto>();
