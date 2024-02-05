@@ -114,6 +114,9 @@ namespace SME.SGP.Aplicacao
             var acimaDiasPermitidosAlteracao = parametroDiasAlteracao.NaoEhNulo() && diasAlteracao > int.Parse(parametroDiasAlteracao);
             var alunosComNotaAlterada = "";
 
+            if (fechamentoAlunos.Any())
+                VerificaSeEhNotaValida(fechamentoAlunos);
+
             //salvar para todos
             unitOfWork.IniciarTransacao();
             try
@@ -151,7 +154,7 @@ namespace SME.SGP.Aplicacao
                                 .FirstOrDefault(x => x.CodigoAluno == fechamentoAluno.AlunoCodigo && x.DisciplinaId == fechamentoNota.DisciplinaId);                            
                             
                             var semFechamentoNota = (fechamentoNota.Id == 0);
-                            
+
                             //-> Caso não estiver em aprovação ou estiver em aprovação e não houver qualquer lançamento de nota de fechamento,
                             //   deve gerar o registro do fechamento da nota inicial.
                             if (!emAprovacao || (emAprovacao && semFechamentoNota))
@@ -189,7 +192,9 @@ namespace SME.SGP.Aplicacao
                                     await SalvarHistoricoNotaFechamentoNovo(fechamentoNota, tipoNota.TipoNota, usuarioLogado.CodigoRf, usuarioLogado.Nome, notaAnterior, conceitoIdAnterior);
 
                                 var alunoInativo = alunos.FirstOrDefault(t => t.CodigoAluno == fechamentoAluno.AlunoCodigo)?.Inativo ?? false;
-                                ConsolidacaoNotasAlunos(periodoEscolar.Bimestre, consolidacaoNotasAlunos, turma, fechamentoAluno.AlunoCodigo, fechamentoNota, alunoInativo);
+                                ConsolidacaoNotasAlunos(periodoEscolar.Bimestre, consolidacaoNotasAlunos, turma, fechamentoAluno.AlunoCodigo, fechamentoNota, alunoInativo, fechamentoTurma.EhFinal);
+
+                                await AtualizaCacheFechamentoFinal(fechamentoTurma.EhFinal, fechamentoNota, fechamentoAluno, turma.CodigoTurma);
                             }
                             
                             if (!emAprovacao)
@@ -308,6 +313,11 @@ namespace SME.SGP.Aplicacao
             }
         }
 
+        private void VerificaSeEhNotaValida(IEnumerable<FechamentoAluno> fechamentoAlunos)
+        {
+            if (fechamentoAlunos.Any(f=> f.FechamentoNotas.Any(f=> f.Nota.NaoEhNulo() && f.Nota > 10)))
+                throw new NegocioException(MensagensNegocioLancamentoNota.NOTA_NUMERICA_DEVE_SER_MENOR_OU_IGUAL_A_10);
+        }
         private async Task SalvarHistoricoNotaFechamentoNovo(FechamentoNota fechamentoNota, TipoNota tipoNota,string criadoRf, string criadoPor, double? notaAnterior, long? conceitoIdAnterior)
         {
             if (tipoNota == TipoNota.Nota)
@@ -337,13 +347,13 @@ namespace SME.SGP.Aplicacao
                 fechamentosNotasConceitos, emAprovacao, fechamentoFinalTurmaDisciplina.Bimestre));
         }
 
-        private void ConsolidacaoNotasAlunos(int bimestre, List<ConsolidacaoNotaAlunoDto> consolidacaoNotasAlunos, Turma turma, string AlunoCodigo, FechamentoNota fechamentoNota, bool inativo)
+        private void ConsolidacaoNotasAlunos(int bimestre, List<ConsolidacaoNotaAlunoDto> consolidacaoNotasAlunos, Turma turma, string AlunoCodigo, FechamentoNota fechamentoNota, bool inativo, bool ehFinal)
         {
             consolidacaoNotasAlunos.Add(new ConsolidacaoNotaAlunoDto()
             {
                 AlunoCodigo = AlunoCodigo,
                 TurmaId = turma.Id,
-                Bimestre = ObterBimestre(bimestre),
+                Bimestre = ObterBimestre(bimestre, ehFinal),
                 AnoLetivo = turma.AnoLetivo,
                 Nota = fechamentoNota.Nota,
                 ConceitoId = fechamentoNota.ConceitoId,
@@ -352,9 +362,9 @@ namespace SME.SGP.Aplicacao
             });
         }
 
-        private static int? ObterBimestre(int? bimestre)
+        private static int? ObterBimestre(int? bimestre, bool ehFinal)
         {
-            if (bimestre.HasValue && bimestre.Value > 0)
+            if (!ehFinal || (bimestre.HasValue && bimestre.Value > 0))
                 return bimestre;
 
             return null;
@@ -642,6 +652,16 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não é possível atribuir conceito NS (Não Satisfatório) pois em 2020 não há retenção dos estudantes conforme o Art 5º da LEI Nº 17.437 DE 12 DE AGOSTO DE 2020.");
             else if (!notaDto.SinteseId.HasValue && notaDto.Nota < 5)
                 throw new NegocioException("Não é possível atribuir uma nota menor que 5 pois em 2020 não há retenção dos estudantes conforme o Art 5º da LEI Nº 17.437 DE 12 DE AGOSTO DE 2020.");
+        }
+
+        private async Task AtualizaCacheFechamentoFinal(bool EhFinal, FechamentoNota fechamentoNota, FechamentoAluno fechamentoAluno, string codigoTurma)
+        {
+            if (EhFinal)
+                await mediator.Send(new AtualizarCacheFechamentoNotaCommand(
+                                fechamentoNota,
+                                fechamentoAluno.AlunoCodigo,
+                                codigoTurma,
+                                fechamentoAluno.FechamentoTurmaDisciplinaId));
         }
 
         private static void AdicionaAprovacaoNota(List<FechamentoNotaDto> notasEmAprovacao, FechamentoNota fechamentoNota,
