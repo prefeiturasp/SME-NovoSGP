@@ -38,7 +38,7 @@ namespace SME.SGP.TesteIntegracao.AtribuicaoCJs
             await CriarUsuarios();
             await CriarDreUePerfil();
             await CriarTurma(Modalidade.EducacaoInfantil);
-            await InserirNaBase(new Abrangencia()
+            await InserirNaBase(new Dominio.Abrangencia()
             {
                 DreId = DRE_ID_1,
                 Historico = false,
@@ -71,7 +71,7 @@ namespace SME.SGP.TesteIntegracao.AtribuicaoCJs
             var salvarAtribuicao = new SalvarAtribuicaoCJUseCase(mediator);
             await salvarAtribuicao.Executar(atribuicaoCJ);
 
-            var abrangenciasAtuais = ObterTodos<Abrangencia>();
+            var abrangenciasAtuais = ObterTodos<Dominio.Abrangencia>();
             Assert.NotNull(abrangenciasAtuais);
             Assert.NotEmpty(abrangenciasAtuais);
         }

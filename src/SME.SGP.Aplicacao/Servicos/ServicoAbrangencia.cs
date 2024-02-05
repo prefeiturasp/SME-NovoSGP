@@ -358,7 +358,7 @@ namespace SME.SGP.Aplicacao.Servicos
             var idsParaAtualizar = new List<long>();
 
             if (ehPerfilProfessorInfantil)
-               turmas = VerificaSeExisteTurmaNaoInfantilEmPerfilProfessorInfantil(turmas);              
+                 turmas = VerificaSeExisteTurmaNaoInfantilEmPerfilProfessorInfantil(turmas);
 
             if (!turmas.Any() && abrangenciaSintetica.Any())
             {
@@ -366,10 +366,19 @@ namespace SME.SGP.Aplicacao.Servicos
 
                 if (ehPerfilProfessorInfantil && abrangenciaSintetica.Any(a=> a.Perfil == perfil))
                 {
-                    idsParaAtualizar = abrangenciaSintetica.Where(a => a.Perfil == perfil).Select(ab => ab.Id).ToList();
-                    await repositorioAbrangencia.ExcluirAbrangencias(idsParaAtualizar);
+                    var idsTurmas = abrangenciaSintetica.Where(a => a.Perfil == perfil).Select(a => a.TurmaId).ToList();
 
-                    idsParaAtualizar = new List<long>();
+                    var dadosTurmas = idsTurmas.Any() ? await mediator.Send(new ObterTurmasPorIdsQuery(idsTurmas.ToArray())) : null;
+
+                    var idsParaExcluir = dadosTurmas?.Where(d => d.ModalidadeTipoCalendario != ModalidadeTipoCalendario.Infantil)?.Select(d => d.Id)?.ToList();
+
+                    if (idsParaExcluir.NaoEhNulo() && idsParaExcluir.Any())
+                    {
+                        await repositorioAbrangencia.ExcluirAbrangencias(idsParaExcluir);
+
+                        idsParaAtualizar = new List<long>();
+                    }
+
                 }
             }  
 
