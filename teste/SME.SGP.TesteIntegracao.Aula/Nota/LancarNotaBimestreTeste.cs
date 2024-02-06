@@ -441,7 +441,7 @@ namespace SME.SGP.TesteIntegracao.Nota
         }
         private async Task CriarAbrangenciaEja()
         {
-            await InserirNaBase(new Abrangencia
+            await InserirNaBase(new Dominio.Abrangencia
             {
                 UsuarioId = 1,
                 DreId = 1,
@@ -453,7 +453,7 @@ namespace SME.SGP.TesteIntegracao.Nota
         }
         private async Task CriarAbrangenciaFundamental()
         {
-            await InserirNaBase(new Abrangencia
+            await InserirNaBase(new Dominio.Abrangencia
             {
                 UsuarioId = 1,
                 DreId = 1,
