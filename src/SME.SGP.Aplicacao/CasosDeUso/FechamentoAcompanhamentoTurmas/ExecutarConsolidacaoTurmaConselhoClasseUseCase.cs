@@ -72,25 +72,6 @@ namespace SME.SGP.Aplicacao
                     continue;
                 }
 
-                var matriculadoDepois = (int?)null;
-
-                if (aluno.Ativo)
-                {
-                    var matriculasAlunoTurma = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(turma.CodigoTurma, aluno.CodigoAluno));
-
-                    matriculadoDepois = (from m in matriculasAlunoTurma
-                                         from p in periodosEscolares
-                                         where (m.DataMatricula.Equals(DateTime.MinValue) ? aluno.DataMatricula.Date : m.DataMatricula.Date) <= p.PeriodoFim.Date
-                                         orderby p.Bimestre
-                                         select (int?)p.Bimestre).FirstOrDefault();                    
-                }
-
-                if (matriculadoDepois.NaoEhNulo() && consolidacaoTurmaConselhoClasse.Bimestre > 0 && consolidacaoTurmaConselhoClasse.Bimestre < matriculadoDepois)
-                {
-                    await VerificaSeHaConsolidacaoErrada(aluno.CodigoAluno, turma.Id, consolidacaoTurmaConselhoClasse.Bimestre ?? 0);
-                    continue;
-                }
-
                 await PublicarMensagem(aluno, consolidacaoTurmaConselhoClasse, 0, mensagemRabbit.CodigoCorrelacao);                 
             }
 
