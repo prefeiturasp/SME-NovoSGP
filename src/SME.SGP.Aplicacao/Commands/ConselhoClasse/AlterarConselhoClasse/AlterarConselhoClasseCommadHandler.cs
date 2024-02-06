@@ -135,8 +135,7 @@ namespace SME.SGP.Aplicacao
                     Inativo = aluno.Inativo,
                     ConselhoClasse = true
                 };
-                
-                await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto), cancellationToken);
+                    await mediator.Send(new TratarConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto), cancellationToken);
             }
 
             var conselhoClasseNotaRetorno = new ConselhoClasseNotaRetornoDto()

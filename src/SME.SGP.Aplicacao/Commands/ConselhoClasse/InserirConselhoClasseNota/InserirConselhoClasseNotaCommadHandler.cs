@@ -101,7 +101,7 @@ namespace SME.SGP.Aplicacao
                     ConselhoClasse = true
                 };
 
-                await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto));
+                await mediator.Send(new TratarConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto));
             }
 
             var conselhoClasseNotaRetorno = new ConselhoClasseNotaRetornoDto()

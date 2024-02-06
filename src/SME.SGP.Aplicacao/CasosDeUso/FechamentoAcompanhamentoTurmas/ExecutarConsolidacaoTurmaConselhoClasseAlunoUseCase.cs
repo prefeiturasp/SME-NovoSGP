@@ -137,7 +137,7 @@ namespace SME.SGP.Aplicacao
                     if (converterNotaEmConceitoTurmaEdFisicaEJA)
                         TratarConversaoNotaEdFisicaEJA(fechamentoNotas);
 
-                    foreach (var componenteCurricular in componentesComNotaFechamentoOuConselho)
+                    foreach (var componenteCurricular in componentesComNotaFechamentoOuConselho.Where(x=>x.Codigo == "800535"))
                     {
                         if (!componenteCurricular.LancaNota)
                             continue;
@@ -329,6 +329,9 @@ namespace SME.SGP.Aplicacao
                 nota = notaConceitoCache.Nota;
                 conceito = notaConceitoCache.ConceitoId;
             }
+
+            if (nota.EhNulo() && conceito.EhNulo())
+                return true;
 
             var consolidadoNota = await mediator.Send(new ObterConselhoClasseConsolidadoNotaPorConsolidadoBimestreComponenteQuery(consolidadoTurmaAlunoId, filtro.Bimestre, componenteCurricularId));
             consolidadoNota ??= new ConselhoClasseConsolidadoTurmaAlunoNota()

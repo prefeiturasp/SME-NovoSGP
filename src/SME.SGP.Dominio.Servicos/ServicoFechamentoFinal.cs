@@ -171,7 +171,7 @@ namespace SME.SGP.Dominio.Servicos
                 await AtualizarCache(fechamentoFinal, turma, emAprovacao, fechamentosNotasCache, notasDto);
 
                 foreach (var consolidacaoNotaAluno in consolidacaoNotasAlunos)
-                    await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAluno));
+                    await mediator.Send(new TratarConsolidacaoNotaAlunoCommand(consolidacaoNotaAluno));
 
                 if (!emAprovacao)
                     await ExcluirPendenciaAusenciaFechamento(fechamentoFinal.DisciplinaId, fechamentoFinal.FechamentoTurma.TurmaId);
