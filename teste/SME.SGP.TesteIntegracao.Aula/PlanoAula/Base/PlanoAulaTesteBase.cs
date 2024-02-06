@@ -102,7 +102,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.Base
 
         protected async Task CriarAbrangencia(string perfil)
         {
-            await InserirNaBase(new Abrangencia()
+            await InserirNaBase(new Dominio.Abrangencia()
             {
                 DreId = DRE_ID_1,
                 Historico = false,
@@ -112,7 +112,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.Base
                 UsuarioId = USUARIO_ID_1
             });
 
-            await InserirNaBase(new Abrangencia()
+            await InserirNaBase(new Dominio.Abrangencia()
             {
                 DreId = DRE_ID_1,
                 Historico = false,
@@ -122,7 +122,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.Base
                 UsuarioId = USUARIO_CP_3333333_ID_3
             });
 
-            await InserirNaBase(new Abrangencia()
+            await InserirNaBase(new Dominio.Abrangencia()
             {
                 DreId = DRE_ID_1,
                 Historico = false,
@@ -132,7 +132,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.Base
                 UsuarioId = USUARIO_CP_999999_ID_4
             });
 
-            await InserirNaBase(new Abrangencia()
+            await InserirNaBase(new Dominio.Abrangencia()
             {
                 DreId = DRE_ID_1,
                 Historico = false,
@@ -142,7 +142,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.Base
                 UsuarioId = USUARIO_DIRETOR_999998_ID_5
             });
 
-            await InserirNaBase(new Abrangencia()
+            await InserirNaBase(new Dominio.Abrangencia()
             {
                 DreId = DRE_ID_1,
                 Historico = false,
