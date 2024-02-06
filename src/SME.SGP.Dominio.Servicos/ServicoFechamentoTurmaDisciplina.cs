@@ -348,7 +348,7 @@ namespace SME.SGP.Dominio.Servicos
                 await PersistirCache(turma, entidadeDto.Bimestre, fechamentoAlunos.ToList());
 
                 foreach (var consolidacaoNotaAlunoDto in consolidacaoNotasAlunos)
-                    await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto));
+                    await mediator.Send(new TratarConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto));
 
                 if (alunosComNotaAlterada.Length > 0)
                 {

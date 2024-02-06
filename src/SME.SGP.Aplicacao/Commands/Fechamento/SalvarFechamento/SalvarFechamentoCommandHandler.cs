@@ -247,7 +247,7 @@ namespace SME.SGP.Aplicacao
                     var dadosAluno = alunosDaTurma.FirstOrDefault(f => f.CodigoAluno.Equals(consolidacaoNotaAlunoDto.AlunoCodigo));
                     consolidacaoNotaAlunoDto.Inativo = dadosAluno.EhNulo() || dadosAluno.Inativo;
 
-                    await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto), cancellationToken);
+                    await mediator.Send(new TratarConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto), cancellationToken);
                 }   
 
                 if (alunosComNotaAlterada.Length > 0)

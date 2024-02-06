@@ -99,7 +99,7 @@ namespace SME.SGP.Aplicacao
                 Inativo = aluno.Inativo,
                 ConselhoClasse = true
             };
-            await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto));
+            await mediator.Send(new TratarConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto));
         }
 
         private async Task GerarParecerConclusivo(ConselhoClasseAluno conselhoClasseAluno, long usuarioSolicitanteId)

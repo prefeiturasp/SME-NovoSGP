@@ -330,6 +330,9 @@ namespace SME.SGP.Aplicacao
                 conceito = notaConceitoCache.ConceitoId;
             }
 
+            if (nota.EhNulo() && conceito.EhNulo())
+                return true;
+
             var consolidadoNota = await mediator.Send(new ObterConselhoClasseConsolidadoNotaPorConsolidadoBimestreComponenteQuery(consolidadoTurmaAlunoId, filtro.Bimestre, componenteCurricularId));
             consolidadoNota ??= new ConselhoClasseConsolidadoTurmaAlunoNota()
             {
