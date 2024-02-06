@@ -48,32 +48,36 @@ namespace SME.SGP.Aplicacao
                 if (string.IsNullOrWhiteSpace(usuarioAtual.CodigoRf))
                     throw new NegocioException("Não foi possível obter o RF do usuário.");
 
-            foreach (var bimestrePlanoAnual in planoAnualTerritorioSaberDto.Bimestres)
-            {
-                PlanoAnualTerritorioSaber planoAnualTerritorioSaber = await ObterPlanoAnualTerritorioSaberSimplificado(planoAnualTerritorioSaberDto, bimestrePlanoAnual.Bimestre.Value, usuarioAtual.EhProfessor() ? usuarioAtual.CodigoRf : null);
-                if (planoAnualTerritorioSaber.NaoEhNulo())
-                {
-                    var podePersistirTurmaDisciplina = await servicoUsuario.PodePersistirTurmaDisciplina(usuarioAtual.CodigoRf, planoAnualTerritorioSaberDto.TurmaId.ToString(), planoAnualTerritorioSaberDto.TerritorioExperienciaId.ToString(), DateTime.Now);
-                    if (usuarioAtual.PerfilAtual == Perfis.PERFIL_PROFESSOR && !podePersistirTurmaDisciplina)
-                        throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
-                }
-                listaDescricao.Add(new PlanoAnualTerritorioSaberResumidoDto() { DesenvolvimentoNovo = bimestrePlanoAnual.Desenvolvimento,
-                                                                                DesenvolvimentoAtual = planoAnualTerritorioSaber.NaoEhNulo() ? planoAnualTerritorioSaber.Desenvolvimento : string.Empty,
-                                                                                ReflexaoAtual = planoAnualTerritorioSaber.NaoEhNulo() ? planoAnualTerritorioSaber.Reflexao : string.Empty,
-                                                                                ReflexaoNovo = bimestrePlanoAnual.Reflexao});
+                var professorTitular = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(planoAnualTerritorioSaberDto.TurmaId.ToString(), planoAnualTerritorioSaberDto.TerritorioExperienciaId.ToString())); ;
+                bool deveVerificarProfessor = usuarioAtual.EhProfessor() && professorTitular.NaoEhNulo() && (!string.IsNullOrEmpty(professorTitular.ProfessorRf) && professorTitular.ProfessorRf != usuarioAtual.CodigoRf);
+
+                foreach (var bimestrePlanoAnual in planoAnualTerritorioSaberDto.Bimestres)
+                {                 
+                    PlanoAnualTerritorioSaber planoAnualTerritorioSaber = await ObterPlanoAnualTerritorioSaberSimplificado(planoAnualTerritorioSaberDto, bimestrePlanoAnual.Bimestre.Value, deveVerificarProfessor ? usuarioAtual.CodigoRf : null);
+                    await ValidarPermissaoPersistenciaTurmaDisciplina(planoAnualTerritorioSaber, usuarioAtual, planoAnualTerritorioSaberDto.TurmaId.ToString(), planoAnualTerritorioSaberDto.TerritorioExperienciaId.ToString());
+                    listaDescricao.Add(ObterPlanoAnualTerritorioSaberResumidoDto(planoAnualTerritorioSaber, bimestrePlanoAnual));
+
+                    if (planoAnualTerritorioSaber.NaoEhNulo())
+                    {
+                        var podePersistirTurmaDisciplina = await servicoUsuario.PodePersistirTurmaDisciplina(usuarioAtual.CodigoRf, planoAnualTerritorioSaberDto.TurmaId.ToString(), planoAnualTerritorioSaberDto.TerritorioExperienciaId.ToString(), DateTime.Now);
+                        if (usuarioAtual.PerfilAtual == Perfis.PERFIL_PROFESSOR && !podePersistirTurmaDisciplina)
+                            throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
+                    }
+                    listaDescricao.Add(new PlanoAnualTerritorioSaberResumidoDto()
+                    {
+                        DesenvolvimentoNovo = bimestrePlanoAnual.Desenvolvimento,
+                        DesenvolvimentoAtual = planoAnualTerritorioSaber.NaoEhNulo() ? planoAnualTerritorioSaber.Desenvolvimento : string.Empty,
+                        ReflexaoAtual = planoAnualTerritorioSaber.NaoEhNulo() ? planoAnualTerritorioSaber.Reflexao : string.Empty,
+                        ReflexaoNovo = bimestrePlanoAnual.Reflexao
+                    });
 
                     planoAnualTerritorioSaber = MapearParaDominio(planoAnualTerritorioSaberDto, planoAnualTerritorioSaber, bimestrePlanoAnual.Bimestre.Value, bimestrePlanoAnual.Desenvolvimento, bimestrePlanoAnual.Reflexao);
                     repositorioPlanoAnualTerritorioSaber.Salvar(planoAnualTerritorioSaber);
-
                     listaAuditoria.Add(planoAnualTerritorioSaber);
                 }
 
                 unitOfWork.PersistirTransacao();
-                foreach (var item in listaDescricao)
-                {
-                    await MoverRemoverExcluidos(item.DesenvolvimentoNovo, item.DesenvolvimentoAtual);
-                    await MoverRemoverExcluidos(item.ReflexaoNovo, item.ReflexaoAtual);
-                }
+                await MoverRemoverArquivosExcluidos(listaDescricao);
                 return listaAuditoria;
             }
             catch
@@ -82,6 +86,38 @@ namespace SME.SGP.Aplicacao
                 throw;
             }
         }
+
+        private PlanoAnualTerritorioSaberResumidoDto ObterPlanoAnualTerritorioSaberResumidoDto(PlanoAnualTerritorioSaber planoAnualTerritorioSaber, BimestrePlanoAnualTerritorioSaberDto bimestrePlano)
+        {
+            return new PlanoAnualTerritorioSaberResumidoDto()
+            {
+                DesenvolvimentoNovo = bimestrePlano.Desenvolvimento,
+                ReflexaoNovo = bimestrePlano.Reflexao,
+                DesenvolvimentoAtual = planoAnualTerritorioSaber?.Desenvolvimento ?? string.Empty,
+                ReflexaoAtual = planoAnualTerritorioSaber?.Reflexao ?? string.Empty
+            };
+        }
+
+        private async Task ValidarPermissaoPersistenciaTurmaDisciplina(PlanoAnualTerritorioSaber planoAnualTerritorioSaber, Usuario usuario, string turmaId, string componenteCurricularId)
+        {
+            if (planoAnualTerritorioSaber.NaoEhNulo())
+            {
+                var podePersistirTurmaDisciplina = await servicoUsuario.PodePersistirTurmaDisciplina(usuario.CodigoRf, turmaId, componenteCurricularId, DateTime.Now);
+                if (usuario.PerfilAtual == Perfis.PERFIL_PROFESSOR && !podePersistirTurmaDisciplina)
+                    throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
+            }
+
+        }
+
+        private async Task MoverRemoverArquivosExcluidos(List<PlanoAnualTerritorioSaberResumidoDto> planos)
+        {
+            foreach (var item in planos)
+            {
+                await MoverRemoverExcluidos(item.DesenvolvimentoNovo, item.DesenvolvimentoAtual);
+                await MoverRemoverExcluidos(item.ReflexaoNovo, item.ReflexaoAtual);
+            }
+        }
+
         private async Task MoverRemoverExcluidos(string novo, string atual)
         {
             if (!string.IsNullOrEmpty(novo))

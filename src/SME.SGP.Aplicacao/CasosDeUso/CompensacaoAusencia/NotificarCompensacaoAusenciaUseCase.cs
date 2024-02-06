@@ -19,23 +19,17 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno;
         private readonly IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia;
         private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
-        private readonly IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia;
-        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
-
+        
         public NotificarCompensacaoAusenciaUseCase(IMediator mediator,
                                                    IRepositorioCompensacaoAusenciaAlunoConsulta repositorioCompensacaoAusenciaAlunoConsulta,
                                                    IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno,
                                                    IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia,
-                                                   IRepositorioTurmaConsulta repositorioTurmaConsulta,
-                                                   IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia,
-                                                   IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular) : base(mediator)
+                                                   IRepositorioTurmaConsulta repositorioTurmaConsulta) : base(mediator)
         {
             this.repositorioCompensacaoAusenciaAlunoConsulta = repositorioCompensacaoAusenciaAlunoConsulta ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusenciaAlunoConsulta));
             this.repositorioCompensacaoAusenciaAluno = repositorioCompensacaoAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusenciaAluno));
             this.repositorioCompensacaoAusencia = repositorioCompensacaoAusencia ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusencia));
             this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
-            this.repositorioNotificacaoCompensacaoAusencia = repositorioNotificacaoCompensacaoAusencia ?? throw new ArgumentNullException(nameof(repositorioNotificacaoCompensacaoAusencia));
-            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
@@ -82,42 +76,15 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new ExcluirNotificacaoCompensacaoAusenciaCommand(compensacaoId));
 
             var cargos = new Cargo[] { Cargo.CP };
+            var dtoNotificacao = new NotificarCompensacaoDto(professor, disciplinaEOL, turma, compensacao, alunosDto, cargos);
+
             if (GerarNotificacaoExtemporanea(possuirPeriodoAberto, parametroAtivo.NaoEhNulo() ? parametroAtivo.Ativo : false))
             {
-
-                await NotificarCompensacaoExtemporanea(
-                     professor.Nome,
-                     professor.CodigoRf,
-                     disciplinaEOL,
-                     turma.CodigoTurma,
-                     turma.Nome,
-                     turma.ModalidadeCodigo.ObterNomeCurto(),
-                     turma.Ue.CodigoUe,
-                     turma.Ue.Nome,
-                     turma.Ue.TipoEscola.ObterNomeCurto(),
-                     turma.Ue.Dre.CodigoDre,
-                     turma.Ue.Dre.Nome,
-                     compensacao.Bimestre,
-                     compensacao.Nome,
-                     alunosDto, cargos);
+                await NotificarCompensacaoExtemporanea(dtoNotificacao);
             }
             else
             {
-                await NotificarCompensacaoAusencia(
-                         professor.Nome
-                        , professor.CodigoRf
-                        , disciplinaEOL
-                        , turma.CodigoTurma
-                        , turma.Nome
-                        , turma.ModalidadeCodigo.ObterNomeCurto()
-                        , turma.Ue.CodigoUe
-                        , turma.Ue.Nome
-                        , turma.Ue.TipoEscola.ObterNomeCurto()
-                        , turma.Ue.Dre.CodigoDre
-                        , turma.Ue.Dre.Nome
-                        , compensacao.Bimestre
-                        , compensacao.Nome
-                        , alunosDto, cargos);
+                await NotificarCompensacaoAusencia(dtoNotificacao);
             }
             // Marca aluno como notificado
             alunosDto.ForEach(alunoDto =>
@@ -142,22 +109,18 @@ namespace SME.SGP.Aplicacao
         {
             if (periodoAberto)
                 return false;
-            else if (parametroAtivo && !periodoAberto)
+            else if (parametroAtivo)
                 return true;
-            else if (!parametroAtivo && !periodoAberto)
+            else
                 throw new NegocioException("Compensação de ausência não permitida, É necessário que o período esteja aberto");
-            else if (!parametroAtivo)
-                return false;
-
-            return false;
         }
 
-        private async Task<long> NotificarCompensacaoExtemporanea(string professor, string professorRf, string disciplina, string codigoTurma, string turma, string modalidade, string codigoUe, string escola, string tipoEscola, string codigoDre, string dre, int bimestre, string atividade, List<CompensacaoAusenciaAlunoQtdDto> alunos, Cargo[] cargos)
+        private async Task<long> NotificarCompensacaoExtemporanea(NotificarCompensacaoDto dto)
         {
-            var tituloMensagem = $"Atividade de compensação de ausência extemporânea - {modalidade}-{turma} - {disciplina}";
+            var tituloMensagem = $"Atividade de compensação de ausência extemporânea - {dto.Modalidade}-{dto.Turma} - {dto.Disciplina}";
 
             StringBuilder mensagemUsuario = new StringBuilder();
-            mensagemUsuario.AppendLine($"<p>A atividade de compensação <b>'{atividade}'</b> do componente curricular de <b>{disciplina}</b> foi cadastrada para a turma <b>{turma} {modalidade}</b> da <b>{tipoEscola} {escola} ({dre})</b> no <b>{bimestre}º</b> Bimestre pelo professor <b>{professor} ({professorRf})</b> de forma extemporânea (fora do período escolar).</p>");
+            mensagemUsuario.AppendLine($"<p>A atividade de compensação <b>'{dto.Atividade}'</b> do componente curricular de <b>{dto.Disciplina}</b> foi cadastrada para a turma <b>{dto.Turma} {dto.Modalidade}</b> da <b>{dto.TipoEscola} {dto.Escola} ({dto.Dre})</b> no <b>{dto.Bimestre}º</b> Bimestre pelo professor <b>{dto.Professor} ({dto.ProfessorRf})</b> de forma extemporânea (fora do período escolar).</p>");
             mensagemUsuario.AppendLine("<p>O(s) seguinte(s) aluno(s) foi(ram) vinculado(s) a atividade:</p>");
 
             mensagemUsuario.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
@@ -166,7 +129,7 @@ namespace SME.SGP.Aplicacao
             mensagemUsuario.AppendLine("<td style='padding: 5px;'>Nome do aluno</td>");
             mensagemUsuario.AppendLine("<td style='padding: 5px;'>Quantidade de aulas compensadas</td>");
             mensagemUsuario.AppendLine("</tr>");
-            foreach (var aluno in alunos)
+            foreach (var aluno in dto.Alunos)
             {
                 mensagemUsuario.AppendLine("<tr>");
                 mensagemUsuario.Append($"<td style='padding: 5px;'>{aluno.NumeroAluno}</td>");
@@ -176,18 +139,16 @@ namespace SME.SGP.Aplicacao
             }
             mensagemUsuario.AppendLine("</table>");
 
-            return await mediator.Send(new EnviarNotificacaoCommand(tituloMensagem, mensagemUsuario.ToString(), NotificacaoCategoria.Alerta, NotificacaoTipo.Frequencia, cargos, codigoDre, codigoUe, codigoTurma));
+            return await mediator.Send(new EnviarNotificacaoCommand(tituloMensagem, mensagemUsuario.ToString(), NotificacaoCategoria.Alerta, NotificacaoTipo.Frequencia, dto.Cargos, dto.CodigoDre, dto.CodigoUe, dto.CodigoTurma));
 
         }
 
-        private async Task<long> NotificarCompensacaoAusencia(string professor, string professorRf, string disciplina,
-            string codigoTurma, string turma, string modalidade, string codigoUe, string escola, string tipoEscola, string codigoDre, string dre,
-            int bimestre, string atividade, List<CompensacaoAusenciaAlunoQtdDto> alunos, Cargo[] cargos)
+        private async Task<long> NotificarCompensacaoAusencia(NotificarCompensacaoDto dto)
         {
-            var tituloMensagem = $"Atividade de compensação da turma {turma}";
+            var tituloMensagem = $"Atividade de compensação da turma {dto.Turma}";
 
             StringBuilder mensagemUsuario = new StringBuilder();
-            mensagemUsuario.AppendLine($"<p>A atividade de compensação <b>'{atividade}'</b> do componente curricular de <b>{disciplina}</b> foi cadastrada para a turma <b>{turma} {modalidade}</b> da <b>{tipoEscola} {escola} ({dre})</b> no <b>{bimestre}º</b> Bimestre pelo professor <b>{professor} ({professorRf})</b>.</p>");
+            mensagemUsuario.AppendLine($"<p>A atividade de compensação <b>'{dto.Atividade}'</b> do componente curricular de <b>{dto.Disciplina}</b> foi cadastrada para a turma <b>{dto.Turma} {dto.Modalidade}</b> da <b>{dto.TipoEscola} {dto.Escola} ({dto.Dre})</b> no <b>{dto.Bimestre}º</b> Bimestre pelo professor <b>{dto.Professor} ({dto.ProfessorRf})</b>.</p>");
             mensagemUsuario.AppendLine("<p>O(s) seguinte(s) aluno(s) foi(ram) vinculado(s) a atividade:</p>");
 
             mensagemUsuario.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
@@ -196,7 +157,7 @@ namespace SME.SGP.Aplicacao
             mensagemUsuario.AppendLine("<td style='padding: 5px;'>Nome do aluno</td>");
             mensagemUsuario.AppendLine("<td style='padding: 5px;'>Quantidade de aulas compensadas</td>");
             mensagemUsuario.AppendLine("</tr>");
-            foreach (var aluno in alunos)
+            foreach (var aluno in dto.Alunos)
             {
                 mensagemUsuario.AppendLine("<tr>");
                 mensagemUsuario.Append($"<td style='padding: 5px;'>{aluno.NumeroAluno}</td>");
@@ -207,7 +168,7 @@ namespace SME.SGP.Aplicacao
             mensagemUsuario.AppendLine("</table>");
             mensagemUsuario.Append("Para consultar os detalhes desta atividade acesse 'Diário de classe > Compensação de ausência'");
 
-            return await mediator.Send(new EnviarNotificacaoCommand(tituloMensagem, mensagemUsuario.ToString(), NotificacaoCategoria.Aviso, NotificacaoTipo.Frequencia, cargos, codigoDre, codigoUe, codigoTurma));
+            return await mediator.Send(new EnviarNotificacaoCommand(tituloMensagem, mensagemUsuario.ToString(), NotificacaoCategoria.Aviso, NotificacaoTipo.Frequencia, dto.Cargos, dto.CodigoDre, dto.CodigoUe, dto.CodigoTurma));
         }
     }
 }

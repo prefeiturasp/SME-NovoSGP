@@ -92,8 +92,8 @@ namespace SME.SGP.Aplicacao
                 TurmaRecuperacaoParalelaId = turmaRecuperacaoParalelaId,
                 Aluno_id = item.CodAluno,
                 CriadoEm = recuperacaoParalelaDto.Periodo.CriadoEm ?? default,
-                CriadoRF = recuperacaoParalelaDto.Periodo.CriadoRF ?? null,
-                CriadoPor = recuperacaoParalelaDto.Periodo.CriadoPor ?? null
+                CriadoRF = recuperacaoParalelaDto.Periodo.CriadoRF,
+                CriadoPor = recuperacaoParalelaDto.Periodo.CriadoPor
             };
         }
 

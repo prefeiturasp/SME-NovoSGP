@@ -159,7 +159,7 @@ namespace SME.SGP.Aplicacao
             {
                 case "1":
                     {
-                        return TipoResponsavel.Filicacao1.Name();
+                        return TipoResponsavel.Filiacao1.Name();
                     }
                 case "2":
                     {
@@ -174,7 +174,7 @@ namespace SME.SGP.Aplicacao
                         return TipoResponsavel.ProprioEstudante.Name();
                     }
             }
-            return TipoResponsavel.Filicacao1.ToString();
+            return TipoResponsavel.Filiacao1.ToString();
         }
     }
 }

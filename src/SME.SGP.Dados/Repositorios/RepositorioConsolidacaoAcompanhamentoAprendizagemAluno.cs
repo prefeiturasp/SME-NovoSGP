@@ -35,14 +35,14 @@ namespace SME.SGP.Dominio
         {
             var campo = ueId > 0 ? "t.nome" : "concat(t.ano, 'º ano')";
             var agrupamento = ueId > 0 ? "nome" : "ano";
+            var filtro = "and ue.id = @ueId";
 
-            var filtro = ueId > 0 ? "and ue.id = @ueId" :
-                            dreId > 0 ? "and ue.dre_id = @dreId" :
-                            "";
+            if (ueId == 0)
+                filtro = dreId > 0 ? "and ue.dre_id = @dreId" : string.Empty;
 
             var query = $@"select {campo} as Turma
-	                        , sum(c.quantidade_com_acompanhamento) as QuantidadeComAcompanhamento
-	                        , sum(c.quantidade_sem_acompanhamento) as QuantidadeSemAcompanhamento
+                            , sum(c.quantidade_com_acompanhamento) as QuantidadeComAcompanhamento
+                            , sum(c.quantidade_sem_acompanhamento) as QuantidadeSemAcompanhamento
                           from consolidacao_acompanhamento_aprendizagem_aluno c
                          inner join turma t on t.id = c.turma_id
                          inner join ue on ue.id = t.ue_id 
@@ -61,7 +61,7 @@ namespace SME.SGP.Dominio
             var filtroSemestre = semestre.HasValue ? "and c.semestre = @semestre" : "";
 
             var query = $@"select 
-	                        RIGHT(dre.abreviacao,2) as Dre
+                            RIGHT(dre.abreviacao,2) as Dre
                             , sum(c.quantidade_com_acompanhamento) as QuantidadeComAcompanhamento
                             , sum(c.quantidade_sem_acompanhamento) as QuantidadeSemAcompanhamento
                           from consolidacao_acompanhamento_aprendizagem_aluno c

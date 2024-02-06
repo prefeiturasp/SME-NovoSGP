@@ -22,16 +22,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AlunoSimplesDto>> Handle(ObterAlunosSimplesDaTurmaQuery request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var alunosEOL =  await mediator.Send(new ObterAlunosEolPorTurmaQuery(request.TurmaCodigo));
-                alunosEOL = alunosEOL.OrderBy(a => a.NomeAluno);
-                return MapearParaDto(alunosEOL);
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            var alunosEOL =  await mediator.Send(new ObterAlunosEolPorTurmaQuery(request.TurmaCodigo));
+            alunosEOL = alunosEOL.OrderBy(a => a.NomeAluno);
+
+            return MapearParaDto(alunosEOL);
         }
 
         private IEnumerable<AlunoSimplesDto> MapearParaDto(IEnumerable<AlunoPorTurmaResposta> alunosEOL)

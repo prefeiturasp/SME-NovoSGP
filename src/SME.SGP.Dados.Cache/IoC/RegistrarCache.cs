@@ -2,16 +2,15 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using SME.SGP.Dados.Cache;
 using SME.SGP.Dados.Repositorios;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Utilitarios;
 using System;
-using SME.SGP.Infra.Interface;
-using SME.SGP.Dados.Cache;
-using SME.SGP.Dominio;
-using Elastic.Apm.Api;
 
 namespace SME.SGP.IoC
 {
@@ -55,7 +54,7 @@ namespace SME.SGP.IoC
         private static IRepositorioCache ObterRepositorio(IServiceProvider serviceProvider, ConfiguracaoCacheOptions options, IServicoTelemetria servicoTelemetria, IServiceCollection services, IServicoMensageriaLogs servicoMensageriaLogs, IMetricasCache metricasCache)
             => options.UtilizaRedis ?
                 ObterRepositorioRedis(serviceProvider, servicoTelemetria,servicoMensageriaLogs, metricasCache) :
-                ObterRepositorioMemory(serviceProvider, servicoTelemetria, services,servicoMensageriaLogs, metricasCache);
+                ObterRepositorioMemory(serviceProvider, servicoTelemetria, servicoMensageriaLogs, metricasCache);
 
         private static IRepositorioCache ObterRepositorioRedis(IServiceProvider serviceProvider, IServicoTelemetria servicoTelemetria, IServicoMensageriaLogs servicoMensageriaLogs, IMetricasCache metricasCache)
         {
@@ -64,7 +63,7 @@ namespace SME.SGP.IoC
             return new RepositorioCacheRedis(connection, servicoTelemetria, redisOptions, servicoMensageriaLogs, metricasCache);
         }
 
-        private static IRepositorioCache ObterRepositorioMemory(IServiceProvider serviceProvider, IServicoTelemetria servicoTelemetria, IServiceCollection services, IServicoMensageriaLogs servicoMensageriaLogs, IMetricasCache metricasCache)
+        private static IRepositorioCache ObterRepositorioMemory(IServiceProvider serviceProvider, IServicoTelemetria servicoTelemetria, IServicoMensageriaLogs servicoMensageriaLogs, IMetricasCache metricasCache)
         {
             var memoryCache = serviceProvider.GetService<IMemoryCache>();
 

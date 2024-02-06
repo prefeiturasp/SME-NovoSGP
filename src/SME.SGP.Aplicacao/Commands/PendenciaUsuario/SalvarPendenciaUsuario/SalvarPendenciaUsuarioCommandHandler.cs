@@ -10,12 +10,10 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarPendenciaUsuarioCommandHandler : IRequestHandler<SalvarPendenciaUsuarioCommand, bool>
     {
-        private readonly IMediator mediator;
         private readonly IRepositorioPendenciaUsuario repositorioPendenciaUsuario;
 
-        public SalvarPendenciaUsuarioCommandHandler(IMediator mediator, IRepositorioPendenciaUsuario repositorioPendenciaUsuario)
+        public SalvarPendenciaUsuarioCommandHandler(IRepositorioPendenciaUsuario repositorioPendenciaUsuario)
         {
-            this.mediator = mediator;
             this.repositorioPendenciaUsuario = repositorioPendenciaUsuario;
         }
 

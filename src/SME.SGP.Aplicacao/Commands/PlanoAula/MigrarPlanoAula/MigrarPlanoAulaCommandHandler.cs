@@ -4,10 +4,10 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -92,8 +92,8 @@ namespace SME.SGP.Aplicacao
         {
             var componenteCurricularTurmaOrigem = await mediator.Send(new ObterComponenteCurricularPorIdQuery(long.Parse(codigoComponenteCurricularAgrupadorTurmaOrigem)));
             var componentesCurricularesTurmaDestino = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(codigoTurmaDestino));
-            var componenteCurricularTurmaDestino = componentesCurricularesTurmaDestino.Where(cc => (componenteCurricularTurmaOrigem?.TerritorioSaber ?? false) &&
-                                                                                    cc.CodigoComponenteTerritorioSaber == componenteCurricularTurmaOrigem.CodigoComponenteCurricularTerritorioSaber).FirstOrDefault();
+            var componenteCurricularTurmaDestino = componentesCurricularesTurmaDestino.FirstOrDefault(cc => (componenteCurricularTurmaOrigem?.TerritorioSaber ?? false) &&
+                                                                                    cc.CodigoComponenteTerritorioSaber == componenteCurricularTurmaOrigem.CodigoComponenteCurricularTerritorioSaber);
             return componenteCurricularTurmaDestino?.CodigoComponenteCurricular.ToString() ?? codigoComponenteCurricularAgrupadorTurmaOrigem;
         }
 
@@ -228,8 +228,13 @@ namespace SME.SGP.Aplicacao
                                                 IEnumerable<AbrangenciaTurmaRetorno> turmasAbrangencia,
                                                 IEnumerable<string> idsTurmasSelecionadas)
         {
-
-            IEnumerable<AtribuicaoCJ> lstTurmasCJ = await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(null, null, ueId, Convert.ToInt64(disciplinaId), codigoRf, null, null));
+            var dto = new AtribuicoesPorTurmaEProfessorDto()
+            {
+                UeId = ueId,
+                ComponenteCurricularId = Convert.ToInt64(disciplinaId),
+                UsuarioRf = codigoRf
+            };
+            IEnumerable<AtribuicaoCJ> lstTurmasCJ = await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(dto));
 
             if (turmasAtribuidasAoProfessor.Any())
             {
@@ -276,8 +281,13 @@ namespace SME.SGP.Aplicacao
                                                 IEnumerable<AbrangenciaTurmaRetorno> turmasAbrangencia,
                                                 IEnumerable<string> idsTurmasSelecionadas)
         {
-
-            IEnumerable<AtribuicaoCJ> lstTurmasCJ = await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(null, null, ueId, Convert.ToInt64(disciplinaId), codigoRf, null, null));
+            var dto = new AtribuicoesPorTurmaEProfessorDto()
+            {
+                UeId = ueId,
+                ComponenteCurricularId = Convert.ToInt64(disciplinaId),
+                UsuarioRf = codigoRf
+            };
+            IEnumerable<AtribuicaoCJ> lstTurmasCJ = await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(dto));
 
             if (turmasAtribuidasAoProfessor.Any())
             {

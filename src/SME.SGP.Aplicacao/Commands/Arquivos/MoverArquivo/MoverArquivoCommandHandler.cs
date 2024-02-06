@@ -40,15 +40,5 @@ namespace SME.SGP.Aplicacao
                 await repositorioArquivo.SalvarAsync(arquivo);
             }
         }
-
-        private void MoverAquivo(string caminhoArquivoTemp, string caminhoArquivoFuncionalidade, string nomeArquivo)
-        {
-            if (!Directory.Exists(caminhoArquivoFuncionalidade))
-                Directory.CreateDirectory(caminhoArquivoFuncionalidade);
-
-            var nomeArquivoCompleto = Path.Combine(caminhoArquivoTemp, nomeArquivo);
-            if (File.Exists(nomeArquivoCompleto))
-                File.Move(nomeArquivoCompleto, Path.Combine(caminhoArquivoFuncionalidade, nomeArquivo));
-        }
     }
 }

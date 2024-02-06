@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
             var turmasCodigos = new List<string> { turma.CodigoTurma };
             if (turma.EhEJA() || turma.EhTurmaEnsinoMedio)
             {
-                var codigosComplementares = await ObterTurmasComplementaresEOL(turma, ue, filtro.AlunoCodigo);
+                var codigosComplementares = await ObterTurmasComplementaresEOL(turma, filtro.AlunoCodigo);
                 turmasCodigos.AddRange(codigosComplementares);
                 if (!turma.EhTurmaRegular())
                 {
@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
                     }
 
                     if (turmaRegular.EhNulo())
-                        throw new Exception(MensagemNegocioTurma.TURMA_REGULAR_NAO_ENCONTRADA);
+                        throw new NegocioException(MensagemNegocioTurma.TURMA_REGULAR_NAO_ENCONTRADA);
 
                     if (turma.EhTurmaEdFisica())
                         componenteEdFisicaEJANecessitaConversaoNotaConceito = await TipoNotaEhConceito(turmaRegular, (filtro.Bimestre ?? 0));
@@ -76,19 +76,16 @@ namespace SME.SGP.Aplicacao
             var componentesComNotaFechamentoOuConselho = (await mediator
                                 .Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma.AnoLetivo, turmasCodigos.ToArray(), filtro.Bimestre, filtro.AlunoCodigo))).ToList();
 
-            if (filtro.ComponenteCurricularId.HasValue && filtro.ComponenteCurricularId != 0)
-                if (!componentesComNotaFechamentoOuConselho.Any(cc => cc.Codigo.Equals(filtro.ComponenteCurricularId.ToString())))
-                    componentesComNotaFechamentoOuConselho.Add(new ComponenteCurricularDto() { Codigo = filtro.ComponenteCurricularId.ToString(), LancaNota = true });
+            if (PodeAdicionarNota(filtro, componentesComNotaFechamentoOuConselho))
+                componentesComNotaFechamentoOuConselho.Add(new ComponenteCurricularDto() { Codigo = filtro.ComponenteCurricularId.ToString(), LancaNota = true });
 
             if (!filtro.Inativo && componentesComNotaFechamentoOuConselho.Any())
             {
+                var codigosComplementares = await ObterTurmasComplementaresEOL(turma, filtro.AlunoCodigo);
 
-                var codigosComplementares = await ObterTurmasComplementaresEOL(turma, ue, filtro.AlunoCodigo);
-                if (turma.ModalidadeCodigo != Modalidade.Fundamental)
-                {
-                    if (codigosComplementares.Any())
-                        turmasCodigos.AddRange(codigosComplementares);
-                }
+                if (turma.ModalidadeCodigo != Modalidade.Fundamental && codigosComplementares.Any())
+                    turmasCodigos.AddRange(codigosComplementares);
+                
                 var componentesDaTurmaES = await mediator.Send(new ObterInfoComponentesCurricularesESPorTurmasCodigoQuery(turmasCodigos.ToArray()));
 
                 if (componentesDaTurmaES.NaoEhNulo() && componentesDaTurmaES.Any())
@@ -129,27 +126,26 @@ namespace SME.SGP.Aplicacao
                 var consolidadoTurmaAlunoId = await mediator.Send(new SalvarConselhoClasseConsolidadoTurmaAlunoCommand(consolidadoTurmaAluno));
 
                 //Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
-                if (!filtro.EhParecer)
+                if (!filtro.EhParecer &&
+                    componentesComNotaFechamentoOuConselho.NaoEhNulo() &&
+                    componentesComNotaFechamentoOuConselho.Any())
                 {
-                    if (componentesComNotaFechamentoOuConselho.NaoEhNulo() && componentesComNotaFechamentoOuConselho.Any())
+                    var turmasIds = await mediator.Send(new ObterTurmaIdsPorCodigosQuery(turmasCodigos.ToArray()));
+                    var conselhoClasseNotas = await mediator.Send(new ObterNotasConceitosConselhoClassePorTurmasCodigosEBimestreQuery(turmasCodigos.ToArray(), filtro.Bimestre ?? 0, alunoCodigo: filtro.AlunoCodigo));
+                    var fechamentoNotas = await mediator.Send(new ObterNotasConceitosFechamentoPorTurmasCodigosEBimestreEAlunoCodigoQuery(turmasCodigos.ToArray(), filtro.Bimestre ?? 0, filtro.AlunoCodigo));
+                    var converterNotaEmConceitoTurmaEdFisicaEJA = (turma.EhEJA() && componenteEdFisicaEJANecessitaConversaoNotaConceito);
+                    if (converterNotaEmConceitoTurmaEdFisicaEJA)
+                        TratarConversaoNotaEdFisicaEJA(fechamentoNotas);
+
+                    foreach (var componenteCurricular in componentesComNotaFechamentoOuConselho)
                     {
-                        var turmasIds = await mediator.Send(new ObterTurmaIdsPorCodigosQuery(turmasCodigos.ToArray()));
-                        var conselhoClasseNotas = await mediator.Send(new ObterNotasConceitosConselhoClassePorTurmasCodigosEBimestreQuery(turmasCodigos.ToArray(), filtro.Bimestre ?? 0, alunoCodigo: filtro.AlunoCodigo));
-                        var fechamentoNotas = await mediator.Send(new ObterNotasConceitosFechamentoPorTurmasCodigosEBimestreEAlunoCodigoQuery(turmasCodigos.ToArray(), filtro.Bimestre ?? 0, filtro.AlunoCodigo));
-                        var converterNotaEmConceitoTurmaEdFisicaEJA = (turma.EhEJA() && componenteEdFisicaEJANecessitaConversaoNotaConceito);
-                        if (converterNotaEmConceitoTurmaEdFisicaEJA)
-                            TratarConversaoNotaEdFisicaEJA(fechamentoNotas);
+                        if (!componenteCurricular.LancaNota)
+                            continue;
 
-                        foreach (var componenteCurricular in componentesComNotaFechamentoOuConselho)
-                        {
-                            if (!componenteCurricular.LancaNota)
-                                continue;
-
-                            var notaConceitoCache = await ObterNotaConceitoCache(turmasIds.ToArray(), long.Parse(componenteCurricular.Codigo), filtro.Bimestre ?? 0, filtro.AlunoCodigo, converterNotaEmConceitoTurmaEdFisicaEJA);
-                            await SalvarConsolidacaoConselhoClasseNota(turma, filtro.Bimestre, long.Parse(componenteCurricular.Codigo),
-                                                                       filtro.AlunoCodigo, consolidadoTurmaAlunoId, conselhoClasseNotas, fechamentoNotas,
-                                                                       notaConceitoCache.Nota, notaConceitoCache.ConceitoId, notaConceitoCache.EhNotaConceitoConselhoCache);
-                        }
+                        var notaConceitoCache = await ObterNotaConceitoCache(turmasIds.ToArray(), long.Parse(componenteCurricular.Codigo), filtro.Bimestre ?? 0, filtro.AlunoCodigo, converterNotaEmConceitoTurmaEdFisicaEJA);
+                        await SalvarConsolidacaoConselhoClasseNota(turma, long.Parse(componenteCurricular.Codigo),
+                                                                    consolidadoTurmaAlunoId, conselhoClasseNotas, fechamentoNotas,
+                                                                    filtro, notaConceitoCache);
                     }
                 }
 
@@ -162,6 +158,15 @@ namespace SME.SGP.Aplicacao
             }
         }
 
+        private bool PodeAdicionarNota(
+                                       MensagemConsolidacaoConselhoClasseAlunoDto filtro, 
+                                       List<ComponenteCurricularDto> componentes)
+        {
+            var possuiIdComponente = filtro.ComponenteCurricularId.HasValue && filtro.ComponenteCurricularId != 0;
+
+            return possuiIdComponente && !componentes.Any(cc => cc.Codigo.Equals(filtro.ComponenteCurricularId.ToString()));
+        }
+
         private async Task<(double? Nota, long? ConceitoId, bool EhNotaConceitoConselhoCache)> ObterNotaConceitoCache(long[] turmasId, long componenteCurricularId, int bimestre, string alunoCodigo, bool converterNotaEmConceitoTurmaEdFisicaEJA = false)
         {
             var retorno = new List<ConsolidadoConselhoClasseAlunoNotaCacheDto>();
@@ -172,11 +177,11 @@ namespace SME.SGP.Aplicacao
                     retorno.Add(retornoCacheMapeado);
             }
 
-            var notaConselhoClasse = retorno.Where(x => x.NotaConselhoClasse.HasValue || x.ConceitoIdConselhoClasse.HasValue).FirstOrDefault();
+            var notaConselhoClasse = retorno.FirstOrDefault(x => x.NotaConselhoClasse.HasValue || x.ConceitoIdConselhoClasse.HasValue);
             if (notaConselhoClasse.NaoEhNulo())
                 return (notaConselhoClasse.NotaConselhoClasse, notaConselhoClasse.ConceitoIdConselhoClasse, true);
 
-            var notaFechamento = retorno.Where(x => x.NotaFechamento.HasValue || x.ConceitoIdFechamento.HasValue).FirstOrDefault();
+            var notaFechamento = retorno.FirstOrDefault(x => x.NotaFechamento.HasValue || x.ConceitoIdFechamento.HasValue);
             if (notaFechamento.NaoEhNulo())
             {
                 var nota = notaFechamento.NotaFechamento;
@@ -207,11 +212,11 @@ namespace SME.SGP.Aplicacao
 
         private async Task<Turma> ObterTurmaRegular(string[] codigosTurmasComplementares, int semestre, bool ehTurmaEJA, bool ehTurmaEM)
         {
-            return (await mediator.Send(new ObterTurmasPorCodigosQuery(codigosTurmasComplementares))).Where(t => t.EhTurmaRegular()
+            return (await mediator.Send(new ObterTurmasPorCodigosQuery(codigosTurmasComplementares))).FirstOrDefault(t => t.EhTurmaRegular()
                                                                                                             && t.Semestre == semestre
                                                                                                             && t.EhEJA() == ehTurmaEJA
                                                                                                             && t.EhTurmaEnsinoMedio == ehTurmaEM
-                                                                                                            ).FirstOrDefault();
+                                                                                                            );
         }
 
         private async Task<Turma> ObterTurmaRegularPorConselhoClasseComplementar(Turma turmaComplementar, string aluno)
@@ -227,7 +232,10 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> TipoNotaEhConceito(Turma turma, int bimestre)
         {
-            var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre == 0 ? turma.ModalidadeTipoCalendario.EhEjaOuCelp() ? BIMESTRE_2 : BIMESTRE_4 : bimestre));
+            if (bimestre == 0)
+                bimestre = turma.ModalidadeTipoCalendario.EhEjaOuCelp() ? BIMESTRE_2 : BIMESTRE_4;
+
+            var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre));
             var tipoNota = await mediator.Send(new ObterNotaTipoPorAnoModalidadeDataReferenciaQuery(turma.Ano, turma.ModalidadeCodigo, periodoEscolar.NaoEhNulo() ? periodoEscolar.PeriodoFim : DateTimeExtension.HorarioBrasilia().Date));
             if (tipoNota.EhNulo())
                 throw new NegocioException(MensagemNegocioTurma.NAO_FOI_POSSIVEL_IDENTIFICAR_TIPO_NOTA_TURMA);
@@ -237,8 +245,7 @@ namespace SME.SGP.Aplicacao
         {
             if (!nota.HasValue)
                 return conceitoId;
-            else
-            if (nota < NOTA_CONCEITO_CINCO)
+            else if (nota < NOTA_CONCEITO_CINCO)
                 return (long)ConceitoValores.NS;
             else if (nota is >= NOTA_CONCEITO_CINCO and < NOTA_CONCEITO_SETE)
                 return (long)ConceitoValores.S;
@@ -247,7 +254,7 @@ namespace SME.SGP.Aplicacao
             else return conceitoId;
         }
 
-        private async Task<string[]> ObterTurmasComplementaresEOL(Turma turma, Ue ue, string codigoAluno)
+        private async Task<string[]> ObterTurmasComplementaresEOL(Turma turma, string codigoAluno)
         {
             var turmasItinerarioEnsinoMedio = await mediator.Send(ObterTurmaItinerarioEnsinoMedioQuery.Instance);
 
@@ -274,9 +281,11 @@ namespace SME.SGP.Aplicacao
             return Array.Empty<string>();
         }
 
-        private async Task<bool> SalvarConsolidacaoConselhoClasseNota(Turma turma, int? bimestre, long componenteCurricularId, string alunoCodigo, long consolidadoTurmaAlunoId,
-                                                                      IEnumerable<NotaConceitoBimestreComponenteDto> notaConceitoBimestreComponenteDto, IEnumerable<FechamentoNotaAlunoAprovacaoDto> fechamentoNotas,
-                                                                      double? notaCache, long? conceitoIdCache, bool ehNotaConceitoConselhoCache)
+        private async Task<bool> SalvarConsolidacaoConselhoClasseNota(Turma turma, long componenteCurricularId, long consolidadoTurmaAlunoId,
+                                                                      IEnumerable<NotaConceitoBimestreComponenteDto> notaConceitoBimestreComponenteDto, 
+                                                                      IEnumerable<FechamentoNotaAlunoAprovacaoDto> fechamentoNotas,
+                                                                      MensagemConsolidacaoConselhoClasseAlunoDto filtro,
+                                                                      (double? Nota, long? ConceitoId, bool EhNotaConceitoConselhoCache) notaConceitoCache)
         {
             double? nota = null;
             double? conceito = null;
@@ -284,21 +293,21 @@ namespace SME.SGP.Aplicacao
             IEnumerable<FechamentoNotaAlunoAprovacaoDto> fechamentoNotasDiciplina = null;
             IEnumerable<NotaConceitoBimestreComponenteDto> conselhoClasseNotasAluno = null;
 
-            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdTurmaQuery(turma.Id, bimestre));
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdTurmaQuery(turma.Id, filtro.Bimestre));
             if (fechamentoTurma.NaoEhNulo())
             {
                 var conselhoClasse = await mediator.Send(new ObterConselhoClassePorFechamentoIdQuery(fechamentoTurma.Id));
                 if (conselhoClasse.NaoEhNulo())
                     conselhoClasseNotasAluno = notaConceitoBimestreComponenteDto
-                        .Where(c => c.AlunoCodigo.Equals(alunoCodigo)
+                        .Where(c => c.AlunoCodigo.Equals(filtro.AlunoCodigo)
                                 && c.ConselhoClasseId == conselhoClasse.Id
                                 && c.ComponenteCurricularCodigo == componenteCurricularId
-                                && (((bimestre ?? 0) != 0 && c.Bimestre == bimestre.Value) || ((bimestre ?? 0) == 0 && !c.Bimestre.HasValue)));
+                                && (((filtro.Bimestre ?? 0) != 0 && c.Bimestre == filtro.Bimestre.Value) || ((filtro.Bimestre ?? 0) == 0 && !c.Bimestre.HasValue)));
             }
             var contemNotaConselhoClasse = conselhoClasseNotasAluno.NaoEhNulo() && conselhoClasseNotasAluno.Any();
 
             fechamentoNotasDiciplina = fechamentoNotas.Where(t => t.ComponenteCurricularId == componenteCurricularId
-                                                                && (((bimestre ?? 0) != 0 && t.Bimestre == bimestre.Value) || ((bimestre ?? 0) == 0 && !t.Bimestre.HasValue)));
+                                                                && (((filtro.Bimestre ?? 0) != 0 && t.Bimestre == filtro.Bimestre.Value) || ((filtro.Bimestre ?? 0) == 0 && !t.Bimestre.HasValue)));
 
             if (contemNotaConselhoClasse)
             {
@@ -314,18 +323,18 @@ namespace SME.SGP.Aplicacao
                 conceito = notaFechamento?.ConceitoId;
             }
 
-            if (notaCache.NaoEhNulo() || conceitoIdCache.NaoEhNulo())
-                if (ehNotaConceitoConselhoCache || !contemNotaConselhoClasse)
-                {
-                    nota = notaCache;
-                    conceito = conceitoIdCache;
-                }
+            if ((notaConceitoCache.Nota.NaoEhNulo() || notaConceitoCache.ConceitoId.NaoEhNulo()) &&
+                (notaConceitoCache.EhNotaConceitoConselhoCache || !contemNotaConselhoClasse))
+            {
+                nota = notaConceitoCache.Nota;
+                conceito = notaConceitoCache.ConceitoId;
+            }
 
-            var consolidadoNota = await mediator.Send(new ObterConselhoClasseConsolidadoNotaPorConsolidadoBimestreComponenteQuery(consolidadoTurmaAlunoId, bimestre, componenteCurricularId));
+            var consolidadoNota = await mediator.Send(new ObterConselhoClasseConsolidadoNotaPorConsolidadoBimestreComponenteQuery(consolidadoTurmaAlunoId, filtro.Bimestre, componenteCurricularId));
             consolidadoNota ??= new ConselhoClasseConsolidadoTurmaAlunoNota()
             {
                 ConselhoClasseConsolidadoTurmaAlunoId = consolidadoTurmaAlunoId,
-                Bimestre = bimestre.HasValue && bimestre == 0 ? null : bimestre,
+                Bimestre = filtro.Bimestre.HasValue && filtro.Bimestre == 0 ? null : filtro.Bimestre,
             };
             consolidadoNota.ComponenteCurricularId = componenteCurricularId;
             consolidadoNota.Nota = nota;

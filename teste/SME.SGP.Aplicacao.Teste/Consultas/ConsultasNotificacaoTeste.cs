@@ -16,13 +16,11 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
     public class ConsultasNotificacaoTeste
     {
         private readonly ConsultasNotificacao consultasNotificacao;
-        private readonly Mock<IRepositorioNotificacao> repositorioNotificacao;
         private readonly Mock<IRepositorioTipoRelatorio> repositorioTipoRelatorio;
         private readonly Mock<IMediator> mediator;
 
         public ConsultasNotificacaoTeste()
         {
-            repositorioNotificacao = new Mock<IRepositorioNotificacao>();
             repositorioTipoRelatorio = new Mock<IRepositorioTipoRelatorio>();
 
             mediator = new Mock<IMediator>();
@@ -31,13 +29,13 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             var obj = new HttpContextAccessor();
             obj.HttpContext = context;
 
-            consultasNotificacao = new ConsultasNotificacao(repositorioNotificacao.Object, new ContextoHttp(obj), mediator.Object, repositorioTipoRelatorio.Object);
+            consultasNotificacao = new ConsultasNotificacao(new ContextoHttp(obj), mediator.Object, repositorioTipoRelatorio.Object);
         }
 
         [Fact(DisplayName = "DeveDispararExcecaoAoInstanciarSemDependencias")]
         public void DeveDispararExcecaoAoInstanciarSemDependencias()
         {
-            Assert.Throws<ArgumentNullException>(() => new ConsultasNotificacao(null, null, null, null));
+            Assert.Throws<ArgumentNullException>(() => new ConsultasNotificacao(null, null, null));
         }
 
         [Fact(DisplayName = "ListarNotificacoesBasicaPorAnoLetivoRF")]

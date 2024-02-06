@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,9 +16,9 @@ namespace SME.SGP.Aplicacao
             this.repositorioUe = repositorio;
         }
 
-        public async Task<(List<Ue> Ues, string[] CodigosUesNaoEncontradas)> Handle(ObterUeMaterializarCodigosQuery request, CancellationToken cancellationToken)
+        public Task<(List<Ue> Ues, string[] CodigosUesNaoEncontradas)> Handle(ObterUeMaterializarCodigosQuery request, CancellationToken cancellationToken)
         {
-            return repositorioUe.MaterializarCodigosUe(request.IdUes);
+            return Task.FromResult(repositorioUe.MaterializarCodigosUe(request.IdUes));
         }
 
     }

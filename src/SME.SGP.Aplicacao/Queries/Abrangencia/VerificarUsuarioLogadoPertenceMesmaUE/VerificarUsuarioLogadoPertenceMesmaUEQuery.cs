@@ -1,24 +1,22 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Dto;
-using System;
-using System.Collections.Generic;
 using SME.SGP.Dominio;
+using System;
 
 namespace SME.SGP.Aplicacao
 {
     public class VerificarUsuarioLogadoPertenceMesmaUEQuery : IRequest<bool>
     {
-        public VerificarUsuarioLogadoPertenceMesmaUEQuery(string login, Guid perfil, string codigoUe, Modalidade modalidade, bool consideraHistorico, int anoLetivo, int periodo = 0, bool consideraNovosAnosInfantil = false)
+        public VerificarUsuarioLogadoPertenceMesmaUEQuery(Usuario usuario, Turma turma, int periodo = 0, bool consideraNovosAnosInfantil = false)
         {
-            CodigoUe = codigoUe;
-            Modalidade = modalidade;
+            CodigoUe = turma.Ue.CodigoUe;
+            Modalidade = turma.ModalidadeCodigo;
             Periodo = periodo;
-            ConsideraHistorico = consideraHistorico;
-            AnoLetivo = anoLetivo;
+            ConsideraHistorico = turma.Historica;
+            AnoLetivo = turma.AnoLetivo;
             ConsideraNovosAnosInfantil = consideraNovosAnosInfantil;
-            Login = login;
-            Perfil = perfil;
+            Login = usuario.Login;
+            Perfil = usuario.PerfilAtual;
         }
         
         public Guid Perfil { get; set; }

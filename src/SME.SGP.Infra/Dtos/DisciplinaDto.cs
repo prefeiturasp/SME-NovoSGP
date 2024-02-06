@@ -40,9 +40,9 @@ namespace SME.SGP.Infra
         {
             disciplinas.ForEach(componenteCurricular =>
             {
-                var componenteCurricularSgp = componentesCurricularesSgp.Where(cc => cc.Codigo == componenteCurricular.CodigoComponenteCurricular
+                var componenteCurricularSgp = componentesCurricularesSgp.FirstOrDefault(cc => cc.Codigo == componenteCurricular.CodigoComponenteCurricular
                                                                                     || (componenteCurricular.CodigoComponenteCurricularTerritorioSaber != 0 &&
-                                                                                        cc.Codigo == componenteCurricular.CodigoComponenteCurricularTerritorioSaber)).FirstOrDefault();
+                                                                                        cc.Codigo == componenteCurricular.CodigoComponenteCurricularTerritorioSaber));
 
                 if (componenteCurricularSgp.NaoEhNulo())
                 {

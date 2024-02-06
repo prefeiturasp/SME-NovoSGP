@@ -32,11 +32,11 @@ namespace SME.SGP.Dados.Repositorios
             var situacao = new List<int>() { (int)SituacaoPendencia.Pendente, (int)SituacaoPendencia.Resolvida };
 
             var query = @"SELECT 
-	                            distinct p.id AS PendenciaId
+                                distinct p.id AS PendenciaId
                             FROM pendencia p
-	                            JOIN pendencia_aula pa ON p.id = pa.pendencia_id
-	                            inner JOIN aula a ON a.id = pa.aula_id
-	                            inner JOIN turma t ON t.turma_id = a.turma_id
+                                JOIN pendencia_aula pa ON p.id = pa.pendencia_id
+                                inner JOIN aula a ON a.id = pa.aula_id
+                                inner JOIN turma t ON t.turma_id = a.turma_id
                             WHERE NOT p.excluido
                               AND p.tipo = any(@tipoPendencia)
                               AND p.situacao = any(@situacao)

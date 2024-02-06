@@ -2,7 +2,6 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
-using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +37,7 @@ namespace SME.SGP.Aplicacao
                         var codigoRfProfessor = professor.Trim();
                         if (!string.IsNullOrEmpty(codigoRfProfessor))
                         {
-                            professoresEComponentes.AddRange(professorDaTurma.DisciplinasId
+                            professoresEComponentes.AddRange(professorDaTurma.DisciplinasId()
                                 .Select(disciplinaId => new ProfessorEComponenteInfantilDto()
                             {
                                 CodigoRf = codigoRfProfessor,

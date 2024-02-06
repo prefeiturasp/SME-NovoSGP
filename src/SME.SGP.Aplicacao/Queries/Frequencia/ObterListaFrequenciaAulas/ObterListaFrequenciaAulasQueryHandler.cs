@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao
                     .Send(new ObterMarcadorFrequenciaAlunoQuery(aluno, request.PeriodoEscolar, request.Turma.ModalidadeCodigo));
 
                 // Indicativo de Frequencia (%)
-                registroFrequenciaAluno.IndicativoFrequencia = ObterIndicativoFrequencia(frequenciaAluno, request.PercentualAlerta, request.PercentualCritico, request.TurmaPossuiFrequenciaRegistrada);
+                registroFrequenciaAluno.IndicativoFrequencia = ObterIndicativoFrequencia(frequenciaAluno, request.PercentualAlerta, request.PercentualCritico);
 
                 if (request.Aulas.Any())
                 {
@@ -97,7 +97,7 @@ namespace SME.SGP.Aplicacao
                 && aula.PermiteRegistroFrequencia(turma);
         }
 
-        private IndicativoFrequenciaDto ObterIndicativoFrequencia(FrequenciaAluno frequenciaAluno, int percentualAlerta, int percentualCritico, bool turmaComFrequenciasRegistradas)
+        private IndicativoFrequenciaDto ObterIndicativoFrequencia(FrequenciaAluno frequenciaAluno, int percentualAlerta, int percentualCritico)
         {
             var percentualFrequencia = frequenciaAluno.NaoEhNulo() ? frequenciaAluno.PercentualFrequencia : double.MinValue;
 
@@ -120,7 +120,7 @@ namespace SME.SGP.Aplicacao
             {
                 case "1":
                     {
-                        return TipoResponsavel.Filicacao1.Name();
+                        return TipoResponsavel.Filiacao1.Name();
                     }
                 case "2":
                     {
@@ -135,7 +135,7 @@ namespace SME.SGP.Aplicacao
                         return TipoResponsavel.ProprioEstudante.Name();
                     }
             }
-            return TipoResponsavel.Filicacao1.ToString();
+            return TipoResponsavel.Filiacao1.ToString();
         }
 
     }

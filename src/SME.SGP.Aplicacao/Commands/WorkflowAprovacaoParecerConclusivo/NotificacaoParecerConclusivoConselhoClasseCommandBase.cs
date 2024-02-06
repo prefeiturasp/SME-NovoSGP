@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         protected List<Usuario> Usuarios;
         protected IEnumerable<WFAprovacaoParecerConclusivoDto> WFAprovacoes;
 
-        public NotificacaoParecerConclusivoConselhoClasseCommandBase(IMediator mediator)
+        protected NotificacaoParecerConclusivoConselhoClasseCommandBase(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }

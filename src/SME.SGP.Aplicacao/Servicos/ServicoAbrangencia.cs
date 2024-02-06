@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -206,7 +205,7 @@ namespace SME.SGP.Aplicacao.Servicos
 
                     if (turmaId > 0)
                     {
-                        var abragenciaSGP = abrangenciaGeralSGP.Where(a => a.TurmaId == turmaId && !a.Historico).FirstOrDefault();
+                        var abragenciaSGP = abrangenciaGeralSGP.FirstOrDefault(a => a.TurmaId == turmaId && !a.Historico);
                         if (abragenciaSGP.NaoEhNulo())
                         {
                             var virouHistorica = await mediator.Send(new VerificaSeTurmaVirouHistoricaQuery(abragenciaSGP.TurmaId.Value));
@@ -277,20 +276,11 @@ namespace SME.SGP.Aplicacao.Servicos
 
                 if (abrangenciaEol.NaoEhNulo())
                 {
-                    IEnumerable<Dre> dres = Enumerable.Empty<Dre>();
-                    IEnumerable<Ue> ues = Enumerable.Empty<Ue>();
-                    IEnumerable<Turma> turmas = Enumerable.Empty<Turma>();
-
                     // sincronizamos as dres, ues e turmas
-                    var estrutura = await MaterializarEstruturaInstitucional(abrangenciaEol, dres, ues, turmas);
-
-                    dres = estrutura.Dres;
-                    ues = estrutura.Ues;
-                    turmas = estrutura.Turmas;
-
+                    var estrutura = await MaterializarEstruturaInstitucional(abrangenciaEol);
+                    
                     // sincronizamos a abrangencia do login + perfil
-
-                    await SincronizarAbrangencia(abrangenciaSintetica, abrangenciaEol.Abrangencia?.Abrangencia, ehSupervisor, dres, ues, turmas, login, perfil);
+                    await SincronizarAbrangencia(abrangenciaSintetica, abrangenciaEol.Abrangencia?.Abrangencia, ehSupervisor, estrutura, login, perfil);
                 }
             }
         }
@@ -307,8 +297,11 @@ namespace SME.SGP.Aplicacao.Servicos
             return repositorioTurma.MaterializarCodigosTurma(codigosNaoEncontrados, out codigosNaoEncontrados);
         }
 
-        private async Task<(IEnumerable<Dre> Dres, IEnumerable<Ue> Ues, IEnumerable<Turma> Turmas)> MaterializarEstruturaInstitucional(AbrangenciaCompactaVigenteRetornoEOLDTO abrangenciaEol, IEnumerable<Dre> dres, IEnumerable<Ue> ues, IEnumerable<Turma> turmas)
+        private async Task<(IEnumerable<Dre> Dres, IEnumerable<Ue> Ues, IEnumerable<Turma> Turmas)> MaterializarEstruturaInstitucional(AbrangenciaCompactaVigenteRetornoEOLDTO abrangenciaEol)
         {
+            IEnumerable<Dre> dres = Enumerable.Empty<Dre>();
+            IEnumerable<Ue> ues = Enumerable.Empty<Ue>();
+            IEnumerable<Turma> turmas = Enumerable.Empty<Turma>();
             string[] codigosNaoEncontrados;
 
             if (abrangenciaEol.IdDres.NaoEhNulo() && abrangenciaEol.IdDres.Length > 0)
@@ -394,9 +387,10 @@ namespace SME.SGP.Aplicacao.Servicos
             if(registrosDuplicados.Any())
                 idsParaAtualizar = registrosDuplicados.Select(x => x.Id).ToList();
 
-            if(abrangenciaSintetica.Any() && turmas.Any())
-                if(abrangenciaSintetica.Count() != turmas.Count())
-                    idsParaAtualizar.AddRange(VerificaTurmasAbrangenciaAtualParaHistorica(abrangenciaSintetica, turmas));
+            if(abrangenciaSintetica.Any() && 
+                turmas.Any() &&
+                abrangenciaSintetica.Count() != turmas.Count())
+                idsParaAtualizar.AddRange(VerificaTurmasAbrangenciaAtualParaHistorica(abrangenciaSintetica, turmas));
 
             await repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() {Perfil = perfil, TurmaId = x.Id}), login);
 
@@ -419,30 +413,30 @@ namespace SME.SGP.Aplicacao.Servicos
             return abrangenciaAtual.Except(turmasNaAbrangenciaAtualExistentesEol).Select(t=> t.Id);
         }
 
-        private async Task SincronizarAbrangencia(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, Infra.Enumerados.Abrangencia? abrangencia, bool ehSupervisor, IEnumerable<Dre> dres, IEnumerable<Ue> ues, IEnumerable<Turma> turmas, string login, Guid perfil)
+        private async Task SincronizarAbrangencia(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, Infra.Enumerados.Abrangencia? abrangencia, bool ehSupervisor, (IEnumerable<Dre> Dres, IEnumerable<Ue> Ues, IEnumerable<Turma> Turmas) estrutura, string login, Guid perfil)
         {
             unitOfWork.IniciarTransacao();
             try
             {
                 if (ehSupervisor)
-                    await SincronizarAbrangenciaPorUes(abrangenciaSintetica, ues, login, perfil);
+                    await SincronizarAbrangenciaPorUes(abrangenciaSintetica, estrutura.Ues, login, perfil);
                 else
                 {
                     switch (abrangencia)
                     {
                         case Infra.Enumerados.Abrangencia.Dre:
                         case Infra.Enumerados.Abrangencia.SME:
-                            await SincronizarAbrangenciPorDres(abrangenciaSintetica, dres, login, perfil);
+                            await SincronizarAbrangenciPorDres(abrangenciaSintetica, estrutura.Dres, login, perfil);
                             break;
 
                         case Infra.Enumerados.Abrangencia.DreEscolasAtribuidas:
                         case Infra.Enumerados.Abrangencia.UeTurmasDisciplinas:
                         case Infra.Enumerados.Abrangencia.UE:
-                            await SincronizarAbrangenciaPorUes(abrangenciaSintetica, ues, login, perfil);
+                            await SincronizarAbrangenciaPorUes(abrangenciaSintetica, estrutura.Ues, login, perfil);
                             break;
 
                         case Infra.Enumerados.Abrangencia.Professor:
-                            await SincronizarAbragenciaPorTurmas(abrangenciaSintetica, turmas, login, perfil);
+                            await SincronizarAbragenciaPorTurmas(abrangenciaSintetica, estrutura.Turmas, login, perfil);
                             break;
                     }
                 }

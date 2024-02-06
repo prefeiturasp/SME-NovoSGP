@@ -7,7 +7,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTipoDeCalendarioDaTurmaUseCase
     {
-         public static async Task<TipoCalendarioSugestaoDto> Executar(IMediator mediator, ObterTipoDeCalendarioDaTurmaEntrada obterTipoDeCalendarioDaTurmaEntrada)
+        protected ObterTipoDeCalendarioDaTurmaUseCase() { }
+
+        public static async Task<TipoCalendarioSugestaoDto> Executar(IMediator mediator, ObterTipoDeCalendarioDaTurmaEntrada obterTipoDeCalendarioDaTurmaEntrada)
         {
 
             Turma turma = await mediator.Send(new ObterTurmaPorCodigoQuery() {  TurmaCodigo = obterTipoDeCalendarioDaTurmaEntrada.TurmaCodigo }) as Turma;

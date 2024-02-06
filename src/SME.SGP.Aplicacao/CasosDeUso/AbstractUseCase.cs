@@ -7,7 +7,7 @@ namespace SME.SGP.Aplicacao
     {
         protected readonly IMediator mediator;
 
-        public AbstractUseCase(IMediator mediator)
+        protected AbstractUseCase(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }

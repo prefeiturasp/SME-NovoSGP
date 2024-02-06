@@ -2,10 +2,10 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Constantes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,13 +23,18 @@ namespace SME.SGP.Aplicacao
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
         }
 
-        public async Task<IEnumerable<DashBoard>> Handle(ObterDashBoardPorPerfilQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<DashBoard>> Handle(ObterDashBoardPorPerfilQuery request, CancellationToken cancellationToken)
         {
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
             var roles = servicoUsuario.ObterPermissoes();
             var listaDashBoard = new List<DashBoard>();
 
-            if (perfil_1.Contains(perfilAtual))
+            if (perfilAtual == Perfis.PERFIL_ABAE)
+            {
+                listaDashBoard.Add(CarregaDashBoard(Permissao.RABA_NAAPA_C, roles, false, ConstantesMenuPermissao.MENU_REGISTRO_ACOES));
+                listaDashBoard.Add(CarregaDashBoard(Permissao.CCEA_NAAPA_C, roles, false, ConstantesMenuPermissao.MENU_CONS_CRIANCAS_ESTUD_AUSENTES));
+            }
+            else if (perfil_1.Contains(perfilAtual))
             {
                 listaDashBoard.Add(CarregaDashBoard(Permissao.CI_C, roles));
                 listaDashBoard.Add(CarregaDashBoard(Permissao.DDB_C, roles));
@@ -52,7 +57,7 @@ namespace SME.SGP.Aplicacao
                 listaDashBoard.Add(CarregaDashBoard(Permissao.E_C, roles, false));
             }
 
-            return listaDashBoard;
+            return Task.FromResult<IEnumerable<DashBoard>>(listaDashBoard);
 
         }
 

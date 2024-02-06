@@ -17,65 +17,8 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioComunicado : RepositorioBase<Comunicado>, IRepositorioComunicado
     {
-        private readonly Func<string, string> camposComunicado =
-            (prefixo) => string.Format(
-                @"{0}.id,
-                  {0}.titulo,
-                  {0}.descricao,
-                  {0}.data_envio,
-                  {0}.data_expiracao,
-                  {0}.criado_em,
-                  {0}.criado_por,
-                  {0}.alterado_em,
-                  {0}.alterado_por,
-                  {0}.criado_rf,
-                  {0}.alterado_rf,
-                  {0}.ano_letivo,
-                  {0}.modalidade,
-                  {0}.semestre,
-                  {0}.tipo_comunicado,
-                  {0}.codigo_dre,
-                  {0}.codigo_ue,
-                  {0}.excluido,
-                  {0}.tipo_calendario_id,
-                  {0}.evento_id,
-                  {0}.alunos_especificados", prefixo);
-
-        private string queryComunicadoListagem()
-        {
-            var query = new StringBuilder();
-
-            query.AppendLine(@"
-						SELECT
-							{0}
-						FROM ({1}) c
-						LEFT JOIN comunidado_grupo cg
-							on cg.comunicado_id = c.id
-						LEFT join grupo_comunicado g
-							on cg.grupo_comunicado_id = g.id
-                        ");
-
-            query.AppendLine(@"
-						WHERE c.excluido = false");
-
-            return query.ToString();
-        }
-
         public RepositorioComunicado(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
-        }
-        private string ObterCamposListagem(string prefixoComunicado, string prefixoGrupoComunicado, string prefixoTurmaComunicado)
-        {
-            StringBuilder builder = new StringBuilder();
-
-            builder.AppendLine($"{camposComunicado(prefixoComunicado)},");
-            builder.AppendLine($@"{prefixoGrupoComunicado}.id,");
-            builder.AppendLine($@"{prefixoGrupoComunicado}.nome,");
-            builder.AppendLine($@"{prefixoGrupoComunicado}.tipo_escola_id,");
-            builder.AppendLine($@"{prefixoGrupoComunicado}.tipo_ciclo_id,");
-            builder.AppendLine($@"{prefixoGrupoComunicado}.etapa_ensino_id");
-
-            return builder.ToString();
         }
 
         public async Task<ComunicadosTotaisResultado> ObterComunicadosTotaisSme(int anoLetivo, string codigoDre, string codigoUe)
@@ -91,9 +34,9 @@ namespace SME.SGP.Dados.Repositorios
                 filtroPorDre = " and codigo_ue = @codigoUe ";
 
             var sql = $@"select
-	                        distinct 
-	                        (select count(id) from comunicado where excluido = false and tipo_comunicado <> @tipoComunicado and ano_letivo = @anoLetivo and data_expiracao >= current_date {filtroPorDre} {filtroPorUe} ) as TotalComunicadosVigentes,
-	                        (select count(id) from comunicado where excluido = false and tipo_comunicado <> @tipoComunicado and ano_letivo = @anoLetivo and data_expiracao < current_date {filtroPorDre} {filtroPorUe}) as TotalComunicadosExpirados 
+                            distinct 
+                            (select count(id) from comunicado where excluido = false and tipo_comunicado <> @tipoComunicado and ano_letivo = @anoLetivo and data_expiracao >= current_date {filtroPorDre} {filtroPorUe} ) as TotalComunicadosVigentes,
+                            (select count(id) from comunicado where excluido = false and tipo_comunicado <> @tipoComunicado and ano_letivo = @anoLetivo and data_expiracao < current_date {filtroPorDre} {filtroPorUe}) as TotalComunicadosExpirados 
                         from comunicado";
             var parametros = new { anoLetivo, codigoDre, codigoUe, tipoComunicado = TipoComunicado.MENSAGEM_AUTOMATICA };
             return await database.QueryFirstAsync<ComunicadosTotaisResultado>(sql, parametros);
@@ -387,62 +330,62 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             sql.AppendLine(@" from
-	                    ( (
-	                    select
+                        ( (
+                        select
                             comunicado.id as ComunicadoId,
-		                    data_envio as DataEnvio,
-		                    tipo_comunicado as Categoria,
-		                    titulo,
-		                    '' as leitura
-	                    from
-		                    comunicado
-	                    where
-		                    not comunicado.excluido
-		                    and comunicado.tipo_comunicado = 1)
+                            data_envio as DataEnvio,
+                            tipo_comunicado as Categoria,
+                            titulo,
+                            '' as leitura
+                        from
+                            comunicado
+                        where
+                            not comunicado.excluido
+                            and comunicado.tipo_comunicado = 1)
                     union (
                     select
                         comunicado.id,
-	                    data_envio as DataEnvio,
-	                    tipo_comunicado as Categoria,
-	                    titulo,
-	                    '' as leitura
+                        data_envio as DataEnvio,
+                        tipo_comunicado as Categoria,
+                        titulo,
+                        '' as leitura
                     from
-	                    comunicado
+                        comunicado
                     where
-	                    not comunicado.excluido
-	                    and comunicado.tipo_comunicado = 2 and comunicado.codigo_dre = @dreCodigo)
-	                    union (
+                        not comunicado.excluido
+                        and comunicado.tipo_comunicado = 2 and comunicado.codigo_dre = @dreCodigo)
+                        union (
                     select
                         comunicado.id,
-	                    data_envio as DataEnvio,
-	                    tipo_comunicado as Categoria,
-	                    titulo,
-	                    '' as leitura
+                        data_envio as DataEnvio,
+                        tipo_comunicado as Categoria,
+                        titulo,
+                        '' as leitura
                     from
-	                    comunicado
+                        comunicado
                     where
-	                    not comunicado.excluido
-	                    and comunicado.tipo_comunicado = 3 and comunicado.codigo_ue = @ueCodigo)
-	                    union (
+                        not comunicado.excluido
+                        and comunicado.tipo_comunicado = 3 and comunicado.codigo_ue = @ueCodigo)
+                        union (
                     select
                         comunicado.id,
-	                    data_envio as DataEnvio,
-	                    tipo_comunicado as Categoria,
-	                    titulo,
-	                    '' as leitura
+                        data_envio as DataEnvio,
+                        tipo_comunicado as Categoria,
+                        titulo,
+                        '' as leitura
                     from
-	                    comunicado
+                        comunicado
                     inner join comunicado_turma ct on comunicado.id = ct.comunicado_id 
                     where
-	                    not comunicado.excluido
-	                    and comunicado.tipo_comunicado = 5 and ct.turma_codigo = @turmaCodigo)
-		                    union (
+                        not comunicado.excluido
+                        and comunicado.tipo_comunicado = 5 and ct.turma_codigo = @turmaCodigo)
+                            union (
                     select
                         comunicado.id,
-	                    data_envio as DataEnvio,
-	                    tipo_comunicado as Categoria,
-	                    titulo,
-	                    '' as leitura from comunicado inner join comunicado_aluno ca on 
+                        data_envio as DataEnvio,
+                        tipo_comunicado as Categoria,
+                        titulo,
+                        '' as leitura from comunicado inner join comunicado_aluno ca on 
             comunicado.id = ca.comunicado_id where not comunicado.excluido and comunicado.tipo_comunicado = 6 and ca.aluno_codigo = @alunoCodigo)) n ");
 
 
@@ -499,10 +442,10 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine(") tb1;");
 
             query.AppendLine(@"select temp.id,
-	                                  temp.titulo,
-	                                  temp.data_envio as DataEnvio,
-	                                  temp.data_expiracao as DataExpiracao,
-	                                  temp.modalidade as modalidadeCodigo,                                 
+                                      temp.titulo,
+                                      temp.data_envio as DataEnvio,
+                                      temp.data_expiracao as DataExpiracao,
+                                      temp.modalidade as modalidadeCodigo,                                 
                                       temp.tipoEscola as tipoEscolaCodigo
                                  from comunicadoTempPaginado temp
                                 order by temp.data_envio desc ");
@@ -551,14 +494,13 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
-
         private string MontaQueryListarComunicados(string dreCodigo, string ueCodigo, int[] modalidades, DateTime? dataEnvioInicio, DateTime? dataEnvioFim, DateTime? dataExpiracaoInicio, DateTime? dataExpiracaoFim, string titulo, string[] turmasCodigo, string[] anosEscolares, int[] tiposEscolas)
         {
             var query = new StringBuilder(@"select distinct c.id,
-	                                               c.titulo,
-	                                               c.data_envio,
-	                                               c.data_expiracao,
-	                                               (select array_agg(modalidade) 
+                                                   c.titulo,
+                                                   c.data_envio,
+                                                   c.data_expiracao,
+                                                   (select array_agg(modalidade) 
                                                       from comunicado_modalidade cm2 
                                                      where cm2.comunicado_id = c.id) as Modalidade,
                                                    (select array_agg(tipo_escola) 
@@ -572,49 +514,83 @@ namespace SME.SGP.Dados.Repositorios
                                               left join ue on ue.ue_id = c.codigo_ue
                                              where c.ano_letivo = @anoLetivo
                                                and not c.excluido and c.tipo_comunicado <> @tipoComunicado ");
+            AdicionarCondicionalDreListarComunicados(query, dreCodigo);
+            AdicionarCondicionalUeListarComunicados(query, ueCodigo);
+            AdicionarCondicionalModalidadesListarComunicados(query, modalidades);
+            AdicionarCondicionalAnosEscolaresListarComunicados(query, anosEscolares);
+            AdicionarCondicionalTurmasListarComunicados(query, turmasCodigo);
+            AdicionarCondicionalTiposEscolasListarComunicados(query, tiposEscolas);
+            AdicionarCondicionalTituloListarComunicados(query, titulo);
+            AdicionarCondicionalDataEnvioListarComunicados(query, dataEnvioInicio, dataEnvioFim);
+            AdicionarCondicionalDataExpiracaoListarComunicados(query, dataExpiracaoInicio, dataExpiracaoFim);
+            return query.ToString();
+        }
 
+        private void AdicionarCondicionalDreListarComunicados(StringBuilder query, string dreCodigo)
+        {
             if (!string.IsNullOrEmpty(dreCodigo) && dreCodigo != "-99")
                 query.AppendLine("and c.codigo_dre = @dreCodigo ");
             else
                 query.AppendLine("and c.codigo_dre is null ");
+        }
 
+        private void AdicionarCondicionalUeListarComunicados(StringBuilder query, string ueCodigo)
+        {
             if (!string.IsNullOrEmpty(ueCodigo) && ueCodigo != "-99")
                 query.AppendLine("and c.codigo_ue = @ueCodigo ");
             else
                 query.AppendLine("and c.codigo_ue is null ");
+        }
 
+        private void AdicionarCondicionalModalidadesListarComunicados(StringBuilder query, int[] modalidades)
+        {
             if (modalidades.NaoEhNulo() && !modalidades.Any(c => c == -99))
-                query.AppendLine("and cm.modalidade = any(@modalidades) ");           
+                query.AppendLine("and cm.modalidade = any(@modalidades) ");
+        }
 
+        private void AdicionarCondicionalAnosEscolaresListarComunicados(StringBuilder query, string[] anosEscolares)
+        {
             if (anosEscolares.NaoEhNulo() && !anosEscolares.Any(c => c == "-99"))
                 query.AppendLine("and t.ano = any(@anosEscolares) ");
+        }
 
+        private void AdicionarCondicionalTurmasListarComunicados(StringBuilder query, string[] turmasCodigo)
+        {
             if (turmasCodigo.NaoEhNulo() && !turmasCodigo.Any(c => c == "-99"))
                 query.AppendLine("and ct.turma_codigo = any(@turmasCodigo) ");
+        }
 
+        private void AdicionarCondicionalTiposEscolasListarComunicados(StringBuilder query, int[] tiposEscolas)
+        {
             if (tiposEscolas.NaoEhNulo() && !tiposEscolas.Any(c => c == -99))
                 query.AppendLine("and cte.tipo_escola = any(@tiposEscolas) ");
+        }
 
+        private void AdicionarCondicionalTituloListarComunicados(StringBuilder query, string titulo)
+        {
             if (!string.IsNullOrEmpty(titulo))
-                query.AppendLine("and (upper(f_unaccent(c.titulo)) LIKE @tituloFormatado) ");            
+                query.AppendLine("and (upper(f_unaccent(c.titulo)) LIKE @tituloFormatado) ");
+        }
 
+        private void AdicionarCondicionalDataEnvioListarComunicados(StringBuilder query, DateTime? dataEnvioInicio, DateTime? dataEnvioFim)
+        {
             if (dataEnvioInicio.HasValue && dataEnvioFim.HasValue)
                 query.AppendLine("and c.data_envio::date between @dataEnvioInicio::date and @dataEnvioFim::date ");
+        }
 
+        private void AdicionarCondicionalDataExpiracaoListarComunicados(StringBuilder query, DateTime? dataExpiracaoInicio, DateTime? dataExpiracaoFim)
+        {
             if (dataExpiracaoInicio.HasValue && dataExpiracaoFim.HasValue)
                 query.AppendLine("and c.data_expiracao::date between @dataExpiracaoInicio::date and @dataExpiracaoFim::date ");
-
-            return query.ToString();
-
         }
 
         private string MontaQueryListarComunicadosEja(string dreCodigo, string ueCodigo, DateTime? dataEnvioInicio, DateTime? dataEnvioFim, DateTime? dataExpiracaoInicio, DateTime? dataExpiracaoFim, string titulo, string[] turmasCodigo, string[] anosEscolares, int[] tiposEscolas)
         {
             var query = new StringBuilder(@"select distinct c.id,
-	                                               c.titulo,
-	                                               c.data_envio,
-	                                               c.data_expiracao,
-	                                               (select array_agg(modalidade) 
+                                                   c.titulo,
+                                                   c.data_envio,
+                                                   c.data_expiracao,
+                                                   (select array_agg(modalidade) 
                                                       from comunicado_modalidade cm2 
                                                      where cm2.comunicado_id = c.id) as Modalidade,
                                                    (select array_agg(tipo_escola) 
@@ -630,35 +606,14 @@ namespace SME.SGP.Dados.Repositorios
                                                and not c.excluido and c.tipo_comunicado <> @tipoComunicado
                                                and cm.modalidade = any(@modalidades)
                                                and t.semestre = @semestre ");
-
-            if (!string.IsNullOrEmpty(dreCodigo) && dreCodigo != "-99")
-                query.AppendLine("and c.codigo_dre = @dreCodigo ");
-            else
-                query.AppendLine("and c.codigo_dre is null ");
-
-            if (!string.IsNullOrEmpty(ueCodigo) && ueCodigo != "-99")
-                query.AppendLine("and c.codigo_ue = @ueCodigo ");
-            else
-                query.AppendLine("and c.codigo_ue is null ");            
-
-            if (anosEscolares.NaoEhNulo() && !anosEscolares.Any(c => c == "-99"))
-                query.AppendLine("and t.ano = any(@anosEscolares) ");
-
-            if (turmasCodigo.NaoEhNulo() && !turmasCodigo.Any(c => c == "-99"))
-                query.AppendLine("and ct.turma_codigo = any(@turmasCodigo) ");
-
-            if (tiposEscolas.NaoEhNulo() && !tiposEscolas.Any(c => c == -99))
-                query.AppendLine("and cte.tipo_escola = any(@tiposEscolas) ");            
-
-            if (!string.IsNullOrEmpty(titulo))
-                query.AppendLine("and (upper(f_unaccent(c.titulo)) LIKE @tituloFormatado) ");            
-
-            if (dataEnvioInicio.HasValue && dataEnvioFim.HasValue)
-                query.AppendLine("and c.data_envio::date between @dataEnvioInicio::date and @dataEnvioFim::date ");
-
-            if (dataExpiracaoInicio.HasValue && dataExpiracaoFim.HasValue)
-                query.AppendLine("and c.data_expiracao::date between @dataExpiracaoInicio::date and @dataExpiracaoFim::date ");
-
+            AdicionarCondicionalDreListarComunicados(query, dreCodigo);
+            AdicionarCondicionalUeListarComunicados(query, ueCodigo);
+            AdicionarCondicionalAnosEscolaresListarComunicados(query, anosEscolares);
+            AdicionarCondicionalTurmasListarComunicados(query, turmasCodigo);
+            AdicionarCondicionalTiposEscolasListarComunicados(query, tiposEscolas);
+            AdicionarCondicionalTituloListarComunicados(query, titulo);
+            AdicionarCondicionalDataEnvioListarComunicados(query, dataEnvioInicio, dataEnvioFim);
+            AdicionarCondicionalDataExpiracaoListarComunicados(query, dataExpiracaoInicio, dataExpiracaoFim);
             return query.ToString();
         }
 

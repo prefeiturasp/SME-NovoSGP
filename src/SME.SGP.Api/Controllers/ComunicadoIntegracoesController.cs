@@ -1,15 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using SME.SGP.Api.Filtros;
+﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Middlewares;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui;
-using SME.SGP.Dto;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.EscolaAqui.Anos;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
