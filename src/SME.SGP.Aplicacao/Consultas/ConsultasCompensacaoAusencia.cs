@@ -104,9 +104,15 @@ namespace SME.SGP.Aplicacao
             var turma = await repositorioTurmaConsulta.ObterPorId(compensacao.TurmaId);
             compensacaoDto.TurmaId = turma.CodigoTurma;
 
-            var alunos = await mediator.Send(new ObterAlunosEolPorTurmaQuery(turma.CodigoTurma));
-            alunos.LancarExcecaoNegocioSeNaoPossuiRegistros("Alunos não localizados para a turma.");
-            
+            var periodo = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, compensacao.Bimestre));
+            periodo.LancarExcecaoNegocioSeEhNulo("Não foi possível encontrar o período escolar da turma e bimestre selecionado.");
+
+            var alunos = (await mediator.Send(new ObterAlunosDentroPeriodoQuery(turma.CodigoTurma, (periodo.PeriodoInicio, periodo.PeriodoFim))))
+                        .DistinctBy(a => a.CodigoAluno)
+                        .OrderBy(a => a.NomeSocialAluno ?? a.NomeAluno);
+
+            alunos.LancarExcecaoNegocioSeNaoPossuiRegistros("Alunos não localizados para a turma selecionada.");
+
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var codigosComponentesConsiderados = new List<string>() { compensacao.DisciplinaId };
 
