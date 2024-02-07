@@ -89,7 +89,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(@"    and u.dre_id = @dreId ");
             if (semestre.NaoEhNulo())
                 sql.AppendLine(@"    and t.semestre = @semestre ");
-            sql.AppendLine(@"group by q.nome_componente, d.nome;");
+            sql.AppendLine(@"group by q.nome_componente, d.abreviacao;");
             return await database.Conexao
                                  .QueryAsync<DadosGraficoProcedimentoTrabalhoDreBuscaAtivaDto>(sql.ToString(),
                                                   new
