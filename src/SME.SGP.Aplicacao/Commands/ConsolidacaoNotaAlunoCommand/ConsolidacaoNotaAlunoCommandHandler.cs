@@ -33,8 +33,9 @@ namespace SME.SGP.Aplicacao
                                                                                                              request.ComponenteCurricularId);
 
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaConselhoClasseAlunoTratar, mensagemConsolidacaoConselhoClasseAluno, Guid.NewGuid(), null));
+                return true;
             }
-            return true;
+            return false;
         }
     }
 }
