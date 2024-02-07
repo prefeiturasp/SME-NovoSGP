@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            int.TryParse(param.Mensagem.ToString(), out int ano);
+            _ = int.TryParse(param?.Mensagem?.ToString(), out int ano);
 
             ano = ano == 0 ? DateTimeExtension.HorarioBrasilia().AddYears(-1).Year : ano;
 

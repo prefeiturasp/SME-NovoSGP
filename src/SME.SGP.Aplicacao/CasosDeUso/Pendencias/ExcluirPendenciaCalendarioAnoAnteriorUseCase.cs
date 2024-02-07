@@ -18,18 +18,13 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            IEnumerable<TodosUesIdsComPendenciaCalendarioDto> pendencias = new List<TodosUesIdsComPendenciaCalendarioDto>();
-            int anoLetivo;
             try
             {
-                anoLetivo = param.Mensagem.NaoEhNulo() ? JsonConvert.DeserializeObject<int>(param.Mensagem.ToString()!) : DateTimeExtension.HorarioBrasilia().AddYears(-1).Year;
-                pendencias = await mediator.Send(new ObterTodosUesIdsComPendenciaCalendarioQuery(anoLetivo));
-                
-                foreach (var ueId in pendencias.Select(p => p.UeId).Distinct())
-                {
-                    var idPendencias = pendencias.Where(x => x.UeId == ueId).Select(e => e.PendenciaId).ToArray();
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaExcluirPendenciaCalendarioAnoAnteriorCalendarioUe, new ExcluirPendenciaCalendarioAnoAnteriorPorUeDto(anoLetivo,ueId,idPendencias), Guid.NewGuid(), null));
-                }
+                var anoLetivo = param?.Mensagem?.NaoEhNulo() ?? false ? JsonConvert.DeserializeObject<int>(param.Mensagem.ToString()!) : DateTimeExtension.HorarioBrasilia().AddYears(-1).Year;
+                var uesId = await mediator.Send(ObterTodasUesIdsQuery.Instance);
+
+                foreach (var ueId in uesId)
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaExcluirPendenciaCalendarioAnoAnteriorCalendarioUes, new ExcluirPendenciaCalendarioAnoAnteriorBuscarPorUeDto(anoLetivo, ueId), Guid.NewGuid(), null));
 
                 return true;
             }

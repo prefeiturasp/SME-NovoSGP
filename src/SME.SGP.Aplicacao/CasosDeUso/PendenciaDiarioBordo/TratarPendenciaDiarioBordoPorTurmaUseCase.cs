@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
                             {
                                 CodigoRf = codigoRfProfessor,
                                 DisciplinaId = disciplinaId,
-                                DescricaoComponenteCurricular = componentesSgp.FirstOrDefault(f => f.Codigo.Equals(disciplinaId.ToString())).Descricao,
+                                DescricaoComponenteCurricular = componentesSgp.FirstOrDefault(f => f.Codigo.Equals(disciplinaId.ToString()))?.Descricao,
                             }));
                         }
                     }

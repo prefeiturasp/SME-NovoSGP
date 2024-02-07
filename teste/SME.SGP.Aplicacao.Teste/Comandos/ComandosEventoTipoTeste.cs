@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         public void Deve_Disparar_Excecao_Ao_Instanciar_Sem_Dependencia()
         {
             Assert.Throws<ArgumentNullException>(() => comandosEventoTipo = new ComandosEventoTipo(null, repositorioEvento.Object));
-            Assert.Throws<ArgumentNullException>(() => comandosEventoTipo = new ComandosEventoTipo(repositorioEventoTipo.Object, repositorioEvento.Object));
+            Assert.Throws<ArgumentNullException>(() => comandosEventoTipo = new ComandosEventoTipo(repositorioEventoTipo.Object, null));
         }
 
         [Fact(DisplayName = "Deve_Disparer_Excecao_Ao_Remover_Evento_Inexistente")]
