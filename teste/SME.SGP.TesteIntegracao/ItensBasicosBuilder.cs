@@ -153,7 +153,7 @@ namespace SME.SGP.TesteIntegracao.Setup
                 AulaCJ = false
             });
 
-            await _teste.InserirNaBase(new Abrangencia
+            await _teste.InserirNaBase(new Dominio.Abrangencia
             {
                 UsuarioId = 1,
                 DreId = 1,
