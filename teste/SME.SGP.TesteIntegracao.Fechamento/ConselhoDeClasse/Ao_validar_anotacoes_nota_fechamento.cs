@@ -70,6 +70,70 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             }
         }
 
+        [Fact]
+        public async Task Deve_verificar_se_o_estudante_possui_fechamento_do_ultimo_bimestre_ao_acessar_a_aba_final_fund_med()
+        {
+            var dtoFiltro = new FiltroConselhoClasseDto()
+            {
+                Perfil = ObterPerfilProfessor(),
+                Modalidade = Modalidade.Medio,
+                Bimestre = BIMESTRE_3,
+                ComponenteCurricular = COMPONENTE_LINGUA_PORTUGUESA_ID_138,
+                TipoNota = TipoNota.Nota,
+                AnoTurma = ANO_8,
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio
+            };
+            await CriarDadosBase(dtoFiltro);
+            //await InserirConselhoClassePadrao(dtoFiltro);
+            await CriaFechamento();
+
+            var consulta = ServiceProvider.GetService<IConsultaConselhoClasseRecomendacaoUseCase>();
+
+            var excecao = await Assert.ThrowsAsync<NegocioException>(() => consulta.Executar(new ConselhoClasseRecomendacaoDto()
+            {
+                ConselhoClasseId = CONSELHO_CLASSE_ID_1,
+                FechamentoTurmaId = FECHAMENTO_TURMA_ID_1,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                CodigoTurma = TURMA_CODIGO_1,
+                Bimestre = BIMESTRE_FINAL
+            }
+            ));
+
+            excecao.Message.ShouldBe("Para acessar esta aba você precisa registrar o conselho de classe do 4º bimestre");
+        }
+
+        [Fact]
+        public async Task Deve_verificar_se_o_estudante_possui_fechamento_do_ultimo_bimestre_ao_acessar_a_aba_final_eja_celp()
+        {
+            var dtoFiltro = new FiltroConselhoClasseDto()
+            {
+                Perfil = ObterPerfilProfessor(),
+                Modalidade = Modalidade.CELP,
+                Bimestre = BIMESTRE_1,
+                ComponenteCurricular = COMPONENTE_LINGUA_PORTUGUESA_ID_138,
+                TipoNota = TipoNota.Nota,
+                AnoTurma = ANO_3,
+                TipoCalendario = ModalidadeTipoCalendario.CELP
+            };
+            await CriarDadosBase(dtoFiltro);
+            //await InserirConselhoClassePadrao(dtoFiltro);
+            await CriaFechamento();
+
+            var consulta = ServiceProvider.GetService<IConsultaConselhoClasseRecomendacaoUseCase>();
+
+            var excecao = await Assert.ThrowsAsync<NegocioException>(() => consulta.Executar(new ConselhoClasseRecomendacaoDto()
+            {
+                ConselhoClasseId = CONSELHO_CLASSE_ID_1,
+                FechamentoTurmaId = FECHAMENTO_TURMA_ID_1,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                CodigoTurma = TURMA_CODIGO_1,
+                Bimestre = BIMESTRE_FINAL
+            }
+            ));
+
+            excecao.Message.ShouldBe("Para acessar esta aba você precisa registrar o conselho de classe do 2º bimestre");
+        }
+
         private async Task CriaFechamento()
         {
             var fechamentoTurmaDisciplinaId = 1;
