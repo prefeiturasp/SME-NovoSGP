@@ -24,13 +24,27 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { tipoQuestionario });
         }
 
-        public async Task<IEnumerable<Questao>> ObterQuestoesPorQuestionarioId(long questionarioId)
+        public Task<IEnumerable<Questao>> ObterQuestoesPorNomesComponentes(string[] nomesComponentes, TipoQuestionario tipoQuestionario)
         {
-            var query = @"select q.*, op.*, oqc.*
+            var filtro = @"qto.tipo = @tipoQuestionario
+                           AND q.nome_componente = ANY(@nomesComponentes)";
+
+            return ObterQuestoes(filtro, new { nomesComponentes, tipoQuestionario = (int)tipoQuestionario });
+        }
+
+        public Task<IEnumerable<Questao>> ObterQuestoesPorQuestionarioId(long questionarioId)
+        {
+            return ObterQuestoes("q.questionario_id = @questionarioId", new { questionarioId });
+        }
+
+        private async Task<IEnumerable<Questao>> ObterQuestoes(string condicao, object parametro)
+        {
+            var query = @$"select q.*, op.*, oqc.*
                           from questao q 
+                          inner join questionario qto on qto.id = q.questionario_id
                           left join opcao_resposta op on op.questao_id = q.id
                           left join opcao_questao_complementar oqc on oqc.opcao_resposta_id = op.id
-                         where q.questionario_id = @questionarioId 
+                         where {condicao}
                         order by q.id, op.id";
 
             var lookup = new Dictionary<long, Questao>();
@@ -57,7 +71,7 @@ namespace SME.SGP.Dados.Repositorios
                     }
 
                     return q;
-                }, new { questionarioId });
+                }, parametro);
 
             return lookup.Values;
         }
