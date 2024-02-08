@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
@@ -12,17 +13,25 @@ namespace SME.SGP.Aplicacao
     public class ObterEncaminhamentoNAAPAParaRelatorioDinamicoQueryHandler : ConsultasBase, IRequestHandler<ObterEncaminhamentoNAAPAParaRelatorioDinamicoQuery, RelatorioDinamicoNAAPADto>
     {
         private readonly IRepositorioRelatorioDinamicoNAAPA repositorio;
+        private readonly IRepositorioQuestionario repositorioQuestionario;
+        
 
         public ObterEncaminhamentoNAAPAParaRelatorioDinamicoQueryHandler(
                             IContextoAplicacao contextoAplicacao,
-                            IRepositorioRelatorioDinamicoNAAPA repositorio) : base(contextoAplicacao)
+                            IRepositorioRelatorioDinamicoNAAPA repositorio,
+                            IRepositorioQuestionario repositorioQuestionario) : base(contextoAplicacao)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
+            this.repositorioQuestionario = repositorioQuestionario ?? throw new ArgumentNullException(nameof(repositorioQuestionario));
         }
 
-        public Task<RelatorioDinamicoNAAPADto> Handle(ObterEncaminhamentoNAAPAParaRelatorioDinamicoQuery request, CancellationToken cancellationToken)
+        public async Task<RelatorioDinamicoNAAPADto> Handle(ObterEncaminhamentoNAAPAParaRelatorioDinamicoQuery request, CancellationToken cancellationToken)
         {
-            return repositorio.ObterRelatorioDinamicoNAAPA(request.Filtro, Paginacao);
+            string[] nomesComponentesTotalizadoresAtendimento = { "PROCEDIMENTO_DE_TRABALHO", "TIPO_DO_ATENDIMENTO" };
+            var questoesParaTotalizadoresAtendimento = await repositorioQuestionario.ObterQuestoesPorNomesComponentes(nomesComponentesTotalizadoresAtendimento, TipoQuestionario.RelatorioDinamicoEncaminhamentoNAAPA);
+            
+
+            return await repositorio.ObterRelatorioDinamicoNAAPA(request.Filtro, Paginacao, questoesParaTotalizadoresAtendimento);
         }
     }
 }

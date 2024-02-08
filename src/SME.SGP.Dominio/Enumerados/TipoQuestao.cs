@@ -22,6 +22,7 @@
         EditorTexto = 18,
         TurmasPrograma = 19,
         InformacoesSrm = 20,
-        InformacoesFrequenciaTurmaPAP = 21
+        InformacoesFrequenciaTurmaPAP = 21,
+        ComboMultiplaEscolhaMes = 22
     }
 }
