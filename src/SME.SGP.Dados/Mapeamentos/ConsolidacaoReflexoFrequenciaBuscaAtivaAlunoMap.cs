@@ -8,11 +8,9 @@ namespace SME.SGP.Dados.Mapeamentos
     {
         public ConsolidacaoReflexoFrequenciaBuscaAtivaAlunoMap()
         {
-            ToTable("consolidacao_reflexo_frequencia_buscaativa");
+            ToTable("consolidacao_reflexo_frequencia_busca_ativa");
             Map(c => c.TurmaCodigo).ToColumn("turma_id");
-            Map(c => c.DreCodigo).ToColumn("ue_id");
-            Map(c => c.UeCodigo).ToColumn("dre_id");
-            Map(c => c.AnoTurma).ToColumn("ano_turma");
+            Map(c => c.UeCodigo).ToColumn("ue_id");
             Map(c => c.AnoLetivo).ToColumn("ano_letivo");
             Map(c => c.Modalidade).ToColumn("modalidade_codigo");
             Map(c => c.AlunoCodigo).ToColumn("aluno_codigo");

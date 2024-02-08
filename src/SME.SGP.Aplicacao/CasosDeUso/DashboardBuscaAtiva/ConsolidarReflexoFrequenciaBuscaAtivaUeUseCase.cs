@@ -10,6 +10,8 @@ namespace SME.SGP.Aplicacao
     public class ConsolidarReflexoFrequenciaBuscaAtivaUeUseCase : AbstractUseCase, IConsolidarReflexoFrequenciaBuscaAtivaUeUseCase
     {
         private readonly IRepositorioRegistroAcaoBuscaAtiva repositorioBuscaAtiva;
+        private const int ANUAL = 0;
+
         public ConsolidarReflexoFrequenciaBuscaAtivaUeUseCase(IMediator mediator, IRepositorioRegistroAcaoBuscaAtiva repositorioBuscaAtiva) : base(mediator)
         {
             this.repositorioBuscaAtiva = repositorioBuscaAtiva ?? throw new System.ArgumentNullException(nameof(repositorioBuscaAtiva)); 
@@ -18,7 +20,11 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
             var filtro = mensagem.ObterObjetoMensagem<FiltroIdAnoLetivoDto>();
-            var registrosBuscaAtiva = await repositorioBuscaAtiva.ObterIdsRegistrosAlunoResponsavelContatado(filtro.Data.Date, filtro.Id, filtro.AnoLetivo);
+            var ue = await mediator.Send(new ObterCodigoUEDREPorIdQuery(filtro.Id));
+            //await mediator.Send(new ExcluirConsolidacoesReflexoFrequenciaBuscaAtivaUeMesCommand(ue.UeCodigo, filtro.Data.Month, filtro.Data.Year));
+            //await mediator.Send(new ExcluirConsolidacoesReflexoFrequenciaBuscaAtivaUeMesCommand(ue.UeCodigo, ANUAL, filtro.Data.Year));
+
+            var registrosBuscaAtiva = await repositorioBuscaAtiva.ObterIdsRegistrosAlunoResponsavelContatado(filtro.Data.Date, filtro.Id, filtro.Data.Year);
             foreach (var idBuscaAtiva in registrosBuscaAtiva)
             {
                 filtro.Id = idBuscaAtiva;

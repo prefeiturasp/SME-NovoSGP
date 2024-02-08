@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
             var filtro = mensagemRabbit.EhNulo() || mensagemRabbit.Mensagem.EhNulo()
-                            ? new FiltroIdAnoLetivoDto(0, DateTimeExtension.HorarioBrasilia().Year, DateTime.Now.Date.AddDays(-1))
+                            ? new FiltroIdAnoLetivoDto(0, DateTime.Now.Date.AddDays(-1))
                             : mensagemRabbit.ObterObjetoMensagem<FiltroIdAnoLetivoDto>();
 
             var dres = await mediator.Send(ObterIdsDresQuery.Instance);

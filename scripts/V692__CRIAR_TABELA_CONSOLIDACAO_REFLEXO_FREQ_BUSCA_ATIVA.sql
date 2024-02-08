@@ -1,9 +1,7 @@
-CREATE table if not exists public.consolidacao_reflexo_frequencia_buscaativa (
+CREATE table if not exists public.consolidacao_reflexo_frequencia_busca_ativa (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	turma_id varchar(15) not null,
 	ue_id varchar(15) not null,
-	dre_id varchar(15) not null,
-	ano_turma varchar(1) not null,
 	ano_letivo int4 not null,
 	modalidade_codigo int4 not null,
 	aluno_codigo varchar(15) not null,
