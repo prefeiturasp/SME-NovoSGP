@@ -395,5 +395,100 @@ namespace SME.SGP.Dados.Repositorios
 
             return retorno;
         }
+
+        public async Task<IEnumerable<long>> ObterIdsRegistrosAlunoResponsavelContatado(DateTime dataRef, long ueId, int anoLetivo)
+        {
+            var sql = @"with vw_resposta_data as (
+                               select rabas.registro_acao_busca_ativa_id, 
+                                      to_date(rabar.texto,'yyyy-mm-dd') DataBuscaAtiva
+                               from registro_acao_busca_ativa_secao rabas     
+                               join registro_acao_busca_ativa_questao rabaq on rabas.id = rabaq.registro_acao_busca_ativa_secao_id  
+                               join registro_acao_busca_ativa_resposta rabar on rabar.questao_registro_acao_id = rabaq.id 
+                               join questao q on rabaq.questao_id = q.id
+                               where q.nome_componente = 'DATA_REGISTRO_ACAO'
+                                     and not rabas.excluido 
+                                     and not rabaq.excluido 
+                                     and not rabar.excluido 
+                        ),                       
+                        vw_resposta_conseuiu_contato as (
+                               select rabas.registro_acao_busca_ativa_id    
+                               from registro_acao_busca_ativa_secao rabas     
+                               join registro_acao_busca_ativa_questao rabaq on rabas.id = rabaq.registro_acao_busca_ativa_secao_id  
+                               join registro_acao_busca_ativa_resposta rabar on rabar.questao_registro_acao_id = rabaq.id 
+                               join questao q on rabaq.questao_id = q.id
+                               inner join opcao_resposta opr on opr.id = rabar.resposta_id
+                               where q.nome_componente = 'CONSEGUIU_CONTATO_RESP'
+	                                 and opr.nome = 'Sim'
+	                                 and not rabas.excluido 
+	                                 and not rabaq.excluido 
+	                       	         and not rabar.excluido 
+                        )                        
+                        SELECT id FROM (
+                                 SELECT 
+                                   raba.id,
+                                   ROW_NUMBER() OVER (PARTITION BY raba.aluno_codigo ORDER BY raba.criado_em DESC) AS row_num
+                                 FROM registro_acao_busca_ativa raba 
+                                 INNER JOIN turma t ON t.id = raba.turma_id 
+                                 INNER JOIN ue u ON u.id = t.ue_id 
+                                 INNER JOIN dre d ON d.id = u.dre_id 
+                                 inner join vw_resposta_data vw_data on vw_data.registro_acao_busca_ativa_id = raba.id
+                                 inner join vw_resposta_conseuiu_contato vw_contatou on vw_contatou.registro_acao_busca_ativa_id = raba.id
+                                 WHERE not raba.excluido
+                                       and u.id = @ueId
+                                       and vw_data.DataBuscaAtiva <= @dataRef
+                                       and extract(year from vw_data.DataBuscaAtiva) = @anoLetivo
+                                 ) AS subquery 
+                                 WHERE row_num = 1";
+
+            return await database.Conexao.QueryAsync<long>(sql.ToString(), new { dataRef, ueId, anoLetivo });
+        }
+
+        public async Task<RegistroAcaoBuscaAtivaAlunoDto> ObterRegistroBuscaAtivaAluno(long id)
+        {
+            var sql = @"with vw_resposta_data as (
+                               select rabas.registro_acao_busca_ativa_id, 
+                                      to_date(rabar.texto,'yyyy-mm-dd') DataBuscaAtiva
+                               from registro_acao_busca_ativa_secao rabas     
+                               join registro_acao_busca_ativa_questao rabaq on rabas.id = rabaq.registro_acao_busca_ativa_secao_id  
+                               join registro_acao_busca_ativa_resposta rabar on rabar.questao_registro_acao_id = rabaq.id 
+                               join questao q on rabaq.questao_id = q.id
+                               where q.nome_componente = 'DATA_REGISTRO_ACAO'
+                                     and not rabas.excluido 
+                                     and not rabaq.excluido 
+                                     and not rabar.excluido 
+                        ),                       
+                        vw_resposta_conseuiu_contato as (
+                               select rabas.registro_acao_busca_ativa_id    
+                               from registro_acao_busca_ativa_secao rabas     
+                               join registro_acao_busca_ativa_questao rabaq on rabas.id = rabaq.registro_acao_busca_ativa_secao_id  
+                               join registro_acao_busca_ativa_resposta rabar on rabar.questao_registro_acao_id = rabaq.id 
+                               join questao q on rabaq.questao_id = q.id
+                               inner join opcao_resposta opr on opr.id = rabar.resposta_id
+                               where q.nome_componente = 'CONSEGUIU_CONTATO_RESP'
+	                                 and opr.nome = 'Sim'
+	                                 and not rabas.excluido 
+	                                 and not rabaq.excluido 
+	                       	         and not rabar.excluido 
+                        )                        
+                        SELECT 
+                                   t.turma_id TurmaCodigo, 
+                                   u.ue_id UeCodigo, 
+                                   d.dre_id DreCodigo, 
+                                   t.ano AnoTurma, 
+                                   t.ano_letivo AnoLetivo,  
+                                   t.modalidade_codigo Modalidade, 
+                                   raba.aluno_codigo AlunoCodigo, 
+                                   raba.aluno_nome AlunoNome,
+                                   vw_data.DataBuscaAtiva
+                                 FROM registro_acao_busca_ativa raba 
+                                 INNER JOIN turma t ON t.id = raba.turma_id 
+                                 INNER JOIN ue u ON u.id = t.ue_id 
+                                 INNER JOIN dre d ON d.id = u.dre_id 
+                                 inner join vw_resposta_data vw_data on vw_data.registro_acao_busca_ativa_id = raba.id
+                                 inner join vw_resposta_conseuiu_contato vw_contatou on vw_contatou.registro_acao_busca_ativa_id = raba.id
+                                 WHERE raba.id = @id";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<RegistroAcaoBuscaAtivaAlunoDto>(sql.ToString(), new { id });
+        }
     }
 }

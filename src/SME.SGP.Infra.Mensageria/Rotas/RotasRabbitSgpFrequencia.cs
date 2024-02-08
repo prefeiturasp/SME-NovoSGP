@@ -50,5 +50,9 @@
         public const string IdentificarFrequenciaAlunoPresencasMaiorTotalAulasPorUe = "sgp.frequencia.aluno.identificar.presencas.maior.total.aulas.ue";
         public const string RegularizarFrequenciaAlunoPresencasMaiorTotalAulas = "sgp.frequencia.aluno.regularizar.presencas.maior.total.aulas";
         public const string RegularizarFrequenciaAlunoPresencasMaiorTotalAulasPorRegistro = "sgp.frequencia.aluno.regularizar.presencas.maior.total.aulas.registro";
+        public const string ConsolidarReflexoFrequenciaBuscaAtiva = "sgp.consolidacao.reflexo.frequencia.busca.ativa";
+        public const string ConsolidarReflexoFrequenciaBuscaAtivaDre = "sgp.consolidacao.reflexo.frequencia.busca.ativa.dre";
+        public const string ConsolidarReflexoFrequenciaBuscaAtivaUe = "sgp.consolidacao.reflexo.frequencia.busca.ativa.ue";
+        public const string ConsolidarReflexoFrequenciaBuscaAtivaAluno = "sgp.consolidacao.reflexo.frequencia.busca.ativa.aluno";
     }
 }

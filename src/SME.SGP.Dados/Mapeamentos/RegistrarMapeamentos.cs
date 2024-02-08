@@ -243,7 +243,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new RegistroAcaoBuscaAtivaSecaoMap());
                config.AddMap(new QuestaoRegistroAcaoBuscaAtivaMap());
                config.AddMap(new RespostaRegistroAcaoBuscaAtivaMap());
-
+               config.AddMap(new ConsolidacaoReflexoFrequenciaBuscaAtivaAlunoMap());
 
                config.ForDommel();
            });
