@@ -582,6 +582,9 @@ namespace SME.SGP.IoC
 
             // Registro Coletivo NAAPA
             services.TryAddScoped<IRepositorioTipoReuniaoNAAPA, RepositorioTipoReuniaoNAAPA>();
+            services.TryAddScoped<IRepositorioRegistroColetivo, RepositorioRegistroColetivo>();
+            services.TryAddScoped<IRepositorioRegistroColetivoUe, RepositorioRegistroColetivoUe>();
+            services.TryAddScoped<IRepositorioRegistroColetivoAnexo, RepositorioRegistroColetivoAnexo>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)

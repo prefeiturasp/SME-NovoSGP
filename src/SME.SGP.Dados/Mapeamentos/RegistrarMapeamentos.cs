@@ -244,6 +244,9 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new QuestaoRegistroAcaoBuscaAtivaMap());
                config.AddMap(new RespostaRegistroAcaoBuscaAtivaMap());
                config.AddMap(new TipoReuniaoNAAPAMap());
+               config.AddMap(new RegistroColetivoMap());
+               config.AddMap(new RegistroColetivoUeMap());
+               config.AddMap(new RegistroColetivoAnexoMap());
 
                config.ForDommel();
            });
