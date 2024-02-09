@@ -205,7 +205,9 @@ namespace SME.SGP.Dados.Repositorios
                                                     WHERE questio.tipo = {(int)TipoQuestionario.EncaminhamentoNAAPA}
                                                       and not ens.excluido 
                                                       and not enq.excluido 
-                                                      and not enr.excluido 
+                                                      and not enr.excluido
+                                                      and not q.excluido
+                                                      and not opr.excluido  
                                                     group by {campoId}, q.nome_componente, q.tipo
                                                     order by {campoId}',
 
