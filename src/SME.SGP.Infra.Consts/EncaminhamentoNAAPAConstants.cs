@@ -4,6 +4,6 @@
     {
         private EncaminhamentoNAAPAConstants() { }
 
-        public const string SECAO_ITINERANCIA = "QUESTOES_ITINERANCIA";
+        public const string SECAO_ITINERANCIA = "QUESTOES_ITINERACIA";
     }
 }
