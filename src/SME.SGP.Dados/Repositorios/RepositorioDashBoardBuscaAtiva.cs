@@ -19,6 +19,7 @@ namespace SME.SGP.Dados.Repositorios
         private const string NOME_COMPONENTE_QUESTAO_JUSTIFICATIVA_MOTIVO_FALTA = "JUSTIFICATIVA_MOTIVO_FALTA";
         private const string NOME_COMPONENTE_QUESTAO_PROCEDIMENTO_TRABALHO_CONTATOU_RESP = "PROCEDIMENTO_REALIZADO";
         private const string NOME_COMPONENTE_QUESTAO_PROCEDIMENTO_TRABALHO_NAO_CONTATOU_RESP = "PROCEDIMENTO_REALIZADO_NAO_CONTATOU_RESP";
+        private const int ANUAL = 0;
 
         public RepositorioDashBoardBuscaAtiva(ISgpContextConsultas database)
         {
@@ -104,5 +105,47 @@ namespace SME.SGP.Dados.Repositorios
                                                       semestre
                                                   }, commandTimeout: 60);
         }
+
+        public async Task<IEnumerable<DadosGraficoReflexoFrequenciaAnoTurmaBuscaAtivaDto>> ObterDadosGraficoReflexoFrequencia(int mes, int anoLetivo, Modalidade modalidade, long? ueId, long? dreId, int? semestre)
+        {
+            var sql = new StringBuilder();
+            sql.AppendLine(@$"select 'Crianças/estudantes com '||
+                                    (case when consolidado.percentual_frequencia_anterior_acao < consolidado.percentual_frequencia_atual
+                                     then 'aumento' else 'diminuição' end)
+                                    ||' no percentual de frequência' as ReflexoFrequencia,
+                                    count(consolidado.id) as Quantidade,
+                                    t.modalidade_codigo as Modalidade,
+                                    {(ueId.NaoEhNulo() ? "t.nome as Turma," : string.Empty)} 
+                                    t.ano 
+                             from consolidacao_reflexo_frequencia_busca_ativa consolidado
+                             inner join turma t on t.turma_id  = consolidado.turma_id
+                             inner join ue u on u.id = t.ue_id 
+                             where t.ano_letivo = @anoLetivo
+                                   and t.modalidade_codigo = @modalidade
+                                   and consolidado.mes = @mes ");
+            if (ueId.NaoEhNulo())
+                sql.AppendLine(@"  and t.ue_id= @ueId ");
+            if (dreId.NaoEhNulo())
+                sql.AppendLine(@"  and u.dre_id = @dreId ");
+            if (semestre.NaoEhNulo())
+                sql.AppendLine(@"  and t.semestre = @semestre ");
+            sql.AppendLine(@$"group by consolidado.percentual_frequencia_anterior_acao < consolidado.percentual_frequencia_atual, t.modalidade_codigo, 
+                             {(ueId.NaoEhNulo() ? "t.nome," : string.Empty)}
+                             t.ano");
+            return await database.Conexao
+                                 .QueryAsync<DadosGraficoReflexoFrequenciaAnoTurmaBuscaAtivaDto>(sql.ToString(),
+                                                  new
+                                                  {
+                                                      mes,
+                                                      anoLetivo,
+                                                      modalidade = (int)modalidade,
+                                                      ueId,
+                                                      dreId,
+                                                      semestre
+                                                  }, commandTimeout: 60);
+        }
+
+        public Task<DateTime?> ObterDataUltimaConsolidacaoReflexoFrequencia()
+        => database.Conexao.QueryFirstOrDefaultAsync<DateTime?>(@"select max(criado_em) from consolidacao_reflexo_frequencia_busca_ativa");
     }
 }

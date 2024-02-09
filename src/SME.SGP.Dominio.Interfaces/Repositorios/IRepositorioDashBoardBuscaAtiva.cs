@@ -10,6 +10,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<IEnumerable<DadosGraficoMotivoAusenciaBuscaAtivaDto>> ObterDadosGraficoMotivoAusencia(int anoLetivo, Modalidade modalidade, long? ueId, long? dreId, int? semestre);
         Task<IEnumerable<DadosGraficoProcedimentoTrabalhoDreBuscaAtivaDto>> ObterDadosGraficoProcedimentoTrabalho(EnumProcedimentoTrabalhoBuscaAtiva tipoProcedimentoRealizado, int anoLetivo, Modalidade modalidade, long? ueId, long? dreId, int? semestre);
-
+        Task<IEnumerable<DadosGraficoReflexoFrequenciaAnoTurmaBuscaAtivaDto>> ObterDadosGraficoReflexoFrequencia(int mes, int anoLetivo, Modalidade modalidade, long? ueId, long? dreId, int? semestre);
+        Task<DateTime?> ObterDataUltimaConsolidacaoReflexoFrequencia();
     }
 }
