@@ -175,23 +175,11 @@ namespace SME.SGP.Dados.Repositorios
             var nomesComponentes = await ObterNomesComponentes();
             var colunas = ObterColunasTabelaResposta(nomesComponentes.ToList());
 
-            return ObterTabelaResposta("ens.encaminhamento_naapa_id", colunas);
-        }
-
-        private string ObterTabelaRespostaAtendimento(IEnumerable<string> nomesComponentes)
-        {
-            var colunas = ObterColunasTabelaResposta(nomesComponentes.ToList());
-
-            return ObterTabelaResposta("ens.id", colunas, "AND sen.nome_componente = ''QUESTOES_ITINERACIA''");
-        }
-
-        private string ObterTabelaResposta(string campoId, string colunas, string condicao = "")
-        {
             var sql = new StringBuilder();
 
             sql.AppendLine(@$"WITH tab_resposta as (
                                           SELECT * from CROSSTAB (
-                                                    'SELECT {campoId}, 
+                                                    'SELECT ens.encaminhamento_naapa_id, 
                                                             q.nome_componente,
                                                             CASE WHEN 
                                                                     q.tipo = {(int)TipoQuestao.Radio} OR q.tipo = {(int)TipoQuestao.Combo} OR 
@@ -203,21 +191,59 @@ namespace SME.SGP.Dados.Repositorios
                                                     JOIN encaminhamento_naapa_resposta enr ON enr.questao_encaminhamento_id = enq.id
                                                     JOIN secao_encaminhamento_naapa secao ON secao.id = ens.secao_encaminhamento_id
                                                     JOIN questionario questio ON questio.id = secao.questionario_id
-                                                    LEFT JOIN opcao_resposta opr ON opr.id = enr.resposta_id
+                                                    LEFT JOIN opcao_resposta opr ON opr.id = enr.resposta_id 
                                                     WHERE questio.tipo = {(int)TipoQuestionario.EncaminhamentoNAAPA}
                                                       and not ens.excluido 
                                                       and not enq.excluido 
                                                       and not enr.excluido
                                                       and not q.excluido
-                                                      and not opr.excluido  
-                                                    group by {campoId}, q.nome_componente, q.tipo
-                                                    order by {campoId}',
+                                                    group by ens.encaminhamento_naapa_id, q.nome_componente, q.tipo
+                                                    order by ens.encaminhamento_naapa_id',
 
                                                     'SELECT DISTINCT questao.nome_componente 
                                                      FROM questionario q
                                                      JOIN secao_encaminhamento_naapa sen on sen.questionario_id = q.id
                                                      JOIN questao on q.id = questao.questionario_id
-                                                     WHERE q.tipo = {(int)TipoQuestionario.RelatorioDinamicoEncaminhamentoNAAPA} {condicao}') AS tab_pivot
+                                                     WHERE q.tipo = {(int)TipoQuestionario.RelatorioDinamicoEncaminhamentoNAAPA}') AS tab_pivot
+                                                    (id int8 {colunas}))");
+
+            return sql.ToString();
+        }
+
+        private string ObterTabelaRespostaAtendimento(IEnumerable<string> nomesComponentes)
+        {
+            var colunas = ObterColunasTabelaResposta(nomesComponentes.ToList());
+            var sql = new StringBuilder();
+
+            sql.AppendLine(@$"WITH tab_resposta as (
+                                          SELECT * from CROSSTAB (
+                                                    'SELECT ens.id, 
+                                                            q.nome_componente,
+                                                            CASE WHEN 
+                                                                    q.tipo = {(int)TipoQuestao.Radio} OR q.tipo = {(int)TipoQuestao.Combo} OR 
+                                                                    q.tipo = {(int)TipoQuestao.Checkbox} OR q.tipo = {(int)TipoQuestao.ComboMultiplaEscolha} 
+                                                                 THEN array_agg(opr.ordem::text) ELSE array_agg(enr.texto) END resposta
+                                                    FROM encaminhamento_naapa_secao ens
+                                                    JOIN encaminhamento_naapa_questao enq ON ens.id = enq.encaminhamento_naapa_secao_id
+                                                    JOIN questao q ON enq.questao_id = q.id
+                                                    JOIN encaminhamento_naapa_resposta enr ON enr.questao_encaminhamento_id = enq.id
+                                                    JOIN secao_encaminhamento_naapa secao ON secao.id = ens.secao_encaminhamento_id
+                                                    JOIN questionario questio ON questio.id = secao.questionario_id
+                                                    LEFT JOIN opcao_resposta opr ON opr.id = enr.resposta_id 
+                                                    WHERE questio.tipo = {(int)TipoQuestionario.EncaminhamentoNAAPA}
+                                                      and not ens.excluido 
+                                                      and not enq.excluido 
+                                                      and not enr.excluido
+                                                      and not q.excluido
+                                                    group by ens.id, q.nome_componente, q.tipo
+                                                    order by ens.id',
+
+                                                    'SELECT DISTINCT questao.nome_componente 
+                                                     FROM questionario q
+                                                     JOIN secao_encaminhamento_naapa sen on sen.questionario_id = q.id
+                                                     JOIN questao on q.id = questao.questionario_id
+                                                     WHERE q.tipo = {(int)TipoQuestionario.RelatorioDinamicoEncaminhamentoNAAPA}
+                                                     AND sen.nome_componente = ''QUESTOES_ITINERACIA''') AS tab_pivot
                                                     (id int8 {colunas}))");
 
             return sql.ToString();
