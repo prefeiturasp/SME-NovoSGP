@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -22,7 +23,8 @@ namespace SME.SGP.Aplicacao
             var filtro = mensagem.ObterObjetoMensagem<FiltroIdAnoLetivoDto>();
             var ue = await mediator.Send(new ObterCodigoUEDREPorIdQuery(filtro.Id));
             await mediator.Send(new ExcluirConsolidacoesReflexoFrequenciaBuscaAtivaUeMesCommand(ue.UeCodigo, filtro.Data.Month, filtro.Data.Year));
-            await mediator.Send(new ExcluirConsolidacoesReflexoFrequenciaBuscaAtivaUeMesCommand(ue.UeCodigo, ANUAL, filtro.Data.Year));
+            if (filtro.Data.Month == DateTimeExtension.HorarioBrasilia().Month)
+                await mediator.Send(new ExcluirConsolidacoesReflexoFrequenciaBuscaAtivaUeMesCommand(ue.UeCodigo, ANUAL, filtro.Data.Year));
 
             var registrosBuscaAtiva = await repositorioBuscaAtiva.ObterIdsRegistrosAlunoResponsavelContatado(filtro.Data.Date, filtro.Id, filtro.Data.Year);
             foreach (var idBuscaAtiva in registrosBuscaAtiva)
