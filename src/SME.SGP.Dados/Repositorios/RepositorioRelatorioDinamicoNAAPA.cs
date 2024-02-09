@@ -133,8 +133,10 @@ namespace SME.SGP.Dados.Repositorios
             return ("count(distinct np.id) Total, t.ano, t.modalidade_codigo as Modalidade", " GROUP BY t.ano, t.modalidade_codigo");
         }
 
-        private string ObterQueryRetorno(string camposRetorno)
+        private string ObterQueryRetorno(string camposRetorno, bool atendimento)
         {
+            var campo = atendimento ? "ens.id" : "np.id";
+
             return $@"SELECT {camposRetorno}
                             FROM encaminhamento_naapa np
                                 JOIN encaminhamento_naapa_secao ens on ens.encaminhamento_naapa_id = np.id 
@@ -142,15 +144,15 @@ namespace SME.SGP.Dados.Repositorios
                                 JOIN turma t ON t.id = np.turma_id
                                 JOIN ue ON t.ue_id = ue.id
                                 JOIN dre ON dre.id = ue.dre_id
-                                LEFT JOIN tab_resposta resposta ON resposta.id = ens.id";
+                                LEFT JOIN tab_resposta resposta ON resposta.id = {campo}";
         }
 
-        private string ObterQuery(string filtro, string queryTabelaResposta, string camposRetorno)
+        private string ObterQuery(string filtro, string queryTabelaResposta, string camposRetorno, bool atendimento = false)
         {
             var sql = new StringBuilder();
 
             sql.AppendLine(queryTabelaResposta);
-            sql.AppendLine(ObterQueryRetorno(camposRetorno));
+            sql.AppendLine(ObterQueryRetorno(camposRetorno, atendimento));
             sql.AppendLine(filtro);
 
             return sql.ToString();
@@ -226,7 +228,8 @@ namespace SME.SGP.Dados.Repositorios
             var sql = new StringBuilder();
 
             sql.AppendLine(" WHERE not np.excluido ");
-            sql.AppendLine("   AND np.situacao = ANY(@situacao)");
+            sql.AppendLine(" AND not ens.excluido ");
+            sql.AppendLine(" AND np.situacao = ANY(@situacao)");
 
             if (nomesComponentesAtendimento.NaoEhNulo())
                 filtro.FiltroAvancado = filtro.FiltroAvancado.FindAll(f => nomesComponentesAtendimento.Contains(f.NomeComponente));
@@ -328,7 +331,7 @@ namespace SME.SGP.Dados.Repositorios
             queryFiltro += @" AND sen.nome_componente = 'QUESTOES_ITINERACIA'
                               AND np.id = ANY(@encaminhamentosIds)";
 
-            sql.AppendLine(ObterQuery(queryFiltro, queryTabelaResposta, "COUNT(distinct ens.id) totalAtendimento"));
+            sql.AppendLine(ObterQuery(queryFiltro, queryTabelaResposta, "COUNT(distinct ens.id) totalAtendimento", true));
 
             return sql.ToString();
         }
@@ -347,7 +350,7 @@ namespace SME.SGP.Dados.Repositorios
                 if (adicionarUnion) sql.AppendLine(" UNION");
                 sql.AppendLine($"SELECT '{questao.NomeComponente}' as NomeComponente, itemQuestaoValor as Valor, COUNT(itemQuestaoValor) as Total");
                 sql.AppendLine(" FROM (");
-                sql.AppendLine(ObterQueryRetorno($"unnest({questao.NomeComponente}) as itemQuestaoValor"));
+                sql.AppendLine(ObterQueryRetorno($"unnest({questao.NomeComponente}) as itemQuestaoValor", true));
                 sql.AppendLine(queryFiltro);
                 sql.AppendLine(") as totalComponente");
                 sql.AppendLine($" GROUP BY itemQuestaoValor");
