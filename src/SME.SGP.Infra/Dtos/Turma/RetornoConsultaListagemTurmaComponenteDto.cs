@@ -18,6 +18,7 @@ namespace SME.SGP.Infra
         public string ComplementoTurmaEJA { get; set; }
         public string SerieEnsino { get; set; }
         public string NomeFiltro { get; set; }
+        public int EtapaEnsino { get; set; }
         public string NomeTurmaFormatado(string componenteCurricularNome)
         {
             var complementoTurma = string.IsNullOrEmpty(ComplementoTurmaEJA) ? $"{Ano}ºAno" : ComplementoTurmaEJA.TrimEnd();
