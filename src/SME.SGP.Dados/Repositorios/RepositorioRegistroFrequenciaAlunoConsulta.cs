@@ -372,5 +372,35 @@ namespace SME.SGP.Dados.Repositorios
             return await sgpContextConsultas.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(),
                 new { dataAula, disciplinaId, turmasId, codigoAluno });
         }
+
+        public async Task<RegistroFrequenciaAlunoPorTurmaEMesDto> ObterRegistroFrequenciaAlunoPorTurmaMesDataRef(string turmaCodigo, string alunoCodigo, DateTime dataRef, int mes = 0)
+        {
+            string query = @$"select a.turma_id TurmaId,
+                                          count(distinct(rfa.aula_id*rfa.numero_aula)) as QuantidadeAulas,
+                                          count(distinct(rfa.aula_id*rfa.numero_aula)) filter (where rfa.valor = 2) as QuantidadeAusencias,
+                                          count(caaa.id) as QuantidadeCompensacoes,
+                                          rfa.codigo_aluno as AlunoCodigo,
+                                          a.turma_id as TurmaId
+                                   from registro_frequencia_aluno rfa
+                                       inner join aula a 
+                                          on rfa.aula_id = a.id and not a.excluido   
+                                       left join compensacao_ausencia_aluno_aula caaa 
+                                          on caaa.registro_frequencia_aluno_id = rfa.id and not caaa.excluido
+                                   where
+                                       a.turma_id = @turmaCodigo
+                                       and rfa.codigo_aluno = @alunoCodigo                   
+                                       and rfa.numero_aula <= a.quantidade
+                                       AND a.data_aula::date <= @dataRef
+                                       and not rfa.excluido
+                                       {(mes > 0 ? "and extract(month from a.data_aula) = @mes" : string.Empty)}
+                                   group by
+                                       a.turma_id,
+                                       rfa.codigo_aluno;";
+
+            var parametros = new { turmaCodigo, mes, alunoCodigo, dataRef };
+
+            return await sgpContextConsultas.Conexao.QueryFirstOrDefaultAsync<RegistroFrequenciaAlunoPorTurmaEMesDto>(query, parametros);
+        }
+
     }
 }

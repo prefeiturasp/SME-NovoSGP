@@ -580,6 +580,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioQuestaoRegistroAcaoBuscaAtiva, RepositorioQuestaoRegistroAcaoBuscaAtiva>();
             services.TryAddScoped<IRepositorioRespostaRegistroAcaoBuscaAtiva, RepositorioRespostaRegistroAcaoBuscaAtiva>();
             services.TryAddScoped<IRepositorioDashBoardBuscaAtiva, RepositorioDashBoardBuscaAtiva>();
+            services.TryAddScoped<IRepositorioConsolidacaoReflexoFrequenciaBuscaAtiva, RepositorioConsolidacaoReflexoFrequenciaBuscaAtiva>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)
