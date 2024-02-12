@@ -32,5 +32,15 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(filtro));
         }
+
+        [HttpGet("reflexo-frequencia")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(IEnumerable<GraficoBuscaAtivaDto>), 200)]
+        [Permissao(Permissao.DBA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterQuantidadeBuscaAtivaPorReflexoFrequenciaMes([FromQuery] FiltroGraficoReflexoFrequenciaBuscaAtivaDto filtro, [FromServices] IObterQuantidadeBuscaAtivaPorReflexoFrequenciaMesUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
     }
 }
