@@ -1,6 +1,8 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
@@ -20,17 +22,14 @@ namespace SME.SGP.Aplicacao
         {
             var filtro = mensagemRabbit.ObterObjetoMensagem<FiltroValidarEncerrarEncaminhamentoAEEAutomaticoDto>();
             //log-------------------------------
-            var logPlanoAee = new LogPlanoAee();
+                var logPlanoAee = new LogPlanoAee();
             //----------------------------------
 
             var matriculasTurmaAlunoEol = await mediator.Send(new ObterMatriculasAlunoNaUEQuery(filtro.UeCodigo, filtro.AlunoCodigo));
 
             //log-------------------------------
-            if (filtro.EncaminhamentoId == 31449)
-            {
                 logPlanoAee.filtro = filtro;
                 logPlanoAee.matriculasTurmaAlunoEol = matriculasTurmaAlunoEol;
-            }
             //----------------------------------
 
             if (matriculasTurmaAlunoEol.EhNulo() || !matriculasTurmaAlunoEol.Any())
@@ -39,23 +38,24 @@ namespace SME.SGP.Aplicacao
             var estaAtivo = matriculasTurmaAlunoEol.Any(c => SituacoesAtivas.Contains(c.CodigoSituacaoMatricula) && c.DataSituacao <= DateTime.Today);
 
             //log-------------------------------
-            if (filtro.EncaminhamentoId == 31449)
-            {
                 logPlanoAee.estaAtivo = estaAtivo;
-            }
             //----------------------------------
 
             if (!estaAtivo)
             {
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAEE.RotaEncerrarEncaminhamentoAEEEncerrarAutomatico,
                     new FiltroAtualizarEncaminhamentoAEEEncerramentoAutomaticoDto(filtro.EncaminhamentoId),  Guid.NewGuid(), null));
-
+                await EnviarLog(logPlanoAee);
                 return true;
             }
-
+            await EnviarLog(logPlanoAee);
             return false;
         }
-
+        private async Task EnviarLog(LogPlanoAee planoAee)
+        {
+            var logPlanoAeeJson = JsonConvert.SerializeObject(planoAee);
+            await mediator.Send(new SalvarLogViaRabbitCommand(logPlanoAeeJson, LogNivel.Informacao, LogContexto.WorkerRabbit, rastreamento: "PlanoAEEInfoInconsistente"));
+        }
         private class LogPlanoAee
         {
             public FiltroValidarEncerrarEncaminhamentoAEEAutomaticoDto filtro { get; set; }

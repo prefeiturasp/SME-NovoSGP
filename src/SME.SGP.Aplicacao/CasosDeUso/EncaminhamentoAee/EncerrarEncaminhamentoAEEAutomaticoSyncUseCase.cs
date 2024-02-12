@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
             if (!encaminhamentosVigentes.Any())
                 return false;
 
-            foreach (var encaminhamento in encaminhamentosVigentes.Where(x => x.EncaminhamentoId == 31449))
+            foreach (var encaminhamento in encaminhamentosVigentes)
             {
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAEE.RotaValidarEncerrarEncaminhamentoAEEAutomatico,
                     new FiltroValidarEncerrarEncaminhamentoAEEAutomaticoDto(encaminhamento.EncaminhamentoId, encaminhamento.UeCodigo,
