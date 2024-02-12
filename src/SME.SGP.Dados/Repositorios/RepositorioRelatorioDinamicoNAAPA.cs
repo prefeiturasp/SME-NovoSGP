@@ -257,7 +257,9 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(" AND not ens.excluido ");
             sql.AppendLine(" AND np.situacao = ANY(@situacao)");
 
-            if (nomesComponentesAtendimento.NaoEhNulo())
+            if (nomesComponentesAtendimento.NaoEhNulo()
+                && filtro.FiltroAvancado.NaoEhNulo() && filtro.FiltroAvancado.Any()
+                )
                 filtro.FiltroAvancado = filtro.FiltroAvancado.FindAll(f => nomesComponentesAtendimento.Contains(f.NomeComponente));
 
             var funcoes = new List<Func<FiltroRelatorioDinamicoNAAPADto, string>>
