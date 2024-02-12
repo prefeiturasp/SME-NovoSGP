@@ -25,7 +25,6 @@ namespace SME.SGP.Metrica.Worker.UseCases
         public async Task<bool> Executar(MensagemRabbit param)
         {
             await repositorioConselhoNaoConsolidado.ExcluirTodos();
-
             var ues = await repositorioSGP.ObterUesIds();
             foreach (var ue in ues)
                 await mediator.Send(new PublicarFilaCommand(Rotas.RotasRabbitMetrica.ConselhoClasseNaoConsolidadoUE, new FiltroIdDto(ue)));
