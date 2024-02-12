@@ -176,8 +176,11 @@ namespace SME.SGP.Aplicacao
         }
         private async Task EnviarLog(LogPlanoAee planoAee)
         {
-            var logPlanoAeeJson = JsonConvert.SerializeObject(planoAee);
-            await mediator.Send(new SalvarLogViaRabbitCommand(logPlanoAeeJson, LogNivel.Informacao, LogContexto.WorkerRabbit, rastreamento: "PlanoAEEInfoInconsistente"));
+            if(planoAee.planoAEE.Id == 31449)
+            {
+                var logPlanoAeeJson = JsonConvert.SerializeObject(planoAee);
+                await mediator.Send(new SalvarLogViaRabbitCommand(logPlanoAeeJson, LogNivel.Informacao, LogContexto.WorkerRabbit, rastreamento: "PlanoAEEInfoInconsistente"));
+            }
         }
         private class LogPlanoAee
         {
