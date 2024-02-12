@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
         }
         private async Task EnviarLog(LogPlanoAee planoAee)
         {
-            if (planoAee.filtro.EncaminhamentoId == 31449)
+            if (planoAee.filtro.AlunoCodigo == "6549758")
             {
                 var logPlanoAeeJson = JsonConvert.SerializeObject(planoAee);
                 await mediator.Send(new SalvarLogViaRabbitCommand(logPlanoAeeJson, LogNivel.Informacao, LogContexto.WorkerRabbit, rastreamento: "PlanoAEEInfoInconsistente"));
