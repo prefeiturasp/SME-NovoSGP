@@ -133,10 +133,7 @@ namespace SME.SGP.Aplicacao
                                     var turmaAtualDoAluno = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(ultimaSituacao.CodigoTurma.ToString()));
 
                                     //log-------------------------------
-                                    if (planoAEE.Id == 31449)
-                                    {
                                         logPlanoAee.turmaAtualDoAluno = turmaAtualDoAluno;
-                                    }
                                     //----------------------------------
 
                                     if (turmaDoPlanoAee.Ue.CodigoUe != turmaAtualDoAluno.Ue.CodigoUe)
