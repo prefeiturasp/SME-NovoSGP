@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
                     var alunosCodigo = alunos.Select(a => a.CodigoAluno);
 
                     var comando = new CalcularFrequenciaPorTurmaCommand(alunosCodigo, request.DataFim, request.TurmaCodigo, componenteCurricularId);
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaConciliacaoCalculoFrequenciaPorTurmaComponente, comando, Guid.NewGuid(), null));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaConciliacaoCalculoFrequenciaPorTurmaComponente, comando, Guid.NewGuid(), null), cancellationToken);
                 }
             }
 
@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
             // Listar componentes da turma
             try
             {
-                var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorTurmasQuery(new string[] { turmaCodigo }));
+                var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(new string[] { turmaCodigo }));
                 if (componentesCurriculares?.Any() != true)
                     throw new NegocioException("Não foi possível obter os componentes curriculares da turma para conciliação de frequência");
 

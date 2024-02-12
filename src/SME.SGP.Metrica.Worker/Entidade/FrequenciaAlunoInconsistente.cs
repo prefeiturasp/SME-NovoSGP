@@ -1,7 +1,13 @@
-﻿namespace SME.SGP.Metrica.Worker.Entidade
+﻿using System;
+
+namespace SME.SGP.Metrica.Worker.Entidade
 {
     public class FrequenciaAlunoInconsistente
     {
+        public FrequenciaAlunoInconsistente()
+        {
+            Data = DateTime.Now.Date.ToUniversalTime();
+        }
         public string TurmaCodigo { get; set; }
         public long ComponenteCurricularId { get; set; }
         public string AlunoCodigo { get; set; }
@@ -14,5 +20,6 @@
         public int TotalAusenciasCalculado { get; set; }
         public int TotalPresencasCalculado { get; set; }
         public int TotalRemotosCalculado { get; set; }
+        public DateTime Data { get; set; }
     }
 }

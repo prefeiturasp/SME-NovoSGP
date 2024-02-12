@@ -23,16 +23,20 @@ namespace SME.SGP.Aplicacao
             
             foreach (string codTurma in request.TurmasCodigos)
             {
-                var matriculasAluno = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(codTurma, request.AlunoCodigo));
-                
-                if (matriculasAluno.NaoEhNulo() &&
-                    matriculasAluno.Any(m => m.CodigoTurma.ToString() == codTurma &&
-                    ((m.PossuiSituacaoAtiva() && m.DataMatricula <= request.PeriodoFim) 
-                    || (!m.PossuiSituacaoAtiva() && m.DataSituacao >= request.PeriodoInicio && m.DataSituacao <= request.PeriodoFim) 
-                    || (!m.PossuiSituacaoAtiva() && m.DataMatricula <= request.PeriodoFim && m.DataSituacao > request.PeriodoFim))))
-                    turmasCodigosComMatriculasValidas.Add(codTurma);
-                
+                var matriculasAluno = (await mediator
+                    .Send(new ObterMatriculasAlunoNaTurmaQuery(codTurma, request.AlunoCodigo), cancellationToken))
+                    .Where(m => m.CodigoSituacaoMatricula != SituacaoMatriculaAluno.VinculoIndevido);
+
+                if (matriculasAluno.NaoEhNulo() || matriculasAluno.Any())
+                {
+                    if (matriculasAluno.Any(m => m.CodigoTurma.ToString() == codTurma &&
+                       ((m.PossuiSituacaoAtiva() && m.DataMatricula <= request.PeriodoFim) 
+                       || (!m.PossuiSituacaoAtiva() && m.DataSituacao >= request.PeriodoInicio && m.DataSituacao <= request.PeriodoFim) 
+                       || (!m.PossuiSituacaoAtiva() && m.DataMatricula <= request.PeriodoFim && m.DataSituacao > request.PeriodoFim))))
+                            turmasCodigosComMatriculasValidas.Add(codTurma);
+                }
             }
+
             return turmasCodigosComMatriculasValidas;
         }
     }

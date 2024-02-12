@@ -51,7 +51,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var primeiraSecaoItinerancia = retorno.Items.OrderBy(secao => secao.Auditoria.Id).FirstOrDefault();
             primeiraSecaoItinerancia.ShouldNotBeNull("1º Seção de itinerância não registrada para o Encaminhamento NAAPA");
             primeiraSecaoItinerancia.DataAtendimento.ShouldBe(DateTimeExtension.HorarioBrasilia().Date);
-            primeiraSecaoItinerancia.TipoAtendimento.ShouldBe("Atendimento não presencial");
+            primeiraSecaoItinerancia.TipoAtendimento.ShouldBe("Itinerância");
             primeiraSecaoItinerancia.Auditoria.CriadoPor.ShouldNotBeNull("Usuário criador não preenchido em auditoria 1º Seção de itinerância");
 
             var segundaSecaoItinerancia = retorno.Items.OrderBy(secao => secao.Auditoria.Id).LastOrDefault();
