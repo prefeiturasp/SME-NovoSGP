@@ -12,6 +12,14 @@ namespace SME.SGP.TesteIntegracao.RegistroColetivoNAAPA.Base
         {
         }
 
+        protected async Task CriaBase()
+        {
+            await CriarDreUePerfil();
+            CriarClaimUsuario(ObterPerfilCoordenadorNAAPA());
+            await CriarUsuarios();
+            await CarregarTipoDeReuniao();
+        }
+
         protected async Task CarregarTipoDeReuniao()
         {
             await InserirNaBase(new TipoReuniaoNAAPA()
