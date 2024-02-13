@@ -1,14 +1,15 @@
-﻿using System;
+﻿using SME.SGP.Infra.Dtos;
+using System;
 using System.Collections.Generic;
 
-namespace SME.SGP.Dominio
+namespace SME.SGP.Infra
 {
-    public class RegistroColetivo : EntidadeBase
+    public class RegistroColetivoDto
     {
+        public long? Id { get; set; }
         public long DreId { get; set; }
-        public IEnumerable<Ue> Ues { get; set; }
+        public IEnumerable<long> UeIds { get; set; }
         public long TipoReuniaoId { get; set; }
-        public TipoReuniaoNAAPA TipoReuniao { get; set; }
         public DateTime DataRegistro { get; set; }
         public int QuantidadeParticipantes { get; set; }
         public int QuantidadeEducadores { get; set; }
@@ -16,7 +17,6 @@ namespace SME.SGP.Dominio
         public int QuantidadeCuidadores { get; set; }
         public string Descricao { get; set; }
         public string Observacao { get; set; }
-        public bool Excluido { get; set; }
-        public IEnumerable<Arquivo> Anexos { get; set; }
+        public IEnumerable<AnexoDto> Anexos { get; set; }
     }
 }
