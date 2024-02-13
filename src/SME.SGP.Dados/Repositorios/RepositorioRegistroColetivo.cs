@@ -128,5 +128,58 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(" and rc.data_registro <= @dataReuniaoFim");
         }
 
+        public async Task<RegistroColetivoResumidoDto> ObterRegistroColetivoPorId(long id)
+        {
+            var query = @"select rc.id, d.dre_id as codigoDre, d.nome as nomeDre, trn.id as tipoReuniaoId,
+                                 trn.titulo as tipoReuniaoDescricao, rc.data_registro as dataRegistro, 
+                                 rc.quantidade_participantes as quantidadeParticipantes,
+                                 rc.quantidade_educadores as quantidadeEducadores,
+                                 rc.quantidade_educandos as quantidadeEducandos,
+                                 rc.quantidade_cuidadores as quantidadeCuidadores,
+                                 rc.descricao, rc.observacao,
+                                 rc.alterado_em as AlteradoEm,
+                                 rc.alterado_por as AlteradoPor,
+                                 rc.alterado_rf as AlteradoRF,
+                                 rc.criado_em as CriadoEm,
+                                 rc.criado_por as CriadoPor,
+                                 rc.criado_rf as CriadoRF 
+                          from  registrocoletivo rc  
+                          inner join tipo_reuniao_naapa trn on trn.id = rc.tipo_reuniao_id 
+                          inner join dre d on d.id = rc.dre_id 
+                          where rc.id = @id;
+                          ;
+                          select u.tipo_escola as tipoEscola,
+                                 u.nome as nome, u.ue_id as codigo 
+                          from registrocoletivo_ue ru
+                          inner join ue u on u.id = ru.ue_id 
+                          where ru.registrocoletivo_id = @id
+                          ;
+                          select a.codigo, a.nome  
+                          from registrocoletivo_anexo ra 
+                          inner join arquivo a ON a.id = ra.arquivo_id  
+                          where ra.registrocoletivo_id = @id
+                                and not ra.excluido
+                          ;";
+
+            var parametros = new
+            {
+                id
+            };
+
+            RegistroColetivoResumidoDto retorno;
+            using (var registrosColetivos = await database.Conexao.QueryMultipleAsync(query, parametros))
+            {
+                retorno = registrosColetivos.ReadFirst<RegistroColetivoResumidoDto>();
+                var ues = registrosColetivos.Read<UeRegistroColetivoDto>();
+                var anexos = registrosColetivos.Read<ArquivoAnexoRegistroColetivoDto>();
+                if (retorno.NaoEhNulo())
+                {
+                    retorno.Ues = ues;
+                    retorno.Anexos = anexos;
+                }
+            }
+
+            return retorno;
+        }
     }
 }

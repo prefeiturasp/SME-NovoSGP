@@ -11,6 +11,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<PaginacaoResultadoDto<RegistroColetivoListagemDto>> ListarPaginado(long dreId, long? ueId,
                                                                                 DateTime? dataReuniaoInicio, DateTime? dataReuniaoFim, long[] tiposReuniaoId,
                                                                                 Paginacao paginacao);
-        
+        Task<RegistroColetivoResumidoDto> ObterRegistroColetivoPorId(long id);
     }
 }
