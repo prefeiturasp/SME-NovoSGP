@@ -84,7 +84,6 @@ namespace SME.SGP.Aplicacao
                                     logPlanoAee.planoAEE = planoAEE;
                                     logPlanoAee.situacaoMatricula = ultimaSituacaoAlunoNaUE?.SituacaoMatricula ?? "Inativo";
                                     logPlanoAee.dataSituacao = ultimaSituacaoAlunoNaUE.DataSituacao;
-                                    logPlanoAee.planoDeveSerEncerrado = PlanoDeveSerEncerrado(ultimaSituacaoAlunoNaUE.CodigoSituacaoMatricula);
                                 //----------------------------------
 
                                 if (ultimaSituacaoAlunoNaUE.NaoEhNulo() && PlanoDeveSerEncerrado(ultimaSituacaoAlunoNaUE.CodigoSituacaoMatricula))
@@ -146,7 +145,6 @@ namespace SME.SGP.Aplicacao
 
                             //log-------------------------------
                                 logPlanoAee.elseIfQtdMatriculas = matriculas.Select(m => m.CodigoTurma).Distinct().Count() > 1;
-                                logPlanoAee.alunoFoiTransferidoDaUnidadeEscolar = AlunoFoiTransferidoDaUnidadeEscolar(matriculas, turmaDoPlanoAee);
                             //----------------------------------
                         }
 
@@ -202,7 +200,6 @@ namespace SME.SGP.Aplicacao
             public string situacaoMatricula { get; set; }
             public DateTime dataSituacao { get; set; }
             public bool elseIfQtdMatriculas { get; set; }
-            public bool alunoFoiTransferidoDaUnidadeEscolar { get; set; }
             public int anoLetivo { get; set; }
         }
 

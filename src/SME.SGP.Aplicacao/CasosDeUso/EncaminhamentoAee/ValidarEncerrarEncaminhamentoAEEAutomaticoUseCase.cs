@@ -58,7 +58,6 @@ namespace SME.SGP.Aplicacao
                 var logPlanoAeeJson = JsonConvert.SerializeObject(planoAee);
                 await mediator.Send(new SalvarLogViaRabbitCommand(logPlanoAeeJson, LogNivel.Informacao, LogContexto.WorkerRabbit, rastreamento: "PlanoAEEInfoInconsistente"));
             }
-
         }
         private class LogPlanoAee
         {
