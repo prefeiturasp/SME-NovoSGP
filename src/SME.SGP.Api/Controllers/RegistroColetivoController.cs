@@ -53,5 +53,15 @@ namespace SME.SGP.Api.Controllers
 
             return BadRequest();
         }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<RegistroColetivoListagemDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RC_NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterRegistrosColetivos([FromQuery] FiltroRegistroColetivoDto filtro,
+            [FromServices] IObterRegistrosColetivosNAAPAUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
     }
 }
