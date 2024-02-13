@@ -41,22 +41,12 @@ namespace SME.SGP.Aplicacao
             {
                 await repositorio.SalvarAsync(registroColetivo);
 
+                await AlterarUes(registroColetivo.Id, request.RegistroColetivo.UeIds);
+
+                await AlterarAnexos(registroColetivo.Id, request.RegistroColetivo.Anexos ?? new List<AnexoDto>());
+
                 unitOfWork.PersistirTransacao();
 
-                await mediator.Send(new RemoverRegistroColetivoUeCommand(registroColetivo.Id));
-
-                await mediator.Send(new InserirRegistroColetivoUeCommand(registroColetivo.Id, request.RegistroColetivo.UeIds));
-
-                if (request.RegistroColetivo.Anexos.NaoEhNulo() &&
-                    request.RegistroColetivo.Anexos.Any())
-                {
-                    await RemoverArquivos(registroColetivo.Anexos, request.RegistroColetivo.Anexos);
-
-                    await mediator.Send(new RemoverRegistroColetivoAnexoCommand(registroColetivo.Id));
-
-                    await mediator.Send(new InserirRegistroColetivoAnexoCommand(registroColetivo.Id, request.RegistroColetivo.Anexos));
-                }
-                    
                 return new ResultadoRegistroColetivoDto()
                 {
                     Id = registroColetivo.Id,
@@ -78,18 +68,33 @@ namespace SME.SGP.Aplicacao
             return null;
         }
 
-        private async Task RemoverArquivos(IEnumerable<Arquivo> arquivos, IEnumerable<AnexoDto> anexos)
+        private async Task AlterarUes(long registroColetivoId, IEnumerable<long> uesAlterados)
         {
-            var arquivosIdsAlterados = anexos.Where(anexo => anexo.ArquivoId.NaoEhNulo()).Select(anexo => anexo.ArquivoId.GetValueOrDefault()).ToList();
+            await mediator.Send(new RemoverRegistroColetivoUeCommand(registroColetivoId));
 
-            if (arquivosIdsAlterados.Any())
-            {
-                var arquivosIdsCadastro = arquivos.Select(anexo => anexo.Id).ToList();
-                var arquivosIdsRemovidos = arquivosIdsCadastro.Except(arquivosIdsAlterados);
+            await mediator.Send(new InserirRegistroColetivoUeCommand(registroColetivoId, uesAlterados));
+        }
 
-                foreach(var arquivoId in arquivosIdsRemovidos)
-                    await mediator.Send(new ExcluirArquivoPorIdCommand(arquivoId));
-            }
+        private async Task AlterarAnexos(long registroColetivoId, IEnumerable<AnexoDto> anexosAlterados)
+        {
+            var anexosCadastrados = await mediator.Send(new ObterAnexosRegistroColetivoQuery(registroColetivoId));
+
+            await mediator.Send(new RemoverRegistroColetivoAnexoCommand(registroColetivoId));
+
+            await RemoverArquivos(anexosCadastrados, anexosAlterados);
+
+            if (anexosAlterados.Any())
+                await mediator.Send(new InserirRegistroColetivoAnexoCommand(registroColetivoId, anexosAlterados));
+        }
+
+        private async Task RemoverArquivos(IEnumerable<AnexoDto> anexosCadastrados, IEnumerable<AnexoDto> anexosAlterados)
+        {
+            var arquivosIdsAlterados = anexosAlterados.Where(anexo => anexo.ArquivoId.NaoEhNulo()).Select(anexo => anexo.ArquivoId.GetValueOrDefault()).ToList();
+            var arquivosIdsCadastro = anexosCadastrados.Select(anexo => anexo.ArquivoId.GetValueOrDefault()).ToList();
+            var arquivosIdsRemovidos = arquivosIdsCadastro.Except(arquivosIdsAlterados);
+
+            foreach(var arquivoId in arquivosIdsRemovidos)
+                await mediator.Send(new ExcluirArquivoPorIdCommand(arquivoId));
         }
         
         private void CarregaAlteracoes(RegistroColetivo registro, RegistroColetivoDto registroDto)
