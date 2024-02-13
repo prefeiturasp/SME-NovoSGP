@@ -39,7 +39,16 @@ namespace SME.SGP.Dados.Repositorios
 
             using (var registrosColetivos = await database.Conexao.QueryMultipleAsync(query, parametros))
             {
-                retorno.Items = registrosColetivos.Read<RegistroColetivoListagemDto>();
+                var registrosColetivosUes = registrosColetivos.Read<RegistroColetivoUeListagemDto>();
+                retorno.Items = registrosColetivosUes.GroupBy(rcue => rcue.Id)
+                                                     .Select(rc => new RegistroColetivoListagemDto()
+                                                     {
+                                                         Id = rc.Key,
+                                                         CriadoPor = rc.FirstOrDefault().CriadoPor,
+                                                         DataReuniao = rc.FirstOrDefault().DataReuniao,
+                                                         TipoReuniaoDescricao = rc.FirstOrDefault().TipoReuniaoDescricao,
+                                                         NomesUe = rc.Select(rcue => rcue.NomeTipoUe).ToArray()
+                                                     });
                 retorno.TotalRegistros = registrosColetivos.ReadFirst<int>();
             }
 
@@ -84,15 +93,15 @@ namespace SME.SGP.Dados.Repositorios
             var sqlSelect = $@" select ";
             sql.AppendLine(sqlSelect);
             if (contador)
-                sql.AppendLine("count(rcue.id) ");
+                sql.AppendLine("count(distinct rc.id) ");
             else
             {
-                sql.AppendLine(@"rcue.id, rc.data_registro as dataReuniao,
+                sql.AppendLine(@"rc.id, rc.data_registro as dataReuniao,
                                  trn.titulo as tipoReuniaoDescricao,
-                                 u.tipo_escola as tipoEscola,
-                                 u.nome as nomeUe,
                                  rc.criado_por as nomeUsuarioCriador,
-                                 rc.criado_rf as rfUsuarioCriador");
+                                 rc.criado_rf as rfUsuarioCriador
+                                 u.tipo_escola as tipoEscola,
+                                 u.nome as nomeUe");
             }
 
             sql.AppendLine(@"from registrocoletivo_ue rcue
