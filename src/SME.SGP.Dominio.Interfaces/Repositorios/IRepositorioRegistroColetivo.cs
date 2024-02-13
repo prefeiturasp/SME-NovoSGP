@@ -8,9 +8,9 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioRegistroColetivo : IRepositorioBase<RegistroColetivo>
     {
-        Task<PaginacaoResultadoDto<RegistroColetivoListagemDto>> ListarPaginado(int anoLetivo, long dreId, long? ueId,
-                                                                                             DateTime? dataReuniaoInicio, DateTime? dataReuniaoFim, long[] tiposReuniaoId,
-                                                                                             Paginacao paginacao);
+        Task<PaginacaoResultadoDto<RegistroColetivoListagemDto>> ListarPaginado(long dreId, long? ueId,
+                                                                                DateTime? dataReuniaoInicio, DateTime? dataReuniaoFim, long[] tiposReuniaoId,
+                                                                                Paginacao paginacao);
         
     }
 }

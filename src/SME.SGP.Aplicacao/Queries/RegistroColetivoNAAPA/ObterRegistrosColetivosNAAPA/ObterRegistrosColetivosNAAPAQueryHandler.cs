@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public Task<PaginacaoResultadoDto<RegistroColetivoListagemDto>> Handle(ObterRegistrosColetivosNAAPAQuery request, CancellationToken cancellationToken)
-            => repositorioRegistroColetivo.ListarPaginado(request.AnoLetivo, request.DreId, request.UeId, 
+            => repositorioRegistroColetivo.ListarPaginado(request.DreId, request.UeId, 
                                                           request.DataReuniaoInicio, request.DataReuniaoFim, request.TiposReuniaoId, Paginacao);
     }
 }

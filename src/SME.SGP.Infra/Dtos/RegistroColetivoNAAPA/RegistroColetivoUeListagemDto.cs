@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Infra
 {
-    public class RegistroColetivoListagemDto
+    public class RegistroColetivoUeListagemDto
     {
-        public RegistroColetivoListagemDto()
+        public RegistroColetivoUeListagemDto()
         {
         }
         public long Id { get; set; }

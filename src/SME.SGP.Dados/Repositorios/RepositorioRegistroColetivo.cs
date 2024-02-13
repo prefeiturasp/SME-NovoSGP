@@ -17,17 +17,16 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<PaginacaoResultadoDto<RegistroColetivoListagemDto>> ListarPaginado(int anoLetivo, long dreId, long? ueId,
+        public async Task<PaginacaoResultadoDto<RegistroColetivoListagemDto>> ListarPaginado(long dreId, long? ueId,
                                                                                              DateTime? dataReuniaoInicio, DateTime? dataReuniaoFim, long[] tiposReuniaoId, 
                                                                                              Paginacao paginacao)
         {
-            var query = MontaQueryCompleta(paginacao, anoLetivo, dreId, ueId,
+            var query = MontaQueryCompleta(paginacao,  dreId, ueId,
                                           dataReuniaoInicio, dataReuniaoFim,
                                           tiposReuniaoId);
 
             var parametros = new
             {
-                anoLetivo,
                 dreId,
                 ueId,
                 dataReuniaoInicio,
@@ -47,7 +46,7 @@ namespace SME.SGP.Dados.Repositorios
                                                          CriadoPor = rc.FirstOrDefault().CriadoPor,
                                                          DataReuniao = rc.FirstOrDefault().DataReuniao,
                                                          TipoReuniaoDescricao = rc.FirstOrDefault().TipoReuniaoDescricao,
-                                                         NomesUe = rc.Select(rcue => rcue.NomeTipoUe).ToArray()
+                                                         NomesUe = rc.Select(rcue => rcue.NomeTipoUe).ToArray(),
                                                      });
                 retorno.TotalRegistros = registrosColetivos.ReadFirst<int>();
             }
@@ -57,27 +56,27 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
-        private string MontaQueryCompleta(Paginacao paginacao, int anoLetivo, long dreId, long? ueId,
+        private string MontaQueryCompleta(Paginacao paginacao, long dreId, long? ueId,
                                           DateTime? dataReuniaoInicio, DateTime? dataReuniaoFim, long[] tiposReuniaoId)
         {
             var sql = new StringBuilder();
 
-            MontaQueryConsulta(paginacao, sql, contador: false, anoLetivo, dreId, ueId,
+            MontaQueryConsulta(paginacao, sql, contador: false, dreId, ueId,
                                           dataReuniaoInicio, dataReuniaoFim,
                                           tiposReuniaoId);
             sql.AppendLine(";");
-            MontaQueryConsulta(paginacao, sql, contador: true, anoLetivo, dreId, ueId,
+            MontaQueryConsulta(paginacao, sql, contador: true, dreId, ueId,
                                           dataReuniaoInicio, dataReuniaoFim,
                                           tiposReuniaoId);
             return sql.ToString();
         }
 
-        private void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, int anoLetivo, long dreId, long? ueId,
+        private void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, long dreId, long? ueId,
                                           DateTime? dataReuniaoInicio, DateTime? dataReuniaoFim, long[] tiposReuniaoId)
         {
             ObterCabecalho(sql, contador);
 
-            ObterFiltro(sql, anoLetivo, dreId, ueId,
+            ObterFiltro(sql, dreId, ueId,
                         dataReuniaoInicio, dataReuniaoFim,
                         tiposReuniaoId);
 
@@ -99,7 +98,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(@"rc.id, rc.data_registro as dataReuniao,
                                  trn.titulo as tipoReuniaoDescricao,
                                  rc.criado_por as nomeUsuarioCriador,
-                                 rc.criado_rf as rfUsuarioCriador
+                                 rc.criado_rf as rfUsuarioCriador,
                                  u.tipo_escola as tipoEscola,
                                  u.nome as nomeUe");
             }
@@ -110,15 +109,14 @@ namespace SME.SGP.Dados.Repositorios
                              inner join ue u on u.id = rcue.ue_id");
         }
 
-        private void ObterFiltro(StringBuilder sql, int anoLetivo, long dreId, long? ueId,
+        private void ObterFiltro(StringBuilder sql, long dreId, long? ueId,
                                           DateTime? dataReuniaoInicio, DateTime? dataReuniaoFim, long[] tiposReuniaoId)
         {
             sql.AppendLine(@" where not rc.excluido 
-                                    and t.ano_letivo = @anoLetivo
-                                    and ue.dre_Id = @dreId");
+                                    and rc.dre_id = @dreId");
 
             if (ueId.HasValue)
-                sql.AppendLine(@" and u.id = @ueId ");
+                sql.AppendLine(@" and rc.id in (select rcue.registrocoletivo_id from registrocoletivo_ue rcue where rcue.ue_id = @ueId) ");
 
             if (tiposReuniaoId.PossuiRegistros())
                 sql.AppendLine(" and trn.id = ANY(@tiposReuniaoId) ");

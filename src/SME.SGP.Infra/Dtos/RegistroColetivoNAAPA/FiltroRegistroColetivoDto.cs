@@ -4,7 +4,6 @@ namespace SME.SGP.Infra
 {
     public class FiltroRegistroColetivoDto
     {
-        public int AnoLetivo { get; set; }
         public long DreId { get; set; }
         public long? UeId { get; set; }
         public DateTime? DataReuniaoInicio { get; set; }
