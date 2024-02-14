@@ -240,12 +240,13 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> ValidarFrequenciaGeralAluno(string alunoCodigo, string[] turmasCodigos, int anoLetivo)
         {
             var frequenciaAluno = await mediator.Send(new ObterConsultaFrequenciaGeralAlunoPorTurmasQuery(alunoCodigo, turmasCodigos));
-            double valorFrequenciaAluno = 0;
-            if (frequenciaAluno != "")
+            double? valorFrequenciaAluno = null;
+            if (frequenciaAluno.NaoEhNulo() && frequenciaAluno != "")
                 valorFrequenciaAluno = Convert.ToDouble(frequenciaAluno);
 
             var parametroFrequenciaGeral = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaCritico, anoLetivo)));
-            return !(valorFrequenciaAluno < parametroFrequenciaGeral);
+            var retorno = valorFrequenciaAluno.NaoEhNulo() ? !(valorFrequenciaAluno < parametroFrequenciaGeral) : true;
+            return retorno;
         }
         #endregion
 
