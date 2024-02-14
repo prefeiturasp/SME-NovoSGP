@@ -5,6 +5,7 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -62,6 +63,15 @@ namespace SME.SGP.Api.Controllers
             [FromServices] IObterRegistrosColetivosNAAPAUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
+        }
+
+        [HttpGet("{registroColetivoId}")]
+        [ProducesResponseType(typeof(RegistroColetivoCompletoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RC_NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterEncaminhamento(long registroColetivoId, [FromServices] IObterRegistroColetivoNAAPAPorIdUseCase useCase)
+        {
+            return Ok(await useCase.Executar(registroColetivoId));
         }
     }
 }
