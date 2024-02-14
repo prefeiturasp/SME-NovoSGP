@@ -8,6 +8,11 @@ using System.Text;
 using Dapper.FluentMap;
 using Xunit;
 using System.Globalization;
+using Elastic.Apm.Api;
+using MediatR;
+using System.Reflection;
+using SME.SGP.TesteIntegracao.Commands;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace SME.SGP.TesteIntegracao.Setup
 {
@@ -23,7 +28,6 @@ namespace SME.SGP.TesteIntegracao.Setup
             Database = new InMemoryDatabase();
 
             IniciarServicos();
-
         }
 
         public void IniciarServicos()
@@ -35,6 +39,7 @@ namespace SME.SGP.TesteIntegracao.Setup
             var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", false).Build();
 
             Services.AddSingleton<IConfiguration>(config);
+            Services.TryAddScoped<IExecutor, Executor>();
             Services.AddMemoryCache();
             
             FluentMapper.EntityMaps.Clear();
