@@ -21,49 +21,20 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
             var filtro = mensagemRabbit.ObterObjetoMensagem<FiltroValidarEncerrarEncaminhamentoAEEAutomaticoDto>();
-            //log-------------------------------
-                var logPlanoAee = new LogPlanoAee();
-            //----------------------------------
-
             var matriculasTurmaAlunoEol = await mediator.Send(new ObterMatriculasAlunoNaUEQuery(filtro.UeCodigo, filtro.AlunoCodigo));
-
-            //log-------------------------------
-                logPlanoAee.filtro = filtro;
-                logPlanoAee.matriculasTurmaAlunoEol = matriculasTurmaAlunoEol;
-            //----------------------------------
 
             if (matriculasTurmaAlunoEol.EhNulo() || !matriculasTurmaAlunoEol.Any())
                 return false;
 
             var estaAtivo = matriculasTurmaAlunoEol.Any(c => SituacoesAtivas.Contains(c.CodigoSituacaoMatricula) && c.DataSituacao <= DateTime.Today);
 
-            //log-------------------------------
-                logPlanoAee.estaAtivo = estaAtivo;
-            //----------------------------------
-
             if (!estaAtivo)
             {
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAEE.RotaEncerrarEncaminhamentoAEEEncerrarAutomatico,
                     new FiltroAtualizarEncaminhamentoAEEEncerramentoAutomaticoDto(filtro.EncaminhamentoId),  Guid.NewGuid(), null));
-                await EnviarLog(logPlanoAee);
                 return true;
             }
-            await EnviarLog(logPlanoAee);
             return false;
-        }
-        private async Task EnviarLog(LogPlanoAee planoAee)
-        {
-            if (planoAee.filtro.AlunoCodigo == "6549758")
-            {
-                var logPlanoAeeJson = JsonConvert.SerializeObject(planoAee);
-                await mediator.Send(new SalvarLogViaRabbitCommand(logPlanoAeeJson, LogNivel.Informacao, LogContexto.WorkerRabbit, rastreamento: "PlanoAEEInfoInconsistente"));
-            }
-        }
-        private class LogPlanoAee
-        {
-            public FiltroValidarEncerrarEncaminhamentoAEEAutomaticoDto filtro { get; set; }
-            public IEnumerable<AlunoPorUeDto> matriculasTurmaAlunoEol { get; set; } 
-            public bool estaAtivo { get; set; }
         }
 
         private readonly SituacaoMatriculaAluno[] SituacoesAtivas = new[]
