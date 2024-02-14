@@ -155,7 +155,7 @@ namespace SME.SGP.Dados.Repositorios
                           inner join ue u on u.id = ru.ue_id 
                           where ru.registrocoletivo_id = @id
                           ;
-                          select a.codigo, a.nome  
+                          select a.id, a.codigo, a.nome  
                           from registrocoletivo_anexo ra 
                           inner join arquivo a ON a.id = ra.arquivo_id  
                           where ra.registrocoletivo_id = @id
