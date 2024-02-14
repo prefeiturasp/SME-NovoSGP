@@ -146,7 +146,8 @@ namespace SME.SGP.Dados.Repositorios
                           from  registrocoletivo rc  
                           inner join tipo_reuniao_naapa trn on trn.id = rc.tipo_reuniao_id 
                           inner join dre d on d.id = rc.dre_id 
-                          where rc.id = @id;
+                          where rc.id = @id
+                                and not rc.excluido
                           ;
                           select u.tipo_escola as tipoEscola,
                                  u.nome as nome, u.ue_id as codigo 
@@ -166,16 +167,18 @@ namespace SME.SGP.Dados.Repositorios
                 id
             };
 
-            RegistroColetivoCompletoDto retorno;
+            RegistroColetivoCompletoDto retorno = null;
             using (var registrosColetivos = await database.Conexao.QueryMultipleAsync(query, parametros))
             {
-                retorno = registrosColetivos.ReadFirst<RegistroColetivoCompletoDto>();
-                var ues = registrosColetivos.Read<UeRegistroColetivoDto>();
-                var anexos = registrosColetivos.Read<ArquivoAnexoRegistroColetivoDto>();
-                if (retorno.NaoEhNulo())
                 {
-                    retorno.Ues = ues;
-                    retorno.Anexos = anexos;
+                    retorno = registrosColetivos.ReadFirstOrDefault<RegistroColetivoCompletoDto>();
+                    var ues = registrosColetivos.Read<UeRegistroColetivoDto>();
+                    var anexos = registrosColetivos.Read<ArquivoAnexoRegistroColetivoDto>();
+                    if (retorno.NaoEhNulo())
+                    {
+                        retorno.Ues = ues;
+                        retorno.Anexos = anexos;
+                    }
                 }
             }
 

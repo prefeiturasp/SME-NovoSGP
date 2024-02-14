@@ -4,6 +4,7 @@ using Nest;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.RegistroColetivoNAAPA.Base;
 using SME.SGP.TesteIntegracao.Setup;
@@ -39,6 +40,15 @@ namespace SME.SGP.TesteIntegracao.RegistroColetivoNAAPA
             Validar(retorno, 2);
         }
 
+        [Fact(DisplayName = "Registro Coletivo - Obter registro coletivo por Id inexistente")]
+        public async Task Ao_obter_registro_coletivo_naapa_inexisternte()
+        {
+            await CriaBase();
+            var useCase = ServiceProvider.GetService<IObterRegistroColetivoNAAPAPorIdUseCase>();
+            var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(1));
+            excecao.Message.ShouldBe(MensagemNegocioRegistroColetivoNAAPA.REGISTRO_COLETIVO_NAO_ENCONTRADO);
+        }
+
         private void Validar(RegistroColetivoCompletoDto retorno, long id)
         {
             retorno.ShouldNotBeNull();
@@ -62,6 +72,9 @@ namespace SME.SGP.TesteIntegracao.RegistroColetivoNAAPA
             retorno.QuantidadeEducandos.ToString().ShouldBe($"{id}");
             retorno.QuantidadeParticipantes.ToString().ShouldBe($"{id * 3}");
             retorno.Anexos.All(a => a.Nome.Equals($"Arquivo Registro Coletivo {id}"));
+            retorno.CriadoEm.ShouldBe(DateTimeExtension.HorarioBrasilia().Date);
+            retorno.CriadoPor.ShouldBe(SISTEMA_NOME);
+            retorno.CriadoRF.ShouldBe(SISTEMA_CODIGO_RF);
         }
 
         private async Task InserirRegistrosColetivos()
@@ -78,7 +91,7 @@ namespace SME.SGP.TesteIntegracao.RegistroColetivoNAAPA
                 QuantidadeParticipantes = 3,
                 Descricao = $"{DESCRICAO_REGISTRO_COLETIVO} 1",
                 Observacao = $"{OBSERVACAO_REGISTRO_COLETIVO} 1",
-                CriadoEm = DateTime.Now,
+                CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
             });
@@ -87,7 +100,7 @@ namespace SME.SGP.TesteIntegracao.RegistroColetivoNAAPA
             {
                 RegistroColetivoId = 1,
                 UeId = UE_ID_1,
-                CriadoEm = DateTime.Now,
+                CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
             });
@@ -96,7 +109,7 @@ namespace SME.SGP.TesteIntegracao.RegistroColetivoNAAPA
             {
                 RegistroColetivoId = 1,
                 UeId = UE_ID_2,
-                CriadoEm = DateTime.Now,
+                CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
             });
@@ -105,7 +118,7 @@ namespace SME.SGP.TesteIntegracao.RegistroColetivoNAAPA
             {
                 RegistroColetivoId = 1,
                 UeId = UE_ID_3,
-                CriadoEm = DateTime.Now,
+                CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
             });
@@ -124,7 +137,7 @@ namespace SME.SGP.TesteIntegracao.RegistroColetivoNAAPA
                 QuantidadeParticipantes = 6,
                 Descricao = $"{DESCRICAO_REGISTRO_COLETIVO} 2",
                 Observacao = $"{OBSERVACAO_REGISTRO_COLETIVO} 2",
-                CriadoEm = DateTime.Now,
+                CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
             });
@@ -133,7 +146,7 @@ namespace SME.SGP.TesteIntegracao.RegistroColetivoNAAPA
             {
                 RegistroColetivoId = 2,
                 UeId = UE_ID_2,
-                CriadoEm = DateTime.Now,
+                CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
             });
@@ -147,7 +160,7 @@ namespace SME.SGP.TesteIntegracao.RegistroColetivoNAAPA
             {
                 Codigo = Guid.NewGuid(),
                 Nome = $"Arquivo Registro Coletivo {registroColetivoId}",
-                CriadoEm = DateTime.Now,
+                CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 TipoConteudo = "application/pdf",
@@ -158,7 +171,7 @@ namespace SME.SGP.TesteIntegracao.RegistroColetivoNAAPA
             {
                 RegistroColetivoId = registroColetivoId,
                 ArquivoId = registroColetivoId,
-                CriadoEm = DateTime.Now,
+                CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
             });
