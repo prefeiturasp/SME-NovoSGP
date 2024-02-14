@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Infra
 {
-    public class RegistroColetivoResumidoDto : AuditoriaDto
+    public class RegistroColetivoCompletoDto : AuditoriaDto
     {
         public string CodigoDre { get; set; }
         public string NomeDre { get; set; }

@@ -7,7 +7,7 @@ namespace SME.SGP.Infra
 {
     public class ArquivoAnexoRegistroColetivoDto
     {
-        public string Codigo { get; set; }
+        public Guid Codigo { get; set; }
         public string Nome { get; set; }
     }
 }

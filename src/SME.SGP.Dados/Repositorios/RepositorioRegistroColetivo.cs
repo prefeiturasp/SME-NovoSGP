@@ -128,7 +128,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(" and rc.data_registro <= @dataReuniaoFim");
         }
 
-        public async Task<RegistroColetivoResumidoDto> ObterRegistroColetivoPorId(long id)
+        public async Task<RegistroColetivoCompletoDto> ObterRegistroColetivoCompletoPorId(long id)
         {
             var query = @"select rc.id, d.dre_id as codigoDre, d.nome as nomeDre, trn.id as tipoReuniaoId,
                                  trn.titulo as tipoReuniaoDescricao, rc.data_registro as dataRegistro, 
@@ -166,10 +166,10 @@ namespace SME.SGP.Dados.Repositorios
                 id
             };
 
-            RegistroColetivoResumidoDto retorno;
+            RegistroColetivoCompletoDto retorno;
             using (var registrosColetivos = await database.Conexao.QueryMultipleAsync(query, parametros))
             {
-                retorno = registrosColetivos.ReadFirst<RegistroColetivoResumidoDto>();
+                retorno = registrosColetivos.ReadFirst<RegistroColetivoCompletoDto>();
                 var ues = registrosColetivos.Read<UeRegistroColetivoDto>();
                 var anexos = registrosColetivos.Read<ArquivoAnexoRegistroColetivoDto>();
                 if (retorno.NaoEhNulo())

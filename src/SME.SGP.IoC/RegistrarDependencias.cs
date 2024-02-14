@@ -1379,7 +1379,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<ISalvarRegistroColetivoUseCase, SalvarRegistroColetivoUseCase>();
             services.TryAddScoped<IExcluirRegistroColetivoUseCase, ExcluirRegistroColetivoUseCase>();
             services.TryAddScoped<IObterRegistrosColetivosNAAPAUseCase, ObterRegistrosColetivosNAAPAUseCase>();
-
+            services.TryAddScoped<IObterRegistroColetivoNAAPAPorIdUseCase, ObterRegistroColetivoNAAPAPorIdUseCase>();
+            
             RegistrarCasoDeUsoAEERabbitSgp(services);
             RegistrarCasoDeUsoAulaRabbitSgp(services);
             RegistrarCasoDeUsoFechamentoRabbitSgp(services);
