@@ -14,7 +14,7 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class RegistroColetivoController : ControllerBase
     {
-        [HttpPost]
+        [HttpGet("tipo-reuniao")]
         [ProducesResponseType(typeof(TipoReuniaoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.RC_NAAPA_C, Policy = "Bearer")]
