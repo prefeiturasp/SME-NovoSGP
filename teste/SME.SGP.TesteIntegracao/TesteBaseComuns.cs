@@ -35,7 +35,7 @@ namespace SME.SGP.TesteIntegracao
         protected const string TURMA_CODIGO_1 = "1";
 
         protected const string TURMA_CODIGO_2 = "2";
-        private const string TURMA_NOME_2 = "Turma Nome 2";
+        protected const string TURMA_NOME_2 = "Turma Nome 2";
 
         protected const string TURMA_NOME_1 = "Turma Nome 1";
         protected const string TURMA_ANO_2 = "2";
@@ -1068,7 +1068,7 @@ namespace SME.SGP.TesteIntegracao
                 TipoTurma = tipoTurma
             });
         }
-        protected async Task CriarTurma(Modalidade modalidade, string anoTurma, string codigoTurma, TipoTurma tipoTurma, long ueId,int anoLetivo,bool turmaHistorica = false )
+        protected async Task CriarTurma(Modalidade modalidade, string anoTurma, string codigoTurma, TipoTurma tipoTurma, long ueId,int anoLetivo,bool turmaHistorica = false, string nomeTurma = null)
         {
             await InserirNaBase(new Dominio.Turma
             {
@@ -1079,7 +1079,7 @@ namespace SME.SGP.TesteIntegracao
                 ModalidadeCodigo = modalidade,
                 AnoLetivo = anoLetivo,
                 Semestre = SEMESTRE_1,
-                Nome = TURMA_NOME_1,
+                Nome = nomeTurma ??TURMA_NOME_1,
                 TipoTurma = tipoTurma
             });
         }

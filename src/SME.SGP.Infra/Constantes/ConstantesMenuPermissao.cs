@@ -177,6 +177,7 @@
         public const string ROTA_DASHBOARD_REGISTRO_ITINERANCIA = "/dashboard/registro-itinerancia";
         public const string ROTA_DASHBOARD_NAAPA = "/dashboard/naapa";
         public const string ROTA_DASHBOARD_ESCOLA_AQUI ="/dashboard/escola-aqui";
+        public const string ROTA_DASHBOARD_BUSCA_ATIVA = "/dashboard/busca-ativa";
         public const string ROTA_USUARIOS_REINICIAR_SENHA = "/usuarios/reiniciar-senha";
         public const string ROTA_FECHAMENTO_ACOMPANHAMENTO_APRENDIZAGEM = "/fechamento/acompanhamento-aprendizagem";
         public const string ROTA_RELATORIOS_PAP_RELATORIO_PAP = "/relatorios/pap/relatorio-pap";
@@ -290,7 +291,8 @@
         public const int ORDEM_MENU_GRAFICO_REGISTRO_DE_ITINERANCIA = 9;
         public const int ORDEM_MENU_GRAFICO_NAAPA = 10;
         public const int ORDEM_MENU_GRAFICO_ESCOLA_AQUI = 11;
-        
+        public const int ORDEM_MENU_GRAFICO_BUSCA_ATIVA = 12;
+
         public const int ORDEM_MENU_REINICIAR_SENHA = 1;
         public const int ORDEM_MENU_SUPORTE = 2;
         
