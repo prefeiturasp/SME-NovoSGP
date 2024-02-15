@@ -130,7 +130,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<RegistroColetivoCompletoDto> ObterRegistroColetivoCompletoPorId(long id)
         {
-            var query = @"select rc.id, d.dre_id as codigoDre, d.nome as nomeDre, trn.id as tipoReuniaoId,
+            var query = @"select rc.id, d.id as DreId, d.dre_id as codigoDre, d.nome as nomeDre, trn.id as tipoReuniaoId,
                                  trn.titulo as tipoReuniaoDescricao, rc.data_registro as dataRegistro, 
                                  rc.quantidade_participantes as quantidadeParticipantes,
                                  rc.quantidade_educadores as quantidadeEducadores,
@@ -150,7 +150,7 @@ namespace SME.SGP.Dados.Repositorios
                                 and not rc.excluido
                           ;
                           select u.tipo_escola as tipoEscola,
-                                 u.nome as nome, u.ue_id as codigo 
+                                 u.nome as nome, u.id, u.ue_id as codigo 
                           from registrocoletivo_ue ru
                           inner join ue u on u.id = ru.ue_id 
                           where ru.registrocoletivo_id = @id

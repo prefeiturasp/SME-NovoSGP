@@ -6,6 +6,7 @@ namespace SME.SGP.Infra
 {
     public class RegistroColetivoCompletoDto : AuditoriaDto
     {
+        public long DreId { get; set; }
         public string CodigoDre { get; set; }
         public string NomeDre { get; set; }
         public long TipoReuniaoId { get; set; }
