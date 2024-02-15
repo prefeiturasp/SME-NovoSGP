@@ -32,7 +32,7 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrente
             _collectionFixture.Services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesDoProfessorNaTurmaQuery, IEnumerable<ComponenteCurricularEol>>), typeof(ObterComponentesCurricularesDoProfessorNaTurmaQueryHandlerComponenteInfantilFake), ServiceLifetime.Scoped));
             _collectionFixture.BuildServiceProvider();
 
-            var dataAtual = DateTimeExtension.HorarioBrasilia();
+            var dataAtual = DefinirDataConsiderandoDiaSemana(DateTimeExtension.HorarioBrasilia().Date);
 
             await InserirNaBase(new Dre()
             {
@@ -111,6 +111,14 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrente
             var aulas = ObterTodos<Dominio.Aula>();
             aulas.ShouldNotBeEmpty();
             aulas.All(x => x.TipoCalendarioId == 1 && x.DisciplinaId == "1" && x.RecorrenciaAula == RecorrenciaAula.RepetirBimestreAtual && x.TurmaId == "1").ShouldBeTrue();
+        }
+
+        private static DateTime DefinirDataConsiderandoDiaSemana(DateTime data)
+        {
+            if (data.DayOfWeek == DayOfWeek.Sunday || data.DayOfWeek == DayOfWeek.Saturday)
+                return DefinirDataConsiderandoDiaSemana(data.AddDays(1));
+
+            return data;                
         }
     }
 }
