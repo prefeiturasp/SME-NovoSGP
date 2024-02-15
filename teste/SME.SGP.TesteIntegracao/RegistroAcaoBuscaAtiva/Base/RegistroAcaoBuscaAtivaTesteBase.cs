@@ -16,10 +16,8 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
 {
     public class RegistroAcaoBuscaAtivaTesteBase : TesteBaseComuns
     {
-        private readonly IExecutor ExecutorComandos;
         public RegistroAcaoBuscaAtivaTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
-            ExecutorComandos = ServiceProvider.GetRequiredService<IExecutor>(); 
         }
 
         protected async Task CriarDadosBase(FiltroRegistroAcaoDto filtro)
@@ -29,8 +27,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             await CriarUsuarios();
             await CriarTurmaTipoCalendario(filtro);
 
-            ExecutorComandos.SetarComando(new PublicarQuestionarioBuscaAtivaComando(this));
-            await ExecutorComandos.ExecutarComando();
+            await Executor.ExecutarComando(new PublicarQuestionarioBuscaAtivaComando(this));
         }
 
         protected async Task CriarTurmaTipoCalendario(FiltroRegistroAcaoDto filtro)

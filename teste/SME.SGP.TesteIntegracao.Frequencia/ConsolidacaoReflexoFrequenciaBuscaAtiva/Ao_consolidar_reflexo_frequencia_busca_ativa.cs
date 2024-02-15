@@ -1,23 +1,13 @@
-﻿using Bogus.DataSets;
-using MediatR;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Moq;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
-using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Commands;
-using SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaMensal.ServicosFakes;
 using SME.SGP.TesteIntegracao.Constantes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.Xml;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
@@ -26,13 +16,11 @@ namespace SME.SGP.TesteIntegracao.Frequencia.ConsolidacaoReflexoFrequenciaBuscaA
 {
     public class Ao_consolidar_reflexo_frequencia_busca_ativa : FrequenciaTesteBase
     {
-        private readonly IExecutor ExecutorComandos;
         private const long ID_REGISTRO_BUSCA_ATIVA_ALUNO_1 = 1;
         private const long ID_REGISTRO_BUSCA_ATIVA_ALUNO_2 = 2;
 
         public Ao_consolidar_reflexo_frequencia_busca_ativa(CollectionFixture collectionFixture) : base(collectionFixture)
         {
-            ExecutorComandos = ServiceProvider.GetRequiredService<IExecutor>();
         }
 
         protected override void RegistrarFakes(IServiceCollection services)
@@ -46,8 +34,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia.ConsolidacaoReflexoFrequenciaBuscaA
             await CriarDreUePerfilComponenteCurricular();
             await CriarTipoCalendario(ModalidadeTipoCalendario.FundamentalMedio);
             await CriarTurma(Modalidade.Medio, ANO_5, TURMA_CODIGO_1);
-            ExecutorComandos.SetarComando(new PublicarQuestionarioBuscaAtivaComando(this));
-            await ExecutorComandos.ExecutarComando();
+            await Executor.ExecutarComando(new PublicarQuestionarioBuscaAtivaComando(this));
             var dataReferencia = DateTimeExtension.HorarioBrasilia().Date;
 
             await CriaAulaFrequencia(AULA_ID_1, new(dataReferencia.Year, 5, 01), TipoFrequencia.C, TipoFrequencia.F);

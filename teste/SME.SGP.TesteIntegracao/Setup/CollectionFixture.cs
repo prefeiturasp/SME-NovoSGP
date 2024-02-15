@@ -39,7 +39,6 @@ namespace SME.SGP.TesteIntegracao.Setup
             var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", false).Build();
 
             Services.AddSingleton<IConfiguration>(config);
-            Services.TryAddScoped<IExecutor, Executor>();
             Services.AddMemoryCache();
             
             FluentMapper.EntityMaps.Clear();
