@@ -579,6 +579,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioRegistroAcaoBuscaAtivaSecao, RepositorioRegistroAcaoBuscaAtivaSecao>();
             services.TryAddScoped<IRepositorioQuestaoRegistroAcaoBuscaAtiva, RepositorioQuestaoRegistroAcaoBuscaAtiva>();
             services.TryAddScoped<IRepositorioRespostaRegistroAcaoBuscaAtiva, RepositorioRespostaRegistroAcaoBuscaAtiva>();
+            services.TryAddScoped<IRepositorioDashBoardBuscaAtiva, RepositorioDashBoardBuscaAtiva>();
+            services.TryAddScoped<IRepositorioConsolidacaoReflexoFrequenciaBuscaAtiva, RepositorioConsolidacaoReflexoFrequenciaBuscaAtiva>();
 
             // Registro Coletivo NAAPA
             services.TryAddScoped<IRepositorioTipoReuniaoNAAPA, RepositorioTipoReuniaoNAAPA>();
@@ -1373,6 +1375,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterRegistroAcaoPorIdUseCase, ObterRegistroAcaoPorIdUseCase>();
             services.TryAddScoped<IAtualizarDadosResponsaveisUseCase, AtualizarDadosResponsaveisUseCase>();
             services.TryAddScoped<IObterRegistrosAcaoUseCase, ObterRegistrosAcaoUseCase>();
+            services.TryAddScoped<IObterQuantidadeBuscaAtivaPorMotivosAusenciaUseCase, ObterQuantidadeBuscaAtivaPorMotivosAusenciaUseCase>();
+            services.TryAddScoped<IObterQuantidadeBuscaAtivaPorProcedimentosTrabalhoDreUseCase, ObterQuantidadeBuscaAtivaPorProcedimentosTrabalhoDreUseCase>();
+            services.TryAddScoped<IObterQuantidadeBuscaAtivaPorReflexoFrequenciaMesUseCase, ObterQuantidadeBuscaAtivaPorReflexoFrequenciaMesUseCase>();
+            
 
             //Registro Coletivo 
             services.TryAddScoped<IObterTiposDeReuniaoUseCase, ObterTiposDeReuniaoUseCase>();

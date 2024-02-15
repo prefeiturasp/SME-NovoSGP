@@ -2019,7 +2019,16 @@ namespace SME.SGP.Infra
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CHART_BAR,
             EhConsulta = true)]
         RDE_A = 181,
-        
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GRAFICOS,
+            Menu = ConstantesMenuPermissao.MENU_BUSCA_ATIVA,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GRAFICOS,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_GRAFICO_BUSCA_ATIVA,
+            Url = ConstantesMenuPermissao.ROTA_DASHBOARD_BUSCA_ATIVA,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CHART_BAR,
+            EhConsulta = true)]
+        DBA_C = 267,
+
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_CONFIGURACOES, 
             Menu = ConstantesMenuPermissao.MENU_REINICIAR_SENHA, 
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_CONFIGURACAO,
