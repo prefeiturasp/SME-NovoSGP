@@ -48,6 +48,17 @@ namespace SME.SGP.TesteIntegracao.DashboardNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
+            await InserirNaBase(new ConsolidadoEncaminhamentoNAAPA()
+            {
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                UeId = UE_ID_1,
+                Situacao = SituacaoNAAPA.Rascunho,
+                Quantidade = 2,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
             var useCase = ServiceProvider.GetService<IObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase>();
             var dto = new FiltroQuantidadeEncaminhamentoNAAPAEmAbertoDto() { AnoLetivo = DateTimeExtension.HorarioBrasilia().Year, DreId = DRE_ID_1 };
             var retorno = await useCase.Executar(dto);

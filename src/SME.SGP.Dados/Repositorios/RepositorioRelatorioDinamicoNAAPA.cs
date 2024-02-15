@@ -30,6 +30,7 @@ namespace SME.SGP.Dados.Repositorios
             var situacao = new List<int>() { (int)SituacaoNAAPA.AguardandoAtendimento, (int)SituacaoNAAPA.EmAtendimento };
             var retornoPaginado = new PaginacaoResultadoDto<EncaminhamentoNAAPARelatorioDinamico>();
             IEnumerable<TotalRegistroPorModalidadeRelatorioDinamicoNAAPA> retornoTotalDeRegitros = null;
+
             var parametros = new
             {
                 filtro.DreId,
@@ -40,18 +41,20 @@ namespace SME.SGP.Dados.Repositorios
                 situacao = situacao.ToArray(),
                 Modalidades = filtro.Modalidades?.Select(modalidade => (int)modalidade).ToArray()
             };
+
             using (var encaminhamentosNAAPA = await contexto.Conexao.QueryMultipleAsync(sql, parametros))
             {
                 retornoPaginado.Items = encaminhamentosNAAPA.Read<EncaminhamentoNAAPARelatorioDinamico>();
                 retornoTotalDeRegitros = encaminhamentosNAAPA.Read<TotalRegistroPorModalidadeRelatorioDinamicoNAAPA>();
                 retornoPaginado.TotalRegistros = retornoTotalDeRegitros.Sum(registro => (int)registro.Total);
             }
+
             var encaminhamentosNAAPAIds = retornoPaginado.Items.Select(s => s.Id).Distinct().ToArray();
+
             retornoPaginado.Items = retornoPaginado.Items.OrderBy(rr => rr.Dre)
                                                             .ThenBy(rr => rr.UnidadeEscolar)
-                                                            .ThenBy(rr => rr.Estudante)
-                                                            .Skip(paginacao.QuantidadeRegistrosIgnorados)
-                                                            .Take(paginacao.QuantidadeRegistros);
+                                                            .ThenBy(rr => rr.Estudante);
+
             retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
 
             return new RelatorioDinamicoNAAPADto()
