@@ -4,6 +4,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.Constantes;
 using SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Linq;
@@ -131,7 +132,7 @@ namespace SME.SGP.TesteIntegracao.DashboardBuscaAtiva
             await InserirNaBase(new Dominio.RegistroAcaoBuscaAtivaSecao()
             {
                 RegistroAcaoBuscaAtivaId = idBaseRegistroAcao,
-                SecaoRegistroAcaoBuscaAtivaId = SECAO_REGISTRO_ACAO_ID_1,
+                SecaoRegistroAcaoBuscaAtivaId = ConstantesQuestionarioBuscaAtiva.SECAO_REGISTRO_ACAO_ID_1,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
@@ -141,14 +142,15 @@ namespace SME.SGP.TesteIntegracao.DashboardBuscaAtiva
             await InserirNaBase(new Dominio.QuestaoRegistroAcaoBuscaAtiva()
             {
                 RegistroAcaoBuscaAtivaSecaoId = idBaseRegistroAcao,
-                QuestaoId = (realizouContatoResponsavel ? QUESTAO_2_4_ID_PROCEDIMENTO_REALIZADO : QUESTAO_2_1_ID_PROCEDIMENTO_REALIZADO_NAO_CONTATOU_RESP),
+                QuestaoId = (realizouContatoResponsavel ? ConstantesQuestionarioBuscaAtiva.QUESTAO_2_4_ID_PROCEDIMENTO_REALIZADO 
+                                                        : ConstantesQuestionarioBuscaAtiva.QUESTAO_2_1_ID_PROCEDIMENTO_REALIZADO_NAO_CONTATOU_RESP),
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            var opcaoResposta = opcaoRespostaBase.Where(q => q.QuestaoId == (realizouContatoResponsavel ? QUESTAO_2_4_ID_PROCEDIMENTO_REALIZADO 
-                                                                                                        : QUESTAO_2_1_ID_PROCEDIMENTO_REALIZADO_NAO_CONTATOU_RESP)
+            var opcaoResposta = opcaoRespostaBase.Where(q => q.QuestaoId == (realizouContatoResponsavel ? ConstantesQuestionarioBuscaAtiva.QUESTAO_2_4_ID_PROCEDIMENTO_REALIZADO 
+                                                                                                        : ConstantesQuestionarioBuscaAtiva.QUESTAO_2_1_ID_PROCEDIMENTO_REALIZADO_NAO_CONTATOU_RESP)
                                                              && q.Ordem.Equals((int)tipoProcedimentoTrabalho)).FirstOrDefault();
             await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
                 {
