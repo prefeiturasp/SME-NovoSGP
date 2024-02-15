@@ -23,13 +23,13 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
+            //log-------------------------------
+            var logPlanoAee = new LogPlanoAee();
+            //----------------------------------
             try
             {
                 var planoAEE = mensagemRabbit.ObterObjetoMensagem<PlanoAEE>();
                 var anoLetivo = DateTimeExtension.HorarioBrasilia().Year;
-                //log-------------------------------
-                    var logPlanoAee = new LogPlanoAee();
-                //----------------------------------
 
                 if (planoAEE.NaoEhNulo())
                 {
@@ -168,6 +168,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
+                await EnviarLog(logPlanoAee);
                 await mediator.Send(new SalvarLogViaRabbitCommand(MensagemNegocioEncerramentoAutomaticoPlanoAee.Falha_ao_encerrar_planos, LogNivel.Critico, LogContexto.WorkerRabbit, observacao: ex.Message, rastreamento: ex.StackTrace, excecaoInterna: ex.ToString(), innerException: ex.InnerException?.ToString()));
                 throw;
             }
