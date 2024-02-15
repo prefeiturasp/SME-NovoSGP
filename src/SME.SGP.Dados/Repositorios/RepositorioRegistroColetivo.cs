@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
@@ -121,16 +120,13 @@ namespace SME.SGP.Dados.Repositorios
             if (tiposReuniaoId.PossuiRegistros())
                 sql.AppendLine(" and trn.id = ANY(@tiposReuniaoId) ");
 
-            if (dataReuniaoInicio.HasValue)
-                sql.AppendLine(" and rc.data_registro >= @dataReuniaoInicio ");
-
-            if (dataReuniaoFim.HasValue)
-                sql.AppendLine(" and rc.data_registro <= @dataReuniaoFim");
+            if (dataReuniaoInicio.HasValue && dataReuniaoFim.HasValue)
+                sql.AppendLine(@" and rc.data_registro::date between @dataReuniaoInicio and @dataReuniaoFim");
         }
 
         public async Task<RegistroColetivoCompletoDto> ObterRegistroColetivoCompletoPorId(long id)
         {
-            var query = @"select rc.id, d.id as DreId, d.dre_id as codigoDre, d.nome as nomeDre, trn.id as tipoReuniaoId,
+            var query = @"select rc.id, d.id as DreId, d.dre_id as codigoDre, d.nome as nomeDre, extract(year from rc.criado_em) as AnoLetivo, trn.id as tipoReuniaoId,
                                  trn.titulo as tipoReuniaoDescricao, rc.data_registro as dataRegistro, 
                                  rc.quantidade_participantes as quantidadeParticipantes,
                                  rc.quantidade_educadores as quantidadeEducadores,
