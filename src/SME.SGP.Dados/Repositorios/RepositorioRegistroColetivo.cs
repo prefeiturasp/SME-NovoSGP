@@ -20,7 +20,11 @@ namespace SME.SGP.Dados.Repositorios
                                                                                              DateTime? dataReuniaoInicio, DateTime? dataReuniaoFim, long[] tiposReuniaoId, 
                                                                                              Paginacao paginacao)
         {
-            var query = MontaQueryCompleta(paginacao,  dreId, ueId,
+            var query = MontaQueryConsulta(paginacao, contador: false, dreId, ueId,
+                                         dataReuniaoInicio, dataReuniaoFim,
+                                         tiposReuniaoId);
+            
+            var queryContador = MontaQueryConsulta(paginacao, contador: true, dreId, ueId,
                                           dataReuniaoInicio, dataReuniaoFim,
                                           tiposReuniaoId);
 
@@ -34,95 +38,107 @@ namespace SME.SGP.Dados.Repositorios
             };
 
             var retorno = new PaginacaoResultadoDto<RegistroColetivoListagemDto>();
-
-            using (var registrosColetivos = await database.Conexao.QueryMultipleAsync(query, parametros))
+            using (var registrosColetivosMulti = await database.Conexao.QueryMultipleAsync(query, parametros))
             {
-                var registrosColetivosUes = registrosColetivos.Read<RegistroColetivoUeListagemDto>();
-                retorno.Items = registrosColetivosUes.GroupBy(rcue => rcue.Id)
-                                                     .Select(rc => new RegistroColetivoListagemDto()
-                                                     {
-                                                         Id = rc.Key,
-                                                         CriadoPor = rc.FirstOrDefault().CriadoPor,
-                                                         DataReuniao = rc.FirstOrDefault().DataReuniao,
-                                                         TipoReuniaoDescricao = rc.FirstOrDefault().TipoReuniaoDescricao,
-                                                         NomesUe = rc.Select(rcue => rcue.NomeTipoUe).ToArray(),
-                                                     });
-                retorno.TotalRegistros = registrosColetivos.ReadFirst<int>();
+                var ueRegistrosColetivos = registrosColetivosMulti.Read<UeRegistroColetivoDto>();
+                var registrosColetivos = registrosColetivosMulti.Read<RegistroColetivoListagemDto>().ToList();
+                registrosColetivos.ForEach(registro =>
+                {
+                    registro.NomesUe.AddRange(ueRegistrosColetivos.Where(ue => ue.RegistroColetivoId == registro.Id).Select(ue => ue.NomeFormatado));
+                });
+                retorno.Items = registrosColetivos;
             }
 
+            retorno.TotalRegistros = await database.Conexao.QueryFirstOrDefaultAsync<int>(queryContador, parametros);
             retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
 
             return retorno;
         }
 
-        private string MontaQueryCompleta(Paginacao paginacao, long dreId, long? ueId,
+        private string MontaQueryConsulta(Paginacao paginacao, bool contador, long dreId, long? ueId,
                                           DateTime? dataReuniaoInicio, DateTime? dataReuniaoFim, long[] tiposReuniaoId)
         {
             var sql = new StringBuilder();
-
-            MontaQueryConsulta(paginacao, sql, contador: false, dreId, ueId,
-                                          dataReuniaoInicio, dataReuniaoFim,
-                                          tiposReuniaoId);
-            sql.AppendLine(";");
-            MontaQueryConsulta(paginacao, sql, contador: true, dreId, ueId,
-                                          dataReuniaoInicio, dataReuniaoFim,
-                                          tiposReuniaoId);
-            return sql.ToString();
-        }
-
-        private void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, long dreId, long? ueId,
-                                          DateTime? dataReuniaoInicio, DateTime? dataReuniaoFim, long[] tiposReuniaoId)
-        {
-            ObterCabecalho(sql, contador);
-
-            ObterFiltro(sql, dreId, ueId,
-                        dataReuniaoInicio, dataReuniaoFim,
-                        tiposReuniaoId);
+            ObterQueryListagem(sql, contador,
+                               dreId, ueId,
+                               dataReuniaoInicio, dataReuniaoFim,
+                               tiposReuniaoId);
 
             if (!contador)
                 sql.AppendLine(" order by rc.data_registro desc ");
 
             if (paginacao.QuantidadeRegistros > 0 && !contador)
                 sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
+
+            return sql.ToString();
         }
 
-        private static void ObterCabecalho(StringBuilder sql, bool contador)
+        private static void ObterQueryListagem(StringBuilder sql, bool contador,
+                                           long dreId, long? ueId,
+                                           DateTime? dataReuniaoInicio, 
+                                           DateTime? dataReuniaoFim, long[] tiposReuniaoId)
         {
-            var sqlSelect = $@" select ";
-            sql.AppendLine(sqlSelect);
             if (contador)
-                sql.AppendLine("count(distinct rc.id) ");
-            else
             {
-                sql.AppendLine(@"rc.id, rc.data_registro as dataReuniao,
-                                 trn.titulo as tipoReuniaoDescricao,
-                                 rc.criado_por as nomeUsuarioCriador,
-                                 rc.criado_rf as rfUsuarioCriador,
-                                 u.tipo_escola as tipoEscola,
-                                 u.nome as nomeUe");
-            }
+                sql.AppendLine(@"select count(distinct rc.id) 
+                                 from registrocoletivo rc 
+                                 inner join tipo_reuniao_naapa trn on trn.id = rc.tipo_reuniao_id ");
 
-            sql.AppendLine(@"from registrocoletivo_ue rcue
-                             inner join registrocoletivo rc on rc.id = rcue.registrocoletivo_id 
-                             inner join tipo_reuniao_naapa trn on trn.id = rc.tipo_reuniao_id 
-                             inner join ue u on u.id = rcue.ue_id");
-        }
-
-        private void ObterFiltro(StringBuilder sql, long dreId, long? ueId,
-                                          DateTime? dataReuniaoInicio, DateTime? dataReuniaoFim, long[] tiposReuniaoId)
-        {
-            sql.AppendLine(@" where not rc.excluido 
+                sql.AppendLine(@" where not rc.excluido 
                                     and rc.dre_id = @dreId");
 
-            if (ueId.HasValue)
-                sql.AppendLine(@" and rc.id in (select rcue.registrocoletivo_id from registrocoletivo_ue rcue where rcue.ue_id = @ueId) ");
+                if (ueId.HasValue)
+                    sql.AppendLine(@" and rc.id in (select rcue.registrocoletivo_id from registrocoletivo_ue rcue where rcue.ue_id = @ueId) ");
 
-            if (tiposReuniaoId.PossuiRegistros())
-                sql.AppendLine(" and trn.id = ANY(@tiposReuniaoId) ");
+                if (tiposReuniaoId.PossuiRegistros())
+                    sql.AppendLine(" and trn.id = ANY(@tiposReuniaoId) ");
 
-            if (dataReuniaoInicio.HasValue && dataReuniaoFim.HasValue)
-                sql.AppendLine(@" and rc.data_registro::date between @dataReuniaoInicio and @dataReuniaoFim");
+                if (dataReuniaoInicio.HasValue && dataReuniaoFim.HasValue)
+                    sql.AppendLine(@" and rc.data_registro::date between @dataReuniaoInicio and @dataReuniaoFim");
+            }
+            else
+            {
+                sql.AppendLine(@"select rc.id as registroColetivoId, u.id, u.ue_id as codigo, u.tipo_escola as tipoEscola,
+                                 u.nome as nome
+                                 from registrocoletivo_ue rcue
+                                 inner join registrocoletivo rc on rc.id = rcue.registrocoletivo_id 
+                                 inner join tipo_reuniao_naapa trn on trn.id = rc.tipo_reuniao_id 
+                                 inner join ue u on u.id = rcue.ue_id
+                                 where not rc.excluido 
+                                    and rc.dre_id = @dreId");
+
+                if (ueId.HasValue)
+                    sql.AppendLine(@" and rc.id in (select rcue.registrocoletivo_id from registrocoletivo_ue rcue where rcue.ue_id = @ueId) ");
+
+                if (tiposReuniaoId.PossuiRegistros())
+                    sql.AppendLine(" and trn.id = ANY(@tiposReuniaoId) ");
+
+                if (dataReuniaoInicio.HasValue && dataReuniaoFim.HasValue)
+                    sql.AppendLine(@" and rc.data_registro::date between @dataReuniaoInicio and @dataReuniaoFim");
+
+                sql.AppendLine(@";");
+                sql.AppendLine(@"select  rc.id, rc.data_registro as dataReuniao,
+                                 trn.titulo as tipoReuniaoDescricao,
+                                 rc.criado_por as nomeUsuarioCriador,
+                                 rc.criado_rf as rfUsuarioCriador
+                                 from registrocoletivo rc 
+                                 inner join tipo_reuniao_naapa trn on trn.id = rc.tipo_reuniao_id
+                                 where not rc.excluido 
+                                       and rc.dre_id = @dreId");
+
+                if (ueId.HasValue)
+                    sql.AppendLine(@" and rc.id in (select rcue.registrocoletivo_id from registrocoletivo_ue rcue where rcue.ue_id = @ueId) ");
+
+                if (tiposReuniaoId.PossuiRegistros())
+                    sql.AppendLine(" and trn.id = ANY(@tiposReuniaoId) ");
+
+                if (dataReuniaoInicio.HasValue && dataReuniaoFim.HasValue)
+                    sql.AppendLine(@" and rc.data_registro::date between @dataReuniaoInicio and @dataReuniaoFim");
+            }
+
+           
         }
+
 
         public async Task<RegistroColetivoCompletoDto> ObterRegistroColetivoCompletoPorId(long id)
         {

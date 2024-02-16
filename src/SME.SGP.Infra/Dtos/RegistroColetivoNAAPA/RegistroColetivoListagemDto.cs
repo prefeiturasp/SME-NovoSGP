@@ -9,12 +9,14 @@ namespace SME.SGP.Infra
     {
         public RegistroColetivoListagemDto()
         {
+            NomesUe = new List<string>();
         }
         public long Id { get; set; }
-        public string[] NomesUe { get; set; }
+        public List<string> NomesUe { get; }
         public DateTime DataReuniao { get; set; }
         public string TipoReuniaoDescricao { get; set; }
-        public string CriadoPor { get; set; }
-
+        public string NomeUsuarioCriador { get; set; }
+        public string RfUsuarioCriador { get; set; }
+        public string CriadoPor => $"{NomeUsuarioCriador}({RfUsuarioCriador})";
     }
 }
