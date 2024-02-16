@@ -1,1 +1,1 @@
-ALTER TABLE public.registrocoletivo ALTER COLUMN descricao VARCHAR NOT NULL;
+ALTER TABLE public.registrocoletivo ALTER COLUMN descricao TYPE varchar;
