@@ -42,6 +42,8 @@ namespace SME.SGP.Aplicacao
                                                                                                                         request.Usuario.PerfilAtual,
                                                                                                                         request.Usuario.EhProfessorInfantilOuCjInfantil());
 
+                componentesCurricularesDoProfessor = await ValidaVigenciaComponentesTerritorioSaberDoProfessor(request.Usuario,request.TurmaCodigo,request.Data, componentesCurricularesDoProfessor);
+
                 podeCriarAulasParaTurma = await ProfessorPodeCriarAulasTurma(componentesCurricularesDoProfessor,
                                                                              request.ComponenteCurricularCodigo,
                                                                              request.CodigoTerritorioSaber);
@@ -64,6 +66,21 @@ namespace SME.SGP.Aplicacao
             return (true, string.Empty);
         }
 
+        private async Task<IEnumerable<ComponenteCurricularEol>> ValidaVigenciaComponentesTerritorioSaberDoProfessor(Usuario usuario, string turmaCodigo, DateTime data, IEnumerable<ComponenteCurricularEol> componentesCurricularesDoProfessor)
+        {
+            var componentesTerritorioSaberVigentes = new List<ComponenteCurricularEol>();
+            foreach (var componenteCurricularDoProfessor in componentesCurricularesDoProfessor)
+            {
+                var componenteEhVigente = await mediator.Send(new VerificaPodePersistirTurmaDisciplinaEOLQuery(usuario, turmaCodigo, componenteCurricularDoProfessor.Codigo.ToString(), data, componenteCurricularDoProfessor.TerritorioSaber));
+                if (componenteEhVigente)
+                    componentesTerritorioSaberVigentes.Add(componenteCurricularDoProfessor);
+            }
+            if (componentesTerritorioSaberVigentes.Any())
+               return componentesTerritorioSaberVigentes;
+
+            return componentesCurricularesDoProfessor;
+        }
+
         private async Task<bool> ObterUsuarioPossuiPermissaoNaTurmaEDisciplina(long componenteCurricularId, string codigoTurma, DateTime data, Dominio.Usuario usuario, CancellationToken cancellationToken)
         => usuario.EhGestorEscolar() ||
            await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(componenteCurricularId, codigoTurma, data, usuario), cancellationToken);
@@ -73,7 +90,7 @@ namespace SME.SGP.Aplicacao
                                                               long? componenteCurricularTerritorioSaberCodigo)
         => componentesCurricularesDoProfessor.NaoEhNulo() &&
            (componentesCurricularesDoProfessor.Any(c => !c.Regencia && !c.TerritorioSaber && c.Codigo == componenteCurricularCodigo) ||
-            componentesCurricularesDoProfessor.Any(c => !c.Regencia && c.TerritorioSaber && (c.CodigoComponenteTerritorioSaber == componenteCurricularCodigo || c.Codigo == componenteCurricularTerritorioSaberCodigo)) ||
+            componentesCurricularesDoProfessor.Any(c => !c.Regencia && c.TerritorioSaber && (c.CodigoComponenteTerritorioSaber == componenteCurricularTerritorioSaberCodigo || c.Codigo == componenteCurricularCodigo)) ||
             componentesCurricularesDoProfessor.Any(r => r.Regencia && (r.CodigoComponenteCurricularPai == componenteCurricularCodigo || r.Codigo == componenteCurricularCodigo)));
 
         private async Task<bool> ProfessorCJPodeCriarAulasTurma(IEnumerable<AtribuicaoCJ> componentesCurricularesDoProfessorCJ,

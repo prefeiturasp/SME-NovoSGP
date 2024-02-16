@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
             if (!usuario.EhGestorEscolar())
             {
                 ValidaSeUsuarioPodeCriarAula(aula, usuario);
-                await ValidaProfessorPodePersistirTurmaDisciplina(aula.TurmaId, usuario, aula.DisciplinaId, aula.DataAula, false);
+                await ValidaProfessorPodePersistirTurmaDisciplina(aula.TurmaId, usuario, aula.DisciplinaId, aula.DataAula, false, false);
             }
 
             await ValidarPeriodoEscolarAberto(aula, turma, cancellationToken);
@@ -115,9 +115,9 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task ValidaProfessorPodePersistirTurmaDisciplina(string turmaId, Usuario usuario, string disciplinaId, DateTime dataAula, bool historico)
+        private async Task ValidaProfessorPodePersistirTurmaDisciplina(string turmaId, Usuario usuario, string disciplinaId, DateTime dataAula, bool historico, bool ehTerritorioSaber)
         {
-            var podePersistirTurma = await mediator.Send(new VerificaPodePersistirTurmaDisciplinaQuery(usuario, turmaId, disciplinaId, dataAula.Local(), historico));
+            var podePersistirTurma = await mediator.Send(new VerificaPodePersistirTurmaDisciplinaQuery(usuario, turmaId, disciplinaId, dataAula.Local(), historico, ehTerritorioSaber));
 
             if (!usuario.EhProfessorCj() && !podePersistirTurma)
                 throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);

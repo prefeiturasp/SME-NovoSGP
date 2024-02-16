@@ -9,13 +9,14 @@ namespace SME.SGP.Aplicacao
 {
     public class VerificaPodePersistirTurmaDisciplinaQuery : IRequest<bool>
     {
-        public VerificaPodePersistirTurmaDisciplinaQuery(Usuario usuario, string turmaId, string componenteCurricularId, DateTime data, bool historico)
+        public VerificaPodePersistirTurmaDisciplinaQuery(Usuario usuario, string turmaId, string componenteCurricularId, DateTime data, bool historico, bool ehTerritorioSaber)
         {
             Usuario = usuario;
             TurmaId = turmaId;
             ComponenteCurricularId = componenteCurricularId;
             Data = data;
             Historico = historico;
+            EhTerritorioSaber = ehTerritorioSaber;
         }
 
         public Usuario Usuario { get; set; }
@@ -23,6 +24,7 @@ namespace SME.SGP.Aplicacao
         public string ComponenteCurricularId { get; set; }
         public DateTime Data { get; set; }
         public bool Historico { get; set; }
+        public bool EhTerritorioSaber { get; set; }
     }
 
     public class VerificaPodePersistirTurmaDisciplinaQueryValidator : AbstractValidator<VerificaPodePersistirTurmaDisciplinaQuery>
