@@ -17,6 +17,6 @@ namespace SME.SGP.Infra
         public string TipoReuniaoDescricao { get; set; }
         public string NomeUsuarioCriador { get; set; }
         public string RfUsuarioCriador { get; set; }
-        public string CriadoPor => $"{NomeUsuarioCriador}({RfUsuarioCriador})";
+        public string CriadoPor => $"{NomeUsuarioCriador} ({RfUsuarioCriador})";
     }
 }
