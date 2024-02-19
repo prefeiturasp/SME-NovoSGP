@@ -77,8 +77,10 @@ namespace SME.SGP.Aplicacao
                                 .Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma.AnoLetivo, turmasCodigos.ToArray(), filtro.Bimestre, filtro.AlunoCodigo))).ToList();
 
             if (PodeAdicionarNota(filtro, componentesComNotaFechamentoOuConselho))
-                componentesComNotaFechamentoOuConselho.Add(new ComponenteCurricularDto() { Codigo = filtro.ComponenteCurricularId.ToString(), LancaNota = true });
-
+            {
+                var lancaNota = await mediator.Send(new ObterComponenteLancaNotaQuery((long)filtro.ComponenteCurricularId));
+                componentesComNotaFechamentoOuConselho.Add(new ComponenteCurricularDto() { Codigo = filtro.ComponenteCurricularId.ToString(), LancaNota = lancaNota });
+            }
             if (!filtro.Inativo && componentesComNotaFechamentoOuConselho.Any())
             {
                 var codigosComplementares = await ObterTurmasComplementaresEOL(turma, filtro.AlunoCodigo);
@@ -163,7 +165,7 @@ namespace SME.SGP.Aplicacao
                                        List<ComponenteCurricularDto> componentes)
         {
             var possuiIdComponente = filtro.ComponenteCurricularId.HasValue && filtro.ComponenteCurricularId != 0;
-
+            
             return possuiIdComponente && !componentes.Any(cc => cc.Codigo.Equals(filtro.ComponenteCurricularId.ToString()));
         }
 
