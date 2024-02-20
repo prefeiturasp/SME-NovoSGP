@@ -41,10 +41,20 @@ namespace SME.SGP.TesteIntegracao.Setup
         {
             Conexao.Insert(objeto);
         }
-        
+
+        public async Task<long> Salvar<T>(T objeto) where T : class, new()
+        {
+            return (long)(await Conexao.InsertAsync(objeto));
+        }
+
         public void Atualizar<T>(T objeto) where T : class, new()
         {
             Conexao.Update(objeto);
+        }
+
+        public void ExcluirTodos<T>() where T : class, new()
+        {
+            Conexao.DeleteAll<T>();
         }
 
         public List<T> ObterTodos<T>() where T : class, new()
@@ -88,6 +98,8 @@ namespace SME.SGP.TesteIntegracao.Setup
                 cmd.ExecuteNonQuery();
             }
         }
+
+
         
         public void Inserir(string tabela, string[] campos, string[] valores)
         {
