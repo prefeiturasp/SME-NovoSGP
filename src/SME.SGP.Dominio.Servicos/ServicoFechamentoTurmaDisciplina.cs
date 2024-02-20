@@ -243,15 +243,12 @@ namespace SME.SGP.Dominio.Servicos
                 fechamentoAlunos = await AtualizaSinteseAlunos(id, periodoEscolar.PeriodoFim, disciplinaEOL, turmaFechamento.AnoLetivo);
             else
                 fechamentoAlunos = await CarregarFechamentoAlunoENota(id, entidadeDto.NotaConceitoAlunos, usuarioLogado, parametroAlteracaoNotaFechamento,tipoNotaOuConceito?.TipoNota);
-            
-            var alunos = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turmaFechamento.CodigoTurma)));
-            
-            var alunosAtivos = from a in alunos
-                where a.EstaAtivo(periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim)
-                orderby a.NomeValido(), a.NumeroAlunoChamada
-                select a;
 
-            var codigosAlunosAtivos = alunosAtivos.Select(c => c.CodigoAluno).Distinct().ToArray();
+            var alunos = (await mediator.Send(new ObterAlunosDentroPeriodoQuery(turmaFechamento.CodigoTurma, (periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim))))
+                        .DistinctBy(a => a.CodigoAluno)
+                        .OrderBy(a => a.NomeValido());
+
+            var codigosAlunosAtivos = alunos?.Select(c => c.CodigoAluno)?.Distinct()?.ToArray();
             var codigosAlunosFechamento = fechamentoAlunos.Select(c => c.AlunoCodigo).Distinct().ToArray();
 
             if (codigosAlunosFechamento.Any(c => !codigosAlunosAtivos.Contains(c)))
