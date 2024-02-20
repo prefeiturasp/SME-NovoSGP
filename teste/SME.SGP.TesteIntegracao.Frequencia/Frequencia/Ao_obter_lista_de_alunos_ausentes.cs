@@ -41,8 +41,8 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             var lista = await mediator.Send(new ObterListaAlunosComAusenciaQuery(TURMA_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), BIMESTRE_2));
 
             lista.ShouldNotBeNull();
-            lista.ToList().Exists(ausencia => ausencia.Id == CODIGO_ALUNO_1).ShouldBeTrue();
-            lista.ToList().Exists(ausencia => ausencia.Id == CODIGO_ALUNO_3).ShouldBeFalse();
+            lista.ToList().Select(ausencia => ausencia.Id).ShouldContain(CODIGO_ALUNO_1);
+            lista.ToList().Select(ausencia => ausencia.Id).ShouldNotContain(CODIGO_ALUNO_3);
         }
         
         [Fact(DisplayName = "Frequência - Deve obter lista de alunos faltosos bimestre")]

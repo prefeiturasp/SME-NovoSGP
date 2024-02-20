@@ -45,8 +45,7 @@ namespace SME.SGP.Aplicacao
             var atividadesAvaliativaEBimestres = await mediator
                 .Send(new ObterAtividadesAvaliativasPorCCTurmaPeriodoQuery(componentesCurriculares.Select(a => a.ToString()).ToArray(), filtro.TurmaCodigo, periodoInicio, periodoFim));
 
-            var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(filtro.TurmaCodigo));
-
+            var alunos = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(filtro.TurmaCodigo)));
             if (alunos.EhNulo() || !alunos.Any())
                 throw new NegocioException("Não foi encontrado alunos para a turma informada");
 
@@ -113,15 +112,16 @@ namespace SME.SGP.Aplicacao
 
             }
 
-            IOrderedEnumerable<AlunoPorTurmaResposta> alunosAtivos = null;
+            IEnumerable<AlunoPorTurmaResposta> alunosAtivos = null;
             if (filtro.TurmaHistorico)
             {
                 alunosAtivos = from a in alunos
                                where a.EstaAtivo(periodoFim) ||
                                        (a.EstaInativo(periodoFim) && a.DataSituacao.Date >= periodoInicio.Date && a.DataSituacao.Date <= periodoFim.Date) &&
                                        (a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido || a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Transferido)
-                               orderby a.NomeValido(), a.NumeroAlunoChamada
-                               select a;
+                               group a by a.CodigoAluno into grupoAlunos
+                               orderby grupoAlunos.First().NomeValido(), grupoAlunos.First().NumeroAlunoChamada
+                               select grupoAlunos.OrderByDescending(a => a.DataSituacao).First();
             }
             else
             {
@@ -129,8 +129,10 @@ namespace SME.SGP.Aplicacao
                                where (a.EstaAtivo(periodoFim) ||
                                        (a.EstaInativo(periodoFim) && a.DataSituacao.Date >= periodoInicio.Date)) &&
                                        a.DataMatricula.Date <= periodoFim.Date
-                               orderby a.NomeValido(), a.NumeroAlunoChamada
-                               select a;
+                               group a by a.CodigoAluno into grupoAlunos
+                               orderby grupoAlunos.First().NomeValido(), grupoAlunos.First().NumeroAlunoChamada
+                               select grupoAlunos.OrderByDescending(a => a.DataSituacao).First();
+
             }
 
             var alunosAtivosCodigos = alunosAtivos.Select(a => a.CodigoAluno).Distinct().ToArray();
@@ -145,6 +147,9 @@ namespace SME.SGP.Aplicacao
                     NumeroChamada = aluno.ObterNumeroAlunoChamada()
                 };
                 var matriculasAluno = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(turmaCompleta.CodigoTurma, aluno.CodigoAluno));
+
+                if (alunos.Where(x => x.CodigoAluno == aluno.CodigoAluno).Count() >= 2)
+                    aluno.DataMatricula = alunos.FirstOrDefault(x => x.CodigoAluno == aluno.CodigoAluno && x.DataMatricula != aluno.DataMatricula).DataMatricula;
 
                 var notasAvaliacoes = new List<NotasConceitosNotaAvaliacaoListaoRetornoDto>();
                 foreach (var atividadeAvaliativa in atividadesAvaliativasdoBimestre)

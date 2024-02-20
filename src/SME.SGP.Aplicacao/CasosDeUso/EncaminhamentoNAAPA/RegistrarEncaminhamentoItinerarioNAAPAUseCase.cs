@@ -5,8 +5,8 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Consts;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,7 +15,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
     public class RegistrarEncaminhamentoItinerarioNAAPAUseCase : IRegistrarEncaminhamentoItinerarioNAAPAUseCase
     {
         private readonly IMediator mediator;
-        private const string SECAO_ITINERANCIA = "QUESTOES_ITINERACIA";
 
         public RegistrarEncaminhamentoItinerarioNAAPAUseCase(IMediator mediator)
         {
@@ -121,7 +120,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
 
         private void ValidarSecaoItinerancia(SecaoQuestionarioDto secaoQuestionarioDto)
         {
-            if (secaoQuestionarioDto.NomeComponente != SECAO_ITINERANCIA)
+            if (secaoQuestionarioDto.NomeComponente != EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA)
                 throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.SECAO_NAO_VALIDA_ITINERANCIA);
         }
 

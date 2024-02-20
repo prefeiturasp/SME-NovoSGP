@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
             IEnumerable<long> pendenciasIds = new List<long>();
             try
             {
-                pendenciasIds = JsonConvert.DeserializeObject<List<long>>(param.Mensagem.ToString()); ;
+                pendenciasIds = JsonConvert.DeserializeObject<List<long>>(param.Mensagem.ToString());
 
                 if (pendenciasIds.Any())
                     await mediator.Send(new ExcluirPendenciasPorIdsCommand() { PendenciasIds = pendenciasIds.ToArray() });

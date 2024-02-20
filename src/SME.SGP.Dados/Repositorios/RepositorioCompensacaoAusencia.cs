@@ -4,9 +4,8 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
 {
@@ -63,7 +62,7 @@ namespace SME.SGP.Dados
             };
 
             return await database.Conexao.QueryAsync<RegistroFaltasNaoCompensadaDto>(query, parametros);
-        }
+        }      
 
         public async Task<IEnumerable<CompensacaoDataAlunoDto>> ObterAusenciaParaCompensacaoPorAlunos(string[] codigosAlunos, string[] disciplinasId, int bimestre, string turmacodigo, string professor = null)
         {

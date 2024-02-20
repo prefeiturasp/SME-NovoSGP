@@ -103,7 +103,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<NotaConceitoFechamentoConselhoFinalDto>(query, new { alunoCodigo, turmasCodigos, periodoEscolarId });
         }
         
-        public async Task<IEnumerable<NotaConceitoFechamentoConselhoFinalDto>> ObterNotasFinaisAlunoAsync(string[] turmasCodigos, string alunoCodigo)
+        public async Task<IEnumerable<NotaConceitoFechamentoConselhoFinalDto>> ObterNotasFinaisAlunoAsync(string[] turmasCodigos, string alunoCodigo, bool validaNota, bool validaConceito)
         {
             var query = $@"select distinct * from (SELECT 0                AS ConselhoClasseAlunoId,
                                    fn.disciplina_id AS ComponenteCurricularCodigo,
@@ -125,6 +125,8 @@ namespace SME.SGP.Dados.Repositorios
                             WHERE  t.turma_id = ANY(@turmasCodigos)
                                    AND fa.aluno_codigo = @alunoCodigo
                                    AND pe.bimestre IS NULL
+                                   {(validaNota ? "AND fn.nota is not null" : string.Empty)}
+                                   {(validaConceito ? "AND fn.conceito_id is not null" : string.Empty)}
                                    and ccr.permite_lancamento_nota
                             UNION
                             SELECT cca.id                                    AS ConselhoClasseAlunoId,
@@ -155,6 +157,8 @@ namespace SME.SGP.Dados.Repositorios
                             WHERE  t.turma_id = ANY(@turmasCodigos)
                                    AND cca.aluno_codigo = @alunoCodigo
                                    AND bimestre IS NULL 
+                                   {(validaNota ? "AND ccn.nota is not null" : string.Empty)}
+                                   {(validaConceito ? "AND ccn.conceito_id is not null" : string.Empty)}
                                    and ccr.permite_lancamento_nota)  x";
 
             return await database.Conexao.QueryAsync<NotaConceitoFechamentoConselhoFinalDto>(query, new { turmasCodigos, alunoCodigo });

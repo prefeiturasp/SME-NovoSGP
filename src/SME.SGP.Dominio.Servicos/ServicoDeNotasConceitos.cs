@@ -68,7 +68,7 @@ namespace SME.SGP.Dominio
                         on a.CodigoAluno equals nc.AlunoId
                     join aa in atividadesAvaliativas
                         on nc.AtividadeAvaliativaID equals aa.Id
-                    where a.EstaAtivo(aa.DataAvaliacao)
+                    where a.EstaAtivo(aa.DataAvaliacao) 
                     select a).Distinct();
 
                 if (!usuario.EhGestorEscolar())

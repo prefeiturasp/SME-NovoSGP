@@ -1,12 +1,11 @@
-﻿using System;
+﻿using MediatR;
+using Newtonsoft.Json;
+using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MediatR;
-using Newtonsoft.Json;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -18,13 +17,13 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            var anoAnteriorLetivo = DateTimeExtension.HorarioBrasilia().AddYears(-1).Year;
             IEnumerable<long> pendenciasIds = new List<long>();
+
             try
             {
                 var filtro = param.ObterObjetoMensagem<ExcluirPendenciaCalendarioAnoAnteriorPorUeDto>();
 
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaExcluirPendenciaCalendarioAnoAnteriorCalendarioIdsPendencias, filtro.PendenciaId, Guid.NewGuid(), null));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaExcluirPendenciaCalendarioAnoAnteriorCalendarioIdsPendencias, filtro.PendenciasId, Guid.NewGuid(), null));
 
                 return true;
             }

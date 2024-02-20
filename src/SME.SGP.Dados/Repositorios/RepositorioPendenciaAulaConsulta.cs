@@ -243,18 +243,6 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<Turma>(query, new { pendenciaId });
         }
 
-        public async Task<Turma> ObterTurmaPorPendenciaDiario(long pendenciaId)
-        {
-            var query = @"select t.* 
-                         from pendencia_diario_bordo pdb
-                        inner join aula a on a.id = pdb.aula_id 
-                        inner join turma t on t.turma_id = a.turma_id
-                        where pdb.pendencia_id = @pendenciaId ";
-
-            return await database.Conexao.QueryFirstOrDefaultAsync<Turma>(query, new { pendenciaId });
-        }
-
-
         public async Task<IEnumerable<PendenciaAulaDto>> ObterPendenciasAulasPorPendencia(long pendenciaId)
         {
             var query = @"select distinct a.data_aula as DataAula, pa.Motivo, (a.tipo_aula = @tipoAulaReposicao) ehReposicao, a.turma_id TurmaId, a.ue_id UeId, 
@@ -457,7 +445,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return (await database.Conexao.QueryFirstOrDefaultAsync<PendenciaAulaDto>(sql.ToString(), new { aula = aulaId, hoje = DateTime.Today.Date, usuarioLogadoRf = usuarioLogado.CodigoRf, disciplinaIdTerritorio }));
         }
-
+        
         public async Task<IEnumerable<PendenciaAulaProfessorDto>> ObterPendenciaIdPorComponenteProfessorEBimestre(long componenteCurricularId, string codigoRf, long periodoEscolarId, TipoPendencia tipoPendencia, string turmaCodigo, long ueId)
         {
             var sql = @"select distinct pa.pendencia_id PendenciaId, a.id AulaId, u.rf_codigo CodigoRfProfessor
@@ -477,6 +465,30 @@ namespace SME.SGP.Dados.Repositorios
             
         }
 
+        public async Task<long> ObterPendenciaPorDescricaoTipo(string descricao, TipoPendencia tipoPendencia)
+        {
+            var sql = $@"select p.Id from pendencia p where lower(descricao) = lower(@descricao) and tipo = @tipoPendencia and not excluido ";
+
+            return (await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { descricao, tipoPendencia }));
+        }
+
+        public async Task<IEnumerable<long>> TrazerAulasComPendenciasDiarioBordo(string componenteCurricularId, string professorRf, bool ehGestor, string codigoTurma)
+        {
+            var disciplinaId = Convert.ToInt32(componenteCurricularId);
+            var sqlQuery = string.Empty;
+            if (ehGestor)
+            {
+                sqlQuery = @"select aula_id from pendencia_diario_bordo pdb join aula a on a.id = pdb.aula_id where a.turma_id = @codigoTurma";
+                return await database.Conexao.QueryAsync<long>(sqlQuery, new { codigoTurma }, commandTimeout: 60);
+            }
+            else
+            {
+                sqlQuery = @"select distinct pdb.aula_id from pendencia_diario_bordo pdb where pdb.componente_curricular_id = @disciplinaId and pdb.professor_rf = @professorRf";
+                return await database.Conexao.QueryAsync<long>(sqlQuery, new { professorRf, disciplinaId }, commandTimeout: 60);
+            }
+
+        }
+
         public async Task<long> ObterPendenciaDiarioBordoPorComponenteProfessorPeriodoEscolarTurma(long componenteCurricularId, string codigoRf, long periodoEscolarId, string codigoTurma = "")
         {
            var sql = @"select p.Id from pendencia p 
@@ -493,13 +505,6 @@ namespace SME.SGP.Dados.Repositorios
             var retorno = (await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { componenteCurricularId, codigoRf, periodoEscolarId, codigoTurma, tipoPendencia = (int)TipoPendencia.DiarioBordo }, commandTimeout: 60));
             return retorno;
             
-        }
-
-        public async Task<long> ObterPendenciaPorDescricaoTipo(string descricao, TipoPendencia tipoPendencia)
-        {
-            var sql = $@"select p.Id from pendencia p where lower(descricao) = lower(@descricao) and tipo = @tipoPendencia and not excluido ";
-
-            return (await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { descricao, tipoPendencia }));
         }
 
         public async Task<IEnumerable<long>> ObterPendenciasAulaPorDreUeTipoModalidade(long dreId, long ueId, TipoPendencia tipoPendencia, Modalidade modalidade)
@@ -553,6 +558,11 @@ namespace SME.SGP.Dados.Repositorios
             ;
 
             return (await database.Conexao.QueryAsync<long>(sql.ToString(), new { tipo, turmaId, disciplinaId, periodoInicio, periodoFim })).ToArray();
+        }
+
+        public Task<IEnumerable<PendenciaAulaProfessorDto>> ObterPendenciaIdPorComponenteProfessorEBimestre(string componenteCurricularId, string codigoRf, long periodoEscolarId, TipoPendencia tipoPendencia, string turmaCodigo, long ueId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

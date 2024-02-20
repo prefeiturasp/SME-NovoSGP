@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using Newtonsoft.Json;
 
 namespace SME.SGP.Aplicacao
 {
@@ -64,7 +65,7 @@ namespace SME.SGP.Aplicacao
                             else
                             {
                                 var dadosMatricula = dadosMatriculaAlunoNaUEPlano.Where(x => x.CodigoTurma == long.Parse(turmaDoPlanoAee.CodigoTurma))?.OrderByDescending(c => c.DataSituacao).FirstOrDefault();
-                                await EncerrarPlanoAee(planoAEE, dadosMatricula?.SituacaoMatricula ?? "Inativo", dadosMatricula.DataSituacao);
+                                await EncerrarPlanoAee(planoAEE, dadosMatricula?.SituacaoMatricula ?? "Inativo", dadosMatricula?.DataSituacao ?? DateTimeExtension.HorarioBrasilia());
                             }
                         }
                         else
@@ -81,6 +82,7 @@ namespace SME.SGP.Aplicacao
                             else if (ultimaSituacao!.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido
                                       || ultimaSituacao!.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo)
                             {
+
                                 if (turmaDoPlanoAee.AnoLetivo < anoLetivo)
                                 {
                                     var turmaAtualDoAluno = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(ultimaSituacao.CodigoTurma.ToString()));
@@ -94,17 +96,15 @@ namespace SME.SGP.Aplicacao
                         }
 
                         if (encerrarPlanoAee)
-                            await EncerrarPlanoAee(planoAEE, ultimaSituacao?.SituacaoMatricula ?? "Inativo", ultimaSituacao.DataSituacao);
+                            await EncerrarPlanoAee(planoAEE, ultimaSituacao?.SituacaoMatricula ?? "Inativo", ultimaSituacao?.DataSituacao ?? DateTimeExtension.HorarioBrasilia());
                     }
-
                     return true;
                 }
-
                 return false;
             }
             catch (Exception ex)
             {
-                await mediator.Publish(new SalvarLogViaRabbitCommand(MensagemNegocioEncerramentoAutomaticoPlanoAee.Falha_ao_encerrar_planos, LogNivel.Critico, LogContexto.WorkerRabbit, observacao: ex.Message, rastreamento: ex.StackTrace, excecaoInterna: ex.ToString(), innerException: ex.InnerException.ToString()));
+                await mediator.Send(new SalvarLogViaRabbitCommand(MensagemNegocioEncerramentoAutomaticoPlanoAee.Falha_ao_encerrar_planos, LogNivel.Critico, LogContexto.WorkerRabbit, observacao: ex.Message, rastreamento: ex.StackTrace, excecaoInterna: ex.ToString(), innerException: ex.InnerException?.ToString()));
                 throw;
             }
         }

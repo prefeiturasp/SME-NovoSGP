@@ -39,6 +39,7 @@ namespace SME.SGP.Api.Controllers
             if (files.NaoEhNulo())
             {
                 var file = files.FirstOrDefault();
+                string urlBase = Request.Host.Value;
                 if (file.Length > 0)
                     return Ok(await useCase.Executar(files.FirstOrDefault(), 
                         $"https://{Request.Host}{Request.PathBase}/{configuracaoArmazenamentoOptions.BucketTemp}", 

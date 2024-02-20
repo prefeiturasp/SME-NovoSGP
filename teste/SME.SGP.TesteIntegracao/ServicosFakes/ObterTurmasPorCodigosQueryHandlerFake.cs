@@ -13,7 +13,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 
         public async Task<IEnumerable<Dominio.Turma>> Handle(ObterTurmasPorCodigosQuery request, CancellationToken cancellationToken)
         {
-            return new List<Dominio.Turma> {
+            return await Task.FromResult(new List<Dominio.Turma> {
                 new Dominio.Turma {
                     CodigoTurma = CODIGO_TURMA_1,
                     Id = 1,
@@ -24,7 +24,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     Id = 2,
                     TipoTurma = Dominio.Enumerados.TipoTurma.Regular
                 }
-            };
+            });
         }
     }
 }

@@ -7,7 +7,6 @@ using SME.SGP.Infra;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using static SME.SGP.Dominio.DateTimeExtension;
 
 namespace SME.SGP.Aplicacao
 {
@@ -44,71 +43,12 @@ namespace SME.SGP.Aplicacao
             if (alunos.EhNulo() || !alunos.Any())
                 throw new NegocioException($"Não foram encontrados alunos para a turma {turma.CodigoTurma} no Eol");
 
-            var tipoCalendarioId = await mediator
-                .Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));
-
-            if (tipoCalendarioId == 0)
-                throw new NegocioException("Não foi possível obter o tipo calendario.");
-
-            var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
-
-            if (periodosEscolares.EhNulo())
-                throw new NegocioException("Não foi possivel obter o período escolar.");
-
             foreach (var aluno in alunos)
             {
-                var ultimoBimestreAtivo = aluno.Inativo ?
-                    periodosEscolares.FirstOrDefault(p => p.PeriodoInicio.Date <= aluno.DataSituacao && p.PeriodoFim.Date >= aluno.DataSituacao)?.Bimestre : 4;
-                
-                if (ultimoBimestreAtivo.EhNulo())
-                {
-                    await VerificaSeHaConsolidacaoErrada(aluno.CodigoAluno, turma.Id);
-                    continue;
-                }
-
-                if (aluno.Inativo && consolidacaoTurmaConselhoClasse.Bimestre > ultimoBimestreAtivo)
-                {
-                    await VerificaSeHaConsolidacaoErrada(aluno.CodigoAluno, turma.Id, consolidacaoTurmaConselhoClasse.Bimestre ?? 0);
-                    continue;
-                }
-
-                var matriculadoDepois = (int?)null;
-
-                if (aluno.Ativo)
-                {
-                    var matriculasAlunoTurma = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(turma.CodigoTurma, aluno.CodigoAluno));
-
-                    matriculadoDepois = (from m in matriculasAlunoTurma
-                                         from p in periodosEscolares
-                                         where (m.DataMatricula.Equals(DateTime.MinValue) ? aluno.DataMatricula.Date : m.DataMatricula.Date) <= p.PeriodoFim.Date
-                                         orderby p.Bimestre
-                                         select (int?)p.Bimestre).FirstOrDefault();                    
-                }
-
-                if (matriculadoDepois.NaoEhNulo() && consolidacaoTurmaConselhoClasse.Bimestre > 0 && consolidacaoTurmaConselhoClasse.Bimestre < matriculadoDepois)
-                {
-                    await VerificaSeHaConsolidacaoErrada(aluno.CodigoAluno, turma.Id, consolidacaoTurmaConselhoClasse.Bimestre ?? 0);
-                    continue;
-                }
-
                 await PublicarMensagem(aluno, consolidacaoTurmaConselhoClasse, 0, mensagemRabbit.CodigoCorrelacao);                 
             }
 
             return true;
-        }
-
-        private async Task VerificaSeHaConsolidacaoErrada(string codigoAluno, long turmaId, int bimestreVigente = 0)
-        {
-            var consolidacoesConselhoId = await mediator.Send(new ObterConsolidacoesConselhoClasseAtivasIdPorAlunoETurmaQuery(codigoAluno, turmaId));
-
-            if (consolidacoesConselhoId.Any())
-            {
-                var consolidacoesNotaIds = await mediator.Send(new ObterConsolidacoesConselhoClasseNotaPorConsolidacaoAlunoIdsBimestreQuery(consolidacoesConselhoId.ToArray(), bimestreVigente));
-
-                if (consolidacoesNotaIds.Any())
-                    await mediator.Send(new ExcluirConsolidacaoConselhoPorIdBimestreCommand(consolidacoesNotaIds.ToArray(), bimestreVigente == 0 ? consolidacoesConselhoId.ToArray() : new long[] { }));
-            }
-
         }
 
         private async Task<bool> PublicarMensagem(AlunoPorTurmaResposta aluno, ConsolidacaoTurmaDto consolidacaoTurmaConselhoClasse, long codigoComponenteCurricular, Guid CodigoCorrelacao)

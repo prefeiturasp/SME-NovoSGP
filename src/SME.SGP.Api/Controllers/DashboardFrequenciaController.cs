@@ -126,14 +126,14 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(dto, dataInicio, datafim,mes, tipoConsolidadoFrequencia));
         }    
 
-        [HttpGet("filtro/anos/{anoLetivo}/semanas")]
+        [HttpGet("filtro/anos/{anoLetivo}/modalidadeTurma/{modalidade}/semanas")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(IEnumerable<GraficoAusenciasComJustificativaResultadoDto>), 200)]
         [Permissao(Permissao.DF_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterSemanasFiltro(int anoLetivo, [FromServices] IObterFiltroSemanaUseCase useCase)
+        public async Task<IActionResult> ObterSemanasFiltro(int anoLetivo, int modalidade, [FromQuery] int semestre, [FromServices] IObterFiltroSemanaUseCase useCase)
         {
-            return Ok(await useCase.Executar(anoLetivo));
+            return Ok(await useCase.Executar(anoLetivo, modalidade, semestre));
         }
 
         [HttpPost("consolidar")]

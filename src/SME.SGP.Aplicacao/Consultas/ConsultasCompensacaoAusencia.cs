@@ -104,9 +104,15 @@ namespace SME.SGP.Aplicacao
             var turma = await repositorioTurmaConsulta.ObterPorId(compensacao.TurmaId);
             compensacaoDto.TurmaId = turma.CodigoTurma;
 
-            var alunos = await mediator.Send(new ObterAlunosEolPorTurmaQuery(turma.CodigoTurma));
-            alunos.LancarExcecaoNegocioSeNaoPossuiRegistros("Alunos não localizados para a turma.");
-            
+            var periodo = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, compensacao.Bimestre));
+            periodo.LancarExcecaoNegocioSeEhNulo("Não foi possível encontrar o período escolar da turma e bimestre selecionado.");
+
+            var alunos = (await mediator.Send(new ObterAlunosDentroPeriodoQuery(turma.CodigoTurma, (periodo.PeriodoInicio, periodo.PeriodoFim))))
+                        .DistinctBy(a => a.CodigoAluno)
+                        .OrderBy(a => a.NomeSocialAluno ?? a.NomeAluno);
+
+            alunos.LancarExcecaoNegocioSeNaoPossuiRegistros("Alunos não localizados para a turma selecionada.");
+
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var codigosComponentesConsiderados = new List<string>() { compensacao.DisciplinaId };
 
@@ -117,7 +123,7 @@ namespace SME.SGP.Aplicacao
             var percentualFrequenciaAlerta = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2, DateTime.Today.Year)));
             var alunosCodigos = compensacao.Alunos.Select(x => x.CodigoAluno).ToArray();
 
-            var compensacoes = await ObterAusenciaParaCompensacaoPorAlunos(alunosCodigos, codigosComponentesConsiderados.ToArray(), compensacao.Bimestre, turma.CodigoTurma);
+            var compensacoes = await ObterAusenciaParaCompensacaoPorAlunos(id, alunosCodigos, codigosComponentesConsiderados.ToArray(), compensacao.Bimestre, turma.CodigoTurma);
             var matriculadosTurmaPAP = await ObterAlunosTurmaPap(alunosCodigos, turma.AnoLetivo);
 
             foreach (var aluno in compensacao.Alunos)
@@ -183,9 +189,9 @@ namespace SME.SGP.Aplicacao
            ? await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, codigosAlunos))
            : Enumerable.Empty<AlunosTurmaProgramaPapDto>();
 
-        private async Task<IEnumerable<CompensacaoDataAlunoDto>> ObterAusenciaParaCompensacaoPorAlunos(string[] codigosAlunos, string[] disciplinasId, int bimestre, string turmacodigo)
+        private async Task<IEnumerable<CompensacaoDataAlunoDto>> ObterAusenciaParaCompensacaoPorAlunos(long compensacaoAusenciaId, string[] codigosAlunos, string[] disciplinasId, int bimestre, string turmacodigo)
          => codigosAlunos.Any() 
-            ? await mediator.Send(new ObterAusenciaParaCompensacaoPorAlunosQuery(codigosAlunos, disciplinasId, bimestre, turmacodigo))
+            ? await mediator.Send(new ObterAusenciaParaCompensacaoPorAlunosQuery(compensacaoAusenciaId, codigosAlunos, disciplinasId, bimestre, turmacodigo))
             : Enumerable.Empty<CompensacaoDataAlunoDto>();
 
         private CompensacaoAusenciaAlunoCompletoDto MapearParaDtoAlunos(CompensacaoAusenciaAluno aluno)

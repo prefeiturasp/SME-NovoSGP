@@ -15,13 +15,15 @@ namespace SME.SGP.Aplicacao.Teste.Queries
 
         private readonly ObterIndicativoPendenciasAulasPorTipoQueryHandler query;
         private readonly Mock<IRepositorioPendenciaAulaConsulta> repositorioPendenciaAula;
+        private readonly Mock<IRepositorioPendenciaDiarioBordoConsulta> repositorioPendenciaDiarioBordoConsulta;
         private readonly Mock<IMediator> mediator;
 
         public ObterIndicativoPendenciasAulasPorTipoQueryHandlerTeste()
         {
             repositorioPendenciaAula = new Mock<IRepositorioPendenciaAulaConsulta>();
+            repositorioPendenciaDiarioBordoConsulta = new Mock<IRepositorioPendenciaDiarioBordoConsulta>();
             mediator = new Mock<IMediator>();
-            query = new ObterIndicativoPendenciasAulasPorTipoQueryHandler(repositorioPendenciaAula.Object);
+            query = new ObterIndicativoPendenciasAulasPorTipoQueryHandler(repositorioPendenciaAula.Object,repositorioPendenciaDiarioBordoConsulta.Object);
         }
 
         [Fact]

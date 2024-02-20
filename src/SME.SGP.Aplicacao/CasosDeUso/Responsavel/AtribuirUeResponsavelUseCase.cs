@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
                 if (string.IsNullOrEmpty(validacao))
                 {
                     var escolasAtribuidas = await repositorioSupervisorEscolaDre
-                            .ObtemPorDreESupervisor(atribuicaoResponsavelUe.DreId, atribuicaoResponsavelUe.ResponsavelId, false);
+                            .ObtemPorDreESupervisor(atribuicaoResponsavelUe.DreId, atribuicaoResponsavelUe.ResponsavelId, true);
 
                     await AjustarRegistrosExistentes(atribuicaoResponsavelUe, escolasAtribuidas);
                     AtribuirEscolas(atribuicaoResponsavelUe);

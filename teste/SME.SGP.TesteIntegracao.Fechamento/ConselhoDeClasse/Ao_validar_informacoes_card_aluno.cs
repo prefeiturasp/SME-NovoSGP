@@ -43,7 +43,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 SituacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado,
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio
             });
-            
+
+            await CriarPeriodoEscolarCustomizadoQuartoBimestre(true);
+
             var consulta = ServiceProvider.GetService<IConsultasFechamentoTurmaDisciplina>();
             consulta.ShouldNotBeNull();
             

@@ -5,6 +5,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -224,7 +225,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<ComponenteCurricularDescricaoDto>> ObterDescricaoPorIds(long[] ids)
         {
-            var query = @"select id, coalesce(descricao_sgp, descricao) as descricao, descricao_infantil as descricaoinfantil from componente_curricular where id = Any(@ids)";
+            var query = @"select id, coalesce( descricao_sgp, descricao) as descricao, descricao_infantil as descricaoinfantil from componente_curricular where id = Any(@ids)";
 
             return await database.Conexao.QueryAsync<ComponenteCurricularDescricaoDto>(query, new { ids },queryName: "ObterDescricaoPorIds");
         }

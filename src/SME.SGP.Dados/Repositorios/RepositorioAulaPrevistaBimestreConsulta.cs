@@ -122,7 +122,6 @@ namespace SME.SGP.Dados.Repositorios
         }
         public async Task<IEnumerable<AulaPrevistaTurmaComponenteDto>> ObterBimestresAulasTurmasComponentesCumpridasAsync(string[] turmasCodigos, string[] componentesCurricularesId, long tipoCalendarioId, int[] bimestres)
         {
-
             var query = new StringBuilder(@"select
                             p.id PeriodoEscolarId,
                             p.bimestre,
@@ -166,7 +165,8 @@ namespace SME.SGP.Dados.Repositorios
                             ap.turma_id,
                             ap.disciplina_id;");
 
-            return (await database.Conexao.QueryAsync<AulaPrevistaTurmaComponenteDto>(query.ToString(), new { bimestres, turmasCodigos, componentesCurricularesId, tipoCalendarioId }));
+            return await database.Conexao
+                .QueryAsync<AulaPrevistaTurmaComponenteDto>(query.ToString(), new { bimestres, turmasCodigos, componentesCurricularesId, tipoCalendarioId });
         }
 
     }

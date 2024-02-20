@@ -12,6 +12,7 @@ namespace SME.SGP.Aplicacao
 {
     public class DevolverEncaminhamentoUseCase : AbstractUseCase, IDevolverEncaminhamentoUseCase
     {
+
         public DevolverEncaminhamentoUseCase(IMediator mediator) : base(mediator)
         {
         }
@@ -24,6 +25,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException(MensagemNegocioEncaminhamentoAee.ENCAMINHAMENTO_SO_PODEM_SER_DEVOLVIDOS_NA_SITUACAO_ENCAMINHADO);
 
             encaminhamento.Situacao = SituacaoAEE.Devolvido;
+            encaminhamento.ResponsavelId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(encaminhamento.CriadoRF));
 
             await mediator.Send(new SalvarEncaminhamentoAEECommand(encaminhamento));
 
@@ -34,6 +36,8 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new ExecutaNotificacaoDevolucaoEncaminhamentoAEECommand(encaminhamento.Id, usuarioLogado.CodigoRf, usuarioLogado.Nome, devolucaoDto.Motivo));
 
                 await ExcluirPendenciasEncaminhamentoAEE(encaminhamento.Id);
+
+                await mediator.Send(new GerarPendenciaProfessorEncaminhamentoAEEDevolvidoCommand(encaminhamento));
 
                 return true;
             }

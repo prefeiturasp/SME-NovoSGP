@@ -89,7 +89,7 @@ namespace SME.SGP.Aplicacao
             if (!Filtrar(request.PareceresDaTurma.Where(c => c.Conselho), "Conselho"))
                 return parecerNota;
 
-            var validacaoConselho = await ValidarParecerPorConselho(request.AlunoCodigo, turmasCodigos, turma.AnoLetivo);
+            var validacaoConselho = await ValidarParecerPorConselho(request.AlunoCodigo, turmasCodigos, turma.AnoLetivo, turma);
             if (!validacaoConselho.ExisteNotaConselho)
                 return parecerNota;
 
@@ -240,12 +240,13 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> ValidarFrequenciaGeralAluno(string alunoCodigo, string[] turmasCodigos, int anoLetivo)
         {
             var frequenciaAluno = await mediator.Send(new ObterConsultaFrequenciaGeralAlunoPorTurmasQuery(alunoCodigo, turmasCodigos));
-            double valorFrequenciaAluno = 0;
-            if (frequenciaAluno != "")
+            double? valorFrequenciaAluno = null;
+            if (frequenciaAluno.NaoEhNulo() && frequenciaAluno != "")
                 valorFrequenciaAluno = Convert.ToDouble(frequenciaAluno);
 
             var parametroFrequenciaGeral = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaCritico, anoLetivo)));
-            return !(valorFrequenciaAluno < parametroFrequenciaGeral);
+            var retorno = valorFrequenciaAluno.NaoEhNulo() ? !(valorFrequenciaAluno < parametroFrequenciaGeral) : true;
+            return retorno;
         }
         #endregion
 
@@ -288,9 +289,23 @@ namespace SME.SGP.Aplicacao
         #endregion
 
         #region Conselho
-        private async Task<(bool ExisteNotaConselho, bool ValidacaoNotaConselho)> ValidarParecerPorConselho(string alunoCodigo, string[] turmasCodigos, int anoLetivo)
+        private async Task<(bool ExisteNotaConselho, bool ValidacaoNotaConselho)> ValidarParecerPorConselho(string alunoCodigo, string[] turmasCodigos, int anoLetivo, Turma turma)
         {
-            var notasConselhoClasse = await mediator.Send(new ObterNotasFinaisConselhoFechamentoPorAlunoTurmasQuery(turmasCodigos, alunoCodigo));
+            bool validaNota = false;
+            bool validaConceito = false;
+
+            if (turmasCodigos.Count() == 1)
+            {
+                var tipoNotaTurma = await mediator.Send(new ObterNotaTipoValorPorTurmaIdQuery(turma));
+                
+                if(tipoNotaTurma != null)
+                {
+                    validaConceito = tipoNotaTurma.TipoNota == TipoNota.Conceito;
+                    validaNota = tipoNotaTurma.TipoNota == TipoNota.Nota;
+                }
+            }
+
+            var notasConselhoClasse = await mediator.Send(new ObterNotasFinaisConselhoFechamentoPorAlunoTurmasQuery(turmasCodigos, alunoCodigo, validaNota, validaConceito));
             if (notasConselhoClasse.EhNulo() || !notasConselhoClasse.Any())
                 return (false, false);
             else

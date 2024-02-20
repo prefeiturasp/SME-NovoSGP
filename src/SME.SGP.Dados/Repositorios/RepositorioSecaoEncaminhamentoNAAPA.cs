@@ -2,9 +2,9 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Consts;
 using SME.SGP.Infra.Interface;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,11 +24,11 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<SecaoQuestionarioDto>> ObterSecoesQuestionarioDto(int modalidade, long? encaminhamentoNAAPAId = null)
         {
-            var query = @"SELECT sea.id
-                                , sea.nome
-                                , sea.questionario_id as questionarioId
-                                , eas.concluido
-                                , sea.etapa
+            var query = @$"SELECT sea.id
+	                            , sea.nome
+	                            , sea.questionario_id as questionarioId
+	                            , eas.concluido
+	                            , sea.etapa
                                 , sea.ordem
                                 , sea.nome_componente as nomeComponente
                          FROM secao_encaminhamento_naapa sea
@@ -37,7 +37,7 @@ namespace SME.SGP.Dados.Repositorios
                                                                  and eas.secao_encaminhamento_id = sea.id
                                                                  and not eas.excluido   
                          left join secao_encaminhamento_naapa_modalidade senm on senm.secao_encaminhamento_id = sea.id 
-                         WHERE not sea.excluido and sea.nome_componente <> 'QUESTOES_ITINERACIA'
+                         WHERE not sea.excluido and sea.nome_componente <> '{EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA}'
                             AND ((senm.modalidade_codigo = @modalidade) or (senm.modalidade_codigo is null)) 
                             AND q.tipo = @tipoQuestionario
                          ORDER BY sea.etapa, sea.ordem ";
@@ -47,13 +47,13 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<SecaoEncaminhamentoNAAPA>> ObterSecoesEncaminhamentoPorModalidade(int? modalidade, long? encaminhamentoNAAPAId = null)
         {
-            var query = new StringBuilder(@"SELECT sea.*, eas.*, q.*
+            var query = new StringBuilder(@$"SELECT sea.*, eas.*, q.*
                                             FROM secao_encaminhamento_naapa sea 
                                                 join questionario q on q.id = sea.questionario_id 
                                                 left join encaminhamento_naapa_secao eas on eas.encaminhamento_naapa_id = @encaminhamentoNAAPAId
                                                                                         and eas.secao_encaminhamento_id = sea.id
                                                                                         and not eas.excluido  
-                                                                                        and sea.nome_componente <> 'QUESTOES_ITINERACIA'
+                                                                                        and sea.nome_componente <> '{EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA}'
                                                 left join secao_encaminhamento_naapa_modalidade senm on senm.secao_encaminhamento_id = sea.id 
                                             WHERE not sea.excluido 
                                                   AND ((senm.modalidade_codigo = @modalidade) or (senm.modalidade_codigo is null)) 
@@ -214,7 +214,7 @@ namespace SME.SGP.Dados.Repositorios
                             inner join encaminhamento_naapa_secao ens on ens.encaminhamento_naapa_id = en.id
                             inner join secao_encaminhamento_naapa secao on secao.id = ens.secao_encaminhamento_id 
                             inner join vw_resposta_data questaoDataAtendimento on questaoDataAtendimento.encaminhamento_naapa_secao_id = ens.id
-                            inner join vw_resposta_tipo_atendimento questaoTipoAtendimento on questaoTipoAtendimento.encaminhamento_naapa_secao_id = ens.id
+                            left join vw_resposta_tipo_atendimento questaoTipoAtendimento on questaoTipoAtendimento.encaminhamento_naapa_secao_id = ens.id
                             where en.id = @encaminhamentoNAAPAId and not ens.excluido ");
 
             if (!contador)

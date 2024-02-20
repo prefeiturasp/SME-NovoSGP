@@ -1,9 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using SME.SGP.Dominio.Interfaces;
 using System.Threading;
 using System.Threading.Tasks;
 

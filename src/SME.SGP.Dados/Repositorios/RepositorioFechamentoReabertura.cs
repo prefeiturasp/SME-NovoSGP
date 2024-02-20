@@ -352,5 +352,19 @@ namespace SME.SGP.Dados.Repositorios
                 tipoCalendarioId
             });
         }
+
+        public async Task<long> ObterNotificacaoParaExcluirPorFechamentoReaberturaId(long fechamentoReaberturaId)
+        {
+            var query =@"select n.id 
+                         from wf_aprovacao wf
+                          inner join wf_aprovacao_nivel wfn on wfn.wf_aprovacao_id = wf.id 
+                          join wf_aprovacao_nivel_notificacao wfnn on wfnn.wf_aprovacao_nivel_id = wfn.id
+                          join notificacao n on wfnn.notificacao_id = n.id
+                          JOIN fechamento_reabertura fr ON wf.id = fr.wf_aprovacao_id 
+                        where n.status in(1,2) AND n.categoria =2 AND n.tipo=1
+                        AND NOT n.excluida AND wf.tipo =5 AND fr.id = @fechamentoReaberturaId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(sql: query, new {fechamentoReaberturaId});
+        }
     }
 }
