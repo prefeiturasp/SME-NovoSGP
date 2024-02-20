@@ -94,6 +94,8 @@ namespace SME.SGP.Metrica.Worker.UseCases
             if (periodoEscolar.EhNulo())
                 return false;
             var periodoFechamento = await ObterPeriodoFechamento(periodoEscolar.Id);
+            if (periodoFechamento.EhNulo())
+                return false;
             if (periodoFechamento.Fim == dataJob)
             {
                 for (DateTime dataAtual = periodoEscolar.Inicio; dataAtual <= periodoEscolar.Fim; dataAtual = dataAtual.AddDays(1))

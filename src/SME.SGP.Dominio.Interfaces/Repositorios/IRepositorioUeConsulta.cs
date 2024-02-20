@@ -50,6 +50,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<DreUeCodigoDto> ObterCodigosDreUePorId(long ueId);
         Task<IEnumerable<long>> ObterTodosIds();
         Task<IEnumerable<Ue>> ObterUEsComDREsPorCodigoUes(string[]codigoUes);
-        Task<IEnumerable<TodosUesIdsComPendenciaCalendarioDto>> ObterTodosUesIdComPendenciasCalendario(int anoLetivo);
+        Task<IEnumerable<long>> ObterPendenciasCalendarioPorAnoLetivoUe(int anoLetivo, long ueId);
     }
 }

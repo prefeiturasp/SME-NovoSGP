@@ -17,6 +17,7 @@
         public const string RotaExecutarExclusaoPendenciasDevolutiva = "sgp.pendencias.devolutiva.excluir";
         public const string RotaExecutarReplicarParametrosAnoAnterior = "sgp.pendencias.replicar.ano.anterior";
         public const string RotaExcluirPendenciaCalendarioAnoAnteriorCalendario = "sgp.pendencias.calendario.excluir.ano.anterior";
+        public const string RotaExcluirPendenciaCalendarioAnoAnteriorCalendarioUes = "sgp.pendencias.calendario.excluir.ano.anterior.ues";
         public const string RotaExcluirPendenciaCalendarioAnoAnteriorCalendarioUe = "sgp.pendencias.calendario.excluir.ano.anterior.ue";
         public const string RotaExcluirPendenciaCalendarioAnoAnteriorCalendarioIdsPendencias = "sgp.pendencias.calendario.excluir.ano.anterior.idspendencias";
         public const string RotaExecutarExclusaoPendenciasNoFinalDoAnoLetivoPorAno = "sgp.pendencias.excluir.final.anoletivo.ano";

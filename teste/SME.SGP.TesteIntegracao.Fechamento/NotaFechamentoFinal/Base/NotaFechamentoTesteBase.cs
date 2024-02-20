@@ -595,7 +595,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
 
         protected async Task CriarAbrangencia(string perfil)
         {
-            await InserirNaBase(new Abrangencia()
+            await InserirNaBase(new Dominio.Abrangencia()
             {
                 DreId = DRE_ID_1,
                 Historico = false,

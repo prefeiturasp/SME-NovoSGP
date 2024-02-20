@@ -48,14 +48,15 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<GraficoQuantitativoNAAPADto>> ObterQuantidadeEncaminhamentoNAAPAEmAberto(int anoLetivo, long? dreId)
         {
-            var situacaoEncerrada = (int)SituacaoNAAPA.Encerrado;
+            var situacoesNaapaAberto = new int[] { (int)SituacaoNAAPA.EmAtendimento, (int)SituacaoNAAPA.AguardandoAtendimento };
+
             var query = @"  select dre.dre_id CodigoDre, dre.abreviacao Descricao, sum(quantidade) Quantidade,
                             COALESCE(max(cen.alterado_em), max(cen.criado_em)) as DataUltimaConsolidacao
                             from consolidado_encaminhamento_naapa cen
                             inner join ue on ue.id = cen.ue_id
                             inner join dre on dre.id = ue.dre_id
                             where ano_letivo = @anoLetivo 
-                              and situacao <> @situacaoEncerrada";
+                              and situacao = ANY(@situacoesNaapaAberto)";
 
             if (dreId.HasValue)
                 query += " and dre.id = @dreId";
@@ -63,7 +64,7 @@ namespace SME.SGP.Dados.Repositorios
             query += @" group by dre.dre_id, dre.abreviacao
                         order by dre.dre_id, dre.abreviacao";
 
-            return await database.Conexao.QueryAsync<GraficoQuantitativoNAAPADto>(query, new { anoLetivo, dreId, situacaoEncerrada }, commandTimeout: 60);
+            return await database.Conexao.QueryAsync<GraficoQuantitativoNAAPADto>(query, new { anoLetivo, dreId, situacoesNaapaAberto }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<long>> ObterIds(long ueId, int anoLetivo, int[] situacoesIgnoradas)

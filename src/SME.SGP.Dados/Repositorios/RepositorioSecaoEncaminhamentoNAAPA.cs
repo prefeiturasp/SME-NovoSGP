@@ -214,7 +214,7 @@ namespace SME.SGP.Dados.Repositorios
                             inner join encaminhamento_naapa_secao ens on ens.encaminhamento_naapa_id = en.id
                             inner join secao_encaminhamento_naapa secao on secao.id = ens.secao_encaminhamento_id 
                             inner join vw_resposta_data questaoDataAtendimento on questaoDataAtendimento.encaminhamento_naapa_secao_id = ens.id
-                            inner join vw_resposta_tipo_atendimento questaoTipoAtendimento on questaoTipoAtendimento.encaminhamento_naapa_secao_id = ens.id
+                            left join vw_resposta_tipo_atendimento questaoTipoAtendimento on questaoTipoAtendimento.encaminhamento_naapa_secao_id = ens.id
                             where en.id = @encaminhamentoNAAPAId and not ens.excluido ");
 
             if (!contador)

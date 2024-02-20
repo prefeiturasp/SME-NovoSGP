@@ -43,7 +43,7 @@ namespace SME.SGP.TesteIntegracao.Autenticar
 
             retorno.ShouldNotBeNull();
 
-            var abrangencia = ObterTodos<Abrangencia>();
+            var abrangencia = ObterTodos<Dominio.Abrangencia>();
             var turmas = ObterTodos<Dominio.Turma>();
 
             abrangencia.ShouldNotBeNull();

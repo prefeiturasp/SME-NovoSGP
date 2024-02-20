@@ -36,7 +36,7 @@
         public const string MENU_TIPOS_DE_CALENDARIO_ESCOLAR = "Tipos de Calendário Escolar";
         public const string MENU_ATRIBUICAO_DE_RESPONSAVEIS = "Atribuição de Responsáveis";
         public const string MENU_ATRIBUICAO_ESPORADICA = "Atribuição esporádica";
-        public const string MENU_COMUNICADOS = "Comunicados";
+        public const string MENU_COMUNICADOS = "Comunicados (Escola aqui)";
         public const string MENU_OCORRENCIAS = "Ocorrências";
         public const string MENU_ENCAMINHAMENTO = "Encaminhamento";
         public const string MENU_PLANO = "Plano";

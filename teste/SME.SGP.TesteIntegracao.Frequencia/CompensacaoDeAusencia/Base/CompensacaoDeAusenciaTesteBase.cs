@@ -6,6 +6,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using SME.SGP.TesteIntegracao.CompensacaoDeAusencia.ServicosFake;
+using SME.SGP.TesteIntegracao.Frequencia.CompensacaoDeAusencia.ServicosFake;
 using SME.SGP.TesteIntegracao.ServicosFake;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
@@ -40,6 +41,9 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ProfessorPodePersistirTurmaQuery, bool>), typeof(ProfessorPodePersistirTurmaQueryFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterProfessoresTitularesDisciplinasEolQuery, IEnumerable<ProfessorTitularDisciplinaEol>>), typeof(ObterProfessoresTitularesDisciplinasEolQueryHandlerFakePortugues), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterProfessoresTitularesPorTurmaIdQuery, IEnumerable<ProfessorTitularDisciplinaEol>>), typeof(ObterProfessoresTitularesPorTurmaIdQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosDentroPeriodoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosDentroPeriodoCompensacaoQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesPorIdsQuery, IEnumerable<DisciplinaDto>>), typeof(ObterComponentesCurricularesPorIdsQueryHandlerFakeServicoEol), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterValorParametroSistemaTipoEAnoQuery, string>), typeof(ObterValorParametroSistemaTipoEAnoQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         protected async Task CriarDadosBase(CompensacaoDeAusenciaDBDto dtoDB)
@@ -261,7 +265,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
 
         private async Task CriarAbrangencia(string perfil)
         {
-            await InserirNaBase(new Abrangencia()
+            await InserirNaBase(new Dominio.Abrangencia()
             {
                 DreId = DRE_ID_1,
                 Historico = false,
