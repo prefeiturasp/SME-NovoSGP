@@ -42,6 +42,8 @@ namespace SME.SGP.Aplicacao
                                                                                                                         request.Usuario.PerfilAtual,
                                                                                                                         request.Usuario.EhProfessorInfantilOuCjInfantil());
 
+                componentesCurricularesDoProfessor.LancarExcecaoNegocioSeEhNulo(MensagemNegocioComponentesCurriculares.NAO_FORAM_ENCONTRADOS_COMPONENTES_CURRICULARES_PARA_O_PROFESSOR);
+                
                 var componenteCurricularFiltrado = componentesCurricularesDoProfessor.First(x => x.Codigo == request.ComponenteCurricularCodigo);
                 var componenteEhVigente = await ValidaVigenciaComponenteTerritorioSaberDoProfessor(request.Usuario, request.TurmaCodigo, request.Data, componenteCurricularFiltrado);
                 if (!componenteEhVigente)
