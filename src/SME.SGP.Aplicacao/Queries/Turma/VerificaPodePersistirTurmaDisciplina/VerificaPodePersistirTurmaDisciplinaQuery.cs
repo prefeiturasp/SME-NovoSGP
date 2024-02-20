@@ -9,7 +9,7 @@ namespace SME.SGP.Aplicacao
 {
     public class VerificaPodePersistirTurmaDisciplinaQuery : IRequest<bool>
     {
-        public VerificaPodePersistirTurmaDisciplinaQuery(Usuario usuario, string turmaId, string componenteCurricularId, DateTime data, bool historico, bool ehTerritorioSaber)
+        public VerificaPodePersistirTurmaDisciplinaQuery(Usuario usuario, string turmaId, string componenteCurricularId, DateTime data, bool historico, bool ehTerritorioSaber = false)
         {
             Usuario = usuario;
             TurmaId = turmaId;
