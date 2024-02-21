@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao.Workers
 
         protected override void AtribuirContextoAplicacao(MensagemRabbit mensagemRabbit, IServiceScope scope)
         {
-            if (!string.IsNullOrWhiteSpace(mensagemRabbit.UsuarioLogadoRF))
+            if (!string.IsNullOrWhiteSpace(mensagemRabbit?.UsuarioLogadoRF))
             {
                 var contextoAplicacao = scope.ServiceProvider.GetService<IContextoAplicacao>();
 

@@ -1,6 +1,8 @@
-﻿namespace SME.SGP.Infra
+﻿using System;
+
+namespace SME.SGP.Infra
 {
-    public class FiltroRemoverPendenciaFinalAnoLetivoDto
+    public class FiltroRemoverPendenciaFinalAnoLetivoDto : IEquatable<FiltroRemoverPendenciaFinalAnoLetivoDto>
     {
         public FiltroRemoverPendenciaFinalAnoLetivoDto()
         {
@@ -12,7 +14,7 @@
             DreId = dreId;
         }
 
-        public FiltroRemoverPendenciaFinalAnoLetivoDto(int anoLetivo, long dreId, string codigoUe) : 
+        public FiltroRemoverPendenciaFinalAnoLetivoDto(int anoLetivo, long dreId, string codigoUe) :
             this(anoLetivo, dreId)
         {
             CodigoUe = codigoUe;
@@ -21,5 +23,12 @@
         public int AnoLetivo { get; set; }
         public long DreId { get; set; }
         public string CodigoUe { get; set; }
+
+        public bool Equals(FiltroRemoverPendenciaFinalAnoLetivoDto other)
+        {
+            return AnoLetivo == other.AnoLetivo &&
+                   DreId == other.DreId &&
+                   CodigoUe == other.CodigoUe;
+        }
     }
 }

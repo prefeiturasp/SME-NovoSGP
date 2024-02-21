@@ -1,14 +1,11 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Interface;
+using SME.SGP.Infra.Interfaces;
 using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using RabbitMQ.Client;
-using SME.SGP.Infra.Interfaces;
-using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.ComprimirArquivos.Worker
 {

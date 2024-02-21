@@ -1,5 +1,4 @@
-﻿using SME.SGP.Infra.Dtos;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace SME.SGP.Infra
@@ -9,6 +8,7 @@ namespace SME.SGP.Infra
         public long DreId { get; set; }
         public string CodigoDre { get; set; }
         public string NomeDre { get; set; }
+        public int AnoLetivo { get; set; }
         public long TipoReuniaoId { get; set; }
         public string TipoReuniaoDescricao { get; set; }
         public DateTime DataRegistro { get; set; }

@@ -5,6 +5,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -200,6 +201,7 @@ namespace SME.SGP.Dados.Repositorios
                                 raba.aluno_codigo CodigoAluno
                                 ,case when length(qdata.DataRegistro) > 0 then to_date(qdata.DataRegistro,'yyyy-mm-dd') else null end DataRegistro
                                 ,raba.criado_por as NomeUsuarioCriador
+                                ,raba.criado_rf as RfUsuarioCriador
                                 ,raba.criado_em as DataCriacao
                                 ,qProcedRealizado.ProcedimentoRealizado
                                 ,qContatoEfetuadoComResponsavel.ContatoRealizado as ContatoEfetuadoResponsavel
@@ -489,6 +491,45 @@ namespace SME.SGP.Dados.Repositorios
                                  WHERE raba.id = @id";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<RegistroAcaoBuscaAtivaAlunoDto>(sql.ToString(), new { id });
+        }
+
+        public async Task<PaginacaoResultadoDto<RegistroAcaoBuscaAtivaNAAPADto>> ListarPaginadoRegistroAcaoParaNAAPA(string codigoAluno, Paginacao paginacao)
+        {
+            var sql = $"{ObterQueryConsultaRegistroAcaoParaNAAPA(paginacao)} ; {ObterQueryConsultaRegistroAcaoParaNAAPA(paginacao, true)}";
+            var parametros = new { codigoAluno };
+            var retorno = new PaginacaoResultadoDto<RegistroAcaoBuscaAtivaNAAPADto>();
+
+            using (var registroAcao = await database.Conexao.QueryMultipleAsync(sql, parametros))
+            {
+                var items = registroAcao.Read<RegistroAcaoBuscaAtivaNAAPADto>().ToList();
+                items.ForEach(i =>
+                {
+                    if (string.IsNullOrEmpty(i.ContatoEfetuadoResponsavel))
+                        i.ContatoEfetuadoResponsavel = "Não";
+                });
+                retorno.Items = items;
+                retorno.TotalRegistros = registroAcao.ReadFirst<int>();
+            }
+            retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
+
+            return retorno;
+        }
+
+        private string ObterQueryConsultaRegistroAcaoParaNAAPA(Paginacao paginacao, bool contador = false)
+        {
+            var sql = new StringBuilder();
+            ObterCabecalhoRegistrosAcao(sql, contador);
+
+            sql.AppendLine(" where not raba.excluido");
+            sql.AppendLine(" and raba.aluno_codigo = @codigoAluno ");
+
+            if (!contador)
+                sql.AppendLine(" order by to_date(qdata.DataRegistro,'yyyy-mm-dd') desc ");
+
+            if (paginacao.QuantidadeRegistros > 0 && !contador)
+                sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
+
+            return sql.ToString();
         }
     }
 }

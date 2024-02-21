@@ -4,6 +4,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.Constantes;
 using SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Linq;
@@ -56,16 +57,16 @@ namespace SME.SGP.TesteIntegracao.DashboardBuscaAtiva
         {
             retorno.ShouldNotBeNull();
             retorno.Graficos.Count.ShouldBe(7);
-            var nomesOpcaoResposta = ObterOpcoesRespostas_JUSTIFICATIVA_MOTIVO_FALTA().Where(opcao => opcao.id.Equals(1) ||
+            var nomesOpcaoResposta = ConstantesQuestionarioBuscaAtiva.ObterOpcoesRespostas_JUSTIFICATIVA_MOTIVO_FALTA().Where(opcao => opcao.id.Equals(1) ||
                                                                                                       opcao.id.Equals(2) ||
                                                                                                       opcao.id.Equals(3)).Select(opcao => opcao.descricao);
             retorno.Graficos.Where(gf => nomesOpcaoResposta.Any(nm => nm.Equals(gf.Descricao))).All(gf => gf.Quantidade.Equals(2)).ShouldBeTrue();
 
-            nomesOpcaoResposta = ObterOpcoesRespostas_JUSTIFICATIVA_MOTIVO_FALTA().Where(opcao => opcao.id.Equals(4) ||
+            nomesOpcaoResposta = ConstantesQuestionarioBuscaAtiva.ObterOpcoesRespostas_JUSTIFICATIVA_MOTIVO_FALTA().Where(opcao => opcao.id.Equals(4) ||
                                                                                                       opcao.id.Equals(5)).Select(opcao => opcao.descricao);
             retorno.Graficos.Where(gf => nomesOpcaoResposta.Any(nm => nm.Equals(gf.Descricao))).All(gf => gf.Quantidade.Equals(1)).ShouldBeTrue();
 
-            nomesOpcaoResposta = ObterOpcoesRespostas_JUSTIFICATIVA_MOTIVO_FALTA().Where(opcao => opcao.id.Equals(6) ||
+            nomesOpcaoResposta = ConstantesQuestionarioBuscaAtiva.ObterOpcoesRespostas_JUSTIFICATIVA_MOTIVO_FALTA().Where(opcao => opcao.id.Equals(6) ||
                                                                                                       opcao.id.Equals(7)).Select(opcao => opcao.descricao);
             retorno.Graficos.Where(gf => nomesOpcaoResposta.Any(nm => nm.Equals(gf.Descricao))).All(gf => gf.Quantidade.Equals(3)).ShouldBeTrue();
         }
@@ -89,7 +90,7 @@ namespace SME.SGP.TesteIntegracao.DashboardBuscaAtiva
             await InserirNaBase(new Dominio.RegistroAcaoBuscaAtivaSecao()
             {
                 RegistroAcaoBuscaAtivaId = idBaseRegistroAcao,
-                SecaoRegistroAcaoBuscaAtivaId = SECAO_REGISTRO_ACAO_ID_1,
+                SecaoRegistroAcaoBuscaAtivaId = ConstantesQuestionarioBuscaAtiva.SECAO_REGISTRO_ACAO_ID_1,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
@@ -99,7 +100,7 @@ namespace SME.SGP.TesteIntegracao.DashboardBuscaAtiva
             await InserirNaBase(new Dominio.QuestaoRegistroAcaoBuscaAtiva()
             {
                 RegistroAcaoBuscaAtivaSecaoId = idBaseRegistroAcao,
-                QuestaoId = QUESTAO_2_3_ID_JUSTIFICATIVA_MOTIVO_FALTA,
+                QuestaoId = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_3_ID_JUSTIFICATIVA_MOTIVO_FALTA,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
@@ -107,8 +108,8 @@ namespace SME.SGP.TesteIntegracao.DashboardBuscaAtiva
 
             foreach (var codigoOpcao in codigosOpcoesResposta)
             {
-                var nomeOpcaoResposta = ObterOpcoesRespostas_JUSTIFICATIVA_MOTIVO_FALTA().Where(opcao => opcao.id.Equals(codigoOpcao)).FirstOrDefault().descricao;
-                var opcaoResposta = opcaoRespostaBase.Where(q => q.QuestaoId == QUESTAO_2_3_ID_JUSTIFICATIVA_MOTIVO_FALTA
+                var nomeOpcaoResposta = ConstantesQuestionarioBuscaAtiva.ObterOpcoesRespostas_JUSTIFICATIVA_MOTIVO_FALTA().Where(opcao => opcao.id.Equals(codigoOpcao)).FirstOrDefault().descricao;
+                var opcaoResposta = opcaoRespostaBase.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_3_ID_JUSTIFICATIVA_MOTIVO_FALTA
                                                                  && q.Nome.Equals(nomeOpcaoResposta)).FirstOrDefault();
                 await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
                 {

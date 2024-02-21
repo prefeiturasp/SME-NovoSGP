@@ -52,11 +52,11 @@ namespace SME.SGP.Dados.Repositorios
                                             filtro);
 
             var encaminhamentosNAAPAIds = retornoPaginado.Items.Select(s => s.Id).Distinct().ToArray();
+
             retornoPaginado.Items = retornoPaginado.Items.OrderBy(rr => rr.Dre)
                                                             .ThenBy(rr => rr.UnidadeEscolar)
-                                                            .ThenBy(rr => rr.Estudante)
-                                                            .Skip(paginacao.QuantidadeRegistrosIgnorados)
-                                                            .Take(paginacao.QuantidadeRegistros);
+                                                            .ThenBy(rr => rr.Estudante);
+
             retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
 
             return new RelatorioDinamicoNAAPADto()
