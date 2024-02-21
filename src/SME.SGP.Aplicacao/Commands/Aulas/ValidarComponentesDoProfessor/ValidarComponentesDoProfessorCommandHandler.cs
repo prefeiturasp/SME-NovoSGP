@@ -42,6 +42,15 @@ namespace SME.SGP.Aplicacao
                                                                                                                         request.Usuario.PerfilAtual,
                                                                                                                         request.Usuario.EhProfessorInfantilOuCjInfantil());
 
+                componentesCurricularesDoProfessor.LancarExcecaoNegocioSeEhNulo(MensagemNegocioComponentesCurriculares.NAO_FORAM_ENCONTRADOS_COMPONENTES_CURRICULARES_PARA_O_PROFESSOR);
+                
+                var componenteCurricularFiltrado = componentesCurricularesDoProfessor.First(x => x.Codigo == request.ComponenteCurricularCodigo);
+                var componenteEhVigente = await ValidaVigenciaComponenteTerritorioSaberDoProfessor(request.Usuario, request.TurmaCodigo, request.Data, componenteCurricularFiltrado);
+                if (!componenteEhVigente)
+                {
+                    return (false, MensagemNegocioComuns.VOCE_NAO_PODE_CRIAR_AULAS_PARA_COMPONENTES_SEM_ATRIBUICAO_NA_DATA_SELECIONADA);
+                }
+
                 podeCriarAulasParaTurma = await ProfessorPodeCriarAulasTurma(componentesCurricularesDoProfessor,
                                                                              request.ComponenteCurricularCodigo,
                                                                              request.CodigoTerritorioSaber);
@@ -64,22 +73,30 @@ namespace SME.SGP.Aplicacao
             return (true, string.Empty);
         }
 
+        private async Task<bool> ValidaVigenciaComponenteTerritorioSaberDoProfessor(Usuario usuario, string turmaCodigo, DateTime data, ComponenteCurricularEol componenteCurricularDoProfessor)
+        {
+            var componenteEhVigente = true;
+            if (componenteCurricularDoProfessor.TerritorioSaber)
+                componenteEhVigente = await mediator.Send(new VerificaPodePersistirTurmaDisciplinaEOLQuery(usuario, turmaCodigo, componenteCurricularDoProfessor.Codigo.ToString(), data, componenteCurricularDoProfessor.TerritorioSaber));
+            return componenteEhVigente;
+        }
+
         private async Task<bool> ObterUsuarioPossuiPermissaoNaTurmaEDisciplina(long componenteCurricularId, string codigoTurma, DateTime data, Dominio.Usuario usuario, CancellationToken cancellationToken)
         => usuario.EhGestorEscolar() ||
            await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(componenteCurricularId, codigoTurma, data, usuario), cancellationToken);
 
         private async Task<bool> ProfessorPodeCriarAulasTurma(IEnumerable<ComponenteCurricularEol> componentesCurricularesDoProfessor,
-                                                              long componenteCurricularCodigo, 
+                                                              long componenteCurricularCodigo,
                                                               long? componenteCurricularTerritorioSaberCodigo)
         => componentesCurricularesDoProfessor.NaoEhNulo() &&
            (componentesCurricularesDoProfessor.Any(c => !c.Regencia && !c.TerritorioSaber && c.Codigo == componenteCurricularCodigo) ||
-            componentesCurricularesDoProfessor.Any(c => !c.Regencia && c.TerritorioSaber && (c.CodigoComponenteTerritorioSaber == componenteCurricularCodigo || c.Codigo == componenteCurricularTerritorioSaberCodigo)) ||
+            componentesCurricularesDoProfessor.Any(c => !c.Regencia && c.TerritorioSaber && (c.CodigoComponenteTerritorioSaber == componenteCurricularTerritorioSaberCodigo || c.Codigo == componenteCurricularCodigo)) ||
             componentesCurricularesDoProfessor.Any(r => r.Regencia && (r.CodigoComponenteCurricularPai == componenteCurricularCodigo || r.Codigo == componenteCurricularCodigo)));
 
         private async Task<bool> ProfessorCJPodeCriarAulasTurma(IEnumerable<AtribuicaoCJ> componentesCurricularesDoProfessorCJ,
                                                                 IEnumerable<ComponenteCurricularEol> componentesCurricularesDoProfessor,
                                                                 long componenteCurricularCodigo, string turmaCodigo,
-                                                                long? componenteCurricularTerritorioSaberCodigo) 
+                                                                long? componenteCurricularTerritorioSaberCodigo)
         => componentesCurricularesDoProfessorCJ.Any(c => c.TurmaId == turmaCodigo && (c.DisciplinaId == componenteCurricularCodigo || (componenteCurricularTerritorioSaberCodigo.HasValue && componenteCurricularTerritorioSaberCodigo.Value > 0 && c.DisciplinaId.Equals(componenteCurricularTerritorioSaberCodigo)))) ||
            componentesCurricularesDoProfessor.Any(c => c.Codigo.Equals(componenteCurricularCodigo) || c.CodigoComponenteTerritorioSaber.Equals(componenteCurricularCodigo));
 
