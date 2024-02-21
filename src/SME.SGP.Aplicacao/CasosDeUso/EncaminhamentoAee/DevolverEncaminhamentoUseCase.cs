@@ -3,7 +3,6 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
@@ -24,6 +23,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException(MensagemNegocioEncaminhamentoAee.ENCAMINHAMENTO_SO_PODEM_SER_DEVOLVIDOS_NA_SITUACAO_ENCAMINHADO);
 
             encaminhamento.Situacao = SituacaoAEE.Devolvido;
+            encaminhamento.ResponsavelId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(encaminhamento.CriadoRF));
 
             await mediator.Send(new SalvarEncaminhamentoAEECommand(encaminhamento));
 
