@@ -1314,6 +1314,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExcluirSecaoItineranciaEncaminhamentoNAAPAUseCase, ExcluirSecaoItineranciaEncaminhamentoNAAPAUseCase>();
             services.TryAddScoped<IRegistrarEncaminhamentoItinerarioNAAPAUseCase, RegistrarEncaminhamentoItinerarioNAAPAUseCase>();
             services.TryAddScoped<IObterSituacaoEncaminhamentoNAAPAUseCase, ObterSituacaoEncaminhamentoNAAPAUseCase>();
+            services.TryAddScoped<IExcluirArquivoItineranciaNAAPAUseCase, ExcluirArquivoItineranciaNAAPAUseCase>();
 
             services.TryAddScoped<IObterOpcoesRespostaFluxoAlertaEncaminhamentosNAAPAUseCase, ObterOpcoesRespostaFluxoAlertaEncaminhamentosNAAPAUseCase>();
             services.TryAddScoped<IObterOpcoesRespostaPortaEntradaEncaminhamentosNAAPAUseCase, ObterOpcoesRespostaPortaEntradaEncaminhamentosNAAPAUseCase>();
