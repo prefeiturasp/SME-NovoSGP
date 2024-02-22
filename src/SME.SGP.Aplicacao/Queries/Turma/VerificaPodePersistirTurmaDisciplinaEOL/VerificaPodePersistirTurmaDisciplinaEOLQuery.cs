@@ -9,18 +9,20 @@ namespace SME.SGP.Aplicacao
 {
     public class VerificaPodePersistirTurmaDisciplinaEOLQuery : IRequest<bool>
     {
-        public VerificaPodePersistirTurmaDisciplinaEOLQuery(Usuario usuario, string turmaId, string componenteCurricularId, DateTime data)
+        public VerificaPodePersistirTurmaDisciplinaEOLQuery(Usuario usuario, string turmaId, string componenteCurricularId, DateTime data, bool ehTerritorioSaber = false)
         {
             Usuario = usuario;
             TurmaId = turmaId;
             ComponenteCurricularId = componenteCurricularId;
             Data = data;
+            EhTerritorioSaber = ehTerritorioSaber;
         }
 
         public Usuario Usuario { get; set; }
         public string TurmaId { get; set; }
         public string ComponenteCurricularId { get; set; }
         public DateTime Data { get; set; }
+        public bool EhTerritorioSaber { get; set; }
     }
 
     public class VerificaPodePersistirTurmaDisciplinaEOLQueryValidator : AbstractValidator<VerificaPodePersistirTurmaDisciplinaEOLQuery>

@@ -26,11 +26,11 @@ namespace SME.SGP.Aplicacao
         {
             var dataString = request.Data.ToString("s");
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
-
+            var ehTerritorioSaber = request.EhTerritorioSaber;
             var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_PROFESSORES_TURMAS_DISCIPLINAS_ATRIBUICAO_VERIFICAR_DATA,
                                                                     request.Usuario.CodigoRf,
                                                                     request.TurmaId,
-                                                                    request.ComponenteCurricularId) + $"?dataConsulta={dataString}");
+                                                                    request.ComponenteCurricularId) + $"?dataConsulta={dataString}&territorioSaber={ehTerritorioSaber}");
 
             if (!resposta.IsSuccessStatusCode)
                 throw new NegocioException("Não foi possível validar a atribuição do professor no EOL.");
