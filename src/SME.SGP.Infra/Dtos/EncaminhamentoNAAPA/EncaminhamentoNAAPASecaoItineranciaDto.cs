@@ -2,6 +2,7 @@
 using SME.SGP.Dominio.Enumerados;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace SME.SGP.Infra
@@ -15,5 +16,6 @@ namespace SME.SGP.Infra
         public DateTime DataAtendimento { get; set; }
         public string TipoAtendimento { get; set; }
         public AuditoriaDto Auditoria { get; set; }
+        public IEnumerable<ArquivoResumidoDto> Arquivos { get; set; } = Enumerable.Empty<ArquivoResumidoDto>();
     }
 }
