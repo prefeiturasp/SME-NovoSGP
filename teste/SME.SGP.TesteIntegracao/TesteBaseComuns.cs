@@ -547,14 +547,14 @@ namespace SME.SGP.TesteIntegracao
             this.collectionFixture = collectionFixture ?? throw new ArgumentNullException(nameof(collectionFixture));
         }
 
-        protected void CriarClaimUsuario(string perfil)
+        protected void CriarClaimUsuario(string perfil, string pagina = "0", string registros = "10")
         {
             var contextoAplicacao = ServiceProvider.GetService<IContextoAplicacao>();
             
-            contextoAplicacao.AdicionarVariaveis(ObterVariaveisPorPerfil(perfil));
+            contextoAplicacao.AdicionarVariaveis(ObterVariaveisPorPerfil(perfil, pagina, registros));
         }
 
-        private Dictionary<string, object> ObterVariaveisPorPerfil(string perfil)
+        private Dictionary<string, object> ObterVariaveisPorPerfil(string perfil, string pagina, string registros)
         {
             var rfLoginPerfil = ObterRfLoginPerfil(perfil);
             
@@ -564,8 +564,8 @@ namespace SME.SGP.TesteIntegracao
                 { USUARIO_LOGADO_CHAVE, rfLoginPerfil },
                 { USUARIO_RF_CHAVE, rfLoginPerfil },
                 { USUARIO_LOGIN_CHAVE, rfLoginPerfil },
-                { NUMERO_PAGINA, "0" },
-                { NUMERO_REGISTROS, "10" },
+                { NUMERO_PAGINA, pagina },
+                { NUMERO_REGISTROS, registros },
                 { ADMINISTRADOR, rfLoginPerfil },
                 { NOME_ADMINISTRADOR, rfLoginPerfil },
                 {
