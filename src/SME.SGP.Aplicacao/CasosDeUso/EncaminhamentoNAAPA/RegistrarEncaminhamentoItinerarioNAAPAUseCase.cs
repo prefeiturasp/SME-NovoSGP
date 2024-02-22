@@ -59,8 +59,29 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
             await mediator.Send(new RegistrarHistoricoDeAlteracaoEncaminhamentoNAAPACommand(secaoDto, secaoExistente, TipoHistoricoAlteracoesEncaminhamentoNAAPA.Alteracao));
 
             await mediator.Send(new AlterarEncaminhamentoNAAPASecaoQuestaoCommand(secaoDto, secaoExistente));
-          
+            await RemoverArquivosNaoUtilizados(secaoDto);
             return true;
+        }
+
+        private async Task RemoverArquivosNaoUtilizados(EncaminhamentoNAAPASecaoDto secao)
+        {
+            var resposta = new List<EncaminhamentoNAAPASecaoQuestaoDto>();
+
+            foreach (var q in secao.Questoes)
+            {
+                if (string.IsNullOrEmpty(q.Resposta) && q.TipoQuestao == TipoQuestao.Upload)
+                    resposta.Add(q);
+            }
+            
+            if (resposta.Any())
+            {
+                foreach (var item in resposta)
+                {
+                    var entidadeResposta = await mediator.Send(new ObterRespostaEncaminhamentoNAAPAPorIdQuery(item.RespostaEncaminhamentoId));
+                    if (entidadeResposta.NaoEhNulo())
+                        await mediator.Send(new ExcluirRespostaEncaminhamentoNAAPACommand(entidadeResposta));
+                }
+            }
         }
 
         private async Task<bool> Salvar(Dominio.EncaminhamentoNAAPA encaminhamentoNAAPA, EncaminhamentoNAAPAItineranciaDto encaminhamentoNAAPAItineranciaDto)

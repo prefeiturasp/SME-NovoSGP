@@ -249,6 +249,28 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(codigoAluno));
         }
 
+        [HttpDelete("secoes-itinerancia/arquivo")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_E, Policy = "Bearer")]
+        public async Task<IActionResult> ExcluirArquivoItinerancia([FromQuery] Guid arquivoCodigo, [FromServices] IExcluirArquivoItineranciaNAAPAUseCase useCase)
+        {
+            return Ok(await useCase.Executar(arquivoCodigo));
+        }
+
+        [HttpPost("secoes-itinerancia/upload")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_I, Policy = "Bearer")]
+        public async Task<IActionResult> UploadItinerancia([FromForm] IFormFile file, [FromServices] IUploadDeArquivoUseCase useCase)
+        {
+            if (file.Length > 0)
+                return Ok(await useCase.Executar(file, Dominio.TipoArquivo.ItineranciaEncaminhamentoNAAPA));
+
+            return BadRequest();
+        }
 
         [HttpGet("aluno/{codigoAluno}/registros-acao")]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<RegistroAcaoBuscaAtivaNAAPADto>), 200)]

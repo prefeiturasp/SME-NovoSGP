@@ -8,9 +8,9 @@ using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirArquivoNAAPAUseCase : AbstractUseCase, IExcluirArquivoNAAPAUseCase
+    public class ExcluirArquivoItineranciaNAAPAUseCase : AbstractUseCase, IExcluirArquivoItineranciaNAAPAUseCase
     {
-        public ExcluirArquivoNAAPAUseCase(IMediator mediator) : base(mediator)
+        public ExcluirArquivoItineranciaNAAPAUseCase(IMediator mediator) : base(mediator)
         {
         }
 

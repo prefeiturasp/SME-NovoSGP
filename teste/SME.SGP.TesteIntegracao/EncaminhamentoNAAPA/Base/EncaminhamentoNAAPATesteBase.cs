@@ -41,6 +41,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected const long ID_QUESTAO_ENSINO_APRENDIZAGEM = 41;
         protected const long ID_QUESTAO_HIPOTESE_ESCRITA = 42;
         protected const long ID_QUESTAO_PERMANENCIA_ESCOLAR = 43;
+        protected const long ID_QUESTAO_ANEXOS_ITINERANCIA = 47;
 
         protected const long ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_DATA_ENTRADA_QUEIXA = 17;
         protected const long ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PRIORIDADE = 18;
@@ -390,6 +391,16 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected IRegistrarEncaminhamentoItinerarioNAAPAUseCase ObterServicoRegistrarEncaminhamentoItinerario()
         {
             return ServiceProvider.GetService<IRegistrarEncaminhamentoItinerarioNAAPAUseCase>();
+        }
+
+        protected IExcluirArquivoItineranciaNAAPAUseCase ObterServicoExcluirArquivoItineranciaNAAPAUseCase()
+        {
+            return ServiceProvider.GetService<IExcluirArquivoItineranciaNAAPAUseCase>();
+        }
+
+        protected IUploadDeArquivoUseCase ObterServicoUploadDeArquivoUseCase()
+        {
+            return ServiceProvider.GetService<IUploadDeArquivoUseCase>();
         }
 
         protected IObterSecoesItineranciaDeEncaminhamentoNAAPAUseCase ObterServicoListagemSecoesItineranciaEncaminhamentoNaapa()
@@ -3138,6 +3149,20 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_PROCEDIMENTO_DE_TRABALHO
+            });
+
+            //id 47
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = 3,
+                Ordem = 1,
+                Nome = "Anexos",
+                Obrigatorio = false,
+                Tipo = TipoQuestao.Upload,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now,
+                NomeComponente = "ANEXO_ITINERANCIA"
             });
         }
 
