@@ -393,6 +393,16 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             return ServiceProvider.GetService<IRegistrarEncaminhamentoItinerarioNAAPAUseCase>();
         }
 
+        protected IExcluirArquivoItineranciaNAAPAUseCase ObterServicoExcluirArquivoItineranciaNAAPAUseCase()
+        {
+            return ServiceProvider.GetService<IExcluirArquivoItineranciaNAAPAUseCase>();
+        }
+
+        protected IUploadDeArquivoUseCase ObterServicoUploadDeArquivoUseCase()
+        {
+            return ServiceProvider.GetService<IUploadDeArquivoUseCase>();
+        }
+
         protected IObterSecoesItineranciaDeEncaminhamentoNAAPAUseCase ObterServicoListagemSecoesItineranciaEncaminhamentoNaapa()
         {
             return ServiceProvider.GetService<IObterSecoesItineranciaDeEncaminhamentoNAAPAUseCase>();
