@@ -261,9 +261,13 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<PlanoAEE>> ObterPlanosAtivos()
         {
-            var query = @"select * from plano_aee where not excluido and situacao not in (3,7)";
+            var query = @"select *
+                            from plano_aee 
+                          where not excluido and 
+                                situacao <> @situacaoEncerrado
+                          order by id;";
 
-            return await database.Conexao.QueryAsync<PlanoAEE>(query);
+            return await database.Conexao.QueryAsync<PlanoAEE>(query, new { situacaoEncerrado = (int)SituacaoPlanoAEE.Encerrado });
         }
 
         public async Task<IEnumerable<PlanoAEE>> ObterPorDataFinalVigencia(DateTime dataFim, bool desconsiderarPendencias = true, bool desconsiderarNotificados = false, NotificacaoPlanoAEETipo tipoNotificacao = NotificacaoPlanoAEETipo.PlanoCriado)

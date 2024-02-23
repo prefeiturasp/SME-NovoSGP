@@ -68,7 +68,7 @@
 
         public const string URL_ALUNOS_ANO_LETIVO_ALUNOS = "alunos/anoLetivo/{0}/alunos";
 
-        public const string URL_ALUNOS_TURMAS_ANOS_LETIVOS_HISTORICO_FILTRAR_SITUACAO = "alunos/{0}/turmas/anosLetivos/{1}/historico/{2}/filtrar-situacao/{3}";
+        public const string URL_ALUNOS_TURMAS_ANOS_LETIVOS_HISTORICO_FILTRAR_SITUACAO = "alunos/{0}/turmas/anosLetivos/{1}/historico/{2}/filtrar-situacao/{3}/tipo-turma/{4}";
 
         public const string URL_ALUNOS_ANO_LETIVO_MATRICULADOS_QUANTIDADE = "alunos/ano-letivo/{0}/matriculados/quantidade";
 
