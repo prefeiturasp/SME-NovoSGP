@@ -1,26 +1,25 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
-using Newtonsoft.Json;
 
 namespace SME.SGP.Aplicacao
 {
     public class EncerrarPlanosAEEEstudantesInativosTratarUseCase : AbstractUseCase, IEncerrarPlanosAEEEstudantesInativosTratarUseCase
     {
         private readonly IUnitOfWork unitOfWork;
-        public EncerrarPlanosAEEEstudantesInativosTratarUseCase(IMediator mediator,
-           IUnitOfWork unitOfWork)
+        public EncerrarPlanosAEEEstudantesInativosTratarUseCase(IMediator mediator, IUnitOfWork unitOfWork)
            : base(mediator)
         {
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
+
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
             try
@@ -30,8 +29,6 @@ namespace SME.SGP.Aplicacao
 
                 if (planoAEE.NaoEhNulo())
                 {
-                    var encerrarPlanoAee = false;
-
                     var matriculas = await mediator
                         .Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(planoAEE.AlunoCodigo, anoLetivo, filtrarSituacao: false));
 
@@ -41,91 +38,101 @@ namespace SME.SGP.Aplicacao
                         throw new NegocioException(string.Format(MensagemNegocioEncerramentoAutomaticoPlanoAee.Turma_nao_localizada, planoAEE.TurmaId));
 
                     if (matriculas.EhNulo() || !matriculas.Any())
-                    {
-                        var uePlanoAluno = turmaDoPlanoAee.Ue.CodigoUe;
-                        var dadosMatriculaAlunoNaUEPlano = await mediator.Send(new ObterMatriculasAlunoNaUEQuery(uePlanoAluno, planoAEE.AlunoCodigo));
-
-                        if (dadosMatriculaAlunoNaUEPlano.NaoEhNulo() && dadosMatriculaAlunoNaUEPlano.Any())
-                        {
-                            var situacoesAlunoNaUEAnoAtual = dadosMatriculaAlunoNaUEPlano.Where(a => a.AnoLetivo == anoLetivo);
-
-                            if (situacoesAlunoNaUEAnoAtual.Any() && situacoesAlunoNaUEAnoAtual.NaoEhNulo())
-                            {
-                                var codigosTurmasAluno = situacoesAlunoNaUEAnoAtual.Select(b => b.CodigoTurma.ToString()).ToArray();
-
-                                var turmas = await mediator.Send(new ObterTurmasDreUePorCodigosQuery(codigosTurmasAluno));
-
-                                var codigoTurmaRegular = turmas!.Where(b => b.TipoTurma == TipoTurma.Regular).Select(b => long.Parse(b.CodigoTurma)).FirstOrDefault();
-
-                                var ultimaSituacaoAlunoNaUE = situacoesAlunoNaUEAnoAtual.Where(b => b.CodigoTurma == codigoTurmaRegular).OrderByDescending(c => c.DataSituacao).FirstOrDefault();
-
-                                if (ultimaSituacaoAlunoNaUE.NaoEhNulo() && PlanoDeveSerEncerrado(ultimaSituacaoAlunoNaUE.CodigoSituacaoMatricula))
-                                    await EncerrarPlanoAee(planoAEE, ultimaSituacaoAlunoNaUE?.SituacaoMatricula ?? "Inativo", ultimaSituacaoAlunoNaUE.DataSituacao);
-                            }
-                            else
-                            {
-                                var dadosMatricula = dadosMatriculaAlunoNaUEPlano.Where(x => x.CodigoTurma == long.Parse(turmaDoPlanoAee.CodigoTurma))?.OrderByDescending(c => c.DataSituacao).FirstOrDefault();
-                                await EncerrarPlanoAee(planoAEE, dadosMatricula?.SituacaoMatricula ?? "Inativo", dadosMatricula?.DataSituacao ?? DateTimeExtension.HorarioBrasilia());
-                            }
-                        }
-                        else
-                            throw new NegocioException(string.Format(MensagemNegocioEncerramentoAutomaticoPlanoAee.Nao_foi_localizada_nenhuma_matricula, planoAEE.AlunoCodigo));
-                    }
+                        await ProcessarEncerramentoDadosMatriculasAnosAnteriores(planoAEE, anoLetivo, turmaDoPlanoAee);
                     else
-                    {
-                        var ultimaSituacao = matriculas!.OrderByDescending(c => c.DataSituacao).ThenByDescending(c => c.NumeroAlunoChamada)?.FirstOrDefault();
+                        await ProcessarEncerramentoDadosMatriculasAnoAtual(planoAEE, anoLetivo, matriculas, turmaDoPlanoAee);
 
-                        if (ultimaSituacao.NaoEhNulo())
-                        {
-                            if (ultimaSituacao!.Inativo && PlanoDeveSerEncerrado(ultimaSituacao.CodigoSituacaoMatricula))
-                                encerrarPlanoAee = true;
-                            else if (ultimaSituacao!.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido
-                                      || ultimaSituacao!.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo)
-                            {
-
-                                if (turmaDoPlanoAee.AnoLetivo < anoLetivo)
-                                {
-                                    var turmaAtualDoAluno = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(ultimaSituacao.CodigoTurma.ToString()));
-                                    if (turmaDoPlanoAee.Ue.CodigoUe != turmaAtualDoAluno.Ue.CodigoUe)
-                                        encerrarPlanoAee = true;
-                                }
-                            }
-                            else if (matriculas.Select(m => m.CodigoTurma).Distinct().Count() > 1 &&
-                                     AlunoFoiTransferidoDaUnidadeEscolar(matriculas, turmaDoPlanoAee))
-                                encerrarPlanoAee = true;
-                        }
-
-                        if (encerrarPlanoAee)
-                            await EncerrarPlanoAee(planoAEE, ultimaSituacao?.SituacaoMatricula ?? "Inativo", ultimaSituacao?.DataSituacao ?? DateTimeExtension.HorarioBrasilia());
-                    }
                     return true;
                 }
                 return false;
             }
             catch (Exception ex)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand(MensagemNegocioEncerramentoAutomaticoPlanoAee.Falha_ao_encerrar_planos, LogNivel.Critico, LogContexto.WorkerRabbit, observacao: ex.Message, rastreamento: ex.StackTrace, excecaoInterna: ex.ToString(), innerException: ex.InnerException?.ToString()));
+                await mediator.Send(new SalvarLogViaRabbitCommand(MensagemNegocioEncerramentoAutomaticoPlanoAee.Falha_ao_encerrar_planos,
+                    LogNivel.Critico, LogContexto.WorkerRabbit, observacao: ex.Message, rastreamento: ex.StackTrace, excecaoInterna: ex.ToString(), innerException: ex.InnerException?.ToString()));
                 throw;
             }
         }
 
-        public bool PlanoDeveSerEncerrado(SituacaoMatriculaAluno situacao)
+        private async Task ProcessarEncerramentoDadosMatriculasAnoAtual(PlanoAEE planoAEE, int anoLetivo, IEnumerable<AlunoPorTurmaResposta> matriculas, Turma turmaDoPlanoAee)
+        {
+            var encerrarPlanoAee = false;
+            var ultimaSituacao = matriculas!.OrderByDescending(c => c.DataSituacao).ThenByDescending(c => c.NumeroAlunoChamada)?.FirstOrDefault();
+
+            if (ultimaSituacao.NaoEhNulo())
+            {
+                if (ultimaSituacao!.Inativo && PlanoDeveSerEncerrado(ultimaSituacao.CodigoSituacaoMatricula))
+                    encerrarPlanoAee = true;
+                else if (ultimaSituacao!.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido || ultimaSituacao!.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo)
+                {
+                    if (turmaDoPlanoAee.AnoLetivo < anoLetivo)
+                    {
+                        var turmaAtualDoAluno = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(ultimaSituacao.CodigoTurma.ToString()));
+                        if (turmaDoPlanoAee.Ue.CodigoUe != turmaAtualDoAluno.Ue.CodigoUe)
+                            encerrarPlanoAee = true;
+                    }
+                }
+                else if (matriculas.Select(m => m.CodigoTurma).Distinct().Count() > 1 && AlunoFoiTransferidoDaUnidadeEscolar(matriculas, turmaDoPlanoAee))
+                    encerrarPlanoAee = true;
+            }
+
+            if (encerrarPlanoAee)
+                await EncerrarPlanoAee(planoAEE, ultimaSituacao?.SituacaoMatricula ?? "Inativo", ultimaSituacao?.DataSituacao ?? DateTimeExtension.HorarioBrasilia());
+            else if (planoAEE.Situacao == SituacaoPlanoAEE.EncerradoAutomaticamente)
+                await ReaverPlanoEncerradoIndevidamente(planoAEE, turmaDoPlanoAee);
+        }
+
+        private async Task ProcessarEncerramentoDadosMatriculasAnosAnteriores(PlanoAEE planoAEE, int anoLetivo, Turma turmaDoPlanoAee)
+        {
+            var uePlanoAluno = turmaDoPlanoAee.Ue.CodigoUe;
+            var dadosMatriculaAlunoNaUEPlano = await mediator.Send(new ObterMatriculasAlunoNaUEQuery(uePlanoAluno, planoAEE.AlunoCodigo));
+
+            if (dadosMatriculaAlunoNaUEPlano.NaoEhNulo() && dadosMatriculaAlunoNaUEPlano.Any())
+            {
+                var situacoesAlunoNaUEAnoAtual = dadosMatriculaAlunoNaUEPlano.Where(a => a.AnoLetivo == anoLetivo);
+
+                if (situacoesAlunoNaUEAnoAtual.Any() && situacoesAlunoNaUEAnoAtual.NaoEhNulo())
+                {
+                    var codigosTurmasAluno = situacoesAlunoNaUEAnoAtual.Select(b => b.CodigoTurma.ToString()).ToArray();
+                    var turmas = await mediator.Send(new ObterTurmasDreUePorCodigosQuery(codigosTurmasAluno));
+                    var codigoTurmaRegular = turmas!.Where(b => b.TipoTurma == TipoTurma.Regular).Select(b => long.Parse(b.CodigoTurma)).FirstOrDefault();
+                    var ultimaSituacaoAlunoNaUE = situacoesAlunoNaUEAnoAtual.Where(b => b.CodigoTurma == codigoTurmaRegular).OrderByDescending(c => c.DataSituacao).FirstOrDefault();
+
+                    if (ultimaSituacaoAlunoNaUE.NaoEhNulo() && PlanoDeveSerEncerrado(ultimaSituacaoAlunoNaUE.CodigoSituacaoMatricula))
+                        await EncerrarPlanoAee(planoAEE, ultimaSituacaoAlunoNaUE?.SituacaoMatricula ?? "Inativo", ultimaSituacaoAlunoNaUE.DataSituacao);
+                    else if (planoAEE.Situacao == SituacaoPlanoAEE.EncerradoAutomaticamente)
+                        await ReaverPlanoEncerradoIndevidamente(planoAEE, turmaDoPlanoAee);
+                }
+                else
+                {
+                    var dadosMatricula = dadosMatriculaAlunoNaUEPlano.Where(x => x.CodigoTurma == long.Parse(turmaDoPlanoAee.CodigoTurma))?.OrderByDescending(c => c.DataSituacao).FirstOrDefault();
+                    await EncerrarPlanoAee(planoAEE, dadosMatricula?.SituacaoMatricula ?? "Inativo", dadosMatricula?.DataSituacao ?? DateTimeExtension.HorarioBrasilia());
+                }
+            }
+            else
+                throw new NegocioException(string.Format(MensagemNegocioEncerramentoAutomaticoPlanoAee.Nao_foi_localizada_nenhuma_matricula, planoAEE.AlunoCodigo));
+        }
+
+        public static bool PlanoDeveSerEncerrado(SituacaoMatriculaAluno situacao)
             => !(new[] { SituacaoMatriculaAluno.Ativo,
-                        SituacaoMatriculaAluno.Rematriculado,
-                        SituacaoMatriculaAluno.PendenteRematricula,
-                        SituacaoMatriculaAluno.SemContinuidade,
-                        SituacaoMatriculaAluno.Concluido,
-                        SituacaoMatriculaAluno.RemanejadoSaida,
-                        SituacaoMatriculaAluno.ReclassificadoSaida,
-                        SituacaoMatriculaAluno.Transferido,
-                        SituacaoMatriculaAluno.TransferidoSED
+                         SituacaoMatriculaAluno.Rematriculado,
+                         SituacaoMatriculaAluno.PendenteRematricula,
+                         SituacaoMatriculaAluno.SemContinuidade,
+                         SituacaoMatriculaAluno.Concluido,
+                         SituacaoMatriculaAluno.RemanejadoSaida,
+                         SituacaoMatriculaAluno.ReclassificadoSaida,
+                         SituacaoMatriculaAluno.Transferido,
+                         SituacaoMatriculaAluno.TransferidoSED
                     }).Contains(situacao);
         private async Task EncerrarPlanoAee(PlanoAEE planoAEE, string situacaoMatricula, DateTime dataSituacao)
         {
-            unitOfWork.IniciarTransacao();
+            if (planoAEE.Situacao == SituacaoPlanoAEE.EncerradoAutomaticamente)
+                return;
 
             try
             {
+                unitOfWork.IniciarTransacao();
+
                 planoAEE.Situacao = SituacaoPlanoAEE.EncerradoAutomaticamente;
 
                 await mediator.Send(new PersistirPlanoAEECommand(planoAEE));
@@ -145,7 +152,8 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> ParametroNotificarPlanosAee()
         {
-            var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.GerarNotificacaoPlanoAEE, DateTime.Today.Year));
+            var parametro = await mediator
+                .Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.GerarNotificacaoPlanoAEE, DateTimeExtension.HorarioBrasilia().Year));
 
             return parametro.NaoEhNulo() && parametro.Ativo;
         }
@@ -201,7 +209,7 @@ namespace SME.SGP.Aplicacao
         {
             var usuariosIds = new List<long>();
 
-            if(funcionarios.NaoEhNulo())
+            if (funcionarios.NaoEhNulo())
             {
                 foreach (var functionario in funcionarios)
                 {
@@ -217,7 +225,7 @@ namespace SME.SGP.Aplicacao
         private async Task<Turma> ObterTurma(long turmaId)
             => await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(turmaId));
 
-        private bool AlunoFoiTransferidoDaUnidadeEscolar(IEnumerable<AlunoPorTurmaResposta> matriculas, Turma turmaPlano)
+        private static bool AlunoFoiTransferidoDaUnidadeEscolar(IEnumerable<AlunoPorTurmaResposta> matriculas, Turma turmaPlano)
         {
             var registroMatriculaMaisRecente = matriculas
                 .OrderBy(m => m.DataSituacao)
@@ -236,5 +244,54 @@ namespace SME.SGP.Aplicacao
                     !registroMatriculaTurmaAnterior.CodigoEscola.Equals(registroMatriculaMaisRecente.CodigoEscola))) &&
                    !registroMatriculaTurmaAnterior.CodigoEscola.Equals(registroMatriculaMaisRecente.CodigoEscola);
         }
+
+        private async Task ReaverPlanoEncerradoIndevidamente(PlanoAEE planoAEE, Turma turmaPlano)
+        {
+            try
+            {
+                unitOfWork.IniciarTransacao();
+
+                planoAEE.Situacao = await DefinirSituacaoPlanoAeeReaver(planoAEE, turmaPlano);
+
+                await mediator.Send(new PersistirPlanoAEECommand(planoAEE));
+
+                if (DeveReaverPendencia(planoAEE.Situacao))
+                    await mediator.Send(new ReaverPendenciaPlanoAeeQuery(planoAEE.Id));
+
+                unitOfWork.PersistirTransacao();
+            }
+            catch (Exception ex)
+            {
+                unitOfWork.Rollback();
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Reaver o plano AEE {planoAEE.Id} encerrado indevidamente.", LogNivel.Critico, LogContexto.WorkerRabbit, excecaoInterna: ex.ToString()));
+            }
+        }
+
+        private async Task<SituacaoPlanoAEE> DefinirSituacaoPlanoAeeReaver(PlanoAEE planoAEE, Turma turmaPlano)
+        {
+            if (string.IsNullOrWhiteSpace(planoAEE.ParecerCoordenacao))
+                return await Task.FromResult(SituacaoPlanoAEE.ParecerCP);
+
+            if (!planoAEE.ResponsavelPaaiId.HasValue)
+                return await Task.FromResult(SituacaoPlanoAEE.AtribuicaoPAAI);
+
+            if (string.IsNullOrEmpty(planoAEE.ParecerPAAI))
+                return await Task.FromResult(SituacaoPlanoAEE.ParecerPAAI);
+
+            var periodosEscolares = await mediator
+                .Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turmaPlano.ModalidadeCodigo, turmaPlano.AnoLetivo, turmaPlano.Semestre));
+
+            var ultimoBimestre = periodosEscolares.LastOrDefault(pe => DateTimeExtension.HorarioBrasilia().Date > pe.PeriodoFim.Date);
+
+            return await Task.FromResult(ultimoBimestre.NaoEhNulo() && (planoAEE.AlteradoEm?.Date ?? DateTimeExtension.HorarioBrasilia().Date) > ultimoBimestre.PeriodoFim.Date ? SituacaoPlanoAEE.Expirado : SituacaoPlanoAEE.Validado);
+        }
+
+        private static bool DeveReaverPendencia(SituacaoPlanoAEE situacaoPlanoAEE)
+            => new SituacaoPlanoAEE[]
+            {
+                SituacaoPlanoAEE.ParecerCP,
+                SituacaoPlanoAEE.AtribuicaoPAAI,
+                SituacaoPlanoAEE.ParecerPAAI
+            }.Contains(situacaoPlanoAEE);
     }
 }

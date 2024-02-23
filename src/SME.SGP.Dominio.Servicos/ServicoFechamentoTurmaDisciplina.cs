@@ -209,7 +209,7 @@ namespace SME.SGP.Dominio.Servicos
 
             PeriodoEscolar periodoEscolar = periodos.periodoEscolar;
 
-            if (periodoEscolar.EhNulo())
+            if (periodos.periodoFechamento.EhNulo())
                 throw new NegocioException($"Não localizado período de fechamento em aberto para turma informada no {entidadeDto.Bimestre}º Bimestre");
 
             await CarregaFechamentoTurma(fechamentoTurmaDisciplina, turmaFechamento, periodoEscolar);
@@ -244,7 +244,7 @@ namespace SME.SGP.Dominio.Servicos
             else
                 fechamentoAlunos = await CarregarFechamentoAlunoENota(id, entidadeDto.NotaConceitoAlunos, usuarioLogado, parametroAlteracaoNotaFechamento,tipoNotaOuConceito?.TipoNota);
 
-            var alunos = (await mediator.Send(new ObterAlunosDentroPeriodoQuery(turmaFechamento.CodigoTurma, (periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim))))
+            var alunos = (await mediator.Send(new ObterAlunosDentroPeriodoQuery(turmaFechamento.CodigoTurma, (periodos.periodoFechamento.Inicio, periodos.periodoFechamento.Fim))))
                         .DistinctBy(a => a.CodigoAluno)
                         .OrderBy(a => a.NomeValido());
 
