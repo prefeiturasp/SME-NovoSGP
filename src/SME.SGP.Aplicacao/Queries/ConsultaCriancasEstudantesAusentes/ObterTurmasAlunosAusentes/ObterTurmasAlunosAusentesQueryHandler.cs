@@ -29,23 +29,29 @@ namespace SME.SGP.Aplicacao
 
             if (alunosAusentes.Any())
                 alunosTurma = await mediator.Send(new ObterAlunosEolPorTurmaQuery(request.Filtro.CodigoTurma));
-
+            var alunosAusentesFiltrados = new List<AlunosAusentesDto>();
             foreach (var alunoAusente in alunosAusentes)
             {
                 var aluno = alunosTurma.FirstOrDefault(aluno => aluno.CodigoAluno == alunoAusente.CodigoEol);
-                await TratarAluno(request.Filtro.CodigoTurma, alunoAusente, aluno);
+                await TratarAluno(request.Filtro.CodigoTurma, aluno, alunosAusentesFiltrados);
             }
 
-            return alunosAusentes.OrderBy(aluno => aluno.Nome);
+            return alunosAusentesFiltrados.OrderBy(aluno => aluno.Nome);
         }
 
-        private async Task TratarAluno(string codigoTurma, AlunosAusentesDto alunoAusente, AlunoPorTurmaResposta aluno)
+        private async Task TratarAluno(string codigoTurma, AlunoPorTurmaResposta aluno, List<AlunosAusentesDto> alunosAusentesFiltrados)
         {
             if (aluno.NaoEhNulo())
             {
-                alunoAusente.Nome = aluno.NomeAluno;
-                alunoAusente.NumeroChamada = aluno.NumeroAlunoChamada.GetValueOrDefault();
-                alunoAusente.FrequenciaGlobal = await mediator.Send(new ObterConsultaFrequenciaGeralAlunoQuery(alunoAusente.CodigoEol, codigoTurma));
+                var frequenciaGlobal = await mediator.Send(new ObterConsultaFrequenciaGeralAlunoQuery(aluno.CodigoAluno, codigoTurma));
+                var alunoAusente = new AlunosAusentesDto()
+                {
+                    CodigoEol = aluno.CodigoAluno,
+                    Nome = aluno.NomeAluno,
+                    NumeroChamada = aluno.NumeroAlunoChamada.GetValueOrDefault(),
+                    FrequenciaGlobal = frequenciaGlobal,
+                };
+                alunosAusentesFiltrados.Add(alunoAusente);
             }
         }
     }
