@@ -67,7 +67,7 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(questionarioId, encaminhamentoId, codigoAluno, codigoTurma));
         }
-        
+
         [HttpGet("situacoes")]
         [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -247,6 +247,15 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ExisteEncaminhamentoAtivoParaAluno(string codigoAluno, [FromServices] IExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase useCase)
         {
             return Ok(await useCase.Executar(codigoAluno));
+        }
+
+        [HttpGet("{encaminhamentoId}/imprimirAnexos")]
+        [ProducesResponseType(typeof(IEnumerable<ImprimirAnexoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterItensDeImprimirAnexos(long encaminhamentoId, [FromServices] IObterItensDeImprimirAnexosNAAPAUseCase useCase)
+        {
+            return Ok(await useCase.Executar(encaminhamentoId));
         }
     }
 }
