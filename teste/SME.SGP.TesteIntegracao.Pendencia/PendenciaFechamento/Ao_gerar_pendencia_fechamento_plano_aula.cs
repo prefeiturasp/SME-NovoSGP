@@ -51,7 +51,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
                                         string.Empty);
 
             await useCase.Executar(new MensagemRabbit() { Mensagem = JsonConvert.SerializeObject(command) });
-            var pendeciasSemPlano = ObterTodos<Pendencia>().FindAll(p => p.Tipo == TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento);
+            var pendeciasSemPlano = ObterTodos<Dominio.Pendencia>().FindAll(p => p.Tipo == TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento);
             pendeciasSemPlano.ShouldNotBeNull();
             var pendeciasFechamento = ObterTodos<Dominio.PendenciaFechamento>().Find(pf => pf.PendenciaId == pendeciasSemPlano.FirstOrDefault().Id);
             pendeciasFechamento.ShouldNotBeNull();
@@ -95,7 +95,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
                                         string.Empty);
 
             await useCase.Executar(new MensagemRabbit() { Mensagem = JsonConvert.SerializeObject(command) });
-            var pendeciasSemPlano = ObterTodos<Pendencia>();
+            var pendeciasSemPlano = ObterTodos<Dominio.Pendencia>();
             pendeciasSemPlano.ShouldNotBeNull();
             pendeciasSemPlano.Exists(p => p.Tipo == TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento).ShouldBeFalse();
             var pendenciasAula = ObterTodos<Dominio.PendenciaAula>().Select(pendenciaAula => pendenciaAula.PendenciaId);

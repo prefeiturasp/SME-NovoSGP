@@ -71,14 +71,14 @@ namespace SME.SGP.TesteIntegracao.PendenciaCargaAulas
             await CriarDadosBasicos();
             var useCase = ServiceProvider.GetService<ICargaQuantidadeAulaDiaPendenciaUseCase>();
             
-            var pendenciasExistentesNaBase = ObterTodos<Pendencia>();
+            var pendenciasExistentesNaBase = ObterTodos<Dominio.Pendencia>();
             pendenciasExistentesNaBase.Count(x => x.QuantidadeDias.EhNulo() && x.QuantidadeAulas.EhNulo()).ShouldBeEquivalentTo(2);
             
             var carga = new AulasDiasPendenciaDto {PendenciaId = 1, QuantidadeAulas = 1, QuantidadeDias = 1};
             var retornoUsecase = await useCase.Executar(new MensagemRabbit(JsonConvert.SerializeObject(carga)));
             retornoUsecase.ShouldBeTrue();
             
-            var pendenciasNaBaseAposAtualizacao = ObterTodos<Pendencia>();
+            var pendenciasNaBaseAposAtualizacao = ObterTodos<Dominio.Pendencia>();
             pendenciasNaBaseAposAtualizacao.Count(x => x.QuantidadeDias.EhNulo() && x.QuantidadeAulas.EhNulo()).ShouldBeEquivalentTo(1);
             pendenciasNaBaseAposAtualizacao.Count(x => x.QuantidadeDias == 1 && x.QuantidadeAulas == 1).ShouldBeEquivalentTo(1);
         }
@@ -86,7 +86,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaCargaAulas
 
         private async Task CriarDadosBasicos()
         {
-            await InserirNaBase(new Pendencia()
+            await InserirNaBase(new Dominio.Pendencia()
             {
                 Titulo = "Pendencia de Teste 1",
                 Descricao =  "Desc Pendencia de Teste 1",
@@ -97,7 +97,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaCargaAulas
                 CriadoPor = "Sistema",
                 CriadoRF = "1",
             });
-            await InserirNaBase(new Pendencia()
+            await InserirNaBase(new Dominio.Pendencia()
             {
                 Titulo = "Pendencia de Teste 2",
                 Descricao =  "Desc Pendencia de Teste 2",

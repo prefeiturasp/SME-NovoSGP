@@ -49,7 +49,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaGeral
         {
             await CriarBaseReplicarParametro();
             await CriarBaseReplicarExcluirCalendarioAnoAnteriorCalendario();
-            var pendenciasAntesDaExlusao = ObterTodos<Pendencia>().Where(x => !x.Excluido);
+            var pendenciasAntesDaExlusao = ObterTodos<Dominio.Pendencia>().Where(x => !x.Excluido);
             pendenciasAntesDaExlusao.Count().ShouldBeEquivalentTo(3);
             
             var useCase = ServiceProvider.GetService<IRemoverPendenciasCalendarioNoFinalDoAnoLetivoUseCase>();
@@ -60,7 +60,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaGeral
             var retornoUseCase = await useCase.Executar(mensagemParaPublicar);
             retornoUseCase.ShouldBeTrue();
             
-            var pendenciasDepoisDaExlusao = ObterTodos<Pendencia>().Where(x => x.Excluido);
+            var pendenciasDepoisDaExlusao = ObterTodos<Dominio.Pendencia>().Where(x => x.Excluido);
             pendenciasDepoisDaExlusao.Count().ShouldBeEquivalentTo(3);
         }
 
@@ -97,7 +97,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaGeral
 
         private async Task CriarBaseReplicarExcluirCalendarioAnoAnteriorCalendario()
         {
-            await InserirNaBase(new Pendencia()
+            await InserirNaBase(new Dominio.Pendencia()
             {
                 Tipo = TipoPendencia.AulaNaoLetivo ,
                 Descricao = "Aulas criadas em dias não letivos",
@@ -106,7 +106,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaGeral
                 CriadoRF = "",
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 03, 01)
             });
-            await InserirNaBase(new Pendencia()
+            await InserirNaBase(new Dominio.Pendencia()
             {
                 Tipo = TipoPendencia.CalendarioLetivoInsuficiente ,
                 Descricao = "Calendário com dias letivos abaixo do permitido",
@@ -115,7 +115,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaGeral
                 CriadoRF = "",
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 03, 01)
             });
-            await InserirNaBase(new Pendencia()
+            await InserirNaBase(new Dominio.Pendencia()
             {
                 Tipo = TipoPendencia.CadastroEventoPendente  ,
                 Descricao = "Cadastro de eventos pendente",
