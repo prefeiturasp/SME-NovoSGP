@@ -99,7 +99,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento.Base
 
         protected async Task CriaPendenciaPorTipo(TipoPendencia tipoPendencia, SituacaoPendencia situacao = SituacaoPendencia.Pendente)
         {
-            await InserirNaBase(new Pendencia()
+            await InserirNaBase(new Dominio.Pendencia()
             {
                 Tipo = tipoPendencia,
                 Situacao = situacao,
