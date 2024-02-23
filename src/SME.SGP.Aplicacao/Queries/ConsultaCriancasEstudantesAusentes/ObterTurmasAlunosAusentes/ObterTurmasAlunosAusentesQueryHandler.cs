@@ -30,15 +30,23 @@ namespace SME.SGP.Aplicacao
             if (alunosAusentes.Any())
                 alunosTurma = await mediator.Send(new ObterAlunosEolPorTurmaQuery(request.Filtro.CodigoTurma));
 
-            foreach (var dto in  alunosAusentes)
+            foreach (var alunoAusente in alunosAusentes)
             {
-                var aluno = alunosTurma.FirstOrDefault(aluno => aluno.CodigoAluno == dto.CodigoEol);
-                dto.Nome = aluno.NomeAluno;
-                dto.NumeroChamada = aluno.NumeroAlunoChamada.GetValueOrDefault();
-                dto.FrequenciaGlobal = await mediator.Send(new ObterConsultaFrequenciaGeralAlunoQuery(dto.CodigoEol, request.Filtro.CodigoTurma));
+                var aluno = alunosTurma.FirstOrDefault(aluno => aluno.CodigoAluno == alunoAusente.CodigoEol);
+                await TratarAluno(request.Filtro.CodigoTurma, alunoAusente, aluno);
             }
 
             return alunosAusentes.OrderBy(aluno => aluno.Nome);
+        }
+
+        private async Task TratarAluno(string codigoTurma, AlunosAusentesDto alunoAusente, AlunoPorTurmaResposta aluno)
+        {
+            if (aluno.NaoEhNulo())
+            {
+                alunoAusente.Nome = aluno.NomeAluno;
+                alunoAusente.NumeroChamada = aluno.NumeroAlunoChamada.GetValueOrDefault();
+                alunoAusente.FrequenciaGlobal = await mediator.Send(new ObterConsultaFrequenciaGeralAlunoQuery(alunoAusente.CodigoEol, codigoTurma));
+            }
         }
     }
 }
