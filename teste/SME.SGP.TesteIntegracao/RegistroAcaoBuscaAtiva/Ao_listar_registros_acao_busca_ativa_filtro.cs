@@ -40,9 +40,9 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
 
             await CriarDadosBase(filtro);
             var dataRegistro = DateTimeExtension.HorarioBrasilia().Date;
-            await GerarDadosRegistroAcao_3PrimeirasQuestoes(dataRegistro.AddMonths(-1), true);
-            await GerarDadosRegistroAcao_3PrimeirasQuestoes(dataRegistro, true);
-            await GerarDadosRegistroAcao_3PrimeirasQuestoes(dataRegistro.AddMonths(1), true);
+            await GerarDadosRegistroAcao_2PrimeirasQuestoes(dataRegistro.AddMonths(-1), true);
+            await GerarDadosRegistroAcao_2PrimeirasQuestoes(dataRegistro, true);
+            await GerarDadosRegistroAcao_2PrimeirasQuestoes(dataRegistro.AddMonths(1), true);
             var useCase = ObterUseCaseListagemRegistrosAcao();
             var retorno = await useCase.Executar(new FiltroRegistrosAcaoDto()
             {
