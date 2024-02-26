@@ -127,7 +127,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(ParecerConclusivoDto), 200)]
         [Permissao(Permissao.CC_I, Policy = "Bearer")]
         public async Task<IActionResult> GerarParecerConclusivoAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, [FromServices] IGerarParecerConclusivoUseCase gerarParecerConclusivoUseCase)
-            => Ok(await gerarParecerConclusivoUseCase.Executar(new ConselhoClasseFechamentoAlunoDto() { ConselhoClasseId = conselhoClasseId, FechamentoTurmaId = fechamentoTurmaId, AlunoCodigo = alunoCodigo }));
+            => Ok(await gerarParecerConclusivoUseCase.Executar(new ConselhoClasseFechamentoAlunoDto() { ConselhoClasseId = conselhoClasseId, FechamentoTurmaId = fechamentoTurmaId, AlunoCodigo = alunoCodigo}));
 
         [HttpGet("{conselhoClasseId}/fechamentos/{fechamentoTurmaId}/alunos/{alunoCodigo}/turmas/{codigoTurma}/bimestres/{bimestre}/sintese")]
         [ProducesResponseType(typeof(IEnumerable<ConselhoDeClasseGrupoMatrizDto>), 200)]
@@ -137,7 +137,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterSintesesConselhoDeClasse(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre, [FromServices] IObterSinteseConselhoDeClasseUseCase obterSintesesConselhoDeClasseUseCase)
         {
-            return Ok(await obterSintesesConselhoDeClasseUseCase.Executar(new ConselhoClasseSinteseDto(conselhoClasseId, fechamentoTurmaId, alunoCodigo, codigoTurma, bimestre)));
+            return Ok(await obterSintesesConselhoDeClasseUseCase.Executar(new ConselhoClasseSinteseDto(conselhoClasseId,fechamentoTurmaId,alunoCodigo,codigoTurma,bimestre)));
         }
 
         [HttpGet("{conselhoClasseId}/fechamentos/{fechamentoTurmaId}/alunos/{alunoCodigo}/turmas/{codigoTurma}/bimestres/{bimestre}/notas")]
@@ -260,9 +260,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<InconsistenciasAlunoFamiliaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(204)]
-        public async Task<IActionResult> ObterAlunosSemNotasRecomendacoes(long turmaId, int bimestre, [FromServices] IObterAlunosSemNotasRecomendacoesUseCase useCase)
+        public async Task<IActionResult> ObterAlunosSemNotasRecomendacoes(long turmaId,int bimestre,[FromServices] IObterAlunosSemNotasRecomendacoesUseCase useCase)
         {
-            return Ok(await useCase.Executar(new FiltroInconsistenciasAlunoFamiliaDto(turmaId, bimestre)));
+            return Ok(await useCase.Executar(new FiltroInconsistenciasAlunoFamiliaDto(turmaId,bimestre)));
         }
 
         [HttpGet("turma/{turmaId}/pareceres-conclusivos")]
