@@ -52,7 +52,26 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
                 TurmaId = TURMA_ID_1,
                 Modalidade = (int)Modalidade.Fundamental,
                 OrdemProcedimentoRealizado = QUESTAO_PROCEDIMENTO_REALIZADO_ORDEM_RESPOSTA_LIG_TELEFONICA,
-                NomeAluno = "aluno 1",
+                CodigoNomeAluno = "aluno 1",
+                DataRegistroInicio = dataRegistro.AddMonths(-1),
+                DataRegistroFim = dataRegistro.AddMonths(1)
+            });
+            retorno.ShouldNotBeNull();
+            retorno.TotalRegistros.ShouldBe(3);
+            retorno.Items.Count().ShouldBe(3);
+            retorno.Items.Any(ra => ra.DataRegistro == dataRegistro.AddMonths(-1)).ShouldBeTrue();
+            retorno.Items.Any(ra => ra.DataRegistro == dataRegistro).ShouldBeTrue();
+            retorno.Items.Any(ra => ra.DataRegistro == dataRegistro.AddMonths(1)).ShouldBeTrue();
+
+            retorno = await useCase.Executar(new FiltroRegistrosAcaoDto()
+            {
+                AnoLetivo = dataRegistro.Year,
+                DreId = DRE_ID_1,
+                UeId = UE_ID_1,
+                TurmaId = TURMA_ID_1,
+                Modalidade = (int)Modalidade.Fundamental,
+                OrdemProcedimentoRealizado = QUESTAO_PROCEDIMENTO_REALIZADO_ORDEM_RESPOSTA_LIG_TELEFONICA,
+                CodigoNomeAluno = ALUNO_CODIGO_1,
                 DataRegistroInicio = dataRegistro.AddMonths(-1),
                 DataRegistroFim = dataRegistro.AddMonths(1)
             });

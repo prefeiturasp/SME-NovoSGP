@@ -26,17 +26,17 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         public async Task<PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>> ListarPaginado(int anoLetivo, long dreId, 
-            string codigoUe, string nomeAluno, DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, 
+            string codigoUe, string codigoNomeAluno, DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, 
             int situacao, long prioridade, long[] turmasIds, Paginacao paginacao, bool exibirEncerrados)
         {
-            var query = MontaQueryCompleta(paginacao, codigoUe, nomeAluno, dataAberturaQueixaInicio, 
+            var query = MontaQueryCompleta(paginacao, codigoUe, codigoNomeAluno, dataAberturaQueixaInicio, 
                 dataAberturaQueixaFim, situacao,prioridade , turmasIds, exibirEncerrados);
             var situacoesEncerrado = (int)SituacaoNAAPA.Encerrado ;
 
-            if (!string.IsNullOrWhiteSpace(nomeAluno))
-                nomeAluno = $"%{nomeAluno.ToLower()}%";
+            if (!string.IsNullOrWhiteSpace(codigoNomeAluno))
+                codigoNomeAluno = $"%{codigoNomeAluno.ToLower()}%";
             
-            var parametros = new { anoLetivo, codigoUe, dreId, nomeAluno,
+            var parametros = new { anoLetivo, codigoUe, dreId, codigoNomeAluno,
                 turmasIds, situacao, prioridade, dataAberturaQueixaInicio, 
                 dataAberturaQueixaFim, situacoesEncerrado };
 
@@ -53,29 +53,29 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
-        private string MontaQueryCompleta(Paginacao paginacao, string codigoUe, string nomeAluno, 
+        private string MontaQueryCompleta(Paginacao paginacao, string codigoUe, string codigoNomeAluno, 
             DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, int situacao, long prioridade, long[] turmasIds, bool exibirEncerrados)
         {
             var sql = new StringBuilder();
 
-            MontaQueryConsulta(paginacao, sql, contador: false, nomeAluno,dataAberturaQueixaInicio,
+            MontaQueryConsulta(paginacao, sql, contador: false, codigoNomeAluno, dataAberturaQueixaInicio,
                 dataAberturaQueixaFim,situacao, prioridade, turmasIds, codigoUe, exibirEncerrados);
             
             sql.AppendLine(";");
 
-            MontaQueryConsulta(paginacao, sql, contador: true, nomeAluno,dataAberturaQueixaInicio,
+            MontaQueryConsulta(paginacao, sql, contador: true, codigoNomeAluno, dataAberturaQueixaInicio,
                 dataAberturaQueixaFim,situacao, prioridade, turmasIds, codigoUe, exibirEncerrados);
 
             return sql.ToString();
         }
 
-        private void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, string nomeAluno, 
+        private void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, string codigoNomeAluno, 
             DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, int situacao, long prioridade, 
             long[] turmasIds, string codigoUe, bool exibirEncerrados)
         {
             ObterCabecalho(sql, contador);
 
-            ObterFiltro(sql, nomeAluno, dataAberturaQueixaInicio, dataAberturaQueixaFim,situacao, prioridade, turmasIds, codigoUe, exibirEncerrados);
+            ObterFiltro(sql, codigoNomeAluno, dataAberturaQueixaInicio, dataAberturaQueixaFim,situacao, prioridade, turmasIds, codigoUe, exibirEncerrados);
             
             if (!contador)
                 sql.AppendLine(" order by to_date(qdata.DataAberturaQueixaInicio,'yyyy-mm-dd') desc ");
@@ -134,7 +134,7 @@ namespace SME.SGP.Dados.Repositorios
             ");
         }
 
-        private void ObterFiltro(StringBuilder sql, string nomeAluno, DateTime? dataAberturaQueixaInicio, 
+        private void ObterFiltro(StringBuilder sql, string codigoNomeAluno, DateTime? dataAberturaQueixaInicio, 
             DateTime? dataAberturaQueixaFim, int situacao, long prioridade, long[] turmasIds, string codigoUe, bool exibirEncerrados)
         {
             sql.AppendLine(@" where not np.excluido 
@@ -144,8 +144,8 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(codigoUe))
                 sql.AppendLine(@" and ue.ue_id = @codigoUe ");
 
-            if (!string.IsNullOrEmpty(nomeAluno))
-                sql.AppendLine(" and lower(np.aluno_nome) like @nomeAluno ");
+            if (!string.IsNullOrEmpty(codigoNomeAluno))
+                sql.AppendLine(" and (lower(np.aluno_nome) like @codigoNomeAluno or np.aluno_codigo like @codigoNomeAluno)");
             
             if (turmasIds.Any())
                 sql.AppendLine(" and t.id = ANY(@turmasIds) ");

@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
             var turmasIds = turmas.NaoEhNulo() || turmas.Any() ? turmas.Select(s => s.Id) : null;
 
             return await MapearParaDto(await repositorioEncaminhamentoNAAPA.ListarPaginado(request.AnoLetivo, request.DreId, 
-                request.CodigoUe,request.NomeAluno, request.DataAberturaQueixaInicio, request.DataAberturaQueixaFim, request.Situacao, 
+                request.CodigoUe,request.CodigoNomeAluno, request.DataAberturaQueixaInicio, request.DataAberturaQueixaFim, request.Situacao, 
                 request.Prioridade, turmasIds.ToArray(), Paginacao, request.ExibirEncerrados),request.AnoLetivo);
         }
 
