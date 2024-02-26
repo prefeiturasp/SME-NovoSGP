@@ -4,6 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -48,17 +49,23 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             retorno.ShouldNotBeNull("Nenhuma seção de itinerância registrada para o Encaminhamento NAAPA");
             retorno.Items.Count().ShouldBe(2, "Qdade registros seções itinerância Encaminhamento NAAPA inválida");
 
+            var anexos = new string[] { "Arquivo 1 Itinerância NAAPA 1", "Arquivo 2 Itinerância NAAPA 1" };
             var primeiraSecaoItinerancia = retorno.Items.OrderBy(secao => secao.Auditoria.Id).FirstOrDefault();
             primeiraSecaoItinerancia.ShouldNotBeNull("1º Seção de itinerância não registrada para o Encaminhamento NAAPA");
             primeiraSecaoItinerancia.DataAtendimento.ShouldBe(DateTimeExtension.HorarioBrasilia().Date);
             primeiraSecaoItinerancia.TipoAtendimento.ShouldBe("Itinerância");
             primeiraSecaoItinerancia.Auditoria.CriadoPor.ShouldNotBeNull("Usuário criador não preenchido em auditoria 1º Seção de itinerância");
+            primeiraSecaoItinerancia.Arquivos.Count().ShouldBe(2);
+            primeiraSecaoItinerancia.Arquivos.All(arq => anexos.Contains(arq.Nome)).ShouldBe(true);
 
+            anexos = new string[] { "Arquivo 1 Itinerância NAAPA 2", "Arquivo 2 Itinerância NAAPA 2" };
             var segundaSecaoItinerancia = retorno.Items.OrderBy(secao => secao.Auditoria.Id).LastOrDefault();
             segundaSecaoItinerancia.ShouldNotBeNull("2º Seção de itinerância não registrada para o Encaminhamento NAAPA");
             segundaSecaoItinerancia.DataAtendimento.ShouldBe(DateTimeExtension.HorarioBrasilia().Date.AddDays(4));
             segundaSecaoItinerancia.TipoAtendimento.ShouldBe("Grupo de Trabalho NAAPA");
             segundaSecaoItinerancia.Auditoria.CriadoPor.ShouldNotBeNull("Usuário criador não preenchido em auditoria 2º Seção de itinerância");
+            segundaSecaoItinerancia.Arquivos.Count().ShouldBe(2);
+            segundaSecaoItinerancia.Arquivos.All(arq => anexos.Contains(arq.Nome)).ShouldBe(true);
         }
 
 
@@ -68,7 +75,94 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             await CriarEncaminhamentoNAAPA();
             await CriarEncaminhamentoNAAPASecao();
             await CriarQuestoesEncaminhamentoNAAPA();
+            await CriarQuestoesAnexoItineranciaEncaminhamentoNAAPA();
             await CriarRespostasEncaminhamentoNAAPA(dataQueixa);
+            await CriarRespostasAnexoItineranciaEncaminhamentoNAAPA();
+        }
+
+        private async Task CriarRespostasAnexoItineranciaEncaminhamentoNAAPA()
+        {
+            //Anexos - Itinerancia 1
+            await InserirNaBase(new Arquivo()
+            {
+                Codigo = Guid.NewGuid(),
+                Nome = $"Arquivo 1 Itinerância NAAPA 1",
+                CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                TipoConteudo = "application/pdf",
+                Tipo = TipoArquivo.ItineranciaEncaminhamentoNAAPA
+            });
+            await InserirNaBase(new Arquivo()
+            {
+                Codigo = Guid.NewGuid(),
+                Nome = $"Arquivo 2 Itinerância NAAPA 1",
+                CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                TipoConteudo = "application/pdf",
+                Tipo = TipoArquivo.ItineranciaEncaminhamentoNAAPA
+            });
+
+            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+            {
+                QuestaoEncaminhamentoId = 13,
+                Texto = "",
+                ArquivoId = 1,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+            {
+                QuestaoEncaminhamentoId = 13,
+                Texto = "",
+                ArquivoId = 2,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            //Anexos - Itinerancia 2
+            await InserirNaBase(new Arquivo()
+            {
+                Codigo = Guid.NewGuid(),
+                Nome = $"Arquivo 1 Itinerância NAAPA 2",
+                CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                TipoConteudo = "application/pdf",
+                Tipo = TipoArquivo.ItineranciaEncaminhamentoNAAPA
+            });
+            await InserirNaBase(new Arquivo()
+            {
+                Codigo = Guid.NewGuid(),
+                Nome = $"Arquivo 2 Itinerância NAAPA 2",
+                CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                TipoConteudo = "application/pdf",
+                Tipo = TipoArquivo.ItineranciaEncaminhamentoNAAPA
+            });
+
+            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+            {
+                QuestaoEncaminhamentoId = 14,
+                Texto = "",
+                ArquivoId = 3,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+            {
+                QuestaoEncaminhamentoId = 14,
+                Texto = "",
+                ArquivoId = 4,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
         }
 
         private async Task CriarRespostasEncaminhamentoNAAPA(DateTime dataQueixa)
@@ -189,6 +283,27 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             });
         }
 
+        private async Task CriarQuestoesAnexoItineranciaEncaminhamentoNAAPA()
+        {
+            //Id 13 - Itinerancia 1
+            await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
+            {
+                EncaminhamentoNAAPASecaoId = 2,
+                QuestaoId = ID_QUESTAO_ANEXOS_ITINERANCIA,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            //Id 14 - Itinerancia 2
+            await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
+            {
+                EncaminhamentoNAAPASecaoId = 3,
+                QuestaoId = ID_QUESTAO_ANEXOS_ITINERANCIA,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+        }
         private async Task CriarQuestoesEncaminhamentoNAAPA()
         {
             //informações estudante
@@ -313,7 +428,6 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
-
         }
 
         private async Task CriarEncaminhamentoNAAPASecao()

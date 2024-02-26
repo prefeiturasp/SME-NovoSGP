@@ -21,16 +21,14 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(AlterarEncaminhamentoNAAPASecaoQuestaoCommand request, CancellationToken cancellationToken)
         {
             var questoesExistentes = request.EncaminhamentoNAAPASecaoObj.Questoes;
-            var questoesExistentesAgrupadas = questoesExistentes.GroupBy(q => q.QuestaoId).ToList();
             
             var questoesRespondidas = request.EncaminhamentoNAAPASecaoDto.Questoes; 
             var questoesRespondidasAgrupadas = questoesRespondidas.GroupBy(q => q.QuestaoId);
             
             foreach (var questoes in questoesRespondidasAgrupadas)
             {
-                var questaoExistenteAgrupada = questoesExistentesAgrupadas.FirstOrDefault(c => c.Key == questoes.Key);
-
-                if (questaoExistenteAgrupada.EhNulo())
+                var questaoExistente = questoesExistentes.FirstOrDefault(q => q.QuestaoId == questoes.FirstOrDefault().QuestaoId);
+                if (questaoExistente.EhNulo())
                 {
                     var resultadoEncaminhamentoQuestao = await mediator.Send(
                         new RegistrarEncaminhamentoNAAPASecaoQuestaoCommand(request.EncaminhamentoNAAPASecaoObj.Id,
@@ -39,25 +37,26 @@ namespace SME.SGP.Aplicacao
                     await RegistrarRespostaEncaminhamento(questoes, resultadoEncaminhamentoQuestao);
                 }
                 else
-                {
-                    foreach (var questaoExistente in questaoExistenteAgrupada)
-                    {
-                        if (questaoExistente.Excluido)
-                            await AlterarQuestaoExcluida(questaoExistente);
-
-                        await ExcluirRespostasEncaminhamento(questaoExistente, questoes);
-
-                        await AlterarRespostasEncaminhamento(questaoExistente, questoes);
-
-                        await IncluirRespostasEncaminhamento(questaoExistente, questoes);                        
-                    }
-                }
+                    await AlterarQuestoesExistentes(questaoExistente, questoes);
             }
-            
-            foreach (var questao in questoesExistentes.Where(x => questoesRespondidas.All(s => s.QuestaoId != x.QuestaoId)))
-                await mediator.Send(new ExcluirQuestaoEncaminhamentoNAAPAPorIdCommand(questao.Id), cancellationToken);            
+            await ExcluirQuestoesExistentes(questoesExistentes.Where(x => questoesRespondidas.All(s => s.QuestaoId != x.QuestaoId)));
             
             return true;
+        }
+
+        private async Task ExcluirQuestoesExistentes(IEnumerable<QuestaoEncaminhamentoNAAPA> questoesRemovidas)
+        {
+            foreach (var questao in questoesRemovidas)
+                await mediator.Send(new ExcluirQuestaoEncaminhamentoNAAPAPorIdCommand(questao.Id));
+        }
+
+        private async Task AlterarQuestoesExistentes(QuestaoEncaminhamentoNAAPA questaoExistente, IGrouping<long, EncaminhamentoNAAPASecaoQuestaoDto> questoesRespostas)
+        {
+            if (questaoExistente.Excluido)
+                await AlterarQuestaoExcluida(questaoExistente);
+            await ExcluirRespostasEncaminhamento(questaoExistente, questoesRespostas);
+            await AlterarRespostasEncaminhamento(questaoExistente, questoesRespostas);
+            await IncluirRespostasEncaminhamento(questaoExistente, questoesRespostas);
         }
 
         private async Task RegistrarRespostaEncaminhamento(IEnumerable<EncaminhamentoNAAPASecaoQuestaoDto> questoes, long questaoEncaminhamentoId)
