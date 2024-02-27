@@ -157,7 +157,7 @@ namespace SME.SGP.Dados.Repositorios
                         join secao_encaminhamento_naapa secao on secao.id = ens.secao_encaminhamento_id
                         join questionario q2 on q2.id = secao.questionario_id 
                         where length(enr.texto) > 0 and not ens.excluido  
-                              and (secao.nome_componente = '{SECAO_ITINERANCIA_NOME}' or secao.nome_componente = 'QUESTOES_ITINERANCIA' )
+                              and (secao.nome_componente = 'QUESTOES_ITINERACIA' or secao.nome_componente = 'QUESTOES_ITINERANCIA' )
                               and q2.tipo = {(int)TipoQuestionario.EncaminhamentoNAAPA} and q.nome_componente = '{QUESTAO_DATA_DO_ATENDIMENTO}'
                         group by ens.encaminhamento_naapa_id 
                         )
