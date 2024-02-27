@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(VerificaPodePersistirTurmaDisciplinaQuery request, CancellationToken cancellationToken)
         {
             if (!request.Usuario.EhProfessorCj())
-                return await mediator.Send(new VerificaPodePersistirTurmaDisciplinaEOLQuery(request.Usuario, request.TurmaId, request.ComponenteCurricularId, request.Data));
+                return await mediator.Send(new VerificaPodePersistirTurmaDisciplinaEOLQuery(request.Usuario, request.TurmaId, request.ComponenteCurricularId, request.Data, request.EhTerritorioSaber));
 
             var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(request.Usuario.CodigoRf, request.Historico);
 
