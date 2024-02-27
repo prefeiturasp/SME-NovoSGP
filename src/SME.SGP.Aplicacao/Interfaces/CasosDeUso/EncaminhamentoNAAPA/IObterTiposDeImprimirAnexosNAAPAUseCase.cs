@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IObterItensDeImprimirAnexosNAAPAUseCase : IUseCase<long, IEnumerable<ImprimirAnexoDto>>
+    public interface IObterTiposDeImprimirAnexosNAAPAUseCase : IUseCase<long, IEnumerable<ImprimirAnexoDto>>
     {
     }
 }

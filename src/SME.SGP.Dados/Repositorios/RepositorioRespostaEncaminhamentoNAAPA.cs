@@ -56,6 +56,7 @@ namespace SME.SGP.Dados.Repositorios
                         inner join encaminhamento_naapa_resposta rea on qea.id = rea.questao_encaminhamento_id
                         inner join arquivo a on rea.arquivo_id = a.id
                         where ea.id = @encaminhamentoId 
+                          and not rea.excluido
                           and a.tipo_conteudo like '%pdf'";
 
             return await database.Conexao.QueryAsync<string>(query, new { encaminhamentoId });

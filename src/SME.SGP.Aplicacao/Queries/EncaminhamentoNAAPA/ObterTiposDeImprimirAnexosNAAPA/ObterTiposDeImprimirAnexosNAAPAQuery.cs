@@ -6,9 +6,9 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterItensDeImprimirAnexosNAAPAQuery : IRequest<IEnumerable<ImprimirAnexoDto>>
+    public class ObterTiposDeImprimirAnexosNAAPAQuery : IRequest<IEnumerable<ImprimirAnexoDto>>
     {
-        public ObterItensDeImprimirAnexosNAAPAQuery(long encaminhamentoId)
+        public ObterTiposDeImprimirAnexosNAAPAQuery(long encaminhamentoId)
         {
             EncaminhamentoId = encaminhamentoId;
         }
@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         public long EncaminhamentoId { get; set; }
     }
 
-    public class ObterItensDeImprimirAnexosNAAPAQueryValidator : AbstractValidator<ObterItensDeImprimirAnexosNAAPAQuery>
+    public class ObterItensDeImprimirAnexosNAAPAQueryValidator : AbstractValidator<ObterTiposDeImprimirAnexosNAAPAQuery>
     {
         public ObterItensDeImprimirAnexosNAAPAQueryValidator()
         {

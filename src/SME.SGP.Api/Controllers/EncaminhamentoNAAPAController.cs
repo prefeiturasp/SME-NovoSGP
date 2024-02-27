@@ -285,7 +285,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<ImprimirAnexoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterItensDeImprimirAnexos(long encaminhamentoId, [FromServices] IObterItensDeImprimirAnexosNAAPAUseCase useCase)
+        public async Task<IActionResult> ObterTiposDeImprimirAnexos(long encaminhamentoId, [FromServices] IObterTiposDeImprimirAnexosNAAPAUseCase useCase)
         {
             return Ok(await useCase.Executar(encaminhamentoId));
         }

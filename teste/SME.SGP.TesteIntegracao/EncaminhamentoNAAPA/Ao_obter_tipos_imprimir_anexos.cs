@@ -11,9 +11,9 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 {
-    public class Ao_obter_itens_imprimir_anexos : EncaminhamentoNAAPATesteBase
+    public class Ao_obter_tipos_imprimir_anexos : EncaminhamentoNAAPATesteBase
     {
-        public Ao_obter_itens_imprimir_anexos(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_obter_tipos_imprimir_anexos(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
 
@@ -76,7 +76,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            var useCase = ServiceProvider.GetService<IObterItensDeImprimirAnexosNAAPAUseCase>();
+            var useCase = ServiceProvider.GetService<IObterTiposDeImprimirAnexosNAAPAUseCase>();
 
             var resultado = await useCase.Executar(1);
             resultado.ShouldNotBeNull();
@@ -173,7 +173,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            var useCase = ServiceProvider.GetService<IObterItensDeImprimirAnexosNAAPAUseCase>();
+            var useCase = ServiceProvider.GetService<IObterTiposDeImprimirAnexosNAAPAUseCase>();
 
             var resultado = await useCase.Executar(1);
             resultado.ShouldNotBeNull();
@@ -280,7 +280,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            var useCase = ServiceProvider.GetService<IObterItensDeImprimirAnexosNAAPAUseCase>();
+            var useCase = ServiceProvider.GetService<IObterTiposDeImprimirAnexosNAAPAUseCase>();
 
             var resultado = await useCase.Executar(1);
             resultado.ShouldNotBeNull();
@@ -415,7 +415,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            var useCase = ServiceProvider.GetService<IObterItensDeImprimirAnexosNAAPAUseCase>();
+            var useCase = ServiceProvider.GetService<IObterTiposDeImprimirAnexosNAAPAUseCase>();
 
             var resultado = await useCase.Executar(1);
             resultado.ShouldNotBeNull();
