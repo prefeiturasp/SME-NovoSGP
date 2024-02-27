@@ -147,7 +147,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             retorno.Items.Any(a=> !a.Situacao.Equals(SituacaoNAAPA.Rascunho.ToString())).ShouldBeFalse();            
         }
         
-        [Fact(DisplayName = "Encaminhamento NAAPA - Filtrar encaminhamentos por situação rascunho somente por Ano Letivo e Dre e Nome do Aluno")]
+        [Fact(DisplayName = "Encaminhamento NAAPA - Filtrar encaminhamentos por situação rascunho somente por Ano Letivo e Dre e Nome/Código do Aluno")]
         public async Task Deve_retornar_registros_ao_filtrar_por_situacao_rascunho_somente_por_ano_e_dre_nome_aluno()
         {
             var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
@@ -175,14 +175,30 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 TurmaId = TURMA_ID_1,
                 DreId = 1,
                 Situacao = (int)SituacaoNAAPA.Rascunho,
-                NomeAluno = "nome"
+                CodigoNomeAluno = "nome"
             };
 
             var retorno = await obterEncaminhamentosNAAPAUseCase.Executar(filtroEncaminhamentosNAAPADto);
             retorno.ShouldNotBeNull();
             retorno.Items.ShouldNotBeNull();
             retorno.Items.Count().ShouldBe(10);
-            retorno.Items.Any(a=> !a.Situacao.Equals(SituacaoNAAPA.Rascunho.ToString())).ShouldBeFalse();            
+            retorno.Items.Any(a=> !a.Situacao.Equals(SituacaoNAAPA.Rascunho.ToString())).ShouldBeFalse();
+
+            filtroEncaminhamentosNAAPADto = new FiltroEncaminhamentoNAAPADto()
+            {
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                ExibirHistorico = true,
+                TurmaId = TURMA_ID_1,
+                DreId = 1,
+                Situacao = (int)SituacaoNAAPA.Rascunho,
+                CodigoNomeAluno = ALUNO_CODIGO_1
+            };
+
+            retorno = await obterEncaminhamentosNAAPAUseCase.Executar(filtroEncaminhamentosNAAPADto);
+            retorno.ShouldNotBeNull();
+            retorno.Items.ShouldNotBeNull();
+            retorno.Items.Count().ShouldBe(10);
+            retorno.Items.Any(a => !a.Situacao.Equals(SituacaoNAAPA.Rascunho.ToString())).ShouldBeFalse();
         }
         
         [Fact(DisplayName = "Encaminhamento NAAPA - Filtrar encaminhamentos por situação rascunho somente por Ano Letivo e Dre e Nome do Aluno inválido")]
@@ -213,7 +229,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 TurmaId = TURMA_ID_1,
                 DreId = 1,
                 Situacao = (int)SituacaoNAAPA.Rascunho,
-                NomeAluno = "aluno não identificado"
+                CodigoNomeAluno = "aluno não identificado"
             };
 
             var retorno = await obterEncaminhamentosNAAPAUseCase.Executar(filtroEncaminhamentosNAAPADto);
