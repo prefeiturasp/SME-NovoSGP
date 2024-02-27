@@ -14,7 +14,6 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterHistoricosDeAlteracoesEncaminhamentoNAAPAQueryHandler : IRequestHandler<ObterHistoricosDeAlteracoesEncaminhamentoNAAPAQuery, EncaminhamentoNAAPAHistoricoAlteracoes>
     {
-        private const string SECAO_ITINERANCIA = "QUESTOES_ITINERACIA";
         private List<string> camposInseridos;
         private List<string> camposAlterados;
         private readonly IRepositorioQuestao repositorioQuestao;
@@ -77,7 +76,7 @@ namespace SME.SGP.Aplicacao
 
         private bool SecaoEhItinerancia(EncaminhamentoNAAPASecao encaminhamentoSecaoExistente)
         {
-            return encaminhamentoSecaoExistente?.SecaoEncaminhamentoNAAPA?.NomeComponente == SECAO_ITINERANCIA;
+            return encaminhamentoSecaoExistente?.SecaoEncaminhamentoNAAPA?.NomeComponente == EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA;
         }
 
         private string ObterCamposFormatados(List<string> campos)
