@@ -12,7 +12,6 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTiposDeImprimirAnexosNAAPAQueryHandler : IRequestHandler<ObterTiposDeImprimirAnexosNAAPAQuery, IEnumerable<ImprimirAnexoDto>>
     {
-        private const string SECAO_ATENDIMENTO = "QUESTOES_ITINERACIA";
         private const string SECAO_INFORMACOES = "INFORMACOES_ESTUDANTE";
         private readonly IRepositorioRespostaEncaminhamentoNAAPA repositorio;
 
@@ -26,7 +25,7 @@ namespace SME.SGP.Aplicacao
             var dicionario = new Dictionary<string, EnumImprimirAnexosNAAPA>()
             {
                 { SECAO_INFORMACOES, EnumImprimirAnexosNAAPA.ApenasEncaminhamento },
-                { SECAO_ATENDIMENTO, EnumImprimirAnexosNAAPA.ApenasAtendimentos }
+                { EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA, EnumImprimirAnexosNAAPA.ApenasAtendimentos }
             };
             var itensImprimerAnexo = new List<ImprimirAnexoDto>() { ObterDto(EnumImprimirAnexosNAAPA.Nao) };
             var nomesComponentes = await repositorio.ObterNomesComponenteSecaoComAnexosEmPdf(request.EncaminhamentoId);

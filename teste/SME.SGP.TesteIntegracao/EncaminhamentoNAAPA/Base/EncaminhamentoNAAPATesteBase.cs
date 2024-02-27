@@ -4,6 +4,7 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
+using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Linq;
@@ -294,7 +295,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             {
                 QuestionarioId = 3,
                 Nome = "Apoio e Acompanhamento",
-                NomeComponente = "QUESTOES_ITINERACIA",
+                NomeComponente = EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA,
                 Etapa = 1,
                 Ordem = 3,
                 CriadoPor = SISTEMA_NOME,
@@ -337,7 +338,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             {
                 QuestionarioId = QUESTIONARIO_RELATORIO_DINAMICO_ENCAMINHAMENTO_NAAPA_ATENDIMENTO_7,
                 Nome = "Apoio e acompanhamento",
-                NomeComponente = "QUESTOES_ITINERACIA",
+                NomeComponente = EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA,
                 Etapa = 1,
                 Ordem = 3,
                 CriadoPor = SISTEMA_NOME,
