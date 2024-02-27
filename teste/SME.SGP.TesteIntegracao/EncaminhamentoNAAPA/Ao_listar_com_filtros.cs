@@ -326,7 +326,48 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             retorno.Items.Any(a=> !a.Situacao.Equals(SituacaoNAAPA.Rascunho.ToString())).ShouldBeFalse();
             retorno.Items.Any(a=> !a.Ue.Contains(UE_NOME_1)).ShouldBeFalse();
         }
-        
+
+        [Fact(DisplayName = "Encaminhamento NAAPA - Filtrar encaminhamentos por situação Em Atendimento por Ano Letivo, Dre e Ue")]
+        public async Task Deve_retornar_registros_ao_filtrar_por_situacao_em_atendimento_por_ano_letivo_dre_e_ue()
+        {
+            var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
+
+            var filtroNAAPA = new FiltroNAAPADto()
+            {
+                Perfil = ObterPerfilCP(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8",
+                CodigoUe = "1",
+                TurmaId = TURMA_ID_1,
+                Situacao = (int)SituacaoNAAPA.EmAtendimento,
+            };
+
+            await CriarDadosBase(filtroNAAPA);
+
+            await CriarEncaminhamentosEmAtendimento(dataAtual);
+
+            var obterEncaminhamentosNAAPAUseCase = ObterServicoListagemComFiltros();
+
+            var filtroEncaminhamentosNAAPADto = new FiltroEncaminhamentoNAAPADto()
+            {
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                ExibirHistorico = true,
+                DreId = 1,
+                CodigoUe = "1",
+                Situacao = (int)SituacaoNAAPA.EmAtendimento,
+            };
+
+            var retorno = await obterEncaminhamentosNAAPAUseCase.Executar(filtroEncaminhamentosNAAPADto);
+            retorno.ShouldNotBeNull();
+            retorno.Items.ShouldNotBeNull();
+            retorno.Items.Count().ShouldBe(2);
+            retorno.Items.All(a => a.Situacao.Equals(SituacaoNAAPA.EmAtendimento.ObterNome())).ShouldBeTrue();
+            retorno.Items.All(a => a.Ue.Contains(UE_NOME_1)).ShouldBeTrue();
+            retorno.Items.All(a => a.Turma.Contains("EF-Turma Nome 1")).ShouldBeTrue();
+            retorno.Items.All(a => a.DataUltimoAtendimento.Equals(dataAtual)).ShouldBeTrue();
+        }
+
         [Fact(DisplayName = "Encaminhamento NAAPA - Filtrar encaminhamentos por situação rascunho por Ano Letivo, Dre sem encaminhamento")]
         public async Task Nao_deve_retornar_registros_ao_filtrar_por_situacao_rascunho_por_ano_letivo_e_Dre_sem_encaminhamento()
         {
@@ -458,6 +499,127 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 encaminhamentoNAAPASecaoID++;
                 questaoEncaminhamentoNAAPAId++;
                 encaminhamentoNAAPAId++;
+            }
+        }
+
+        private async Task CriarEncaminhamentosEmAtendimento(DateTime dataAtual)
+        {
+            var dataQueixa = dataAtual.AddDays(-5);
+
+            for (int i = 1; i <= 2; i++)
+            {
+                await InserirNaBase(new Dominio.EncaminhamentoNAAPA()
+                {
+                    TurmaId = TURMA_ID_1,
+                    AlunoCodigo = ALUNO_CODIGO_1,
+                    Situacao = SituacaoNAAPA.EmAtendimento,
+                    AlunoNome = NOME_ALUNO_1,
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
+
+                await InserirNaBase(new Dominio.EncaminhamentoNAAPASecao()
+                {
+                    EncaminhamentoNAAPAId = ObterUltimoId<Dominio.EncaminhamentoNAAPA>(),
+                    SecaoEncaminhamentoNAAPAId = ID_SECAO_ENCAMINHAMENTO_NAAPA_INFORMACOES_ESTUDANTE,
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
+
+                await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
+                {
+                    EncaminhamentoNAAPASecaoId = ObterUltimoId<Dominio.EncaminhamentoNAAPASecao>(),
+                    QuestaoId = ID_QUESTAO_DATA_ENTRADA_QUEIXA,
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
+
+                await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+                {
+                    QuestaoEncaminhamentoId = ObterUltimoId<Dominio.QuestaoEncaminhamentoNAAPA>(),
+                    Texto = dataQueixa.ToString("yyyy-MM-dd"),
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
+                dataQueixa = dataQueixa.AddDays(i);
+
+                await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
+                {
+                    EncaminhamentoNAAPASecaoId = ObterUltimoId<Dominio.EncaminhamentoNAAPASecao>(),
+                    QuestaoId = ID_QUESTAO_PRIORIDADE,
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
+
+                await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+                {
+                    QuestaoEncaminhamentoId = ObterUltimoId<Dominio.QuestaoEncaminhamentoNAAPA>(),
+                    RespostaId = 1,
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
+
+                //ITINERANCIAS - 1
+                await InserirNaBase(new Dominio.EncaminhamentoNAAPASecao()
+                {
+                    EncaminhamentoNAAPAId = ObterUltimoId<Dominio.EncaminhamentoNAAPA>(),
+                    SecaoEncaminhamentoNAAPAId = ID_SECAO_ENCAMINHAMENTO_NAAPA_ITINERANCIA,
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
+
+                await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
+                {
+                    EncaminhamentoNAAPASecaoId = ObterUltimoId<Dominio.EncaminhamentoNAAPASecao>(),
+                    QuestaoId = ID_QUESTAO_DATA_ATENDIMENTO,
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
+
+                await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+                {
+                    QuestaoEncaminhamentoId = ObterUltimoId<Dominio.QuestaoEncaminhamentoNAAPA>(),
+                    Texto = dataAtual.AddDays(-5).ToString("yyyy-MM-dd"),
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                }) ;
+
+                //ITINERANCIAS - 2
+                await InserirNaBase(new Dominio.EncaminhamentoNAAPASecao()
+                {
+                    EncaminhamentoNAAPAId = ObterUltimoId<Dominio.EncaminhamentoNAAPA>(),
+                    SecaoEncaminhamentoNAAPAId = ID_SECAO_ENCAMINHAMENTO_NAAPA_ITINERANCIA,
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
+
+                await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
+                {
+                    EncaminhamentoNAAPASecaoId = ObterUltimoId<Dominio.EncaminhamentoNAAPASecao>(),
+                    QuestaoId = ID_QUESTAO_DATA_ATENDIMENTO,
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
+
+                await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+                {
+                    QuestaoEncaminhamentoId = ObterUltimoId<Dominio.QuestaoEncaminhamentoNAAPA>(),
+                    Texto = dataAtual.ToString("yyyy-MM-dd"),
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
             }
         }
     }

@@ -79,8 +79,12 @@ namespace SME.SGP.Aplicacao
                     Prioridade = encaminhamento.Prioridade,
                     Situacao = ((SituacaoNAAPA)int.Parse(encaminhamento.Situacao)).Name(),
                     DataAberturaQueixaInicio = encaminhamento.DataAberturaQueixaInicio,
-                    EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == encaminhamento.CodigoAluno)
-                });
+                    EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == encaminhamento.CodigoAluno),
+                    Turma = $"{encaminhamento.TurmaModalidade.ObterNomeCurto()}-{encaminhamento.TurmaNome}",
+                    TurmaNome = encaminhamento.TurmaNome,
+                    TurmaModalidade = encaminhamento.TurmaModalidade,
+                    DataUltimoAtendimento = encaminhamento.DataUltimoAtendimento,
+            });
             }
 
             return listaEncaminhamentos;
