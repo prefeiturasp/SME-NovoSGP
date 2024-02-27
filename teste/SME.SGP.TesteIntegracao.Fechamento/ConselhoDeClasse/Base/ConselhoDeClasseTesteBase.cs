@@ -61,6 +61,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         protected const string JUSTIFICATIVA = "Nota pós conselho";
         private const string COMPONENTE_CURRICULAR_GRUPO_AREA_ORDENACAO = "componente_curricular_grupo_area_ordenacao";
 
+        protected const int PARECER_CONCLUSIVO_ID_1 = 1;
+        protected const int PARECER_CONCLUSIVO_ID_2 = 2;
+
         protected ConselhoDeClasseTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
