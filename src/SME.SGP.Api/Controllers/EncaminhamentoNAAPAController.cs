@@ -281,7 +281,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(codigoAluno));
         }
 
-        [HttpGet("{encaminhamentoId}/imprimirAnexos")]
+        [HttpGet("{encaminhamentoId}/anexos/tipos-impressao")]
         [ProducesResponseType(typeof(IEnumerable<ImprimirAnexoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
