@@ -17,7 +17,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/encaminhamento-naapa")]
-    //[Authorize("Bearer")]
+    [Authorize("Bearer")]
     public class EncaminhamentoNAAPAController : ControllerBase
     {
         [HttpPost("salvar")]
@@ -32,7 +32,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterEncaminhamentosNAAPA([FromQuery] FiltroEncaminhamentoNAAPADto filtro,
             [FromServices] IObterEncaminhamentoNAAPAUseCase useCase)
         {
