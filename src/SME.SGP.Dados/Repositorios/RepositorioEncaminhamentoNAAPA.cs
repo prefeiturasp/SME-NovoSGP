@@ -134,6 +134,7 @@ namespace SME.SGP.Dados.Repositorios
                         join secao_encaminhamento_naapa secao on secao.id = ens.secao_encaminhamento_id
                         left join opcao_resposta opr on opr.id = enr.resposta_id
                         where q.ordem = {QUESTAO_DATA_QUEIXA_ORDEM} and secao.etapa = {SECAO_ETAPA_1} and secao.ordem = {SECAO_INFORMACOES_ALUNO_ORDEM}
+                              and not ens.excluido and not enq.excluido and not enr.excluido 
                         ),
                         vw_resposta_prioridade as (
                         select ens.encaminhamento_naapa_id, 
@@ -146,6 +147,7 @@ namespace SME.SGP.Dados.Repositorios
                         join secao_encaminhamento_naapa secao on secao.id = ens.secao_encaminhamento_id
                         left join opcao_resposta opr on opr.id = enr.resposta_id
                         where q.ordem = {QUESTAO_PRIORIDADE_ORDEM} and secao.etapa = {SECAO_ETAPA_1} and secao.ordem = {SECAO_INFORMACOES_ALUNO_ORDEM}
+                              and not ens.excluido and not enq.excluido and not enr.excluido 
                         ),
                         vw_resposta_data_ultimo_atendimento as (
                         select ens.encaminhamento_naapa_id, 
@@ -156,7 +158,7 @@ namespace SME.SGP.Dados.Repositorios
                         join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id 
                         join secao_encaminhamento_naapa secao on secao.id = ens.secao_encaminhamento_id
                         join questionario q2 on q2.id = secao.questionario_id 
-                        where length(enr.texto) > 0 and not ens.excluido  
+                        where length(enr.texto) > 0 and not ens.excluido and not enq.excluido and not enr.excluido  
                               and (secao.nome_componente = 'QUESTOES_ITINERACIA' or secao.nome_componente = 'QUESTOES_ITINERANCIA' )
                               and q2.tipo = {(int)TipoQuestionario.EncaminhamentoNAAPA} and q.nome_componente = '{QUESTAO_DATA_DO_ATENDIMENTO}'
                         group by ens.encaminhamento_naapa_id 
