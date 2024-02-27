@@ -108,6 +108,20 @@ namespace SME.SGP.Dados.Repositorios
                         join secao_encaminhamento_naapa secao on secao.id = ens.secao_encaminhamento_id
                         left join opcao_resposta opr on opr.id = enr.resposta_id
                         where q.ordem = {QUESTAO_PRIORIDADE_ORDEM} and secao.etapa = {SECAO_ETAPA_1} and secao.ordem = {SECAO_INFORMACOES_ALUNO_ORDEM}
+                        ),
+                        vw_resposta_data_ultimo_atendimento as (
+                        select ens.encaminhamento_naapa_id, 
+                               max(to_date(enr.texto,'yyyy-mm-dd')) DataUltimoAtendimento   
+                        from encaminhamento_naapa_secao ens   
+                        join encaminhamento_naapa_questao enq on ens.id = enq.encaminhamento_naapa_secao_id  
+                        join questao q on enq.questao_id = q.id 
+                        join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id 
+                        join secao_encaminhamento_naapa secao on secao.id = ens.secao_encaminhamento_id
+                        join questionario q2 on q2.id = secao.questionario_id 
+                        where length(enr.texto) > 0 and not ens.excluido  
+                              and (secao.nome_componente = '{SECAO_ITINERANCIA_NOME}' or secao.nome_componente = 'QUESTOES_ITINERANCIA' )
+                              and q2.tipo = {(int)TipoQuestionario.EncaminhamentoNAAPA} and q.nome_componente = '{QUESTAO_DATA_DO_ATENDIMENTO}'
+                        group by ens.encaminhamento_naapa_id 
                         )
                         select ";
             sql.AppendLine(sqlSelect);
@@ -123,6 +137,8 @@ namespace SME.SGP.Dados.Repositorios
                                 ,np.situacao 
                                 ,case when length(qdata.DataAberturaQueixaInicio) > 0 then to_date(qdata.DataAberturaQueixaInicio,'yyyy-mm-dd') else null end DataAberturaQueixaInicio
                                 ,qprioridade.Prioridade
+                                ,t.nome as TurmaNome, t.modalidade_codigo as TurmaModalidade
+                                ,qdataultimoatendimento.DataUltimoAtendimento
                 ");
             }
 
@@ -131,6 +147,7 @@ namespace SME.SGP.Dados.Repositorios
                                 join ue on t.ue_id = ue.id
                                 left join vw_resposta_data qdata on qdata.encaminhamento_naapa_id = np.id
                                 left join vw_resposta_prioridade qprioridade on qprioridade.encaminhamento_naapa_id = np.id 
+                                left join vw_resposta_data_ultimo_atendimento qdataultimoatendimento on qdataultimoatendimento.encaminhamento_naapa_id = np.id 
             ");
         }
 
