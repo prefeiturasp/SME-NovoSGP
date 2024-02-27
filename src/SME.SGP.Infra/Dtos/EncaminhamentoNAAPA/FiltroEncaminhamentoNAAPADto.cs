@@ -1,3 +1,4 @@
+using SME.SGP.Dominio;
 using System;
 
 namespace SME.SGP.Infra
@@ -15,5 +16,6 @@ namespace SME.SGP.Infra
         public int Situacao { get; set; }
         public int Prioridade { get; set; }
         public bool ExibirEncerrados { get; set; }
+        public OrdenacaoListagemPaginadaEncaminhamentoNAAPA[] Ordenacao { get; set; }
     }
 }

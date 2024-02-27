@@ -1,7 +1,9 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
+using System.Linq;
 
 namespace SME.SGP.Aplicacao
 {
@@ -20,6 +22,9 @@ namespace SME.SGP.Aplicacao
             DataAberturaQueixaFim = filtro.DataAberturaQueixaFim;
             Prioridade = filtro.Prioridade;
             ExibirEncerrados = filtro.ExibirEncerrados;
+            Ordenacao = filtro.Ordenacao;
+            if (Ordenacao.NaoPossuiRegistros())
+                Ordenacao = new OrdenacaoListagemPaginadaEncaminhamentoNAAPA[] { OrdenacaoListagemPaginadaEncaminhamentoNAAPA.DataEntradaQueixa };
         }
 
         public bool ExibirHistorico { get; set; }
@@ -33,6 +38,7 @@ namespace SME.SGP.Aplicacao
         public int Situacao { get; set; }
         public int Prioridade { get; set; }
         public bool ExibirEncerrados { get; set; }
+        public OrdenacaoListagemPaginadaEncaminhamentoNAAPA[] Ordenacao { get; set; }
     }
 
     public class ObterEncaminhamentosNAAPAQueryValidator : AbstractValidator<ObterEncaminhamentosNAAPAQuery>
