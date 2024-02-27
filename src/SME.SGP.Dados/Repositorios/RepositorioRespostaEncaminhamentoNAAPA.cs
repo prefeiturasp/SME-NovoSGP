@@ -2,7 +2,6 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -47,5 +46,20 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<long>(query, new { questaoEncaminhamentoNAAPAId });
         }
 
+        public async Task<IEnumerable<string>> ObterNomesComponenteSecaoComAnexosEmPdf(long encaminhamentoId)
+        {
+            var query = @"select distinct nome_componente
+                        from encaminhamento_naapa ea
+                        inner join encaminhamento_naapa_secao eas on ea.id = eas.encaminhamento_naapa_id
+                        inner join secao_encaminhamento_naapa sen on sen.id = eas.secao_encaminhamento_id
+                        inner join encaminhamento_naapa_questao qea on eas.id = qea.encaminhamento_naapa_secao_id
+                        inner join encaminhamento_naapa_resposta rea on qea.id = rea.questao_encaminhamento_id
+                        inner join arquivo a on rea.arquivo_id = a.id
+                        where ea.id = @encaminhamentoId 
+                          and not rea.excluido
+                          and a.tipo_conteudo like '%pdf'";
+
+            return await database.Conexao.QueryAsync<string>(query, new { encaminhamentoId });
+        }
     }
 }
