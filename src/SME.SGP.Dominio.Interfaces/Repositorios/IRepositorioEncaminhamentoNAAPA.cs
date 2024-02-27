@@ -9,7 +9,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>> ListarPaginado(int anoLetivo, long dreId, 
             string codigoUe, string codigoNomeAluno, DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, 
-            int situacao, long prioridade, long[] turmasIds, Paginacao paginacao, bool exibirEncerrados);
+            int situacao, long prioridade, long[] turmasIds, Paginacao paginacao, bool exibirEncerrados, OrdenacaoListagemPaginadaEncaminhamentoNAAPA[] ordenacao);
 
         Task<EncaminhamentoNAAPA> ObterEncaminhamentoPorId(long id);
         Task<EncaminhamentoNAAPA> ObterCabecalhoEncaminhamentoPorId(long id);

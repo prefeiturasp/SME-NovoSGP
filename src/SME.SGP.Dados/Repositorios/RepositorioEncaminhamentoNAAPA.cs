@@ -27,10 +27,10 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>> ListarPaginado(int anoLetivo, long dreId, 
             string codigoUe, string codigoNomeAluno, DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, 
-            int situacao, long prioridade, long[] turmasIds, Paginacao paginacao, bool exibirEncerrados)
+            int situacao, long prioridade, long[] turmasIds, Paginacao paginacao, bool exibirEncerrados, OrdenacaoListagemPaginadaEncaminhamentoNAAPA[] ordenacao)
         {
             var query = MontaQueryCompleta(paginacao, codigoUe, codigoNomeAluno, dataAberturaQueixaInicio, 
-                dataAberturaQueixaFim, situacao,prioridade , turmasIds, exibirEncerrados);
+                dataAberturaQueixaFim, situacao,prioridade , turmasIds, exibirEncerrados, ordenacao);
             var situacoesEncerrado = (int)SituacaoNAAPA.Encerrado ;
 
             if (!string.IsNullOrWhiteSpace(codigoNomeAluno))
@@ -54,12 +54,12 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         private string MontaQueryCompleta(Paginacao paginacao, string codigoUe, string codigoNomeAluno, 
-            DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, int situacao, long prioridade, long[] turmasIds, bool exibirEncerrados)
+            DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, int situacao, long prioridade, long[] turmasIds, bool exibirEncerrados, OrdenacaoListagemPaginadaEncaminhamentoNAAPA[] ordenacao)
         {
             var sql = new StringBuilder();
 
             MontaQueryConsulta(paginacao, sql, contador: false, codigoNomeAluno, dataAberturaQueixaInicio,
-                dataAberturaQueixaFim,situacao, prioridade, turmasIds, codigoUe, exibirEncerrados);
+                dataAberturaQueixaFim,situacao, prioridade, turmasIds, codigoUe, exibirEncerrados, ordenacao);
             
             sql.AppendLine(";");
 
@@ -71,17 +71,55 @@ namespace SME.SGP.Dados.Repositorios
 
         private void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, string codigoNomeAluno, 
             DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, int situacao, long prioridade, 
-            long[] turmasIds, string codigoUe, bool exibirEncerrados)
+            long[] turmasIds, string codigoUe, bool exibirEncerrados, OrdenacaoListagemPaginadaEncaminhamentoNAAPA[] ordenacao = null)
         {
             ObterCabecalho(sql, contador);
 
             ObterFiltro(sql, codigoNomeAluno, dataAberturaQueixaInicio, dataAberturaQueixaFim,situacao, prioridade, turmasIds, codigoUe, exibirEncerrados);
             
-            if (!contador)
-                sql.AppendLine(" order by to_date(qdata.DataAberturaQueixaInicio,'yyyy-mm-dd') desc ");
+            ObterOrdenacaoConsulta(sql, ordenacao);
 
             if (paginacao.QuantidadeRegistros > 0 && !contador)
                 sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
+        }
+
+        private static void ObterOrdenacaoConsulta(StringBuilder sql, OrdenacaoListagemPaginadaEncaminhamentoNAAPA[] ordenacao)
+        {
+            StringBuilder sqlAux = new StringBuilder();
+            if (ordenacao.PossuiRegistros())
+            {
+                foreach (var order in ordenacao)
+                {
+                    if (sqlAux.Length == 0)
+                        sqlAux.AppendLine("order by");
+                    else
+                        sqlAux.Append(", ");
+                    switch (order)
+                    {
+                        case OrdenacaoListagemPaginadaEncaminhamentoNAAPA.UE:
+                            sqlAux.AppendLine($" {EnumExtensao.ObterCaseWhenSQL<TipoEscola>("ue.tipo_escola")}||' '||ue.nome");
+                            break;
+                        case OrdenacaoListagemPaginadaEncaminhamentoNAAPA.Estudante:
+                            sqlAux.AppendLine(" np.aluno_nome, np.aluno_codigo");
+                            break;
+                        case OrdenacaoListagemPaginadaEncaminhamentoNAAPA.DataEntradaQueixa:
+                            sqlAux.AppendLine(" to_date(qdata.DataAberturaQueixaInicio,'yyyy-mm-dd')");
+                            break;
+                        case OrdenacaoListagemPaginadaEncaminhamentoNAAPA.UEDesc:
+                            sqlAux.AppendLine($" {EnumExtensao.ObterCaseWhenSQL<TipoEscola>("ue.tipo_escola")}||' '||ue.nome desc");
+                            break;
+                        case OrdenacaoListagemPaginadaEncaminhamentoNAAPA.EstudanteDesc:
+                            sqlAux.AppendLine(" np.aluno_nome desc, np.aluno_codigo desc");
+                            break;
+                        case OrdenacaoListagemPaginadaEncaminhamentoNAAPA.DataEntradaQueixaDesc:
+                            sqlAux.AppendLine(" to_date(qdata.DataAberturaQueixaInicio,'yyyy-mm-dd') desc ");
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                sql.AppendLine(sqlAux.ToString());
+            }
         }
 
         private static void ObterCabecalho(StringBuilder sql, bool contador)
