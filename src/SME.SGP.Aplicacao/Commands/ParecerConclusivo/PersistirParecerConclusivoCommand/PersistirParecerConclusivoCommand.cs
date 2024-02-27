@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao
     {
         public int? Bimestre { get; set; }
         public long TurmaId { get; set; }
-        public long ParecerConclusivoId { get; set; }
+        public long? ParecerConclusivoId { get; set; }
         public long ConselhoClasseAlunoId { get; set; }
         public string AlunoCodigo { get; set; }
         public string TurmaCodigo { get; set; }

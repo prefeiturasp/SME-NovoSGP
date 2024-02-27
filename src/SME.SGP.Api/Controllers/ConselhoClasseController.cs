@@ -273,5 +273,15 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(turmaId));
         }
+
+        [HttpPut("parecer-conclusivo")]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(ParecerConclusivoDto), 200)]
+        [Permissao(Permissao.CC_A, Policy = "Bearer")]
+        public IActionResult AlterarParecerConclusivo(AlterarParecerConclusivoDto alterarParecerConclusivo, [FromServices] IAlterarParecerConclusivoUseCase useCase)
+        {
+            return Ok(useCase.Executar(alterarParecerConclusivo));
+        }
     }
 }
