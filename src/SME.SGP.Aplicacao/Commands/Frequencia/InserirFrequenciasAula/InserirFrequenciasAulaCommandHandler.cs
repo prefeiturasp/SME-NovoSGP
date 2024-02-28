@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
                 
                 await mediator.Send(new ExcluirPendenciaAulaCommand(aula.Id, TipoPendencia.Frequencia), cancellationToken);
                 await mediator.Send(new IncluirFilaConsolidacaoDiariaDashBoardFrequenciaCommand(turma.Id, aula.DataAula), cancellationToken);              
-                await mediator.Send(new IncluirFilaConsolidacaoSemanalMensalDashBoardFrequenciaCommand(turma.Id, turma.CodigoTurma, turma.ModalidadeCodigo == Modalidade.EducacaoInfantil, turma.AnoLetivo, aula.DataAula));
+                await mediator.Send(new IncluirFilaConsolidacaoSemanalMensalDashBoardFrequenciaCommand(turma.Id, turma.CodigoTurma, turma.ModalidadeCodigo == Modalidade.EducacaoInfantil, turma.AnoLetivo, aula.DataAula), cancellationToken);
 
                 return new FrequenciaAuditoriaAulaDto() { Auditoria = (AuditoriaDto)registroFrequencia, DataAula = aula.DataAula, TurmaId = aula.TurmaId, DisciplinaId = aula.DisciplinaId };
             }
@@ -96,10 +96,15 @@ namespace SME.SGP.Aplicacao
             var alunos = requestParams.Frequencia.ListaFrequencia.Select(a => a.CodigoAluno).ToList();
             if (alunos.NaoPossuiRegistros())
                 throw new NegocioException(MensagensNegocioFrequencia.Lista_de_alunos_e_o_componente_devem_ser_informados);
-            var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance, cancellationToken);
+
+            var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(null, requestParams.UsuarioLogin), cancellationToken);
+            if (usuario.EhNulo())
+                throw new NegocioException(string.Format(MensagensNegocioFrequencia.Nao_foi_localizado_usuario_pelo_login, requestParams.UsuarioLogin));
+
             var aula = await mediator.Send(new ObterAulaPorIdQuery(requestParams.Frequencia.AulaId), cancellationToken);
             if (aula.EhNulo())
                 throw new NegocioException(MensagensNegocioFrequencia.A_aula_informada_nao_foi_encontrada);
+
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aula.TurmaId), cancellationToken);
             if (turma.EhNulo())
                 throw new NegocioException(MensagensNegocioFrequencia.Turma_informada_nao_foi_encontrada);
@@ -107,12 +112,10 @@ namespace SME.SGP.Aplicacao
             return (usuario, aula, turma, alunos);
         }
 
-        private void ValidaSeUsuarioPodeCriarAula(Aula aula, Usuario usuario)
+        private static void ValidaSeUsuarioPodeCriarAula(Aula aula, Usuario usuario)
         {
             if (!usuario.PodeRegistrarFrequencia(aula))
-            {
                 throw new NegocioException(MensagensNegocioFrequencia.Nao_e_possível_registrar_a_frequência_o_componente_nao_permite_substituicao);
-            }
         }
 
         private async Task ValidaProfessorPodePersistirTurmaDisciplina(string turmaId, Usuario usuario, string disciplinaId, DateTime dataAula, bool historico)
