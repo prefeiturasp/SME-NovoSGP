@@ -22,6 +22,7 @@ namespace SME.SGP.Aplicacao
         {
             var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorIdAsync(request.ConselhoClasseAlunoId);
             conselhoClasseAluno.ConselhoClasseParecerId = request.ParecerConclusivoId;
+            conselhoClasseAluno.ParecerAlteradoManual = request.ParecerAlteradoManual;
 
             await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
 
