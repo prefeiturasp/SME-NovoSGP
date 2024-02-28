@@ -69,7 +69,7 @@ namespace SME.SGP.Api.Controllers
                 Bimestre = bimestre
             };
 
-           return Ok(await useCase.Executar(dto));
+            return Ok(await useCase.Executar(dto));
         }
 
         [HttpGet("detalhamento/{id}")]
@@ -119,7 +119,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(ParecerConclusivoDto), 200)]
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterParecerConclusivoPorTurmaAluno(string codigoTurma, string alunoCodigo, [FromServices] IObterParecerConclusivoAlunoTurmaUseCase obterParecerConclusivoAlunoTurmaUseCase)
-            => Ok(await obterParecerConclusivoAlunoTurmaUseCase.Executar(codigoTurma, alunoCodigo)); 
+            => Ok(await obterParecerConclusivoAlunoTurmaUseCase.Executar(codigoTurma, alunoCodigo));
 
         [HttpPost("{conselhoClasseId}/fechamentos/{fechamentoTurmaId}/alunos/{alunoCodigo}/parecer")]
         [ProducesResponseType(401)]
@@ -145,8 +145,8 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(IEnumerable<ConselhoClasseAlunoNotasConceitosDto>), 200)]
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterNotasAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre, 
-            [FromServices] IObterNotasFrequenciaUseCase obterNotasFrequenciaUseCase, 
+        public async Task<IActionResult> ObterNotasAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre,
+            [FromServices] IObterNotasFrequenciaUseCase obterNotasFrequenciaUseCase,
             [FromQuery] bool consideraHistorico = false)
             => Ok(await obterNotasFrequenciaUseCase.Executar(new ConselhoClasseNotasFrequenciaDto(conselhoClasseId, fechamentoTurmaId, alunoCodigo, codigoTurma, bimestre, consideraHistorico)));
 
@@ -264,6 +264,24 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(new FiltroInconsistenciasAlunoFamiliaDto(turmaId,bimestre)));
         }
-    }
 
+        [HttpGet("turma/{turmaId}/pareceres-conclusivos")]
+        [ProducesResponseType(typeof(IEnumerable<ParecerConclusivoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(204)]
+        public async Task<IActionResult> ObterPareceresConclusivosTurma(long turmaId, [FromServices] IObterPareceresConclusivosTurmaUseCase useCase)
+        {
+            return Ok(await useCase.Executar(turmaId));
+        }
+
+        [HttpPut("parecer-conclusivo")]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(ParecerConclusivoDto), 200)]
+        [Permissao(Permissao.CC_A, Policy = "Bearer")]
+        public IActionResult AlterarParecerConclusivo(AlterarParecerConclusivoDto alterarParecerConclusivo, [FromServices] IAlterarParecerConclusivoUseCase useCase)
+        {
+            return Ok(useCase.Executar(alterarParecerConclusivo));
+        }
+    }
 }

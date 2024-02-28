@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.CasosDeUso;
 using SME.SGP.Aplicacao.CasosDeUso.Abrangencia;
+using SME.SGP.Aplicacao.CasosDeUso.ConselhoClasse;
 using SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA;
 using SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Dashboard;
 using SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Dashboard.ObterDadosDeLeituraDeComunicados;
@@ -838,6 +839,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterParecerConclusivoUseCase, ObterParecerConclusivoUseCase>();
             services.TryAddScoped<IObterParecerConclusivoAlunoTurmaUseCase, ObterParecerConclusivoAlunoTurmaUseCase>();
             services.TryAddScoped<ISalvarConselhoClasseAlunoRecomendacaoUseCase, SalvarConselhoClasseAlunoRecomendacaoUseCase>();
+            services.TryAddScoped<IObterPareceresConclusivosTurmaUseCase, ObterPareceresConclusivosTurmaUseCase>();
+            services.TryAddScoped<IAlterarParecerConclusivoUseCase, AlterarParecerConclusivoUseCase>();
 
             // Fechamento
             services.TryAddScoped<IExecutarVarreduraFechamentosEmProcessamentoPendentes, ExecutarVarreduraFechamentosEmProcessamentoPendentes>();

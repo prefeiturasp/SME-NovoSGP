@@ -289,7 +289,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
             {
                 EncaminhamentoNAAPASecaoId = 2,
-                QuestaoId = ID_QUESTAO_ANEXO_ITINERANCIA,
+                QuestaoId = ID_QUESTAO_ANEXOS_ITINERANCIA,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
@@ -298,7 +298,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
             {
                 EncaminhamentoNAAPASecaoId = 3,
-                QuestaoId = ID_QUESTAO_ANEXO_ITINERANCIA,
+                QuestaoId = ID_QUESTAO_ANEXOS_ITINERANCIA,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF

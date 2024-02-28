@@ -353,12 +353,149 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             resposta4.Texto.ShouldBe("Descrição do atendimento alteração");
         }
 
+        [Fact(DisplayName = "Encaminhamento NAAPA - Editar encaminhamento NAAPA itinerância removendo anexo")]
+        public async Task Ao_editar_encaminhamento_itinerancia_removendo_anexo()
+        {
+            var filtroNAAPA = new FiltroNAAPADto()
+            {
+                Perfil = ObterPerfilCP(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8",
+                DreId = 1,
+                CodigoUe = "1",
+                TurmaId = TURMA_ID_1,
+                Situacao = (int)SituacaoNAAPA.AguardandoAtendimento,
+                Prioridade = NORMAL
+            };
+
+            await CriarDadosBase(filtroNAAPA);
+
+            var useCase = ObterServicoRegistrarEncaminhamentoItinerario();
+
+            var dataQueixa = DateTimeExtension.HorarioBrasilia().Date;
+            dataQueixa.AddDays(-10);
+
+            await GerarDadosEncaminhamentoNAAPA(dataQueixa);
+            await GerarDadosEncaminhamentoNAAPAItinerarioComAnexos(dataQueixa);
+
+            dataQueixa.AddDays(4);
+
+            //Com DTO abaixo, ao Editar a Itinerancia, excluirá as 2 respostas da questão anexo: 1 por conta de estar sendo enviada no DTO sem resposta e 1 por nem estar sendo enviada no DTO
+            var dto = new EncaminhamentoNAAPAItineranciaDto()
+            {
+                EncaminhamentoId = 1,
+                EncaminhamentoNAAPASecaoId = 2,
+                EncaminhamentoNAAPASecao = new EncaminhamentoNAAPASecaoDto()
+                {
+                    SecaoId = 3,
+                    Questoes = new List<EncaminhamentoNAAPASecaoQuestaoDto>()
+                    {
+                        new ()
+                        {
+                            QuestaoId = ID_QUESTAO_DATA_ATENDIMENTO,
+                            TipoQuestao = TipoQuestao.Data,
+                            Resposta = dataQueixa.ToString("dd/MM/yyyy"),
+                            RespostaEncaminhamentoId = 3
+                        },
+                        new ()
+                        {
+                            QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
+                            TipoQuestao = TipoQuestao.Combo,
+                            Resposta =  ID_GRUPO_DE_TRABALHO_NAAPA.ToString(),
+                            RespostaEncaminhamentoId = 4
+                        },
+                        new ()
+                        {
+                            QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
+                            TipoQuestao = TipoQuestao.Combo,
+                            Resposta = ID_ACOES_LUDICAS.ToString(),
+                            RespostaEncaminhamentoId = 5
+                        },
+                        new ()
+                        {
+                            QuestaoId = ID_QUESTAO_DESCRICAO_ATENDIMENTO,
+                            TipoQuestao = TipoQuestao.EditorTexto,
+                            Resposta = "Descrição do atendimento alteração",
+                            RespostaEncaminhamentoId = 6
+                        },
+                        new ()
+                        {
+                            QuestaoId = ID_QUESTAO_ANEXOS_ITINERANCIA,
+                            TipoQuestao = TipoQuestao.Upload,
+                            Resposta = "",
+                            RespostaEncaminhamentoId = 8,
+                        }
+                    }
+                }
+            };
+
+            await useCase.Executar(dto);
+
+            var questoes = ObterTodos<QuestaoEncaminhamentoNAAPA>();
+            var questaoAnexo = questoes.Find(questao => questao.QuestaoId == ID_QUESTAO_ANEXOS_ITINERANCIA);
+            questaoAnexo.ShouldNotBeNull();
+            var respostas = ObterTodos<RespostaEncaminhamentoNAAPA>();
+            var respostaAnexo = respostas.Where(resposta => resposta.QuestaoEncaminhamentoId == questaoAnexo.Id);
+            respostaAnexo.All(r => r.Excluido).ShouldBeTrue();
+
+            var arquivos = ObterTodos<Arquivo>();
+            arquivos.Count().ShouldBe(0);
+        }
+
         private async Task GerarDadosEncaminhamentoNAAPA(DateTime dataQueixa)
         {
             await CriarEncaminhamentoNAAPA();
             await CriarEncaminhamentoNAAPASecao();
             await CriarQuestoesEncaminhamentoNAAPA();
             await CriarRespostasEncaminhamentoNAAPA(dataQueixa);
+        }
+
+
+        private async Task GerarDadosEncaminhamentoNAAPAItinerarioComAnexos(DateTime dataQueixa)
+        {
+            await GerarDadosEncaminhamentoNAAPAItinerario(dataQueixa);
+
+            //Anexos - Itinerancia 
+            await InserirNaBase(new Arquivo()
+            {
+                Codigo = Guid.NewGuid(),
+                Nome = $"Arquivo 1 Itinerância NAAPA",
+                CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                TipoConteudo = "application/pdf",
+                Tipo = TipoArquivo.ItineranciaEncaminhamentoNAAPA
+            });
+            await InserirNaBase(new Arquivo()
+            {
+                Codigo = Guid.NewGuid(),
+                Nome = $"Arquivo 2 Itinerância NAAPA",
+                CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                TipoConteudo = "application/pdf",
+                Tipo = TipoArquivo.ItineranciaEncaminhamentoNAAPA
+            });
+
+            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+            {
+                QuestaoEncaminhamentoId = 7,
+                Texto = "",
+                ArquivoId = 1,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+            {
+                QuestaoEncaminhamentoId = 7,
+                Texto = "",
+                ArquivoId = 2,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
         }
 
         private async Task GerarDadosEncaminhamentoNAAPAItinerario(DateTime dataQueixa)
@@ -370,6 +507,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
         private async Task CriarQuestoesEncaminhamentoNAAPA()
         {
+            //Id 1
             await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
             {
                 EncaminhamentoNAAPASecaoId = 1,
@@ -378,7 +516,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
-
+            //Id 2
             await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
             {
                 EncaminhamentoNAAPASecaoId = 1,
@@ -391,6 +529,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
         private async Task CriarQuestoesEncaminhamentoNAAPAItinerario()
         {
+            //Id 3
             await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
             {
                 EncaminhamentoNAAPASecaoId = 2,
@@ -399,7 +538,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
-
+            //Id 4
             await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
             {
                 EncaminhamentoNAAPASecaoId = 2,
@@ -408,7 +547,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
-
+            //Id 5
             await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
             {
                 EncaminhamentoNAAPASecaoId = 2,
@@ -417,11 +556,20 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
-
+            //Id 6
             await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
             {
                 EncaminhamentoNAAPASecaoId = 2,
                 QuestaoId = ID_QUESTAO_DESCRICAO_ATENDIMENTO,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            //Id 7
+            await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
+            {
+                EncaminhamentoNAAPASecaoId = 2,
+                QuestaoId = ID_QUESTAO_ANEXOS_ITINERANCIA,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF

@@ -18,6 +18,7 @@ namespace SME.SGP.Dados.Repositorios
 
         private const int SECAO_ITINERANCIA_NAAPA = 3;
         private const int PRIMEIRA_ETAPA_NAAPA = 1;
+        private const string NOME_COMPONENTE_QUESTAO_ANEXOS = "ANEXO_ITINERANCIA";
         public RepositorioSecaoEncaminhamentoNAAPA(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
             
@@ -242,7 +243,7 @@ namespace SME.SGP.Dados.Repositorios
 
         private void MontaQueryConsultaArquivos(StringBuilder sql)
         {
-            sql.AppendLine(@"with vw_resposta_arquivos as (
+            sql.AppendLine($@"with vw_resposta_arquivos as (
                                   select ens.id encaminhamento_naapa_secao_id, 
                                          a.codigo as CodigoArquivo, 
                                          a.nome as NomeArquivo
@@ -251,7 +252,7 @@ namespace SME.SGP.Dados.Repositorios
                                   join questao q on enq.questao_id = q.id 
                                   join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id 
                                   inner join arquivo a on a.id = enr.arquivo_id 
-                                  where q.nome_componente  = 'ANEXO_ITINERANCIA' and q.tipo = 6
+                                  where q.nome_componente  = '{NOME_COMPONENTE_QUESTAO_ANEXOS}' and q.tipo = {(int)TipoQuestao.Upload}
                                         and not enq.excluido and not ens.excluido 
                         )
                         select ens.id SecaoItineranciaId, 

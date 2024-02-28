@@ -57,7 +57,8 @@ namespace SME.SGP.Aplicacao
                 TurmaId = parecerEmAprovacao.TurmaId,
                 TurmaCodigo = turmaCodigo,
                 Bimestre = parecerEmAprovacao.Bimestre,
-                AnoLetivo = parecerEmAprovacao.AnoLetivo
+                AnoLetivo = parecerEmAprovacao.AnoLetivo,
+                ParecerAlteradoManual = parecerEmAprovacao.ParecerAlteradoManual
             };
             await mediator.Send(new PersistirParecerConclusivoCommand(persistirParecerConclusivoDto));
             await mediator.Send(new ExcluirWfAprovacaoParecerConclusivoCommand(parecerEmAprovacao.Id));
