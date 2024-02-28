@@ -5,7 +5,7 @@ namespace SME.SGP.Aplicacao
 {
     public class InserirFrequenciasAulaCommand : IRequest<FrequenciaAuditoriaAulaDto>
     {
-        public InserirFrequenciasAulaCommand(FrequenciaDto frequencia, bool calcularFrequencia = true, string usuarioLogin = "Sistema")
+        public InserirFrequenciasAulaCommand(FrequenciaDto frequencia, bool calcularFrequencia = true, string usuarioLogin = null)
         {
             Frequencia = frequencia;
             CalcularFrequencia = calcularFrequencia;

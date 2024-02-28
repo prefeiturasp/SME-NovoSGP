@@ -96,8 +96,7 @@ namespace SME.SGP.Aplicacao
             var alunos = requestParams.Frequencia.ListaFrequencia.Select(a => a.CodigoAluno).ToList();
             if (alunos.NaoPossuiRegistros())
                 throw new NegocioException(MensagensNegocioFrequencia.Lista_de_alunos_e_o_componente_devem_ser_informados);
-
-            var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(null, requestParams.UsuarioLogin), cancellationToken);
+            var usuario = await ObterUsuario(cancellationToken);
             if (usuario.EhNulo())
                 throw new NegocioException(string.Format(MensagensNegocioFrequencia.Nao_foi_localizado_usuario_pelo_login, requestParams.UsuarioLogin));
 
@@ -112,6 +111,10 @@ namespace SME.SGP.Aplicacao
             return (usuario, aula, turma, alunos);
         }
 
+        private async Task<Usuario> ObterUsuario(CancellationToken cancellationToken)
+            => !string.IsNullOrWhiteSpace(requestParams.UsuarioLogin) ? 
+                await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(null, requestParams.UsuarioLogin), cancellationToken) : 
+                await mediator.Send(ObterUsuarioLogadoQuery.Instance, cancellationToken);
         private static void ValidaSeUsuarioPodeCriarAula(Aula aula, Usuario usuario)
         {
             if (!usuario.PodeRegistrarFrequencia(aula))
