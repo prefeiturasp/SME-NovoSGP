@@ -13,7 +13,6 @@ namespace SME.SGP.Dominio
         public readonly static Guid PERFIL_CP = Guid.Parse("44E1E074-37D6-E911-ABD6-F81654FE895D");
         public readonly static Guid PERFIL_CEFAI = Guid.Parse("4be1e074-37d6-e911-abd6-f81654fe895d");
         public readonly static Guid PERFIL_DIRETOR = Guid.Parse("46E1E074-37D6-E911-ABD6-F81654FE895D");
-        public readonly static Guid PERFIL_POA = Guid.Parse("3fe1e074-37d6-e911-abd6-f81654fe895d");
         public readonly static Guid PERFIL_PROFESSOR = Guid.Parse("40E1E074-37D6-E911-ABD6-F81654FE895D");
         public readonly static Guid PERFIL_SECRETARIO = Guid.Parse("43E1E074-37D6-E911-ABD6-F81654FE895D");
         public readonly static Guid PERFIL_SUPERVISOR = Guid.Parse("4EE1E074-37D6-E911-ABD6-F81654FE895D");
@@ -33,6 +32,11 @@ namespace SME.SGP.Dominio
         public readonly static Guid PERFIL_NAAPA_DRE = Guid.Parse("4CE1E074-37D6-E911-ABD6-F81654FE895D");
         public readonly static Guid PERFIL_COORDENADOR_CELP = Guid.Parse("32C01A4F-B251-4A0F-933D-5B61C8B5DDBF");
         public readonly static Guid PERFIL_ABAE = Guid.Parse("EA741BF4-47EA-486D-8B88-5327521BCFC5");
+        public readonly static Guid PERFIL_POA_ALFABETIZACAO = Guid.Parse("2e89cf10-e42b-476f-8673-2dfbeeee3cd0");
+        public readonly static Guid PERFIL_POA_LINGUA_PORTUGUESA = Guid.Parse("57a7b9ab-8e61-4093-b692-a0bb1f9f46bd");
+        public readonly static Guid PERFIL_POA_MATEMATICA = Guid.Parse("cf181fd4-dd30-47cf-a97d-57e602fd8d10");
+        public readonly static Guid PERFIL_POA_HUMANAS = Guid.Parse("2c7ced81-7109-4276-9262-5c56efd8992f");
+        public readonly static Guid PERFIL_POA_NATURAIS = Guid.Parse("3104735d-c369-4710-ae64-bca37bc78f3b");
     }
 
 }
