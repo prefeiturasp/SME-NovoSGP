@@ -9,6 +9,7 @@ using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake = SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes.ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake;
@@ -71,6 +72,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             {
                 ConselhoClasseId = CONSELHO_CLASSE_ID_1,
                 AlunoCodigo = ALUNO_CODIGO_1,
+                ParecerAlteradoManual = true,
                 CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
@@ -93,6 +95,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             retorno.ShouldNotBeNull();
             retorno.Id.ShouldBeGreaterThan(0);
             retorno.Nome.ShouldNotBeEmpty();
+
+            var parecerConclusivo = ObterTodos<ConselhoClasseAluno>();
+            parecerConclusivo.First().ParecerAlteradoManual.ShouldBeFalse();
         }
     }
 }

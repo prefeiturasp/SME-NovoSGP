@@ -9,5 +9,6 @@ namespace SME.SGP.Dto
         public int? Bimestre { get; set; }
         public int AnoLetivo { get; set; }
         public string TurmaCodigo { get; set; }
+        public bool ParecerAlteradoManual { get; set; } 
     }
 }

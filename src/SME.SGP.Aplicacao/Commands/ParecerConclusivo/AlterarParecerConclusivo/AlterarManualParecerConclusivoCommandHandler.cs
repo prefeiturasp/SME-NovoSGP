@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
@@ -10,16 +11,16 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AlterarParecerConclusivoCommandHandler : IRequestHandler<AlterarParecerConclusivoCommand, ParecerConclusivoDto>
+    public class AlterarManualParecerConclusivoCommandHandler : IRequestHandler<AlterarManualParecerConclusivoCommand, ParecerConclusivoDto>
     {
         private readonly IMediator mediator;
 
-        public AlterarParecerConclusivoCommandHandler(IMediator mediator)
+        public AlterarManualParecerConclusivoCommandHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<ParecerConclusivoDto> Handle(AlterarParecerConclusivoCommand request, CancellationToken cancellationToken)
+        public async Task<ParecerConclusivoDto> Handle(AlterarManualParecerConclusivoCommand request, CancellationToken cancellationToken)
         {
             var conselhoClasseAluno = await mediator.Send(new ObterConselhoClasseAlunoPorConselhoFechamentoAlunoCodigoQuery(
                     request.ConselhoClasseId,
@@ -33,7 +34,11 @@ namespace SME.SGP.Aplicacao
                     EmAprovacao = false
                 };
 
-            var emAprovacao = await EnviarParaAprovacao(conselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma);
+            var turma = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma;
+
+            await ValidarLimparParecer(request, turma);
+
+            var emAprovacao = await EnviarParaAprovacao(turma);
 
             if (emAprovacao)
                 await GerarWFAprovacao(conselhoClasseAluno, request.ParecerConclusivoId);
@@ -45,6 +50,17 @@ namespace SME.SGP.Aplicacao
                 Id = request.ParecerConclusivoId ?? 0,
                 EmAprovacao = emAprovacao
             }; 
+        }
+
+        private async Task ValidarLimparParecer(AlterarManualParecerConclusivoCommand request, Turma turma)
+        {
+            if (request.ParecerConclusivoId.EhNulo())
+            {
+                var aluno = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(turma.CodigoTurma, request.AlunoCodigo));
+
+                if (aluno.Ativo)
+                    throw new NegocioException(MensagemNegocioConselhoClasse.LIMPAR_PARECER_CONCLUSIVO_APENAS_ALUNO_INATIVO);
+            }
         }
 
         private async Task PersistirParecer(ConselhoClasseAluno conselhoClasseAluno, long? parecerConclusivoId)
@@ -59,7 +75,8 @@ namespace SME.SGP.Aplicacao
                 TurmaId = turma.Id,
                 TurmaCodigo = turma.CodigoTurma,
                 Bimestre = bimestre,
-                AnoLetivo = turma.AnoLetivo
+                AnoLetivo = turma.AnoLetivo,
+                ParecerAlteradoManual = true
             };
             await mediator.Send(new PersistirParecerConclusivoCommand(persistirParecerConclusivoDto));
         }
@@ -79,7 +96,8 @@ namespace SME.SGP.Aplicacao
                                                                                  parecerConclusivoId,
                                                                                  parecerAnterior,
                                                                                  parecerNovo,
-                                                                                 solicitanteId));
+                                                                                 solicitanteId,
+                                                                                 true));
         }
 
         private async Task<IEnumerable<ConselhoClasseParecerConclusivo>> ObterPareceresDaTurma(Turma turma)

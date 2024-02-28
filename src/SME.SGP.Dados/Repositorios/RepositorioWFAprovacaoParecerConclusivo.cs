@@ -1,12 +1,10 @@
 ﻿using Dapper;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interface;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -92,7 +90,8 @@ namespace SME.SGP.Dados
                     ca.id as ConselhoClasseAlunoId,
                     wa.conselho_classe_parecer_id_anterior as ConselhoClasseParecerAnteriorId,
                     wa.wf_aprovacao_id as WorkFlowAprovacaoId,
-                    t.ano_letivo as AnoLetivo
+                    t.ano_letivo as AnoLetivo,
+                    wa.parecer_alterado_manual as ParecerAlteradoManual
                 from wf_aprovacao_parecer_conclusivo wa
                     join conselho_classe_aluno ca on ca.id = wa.conselho_classe_aluno_id
                     join conselho_classe cc on cc.id = ca.conselho_classe_id
