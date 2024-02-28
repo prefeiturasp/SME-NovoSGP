@@ -80,8 +80,6 @@ namespace SME.SGP.Infra.Worker
             foreach (var fila in tipoRotas.ObterConstantesPublicas<string>())
             {
                 var args = ObterArgumentoDaFila(fila, exchangeDeadLetter);
-                if (fila.Equals("sgp.metricas.acessos"))
-                    args.Add("x-consumer-timeout", 90000);//timeout consumer
                 canalRabbit.QueueDeclare(fila, true, false, false, args);
                 canalRabbit.QueueBind(fila, exchange, fila, null);
 
@@ -173,9 +171,6 @@ namespace SME.SGP.Infra.Worker
                 {
                     using var scope = serviceScopeFactory.CreateScope();
                     AtribuirContextoAplicacao(mensagemRabbit, scope);
-
-                    Thread.Sleep(120000);//timeout consumer
-                    throw new Exception("Exception Teste após timeout consumer");
                     IRabbitUseCase casoDeUso = (IRabbitUseCase)scope.ServiceProvider.GetService(comandoRabbit.TipoCasoUso);
 
                     await servicoTelemetria.RegistrarAsync(
