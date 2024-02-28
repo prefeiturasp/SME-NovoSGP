@@ -11,16 +11,16 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AlterarParecerConclusivoCommandHandler : IRequestHandler<AlterarParecerConclusivoCommand, ParecerConclusivoDto>
+    public class AlterarManualParecerConclusivoCommandHandler : IRequestHandler<AlterarManualParecerConclusivoCommand, ParecerConclusivoDto>
     {
         private readonly IMediator mediator;
 
-        public AlterarParecerConclusivoCommandHandler(IMediator mediator)
+        public AlterarManualParecerConclusivoCommandHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<ParecerConclusivoDto> Handle(AlterarParecerConclusivoCommand request, CancellationToken cancellationToken)
+        public async Task<ParecerConclusivoDto> Handle(AlterarManualParecerConclusivoCommand request, CancellationToken cancellationToken)
         {
             var conselhoClasseAluno = await mediator.Send(new ObterConselhoClasseAlunoPorConselhoFechamentoAlunoCodigoQuery(
                     request.ConselhoClasseId,
@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
             }; 
         }
 
-        private async Task ValidarLimparParecer(AlterarParecerConclusivoCommand request, Turma turma)
+        private async Task ValidarLimparParecer(AlterarManualParecerConclusivoCommand request, Turma turma)
         {
             if (request.ParecerConclusivoId.EhNulo())
             {

@@ -4,9 +4,9 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AlterarParecerConclusivoCommand : IRequest<ParecerConclusivoDto>
+    public class AlterarManualParecerConclusivoCommand : IRequest<ParecerConclusivoDto>
     {
-        public AlterarParecerConclusivoCommand(AlterarParecerConclusivoDto alterarParecerConclusivo)
+        public AlterarManualParecerConclusivoCommand(AlterarParecerConclusivoDto alterarParecerConclusivo)
         {
             ConselhoClasseId = alterarParecerConclusivo.ConselhoClasseId;
             FechamentoTurmaId = alterarParecerConclusivo.FechamentoTurmaId;
@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         public long? ParecerConclusivoId { get; set; }
     }
 
-    public class AlterarParecerConclusivoCommandValidator : AbstractValidator<AlterarParecerConclusivoCommand>
+    public class AlterarParecerConclusivoCommandValidator : AbstractValidator<AlterarManualParecerConclusivoCommand>
     {
         public AlterarParecerConclusivoCommandValidator()
         {

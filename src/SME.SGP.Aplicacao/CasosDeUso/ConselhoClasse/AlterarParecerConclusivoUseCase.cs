@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ConselhoClasse
 
         public async Task<ParecerConclusivoDto> Executar(AlterarParecerConclusivoDto param)
         {
-            return await mediator.Send(new AlterarParecerConclusivoCommand(param));
+            return await mediator.Send(new AlterarManualParecerConclusivoCommand(param));
         }
     }
 }
