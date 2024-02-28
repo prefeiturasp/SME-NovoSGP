@@ -41,7 +41,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected const long ID_QUESTAO_ENSINO_APRENDIZAGEM = 41;
         protected const long ID_QUESTAO_HIPOTESE_ESCRITA = 42;
         protected const long ID_QUESTAO_PERMANENCIA_ESCOLAR = 43;
-        protected const long ID_QUESTAO_ANEXOS_ITINERANCIA = 47;
+        protected const long ID_QUESTAO_ANEXO = 47;
+        protected const long ID_QUESTAO_ANEXOS_ITINERANCIA = 48;
 
         protected const long ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_DATA_ENTRADA_QUEIXA = 17;
         protected const long ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PRIORIDADE = 18;
@@ -188,6 +189,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
         protected const string QUESTAO_NOME_PROCEDIMENTO_TRABALHO = "Procedimento de trabalho";
         protected const string QUESTAO_NOME_COMPONENTE_PROCEDIMENTO_DE_TRABALHO = "PROCEDIMENTO_DE_TRABALHO";
+
+        protected const string QUESTAO_NOME_COMPONENTE_ANEXOS = "ANEXOS";
+        protected const string QUESTAO_NOME_COMPONENTE_ANEXO_ITINERANCIA = "ANEXO_ITINERANCIA";
 
         protected const long ID_OPCAO_RESPOSTA_DOENCA_CRONICA_OU_EM_TRATAMENTO_DE_LONGA_DURACAO_71_1099 = 71;
         protected const long ID_QUESTAO_COMPLEMENTAR_SELECIONE_UM_FILTRO_DOENCA_CRONICA_OU_EM_TRATAMENTO_DE_LONGA_DURACAO_28_303 = 28;
@@ -3154,16 +3158,32 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //id 47
             await InserirNaBase(new Questao()
             {
-                QuestionarioId = 3,
-                Ordem = 1,
-                Nome = "Anexos",
+                QuestionarioId = ID_QUESTIONARIO_INFORMACOES_ESTUDANTE,
+                Ordem = 3,
+                Nome = "Anexo",
                 Obrigatorio = false,
                 Tipo = TipoQuestao.Upload,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now,
-                NomeComponente = "ANEXO_ITINERANCIA"
+                NomeComponente = QUESTAO_NOME_COMPONENTE_ANEXOS
             });
+
+            //id 48
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = ID_QUESTIONARIO_NAAPA_ITINERANCIA,
+                Ordem = 3,
+                Nome = "Anexo",
+                Obrigatorio = false,
+                Tipo = TipoQuestao.Upload,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now,
+                NomeComponente = QUESTAO_NOME_COMPONENTE_ANEXO_ITINERANCIA
+            });
+
+            
         }
 
         protected class FiltroNAAPADto
