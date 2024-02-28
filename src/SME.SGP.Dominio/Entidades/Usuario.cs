@@ -172,7 +172,11 @@ namespace SME.SGP.Dominio
 
         public bool EhProfessorPoa()
         {
-            return PerfilAtual == Dominio.Perfis.PERFIL_POA;
+            return (PerfilAtual == Dominio.Perfis.PERFIL_POA_ALFABETIZACAO
+                 || PerfilAtual == Dominio.Perfis.PERFIL_POA_LINGUA_PORTUGUESA
+                 || PerfilAtual == Dominio.Perfis.PERFIL_POA_HUMANAS
+                 || PerfilAtual == Dominio.Perfis.PERFIL_POA_MATEMATICA
+                 || PerfilAtual == Dominio.Perfis.PERFIL_POA_NATURAIS);
         }
 
         public void FinalizarRecuperacaoSenha()
