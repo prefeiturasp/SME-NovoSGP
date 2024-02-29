@@ -279,9 +279,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(ParecerConclusivoDto), 200)]
         [Permissao(Permissao.CC_A, Policy = "Bearer")]
-        public IActionResult AlterarParecerConclusivo(AlterarParecerConclusivoDto alterarParecerConclusivo, [FromServices] IAlterarParecerConclusivoUseCase useCase)
+        public async Task<IActionResult> AlterarParecerConclusivo(AlterarParecerConclusivoDto alterarParecerConclusivo, [FromServices] IAlterarParecerConclusivoUseCase useCase)
         {
-            return Ok(useCase.Executar(alterarParecerConclusivo));
+            return Ok(await useCase.Executar(alterarParecerConclusivo));
         }
     }
 }
