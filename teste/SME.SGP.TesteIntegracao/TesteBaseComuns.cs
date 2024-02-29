@@ -246,7 +246,7 @@ namespace SME.SGP.TesteIntegracao
         public const string USUARIO_LOGIN_COOD_NAAPA = "NAAP11111";
         public const string USUARIO_LOGIN_ADM_DRE = "DRE111111";
         public const string USUARIO_LOGIN_ADM_SME = "SME111111";
-        public const string USUARIO_LOGIN_PAP = "PAP111111";
+        public const string USUARIO_LOGIN_PAP = "PAP111111";        
 
         protected const string USUARIO_CP_LOGIN_3333333 = "3333333";
         protected const string USUARIO_CEFAI_LOGIN_3333333 = "3333333";
@@ -974,6 +974,15 @@ namespace SME.SGP.TesteIntegracao
                 CodigoRf = USUARIO_LOGIN_PAP,
                 PerfilAtual = Guid.Parse(PerfilUsuario.PAP.ObterNome()),
                 Nome = USUARIO_LOGIN_PAP,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            await InserirNaBase(new Usuario
+            {
+                Login = SISTEMA_NOME,
+                CodigoRf = SISTEMA_NOME,
+                PerfilAtual = Guid.Parse(PerfilUsuario.ADMSME.ObterNome()),
+                Nome = SISTEMA_NOME,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
