@@ -27,7 +27,8 @@ namespace SME.SGP.Aplicacao
                 ConselhoClasseAlunoId = request.ConselhoClasseAlunoId,
                 ConselhoClasseParecerId = request.ParecerConclusivoId,
                 UsuarioSolicitanteId = request.UsuarioSolicitanteId,
-                ConselhoClasseParecerAnteriorId = request.ParecerConclusivoAnteriorId
+                ConselhoClasseParecerAnteriorId = request.ParecerConclusivoAnteriorId,
+                ParecerAlteradoManual = request.ParecerAlteradoManual
             });
         }
 

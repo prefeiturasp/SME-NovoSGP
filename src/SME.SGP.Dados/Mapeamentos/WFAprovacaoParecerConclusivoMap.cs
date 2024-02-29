@@ -1,5 +1,4 @@
-﻿using Dapper.FluentMap.Dommel.Mapping;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados
 {
@@ -14,6 +13,7 @@ namespace SME.SGP.Dados
             Map(c => c.ConselhoClasseParecerId).ToColumn("conselho_classe_parecer_id");
             Map(c => c.ConselhoClasseParecerAnteriorId).ToColumn("conselho_classe_parecer_id_anterior");
             Map(c => c.Excluido).ToColumn("excluido");
+            Map(c => c.ParecerAlteradoManual).ToColumn("parecer_alterado_manual");
         }
     }
 }
