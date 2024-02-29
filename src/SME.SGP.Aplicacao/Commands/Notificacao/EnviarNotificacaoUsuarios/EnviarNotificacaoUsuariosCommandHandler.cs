@@ -24,12 +24,13 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<long>> Handle(EnviarNotificacaoUsuariosCommand request, CancellationToken cancellationToken)
         {
             var notificacoes = new List<long>();
+            var anoAtual = DateTimeExtension.HorarioBrasilia().Year;
             foreach (var usuario in request.Usuarios)
             {
                 var notificacao = new Notificacao()
                 {
-                    Codigo = await mediator.Send(new ObterNotificacaoUltimoCodigoPorAnoQuery(DateTime.Now.Year)) + 1,
-                    Ano = DateTime.Today.Year,
+                    Codigo = await mediator.Send(new ObterNotificacaoUltimoCodigoPorAnoQuery(anoAtual)) + 1,
+                    Ano = anoAtual,
                     Categoria = request.CategoriaNotificacao,
                     Tipo = request.TipoNotificacao,
                     DreId = request.DreCodigo,

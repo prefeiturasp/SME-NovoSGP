@@ -49,7 +49,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
                                         string.Empty);
 
             await useCase.Executar(new MensagemRabbit() { Mensagem = JsonConvert.SerializeObject(command) });
-            var pendencia = ObterTodos<Pendencia>().Find(p => p.Tipo == TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento);
+            var pendencia = ObterTodos<Dominio.Pendencia>().Find(p => p.Tipo == TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento);
             pendencia.ShouldNotBeNull();
             var pendenciafechamento = ObterTodos<Dominio.PendenciaFechamento>().Find(pf => pf.PendenciaId == pendencia.Id);
             pendenciafechamento.ShouldNotBeNull();
@@ -94,7 +94,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
                                         string.Empty);
 
             await useCase.Executar(new MensagemRabbit() { Mensagem = JsonConvert.SerializeObject(command) });
-            var pendencia = ObterTodos<Pendencia>().Find(p => p.Tipo == TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento && p.Situacao == SituacaoPendencia.Pendente);
+            var pendencia = ObterTodos<Dominio.Pendencia>().Find(p => p.Tipo == TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento && p.Situacao == SituacaoPendencia.Pendente);
             pendencia.ShouldNotBeNull();
             var pendenciafechamento = ObterTodos<Dominio.PendenciaFechamento>().Find(pf => pf.PendenciaId == pendencia.Id);
             pendenciafechamento.ShouldNotBeNull();
@@ -138,7 +138,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
                                         string.Empty);
 
             await useCase.Executar(new MensagemRabbit() { Mensagem = JsonConvert.SerializeObject(command) });
-            var pendencia = ObterTodos<Pendencia>().Find(p => p.Tipo == TipoPendencia.AulasSemFrequenciaNaDataDoFechamento && p.Situacao == SituacaoPendencia.Pendente);
+            var pendencia = ObterTodos<Dominio.Pendencia>().Find(p => p.Tipo == TipoPendencia.AulasSemFrequenciaNaDataDoFechamento && p.Situacao == SituacaoPendencia.Pendente);
             pendencia.ShouldNotBeNull();
             var pendenciafechamento = ObterTodos<Dominio.PendenciaFechamento>().Find(pf => pf.PendenciaId == pendencia.Id);
             pendenciafechamento.ShouldNotBeNull();
@@ -182,7 +182,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
                                         string.Empty);
 
             await useCase.Executar(new MensagemRabbit() { Mensagem = JsonConvert.SerializeObject(command) });
-            var pendencia = ObterTodos<Pendencia>().Find(p => p.Tipo == TipoPendencia.AvaliacaoSemNotaParaNenhumAluno && p.Situacao == SituacaoPendencia.Pendente);
+            var pendencia = ObterTodos<Dominio.Pendencia>().Find(p => p.Tipo == TipoPendencia.AvaliacaoSemNotaParaNenhumAluno && p.Situacao == SituacaoPendencia.Pendente);
             pendencia.ShouldNotBeNull();
             var pendenciafechamento = ObterTodos<Dominio.PendenciaFechamento>().Find(pf => pf.PendenciaId == pendencia.Id);
             pendenciafechamento.ShouldNotBeNull();
