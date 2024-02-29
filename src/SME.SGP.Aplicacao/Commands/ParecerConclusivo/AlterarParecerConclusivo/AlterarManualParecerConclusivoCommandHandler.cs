@@ -49,9 +49,17 @@ namespace SME.SGP.Aplicacao
             return new ParecerConclusivoDto()
             {
                 Id = request.ParecerConclusivoId ?? 0,
-                Nome = pareceresDaTurma.FirstOrDefault(a => a.Id == request.ParecerConclusivoId)?.Nome,
+                Nome = ObterNomeParecer(request.ParecerConclusivoId, pareceresDaTurma),
                 EmAprovacao = emAprovacao
             }; 
+        }
+
+        private string ObterNomeParecer(long? parecerId, IEnumerable<ConselhoClasseParecerConclusivo> pareceresDaTurma)
+        {
+            if (parecerId.EhNulo())
+                return "Sem parecer";
+
+            return pareceresDaTurma.FirstOrDefault(a => a.Id == parecerId)?.Nome;
         }
 
         private async Task ValidarLimparParecer(AlterarManualParecerConclusivoCommand request, Turma turma)
