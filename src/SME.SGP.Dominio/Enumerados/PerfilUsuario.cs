@@ -101,7 +101,7 @@ namespace SME.SGP.Dominio
         POA_LINGUA_PORTUGUESA = 32,
 
         [Display(Name = "cf181fd4-dd30-47cf-a97d-57e602fd8d10")]
-        POA_POA_MATEMATICA = 33,
+        POA_MATEMATICA = 33,
 
         [Display(Name = "2c7ced81-7109-4276-9262-5c56efd8992f")]
         POA_HUMANAS = 34,
