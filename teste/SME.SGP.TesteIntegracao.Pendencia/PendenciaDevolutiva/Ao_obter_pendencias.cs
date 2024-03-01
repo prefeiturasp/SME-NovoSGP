@@ -132,7 +132,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
             await CriarUsuarioLogadoCP();
             await CriarItensBasicos();
 
-            await InserirNaBase(new Dominio.Pendencia(TipoPendencia.Devolutiva)
+            await InserirNaBase(new Pendencia(TipoPendencia.Devolutiva)
             {
                 Id = 1,
                 Titulo = "Devolutiva - CEMEI LEILA GALLACCI METZKER, PROFA (DRE  BT) - REGÊNCIA INFANTIL EMEI 4H",

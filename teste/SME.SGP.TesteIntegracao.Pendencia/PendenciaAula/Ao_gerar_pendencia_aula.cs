@@ -75,7 +75,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaAula
         {
             var mediator = ServiceProvider.GetService<IMediator>();
 
-            await InserirNaBase(new Dominio.Pendencia()
+            await InserirNaBase(new Pendencia()
             {
                 Tipo = TipoPendencia.PlanoAula,
                 Descricao = "Contém pendência de plano de aula para as seguintes aulas:",

@@ -23,7 +23,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaUsuario
         {
             var mediator = ServiceProvider.GetService<IMediator>();
 
-            await InserirNaBase(new Dominio.Pendencia()
+            await InserirNaBase(new Pendencia()
             {
                 Tipo = TipoPendencia.DiarioBordo,
                 Descricao = "O registro do Diário de Bordo do componente COMPONENTE CURRICULAR da turma TURMA da UE das aulas abaixo está pendente:",
