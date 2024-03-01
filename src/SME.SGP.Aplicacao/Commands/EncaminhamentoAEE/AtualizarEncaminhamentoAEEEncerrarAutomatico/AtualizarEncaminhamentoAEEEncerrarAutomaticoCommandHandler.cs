@@ -5,7 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao
+namespace SME.SGP.Aplicacao.Commands
 {
     public class AtualizarEncaminhamentoAEEEncerrarAutomaticoCommandHandler : IRequestHandler<AtualizarEncaminhamentoAEEEncerrarAutomaticoCommand, EncaminhamentoAEE>
     {

@@ -43,7 +43,6 @@ namespace SME.SGP.Aplicacao
                 $"<br/><br/>Esta pendência será resolvida automaticamente quando o parecer do AEE for registrado no sistema";
 
             var pendencia = new Pendencia(TipoPendencia.AEE, titulo, descricao, turma.Id);
-            pendencia.Situacao = SituacaoPendencia.Pendente;
             pendencia.Id = await repositorioPendencia.SalvarAsync(pendencia);
 
             var pendenciaUsuario = new PendenciaUsuario { PendenciaId = pendencia.Id, UsuarioId = encaminhamentoAEE.ResponsavelId.GetValueOrDefault() };
