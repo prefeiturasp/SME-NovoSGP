@@ -16,6 +16,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using SME.SGP.TesteIntegracao.Mocks;
 using Xunit;
+using System.Linq;
+using System;
 
 //[assembly: CollectionBehavior(DisableTestParallelization = true)]
 namespace SME.SGP.TesteIntegracao
@@ -118,6 +120,17 @@ namespace SME.SGP.TesteIntegracao
         public List<T> ObterTodos<T>() where T : class, new()
         {
             return _collectionFixture.Database.ObterTodos<T>();
+        }
+
+        public long ObterProximoId<T>() where T : EntidadeBase, new()
+        {
+            return ObterUltimoId<T>() + 1;
+        }
+
+        public long ObterUltimoId<T>() where T : EntidadeBase, new()
+        {
+            var registros = _collectionFixture.Database.ObterTodos<T>();
+            return registros.Max(reg => reg.Id);
         }
 
         public T ObterPorId<T, K>(K id)

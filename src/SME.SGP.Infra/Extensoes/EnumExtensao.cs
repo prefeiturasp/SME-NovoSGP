@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 
 namespace SME.SGP.Infra
 {
@@ -162,6 +163,26 @@ namespace SME.SGP.Infra
         public static bool EhIgualZero(this long valor)
         {
             return valor == 0;
+        }
+
+
+        public static string ObterCaseWhenSQL<TEnum>(string atributoComparacao)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.AppendLine("CASE");
+            foreach (var value in Enum.GetValues(typeof(TEnum)))
+            {
+                var enumName = Enum.GetName(typeof(TEnum), value);
+                var enumMemberInfo = typeof(TEnum).GetMember(enumName)[0];
+                var displayAttribute = (DisplayAttribute)Attribute.GetCustomAttribute(enumMemberInfo, typeof(DisplayAttribute));
+                var shortName = displayAttribute.ShortName;
+
+                sql.AppendLine($"    WHEN {atributoComparacao} = {(int)value} THEN '{shortName}'");
+            }
+            sql.AppendLine("    ELSE ''");
+            sql.AppendLine("END");
+
+            return sql.ToString();
         }
     }
 }
