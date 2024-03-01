@@ -41,7 +41,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaGeral
 
             await useCase.Executar(mensagemParaPublicar);
 
-            var pendencias = ObterTodos<Dominio.Pendencia>();
+            var pendencias = ObterTodos<Pendencia>();
 
             pendencias.FirstOrDefault().Excluido.ShouldBeTrue();
         }
@@ -58,7 +58,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaGeral
 
             await useCase.Executar(mensagemParaPublicar);
 
-            var pendencias = ObterTodos<Dominio.Pendencia>();
+            var pendencias = ObterTodos<Pendencia>();
 
             pendencias.FirstOrDefault().Excluido.ShouldBeTrue();
         }
@@ -76,7 +76,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaGeral
 
             await useCase.Executar(mensagemParaPublicar);
 
-            var pendencias = ObterTodos<Dominio.Pendencia>();
+            var pendencias = ObterTodos<Pendencia>();
 
             pendencias.FirstOrDefault().Excluido.ShouldBeTrue();
         }
@@ -93,7 +93,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaGeral
 
             await useCase.Executar(mensagemParaPublicar);
 
-            var pendencias = ObterTodos<Dominio.Pendencia>();
+            var pendencias = ObterTodos<Pendencia>();
 
             pendencias.FirstOrDefault().Excluido.ShouldBeTrue();
         }
@@ -110,7 +110,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaGeral
 
             await useCase.Executar(mensagemParaPublicar);
 
-            var pendencias = ObterTodos<Dominio.Pendencia>();
+            var pendencias = ObterTodos<Pendencia>();
 
             pendencias.FirstOrDefault().Excluido.ShouldBeTrue();
         }
@@ -127,7 +127,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaGeral
 
             await useCase.Executar(mensagemParaPublicar);
 
-            var pendencias = ObterTodos<Dominio.Pendencia>();
+            var pendencias = ObterTodos<Pendencia>();
 
             pendencias.FirstOrDefault().Excluido.ShouldBeTrue();
         }
