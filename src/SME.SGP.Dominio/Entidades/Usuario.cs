@@ -171,11 +171,7 @@ namespace SME.SGP.Dominio
             => PerfilAtual == Dominio.Perfis.PERFIL_DIRETOR;
 
         public bool EhProfessorPoa()
-            => PerfilAtual == Dominio.Perfis.PERFIL_POA_ALFABETIZACAO
-              || PerfilAtual == Dominio.Perfis.PERFIL_POA_HUMANAS
-              || PerfilAtual == Dominio.Perfis.PERFIL_POA_LINGUA_PORTUGUESA
-              || PerfilAtual == Dominio.Perfis.PERFIL_POA_MATEMATICA
-              || PerfilAtual == Dominio.Perfis.PERFIL_POA_NATURAIS;
+            => PerfilAtual.EhPerfilPOA();
 
 
         public void FinalizarRecuperacaoSenha()

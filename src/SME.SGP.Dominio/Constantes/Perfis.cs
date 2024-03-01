@@ -38,6 +38,13 @@ namespace SME.SGP.Dominio
         public readonly static Guid PERFIL_POA_MATEMATICA = Guid.Parse("cf181fd4-dd30-47cf-a97d-57e602fd8d10");
         public readonly static Guid PERFIL_POA_HUMANAS = Guid.Parse("2c7ced81-7109-4276-9262-5c56efd8992f");
         public readonly static Guid PERFIL_POA_NATURAIS = Guid.Parse("3104735d-c369-4710-ae64-bca37bc78f3b");
+
+        public static bool EhPerfilPOA(this Guid source)
+            => source == PERFIL_POA_ALFABETIZACAO
+                  || source == PERFIL_POA_HUMANAS
+                  || source == PERFIL_POA_LINGUA_PORTUGUESA
+                  || source == PERFIL_POA_MATEMATICA
+                  || source == PERFIL_POA_NATURAIS;
     }
 
 }

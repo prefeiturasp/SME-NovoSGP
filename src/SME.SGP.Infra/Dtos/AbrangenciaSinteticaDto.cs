@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Dto
 {
@@ -59,11 +57,7 @@ namespace SME.SGP.Dto
 
 
         public bool EhProfessorPoa()
-            => Perfil == Dominio.Perfis.PERFIL_POA_ALFABETIZACAO
-              || Perfil == Dominio.Perfis.PERFIL_POA_HUMANAS
-              || Perfil == Dominio.Perfis.PERFIL_POA_LINGUA_PORTUGUESA
-              || Perfil == Dominio.Perfis.PERFIL_POA_MATEMATICA
-              || Perfil == Dominio.Perfis.PERFIL_POA_NATURAIS;
+            => Dominio.Perfis.EhPerfilPOA(Perfil);
 
         public bool EhProfessorInfantil()
         {
