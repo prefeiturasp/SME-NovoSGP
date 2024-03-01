@@ -177,6 +177,7 @@ namespace SME.SGP.Dominio
               || PerfilAtual == Dominio.Perfis.PERFIL_POA_MATEMATICA
               || PerfilAtual == Dominio.Perfis.PERFIL_POA_NATURAIS;
 
+
         public void FinalizarRecuperacaoSenha()
         {
             TokenRecuperacaoSenha = null;
