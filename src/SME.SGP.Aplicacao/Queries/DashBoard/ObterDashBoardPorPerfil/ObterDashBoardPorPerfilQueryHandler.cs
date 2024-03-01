@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         Guid[] perfil_1 = { Perfis.PERFIL_PROFESSOR_INFANTIL, Perfis.PERFIL_CJ_INFANTIL };
         Guid[] perfil_2 = { Perfis.PERFIL_PROFESSOR, Perfis.PERFIL_CJ, Perfis.PERFIL_PAEE, Perfis.PERFIL_PAP, 
                             Perfis.PERFIL_POEI, Perfis.PERFIL_POED, Perfis.PERFIL_POSL,
-                            Perfis.PERFIL_POAAlfabetizacao, Perfis.PERFIL_POAHumanas, Perfis.PERFIL_POALinguaPortuguesa, Perfis.PERFIL_POAMatematica, Perfis.PERFIL_POANaturais };
+                            Perfis.PERFIL_POA_ALFABETIZACAO, Perfis.PERFIL_POA_HUMANAS, Perfis.PERFIL_POA_LINGUA_PORTUGUESA, Perfis.PERFIL_POA_MATEMATICA, Perfis.PERFIL_POA_NATURAIS };
 
         private readonly IServicoUsuario servicoUsuario;
 
