@@ -59,9 +59,11 @@ namespace SME.SGP.Dto
 
 
         public bool EhProfessorPoa()
-        {
-            return Perfil == Dominio.Perfis.PERFIL_POA;
-        }
+            => Perfil == Dominio.Perfis.PERFIL_POAAlfabetizacao
+              || Perfil == Dominio.Perfis.PERFIL_POAHumanas
+              || Perfil == Dominio.Perfis.PERFIL_POALinguaPortuguesa
+              || Perfil == Dominio.Perfis.PERFIL_POAMatematica
+              || Perfil == Dominio.Perfis.PERFIL_POANaturais;
 
         public bool EhProfessorInfantil()
         {
