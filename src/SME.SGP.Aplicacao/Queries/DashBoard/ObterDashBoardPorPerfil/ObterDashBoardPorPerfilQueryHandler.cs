@@ -14,7 +14,9 @@ namespace SME.SGP.Aplicacao
     public class ObterDashBoardPorPerfilQueryHandler : IRequestHandler<ObterDashBoardPorPerfilQuery, IEnumerable<DashBoard>>
     {
         Guid[] perfil_1 = { Perfis.PERFIL_PROFESSOR_INFANTIL, Perfis.PERFIL_CJ_INFANTIL };
-        Guid[] perfil_2 = { Perfis.PERFIL_PROFESSOR, Perfis.PERFIL_CJ, Perfis.PERFIL_POA, Perfis.PERFIL_PAEE, Perfis.PERFIL_PAP, Perfis.PERFIL_POEI, Perfis.PERFIL_POED, Perfis.PERFIL_POSL };
+        Guid[] perfil_2 = { Perfis.PERFIL_PROFESSOR, Perfis.PERFIL_CJ, Perfis.PERFIL_PAEE, Perfis.PERFIL_PAP, 
+                            Perfis.PERFIL_POEI, Perfis.PERFIL_POED, Perfis.PERFIL_POSL,
+                            Perfis.PERFIL_POAAlfabetizacao, Perfis.PERFIL_POAHumanas, Perfis.PERFIL_POALinguaPortuguesa, Perfis.PERFIL_POAMatematica, Perfis.PERFIL_POANaturais };
 
         private readonly IServicoUsuario servicoUsuario;
 

@@ -53,7 +53,7 @@ namespace SME.SGP.Dominio
                 {
                     return (from a in aulas
                             from ccp in componentesUsuario
-                            where ((!ccp.TerritorioSaber && a.DisciplinaId == (ccp.CodigoComponenteCurricularPai ?? ccp.Codigo).ToString()) || 
+                            where ((!ccp.TerritorioSaber && a.DisciplinaId == (ccp.CodigoComponenteCurricularPai ?? ccp.Codigo).ToString()) ||
                                    (ccp.TerritorioSaber && (a.DisciplinaId == ccp.Codigo.ToString() || a.DisciplinaId == ccp.CodigoComponenteTerritorioSaber.ToString()))) ||
                                   a.ProfessorRf == CodigoRf
                             select a).Distinct();
@@ -116,7 +116,7 @@ namespace SME.SGP.Dominio
 
         public bool EhProfessorPaee()
          => PerfilAtual == Dominio.Perfis.PERFIL_PAEE;
-        
+
         public bool EhProfessorPap()
          => PerfilAtual == Dominio.Perfis.PERFIL_PAP;
 
@@ -153,8 +153,8 @@ namespace SME.SGP.Dominio
             || EhCCELP();
 
         public bool PossuiPerfilGestorEscolar()
-            => Perfis.Any(p => p.CodigoPerfil == Dominio.Perfis.PERFIL_AD 
-                                || p.CodigoPerfil == Dominio.Perfis.PERFIL_CP 
+            => Perfis.Any(p => p.CodigoPerfil == Dominio.Perfis.PERFIL_AD
+                                || p.CodigoPerfil == Dominio.Perfis.PERFIL_CP
                                 || p.CodigoPerfil == Dominio.Perfis.PERFIL_DIRETOR
                                 || p.CodigoPerfil == Dominio.Perfis.PERFIL_COORDENADOR_CELP);
 
@@ -171,9 +171,11 @@ namespace SME.SGP.Dominio
             => PerfilAtual == Dominio.Perfis.PERFIL_DIRETOR;
 
         public bool EhProfessorPoa()
-        {
-            return PerfilAtual == Dominio.Perfis.PERFIL_POA;
-        }
+            => PerfilAtual == Dominio.Perfis.PERFIL_POAAlfabetizacao
+              || PerfilAtual == Dominio.Perfis.PERFIL_POAHumanas
+              || PerfilAtual == Dominio.Perfis.PERFIL_POALinguaPortuguesa
+              || PerfilAtual == Dominio.Perfis.PERFIL_POAMatematica
+              || PerfilAtual == Dominio.Perfis.PERFIL_POANaturais;
 
         public void FinalizarRecuperacaoSenha()
         {
