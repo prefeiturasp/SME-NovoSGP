@@ -694,6 +694,10 @@ namespace SME.SGP.TesteIntegracao
         {
             return Guid.Parse(PerfilUsuario.PAP.Name()).ToString();
         }
+        protected string ObterPerfilPOA_Portugues()
+        {
+            return Guid.Parse(PerfilUsuario.POA_LINGUA_PORTUGUESA.Name()).ToString();
+        }
 
         protected async Task CriarPeriodoEscolarEncerrado()
         {
