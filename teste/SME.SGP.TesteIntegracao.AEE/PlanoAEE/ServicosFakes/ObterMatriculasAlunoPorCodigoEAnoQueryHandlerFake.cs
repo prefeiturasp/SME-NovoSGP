@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 
 namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
@@ -36,7 +37,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
                     TipoResponsavel = "1",
                     CelularResponsavel = "9999999999",
                     DataAtualizacaoContato = DateTime.Now,
-                    CodigoEscola = "111111111"
+                    CodigoEscola = "111111111",
+                    CodigoTipoTurma = (int)TipoTurma.Regular
                 },
                 new AlunoPorTurmaResposta
                 {
@@ -56,7 +58,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
                     TipoResponsavel = "1",
                     CelularResponsavel = "9999999999",
                     DataAtualizacaoContato = DateTime.Now,
-                    CodigoEscola = "111111111"
+                    CodigoEscola = "111111111",
+                    CodigoTipoTurma = (int)TipoTurma.Regular
                 },
                 new AlunoPorTurmaResposta
                 {
@@ -76,7 +79,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
                     TipoResponsavel = "1",
                     CelularResponsavel = "9999999999",
                     DataAtualizacaoContato = DateTime.Now,
-                    CodigoEscola = "111111111"
+                    CodigoEscola = "111111111",
+                    CodigoTipoTurma = (int)TipoTurma.Regular
                 },
                 new AlunoPorTurmaResposta
                 {
@@ -96,7 +100,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
                     TipoResponsavel = "1",
                     CelularResponsavel = "9999999999",
                     DataAtualizacaoContato = DateTime.Now,
-                    CodigoEscola = "111111111"
+                    CodigoEscola = "111111111",
+                    CodigoTipoTurma = (int)TipoTurma.Regular
                 },
                 new AlunoPorTurmaResposta
                 {
@@ -116,7 +121,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
                     TipoResponsavel = "1",
                     CelularResponsavel = "9999999999",
                     DataAtualizacaoContato = DateTime.Now,
-                    CodigoEscola = "111111111"
+                    CodigoEscola = "111111111",
+                    CodigoTipoTurma = (int)TipoTurma.Regular
                 },
                 new AlunoPorTurmaResposta
                 {
@@ -136,7 +142,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
                     TipoResponsavel = "1",
                     CelularResponsavel = "9999999999",
                     DataAtualizacaoContato = DateTime.Now,
-                    CodigoEscola = "111111111"
+                    CodigoEscola = "111111111",
+                    CodigoTipoTurma = (int)TipoTurma.Regular
                 },
                 new AlunoPorTurmaResposta
                 {
@@ -156,7 +163,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
                     TipoResponsavel = "1",
                     CelularResponsavel = "9999999999",
                     DataAtualizacaoContato = DateTime.Now,
-                    CodigoEscola = "111111111"
+                    CodigoEscola = "111111111",
+                    CodigoTipoTurma = (int)TipoTurma.Regular
                 },
                 new AlunoPorTurmaResposta
                 {
@@ -176,7 +184,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
                     TipoResponsavel = "1",
                     CelularResponsavel = "9999999999",
                     DataAtualizacaoContato = DateTime.Now,
-                    CodigoEscola = "111111111"
+                    CodigoEscola = "111111111",
+                    CodigoTipoTurma = (int)TipoTurma.Regular
                 },
                 new AlunoPorTurmaResposta
                 {
@@ -196,7 +205,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
                     TipoResponsavel = "1",
                     CelularResponsavel = "9999999999",
                     DataAtualizacaoContato = DateTime.Now,
-                    CodigoEscola = "111111111"
+                    CodigoEscola = "111111111",
+                    CodigoTipoTurma = (int)TipoTurma.Regular
                 },
                 new AlunoPorTurmaResposta
                 {
@@ -216,7 +226,29 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
                     TipoResponsavel = "1",
                     CelularResponsavel = "9999999999",
                     DataAtualizacaoContato = DateTime.Now,
-                    CodigoEscola = "111111111"
+                    CodigoEscola = "111111111",
+                    CodigoTipoTurma = (int)TipoTurma.Regular
+                },
+                new AlunoPorTurmaResposta
+                {
+                    Ano = dataAtual.Year,
+                    CodigoAluno = "5",
+                    CodigoComponenteCurricular = 138,
+                    CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
+                    CodigoTurma = 2,
+                    DataNascimento = new DateTime(1998, 2, 12),
+                    DataSituacao = dataAtual.Date,
+                    DataMatricula = new DateTime(dataAtual.Year, 9, 12),
+                    NomeSocialAluno = "Nome Social do Aluno",
+                    NomeAluno = "Nome do Aluno",
+                    NumeroAlunoChamada = 5,
+                    SituacaoMatricula = "Ativo",
+                    NomeResponsavel = "Nome do Responsavel do Aluno",
+                    TipoResponsavel = "1",
+                    CelularResponsavel = "9999999999",
+                    DataAtualizacaoContato = DateTime.Now,
+                    CodigoEscola = "111111111",
+                    CodigoTipoTurma = (int)TipoTurma.Programa
                 },
                 new AlunoPorTurmaResposta
                 {
@@ -236,7 +268,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
                     TipoResponsavel = "1",
                     CelularResponsavel = "9999999999",
                     DataAtualizacaoContato = DateTime.Now,
-                    CodigoEscola = "111111111"
+                    CodigoEscola = "111111111",
+                    CodigoTipoTurma = (int)TipoTurma.Regular
                 },
                 new AlunoPorTurmaResposta
                 {
@@ -256,7 +289,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
                     TipoResponsavel = "1",
                     CelularResponsavel = "9999999999",
                     DataAtualizacaoContato = DateTime.Now,
-                    CodigoEscola = "111111111"
+                    CodigoEscola = "111111111",
+                    CodigoTipoTurma = (int)TipoTurma.Regular
                 },
             };
 
