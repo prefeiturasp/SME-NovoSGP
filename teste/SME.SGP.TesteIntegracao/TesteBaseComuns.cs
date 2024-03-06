@@ -11,6 +11,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using SME.SGP.Dominio.Enumerados;
 using Sentry.Protocol;
+using Nest;
+using System.Linq;
 
 namespace SME.SGP.TesteIntegracao
 {
@@ -1109,6 +1111,27 @@ namespace SME.SGP.TesteIntegracao
                 CodigoUe = codigoUe,
                 DreId = 1,
                 Nome = UE_NOME_2,
+            });
+        }
+
+        protected async Task CriarDreUe(string codigoDre, string nomeDre, string codigoUe, string nomeUe)
+        {
+            var dres = ObterTodos<Dre>();
+            long? idDre = dres.Where(d => d.CodigoDre.Equals(codigoDre)).FirstOrDefault()?.Id;
+
+            if (!idDre.HasValue)
+                await InserirNaBase(new Dre
+                {
+                    CodigoDre = codigoDre,
+                    Abreviacao = nomeDre,
+                    Nome = nomeDre
+                });
+            
+            await InserirNaBase(new Ue
+            {
+                CodigoUe = codigoUe,
+                DreId = idDre ?? dres.Count+1,
+                Nome = nomeUe,
             });
         }
         protected async Task CriarAtividadeAvaliativaFundamental(DateTime dataAvaliacao)

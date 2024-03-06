@@ -28,7 +28,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = MontaQueryCompleta(paginacao, filtro);
 
-            var parametros = new {ueId = filtro.UeId, nome = filtro.Nome, situacao = filtro.Situacao};
+            var parametros = new {dreId = filtro.DreId, ueId = filtro.UeId, nome = filtro.Nome, situacao = filtro.Situacao};
             
             var retorno = new PaginacaoResultadoDto<DreUeNomeSituacaoTipoEscolaDataABAEDto>();
 
@@ -63,12 +63,22 @@ namespace SME.SGP.Dados.Repositorios
             ObterFiltro(sql, filtro);
 
             if (!ehContador)
-                sql.AppendLine(" order by coalesce(a.alterado_em, a.criado_em) desc ");
+                ObterOrdenacaoConsulta(sql);
 
             if (paginacao.QuantidadeRegistros > 0 && !ehContador)
                 sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
         }
-        
+
+        private static void ObterOrdenacaoConsulta(StringBuilder sql)
+        {
+            StringBuilder sqlAux = new StringBuilder();
+            sqlAux.AppendLine("order by");
+            sqlAux.AppendLine($", dre.dre_id");
+            sqlAux.AppendLine($", {EnumExtensao.ObterCaseWhenSQL<TipoEscola>("ue.tipo_escola")}||' '||ue.nome");
+            sqlAux.AppendLine($", coalesce(a.alterado_em, a.criado_em) desc");
+        }
+
+
         private static void ObterCabecalho(StringBuilder sql, bool EhContador)
         {
             var query = EhContador 
@@ -93,8 +103,11 @@ namespace SME.SGP.Dados.Repositorios
         {
             sql.AppendLine(" where not excluido and a.situacao = @situacao ");
 
-            if (filtro.UeId.EhMaiorQueZero())
+            if (!filtro.UeId.EhOpcaoTodos())
                 sql.AppendLine(" and ue.id = @ueId ");
+
+            if (!filtro.DreId.EhOpcaoTodos())
+                sql.AppendLine(" and ue.dre_id = @dreId ");
 
             if (filtro.Nome.EstaPreenchido())
                 sql.AppendLine(" and lower(f_unaccent(a.nome)) LIKE ('%' || lower(f_unaccent(@nome)) || '%') ");
