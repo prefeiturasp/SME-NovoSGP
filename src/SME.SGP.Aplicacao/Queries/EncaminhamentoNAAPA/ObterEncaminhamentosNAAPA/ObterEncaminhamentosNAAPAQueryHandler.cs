@@ -41,8 +41,8 @@ namespace SME.SGP.Aplicacao
             var turmasIds = turmas.NaoEhNulo() || turmas.Any() ? turmas.Select(s => s.Id) : null;
 
             return await MapearParaDto(await repositorioEncaminhamentoNAAPA.ListarPaginado(request.AnoLetivo, request.DreId, 
-                request.CodigoUe,request.NomeAluno, request.DataAberturaQueixaInicio, request.DataAberturaQueixaFim, request.Situacao, 
-                request.Prioridade, turmasIds.ToArray(), Paginacao, request.ExibirEncerrados),request.AnoLetivo);
+                request.CodigoUe,request.CodigoNomeAluno, request.DataAberturaQueixaInicio, request.DataAberturaQueixaFim, request.Situacao, 
+                request.Prioridade, turmasIds.ToArray(), Paginacao, request.ExibirEncerrados, request.Ordenacao),request.AnoLetivo);
         }
 
         private async Task<PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>> MapearParaDto(PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto> resultadoDto,int anoLetivo)
@@ -79,8 +79,12 @@ namespace SME.SGP.Aplicacao
                     Prioridade = encaminhamento.Prioridade,
                     Situacao = ((SituacaoNAAPA)int.Parse(encaminhamento.Situacao)).Name(),
                     DataAberturaQueixaInicio = encaminhamento.DataAberturaQueixaInicio,
-                    EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == encaminhamento.CodigoAluno)
-                });
+                    EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == encaminhamento.CodigoAluno),
+                    Turma = $"{encaminhamento.TurmaModalidade.ObterNomeCurto()}-{encaminhamento.TurmaNome}",
+                    TurmaNome = encaminhamento.TurmaNome,
+                    TurmaModalidade = encaminhamento.TurmaModalidade,
+                    DataUltimoAtendimento = encaminhamento.DataUltimoAtendimento,
+            });
             }
 
             return listaEncaminhamentos;

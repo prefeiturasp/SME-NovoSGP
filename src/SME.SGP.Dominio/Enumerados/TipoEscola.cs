@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.Text;
 
 namespace SME.SGP.Dominio
 {
@@ -82,4 +84,5 @@ namespace SME.SGP.Dominio
         [Display(Name = "ESCOLA MUNICIPAL DE EDUCACAO INFANTIL PRIVADA FOMENTO", ShortName = "EMEI P FOM")]
         EMEIPFOM = 33
     }
+
 }
