@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Bogus;
 using Bogus.Extensions.Brazil;
@@ -16,26 +18,31 @@ namespace SME.SGP.TesteIntegracao.ABAE.Base
         protected ABAETesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
 
-        protected async Task CriarDadosBasicos(bool criarCadastroAcessoABAE = false)
+        protected async Task CriarDadosBasicos(bool criarCadastroAcessoABAE = false, List<(string CodigoDre, string CodigoUe)> dresUes = null)
         {
-            await CriarDreUe(DRE_CODIGO_1, UE_CODIGO_1);
-
+            if (dresUes.PossuiRegistros())
+                foreach (var dreUe in dresUes)
+                    await CriarDreUe(dreUe.CodigoDre, $"Nome Dre {dreUe.CodigoDre}", 
+                                     dreUe.CodigoUe, $"Nome Ue {dreUe.CodigoUe}");
+            else
+                await CriarDreUe(DRE_CODIGO_1, UE_CODIGO_1);
+            
             if (criarCadastroAcessoABAE)
                 await CriarCadastroAcessoABAE();
         }
 
-        protected async Task CriarCadastroAcessoABAE(int quantidade = 1)
+        protected async Task CriarCadastroAcessoABAE(int quantidade = 1, long ueId = UE_ID_1)
         {
-            var cadastrosAcessosABAE = GerarCadastroAcessoABAE().Generate(quantidade);
+            var cadastrosAcessosABAE = GerarCadastroAcessoABAE(ueId).Generate(quantidade);
 
             foreach (var cadastroAcessoAbae in cadastrosAcessosABAE)
                 await InserirNaBase(cadastroAcessoAbae);
         }
         
-        protected static Faker<CadastroAcessoABAE> GerarCadastroAcessoABAE()
+        protected static Faker<CadastroAcessoABAE> GerarCadastroAcessoABAE(long ueId = UE_ID_1)
         {
             var faker = new Faker<CadastroAcessoABAE>("pt_BR");
-            faker.RuleFor(x => x.UeId, f => UE_ID_1);
+            faker.RuleFor(x => x.UeId, f => ueId);
             faker.RuleFor(x => x.Nome, f => f.Person.FullName);
             faker.RuleFor(x => x.Cpf, f => f.Person.Cpf());
             faker.RuleFor(x => x.Email, f => f.Person.Email);
