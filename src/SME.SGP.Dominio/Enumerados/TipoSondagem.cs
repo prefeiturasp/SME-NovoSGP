@@ -8,11 +8,11 @@ namespace SME.SGP.Dominio
         LP_Escrita = 1,
         [Display(Name = "LP - Leitura")]
         LP_Leitura = 2,
-        [Display(Name = "LP - Leitura em voz alta")]
+        [Display(Name = "IAD - Leitura em voz alta")]
         LP_LeituraVozAlta = 3,
-        [Display(Name = "LP - Capacidade de Leitura")]
+        [Display(Name = "IAD - Capacidade de Leitura")]
         LP_CapacidadeLeitura = 4,
-        [Display(Name = "LP - Produção de texto")]
+        [Display(Name = "IAD - Produção de texto")]
         LP_ProducaoTexto = 5,
         [Display(Name = "MAT - Números")]
         MAT_Numeros = 6,
