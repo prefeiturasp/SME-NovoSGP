@@ -28,6 +28,8 @@ namespace SME.SGP.TesteIntegracao.Turma
 
             await CriarTurma(Modalidade.Fundamental, "7", TURMA_CODIGO_1, TipoTurma.Regular);
             await CriarTurma(Modalidade.Fundamental, "6", TURMA_CODIGO_2, TipoTurma.Regular);
+            await CriarTurma(Modalidade.Medio, "7", TURMA_CODIGO_3, TipoTurma.Regular);
+            await CriarTurma(Modalidade.Fundamental, "1", TURMA_CODIGO_4, TipoTurma.Programa);
 
             var useCase = ServiceProvider.GetService<IObterTurmaSondagemUseCase>();
 
