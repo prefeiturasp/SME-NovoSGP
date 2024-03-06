@@ -107,6 +107,28 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             Assert.Equal(1, planosAee.Count(x => x.Situacao == SituacaoPlanoAEE.EncerradoAutomaticamente));
         }
 
+        [Fact(DisplayName = "Plano AEE - Não Deve Encerrar automáticamente os planos de Alunos Concluidos, com matricula no Ano seguinte na mesma UE e com matrícula em turma de programa em outra unidade")]
+        public async Task Nao_deve_encerrar_aluno_concluido_com_matricula_no_ano_seguinte_mesma_ue_e_outra_matricula_ativa_em_outra_ue_com_turma_programa()
+        {
+            await CriarDadosBasicos(new FiltroPlanoAee()
+            {
+                Modalidade = Modalidade.Fundamental,
+                Perfil = ObterPerfilCP(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+            });
+            await CriarDreUe("1", "1");
+            await CriarTurma(Modalidade.Fundamental, "1", "2", TipoTurma.Regular, 1, 2021, false);
+            await CriarPlanosAeeAlunoConcluido();
+
+            var servicoEncerrar = EncerrarPlanosAEEEstudantesInativosUseCase();
+
+            var retornoUseCase = await servicoEncerrar.Executar(new MensagemRabbit());
+            retornoUseCase.ShouldBeTrue();
+            var planosAee = ObterTodos<Dominio.PlanoAEE>();
+            planosAee.ShouldNotBeNull();
+            planosAee.Count(x => x.Situacao == SituacaoPlanoAEE.ParecerCP).ShouldBeEquivalentTo(1);
+            planosAee.Count(x => x.Situacao == SituacaoPlanoAEE.EncerradoAutomaticamente).ShouldBeEquivalentTo(0);
+        }
 
         private new async Task CriarDreUe(string codigoDre,string codigoUe)
         {

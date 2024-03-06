@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
         private async Task ProcessarEncerramentoDadosMatriculasAnoAtual(PlanoAEE planoAEE, int anoLetivo, IEnumerable<AlunoPorTurmaResposta> matriculas, Turma turmaDoPlanoAee)
         {
             var encerrarPlanoAee = false;
-            var ultimaSituacao = matriculas!.OrderByDescending(c => c.DataSituacao).ThenByDescending(c => c.NumeroAlunoChamada)?.FirstOrDefault();
+            var ultimaSituacao = matriculas!.Where(m=> m.CodigoTipoTurma == (int)TipoTurma.Regular).OrderByDescending(c => c.DataSituacao).ThenByDescending(c => c.NumeroAlunoChamada)?.FirstOrDefault();
 
             if (ultimaSituacao.NaoEhNulo())
             {
@@ -68,8 +68,12 @@ namespace SME.SGP.Aplicacao
                     if (turmaDoPlanoAee.AnoLetivo < anoLetivo)
                     {
                         var turmaAtualDoAluno = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(ultimaSituacao.CodigoTurma.ToString()));
-                        if (turmaDoPlanoAee.Ue.CodigoUe != turmaAtualDoAluno.Ue.CodigoUe)
-                            encerrarPlanoAee = true;
+
+                        if (turmaAtualDoAluno.NaoEhNulo())
+                        {
+                            if (turmaDoPlanoAee.Ue.CodigoUe != turmaAtualDoAluno.Ue.CodigoUe)
+                                encerrarPlanoAee = true;
+                        }                         
                     }
                 }
                 else if (matriculas.Select(m => m.CodigoTurma).Distinct().Count() > 1 && AlunoFoiTransferidoDaUnidadeEscolar(matriculas, turmaDoPlanoAee))
