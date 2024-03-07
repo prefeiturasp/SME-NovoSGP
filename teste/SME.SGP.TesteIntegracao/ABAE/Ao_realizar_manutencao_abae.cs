@@ -252,6 +252,8 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             var retorno = await useCase.Executar(filtro);
             retorno.ShouldNotBeNull();
             retorno.TotalRegistros.ShouldBe(15);
+            retorno.Items.FirstOrDefault().Dre.ShouldBe("Nome Dre 1");
+            retorno.Items.LastOrDefault().Dre.ShouldBe("Nome Dre 2");
 
             filtro = new FiltroDreIdUeIdNomeSituacaoABAEDto()
             { DreId = DRE_ID_1, Situacao = true };
@@ -271,7 +273,6 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             retorno.ShouldNotBeNull();
             retorno.TotalRegistros.ShouldBe(10);
             retorno.Items.FirstOrDefault().Ue.ShouldBe("NA Nome Ue 2");
-            retorno.Items.FirstOrDefault().Dre.ShouldBe("Nome Dre 2");
             retorno.Items.LastOrDefault().Ue.ShouldBe("NA Nome Ue 3");
         }
     }
