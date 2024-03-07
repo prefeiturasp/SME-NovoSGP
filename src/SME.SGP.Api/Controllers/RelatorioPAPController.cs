@@ -85,15 +85,5 @@ namespace SME.SGP.Api.Controllers
 
             return BadRequest();
         }
-
-        [HttpGet("turmas/{codigoTurmaRegular}/alunos/{codigoAluno}/bimestres/{bimestre}")]
-        [ProducesResponseType(typeof(IEnumerable<SecaoQuestoesDTO>), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [Permissao(Permissao.RPAP_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterQuestionarioPAPConselhoClasse(string codigoTurmaRegular, string codigoAluno, int bimestre, [FromServices] IObterRelatorioPAPConselhoClasseUseCase useCase)
-        {
-            return Ok(await useCase.Executar(codigoTurmaRegular, codigoAluno, bimestre));
-        }
     }
 }
