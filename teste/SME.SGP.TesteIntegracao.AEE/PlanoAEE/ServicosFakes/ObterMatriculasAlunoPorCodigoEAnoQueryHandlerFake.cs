@@ -292,6 +292,27 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
                     CodigoEscola = "111111111",
                     CodigoTipoTurma = (int)TipoTurma.Regular
                 },
+                new AlunoPorTurmaResposta
+                {
+                    Ano = dataAtual.Year,
+                    CodigoAluno = "7",
+                    CodigoComponenteCurricular = 138,
+                    CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
+                    CodigoTurma = 5,
+                    DataNascimento = new DateTime(1998, 2, 12),
+                    DataSituacao = dataAtual.Date,
+                    DataMatricula = new DateTime(dataAtual.Year, 9, 12),
+                    NomeSocialAluno = "Nome Social do Aluno",
+                    NomeAluno = "Nome do Aluno",
+                    NumeroAlunoChamada = 5,
+                    SituacaoMatricula = "Ativo",
+                    NomeResponsavel = "Nome do Responsavel do Aluno",
+                    TipoResponsavel = "1",
+                    CelularResponsavel = "9999999999",
+                    DataAtualizacaoContato = DateTime.Now,
+                    CodigoEscola = "111111111",
+                    CodigoTipoTurma = (int)TipoTurma.Programa
+                },
             };
 
             return Task.FromResult(alunoPorTurmaResposta.Where(x => x.CodigoAluno == request.CodigoAluno));
