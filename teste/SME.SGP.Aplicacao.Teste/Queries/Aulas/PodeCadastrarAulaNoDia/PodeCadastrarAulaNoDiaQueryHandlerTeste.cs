@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries.Aulas.PodeCadastrarAulaNoDia
             var dreUeDaTurmaDto = new DreUeDaTurmaDto() { DreCodigo = "1", UeCodigo = "321" };
             var componenteCienciasCodigo = new long[] { 89 };
             var dataAula = new DateTime(2023, 11, 14);
-            var podeCadastrarAulaNoDiaQuery = new PodeCadastrarAulaNoDiaQuery(dataAula, turma.CodigoTurma, componenteCienciasCodigo, TipoAula.Normal, usuario.CodigoRf);
+            var podeCadastrarAulaNoDiaQuery = new PodeCadastrarAulaNoDiaQuery(dataAula, turma.CodigoTurma, componenteCienciasCodigo, TipoAula.Normal);
 
             var listaAulaConsultaDto = new List<AulaConsultaDto>() {
                 new AulaConsultaDto(){Id = 1,AulaCJ = false, CriadoRF = "2222" },
@@ -42,6 +42,9 @@ namespace SME.SGP.Aplicacao.Teste.Queries.Aulas.PodeCadastrarAulaNoDia
 
             mediator.Setup(a => a.Send(It.IsAny<ObterTurmaPorCodigoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(turma);
+
+            mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioLogadoRFQuery>(), It.IsAny<CancellationToken>()))
+               .ReturnsAsync(usuario.CodigoRf);
 
             mediator.Setup(a => a.Send(It.IsAny<ObterCodigosDreUePorTurmaQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(dreUeDaTurmaDto);
