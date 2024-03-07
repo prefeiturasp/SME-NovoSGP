@@ -71,11 +71,10 @@ namespace SME.SGP.Dados.Repositorios
 
         private static void ObterOrdenacaoConsulta(StringBuilder sql)
         {
-            StringBuilder sqlAux = new StringBuilder();
-            sqlAux.AppendLine("order by");
-            sqlAux.AppendLine($", dre.dre_id");
-            sqlAux.AppendLine($", {EnumExtensao.ObterCaseWhenSQL<TipoEscola>("ue.tipo_escola")}||' '||ue.nome");
-            sqlAux.AppendLine($", coalesce(a.alterado_em, a.criado_em) desc");
+            sql.AppendLine("order by");
+            sql.AppendLine($" dre.dre_id");
+            sql.AppendLine($", {EnumExtensao.ObterCaseWhenSQL<TipoEscola>("ue.tipo_escola")}||' '||ue.nome");
+            sql.AppendLine($", coalesce(a.alterado_em, a.criado_em) desc");
         }
 
 
