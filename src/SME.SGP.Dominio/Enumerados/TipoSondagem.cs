@@ -20,7 +20,7 @@ namespace SME.SGP.Dominio
         MAT_CampoAditivo = 7,
         [Display(Name = "MAT - Campo multiplicativo")]
         MAT_CampoMultiplicativo = 8,
-        [Display(Name = "MAT - IAD")]
+        [Display(Name = "IAD - Matemática")]
         MAT_IAD = 9,
     }
 }
