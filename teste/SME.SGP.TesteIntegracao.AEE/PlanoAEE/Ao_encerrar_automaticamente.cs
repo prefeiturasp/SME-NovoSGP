@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
@@ -128,6 +129,62 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             planosAee.ShouldNotBeNull();
             planosAee.Count(x => x.Situacao == SituacaoPlanoAEE.ParecerCP).ShouldBeEquivalentTo(1);
             planosAee.Count(x => x.Situacao == SituacaoPlanoAEE.EncerradoAutomaticamente).ShouldBeEquivalentTo(0);
+        }
+
+        [Fact(DisplayName = "Plano AEE - Deve Encerrar automaticamente os planos de Alunos Ativos, com matricula no ativa em turma de programa e que o plano esteja expirado")]
+        public async Task Feve_encerrar_aluno_com_matricula_ativa_em_turma_programa_e_plano_vinculado_a_turma_programa()
+        {
+            await CriarDadosBasicos(new FiltroPlanoAee()
+            {
+                Modalidade = Modalidade.Fundamental,
+                Perfil = ObterPerfilCP(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+            });
+            await CriarDreUe("1", "1");
+
+            await InserirNaBase(new Dominio.Turma
+            {
+                Id = 5,
+                UeId = 1,
+                Ano = "5",
+                CodigoTurma = "5",
+                Historica = false,
+                ModalidadeCodigo = Modalidade.Fundamental,
+                AnoLetivo = DateTime.Now.Year,
+                Semestre = SEMESTRE_1,
+                Nome = "5",
+                TipoTurma = TipoTurma.Programa
+            });
+            await CriarTurma(Modalidade.Fundamental, "1", "5", TipoTurma.Programa, 1, 2021, false);
+
+            await InserirNaBase(new Dominio.PlanoAEE()
+            {
+                TurmaId = 5,
+                Situacao = SituacaoPlanoAEE.Expirado,
+                AlunoCodigo = "7",
+                AlunoNumero = 1,
+                AlunoNome = "Nome do aluno 1",
+                Questoes = new List<PlanoAEEQuestao>(),
+                ResponsavelId = USUARIO_ID_1,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            var servicoEncerrar = EncerrarPlanosAEEEstudantesInativosUseCase();
+            var servicoEncerrarTratar = EncerrarPlanosAEEEstudantesInativosTratarUseCase();
+
+            var retornoUseCase = await servicoEncerrar.Executar(new MensagemRabbit());
+            retornoUseCase.ShouldBeTrue();
+
+            var planosAee = ObterTodos<Dominio.PlanoAEE>();
+            planosAee.ShouldNotBeNull();
+
+            var retornoUseCaseTratar = await servicoEncerrarTratar.Executar(new MensagemRabbit(JsonConvert.SerializeObject(planosAee.FirstOrDefault()))); 
+            retornoUseCaseTratar.ShouldBeTrue();
+
+            var planosAEEPosExecucao = ObterTodos<Dominio.PlanoAEE>();
+            planosAEEPosExecucao.Count(p=> p.Situacao == SituacaoPlanoAEE.EncerradoAutomaticamente).ShouldBe(1);
         }
 
         private new async Task CriarDreUe(string codigoDre,string codigoUe)
