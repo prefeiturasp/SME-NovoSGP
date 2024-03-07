@@ -187,9 +187,11 @@ namespace SME.SGP.Aplicacao
                 var idComponenteLeituraOsl = 1061;
                 foreach (var disciplina in disciplinasDto)
                 {
-                    disciplina.PossuiObjetivos = false;
                     if (disciplina.CodigoComponenteCurricular == idComponenteInformaticaOie || disciplina.CodigoComponenteCurricular == idComponenteLeituraOsl)
+                    {
+                        disciplina.PossuiObjetivos = false;
                         disciplina.RegistraFrequencia = false;
+                    }
                 }
             }
 

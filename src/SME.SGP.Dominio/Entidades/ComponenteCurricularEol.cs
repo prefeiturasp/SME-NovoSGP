@@ -27,7 +27,7 @@ namespace SME.SGP.Dominio
 
         public bool PossuiObjetivosDeAprendizagem(IEnumerable<ComponenteCurricularJurema> componentesCurricularesJurema, Modalidade turmaModalidade)
         {
-            if (new[] { Modalidade.EJA, Modalidade.Medio }.Contains(turmaModalidade))
+            if (new[] { Modalidade.Medio }.Contains(turmaModalidade))
                 return false;
 
             return componentesCurricularesJurema.Any(x => x.CodigoEOL == Codigo);
