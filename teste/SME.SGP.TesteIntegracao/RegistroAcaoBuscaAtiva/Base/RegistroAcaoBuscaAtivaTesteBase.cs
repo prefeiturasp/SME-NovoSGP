@@ -27,7 +27,8 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
         protected const string QUESTAO_2_4_NOME_COMPONENTE_PROCEDIMENTO_REALIZADO = "PROCEDIMENTO_REALIZADO";
         protected const string QUESTAO_2_1_NOME_COMPONENTE_PROCEDIMENTO_REALIZADO_NAO_CONTATOU_RESP = "PROCEDIMENTO_REALIZADO_NAO_CONTATOU_RESP";
         protected const string QUESTAO_2_4_1_NOME_COMPONENTE_QUESTOES_OBS_DURANTE_VISITA = "QUESTOES_OBS_DURANTE_VISITA";
-        protected const string QUESTAO_3_NOME_COMPONENTE_OBS_GERAL = "OBS_GERAL";
+        protected const string QUESTAO_2_5_NOME_COMPONENTE_OBS_GERAL = "OBS_GERAL";
+        protected const string QUESTAO_2_2_NOME_COMPONENTE_OBS_GERAL_NAO_CONTATOU_RESP = "OBS_GERAL_NAO_CONTATOU_RESP";
 
         protected const long QUESTAO_1_ID_DATA_REGISTRO_ACAO = 1;
         protected const long QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP = 2;
@@ -37,8 +38,9 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
         protected const long QUESTAO_2_3_1_ID_JUSTIFICATIVA_MOTIVO_FALTA_OUTROS = 7;
         protected const long QUESTAO_2_4_ID_PROCEDIMENTO_REALIZADO = 3;
         protected const long QUESTAO_2_4_1_ID_QUESTOES_OBS_DURANTE_VISITA = 8;
-        protected const long QUESTAO_3_ID_OBS_GERAL = 9;
+        protected const long QUESTAO_2_5_ID_OBS_GERAL = 9;
         protected const long QUESTAO_2_1_ID_PROCEDIMENTO_REALIZADO_NAO_CONTATOU_RESP = 10;
+        protected const long QUESTAO_2_2_ID_OBS_GERAL_NAO_CONTATOU_RESP = 11;
 
         protected const string QUESTAO_OPCAO_RESPOSTA_SIM = "Sim";
         protected const string QUESTAO_JUSTIFICATIVA_MOTIVO_FALTA_RESPOSTA_OUTROS = "Outros";
@@ -186,6 +188,26 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             {
                 OpcaoRespostaId = opcaoRespostaBase.Id,
                 QuestaoComplementarId = QUESTAO_2_1_ID_PROCEDIMENTO_REALIZADO_NAO_CONTATOU_RESP,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP && q.Nome == QUESTAO_OPCAO_RESPOSTA_SIM).FirstOrDefault();
+            await InserirNaBase(new OpcaoQuestaoComplementar()
+            {
+                OpcaoRespostaId = opcaoRespostaBase.Id,
+                QuestaoComplementarId = QUESTAO_2_5_ID_OBS_GERAL,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP && q.Nome == QUESTAO_OPCAO_RESPOSTA_NAO).FirstOrDefault();
+            await InserirNaBase(new OpcaoQuestaoComplementar()
+            {
+                OpcaoRespostaId = opcaoRespostaBase.Id,
+                QuestaoComplementarId = QUESTAO_2_2_ID_OBS_GERAL_NAO_CONTATOU_RESP,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now
@@ -444,13 +466,13 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
 
             await InserirNaBase(new Questao()
             {
-                Id = QUESTAO_3_ID_OBS_GERAL,
+                Id = QUESTAO_2_5_ID_OBS_GERAL,
                 QuestionarioId = QUESTIONARIO_REGISTRO_ACAO_ID_1,
-                Ordem = 3,
-                Nome = QUESTAO_3_NOME_COMPONENTE_OBS_GERAL,
-                Obrigatorio = false,
+                Ordem = 5,
+                Nome = QUESTAO_2_5_NOME_COMPONENTE_OBS_GERAL,
+                Obrigatorio = true,
                 Tipo = TipoQuestao.Texto,
-                NomeComponente = QUESTAO_3_NOME_COMPONENTE_OBS_GERAL,
+                NomeComponente = QUESTAO_2_5_NOME_COMPONENTE_OBS_GERAL,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now
@@ -464,6 +486,19 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
                 Obrigatorio = true,
                 Tipo = TipoQuestao.Checkbox,
                 NomeComponente = QUESTAO_2_1_NOME_COMPONENTE_PROCEDIMENTO_REALIZADO_NAO_CONTATOU_RESP,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            }); 
+            await InserirNaBase(new Questao()
+            {
+                Id = QUESTAO_2_2_ID_OBS_GERAL_NAO_CONTATOU_RESP,
+                QuestionarioId = QUESTIONARIO_REGISTRO_ACAO_ID_1,
+                Ordem = 2,
+                Nome = QUESTAO_2_2_NOME_COMPONENTE_OBS_GERAL_NAO_CONTATOU_RESP,
+                Obrigatorio = false,
+                Tipo = TipoQuestao.Texto,
+                NomeComponente = QUESTAO_2_2_NOME_COMPONENTE_OBS_GERAL_NAO_CONTATOU_RESP,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now
@@ -527,7 +562,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             public bool CriarTurmaPadrao { get; set; }
         }
 
-        protected async Task GerarDadosRegistroAcao_3PrimeirasQuestoes(DateTime dataRegistro, bool adicionarRespostasComplementarConseguiuContatoResponsavel = false)
+        protected async Task GerarDadosRegistroAcao_2PrimeirasQuestoes(DateTime dataRegistro, bool adicionarRespostasComplementarConseguiuContatoResponsavel = false)
         {
             await CriarRegistroAcao();
             var registrosAcaoId = ObterTodos<Dominio.RegistroAcaoBuscaAtiva>().Max(ra => ra.Id);
@@ -556,16 +591,6 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             {
                 QuestaoRegistroAcaoBuscaAtivaId = idRegistroAcaoQuestao,
                 RespostaId = opcaoRespostaBase.Id,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-            idRegistroAcaoQuestao++;
-
-            await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
-            {
-                QuestaoRegistroAcaoBuscaAtivaId = idRegistroAcaoQuestao,
-                Texto = "OBS GERAL",
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
@@ -617,8 +642,17 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
                     CriadoRF = SISTEMA_CODIGO_RF
                 });
                 idRegistroAcaoQuestao++;
-            }
 
+                await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
+                {
+                    QuestaoRegistroAcaoBuscaAtivaId = idRegistroAcaoQuestao,
+                    Texto = "OBS GERAL",
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
+                idRegistroAcaoQuestao++;
+            }
         }
 
         private async Task CriarQuestoesRegistroAcao(long idRegistroAcaoSecao = 1, bool adicionarRespostasComplementarConseguiuContatoResponsavel = false)
@@ -636,15 +670,6 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             {
                 RegistroAcaoBuscaAtivaSecaoId = idRegistroAcaoSecao,
                 QuestaoId = QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            await InserirNaBase(new Dominio.QuestaoRegistroAcaoBuscaAtiva()
-            {
-                RegistroAcaoBuscaAtivaSecaoId = idRegistroAcaoSecao,
-                QuestaoId = QUESTAO_3_ID_OBS_GERAL,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
@@ -683,6 +708,15 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
                 {
                     RegistroAcaoBuscaAtivaSecaoId = idRegistroAcaoSecao,
                     QuestaoId = QUESTAO_2_4_ID_PROCEDIMENTO_REALIZADO,
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
+
+                await InserirNaBase(new Dominio.QuestaoRegistroAcaoBuscaAtiva()
+                {
+                    RegistroAcaoBuscaAtivaSecaoId = idRegistroAcaoSecao,
+                    QuestaoId = QUESTAO_2_5_ID_OBS_GERAL,
                     CriadoEm = DateTimeExtension.HorarioBrasilia(),
                     CriadoPor = SISTEMA_NOME,
                     CriadoRF = SISTEMA_CODIGO_RF

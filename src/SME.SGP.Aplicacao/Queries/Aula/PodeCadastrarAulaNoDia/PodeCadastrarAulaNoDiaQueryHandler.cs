@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(PodeCadastrarAulaNoDiaQuery request, CancellationToken cancellationToken)
         {
-            return !await ExisteAula(request) 
+            return !await ExisteAula(request)
                 && await PermiteTipoAula(request);
         }
 
@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> ExisteAula(PodeCadastrarAulaNoDiaQuery request)
         {
-            var existeAula =  await mediator.Send(new ExisteAulaNaDataTurmaDisciplinaProfessorRfQuery(
+            var existeAula = await mediator.Send(new ExisteAulaNaDataTurmaDisciplinaProfessorRfQuery(
                                                     request.DataAula,
                                                     request.TurmaCodigo,
                                                     request.ComponentesCurriculares.Select(c => c.ToString()).ToArray(),
@@ -86,6 +86,9 @@ namespace SME.SGP.Aplicacao
                     if (aula.All(a => ehPerfilAtualCJ != a.AulaCJ))
                         return false;
 
+                    if (ehPerfilAtualCJ)
+                        request.ProfessorRf = await mediator.Send(ObterUsuarioLogadoRFQuery.Instance);
+
                     if (ehPerfilAtualCJ && request.ProfessorRf.NaoEhNulo())
                     {
                         var aulaCj = aula.Where(a => a.AulaCJ == ehPerfilAtualCJ && a.CriadoRF == request.ProfessorRf);
@@ -100,11 +103,11 @@ namespace SME.SGP.Aplicacao
             return false;
         }
 
-        private bool PerfilAtualEhCJ(Guid perfilAtual) 
-            => perfilAtual.ToString() == PerfilUsuario.CJ.Name() 
+        private bool PerfilAtualEhCJ(Guid perfilAtual)
+            => perfilAtual.ToString() == PerfilUsuario.CJ.Name()
                || perfilAtual.ToString() == PerfilUsuario.CJ_INFANTIL.Name();
         private bool PossuiAulasOuPerfilParaValidacao(IEnumerable<AulaConsultaDto> aulas, Guid perfilAtual)
         => (aulas.PossuiRegistros() || perfilAtual != Guid.Empty);
-            
+
     }
 }

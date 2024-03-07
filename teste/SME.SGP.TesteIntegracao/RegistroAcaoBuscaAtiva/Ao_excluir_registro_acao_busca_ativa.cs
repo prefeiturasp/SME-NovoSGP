@@ -27,7 +27,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             var data = DateTimeExtension.HorarioBrasilia().Date;
 
             await CriarDadosBase(filtro);
-            await GerarDadosRegistroAcao_3PrimeirasQuestoes(data);
+            await GerarDadosRegistroAcao_2PrimeirasQuestoes(data);
 
             var useCase = ObterUseCaseExclusaoRegistroAcao();
             var retorno = await useCase.Executar(1);
@@ -46,12 +46,12 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
 
             var questaoRegistroAcaoExcluida = ObterTodos<QuestaoRegistroAcaoBuscaAtiva>();
             questaoRegistroAcaoExcluida.ShouldNotBeNull();
-            questaoRegistroAcaoExcluida.Where(registroAcaoQuestao => registroAcaoQuestao.Excluido).Count().ShouldBe(3);
+            questaoRegistroAcaoExcluida.Where(registroAcaoQuestao => registroAcaoQuestao.Excluido).Count().ShouldBe(2);
             questaoRegistroAcaoExcluida.Any(registroAcaoQuestao => !registroAcaoQuestao.Excluido).ShouldBeFalse();
 
             var respostaRegistroAcaoExcluida = ObterTodos<RespostaRegistroAcaoBuscaAtiva>();
             respostaRegistroAcaoExcluida.ShouldNotBeNull();
-            respostaRegistroAcaoExcluida.Where(registroAcaoResposta => registroAcaoResposta.Excluido).Count().ShouldBe(3);
+            respostaRegistroAcaoExcluida.Where(registroAcaoResposta => registroAcaoResposta.Excluido).Count().ShouldBe(2);
             respostaRegistroAcaoExcluida.Any(registroAcaoResposta => !registroAcaoResposta.Excluido).ShouldBeFalse();
         }
 

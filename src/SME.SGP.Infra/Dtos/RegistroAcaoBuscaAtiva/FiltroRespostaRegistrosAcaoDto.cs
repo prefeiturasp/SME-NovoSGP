@@ -5,7 +5,7 @@ namespace SME.SGP.Infra
 {
     public class FiltroRespostaRegistrosAcaoDto
     {
-        public string NomeAluno { get; set; }
+        public string CodigoNomeAluno { get; set; }
         public DateTime? DataRegistroInicio { get; set; }
         public DateTime? DataRegistroFim { get; set; }
         public int? OrdemRespostaQuestaoProcedimentoRealizado { get; set; }
