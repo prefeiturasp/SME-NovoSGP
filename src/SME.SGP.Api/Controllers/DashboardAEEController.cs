@@ -13,8 +13,8 @@ namespace SME.SGP.Api.Controllers
     public class DashboardAEEController : ControllerBase
     {
         [HttpGet("encaminhamentos/situacoes")]
-        [ProducesResponseType(typeof(AEESituacaoEncaminhamentoDto), 200)]
-        [ProducesResponseType(typeof(AEESituacaoEncaminhamentoDto), 204)]
+        [ProducesResponseType(typeof(DashboardAEEEncaminhamentosDto), 200)]
+        [ProducesResponseType(typeof(DashboardAEEEncaminhamentosDto), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ObterSituacoesEncaminhamentos([FromQuery] int anoLetivo, [FromQuery] long dreId, long ueId, [FromServices] IObterEncaminhamentoAEESituacoesUseCase useCase)
         {
