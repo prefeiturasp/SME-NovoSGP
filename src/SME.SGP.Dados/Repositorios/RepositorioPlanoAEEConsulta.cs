@@ -401,7 +401,7 @@ namespace SME.SGP.Dados.Repositorios
 
             sql.Append(" group by pa.situacao; ");
 
-            sql.Append(ObterQueryTotalPlanos(where));
+            sql.Append(ObterQueryTotalPlanos(where.ToString()));
 
             var situacaoEncerrado = new int[]
             {
@@ -420,7 +420,7 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
-        public async Task<IEnumerable<AEETurmaDto>> ObterQuantidadeVigentes(int ano, long dreId, long ueId)
+        public async Task<DashboardAEEPlanosVigentesDto> ObterDashboardPlanosVigentes(int ano, long dreId, long ueId)
         {
             var sql = new StringBuilder(@"select t.nome, t.modalidade_codigo as Modalidade, count(pa.id) as Quantidade, t.ano as AnoTurma ");
             sql.Append(" from plano_aee pa ");
@@ -429,24 +429,39 @@ namespace SME.SGP.Dados.Repositorios
             sql.Append(" inner join ue on t.ue_id = ue.id ");
 
 
-            var where = new StringBuilder(@" where t.ano_letivo = @ano and pa.situacao in (1,2,8)");
+            var where = new StringBuilder(@" where t.ano_letivo = @ano");
 
             if (dreId > 0)
-            {
-                sql.Append(" inner join dre on ue.dre_id = dre.id ");
-                where.Append(" and dre.id = @dreId");
-            }
+                where.Append(" and ue.dre_id = @dreId");
 
             if (ueId > 0)
-            {
                 where.Append(" and ue.id = @ueId");
-            }
+            
+            var sqlTotalPlanos = ObterQueryTotalPlanos(where.ToString());
+
+            where.Append(" and pa.situacao in (1,2,8)");
 
             sql.Append(where.ToString());
-            sql.Append(" group by t.modalidade_codigo, t.nome, t.ano  ");
 
-            return (await database.Conexao.QueryAsync<AEETurmaDto>(sql.ToString(), new { ano, dreId, ueId }))
-                .OrderBy(a => a.Ordem).ThenBy(a => a.Descricao);
+            sql.Append(" group by t.modalidade_codigo, t.nome, t.ano;  ");
+
+            sql.Append(sqlTotalPlanos);
+
+            var situacaoEncerrado = new int[]
+            {
+                (int)SituacaoPlanoAEE.EncerradoAutomaticamente,
+                (int)SituacaoPlanoAEE.Encerrado
+            };
+
+            var retorno = new DashboardAEEPlanosVigentesDto();
+
+            using (var multi = await database.Conexao.QueryMultipleAsync(sql.ToString(), new { ano, dreId, ueId, situacaoEncerrado }))
+            {
+                retorno.PlanosVigentes = multi.Read<AEETurmaDto>().OrderBy(a => a.Ordem).ThenBy(a => a.Descricao);
+                retorno.TotalPlanosVigentes = multi.ReadFirst<long>();
+            }
+
+            return retorno;
         }
 
         public async Task<IEnumerable<AEEAcessibilidateDto>> ObterQuantidadeAcessibilidades(int ano, long dreId, long ueId)
@@ -541,15 +556,15 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<PlanoAEETurmaDto>(query, new { anoLetivo });
         }
 
-        private string ObterQueryTotalPlanos(StringBuilder where)
+        private string ObterQueryTotalPlanos(string where)
         {
             var sql = new StringBuilder(@"select count(pa.id) as Quantidade from plano_aee pa ");
             sql.Append(" inner join turma t on pa.turma_id = t.id ");
             sql.Append(" inner join ue on t.ue_id = ue.id ");
 
-            where.Append(" and not pa.situacao = ANY(@situacaoEncerrado)");
+            where += " and not pa.situacao = ANY(@situacaoEncerrado)";
 
-            sql.Append(where.ToString());
+            sql.Append(where);
             sql.Append(";");
 
             return sql.ToString();

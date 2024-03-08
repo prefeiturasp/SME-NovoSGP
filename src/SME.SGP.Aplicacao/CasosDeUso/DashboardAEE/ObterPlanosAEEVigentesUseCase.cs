@@ -4,7 +4,6 @@ using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -15,15 +14,16 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<AEETurmaDto>> Executar(FiltroDashboardAEEDto param)
+        public async Task<DashboardAEEPlanosVigentesDto> Executar(FiltroDashboardAEEDto param)
         {
             if (param.AnoLetivo == 0)
                 param.AnoLetivo = DateTime.Now.Year;
-            var planos = await mediator.Send(new ObterPlanosAEEVigentesQuery(param.AnoLetivo, param.DreId, param.UeId));
+            var dashboard = await mediator.Send(new ObterPlanosAEEVigentesQuery(param.AnoLetivo, param.DreId, param.UeId));
 
-            var lista = param.UeId > 0 ? MapearParaDtoTurmas(planos) : MapearParaDto(planos);
-            return lista.OrderBy(a => a.Ordem)
-                .ThenBy(a => a.Descricao);
+            var lista = param.UeId > 0 ? MapearParaDtoTurmas(dashboard.PlanosVigentes) : MapearParaDto(dashboard.PlanosVigentes);
+            dashboard.PlanosVigentes = lista.OrderBy(a => a.Ordem).ThenBy(a => a.Descricao);
+
+            return dashboard;
         }
 
         private IEnumerable<AEETurmaDto> MapearParaDto(IEnumerable<AEETurmaDto> planos)

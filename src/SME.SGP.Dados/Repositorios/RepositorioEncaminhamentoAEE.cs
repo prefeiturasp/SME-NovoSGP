@@ -266,8 +266,8 @@ namespace SME.SGP.Dados.Repositorios
 
             sql.Append(" group by ea.situacao; ");
 
-            sql.Append(ObterQueryTotalEncaminhamento(where, false));
-            sql.Append(ObterQueryTotalEncaminhamento(where, true));
+            sql.Append(ObterQueryTotalEncaminhamento(where.ToString(), false));
+            sql.Append(ObterQueryTotalEncaminhamento(where.ToString(), true));
 
             var situacaoEmAnalise = new int[] 
             { 
@@ -376,20 +376,20 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<EncaminhamentoAEEVigenteDto>(sql, new { anoLetivo });
         }
 
-        private string ObterQueryTotalEncaminhamento(StringBuilder where, bool emAnalise)
+        private string ObterQueryTotalEncaminhamento(string where, bool emAnalise)
         {
             var sql = new StringBuilder(@"select count(ea.id) as Quantidade from encaminhamento_aee ea ");
             sql.Append(" inner join turma t on ea.turma_id = t.id ");
             sql.Append(" inner join ue on t.ue_id = ue.id ");
 
-            where.Append(" and ea.situacao");
+            where += " and ea.situacao";
 
             if (emAnalise)
-                where.Append(" = ANY(@situacaoEmAnalise)");
+                where += " = ANY(@situacaoEmAnalise)";
             else
-                where.Append($" <> {(int)SituacaoAEE.EncerradoAutomaticamente}");
+                where += $" <> {(int)SituacaoAEE.EncerradoAutomaticamente}";
 
-            sql.Append(where.ToString());
+            sql.Append(where);
             sql.Append(";");
 
             return sql.ToString();
