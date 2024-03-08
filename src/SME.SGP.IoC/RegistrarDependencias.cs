@@ -504,6 +504,7 @@ namespace SME.SGP.IoC
 
             // Frequência turma evasão
             services.TryAddScoped<IRepositorioFrequenciaTurmaEvasao, RepositorioFrequenciaTurmaEvasao>();
+            services.TryAddScoped<IRepositorioFrequenciaTurmaEvasaoAluno, RepositorioFrequenciaTurmaEvasaoAluno>();
 
             // Consolidação Devolutivas
             services.TryAddScoped<IRepositorioConsolidacaoDevolutivas, RepositorioConsolidacaoDevolutivas>();
