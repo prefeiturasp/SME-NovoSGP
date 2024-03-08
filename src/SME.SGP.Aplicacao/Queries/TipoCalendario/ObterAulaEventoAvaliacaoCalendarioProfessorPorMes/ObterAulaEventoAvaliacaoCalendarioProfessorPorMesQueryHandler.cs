@@ -91,7 +91,7 @@ namespace SME.SGP.Aplicacao
                     }
 
                     if (aulasId.NaoEhNulo() && aulasId.Any() && componentesCurricularesId.NaoEhNulo())
-                        eventoAula.PossuiPendencia = await mediator.Send(new ObterPendenciasAulaPorAulaIdsQuery(aulasId, turma.ModalidadeCodigo, componentesCurricularesId.Union(aulasDoDia.Select(a => long.Parse(a.DisciplinaId))).ToArray()));
+                        eventoAula.PossuiPendencia = await mediator.Send(new ObterPendenciasAulaPorAulaIdsQuery(aulasId, turma.ModalidadeCodigo, turma.EtapaEJA, componentesCurricularesId.Union(aulasDoDia.Select(a => long.Parse(a.DisciplinaId))).ToArray()));
                     else
                         eventoAula.PossuiPendencia = false;
                 }
