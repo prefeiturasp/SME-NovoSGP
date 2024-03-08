@@ -84,11 +84,11 @@ namespace SME.SGP.Aplicacao
                         eventoAulaDto.PodeCadastrarAvaliacao = ObterPodeCadastrarAvaliacao(atividadesAvaliativasDaAula, componenteCurricular);
                     }
 
-                    var modalidadeTurma = await mediator
-                        .Send(new ObterModalidadeTurmaPorCodigoQuery(request.TurmaCodigo), cancellationToken);
+                    var dadosTurma = await mediator
+                        .Send(new ObterTurmaPorCodigoQuery() { TurmaCodigo = request.TurmaCodigo });
 
                     eventoAulaDto.Pendencias = await mediator
-                        .Send(new ObterPendenciasAulaPorAulaIdQuery(aulaParaVisualizar.Id, usuarioLogado, atividadesAvaliativasDaAula.Any(), modalidadeTurma == Modalidade.EducacaoInfantil), cancellationToken);
+                        .Send(new ObterPendenciasAulaPorAulaIdQuery(aulaParaVisualizar.Id, usuarioLogado, atividadesAvaliativasDaAula.Any(), dadosTurma.ModalidadeCodigo == Modalidade.EducacaoInfantil, dadosTurma.EtapaEJA), cancellationToken);
 
                     retorno.Add(eventoAulaDto);
                 }
