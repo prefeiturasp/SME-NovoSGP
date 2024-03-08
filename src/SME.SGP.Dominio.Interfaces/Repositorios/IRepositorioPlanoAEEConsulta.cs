@@ -18,7 +18,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<PlanoAEEResumoDto>> ObterPlanosPorAlunosEAno(string[] codigoEstudante, int ano);
         Task<IEnumerable<PlanoAEE>> ObterPorDataFinalVigencia(DateTime dataFim, bool desconsiderarPendencias = true, bool desconsiderarNotificados = false, NotificacaoPlanoAEETipo tipo = NotificacaoPlanoAEETipo.PlanoCriado);
         Task<IEnumerable<AEEAcessibilidateDto>> ObterQuantidadeAcessibilidades(int ano, long dreId, long ueId);
-        Task<IEnumerable<AEETurmaDto>> ObterQuantidadeVigentes(int ano, long dreId, long ueId);
+        Task<DashboardAEEPlanosVigentesDto> ObterDashboardPlanosVigentes(int ano, long dreId, long ueId);
         Task<DashboardAEEPlanosSituacaoDto> ObterDashBoardPlanosSituacoes(int ano, long dreId, long ueId);
         Task<IEnumerable<PlanoAEEReduzidoDto>> ObterPlanosAEEAtivosComTurmaEVigencia();
         Task<PlanoAEE> ObterPorReestruturacaoId(long reestruturacaoId);

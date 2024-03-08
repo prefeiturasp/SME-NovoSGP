@@ -52,8 +52,8 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("planos/vigentes")]
-        [ProducesResponseType(typeof(AEETurmaDto), 200)]
-        [ProducesResponseType(typeof(AEETurmaDto), 204)]
+        [ProducesResponseType(typeof(DashboardAEEPlanosVigentesDto), 200)]
+        [ProducesResponseType(typeof(DashboardAEEPlanosVigentesDto), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ObterPlanosVigentes([FromQuery] int anoLetivo, [FromQuery] long dreId, long ueId, [FromServices] IObterPlanosAEEVigentesUseCase useCase)
         {
