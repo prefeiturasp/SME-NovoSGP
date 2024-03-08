@@ -18,7 +18,7 @@ namespace SME.SGP.TesteIntegracao.AEE.DashBoardAEE
         {
         }
 
-        [Fact]
+        [Fact(DisplayName = "Dashboard AEE - Encaminhamentos")]
         public async Task Ao_obter_dashboard_encaminhamentos()
         {
             await CriarDreUePerfilComponenteCurricular();
