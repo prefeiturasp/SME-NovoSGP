@@ -38,8 +38,8 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("planos/situacoes")]
-        [ProducesResponseType(typeof(AEESituacaoPlanoDto), 200)]
-        [ProducesResponseType(typeof(AEESituacaoPlanoDto), 204)]
+        [ProducesResponseType(typeof(DashboardAEEPlanosSituacaoDto), 200)]
+        [ProducesResponseType(typeof(DashboardAEEPlanosSituacaoDto), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ObterSituacoesPlanos([FromQuery] int anoLetivo, [FromQuery] long dreId, long ueId, [FromServices] IObterPlanoAEESituacoesUseCase useCase)
         {
