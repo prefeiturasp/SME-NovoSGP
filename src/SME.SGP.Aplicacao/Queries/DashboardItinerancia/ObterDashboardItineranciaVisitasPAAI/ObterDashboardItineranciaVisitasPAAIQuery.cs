@@ -1,14 +1,9 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
-using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterDashboardItineranciaVisitasPAAIQuery : IRequest<IEnumerable<DashboardItineranciaDto>>
+    public class ObterDashboardItineranciaVisitasPAAIQuery : IRequest<DashboardItineranciaVisitaPaais>
     {
         public long UeId { get; set; }
         public int Ano { get; set; }
