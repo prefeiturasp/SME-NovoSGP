@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<GraficoFrequenciaTurmaEvasaoDto>> Executar(FiltroGraficoFrequenciaTurmaEvasaoDto filtro)
+        public async Task<FrequenciaTurmaEvasaoDto> Executar(FiltroGraficoFrequenciaTurmaEvasaoDto filtro)
         {
             return await mediator.Send(new ObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoQuery(filtro.AnoLetivo,
                 filtro.DreCodigo, filtro.UeCodigo, filtro.Modalidade, filtro.Semestre, filtro.Mes));

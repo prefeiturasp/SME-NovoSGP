@@ -1,9 +1,9 @@
 ﻿using SME.SGP.Infra;
-using System.Collections.Generic;
+using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoUseCase : IUseCase<FiltroGraficoFrequenciaTurmaEvasaoDto, IEnumerable<GraficoFrequenciaTurmaEvasaoDto>>
+    public interface IObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoUseCase : IUseCase<FiltroGraficoFrequenciaTurmaEvasaoDto, FrequenciaTurmaEvasaoDto>
     {
     }
 }
