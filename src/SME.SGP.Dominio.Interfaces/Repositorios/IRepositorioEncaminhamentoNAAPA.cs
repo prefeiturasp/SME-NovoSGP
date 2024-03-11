@@ -8,8 +8,8 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IRepositorioEncaminhamentoNAAPA : IRepositorioBase<EncaminhamentoNAAPA>
     {
         Task<PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>> ListarPaginado(int anoLetivo, long dreId, 
-            string codigoUe, string nomeAluno, DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, 
-            int situacao, long prioridade, long[] turmasIds, Paginacao paginacao, bool exibirEncerrados);
+            string codigoUe, string codigoNomeAluno, DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, 
+            int situacao, long prioridade, long[] turmasIds, Paginacao paginacao, bool exibirEncerrados, OrdenacaoListagemPaginadaEncaminhamentoNAAPA[] ordenacao);
 
         Task<EncaminhamentoNAAPA> ObterEncaminhamentoPorId(long id);
         Task<EncaminhamentoNAAPA> ObterCabecalhoEncaminhamentoPorId(long id);

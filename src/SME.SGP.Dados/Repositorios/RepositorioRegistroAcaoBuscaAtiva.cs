@@ -243,8 +243,8 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(" and t.modalidade_codigo = @modalidade ");
             if (filtroTurma.Semestre != 0)
                 sql.AppendLine(" and t.semestre = @semestre ");
-            if (!string.IsNullOrEmpty(filtroRespostas.NomeAluno))
-                sql.AppendLine(" and lower(raba.aluno_nome) like @nomeAluno ");
+            if (!string.IsNullOrEmpty(filtroRespostas.CodigoNomeAluno))
+                sql.AppendLine(" and (lower(raba.aluno_nome) like @codigoNomeAluno or raba.aluno_codigo like @codigoNomeAluno)");
             if (filtroRespostas.DataRegistroInicio.HasValue && filtroRespostas.DataRegistroFim.HasValue)
                 sql.AppendLine(@" and CASE WHEN qdata.DataRegistro ~'^[0-9]{4}-[0-9]{2}-[0-9]*'
                                         THEN to_date(qdata.DataRegistro, 'YYYY-MM-dd') between @dataRegistroInicio and @dataRegistroFim
@@ -362,8 +362,8 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = MontaQueryCompleta(paginacao, filtroTurma,
                                             filtroRespostas);
-            if (!string.IsNullOrWhiteSpace(filtroRespostas.NomeAluno))
-                filtroRespostas.NomeAluno = $"%{filtroRespostas.NomeAluno.ToLower()}%";
+            if (!string.IsNullOrWhiteSpace(filtroRespostas.CodigoNomeAluno))
+                filtroRespostas.CodigoNomeAluno = $"%{filtroRespostas.CodigoNomeAluno.ToLower()}%";
 
             var parametros = new
             {
@@ -373,7 +373,7 @@ namespace SME.SGP.Dados.Repositorios
                 filtroTurma.TurmaId,
                 filtroTurma.Modalidade,
                 filtroTurma.Semestre,
-                filtroRespostas.NomeAluno,
+                filtroRespostas.CodigoNomeAluno,
                 filtroRespostas.DataRegistroInicio,
                 filtroRespostas.DataRegistroFim,
                 filtroRespostas.OrdemRespostaQuestaoProcedimentoRealizado

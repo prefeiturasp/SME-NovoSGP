@@ -9,7 +9,7 @@ namespace SME.SGP.Infra
         public long? DreId { get; set; }
         public long? UeId { get; set; }
         public long? TurmaId { get; set; }
-        public string NomeAluno { get; set; }
+        public string CodigoNomeAluno { get; set; }
         public int? Modalidade { get; set; }
         public int Semestre { get; set; }
         public DateTime? DataRegistroInicio { get; set; }

@@ -105,7 +105,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             var dtoUseCase = ObterRegistroAcaoBuscaAtivaDtoSemQuestoesObrigatoriasPreenchidas(DateTimeExtension.HorarioBrasilia().Date);
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(async () => await useCase.Executar(dtoUseCase));
-            excecao.Message.ShouldBe("Existem questões obrigatórias não preenchidas no Registro de Ação: Seção: Registro Ação Busca Ativa Seção 1 Questões: [2.1, 2.2, 2.3, 2.4.1]");
+            excecao.Message.ShouldBe("Existem questões obrigatórias não preenchidas no Registro de Ação: Seção: Registro Ação Busca Ativa Seção 1 Questões: [2.1, 2.2, 2.3, 2.4.1, 2.5]");
         }
 
         [Fact(DisplayName = "Registro de Ação - Não consistir questões obrigatórias complementares ao cadastrar")]
@@ -143,15 +143,15 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             var data = DateTimeExtension.HorarioBrasilia().Date;
 
             await CriarDadosBase(filtro);
-            await GerarDadosRegistroAcao_3PrimeirasQuestoes(data);
+            await GerarDadosRegistroAcao_2PrimeirasQuestoes(data);
 
             var questaoregistroAcao = ObterTodos<QuestaoRegistroAcaoBuscaAtiva>();
             questaoregistroAcao.ShouldNotBeNull();
-            questaoregistroAcao.Count().ShouldBe(3);
+            questaoregistroAcao.Count().ShouldBe(2);
 
             var respostaregistroAcao = ObterTodos<RespostaRegistroAcaoBuscaAtiva>();
             respostaregistroAcao.ShouldNotBeNull();
-            respostaregistroAcao.Count().ShouldBe(3);
+            respostaregistroAcao.Count().ShouldBe(2);
 
             var useCase = ObterUseCaseRegistroAcao();           
             var dtoUseCase = ObterRegistroAcaoBuscaAtivaDtoComQuestoesObrigatoriasPreenchidas(data);

@@ -41,9 +41,9 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
 
             await CriarDadosBase(filtro);
             var dataRegistro = DateTimeExtension.HorarioBrasilia().Date;
-            await GerarDadosRegistroAcao_3PrimeirasQuestoes(dataRegistro.AddMonths(-1), true);
-            await GerarDadosRegistroAcao_3PrimeirasQuestoes(dataRegistro, true);
-            await GerarDadosRegistroAcao_3PrimeirasQuestoes(dataRegistro.AddMonths(1), true);
+            await GerarDadosRegistroAcao_2PrimeirasQuestoes(dataRegistro.AddMonths(-1), true);
+            await GerarDadosRegistroAcao_2PrimeirasQuestoes(dataRegistro, true);
+            await GerarDadosRegistroAcao_2PrimeirasQuestoes(dataRegistro.AddMonths(1), true);
             var useCase = ObterUseCaseListagemRegistrosAcao();
             var retorno = await useCase.Executar(new FiltroRegistrosAcaoDto()
             {
@@ -53,7 +53,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
                 TurmaId = TURMA_ID_1,
                 Modalidade = (int)Modalidade.Fundamental,
                 OrdemProcedimentoRealizado = ConstantesQuestionarioBuscaAtiva.QUESTAO_PROCEDIMENTO_REALIZADO_ORDEM_RESPOSTA_LIG_TELEFONICA,
-                NomeAluno = "aluno 1",
+                CodigoNomeAluno = "aluno 1",
                 DataRegistroInicio = dataRegistro.AddMonths(-1),
                 DataRegistroFim = dataRegistro.AddMonths(1)
             });
