@@ -35,6 +35,7 @@ namespace SME.SGP.Aplicacao
                     TotalAulas = grupo.Sum(f => f.TotalAulas),
                     TotalAusencias = grupo.Sum(f => f.TotalAusencias),
                     TotalCompensacoes = grupo.Sum(f => f.TotalCompensacoes),
+                    CodigoAluno = codigoAluno
                 };
 
                 frequenciaRetorno.Add(frequenciaAluno);
