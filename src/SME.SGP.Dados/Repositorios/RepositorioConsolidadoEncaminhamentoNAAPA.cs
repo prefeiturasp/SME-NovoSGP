@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Dapper;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -46,12 +47,12 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<DadosGraficoSitaucaoPorUeAnoLetivoDto>(sql.ToString(), new {  ueId,anoLetivo,dreId }, commandTimeout: 60);
         }
 
-        public async Task<IEnumerable<GraficoQuantitativoNAAPADto>> ObterQuantidadeEncaminhamentoNAAPAEmAberto(int anoLetivo, long? dreId)
+        public async Task<GraficoEncaminhamentoNAAPADto> ObterQuantidadeEncaminhamentoNAAPAEmAberto(int anoLetivo, long? dreId)
         {
             var situacoesNaapaAberto = new int[] { (int)SituacaoNAAPA.EmAtendimento, (int)SituacaoNAAPA.AguardandoAtendimento };
+            var situacaoEncerrada = (int)SituacaoNAAPA.Encerrado ;
 
-            var query = @"  select dre.dre_id CodigoDre, dre.abreviacao Descricao, sum(quantidade) Quantidade,
-                            COALESCE(max(cen.alterado_em), max(cen.criado_em)) as DataUltimaConsolidacao
+            var query = @"  select dre.dre_id CodigoDre, dre.abreviacao Descricao, sum(quantidade) Quantidade
                             from consolidado_encaminhamento_naapa cen
                             inner join ue on ue.id = cen.ue_id
                             inner join dre on dre.id = ue.dre_id
@@ -62,9 +63,28 @@ namespace SME.SGP.Dados.Repositorios
                 query += " and dre.id = @dreId";
 
             query += @" group by dre.dre_id, dre.abreviacao
-                        order by dre.dre_id, dre.abreviacao";
+                        order by dre.dre_id, dre.abreviacao;";
 
-            return await database.Conexao.QueryAsync<GraficoQuantitativoNAAPADto>(query, new { anoLetivo, dreId, situacoesNaapaAberto }, commandTimeout: 60);
+            query += @" select sum(quantidade) Quantidade
+                            from consolidado_encaminhamento_naapa cen
+                            inner join ue on ue.id = cen.ue_id
+                            where ano_letivo = @anoLetivo 
+                             and situacao <> @situacaoEncerrada";
+
+            if (dreId.HasValue)
+                query += " and ue.dre_id = @dreId";
+
+            query += ";";
+
+            var retorno = new GraficoEncaminhamentoNAAPADto();
+
+            using (var multi = await database.Conexao.QueryMultipleAsync(query, new { anoLetivo, dreId, situacoesNaapaAberto, situacaoEncerrada }))
+            {
+                retorno.Graficos = multi.Read<GraficoBaseDto>().ToList();
+                retorno.TotaEncaminhamento = multi.ReadFirst<long>();
+            }
+
+            return retorno;
         }
 
         public async Task<IEnumerable<long>> ObterIds(long ueId, int anoLetivo, int[] situacoesIgnoradas)
