@@ -5,8 +5,10 @@ using System;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AlterarAulaRecorrenteCommand: IRequest<bool>
+    public class AlterarAulaRecorrenteCommand : IRequest<bool>
     {
+        public AlterarAulaRecorrenteCommand() { }
+
         public AlterarAulaRecorrenteCommand(IncluirFilaAlteracaoAulaRecorrenteCommand aulaRecorrente)
         {
             Usuario = aulaRecorrente.Usuario;

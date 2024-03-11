@@ -29,9 +29,9 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
 
             await CriarDadosBase(filtro);
             var dataRegistro = DateTimeExtension.HorarioBrasilia().Date;
-            await GerarDadosRegistroAcao_3PrimeirasQuestoes(dataRegistro.AddMonths(-1), true);
-            await GerarDadosRegistroAcao_3PrimeirasQuestoes(dataRegistro, true);
-            await GerarDadosRegistroAcao_3PrimeirasQuestoes(dataRegistro.AddMonths(1), true);
+            await GerarDadosRegistroAcao_2PrimeirasQuestoes(dataRegistro.AddMonths(-1), true);
+            await GerarDadosRegistroAcao_2PrimeirasQuestoes(dataRegistro, true);
+            await GerarDadosRegistroAcao_2PrimeirasQuestoes(dataRegistro.AddMonths(1), true);
 
             var useCase = ServiceProvider.GetService<IObterRegistrosDeAcaoParaNAAPAUseCase>();
             var resultado = await useCase.Executar(ALUNO_CODIGO_1);
@@ -65,9 +65,9 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             await Executor.ExecutarComando(new PublicarQuestionarioBuscaAtivaComando(this));
 
             var dataRegistro = DateTimeExtension.HorarioBrasilia().Date;
-            await GerarDadosRegistroAcao_3PrimeirasQuestoes(dataRegistro.AddMonths(-1), true);
-            await GerarDadosRegistroAcao_3PrimeirasQuestoes(dataRegistro, true);
-            await GerarDadosRegistroAcao_3PrimeirasQuestoes(dataRegistro.AddMonths(1), true);
+            await GerarDadosRegistroAcao_2PrimeirasQuestoes(dataRegistro.AddMonths(-1), true);
+            await GerarDadosRegistroAcao_2PrimeirasQuestoes(dataRegistro, true);
+            await GerarDadosRegistroAcao_2PrimeirasQuestoes(dataRegistro.AddMonths(1), true);
 
             var useCase = ServiceProvider.GetService<IObterRegistrosDeAcaoParaNAAPAUseCase>();
             var resultado = await useCase.Executar(ALUNO_CODIGO_1);

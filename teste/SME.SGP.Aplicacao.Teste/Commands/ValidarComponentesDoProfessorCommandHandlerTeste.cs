@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao.Teste.Commands
                 .ReturnsAsync(new Turma() { ModalidadeCodigo = Dominio.Modalidade.EducacaoInfantil });
 
             mediator.Setup(x => x.Send(It.IsAny<ObterComponentesCurricularesDoProfessorNaTurmaQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<ComponenteCurricularEol>().AsEnumerable());
+                .ReturnsAsync(new List<ComponenteCurricularEol>() { new() { Codigo = 1 } });
 
             var commandHanlder = new ValidarComponentesDoProfessorCommandHandler(mediator.Object);
 

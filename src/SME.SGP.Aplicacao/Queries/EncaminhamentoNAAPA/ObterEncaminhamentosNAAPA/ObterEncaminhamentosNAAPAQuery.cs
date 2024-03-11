@@ -1,7 +1,9 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
+using System.Linq;
 
 namespace SME.SGP.Aplicacao
 {
@@ -14,12 +16,15 @@ namespace SME.SGP.Aplicacao
             TurmaId = filtro.TurmaId;
             CodigoUe = filtro.CodigoUe;
             Situacao = filtro.Situacao;
-            NomeAluno = filtro.NomeAluno;
+            CodigoNomeAluno = filtro.CodigoNomeAluno;
             AnoLetivo = filtro.AnoLetivo;
             DataAberturaQueixaInicio = filtro.DataAberturaQueixaInicio;
             DataAberturaQueixaFim = filtro.DataAberturaQueixaFim;
             Prioridade = filtro.Prioridade;
             ExibirEncerrados = filtro.ExibirEncerrados;
+            Ordenacao = filtro.Ordenacao;
+            if (Ordenacao.NaoPossuiRegistros())
+                Ordenacao = new OrdenacaoListagemPaginadaEncaminhamentoNAAPA[] { OrdenacaoListagemPaginadaEncaminhamentoNAAPA.DataEntradaQueixa };
         }
 
         public bool ExibirHistorico { get; set; }
@@ -27,12 +32,13 @@ namespace SME.SGP.Aplicacao
         public long DreId { get; set; }
         public string CodigoUe { get; set; }
         public long TurmaId { get; set; }
-        public string NomeAluno { get; set; }
+        public string CodigoNomeAluno { get; set; }
         public DateTime? DataAberturaQueixaInicio { get; set; }
         public DateTime? DataAberturaQueixaFim { get; set; }
         public int Situacao { get; set; }
         public int Prioridade { get; set; }
         public bool ExibirEncerrados { get; set; }
+        public OrdenacaoListagemPaginadaEncaminhamentoNAAPA[] Ordenacao { get; set; }
     }
 
     public class ObterEncaminhamentosNAAPAQueryValidator : AbstractValidator<ObterEncaminhamentosNAAPAQuery>

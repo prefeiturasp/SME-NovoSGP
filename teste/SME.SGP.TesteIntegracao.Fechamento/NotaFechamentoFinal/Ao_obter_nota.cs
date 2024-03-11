@@ -231,6 +231,65 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             var valor = retorno.Any(x => x.ComponenteCurricularId == COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
             Assert.False(valor);
         }
+
+        [Fact]
+        public async Task Deve_obter_nota_fechamento_final_por_turma_nao_excluida()
+        {
+            var turmas = new string[] { TURMA_CODIGO_1 };
+
+            var filtroNotaFechamento = ObterFiltroNotas(
+                           ObterPerfilProfessor(),
+                           ANO_1,
+                           COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(),
+                           TipoNota.Conceito,
+                           Modalidade.EJA,
+                           ModalidadeTipoCalendario.EJA,
+                           false);
+            await CriarDadosBase(filtroNotaFechamento);
+            await CriaFechamentoTurma_Disciplina(null, COMPONENTE_CURRICULAR_ARTES_ID_139, FECHAMENTO_TURMA_ID_1);
+            await CriaFechamentoTurma_Disciplina(null, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, FECHAMENTO_TURMA_ID_1);
+            await CriaFechamentoAluno(FECHAMENTO_TURMA_DISCIPLINA_ID_1, CODIGO_ALUNO_1);
+            await CriaFechamentoAluno(FECHAMENTO_TURMA_DISCIPLINA_ID_2, CODIGO_ALUNO_1);
+            await CriaFechamentoNota(FECHAMENTO_ALUNO_ID_1, COMPONENTE_CURRICULAR_ARTES_ID_139, (int)ConceitoValores.P);
+            await CriaFechamentoNota(FECHAMENTO_ALUNO_ID_2, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, (int)ConceitoValores.NS, true);
+
+            var consulta = ServiceProvider.GetService<IRepositorioFechamentoNotaConsulta>();
+            var retorno = await consulta.ObterPorFechamentosTurma(new long[] { FECHAMENTO_TURMA_ID_1 } );
+
+            var valor = retorno.Any(x => x.ComponenteCurricularId == COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+            Assert.False(valor);
+        }
+
+        [Fact]
+        public async Task Deve_obter_nota_final_fechamento_por_turma_nao_excluida()
+        {
+            var turmas = new string[] { TURMA_CODIGO_1 };
+
+            var filtroNotaFechamento = ObterFiltroNotas(
+                           ObterPerfilProfessor(),
+                           ANO_1,
+                           COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(),
+                           TipoNota.Conceito,
+                           Modalidade.EJA,
+                           ModalidadeTipoCalendario.EJA,
+                           false);
+            await CriarDadosBase(filtroNotaFechamento);
+            await CriaFechamentoTurma_Disciplina(PERIODO_ESCOLAR_CODIGO_1, COMPONENTE_CURRICULAR_ARTES_ID_139, FECHAMENTO_TURMA_ID_1);
+            await CriaFechamentoTurma_Disciplina(PERIODO_ESCOLAR_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, FECHAMENTO_TURMA_ID_1);
+            await CriaFechamentoAluno(FECHAMENTO_TURMA_DISCIPLINA_ID_1, CODIGO_ALUNO_1);
+            await CriaFechamentoAluno(FECHAMENTO_TURMA_DISCIPLINA_ID_2, CODIGO_ALUNO_1);
+            await CriaFechamentoNota(FECHAMENTO_ALUNO_ID_1, COMPONENTE_CURRICULAR_ARTES_ID_139, (int)ConceitoValores.P);
+            await CriaFechamentoNota(FECHAMENTO_ALUNO_ID_2, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, (int)ConceitoValores.NS, true);
+
+            var consulta = ServiceProvider.GetService<IRepositorioFechamentoNotaConsulta>();
+            var retorno = await consulta.ObterPorFechamentosTurma(new long[] { FECHAMENTO_TURMA_ID_1 });
+
+            var valor = retorno.Any(x => x.ComponenteCurricularId == COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+            Assert.False(valor);
+        }
+
+
+
         private async Task CriaAula(string componente)
         {
             await CriarAula(

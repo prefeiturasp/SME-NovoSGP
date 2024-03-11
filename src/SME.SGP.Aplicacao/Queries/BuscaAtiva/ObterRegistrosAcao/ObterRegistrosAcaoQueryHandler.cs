@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
                                                                   Modalidade =  request.Filtros.Modalidade,
                                                                   Semestre =  request.Filtros.Semestre },
                                                                 new FiltroRespostaRegistrosAcaoDto() {
-                                                                  NomeAluno = request.Filtros.NomeAluno,
+                                                                  CodigoNomeAluno = request.Filtros.CodigoNomeAluno,
                                                                   DataRegistroInicio = request.Filtros.DataRegistroInicio,
                                                                   DataRegistroFim = request.Filtros.DataRegistroFim,
                                                                   OrdemRespostaQuestaoProcedimentoRealizado = request.Filtros.OrdemProcedimentoRealizado },

@@ -84,7 +84,7 @@ namespace SME.SGP.TesteIntegracao.Aula.DiarioBordo
                 CriadoRF = USUARIO_PROFESSOR_CODIGO_RF_1111111
             });
 
-            await InserirNaBase(new Devolutiva()
+            await InserirNaBase(new Dominio.Devolutiva()
             {
                 CodigoComponenteCurricular = COMPONENTE_CURRICULAR_512,
                 Descricao = "Devolutiva",
@@ -172,7 +172,7 @@ namespace SME.SGP.TesteIntegracao.Aula.DiarioBordo
                 CriadoRF = USUARIO_PROFESSOR_CODIGO_RF_1111111
             });
 
-            await InserirNaBase(new Devolutiva()
+            await InserirNaBase(new Dominio.Devolutiva()
             {
                 CodigoComponenteCurricular = COMPONENTE_CURRICULAR_512,
                 Descricao = "Devolutiva",

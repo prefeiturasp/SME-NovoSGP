@@ -41,7 +41,7 @@ namespace SME.SGP.Dados.Repositorios
                 Items = await database.Conexao.QueryAsync<DevolutivaResumoDto>(query, new
                 {
                     turmaCodigo,
-                    componenteCurricularCodigo = componenteCurricularCodigo,
+                    componenteCurricularCodigo,
                     dataReferencia,
                     qtdeRegistrosIgnorados = paginacao.QuantidadeRegistrosIgnorados,
                     qtdeRegistros = paginacao.QuantidadeRegistros
@@ -56,9 +56,10 @@ namespace SME.SGP.Dados.Repositorios
             var query = new StringBuilder(@"from devolutiva d
                          inner join diario_bordo db on db.devolutiva_id = d.id
                          inner join aula a on a.id = db.aula_id
+                         inner join componente_curricular cc on cc.id = db.componente_curricular_id 
                          where not d.excluido  and not db.excluido
                            and a.turma_id = @turmaCodigo
-                           and db.componente_curricular_id = @componenteCurricularCodigo");
+                           and (db.componente_curricular_id = @componenteCurricularCodigo or cc.componente_curricular_pai_id = @componenteCurricularCodigo)");
 
             if (dataReferencia.HasValue)
                 query.Append(" and @dataReferencia between d.periodo_inicio and d.periodo_fim");
