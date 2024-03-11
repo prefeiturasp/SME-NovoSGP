@@ -1291,7 +1291,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRegistrarEncaminhamentoNAAPAUseCase, RegistrarEncaminhamentoNAAPAUseCase>();
             services.TryAddScoped<IEncerrarEncaminhamentoNAAPAUseCase, EncerrarEncaminhamentoNAAPAUseCase>();
             services.TryAddScoped<IReabrirEncaminhamentoNAAPAUseCase, ReabrirEncaminhamentoNAAPAUseCase>();
-            
+            services.TryAddScoped<IObterAlunosDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoUseCase, ObterAlunosDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoUseCase>();
+            services.TryAddScoped<IObterAlunosDashboardFrequenciaTurmaEvasaoSemPresencaUseCase, ObterAlunosDashboardFrequenciaTurmaEvasaoSemPresencaUseCase>();
+
             services.TryAddScoped<IVerificarExistenciaRelatorioPorCodigoUseCase, VerificarExistenciaRelatorioPorCodigoUseCase>();
             services.TryAddScoped<IObterPAAIPorDreUseCase, ObterPAAIPorDreUseCase>();
             services.TryAddScoped<IObterResponsaveisPorDreUseCase, ObterResponsaveisPorDreUseCase>();

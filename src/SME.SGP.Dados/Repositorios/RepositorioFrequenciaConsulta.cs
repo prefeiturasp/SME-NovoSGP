@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Minio.DataModel;
 using Polly;
 using Polly.Registry;
 using SME.SGP.Dominio;
@@ -405,7 +406,7 @@ namespace SME.SGP.Dados.Repositorios
         private async Task<FrequenciaTurmaEvasaoDto> ObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoAgrupadoPorDre(int anoLetivo, Modalidade modalidade,
             int semestre, int mes)
         {
-            var query = @"select d.Abreviacao as Descricao,
+            var query = @"select d.Abreviacao as Descricao, d.dre_id as DreCodigo,
                                 sum(fte.quantidade_alunos_abaixo_50_porcento) as Quantidade
                             from frequencia_turma_evasao fte
                                 inner join turma t on t.id = fte.turma_id 
@@ -447,7 +448,7 @@ namespace SME.SGP.Dados.Repositorios
         private async Task<FrequenciaTurmaEvasaoDto> ObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoAgrupadoPorUe(int anoLetivo, string dreCodigo,
             Modalidade modalidade, int semestre, int mes)
         {
-            var query = @"select coalesce(te.descricao || '-', '') || coalesce(u.nome, '') as Descricao,
+            var query = @"select coalesce(te.descricao || '-', '') || coalesce(u.nome, '') as Descricao, u.ue_id as UeCodigo,
                                 sum(fte.quantidade_alunos_abaixo_50_porcento) as Quantidade
                             from frequencia_turma_evasao fte
                                 inner join turma t on t.id = fte.turma_id 
@@ -465,7 +466,7 @@ namespace SME.SGP.Dados.Repositorios
 
             query += where;
 
-            query += @" group by te.descricao, u.nome
+            query += @" group by te.descricao, u.nome, u.ue_id
                         order by te.descricao, u.nome; ";
 
             query += @" select sum(fte.quantidade_alunos_abaixo_50_porcento) as Quantidade
@@ -496,7 +497,7 @@ namespace SME.SGP.Dados.Repositorios
                                            mes,
                                            quantidade_alunos_abaixo_50_porcento
                            FROM frequencia_turma_evasao)";
-            var query = @$"{with} SELECT t.nome AS Descricao,
+            var query = @$"{with} SELECT t.nome AS Descricao, t.turma_id as TurmaCodigo,
                                sum(fte.quantidade_alunos_abaixo_50_porcento) AS Quantidade
                         FROM TurmaEvasao fte
                         INNER JOIN turma t ON t.id = fte.turma_id
@@ -513,7 +514,7 @@ namespace SME.SGP.Dados.Repositorios
                 where += " and t.semestre = @semestre ";
 
             query += where;
-            query += @" group by t.nome
+            query += @" group by t.nome, t.turma_id
                         order by t.nome; ";
 
             query += @$"{with} SELECT sum(fte.quantidade_alunos_abaixo_50_porcento) as Quantidade
@@ -558,7 +559,7 @@ namespace SME.SGP.Dados.Repositorios
         private async Task<FrequenciaTurmaEvasaoDto> ObterDashboardFrequenciaTurmaEvasaoSemPresencaAgrupadoPorDre(int anoLetivo,
             Modalidade modalidade, int semestre, int mes)
         {
-            var query = @"select d.Abreviacao as Descricao,
+            var query = @"select d.Abreviacao as Descricao, d.dre_id as DreCodigo,
                                 sum(fte.quantidade_alunos_0_porcento) as Quantidade
                             from frequencia_turma_evasao fte
                                 inner join turma t on t.id = fte.turma_id 
@@ -602,7 +603,7 @@ namespace SME.SGP.Dados.Repositorios
         private async Task<FrequenciaTurmaEvasaoDto> ObterDashboardFrequenciaTurmaEvasaoSemPresencaAgrupadoPorUe(int anoLetivo, string dreCodigo,
             Modalidade modalidade, int semestre, int mes)
         {
-            var query = @"select coalesce(te.descricao || '-', '') || coalesce(u.nome, '') as Descricao,
+            var query = @"select coalesce(te.descricao || '-', '') || coalesce(u.nome, '') as Descricao, u.ue_id as UeCodigo,
                                  te.descricao as DescricaoTipo,
                                 sum(fte.quantidade_alunos_0_porcento) as Quantidade
                             from frequencia_turma_evasao fte
@@ -623,7 +624,7 @@ namespace SME.SGP.Dados.Repositorios
 
             query += where;
 
-            query += @" group by te.descricao, u.nome
+            query += @" group by te.descricao, u.nome, u.ue_id
                         order by te.descricao, u.nome; ";
 
             query += @" select sum(fte.quantidade_alunos_0_porcento) as Quantidade
@@ -654,7 +655,7 @@ namespace SME.SGP.Dados.Repositorios
                                            mes,
                                            quantidade_alunos_0_porcento
                            FROM frequencia_turma_evasao)";
-            var query = @$"{with} select t.nome as Descricao,
+            var query = @$"{with} select t.nome as Descricao, t.turma_id as TurmaCodigo,
                                 sum(fte.quantidade_alunos_0_porcento) as Quantidade
                             from TurmaEvasao fte
                                 inner join turma t on t.id = fte.turma_id 
@@ -674,7 +675,7 @@ namespace SME.SGP.Dados.Repositorios
 
             query += where;
 
-            query += @" group by t.nome
+            query += @" group by t.nome, t.turma_id
                         order by t.nome; ";
 
             query += @$"{with} select sum(fte.quantidade_alunos_0_porcento) as Quantidade
@@ -759,5 +760,142 @@ namespace SME.SGP.Dados.Repositorios
 
             return resultado.ToArray();
         }
+
+        public async Task<PaginacaoResultadoDto<AlunoFrequenciaTurmaEvasaoDto>> ObterAlunosDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoPaginado(int mes, int anoLetivo, string dreCodigo, 
+            string ueCodigo, string turmaCodigo, Modalidade modalidade, int semestre, Paginacao paginacao)
+        {
+            var sql = new StringBuilder();
+            MontaQueryConsultaFrequenciaTurmaEvasaoAbaixo50Porcento(paginacao, sql, mes, dreCodigo, ueCodigo, turmaCodigo, semestre);
+            sql.AppendLine(";");
+            MontaQueryConsultaFrequenciaTurmaEvasaoAbaixo50Porcento(paginacao, sql, mes, dreCodigo, ueCodigo, turmaCodigo, semestre, true);
+
+            var parametros = new
+            {
+                anoLetivo,
+                dreCodigo,
+                ueCodigo,
+                turmaCodigo,
+                modalidade = (int)modalidade,
+                semestre,
+                mes
+            };
+            
+            var retorno = new PaginacaoResultadoDto<AlunoFrequenciaTurmaEvasaoDto>();
+
+            using (var multi = await database.Conexao.QueryMultipleAsync(sql.ToString(), parametros))
+            {
+                retorno.Items = multi.Read<AlunoFrequenciaTurmaEvasaoDto>();
+                retorno.TotalRegistros = multi.ReadFirst<int>();
+            }
+
+            retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
+
+            return retorno;
+        }
+
+        private void MontaQueryConsultaFrequenciaTurmaEvasaoAbaixo50Porcento(Paginacao paginacao, StringBuilder sql, int mes, string dreCodigo,
+            string ueCodigo, string turmaCodigo, int semestre, bool ehContador = false)
+        {
+            var ehConsolidacaoAcumulada = mes == 0;
+
+            sql.AppendLine($@"select {(ehContador ? "count(distinct freqaluno.codigo_aluno)"
+                                                  : $@"d.abreviacao as Dre,
+                                                       coalesce(te.descricao || ' ', '') || coalesce(u.nome, '') as Ue,
+                                                       {EnumExtensao.ObterCaseWhenSQL<Modalidade>("t.modalidade_codigo")}||'-'||t.nome as Turma,
+                                                       freqaluno.nome_aluno || ' (' || freqaluno.codigo_aluno || ')' as Aluno,
+                                                       freqaluno.percentual_frequencia as PercentualFrequencia")}
+                          from frequencia_turma_evasao_aluno freqAluno
+                          inner join frequencia_turma_evasao freq on freq.id = freqAluno.frequencia_turma_evasao_id
+                          inner join turma t on t.id = freq.turma_id 
+                          inner join ue u on u.id = t.ue_id 
+                          inner join dre d on d.id = u.dre_id
+                          left join tipo_escola te on te.cod_tipo_escola_eol = u.tipo_escola 
+                          where t.ano_letivo = @anoLetivo 
+                                and t.modalidade_codigo = @modalidade 
+                                and freq.mes = @mes
+                                {(!string.IsNullOrEmpty(dreCodigo) ? "and d.dre_id = @dreCodigo" : string.Empty)}
+                                {(!string.IsNullOrEmpty(ueCodigo) ? "and u.ue_id = @ueCodigo" : string.Empty)}
+                                {(!string.IsNullOrEmpty(turmaCodigo) ? "and t.turma_id = @turmaCodigo" : string.Empty)}
+                                {(semestre > 0 ? "and t.semestre = @semestre" : string.Empty)}
+                                {(ehConsolidacaoAcumulada ? "and freqaluno.percentual_frequencia < 50"
+                                                          : "and freqaluno.percentual_frequencia < 50 and freqaluno.percentual_frequencia > 0")}
+                          ");
+
+            if (!ehContador)
+                sql.AppendLine($@"order by d.dre_id, 
+                                           coalesce(te.descricao || ' ', '') || coalesce(u.nome, ''),
+                                           {EnumExtensao.ObterCaseWhenSQL<Modalidade>("t.modalidade_codigo")}||'-'||t.nome,
+                                           freqaluno.nome_aluno || ' (' || freqaluno.codigo_aluno || ')' ");
+
+            if (paginacao.QuantidadeRegistros > 0 && !ehContador)
+                sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
+        }
+
+        public async Task<PaginacaoResultadoDto<AlunoFrequenciaTurmaEvasaoDto>> ObterAlunosDashboardFrequenciaTurmaEvasaoSemPresencaPaginado(int mes, int anoLetivo, string dreCodigo, string ueCodigo, string turmaCodigo, Modalidade modalidade, int semestre, Paginacao paginacao)
+        {
+            var sql = new StringBuilder();
+            MontaQueryConsultaFrequenciaTurmaEvasaoSemPresenca(paginacao, sql, dreCodigo, ueCodigo, turmaCodigo, semestre);
+            sql.AppendLine(";");
+            MontaQueryConsultaFrequenciaTurmaEvasaoSemPresenca(paginacao, sql, dreCodigo, ueCodigo, turmaCodigo, semestre, true);
+
+            var parametros = new
+            {
+                anoLetivo,
+                dreCodigo,
+                ueCodigo,
+                turmaCodigo,
+                modalidade = (int)modalidade,
+                semestre,
+                mes
+            };
+
+            var retorno = new PaginacaoResultadoDto<AlunoFrequenciaTurmaEvasaoDto>();
+
+            using (var multi = await database.Conexao.QueryMultipleAsync(sql.ToString(), parametros))
+            {
+                retorno.Items = multi.Read<AlunoFrequenciaTurmaEvasaoDto>();
+                retorno.TotalRegistros = multi.ReadFirst<int>();
+            }
+
+            retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
+
+            return retorno;
+        }
+
+        private void MontaQueryConsultaFrequenciaTurmaEvasaoSemPresenca(Paginacao paginacao, StringBuilder sql, string dreCodigo,
+            string ueCodigo, string turmaCodigo, int semestre, bool ehContador = false)
+        {
+            sql.AppendLine($@"select {(ehContador ? "count(distinct freqaluno.codigo_aluno)"
+                                                  : $@"d.abreviacao as Dre,
+                                                       coalesce(te.descricao || ' ', '') || coalesce(u.nome, '') as Ue,
+                                                       {EnumExtensao.ObterCaseWhenSQL<Modalidade>("t.modalidade_codigo")}||'-'||t.nome as Turma,
+                                                       freqaluno.nome_aluno || ' (' || freqaluno.codigo_aluno || ')' as Aluno,
+                                                       freqaluno.percentual_frequencia as PercentualFrequencia")}
+                          from frequencia_turma_evasao_aluno freqAluno
+                          inner join frequencia_turma_evasao freq on freq.id = freqAluno.frequencia_turma_evasao_id
+                          inner join turma t on t.id = freq.turma_id 
+                          inner join ue u on u.id = t.ue_id 
+                          inner join dre d on d.id = u.dre_id
+                          left join tipo_escola te on te.cod_tipo_escola_eol = u.tipo_escola 
+                          where t.ano_letivo = @anoLetivo 
+                                and t.modalidade_codigo = @modalidade 
+                                and freq.mes = @mes
+                                {(!string.IsNullOrEmpty(dreCodigo) ? "and d.dre_id = @dreCodigo" : string.Empty)}
+                                {(!string.IsNullOrEmpty(ueCodigo) ? "and u.ue_id = @ueCodigo" : string.Empty)}
+                                {(!string.IsNullOrEmpty(turmaCodigo) ? "and t.turma_id = @turmaCodigo" : string.Empty)}
+                                {(semestre > 0 ? "and t.semestre = @semestre" : string.Empty)}
+                                and freqaluno.percentual_frequencia = 0
+                          ");
+
+            if (!ehContador)
+                sql.AppendLine($@"order by d.dre_id, 
+                                           coalesce(te.descricao || ' ', '') || coalesce(u.nome, ''),
+                                           {EnumExtensao.ObterCaseWhenSQL<Modalidade>("t.modalidade_codigo")}||'-'||t.nome,
+                                           freqaluno.nome_aluno || ' (' || freqaluno.codigo_aluno || ')' ");
+
+            if (paginacao.QuantidadeRegistros > 0 && !ehContador)
+                sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
+        }
+
     }
 }
