@@ -50,7 +50,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("quantidade-em-aberto")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [ProducesResponseType(typeof(IEnumerable<GraficoEncaminhamentoNAAPADto>), 200)]
+        [ProducesResponseType(typeof(GraficoEncaminhamentoNAAPADto), 200)]
         [Permissao(Permissao.DNA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterQuantidadeEncaminhamentoNAAPAEmAberto(
                                                 [FromQuery] FiltroQuantidadeEncaminhamentoNAAPAEmAbertoDto filtro,

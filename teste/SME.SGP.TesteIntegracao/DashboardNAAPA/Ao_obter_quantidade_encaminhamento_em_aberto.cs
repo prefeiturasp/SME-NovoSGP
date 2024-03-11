@@ -64,6 +64,7 @@ namespace SME.SGP.TesteIntegracao.DashboardNAAPA
             var retorno = await useCase.Executar(dto);
 
             retorno.ShouldNotBeNull();
+            retorno.TotaEncaminhamento.ShouldBe(10);
             retorno.Graficos.FirstOrDefault().Quantidade.ShouldBe(8);
         }
 
@@ -103,6 +104,7 @@ namespace SME.SGP.TesteIntegracao.DashboardNAAPA
             var retorno = await useCase.Executar(dto);
 
             retorno.ShouldNotBeNull();
+            retorno.TotaEncaminhamento.ShouldBe(8);
             var graficos = retorno.Graficos.ToList();
             graficos.Count().ShouldBe(2);
             graficos.Exists(consolidado => consolidado.Descricao == DRE_NOME_1).ShouldBeTrue();
