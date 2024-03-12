@@ -168,7 +168,7 @@ namespace SME.SGP.TesteIntegracao
             await CriarParametrosSistema(dataInicio.Year);
         }
 
-        protected async Task CriarDadosBasicosSemPeriodoEscolar(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataAula, string componenteCurricular, int quantidadeAula = QUANTIDADE_3)
+        protected async Task CriarDadosBasicosSemPeriodoEscolar(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataAula, string componenteCurricular, int quantidadeAula = QUANTIDADE_3, int tipoTurnoEOL = 0)
         {
             await CriarTipoCalendario(tipoCalendario);
 
@@ -180,7 +180,7 @@ namespace SME.SGP.TesteIntegracao
 
             await CriarUsuarios();
 
-            await CriarTurma(modalidade);
+            await CriarTurma(modalidade, tipoTurnoEol : tipoTurnoEOL);
 
             await CriarAula(componenteCurricular, dataAula, RecorrenciaAula.AulaUnica, quantidadeAula);
         }
