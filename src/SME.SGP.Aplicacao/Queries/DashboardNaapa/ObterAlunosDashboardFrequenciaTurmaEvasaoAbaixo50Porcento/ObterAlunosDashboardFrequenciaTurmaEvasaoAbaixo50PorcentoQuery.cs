@@ -9,24 +9,13 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAlunosDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoQuery : IRequest<PaginacaoResultadoDto<AlunoFrequenciaTurmaEvasaoDto>>
     {
-        public ObterAlunosDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoQuery(int anoLetivo, string dreCodigo, string ueCodigo, string turmaCodigo,
-            Modalidade modalidade, int semestre, int mes)
+        public ObterAlunosDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoQuery(FiltroAbrangenciaGraficoFrequenciaTurmaEvasaoAlunoDto filtroAbrangencia, int mes)
         {
-            AnoLetivo = anoLetivo;
-            DreCodigo = dreCodigo;
-            UeCodigo = ueCodigo;
-            TurmaCodigo = turmaCodigo;
-            Modalidade = modalidade;
-            Semestre = semestre;
+            FiltroAbrangencia = filtroAbrangencia;
             Mes = mes;
         }
 
-        public int AnoLetivo { get; set; }
-        public string DreCodigo { get; set; }
-        public string UeCodigo { get; set; }
-        public string TurmaCodigo { get; set; }
-        public Modalidade Modalidade { get; set; }
-        public int Semestre { get; set; }
+        public FiltroAbrangenciaGraficoFrequenciaTurmaEvasaoAlunoDto FiltroAbrangencia { get; set; }
         public int Mes { get; set; }
     }
 
@@ -34,11 +23,15 @@ namespace SME.SGP.Aplicacao
     {
         public ObterAlunosDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoQueryValidator()
         {
-            RuleFor(c => c.AnoLetivo)
+            RuleFor(c => c.FiltroAbrangencia)
+                .NotNull()
+                .WithMessage("O filtro de abrangência deve ser informado.");
+
+            RuleFor(c => c.FiltroAbrangencia.AnoLetivo)
                 .GreaterThan(0)
                 .WithMessage("O ano letivo deve ser informado.");
 
-            RuleFor(c => c.Modalidade)
+            RuleFor(c => c.FiltroAbrangencia.Modalidade)
                 .NotEmpty()
                 .NotNull()
                 .WithMessage("A modalidade deve ser informada.");

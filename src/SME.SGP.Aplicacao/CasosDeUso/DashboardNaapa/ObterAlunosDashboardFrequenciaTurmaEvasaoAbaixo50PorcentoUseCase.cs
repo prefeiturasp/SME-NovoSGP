@@ -17,8 +17,16 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<AlunoFrequenciaTurmaEvasaoDto>> Executar(FiltroGraficoFrequenciaTurmaEvasaoAlunoDto filtro)
         {
-            return await mediator.Send(new ObterAlunosDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoQuery(filtro.AnoLetivo,
-                filtro.DreCodigo, filtro.UeCodigo, filtro.TurmaCodigo, filtro.Modalidade, filtro.Semestre, filtro.Mes));
+            var filtroAbrangencia = new FiltroAbrangenciaGraficoFrequenciaTurmaEvasaoAlunoDto()
+            {
+                AnoLetivo = filtro.AnoLetivo,
+                DreCodigo = filtro.DreCodigo,
+                UeCodigo = filtro.UeCodigo,
+                TurmaCodigo = filtro.TurmaCodigo,
+                Modalidade = filtro.Modalidade,
+                Semestre = filtro.Semestre
+            };
+            return await mediator.Send(new ObterAlunosDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoQuery(filtroAbrangencia, filtro.Mes));
         }
     }
 }

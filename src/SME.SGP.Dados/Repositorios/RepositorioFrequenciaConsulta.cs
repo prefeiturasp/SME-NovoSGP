@@ -761,22 +761,21 @@ namespace SME.SGP.Dados.Repositorios
             return resultado.ToArray();
         }
 
-        public async Task<PaginacaoResultadoDto<AlunoFrequenciaTurmaEvasaoDto>> ObterAlunosDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoPaginado(int mes, int anoLetivo, string dreCodigo, 
-            string ueCodigo, string turmaCodigo, Modalidade modalidade, int semestre, Paginacao paginacao)
+        public async Task<PaginacaoResultadoDto<AlunoFrequenciaTurmaEvasaoDto>> ObterAlunosDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoPaginado(int mes, FiltroAbrangenciaGraficoFrequenciaTurmaEvasaoAlunoDto filtroAbrangencia, Paginacao paginacao)
         {
             var sql = new StringBuilder();
-            MontaQueryConsultaFrequenciaTurmaEvasaoAbaixo50Porcento(paginacao, sql, mes, dreCodigo, ueCodigo, turmaCodigo, semestre);
+            MontaQueryConsultaFrequenciaTurmaEvasaoAbaixo50Porcento(paginacao, sql, mes, filtroAbrangencia);
             sql.AppendLine(";");
-            MontaQueryConsultaFrequenciaTurmaEvasaoAbaixo50Porcento(paginacao, sql, mes, dreCodigo, ueCodigo, turmaCodigo, semestre, true);
+            MontaQueryConsultaFrequenciaTurmaEvasaoAbaixo50Porcento(paginacao, sql, mes, filtroAbrangencia, true);
 
             var parametros = new
             {
-                anoLetivo,
-                dreCodigo,
-                ueCodigo,
-                turmaCodigo,
-                modalidade = (int)modalidade,
-                semestre,
+                filtroAbrangencia.AnoLetivo,
+                filtroAbrangencia.DreCodigo,
+                filtroAbrangencia.UeCodigo,
+                filtroAbrangencia.TurmaCodigo,
+                modalidade = (int)filtroAbrangencia.Modalidade,
+                filtroAbrangencia.Semestre,
                 mes
             };
             
@@ -793,8 +792,7 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
-        private void MontaQueryConsultaFrequenciaTurmaEvasaoAbaixo50Porcento(Paginacao paginacao, StringBuilder sql, int mes, string dreCodigo,
-            string ueCodigo, string turmaCodigo, int semestre, bool ehContador = false)
+        private void MontaQueryConsultaFrequenciaTurmaEvasaoAbaixo50Porcento(Paginacao paginacao, StringBuilder sql, int mes, FiltroAbrangenciaGraficoFrequenciaTurmaEvasaoAlunoDto filtroAbrangencia, bool ehContador = false)
         {
             var ehConsolidacaoAcumulada = mes == 0;
 
@@ -813,10 +811,10 @@ namespace SME.SGP.Dados.Repositorios
                           where t.ano_letivo = @anoLetivo 
                                 and t.modalidade_codigo = @modalidade 
                                 and freq.mes = @mes
-                                {(!string.IsNullOrEmpty(dreCodigo) ? "and d.dre_id = @dreCodigo" : string.Empty)}
-                                {(!string.IsNullOrEmpty(ueCodigo) ? "and u.ue_id = @ueCodigo" : string.Empty)}
-                                {(!string.IsNullOrEmpty(turmaCodigo) ? "and t.turma_id = @turmaCodigo" : string.Empty)}
-                                {(semestre > 0 ? "and t.semestre = @semestre" : string.Empty)}
+                                {(!string.IsNullOrEmpty(filtroAbrangencia.DreCodigo) ? "and d.dre_id = @dreCodigo" : string.Empty)}
+                                {(!string.IsNullOrEmpty(filtroAbrangencia.UeCodigo) ? "and u.ue_id = @ueCodigo" : string.Empty)}
+                                {(!string.IsNullOrEmpty(filtroAbrangencia.TurmaCodigo) ? "and t.turma_id = @turmaCodigo" : string.Empty)}
+                                {(filtroAbrangencia.Semestre > 0 ? "and t.semestre = @semestre" : string.Empty)}
                                 {(ehConsolidacaoAcumulada ? "and freqaluno.percentual_frequencia < 50"
                                                           : "and freqaluno.percentual_frequencia < 50 and freqaluno.percentual_frequencia > 0")}
                           ");
@@ -831,21 +829,21 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
         }
 
-        public async Task<PaginacaoResultadoDto<AlunoFrequenciaTurmaEvasaoDto>> ObterAlunosDashboardFrequenciaTurmaEvasaoSemPresencaPaginado(int mes, int anoLetivo, string dreCodigo, string ueCodigo, string turmaCodigo, Modalidade modalidade, int semestre, Paginacao paginacao)
+        public async Task<PaginacaoResultadoDto<AlunoFrequenciaTurmaEvasaoDto>> ObterAlunosDashboardFrequenciaTurmaEvasaoSemPresencaPaginado(int mes, FiltroAbrangenciaGraficoFrequenciaTurmaEvasaoAlunoDto filtroAbrangencia, Paginacao paginacao)
         {
             var sql = new StringBuilder();
-            MontaQueryConsultaFrequenciaTurmaEvasaoSemPresenca(paginacao, sql, dreCodigo, ueCodigo, turmaCodigo, semestre);
+            MontaQueryConsultaFrequenciaTurmaEvasaoSemPresenca(paginacao, sql, filtroAbrangencia);
             sql.AppendLine(";");
-            MontaQueryConsultaFrequenciaTurmaEvasaoSemPresenca(paginacao, sql, dreCodigo, ueCodigo, turmaCodigo, semestre, true);
+            MontaQueryConsultaFrequenciaTurmaEvasaoSemPresenca(paginacao, sql, filtroAbrangencia, true);
 
             var parametros = new
             {
-                anoLetivo,
-                dreCodigo,
-                ueCodigo,
-                turmaCodigo,
-                modalidade = (int)modalidade,
-                semestre,
+                filtroAbrangencia.AnoLetivo,
+                filtroAbrangencia.DreCodigo,
+                filtroAbrangencia.UeCodigo,
+                filtroAbrangencia.TurmaCodigo,
+                modalidade = (int)filtroAbrangencia.Modalidade,
+                filtroAbrangencia.Semestre,
                 mes
             };
 
@@ -862,8 +860,7 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
-        private void MontaQueryConsultaFrequenciaTurmaEvasaoSemPresenca(Paginacao paginacao, StringBuilder sql, string dreCodigo,
-            string ueCodigo, string turmaCodigo, int semestre, bool ehContador = false)
+        private void MontaQueryConsultaFrequenciaTurmaEvasaoSemPresenca(Paginacao paginacao, StringBuilder sql, FiltroAbrangenciaGraficoFrequenciaTurmaEvasaoAlunoDto filtroAbrangencia, bool ehContador = false)
         {
             sql.AppendLine($@"select {(ehContador ? "count(distinct freqaluno.codigo_aluno)"
                                                   : $@"d.abreviacao as Dre,
@@ -880,10 +877,10 @@ namespace SME.SGP.Dados.Repositorios
                           where t.ano_letivo = @anoLetivo 
                                 and t.modalidade_codigo = @modalidade 
                                 and freq.mes = @mes
-                                {(!string.IsNullOrEmpty(dreCodigo) ? "and d.dre_id = @dreCodigo" : string.Empty)}
-                                {(!string.IsNullOrEmpty(ueCodigo) ? "and u.ue_id = @ueCodigo" : string.Empty)}
-                                {(!string.IsNullOrEmpty(turmaCodigo) ? "and t.turma_id = @turmaCodigo" : string.Empty)}
-                                {(semestre > 0 ? "and t.semestre = @semestre" : string.Empty)}
+                                {(!string.IsNullOrEmpty(filtroAbrangencia.DreCodigo) ? "and d.dre_id = @dreCodigo" : string.Empty)}
+                                {(!string.IsNullOrEmpty(filtroAbrangencia.UeCodigo) ? "and u.ue_id = @ueCodigo" : string.Empty)}
+                                {(!string.IsNullOrEmpty(filtroAbrangencia.TurmaCodigo) ? "and t.turma_id = @turmaCodigo" : string.Empty)}
+                                {(filtroAbrangencia.Semestre > 0 ? "and t.semestre = @semestre" : string.Empty)}
                                 and freqaluno.percentual_frequencia = 0
                           ");
 

@@ -21,9 +21,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<AlunoFrequenciaTurmaEvasaoDto>> Handle(ObterAlunosDashboardFrequenciaTurmaEvasaoSemPresencaQuery request, CancellationToken cancellationToken)
         {
-            return await repositorio.ObterAlunosDashboardFrequenciaTurmaEvasaoSemPresencaPaginado(request.Mes, request.AnoLetivo, request.DreCodigo,
-                request.UeCodigo, request.TurmaCodigo,
-                request.Modalidade, request.Semestre, Paginacao);
+            return await repositorio.ObterAlunosDashboardFrequenciaTurmaEvasaoSemPresencaPaginado(request.Mes, request.FiltroAbrangencia, Paginacao);
         }
     }
 }
