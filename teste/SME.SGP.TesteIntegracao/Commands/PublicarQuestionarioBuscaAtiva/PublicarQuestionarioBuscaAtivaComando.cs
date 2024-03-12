@@ -117,6 +117,28 @@ namespace SME.SGP.TesteIntegracao.Commands
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now
             });
+
+            opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP 
+                                                     && q.Nome == ConstantesQuestionarioBuscaAtiva.QUESTAO_OPCAO_RESPOSTA_SIM).FirstOrDefault();
+            await _teste.InserirNaBase(new OpcaoQuestaoComplementar()
+            {
+                OpcaoRespostaId = opcaoRespostaBase.Id,
+                QuestaoComplementarId = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_5_ID_OBS_GERAL,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP 
+                                                     && q.Nome == ConstantesQuestionarioBuscaAtiva.QUESTAO_OPCAO_RESPOSTA_NAO).FirstOrDefault();
+            await _teste.InserirNaBase(new OpcaoQuestaoComplementar()
+            {
+                OpcaoRespostaId = opcaoRespostaBase.Id,
+                QuestaoComplementarId = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_2_ID_OBS_GERAL_NAO_CONTATOU_RESP,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
         }
 
         private async Task CriarRespostas()
@@ -258,7 +280,6 @@ namespace SME.SGP.TesteIntegracao.Commands
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now
             });
-
         }
 
         private async Task CriarQuestoes()
@@ -377,13 +398,13 @@ namespace SME.SGP.TesteIntegracao.Commands
 
             await _teste.InserirNaBase(new Questao()
             {
-                Id = ConstantesQuestionarioBuscaAtiva.QUESTAO_3_ID_OBS_GERAL,
+                Id = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_5_ID_OBS_GERAL,
                 QuestionarioId = ConstantesQuestionarioBuscaAtiva.QUESTIONARIO_REGISTRO_ACAO_ID_1,
-                Ordem = 3,
-                Nome = ConstantesQuestionarioBuscaAtiva.QUESTAO_3_NOME_COMPONENTE_OBS_GERAL,
-                Obrigatorio = false,
+                Ordem = 5,
+                Nome = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_5_NOME_COMPONENTE_OBS_GERAL,
+                Obrigatorio = true,
                 Tipo = TipoQuestao.Texto,
-                NomeComponente = ConstantesQuestionarioBuscaAtiva.QUESTAO_3_NOME_COMPONENTE_OBS_GERAL,
+                NomeComponente = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_5_NOME_COMPONENTE_OBS_GERAL,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now
@@ -397,6 +418,19 @@ namespace SME.SGP.TesteIntegracao.Commands
                 Obrigatorio = true,
                 Tipo = TipoQuestao.Checkbox,
                 NomeComponente = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_1_NOME_COMPONENTE_PROCEDIMENTO_REALIZADO_NAO_CONTATOU_RESP,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+            await _teste.InserirNaBase(new Questao()
+            {
+                Id = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_2_ID_OBS_GERAL_NAO_CONTATOU_RESP,
+                QuestionarioId = ConstantesQuestionarioBuscaAtiva.QUESTIONARIO_REGISTRO_ACAO_ID_1,
+                Ordem = 2,
+                Nome = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_2_NOME_COMPONENTE_OBS_GERAL_NAO_CONTATOU_RESP,
+                Obrigatorio = false,
+                Tipo = TipoQuestao.Texto,
+                NomeComponente = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_2_NOME_COMPONENTE_OBS_GERAL_NAO_CONTATOU_RESP,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now

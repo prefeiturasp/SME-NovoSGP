@@ -73,14 +73,14 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             questaoregistroAcao.Any(a => a.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_3_ID_JUSTIFICATIVA_MOTIVO_FALTA).ShouldBeTrue();
             questaoregistroAcao.Any(a => a.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_4_ID_PROCEDIMENTO_REALIZADO).ShouldBeTrue();
             questaoregistroAcao.Any(a => a.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_4_1_ID_QUESTOES_OBS_DURANTE_VISITA).ShouldBeTrue();
-            questaoregistroAcao.Any(a => a.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_3_ID_OBS_GERAL).ShouldBeTrue();
+            questaoregistroAcao.Any(a => a.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_5_ID_OBS_GERAL).ShouldBeTrue();
             
             var respostaregistroAcao = ObterTodos<RespostaRegistroAcaoBuscaAtiva>();
             respostaregistroAcao.ShouldNotBeNull();
             respostaregistroAcao.Count().ShouldBe(10);
             respostaregistroAcao.Any(a => a.QuestaoRegistroAcaoBuscaAtivaId == questaoregistroAcao.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_1_ID_DATA_REGISTRO_ACAO).FirstOrDefault().Id
                                           && a.Texto.Equals(data.ToString("yyyy-MM-dd"))).ShouldBeTrue();
-            respostaregistroAcao.Any(a => a.QuestaoRegistroAcaoBuscaAtivaId == questaoregistroAcao.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_3_ID_OBS_GERAL).FirstOrDefault().Id
+            respostaregistroAcao.Any(a => a.QuestaoRegistroAcaoBuscaAtivaId == questaoregistroAcao.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_5_ID_OBS_GERAL).FirstOrDefault().Id
                                           && a.Texto.Equals("OBS GERAL")).ShouldBeTrue();
             respostaregistroAcao.Where(a => a.QuestaoRegistroAcaoBuscaAtivaId == questaoregistroAcao.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_4_1_ID_QUESTOES_OBS_DURANTE_VISITA).FirstOrDefault().Id
                                        ).Count().ShouldBe(2);
@@ -103,7 +103,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
 
             var useCase = ObterUseCaseRegistroAcao();
             var dtoUseCase = ObterRegistroAcaoBuscaAtivaDtoSemQuestoesObrigatoriasPreenchidas(DateTimeExtension.HorarioBrasilia().Date);
-
+            
             var excecao = await Assert.ThrowsAsync<NegocioException>(async () => await useCase.Executar(dtoUseCase));
             excecao.Message.ShouldBe("Existem questões obrigatórias não preenchidas no Registro de Ação: Seção: Registro Ação Busca Ativa Seção 1 Questões: [2.1, 2.2, 2.3, 2.4.1, 2.5]");
         }
@@ -171,7 +171,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
 
             questaoregistroAcao = ObterTodos<QuestaoRegistroAcaoBuscaAtiva>();
             questaoregistroAcao.ShouldNotBeNull();
-            questaoregistroAcao.Count.ShouldBe(8);
+            questaoregistroAcao.Where(r => !r.Excluido).Count().ShouldBe(8);
             questaoregistroAcao.Any(a => a.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_1_ID_DATA_REGISTRO_ACAO).ShouldBeTrue();
             questaoregistroAcao.Any(a => a.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP).ShouldBeTrue();
             questaoregistroAcao.Any(a => a.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_1_ID_CONTATO_COM_RESPONSAVEL).ShouldBeTrue();
@@ -179,14 +179,14 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             questaoregistroAcao.Any(a => a.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_3_ID_JUSTIFICATIVA_MOTIVO_FALTA).ShouldBeTrue();
             questaoregistroAcao.Any(a => a.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_4_ID_PROCEDIMENTO_REALIZADO).ShouldBeTrue();
             questaoregistroAcao.Any(a => a.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_4_1_ID_QUESTOES_OBS_DURANTE_VISITA).ShouldBeTrue();
-            questaoregistroAcao.Any(a => a.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_3_ID_OBS_GERAL).ShouldBeTrue();
+            questaoregistroAcao.Any(a => a.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_5_ID_OBS_GERAL).ShouldBeTrue();
 
             respostaregistroAcao = ObterTodos<RespostaRegistroAcaoBuscaAtiva>();
             respostaregistroAcao.ShouldNotBeNull();
-            respostaregistroAcao.Count().ShouldBe(10);
+            respostaregistroAcao.Where(r => !r.Excluido).Count().ShouldBe(10);
             respostaregistroAcao.Any(a => a.QuestaoRegistroAcaoBuscaAtivaId == questaoregistroAcao.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_1_ID_DATA_REGISTRO_ACAO).FirstOrDefault().Id
                                           && a.Texto.Equals(data.ToString("yyyy-MM-dd"))).ShouldBeTrue();
-            respostaregistroAcao.Any(a => a.QuestaoRegistroAcaoBuscaAtivaId == questaoregistroAcao.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_3_ID_OBS_GERAL).FirstOrDefault().Id
+            respostaregistroAcao.Any(a => a.QuestaoRegistroAcaoBuscaAtivaId == questaoregistroAcao.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_5_ID_OBS_GERAL).FirstOrDefault().Id
                                           && a.Texto.Equals("OBS GERAL")).ShouldBeTrue();
             respostaregistroAcao.Where(a => a.QuestaoRegistroAcaoBuscaAtivaId == questaoregistroAcao.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_4_1_ID_QUESTOES_OBS_DURANTE_VISITA).FirstOrDefault().Id
                                        ).Count().ShouldBe(2);
@@ -202,8 +202,6 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             questao.RespostaRegistroAcaoId = 1;
             questao = secao.Questoes.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP).FirstOrDefault();
             questao.RespostaRegistroAcaoId = 2;
-            questao = secao.Questoes.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_3_ID_OBS_GERAL).FirstOrDefault();
-            questao.RespostaRegistroAcaoId = 3;
         }
 
         private RegistroAcaoBuscaAtivaDto ObterRegistroAcaoBuscaAtivaDtoSemQuestoesObrigatoriasPreenchidas(DateTime data)
@@ -243,12 +241,6 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
                                 QuestaoId = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_4_ID_PROCEDIMENTO_REALIZADO,
                                 Resposta = opcaoRespostaQ3.Id.ToString(),
                                 TipoQuestao = TipoQuestao.Combo
-                            },
-                            new ()
-                            {
-                                QuestaoId = ConstantesQuestionarioBuscaAtiva.QUESTAO_3_ID_OBS_GERAL,
-                                Resposta = "OBS GERAL",
-                                TipoQuestao = TipoQuestao.Texto
                             }
                         }
                     }
@@ -296,7 +288,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
                             },
                             new ()
                             {
-                                QuestaoId = ConstantesQuestionarioBuscaAtiva.QUESTAO_3_ID_OBS_GERAL,
+                                QuestaoId = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_2_ID_OBS_GERAL_NAO_CONTATOU_RESP,
                                 Resposta = "OBS GERAL",
                                 TipoQuestao = TipoQuestao.Texto
                             }
@@ -392,7 +384,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
                             },
                             new ()
                             {
-                                QuestaoId = ConstantesQuestionarioBuscaAtiva.QUESTAO_3_ID_OBS_GERAL,
+                                QuestaoId = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_5_ID_OBS_GERAL,
                                 Resposta = "OBS GERAL",
                                 TipoQuestao = TipoQuestao.Texto
                             }

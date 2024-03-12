@@ -65,7 +65,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             var useCase = ObterUseCaseListagemQuestionario();
             var retorno = await useCase.Executar(ConstantesQuestionarioBuscaAtiva.QUESTIONARIO_REGISTRO_ACAO_ID_1, 1);
             retorno.ShouldNotBeNull();
-            retorno.Count().ShouldBe(3);
+            retorno.Count().ShouldBe(2);
             retorno.Where(q => q.Id == ConstantesQuestionarioBuscaAtiva.QUESTAO_1_ID_DATA_REGISTRO_ACAO).FirstOrDefault()
                             .Resposta.FirstOrDefault()
                             .Texto.ShouldBe(DateTimeExtension.HorarioBrasilia().Date.ToString("yyyy-MM-dd"));
@@ -76,10 +76,6 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             retorno.Where(q => q.Id == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP).FirstOrDefault()
                             .Resposta.FirstOrDefault()
                             .OpcaoRespostaId.ShouldBe(opcaoRespostaBase.Id);
-            
-            retorno.Where(q => q.Id == ConstantesQuestionarioBuscaAtiva.QUESTAO_3_ID_OBS_GERAL).FirstOrDefault()
-                            .Resposta.FirstOrDefault()
-                            .Texto.ShouldBe("OBS GERAL");
         }
 
         [Fact(DisplayName = "Registro de Ação - Obter registro de ação por id")]
