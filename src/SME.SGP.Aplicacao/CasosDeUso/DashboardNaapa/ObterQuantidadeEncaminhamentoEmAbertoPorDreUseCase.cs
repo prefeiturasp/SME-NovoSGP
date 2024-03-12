@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
 
         public Task<GraficoEncaminhamentoNAAPADto> Executar(FiltroQuantidadeEncaminhamentoNAAPAEmAbertoDto param)
         {
-            return mediator.Send(new ObterQuantidadeEncaminhamentoNAAPAEmAbertoQuery(param.AnoLetivo, param.DreId));
+            return mediator.Send(new ObterQuantidadeEncaminhamentoNAAPAEmAbertoQuery(param.AnoLetivo, param.DreId, param.Modalidade));
         }
     }
 }
