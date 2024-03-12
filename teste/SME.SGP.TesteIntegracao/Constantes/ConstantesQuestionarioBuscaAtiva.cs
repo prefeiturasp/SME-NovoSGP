@@ -21,7 +21,8 @@ namespace SME.SGP.TesteIntegracao.Constantes
         public const string QUESTAO_2_4_NOME_COMPONENTE_PROCEDIMENTO_REALIZADO = "PROCEDIMENTO_REALIZADO";
         public const string QUESTAO_2_1_NOME_COMPONENTE_PROCEDIMENTO_REALIZADO_NAO_CONTATOU_RESP = "PROCEDIMENTO_REALIZADO_NAO_CONTATOU_RESP";
         public const string QUESTAO_2_4_1_NOME_COMPONENTE_QUESTOES_OBS_DURANTE_VISITA = "QUESTOES_OBS_DURANTE_VISITA";
-        public const string QUESTAO_3_NOME_COMPONENTE_OBS_GERAL = "OBS_GERAL";
+        public const string QUESTAO_2_5_NOME_COMPONENTE_OBS_GERAL = "OBS_GERAL";
+        public const string QUESTAO_2_2_NOME_COMPONENTE_OBS_GERAL_NAO_CONTATOU_RESP = "OBS_GERAL_NAO_CONTATOU_RESP";
 
         public const long QUESTAO_1_ID_DATA_REGISTRO_ACAO = 1;
         public const long QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP = 2;
@@ -31,8 +32,9 @@ namespace SME.SGP.TesteIntegracao.Constantes
         public const long QUESTAO_2_3_1_ID_JUSTIFICATIVA_MOTIVO_FALTA_OUTROS = 7;
         public const long QUESTAO_2_4_ID_PROCEDIMENTO_REALIZADO = 3;
         public const long QUESTAO_2_4_1_ID_QUESTOES_OBS_DURANTE_VISITA = 8;
-        public const long QUESTAO_3_ID_OBS_GERAL = 9;
+        public const long QUESTAO_2_5_ID_OBS_GERAL = 9;
         public const long QUESTAO_2_1_ID_PROCEDIMENTO_REALIZADO_NAO_CONTATOU_RESP = 10;
+        public const long QUESTAO_2_2_ID_OBS_GERAL_NAO_CONTATOU_RESP = 11;
 
         public const string QUESTAO_OPCAO_RESPOSTA_SIM = "Sim";
         public const string QUESTAO_JUSTIFICATIVA_MOTIVO_FALTA_RESPOSTA_OUTROS = "Outros";
