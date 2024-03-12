@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit param)
         {
             var consolidado = param.ObterObjetoMensagem<ConsolidadoAtendimentoNAAPA>();
-            var profissionalAtendimentoConsolidado = await mediator.Send(new ObterAtendimentoProfissionalEncaminhamentosNAAPAConsolidadoQuery(consolidado.UeId, consolidado.Mes, consolidado.AnoLetivo, consolidado.RfProfissional));
+            var profissionalAtendimentoConsolidado = await mediator.Send(new ObterAtendimentoProfissionalEncaminhamentosNAAPAConsolidadoQuery(consolidado.UeId, consolidado.Mes, consolidado.AnoLetivo, consolidado.RfProfissional, consolidado.Modalidade));
             if (profissionalAtendimentoConsolidado.NaoEhNulo())
             {
                 consolidado.Id = profissionalAtendimentoConsolidado.Id;

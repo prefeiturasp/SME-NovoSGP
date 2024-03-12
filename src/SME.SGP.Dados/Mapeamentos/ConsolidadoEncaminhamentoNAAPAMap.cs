@@ -1,5 +1,4 @@
-﻿using Dapper.FluentMap.Dommel.Mapping;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
@@ -12,6 +11,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.UeId).ToColumn("ue_id");
             Map(c => c.Quantidade).ToColumn("quantidade");
             Map(c => c.Situacao).ToColumn("situacao");
+            Map(c => c.Modalidade).ToColumn("modalidade_codigo");
         }
     }
 }

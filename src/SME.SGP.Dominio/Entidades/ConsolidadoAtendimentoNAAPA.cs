@@ -8,5 +8,6 @@
         public long Quantidade { get; set; }
         public string NomeProfissional { get; set; }
         public string RfProfissional { get; set; }
+        public Modalidade Modalidade { get; set; }
     }
 }

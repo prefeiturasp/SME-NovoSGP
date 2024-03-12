@@ -71,13 +71,19 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var ueId = 1;
             var anoLetivo = ANO_ATUAL;
-            var retorno = await useCase.Executar(new MensagemRabbit(JsonConvert.SerializeObject(new ConsolidadoEncaminhamentoNAAPA(anoLetivo, ueId, 10, SituacaoNAAPA.Rascunho))));
+            var retorno = await useCase.Executar(new MensagemRabbit(JsonConvert.SerializeObject(new ConsolidadoEncaminhamentoNAAPA(anoLetivo, ueId, 10, SituacaoNAAPA.Rascunho, Modalidade.Medio))));
             retorno.ShouldBeTrue();
 
             var obterTodosAposUseCaseExecutar = ObterTodos<ConsolidadoEncaminhamentoNAAPA>();
             obterTodosAposUseCaseExecutar.Count.ShouldBeEquivalentTo(2);
-            obterTodosAposUseCaseExecutar.Count(x => x.Situacao == SituacaoNAAPA.Rascunho).ShouldBeEquivalentTo(1);
-            obterTodosAposUseCaseExecutar.Count(x => x.Situacao == SituacaoNAAPA.Encerrado).ShouldBeEquivalentTo(1);
+            var rascunho = obterTodosAposUseCaseExecutar.Find(x => x.Situacao == SituacaoNAAPA.Rascunho);
+            rascunho.ShouldNotBeNull();
+            rascunho.Quantidade.ShouldBe(10);
+            rascunho.Modalidade.ShouldBe(Modalidade.Medio);
+            var encerrado = obterTodosAposUseCaseExecutar.Find(x => x.Situacao == SituacaoNAAPA.Encerrado);
+            encerrado.ShouldNotBeNull();
+            encerrado.Quantidade.ShouldBe(10);
+            encerrado.Modalidade.ShouldBe(Modalidade.Fundamental);
         }
 
         [Fact(DisplayName = "Deve atualizar um registo de Consolidação sem inserir umm novo")]
@@ -91,14 +97,15 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var ueId = 1;
             var anoLetivo = ANO_ATUAL;
-            var retorno = await useCase.Executar(new MensagemRabbit(JsonConvert.SerializeObject(new ConsolidadoEncaminhamentoNAAPA(anoLetivo, ueId, 12, SituacaoNAAPA.Encerrado))));
+            var retorno = await useCase.Executar(new MensagemRabbit(JsonConvert.SerializeObject(new ConsolidadoEncaminhamentoNAAPA(anoLetivo, ueId, 12, SituacaoNAAPA.Encerrado, Modalidade.Fundamental))));
             retorno.ShouldBeTrue();
 
             var obterTodosAposUseCaseExecutar = ObterTodos<ConsolidadoEncaminhamentoNAAPA>();
             obterTodosAposUseCaseExecutar.Count.ShouldBeEquivalentTo(1);
-            obterTodosAposUseCaseExecutar.Count(x => x.Situacao == SituacaoNAAPA.Encerrado).ShouldBeEquivalentTo(1);
-            obterTodosAposUseCaseExecutar.FirstOrDefault().Quantidade.ShouldBe<long>(12);
-
+            var encerrado = obterTodosAposUseCaseExecutar.Find(x => x.Situacao == SituacaoNAAPA.Encerrado);
+            encerrado.ShouldNotBeNull();
+            encerrado.Quantidade.ShouldBe(12);
+            encerrado.Modalidade.ShouldBe(Modalidade.Fundamental);
         }
 
         private async Task CriarDadosBasicos()
@@ -145,6 +152,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 AnoLetivo = ANO_ATUAL,
                 Quantidade = 10,
                 Situacao = SituacaoNAAPA.Encerrado,
+                Modalidade = Modalidade.Fundamental,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(), 
                 CriadoPor = SISTEMA_NOME, 
                 CriadoRF = SISTEMA_CODIGO_RF,
