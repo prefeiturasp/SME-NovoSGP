@@ -22,11 +22,15 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<ConsolidadoEncaminhamentoNAAPA>(query, new {  ueId,anoLetivo }, commandTimeout: 60);
         }
 
-        public async Task<ConsolidadoEncaminhamentoNAAPA> ObterPorUeIdAnoLetivoSituacao(long ueId, int anoLetivo, int situacao)
+        public async Task<ConsolidadoEncaminhamentoNAAPA> ObterPorUeIdAnoLetivoSituacao(long ueId, int anoLetivo, int situacao, int modalidade)
         {
-           var query = "select * from consolidado_encaminhamento_naapa cen where cen.ue_id = @ueId and cen.ano_letivo = @anoLetivo and  cen.situacao = @situacao ";
+           var query = @"select * from consolidado_encaminhamento_naapa cen 
+                         where cen.ue_id = @ueId 
+                            and cen.ano_letivo = @anoLetivo 
+                            and cen.situacao = @situacao 
+                            and cen.modalidade_codigo = @modalidade";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<ConsolidadoEncaminhamentoNAAPA>(query, new { ueId, anoLetivo, situacao }, commandTimeout:60);
+            return await database.Conexao.QueryFirstOrDefaultAsync<ConsolidadoEncaminhamentoNAAPA>(query, new { ueId, anoLetivo, situacao, modalidade }, commandTimeout:60);
         }
 
         public async Task<IEnumerable<DadosGraficoSitaucaoPorUeAnoLetivoDto>> ObterDadosGraficoSitaucaoPorUeAnoLetivo(int anoLetivo,long? ueId,long? dreId)
