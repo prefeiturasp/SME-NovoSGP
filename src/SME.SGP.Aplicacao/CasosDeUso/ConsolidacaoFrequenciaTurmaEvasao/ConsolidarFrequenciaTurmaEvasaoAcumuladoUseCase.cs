@@ -86,9 +86,8 @@ namespace SME.SGP.Aplicacao
                 await RegistrarFrequenciaTurmaEvasaoAluno(id, ObterAlunosFrequenciaInferior50(alunos, alunosFrequencia));
                 unitOfWork.PersistirTransacao();
             }
-            catch (Exception e)
+            catch 
             {
-                _ = e.Message;
                 unitOfWork.Rollback();
                 throw;
             }
