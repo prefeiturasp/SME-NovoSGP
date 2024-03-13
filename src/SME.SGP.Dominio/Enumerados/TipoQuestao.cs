@@ -23,6 +23,7 @@
         TurmasPrograma = 19,
         InformacoesSrm = 20,
         InformacoesFrequenciaTurmaPAP = 21,
-        ComboMultiplaEscolhaMes = 22
+        ComboMultiplaEscolhaMes = 22,
+        ProfissionaisEnvolvidos = 23
     }
 }

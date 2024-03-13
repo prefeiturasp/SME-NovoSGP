@@ -14,6 +14,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
 {
     public class Ao_cadastrar_editar_encaminhamento_naapa_itinerancia : EncaminhamentoNAAPATesteBase
     {
+        private const string PROFISSIONAIS_ENVOLVIDOS_02 = "[{\"login\": \"11223344\", \"nome\": \"psicopedagogo 02\"},{\"login\": \"55667788\", \"nome\": \"psicólogo 02\"},{\"login\": \"66778899\", \"nome\": \"coordenador naapa 01\"},{\"login\": \"77889900\", \"nome\": \"assistente social 01\"}]";
+        private const string PROFISSIONAIS_ENVOLVIDOS_01 = "[{\"login\": \"11223344\", \"nome\": \"psicopedagogo 01\"},{\"login\": \"55667788\", \"nome\": \"psicólogo 01\"},{\"login\": \"66778899\", \"nome\": \"coordenador naapa 01\"},{\"login\": \"77889900\", \"nome\": \"assistente social 01\"}]";
+        
         public Ao_cadastrar_editar_encaminhamento_naapa_itinerancia(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -238,6 +241,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
                             QuestaoId = ID_QUESTAO_DESCRICAO_ATENDIMENTO,
                             TipoQuestao = TipoQuestao.EditorTexto,
                             Resposta = "Descrição do atendimento"
+                        },
+                        new ()
+                        {
+                            QuestaoId = ID_QUESTAO_PROFISSIONAIS_ENVOLVIDOS,
+                            TipoQuestao = TipoQuestao.ProfissionaisEnvolvidos,
+                            Resposta = PROFISSIONAIS_ENVOLVIDOS_02
                         }
                     }
                 }
@@ -313,6 +322,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
                             TipoQuestao = TipoQuestao.EditorTexto,
                             Resposta = "Descrição do atendimento alteração",
                             RespostaEncaminhamentoId = 6
+                        },
+                        new ()
+                        {
+                            QuestaoId = ID_QUESTAO_PROFISSIONAIS_ENVOLVIDOS,
+                            TipoQuestao = TipoQuestao.ProfissionaisEnvolvidos,
+                            Resposta = PROFISSIONAIS_ENVOLVIDOS_02
                         }
                     }
                 }
@@ -351,6 +366,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
             var resposta4 = respostas.Find(resposta => resposta.QuestaoEncaminhamentoId == questao4.Id);
             resposta4.ShouldNotBeNull();
             resposta4.Texto.ShouldBe("Descrição do atendimento alteração");
+
+            var questao5 = questoes.Find(questao => questao.QuestaoId == ID_QUESTAO_PROFISSIONAIS_ENVOLVIDOS);
+            questao5.ShouldNotBeNull();
+            var resposta5 = respostas.Find(resposta => resposta.QuestaoEncaminhamentoId == questao5.Id);
+            resposta5.ShouldNotBeNull();
+            resposta5.Texto.ShouldBe(PROFISSIONAIS_ENVOLVIDOS_02);
         }
 
         [Fact(DisplayName = "Encaminhamento NAAPA - Editar encaminhamento NAAPA itinerância removendo anexo")]
@@ -574,6 +595,15 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
+            //Id 8
+            await InserirNaBase(new QuestaoEncaminhamentoNAAPA()
+            {
+                EncaminhamentoNAAPASecaoId = 2,
+                QuestaoId = ID_QUESTAO_PROFISSIONAIS_ENVOLVIDOS,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
         }
 
         private async Task CriarEncaminhamentoNAAPASecao()
@@ -668,6 +698,15 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
             {
                 QuestaoEncaminhamentoId = 6,
                 Texto = "Descrição do atendimento",
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new RespostaEncaminhamentoNAAPA()
+            {
+                QuestaoEncaminhamentoId = 8,
+                Texto = PROFISSIONAIS_ENVOLVIDOS_01,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
