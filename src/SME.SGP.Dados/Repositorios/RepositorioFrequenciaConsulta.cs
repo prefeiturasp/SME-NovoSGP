@@ -438,7 +438,7 @@ namespace SME.SGP.Dados.Repositorios
                 var graficos = multi.Read<GraficoFrequenciaTurmaEvasaoDto>().ToList();
                 graficos.ForEach(c => c.Descricao = c.Descricao.Replace(DashboardConstants.PrefixoDreParaSerRemovido, string.Empty).Trim());
                 retorno.GraficosFrequencia = graficos;
-                retorno.TotalEstudantes = multi.ReadFirst<long>();
+                retorno.TotalEstudantes = multi.ReadFirst<long?>() ?? 0;
             }
 
             return retorno;
@@ -482,7 +482,7 @@ namespace SME.SGP.Dados.Repositorios
             using (var multi = await database.Conexao.QueryMultipleAsync(query, parametros))
             {
                 retorno.GraficosFrequencia = multi.Read<GraficoFrequenciaTurmaEvasaoDto>().ToList();
-                retorno.TotalEstudantes = multi.ReadFirst<long>();
+                retorno.TotalEstudantes = multi.ReadFirst<long?>() ?? 0;
             }
 
             return retorno;
@@ -532,7 +532,7 @@ namespace SME.SGP.Dados.Repositorios
                 var graficos = multi.Read<GraficoFrequenciaTurmaEvasaoDto>().ToList();
                 graficos.ForEach(c => c.Descricao = string.Concat(modalidade.ShortName(), " - ", c.Descricao));
                 retorno.GraficosFrequencia = graficos;
-                retorno.TotalEstudantes = multi.ReadFirst<long>();
+                retorno.TotalEstudantes = multi.ReadFirst<long?>() ?? 0;
             }
 
             return retorno;
@@ -593,7 +593,7 @@ namespace SME.SGP.Dados.Repositorios
                 var graficos = multi.Read<GraficoFrequenciaTurmaEvasaoDto>().ToList();
                 graficos.ForEach(c => c.Descricao = c.Descricao.Replace(DashboardConstants.PrefixoDreParaSerRemovido, string.Empty).Trim());
                 retorno.GraficosFrequencia = graficos;
-                retorno.TotalEstudantes = multi.ReadFirst<long>();
+                retorno.TotalEstudantes = multi.ReadFirst<long?>() ?? 0;
             }
 
             return retorno;
@@ -640,7 +640,7 @@ namespace SME.SGP.Dados.Repositorios
             using (var multi = await database.Conexao.QueryMultipleAsync(query, parametros))
             {
                 retorno.GraficosFrequencia = multi.Read<GraficoFrequenciaTurmaEvasaoDto>().ToList();
-                retorno.TotalEstudantes = multi.ReadFirst<long>();
+                retorno.TotalEstudantes = multi.ReadFirst<long?>() ?? 0;
             }
 
             return retorno;
@@ -694,7 +694,7 @@ namespace SME.SGP.Dados.Repositorios
                 var graficos = multi.Read<GraficoFrequenciaTurmaEvasaoDto>().ToList();
                 graficos.ForEach(c => c.Descricao = string.Concat(modalidade.ShortName(), " - ", c.Descricao));
                 retorno.GraficosFrequencia = graficos;
-                retorno.TotalEstudantes = multi.ReadFirst<long>();
+                retorno.TotalEstudantes = multi.ReadFirst<long?>() ?? 0;
             }
 
             return retorno;
