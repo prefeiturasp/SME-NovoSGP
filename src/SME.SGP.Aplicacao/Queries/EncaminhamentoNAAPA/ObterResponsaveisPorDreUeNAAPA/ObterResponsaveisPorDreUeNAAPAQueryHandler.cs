@@ -24,9 +24,13 @@ namespace SME.SGP.Aplicacao
                                         TipoResponsavelAtribuicao.PsicologoEscolar,
                                         TipoResponsavelAtribuicao.AssistenteSocial };
 
-            var responsaveisDre = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(request.CodigoUe, perfisDre))).ToList();
+            var responsaveisDre = string.IsNullOrEmpty(request.CodigoUe) 
+                                  ? Enumerable.Empty<FuncionarioUnidadeDto>()
+                                  : (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(request.CodigoUe, perfisDre))).ToList();
             if (!responsaveisDre.Any())
-                responsaveisDre = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(request.CodigoDre, perfisDre))).ToList();
+                responsaveisDre = string.IsNullOrEmpty(request.CodigoDre)
+                                  ? Enumerable.Empty<FuncionarioUnidadeDto>()
+                                  : (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(request.CodigoDre, perfisDre))).ToList();
 
             var responsaveisUe = (await mediator.Send(new ObterResponsaveisAtribuidosUePorDreUeTiposQuery(request.CodigoDre, request.CodigoUe, tiposAtribuicaoUe)))
                                 .Select(atribuicaoResponsavel => new FuncionarioUnidadeDto()

@@ -440,6 +440,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             return ServiceProvider.GetService<IObterEncaminhamentoNAAPAPorIdUseCase>();
         }
 
+        protected IObterProfissionaisEnvolvidosAtendimentoNAAPANAAPAUseCase ObterServicoObtencaoProfissionaisEnvolvidosAtendimentoNAAPANAAPAUseCase()
+        {
+            return ServiceProvider.GetService<IObterProfissionaisEnvolvidosAtendimentoNAAPANAAPAUseCase>();
+        }
+
         protected IObterQuestionarioItinerarioEncaminhamentoNAAPAUseCase ObterServicoObterQuestionarioItinerarioEncaminhamentoNAAPA()
         {
             return ServiceProvider.GetService<IObterQuestionarioItinerarioEncaminhamentoNAAPAUseCase>();
