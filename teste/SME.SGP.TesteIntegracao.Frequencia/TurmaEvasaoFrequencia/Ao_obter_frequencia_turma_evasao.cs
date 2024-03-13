@@ -37,8 +37,14 @@ namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
             resultados.ShouldNotBeNull();
             resultados.GraficosFrequencia.Count().ShouldBe(2);
             resultados.TotalEstudantes.ShouldBe(13);
-            resultados.GraficosFrequencia.FirstOrDefault(c => c.Descricao == "BT").Quantidade.ShouldBe(10);
-            resultados.GraficosFrequencia.FirstOrDefault(c => c.Descricao == "JT").Quantidade.ShouldBe(3);
+            resultados.GraficosFrequencia.FirstOrDefault(c => c.Descricao == "BT" 
+                                                              && c.DreCodigo == "1"
+                                                              && string.IsNullOrEmpty(c.UeCodigo)
+                                                              && string.IsNullOrEmpty(c.TurmaCodigo)).Quantidade.ShouldBe(10);
+            resultados.GraficosFrequencia.FirstOrDefault(c => c.Descricao == "JT"
+                                                              && c.DreCodigo == "2"
+                                                              && string.IsNullOrEmpty(c.UeCodigo)
+                                                              && string.IsNullOrEmpty(c.TurmaCodigo)).Quantidade.ShouldBe(3);
         }
 
         [Fact]
@@ -62,6 +68,9 @@ namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
             resultados.ShouldNotBeNull();
             resultados.GraficosFrequencia.Count().ShouldBe(1);
             resultados.TotalEstudantes.ShouldBe(10);
+            resultados.GraficosFrequencia.FirstOrDefault().UeCodigo.ShouldBe("1");
+            resultados.GraficosFrequencia.FirstOrDefault().TurmaCodigo.ShouldBeNullOrEmpty();
+            resultados.GraficosFrequencia.FirstOrDefault().DreCodigo.ShouldBeNullOrEmpty();
             resultados.GraficosFrequencia.FirstOrDefault().Quantidade.ShouldBe(10);
         }
 
@@ -86,6 +95,9 @@ namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
             resultados.ShouldNotBeNull();
             resultados.GraficosFrequencia.Count().ShouldBe(1);
             resultados.TotalEstudantes.ShouldBe(10);
+            resultados.GraficosFrequencia.FirstOrDefault().TurmaCodigo.ShouldBe("1");
+            resultados.GraficosFrequencia.FirstOrDefault().UeCodigo.ShouldBeNullOrEmpty();
+            resultados.GraficosFrequencia.FirstOrDefault().DreCodigo.ShouldBeNullOrEmpty();
             resultados.GraficosFrequencia.FirstOrDefault().Quantidade.ShouldBe(10);
         }
 
@@ -110,8 +122,14 @@ namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
             resultados.ShouldNotBeNull();
             resultados.GraficosFrequencia.Count().ShouldBe(2);
             resultados.TotalEstudantes.ShouldBe(6);
-            resultados.GraficosFrequencia.FirstOrDefault(c => c.Descricao == "BT").Quantidade.ShouldBe(4);
-            resultados.GraficosFrequencia.FirstOrDefault(c => c.Descricao == "JT").Quantidade.ShouldBe(2);
+            resultados.GraficosFrequencia.FirstOrDefault(c => c.Descricao == "BT"
+                                                              && c.DreCodigo == "1"
+                                                              && string.IsNullOrEmpty(c.UeCodigo)
+                                                              && string.IsNullOrEmpty(c.TurmaCodigo)).Quantidade.ShouldBe(4);
+            resultados.GraficosFrequencia.FirstOrDefault(c => c.Descricao == "JT"
+                                                              && c.DreCodigo == "2"
+                                                              && string.IsNullOrEmpty(c.UeCodigo)
+                                                              && string.IsNullOrEmpty(c.TurmaCodigo)).Quantidade.ShouldBe(2);
         }
 
         [Fact]
@@ -135,6 +153,9 @@ namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
             resultados.ShouldNotBeNull();
             resultados.GraficosFrequencia.Count().ShouldBe(1);
             resultados.TotalEstudantes.ShouldBe(4);
+            resultados.GraficosFrequencia.FirstOrDefault().UeCodigo.ShouldBe("1");
+            resultados.GraficosFrequencia.FirstOrDefault().TurmaCodigo.ShouldBeNullOrEmpty();
+            resultados.GraficosFrequencia.FirstOrDefault().DreCodigo.ShouldBeNullOrEmpty();
             resultados.GraficosFrequencia.FirstOrDefault().Quantidade.ShouldBe(4);
         }
 
@@ -159,6 +180,9 @@ namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
             resultados.ShouldNotBeNull();
             resultados.GraficosFrequencia.Count().ShouldBe(1);
             resultados.TotalEstudantes.ShouldBe(4);
+            resultados.GraficosFrequencia.FirstOrDefault().TurmaCodigo.ShouldBe("1");
+            resultados.GraficosFrequencia.FirstOrDefault().UeCodigo.ShouldBeNullOrEmpty();
+            resultados.GraficosFrequencia.FirstOrDefault().DreCodigo.ShouldBeNullOrEmpty();
             resultados.GraficosFrequencia.FirstOrDefault().Quantidade.ShouldBe(4);
         }
 

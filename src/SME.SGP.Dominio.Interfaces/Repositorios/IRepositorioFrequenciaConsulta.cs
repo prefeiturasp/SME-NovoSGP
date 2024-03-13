@@ -30,5 +30,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<AusenciaAlunoDto>> ObterAusenciasPorAluno(string turmaCodigo, string disciplinaCodigo, DateTime[] datas, string alunoCodigo);
         Task<IEnumerable<FrequenciaAlunoDto>> ObterFrequenciaPorTurmaPeriodo(string codigoTurma, DateTime dataInicio, DateTime dataFim);
         Task<long[]> ObterFrequenciasAlunosIdsComPresencasMaiorTotalAulas(long ueId, int anoLetivo);
+        Task<PaginacaoResultadoDto<AlunoFrequenciaTurmaEvasaoDto>> ObterAlunosDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoPaginado(int mes, FiltroAbrangenciaGraficoFrequenciaTurmaEvasaoAlunoDto filtroAbrangencia, Paginacao paginacao);
+        Task<PaginacaoResultadoDto<AlunoFrequenciaTurmaEvasaoDto>> ObterAlunosDashboardFrequenciaTurmaEvasaoSemPresencaPaginado(int mes, FiltroAbrangenciaGraficoFrequenciaTurmaEvasaoAlunoDto filtroAbrangencia, Paginacao paginacao);
     }
 }

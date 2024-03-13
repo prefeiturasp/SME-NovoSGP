@@ -71,6 +71,26 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(filtro));
         }
 
-        
+        [HttpGet("frequencia/turma/evasao/abaixo50porcento/alunos")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(IEnumerable<AlunoFrequenciaTurmaEvasaoDto>), 200)]
+        [Permissao(Permissao.DNA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterAlunosFrequenciaTurmaEvasaoAbaixo50Porcento([FromQuery] FiltroGraficoFrequenciaTurmaEvasaoAlunoDto filtro,
+            [FromServices] IObterAlunosDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
+
+        [HttpGet("frequencia/turma/evasao/sempresenca/alunos")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(IEnumerable<AlunoFrequenciaTurmaEvasaoDto>), 200)]
+        [Permissao(Permissao.DNA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterAlunosFrequenciaTurmaEvasaoSemPresenca([FromQuery] FiltroGraficoFrequenciaTurmaEvasaoAlunoDto filtro,
+            [FromServices] IObterAlunosDashboardFrequenciaTurmaEvasaoSemPresencaUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
     }
 }
