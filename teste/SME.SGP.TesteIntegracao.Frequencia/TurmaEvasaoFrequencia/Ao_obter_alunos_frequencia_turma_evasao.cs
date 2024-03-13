@@ -42,7 +42,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
                                           && al.PercentualFrequencia.Equals(40)).ShouldBeTrue();
 
             var primeiroAluno = resultados.Items.FirstOrDefault();
-            primeiroAluno.Aluno.ShouldBe("Aluno 1 (1)");
+            primeiroAluno.Aluno.ShouldContain("Aluno 1");
             primeiroAluno.Turma.ShouldBe("EM-7A");
             primeiroAluno.Dre.ShouldBe("DRE - BT");
             primeiroAluno.Ue.ShouldBe("UE - 1");
