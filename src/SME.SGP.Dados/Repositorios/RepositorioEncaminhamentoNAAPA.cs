@@ -405,17 +405,18 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<EncaminhamentosNAAPAConsolidadoDto>> ObterQuantidadeSituacaoEncaminhamentosPorUeAnoLetivo(long ueId, int anoLetivo)
         {
-           var query =@"select 
+           var query = @"select 
                             t.ue_id UeId,
                             t.ano_letivo AnoLetivo, 
                             en.situacao,
-                            count(en.id)quantidade
+                            count(en.id)quantidade,
+                            t.modalidade_codigo as Modalidade
                         from encaminhamento_naapa en
                         inner join turma t on en.turma_id = t.id 
                         where not en.excluido  
                         and t.ue_id = @ueId
                         and t.ano_letivo = @anoLetivo
-                        group by t.ue_id,t.ano_letivo ,en.situacao ";
+                        group by t.ue_id,t.ano_letivo ,en.situacao, t.modalidade_codigo ";
            
            return await database.Conexao.QueryAsync<EncaminhamentosNAAPAConsolidadoDto>(query, new {ueId, anoLetivo});
         }

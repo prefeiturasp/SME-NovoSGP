@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -17,7 +16,7 @@ namespace SME.SGP.Aplicacao
 
         public Task<GraficoEncaminhamentoNAAPADto> Executar(FiltroQuantidadeEncaminhamentoNAAPAEmAbertoDto param)
         {
-            return mediator.Send(new ObterQuantidadeEncaminhamentoNAAPAEmAbertoQuery(param.AnoLetivo, param.DreId));
+            return mediator.Send(new ObterQuantidadeEncaminhamentoNAAPAEmAbertoQuery(param.AnoLetivo, param.DreId, param.Modalidade));
         }
     }
 }

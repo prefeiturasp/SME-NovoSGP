@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<GraficoEncaminhamentoNAAPADto> Handle(ObterQuantidadeAtendimentoNAAPAPorProfissionalMesQuery request, CancellationToken cancellationToken)
         {
-            var graficos = await this.repositorioConsolidado.ObterQuantidadeAtendimentoNAAPAPorProfissionalMes(request.AnoLetivo, request.DreId, request.UeId, request.Mes);
+            var graficos = await this.repositorioConsolidado.ObterQuantidadeAtendimentoNAAPAPorProfissionalMes(request.AnoLetivo, request.DreId, request.UeId, request.Mes, (int?)request.Modalidade);
             var grafico = new GraficoEncaminhamentoNAAPADto()
             {
                 DataUltimaConsolidacao = await mediator.Send(new ObterDataUltimaConsolicacaoDashboardNaapaQuery(TipoParametroSistema.GerarConsolidadoAtendimentoNAAPA))

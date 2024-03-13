@@ -1,11 +1,9 @@
 ﻿using Dapper;
-using Polly.Caching;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -283,7 +281,9 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<AtendimentosProfissionalEncaminhamentoNAAPAConsolidadoDto>> ObterQuantidadeAtendimentosProfissionalPorUeAnoLetivoMes(long ueId, int mes, int anoLetivo)
         {
-            var query = @$"select ens.criado_por as Nome, ens.criado_rf as Rf, count(ens.id) as Quantidade from encaminhamento_naapa_secao ens 
+            var query = @$"select ens.criado_por as Nome, ens.criado_rf as Rf, 
+                                  count(ens.id) as Quantidade, t.modalidade_codigo as Modalidade
+                        from encaminhamento_naapa_secao ens
                         inner join encaminhamento_naapa_questao enq on enq.encaminhamento_naapa_secao_id = ens.id
                         inner join questao q on q.id = enq.questao_id 
                         inner join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id 
@@ -299,11 +299,11 @@ namespace SME.SGP.Dados.Repositorios
                         and EXTRACT('Year' FROM to_date(enr.texto,'yyyy-mm-dd')) = @anoLetivo
                         and EXTRACT('Month' FROM to_date(enr.texto,'yyyy-mm-dd')) = @mes
                         and t.ue_id = @ueId
-                        group by ens.criado_por, ens.criado_rf; ";
+                        group by ens.criado_por, ens.criado_rf, t.modalidade_codigo; ";
 
             var retorno = await database.Conexao.QueryAsync<AtendimentosPorProfissionalEncaminhamentoNAAPADto>(query, new { ueId, mes, anoLetivo });
             if (retorno.Any())
-                return retorno.Select(atendimento => new AtendimentosProfissionalEncaminhamentoNAAPAConsolidadoDto(ueId, anoLetivo, mes, atendimento.Nome, atendimento.Rf, atendimento.Quantidade));
+                return retorno.Select(atendimento => new AtendimentosProfissionalEncaminhamentoNAAPAConsolidadoDto(ueId, anoLetivo, mes, atendimento.Nome, atendimento.Rf, atendimento.Quantidade, atendimento.Modalidade));
 
             return Enumerable.Empty<AtendimentosProfissionalEncaminhamentoNAAPAConsolidadoDto>();
 
