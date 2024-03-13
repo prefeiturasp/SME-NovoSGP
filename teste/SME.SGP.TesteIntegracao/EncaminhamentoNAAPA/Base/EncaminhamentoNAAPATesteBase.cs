@@ -44,6 +44,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected const long ID_QUESTAO_PERMANENCIA_ESCOLAR = 43;
         protected const long ID_QUESTAO_ANEXO = 47;
         protected const long ID_QUESTAO_ANEXOS_ITINERANCIA = 48;
+        protected const long ID_QUESTAO_PROFISSIONAIS_ENVOLVIDOS = 49;
 
         protected const long ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_DATA_ENTRADA_QUEIXA = 17;
         protected const long ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PRIORIDADE = 18;
@@ -193,6 +194,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
         protected const string QUESTAO_NOME_COMPONENTE_ANEXOS = "ANEXOS";
         protected const string QUESTAO_NOME_COMPONENTE_ANEXO_ITINERANCIA = "ANEXO_ITINERANCIA";
+        protected const string QUESTAO_NOME_COMPONENTE_PROFISSIONAIS_ENVOLVIDOS = "PROFISSIONAIS_ENVOLVIDOS_ATENDIMENTO";
 
         protected const long ID_OPCAO_RESPOSTA_DOENCA_CRONICA_OU_EM_TRATAMENTO_DE_LONGA_DURACAO_71_1099 = 71;
         protected const long ID_QUESTAO_COMPLEMENTAR_SELECIONE_UM_FILTRO_DOENCA_CRONICA_OU_EM_TRATAMENTO_DE_LONGA_DURACAO_28_303 = 28;
@@ -293,7 +295,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //Id 3
             await InserirNaBase(new SecaoEncaminhamentoNAAPA()
             {
-                QuestionarioId = 3,
+                QuestionarioId = ID_QUESTIONARIO_NAAPA_ITINERANCIA,
                 Nome = "Apoio e Acompanhamento",
                 NomeComponente = EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA,
                 Etapa = 1,
@@ -2663,8 +2665,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //id 7
             await InserirNaBase(new Questao()
             {
-                QuestionarioId = 3,
-                Ordem = 1,
+                QuestionarioId = ID_QUESTIONARIO_NAAPA_ITINERANCIA,
+                Ordem = 0,
                 Nome = "Data do atendimento",
                 Obrigatorio = true,
                 Tipo = TipoQuestao.Data,
@@ -2677,8 +2679,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //id 8
             await InserirNaBase(new Questao()
             {
-                QuestionarioId = 3,
-                Ordem = 2,
+                QuestionarioId = ID_QUESTIONARIO_NAAPA_ITINERANCIA,
+                Ordem = 1,
                 Nome = "Modalidade de atenção",
                 Obrigatorio = true,
                 Tipo = TipoQuestao.Combo,
@@ -2691,8 +2693,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //id 9
             await InserirNaBase(new Questao()
             {
-                QuestionarioId = 3,
-                Ordem = 3,
+                QuestionarioId = ID_QUESTIONARIO_NAAPA_ITINERANCIA,
+                Ordem = 2,
                 Nome = "Procedimento de trabalho",
                 Obrigatorio = true,
                 Tipo = TipoQuestao.ComboMultiplaEscolha,
@@ -2705,8 +2707,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //id 10
             await InserirNaBase(new Questao()
             {
-                QuestionarioId = 3,
-                Ordem = 4,
+                QuestionarioId = ID_QUESTIONARIO_NAAPA_ITINERANCIA,
+                Ordem = 6,
                 Nome = "Descrição do atendimento",
                 Obrigatorio = true,
                 Tipo = TipoQuestao.EditorTexto,
@@ -2719,7 +2721,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //id 11
             await InserirNaBase(new Questao()
             {
-                QuestionarioId = 3,
+                QuestionarioId = ID_QUESTIONARIO_NAAPA_ITINERANCIA,
                 Ordem = 1,
                 Nome = "Descrição do procedimento de trabalho",
                 Obrigatorio = true,
@@ -3174,8 +3176,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             await InserirNaBase(new Questao()
             {
                 QuestionarioId = ID_QUESTIONARIO_NAAPA_ITINERANCIA,
-                Ordem = 3,
-                Nome = "Anexo",
+                Ordem = 7,
+                Nome = "Anexos",
                 Obrigatorio = false,
                 Tipo = TipoQuestao.Upload,
                 CriadoPor = SISTEMA_NOME,
@@ -3184,7 +3186,21 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 NomeComponente = QUESTAO_NOME_COMPONENTE_ANEXO_ITINERANCIA
             });
 
-            
+            //id 49
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = ID_QUESTIONARIO_NAAPA_ITINERANCIA,
+                Ordem = 5,
+                Nome = "Profissionais envolvidos",
+                Obrigatorio = false,
+                Tipo = TipoQuestao.Upload,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now,
+                NomeComponente = QUESTAO_NOME_COMPONENTE_PROFISSIONAIS_ENVOLVIDOS
+            });
+
+
         }
 
         protected class FiltroNAAPADto

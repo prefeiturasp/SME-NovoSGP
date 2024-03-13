@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
+namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
 {
     public class Ao_listar_secoes_itinerancia : EncaminhamentoNAAPATesteBase
     {
@@ -40,7 +40,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             await CriarDadosBase(filtroNAAPA);
 
-            
+
             var obterSecoesItineranciaEncaminhamentoNaapaUseCase = ObterServicoListagemSecoesItineranciaEncaminhamentoNaapa();
             await GerarDadosEncaminhamentoNAAPA(DateTimeExtension.HorarioBrasilia().Date);
 
@@ -104,7 +104,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Tipo = TipoArquivo.ItineranciaEncaminhamentoNAAPA
             });
 
-            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+            await InserirNaBase(new RespostaEncaminhamentoNAAPA()
             {
                 QuestaoEncaminhamentoId = 13,
                 Texto = "",
@@ -113,7 +113,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
-            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+            await InserirNaBase(new RespostaEncaminhamentoNAAPA()
             {
                 QuestaoEncaminhamentoId = 13,
                 Texto = "",
@@ -145,7 +145,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Tipo = TipoArquivo.ItineranciaEncaminhamentoNAAPA
             });
 
-            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+            await InserirNaBase(new RespostaEncaminhamentoNAAPA()
             {
                 QuestaoEncaminhamentoId = 14,
                 Texto = "",
@@ -154,7 +154,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
-            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+            await InserirNaBase(new RespostaEncaminhamentoNAAPA()
             {
                 QuestaoEncaminhamentoId = 14,
                 Texto = "",
@@ -168,7 +168,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         private async Task CriarRespostasEncaminhamentoNAAPA(DateTime dataQueixa)
         {
             //Informações estudante
-            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+            await InserirNaBase(new RespostaEncaminhamentoNAAPA()
             {
                 QuestaoEncaminhamentoId = 1,
                 Texto = dataQueixa.ToString("dd/MM/yyyy"),
@@ -177,7 +177,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+            await InserirNaBase(new RespostaEncaminhamentoNAAPA()
             {
                 QuestaoEncaminhamentoId = 2,
                 Texto = "1",
@@ -187,7 +187,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             });
 
             //itinerancia 1
-            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+            await InserirNaBase(new RespostaEncaminhamentoNAAPA()
             {
                 QuestaoEncaminhamentoId = 3,
                 Texto = DateTimeExtension.HorarioBrasilia().Date.ToString("yyyy/MM/dd"),
@@ -196,7 +196,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+            await InserirNaBase(new RespostaEncaminhamentoNAAPA()
             {
                 QuestaoEncaminhamentoId = 4,
                 Texto = "",
@@ -206,7 +206,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+            await InserirNaBase(new RespostaEncaminhamentoNAAPA()
             {
                 QuestaoEncaminhamentoId = 5,
                 Texto = "",
@@ -216,7 +216,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+            await InserirNaBase(new RespostaEncaminhamentoNAAPA()
             {
                 QuestaoEncaminhamentoId = 6,
                 Texto = "Teste Descricao Atendimento",
@@ -225,7 +225,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+            await InserirNaBase(new RespostaEncaminhamentoNAAPA()
             {
                 QuestaoEncaminhamentoId = 7,
                 Texto = "Teste Descricao Procedimento de Trabalho",
@@ -235,7 +235,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             });
 
             //itinerancia 2
-            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+            await InserirNaBase(new RespostaEncaminhamentoNAAPA()
             {
                 QuestaoEncaminhamentoId = 8,
                 Texto = DateTimeExtension.HorarioBrasilia().Date.AddDays(4).ToString("yyyy/MM/dd"),
@@ -244,7 +244,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+            await InserirNaBase(new RespostaEncaminhamentoNAAPA()
             {
                 QuestaoEncaminhamentoId = 9,
                 Texto = "",
@@ -254,7 +254,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+            await InserirNaBase(new RespostaEncaminhamentoNAAPA()
             {
                 QuestaoEncaminhamentoId = 10,
                 Texto = "",
@@ -264,7 +264,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+            await InserirNaBase(new RespostaEncaminhamentoNAAPA()
             {
                 QuestaoEncaminhamentoId = 11,
                 Texto = "Teste Descricao Atendimento 02",
@@ -273,7 +273,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+            await InserirNaBase(new RespostaEncaminhamentoNAAPA()
             {
                 QuestaoEncaminhamentoId = 12,
                 Texto = "Teste Descricao Procedimento de Trabalho 02",
@@ -286,7 +286,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         private async Task CriarQuestoesAnexoItineranciaEncaminhamentoNAAPA()
         {
             //Id 13 - Itinerancia 1
-            await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
+            await InserirNaBase(new QuestaoEncaminhamentoNAAPA()
             {
                 EncaminhamentoNAAPASecaoId = 2,
                 QuestaoId = ID_QUESTAO_ANEXOS_ITINERANCIA,
@@ -295,7 +295,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF
             });
             //Id 14 - Itinerancia 2
-            await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
+            await InserirNaBase(new QuestaoEncaminhamentoNAAPA()
             {
                 EncaminhamentoNAAPASecaoId = 3,
                 QuestaoId = ID_QUESTAO_ANEXOS_ITINERANCIA,
@@ -308,7 +308,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         {
             //informações estudante
             //Id 1
-            await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
+            await InserirNaBase(new QuestaoEncaminhamentoNAAPA()
             {
                 EncaminhamentoNAAPASecaoId = 1,
                 QuestaoId = 1,
@@ -318,7 +318,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             });
 
             //Id 2
-            await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
+            await InserirNaBase(new QuestaoEncaminhamentoNAAPA()
             {
                 EncaminhamentoNAAPASecaoId = 1,
                 QuestaoId = 2,
@@ -329,7 +329,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             //itinerancia 1
             //Id 3
-            await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
+            await InserirNaBase(new QuestaoEncaminhamentoNAAPA()
             {
                 EncaminhamentoNAAPASecaoId = 2,
                 QuestaoId = ID_QUESTAO_DATA_ATENDIMENTO,
@@ -339,7 +339,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             });
 
             //Id 4
-            await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
+            await InserirNaBase(new QuestaoEncaminhamentoNAAPA()
             {
                 EncaminhamentoNAAPASecaoId = 2,
                 QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
@@ -349,7 +349,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             });
 
             //Id 5
-            await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
+            await InserirNaBase(new QuestaoEncaminhamentoNAAPA()
             {
                 EncaminhamentoNAAPASecaoId = 2,
                 QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
@@ -359,7 +359,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             });
 
             //Id 6
-            await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
+            await InserirNaBase(new QuestaoEncaminhamentoNAAPA()
             {
                 EncaminhamentoNAAPASecaoId = 2,
                 QuestaoId = ID_QUESTAO_DESCRICAO_ATENDIMENTO,
@@ -369,7 +369,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             });
 
             //Id 7
-            await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
+            await InserirNaBase(new QuestaoEncaminhamentoNAAPA()
             {
                 EncaminhamentoNAAPASecaoId = 2,
                 QuestaoId = ID_QUESTAO_DESCRICAO_PROCEDIMENTO_TRABALHO,
@@ -380,7 +380,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             //itinerancia 2
             //Id 8
-            await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
+            await InserirNaBase(new QuestaoEncaminhamentoNAAPA()
             {
                 EncaminhamentoNAAPASecaoId = 3,
                 QuestaoId = ID_QUESTAO_DATA_ATENDIMENTO,
@@ -390,7 +390,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             });
 
             //Id 9
-            await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
+            await InserirNaBase(new QuestaoEncaminhamentoNAAPA()
             {
                 EncaminhamentoNAAPASecaoId = 3,
                 QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
@@ -400,7 +400,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             });
 
             //Id 10
-            await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
+            await InserirNaBase(new QuestaoEncaminhamentoNAAPA()
             {
                 EncaminhamentoNAAPASecaoId = 3,
                 QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
@@ -410,7 +410,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             });
 
             //Id 11
-            await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
+            await InserirNaBase(new QuestaoEncaminhamentoNAAPA()
             {
                 EncaminhamentoNAAPASecaoId = 3,
                 QuestaoId = ID_QUESTAO_DESCRICAO_ATENDIMENTO,
@@ -420,7 +420,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             });
 
             //Id 12
-            await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
+            await InserirNaBase(new QuestaoEncaminhamentoNAAPA()
             {
                 EncaminhamentoNAAPASecaoId = 3,
                 QuestaoId = ID_QUESTAO_DESCRICAO_PROCEDIMENTO_TRABALHO,
@@ -433,7 +433,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         private async Task CriarEncaminhamentoNAAPASecao()
         {
             //Id 1
-            await InserirNaBase(new Dominio.EncaminhamentoNAAPASecao()
+            await InserirNaBase(new EncaminhamentoNAAPASecao()
             {
                 EncaminhamentoNAAPAId = 1,
                 SecaoEncaminhamentoNAAPAId = ID_SECAO_ENCAMINHAMENTO_NAAPA_INFORMACOES_ESTUDANTE,
@@ -443,7 +443,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             });
 
             //Id 2
-            await InserirNaBase(new Dominio.EncaminhamentoNAAPASecao()
+            await InserirNaBase(new EncaminhamentoNAAPASecao()
             {
                 EncaminhamentoNAAPAId = 1,
                 SecaoEncaminhamentoNAAPAId = ID_SECAO_ENCAMINHAMENTO_NAAPA_ITINERANCIA,
@@ -453,7 +453,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             });
 
             //Id 3
-            await InserirNaBase(new Dominio.EncaminhamentoNAAPASecao()
+            await InserirNaBase(new EncaminhamentoNAAPASecao()
             {
                 EncaminhamentoNAAPAId = 1,
                 SecaoEncaminhamentoNAAPAId = ID_SECAO_ENCAMINHAMENTO_NAAPA_ITINERANCIA,
