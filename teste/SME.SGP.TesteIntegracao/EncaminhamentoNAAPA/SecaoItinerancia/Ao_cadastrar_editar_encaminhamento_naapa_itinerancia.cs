@@ -83,7 +83,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
             excecao.Message.ShouldBe(string.Format(MensagemNegocioEncaminhamentoNAAPA.EXISTEM_QUESTOES_OBRIGATORIAS_NAO_PREENCHIDAS,
-                                                    "Seção: Apoio e Acompanhamento Questões: [1, 2, 3]"));
+                                                    "Seção: Apoio e Acompanhamento Questões: [0, 1, 2]"));
         }
 
         [Fact(DisplayName = "Encaminhamento NAAPA - Cadastrar encaminhamento NAAPA itinerância")]
@@ -144,6 +144,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
                             QuestaoId = ID_QUESTAO_DESCRICAO_ATENDIMENTO,
                             TipoQuestao = TipoQuestao.EditorTexto,
                             Resposta = "Descrição do atendimento"
+                        },
+                        new ()
+                        {
+                            QuestaoId = ID_QUESTAO_PROFISSIONAIS_ENVOLVIDOS,
+                            TipoQuestao = TipoQuestao.ProfissionaisEnvolvidos,
+                            Resposta = PROFISSIONAIS_ENVOLVIDOS_01
                         }
                     }
                 }
@@ -182,6 +188,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
             var resposta4 = respostas.Find(resposta => resposta.QuestaoEncaminhamentoId == questao4.Id);
             resposta4.ShouldNotBeNull();
             resposta4.Texto.ShouldBe("Descrição do atendimento");
+
+            var questao5 = questoes.Find(questao => questao.QuestaoId == ID_QUESTAO_PROFISSIONAIS_ENVOLVIDOS);
+            questao5.ShouldNotBeNull();
+            var resposta5 = respostas.Find(resposta => resposta.QuestaoEncaminhamentoId == questao5.Id);
+            resposta5.ShouldNotBeNull();
+            resposta5.Texto.ShouldBe(PROFISSIONAIS_ENVOLVIDOS_01);
         }
 
         [Fact(DisplayName = "Encaminhamento NAAPA - Editar encaminhamento NAAPA itinerância (campos obrigatório não preenchidos)")]
@@ -241,12 +253,6 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
                             QuestaoId = ID_QUESTAO_DESCRICAO_ATENDIMENTO,
                             TipoQuestao = TipoQuestao.EditorTexto,
                             Resposta = "Descrição do atendimento"
-                        },
-                        new ()
-                        {
-                            QuestaoId = ID_QUESTAO_PROFISSIONAIS_ENVOLVIDOS,
-                            TipoQuestao = TipoQuestao.ProfissionaisEnvolvidos,
-                            Resposta = PROFISSIONAIS_ENVOLVIDOS_02
                         }
                     }
                 }
@@ -255,7 +261,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
             excecao.Message.ShouldBe(string.Format(MensagemNegocioEncaminhamentoNAAPA.EXISTEM_QUESTOES_OBRIGATORIAS_NAO_PREENCHIDAS,
-                                                    "Seção: Apoio e Acompanhamento Questões: [1, 2, 3]"));
+                                                    "Seção: Apoio e Acompanhamento Questões: [0, 1, 2]"));
         }
 
         [Fact(DisplayName = "Encaminhamento NAAPA - Editar encaminhamento NAAPA itinerância")]
@@ -327,7 +333,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
                         {
                             QuestaoId = ID_QUESTAO_PROFISSIONAIS_ENVOLVIDOS,
                             TipoQuestao = TipoQuestao.ProfissionaisEnvolvidos,
-                            Resposta = PROFISSIONAIS_ENVOLVIDOS_02
+                            Resposta = PROFISSIONAIS_ENVOLVIDOS_02,
+                            RespostaEncaminhamentoId = 7
                         }
                     }
                 }

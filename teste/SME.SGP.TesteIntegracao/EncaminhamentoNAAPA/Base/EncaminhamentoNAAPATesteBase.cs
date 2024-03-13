@@ -3193,7 +3193,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Ordem = 5,
                 Nome = "Profissionais envolvidos",
                 Obrigatorio = false,
-                Tipo = TipoQuestao.Upload,
+                Tipo = TipoQuestao.ProfissionaisEnvolvidos,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now,
