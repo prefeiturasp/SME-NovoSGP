@@ -54,8 +54,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<GraficoEncaminhamentoNAAPADto> ObterQuantidadeEncaminhamentoNAAPAEmAberto(int anoLetivo, long? dreId, int? modalidade)
         {
-            var situacoesNaapaAberto = new int[] { (int)SituacaoNAAPA.EmAtendimento, (int)SituacaoNAAPA.AguardandoAtendimento };
-            var situacaoEncerrada = (int)SituacaoNAAPA.Encerrado ;
+            var situacaoEncerrada = (int)SituacaoNAAPA.Encerrado;
             var query = new StringBuilder();
 
             query.AppendLine(@" select dre.dre_id CodigoDre, dre.abreviacao Descricao, sum(quantidade) Quantidade
@@ -63,15 +62,16 @@ namespace SME.SGP.Dados.Repositorios
                             inner join ue on ue.id = cen.ue_id
                             inner join dre on dre.id = ue.dre_id");
 
-            var where = " where ano_letivo = @anoLetivo ";
+            var where = @" where ano_letivo = @anoLetivo 
+                             and situacao <> @situacaoEncerrada";
 
             if (dreId.HasValue)
-                where += " and dre.id = @dreId";
+                where += " and ue.dre_id = @dreId";
 
             if (modalidade.HasValue)
                 where += " and cen.modalidade_codigo = @modalidade";
 
-            query.AppendLine($" {where} and situacao = ANY(@situacoesNaapaAberto)");
+            query.AppendLine($" {where} ");
 
             query.AppendLine(@" group by dre.dre_id, dre.abreviacao
                                 order by dre.dre_id, dre.abreviacao;");
@@ -80,13 +80,11 @@ namespace SME.SGP.Dados.Repositorios
                                 from consolidado_encaminhamento_naapa cen
                                 inner join ue on ue.id = cen.ue_id");
 
-            query.AppendLine($" {where} and situacao <> @situacaoEncerrada");
-
-            query.AppendLine(";");
+            query.AppendLine($" {where} ;");
 
             var retorno = new GraficoEncaminhamentoNAAPADto();
 
-            using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), new { anoLetivo, dreId, situacoesNaapaAberto, situacaoEncerrada, modalidade }))
+            using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), new { anoLetivo, dreId, situacaoEncerrada, modalidade }))
             {
                 retorno.Graficos = multi.Read<GraficoBaseDto>().ToList();
                 retorno.TotaEncaminhamento = multi.ReadFirst<long>();
