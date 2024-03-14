@@ -19,7 +19,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Infra.Utilitarios;
 using Minio.DataModel;
 
-namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
+namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
 {
     public class Ao_notificar_responsaveis_por_inatividade_atendimento_naapa : EncaminhamentoNAAPATesteBase
     {
@@ -74,7 +74,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var mensagem = new MensagemRabbit(JsonSerializer.Serialize(dto));
 
-            var gerouNotificacoes = (await useCase.Executar(mensagem));
+            var gerouNotificacoes = await useCase.Executar(mensagem);
             gerouNotificacoes.ShouldBe(true);
 
             var encaminhamentoNAAPA = ObterTodos<Dominio.EncaminhamentoNAAPA>().FirstOrDefault();

@@ -289,5 +289,15 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(encaminhamentoId));
         }
+
+        [HttpGet("secoes-itinerancia/profissionais-envolvidos")]
+        [ProducesResponseType(typeof(IEnumerable<FuncionarioUnidadeDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterProfissionaisEnvolvidosAtendimento([FromQuery] FiltroBuscarProfissionaisEnvolvidosAtendimentoNAAPA filtro,
+            [FromServices] IObterProfissionaisEnvolvidosAtendimentoNAAPANAAPAUseCase obterProfissionaisEnvolvidosAtendimentoNAAPANAAPAUseCase)
+        {
+            return Ok(await obterProfissionaisEnvolvidosAtendimentoNAAPANAAPAUseCase.Executar(filtro));
+        }
     }
 }

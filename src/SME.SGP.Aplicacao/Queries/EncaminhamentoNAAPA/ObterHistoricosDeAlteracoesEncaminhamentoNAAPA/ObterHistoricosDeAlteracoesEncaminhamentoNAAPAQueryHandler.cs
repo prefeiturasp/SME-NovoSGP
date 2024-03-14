@@ -126,7 +126,8 @@ namespace SME.SGP.Aplicacao
 
         private bool CampoPodeSerInserido(EncaminhamentoNAAPASecaoQuestaoDto respostasEncaminhamento)
         {
-            if (respostasEncaminhamento.TipoQuestao == TipoQuestao.TurmasPrograma)
+            if (respostasEncaminhamento.TipoQuestao == TipoQuestao.TurmasPrograma
+                || respostasEncaminhamento.TipoQuestao == TipoQuestao.ProfissionaisEnvolvidos)
                 return respostasEncaminhamento.Resposta != "[]";
 
             if (EhCampoLista(respostasEncaminhamento))
@@ -266,7 +267,8 @@ namespace SME.SGP.Aplicacao
         private bool EhCampoLista(EncaminhamentoNAAPASecaoQuestaoDto respostaAlteracao)
         {
             return EnumExtension.EhUmDosValores(respostaAlteracao.TipoQuestao, new Enum[] { TipoQuestao.Endereco, TipoQuestao.ContatoResponsaveis,
-                                                                                            TipoQuestao.AtividadesContraturno, TipoQuestao.TurmasPrograma});
+                                                                                            TipoQuestao.AtividadesContraturno, TipoQuestao.TurmasPrograma,
+                                                                                            TipoQuestao.ProfissionaisEnvolvidos});
         }
 
         private async Task<string> ObterNomeQuestao(Questao questao)

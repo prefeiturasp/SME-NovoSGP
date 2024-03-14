@@ -10,7 +10,7 @@ using SME.SGP.Aplicacao;
 using Shouldly;
 using System.Linq;
 
-namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
+namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
 {
     public class Ao_obter_informacoes_inatividade_atendimento_naapa : EncaminhamentoNAAPATesteBase
     {
@@ -45,16 +45,16 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             };
             await CriarDadosBase(filtroNAAPA);
 
-            var mediator = ServiceProvider.GetService<IMediator>(); 
+            var mediator = ServiceProvider.GetService<IMediator>();
             var dataCriacao = DateTimeExtension.HorarioBrasilia().Date;
-          
+
             await GerarDadosEncaminhamentoNAAPA(dataCriacao, ENCAMINHAMENTO_ID_1);
 
             dataCriacao = dataCriacao.AddDays(-40);
             await GerarDadosEncaminhamentoNAAPA(
-                                dataCriacao, 
-                                ENCAMINHAMENTO_ID_2, 
-                                ENCAMINHAMENTO_SECAO_ID_2, 
+                                dataCriacao,
+                                ENCAMINHAMENTO_ID_2,
+                                ENCAMINHAMENTO_SECAO_ID_2,
                                 RESPOSTA_ITINERANCIA_ID_3);
 
             var informacoes = await mediator.Send(new ObterEncaminhamentosNAAPAComInatividadeDeAtendimentoQuery(UE_ID_1));
@@ -89,16 +89,16 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var dataCriacao = DateTimeExtension.HorarioBrasilia().Date;
 
             await GerarDadosEncaminhamentoNAAPA(
-                            dataCriacao, 
-                            ENCAMINHAMENTO_ID_1, 
-                            ENCAMINHAMENTO_SECAO_ID_1, 
-                            RESPOSTA_ITINERANCIA_ID_1, 
+                            dataCriacao,
+                            ENCAMINHAMENTO_ID_1,
+                            ENCAMINHAMENTO_SECAO_ID_1,
+                            RESPOSTA_ITINERANCIA_ID_1,
                             dataCriacao.AddDays(-40));
 
             await GerarDadosEncaminhamentoNAAPA(
-                            dataCriacao, 
-                            ENCAMINHAMENTO_ID_2, 
-                            ENCAMINHAMENTO_SECAO_ID_2, 
+                            dataCriacao,
+                            ENCAMINHAMENTO_ID_2,
+                            ENCAMINHAMENTO_SECAO_ID_2,
                             RESPOSTA_ITINERANCIA_ID_3);
 
             var informacoes = await mediator.Send(new ObterEncaminhamentosNAAPAComInatividadeDeAtendimentoQuery(UE_ID_1));
@@ -176,18 +176,18 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             await GerarDadosEncaminhamentoNAAPA(
                             dataCriacao,
-                            ENCAMINHAMENTO_ID_1, 
-                            ENCAMINHAMENTO_SECAO_ID_1, 
-                            RESPOSTA_ITINERANCIA_ID_1, 
+                            ENCAMINHAMENTO_ID_1,
+                            ENCAMINHAMENTO_SECAO_ID_1,
+                            RESPOSTA_ITINERANCIA_ID_1,
                             dataCriacao.AddDays(-40));
             await CriarEncaminhamentoNAAPASecao(ENCAMINHAMENTO_ID_1, ID_QUESTIONARIO_NAAPA_ITINERANCIA);
             await CriarQuestoesEncaminhamentoNAAPAItinerario(ENCAMINHAMENTO_SECAO_ID_2);
             await CriarRespostasEncaminhamentoNAAPAItinerario(dataCriacao, RESPOSTA_ITINERANCIA_ID_3);
 
             await GerarDadosEncaminhamentoNAAPA(
-                            dataCriacao, 
-                            ENCAMINHAMENTO_ID_2, 
-                            ENCAMINHAMENTO_SECAO_ID_3, 
+                            dataCriacao,
+                            ENCAMINHAMENTO_ID_2,
+                            ENCAMINHAMENTO_SECAO_ID_3,
                             RESPOSTA_ITINERANCIA_ID_7);
             await CriarEncaminhamentoNAAPASecao(ENCAMINHAMENTO_ID_2, ID_QUESTIONARIO_NAAPA_ITINERANCIA);
             await CriarQuestoesEncaminhamentoNAAPAItinerario(ENCAMINHAMENTO_SECAO_ID_4);
@@ -240,10 +240,10 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         }
 
         private async Task GerarDadosEncaminhamentoNAAPA(
-                                DateTime dataCriacao, 
-                                long encaminhamentoId, 
-                                long encaminhamentoSecaoId = 1, 
-                                long encaminhamentoResposta = 1, 
+                                DateTime dataCriacao,
+                                long encaminhamentoId,
+                                long encaminhamentoSecaoId = 1,
+                                long encaminhamentoResposta = 1,
                                 DateTime? dataUltimaNotificacao = null,
                                 SituacaoNAAPA situacao = SituacaoNAAPA.EmAtendimento)
         {
