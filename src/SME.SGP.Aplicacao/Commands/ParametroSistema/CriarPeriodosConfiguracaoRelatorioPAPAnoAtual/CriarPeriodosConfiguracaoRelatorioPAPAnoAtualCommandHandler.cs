@@ -25,8 +25,8 @@ namespace SME.SGP.Aplicacao
             if (tipoCalendario.NaoEhNulo()
                 && tipoCalendario.Modalidade == ModalidadeTipoCalendario.FundamentalMedio)
             {
-                var inseriuRegistros = await repositorioParametrosSistema.CriarParametrosPeriodosConfiguracaoRelatorioPeriodicoPAPAnoAtualAsync(tipoCalendario.AnoLetivo);
-                return inseriuRegistros > 0;
+                await repositorioParametrosSistema.CriarParametrosPeriodosConfiguracaoRelatorioPeriodicoPAPAnoAtualAsync(tipoCalendario.AnoLetivo);
+                return true;
             }
             return false;
         }

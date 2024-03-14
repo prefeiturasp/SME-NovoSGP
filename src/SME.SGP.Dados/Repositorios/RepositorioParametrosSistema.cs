@@ -40,9 +40,9 @@ namespace SME.SGP.Dados.Repositorios
         }
 
 
-        public async Task<int> CriarParametrosPeriodosConfiguracaoRelatorioPeriodicoPAPAnoAtualAsync(int anoAtual)
+        public async Task CriarParametrosPeriodosConfiguracaoRelatorioPeriodicoPAPAnoAtualAsync(int anoAtual)
         {
-            var query = @"DO $$
+            var query = $@"DO $$
                           DECLARE
                               configuracaoId bigint;
                               periodoRelatorioId bigint;
@@ -53,7 +53,7 @@ namespace SME.SGP.Dados.Repositorios
                                   SELECT pe.id, pe.bimestre 
                                   FROM periodo_escolar pe 
                                   INNER JOIN tipo_calendario tc ON tc.id = pe.tipo_calendario_id
-                                  WHERE ano_letivo = @anoAtual AND modalidade = 1 AND NOT tc.excluido
+                                  WHERE ano_letivo = {anoAtual} AND modalidade = 1 AND NOT tc.excluido
                                         and coalesce(configuracaoId, 0) > 0
                                   ORDER BY pe.bimestre
                               LOOP
@@ -70,7 +70,7 @@ namespace SME.SGP.Dados.Repositorios
                               END LOOP;
                           END $$;";
 
-            return await database.Conexao.ExecuteAsync(query.ToString(), new { anoAtual });
+            await database.Conexao.ExecuteAsync(query.ToString());
         }
     }
 }

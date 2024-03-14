@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
             var listaPeriodoEscolar = MapearListaPeriodos(periodosDto);
 
             await servicoPeriodoEscolar.SalvarPeriodoEscolar(listaPeriodoEscolar, periodosDto.TipoCalendario);
-            await mediator.Send(new CriarPeriodosConfiguracaoRelatorioPAPAnoAtualCommand(periodosDto.TipoCalendario == 0));
+            await mediator.Send(new CriarPeriodosConfiguracaoRelatorioPAPAnoAtualCommand(periodosDto.TipoCalendario));
         }
 
         private IEnumerable<PeriodoEscolar> MapearListaPeriodos(PeriodoEscolarListaDto periodosDto)
