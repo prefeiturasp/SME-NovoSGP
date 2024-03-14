@@ -7,5 +7,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task AtualizarValorPorTipoAsync(TipoParametroSistema tipo, string valor, int? ano = null);
         Task<int> ReplicarParametrosAnoAnteriorAsync(int anoAtual, int anoAnterior);
+        Task CriarParametrosPeriodosConfiguracaoRelatorioPeriodicoPAPAnoAtualAsync(int anoAtual);
     }
 }

@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -12,11 +13,13 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioPeriodoEscolar repositorioPeriodo;
         private readonly IServicoPeriodoEscolar servicoPeriodoEscolar;
+        private readonly IMediator mediator;
 
-        public ComandosPeriodoEscolar(IRepositorioPeriodoEscolar repositorioPeriodo, IServicoPeriodoEscolar servicoPeriodoEscolar)
+        public ComandosPeriodoEscolar(IRepositorioPeriodoEscolar repositorioPeriodo, IServicoPeriodoEscolar servicoPeriodoEscolar, IMediator mediator)
         {
             this.repositorioPeriodo = repositorioPeriodo ?? throw new ArgumentNullException(nameof(repositorioPeriodo));
             this.servicoPeriodoEscolar = servicoPeriodoEscolar ?? throw new ArgumentNullException(nameof(servicoPeriodoEscolar));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task Salvar(PeriodoEscolarListaDto periodosDto)
@@ -28,6 +31,7 @@ namespace SME.SGP.Aplicacao
             var listaPeriodoEscolar = MapearListaPeriodos(periodosDto);
 
             await servicoPeriodoEscolar.SalvarPeriodoEscolar(listaPeriodoEscolar, periodosDto.TipoCalendario);
+            await mediator.Send(new CriarPeriodosConfiguracaoRelatorioPAPAnoAtualCommand(periodosDto.TipoCalendario));
         }
 
         private IEnumerable<PeriodoEscolar> MapearListaPeriodos(PeriodoEscolarListaDto periodosDto)
