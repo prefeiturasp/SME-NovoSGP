@@ -1,4 +1,6 @@
-﻿using Moq;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
@@ -15,13 +17,12 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         private readonly ComandosPeriodoEscolar comandosPeriodoEscolar;
         private readonly Mock<IRepositorioPeriodoEscolar> repositorioPeriodo;
         private readonly Mock<IServicoPeriodoEscolar> servicoPeriodoEscolar;
-
+  
         public ComandosPeriodoEscolarTeste()
         {
             servicoPeriodoEscolar = new Mock<IServicoPeriodoEscolar>();
             repositorioPeriodo = new Mock<IRepositorioPeriodoEscolar>();
-
-            comandosPeriodoEscolar = new ComandosPeriodoEscolar(repositorioPeriodo.Object, servicoPeriodoEscolar.Object);
+            comandosPeriodoEscolar = new ComandosPeriodoEscolar(repositorioPeriodo.Object, servicoPeriodoEscolar.Object, mediator);
         }
 
         [Fact(DisplayName = "Deve_Disparar_Excecao_Ao_Instanciar_Sem_Dependencias")]
