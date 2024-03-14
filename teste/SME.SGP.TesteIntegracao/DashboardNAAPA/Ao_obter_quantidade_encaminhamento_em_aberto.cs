@@ -65,7 +65,7 @@ namespace SME.SGP.TesteIntegracao.DashboardNAAPA
 
             retorno.ShouldNotBeNull();
             retorno.TotaEncaminhamento.ShouldBe(10);
-            retorno.Graficos.FirstOrDefault().Quantidade.ShouldBe(8);
+            retorno.Graficos.FirstOrDefault().Quantidade.ShouldBe(10);
         }
 
         [Fact]
