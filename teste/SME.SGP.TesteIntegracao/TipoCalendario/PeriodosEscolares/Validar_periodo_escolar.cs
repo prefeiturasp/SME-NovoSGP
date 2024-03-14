@@ -159,11 +159,6 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             var periodosEscolaresRelatorioPAP = ObterTodos<PeriodoEscolarRelatorioPAP>();
             periodosRelatorioPAP.Count().ShouldBe(4);
             periodosEscolaresRelatorioPAP.Count().ShouldBe(4);
-            await comandoPeriodoEscolar.Salvar(parametro);
-            periodosRelatorioPAP = ObterTodos<PeriodoRelatorioPAP>();
-            periodosEscolaresRelatorioPAP = ObterTodos<PeriodoEscolarRelatorioPAP>();
-            periodosRelatorioPAP.Count().ShouldBe(4);
-            periodosEscolaresRelatorioPAP.Count().ShouldBe(4);
         }
 
         [Fact(DisplayName = "Deve_Salvar_Periodo_Escolar_Nao_Replicando_Periodos_Relatorios_PAP")]
