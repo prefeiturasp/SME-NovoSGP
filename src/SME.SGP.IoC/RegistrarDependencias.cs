@@ -589,6 +589,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioRegistroColetivo, RepositorioRegistroColetivo>();
             services.TryAddScoped<IRepositorioRegistroColetivoUe, RepositorioRegistroColetivoUe>();
             services.TryAddScoped<IRepositorioRegistroColetivoAnexo, RepositorioRegistroColetivoAnexo>();
+
+            services.TryAddScoped<IRepositorioObjetivoAprendizagemConsulta, RepositorioObjetivoAprendizagemConsulta>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)
