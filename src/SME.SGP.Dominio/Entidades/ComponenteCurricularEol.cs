@@ -26,13 +26,9 @@ namespace SME.SGP.Dominio
         public long[] CodigosTerritoriosAgrupamento { get; set; }
 
         public bool PossuiObjetivosDeAprendizagem(IEnumerable<ComponenteCurricularJurema> componentesCurricularesJurema, Modalidade turmaModalidade)
-        {
-            if (new[] { Modalidade.Medio }.Contains(turmaModalidade))
-                return false;
-
-            return componentesCurricularesJurema.Any(x => x.CodigoEOL == Codigo);
-        }
-
+        => turmaModalidade.PossuiObjetivosAprendizagem()
+           && componentesCurricularesJurema.Any(x => x.CodigoEOL == Codigo);
+        
         public bool PossuiObjetivosDeAprendizagemOpcionais(IEnumerable<ComponenteCurricularJurema> componentesCurricularesJurema, bool ensinoEspecial)
         {
             return ensinoEspecial && (componentesCurricularesJurema.Any(x => x.CodigoEOL == Codigo && new long[] { 218, 138, 1116 }.Contains(Codigo)) || Regencia);
