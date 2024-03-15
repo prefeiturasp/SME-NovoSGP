@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<FuncionarioUnidadeDto>> Handle(ObterResponsaveisPorDreUeNAAPAQuery request, CancellationToken cancellationToken)
         {
-            var perfisDre = new Guid[] { Perfis.PERFIL_COORDENADOR_NAAPA };
+            var perfisDre = new Guid[] { Perfis.PERFIL_COORDENADOR_NAAPA, Perfis.PERFIL_PSICOLOGO_ESCOLAR, Perfis.PERFIL_PSICOPEDAGOGO };
             var tiposAtribuicaoUe = new TipoResponsavelAtribuicao[] { TipoResponsavelAtribuicao.Psicopedagogo,
                                         TipoResponsavelAtribuicao.PsicologoEscolar,
                                         TipoResponsavelAtribuicao.AssistenteSocial };
