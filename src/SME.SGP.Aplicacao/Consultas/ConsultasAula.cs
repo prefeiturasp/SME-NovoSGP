@@ -103,7 +103,7 @@ namespace SME.SGP.Aplicacao
 
             var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(turmaCodigo, usuarioLogado.Login, usuarioLogado.PerfilAtual, true));
 
-            var disciplinaCJ = (await mediator.Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.CodigoRf))).FirstOrDefault(x => x.TurmaId == turma.CodigoTurma && 
+            var disciplinaCJ = (await mediator.Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.CodigoRf)))?.FirstOrDefault(x => x.TurmaId == turma.CodigoTurma && 
                                                                                                                                                             x.DisciplinaId.ToString() == disciplinaCodigo);
             if (componentesCurriculares.EhNulo())
                 componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(turmaCodigo, usuarioLogado.Login, usuarioLogado.PerfilAtual, true, false));
