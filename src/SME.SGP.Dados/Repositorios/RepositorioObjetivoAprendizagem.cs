@@ -57,22 +57,6 @@ namespace SME.SGP.Dados.Repositorios
             }
         }
 
-        public async Task<IEnumerable<ObjetivoAprendizagemDto>> ObterPorAnoEComponenteCurricularJuremaIds(AnoTurma? ano, long[] juremaIds)
-        {
-            using (var conexao = new NpgsqlConnection(connectionString))
-            {
-                await conexao.OpenAsync();
-                var objetivos = await conexao.QueryAsync<ObjetivoAprendizagemDto>($@"select id, descricao, codigo, 
-                        ano_turma as ano, componente_curricular_id as idComponenteCurricular, componente_curricular_id as ComponenteCurricularEolId 
-                        from objetivo_aprendizagem 
-                        where  componente_curricular_id = ANY(@componentes) 
-                       {(ano.HasValue ? " and ano_turma = @ano " : "")} ",
-                        new { ano = ano?.Name(), componentes = juremaIds });
-                conexao.Close();
-                return objetivos;
-            }
-        }
-
         public async Task<IEnumerable<ObjetivoAprendizagemDto>> ObterPorComponenteCurricularJuremaIds(long[] juremaIds)
         {
             using (var conexao = new NpgsqlConnection(connectionString))
