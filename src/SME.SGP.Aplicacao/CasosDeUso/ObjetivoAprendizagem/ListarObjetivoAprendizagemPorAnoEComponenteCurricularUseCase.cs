@@ -22,8 +22,8 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<ObjetivoAprendizagemDto>> Executar(string ano, long componenteCurricularId, bool ensinoEspecial, long turmaId)
         {
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
-            
-            if (new[] { Modalidade.EJA, Modalidade.Medio }.Contains(turma.ModalidadeCodigo))
+
+            if (new[] { Modalidade.Medio }.Contains(turma.ModalidadeCodigo))
                 return null;
 
             var componenteEnsinoEspecial = ensinoEspecial ? 11 : 6;
@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
             var anos = new string[] { ano };
             if (ensinoEspecial)
                 anos = Enumerable.Range(1, 9).Select(a => a.ToString()).ToArray();
-            else if (turma.EhTurmaPrograma())
+            else if (turma.EhTurmaPrograma() || turma.EhEJA())
                 anos = Array.Empty<string>();
 
             var objetivos = await mediator.Send(
@@ -49,7 +49,10 @@ namespace SME.SGP.Aplicacao
                 return objetivos.OrderBy(o => Enum.Parse(typeof(AnoTurma), o.Ano)).ThenBy(x => x.Codigo);
 
             if (int.TryParse(ano, out int anoTurma))
-                objetivos = objetivos.Where(x => x.Ano == ((AnoTurma)anoTurma).Name()).ToList();
+                if (turma.EhEJA())
+                    objetivos = objetivos.Where(x => x.Ano == ((AnoTurma)anoTurma+9).Name()).ToList();
+                else
+                    objetivos = objetivos.Where(x => x.Ano == ((AnoTurma)anoTurma).Name()).ToList();
 
             return objetivos.OrderBy(o => o.Codigo);
         }
