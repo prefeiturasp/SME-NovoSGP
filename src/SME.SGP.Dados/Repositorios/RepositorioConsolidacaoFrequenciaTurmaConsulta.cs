@@ -37,6 +37,7 @@ namespace SME.SGP.Dados.Repositorios
                          inner join ue on ue.id = t.ue_id 
                          inner join dre on dre.id = ue.dre_id 
                          where quantidade_abaixo_minimo_frequencia >= 0
+                           and cft.tipo_consolidacao = @tipoConsolidacao
                            and t.ano_letivo = @anoLetivo
                            and t.modalidade_codigo = @modalidade";
             if (semestre > 0) sql += @"  and t.semestre = @semestre";
@@ -47,7 +48,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database
                 .Conexao
-                .QueryAsync<FrequenciaGlobalPorAnoDto>(sql, new { modalidade, dreId, ueId, anoLetivo });
+                .QueryAsync<FrequenciaGlobalPorAnoDto>(sql, new { modalidade, dreId, ueId, anoLetivo, tipoConsolidacao = TipoConsolidadoFrequencia.Anual });
         }
 
         public async Task<IEnumerable<FrequenciaGlobalPorDreDto>> ObterFrequenciaGlobalPorDreAsync(int anoLetivo, Modalidade modalidade, string ano, int? semestre)
