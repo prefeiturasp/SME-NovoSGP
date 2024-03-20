@@ -1,5 +1,8 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -40,6 +43,11 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
         {
             await ExecuteTesteResgistrarAvaliacao(ObterPerfilCJ(), true);
         }
+        [Fact]
+        public async Task Registrar_copia_avaliacao_professor_cj()
+        {
+            await ExecuteTesteResgistrarAvaliacaoCopia(ObterPerfilCJ(), true);
+        }
 
         [Fact]
         public async Task Registrar_avaliacao_professor_cj_regente()
@@ -65,6 +73,28 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
             await ExecuteTesteResgistrarAvaliacaoPorPerfilRegente(dto);
         }
 
+        private async Task ExecuteTesteResgistrarAvaliacaoCopia(string perfil, bool ehCJ = false)
+        {
+            await CriarDadosBasicos(ObterCriacaoDeDadosDto(perfil));
+
+            await CriarPeriodoEscolarEAbertura();
+
+            await CriarAula(DATA_02_05, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), TIPO_CALENDARIO_1, ehCJ);
+            await CriarAula(DATA_02_05, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_2, UE_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), TIPO_CALENDARIO_1, ehCJ);
+
+
+            var atividadeAvaliativaCopiaDto = ObterCopiarAtividadeAvaliativaDto(perfil);
+
+            var dto = ObterAtividadeAvaliativaCopiaDto(
+                            COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
+                            CategoriaAtividadeAvaliativa.Normal,
+                            DATA_02_05,
+                            TipoAvaliacaoCodigo.AvaliacaoBimestral,
+                            atividadeAvaliativaCopiaDto);
+
+            await ExecuteTesteResgistrarAvaliacaoCopiaPorPerfil(dto);
+        }
+
         private async Task ExecuteTesteResgistrarAvaliacao(string perfil, bool ehCJ = false)
         {
             await CriarDadosBasicos(ObterCriacaoDeDadosDto(perfil));
@@ -82,6 +112,18 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
             await ExecuteTesteResgistrarAvaliacaoPorPerfil(dto);
         }
 
+        private List<CopiarAtividadeAvaliativaDto> ObterCopiarAtividadeAvaliativaDto(string perfil)
+        {
+            var atividadeLista = new List<CopiarAtividadeAvaliativaDto>();
+
+            atividadeLista.Add(new CopiarAtividadeAvaliativaDto()
+            {
+                TurmaId = TURMA_CODIGO_2,
+                DataAtividadeAvaliativa = DATA_02_05
+            });
+
+            return atividadeLista;
+        }
         private CriacaoDeDadosDto ObterCriacaoDeDadosDto(string perfil)
         {
             return new CriacaoDeDadosDto()
