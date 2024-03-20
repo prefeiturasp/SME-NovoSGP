@@ -252,7 +252,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstAsync<int>(sql, new { anoLetivo, codigoRf, naoLida = (int)NotificacaoStatus.Pendente });
         }
 
-        public async Task<IEnumerable<NotificacoesParaTratamentoCargosNiveisDto>> ObterNotificacoesParaTratamentoCargosNiveis()
+        public async Task<IEnumerable<NotificacoesParaTratamentoCargosNiveisDto>> ObterNotificacoesParaTratamentoCargosNiveis(string codigoUe)
         {
             var query = @"select 
                             wan.cargo,                                                         
@@ -269,9 +269,10 @@ namespace SME.SGP.Dados.Repositorios
                                     on n.usuario_id  = u.id 
                                 where n.status = 1
                                     and n.excluida = false
-                                    and n.tipo in (1,2)";
+                                    and n.tipo in (1,2)
+                                    and n.ue_id = @codigoUe";
 
-            return await database.Conexao.QueryAsync<NotificacoesParaTratamentoCargosNiveisDto>(query);
+            return await database.Conexao.QueryAsync<NotificacoesParaTratamentoCargosNiveisDto>(query, new { codigoUe });
         }
         public async Task<long> ObterCodigoPorId(long notificacaoId)
         {
