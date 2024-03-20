@@ -6,7 +6,11 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterNotificacoesNiveisCargosQuery : IRequest<IEnumerable<NotificacoesParaTratamentoCargosNiveisDto>>
     {
-        private static ObterNotificacoesNiveisCargosQuery _instance;
-        public static ObterNotificacoesNiveisCargosQuery Instance => _instance ??= new();
+        public ObterNotificacoesNiveisCargosQuery(string codigoUe)
+        {
+            CodigoUe = codigoUe;
+        }
+
+        public string CodigoUe { get; set; }
     }
 }

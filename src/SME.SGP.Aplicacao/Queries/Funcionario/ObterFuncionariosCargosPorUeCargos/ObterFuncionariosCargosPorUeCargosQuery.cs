@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    internal class ObterFuncionariosCargosPorUeCargosQuery : IRequest<IEnumerable<FuncionarioCargoDTO>>
+    public class ObterFuncionariosCargosPorUeCargosQuery : IRequest<IEnumerable<FuncionarioCargoDTO>>
     {
         public string UeCodigo;
         public IEnumerable<int> cargosIdsDaUe;

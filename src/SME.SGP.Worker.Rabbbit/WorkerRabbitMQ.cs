@@ -84,13 +84,14 @@ namespace SME.SGP.Worker.RabbitMQ
             Comandos.Add(RotasRabbitSgp.AlterarRecorrenciaEventos, new ComandoRabbit("Altera recorrencia de eventos", typeof(IAlterarRecorrenciaEventosUseCase)));
             Comandos.Add(RotasRabbitSgp.SincronizarObjetivosComJurema, new ComandoRabbit("Realiza sincronização dos objetivos com Jurema", typeof(IExecutarSincronizacaoObjetivosComJuremaUseCase)));
             Comandos.Add(RotasRabbitSgp.NotificarAlunosFaltososBimestre, new ComandoRabbit("Notifica os alunos faltoso no bimestre", typeof(IExecutarNotificacaoAlunosFaltososBimestreUseCase), true));
-            Comandos.Add(RotasRabbitSgp.NotificacoesNiveisCargos, new ComandoRabbit("Sicronizar componentes curriculares", typeof(IExecutarTratamentoNotificacoesNiveisCargosUseCase), true));
             Comandos.Add(RotasRabbitSgp.SincronizarComponentesCurriculares, new ComandoRabbit("Sicronizar componentes curriculares", typeof(IExecutarSincronismoComponentesCurricularesUseCase), true));
             Comandos.Add(RotasRabbitSgp.SincronizarComponentesCurricularesEol, new ComandoRabbit("Sicronizar componentes curriculares eol", typeof(IExecutaSincronismoComponentesCurricularesEolUseCase), true));
             Comandos.Add(RotasRabbitSgp.SyncGeralGoogleClassroom, new ComandoRabbit("Sicronizar geral google classroom", typeof(IExecutarSyncGeralGoogleClassroomUseCase), true));
             Comandos.Add(RotasRabbitSgp.SyncGsaGoogleClassroom, new ComandoRabbit("Sicronizar gsa google classroom", typeof(IExecutaSyncGsaGoogleClassroomUseCase), true));
             Comandos.Add(RotasRabbitSgp.SyncSerapEstudantesProvas, new ComandoRabbit("Sicronizar provas dos estantes serap ", typeof(IExecutarSyncSerapEstudantesProvasUseCase), true));
             Comandos.Add(RotasRabbitSgp.TratarNotificacoesNiveisCargos, new ComandoRabbit("Tratar notificações", typeof(ITrataNotificacoesNiveisCargosUseCase), true));
+            Comandos.Add(RotasRabbitSgp.TratarNotificacoesNiveisCargosDre, new ComandoRabbit("Tratar notificações por dre", typeof(ITrataNotificacoesNiveisCargosDreUseCase), true));
+            Comandos.Add(RotasRabbitSgp.TratarNotificacoesNiveisCargosUe, new ComandoRabbit("Tratar notificações por ue", typeof(ITrataNotificacoesNiveisCargosUeUseCase), true));
             Comandos.Add(RotasRabbitSgp.AjusteImagesAcompanhamentoAprendizagemAlunoCarregar, new ComandoRabbit("Efetua a atualização da rota das imagens do acompanhamento aluno", typeof(ICarregarAjusteImagensAcompanhamentoAprendizagemAlunoUseCase)));
             Comandos.Add(RotasRabbitSgp.AjusteImagesAcompanhamentoAprendizagemAlunoSync, new ComandoRabbit("Efetua a atualização da rota das imagens do acompanhamento aluno", typeof(ISyncAjusteImagensAcompanhamentoAprendizagemAlunoUseCase)));
             Comandos.Add(RotasRabbitSgp.AtualizaUltimoLoginUsuario, new ComandoRabbit("Efetua a atualização da data de ultimo login do usuario", typeof(IAtualizarUltimoLoginUsuarioUseCase)));
