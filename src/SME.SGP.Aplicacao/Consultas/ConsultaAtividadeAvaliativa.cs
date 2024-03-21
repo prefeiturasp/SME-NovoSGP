@@ -166,7 +166,7 @@ namespace SME.SGP.Aplicacao
                     });
             }
 
-            return retorno;
+            return retorno.DistinctBy(x => x.Codigo);
         }
 
         public async Task<IEnumerable<AtividadeAvaliativaExistenteRetornoDto>> ValidarAtividadeAvaliativaExistente(FiltroAtividadeAvaliativaExistenteDto dto)

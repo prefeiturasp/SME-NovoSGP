@@ -196,10 +196,10 @@ namespace SME.SGP.Aplicacao
             if (turma.ModalidadeCodigo == Modalidade.Medio && turma.TipoTurno == (int)TipoTurnoEOL.Noite && disciplinasDto.Any())
             {
                 var idComponenteSalaLeituraEM = 1347;
-                var idComponenteTecAprendizagem = 1359;
+                var idsComponenteTecAprendizagem = new long[] { 1359, 1347, 1312 };
                 foreach (var disciplina in disciplinasDto)
                 {
-                    if (disciplina.CodigoComponenteCurricular == idComponenteSalaLeituraEM || disciplina.CodigoComponenteCurricular == idComponenteTecAprendizagem)
+                    if (disciplina.CodigoComponenteCurricular == idComponenteSalaLeituraEM || idsComponenteTecAprendizagem.Contains(disciplina.CodigoComponenteCurricular))
                         disciplina.RegistraFrequencia = false;
                 }
             }

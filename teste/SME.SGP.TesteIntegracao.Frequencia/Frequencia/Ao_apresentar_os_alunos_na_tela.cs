@@ -5,7 +5,9 @@ using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.Frequencia.Frequencia.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
@@ -26,6 +28,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             base.RegistrarFakes(services);
             
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosAtivosPorTurmaCodigoQueryHandlerFakeValidarAlunosFrequencia), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesPorIdsUsuarioLogadoQuery, IEnumerable<DisciplinaDto>>), typeof(ObterComponentesCurricularesPorIdsUsuarioLogadoQueryHandlerFake), ServiceLifetime.Scoped));
         }
         
         [Fact(DisplayName = "Frequência - Deve exibir tooltip alunos novos durante 15 dias")]
@@ -67,6 +70,15 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             (retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_13)).EhNulo()).ShouldBeTrue();
         }
 
+        [Fact(DisplayName = "Frequência - Deve bloquear tela para componente tecnologias de aprendizagem no ens. médio noturno")]
+        public async Task Nao_deve_permitir_inserir_frequencia_para_alunos_da_disciplina_tec_aprendizagem_medio_noturno()
+        {
+            var retorno = await ExecutarTesteObterAulaTecAprendizagemEnsMedioNoturno();
+
+            retorno.ShouldNotBeNull();
+            retorno.Desabilitado.ShouldBeTrue();
+        }
+
         private async Task InserirPeriodoEscolarCustomizado()
         {
             var dataReferencia = DateTimeExtension.HorarioBrasilia();
@@ -101,5 +113,29 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             var retorno = await useCase.Executar(filtroFrequencia);
             return retorno;
         }
+
+        private async Task<FrequenciaDto> ExecutarTesteObterAulaTecAprendizagemEnsMedioNoturno()
+        {
+            await CriarDadosBasicosSemPeriodoEscolar(ObterPerfilProfessor(), Modalidade.Medio,
+                ModalidadeTipoCalendario.FundamentalMedio, DateTimeExtension.HorarioBrasilia().Date,
+                COMPONENTE_CURRICULAR_TEC_APRENDIZAGEM.ToString(), NUMERO_AULAS_1, (int) TipoTurnoEOL.Noite);
+
+
+            await InserirParametroSistema(true);
+
+            await InserirPeriodoEscolarCustomizado();
+
+            var useCase = ServiceProvider.GetService<IObterFrequenciaPorAulaUseCase>();
+
+            var filtroFrequencia = new FiltroFrequenciaDto()
+            {
+                AulaId = AULA_ID_1,
+                ComponenteCurricularId = COMPONENTE_CURRICULAR_TEC_APRENDIZAGEM
+            };
+
+            var retorno = await useCase.Executar(filtroFrequencia);
+            return retorno;
+        }
+
     }
 }

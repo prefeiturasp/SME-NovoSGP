@@ -103,6 +103,8 @@ namespace SME.SGP.Aplicacao
 
             var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(turmaCodigo, usuarioLogado.Login, usuarioLogado.PerfilAtual, true));
 
+            var disciplinaCJ = (await mediator.Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.CodigoRf)))?.FirstOrDefault(x => x.TurmaId == turma.CodigoTurma && 
+                                                                                                                                                            x.DisciplinaId.ToString() == disciplinaCodigo);
             if (componentesCurriculares.EhNulo())
                 componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(turmaCodigo, usuarioLogado.Login, usuarioLogado.PerfilAtual, true, false));
 
@@ -118,7 +120,10 @@ namespace SME.SGP.Aplicacao
                                 })
                                 .FirstOrDefault();
 
-            return await ObterAulasNosPeriodos(periodosEscolares, anoLetivo, turmaCodigo, dadosDisciplina.CodigoComponenteCurricular, usuarioLogado, usuarioRF);
+            if(dadosDisciplina.EhNulo() && disciplinaCJ.NaoEhNulo())
+                return await ObterAulasNosPeriodos(periodosEscolares, anoLetivo, turmaCodigo, disciplinaCJ.DisciplinaId.ToString(), usuarioLogado, usuarioRF);
+            else
+                return await ObterAulasNosPeriodos(periodosEscolares, anoLetivo, turmaCodigo, dadosDisciplina.CodigoComponenteCurricular, usuarioLogado, usuarioRF);
         }
 
         public async Task<int> ObterQuantidadeAulasRecorrentes(long aulaInicialId, RecorrenciaAula recorrencia)
