@@ -107,7 +107,8 @@ namespace SME.SGP.Aplicacao
                     await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(codigosAlunosCompensacao, periodo.PeriodoFim, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId, periodo.MesesDoPeriodo().ToArray()));
                 }
 
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.NotificarCompensacaoAusencia, new FiltroNotificacaoCompensacaoAusenciaDto(compensacao.Id), Guid.NewGuid(), usuario));
+                if (await mediator.Send(new VerificaSeExisteParametroSistemaPorTipoQuery(TipoParametroSistema.GerarNotificacaoCadastroDeCompensacaoDeAusencia)))
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.NotificarCompensacaoAusencia, new FiltroNotificacaoCompensacaoAusenciaDto(compensacao.Id), Guid.NewGuid(), usuario));
             }
             catch (Exception ex)
             {
