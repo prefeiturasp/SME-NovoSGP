@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            var codigoUe = param.ObterObjetoMensagem<string>();
+            var codigoUe = param.Mensagem.ToString();
 
             if (!string.IsNullOrEmpty(codigoUe))
             {
