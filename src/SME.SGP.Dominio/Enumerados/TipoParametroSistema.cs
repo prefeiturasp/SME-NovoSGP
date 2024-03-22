@@ -177,6 +177,9 @@ namespace SME.SGP.Dominio
 
         DiasExclusaoNotificacoesLidasDeAlerta = 110,
         DiasExclusaoNotificacoesLidasDeAviso = 111,
-        DiasExclusaoNotificacoesNaoLidasDeAvisoEAlerta = 112
+        DiasExclusaoNotificacoesNaoLidasDeAvisoEAlerta = 112,
+        GerarNotificacaoAlteracaoEmAtividadeAvaliativa = 113,
+        GerarNotificacaoCadastroDeCompensacaoDeAusencia = 114,
+        GerarNotificacaoPendenciaFechamento = 115
     }
 }
