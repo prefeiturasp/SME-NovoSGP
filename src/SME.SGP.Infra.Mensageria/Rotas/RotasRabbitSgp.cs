@@ -46,6 +46,8 @@
         public const string RotaNotificacaoInformativoUsuario = "sgp.notificacao.informativo.usuario";
         public const string RotaExcluirNotificacaoInformativo = "sgp.notificacao.informativo.excluir";
         public const string RotaExcluirNotificacaoInformativoUsuario = "sgp.notificacao.informativo.usuario.excluir";
+        public const string RotaExecutarExclusaoDasNotificacoesPeriodicamente = "sgp.notificacao.excluir.periodicamente";
+        public const string RotaExecutarExclusaoDaNotificacao = "sgp.notificacao.excluir";
 
         #region Relatórios
 
