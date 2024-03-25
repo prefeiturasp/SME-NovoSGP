@@ -12,13 +12,13 @@ using SME.SGP.Dominio;
 namespace SME.SGP.Aplicacao
 {
     public class ObterPlanosAEEQueryHandler : ConsultasBase, IRequestHandler<ObterPlanosAEEQuery, PaginacaoResultadoDto<PlanoAEEResumoDto>>
-    {        
+    {
         private readonly IRepositorioPlanoAEEConsulta repositorioPlanoAEE;
         private readonly IMediator mediator;
 
-        public ObterPlanosAEEQueryHandler(IContextoAplicacao contextoAplicacao, IRepositorioPlanoAEEConsulta repositorioPlanoAEE, 
+        public ObterPlanosAEEQueryHandler(IContextoAplicacao contextoAplicacao, IRepositorioPlanoAEEConsulta repositorioPlanoAEE,
                                           IMediator mediator) : base(contextoAplicacao)
-        {            
+        {
             this.repositorioPlanoAEE = repositorioPlanoAEE ?? throw new ArgumentNullException(nameof(repositorioPlanoAEE));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
@@ -28,7 +28,28 @@ namespace SME.SGP.Aplicacao
             var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             bool ehAdmin = usuario.EhAdmGestao();
             bool ehPAEE = usuario.EhProfessorPaee();
-            var turmasCodigos = await ObterCodigosTurmas(request.UeId, ehAdmin);
+            string[] turmasCodigos = null;
+
+            if (request.UeId == 0 || request.UeId == -99)
+            {
+                var dre = await mediator.Send(new ObterDREPorIdQuery(request.DreId));
+                var ues = await mediator.Send(new ObterAbrangenciaUesPorLoginEPerfilQuery(dre.CodigoDre, usuario.Login, usuario.PerfilAtual));
+
+                foreach (var ue in ues)
+                {
+                    var codigosTurmasPorUe = await ObterCodigosTurmas(ue.Id, ehAdmin);
+
+                    foreach (var codigoTurmaPorUe in codigosTurmasPorUe)
+                    {
+                        if(turmasCodigos is not null && turmasCodigos.Any())
+                            turmasCodigos = turmasCodigos.Concat(new string[1] { codigoTurmaPorUe }).ToArray(); 
+                        else
+                            turmasCodigos = new string[1] { codigoTurmaPorUe };
+                    }
+                }
+            }
+            else
+                turmasCodigos = await ObterCodigosTurmas(request.UeId, ehAdmin);
 
             var anoLetivoConsultaPap = request.TurmaId > 0 ? (await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId))).AnoLetivo : DateTimeExtension.HorarioBrasilia().Year;
             
