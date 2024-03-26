@@ -35,6 +35,8 @@ namespace SME.SGP.Aplicacao
 
             if (request.UeId == 0 || request.UeId == -99)
             {
+                ues = await ObterUesPorUsuario(request.DreId, request.AnoLetivo, request.ConsideraHistorico, usuario);
+
                 foreach (var ue in ues)
                 {
                     var codigosTurmasPorUe = await ObterCodigosTurmas(ue, ehAdmin);
