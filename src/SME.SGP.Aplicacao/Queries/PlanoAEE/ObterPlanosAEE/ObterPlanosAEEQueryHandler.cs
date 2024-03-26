@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
@@ -34,8 +35,6 @@ namespace SME.SGP.Aplicacao
 
             if (request.UeId == 0 || request.UeId == -99)
             {
-                ues = await ObterUesPorUsuario(request.DreId, request.AnoLetivo, request.ConsideraHistorico, usuario);
-
                 foreach (var ue in ues)
                 {
                     var codigosTurmasPorUe = await ObterCodigosTurmas(ue, ehAdmin);
@@ -82,8 +81,10 @@ namespace SME.SGP.Aplicacao
                 };
 
                 var ues = await mediator.Send(new ObterUEsPorDREQuery(dto, usuario.Login, usuario.PerfilAtual));
+                if (ues.NaoEhNulo() && ues.Any())
+                    return ues.Select(x => x.Id).ToArray();
 
-                return ues.Select(x => x.Id).ToArray();
+                return new long[1] { 0 };
             }
 
             return null;
