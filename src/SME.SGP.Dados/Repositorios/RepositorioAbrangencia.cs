@@ -151,7 +151,6 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("            on ue.dre_id = dre.id");
             query.AppendLine("where upper(abt.nome) like @texto or upper(f_unaccent(ue.nome)) like @texto");
             query.AppendLine("order by ue.nome");
-            query.AppendLine("limit 10;");
 
             return await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query.ToString(), new { texto, login, perfil, consideraHistorico, anosInfantilDesconsiderar });
         }

@@ -225,10 +225,13 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder();
 
-            query.AppendLine("SELECT n.codigo");
+            query.AppendLine("SELECT * from (");
+            query.AppendLine("SELECT MAX(n.codigo) Codigo");
             query.AppendLine("FROM notificacao n");
-            query.AppendLine($"where EXTRACT(year FROM n.criado_em) = @ano and n.categoria <> {(int)NotificacaoCategoria.Informe}");
-            query.AppendLine("order by codigo desc");
+            query.AppendLine($"where ano = @ano and n.categoria <> {(int)NotificacaoCategoria.Informe}");
+            query.AppendLine("group by n.codigo, n.ano");
+            query.AppendLine("order by n.codigo, n.ano desc) VALORES");
+            query.AppendLine("order by Codigo desc");
             query.AppendLine("limit 1");
 
             var codigos = await database.Conexao.QueryAsync<int>(query.ToString(), new { ano }, commandTimeout: 90);
@@ -250,7 +253,7 @@ namespace SME.SGP.Dados.Repositorios
                             and extract(year from n.criado_em) = @anoLetivo";
 
             return await database.Conexao.QueryFirstAsync<int>(sql, new { anoLetivo, codigoRf, naoLida = (int)NotificacaoStatus.Pendente });
-        }
+       }
 
         public async Task<IEnumerable<NotificacoesParaTratamentoCargosNiveisDto>> ObterNotificacoesParaTratamentoCargosNiveis(string codigoUe)
         {
