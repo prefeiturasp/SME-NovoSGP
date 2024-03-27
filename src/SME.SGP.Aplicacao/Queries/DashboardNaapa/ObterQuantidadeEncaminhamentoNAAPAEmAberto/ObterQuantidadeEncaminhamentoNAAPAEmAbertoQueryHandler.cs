@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
             var graficos = await this.repositorioConsolidado.ObterQuantidadeEncaminhamentoNAAPAEmAberto(request.AnoLetivo, request.DreId);
             var grafico = new GraficoEncaminhamentoNAAPADto()
             {
-                DataUltimaConsolidacao = await mediator.Send(new ObterDataUltimaConsolicacaoDashboardNaapaQuery(TipoParametroSistema.GerarConsolidadoEncaminhamentoNAAPA))
+                DataUltimaConsolidacao = await mediator.Send(new ObterDataUltimaConsolicacaoDashboardNaapaQuery(TipoParametroSistema.GerarConsolidadoEncaminhamentoNAAPA, request.AnoLetivo))
             };
 
             foreach (var item in graficos)
