@@ -12,7 +12,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
         {
             var lista = new List<string>()
             {
-                "1","2"
+                "1","2","3"
             };
             return await Task.FromResult(lista.ToArray());
         }
