@@ -11,7 +11,6 @@ namespace SME.SGP.Infra
         public string Turma => $"{Modalidade.ObterNomeCurto()}-{NomeTurma}";
         public DateTime DataRegistro { get; set; }
         public string ProcedimentoRealizado { get; set; }
-        public string ContatoEfetuadoResponsavel { get; set; }
         private string NomeUsuarioCriador { get; set; }
         private string RfUsuarioCriador { get; set; }
         public string Usuario => $"{NomeUsuarioCriador} ({RfUsuarioCriador})";

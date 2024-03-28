@@ -5,7 +5,6 @@ using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.Commands;
 using SME.SGP.TesteIntegracao.Constantes;
 using SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
@@ -65,7 +64,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             var useCase = ObterUseCaseListagemQuestionario();
             var retorno = await useCase.Executar(ConstantesQuestionarioBuscaAtiva.QUESTIONARIO_REGISTRO_ACAO_ID_1, 1);
             retorno.ShouldNotBeNull();
-            retorno.Count().ShouldBe(2);
+            retorno.Count().ShouldBe(3);
             retorno.Where(q => q.Id == ConstantesQuestionarioBuscaAtiva.QUESTAO_1_ID_DATA_REGISTRO_ACAO).FirstOrDefault()
                             .Resposta.FirstOrDefault()
                             .Texto.ShouldBe(DateTimeExtension.HorarioBrasilia().Date.ToString("yyyy-MM-dd"));

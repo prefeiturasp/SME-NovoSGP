@@ -113,11 +113,13 @@ namespace SME.SGP.TesteIntegracao.DashboardBuscaAtiva
             retorno.Graficos.All(gf => gf.Grupo.Equals(DRE_NOME_1)).ShouldBe(filtroTodosDre);
         }
 
-        private async Task InserirRegistrosAcao(EnumProcedimentoTrabalhoBuscaAtiva tipoProcedimentoTrabalho, bool realizouContatoResponsavel = false)
+        private async Task InserirRegistrosAcao(EnumProcedimentoTrabalhoBuscaAtiva tipoProcedimentoTrabalho, bool realizouContatoResponsavel)
         {
             var opcaoRespostaBase = ObterTodos<OpcaoResposta>();
             var registroAcaoBase = ObterTodos<SME.SGP.Dominio.RegistroAcaoBuscaAtiva>();
             var idBaseRegistroAcao = registroAcaoBase.Count() + 1;
+            var registroQuestao = ObterTodos<QuestaoRegistroAcaoBuscaAtiva>();
+            var idQuestaoRegistro = registroQuestao.Count + 1;
 
             await InserirNaBase(new SME.SGP.Dominio.RegistroAcaoBuscaAtiva()
             {
@@ -142,20 +144,40 @@ namespace SME.SGP.TesteIntegracao.DashboardBuscaAtiva
             await InserirNaBase(new Dominio.QuestaoRegistroAcaoBuscaAtiva()
             {
                 RegistroAcaoBuscaAtivaSecaoId = idBaseRegistroAcao,
-                QuestaoId = (realizouContatoResponsavel ? ConstantesQuestionarioBuscaAtiva.QUESTAO_2_4_ID_PROCEDIMENTO_REALIZADO 
-                                                        : ConstantesQuestionarioBuscaAtiva.QUESTAO_2_1_ID_PROCEDIMENTO_REALIZADO_NAO_CONTATOU_RESP),
+                QuestaoId = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            var opcaoResposta = opcaoRespostaBase.Where(q => q.QuestaoId == (realizouContatoResponsavel ? ConstantesQuestionarioBuscaAtiva.QUESTAO_2_4_ID_PROCEDIMENTO_REALIZADO 
-                                                                                                        : ConstantesQuestionarioBuscaAtiva.QUESTAO_2_1_ID_PROCEDIMENTO_REALIZADO_NAO_CONTATOU_RESP)
+            var opcaoResposta = opcaoRespostaBase.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP
+                                                 &&  q.Ordem == (realizouContatoResponsavel ? 1 : 2)).FirstOrDefault();
+            await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
+            {
+                QuestaoRegistroAcaoBuscaAtivaId = idQuestaoRegistro,
+                RespostaId = opcaoResposta.Id,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new Dominio.QuestaoRegistroAcaoBuscaAtiva()
+            {
+                RegistroAcaoBuscaAtivaSecaoId = idBaseRegistroAcao,
+                QuestaoId = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_4_ID_PROCEDIMENTO_REALIZADO,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            idQuestaoRegistro++;
+
+            var opcaoRespostaProcedimento = opcaoRespostaBase.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_4_ID_PROCEDIMENTO_REALIZADO
                                                              && q.Ordem.Equals((int)tipoProcedimentoTrabalho)).FirstOrDefault();
             await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
                 {
-                    QuestaoRegistroAcaoBuscaAtivaId = idBaseRegistroAcao,
-                    RespostaId = opcaoResposta.Id,
+                    QuestaoRegistroAcaoBuscaAtivaId = idQuestaoRegistro,
+                    RespostaId = opcaoRespostaProcedimento.Id,
                     CriadoEm = DateTimeExtension.HorarioBrasilia(),
                     CriadoPor = SISTEMA_NOME,
                     CriadoRF = SISTEMA_CODIGO_RF

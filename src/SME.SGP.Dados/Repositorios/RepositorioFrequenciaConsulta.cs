@@ -567,13 +567,11 @@ namespace SME.SGP.Dados.Repositorios
                                 inner join dre d on d.id = u.dre_id"; 
             var where = @" where t.modalidade_codigo = @modalidade
                             and (fte.quantidade_alunos_0_porcento > 0)
-                            and t.ano_letivo = @anoLetivo";
+                            and t.ano_letivo = @anoLetivo
+                            and fte.mes = @mes";
 
             if (semestre > 0)
                 where += " and t.semestre = @semestre ";
-
-            if (mes > 0)
-                where += " and fte.mes = @mes ";
 
             query += where;
 
@@ -614,13 +612,11 @@ namespace SME.SGP.Dados.Repositorios
             var where = @" where d.dre_id = @dreCodigo
                             and t.modalidade_codigo = @modalidade
                             and (fte.quantidade_alunos_0_porcento > 0)
-                            and t.ano_letivo = @anoLetivo";
+                            and t.ano_letivo = @anoLetivo
+                            and fte.mes = @mes";
 
             if (semestre > 0)
                 where += " and t.semestre = @semestre ";
-
-            if (mes > 0)
-                where += " and fte.mes = @mes ";
 
             query += where;
 
@@ -665,13 +661,11 @@ namespace SME.SGP.Dados.Repositorios
                             and u.ue_id = @ueCodigo
                             and t.modalidade_codigo = @modalidade
                             and (fte.quantidade_alunos_0_porcento > 0)
-                            and t.ano_letivo = @anoLetivo";
+                            and t.ano_letivo = @anoLetivo
+                            and fte.mes = @mes";
 
             if (semestre > 0)
                 where += " and t.semestre = @semestre ";
-
-            if (mes > 0)
-                where += " and fte.mes = @mes ";
 
             query += where;
 
@@ -832,9 +826,9 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<PaginacaoResultadoDto<AlunoFrequenciaTurmaEvasaoDto>> ObterAlunosDashboardFrequenciaTurmaEvasaoSemPresencaPaginado(int mes, FiltroAbrangenciaGraficoFrequenciaTurmaEvasaoAlunoDto filtroAbrangencia, Paginacao paginacao)
         {
             var sql = new StringBuilder();
-            MontaQueryConsultaFrequenciaTurmaEvasaoSemPresenca(paginacao, sql, filtroAbrangencia);
+            MontaQueryConsultaFrequenciaTurmaEvasaoSemPresenca(paginacao, sql, filtroAbrangencia, mes);
             sql.AppendLine(";");
-            MontaQueryConsultaFrequenciaTurmaEvasaoSemPresenca(paginacao, sql, filtroAbrangencia, true);
+            MontaQueryConsultaFrequenciaTurmaEvasaoSemPresenca(paginacao, sql, filtroAbrangencia, mes, true);
 
             var parametros = new
             {
@@ -860,7 +854,7 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
-        private void MontaQueryConsultaFrequenciaTurmaEvasaoSemPresenca(Paginacao paginacao, StringBuilder sql, FiltroAbrangenciaGraficoFrequenciaTurmaEvasaoAlunoDto filtroAbrangencia, bool ehContador = false)
+        private void MontaQueryConsultaFrequenciaTurmaEvasaoSemPresenca(Paginacao paginacao, StringBuilder sql, FiltroAbrangenciaGraficoFrequenciaTurmaEvasaoAlunoDto filtroAbrangencia, int mes, bool ehContador = false)
         {
             sql.AppendLine($@"select {(ehContador ? "count(distinct freqaluno.codigo_aluno)"
                                                   : $@"d.abreviacao as Dre,
@@ -883,6 +877,13 @@ namespace SME.SGP.Dados.Repositorios
                                 {(filtroAbrangencia.Semestre > 0 ? "and t.semestre = @semestre" : string.Empty)}
                                 and freqaluno.percentual_frequencia = 0
                           ");
+
+            if (mes == 0)
+                sql.AppendLine(@" and not exists (select 1 from frequencia_turma_evasao_aluno freqAlunoi
+                          				      inner join frequencia_turma_evasao freqi on freqi.id = freqAlunoi.frequencia_turma_evasao_id
+                          			          where	freqAlunoi.codigo_aluno = freqAluno.codigo_aluno 
+                          			      	    and freqAlunoi.percentual_frequencia > 0
+                          			      	    and freqi.turma_id = freq.turma_id)");
 
             if (!ehContador)
                 sql.AppendLine($@"order by d.dre_id, 
