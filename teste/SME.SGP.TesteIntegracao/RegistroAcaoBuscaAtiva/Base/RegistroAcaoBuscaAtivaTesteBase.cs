@@ -1,10 +1,8 @@
-﻿using MediatR;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio;
-using SME.SGP.TesteIntegracao;
 using SME.SGP.TesteIntegracao.Commands;
 using SME.SGP.TesteIntegracao.Constantes;
 using SME.SGP.TesteIntegracao.Setup;
@@ -124,32 +122,8 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
 
             if (adicionarRespostasComplementarConseguiuContatoResponsavel)
             {
-                opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_1_ID_CONTATO_COM_RESPONSAVEL
-                                                            && q.Nome == ConstantesQuestionarioBuscaAtiva.QUESTAO_OPCAO_RESPOSTA_SIM).FirstOrDefault();
-                await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
-                {
-                    QuestaoRegistroAcaoBuscaAtivaId = idRegistroAcaoQuestao,
-                    RespostaId = opcaoRespostaBase.Id,
-                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF
-                });
-                idRegistroAcaoQuestao++;
-
-                opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_2_ID_APOS_CONTATO_CRIANCA_RETORNOU_ESCOLA
-                                                            && q.Nome == ConstantesQuestionarioBuscaAtiva.QUESTAO_OPCAO_RESPOSTA_SIM).FirstOrDefault();
-                await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
-                {
-                    QuestaoRegistroAcaoBuscaAtivaId = idRegistroAcaoQuestao,
-                    RespostaId = opcaoRespostaBase.Id,
-                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF
-                });
-                idRegistroAcaoQuestao++;
-
                 opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_3_ID_JUSTIFICATIVA_MOTIVO_FALTA
-                                                            && q.Nome == "Há suspeita de ausência por estar realizando trabalho infantil").FirstOrDefault();
+                                                            && q.Nome == "Estudante grávida").FirstOrDefault();
                 await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
                 {
                     QuestaoRegistroAcaoBuscaAtivaId = idRegistroAcaoQuestao,
@@ -206,24 +180,6 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
 
             if (adicionarRespostasComplementarConseguiuContatoResponsavel)
             {
-                await InserirNaBase(new Dominio.QuestaoRegistroAcaoBuscaAtiva()
-                {
-                    RegistroAcaoBuscaAtivaSecaoId = idRegistroAcaoSecao,
-                    QuestaoId = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_1_ID_CONTATO_COM_RESPONSAVEL,
-                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF
-                });
-
-                await InserirNaBase(new Dominio.QuestaoRegistroAcaoBuscaAtiva()
-                {
-                    RegistroAcaoBuscaAtivaSecaoId = idRegistroAcaoSecao,
-                    QuestaoId = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_2_ID_APOS_CONTATO_CRIANCA_RETORNOU_ESCOLA,
-                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF
-                });
-
                 await InserirNaBase(new Dominio.QuestaoRegistroAcaoBuscaAtiva()
                 {
                     RegistroAcaoBuscaAtivaSecaoId = idRegistroAcaoSecao,
