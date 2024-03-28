@@ -33,7 +33,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
             };
 
             var resultados = await useCase.Executar(filtro);
-            resultados.Items.Count().ShouldBe(13);
+            resultados.Items.Count().ShouldBe(18);
             for (int i = 1; i <= 10; i++)
                 resultados.Items.Take(10).Any(al => al.Aluno.Equals($"Aluno {i} ({i})")
                                           && al.Turma.Equals("EM-7A")
@@ -46,13 +46,6 @@ namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
             primeiroAluno.Turma.ShouldBe("EM-7A");
             primeiroAluno.Dre.ShouldBe("DRE - BT");
             primeiroAluno.Ue.ShouldBe("UE - 1");
-
-            for (int i = 11; i <= 13; i++)
-                resultados.Items.Skip(10).Take(3).Any(al => al.Aluno.Equals($"Aluno {i-10} ({i-10})")
-                                          && al.Turma.Equals("EM-8A")
-                                          && al.Dre.Equals("DRE - BT")
-                                          && al.Ue.Equals("UE - 2")
-                                          && al.PercentualFrequencia.Equals(40)).ShouldBeTrue();
 
             var ultimoAluno = resultados.Items.LastOrDefault();
             ultimoAluno.Aluno.ShouldBe("Aluno 3 (3)");
@@ -241,6 +234,36 @@ namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
             primeiroAluno.PercentualFrequencia.ShouldBe(0);
         }
 
+
+        [Fact(DisplayName = "Dashboard Turma Evasão - Obter apenas alunos sem presença em nenhum mês")]
+        public async Task Deve_obter_apenas_alunos_sem_presenca_em_nenhum_mes()
+        {
+            await CriarItensBasicos();
+            await CriarRegistrosParaConsulta();
+
+            var useCase = ServiceProvider.GetService<IObterAlunosDashboardFrequenciaTurmaEvasaoSemPresencaUseCase>();
+
+            var filtro = new FiltroGraficoFrequenciaTurmaEvasaoAlunoDto()
+            {
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                Modalidade = Modalidade.Medio,
+                UeCodigo = "2",
+                Mes = 0
+            };
+
+            var resultados = await useCase.Executar(filtro);
+            resultados.Items.Count().ShouldBe(3);
+
+            resultados.Items.Count(i => i.Turma == "EM-8A").ShouldBe(0);
+
+            for (int i = 1; i <= 3; i++)
+                resultados.Items.Any(al => al.Aluno.Equals($"Aluno {i} ({i})")
+                                            && al.Turma.Equals("EM-6A")
+                                            && al.Dre.Equals("DRE - BT")
+                                            && al.Ue.Equals("UE - 2")).ShouldBeTrue();
+
+        }
+
         private async Task CriarItensBasicos()
         {
             await InserirNaBase(new Dre
@@ -290,6 +313,17 @@ namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
                 Nome = "8A"
             });
 
+            await InserirNaBase(new Dominio.Turma
+            {
+                Id = 3,
+                UeId = 2,
+                Ano = "1",
+                CodigoTurma = "3",
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                ModalidadeCodigo = Modalidade.Medio,
+                Nome = "6A"
+            });
+
             await InserirNaBase(new TipoCalendario
             {
                 Id = 1,
@@ -334,6 +368,23 @@ namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
                 QuantidadeAlunos0Porcento = 5
             });
             await CriarRegistrosParaConsultaAlunosSemPresenca(5);
+
+            await InserirNaBase(new Dominio.FrequenciaTurmaEvasao
+            {
+                TurmaId = 2,
+                Mes = 0,
+                QuantidadeAlunosAbaixo50Porcento = 0,
+                QuantidadeAlunos0Porcento = 2
+            });
+            await CriarRegistrosParaConsultaAlunosSemPresenca(2);
+            await InserirNaBase(new Dominio.FrequenciaTurmaEvasao
+            {
+                TurmaId = 3,
+                Mes = 0,
+                QuantidadeAlunosAbaixo50Porcento = 0,
+                QuantidadeAlunos0Porcento = 3
+            });
+            await CriarRegistrosParaConsultaAlunosSemPresenca(3);
         }
 
         private async Task CriarRegistrosParaConsultaAlunosFreqAbaixo50Porcento(int qdadeRegistros)
@@ -353,9 +404,9 @@ namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
 
         private async Task CriarRegistrosParaConsultaAlunosSemPresenca(int qdadeRegistros)
         {
+            var idTurmaEvasaoFrequencia = ObterTodos<Dominio.FrequenciaTurmaEvasao>().Count();
             for (int i = 1; i <= qdadeRegistros; i++)
             {
-                var idTurmaEvasaoFrequencia = ObterTodos<Dominio.FrequenciaTurmaEvasao>().Count();
                 await InserirNaBase(new Dominio.FrequenciaTurmaEvasaoAluno
                 {
                     FrequenciaTurmaEvasaoId = idTurmaEvasaoFrequencia,
