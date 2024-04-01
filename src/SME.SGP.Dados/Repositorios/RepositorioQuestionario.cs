@@ -45,6 +45,8 @@ namespace SME.SGP.Dados.Repositorios
                           left join opcao_resposta op on op.questao_id = q.id
                           left join opcao_questao_complementar oqc on oqc.opcao_resposta_id = op.id
                          where {condicao}
+                            and not q.excluido 
+                            and not op.excluido 
                         order by q.id, op.id";
 
             var lookup = new Dictionary<long, Questao>();
