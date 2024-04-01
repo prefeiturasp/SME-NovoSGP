@@ -31,9 +31,9 @@
 		END; 
 	$$;
 
-	--Remover questao complementar
-	delete from opcao_questao_complementar
-	where questao_complementar_id in(select Id from questao where nome_componente = 'OBS_GERAL_NAO_CONTATOU_RESP')
+	--Alterar questao complementar
+	update opcao_questao_complementar set  questao_complementar_id = (select Id from questao where nome_componente = 'OBS_GERAL')
+	where questao_complementar_id in(select Id from questao where nome_componente = 'OBS_GERAL_NAO_CONTATOU_RESP');
 
 	--Excluir questao OBS_GERAL_NAO_CONTATOU_RESP
 	update questao set excluido = true
