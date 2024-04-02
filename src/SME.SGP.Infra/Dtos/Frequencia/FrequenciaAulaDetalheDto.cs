@@ -18,7 +18,6 @@ namespace SME.SGP.Infra
 
             AulaId = aula.Id;
             Desabilitado = !aluno.EstaAtivo(aula.DataAula) || aula.EhDataSelecionadaFutura;
-            PermiteAnotacao = aluno.EstaAtivo(aula.DataAula);
             PossuiAnotacao = anotacoesTurma.Any(a => a.AulaId == AulaId);
             EhReposicao = TipoAula.Reposicao == aula.TipoAula ? true : false;
 
@@ -29,7 +28,6 @@ namespace SME.SGP.Infra
 
         public long AulaId { get; set; }
         public bool Desabilitado { get; set; }
-        public bool PermiteAnotacao { get; set; }
         public bool PossuiAnotacao { get; set; }
         private TipoFrequencia? Tipo { get; set; }
         public string TipoFrequencia  { get => Tipo?.ShortName() ?? ""; }
