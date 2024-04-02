@@ -39,14 +39,14 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             return planoAeePersistidoDto;
         }
 
-        private async Task ValidaQuestaoPeriodoEscolarSeEstaNoPeriodoCorreto(RetornoPlanoAEEDto questaoPeriodoEscolar)
+        private async Task ValidaQuestaoPeriodoEscolarSeEstaNoPeriodoCorreto(RetornoPlanoAEEDto planoAeePersistidoDto)
         {
-            var planoAee = await mediator.Send(new ObterPlanoAEEPorIdQuery(questaoPeriodoEscolar.PlanoId));
+            var planoAee = await mediator.Send(new ObterPlanoAEEPorIdQuery(planoAeePersistidoDto.PlanoId));
             
             if(planoAee.EhNulo())
                 throw new NegocioException(MensagemNegocioPlanoAee.Plano_aee_nao_encontrado);
 
-            var ultimaVersaoPlanoAee = await mediator.Send(new ObterVersaoPlanoAEEPorIdQuery(questaoPeriodoEscolar.PlanoVersaoId));
+            var ultimaVersaoPlanoAee = await mediator.Send(new ObterVersaoPlanoAEEPorIdQuery(planoAeePersistidoDto.PlanoVersaoId));
 
             if(ultimaVersaoPlanoAee.NaoEhNulo() && ultimaVersaoPlanoAee.Numero > 1)
             {
@@ -64,14 +64,18 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
                 if(respostaQuestoesPlanoAee.NaoEhNulo() && respostaQuestoesPlanoAee.Any())
                 {
-                    //Obtem resposta da questao Bimestre de vigência do plano
-                    var questaoAValidar = respostaQuestoesPlanoAee.FirstOrDefault(x => x.QuestaoId == 41);
+                    var questionarioId = await mediator.Send(new ObterQuestionarioPlanoAEEIdQuery());
+                    var questaoPeriodoEscolar = (await mediator.Send(new ObterQuestoesPlanoAEEPorVersaoQuery(questionarioId, ultimaVersaoPlanoAee.Id, turma.CodigoTurma)))?.FirstOrDefault(x => x.TipoQuestao == TipoQuestao.PeriodoEscolar);
 
-                    if (questaoAValidar.NaoEhNulo() && (long)Convert.ToDouble(questaoAValidar.Texto) != periodoEscolarPlano.Id)
-                    {
-                        var planoAEEQuestaoId = await mediator.Send(new SalvarPlanoAEEQuestaoCommand(planoAee.Id, 41, ultimaVersaoPlanoAee.Id));
+                    if (questaoPeriodoEscolar.NaoEhNulo())
+                    {                    
+                        //Obtem resposta da questao Bimestre de vigência do plano
+                        var respostaPeriodoEscolar = respostaQuestoesPlanoAee.FirstOrDefault(x => x.QuestaoId == questaoPeriodoEscolar.Id);
 
-                        await mediator.Send(new SalvarPlanoAEERespostaCommand(planoAee.Id, planoAEEQuestaoId, periodoEscolarPlano.Id.ToString(), TipoQuestao.PeriodoEscolar));
+                        if (respostaPeriodoEscolar.NaoEhNulo() && (long)Convert.ToDouble(respostaPeriodoEscolar.Texto) != periodoEscolarPlano.Id)
+                        {
+                            await mediator.Send(new AtualizarPlanoAEERespostaPeriodoEscolarCommand(respostaPeriodoEscolar.Id, periodoEscolarPlano.Id.ToString()));
+                        }
                     }
                 }
             }
