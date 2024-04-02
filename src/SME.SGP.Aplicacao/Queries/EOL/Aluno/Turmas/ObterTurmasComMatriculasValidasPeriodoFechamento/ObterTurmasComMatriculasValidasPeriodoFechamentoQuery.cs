@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmasComMatriculasValidasPeriodoFechamentoQuery : IRequest<IEnumerable<string>>
     {
-        public ObterTurmasComMatriculasValidasPeriodoFechamentoQuery(string alunoCodigo, bool ehTurmaInfantil, int bimestre, long tipoCalendarioId, string[] turmasCodigos, DateTime periodoInicio, DateTime periodoFim)
+        public ObterTurmasComMatriculasValidasPeriodoFechamentoQuery(string alunoCodigo, bool ehTurmaInfantil, int bimestre, long tipoCalendarioId, string[] turmasCodigos, DateTime periodoInicio, DateTime periodoFim, bool consideraPeriodoFechamento = true)
         {
             AlunoCodigo = alunoCodigo;
             EhTurmaInfantil = ehTurmaInfantil;
@@ -15,6 +15,7 @@ namespace SME.SGP.Aplicacao
             TurmasCodigos = turmasCodigos;
             PeriodoInicio = periodoInicio;
             PeriodoFim = periodoFim;
+            ConsideraPeriodoFechamento = consideraPeriodoFechamento;
         }
 
         public string AlunoCodigo { get; set; }
@@ -24,5 +25,6 @@ namespace SME.SGP.Aplicacao
         public long TipoCalendarioId { get; set; }
         public bool EhTurmaInfantil { get; set; }
         public int Bimestre { get; set; }
+        public bool ConsideraPeriodoFechamento { get; set; }
     }
 }

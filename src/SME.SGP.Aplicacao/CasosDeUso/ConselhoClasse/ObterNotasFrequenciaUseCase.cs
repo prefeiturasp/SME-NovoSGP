@@ -67,9 +67,9 @@ namespace SME.SGP.Aplicacao
                     notasFrequenciaDto.ConsideraHistorico = alunoNaTurma.Inativo;
 
                 var turmasCodigoAtivos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, notasFrequenciaDto.AlunoCodigo,
-                    tiposParaConsulta, semestre: turma.Semestre != 0 ? turma.Semestre : null));
+                    tiposParaConsulta, periodoEscolar?.PeriodoFim, semestre: turma.Semestre != 0 ? turma.Semestre : null));
 
-                turmasCodigos.AddRange(turmasCodigoAtivos.ToList());
+                turmasCodigos.AddRange(turmasCodigoAtivos);
 
                 if (!turmasCodigos.Any())
                 {
@@ -80,8 +80,6 @@ namespace SME.SGP.Aplicacao
                 }
                 else if (!turmasCodigos.Contains(turma.CodigoTurma))
                     turmasCodigos.Add(turma.CodigoTurma);
-
-
 
                 conselhosClassesIds = await mediator
                     .Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(turmasCodigos.Distinct().ToArray(), periodoEscolar?.Id));
@@ -120,12 +118,12 @@ namespace SME.SGP.Aplicacao
             var bimestre = periodoEscolar?.Bimestre ?? (int)Bimestre.Final;
 
             var turmasComMatriculasValidas = await mediator.Send(new ObterTurmasComMatriculasValidasPeriodoFechamentoQuery(notasFrequenciaDto.AlunoCodigo,
-                                                                                                                            turma.EhTurmaInfantil,
-                                                                                                                            bimestre,
-                                                                                                                            tipoCalendario.Id,
-                                                                                                                            turmasCodigos.ToArray(),
-                                                                                                                            periodoInicio,
-                                                                                                                            periodoFim));
+                                                                                                                           turma.EhTurmaInfantil,
+                                                                                                                           bimestre,
+                                                                                                                           tipoCalendario.Id,
+                                                                                                                           turmasCodigos.ToArray(),
+                                                                                                                           periodoInicio,
+                                                                                                                           periodoFim));
             if (turmasComMatriculasValidas.Any())
                 turmasCodigos = turmasComMatriculasValidas.ToList();
 
@@ -163,7 +161,7 @@ namespace SME.SGP.Aplicacao
                     DataMatricula = d.DataMatricula,
                     DataSituacao = d.DataSituacao,
                     SituacaoCodigo = d.CodigoSituacaoMatricula,
-                    NumeroChamada = d.NumeroAlunoChamada.HasValue ? d.NumeroAlunoChamada.Value : 0
+                    NumeroChamada = d.NumeroAlunoChamada ?? 0
                 }).FirstOrDefault(d => d.DataMatricula <= periodoFim && d.DataSituacao.Date >= periodoInicio) ?? dadosAluno;
 
             bool validaMatricula = false;
@@ -201,7 +199,16 @@ namespace SME.SGP.Aplicacao
             var retorno = new ConselhoClasseAlunoNotasConceitosRetornoDto();
             var gruposMatrizesNotas = new List<ConselhoClasseAlunoNotasConceitosDto>();
 
-            var frequenciasAluno = turmasComMatriculasValidas.Contains(notasFrequenciaDto.CodigoTurma) && alunoNaTurma.NaoEhNulo() ?
+            var matriculaValidasFrequencia = await mediator.Send(new ObterTurmasComMatriculasValidasPeriodoFechamentoQuery(notasFrequenciaDto.AlunoCodigo,
+                                                                                                                           turma.EhTurmaInfantil,
+                                                                                                                           bimestre,
+                                                                                                                           tipoCalendario.Id,
+                                                                                                                           turmasCodigos.ToArray(),
+                                                                                                                           periodoInicio,
+                                                                                                                           periodoFim,
+                                                                                                                           false));
+
+            var frequenciasAluno = matriculaValidasFrequencia.Contains(notasFrequenciaDto.CodigoTurma) && alunoNaTurma.NaoEhNulo() ?
                 await ObterFrequenciaAlunoRefatorada(disciplinasDaTurmaEol, periodoEscolar, situacoesAlunoNaTurma, tipoCalendario.Id, notasFrequenciaDto.Bimestre, tipoCalendario.AnoLetivo) :
                 Enumerable.Empty<FrequenciaAluno>();
 

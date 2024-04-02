@@ -3,7 +3,6 @@ using SME.SGP.Dominio;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,15 +18,22 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<string>> Handle(ObterTurmasComMatriculasValidasPeriodoFechamentoQuery request, CancellationToken cancellationToken)
         {
-            var turmasComMatriculasValidas = await mediator.Send(new ObterTurmasComMatriculasValidasQuery(request.AlunoCodigo, request.TurmasCodigos, request.PeriodoInicio, request.PeriodoFim));
+            var turmasComMatriculasValidas = await mediator
+                .Send(new ObterTurmasComMatriculasValidasQuery(request.AlunoCodigo, request.TurmasCodigos, request.PeriodoInicio, request.PeriodoFim), cancellationToken);
 
-            var periodoFechamento = await mediator.Send(new ObterPeriodoFechamentoPorCalendarioIdEBimestreQuery(request.TipoCalendarioId, request.EhTurmaInfantil, request.Bimestre));
+            if (!request.ConsideraPeriodoFechamento)
+                return turmasComMatriculasValidas.Distinct();
+
+            var periodoFechamento = await mediator
+                .Send(new ObterPeriodoFechamentoPorCalendarioIdEBimestreQuery(request.TipoCalendarioId, request.EhTurmaInfantil, request.Bimestre), cancellationToken);
+
             if (periodoFechamento.NaoEhNulo())
             {
-                turmasComMatriculasValidas = await mediator.Send(new ObterTurmasComMatriculasValidasQuery(request.AlunoCodigo, request.TurmasCodigos, periodoFechamento.InicioDoFechamento, periodoFechamento.FinalDoFechamento));
+                turmasComMatriculasValidas = await mediator
+                    .Send(new ObterTurmasComMatriculasValidasQuery(request.AlunoCodigo, request.TurmasCodigos, periodoFechamento.InicioDoFechamento, periodoFechamento.FinalDoFechamento), cancellationToken);
             }
 
-            return turmasComMatriculasValidas;
+            return turmasComMatriculasValidas.Distinct();
         }
     }
 }
