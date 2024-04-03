@@ -144,5 +144,10 @@ namespace SME.SGP.Infra
 
             return cpf.EndsWith(digito);
         }
+
+        public static string SomenteNumeros(this string valor)
+        {
+            return Regex.Replace(valor, "[^0-9]", "");
+        }
     }
 }
