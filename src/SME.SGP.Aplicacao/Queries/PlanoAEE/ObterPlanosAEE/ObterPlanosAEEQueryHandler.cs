@@ -41,12 +41,15 @@ namespace SME.SGP.Aplicacao
                 {
                     var codigosTurmasPorUe = await ObterCodigosTurmas(ue, ehAdmin);
 
-                    foreach (var codigoTurmaPorUe in codigosTurmasPorUe)
+                    if(codigosTurmasPorUe.NaoEhNulo() && codigosTurmasPorUe.Any())
                     {
-                        if (turmasCodigos is not null && turmasCodigos.Any())
-                            turmasCodigos = turmasCodigos.Concat(new string[1] { codigoTurmaPorUe }).ToArray();
-                        else
-                            turmasCodigos = new string[1] { codigoTurmaPorUe };
+                        foreach (var codigoTurmaPorUe in codigosTurmasPorUe)
+                        {
+                            if (turmasCodigos is not null && turmasCodigos.Any())
+                                turmasCodigos = turmasCodigos.Concat(new string[1] { codigoTurmaPorUe }).ToArray();
+                            else
+                                turmasCodigos = new string[1] { codigoTurmaPorUe };
+                        }
                     }
                 }
             }
