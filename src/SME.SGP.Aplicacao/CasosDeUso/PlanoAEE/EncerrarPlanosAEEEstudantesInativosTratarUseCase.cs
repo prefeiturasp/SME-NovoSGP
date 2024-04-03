@@ -65,20 +65,19 @@ namespace SME.SGP.Aplicacao
                     encerrarPlanoAee = true;
                 else if (ultimaSituacao!.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido || ultimaSituacao!.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo)
                 {
-                    if (turmaDoPlanoAee.AnoLetivo < anoLetivo)
-                    {
-                        var turmaAtualDoAluno = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(ultimaSituacao.CodigoTurma.ToString()));
+                    var turmaAtualDoAluno = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(ultimaSituacao.CodigoTurma.ToString()));
 
-                        if (turmaAtualDoAluno.NaoEhNulo())
-                        {
-                            if (turmaDoPlanoAee.Ue.CodigoUe != turmaAtualDoAluno.Ue.CodigoUe)
-                                encerrarPlanoAee = true;
-                        }                         
+                    if (turmaAtualDoAluno.NaoEhNulo())
+                    {
+                        if (turmaDoPlanoAee.Ue.CodigoUe != turmaAtualDoAluno.Ue.CodigoUe)
+                            encerrarPlanoAee = true;
                     }
                 }
                 else if (matriculas.Select(m => m.CodigoTurma).Distinct().Count() > 1 && AlunoFoiTransferidoDaUnidadeEscolar(matriculas, turmaDoPlanoAee))
                     encerrarPlanoAee = true;
             }
+            else
+                encerrarPlanoAee = true;
 
             if (encerrarPlanoAee || (turmaDoPlanoAee.EhTurmaPrograma() && ultimaSituacao.EhNulo()))
                 await EncerrarPlanoAee(planoAEE, ultimaSituacao?.SituacaoMatricula ?? "Inativo", ultimaSituacao?.DataSituacao ?? DateTimeExtension.HorarioBrasilia());

@@ -37,5 +37,11 @@ namespace SME.SGP.Dados.Repositorios
                     };
                 }, new { versaoPlanoId });
         }
+        public async Task Atualizar(string resposta, long id)
+        {
+            var sql = @"UPDATE plano_aee_resposta SET texto = @texto WHERE id = @id";
+
+            await database.Conexao.QueryAsync<string>(sql.ToString(), new { texto = resposta, id });
+        }
     }
 }
