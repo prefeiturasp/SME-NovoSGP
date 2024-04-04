@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
                 .WithMessage("Um mês válido precisa ser informado");
 
             RuleFor(c => c.AnoLetivo)
-                .GreaterThanOrEqualTo(0)
+                .GreaterThan(0)
                 .WithMessage("Um ano letivo válido precisa ser informado");
         }
     }
