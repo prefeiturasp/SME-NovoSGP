@@ -117,7 +117,7 @@ namespace SME.SGP.Aplicacao
             var periodoFim = periodoEscolar?.PeriodoFim ?? periodosLetivos.OrderBy(pl => pl.Bimestre).Last().PeriodoFim;
             var bimestre = periodoEscolar?.Bimestre ?? (int)Bimestre.Final;
 
-            var turmasComMatriculasValidas = await mediator.Send(new ObterTurmasComMatriculasValidasPeriodoFechamentoQuery(notasFrequenciaDto.AlunoCodigo,
+            var turmasComMatriculasValidas = await mediator.Send(new ObterTurmasComMatriculasValidasPeriodoQuery(notasFrequenciaDto.AlunoCodigo,
                                                                                                                            turma.EhTurmaInfantil,
                                                                                                                            bimestre,
                                                                                                                            tipoCalendario.Id,
@@ -199,7 +199,7 @@ namespace SME.SGP.Aplicacao
             var retorno = new ConselhoClasseAlunoNotasConceitosRetornoDto();
             var gruposMatrizesNotas = new List<ConselhoClasseAlunoNotasConceitosDto>();
 
-            var matriculaValidasFrequencia = await mediator.Send(new ObterTurmasComMatriculasValidasPeriodoFechamentoQuery(notasFrequenciaDto.AlunoCodigo,
+            var matriculaValidasFrequencia = await mediator.Send(new ObterTurmasComMatriculasValidasPeriodoQuery(notasFrequenciaDto.AlunoCodigo,
                                                                                                                            turma.EhTurmaInfantil,
                                                                                                                            bimestre,
                                                                                                                            tipoCalendario.Id,

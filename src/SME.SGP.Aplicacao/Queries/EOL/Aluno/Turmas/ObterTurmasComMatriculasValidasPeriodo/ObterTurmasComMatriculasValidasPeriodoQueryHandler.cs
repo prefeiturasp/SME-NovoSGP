@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterTurmasComMatriculasValidasPeriodoFechamentoQueryHandler : IRequestHandler<ObterTurmasComMatriculasValidasPeriodoFechamentoQuery, IEnumerable<string>>
+    public class ObterTurmasComMatriculasValidasPeriodoQueryHandler : IRequestHandler<ObterTurmasComMatriculasValidasPeriodoQuery, IEnumerable<string>>
     {
         private readonly IMediator mediator;
-        public ObterTurmasComMatriculasValidasPeriodoFechamentoQueryHandler(IMediator mediator)
+        public ObterTurmasComMatriculasValidasPeriodoQueryHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<string>> Handle(ObterTurmasComMatriculasValidasPeriodoFechamentoQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<string>> Handle(ObterTurmasComMatriculasValidasPeriodoQuery request, CancellationToken cancellationToken)
         {
             var turmasComMatriculasValidas = await mediator
                 .Send(new ObterTurmasComMatriculasValidasQuery(request.AlunoCodigo, request.TurmasCodigos, request.PeriodoInicio, request.PeriodoFim), cancellationToken);

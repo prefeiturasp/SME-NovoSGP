@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterTurmasComMatriculasValidasPeriodoFechamentoQuery : IRequest<IEnumerable<string>>
+    public class ObterTurmasComMatriculasValidasPeriodoQuery : IRequest<IEnumerable<string>>
     {
-        public ObterTurmasComMatriculasValidasPeriodoFechamentoQuery(string alunoCodigo, bool ehTurmaInfantil, int bimestre, long tipoCalendarioId, string[] turmasCodigos, DateTime periodoInicio, DateTime periodoFim, bool consideraPeriodoFechamento = true)
+        public ObterTurmasComMatriculasValidasPeriodoQuery(string alunoCodigo, bool ehTurmaInfantil, int bimestre, long tipoCalendarioId, string[] turmasCodigos, DateTime periodoInicio, DateTime periodoFim, bool consideraPeriodoFechamento = true)
         {
             AlunoCodigo = alunoCodigo;
             EhTurmaInfantil = ehTurmaInfantil;
