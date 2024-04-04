@@ -180,7 +180,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
 
             mediator.Setup(a => a.Send(It.IsAny<ObterFechamentoPorTurmaPeriodoQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new FechamentoTurma());
 
-            mediator.Setup(a => a.Send(It.IsAny<ObterConselhoClassePorFechamentoIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new ConselhoClasse());
+            mediator.Setup(a => a.Send(It.IsAny<ObterConselhoClassePorFechamentoIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new Dominio.ConselhoClasse());
 
             mediator.Setup(a => a.Send(It.IsAny<ObterConselhoClasseAlunoPorAlunoCodigoConselhoIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new ConselhoClasseAluno());
 
