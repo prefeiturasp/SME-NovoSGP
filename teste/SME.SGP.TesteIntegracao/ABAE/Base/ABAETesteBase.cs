@@ -20,6 +20,9 @@ namespace SME.SGP.TesteIntegracao.ABAE.Base
 
         protected async Task CriarDadosBasicos(bool criarCadastroAcessoABAE = false, List<(string CodigoDre, string CodigoUe)> dresUes = null)
         {
+            CriarClaimUsuario(ObterPerfilDiretor());
+            await CriarUsuarios();
+            
             if (dresUes.PossuiRegistros())
                 foreach (var dreUe in dresUes)
                     await CriarDreUe(dreUe.CodigoDre, $"Nome Dre {dreUe.CodigoDre}", 

@@ -111,5 +111,27 @@ namespace SME.SGP.Dados.Repositorios
             if (filtro.Nome.EstaPreenchido())
                 sql.AppendLine(" and lower(f_unaccent(a.nome)) LIKE ('%' || lower(f_unaccent(@nome)) || '%') ");
         }
+
+        public async Task<IEnumerable<NomeCpfABAEDto>> ObterCadastrosABAEPorDre(string cpf, string codigoDre, string codigoUe, string nome)
+        {
+            var sql = new StringBuilder();
+
+            sql.AppendLine("SELECT a.nome, a.cpf ");
+            sql.AppendLine(@"FROM cadastro_acesso_abae a
+                              INNER JOIN ue ON ue.id = a.ue_id
+                              INNER JOIN dre ON dre.id = ue.dre_id ");
+            sql.AppendLine("WHERE dre.dre_id = @codigoDre ");
+
+            if (!string.IsNullOrEmpty(codigoUe))
+                sql.AppendLine(" AND ue.ue_id = @codigoUe");
+
+            if (!string.IsNullOrEmpty(cpf))
+                sql.AppendLine(" AND a.cpf = @cpf");
+
+            else if (!string.IsNullOrEmpty(nome))
+                sql.AppendLine(" AND lower(f_unaccent(a.nome)) LIKE lower(f_unaccent(@nome))");
+
+            return await database.Conexao.QueryAsync<NomeCpfABAEDto>(sql.ToString(), new { cpf, codigoDre, codigoUe, nome });
+        }
     }
 }
