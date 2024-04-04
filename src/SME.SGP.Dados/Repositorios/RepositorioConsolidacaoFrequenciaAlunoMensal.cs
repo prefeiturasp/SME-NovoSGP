@@ -70,6 +70,9 @@ namespace SME.SGP.Dados.Repositorios
 
         public Task<IEnumerable<ConsolidacaoFreqAlunoMensalInsuficienteDto>> ObterConsolidacoesFrequenciaAlunoMensalInsuficientes(long ueId, int anoLetivo, int mes)
         {
+            const int PERC_MINIMO_FREQUENCIA_FUNDAMENTAL_MEDIO_EJA = 75;
+            const int PERC_MINIMO_FREQUENCIA_INFANTIL = 60;
+
             var query = @$"select t.turma_id as TurmaCodigo, t.nome as turma, t.modalidade_codigo as modalidade, 
                                   u.nome as ue, u.tipo_escola as tipoEscola, d.abreviacao as dre,
                                   cfam.percentual as 	, cfam.mes, cfam.aluno_codigo as alunoCodigo
@@ -80,8 +83,8 @@ namespace SME.SGP.Dados.Repositorios
                            where t.ue_id = @ueId
                                  and cfam.mes = @mes
                                  and t.ano_letivo = @anoLetivo
-                                 and ((t.modalidade_codigo in({(int) Modalidade.Fundamental}, {(int)Modalidade.Medio}, {(int)Modalidade.EJA}) and cfam.percentual < 75) or
-                                      (t.modalidade_codigo in({(int)Modalidade.EducacaoInfantil}) and cfam.percentual < 60));";
+                                 and ((t.modalidade_codigo in({(int) Modalidade.Fundamental}, {(int)Modalidade.Medio}, {(int)Modalidade.EJA}) and cfam.percentual < {PERC_MINIMO_FREQUENCIA_FUNDAMENTAL_MEDIO_EJA}) or
+                                      (t.modalidade_codigo in({(int)Modalidade.EducacaoInfantil}) and cfam.percentual < {PERC_MINIMO_FREQUENCIA_INFANTIL}));";
 
             return database.Conexao.QueryAsync<ConsolidacaoFreqAlunoMensalInsuficienteDto>(query, new { ueId, anoLetivo, mes });
         }
