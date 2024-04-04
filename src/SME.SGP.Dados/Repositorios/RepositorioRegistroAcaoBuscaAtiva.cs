@@ -477,5 +477,34 @@ namespace SME.SGP.Dados.Repositorios
 
             return sql.ToString();
         }
+
+        public Task<int> ObterQdadeRegistrosAcaoAlunoMes(string alunoCodigo, int mes, int anoLetivo)
+        {
+            var sql = $@"with vw_resposta_data as (
+                             select rabas.registro_acao_busca_ativa_id, 
+                                    rabar.texto DataRegistro
+                             from registro_acao_busca_ativa_secao rabas    
+                             join registro_acao_busca_ativa_questao rabaq on rabas.id = rabaq.registro_acao_busca_ativa_secao_id  
+                             join questao q on rabaq.questao_id = q.id 
+                             join registro_acao_busca_ativa_resposta rabar on rabar.questao_registro_acao_id = rabaq.id 
+                             join secao_registro_acao_busca_ativa sraba on sraba.id = rabas.secao_registro_acao_id
+                             where q.nome_componente = {QUESTAO_DATA_REGISTRO_NOME_COMPONENTE} 
+                                   and sraba.etapa = {SECAO_ETAPA_1} 
+                                   and sraba.ordem = {SECAO_ORDEM_1} 
+                                   and not rabas.excluido 
+                                   and not rabaq.excluido
+                                   and not rabar.excluido
+                                   and not sraba.excluido)
+                         select  count(raba.id) 
+                         from registro_acao_busca_ativa raba 
+                         inner join vw_resposta_data qdata on qdata.registro_acao_busca_ativa_id = raba.id
+                         where raba.aluno_codigo = @AlunoCodigo
+                               and length(qdata.DataRegistro) > 0 
+                               and not raba.excluido 
+                               and extract(month from to_date(qdata.DataRegistro,'yyyy-mm-dd')) = @mes 
+                               and extract(year from to_date(qdata.DataRegistro,'yyyy-mm-dd')) = @ano;";
+
+            return database.Conexao.QueryFirstOrDefaultAsync<int>(sql.ToString(), new { alunoCodigo, mes, ano = anoLetivo });
+        }
     }
 }
