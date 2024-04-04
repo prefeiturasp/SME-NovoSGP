@@ -126,12 +126,17 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(" AND ue.ue_id = @codigoUe");
 
             if (!string.IsNullOrEmpty(cpf))
+            {
+                cpf = cpf.FormatarCPF();
                 sql.AppendLine(" AND a.cpf = @cpf");
+            }
 
             else if (!string.IsNullOrEmpty(nome))
-                sql.AppendLine(" AND lower(f_unaccent(a.nome)) LIKE lower(f_unaccent(@nome))");
+                sql.AppendLine(" AND lower(a.nome) LIKE @nome ");
 
-            return await database.Conexao.QueryAsync<NomeCpfABAEDto>(sql.ToString(), new { cpf, codigoDre, codigoUe, nome });
+            return await database.Conexao.QueryAsync<NomeCpfABAEDto>(sql.ToString(), new { cpf, codigoDre, codigoUe, 
+                                                                                           nome = string.IsNullOrEmpty(nome) ? string.Empty
+                                                                                           : string.Format("%{0}%", nome.ToLower()) });
         }
     }
 }
