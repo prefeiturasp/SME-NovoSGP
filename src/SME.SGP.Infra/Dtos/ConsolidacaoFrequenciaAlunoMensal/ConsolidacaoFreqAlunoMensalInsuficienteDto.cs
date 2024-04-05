@@ -12,6 +12,7 @@ namespace SME.SGP.Infra
         public string Dre { get; set; }
         public string AlunoCodigo { get; set; }
         public int Mes { get; set; }
+        public int AnoLetivo { get; set; }
         public decimal Frequencia { get; set; }
         
     }

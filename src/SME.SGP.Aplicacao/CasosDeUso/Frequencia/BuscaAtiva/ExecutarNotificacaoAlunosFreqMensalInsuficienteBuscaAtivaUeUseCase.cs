@@ -16,14 +16,13 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
             var filtro = mensagemRabbit.ObterObjetoMensagem<FiltroIdAnoLetivoDto>();
-            var ue = await mediator.Send(new ObterCodigoUEDREPorIdQuery(filtro.Id));
-            
-            /*var registrosBuscaAtiva = await repositorioBuscaAtiva.ObterIdsRegistrosAlunoResponsavelContatado(filtro.Data.Date, filtro.Id, filtro.Data.Year);
-            foreach (var idBuscaAtiva in registrosBuscaAtiva)
-            {
-                filtro.Id = idBuscaAtiva;
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.ConsolidarReflexoFrequenciaBuscaAtivaAluno, filtro, Guid.NewGuid()));
-            }*/
+            //var ue = await mediator.Send(new ObterCodigoUEDREPorIdQuery(filtro.Id));
+            if (filtro.Data.Day.Equals(DateTime.DaysInMonth(filtro.Data.Year, filtro.Data.Month))){
+                var consolidacoesFrequenciaMensalInsuficientes = await mediator.Send(new ObterConsolidacoesFrequenciaAlunoMensalInsuficientesQuery(filtro.Id, filtro.Data.Year, filtro.Data.Month));
+                if (consolidacoesFrequenciaMensalInsuficientes.PossuiRegistros())
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.ExecutarNotificacaoAlunosBaixaFrequenciaBuscaAtivaProfissionaisNAAPA, consolidacoesFrequenciaMensalInsuficientes, 
+                                                                   Guid.NewGuid()));
+            }
             return true;
         }
     }

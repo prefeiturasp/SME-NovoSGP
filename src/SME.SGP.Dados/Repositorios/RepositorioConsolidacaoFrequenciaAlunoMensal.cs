@@ -73,7 +73,7 @@ namespace SME.SGP.Dados.Repositorios
             const int PERC_MINIMO_FREQUENCIA_FUNDAMENTAL_MEDIO_EJA = 75;
             const int PERC_MINIMO_FREQUENCIA_INFANTIL = 60;
 
-            var query = @$"select t.turma_id as TurmaCodigo, t.nome as turma, t.modalidade_codigo as modalidade, 
+            var query = @$"select t.turma_id as TurmaCodigo, t.nome as turma, t.modalidade_codigo as modalidade, t.ano_letivo as AnoLetivo,
                                   u.nome as ue, u.tipo_escola as tipoEscola, d.abreviacao as dre,
                                   cfam.percentual as 	, cfam.mes, cfam.aluno_codigo as alunoCodigo
                            from consolidacao_frequencia_aluno_mensal cfam
