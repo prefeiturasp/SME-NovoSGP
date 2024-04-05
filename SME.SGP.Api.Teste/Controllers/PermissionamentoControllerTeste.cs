@@ -28,7 +28,7 @@ namespace SME.SGP.Api.Teste.Controllers
             ObterDadosControllers(listaApiMethod, apiControllers, AssemblyName);
 
             var listMetodos = listaApiMethod.Where(x => x.CustomAttributeName.Count == 0);
-            var semAuthorizeAttribute = listaApiMethod.Where(x => x.Authorize ==false && x.ControllerName != "AutenticacaoIntegracaoController");
+            var semAuthorizeAttribute = listaApiMethod.Where(x => !x.Authorize && x.ControllerName != "AutenticacaoIntegracaoController" && x.ControllerName != "CEPController");
             var listAutorizecontrollerName = semAuthorizeAttribute.GroupBy(x => x.ControllerName).ToList();
             var listcontrollerName = listMetodos.GroupBy(c => c.ControllerName).ToList();
 
