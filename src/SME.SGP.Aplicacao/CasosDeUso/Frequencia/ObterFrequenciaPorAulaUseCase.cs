@@ -78,7 +78,6 @@ namespace SME.SGP.Aplicacao
                     DataSituacao = aluno.DataSituacao,
                     DataNascimento = aluno.DataNascimento,
                     Desabilitado = EhAlunoDesabilitado(turma, aula, periodoEscolar, aluno),
-                    PermiteAnotacao = aluno.EstaAtivo(aula.DataAula),
                     PossuiAnotacao = anotacoesTurma.Any(a => a == aluno.CodigoAluno),
                     NomeResponsavel = aluno.NomeResponsavel,
                     TipoResponsavel = ObterTipoResponsavel(aluno.TipoResponsavel),
