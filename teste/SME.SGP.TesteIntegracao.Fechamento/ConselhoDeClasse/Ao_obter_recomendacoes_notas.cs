@@ -8,6 +8,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.ConsolidacaoConselhoDeClasse.ServicosFakes;
+using SME.SGP.TesteIntegracao.Fechamento.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
@@ -20,7 +21,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 {
     public class Ao_obter_recomendacoes_notas : ConselhoDeClasseTesteBase
     {
-        private const long TURMA_ID = 1;
+        private const long TURMA_ID_1 = 1;
+        private const long TURMA_ID_3 = 3;
         private const int PRIMEIRO_BIMESTRE = 1;
 
         public Ao_obter_recomendacoes_notas(CollectionFixture collectionFixture) : base(collectionFixture)
@@ -40,7 +42,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesPorTurmasCodigoQuery, IEnumerable<DisciplinaDto>>), typeof(ObterComponentesCurricularesPorTurmasCodigoQueryFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<VerificarSeExisteRecomendacaoPorTurmaQuery, IEnumerable<AlunoTemRecomandacaoDto>>), typeof(VerificarSeExisteRecomendacaoPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterConselhoClasseAlunoNotaQuery, IEnumerable<ConselhoClasseAlunoNotaDto>>), typeof(ObterConselhoClasseAlunoNotaQueryHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterInfoComponentesCurricularesESPorTurmasCodigoQuery, IEnumerable<InfoComponenteCurricular>>), typeof(ObterInfoComponentesCurricularesESPorTurmasCodigoQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterInfoComponentesCurricularesESPorTurmasCodigoQuery, IEnumerable<InfoComponenteCurricular>>), typeof(ConsolidacaoConselhoDeClasse.ServicosFakes.ObterInfoComponentesCurricularesESPorTurmasCodigoQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmasFechamentoConselhoPorAlunosQuery, IEnumerable<TurmaAlunoDto>>), typeof(ObterTurmasFechamentoConselhoPorAlunosQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         [Fact(DisplayName = "Obter Alunos Sem fechamento turma")]
@@ -49,7 +52,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarItensBasicos();
             var userCase = ServiceProvider.GetService<IObterAlunosSemNotasRecomendacoesUseCase>();
 
-            var filtro = new FiltroInconsistenciasAlunoFamiliaDto(TURMA_ID, PRIMEIRO_BIMESTRE);
+            var filtro = new FiltroInconsistenciasAlunoFamiliaDto(TURMA_ID_1, PRIMEIRO_BIMESTRE);
             await userCase.Executar(filtro).ShouldThrowAsync<NegocioException>();
         }
 
@@ -59,7 +62,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarItensBasicos();
             var userCase = ServiceProvider.GetService<IObterAlunosSemNotasRecomendacoesUseCase>();
 
-            var filtro = new FiltroInconsistenciasAlunoFamiliaDto(TURMA_ID, PRIMEIRO_BIMESTRE);
+            var filtro = new FiltroInconsistenciasAlunoFamiliaDto(TURMA_ID_1, PRIMEIRO_BIMESTRE);
 
             await InserirNaBase(new FechamentoTurma()
             {
@@ -74,7 +77,58 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await InserirNaBase(new ConselhoClasse()
             {
                 FechamentoTurmaId = 1,
-                Situacao = SituacaoConselhoClasse.EmAndamento,
+                Situacao = SituacaoConselhoClasse.Concluido,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = "Sistema",
+                CriadoRF = "0"
+            });
+
+            var retornoUseCase = await userCase.Executar(filtro);
+            retornoUseCase.Count().ShouldBeGreaterThan(0);
+            retornoUseCase.FirstOrDefault().Inconsistencias.Count().ShouldBeGreaterThan(0);
+        }
+
+        [Fact(DisplayName = "Obter Alunos Sem recomendações e Notas")]
+        public async Task Obter_Alunos_Sem_Inconsistencia_com_dois_conselhos_turmas_regulares_EM()
+        {
+            await CriarItensBasicos();
+            var userCase = ServiceProvider.GetService<IObterAlunosSemNotasRecomendacoesUseCase>();
+
+            var filtro = new FiltroInconsistenciasAlunoFamiliaDto(TURMA_ID_3, PRIMEIRO_BIMESTRE);
+
+            await InserirNaBase(new FechamentoTurma()
+            {
+                Id = 1,
+                PeriodoEscolarId = 1,
+                TurmaId = 2,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = "Sistema",
+                CriadoRF = "0"
+            });
+
+            await InserirNaBase(new FechamentoTurma()
+            {
+                Id = 2,
+                PeriodoEscolarId = 1,
+                TurmaId = 3,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = "Sistema",
+                CriadoRF = "0"
+            });
+
+            await InserirNaBase(new ConselhoClasse()
+            {
+                FechamentoTurmaId = 1,
+                Situacao = SituacaoConselhoClasse.Concluido,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = "Sistema",
+                CriadoRF = "0"
+            });
+
+            await InserirNaBase(new ConselhoClasse()
+            {
+                FechamentoTurmaId = 2,
+                Situacao = SituacaoConselhoClasse.Concluido,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = "Sistema",
                 CriadoRF = "0"
@@ -109,6 +163,27 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ModalidadeCodigo = Modalidade.Fundamental,
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year
             });
+
+            await InserirNaBase(new Dominio.Turma()
+            {
+                Id = 2,
+                UeId = 1,
+                Ano = "2",
+                CodigoTurma = "2",
+                ModalidadeCodigo = Modalidade.Medio,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year
+            });
+
+            await InserirNaBase(new Dominio.Turma()
+            {
+                Id = 3,
+                UeId = 1,
+                Ano = "P",
+                CodigoTurma = "3",
+                ModalidadeCodigo = Modalidade.Medio,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year
+            });
+
             await InserirNaBase(new PeriodoEscolar
             {
                 Id = 1,

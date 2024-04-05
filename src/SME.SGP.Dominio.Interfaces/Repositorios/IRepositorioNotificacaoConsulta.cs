@@ -15,7 +15,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<int> ObterQuantidadeNotificacoesNaoLidasPorAnoLetivoEUsuarioAsync(int anoLetivo, string codigoRf);
         Task<long> ObterCodigoPorId(long notificacaoId);
         Task<IEnumerable<NotificacaoUsuarioDto>> ObterUsuariosNotificacoesPorIds(long[] notificacoesIds);
-        Task<IEnumerable<NotificacoesParaTratamentoCargosNiveisDto>> ObterNotificacoesParaTratamentoCargosNiveis();
+        Task<IEnumerable<NotificacoesParaTratamentoCargosNiveisDto>> ObterNotificacoesParaTratamentoCargosNiveis(string codigoUe);
         Task<string> ObterUsuarioNotificacaoPorId(long id);
         Task<Notificacao> ObterPorCodigo(long codigo);
         Task<IEnumerable<Notificacao>> ObterPorWorkFlowAprovacaoId(long requestWorkFlowAprovacaoId);

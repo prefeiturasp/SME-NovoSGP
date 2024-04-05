@@ -18,8 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<DateTime?> Handle(ObterDataUltimaConsolicacaoDashboardNaapaQuery request, CancellationToken cancellationToken)
         {
-            var tipos = new long[] { (long)request.Tipo };
-            var parametroSistema = (await mediator.Send(new ObterParametrosSistemaPorTiposQuery() { Tipos = tipos })).FirstOrDefault();
+            var parametroSistema = (await mediator.Send(new ObterParametrosSistemaPorTipoEAnoQuery(request.Tipo, request.AnoLetivo)))?.FirstOrDefault();
             
             if (parametroSistema.NaoEhNulo() && !string.IsNullOrEmpty(parametroSistema.Valor))
                 return DateTime.Parse(parametroSistema.Valor);

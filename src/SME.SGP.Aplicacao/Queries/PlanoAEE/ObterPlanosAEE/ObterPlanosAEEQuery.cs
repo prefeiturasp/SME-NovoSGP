@@ -16,6 +16,8 @@ namespace SME.SGP.Aplicacao
             ResponsavelRf = filtro.ResponsavelRf;
             PaaiReponsavelRf = filtro.PaaiReponsavelRf;
             ExibirEncerrados = filtro.ExibirEncerrados;
+            AnoLetivo = filtro.AnoLetivo;
+            ConsideraHistorico = filtro.ConsideraHistorico;
         }
 
         public long DreId { get; }
@@ -26,5 +28,7 @@ namespace SME.SGP.Aplicacao
         public string ResponsavelRf { get; set; }
         public string PaaiReponsavelRf { get; set; }
         public bool ExibirEncerrados { get; set; }
+        public int AnoLetivo { get; set; }
+        public bool ConsideraHistorico { get; set; }
     }
 }

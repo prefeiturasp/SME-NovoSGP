@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public Task<IEnumerable<UsuarioEolRetornoDto>> Handle(ObterResponsaveisPlanoAEEQuery request, CancellationToken cancellationToken)
         {
-            return repositorioPlanoAEE.ObterResponsaveis(request.DreId, request.UeId, request.TurmaId, request.AlunoCodigo, (int?)request.Situacao, request.ExibirEncerrados);
+            return repositorioPlanoAEE.ObterResponsaveis(request.DreId, new long[] { request.UeId }, request.TurmaId, request.AlunoCodigo, (int?)request.Situacao, request.ExibirEncerrados);
         }
     }
 }
