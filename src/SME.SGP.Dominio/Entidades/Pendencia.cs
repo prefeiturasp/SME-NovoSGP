@@ -19,6 +19,7 @@ namespace SME.SGP.Dominio
 
         public Pendencia(TipoPendencia tipo, string titulo, string descricao, long? turmaId = null)
         {
+            Situacao = SituacaoPendencia.Pendente;
             Tipo = tipo;
             Titulo = titulo;
             Descricao = descricao;

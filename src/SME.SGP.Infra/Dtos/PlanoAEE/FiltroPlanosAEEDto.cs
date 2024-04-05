@@ -12,5 +12,7 @@ namespace SME.SGP.Infra
         public string ResponsavelRf { get; set; }
         public string PaaiReponsavelRf { get; set; }
         public bool ExibirEncerrados { get; set; }
+        public int AnoLetivo { get; set; }
+        public bool ConsideraHistorico { get; set; }
     }
 }

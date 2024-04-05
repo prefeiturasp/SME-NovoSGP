@@ -5,7 +5,9 @@ using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Dto;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.AEE.PlanoAEE.ServicosFakes;
 using SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
@@ -27,6 +29,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             base.RegistrarFakes(services);
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaRegularESrmPorAlunoQuery, IEnumerable<TurmasDoAlunoDto>>), typeof(ObterTurmaRegularESrmPorAlunoQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUEsPorDREQuery, IEnumerable<AbrangenciaUeRetorno>>), typeof(ObterUEsPorDREQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         [Fact(DisplayName = "Plano AEE - Deve exibir o historico ao selecionar uma turma de 2021")]
@@ -238,7 +241,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             {
                 Modalidade = Modalidade.Fundamental,
                 Perfil = ObterPerfilProfessor(),
-                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                TurmasMesmaUe = false
             });
             await CriarTurma(Modalidade.Fundamental, "1", TURMA_CODIGO_2, TipoTurma.Regular, UE_ID_2, ANO_LETIVO_ANO_ATUAL, false);
             await CriarTurma(Modalidade.Fundamental, "1", TURMA_CODIGO_3, TipoTurma.Regular, UE_ID_3, ANO_LETIVO_ANO_ATUAL, false);
@@ -293,14 +297,119 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             var filtroPlanoAeeDto = new FiltroPlanosAEEDto()
             {
                 DreId = 2,
-                Situacao = SituacaoPlanoAEE.ParecerCP
+                Situacao = SituacaoPlanoAEE.ParecerCP,
+                UeId = 0,
+                AnoLetivo = ANO_LETIVO_ANO_ATUAL,
+                ConsideraHistorico = false
             };
+
             var servicoObterPlanoAEE = ObterServicoObterPlanosAEEUseCase();
             var retorno = await servicoObterPlanoAEE.Executar(filtroPlanoAeeDto);
             retorno.ShouldNotBeNull();
             retorno.Items.ShouldNotBeNull();
             retorno.Items.Count().ShouldBe(2);
             retorno.Items.ToList().Exists(plano => plano.Ue.Equals("EMEF UE 2")).ShouldBeTrue();
+            retorno.Items.ToList().Exists(plano => plano.Ue.Equals("EMEF UE 2")).ShouldBeTrue();
+        }
+
+        [Fact]
+        public async Task Ao_nao_filtrar_nenhuma_ue_encaminhamento()
+        {
+            await CriarDadosBasicos(new FiltroPlanoAee()
+            {
+                Modalidade = Modalidade.Fundamental,
+                Perfil = ObterPerfilProfessor(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                TurmasMesmaUe = false
+            });
+            await CriarTurma(Modalidade.Fundamental, "1", TURMA_CODIGO_3, TipoTurma.Regular, UE_ID_2, ANO_LETIVO_ANO_ATUAL, false);
+            await CriarTurma(Modalidade.Fundamental, "1", TURMA_CODIGO_2, TipoTurma.Regular, UE_ID_3, ANO_LETIVO_ANO_ATUAL, false);
+            await CriarTurma(Modalidade.Fundamental, "1", TURMA_CODIGO_1, TipoTurma.Regular, UE_ID_1, ANO_LETIVO_ANO_ATUAL, false);
+
+            await InserirNaBase(new Dominio.PlanoAEE()
+            {
+                TurmaId = TURMA_ID_2,
+                Situacao = SituacaoPlanoAEE.ParecerCP,
+                AlunoCodigo = CODIGO_ALUNO_1,
+                AlunoNumero = 1,
+                AlunoNome = "Nome do aluno 1",
+                Questoes = new List<PlanoAEEQuestao>(),
+                ResponsavelId = USUARIO_ID_1,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            await InserirNaBase(new PlanoAEEVersao()
+            {
+                PlanoAEEId = 1,
+                Numero = 1,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+
+            await InserirNaBase(new Dominio.PlanoAEE()
+            {
+                TurmaId = TURMA_ID_3,
+                Situacao = SituacaoPlanoAEE.ParecerCP,
+                AlunoCodigo = ALUNO_CODIGO_2,
+                AlunoNumero = 2,
+                AlunoNome = "Nome do aluno 2",
+                Questoes = new List<PlanoAEEQuestao>(),
+                ResponsavelId = USUARIO_ID_1,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            await InserirNaBase(new PlanoAEEVersao()
+            {
+                PlanoAEEId = 2,
+                Numero = 1,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+
+            await InserirNaBase(new Dominio.PlanoAEE()
+            {
+                TurmaId = TURMA_ID_1,
+                Situacao = SituacaoPlanoAEE.ParecerCP,
+                AlunoCodigo = ALUNO_CODIGO_3,
+                AlunoNumero = 4,
+                AlunoNome = "Nome do aluno 3",
+                Questoes = new List<PlanoAEEQuestao>(),
+                ResponsavelId = USUARIO_ID_1,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            await InserirNaBase(new PlanoAEEVersao()
+            {
+                PlanoAEEId = 3,
+                Numero = 4,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            var filtroPlanoAeeDto = new FiltroPlanosAEEDto()
+            {
+                DreId = 2,
+                UeId = -99,
+                AnoLetivo = ANO_LETIVO_ANO_ATUAL,
+                ConsideraHistorico = false
+            };
+
+            var servicoObterPlanoAEE = ObterServicoObterPlanosAEEUseCase();
+            var retorno = await servicoObterPlanoAEE.Executar(filtroPlanoAeeDto);
+            retorno.ShouldNotBeNull();
+            retorno.Items.ShouldNotBeNull();
+            retorno.Items.Count().ShouldBe(2);
             retorno.Items.ToList().Exists(plano => plano.Ue.Equals("EMEF UE 2")).ShouldBeTrue();
         }
 
@@ -411,7 +520,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             {
                 DreId = 1,
                 ResponsavelRf = USUARIO_PROFESSOR_CODIGO_RF_2222222,
-                PaaiReponsavelRf = USUARIO_PROFESSOR_CODIGO_RF_1111111
+                PaaiReponsavelRf = USUARIO_PROFESSOR_CODIGO_RF_1111111,
+                UeId = 1
             };
             var servicoObterPlanoAEE = ObterServicoObterPlanosAEEUseCase();
             var retorno = await servicoObterPlanoAEE.Executar(filtroPlanoAeeDto);

@@ -48,7 +48,8 @@ namespace SME.SGP.Dominio
             };
             ComponentesDeTecAprendizageELeitura = new List<string> {
                 "1359",
-                "1347"
+                "1347",
+                "1312"
             };
         }
 

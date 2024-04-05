@@ -8,6 +8,8 @@ using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ServicosFakes.Query;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -84,6 +86,27 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
             atividadeAvaliativasDiciplina.Count().ShouldBeGreaterThanOrEqualTo(1);
         }
 
+        protected async Task ExecuteTesteResgistrarAvaliacaoCopiaPorPerfil(AtividadeAvaliativaDto atividadeAvaliativa)
+        {
+            var comando = ServiceProvider.GetService<IComandosAtividadeAvaliativa>();
+
+            await Validar(comando, atividadeAvaliativa);
+
+            var retorno = await comando.Inserir(atividadeAvaliativa);
+
+            retorno.ShouldNotBeNull();
+
+            var atividadeAvaliativas = ObterTodos<AtividadeAvaliativa>();
+
+            atividadeAvaliativas.ShouldNotBeEmpty();
+            atividadeAvaliativas.Count().ShouldBeGreaterThanOrEqualTo(1);
+
+            var atividadeAvaliativasDiciplina = ObterTodos<AtividadeAvaliativaDisciplina>();
+
+            atividadeAvaliativasDiciplina.ShouldNotBeEmpty();
+            atividadeAvaliativasDiciplina.Count().ShouldBeGreaterThanOrEqualTo(2);
+        }
+
         protected async Task ExecuteTesteResgistrarAvaliacaoPorPerfilRegente(AtividadeAvaliativaDto dto)
         {
             await ExecuteTesteResgistrarAvaliacaoPorPerfil(dto);
@@ -107,6 +130,23 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
                 CategoriaId = categoria,    
                 DataAvaliacao = dataAvaliacao,
                 TipoAvaliacaoId = (long)tipoAvaliacao
+            };
+        }
+
+        protected AtividadeAvaliativaDto ObterAtividadeAvaliativaCopiaDto(string componente, CategoriaAtividadeAvaliativa categoria, DateTime dataAvaliacao, TipoAvaliacaoCodigo tipoAvaliacao, IEnumerable<CopiarAtividadeAvaliativaDto> atividadeAvaliativaCopiaDto, string nome = NOME_ATIVIDADE_AVALIATIVA)
+        {
+            return new AtividadeAvaliativaDto()
+            {
+                UeId = UE_CODIGO_1,
+                DreId = DRE_CODIGO_1,
+                TurmaId = TURMA_CODIGO_1,
+                DisciplinasId = new string[] { componente },
+                Descricao = "",
+                Nome = nome,
+                CategoriaId = categoria,
+                DataAvaliacao = dataAvaliacao,
+                TipoAvaliacaoId = (long)tipoAvaliacao,
+                TurmasParaCopiar = atividadeAvaliativaCopiaDto
             };
         }
 
