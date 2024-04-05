@@ -98,13 +98,14 @@
         public const string AlterarRecorrenciaEventos = "sgp.alterar.recorrencia.eventos";
         public const string SincronizarObjetivosComJurema = "sgp.sincronizar.objetivos.com.jurema";
         public const string NotificarAlunosFaltososBimestre = "sgp.alunos.faltosos.bimestre.notificacao";
-        public const string NotificacoesNiveisCargos = "sgp.notificacoes.nivel.cargos";
         public const string SincronizarComponentesCurriculares = "sgp.sincronizar.componentes.curriculares";
         public const string SincronizarComponentesCurricularesEol = "sgp.sincronizar.componentes.curriculares.eol";
         public const string SyncGeralGoogleClassroom = "sgp.sync.geral.google.classroom";
         public const string SyncGsaGoogleClassroom = "sgp.sync.gsa.google.classroom";
         public const string SyncSerapEstudantesProvas = "sgp.sync.serap.estudantes.provas";
         public const string TratarNotificacoesNiveisCargos = "sgp.tratar.notificacoes.niveis.cargos";
+        public const string TratarNotificacoesNiveisCargosDre = "sgp.tratar.notificacoes.niveis.cargos.dre";
+        public const string TratarNotificacoesNiveisCargosUe = "sgp.tratar.notificacoes.niveis.cargos.ue";
         public const string AjusteImagesAcompanhamentoAprendizagemAlunoCarregar = "sgp.acompanhamento.aprendizado.aluno.imagens.ajuste.carregar";
         public const string AjusteImagesAcompanhamentoAprendizagemAlunoSync = "sgp.acompanhamento.aprendizado.aluno.imagens.ajuste.sync";
         public const string AtualizaUltimoLoginUsuario = "sgp.usuario.login.atualizar";
