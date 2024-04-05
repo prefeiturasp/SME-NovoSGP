@@ -63,6 +63,9 @@ namespace SME.SGP.Aplicacao
 
                 if (request.Aulas.Any())
                 {
+                    var anotacoesAluno = request.AnotacoesTurma
+                        .Where(a => a.AlunoCodigo == aluno.CodigoAluno);
+
                     if (RegistraFrequencia(request.RegistraFrequencia, request.Aulas, request.Turma))
                     {
                         var registrosFrequenciaAluno = request.RegistrosFrequenciaAlunos
@@ -71,12 +74,12 @@ namespace SME.SGP.Aplicacao
                         var compensacoesAusenciaAluno = request.CompensacaoAusenciaAlunoAulas
                             .Where(t => t.CodigoAluno == aluno.CodigoAluno);
 
-                        var anotacoesAluno = request.AnotacoesTurma
-                            .Where(a => a.AlunoCodigo == aluno.CodigoAluno);
-
                         registroFrequenciaAluno
-                            .CarregarAulas(request.Aulas, registrosFrequenciaAluno, compensacoesAusenciaAluno, aluno, anotacoesAluno, frequenciaPreDefinida, request.PeriodoEscolar.PeriodoFim);
+                            .CarregarAulas(request.Aulas, registrosFrequenciaAluno, compensacoesAusenciaAluno, aluno, anotacoesAluno, frequenciaPreDefinida);
                     }
+                    else
+                        registroFrequenciaAluno
+                            .CarregarAnotacoesAulas(request.Aulas, aluno, anotacoesAluno);
 
                     registrosFrequencias.Alunos.Add(registroFrequenciaAluno);
                 }

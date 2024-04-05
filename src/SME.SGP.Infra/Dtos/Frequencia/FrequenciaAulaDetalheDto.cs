@@ -12,7 +12,7 @@ namespace SME.SGP.Infra
                                         IEnumerable<RegistroFrequenciaAlunoPorAulaDto> registrosFrequenciaAlunos,
                                         IEnumerable<CompensacaoAusenciaAlunoAulaSimplificadoDto> compensacaoAusenciaAlunos,
                                         IEnumerable<AnotacaoAlunoAulaDto> anotacoesTurma,
-                                        FrequenciaPreDefinidaDto frequenciaPreDefinida, DateTime PeriodoFim)
+                                        FrequenciaPreDefinidaDto frequenciaPreDefinida)
         {
             DetalheFrequencia = new List<FrequenciaDetalheAulaDto>();
 
