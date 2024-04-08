@@ -9,5 +9,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<IEnumerable<Questao>> ObterQuestoesPorQuestionarioId(long questionarioId);
         Task<long> ObterQuestionarioIdPorTipo(int tipoQuestionario);
+        Task<IEnumerable<Questao>> ObterQuestoesPorNomesComponentes(string[] nomesComponentes, TipoQuestionario tipoQuestionario);
     }
 }

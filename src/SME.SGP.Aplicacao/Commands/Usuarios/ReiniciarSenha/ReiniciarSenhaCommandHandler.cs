@@ -19,23 +19,23 @@ namespace SME.SGP.Aplicacao
 
         public async Task<UsuarioReinicioSenhaDto> Handle(ReiniciarSenhaCommand request, CancellationToken cancellationToken)
         {
-            var usuario = await mediator.Send(new ObterUsuarioCoreSSOQuery(request.CodigoRf));
+            var usuario = await mediator.Send(new ObterUsuarioCoreSSOQuery(request.CodigoRf.SomenteNumeros()));
 
             var retorno = new UsuarioReinicioSenhaDto();
 
             if (usuario.NaoEhNulo() && String.IsNullOrEmpty(usuario.Email))
             {
-                await mediator.Send(new ReiniciarSenhaEolCommand(request.CodigoRf));
+                await mediator.Send(new ReiniciarSenhaEolCommand(request.CodigoRf.SomenteNumeros()));
                 retorno.DeveAtualizarEmail = true;
                 retorno.Mensagem = $"Usuário {request.CodigoRf} - {usuario.Nome} não possui email cadastrado!";
             }
             else
             {
-                await mediator.Send(new ReiniciarSenhaEolCommand(request.CodigoRf));
+                await mediator.Send(new ReiniciarSenhaEolCommand(request.CodigoRf.SomenteNumeros()));
 
-                await GravarHistoricoReinicioSenha(request.CodigoRf, request.DreCodigo, request.UeCodigo);
+                await GravarHistoricoReinicioSenha(request.CodigoRf.SomenteNumeros(), request.DreCodigo, request.UeCodigo);
 
-                retorno.Mensagem = $"Senha do usuário {request.CodigoRf}{(usuario.NaoEhNulo() ? string.Concat(" - ", usuario.Nome) : string.Empty)} reiniciada com sucesso. O usuário deverá informar a senha {FormatarSenha(request.CodigoRf)} no seu próximo acesso.";
+                retorno.Mensagem = $"Senha do usuário {request.CodigoRf}{(usuario.NaoEhNulo() ? string.Concat(" - ", usuario.Nome) : string.Empty)} reiniciada com sucesso. O usuário deverá informar a senha {FormatarSenha(request.CodigoRf.SomenteNumeros())} no seu próximo acesso.";
                 retorno.DeveAtualizarEmail = false;
             }
 

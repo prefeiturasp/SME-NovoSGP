@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Dto
 {
@@ -59,9 +57,7 @@ namespace SME.SGP.Dto
 
 
         public bool EhProfessorPoa()
-        {
-            return Perfil == Dominio.Perfis.PERFIL_POA;
-        }
+            => Dominio.Perfis.EhPerfilPOA(Perfil);
 
         public bool EhProfessorInfantil()
         {

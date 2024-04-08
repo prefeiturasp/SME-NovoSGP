@@ -78,6 +78,9 @@ namespace SME.SGP.Aplicacao.Commands.Fechamento.GerarPendenciasFechamento
 
         private async Task GerarNotificacaoFechamento(long componenteCurricularId, string turmaCodigo, long usuarioLogadoId, int bimestre, IServicoPendenciaFechamento servicoPendenciaFechamento, string perfilUsuario)
         {
+            if (!await mediator.Send(new VerificaSeExisteParametroSistemaPorTipoQuery(TipoParametroSistema.GerarNotificacaoPendenciaFechamento)))
+                return;
+
             var componentes = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { componenteCurricularId }));
             if (componentes.EhNulo() || !componentes.Any())
             {

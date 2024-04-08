@@ -33,5 +33,6 @@ namespace SME.SGP.Dominio.Constantes.MensagensNegocio
         public const string CPF_INFORMADO_EH_INVALIDO = "O cpf informado é inválido";
         public const string TELEFONE_DEVE_ESTAR_COM_A_SEGUINTE_MASCARA = "O telefone deve estar com a seguinte máscara (XX) XXXX-XXXX";
         public const string VOCE_NAO_PODE_CRIAR_AULAS_PARA_COMPONENTES_SEM_ATRIBUICAO_NA_DATA_SELECIONADA = "Você não pode criar aulas para componentes sem atribuição na data selecionada.";
+        public const string REGISTRO_COLETIVO_NAO_ENCONTRADA = "Registro coletivo não encontrado";
     }
 }

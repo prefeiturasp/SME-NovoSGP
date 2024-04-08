@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre.ServicosFakes
 {
@@ -38,6 +35,12 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre.ServicosFakes
                 {
                     CodigoAluno = 4444444,
                     NomeAluno = "Nome aluno 4444444",
+                    CodigoTurma = 1
+                },
+                new TurmasDoAlunoDto()
+                {
+                    CodigoAluno = 14,
+                    NomeAluno = "Nome aluno 14",
                     CodigoTurma = 1
                 }
             };

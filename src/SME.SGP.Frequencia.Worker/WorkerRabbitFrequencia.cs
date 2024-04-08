@@ -74,6 +74,11 @@ namespace SME.SGP.Frequencia.Worker
             Comandos.Add(RotasRabbitSgpFrequencia.IdentificarFrequenciaAlunoPresencasMaiorTotalAulasPorUe, new ComandoRabbit("Identificar registros de frequência aluno que possuam a quantidade de presenças maior que a quantidade de aulas para providenciar a regularização por UE", typeof(IIdentificarFrequenciaAlunoPresencasMaiorTotalAulasPorUeUseCase)));
             Comandos.Add(RotasRabbitSgpFrequencia.RegularizarFrequenciaAlunoPresencasMaiorTotalAulas, new ComandoRabbit("Inicio da regularização dos registros de frequência aluno que estão com a quantidade de presenças maior que a quantidade de aulas", typeof(IRegularizarFrequenciaAlunoPresencasMaiorQuantidadeAulasUseCase)));
             Comandos.Add(RotasRabbitSgpFrequencia.RegularizarFrequenciaAlunoPresencasMaiorTotalAulasPorRegistro, new ComandoRabbit("Regularizar o registro de frequência aluno que está com a quantidade de presenças maior que a quantidade de aulas", typeof(IRegularizarFrequenciaAlunoPresencasMaiorQuantidadeAulasPorRegistroUseCase)));
+
+            Comandos.Add(RotasRabbitSgpFrequencia.ConsolidarReflexoFrequenciaBuscaAtiva, new ComandoRabbit("Consolidar reflexo frequência aluno dashboard Busca Ativa", typeof(IConsolidarReflexoFrequenciaBuscaAtivaUseCase)));
+            Comandos.Add(RotasRabbitSgpFrequencia.ConsolidarReflexoFrequenciaBuscaAtivaDre, new ComandoRabbit("Consolidar reflexo frequência aluno dashboard Busca Ativa (Dre)", typeof(IConsolidarReflexoFrequenciaBuscaAtivaDreUseCase)));
+            Comandos.Add(RotasRabbitSgpFrequencia.ConsolidarReflexoFrequenciaBuscaAtivaUe, new ComandoRabbit("Consolidar reflexo frequência aluno dashboard Busca Ativa (Ue)", typeof(IConsolidarReflexoFrequenciaBuscaAtivaUeUseCase)));
+            Comandos.Add(RotasRabbitSgpFrequencia.ConsolidarReflexoFrequenciaBuscaAtivaAluno, new ComandoRabbit("Consolidar reflexo frequência aluno dashboard Busca Ativa (Aluno)", typeof(IConsolidarReflexoFrequenciaBuscaAtivaAlunoUseCase)));
         }
     }
 }

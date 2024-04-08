@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using MediatR;
+using SME.SGP.Dominio;
+using SME.SGP.Infra.Interfaces;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
-using SME.SGP.Infra.Interfaces;
 
 namespace SME.SGP.Aplicacao
 {
@@ -20,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ConsolidadoAtendimentoNAAPA> Handle(ObterAtendimentoProfissionalEncaminhamentosNAAPAConsolidadoQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioConsolidado.ObterPorUeIdMesAnoLetivoProfissional(request.UeId, request.Mes, request.AnoLetivo, request.RfProfissional);
+            return await repositorioConsolidado.ObterPorUeIdMesAnoLetivoProfissional(request.UeId, request.Mes, request.AnoLetivo, request.RfProfissional, (int)request.Modalidade);
         }
     }
 }

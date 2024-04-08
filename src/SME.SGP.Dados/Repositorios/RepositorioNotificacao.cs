@@ -5,8 +5,8 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -121,6 +121,74 @@ namespace SME.SGP.Dados.Repositorios
                         and n.ano = @ano ";
             var notificacoes = await database.Conexao.QueryAsync<long>(sql, new { turmaCodigo, categoria = (int)categoria, tipo = (int)tipo, ano });
             return notificacoes.ToArray();
+        }
+
+        public async Task<IEnumerable<long>> ObterIdsNotificacoesParaExclusao(int ano, long? diasLidasDeAlerta, long? diasLidasDeAviso, long? diasNaoLidasDeAvisoEAlerta)
+        {
+            var sql = new StringBuilder();
+
+            if (diasLidasDeAlerta.NaoEhNulo())
+                sql.AppendLine(@$"SELECT id 
+                                 FROM notificacao n
+                                 WHERE n.status = {(int)NotificacaoStatus.Lida} 
+                                 AND n.categoria = {(int)NotificacaoCategoria.Alerta} 
+                                 AND CAST(TO_CHAR(CURRENT_DATE - (n.criado_em  -  INTERVAL '1 DAY'), 'DD') AS INTEGER) >= @diasLidasDeAlerta 
+                                 AND n.ano = @ano");
+
+            if (diasLidasDeAviso.NaoEhNulo())
+            {
+                if (sql.Length > 0)
+                    sql.AppendLine(" UNION");
+
+                sql.AppendLine(@$"SELECT id 
+                                    FROM notificacao n
+                                    WHERE n.status = {(int)NotificacaoStatus.Lida} 
+                                    AND n.categoria = {(int)NotificacaoCategoria.Aviso} 
+                                    AND CAST(TO_CHAR(CURRENT_DATE - (n.criado_em  -  INTERVAL '1 DAY'), 'DD') AS INTEGER) >= @diasLidasDeAviso 
+                                    AND n.ano = @ano");
+            }
+
+            if (diasNaoLidasDeAvisoEAlerta.NaoEhNulo())
+            {
+                if (sql.Length > 0)
+                    sql.AppendLine(" UNION");
+
+                sql.AppendLine(@$"SELECT id 
+                                  FROM notificacao n
+                                  WHERE n.status = {(int)NotificacaoStatus.Pendente} 
+                                  AND n.categoria in({(int)NotificacaoCategoria.Alerta}, {(int)NotificacaoCategoria.Aviso}) 
+                                  AND CAST(TO_CHAR(CURRENT_DATE - (n.criado_em  -  INTERVAL '1 DAY'), 'DD') AS INTEGER) >= @diasNaoLidasDeAvisoEAlerta 
+                                  AND n.ano = @ano");
+            }
+
+            return await database.Conexao.QueryAsync<long>(sql.ToString(), new { ano, diasLidasDeAlerta, diasLidasDeAviso, diasNaoLidasDeAvisoEAlerta });
+        }
+
+        public async Task<bool> ExcluirTotalPorIdsAsync(long id)
+        {
+            var sql = new StringBuilder();
+
+            sql.AppendLine("DELETE FROM carta_intencoes_observacao_notificacao WHERE notificacao_id = @id; ");
+
+            sql.AppendLine("DELETE FROM devolutiva_diario_bordo_notificacao WHERE notificacao_id = @id; ");
+
+            sql.AppendLine("DELETE FROM diario_bordo_observacao_notificacao WHERE notificacao_id = @id; ");
+
+            sql.AppendLine("DELETE FROM fechamento_reabertura_notificacao WHERE notificacao_id = @id; ");
+
+            sql.AppendLine("DELETE FROM notificacao_aula WHERE notificacao_id = @id; ");
+
+            sql.AppendLine("DELETE FROM notificacao_compensacao_ausencia WHERE notificacao_id = @id; ");
+
+            sql.AppendLine("DELETE FROM notificacao_plano_aee WHERE notificacao_id = @id; ");
+
+            sql.AppendLine("DELETE FROM notificacao_plano_aee_observacao WHERE notificacao_id = @id; ");
+
+            sql.AppendLine("DELETE FROM wf_aprovacao_nivel_notificacao WHERE notificacao_id = @id; ");
+
+            sql.AppendLine("DELETE FROM notificacao WHERE id = @id; ");
+
+            return await database.Conexao.ExecuteAsync(sql.ToString(), new { id }) != 0;
         }
     }
 }

@@ -15,8 +15,8 @@ namespace SME.SGP.Api.Controllers
     public class DashboardRegistroItineranciaController : ControllerBase
     {
         [HttpGet("visitas-paais")]
-        [ProducesResponseType(typeof(IEnumerable<DashboardItineranciaDto>), 200)]
-        [ProducesResponseType(typeof(IEnumerable<DashboardItineranciaDto>), 204)]
+        [ProducesResponseType(typeof(DashboardItineranciaVisitaPaais), 200)]
+        [ProducesResponseType(typeof(DashboardItineranciaVisitaPaais), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.DRI_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterVisitasPAAIs([FromQuery] int anoLetivo, [FromQuery] long dreId, [FromQuery] long ueId, [FromQuery] int mes, [FromServices] IObterDashboardItineranciaVisitasPAAIsUseCase useCase)

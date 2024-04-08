@@ -8,7 +8,7 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPlanoAEESituacoesQuery : IRequest<IEnumerable<AEESituacaoPlanoDto>>
+    public class ObterPlanoAEESituacoesQuery : IRequest<DashboardAEEPlanosSituacaoDto>
     {
         public long UeId { get; set; }
         public int Ano { get; set; }

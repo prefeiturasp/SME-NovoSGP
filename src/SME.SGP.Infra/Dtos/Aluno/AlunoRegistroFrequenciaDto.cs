@@ -17,7 +17,6 @@ namespace SME.SGP.Infra
         public string NomeAluno { get; set; }
         public int NumeroAlunoChamada { get; set; }
         public string SituacaoMatricula { get; set; }
-        public bool PermiteAnotacao { get; set; }
         public bool PossuiAnotacao { get; set; }
         public DateTime DataSituacao { get; set; }
         public DateTime DataNascimento { get; set; }
@@ -38,12 +37,24 @@ namespace SME.SGP.Infra
             IEnumerable<CompensacaoAusenciaAlunoAulaSimplificadoDto> compensacaoAusenciaAlunoAula,
             AlunoPorTurmaResposta aluno, 
             IEnumerable<AnotacaoAlunoAulaDto> anotacoesTurma, 
-            FrequenciaPreDefinidaDto frequenciaPreDefinida, 
-            DateTime PeriodoFim)
+            FrequenciaPreDefinidaDto frequenciaPreDefinida)
         {
             foreach (var aula in aulas.OrderBy(a => a.DataAula))
             {
-                Aulas.Add(new FrequenciaAulaDetalheDto(aula, aluno, registrosFrequenciaAlunos, compensacaoAusenciaAlunoAula, anotacoesTurma, frequenciaPreDefinida, PeriodoFim));
+                Aulas.Add(new FrequenciaAulaDetalheDto(aula, aluno, registrosFrequenciaAlunos, compensacaoAusenciaAlunoAula, anotacoesTurma, frequenciaPreDefinida));
+            }
+        }
+
+        public void CarregarAnotacoesAulas(
+            IEnumerable<Aula> aulas,
+            AlunoPorTurmaResposta aluno,
+            IEnumerable<AnotacaoAlunoAulaDto> anotacoesTurma)
+        {
+            foreach (var aula in aulas.OrderBy(a => a.DataAula))
+            {
+                Aulas.Add(new FrequenciaAulaDetalheDto(aula, aluno, Enumerable.Empty<RegistroFrequenciaAlunoPorAulaDto>(),
+                                                       Enumerable.Empty<CompensacaoAusenciaAlunoAulaSimplificadoDto>(), anotacoesTurma, 
+                                                       null));
             }
         }
     }

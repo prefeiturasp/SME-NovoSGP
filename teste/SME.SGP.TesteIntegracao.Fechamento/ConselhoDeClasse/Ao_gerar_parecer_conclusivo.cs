@@ -127,6 +127,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             
             var parecerConclusivo = ObterTodos<ConselhoClasseAluno>();
             parecerConclusivo.Any(f=> f.ConselhoClasseParecerId > 0).ShouldBeTrue();
+            parecerConclusivo.Exists(p => p.ParecerAlteradoManual).ShouldBeFalse();
         }
         
         private async Task CriarDados(string perfil, long componente, TipoNota tipo, string anoTurma, Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, bool anoAnterior, SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado, bool criarFechamentoDisciplinaAlunoNota = false)

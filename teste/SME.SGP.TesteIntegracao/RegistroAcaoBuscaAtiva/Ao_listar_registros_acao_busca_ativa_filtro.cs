@@ -5,6 +5,7 @@ using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.Constantes;
 using SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Linq;
@@ -51,7 +52,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
                 UeId = UE_ID_1,
                 TurmaId = TURMA_ID_1,
                 Modalidade = (int)Modalidade.Fundamental,
-                OrdemProcedimentoRealizado = QUESTAO_PROCEDIMENTO_REALIZADO_ORDEM_RESPOSTA_LIG_TELEFONICA,
+                OrdemProcedimentoRealizado = ConstantesQuestionarioBuscaAtiva.QUESTAO_PROCEDIMENTO_REALIZADO_ORDEM_RESPOSTA_LIG_TELEFONICA,
                 CodigoNomeAluno = "aluno 1",
                 DataRegistroInicio = dataRegistro.AddMonths(-1),
                 DataRegistroFim = dataRegistro.AddMonths(1)
@@ -70,7 +71,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
                 UeId = UE_ID_1,
                 TurmaId = TURMA_ID_1,
                 Modalidade = (int)Modalidade.Fundamental,
-                OrdemProcedimentoRealizado = QUESTAO_PROCEDIMENTO_REALIZADO_ORDEM_RESPOSTA_LIG_TELEFONICA,
+                OrdemProcedimentoRealizado = ConstantesQuestionarioBuscaAtiva.QUESTAO_PROCEDIMENTO_REALIZADO_ORDEM_RESPOSTA_LIG_TELEFONICA,
                 CodigoNomeAluno = ALUNO_CODIGO_1,
                 DataRegistroInicio = dataRegistro.AddMonths(-1),
                 DataRegistroFim = dataRegistro.AddMonths(1)

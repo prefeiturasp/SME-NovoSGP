@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.CasosDeUso;
 using SME.SGP.Aplicacao.CasosDeUso.Abrangencia;
+using SME.SGP.Aplicacao.CasosDeUso.ConselhoClasse;
 using SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA;
 using SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Dashboard;
 using SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Dashboard.ObterDadosDeLeituraDeComunicados;
@@ -503,6 +504,7 @@ namespace SME.SGP.IoC
 
             // Frequência turma evasão
             services.TryAddScoped<IRepositorioFrequenciaTurmaEvasao, RepositorioFrequenciaTurmaEvasao>();
+            services.TryAddScoped<IRepositorioFrequenciaTurmaEvasaoAluno, RepositorioFrequenciaTurmaEvasaoAluno>();
 
             // Consolidação Devolutivas
             services.TryAddScoped<IRepositorioConsolidacaoDevolutivas, RepositorioConsolidacaoDevolutivas>();
@@ -579,6 +581,16 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioRegistroAcaoBuscaAtivaSecao, RepositorioRegistroAcaoBuscaAtivaSecao>();
             services.TryAddScoped<IRepositorioQuestaoRegistroAcaoBuscaAtiva, RepositorioQuestaoRegistroAcaoBuscaAtiva>();
             services.TryAddScoped<IRepositorioRespostaRegistroAcaoBuscaAtiva, RepositorioRespostaRegistroAcaoBuscaAtiva>();
+            services.TryAddScoped<IRepositorioDashBoardBuscaAtiva, RepositorioDashBoardBuscaAtiva>();
+            services.TryAddScoped<IRepositorioConsolidacaoReflexoFrequenciaBuscaAtiva, RepositorioConsolidacaoReflexoFrequenciaBuscaAtiva>();
+
+            // Registro Coletivo NAAPA
+            services.TryAddScoped<IRepositorioTipoReuniaoNAAPA, RepositorioTipoReuniaoNAAPA>();
+            services.TryAddScoped<IRepositorioRegistroColetivo, RepositorioRegistroColetivo>();
+            services.TryAddScoped<IRepositorioRegistroColetivoUe, RepositorioRegistroColetivoUe>();
+            services.TryAddScoped<IRepositorioRegistroColetivoAnexo, RepositorioRegistroColetivoAnexo>();
+
+            services.TryAddScoped<IRepositorioObjetivoAprendizagemConsulta, RepositorioObjetivoAprendizagemConsulta>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)
@@ -830,6 +842,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterParecerConclusivoUseCase, ObterParecerConclusivoUseCase>();
             services.TryAddScoped<IObterParecerConclusivoAlunoTurmaUseCase, ObterParecerConclusivoAlunoTurmaUseCase>();
             services.TryAddScoped<ISalvarConselhoClasseAlunoRecomendacaoUseCase, SalvarConselhoClasseAlunoRecomendacaoUseCase>();
+            services.TryAddScoped<IObterPareceresConclusivosTurmaUseCase, ObterPareceresConclusivosTurmaUseCase>();
+            services.TryAddScoped<IAlterarParecerConclusivoUseCase, AlterarParecerConclusivoUseCase>();
 
             // Fechamento
             services.TryAddScoped<IExecutarVarreduraFechamentosEmProcessamentoPendentes, ExecutarVarreduraFechamentosEmProcessamentoPendentes>();
@@ -1279,7 +1293,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRegistrarEncaminhamentoNAAPAUseCase, RegistrarEncaminhamentoNAAPAUseCase>();
             services.TryAddScoped<IEncerrarEncaminhamentoNAAPAUseCase, EncerrarEncaminhamentoNAAPAUseCase>();
             services.TryAddScoped<IReabrirEncaminhamentoNAAPAUseCase, ReabrirEncaminhamentoNAAPAUseCase>();
-            
+            services.TryAddScoped<IObterAlunosDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoUseCase, ObterAlunosDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoUseCase>();
+            services.TryAddScoped<IObterAlunosDashboardFrequenciaTurmaEvasaoSemPresencaUseCase, ObterAlunosDashboardFrequenciaTurmaEvasaoSemPresencaUseCase>();
+
             services.TryAddScoped<IVerificarExistenciaRelatorioPorCodigoUseCase, VerificarExistenciaRelatorioPorCodigoUseCase>();
             services.TryAddScoped<IObterPAAIPorDreUseCase, ObterPAAIPorDreUseCase>();
             services.TryAddScoped<IObterResponsaveisPorDreUseCase, ObterResponsaveisPorDreUseCase>();
@@ -1306,6 +1322,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExcluirSecaoItineranciaEncaminhamentoNAAPAUseCase, ExcluirSecaoItineranciaEncaminhamentoNAAPAUseCase>();
             services.TryAddScoped<IRegistrarEncaminhamentoItinerarioNAAPAUseCase, RegistrarEncaminhamentoItinerarioNAAPAUseCase>();
             services.TryAddScoped<IObterSituacaoEncaminhamentoNAAPAUseCase, ObterSituacaoEncaminhamentoNAAPAUseCase>();
+            services.TryAddScoped<IExcluirArquivoItineranciaNAAPAUseCase, ExcluirArquivoItineranciaNAAPAUseCase>();
 
             services.TryAddScoped<IObterOpcoesRespostaFluxoAlertaEncaminhamentosNAAPAUseCase, ObterOpcoesRespostaFluxoAlertaEncaminhamentosNAAPAUseCase>();
             services.TryAddScoped<IObterOpcoesRespostaPortaEntradaEncaminhamentosNAAPAUseCase, ObterOpcoesRespostaPortaEntradaEncaminhamentosNAAPAUseCase>();
@@ -1313,6 +1330,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase, ObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase>();
             services.TryAddScoped<IObterQuantidadeAtendimentoNAAPAPorProfissionalMesUseCase, ObterQuantidadeAtendimentoNAAPAPorProfissionalMesUseCase>();
             services.TryAddScoped<IExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase, ExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase>();
+            services.TryAddScoped<IObterRegistrosDeAcaoParaNAAPAUseCase, ObterRegistrosDeAcaoParaNAAPAUseCase>();
+            services.TryAddScoped<IObterTiposDeImprimirAnexosNAAPAUseCase, ObterTiposDeImprimirAnexosNAAPAUseCase>();
+            services.TryAddScoped<IObterProfissionaisEnvolvidosAtendimentoNAAPANAAPAUseCase, ObterProfissionaisEnvolvidosAtendimentoNAAPANAAPAUseCase>();
 
             //Relatório Dinâmico NAAPA
             services.TryAddScoped<IRelatorioDinamicoObterEncaminhamentoNAAPAUseCase, RelatorioDinamicoObterEncaminhamentoNAAPAUseCase>();
@@ -1324,6 +1344,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterAlunosPorPeriodoPAPUseCase, ObterAlunosPorPeriodoPAPUseCase>();
             services.TryAddScoped<ISalvarRelatorioPAPUseCase, SalvarRelatorioPAPUseCase>();
             services.TryAddScoped<IExcluirArquivoPAPUseCase, ExcluirArquivoPAPUseCase>();
+            services.TryAddScoped<IObterRelatorioPAPConselhoClasseUseCase, ObterRelatorioPAPConselhoClasseUseCase>();
 
             // Historico Escolar Observação
             services.TryAddScoped<IObterHistoricoEscolarObservacaoUseCase, ObterHistoricoEscolarObservacaoUseCase>();
@@ -1367,6 +1388,19 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterRegistroAcaoPorIdUseCase, ObterRegistroAcaoPorIdUseCase>();
             services.TryAddScoped<IAtualizarDadosResponsaveisUseCase, AtualizarDadosResponsaveisUseCase>();
             services.TryAddScoped<IObterRegistrosAcaoUseCase, ObterRegistrosAcaoUseCase>();
+            services.TryAddScoped<IObterQuantidadeBuscaAtivaPorMotivosAusenciaUseCase, ObterQuantidadeBuscaAtivaPorMotivosAusenciaUseCase>();
+            services.TryAddScoped<IObterQuantidadeBuscaAtivaPorProcedimentosTrabalhoDreUseCase, ObterQuantidadeBuscaAtivaPorProcedimentosTrabalhoDreUseCase>();
+            services.TryAddScoped<IObterQuantidadeBuscaAtivaPorReflexoFrequenciaMesUseCase, ObterQuantidadeBuscaAtivaPorReflexoFrequenciaMesUseCase>();
+           
+            //Registro Coletivo 
+            services.TryAddScoped<IObterTiposDeReuniaoUseCase, ObterTiposDeReuniaoUseCase>();
+            services.TryAddScoped<ISalvarRegistroColetivoUseCase, SalvarRegistroColetivoUseCase>();
+            services.TryAddScoped<IExcluirRegistroColetivoUseCase, ExcluirRegistroColetivoUseCase>();
+            services.TryAddScoped<IObterRegistrosColetivosNAAPAUseCase, ObterRegistrosColetivosNAAPAUseCase>();
+            services.TryAddScoped<IObterRegistroColetivoNAAPAPorIdUseCase, ObterRegistroColetivoNAAPAPorIdUseCase>();
+
+            //Turma
+            services.TryAddScoped<IObterTurmaSondagemUseCase, ObterTurmaSondagemUseCase>();
 
             RegistrarCasoDeUsoAEERabbitSgp(services);
             RegistrarCasoDeUsoAulaRabbitSgp(services);
