@@ -14,6 +14,7 @@ namespace SME.SGP.Infra
         public string CriancaEstudante => $"{NomeAluno} ({CodigoAluno})";
         public DateTime DataRegistro  { get; set; }
         public string ProcedimentoRealizado { get; set; }
+        public string ConseguiuContatoResponsavel { get; set; }
         private string NomeUsuarioCriador { get; set; }
         private DateTime DataCriacao { get; set; }
         public string InseridoPor => $"{NomeUsuarioCriador} em {DataCriacao.ToString("dd/MM/yyyy")} as {DataCriacao.ToString("HH:mm")}";
