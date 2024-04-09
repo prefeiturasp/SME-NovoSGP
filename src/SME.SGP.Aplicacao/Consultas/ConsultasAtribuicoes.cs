@@ -57,7 +57,11 @@ namespace SME.SGP.Aplicacao
                 anosLetivos.AddRange(await mediator
                     .Send(new ObterAnosAtribuicaoCJQuery(loginAtual, consideraHistorico)));
 
+                if (!anosLetivos.Contains(DateTime.Now.Year) && !consideraHistorico)
+                    return new List<int>();
+
                 return anosLetivos.Distinct();
+
             }
             else
                 return await consultasAbrangencia.ObterAnosLetivos(consideraHistorico, ANO_LETIVO_MINIMO);
@@ -183,6 +187,9 @@ namespace SME.SGP.Aplicacao
 
             codigosDres.AddRange((from dre in abrangencia.Dres
                                   select dre.Codigo).Distinct());
+
+            //8044821
+            //41e1e074-37d6-e911-abd6-f81654fe895d
         }
 
         private async Task ObterAtribuicoesEolUe(string professorRf, Guid perfil, List<string> codigosUes)
