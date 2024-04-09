@@ -187,9 +187,6 @@ namespace SME.SGP.Aplicacao
 
             codigosDres.AddRange((from dre in abrangencia.Dres
                                   select dre.Codigo).Distinct());
-
-            //8044821
-            //41e1e074-37d6-e911-abd6-f81654fe895d
         }
 
         private async Task ObterAtribuicoesEolUe(string professorRf, Guid perfil, List<string> codigosUes)
