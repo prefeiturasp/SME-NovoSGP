@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
                     .Send(new ObterAnosAtribuicaoCJQuery(loginAtual, consideraHistorico)));
 
                 if (!anosLetivos.Contains(DateTime.Now.Year) && !consideraHistorico)
-                    return new List<int>();
+                    return Enumerable.Empty<int>();
 
                 return anosLetivos.Distinct();
 
