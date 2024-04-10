@@ -43,7 +43,23 @@ namespace SME.SGP.Aplicacao
         private async Task<string> ObterCorpoMensagemNotificacao(string cabecalho, IEnumerable<ConsolidacaoFreqAlunoMensalInsuficienteDto> consolidacoesFrequenciaInsuficientes)
         {
             var texto = cabecalho;
-            foreach(var turma in consolidacoesFrequenciaInsuficientes.OrderBy(cc => cc.Modalidade.ObterNomeCurto())
+            texto += @"<style>
+                         p {
+                             margin-bottom: 20px; 
+                             margin-top: 20px; 
+                            }
+                         th, td {
+                             padding-left: 5px; 
+                             padding-right: 5px; 
+                                }
+                         th {
+                             text-align: left;
+                            }
+                         td {
+                             text-align: left;
+                            }
+                       </style>";
+            foreach (var turma in consolidacoesFrequenciaInsuficientes.OrderBy(cc => cc.Modalidade.ObterNomeCurto())
                                                                     .ThenBy(cc => cc.Turma)
                                                                     .GroupBy(cc => $"{cc.Modalidade.ObterNomeCurto()} - {cc.Turma}"))
             {
@@ -63,8 +79,8 @@ namespace SME.SGP.Aplicacao
                     var aluno = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(consolidacao.TurmaCodigo, consolidacao.AlunoCodigo, true));
                     texto += $@"  <tr>
                                     <td>{$"{aluno.NumeroAlunoChamada} - {aluno.NomeValido()} ({consolidacao.AlunoCodigo})"}</td>
-                                    <td style='text-align: left;'>{consolidacao.Frequencia}%</td>
-                                    <td style='text-align: left;'>{await mediator.Send(new ObterQdadeRegistrosAcaoAlunoMesQuery(consolidacao.AlunoCodigo, consolidacao.Mes, consolidacao.AnoLetivo))}</td>
+                                    <td style='text-align: right;'>{consolidacao.Frequencia}%</td>
+                                    <td style='text-align: right;'>{await mediator.Send(new ObterQdadeRegistrosAcaoAlunoMesQuery(consolidacao.AlunoCodigo, consolidacao.Mes, consolidacao.AnoLetivo))}</td>
                                   </tr>";
                 }
                 texto += @$"  </tbody>
