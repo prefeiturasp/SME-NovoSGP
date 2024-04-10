@@ -67,5 +67,26 @@ namespace SME.SGP.Dados.Repositorios
             string query = @"delete from consolidacao_frequencia_aluno_mensal where id = @consolidacaoId";
             await database.Conexao.ExecuteAsync(query, new { consolidacaoId });
         }
+
+        public Task<IEnumerable<ConsolidacaoFreqAlunoMensalInsuficienteDto>> ObterConsolidacoesFrequenciaAlunoMensalInsuficientes(long ueId, int anoLetivo, int mes)
+        {
+            const int PERC_MINIMO_FREQUENCIA_FUNDAMENTAL_MEDIO_EJA = 75;
+            const int PERC_MINIMO_FREQUENCIA_INFANTIL = 60;
+
+            var query = @$"select t.turma_id as TurmaCodigo, t.nome as turma, t.modalidade_codigo as modalidade, t.ano_letivo as AnoLetivo,
+                                  u.nome as ue, u.tipo_escola as tipoEscola, d.abreviacao as dre,
+                                  cfam.percentual as frequencia, cfam.mes, cfam.aluno_codigo as alunoCodigo
+                           from consolidacao_frequencia_aluno_mensal cfam
+                           inner join turma t on t.id = cfam.turma_id  
+                           inner join ue u on u.id = t.ue_id 
+                           inner join dre d on d.id = u.dre_id 
+                           where t.ue_id = @ueId
+                                 and cfam.mes = @mes
+                                 and t.ano_letivo = @anoLetivo
+                                 and ((t.modalidade_codigo in({(int) Modalidade.Fundamental}, {(int)Modalidade.Medio}, {(int)Modalidade.EJA}) and cfam.percentual < {PERC_MINIMO_FREQUENCIA_FUNDAMENTAL_MEDIO_EJA}) or
+                                      (t.modalidade_codigo in({(int)Modalidade.EducacaoInfantil}) and cfam.percentual < {PERC_MINIMO_FREQUENCIA_INFANTIL}));";
+
+            return database.Conexao.QueryAsync<ConsolidacaoFreqAlunoMensalInsuficienteDto>(query, new { ueId, anoLetivo, mes });
+        }
     }
 }
