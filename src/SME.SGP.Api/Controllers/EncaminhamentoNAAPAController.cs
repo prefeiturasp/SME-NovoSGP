@@ -67,7 +67,7 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(questionarioId, encaminhamentoId, codigoAluno, codigoTurma));
         }
-        
+
         [HttpGet("situacoes")]
         [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -247,6 +247,57 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ExisteEncaminhamentoAtivoParaAluno(string codigoAluno, [FromServices] IExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase useCase)
         {
             return Ok(await useCase.Executar(codigoAluno));
+        }
+
+        [HttpDelete("secoes-itinerancia/arquivo")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_E, Policy = "Bearer")]
+        public async Task<IActionResult> ExcluirArquivoItinerancia([FromQuery] Guid arquivoCodigo, [FromServices] IExcluirArquivoItineranciaNAAPAUseCase useCase)
+        {
+            return Ok(await useCase.Executar(arquivoCodigo));
+        }
+
+        [HttpPost("secoes-itinerancia/upload")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_I, Policy = "Bearer")]
+        public async Task<IActionResult> UploadItinerancia([FromForm] IFormFile file, [FromServices] IUploadDeArquivoUseCase useCase)
+        {
+            if (file.Length > 0)
+                return Ok(await useCase.Executar(file, Dominio.TipoArquivo.ItineranciaEncaminhamentoNAAPA));
+
+            return BadRequest();
+        }
+
+        [HttpGet("aluno/{codigoAluno}/registros-acao")]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<RegistroAcaoBuscaAtivaNAAPADto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterRegistrosDeAcaoParaAluno(string codigoAluno, [FromServices] IObterRegistrosDeAcaoParaNAAPAUseCase useCase)
+        {
+            return Ok(await useCase.Executar(codigoAluno));
+        }
+
+        [HttpGet("{encaminhamentoId}/anexos/tipos-impressao")]
+        [ProducesResponseType(typeof(IEnumerable<ImprimirAnexoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterTiposDeImprimirAnexos(long encaminhamentoId, [FromServices] IObterTiposDeImprimirAnexosNAAPAUseCase useCase)
+        {
+            return Ok(await useCase.Executar(encaminhamentoId));
+        }
+
+        [HttpGet("secoes-itinerancia/profissionais-envolvidos")]
+        [ProducesResponseType(typeof(IEnumerable<FuncionarioUnidadeDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterProfissionaisEnvolvidosAtendimento([FromQuery] FiltroBuscarProfissionaisEnvolvidosAtendimentoNAAPA filtro,
+            [FromServices] IObterProfissionaisEnvolvidosAtendimentoNAAPANAAPAUseCase obterProfissionaisEnvolvidosAtendimentoNAAPANAAPAUseCase)
+        {
+            return Ok(await obterProfissionaisEnvolvidosAtendimentoNAAPANAAPAUseCase.Executar(filtro));
         }
     }
 }

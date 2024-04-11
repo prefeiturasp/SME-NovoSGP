@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPlanoAEESituacoesQueryHandler : IRequestHandler<ObterPlanoAEESituacoesQuery, IEnumerable<AEESituacaoPlanoDto>>
+    public class ObterPlanoAEESituacoesQueryHandler : IRequestHandler<ObterPlanoAEESituacoesQuery, DashboardAEEPlanosSituacaoDto>
     {
         private readonly IRepositorioPlanoAEEConsulta repositorio;
 
@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
 
-        public async Task<IEnumerable<AEESituacaoPlanoDto>> Handle(ObterPlanoAEESituacoesQuery request, CancellationToken cancellationToken)
-            => await repositorio.ObterQuantidadeSituacoes(request.Ano, request.DreId, request.UeId);
+        public async Task<DashboardAEEPlanosSituacaoDto> Handle(ObterPlanoAEESituacoesQuery request, CancellationToken cancellationToken)
+            => await repositorio.ObterDashBoardPlanosSituacoes(request.Ano, request.DreId, request.UeId);
     }
 }

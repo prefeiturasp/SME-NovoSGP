@@ -1,4 +1,6 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
@@ -6,6 +8,7 @@ using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -122,6 +125,25 @@ namespace SME.SGP.Dados.Repositorios
                     return wfAprovacaoNota;
                 }
                 , new { conselhoClasseAlunoId })).FirstOrDefault();
+        }
+
+        public async Task<IEnumerable<ParecerConclusivoDto>> ObterPareceresConclusivos(int anoLetivo, int anoTurma, Modalidade modalidade)
+        {
+
+            var query = $@"select ccp.id, ccp.nome
+                            from conselho_classe_parecer ccp
+                            inner join conselho_classe_parecer_ano ccpa on ccpa.parecer_id = ccp.id
+                            where ccpa.ano_turma = @anoTurma
+                            and ccpa.modalidade = @modalidade
+                            and ccpa.inicio_vigencia <= @dataConsulta 
+                            and (ccpa.fim_vigencia >= @dataConsulta or ccpa.fim_vigencia is null)";
+
+            return await database.Conexao.QueryAsync<ParecerConclusivoDto>(query, new
+            {
+                dataConsulta = new DateTime(anoLetivo, 01, 01),
+                anoTurma,
+                modalidade = (int)modalidade
+            });
         }
     }
 }

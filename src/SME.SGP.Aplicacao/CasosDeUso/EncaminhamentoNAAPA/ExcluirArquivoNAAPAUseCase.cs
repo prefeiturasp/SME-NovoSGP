@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
             if (entidadeArquivo.EhNulo())
                 throw new NegocioException(MensagemNegocioComuns.ARQUIVO_INF0RMADO_NAO_ENCONTRADO);
 
-            await mediator.Send(new ExcluirReferenciaArquivoAeePorArquivoIdCommand(entidadeArquivo.Id));
+            await mediator.Send(new ExcluirReferenciaArquivoNAAPAPorArquivoIdCommand(entidadeArquivo.Id));
             await mediator.Send(new ExcluirArquivoRepositorioPorIdCommand(entidadeArquivo.Id));
             
             var extencao = Path.GetExtension(entidadeArquivo.Nome);

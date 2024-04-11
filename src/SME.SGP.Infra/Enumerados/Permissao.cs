@@ -1550,6 +1550,42 @@ namespace SME.SGP.Infra
             EhConsulta = true)]
         RABA_NAAPA_C = 266,
 
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NAAPA,
+            Menu = ConstantesMenuPermissao.MENU_REGISTRO_COLETIVO_NAAPA,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_NAAPA,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_REGISTRO_COLETIVO_NAAPA,
+            Url = ConstantesMenuPermissao.ROTA_REGISTRO_COLETIVO_NAAPA,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhConsulta = true)]
+        RC_NAAPA_C = 268,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NAAPA,
+            Menu = ConstantesMenuPermissao.MENU_REGISTRO_COLETIVO_NAAPA,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_NAAPA,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_REGISTRO_COLETIVO_NAAPA,
+            Url = ConstantesMenuPermissao.ROTA_REGISTRO_COLETIVO_NAAPA,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhInclusao = true)]
+        RC_NAAPA_I = 269,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NAAPA,
+            Menu = ConstantesMenuPermissao.MENU_REGISTRO_COLETIVO_NAAPA,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_NAAPA,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_REGISTRO_COLETIVO_NAAPA,
+            Url = ConstantesMenuPermissao.ROTA_REGISTRO_COLETIVO_NAAPA,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhExclusao = true)]
+        RC_NAAPA_E = 270,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NAAPA,
+            Menu = ConstantesMenuPermissao.MENU_REGISTRO_COLETIVO_NAAPA,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_NAAPA,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_REGISTRO_COLETIVO_NAAPA,
+            Url = ConstantesMenuPermissao.ROTA_REGISTRO_COLETIVO_NAAPA,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhAlteracao = true)]
+        RC_NAAPA_A = 271,
+
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_RELATORIOS, 
             Menu = ConstantesMenuPermissao.MENU_FREQUENCIA, 
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_RELATORIOS,
@@ -1983,7 +2019,16 @@ namespace SME.SGP.Infra
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CHART_BAR,
             EhConsulta = true)]
         RDE_A = 181,
-        
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GRAFICOS,
+            Menu = ConstantesMenuPermissao.MENU_BUSCA_ATIVA,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GRAFICOS,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_GRAFICO_BUSCA_ATIVA,
+            Url = ConstantesMenuPermissao.ROTA_DASHBOARD_BUSCA_ATIVA,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CHART_BAR,
+            EhConsulta = true)]
+        DBA_C = 267,
+
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_CONFIGURACOES, 
             Menu = ConstantesMenuPermissao.MENU_REINICIAR_SENHA, 
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_CONFIGURACAO,

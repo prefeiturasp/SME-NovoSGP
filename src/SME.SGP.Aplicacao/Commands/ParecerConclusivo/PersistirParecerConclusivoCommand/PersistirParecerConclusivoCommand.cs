@@ -8,11 +8,12 @@ namespace SME.SGP.Aplicacao
     {
         public int? Bimestre { get; set; }
         public long TurmaId { get; set; }
-        public long ParecerConclusivoId { get; set; }
+        public long? ParecerConclusivoId { get; set; }
         public long ConselhoClasseAlunoId { get; set; }
         public string AlunoCodigo { get; set; }
         public string TurmaCodigo { get; set; }
         public int AnoLetivo { get; set; }
+        public bool ParecerAlteradoManual { get; set; }
 
         public PersistirParecerConclusivoCommand(PersistirParecerConclusivoDto persistirParecerConclusivoDto)
         {
@@ -23,6 +24,7 @@ namespace SME.SGP.Aplicacao
             ConselhoClasseAlunoId = persistirParecerConclusivoDto.ConselhoClasseAlunoId;
             AnoLetivo = persistirParecerConclusivoDto.AnoLetivo;
             TurmaCodigo = persistirParecerConclusivoDto.TurmaCodigo;
+            ParecerAlteradoManual = persistirParecerConclusivoDto.ParecerAlteradoManual;
         }
     }
 
@@ -41,10 +43,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(a => a.AlunoCodigo)
                 .NotEmpty()
                 .WithMessage("O código do aluno deve ser informado para gerar seu parecer conclusivo");
-
-            RuleFor(a => a.ParecerConclusivoId)
-                .NotEmpty()
-                .WithMessage("O parecer conclusivo deve ser informado para gerar seu parecer conclusivo");
 
             RuleFor(a => a.ConselhoClasseAlunoId)
                 .NotEmpty()

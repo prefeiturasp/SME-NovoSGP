@@ -5,6 +5,7 @@ using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.Constantes;
 using SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Linq;
@@ -61,16 +62,17 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             await CriarDadosBase(filtro);
             await GerarDadosRegistroAcao_2PrimeirasQuestoes(DateTimeExtension.HorarioBrasilia().Date);
             var useCase = ObterUseCaseListagemQuestionario();
-            var retorno = await useCase.Executar(QUESTIONARIO_REGISTRO_ACAO_ID_1, 1);
+            var retorno = await useCase.Executar(ConstantesQuestionarioBuscaAtiva.QUESTIONARIO_REGISTRO_ACAO_ID_1, 1);
             retorno.ShouldNotBeNull();
-            retorno.Count().ShouldBe(2);
-            retorno.Where(q => q.Id == QUESTAO_1_ID_DATA_REGISTRO_ACAO).FirstOrDefault()
+            retorno.Count().ShouldBe(3);
+            retorno.Where(q => q.Id == ConstantesQuestionarioBuscaAtiva.QUESTAO_1_ID_DATA_REGISTRO_ACAO).FirstOrDefault()
                             .Resposta.FirstOrDefault()
                             .Texto.ShouldBe(DateTimeExtension.HorarioBrasilia().Date.ToString("yyyy-MM-dd"));
 
             var opcoesResposta = ObterTodos<OpcaoResposta>();
-            var opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP && q.Nome == QUESTAO_OPCAO_RESPOSTA_SIM).FirstOrDefault();
-            retorno.Where(q => q.Id == QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP).FirstOrDefault()
+            var opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP 
+                                                         && q.Nome == ConstantesQuestionarioBuscaAtiva.QUESTAO_OPCAO_RESPOSTA_SIM).FirstOrDefault();
+            retorno.Where(q => q.Id == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP).FirstOrDefault()
                             .Resposta.FirstOrDefault()
                             .OpcaoRespostaId.ShouldBe(opcaoRespostaBase.Id);
         }

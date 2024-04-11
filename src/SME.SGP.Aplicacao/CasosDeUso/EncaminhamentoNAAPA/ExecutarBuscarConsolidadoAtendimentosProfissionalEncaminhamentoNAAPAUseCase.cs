@@ -1,12 +1,11 @@
-﻿using System;
+﻿using MediatR;
+using SME.SGP.Dominio;
+using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Aplicacao
 {
@@ -30,6 +29,7 @@ namespace SME.SGP.Aplicacao
                     Mes = profissional.Mes,
                     NomeProfissional = profissional.NomeProfissional,
                     RfProfissional = profissional.RfProfissional,
+                    Modalidade = profissional.Modalidade
                 };
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpNAAPA.ExecutarInserirConsolidadoAtendimentoProfissionalEncaminhamentoNAAPA, entidade, Guid.NewGuid()));
             }

@@ -80,6 +80,7 @@
         public const string MENU_BUSCA_ATIVA = "Busca Ativa";
         public const string MENU_CONS_CRIANCAS_ESTUD_AUSENTES = "Consulta de crianças/estudantes ausentes";
         public const string MENU_REGISTRO_ACOES = "Registro de ações";
+        public const string MENU_REGISTRO_COLETIVO_NAAPA = "Registro coletivo ";
 
         public const string AGRUPAMENTO_PLANEJAMENTO = "Planejamento";
         public const string AGRUPAMENTO_DIARIO_DE_CLASSE = "Diário de Classe";
@@ -177,6 +178,7 @@
         public const string ROTA_DASHBOARD_REGISTRO_ITINERANCIA = "/dashboard/registro-itinerancia";
         public const string ROTA_DASHBOARD_NAAPA = "/dashboard/naapa";
         public const string ROTA_DASHBOARD_ESCOLA_AQUI ="/dashboard/escola-aqui";
+        public const string ROTA_DASHBOARD_BUSCA_ATIVA = "/dashboard/busca-ativa";
         public const string ROTA_USUARIOS_REINICIAR_SENHA = "/usuarios/reiniciar-senha";
         public const string ROTA_FECHAMENTO_ACOMPANHAMENTO_APRENDIZAGEM = "/fechamento/acompanhamento-aprendizagem";
         public const string ROTA_RELATORIOS_PAP_RELATORIO_PAP = "/relatorios/pap/relatorio-pap";
@@ -185,7 +187,8 @@
         public const string ROTA_RELATORIOS_ESCOLA_AQUI_ADESAO = "/relatorios/escola-aqui/adesao";
         public const string ROTA_RELATORIOS_ESCOLA_AQUI_LEITURA = "/relatorios/escola-aqui/leitura";
         public const string ROTA_MENU_SUPORTE = "/usuarios/suporte";
-        
+        public const string ROTA_REGISTRO_COLETIVO_NAAPA = "/naapa/registro-coletivo";
+
         public const string ICONE_FAS_FA_LIST_ALT = "fas fa-list-alt";
         public const string ICONE_FAR_FA_CALENDAR_MINUS = "far fa-calendar-minus";
         public const string ICONE_FAR_FA_ENVELOPE_OPEN = "far fa-envelope-open";
@@ -264,6 +267,7 @@
         public const int ORDEM_MENU_ENCAMINHAMENTO_NAAPA = 4;
         public const int ORDEM_MENU_RELATORIO_DINAMICO_NAAPA = 5;
         public const int ORDEM_MENU_BUSCA_ATIVA_NAAPA = 6;
+        public const int ORDEM_MENU_REGISTRO_COLETIVO_NAAPA = 7;
 
         public const int ORDEM_MENU_RELATORIO_FREQUENCIA = 1;
         public const int ORDEM_MENU_RELATORIO_DIARIO_DE_CLASSE = 2;
@@ -290,7 +294,8 @@
         public const int ORDEM_MENU_GRAFICO_REGISTRO_DE_ITINERANCIA = 9;
         public const int ORDEM_MENU_GRAFICO_NAAPA = 10;
         public const int ORDEM_MENU_GRAFICO_ESCOLA_AQUI = 11;
-        
+        public const int ORDEM_MENU_GRAFICO_BUSCA_ATIVA = 12;
+
         public const int ORDEM_MENU_REINICIAR_SENHA = 1;
         public const int ORDEM_MENU_SUPORTE = 2;
         

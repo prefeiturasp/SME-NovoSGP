@@ -1,20 +1,22 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterQuantidadeEncaminhamentoNAAPAEmAbertoQuery : IRequest<GraficoEncaminhamentoNAAPADto>
     {
-        public ObterQuantidadeEncaminhamentoNAAPAEmAbertoQuery(int anoLetivo, long? dreId)
+        public ObterQuantidadeEncaminhamentoNAAPAEmAbertoQuery(int anoLetivo, long? dreId, Modalidade? modalidade)
         {
             AnoLetivo = anoLetivo;
             DreId = dreId;
+            Modalidade = modalidade;
         }
 
         public int AnoLetivo { get; set; }
         public long? DreId { get; set; }
+        public Modalidade? Modalidade { get; set; }
     }
 
     public class ObterQuantidadeEncaminhamentoNAAPAEmAbertoQueryValidator : AbstractValidator<ObterQuantidadeEncaminhamentoNAAPAEmAbertoQuery>

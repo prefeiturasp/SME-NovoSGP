@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Shouldly;
@@ -233,6 +234,46 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             var retorno = await useCase.Executar(filtro);
             retorno.ShouldNotBeNull();
             retorno.TotalRegistros.ShouldBe(22);
+        }
+
+        [Fact(DisplayName = "ABAE - Obter paginado com filtro Dre/Ue")]
+        public async Task Ao_obter_paginado_dre_ue()
+        {
+            var dresUes = new List<(string CodigoDre, string CodigoUe)> { (DRE_CODIGO_1, UE_CODIGO_1), (DRE_CODIGO_2, UE_CODIGO_2), (DRE_CODIGO_2, UE_CODIGO_3) };
+            await CriarDadosBasicos(dresUes: dresUes);
+
+            await CriarCadastroAcessoABAE(5, UE_ID_1);
+            await CriarCadastroAcessoABAE(5, UE_ID_2);
+            await CriarCadastroAcessoABAE(5, UE_ID_3);
+            var useCase = ObterServicoObterPaginadoCadastroAcessoABAEUseCase();
+
+            var filtro = new FiltroDreIdUeIdNomeSituacaoABAEDto()
+            { Situacao = true };
+            var retorno = await useCase.Executar(filtro);
+            retorno.ShouldNotBeNull();
+            retorno.TotalRegistros.ShouldBe(15);
+            retorno.Items.FirstOrDefault().Dre.ShouldBe("Nome Dre 1");
+            retorno.Items.LastOrDefault().Dre.ShouldBe("Nome Dre 2");
+
+            filtro = new FiltroDreIdUeIdNomeSituacaoABAEDto()
+            { DreId = DRE_ID_1, Situacao = true };
+            retorno = await useCase.Executar(filtro);
+            retorno.ShouldNotBeNull();
+            retorno.TotalRegistros.ShouldBe(5);
+
+            filtro = new FiltroDreIdUeIdNomeSituacaoABAEDto()
+            { UeId = UE_ID_1, Situacao = true };
+            retorno = await useCase.Executar(filtro);
+            retorno.ShouldNotBeNull();
+            retorno.TotalRegistros.ShouldBe(5);
+
+            filtro = new FiltroDreIdUeIdNomeSituacaoABAEDto()
+            { DreId = DRE_ID_2, Situacao = true };
+            retorno = await useCase.Executar(filtro);
+            retorno.ShouldNotBeNull();
+            retorno.TotalRegistros.ShouldBe(10);
+            retorno.Items.FirstOrDefault().Ue.ShouldBe("NA Nome Ue 2");
+            retorno.Items.LastOrDefault().Ue.ShouldBe("NA Nome Ue 3");
         }
     }
 }

@@ -1122,5 +1122,24 @@ namespace SME.SGP.Dados.Repositorios
 
             return await contexto.QueryAsync<TurmaDTO>(query, new { ueId, anoLetivo, tiposTurma, modalidades, ignorarTiposCiclos });
         }
+
+        public async Task<IEnumerable<TurmaRetornoDto>> ObterTurmasSondagem(string codigoUe, int anoLetivo)
+        {
+            var query = @"select t.turma_id AS Codigo, t.nome  
+                          from turma t
+                         inner join ue on ue.id = t.ue_id 
+                         where t.ano_letivo = @anoLetivo 
+                           and ue.ue_id = @codigoUe 
+                           and t.modalidade_codigo = @modalidade
+                           and t.tipo_turma = @tipoTurma";
+
+            return await contexto.Conexao.QueryAsync<TurmaRetornoDto>(query, 
+                new { 
+                    codigoUe, 
+                    anoLetivo, 
+                    modalidade = (int)Modalidade.Fundamental,
+                    tipoTurma = (int)TipoTurma.Regular
+                });
+        }
     }
 }

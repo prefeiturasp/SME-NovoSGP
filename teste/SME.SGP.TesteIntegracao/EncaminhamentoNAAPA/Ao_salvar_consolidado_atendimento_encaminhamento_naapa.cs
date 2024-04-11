@@ -65,12 +65,15 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var consolidacoes = ObterTodos<ConsolidadoAtendimentoNAAPA>();
             consolidacoes.ShouldNotBeNull("Registros de consolidações deveriam existir");
             consolidacoes.Count.ShouldBe(2, "2 Registros de consolidações deveriam existir (itinerâncias existentes para 2 usuários)");
-            consolidacoes.Where(x => x.RfProfissional == USUARIO_PROFESSOR_CODIGO_RF_2222222).ShouldNotBeEmpty("1 Registro de consolidações deveriam existir para o usuário 2222222");
-            consolidacoes.Where(x => x.RfProfissional == USUARIO_PROFESSOR_CODIGO_RF_1111111).ShouldNotBeEmpty("1 Registro de consolidações deveriam existir para o usuário 1111111");
-            consolidacoes.Where(x => x.RfProfissional == USUARIO_PROFESSOR_CODIGO_RF_2222222).FirstOrDefault().Quantidade.ShouldBe(5, "5 Atendimentos deveriam ser consolidados para o usuário 2222222");
-            consolidacoes.Where(x => x.RfProfissional == USUARIO_PROFESSOR_CODIGO_RF_1111111).FirstOrDefault().Quantidade.ShouldBe(2, "2 Atendimentos deveriam ser consolidados para o usuário 1111111");
+            var rf1 = consolidacoes.Find(x => x.RfProfissional == USUARIO_PROFESSOR_CODIGO_RF_1111111);
+            var rf2 = consolidacoes.Find(x => x.RfProfissional == USUARIO_PROFESSOR_CODIGO_RF_2222222);
+            rf2.ShouldNotBeNull("1 Registro de consolidações deveriam existir para o usuário 2222222");
+            rf1.ShouldNotBeNull("1 Registro de consolidações deveriam existir para o usuário 1111111");
+            rf2.Quantidade.ShouldBe(5, "5 Atendimentos deveriam ser consolidados para o usuário 2222222");
+            rf1.Quantidade.ShouldBe(2, "2 Atendimentos deveriam ser consolidados para o usuário 1111111");
+            rf2.Modalidade.ShouldBe(Modalidade.Fundamental);
+            rf1.Modalidade.ShouldBe(Modalidade.Fundamental);
         }
-
 
         private async Task CriarRespostasItineranciaEncaminhamentoNAAPA(DateTime dataAtendimento, int qdadeSecoes = 1)
         {
