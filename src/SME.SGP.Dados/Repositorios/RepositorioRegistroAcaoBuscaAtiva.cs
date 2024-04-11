@@ -402,7 +402,7 @@ namespace SME.SGP.Dados.Repositorios
                         SELECT id FROM (
                                  SELECT 
                                    raba.id,
-                                   ROW_NUMBER() OVER (PARTITION BY raba.aluno_codigo ORDER BY raba.criado_em DESC) AS row_num
+                                   ROW_NUMBER() OVER (PARTITION BY raba.aluno_codigo ORDER BY vw_data.DataBuscaAtiva DESC) AS row_num
                                  FROM registro_acao_busca_ativa raba 
                                  INNER JOIN turma t ON t.id = raba.turma_id 
                                  INNER JOIN ue u ON u.id = t.ue_id 
