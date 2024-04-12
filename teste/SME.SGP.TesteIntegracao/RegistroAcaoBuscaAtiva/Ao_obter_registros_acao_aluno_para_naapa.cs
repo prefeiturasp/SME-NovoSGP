@@ -39,6 +39,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             resultado.ShouldNotBeNull();
             resultado.TotalRegistros.ShouldBe(3);
             var item1 = resultado.Items.First();
+            item1.ConseguiuContatoResponsavel.ShouldBe("Sim");
             item1.ProcedimentoRealizado.ShouldBe("Ligação telefonica");
             item1.Turma.ShouldBe("EF-Turma Nome 1");
             item1.Usuario.ShouldBe("Sistema (1)");
@@ -76,6 +77,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             resultado.TotalPaginas.ShouldBe(2);
             resultado.Items.Count().ShouldBe(2);
             var item1 = resultado.Items.First();
+            item1.ConseguiuContatoResponsavel.ShouldBe("Sim");
             item1.ProcedimentoRealizado.ShouldBe("Ligação telefonica");
             item1.Turma.ShouldBe("EF-Turma Nome 1");
             item1.Usuario.ShouldBe("Sistema (1)");
