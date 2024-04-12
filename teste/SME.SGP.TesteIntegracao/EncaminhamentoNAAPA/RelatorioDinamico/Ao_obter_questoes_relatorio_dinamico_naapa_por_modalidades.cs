@@ -36,10 +36,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
             var useCase = ServiceProvider.GetService<IObterQuestoesRelatorioDinamicoEncaminhamentoNAAPAPorModalidadesUseCase>();
             var retorno = await useCase.Executar(new int[] { (int)Modalidade.Fundamental });
             retorno.PossuiRegistros().ShouldBeTrue();
-            retorno.Count().ShouldBe(2); //Seção Questionário Geral e específico modalidade (todos exceto infantil)
+            retorno.Count().ShouldBe(3); //Seção Questionário Geral e específico modalidade (todos exceto infantil)
             retorno.FirstOrDefault().ModalidadesCodigo.NaoPossuiRegistros().ShouldBeTrue();
-            retorno.LastOrDefault().ModalidadesCodigo.PossuiRegistros().ShouldBeTrue();
-            retorno.LastOrDefault().ModalidadesCodigo.Contains((int)Modalidade.Fundamental).ShouldBeTrue();
+            var fundamental = retorno.FirstOrDefault(x => x.NomeComponente == "QUESTOES_APRESENTADAS_FUNDAMENTAL");
+            fundamental.ShouldNotBeNull();
+            fundamental.ModalidadesCodigo.PossuiRegistros().ShouldBeTrue();
+            fundamental.ModalidadesCodigo.Contains((int)Modalidade.Fundamental).ShouldBeTrue();
         }
 
         [Fact(DisplayName = "Encaminhamento NAAPA - Obter questões para relatório dinâmico para todas as modalidades")]
@@ -62,7 +64,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
             var useCase = ServiceProvider.GetService<IObterQuestoesRelatorioDinamicoEncaminhamentoNAAPAPorModalidadesUseCase>();
             var retorno = await useCase.Executar(null);
             retorno.PossuiRegistros().ShouldBeTrue();
-            retorno.Count().ShouldBe(3); //Seção Questionário Geral e específicos modalidades (somenter infantil e todos exceto infantil)
+            retorno.Count().ShouldBe(4); //Seção Questionário Geral e específicos modalidades (somenter infantil e todos exceto infantil)
             retorno.FirstOrDefault().ModalidadesCodigo.NaoPossuiRegistros().ShouldBeTrue();
             retorno.Where(x => x.ModalidadesCodigo.PossuiRegistros()).Count().ShouldBe(2);
             retorno.FirstOrDefault(x => x.ModalidadesCodigo.Contains((int)Modalidade.Fundamental)).ShouldNotBeNull();

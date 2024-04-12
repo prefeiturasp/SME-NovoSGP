@@ -46,7 +46,7 @@ namespace SME.SGP.Infra.Utilitarios
 
         public static string ObterJsonSemAtributoId(string texto)
         {
-            return UtilRegex.RegexChaveValorJsonAtributoId.Replace(texto, "");
+            return UtilRegex.RegexChaveValorJsonAtributoId.Replace(texto??"", "");
         }
     }
 }

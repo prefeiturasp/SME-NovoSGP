@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio.Enumerados;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Infra
 {
@@ -8,5 +9,6 @@ namespace SME.SGP.Infra
         public int AnoLetivo { get; set; }
         public SituacaoNAAPA Situacao { get; set; }
         public long Quantidade { get; set; }
+        public Modalidade Modalidade { get; set; }
     }
 }

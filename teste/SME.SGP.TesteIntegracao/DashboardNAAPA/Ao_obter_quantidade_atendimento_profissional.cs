@@ -4,10 +4,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -106,6 +103,54 @@ namespace SME.SGP.TesteIntegracao.DashboardNAAPA
             var grafico = retorno.Graficos.FirstOrDefault();
             grafico.Quantidade.ShouldBe(4);
             grafico.Descricao.ShouldBe(USUARIO_PROFESSOR_NOME_2222222);
+        }
+
+
+        [Fact(DisplayName = "Dashboard NAAPA - Obter quantidade encaminhamento por modalidade")]
+        public async Task Ao_obter_quantidade_encaminhamento_por_modalidade()
+        {
+            await CriarDreUePerfilComponenteCurricular();
+
+            CriarClaimUsuario(ObterPerfilProfessor());
+
+            await CriarUsuarios();
+
+            await InserirNaBase(new ConsolidadoAtendimentoNAAPA()
+            {
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                UeId = UE_ID_1,
+                Quantidade = 4,
+                Mes = 2,
+                NomeProfissional = USUARIO_PROFESSOR_NOME_1111111,
+                RfProfissional = USUARIO_PROFESSOR_CODIGO_RF_1111111,
+                Modalidade = Modalidade.EducacaoInfantil,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new ConsolidadoAtendimentoNAAPA()
+            {
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                UeId = UE_ID_1,
+                Quantidade = 3,
+                Mes = 3,
+                NomeProfissional = USUARIO_PROFESSOR_NOME_1111111,
+                RfProfissional = USUARIO_PROFESSOR_CODIGO_RF_1111111,
+                Modalidade = Modalidade.Fundamental,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            var useCase = ServiceProvider.GetService<IObterQuantidadeAtendimentoNAAPAPorProfissionalMesUseCase>();
+            var dto = new FiltroQuantidadeAtendimentoNAAPAPorProfissionalMesDto() { AnoLetivo = DateTimeExtension.HorarioBrasilia().Year, DreId = DRE_ID_1, Modalidade = Modalidade.Fundamental };
+            var retorno = await useCase.Executar(dto);
+
+            retorno.ShouldNotBeNull();
+            retorno.Graficos.Count().ShouldBe(1);
+            var grafico = retorno.Graficos.FirstOrDefault();
+            grafico.Quantidade.ShouldBe(3);
         }
     }
 }

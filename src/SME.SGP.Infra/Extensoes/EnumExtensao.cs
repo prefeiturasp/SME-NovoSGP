@@ -165,7 +165,6 @@ namespace SME.SGP.Infra
             return valor == 0;
         }
 
-
         public static string ObterCaseWhenSQL<TEnum>(string atributoComparacao)
         {
             StringBuilder sql = new StringBuilder();
@@ -183,6 +182,11 @@ namespace SME.SGP.Infra
             sql.AppendLine("END");
 
             return sql.ToString();
+        }
+
+        public static bool EhOpcaoTodos(this long? valor)
+        {
+            return (!valor.HasValue || valor.Equals(-99) || valor.Equals(0));
         }
     }
 }

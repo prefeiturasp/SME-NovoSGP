@@ -173,6 +173,13 @@ namespace SME.SGP.Dominio
         ExecutaPendenciaComponenteSemAula = 107,
         ComponentesParaObjetivosAprendizagemOpcionais = 108,
         
-        CelpDiasLetivos = 109
+        CelpDiasLetivos = 109,
+
+        DiasExclusaoNotificacoesLidasDeAlerta = 110,
+        DiasExclusaoNotificacoesLidasDeAviso = 111,
+        DiasExclusaoNotificacoesNaoLidasDeAvisoEAlerta = 112,
+        GerarNotificacaoAlteracaoEmAtividadeAvaliativa = 113,
+        GerarNotificacaoCadastroDeCompensacaoDeAusencia = 114,
+        GerarNotificacaoPendenciaFechamento = 115
     }
 }

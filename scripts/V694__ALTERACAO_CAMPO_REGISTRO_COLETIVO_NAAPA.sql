@@ -1,0 +1,1 @@
+ALTER TABLE public.registrocoletivo ALTER COLUMN descricao TYPE varchar;

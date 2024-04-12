@@ -208,6 +208,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ConselhoClasseAlunoRecomendacaoMap());
                config.AddMap(new ConsolidacaoFrequenciaAlunoMensalMap());
                config.AddMap(new FrequenciaTurmaEvasaoMap());
+               config.AddMap(new FrequenciaTurmaEvasaoAlunoMap());
                config.AddMap(new SuporteUsuarioMap());
                config.AddMap(new PendenciaDevolutivaMap());
                config.AddMap(new SecaoEncaminhamentoNAAPAMap());
@@ -243,7 +244,11 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new RegistroAcaoBuscaAtivaSecaoMap());
                config.AddMap(new QuestaoRegistroAcaoBuscaAtivaMap());
                config.AddMap(new RespostaRegistroAcaoBuscaAtivaMap());
-
+               config.AddMap(new ConsolidacaoReflexoFrequenciaBuscaAtivaAlunoMap());
+               config.AddMap(new TipoReuniaoNAAPAMap());
+               config.AddMap(new RegistroColetivoMap());
+               config.AddMap(new RegistroColetivoUeMap());
+               config.AddMap(new RegistroColetivoAnexoMap());
 
                config.ForDommel();
            });

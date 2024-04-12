@@ -22,11 +22,11 @@ namespace SME.SGP.Aplicacao
         public ObterResponsaveisPorDreUeNAAPAQueryValidator()
         {
             RuleFor(c => c.CodigoDre)
-                .NotEmpty()
+                .NotEmpty().When(x => string.IsNullOrEmpty(x.CodigoUe))
                 .WithMessage("O código da dre deve ser informado para a obter os responsáveis naapa");
 
             RuleFor(c => c.CodigoUe)
-                .NotEmpty()
+                .NotEmpty().When(x => string.IsNullOrEmpty(x.CodigoDre))
                 .WithMessage("O código da ue deve ser informado para a obter os responsáveis naapa");
         }
     }

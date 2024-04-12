@@ -86,5 +86,8 @@ namespace SME.SGP.Dominio
         {
             return modalidade.EhUmDosValores(Modalidade.Medio);
         }
+
+        public static bool PossuiObjetivosAprendizagem(this Modalidade modalidade)
+        => modalidade != Modalidade.Medio;
     }
 }

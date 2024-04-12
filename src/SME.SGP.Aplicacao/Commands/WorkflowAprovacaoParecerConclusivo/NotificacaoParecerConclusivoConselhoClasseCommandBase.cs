@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         where TRequest : IRequest<TResponse>
     {
         protected const string MENSAGEM_DINAMICA_TABELA_POR_ALUNO = "<mensagemDinamicaTabelaPorAluno>";
-        
+        private const string SEM_PARECER = "Sem parecer";
         protected readonly IMediator mediator;
         protected List<TurmasDoAlunoDto> Alunos;
         protected List<Usuario> Usuarios;
@@ -83,11 +83,16 @@ namespace SME.SGP.Aplicacao
 
             return $@"<tr>
                 <td style='padding: 3px;'>{aluno.NumeroAlunoChamada} - {aluno.NomeAluno} ({aluno.CodigoAluno})</td>
-                <td style='padding: 3px;'>{(aprovacao.NomeParecerAnterior?? "")}</td>
-                <td style='padding: 3px;'>{aprovacao.NomeParecerNovo}</td>
+                <td style='padding: 3px;'>{ObterNomeParecer(aprovacao.NomeParecerAnterior)}</td>
+                <td style='padding: 3px;'>{ObterNomeParecer(aprovacao.NomeParecerNovo)}</td>
                 <td style='padding: 3px;'>{usuario.Nome} ({usuario.CodigoRf})</td>
                 <td style='padding: 3px;'>{aprovacao.CriadoEm:dd/MM/yyyy HH:mm}</td>
             </tr>";
+        }
+
+        private string ObterNomeParecer(string parecer)
+        {
+            return string.IsNullOrEmpty(parecer) ? SEM_PARECER : parecer;
         }
 
         private async Task CarregarTodosAlunos()

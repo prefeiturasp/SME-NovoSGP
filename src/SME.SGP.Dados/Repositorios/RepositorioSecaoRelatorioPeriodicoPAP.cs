@@ -16,7 +16,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var secao = new SecaoTurmaAlunoPAPDto();
             var sql = @"select srpp.id, 
-                        srpp.nome, srpp.ordem, srpp.questionario_id QuestionarioId, 
+                        srpp.nome, srpp.nome_componente NomeComponente, srpp.ordem, srpp.questionario_id QuestionarioId, 
                         case when questao is null then false else true end QuestoesObrigatorias,
                         alunoTurma.PAPSecaoId, 
                         case when alunoTurma.concluido is null then false else true end Concluido,

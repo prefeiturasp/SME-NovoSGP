@@ -11,6 +11,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using SME.SGP.Dominio.Enumerados;
 using Sentry.Protocol;
+using Nest;
+using System.Linq;
 
 namespace SME.SGP.TesteIntegracao
 {
@@ -35,7 +37,7 @@ namespace SME.SGP.TesteIntegracao
         protected const string TURMA_CODIGO_1 = "1";
 
         protected const string TURMA_CODIGO_2 = "2";
-        private const string TURMA_NOME_2 = "Turma Nome 2";
+        protected const string TURMA_NOME_2 = "Turma Nome 2";
 
         protected const string TURMA_NOME_1 = "Turma Nome 1";
         protected const string TURMA_ANO_2 = "2";
@@ -83,6 +85,9 @@ namespace SME.SGP.TesteIntegracao
         protected const string COMPONENTE_CURRICULAR_PORTUGUES_NOME = "Língua Portuguesa";
         protected const long COMPONENTE_CURRICULAR_DESCONHECIDO_ID_999999 = 999999;
         protected const string COMPONENTE_CURRICULAR_DESCONHECIDO_NOME = "Desconhecido";
+
+        protected const long COMPONENTE_CURRICULAR_LIBRAS_COMPARTILHADA_ID_1116 = 1116;
+        protected const string COMPONENTE_CURRICULAR_LIBRAS_COMPARTILHADA_NOME = "'LIBRAS COMPARTILHADA'";
 
         protected const long COMPONENTE_CURRICULAR_LEITURA_OSL_ID_1061 = 1061;
 
@@ -554,14 +559,14 @@ namespace SME.SGP.TesteIntegracao
             this.collectionFixture = collectionFixture ?? throw new ArgumentNullException(nameof(collectionFixture));
         }
 
-        protected void CriarClaimUsuario(string perfil)
+        protected void CriarClaimUsuario(string perfil, string pagina = "0", string registros = "10")
         {
             var contextoAplicacao = ServiceProvider.GetService<IContextoAplicacao>();
             
-            contextoAplicacao.AdicionarVariaveis(ObterVariaveisPorPerfil(perfil));
+            contextoAplicacao.AdicionarVariaveis(ObterVariaveisPorPerfil(perfil, pagina, registros));
         }
 
-        private Dictionary<string, object> ObterVariaveisPorPerfil(string perfil)
+        private Dictionary<string, object> ObterVariaveisPorPerfil(string perfil, string pagina, string registros)
         {
             var rfLoginPerfil = ObterRfLoginPerfil(perfil);
             
@@ -571,8 +576,8 @@ namespace SME.SGP.TesteIntegracao
                 { USUARIO_LOGADO_CHAVE, rfLoginPerfil },
                 { USUARIO_RF_CHAVE, rfLoginPerfil },
                 { USUARIO_LOGIN_CHAVE, rfLoginPerfil },
-                { NUMERO_PAGINA, "0" },
-                { NUMERO_REGISTROS, "10" },
+                { NUMERO_PAGINA, pagina },
+                { NUMERO_REGISTROS, registros },
                 { ADMINISTRADOR, rfLoginPerfil },
                 { NOME_ADMINISTRADOR, rfLoginPerfil },
                 {
@@ -700,6 +705,10 @@ namespace SME.SGP.TesteIntegracao
         protected string ObterPerfilPAP()
         {
             return Guid.Parse(PerfilUsuario.PAP.Name()).ToString();
+        }
+        protected string ObterPerfilPOA_Portugues()
+        {
+            return Guid.Parse(PerfilUsuario.POA_LINGUA_PORTUGUESA.Name()).ToString();
         }
 
         protected async Task CriarPeriodoEscolarEncerrado()
@@ -1087,7 +1096,7 @@ namespace SME.SGP.TesteIntegracao
                 TipoTurma = tipoTurma
             });
         }
-        protected async Task CriarTurma(Modalidade modalidade, string anoTurma, string codigoTurma, TipoTurma tipoTurma, long ueId,int anoLetivo,bool turmaHistorica = false )
+        protected async Task CriarTurma(Modalidade modalidade, string anoTurma, string codigoTurma, TipoTurma tipoTurma, long ueId,int anoLetivo,bool turmaHistorica = false, string nomeTurma = null)
         {
             await InserirNaBase(new Dominio.Turma
             {
@@ -1098,7 +1107,7 @@ namespace SME.SGP.TesteIntegracao
                 ModalidadeCodigo = modalidade,
                 AnoLetivo = anoLetivo,
                 Semestre = SEMESTRE_1,
-                Nome = TURMA_NOME_1,
+                Nome = nomeTurma ??TURMA_NOME_1,
                 TipoTurma = tipoTurma
             });
         }
@@ -1124,6 +1133,27 @@ namespace SME.SGP.TesteIntegracao
                 CodigoUe = codigoUe,
                 DreId = 1,
                 Nome = UE_NOME_2,
+            });
+        }
+
+        protected async Task CriarDreUe(string codigoDre, string nomeDre, string codigoUe, string nomeUe)
+        {
+            var dres = ObterTodos<Dre>();
+            long? idDre = dres.Where(d => d.CodigoDre.Equals(codigoDre)).FirstOrDefault()?.Id;
+
+            if (!idDre.HasValue)
+                await InserirNaBase(new Dre
+                {
+                    CodigoDre = codigoDre,
+                    Abreviacao = nomeDre,
+                    Nome = nomeDre
+                });
+            
+            await InserirNaBase(new Ue
+            {
+                CodigoUe = codigoUe,
+                DreId = idDre ?? dres.Count+1,
+                Nome = nomeUe,
             });
         }
         protected async Task CriarAtividadeAvaliativaFundamental(DateTime dataAvaliacao)
@@ -1477,6 +1507,8 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_PAP_PROJETO_COLABORATIVO.ToString(), COMPONENTE_CURRICULAR_PAP_PROJETO_COLABORATIVO.ToString(), CODIGO_1, CODIGO_1, COMPONENTE_CURRICULAR_PAP_PROJETO_COLABORATIVO_NOME, FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, COMPONENTE_CURRICULAR_PAP_PROJETO_COLABORATIVO_NOME, COMPONENTE_CURRICULAR_PAP_PROJETO_COLABORATIVO_NOME);
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_513.ToString(), COMPONENTE_CURRICULAR_512.ToString(), CODIGO_1, NULO, COMPONENTE_ED_INF_EMEI_2HS_NOME, TRUE, FALSE, FALSE, FALSE, TRUE, FALSE, COMPONENTE_REGENCIA_CLASSE_INFANTIL_NOME, COMPONENTE_REGENCIA_INFANTIL_EMEI_2H_NOME);
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_TEC_APRENDIZAGEM.ToString(), NULO, CODIGO_7, CODIGO_10, COMPONENTE_CURRICULAR_TEC_APRENDIZAGEM_NOME, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, COMPONENTE_CURRICULAR_TEC_APRENDIZAGEM_NOME, NULO);
+
+            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_LIBRAS_COMPARTILHADA_ID_1116.ToString(), NULO, CODIGO_1, CODIGO_1, COMPONENTE_CURRICULAR_LIBRAS_COMPARTILHADA_NOME, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, COMPONENTE_CURRICULAR_LIBRAS_COMPARTILHADA_NOME, NULO);
         }
         
         protected async Task CriarPeriodoEscolarCustomizadoQuartoBimestre(bool periodoEscolarValido = false)

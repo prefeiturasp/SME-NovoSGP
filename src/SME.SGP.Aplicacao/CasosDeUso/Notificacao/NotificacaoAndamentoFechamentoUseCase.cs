@@ -15,6 +15,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
+            if (!await mediator.Send(new VerificaSeExisteParametroSistemaPorTipoQuery(TipoParametroSistema.GerarNotificacaoPendenciaFechamento)))
+                return false;
+
             var anoAtual = DateTime.Now.Year;
             var parametros = await mediator.Send(new ObterParametrosSistemaPorTipoEAnoQuery(TipoParametroSistema.DiasNotificacaoAndamentoFechamento, anoAtual));
 

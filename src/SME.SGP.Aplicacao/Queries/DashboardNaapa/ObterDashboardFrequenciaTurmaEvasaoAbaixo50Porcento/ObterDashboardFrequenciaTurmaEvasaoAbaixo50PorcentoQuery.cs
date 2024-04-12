@@ -1,11 +1,10 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Infra;
-using System.Collections.Generic;
+using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoQuery : IRequest<IEnumerable<GraficoFrequenciaTurmaEvasaoDto>>
+    public class ObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoQuery : IRequest<FrequenciaTurmaEvasaoDto>
     {
         public ObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoQuery(int anoLetivo, string dreCodigo, string ueCodigo,
             Modalidade modalidade, int semestre, int mes)

@@ -441,7 +441,10 @@ namespace SME.SGP.Aplicacao.Servicos
                         case Infra.Enumerados.Abrangencia.DreEscolasAtribuidas:
                         case Infra.Enumerados.Abrangencia.UeTurmasDisciplinas:
                         case Infra.Enumerados.Abrangencia.UE:
-                            await SincronizarAbrangenciaPorUes(abrangenciaSintetica, estrutura.Ues, login, perfil);
+                            if (perfil.EhPerfilPOA())
+                                await SincronizarAbragenciaPorTurmas(abrangenciaSintetica, estrutura.Turmas, login, perfil);
+                            else    
+                                await SincronizarAbrangenciaPorUes(abrangenciaSintetica, estrutura.Ues, login, perfil);
                             break;
 
                         case Infra.Enumerados.Abrangencia.Professor:
