@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Nest;
@@ -195,6 +196,7 @@ namespace SME.SGP.Dados.ElasticSearch
 
         public async Task ExcluirPorId(string id, string indice = "")
         {
+            var cancelationToken = new CancellationTokenSource(TimeSpan.FromMinutes(5));
             var nomeIndice = ObterNomeIndice(indice);
             DeleteByQueryResponse response = await servicoTelemetria.RegistrarComRetornoAsync<DeleteByQueryResponse>(async () =>
                 await _elasticClient.DeleteByQueryAsync<TEntidade>(q => q
@@ -204,7 +206,7 @@ namespace SME.SGP.Dados.ElasticSearch
                             .Field("_id")
                             .Value(id)
                         )
-                    )),
+                    ), cancelationToken.Token),
                 "Elastic",
                 $"Excluir Id [{nomeIndice}-{id}]",
                 indice);
