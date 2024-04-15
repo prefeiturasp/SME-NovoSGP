@@ -186,6 +186,7 @@ namespace SME.SGP.Metrica.Worker
             services.TryAddScoped<IRegistroFrequenciaDuplicadoUseCase, RegistroFrequenciaDuplicadoUseCase>();
             services.TryAddScoped<IRegistroFrequenciaDuplicadoUEUseCase, RegistroFrequenciaDuplicadoUEUseCase>();
             services.TryAddScoped<ILimpezaRegistroFrequenciaDuplicadoUseCase, LimpezaRegistroFrequenciaDuplicadoUseCase>();
+            services.TryAddScoped<ILimpezaRegistroFrequenciaAlunoDuplicadoUseCase, LimpezaRegistroFrequenciaAlunoDuplicadoUseCase>();
             services.TryAddScoped<IRegistroFrequenciaAlunoDuplicadoUseCase, RegistroFrequenciaAlunoDuplicadoUseCase>();
             services.TryAddScoped<IRegistroFrequenciaAlunoDuplicadoUEUseCase, RegistroFrequenciaAlunoDuplicadoUEUseCase>();
             services.TryAddScoped<IRegistroFrequenciaAlunoDuplicadoTurmaUseCase, RegistroFrequenciaAlunoDuplicadoTurmaUseCase>();
