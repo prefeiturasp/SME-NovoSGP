@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
 
             var dres = await mediator.Send(ObterIdsDresQuery.Instance);
             foreach (long dreId in dres.Where(dreId => filtro.Id.Equals(0)
-                                                       || dreId.Equals(filtro.Id)))
+                                                       || dreId.Equals(filtro.Id)).ToList())
             {
                 filtro.Id = dreId;
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.ExecutarNotificacaoAlunosBaixaFrequenciaBuscaAtivaDre, filtro, Guid.NewGuid()));
