@@ -15,12 +15,14 @@ namespace SME.SGP.TesteIntegracao.Setup
     {
         public NpgsqlConnection Conexao;
         private readonly PostgresRunner _postgresRunner;
+        private readonly ConstrutorDeTabelas _construtorDeTabelas;
 
         public InMemoryDatabase()
         {
             _postgresRunner = PostgresRunner.Start();
             CriarConexaoEAbrir();
-            new ConstrutorDeTabelas().Construir(Conexao);
+            _construtorDeTabelas = new ConstrutorDeTabelas(Conexao);
+            _construtorDeTabelas.Construir();
         }
 
         public void CriarConexaoEAbrir()
@@ -57,6 +59,11 @@ namespace SME.SGP.TesteIntegracao.Setup
             where K : struct
         {
             return Conexao.Get<T>(id);
+        }
+
+        public void ExecutarScripts()
+        {
+            _construtorDeTabelas.ExecutarScripts();
         }
 
         public void LimparBase()
