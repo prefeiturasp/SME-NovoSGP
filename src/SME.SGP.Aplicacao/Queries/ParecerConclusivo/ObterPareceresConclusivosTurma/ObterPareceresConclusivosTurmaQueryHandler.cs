@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public Task<IEnumerable<ParecerConclusivoDto>> Handle(ObterPareceresConclusivosTurmaQuery request, CancellationToken cancellationToken)
         {
-            return this.repositorio.ObterPareceresConclusivos(request.Turma.AnoLetivo, request.Turma.AnoTurmaInteiro, request.Turma.ModalidadeCodigo);
+            return this.repositorio.ObterPareceresConclusivos(request.AnoLetivoAnterior ? request.Turma.AnoLetivo - 1 : request.Turma.AnoLetivo, request.Turma.AnoTurmaInteiro, request.Turma.ModalidadeCodigo);
         }
     }
 }

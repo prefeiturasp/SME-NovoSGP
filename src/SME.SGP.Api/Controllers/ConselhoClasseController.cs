@@ -270,9 +270,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<ParecerConclusivoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(204)]
-        public async Task<IActionResult> ObterPareceresConclusivosTurma(long turmaId, [FromServices] IObterPareceresConclusivosTurmaUseCase useCase)
+        public async Task<IActionResult> ObterPareceresConclusivosTurma(long turmaId, [FromServices] IObterPareceresConclusivosTurmaUseCase useCase, [FromQuery] bool anoLetivoAnterior = false)
         {
-            return Ok(await useCase.Executar(turmaId));
+            return Ok(await useCase.Executar(turmaId, anoLetivoAnterior));
         }
 
         [HttpPut("parecer-conclusivo")]
