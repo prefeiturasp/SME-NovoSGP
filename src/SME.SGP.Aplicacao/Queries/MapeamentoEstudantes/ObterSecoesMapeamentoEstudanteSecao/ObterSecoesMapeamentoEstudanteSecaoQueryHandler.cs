@@ -10,20 +10,20 @@ namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepci
 {
     public class ObterSecoesMapeamentoEstudanteSecaoQueryHandler : IRequestHandler<ObterSecoesMapeamentoEstudanteSecaoQuery, IEnumerable<SecaoQuestionarioDto>>
     {
-        private readonly IRepositorioSecaoRegistroAcaoBuscaAtiva repositorioSecao;
+        private readonly IRepositorioSecaoMapeamentoEstudante repositorioSecao;
 
-        public ObterSecoesMapeamentoEstudanteSecaoQueryHandler(IRepositorioSecaoRegistroAcaoBuscaAtiva repositorioSecao)
+        public ObterSecoesMapeamentoEstudanteSecaoQueryHandler(IRepositorioSecaoMapeamentoEstudante repositorioSecao)
         {
             this.repositorioSecao = repositorioSecao ?? throw new System.ArgumentNullException(nameof(repositorioSecao));
         }
 
         public async Task<IEnumerable<SecaoQuestionarioDto>> Handle(ObterSecoesMapeamentoEstudanteSecaoQuery request, CancellationToken cancellationToken)
         {
-            var secoes = await repositorioSecao.ObterSecoesRegistroAcaoBuscaAtiva(request.MapeamentoEstudanteId);
+            var secoes = await repositorioSecao.ObterSecoesMapeamentoEstudante(request.MapeamentoEstudanteId);
             return MapearParaDto(secoes);
         }
 
-        private IEnumerable<SecaoQuestionarioDto> MapearParaDto(IEnumerable<SecaoRegistroAcaoBuscaAtiva> secoes)
+        private IEnumerable<SecaoQuestionarioDto> MapearParaDto(IEnumerable<SecaoMapeamentoEstudante> secoes)
         {
             foreach (var secao in secoes)
             {
@@ -34,9 +34,9 @@ namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepci
                     QuestionarioId = secao.QuestionarioId,
                     Etapa = secao.Etapa,
                     Ordem = secao.Ordem,
-                    Concluido = (secao.RegistroBuscaAtivaSecao?.Concluido ?? false),
+                    Concluido = (secao.MapeamentoEstudanteSecao?.Concluido ?? false),
                     NomeComponente = secao.NomeComponente,
-                    Auditoria = (AuditoriaDto)secao.RegistroBuscaAtivaSecao,
+                    Auditoria = (AuditoriaDto)secao.MapeamentoEstudanteSecao,
                     TipoQuestionario = secao.Questionario.Tipo
                 };
             }

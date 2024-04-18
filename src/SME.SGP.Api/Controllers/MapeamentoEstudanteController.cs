@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.MapeamentoEstudante;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
@@ -25,6 +26,15 @@ namespace SME.SGP.Api.Controllers
             [FromServices] IObterSecoesMapeamentoSecaoUseCase obterSecoesMapeamentoSecaoUseCase)
         {
             return Ok(await obterSecoesMapeamentoSecaoUseCase.Executar(mapeamentoEstudanteId));
+        }
+
+        [HttpGet("questionario/{questionarioId}")]
+        [ProducesResponseType(typeof(IEnumerable<QuestaoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.ME_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterQuestionario(long questionarioId, [FromQuery] long? mapeamentoEstudanteId, [FromServices] IObterQuestionarioMapeamentoEstudanteUseCase useCase)
+        {
+            return Ok(await useCase.Executar(questionarioId, mapeamentoEstudanteId));
         }
 
         [HttpGet("aluno/{codigoAluno}/turma/{turmaId}/bimestre/{bimestre}/identificador")]
