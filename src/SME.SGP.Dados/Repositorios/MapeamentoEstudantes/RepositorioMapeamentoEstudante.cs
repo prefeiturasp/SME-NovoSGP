@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,6 +20,17 @@ namespace SME.SGP.Dados.Repositorios
 
         public RepositorioMapeamentoEstudante(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         { }
+
+        public async Task<long> ObterIdentificador(string codigoAluno, long turmaId, int bimestre)
+        {
+            var sql = @"SELECT id 
+                        FROM mapeamento_estudante
+                        WHERE aluno_codigo = @codigoAluno
+                        AND turma_id = @turmaId
+                        AND bimestre = @bimestre";
+
+            return await database.Conexao.QueryFirstAsync<long>(sql, new { codigoAluno, turmaId, bimestre });
+        }
 
         public async Task<MapeamentoEstudante> ObterMapeamentoEstudantePorId(long id)
         {

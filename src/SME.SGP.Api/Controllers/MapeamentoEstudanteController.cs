@@ -26,5 +26,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await obterSecoesMapeamentoSecaoUseCase.Executar(mapeamentoEstudanteId));
         }
+
+        [HttpGet("aluno/{codigoAluno}/turma/{turmaId}/bimestre/{bimestre}/identificador")]
+        [ProducesResponseType(typeof(long), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.ME_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterIdentificador(string codigoAluno, long turmaId, int bimestre, [FromServices] IObterIdentificadorMapeamentoEstudanteUseCase useCase)
+        {
+            return Ok(await useCase.Executar(codigoAluno, turmaId, bimestre));
+        }
     }
 }
