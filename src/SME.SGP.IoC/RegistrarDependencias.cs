@@ -26,6 +26,7 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.ObterDadosDeLeituraDeCo
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.ObterDadosDeLeituraDeComunicadosPorModalidade;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.ObterDadosDeLeituraDeComunicadosPorModalidadeETurma;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.SolicitarReiniciarSenha;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.MapeamentoEstudante;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.Turma;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados;
@@ -1408,6 +1409,10 @@ namespace SME.SGP.IoC
 
             //Turma
             services.TryAddScoped<IObterTurmaSondagemUseCase, ObterTurmaSondagemUseCase>();
+
+            //Mapeamento Aluno
+            services.TryAddScoped<IObterSecoesMapeamentoSecaoUseCase, ObterSecoesMapeamentoSecaoUseCase>();
+            services.TryAddScoped<IObterQuestionarioMapeamentoEstudanteUseCase, ObterQuestionarioMapeamentoEstudanteUseCase>();
 
             RegistrarCasoDeUsoAEERabbitSgp(services);
             RegistrarCasoDeUsoAulaRabbitSgp(services);
