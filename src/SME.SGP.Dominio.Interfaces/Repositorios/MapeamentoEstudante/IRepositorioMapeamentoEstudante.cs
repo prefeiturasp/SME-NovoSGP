@@ -1,0 +1,9 @@
+﻿using System.Threading.Tasks;
+
+namespace SME.SGP.Dominio.Interfaces
+{
+    public interface IRepositorioMapeamentoEstudante : IRepositorioBase<MapeamentoEstudante>
+    {
+        Task<MapeamentoEstudante> ObterMapeamentoEstudantePorId(long id);
+    }
+}

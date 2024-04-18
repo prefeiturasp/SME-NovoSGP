@@ -591,6 +591,13 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioRegistroColetivoAnexo, RepositorioRegistroColetivoAnexo>();
 
             services.TryAddScoped<IRepositorioObjetivoAprendizagemConsulta, RepositorioObjetivoAprendizagemConsulta>();
+
+            // Mapeamento Estudante
+            services.TryAddScoped<IRepositorioSecaoMapeamentoEstudante, RepositorioSecaoMapeamentoEstudante>();
+            services.TryAddScoped<IRepositorioMapeamentoEstudante, RepositorioMapeamentoEstudante>();
+            services.TryAddScoped<IRepositorioMapeamentoEstudanteSecao, RepositorioMapeamentoEstudanteSecao>();
+            services.TryAddScoped<IRepositorioQuestaoMapeamentoEstudante, RepositorioQuestaoMapeamentoEstudante>();
+            services.TryAddScoped<IRepositorioRespostaMapeamentoEstudante, RepositorioRespostaMapeamentoEstudante>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)
