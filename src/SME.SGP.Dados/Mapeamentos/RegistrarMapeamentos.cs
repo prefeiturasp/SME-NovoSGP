@@ -249,6 +249,12 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new RegistroColetivoMap());
                config.AddMap(new RegistroColetivoUeMap());
                config.AddMap(new RegistroColetivoAnexoMap());
+               config.AddMap(new SecaoMapeamentoEstudanteMap());
+               config.AddMap(new MapeamentoEstudanteMap());
+               config.AddMap(new MapeamentoEstudanteSecaoMap());
+               config.AddMap(new QuestaoMapeamentoEstudanteMap());
+               config.AddMap(new RespostaMapeamentoEstudanteMap());
+
 
                config.ForDommel();
            });
