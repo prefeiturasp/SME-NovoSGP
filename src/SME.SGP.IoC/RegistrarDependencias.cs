@@ -1410,9 +1410,10 @@ namespace SME.SGP.IoC
             //Turma
             services.TryAddScoped<IObterTurmaSondagemUseCase, ObterTurmaSondagemUseCase>();
 
-            //Mapeamento Aluno
+            //Mapeamento de estudantes
             services.TryAddScoped<IObterSecoesMapeamentoSecaoUseCase, ObterSecoesMapeamentoSecaoUseCase>();
             services.TryAddScoped<IObterQuestionarioMapeamentoEstudanteUseCase, ObterQuestionarioMapeamentoEstudanteUseCase>();
+            services.TryAddScoped<IObterIdentificadorMapeamentoEstudanteUseCase, ObterIdentificadorMapeamentoEstudanteUseCase>();
 
             RegistrarCasoDeUsoAEERabbitSgp(services);
             RegistrarCasoDeUsoAulaRabbitSgp(services);
