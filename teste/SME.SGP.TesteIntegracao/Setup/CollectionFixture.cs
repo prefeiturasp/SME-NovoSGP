@@ -30,6 +30,11 @@ namespace SME.SGP.TesteIntegracao.Setup
             IniciarServicos();
         }
 
+        public void ExecutarScripts()
+        {
+            Database.ExecutarScripts();
+        }
+
         public void IniciarServicos()
         {
             Services = new ServiceCollection();

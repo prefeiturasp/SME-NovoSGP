@@ -7,34 +7,38 @@ using Microsoft.Extensions.PlatformAbstractions;
 using Npgsql;
 using Postgres2Go;
 using SME.SGP.Dominio;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace SME.SGP.TesteIntegracao.Setup
 {
     public class ConstrutorDeTabelas
     {
-        public void Construir(NpgsqlConnection connection)
+        private readonly NpgsqlConnection _connection;
+        public ConstrutorDeTabelas(NpgsqlConnection connection)
         {
-            MontaBaseDados(connection);
+            _connection = connection ?? throw new ArgumentNullException(nameof(connection));
         }
 
-        private void MontaBaseDados(NpgsqlConnection connection)
+        public void Construir()
         {
-            ExecutarPreScripts(connection);
+            MontaBaseDados();
+        }
 
+        public void ExecutarScripts()
+        {
             var scripts = ObterScripts();
             DirectoryInfo d = new DirectoryInfo(scripts);
 
-            var files = d.GetFiles("*.sql").OrderBy(a => int.Parse(CleanStringOfNonDigits_V1(a.Name.Replace("\uFEFF",""))));
+            var files = d.GetFiles("*.sql").OrderBy(a => int.Parse(CleanStringOfNonDigits_V1(a.Name.Replace("\uFEFF", ""))));
 
             foreach (var file in files)
             {
                 var b = File.ReadAllBytes(file.FullName);
 
                 Encoding enc = null;
-
                 var textoComEncodeCerto = ReadFileAndGetEncoding(b, ref enc);
 
-                using (var cmd = new NpgsqlCommand(textoComEncodeCerto, connection))
+                using (var cmd = new NpgsqlCommand(textoComEncodeCerto, _connection))
                 {
                     try
                     {
@@ -47,6 +51,12 @@ namespace SME.SGP.TesteIntegracao.Setup
 
                 }
             }
+        }
+
+        private void MontaBaseDados()
+        {
+            ExecutarPreScripts();
+            ExecutarScripts();            
         }
 
         private string ReadFileAndGetEncoding(Byte[] docBytes, ref Encoding encoding)
@@ -150,12 +160,12 @@ namespace SME.SGP.TesteIntegracao.Setup
             return Path.GetFullPath(Path.Combine(testProjectPath, relativePathToHostProject));
         }
 
-        private void ExecutarPreScripts(NpgsqlConnection connection)
+        private void ExecutarPreScripts()
         {
             var builder = new StringBuilder();
             builder.Append("CREATE USER postgres;");
             builder.Append("SET client_encoding TO 'UTF8';");
-            using (var cmd = new NpgsqlCommand(builder.ToString(), connection))
+            using (var cmd = new NpgsqlCommand(builder.ToString(), _connection))
             {
                 cmd.ExecuteNonQuery();
             }

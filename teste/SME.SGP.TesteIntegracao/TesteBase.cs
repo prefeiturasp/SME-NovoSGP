@@ -38,6 +38,11 @@ namespace SME.SGP.TesteIntegracao
             _collectionFixture.BuildServiceProvider();
         }
 
+        public void ExecutarScripts()
+        {
+            _collectionFixture.ExecutarScripts();
+        }
+
         protected virtual void RegistrarFakes(IServiceCollection services)
         {
             RegistrarCommandFakes(services);
