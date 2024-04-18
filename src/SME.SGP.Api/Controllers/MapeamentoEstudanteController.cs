@@ -37,7 +37,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await obterSecoesMapeamentoSecaoUseCase.Executar(mapeamentoEstudanteId));
         }
 
-        [HttpGet("questionarios/{questionarioId}")]
+        [HttpGet("questionario/{questionarioId}")]
         [ProducesResponseType(typeof(IEnumerable<QuestaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ME_C, Policy = "Bearer")]
