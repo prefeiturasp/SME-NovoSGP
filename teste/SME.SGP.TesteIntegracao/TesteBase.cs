@@ -38,9 +38,9 @@ namespace SME.SGP.TesteIntegracao
             _collectionFixture.BuildServiceProvider();
         }
 
-        public void ExecutarScripts()
+        public void ExecutarScripts(List<ScriptCarga> scriptsCarga)
         {
-            _collectionFixture.ExecutarScripts();
+            _collectionFixture.ExecutarScripts(scriptsCarga);
         }
 
         protected virtual void RegistrarFakes(IServiceCollection services)

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterIdentificadorMapeamentoEstudanteQueryHandler : IRequestHandler<ObterIdentificadorMapeamentoEstudanteQuery, long>
+    public class ObterIdentificadorMapeamentoEstudanteQueryHandler : IRequestHandler<ObterIdentificadorMapeamentoEstudanteQuery, long?>
     {
         private readonly IRepositorioMapeamentoEstudante repositorio;
 
@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
             this.repositorio = repositorio ?? throw new System.ArgumentNullException(nameof(repositorio));
         }
 
-        public Task<long> Handle(ObterIdentificadorMapeamentoEstudanteQuery request, CancellationToken cancellationToken)
+        public Task<long?> Handle(ObterIdentificadorMapeamentoEstudanteQuery request, CancellationToken cancellationToken)
         {
             return repositorio.ObterIdentificador(request.CodigoAluno, request.TurmaId, request.Bimestre);
         }
