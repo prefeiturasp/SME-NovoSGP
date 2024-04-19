@@ -8,6 +8,7 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso.MapeamentoEstudante;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Dtos.MapeamentoEstudantes;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -19,12 +20,12 @@ namespace SME.SGP.Api.Controllers
     public class MapeamentoEstudanteController : ControllerBase
     {
         [HttpPost()]
-        [ProducesResponseType(typeof(IEnumerable<ResultadoRegistroAcaoBuscaAtivaDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<ResultadoMapeamentoEstudanteDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ME_I, Permissao.ME_A, Policy = "Bearer")]
-        public async Task<IActionResult> RegistrarMapeamentoEstudante([FromBody] RegistroAcaoBuscaAtivaDto registroAcaoDto, [FromServices] IRegistrarRegistroAcaoUseCase registrarRegistroAcaoUseCase)
+        public async Task<IActionResult> RegistrarMapeamentoEstudante([FromBody] MapeamentoEstudanteDto mapeamentoEstudante, [FromServices] IRegistrarMapeamentoEstudanteUseCase useCase)
         {
-            return Ok(await registrarRegistroAcaoUseCase.Executar(registroAcaoDto));
+            return Ok(await useCase.Executar(mapeamentoEstudante));
         }
 
         [HttpGet("secoes")]
@@ -37,7 +38,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await obterSecoesMapeamentoSecaoUseCase.Executar(mapeamentoEstudanteId));
         }
 
-        [HttpGet("questionario/{questionarioId}")]
+        [HttpGet("questionarios/{questionarioId}/questoes")]
         [ProducesResponseType(typeof(IEnumerable<QuestaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ME_C, Policy = "Bearer")]
@@ -46,7 +47,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(questionarioId, mapeamentoEstudanteId));
         }
 
-        [HttpGet("aluno/{codigoAluno}/turma/{turmaId}/bimestre/{bimestre}/identificador")]
+        [HttpGet("alunos/{codigoAluno}/turmas/{turmaId}/bimestres/{bimestre}/identificador")]
         [ProducesResponseType(typeof(long), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ME_C, Policy = "Bearer")]

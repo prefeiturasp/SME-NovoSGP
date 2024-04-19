@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -6,5 +7,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<MapeamentoEstudante> ObterMapeamentoEstudantePorId(long id);
         Task<long?> ObterIdentificador(string codigoAluno, long turmaId, int bimestre);
+        Task<IEnumerable<string>> ObterCodigoArquivoPorMapeamentoEstudanteId(long id);
     }
 }

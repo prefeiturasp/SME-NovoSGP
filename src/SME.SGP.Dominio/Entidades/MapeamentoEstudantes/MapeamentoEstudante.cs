@@ -9,9 +9,9 @@ namespace SME.SGP.Dominio
         }
         public Turma Turma { get; set; }
         public long TurmaId { get; set; }
+        public int Bimestre { get; set; }
         public string AlunoCodigo { get; set; }
         public string AlunoNome { get; set; }
-        public int Bimestre { get; set; }
         public bool Excluido { get; set; }
         public List<MapeamentoEstudanteSecao> Secoes { get; set; }
 

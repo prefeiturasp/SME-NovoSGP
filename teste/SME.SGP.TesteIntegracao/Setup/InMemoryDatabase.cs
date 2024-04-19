@@ -38,12 +38,16 @@ namespace SME.SGP.TesteIntegracao.Setup
                 Conexao.Insert(objeto);
             }
         }
-
+        
         public void Inserir<T>(T objeto) where T : class, new()
         {
             Conexao.Insert(objeto);
         }
-        
+        public async Task<long> InserirAsync<T>(T objeto) where T : class, new()
+        {
+            return (long)(await Conexao.InsertAsync(objeto));
+        }
+
         public void Atualizar<T>(T objeto) where T : class, new()
         {
             Conexao.Update(objeto);
