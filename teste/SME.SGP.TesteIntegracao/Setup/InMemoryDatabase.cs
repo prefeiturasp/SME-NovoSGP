@@ -61,9 +61,9 @@ namespace SME.SGP.TesteIntegracao.Setup
             return Conexao.Get<T>(id);
         }
 
-        public void ExecutarScripts()
+        public void ExecutarScripts(List<ScriptCarga> scriptsCarga)
         {
-            _construtorDeTabelas.ExecutarScripts();
+            _construtorDeTabelas.ExecutarScripts(scriptsCarga);
         }
 
         public void LimparBase()

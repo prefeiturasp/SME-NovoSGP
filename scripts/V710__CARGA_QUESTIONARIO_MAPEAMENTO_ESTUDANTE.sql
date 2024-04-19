@@ -9,7 +9,7 @@ begin
 	insert into questionario (nome, excluido, criado_em, criado_por, criado_rf, tipo)
 		values ('Questionário Mapeamento Estudante Etapa 1 Seção 1', false, NOW(), 'SISTEMA', '0', 9)
 		RETURNING id INTO questionarioId;
-	insert into secao_registro_acao_busca_ativa (questionario_id, nome, etapa, ordem, criado_em, criado_por, criado_rf, nome_componente)
+	insert into secao_mapeamento_estudante (questionario_id, nome, etapa, ordem, criado_em, criado_por, criado_rf, nome_componente)
 		values(questionarioId, 'Mapeamento Estudante Seção 1', 1, 1, NOW(), 'SISTEMA', '0', 'SECAO_1_MAPEAMENTO_ESTUDANTE');
 
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente, somente_leitura)
