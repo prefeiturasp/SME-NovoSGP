@@ -94,5 +94,25 @@ namespace SME.SGP.Dados.Repositorios
 
             return mapeamento;
         }
+
+        public async Task<IEnumerable<string>> ObterCodigoArquivoPorMapeamentoEstudanteId(long id)
+        {
+            var sql = @"select
+                    	a.codigo
+                    from
+	                    mapeamento_estudante me
+                    inner join mapeamento_estudante_secao mes on
+	                    me.id = mes.mapeamento_estudante_id
+                    inner join mapeamento_estudante_questao qme on
+	                    mes.id = qme.mapeamento_estudante_secao_id
+                    inner join mapeamento_estudante_resposta rme on
+	                    qme.id = rme.questao_registro_acao_id
+                    inner join arquivo a on
+	                    rme.arquivo_id = a.id
+                    where
+	                    me.id = @id";
+
+            return await database.Conexao.QueryAsync<string>(sql.ToString(), new { id });
+        }
     }
 }

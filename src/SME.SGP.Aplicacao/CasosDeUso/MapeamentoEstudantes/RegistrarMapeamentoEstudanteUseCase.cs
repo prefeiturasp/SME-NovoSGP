@@ -24,26 +24,27 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ResultadoMapeamentoEstudanteDto> Executar(MapeamentoEstudanteDto mapeamentoDto)
         {
-            var dadosAluno = await ValidarRegras(mapeamentoDto);           
+            /*var dadosAluno = await ValidarRegras(mapeamentoDto);           
             List<QuestaoObrigatoriaNaoRespondidaDto> questoesObrigatoriasAConsistir = await ObterQuestoesObrigatoriasNaoPreechidas(mapeamentoDto);
             ConsistirQuestoesObrigatoriasNaoPreenchidas(questoesObrigatoriasAConsistir);
             PreencherConclusaoSecoes(questoesObrigatoriasAConsistir, mapeamentoDto);
-            
+
             if (mapeamentoDto.Id.GetValueOrDefault() > 0)
             {
-                var registroAcao = await mediator.Send(new ObterRegistroAcaoPorIdQuery(mapeamentoDto.Id.GetValueOrDefault()));
-                if (registroAcao.NaoEhNulo())
+                var mapeamentoEstudante = await mediator.Send(new ObterMapeamentoEstudantePorIdQuery(mapeamentoDto.Id.GetValueOrDefault()));
+                if (mapeamentoEstudante.NaoEhNulo())
                 {
-                    await AlterarRegistroAcao(mapeamentoDto, registroAcao);
-                    await RemoverArquivosNaoUtilizados(mapeamentoDto.Secoes);
-                    return new ResultadoRegistroAcaoBuscaAtivaDto
-                        { Id = registroAcao.Id, Auditoria = (AuditoriaDto)registroAcao };
+                    await AlterarRegistroAcao(mapeamentoDto, mapeamentoEstudante);
+                    //await RemoverArquivosNaoUtilizados(mapeamentoDto.Secoes);
+                    return new ResultadoMapeamentoEstudanteDto
+                        { Id = mapeamentoEstudante.Id, Auditoria = (AuditoriaDto)mapeamentoEstudante };
                 }
             }
 
             var resultadoRegistroAcao = await mediator.Send(new RegistrarRegistroAcaoCommand(mapeamentoDto.TurmaId, dadosAluno.NomeAluno, dadosAluno.CodigoAluno));
             await SalvarRegistroAcao(mapeamentoDto, resultadoRegistroAcao);
-            return resultadoRegistroAcao;
+            return resultadoRegistroAcao;*/
+            return null;
         }
       
         private async Task<(string CodigoAluno, string NomeAluno)> ValidarRegras(MapeamentoEstudanteDto mapeamento)
@@ -59,12 +60,12 @@ namespace SME.SGP.Aplicacao
             return (aluno.CodigoAluno, aluno.NomeAluno);
         }
 
-        private void PreencherConclusaoSecoes(List<QuestaoObrigatoriaNaoRespondidaDto> questoesObrigatoriasAConsistir, RegistroAcaoBuscaAtivaDto registroAcaoDto)
+        private void PreencherConclusaoSecoes(List<QuestaoObrigatoriaNaoRespondidaDto> questoesObrigatoriasAConsistir, MapeamentoEstudanteDto mapeamentoDto)
         {
             var secoesComQuestoesObrigatoriasAConsistir = questoesObrigatoriasAConsistir
                 .Select(questao => questao.SecaoId).Distinct().ToArray();
 
-            foreach (var secao in registroAcaoDto.Secoes)
+            foreach (var secao in mapeamentoDto.Secoes)
                 secao.Concluido = !secoesComQuestoesObrigatoriasAConsistir.Contains(secao.SecaoId);
         }
 
@@ -78,11 +79,11 @@ namespace SME.SGP.Aplicacao
             .ToList();
 
             throw new NegocioException(string.Format(
-                MensagemNegocioRegistroAcao.EXISTEM_QUESTOES_OBRIGATORIAS_NAO_PREENCHIDAS,
+                MensagemNegocioMapeamentoEstudante.EXISTEM_QUESTOES_OBRIGATORIAS_NAO_PREENCHIDAS,
                 string.Join(", ", mensagem)));
         }
 
-        private async Task RemoverArquivosNaoUtilizados(List<RegistroAcaoBuscaAtivaSecaoDto> secoes)
+        /*private async Task RemoverArquivosNaoUtilizados(List<RegistroAcaoBuscaAtivaSecaoDto> secoes)
         {
             var resposta = new List<RegistroAcaoBuscaAtivaSecaoQuestaoDto>();
             foreach (var s in secoes)
@@ -98,16 +99,16 @@ namespace SME.SGP.Aplicacao
                         await mediator.Send(new ExcluirRespostaRegistroAcaoCommand(entidadeResposta));
                 }
         }
-        public async Task AlterarRegistroAcao(RegistroAcaoBuscaAtivaDto registroAcaoDto, RegistroAcaoBuscaAtiva registroAcao)
+        public async Task AlterarRegistroAcao(MapeamentoEstudanteDto mapeamentoEstudanteDto, MapeamentoEstudante mapeamentoEstudante)
         {
-            foreach (var secao in registroAcaoDto.Secoes)
+            foreach (var secao in mapeamentoEstudanteDto.Secoes)
             {
                 if (!secao.Questoes.Any())
                     throw new NegocioException(string.Format(MensagemNegocioComuns.NENHUMA_QUESTAO_FOI_ENCONTRADA_NA_SECAO_X,secao.SecaoId));
 
-                var secaoExistente = registroAcao.Secoes.FirstOrDefault(s => s.SecaoRegistroAcaoBuscaAtivaId == secao.SecaoId);
+                var secaoExistente = mapeamentoEstudante.Secoes.FirstOrDefault(s => s.SecaoMapeamentoEstudanteId == secao.SecaoId);
                 if (secaoExistente.EhNulo())
-                    secaoExistente = await mediator.Send(new RegistrarRegistroAcaoSecaoCommand(registroAcao.Id, secao.SecaoId, secao.Concluido));
+                    secaoExistente = await mediator.Send(new RegistrarRegistroAcaoSecaoCommand(mapeamentoEstudante.Id, secao.SecaoId, secao.Concluido));
                 else
                 {
                     secaoExistente.Concluido = secao.Concluido;
@@ -203,11 +204,11 @@ namespace SME.SGP.Aplicacao
 
             return Enumerable.Empty<RespostaQuestaoObrigatoriaDto>();
         }
-
+        
         private async Task<List<QuestaoObrigatoriaNaoRespondidaDto>> ObterQuestoesObrigatoriasNaoPreechidas(MapeamentoEstudanteDto mapeamentoDto)
         {
             List<QuestaoObrigatoriaNaoRespondidaDto> questoesObrigatoriasAConsistir = new List<QuestaoObrigatoriaNaoRespondidaDto>();
-            var secoesEtapa = await mediator.Send(new ObterSecoesQuestionarioRegistroAcaoDtoQuery());
+            var secoesEtapa = await mediator.Send(new ObterSecoesQuestionarioMapeamentoEstudanteDtoQuery());
             IEnumerable<RespostaQuestaoObrigatoriaDto> respostasPersistidas = null;
 
             foreach (var secao in secoesEtapa)
@@ -244,6 +245,7 @@ namespace SME.SGP.Aplicacao
             
         private IEnumerable<RespostaRegistroAcaoBuscaAtiva> ObterRespostasAAlterar(QuestaoRegistroAcaoBuscaAtiva questaoExistente, IGrouping<long, RegistroAcaoBuscaAtivaSecaoQuestaoDto> respostas)
             => questaoExistente.Respostas.Where(s => respostas.Any(c => c.RespostaRegistroAcaoId == s.Id));
+        */
 
     }
 }
