@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ResultadoMapeamentoEstudanteDto> Executar(MapeamentoEstudanteDto mapeamentoDto)
         {
-            /*var dadosAluno = await ValidarRegras(mapeamentoDto);           
+            var dadosAluno = await ValidarRegras(mapeamentoDto);           
             List<QuestaoObrigatoriaNaoRespondidaDto> questoesObrigatoriasAConsistir = await ObterQuestoesObrigatoriasNaoPreechidas(mapeamentoDto);
             ConsistirQuestoesObrigatoriasNaoPreenchidas(questoesObrigatoriasAConsistir);
             PreencherConclusaoSecoes(questoesObrigatoriasAConsistir, mapeamentoDto);
@@ -34,17 +34,16 @@ namespace SME.SGP.Aplicacao
                 var mapeamentoEstudante = await mediator.Send(new ObterMapeamentoEstudantePorIdQuery(mapeamentoDto.Id.GetValueOrDefault()));
                 if (mapeamentoEstudante.NaoEhNulo())
                 {
-                    await AlterarRegistroAcao(mapeamentoDto, mapeamentoEstudante);
-                    //await RemoverArquivosNaoUtilizados(mapeamentoDto.Secoes);
+                    await AlterarMapeamentoEstudante(mapeamentoDto, mapeamentoEstudante);
+                    await RemoverArquivosNaoUtilizados(mapeamentoDto.Secoes);
                     return new ResultadoMapeamentoEstudanteDto
                         { Id = mapeamentoEstudante.Id, Auditoria = (AuditoriaDto)mapeamentoEstudante };
                 }
             }
 
-            var resultadoRegistroAcao = await mediator.Send(new RegistrarRegistroAcaoCommand(mapeamentoDto.TurmaId, dadosAluno.NomeAluno, dadosAluno.CodigoAluno));
-            await SalvarRegistroAcao(mapeamentoDto, resultadoRegistroAcao);
-            return resultadoRegistroAcao;*/
-            return null;
+            var resultadoMapeamento = await mediator.Send(new RegistrarMapeamentoEstudanteCommand(mapeamentoDto.TurmaId, dadosAluno.NomeAluno, dadosAluno.CodigoAluno, mapeamentoDto.Bimestre));
+            await SalvarMapeamentoEstudante(mapeamentoDto, resultadoMapeamento);
+            return resultadoMapeamento;
         }
       
         private async Task<(string CodigoAluno, string NomeAluno)> ValidarRegras(MapeamentoEstudanteDto mapeamento)
@@ -83,9 +82,9 @@ namespace SME.SGP.Aplicacao
                 string.Join(", ", mensagem)));
         }
 
-        /*private async Task RemoverArquivosNaoUtilizados(List<RegistroAcaoBuscaAtivaSecaoDto> secoes)
+        private async Task RemoverArquivosNaoUtilizados(List<MapeamentoEstudanteSecaoDto> secoes)
         {
-            var resposta = new List<RegistroAcaoBuscaAtivaSecaoQuestaoDto>();
+            var resposta = new List<MapeamentoEstudanteSecaoQuestaoDto>();
             foreach (var s in secoes)
                 foreach (var q in s.Questoes)
                     if (string.IsNullOrEmpty(q.Resposta) && q.TipoQuestao == TipoQuestao.Upload)
@@ -94,12 +93,12 @@ namespace SME.SGP.Aplicacao
             if (resposta.Any())
                 foreach (var item in resposta)
                 {
-                    var entidadeResposta = await mediator.Send(new ObterRespostaRegistroAcaoPorIdQuery(item.RespostaRegistroAcaoId));
+                    var entidadeResposta = await mediator.Send(new ObterRespostaMapeamentoEstudantePorIdQuery(item.RespostaMapeamentoEstudanteId));
                     if (entidadeResposta.NaoEhNulo())
-                        await mediator.Send(new ExcluirRespostaRegistroAcaoCommand(entidadeResposta));
+                        await mediator.Send(new ExcluirRespostaMapeamentoEstudanteCommand(entidadeResposta));
                 }
         }
-        public async Task AlterarRegistroAcao(MapeamentoEstudanteDto mapeamentoEstudanteDto, MapeamentoEstudante mapeamentoEstudante)
+        public async Task AlterarMapeamentoEstudante(MapeamentoEstudanteDto mapeamentoEstudanteDto, MapeamentoEstudante mapeamentoEstudante)
         {
             foreach (var secao in mapeamentoEstudanteDto.Secoes)
             {
@@ -108,11 +107,11 @@ namespace SME.SGP.Aplicacao
 
                 var secaoExistente = mapeamentoEstudante.Secoes.FirstOrDefault(s => s.SecaoMapeamentoEstudanteId == secao.SecaoId);
                 if (secaoExistente.EhNulo())
-                    secaoExistente = await mediator.Send(new RegistrarRegistroAcaoSecaoCommand(mapeamentoEstudante.Id, secao.SecaoId, secao.Concluido));
+                    secaoExistente = await mediator.Send(new RegistrarMapeamentoEstudanteSecaoCommand(mapeamentoEstudante.Id, secao.SecaoId, secao.Concluido));
                 else
                 {
                     secaoExistente.Concluido = secao.Concluido;
-                    await mediator.Send(new AlterarRegistroAcaoSecaoCommand(secaoExistente));
+                    await mediator.Send(new AlterarMapeamentoEstudanteSecaoCommand(secaoExistente));
                 }
 
                 foreach (var questoes in secao.Questoes.GroupBy(q => q.QuestaoId))
@@ -121,8 +120,8 @@ namespace SME.SGP.Aplicacao
 
                     if (questaoExistente.EhNulo())
                     {   
-                        var resultadoRegistroAcaoQuestao = await mediator.Send(new RegistrarRegistroAcaoSecaoQuestaoCommand(secaoExistente.Id, questoes.FirstOrDefault().QuestaoId));
-                        await RegistrarRespostaRegistroAcao(questoes, resultadoRegistroAcaoQuestao);
+                        var resultadoMapeamentoQuestao = await mediator.Send(new RegistrarMapeamentoEstudanteSecaoQuestaoCommand(secaoExistente.Id, questoes.FirstOrDefault().QuestaoId));
+                        await RegistrarRespostaMapeamento(questoes, resultadoMapeamentoQuestao);
                     }
                     else
                         await AlterarQuestoesExistentes(questaoExistente, questoes);
@@ -131,70 +130,70 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task ExcluirQuestoesExistentes(IEnumerable<QuestaoRegistroAcaoBuscaAtiva> questoesRemovidas)
+        private async Task ExcluirQuestoesExistentes(IEnumerable<QuestaoMapeamentoEstudante> questoesRemovidas)
         {
             foreach (var questao in questoesRemovidas)
-                await mediator.Send(new ExcluirQuestaoRegistroAcaoPorIdCommand(questao.Id));
+                await mediator.Send(new ExcluirQuestaoMapeamentoEstudantePorIdCommand(questao.Id));
         }
 
-        private async Task AlterarQuestoesExistentes(QuestaoRegistroAcaoBuscaAtiva questaoExistente, IGrouping<long, RegistroAcaoBuscaAtivaSecaoQuestaoDto> questoesRespostas)
+        private async Task AlterarQuestoesExistentes(QuestaoMapeamentoEstudante questaoExistente, IGrouping<long, MapeamentoEstudanteSecaoQuestaoDto> questoesRespostas)
         {
             if (questaoExistente.Excluido)
                 await AlterarQuestaoExcluida(questaoExistente);
-            await ExcluirRespostasRegistroAcao(questaoExistente, questoesRespostas);
-            await AlterarRespostasRegistroAcao(questaoExistente, questoesRespostas);
-            await IncluirRespostasRegistroAcao(questaoExistente, questoesRespostas);
+            await ExcluirRespostasMapeamentoEstudante(questaoExistente, questoesRespostas);
+            await AlterarRespostasMapeamentoEstudante(questaoExistente, questoesRespostas);
+            await IncluirRespostasMapeamento(questaoExistente, questoesRespostas);
         }
 
-        private async Task AlterarQuestaoExcluida(QuestaoRegistroAcaoBuscaAtiva questao)
+        private async Task AlterarQuestaoExcluida(QuestaoMapeamentoEstudante questao)
         {
             questao.Excluido = false;
-            await mediator.Send(new AlterarQuestaoRegistroAcaoCommand(questao));
+            await mediator.Send(new AlterarQuestaoMapeamentoEstudanteCommand(questao));
         }
 
-        private async Task IncluirRespostasRegistroAcao(QuestaoRegistroAcaoBuscaAtiva questaoExistente, IGrouping<long, RegistroAcaoBuscaAtivaSecaoQuestaoDto> respostas)
-            => await RegistrarRespostaRegistroAcao(ObterRespostasAIncluir(respostas), questaoExistente.Id);
+        private async Task IncluirRespostasMapeamento(QuestaoMapeamentoEstudante questaoExistente, IGrouping<long, MapeamentoEstudanteSecaoQuestaoDto> respostas)
+            => await RegistrarRespostaMapeamento(ObterRespostasAIncluir(respostas), questaoExistente.Id);
 
-        private async Task RegistrarRespostaRegistroAcao(IEnumerable<RegistroAcaoBuscaAtivaSecaoQuestaoDto> questoes, long questaoRegistroAcaoId)
+        private async Task RegistrarRespostaMapeamento(IEnumerable<MapeamentoEstudanteSecaoQuestaoDto> questoes, long questaoMapeamentoId)
         {
             foreach (var questao in questoes)
-                await mediator.Send(new RegistrarRegistroAcaoSecaoQuestaoRespostaCommand(questao.Resposta, questaoRegistroAcaoId, questao.TipoQuestao));
+                await mediator.Send(new RegistrarMapeamentoEstudanteSecaoQuestaoRespostaCommand(questao.Resposta, questaoMapeamentoId, questao.TipoQuestao));
         }
 
-        private async Task AlterarRespostasRegistroAcao(QuestaoRegistroAcaoBuscaAtiva questaoExistente, IGrouping<long, RegistroAcaoBuscaAtivaSecaoQuestaoDto> respostas)
+        private async Task AlterarRespostasMapeamentoEstudante(QuestaoMapeamentoEstudante questaoExistente, IGrouping<long, MapeamentoEstudanteSecaoQuestaoDto> respostas)
         {
             foreach (var respostaAlterar in ObterRespostasAAlterar(questaoExistente, respostas))
-                await mediator.Send(new AlterarRegistroAcaoSecaoQuestaoRespostaCommand(respostaAlterar, respostas.FirstOrDefault(c => c.RespostaRegistroAcaoId == respostaAlterar.Id)));
+                await mediator.Send(new AlterarMapeamentoEstudanteSecaoQuestaoRespostaCommand(respostaAlterar, respostas.FirstOrDefault(c => c.RespostaMapeamentoEstudanteId == respostaAlterar.Id)));
         }
 
-        private async Task ExcluirRespostasRegistroAcao(QuestaoRegistroAcaoBuscaAtiva questoesExistentes, IGrouping<long, RegistroAcaoBuscaAtivaSecaoQuestaoDto> respostas)
+        private async Task ExcluirRespostasMapeamentoEstudante(QuestaoMapeamentoEstudante questoesExistentes, IGrouping<long, MapeamentoEstudanteSecaoQuestaoDto> respostas)
         {
             foreach (var respostasExcluir in ObterRespostasAExcluir(questoesExistentes, respostas))
-                await mediator.Send(new ExcluirRespostaRegistroAcaoCommand(respostasExcluir));
+                await mediator.Send(new ExcluirRespostaMapeamentoEstudanteCommand(respostasExcluir));
         }
 
-        public async Task SalvarRegistroAcao(RegistroAcaoBuscaAtivaDto registroAcaoDto, ResultadoRegistroAcaoBuscaAtivaDto resultadoRegistroAcao)
+        public async Task SalvarMapeamentoEstudante(MapeamentoEstudanteDto mapeamentoEstudanteDto, ResultadoMapeamentoEstudanteDto resultadoMapeamentoEstudante)
         {
-            foreach (var secao in registroAcaoDto.Secoes)
+            foreach (var secao in mapeamentoEstudanteDto.Secoes)
             {
                 if (!secao.Questoes.Any())
                     throw new NegocioException(string.Format(MensagemNegocioComuns.NENHUMA_QUESTAO_FOI_ENCONTRADA_NA_SECAO_X,secao.SecaoId));
 
-                var secaoRegistroAcao = await mediator.Send(new RegistrarRegistroAcaoSecaoCommand(resultadoRegistroAcao.Id, secao.SecaoId, secao.Concluido));
+                var secaoMapeamentoEstudante = await mediator.Send(new RegistrarMapeamentoEstudanteSecaoCommand(resultadoMapeamentoEstudante.Id, secao.SecaoId, secao.Concluido));
                 foreach (var questoes in secao.Questoes.GroupBy(q => q.QuestaoId))
                 {
-                    var resultadoResultadoAcaoQuestao = await mediator.Send(new RegistrarRegistroAcaoSecaoQuestaoCommand(secaoRegistroAcao.Id, questoes.FirstOrDefault().QuestaoId));
-                    await RegistrarRespostaRegistroAcao(questoes, resultadoResultadoAcaoQuestao);
+                    var resultadoMapeamentoEstudanteQuestao = await mediator.Send(new RegistrarMapeamentoEstudanteSecaoQuestaoCommand(secaoMapeamentoEstudante.Id, questoes.FirstOrDefault().QuestaoId));
+                    await RegistrarRespostaMapeamento(questoes, resultadoMapeamentoEstudanteQuestao);
                 }
             }
         }
 
 
-        private async Task<IEnumerable<RespostaQuestaoObrigatoriaDto>> ObterRespostasRegistroAcao(long? registroAcaoId)
+        private async Task<IEnumerable<RespostaQuestaoObrigatoriaDto>> ObterRespostasMapeamentoEstudante(long? mapeamentoEstudanteId)
         {
-            if (registroAcaoId.HasValue)
+            if (mapeamentoEstudanteId.HasValue)
                 return (await mediator.Send(
-                        new ObterQuestaoRespostaRegistroAcaoPorIdQuery(registroAcaoId.Value)))
+                        new ObterQuestaoRespostaMapeamentoEstudantePorIdQuery(mapeamentoEstudanteId.Value)))
                     .Select(resposta => new RespostaQuestaoObrigatoriaDto
                     {
                         QuestaoId = resposta.QuestaoId,
@@ -214,10 +213,10 @@ namespace SME.SGP.Aplicacao
             foreach (var secao in secoesEtapa)
             {
                 var secaoPresenteDto = mapeamentoDto.Secoes.FirstOrDefault(secaoDto => secaoDto.SecaoId == secao.Id);
-                IEnumerable<RespostaQuestaoObrigatoriaDto> respostasRegistroAcao;
+                IEnumerable<RespostaQuestaoObrigatoriaDto> respostasMapeamentoEstudante;
                 if (secaoPresenteDto.NaoEhNulo() && secaoPresenteDto.Questoes.Any())
                 {
-                    respostasRegistroAcao = secaoPresenteDto.Questoes
+                    respostasMapeamentoEstudante = secaoPresenteDto.Questoes
                         .Select(questao => new RespostaQuestaoObrigatoriaDto()
                         {
                             QuestaoId = questao.QuestaoId,
@@ -228,24 +227,23 @@ namespace SME.SGP.Aplicacao
                 else
                 {
                     if (respostasPersistidas.EhNulo())
-                        respostasPersistidas = await ObterRespostasRegistroAcao(mapeamentoDto.Id);
-                    respostasRegistroAcao = respostasPersistidas;
+                        respostasPersistidas = await ObterRespostasMapeamentoEstudante(mapeamentoDto.Id);
+                    respostasMapeamentoEstudante = respostasPersistidas;
                 }
-                questoesObrigatoriasAConsistir.AddRange(await mediator.Send(new ObterQuestoesObrigatoriasNaoRespondidasQuery(secao, respostasRegistroAcao)));
+                questoesObrigatoriasAConsistir.AddRange(await mediator.Send(new ObterQuestoesObrigatoriasNaoRespondidasQuery(secao, respostasMapeamentoEstudante)));
             }
             return questoesObrigatoriasAConsistir;
         }
 
 
-        private IEnumerable<RegistroAcaoBuscaAtivaSecaoQuestaoDto> ObterRespostasAIncluir(IGrouping<long, RegistroAcaoBuscaAtivaSecaoQuestaoDto> respostas)
-            => respostas.Where(c => c.RespostaRegistroAcaoId == 0);
+        private IEnumerable<MapeamentoEstudanteSecaoQuestaoDto> ObterRespostasAIncluir(IGrouping<long, MapeamentoEstudanteSecaoQuestaoDto> respostas)
+            => respostas.Where(c => c.RespostaMapeamentoEstudanteId == 0);
 
-        private IEnumerable<RespostaRegistroAcaoBuscaAtiva> ObterRespostasAExcluir(QuestaoRegistroAcaoBuscaAtiva questaoExistente, IGrouping<long, RegistroAcaoBuscaAtivaSecaoQuestaoDto> respostas) 
-            => questaoExistente.Respostas.Where(s => !respostas.Any(c => c.RespostaRegistroAcaoId == s.Id));
+        private IEnumerable<RespostaMapeamentoEstudante> ObterRespostasAExcluir(QuestaoMapeamentoEstudante questaoExistente, IGrouping<long, MapeamentoEstudanteSecaoQuestaoDto> respostas) 
+            => questaoExistente.Respostas.Where(s => !respostas.Any(c => c.RespostaMapeamentoEstudanteId == s.Id));
             
-        private IEnumerable<RespostaRegistroAcaoBuscaAtiva> ObterRespostasAAlterar(QuestaoRegistroAcaoBuscaAtiva questaoExistente, IGrouping<long, RegistroAcaoBuscaAtivaSecaoQuestaoDto> respostas)
-            => questaoExistente.Respostas.Where(s => respostas.Any(c => c.RespostaRegistroAcaoId == s.Id));
-        */
+        private IEnumerable<RespostaMapeamentoEstudante> ObterRespostasAAlterar(QuestaoMapeamentoEstudante questaoExistente, IGrouping<long, MapeamentoEstudanteSecaoQuestaoDto> respostas)
+            => questaoExistente.Respostas.Where(s => respostas.Any(c => c.RespostaMapeamentoEstudanteId == s.Id));
 
     }
 }
