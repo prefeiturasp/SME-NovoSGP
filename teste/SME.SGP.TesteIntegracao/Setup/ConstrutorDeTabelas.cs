@@ -1,13 +1,13 @@
+using Microsoft.Extensions.PlatformAbstractions;
+using Npgsql;
+using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.Extensions.PlatformAbstractions;
-using Npgsql;
-using Postgres2Go;
-using SME.SGP.Dominio;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace SME.SGP.TesteIntegracao.Setup
 {
@@ -24,12 +24,17 @@ namespace SME.SGP.TesteIntegracao.Setup
             MontaBaseDados();
         }
 
-        public void ExecutarScripts()
+        public void ExecutarScripts(List<ScriptCarga> scriptsCarga = null)
         {
             var scripts = ObterScripts();
             DirectoryInfo d = new DirectoryInfo(scripts);
 
-            var files = d.GetFiles("*.sql").OrderBy(a => int.Parse(CleanStringOfNonDigits_V1(a.Name.Replace("\uFEFF", ""))));
+            var files = d.GetFiles("*.sql").ToList();
+
+            if (scriptsCarga.NaoEhNulo())
+                files = files.FindAll(file => scriptsCarga.Exists(script => script.Name() == file.Name));
+
+            files = files.OrderBy(a => int.Parse(CleanStringOfNonDigits_V1(a.Name.Replace("\uFEFF", "")))).ToList();
 
             foreach (var file in files)
             {
