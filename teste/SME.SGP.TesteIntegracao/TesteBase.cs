@@ -25,17 +25,25 @@ namespace SME.SGP.TesteIntegracao
     public class TesteBase : BaseMock, IClassFixture<TestFixture>
     {
         protected readonly CollectionFixture _collectionFixture;
-
         public ServiceProvider ServiceProvider => _collectionFixture.ServiceProvider;
 
         public TesteBase(CollectionFixture collectionFixture)
         {
             _collectionFixture = collectionFixture;
-            _collectionFixture.Database.LimparBase();
-            _collectionFixture.IniciarServicos();
+            if (_collectionFixture.NomeClasseTesteExecucao != this.GetType().Name)
+            {
+                _collectionFixture.DatabasePublicado = false;
+                _collectionFixture.NomeClasseTesteExecucao = this.GetType().Name;
+            }
 
-            RegistrarFakes(_collectionFixture.Services);
-            _collectionFixture.BuildServiceProvider();
+            if (!_collectionFixture.DatabasePublicado)
+            {
+                _collectionFixture.Database.LimparBase();
+                _collectionFixture.IniciarServicos();
+
+                RegistrarFakes(_collectionFixture.Services);
+                _collectionFixture.BuildServiceProvider();
+            }
         }
 
         public void ExecutarScripts(List<ScriptCarga> scriptsCarga)
@@ -102,7 +110,11 @@ namespace SME.SGP.TesteIntegracao
             _collectionFixture.Database.Inserir(objeto);
             return Task.CompletedTask;
         }
-        
+        public Task<long> InserirNaBaseAsync<T>(T objeto) where T : class, new()
+        {
+            return _collectionFixture.Database.InserirAsync(objeto);
+        }
+
         public Task AtualizarNaBase<T>(T objeto) where T : class, new()
         {
             _collectionFixture.Database.Atualizar(objeto);

@@ -7,9 +7,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
     public class MapeamentoBase : TesteBaseComuns
     {
         public MapeamentoBase(CollectionFixture collectionFixture) : base(collectionFixture)
-        {
-            
-        }
+        {}
 
         protected async Task CriarDadosBase()
         {
