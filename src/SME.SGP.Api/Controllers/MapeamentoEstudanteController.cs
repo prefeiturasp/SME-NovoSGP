@@ -47,7 +47,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(questionarioId, mapeamentoEstudanteId));
         }
 
-        [HttpGet("aluno/{codigoAluno}/turma/{turmaId}/bimestre/{bimestre}/identificador")]
+        [HttpGet("alunos/{codigoAluno}/turmas/{turmaId}/bimestres/{bimestre}/identificador")]
         [ProducesResponseType(typeof(long), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ME_C, Policy = "Bearer")]
