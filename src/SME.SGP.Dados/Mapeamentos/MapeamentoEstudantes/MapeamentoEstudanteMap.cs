@@ -7,6 +7,7 @@ namespace SME.SGP.Dados
         {
             ToTable("mapeamento_estudante");
             Map(c => c.TurmaId).ToColumn("turma_id");
+            Map(c => c.Bimestre).ToColumn("bimestre");
             Map(c => c.AlunoCodigo).ToColumn("aluno_codigo");
             Map(c => c.AlunoNome).ToColumn("aluno_nome");
             Map(c => c.Excluido).ToColumn("excluido");

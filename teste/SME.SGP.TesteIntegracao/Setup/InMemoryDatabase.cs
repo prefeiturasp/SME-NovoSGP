@@ -1,13 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Dommel;
 using Npgsql;
 using Postgres2Go;
-using SME.SGP.Dominio;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.Setup
 {
@@ -43,7 +41,12 @@ namespace SME.SGP.TesteIntegracao.Setup
         {
             Conexao.Insert(objeto);
         }
-        
+
+        public async Task<long> InserirAsync<T>(T objeto) where T : class, new()
+        {
+            return (long)(await Conexao.InsertAsync(objeto));
+        }
+
         public void Atualizar<T>(T objeto) where T : class, new()
         {
             Conexao.Update(objeto);
@@ -61,9 +64,9 @@ namespace SME.SGP.TesteIntegracao.Setup
             return Conexao.Get<T>(id);
         }
 
-        public void ExecutarScripts()
+        public void ExecutarScripts(List<ScriptCarga> scriptsCarga)
         {
-            _construtorDeTabelas.ExecutarScripts();
+            _construtorDeTabelas.ExecutarScripts(scriptsCarga);
         }
 
         public void LimparBase()

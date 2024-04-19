@@ -3,7 +3,7 @@ using SME.SGP.Dominio;
 
 namespace SME.SGP.TesteIntegracao.Mocks
 {
-    public abstract class BaseMock
+    public abstract class BaseMock: TesteBaseConstantes
     {
         public static long GerarIdAleatorio()
         {
