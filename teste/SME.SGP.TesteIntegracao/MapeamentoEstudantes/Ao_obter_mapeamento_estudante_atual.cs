@@ -182,38 +182,5 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
 
             identificador.ShouldBe(idMapeamento);
         }
-
-        [Fact(DisplayName = "Mapeamento de estudante - Obter identificador do mapeamento estudante")]
-        public async Task Ao_obter_identificador5()
-        {
-            var idMapeamento = await  InserirNaBaseAsync(new MapeamentoEstudante()
-            {
-                TurmaId = TURMA_ID_1,
-                AlunoCodigo = ALUNO_CODIGO_1,
-                AlunoNome = "Nome do aluno 1",
-                Bimestre = BIMESTRE_1,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            var questoes =  ObterTodos<Questao>();
-
-            var secaoMapeamento =  ObterTodos<SecaoMapeamentoEstudante>().FirstOrDefault();
-
-            await  InserirNaBaseAsync(new MapeamentoEstudanteSecao()
-            {
-                MapeamentoEstudanteId = idMapeamento,
-                SecaoMapeamentoEstudanteId = secaoMapeamento.Id,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            var useCase =  ServiceProvider.GetService<IObterIdentificadorMapeamentoEstudanteUseCase>();
-            var identificador = await useCase.Executar(ALUNO_CODIGO_1, TURMA_ID_1, BIMESTRE_1);
-
-            identificador.ShouldBe(idMapeamento);
-        }
     }
 }

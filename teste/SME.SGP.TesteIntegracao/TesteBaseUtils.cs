@@ -942,7 +942,7 @@ namespace SME.SGP.TesteIntegracao
             await collectionFixture.InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_AREA_ORDENACAO, CODIGO_2, CODIGO_2, CODIGO_2);
             await collectionFixture.InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_AREA_ORDENACAO, CODIGO_3, CODIGO_3, CODIGO_3);
             await collectionFixture.InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_AREA_ORDENACAO, CODIGO_4, CODIGO_4, CODIGO_4);
-            await collectionFixture.InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_AREA_ORDENACAO, CODIGO_5, CODIGO_5, CODIGO_5);
+            await collectionFixture.InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_AREA_ORDENACAO, CODIGO_4, CODIGO_5, CODIGO_5);
             await collectionFixture.InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_AREA_ORDENACAO, CODIGO_8, CODIGO_8, CODIGO_8);
             await collectionFixture.InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_AREA_ORDENACAO, CODIGO_8, CODIGO_10, CODIGO_10);
 

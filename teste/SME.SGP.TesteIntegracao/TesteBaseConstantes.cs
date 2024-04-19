@@ -380,10 +380,10 @@ namespace SME.SGP.TesteIntegracao
         public const string ANO_8 = "8";
         public const string ANO_9 = "9";
 
-        public readonly long ATIVIDADE_AVALIATIVA_1 = 1;
-        public readonly long ATIVIDADE_AVALIATIVA_2 = 2;
+        public const long ATIVIDADE_AVALIATIVA_1 = 1;
+        public const long ATIVIDADE_AVALIATIVA_2 = 2;
 
-        public DateTime DATA_04_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 04);
+        public readonly DateTime DATA_04_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 04);
 
         public readonly DateTime DATA_02_05 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
         public readonly DateTime DATA_08_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
@@ -497,18 +497,18 @@ namespace SME.SGP.TesteIntegracao
 
         public const string ALUNO_CODIGO_1 = "1";
         public const string ALUNO_NOME_1 = "Nome do Aluno 1";
-        public readonly string ALUNO_CODIGO_2 = "2";
-        public readonly string ALUNO_CODIGO_3 = "3";
-        public readonly string ALUNO_CODIGO_4 = "4";
-        public readonly string ALUNO_CODIGO_5 = "5";
-        public readonly string ALUNO_CODIGO_6 = "6";
-        public readonly string ALUNO_CODIGO_7 = "7";
-        public readonly string ALUNO_CODIGO_8 = "8";
-        public readonly string ALUNO_CODIGO_9 = "9";
-        public readonly string ALUNO_CODIGO_10 = "10";
-        public readonly string ALUNO_CODIGO_11 = "11";
-        public readonly string ALUNO_CODIGO_12 = "12";
-        public readonly string ALUNO_CODIGO_13 = "13";
+        public const string ALUNO_CODIGO_2 = "2";
+        public const string ALUNO_CODIGO_3 = "3";
+        public const string ALUNO_CODIGO_4 = "4";
+        public const string ALUNO_CODIGO_5 = "5";
+        public const string ALUNO_CODIGO_6 = "6";
+        public const string ALUNO_CODIGO_7 = "7";
+        public const string ALUNO_CODIGO_8 = "8";
+        public const string ALUNO_CODIGO_9 = "9";
+        public const string ALUNO_CODIGO_10 = "10";
+        public const string ALUNO_CODIGO_11 = "11";
+        public const string ALUNO_CODIGO_12 = "12";
+        public const string ALUNO_CODIGO_13 = "13";
         
 
         public const double NOTA_1 = 1;
@@ -529,14 +529,14 @@ namespace SME.SGP.TesteIntegracao
         public const string NAO_SATISFATORIO = "NS";
         public const int NAO_SATISFATORIO_ID_3 = 3;
         
-        public readonly string NOTA = "NOTA";
-        public readonly string CONCEITO = "CONCEITO";
+        public const string NOTA = "NOTA";
+        public const string CONCEITO = "CONCEITO";
 
-        public readonly string PERCENTUAL_FREQUENCIA_CRITICO_NOME = "PercentualFrequenciaCritico";
-        public readonly string PERCENTUAL_FREQUENCIA_CRITICO_DESCRICAO = "Percentual de frequência para definir aluno em situação crítica";
-        public readonly string NUMERO_PAGINA = "NumeroPagina";
-        public readonly string NUMERO_REGISTROS = "NumeroRegistros";
-        public readonly string ADMINISTRADOR = "Administrador";
-        public readonly string NOME_ADMINISTRADOR = "NomeAdministrador";
+        public const string PERCENTUAL_FREQUENCIA_CRITICO_NOME = "PercentualFrequenciaCritico";
+        public const string PERCENTUAL_FREQUENCIA_CRITICO_DESCRICAO = "Percentual de frequência para definir aluno em situação crítica";
+        public const string NUMERO_PAGINA = "NumeroPagina";
+        public const string NUMERO_REGISTROS = "NumeroRegistros";
+        public const string ADMINISTRADOR = "Administrador";
+        public const string NOME_ADMINISTRADOR = "NomeAdministrador";
     }
 }
