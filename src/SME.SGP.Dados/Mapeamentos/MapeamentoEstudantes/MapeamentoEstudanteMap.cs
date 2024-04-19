@@ -10,6 +10,7 @@ namespace SME.SGP.Dados
             Map(c => c.Bimestre).ToColumn("bimestre");
             Map(c => c.AlunoCodigo).ToColumn("aluno_codigo");
             Map(c => c.AlunoNome).ToColumn("aluno_nome");
+            Map(c => c.Bimestre).ToColumn("bimestre");
             Map(c => c.Excluido).ToColumn("excluido");
         }
     }

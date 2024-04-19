@@ -10,7 +10,7 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public Task<long> Executar(string codigoAluno, long turmaId, int bimestre)
+        public Task<long?> Executar(string codigoAluno, long turmaId, int bimestre)
         {
             return mediator.Send(new ObterIdentificadorMapeamentoEstudanteQuery(codigoAluno, turmaId, bimestre));   
         }

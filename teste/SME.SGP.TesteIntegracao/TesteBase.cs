@@ -22,6 +22,11 @@ namespace SME.SGP.TesteIntegracao
             _collectionFixture.Iniciar();
         }
 
+        public void ExecutarScripts(List<ScriptCarga> scriptsCarga)
+        {
+            _collectionFixture.ExecutarScripts(scriptsCarga);
+        }
+
         protected virtual void RegistrarFakes(IServiceCollection services)
         {
             _collectionFixture.RegistrarFakes(services);          
@@ -82,11 +87,6 @@ namespace SME.SGP.TesteIntegracao
             where K : struct
         {
             return _collectionFixture.ObterPorId<T, K>(id);
-        }
-
-        public void ExecutarScripts(List<ScriptCarga> scriptsCarga)
-        {
-            _collectionFixture.ExecutarScripts(scriptsCarga);
         }
     }
 }
