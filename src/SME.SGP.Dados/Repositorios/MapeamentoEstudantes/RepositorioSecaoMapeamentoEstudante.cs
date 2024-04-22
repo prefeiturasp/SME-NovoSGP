@@ -25,7 +25,7 @@ namespace SME.SGP.Dados.Repositorios
                                 , sme.nome_componente as nomeComponente
                          FROM secao_mapeamento_estudante sme 
                          inner join questionario q on q.id = sme.questionario_id 
-                         left join mapeamento_estudante_secao mes on mes.mapeamento_estudante_id = @registroAcaoId 
+                         left join mapeamento_estudante_secao mes on mes.mapeamento_estudante_id = @mapeamentoEstudanteId 
                                                                  and mes.secao_mapeamento_estudante_id = sme.id
                                                                  and not mes.excluido   
                          WHERE not sme.excluido 
