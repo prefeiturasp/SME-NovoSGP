@@ -15,21 +15,16 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
 {
-    public class Ao_obter_secoes_e_questoes_questionario_mapeamento_estudante_novo : MapeamentoBase
+    public class Ao_obter_secoes_e_questoes_questionario_mapeamento_estudante : MapeamentoBase
     {
 
-        public Ao_obter_secoes_e_questoes_questionario_mapeamento_estudante_novo(CollectionFixture collectionFixture) : base(collectionFixture)
-        {
-            if (!collectionFixture.DatabasePublicado)
-            {
-                Task.Run(() => CriarDadosBase()).Wait();
-                collectionFixture.DatabasePublicado = true;
-            }
-        }
+        public Ao_obter_secoes_e_questoes_questionario_mapeamento_estudante(CollectionFixture collectionFixture) : base(collectionFixture)
+        {}
 
         [Fact(DisplayName = "Mapeamento Estudantes - Listar as seções")]
         public async Task Ao_listar_secoes_mapeamento_estudantes()
         {
+            await CriarDadosBase();
             var useCase = ServiceProvider.GetService<IObterSecoesMapeamentoSecaoUseCase>();
             var retorno = await useCase.Executar(null);
             retorno.ShouldNotBeNull();
@@ -43,6 +38,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
         [Fact(DisplayName = "Mapeamento Estudantes - Listar questões por questionário")]
         public async Task Ao_listar_questoes_questionario()
         {
+            await CriarDadosBase();
             var useCase = ServiceProvider.GetService<IObterQuestionarioMapeamentoEstudanteUseCase>();
             var retorno = await useCase.Executar(1, null);
             retorno.ShouldNotBeNull();

@@ -17,9 +17,7 @@ namespace SME.SGP.TesteIntegracao.Setup
         public IServiceCollection Services { get; set; }
         public InMemoryDatabase Database { get; }
         public ServiceProvider ServiceProvider { get; set; }
-        public bool DatabasePublicado { get; set; }
-        public string NomeClasseTesteExecucao { get; set; }
-
+        
         public CollectionFixture()
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);

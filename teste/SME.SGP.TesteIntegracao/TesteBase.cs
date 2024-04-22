@@ -30,20 +30,11 @@ namespace SME.SGP.TesteIntegracao
         public TesteBase(CollectionFixture collectionFixture)
         {
             _collectionFixture = collectionFixture;
-            if (_collectionFixture.NomeClasseTesteExecucao != this.GetType().Name)
-            {
-                _collectionFixture.DatabasePublicado = false;
-                _collectionFixture.NomeClasseTesteExecucao = this.GetType().Name;
-            }
+            _collectionFixture.Database.LimparBase();
+            _collectionFixture.IniciarServicos();
 
-            if (!_collectionFixture.DatabasePublicado)
-            {
-                _collectionFixture.Database.LimparBase();
-                _collectionFixture.IniciarServicos();
-
-                RegistrarFakes(_collectionFixture.Services);
-                _collectionFixture.BuildServiceProvider();
-            }
+            RegistrarFakes(_collectionFixture.Services);
+            _collectionFixture.BuildServiceProvider();
         }
 
         public void ExecutarScripts(List<ScriptCarga> scriptsCarga)
