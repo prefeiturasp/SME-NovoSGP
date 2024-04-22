@@ -95,6 +95,9 @@ namespace SME.SGP.Dados.Repositorios
         {
             sql.AppendLine(" where not ea.excluido ");
 
+            if (ueId > 0)
+                sql.AppendLine(" and ue.id = @ueId ");
+
             if (!string.IsNullOrEmpty(alunoCodigo))
                 sql.AppendLine(" and ea.aluno_codigo = @alunoCodigo ");
             if (situacao.HasValue && situacao > 0)
@@ -107,8 +110,6 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(" and ((ue.dre_id = @dreId ");
             sql.AppendLine(" and t.ano_letivo = @anoLetivo ");
 
-            if (ueId > 0)
-                sql.AppendLine(" and ue.id = @ueId ");
             if (turmaId > 0)
                 sql.AppendLine(" and t.id = @turmaId ");
             if (turmasCodigos.NaoEhNulo() && turmaId == 0)

@@ -44,11 +44,17 @@ namespace SME.SGP.Aplicacao
 
                 componentesCurricularesDoProfessor.LancarExcecaoNegocioSeEhNulo(MensagemNegocioComponentesCurriculares.NAO_FORAM_ENCONTRADOS_COMPONENTES_CURRICULARES_PARA_O_PROFESSOR);
                 
-                var componenteCurricularFiltrado = componentesCurricularesDoProfessor.First(x => x.Codigo == request.ComponenteCurricularCodigo);
-                var componenteEhVigente = await ValidaVigenciaComponenteTerritorioSaberDoProfessor(request.Usuario, request.TurmaCodigo, request.Data, componenteCurricularFiltrado);
-                if (!componenteEhVigente)
+                if(componentesCurricularesDoProfessor.NaoEhNulo() && componentesCurricularesDoProfessor.Any())
                 {
-                    return (false, MensagemNegocioComuns.VOCE_NAO_PODE_CRIAR_AULAS_PARA_COMPONENTES_SEM_ATRIBUICAO_NA_DATA_SELECIONADA);
+                    var componenteCurricularFiltrado = componentesCurricularesDoProfessor.FirstOrDefault(x => x.Codigo == request.ComponenteCurricularCodigo);
+                    if (componenteCurricularFiltrado.NaoEhNulo())
+                    {
+                        var componenteEhVigente = await ValidaVigenciaComponenteTerritorioSaberDoProfessor(request.Usuario, request.TurmaCodigo, request.Data, componenteCurricularFiltrado);
+                        if (!componenteEhVigente)
+                        {
+                            return (false, MensagemNegocioComuns.VOCE_NAO_PODE_CRIAR_AULAS_PARA_COMPONENTES_SEM_ATRIBUICAO_NA_DATA_SELECIONADA);
+                        }
+                    }
                 }
 
                 podeCriarAulasParaTurma = await ProfessorPodeCriarAulasTurma(componentesCurricularesDoProfessor,

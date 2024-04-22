@@ -57,7 +57,11 @@ namespace SME.SGP.Aplicacao
                 anosLetivos.AddRange(await mediator
                     .Send(new ObterAnosAtribuicaoCJQuery(loginAtual, consideraHistorico)));
 
+                if (!anosLetivos.Contains(DateTime.Now.Year) && !consideraHistorico)
+                    return Enumerable.Empty<int>();
+
                 return anosLetivos.Distinct();
+
             }
             else
                 return await consultasAbrangencia.ObterAnosLetivos(consideraHistorico, ANO_LETIVO_MINIMO);
