@@ -1,8 +1,12 @@
-﻿using SME.SGP.Dominio;
+﻿using Dapper;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.MapeamentoEstudantes;
 using SME.SGP.Infra.Interface;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,6 +18,8 @@ namespace SME.SGP.Dados.Repositorios
         public const int SECAO_ETAPA_1 = 1;
         public const int SECAO_ORDEM_1 = 1;
         public const int FILTRO_TODOS = -99;
+
+        public const string QUESTAO_BUSCA_ATIVA_DATA_REGISTRO_NOME_COMPONENTE = "'DATA_REGISTRO_ACAO'";
 
         public RepositorioMapeamentoEstudante(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         { }
@@ -134,6 +140,61 @@ namespace SME.SGP.Dados.Repositorios
 	                    me.id = @id";
 
             return await database.Conexao.QueryAsync<string>(sql.ToString(), new { id });
+        }
+
+        public async Task<InformacoesAtualizadasMapeamentoEstudanteAlunoDto> ObterInformacoesAtualizadasAlunoMapeamentoEstudante(string codigoAluno, int anoLetivo, int bimestre)
+        {
+            var retorno = new InformacoesAtualizadasMapeamentoEstudanteAlunoDto();
+            var query = @$"select t.modalidade_codigo as Modalidade, t.nome as NomeTurma,  
+	                             ccp.id as IdParecerConclusivo, ccp.nome as DescricaoParecerConclusivo	
+	                      from consolidado_conselho_classe_aluno_turma cccat 
+	                      inner join turma t on t.id = cccat.turma_id 
+	                      inner join conselho_classe_parecer ccp on ccp.id = coalesce(cccat.parecer_conclusivo_id, 0)
+	                      where cccat.aluno_codigo = @codigoAluno
+	                      and not cccat.excluido 
+	                      and t.ano_letivo = @anoLetivo -1
+	                      order by cccat.dt_atualizacao desc;
+                          with vw_resposta_data as (
+                             select rabas.registro_acao_busca_ativa_id, 
+                                    rabar.texto DataRegistro
+                             from registro_acao_busca_ativa_secao rabas    
+                             join registro_acao_busca_ativa_questao rabaq on rabas.id = rabaq.registro_acao_busca_ativa_secao_id  
+                             join questao q on rabaq.questao_id = q.id 
+                             join registro_acao_busca_ativa_resposta rabar on rabar.questao_registro_acao_id = rabaq.id 
+                             join secao_registro_acao_busca_ativa sraba on sraba.id = rabas.secao_registro_acao_id
+                             where q.nome_componente = {QUESTAO_BUSCA_ATIVA_DATA_REGISTRO_NOME_COMPONENTE} 
+                                   and sraba.etapa = 1
+                                   and sraba.ordem = 1
+                                   and not rabas.excluido 
+                                   and not rabaq.excluido
+                                   and not rabar.excluido
+                                   and not sraba.excluido)
+                         select  count(raba.id) 
+                         from registro_acao_busca_ativa raba 
+                         inner join vw_resposta_data qdata on qdata.registro_acao_busca_ativa_id = raba.id
+                         inner join turma t on t.id = raba.turma_id 
+                         inner join tipo_calendario tc on tc.modalidade = {(int)ModalidadeTipoCalendario.FundamentalMedio} and tc.ano_letivo = t.ano_letivo and not tc.excluido
+                         inner join periodo_escolar pe on pe.tipo_calendario_id = tc.id
+                         where raba.aluno_codigo = @codigoAluno 
+                               and length(qdata.DataRegistro) > 0 
+                               and not raba.excluido 
+                               and t.ano_letivo = @anoLetivo
+                               and pe.bimestre = @bimestre
+                               and pe.periodo_inicio::date <= to_date(qdata.DataRegistro,'yyyy-mm-dd') 
+                               and pe.periodo_fim::date >= to_date(qdata.DataRegistro,'yyyy-mm-dd');
+                         select count(pa.id) from plano_aee pa where pa.aluno_codigo = @codigoAluno and not pa.excluido and not situacao in({(int)SituacaoPlanoAEE.Encerrado}, {(int)SituacaoPlanoAEE.EncerradoAutomaticamente});
+                         select count(en.id) from encaminhamento_naapa en  where en.aluno_codigo = @codigoAluno and not en.excluido and not situacao in({(int)SituacaoNAAPA.Encerrado});";
+            using (var mapeamentoEstudante = await database.Conexao.QueryMultipleAsync(query, new { codigoAluno, anoLetivo, bimestre }))
+            {
+                var parecerConclusivoTurmaAnoAnterior = mapeamentoEstudante.ReadFirstOrDefault<ParecerConclusivoAlunoTurmaAnoAnteriorDto>();
+                retorno.TurmaAnoAnterior = parecerConclusivoTurmaAnoAnterior?.Turma();
+                retorno.IdParecerConclusivoAnoAnterior = string.IsNullOrEmpty(parecerConclusivoTurmaAnoAnterior?.DescricaoParecerConclusivo) ? null : parecerConclusivoTurmaAnoAnterior.IdParecerConclusivo;
+                retorno.DescricaoParecerConclusivoAnoAnterior = parecerConclusivoTurmaAnoAnterior?.DescricaoParecerConclusivo;
+                retorno.QdadeBuscasAtivasBimestre = mapeamentoEstudante.ReadFirst<int>();
+                retorno.QdadePlanosAEEAtivos = mapeamentoEstudante.ReadFirst<int>();
+                retorno.QdadeEncaminhamentosNAAPAAtivos = mapeamentoEstudante.ReadFirst<int>();
+            }
+            return retorno;
         }
     }
 }
