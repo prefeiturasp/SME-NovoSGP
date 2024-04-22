@@ -183,7 +183,17 @@ namespace SME.SGP.Dados.Repositorios
                                and pe.periodo_inicio::date <= to_date(qdata.DataRegistro,'yyyy-mm-dd') 
                                and pe.periodo_fim::date >= to_date(qdata.DataRegistro,'yyyy-mm-dd');
                          select count(pa.id) from plano_aee pa where pa.aluno_codigo = @codigoAluno and not pa.excluido and not situacao in({(int)SituacaoPlanoAEE.Encerrado}, {(int)SituacaoPlanoAEE.EncerradoAutomaticamente});
-                         select count(en.id) from encaminhamento_naapa en  where en.aluno_codigo = @codigoAluno and not en.excluido and not situacao in({(int)SituacaoNAAPA.Encerrado});";
+                         select count(en.id) from encaminhamento_naapa en  where en.aluno_codigo = @codigoAluno and not en.excluido and not situacao in({(int)SituacaoNAAPA.Encerrado});
+                         select cca.anotacoes_pedagogicas from conselho_classe_aluno cca 
+                         inner join conselho_classe cc on cc.id = cca.conselho_classe_id 
+                         inner join fechamento_turma ft on ft.id = cc.fechamento_turma_id 
+                         inner join turma t on t.id = ft.turma_id 
+                         left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
+                         where not cca.excluido and not cc.excluido and not ft.excluido 
+                         and cca.aluno_codigo = @codigoAluno
+                         and t.ano_letivo = {(bimestre == 1 ? anoLetivo-1 : anoLetivo)}
+                         and pe.bimestre = {(bimestre == 1 ? 4 : bimestre-1)}
+                         order by cca.id desc;";
             using (var mapeamentoEstudante = await database.Conexao.QueryMultipleAsync(query, new { codigoAluno, anoLetivo, bimestre }))
             {
                 var parecerConclusivoTurmaAnoAnterior = mapeamentoEstudante.ReadFirstOrDefault<ParecerConclusivoAlunoTurmaAnoAnteriorDto>();
@@ -193,6 +203,7 @@ namespace SME.SGP.Dados.Repositorios
                 retorno.QdadeBuscasAtivasBimestre = mapeamentoEstudante.ReadFirst<int>();
                 retorno.QdadePlanosAEEAtivos = mapeamentoEstudante.ReadFirst<int>();
                 retorno.QdadeEncaminhamentosNAAPAAtivos = mapeamentoEstudante.ReadFirst<int>();
+                retorno.AnotacoesPedagogicasBimestreAnterior = mapeamentoEstudante.ReadFirst<string>();
             }
             return retorno;
         }
