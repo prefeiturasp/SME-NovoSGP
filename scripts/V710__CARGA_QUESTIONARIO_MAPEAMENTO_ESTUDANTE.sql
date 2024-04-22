@@ -19,7 +19,7 @@ begin
 		values(questionarioId, 2, 'Turma do ano anterior', '', true, 1, '', NOW(), 'SISTEMA', '0', 6, '', 'TURMA_ANO_ANTERIOR', true);
 
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente, somente_leitura)
-		values(questionarioId, 3, 'Anotações pedagógicas do bimestre anterior', '', true, 2, '', NOW(), 'SISTEMA', '0', 12, '', 'ANOTACOES_PEDAG_BIMESTRE_ANTERIOR', true);
+		values(questionarioId, 3, 'Anotações pedagógicas do bimestre anterior', '', false, 2, '', NOW(), 'SISTEMA', '0', 12, '', 'ANOTACOES_PEDAG_BIMESTRE_ANTERIOR', true);
 	
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente, somente_leitura)
 		values(questionarioId, 4, 'Classificado', '', true, 3, '', NOW(), 'SISTEMA', '0', 4, '', 'CLASSIFICADO', false)
@@ -93,10 +93,10 @@ begin
 		values(questaoId, 2, 'Não', NOW(), 'SISTEMA', '0');		
 		
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente, somente_leitura)
-		values(questionarioId, 16, 'Qual a hipótese de escrita do estudante', '', true, 1, '', NOW(), 'SISTEMA', '0', 6, '', 'HIPOTESE_ESCRITA', true);	
+		values(questionarioId, 16, 'Qual a hipótese de escrita do estudante', '', false, 1, '', NOW(), 'SISTEMA', '0', 6, '', 'HIPOTESE_ESCRITA', true);	
 		
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente, somente_leitura)
-		values(questionarioId, 17, 'Avaliações externas (Prova São Paulo)', '', true, 26, '', NOW(), 'SISTEMA', '0', 12, '', 'AVALIACOES_EXTERNAS_PROVA_SP', true);		
+		values(questionarioId, 17, 'Avaliações externas (Prova São Paulo)', '', false, 26, '', NOW(), 'SISTEMA', '0', 12, '', 'AVALIACOES_EXTERNAS_PROVA_SP', true);		
 		
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente, somente_leitura)
 		values(questionarioId, 18, 'Observações sobre a avaliação processual do estudante', '', true, 18, '', NOW(), 'SISTEMA', '0', 12, '', 'OBS_AVALIACAO_PROCESSUAL', false);			
