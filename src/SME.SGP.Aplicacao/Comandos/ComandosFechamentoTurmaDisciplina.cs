@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
                 await Reprocessar(id, usuario);
         }
 
-        public async Task<IEnumerable<AuditoriaPersistenciaDto>> Salvar(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma, bool componenteSemNota = false)
+        public async Task<IEnumerable<AuditoriaPersistenciaDto>> Salvar(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma, bool componenteSemNota = false, bool processamento = false)
         {
             var listaAuditoria = new List<AuditoriaPersistenciaDto>();
             
@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
                             throw new NegocioException("Justificativa não pode ter mais que " + limite + " caracteres");
                     }
                     
-                    listaAuditoria.Add(await servicoFechamentoTurmaDisciplina.Salvar(fechamentoTurma.Id, fechamentoTurma, componenteSemNota));
+                    listaAuditoria.Add(await servicoFechamentoTurmaDisciplina.Salvar(fechamentoTurma.Id, fechamentoTurma, componenteSemNota, processamento));
                     await RemoverCacheFechamento(fechamentoTurma);
                 }
                 catch (Exception e)
