@@ -2,6 +2,7 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,6 +27,30 @@ namespace SME.SGP.Dados.Repositorios
                         AND bimestre = @bimestre";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<long?>(sql, new { codigoAluno, turmaId, bimestre });
+        }
+
+        public async Task<IEnumerable<long>> ObterIdentificadoresDosMapeamentosDoBimestreAtual()
+        {
+            var sql = @"select me.id
+                        from mapeamento_estudante me 
+                        inner join turma t on t.id = me.turma_id 
+                        where me.bimestre = (select pe.bimestre
+                                  from periodo_escolar pe
+                                  left join tipo_calendario tc on pe.tipo_calendario_id = tc.id 
+                                  where tc.modalidade = @modalidade
+                                  and tc.ano_letivo = @anoLetivo
+                                  and pe.periodo_inicio::date <= @dataReferencia and pe.periodo_fim::date >= @dataReferencia
+                                  and not tc.excluido)
+                        and t.ano_letivo = @anoLetivo";
+
+            var parametro = new
+            {
+                anoLetivo = DateTime.Today.Year,
+                dataReferencia = DateTime.Today,
+                modalidade = (int)ModalidadeTipoCalendario.FundamentalMedio
+            };
+
+            return await database.Conexao.QueryAsync<long>(sql, parametro);
         }
 
         public async Task<MapeamentoEstudante> ObterMapeamentoEstudantePorId(long id)
