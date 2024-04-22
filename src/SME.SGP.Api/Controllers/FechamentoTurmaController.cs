@@ -62,7 +62,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.CP_I, Policy = "Bearer")]
         public async Task<IActionResult> Processar([FromBody] IEnumerable<FechamentoTurmaDisciplinaDto> fechamentoTurma, [FromServices] IComandosFechamentoTurmaDisciplina comandos)
-            => Ok(await comandos.Salvar(fechamentoTurma, true));
+            => Ok(await comandos.Salvar(fechamentoTurma, true, true));
 
         [HttpPost("anotacoes/alunos/")]
         [ProducesResponseType(typeof(AuditoriaPersistenciaDto), 200)]
