@@ -46,6 +46,8 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
             await CriarTipoCalendario(Dominio.ModalidadeTipoCalendario.FundamentalMedio, false);
 
             await CriarTurma(Dominio.Modalidade.Fundamental, ANO_4, false, tipoTurno: 2);
+
+            await CriarPeriodoEscolarCustomizadoQuartoBimestre(true);
         }
     }
 }

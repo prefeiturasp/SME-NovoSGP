@@ -8,5 +8,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<MapeamentoEstudante> ObterMapeamentoEstudantePorId(long id);
         Task<long?> ObterIdentificador(string codigoAluno, long turmaId, int bimestre);
         Task<IEnumerable<string>> ObterCodigoArquivoPorMapeamentoEstudanteId(long id);
+        Task<IEnumerable<long>> ObterIdentificadoresDosMapeamentosDoBimestreAtual();
     }
 }
