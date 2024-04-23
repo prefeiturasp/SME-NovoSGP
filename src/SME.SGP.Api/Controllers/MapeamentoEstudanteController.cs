@@ -66,14 +66,5 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(codigoAluno, turmaId, bimestre));
         }
-
-
-        [HttpGet("sondagem/{turmaCodigo}/{alunoCodigo}")]
-        [ProducesResponseType(typeof(SondagemLPAlunoDto), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterSondagemLPAluno(string turmaCodigo, string alunoCodigo)
-        {
-            return Ok(await mediator.Send(new ObterSondagemLPAlunoQuery(turmaCodigo, alunoCodigo)));
-        }
     }
 }
