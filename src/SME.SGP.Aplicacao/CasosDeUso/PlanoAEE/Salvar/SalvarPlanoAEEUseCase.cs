@@ -1,20 +1,23 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
-using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
 {
     public class SalvarPlanoAEEUseCase : ISalvarPlanoAEEUseCase
     {
         private readonly IMediator mediator;
+        private readonly IUnitOfWork unitOfWork;
 
-        public SalvarPlanoAEEUseCase(IMediator mediator)
+        public SalvarPlanoAEEUseCase(IMediator mediator, IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task<RetornoPlanoAEEDto> Executar(PlanoAEEPersistenciaDto planoAeeDto)
@@ -30,25 +33,40 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             if (aluno.EhNulo())
                 throw new NegocioException(MensagemNegocioAluno.ESTUDANTE_NAO_ENCONTRADO);
 
-            var planoAeePersistidoDto = await mediator.Send(new SalvarPlanoAeeCommand(planoAeeDto, turma.Id, aluno.NomeAluno, aluno.CodigoAluno, aluno.ObterNumeroAlunoChamada()));
+            using var transacao = unitOfWork.IniciarTransacao();
 
-            await mediator.Send(new SalvarPlanoAEETurmaAlunoCommand(planoAeePersistidoDto.PlanoId, aluno.CodigoAluno));
+            try
+            {
+                var planoAeePersistidoDto = await mediator
+                    .Send(new SalvarPlanoAeeCommand(planoAeeDto, turma.Id, aluno.NomeAluno, aluno.CodigoAluno, aluno.ObterNumeroAlunoChamada()));
 
-            await ValidaQuestaoPeriodoEscolarSeEstaNoPeriodoCorreto(planoAeePersistidoDto);
+                await mediator
+                    .Send(new SalvarPlanoAEETurmaAlunoCommand(planoAeePersistidoDto.PlanoId, aluno.CodigoAluno));
 
-            return planoAeePersistidoDto;
+                unitOfWork.PersistirTransacao();
+
+                await ValidaQuestaoPeriodoEscolarSeEstaNoPeriodoCorreto(planoAeePersistidoDto);
+
+                return planoAeePersistidoDto;
+            }
+            catch (Exception ex)
+            {
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível salvar o Plano AEE {planoAeeDto.Id}", LogNivel.Negocio, LogContexto.Geral, ex.Message, rastreamento: ex.StackTrace, innerException: ex.InnerException.ToString()));
+                unitOfWork.Rollback();
+                throw;
+            }
         }
 
         private async Task ValidaQuestaoPeriodoEscolarSeEstaNoPeriodoCorreto(RetornoPlanoAEEDto planoAeePersistidoDto)
         {
             var planoAee = await mediator.Send(new ObterPlanoAEEPorIdQuery(planoAeePersistidoDto.PlanoId));
-            
-            if(planoAee.EhNulo())
+
+            if (planoAee.EhNulo())
                 throw new NegocioException(MensagemNegocioPlanoAee.Plano_aee_nao_encontrado);
 
             var ultimaVersaoPlanoAee = await mediator.Send(new ObterVersaoPlanoAEEPorIdQuery(planoAeePersistidoDto.PlanoVersaoId));
 
-            if(ultimaVersaoPlanoAee.NaoEhNulo() && ultimaVersaoPlanoAee.Numero > 1)
+            if (ultimaVersaoPlanoAee.NaoEhNulo() && ultimaVersaoPlanoAee.Numero > 1)
             {
                 var turma = await mediator.Send(new ObterTurmaPorIdQuery(planoAee.TurmaId));
 
@@ -57,25 +75,23 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
                 var periodoEscolarPlano = await mediator.Send(new ObterPeriodoEscolarAtualPorTurmaQuery(turma, DateTime.Now));
 
-                if(periodoEscolarPlano.EhNulo())
+                if (periodoEscolarPlano.EhNulo())
                     throw new NegocioException(MensagemNegocioPeriodo.PERIODO_ESCOLAR_NAO_ENCONTRADO);
 
                 var respostaQuestoesPlanoAee = await mediator.Send(new ObterRespostasPlanoAEEPorVersaoQuery(ultimaVersaoPlanoAee.Id));
 
-                if(respostaQuestoesPlanoAee.NaoEhNulo() && respostaQuestoesPlanoAee.Any())
+                if (respostaQuestoesPlanoAee.NaoEhNulo() && respostaQuestoesPlanoAee.Any())
                 {
                     var questionarioId = await mediator.Send(new ObterQuestionarioPlanoAEEIdQuery());
                     var questaoPeriodoEscolar = (await mediator.Send(new ObterQuestoesPlanoAEEPorVersaoQuery(questionarioId, ultimaVersaoPlanoAee.Id, turma.CodigoTurma)))?.FirstOrDefault(x => x.TipoQuestao == TipoQuestao.PeriodoEscolar);
 
                     if (questaoPeriodoEscolar.NaoEhNulo())
-                    {                    
+                    {
                         //Obtem resposta da questao Bimestre de vigência do plano
                         var respostaPeriodoEscolar = respostaQuestoesPlanoAee.FirstOrDefault(x => x.QuestaoId == questaoPeriodoEscolar.Id);
 
                         if (respostaPeriodoEscolar.NaoEhNulo() && (long)Convert.ToDouble(respostaPeriodoEscolar.Texto) != periodoEscolarPlano.Id)
-                        {
                             await mediator.Send(new AtualizarPlanoAEERespostaPeriodoEscolarCommand(respostaPeriodoEscolar.Id, periodoEscolarPlano.Id.ToString()));
-                        }
                     }
                 }
             }
