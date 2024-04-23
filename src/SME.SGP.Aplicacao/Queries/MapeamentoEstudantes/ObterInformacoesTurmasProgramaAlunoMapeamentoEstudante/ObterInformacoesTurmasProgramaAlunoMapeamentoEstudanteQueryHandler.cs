@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -27,11 +28,11 @@ namespace SME.SGP.Aplicacao
         private const long SRM = 1030;
         private const long PAEE_COLABORATIVO = 1030;
 
-        private const long Acompanhamento_Pedagogico_Matematica = 1255;
-        private const long Acompanhamento_Pedagogico_Portugues = 1204;
-        private const long Acompanhamento_Leitura = 1304;
-        private const long Reforco_Acompanhamento_Alfabetizacao = 1302;
-        private const long Reforco_Acompanhamento_Ciencias = 1295;
+        private const long ACOMPANHAMENTO_PEDAGOGICO_MATEMATICA = 1255;
+        private const long ACOMPANHAMENTO_PEDAGOGICO_PORTUGUES = 1204;
+        private const long ACOMPANHAMENTO_LEITURA = 1304;
+        private const long REFORCO_ACOMPANHAMENTO_ALFABETIZACAO = 1302;
+        private const long REFORCO_ACOMPANHAMENTO_CIENCIAS = 1295;
 
         public ObterInformacoesTurmasProgramaAlunoMapeamentoEstudanteQueryHandler(IHttpClientFactory httpClientFactory)
         {
@@ -86,11 +87,11 @@ namespace SME.SGP.Aplicacao
                                                                       .Distinct());
 
                 //Fortalecimento de Aprendizagens 
-                retorno.ComponentesFortalecimentoAprendizagens.AddRange(componentesTurmasAluno.Where(cc => new List<long> { Acompanhamento_Pedagogico_Matematica,
-                                                                                                                            Acompanhamento_Pedagogico_Portugues,
-                                                                                                                            Acompanhamento_Leitura,
-                                                                                                                            Reforco_Acompanhamento_Alfabetizacao,
-                                                                                                                            Reforco_Acompanhamento_Ciencias }
+                retorno.ComponentesFortalecimentoAprendizagens.AddRange(componentesTurmasAluno.Where(cc => new List<long> { ACOMPANHAMENTO_PEDAGOGICO_MATEMATICA,
+                                                                                                                            ACOMPANHAMENTO_PEDAGOGICO_PORTUGUES,
+                                                                                                                            ACOMPANHAMENTO_LEITURA,
+                                                                                                                            REFORCO_ACOMPANHAMENTO_ALFABETIZACAO,
+                                                                                                                            REFORCO_ACOMPANHAMENTO_CIENCIAS }
                                                                                     .Contains(cc.codigoComponenteCurricular))
                                                                       .Select(cc => new ComponenteCurricularSimplificadoDto()
                                                                       {
@@ -120,4 +121,16 @@ namespace SME.SGP.Aplicacao
     }
 
     public record ComponenteTurmaAlunoDto(string codigoAluno, long codigoTurma, long codigoComponenteCurricular, string nomeComponenteCurricular);
+
+    public static class ListExtension
+    {
+        public static string SerializarJsonTipoQuestaoComboMultiplaEscolhaDinamico(this List<ComponenteCurricularSimplificadoDto> source)
+        {
+            var lista = source.PossuiRegistros()
+                             ? source
+                             : new List<ComponenteCurricularSimplificadoDto>() { new() { Id = 0, Descricao = "Não"} };
+
+            return JsonConvert.SerializeObject(lista.Select(cc => new { index = cc.Id, value = cc.Descricao }));
+        }
+    }
 }
