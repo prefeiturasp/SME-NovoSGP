@@ -22,11 +22,9 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class MapeamentoEstudanteController : ControllerBase
     {
-        private readonly IMediator mediator;
 
-        public MapeamentoEstudanteController(IMediator mediator)
+        public MapeamentoEstudanteController()
         {
-            this.mediator = mediator;
         }
 
 
