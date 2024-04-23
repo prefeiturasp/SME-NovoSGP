@@ -43,5 +43,9 @@ namespace SME.SGP.Dados.Repositorios
                 }, new { mapeamentoEstudanteId });
         }
 
+        public Task<long> ObterIdQuestaoPorNomeComponenteQuestionario(long questionarioId, string nomeComponente)
+        => database.Conexao.QueryFirstOrDefaultAsync<long>("select id from questao where nome_componente = @nomeComponente and questionario_id = @questionarioId", 
+                                            new { nomeComponente, questionarioId });
+        
     }
 }
