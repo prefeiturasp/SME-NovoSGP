@@ -30,13 +30,12 @@ namespace SME.SGP.Aplicacao
         public const string PARTICIPA_MAIS_EDUCACAO = "PARTICIPA_MAIS_EDUCACAO";
         public const string PROJETO_FORTALECIMENTO_APRENDIZAGENS = "PROJETO_FORTALECIMENTO_APRENDIZAGENS";
         public const string QDADE_REGISTROS_BUSCA_ATIVA = "QDADE_REGISTROS_BUSCA_ATIVA";
-
         public const string MIGRANTE = "MIGRANTE";
         public const string PROGRAMA_SAO_PAULO_INTEGRAL = "PROGRAMA_SAO_PAULO_INTEGRAL";
+        public const string FREQUENCIA = "FREQUENCIA";
         public const string HIPOTESE_ESCRITA = "HIPOTESE_ESCRITA";
         public const string AVALIACOES_EXTERNAS_PROVA_SP = "AVALIACOES_EXTERNAS_PROVA_SP";
-        public const string FREQUENCIA = "FREQUENCIA";
-
+        
 
         public ObterRespostasAtualizadasQuestionarioMapeamentoEstudanteQueryHandler(IMediator mediator,         
                                                                                     IRepositorioQuestaoMapeamentoEstudante repositorioQuestao,
@@ -141,8 +140,27 @@ namespace SME.SGP.Aplicacao
                         : (await repositorioResposta.ObterIdOpcaoRespostaPorNomeComponenteQuestao(PROGRAMA_SAO_PAULO_INTEGRAL, "Não")).ToString()
             }); ;
 
+            var dadosEstudante = await mediator.Send(new ObterAlunoEnderecoEolQuery(request.CodigoAluno));
+            questao = await repositorioQuestao.ObterIdQuestaoPorNomeComponenteQuestionario(request.QuestionarioId, MIGRANTE);
+            retorno.Add(new RespostaQuestaoMapeamentoEstudanteDto()
+            {
+                QuestaoId = questao,
+                Texto = dadosEstudante.EhImigrante
+                        ? (await repositorioResposta.ObterIdOpcaoRespostaPorNomeComponenteQuestao(MIGRANTE, "Sim")).ToString()
+                        : (await repositorioResposta.ObterIdOpcaoRespostaPorNomeComponenteQuestao(MIGRANTE, "Não")).ToString()
+            });
 
-            return null;
+            var freqGeralEstudante = await mediator.Send(new ObterConsultaFrequenciaGeralAlunoQuery(request.CodigoAluno, turma.CodigoTurma));
+            questao = await repositorioQuestao.ObterIdQuestaoPorNomeComponenteQuestionario(request.QuestionarioId, FREQUENCIA);
+            retorno.Add(new RespostaQuestaoMapeamentoEstudanteDto()
+            {
+                QuestaoId = questao,
+                Texto = double.Parse(freqGeralEstudante.Replace("%", "").Replace(",", ".")) >= 75
+                        ? (await repositorioResposta.ObterIdOpcaoRespostaPorNomeComponenteQuestao(FREQUENCIA, "Frequente")).ToString()
+                        : (await repositorioResposta.ObterIdOpcaoRespostaPorNomeComponenteQuestao(FREQUENCIA, "Não Frequente")).ToString()
+            });
+
+            return retorno;
         }
 
     }
