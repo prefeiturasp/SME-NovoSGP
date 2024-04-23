@@ -1,14 +1,17 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.MapeamentoEstudante;
+using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Dtos.MapeamentoEstudantes;
+using SME.SGP.Infra.Dtos.Sondagem;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -19,6 +22,14 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class MapeamentoEstudanteController : ControllerBase
     {
+        private readonly IMediator mediator;
+
+        public MapeamentoEstudanteController(IMediator mediator)
+        {
+            this.mediator = mediator;
+        }
+
+
         [HttpPost()]
         [ProducesResponseType(typeof(IEnumerable<ResultadoMapeamentoEstudanteDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -54,6 +65,15 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterIdentificador(string codigoAluno, long turmaId, int bimestre, [FromServices] IObterIdentificadorMapeamentoEstudanteUseCase useCase)
         {
             return Ok(await useCase.Executar(codigoAluno, turmaId, bimestre));
+        }
+
+
+        [HttpGet("sondagem/{turmaCodigo}/{alunoCodigo}")]
+        [ProducesResponseType(typeof(SondagemLPAlunoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterSondagemLPAluno(string turmaCodigo, string alunoCodigo)
+        {
+            return Ok(await mediator.Send(new ObterSondagemLPAlunoQuery(turmaCodigo, alunoCodigo)));
         }
     }
 }

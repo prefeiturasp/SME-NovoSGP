@@ -6,6 +6,7 @@ using Polly.Extensions.Http;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Consts;
 using SME.SGP.Infra.Mensageria;
 using System;
 using System.Net;
@@ -32,6 +33,16 @@ namespace SME.SGP.IoC
                 if (configuration.GetSection("HttpClientTimeoutSecond").Value.NaoEhNulo())
                     c.Timeout = TimeSpan.FromSeconds(double.Parse(configuration.GetSection("HttpClientTimeoutSecond").Value));
 
+            }).AddPolicyHandler(GetRetryPolicy());
+
+            services.AddHttpClient(name: ServicoSondagemConstants.Servico, c =>
+            {
+                c.BaseAddress = new Uri(configuration.GetSection("UrlApiSondagem").Value);
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+                c.DefaultRequestHeaders.Add("x-sondagem-api-key", configuration.GetSection("ChaveIntegracaoSondagemApi").Value);
+                
+                if (configuration.GetSection("HttpClientTimeoutSecond").Value.NaoEhNulo())
+                    c.Timeout = TimeSpan.FromSeconds(double.Parse(configuration.GetSection("HttpClientTimeoutSecond").Value));
             }).AddPolicyHandler(GetRetryPolicy());
 
             services.AddHttpClient<IServicoAcompanhamentoEscolar, ServicoAcompanhamentoEscolar>(c =>
