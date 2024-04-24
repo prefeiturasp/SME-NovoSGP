@@ -51,9 +51,11 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<QuestaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ME_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterQuestionario(long questionarioId, [FromQuery] long? mapeamentoEstudanteId, [FromServices] IObterQuestionarioMapeamentoEstudanteUseCase useCase)
+        public async Task<IActionResult> ObterQuestionario(long questionarioId, [FromQuery] FiltroQuestoesQuestionarioMapeamentoEstudanteDto filtro, 
+                                                           [FromServices] IObterQuestionarioMapeamentoEstudanteUseCase useCase)
         {
-            return Ok(await useCase.Executar(questionarioId, mapeamentoEstudanteId));
+            filtro.QuestionarioId = questionarioId;
+            return Ok(await useCase.Executar(filtro));
         }
 
         [HttpGet("alunos/{codigoAluno}/turmas/{turmaId}/bimestres/{bimestre}/identificador")]

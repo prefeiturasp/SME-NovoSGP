@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Constantes;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.MapeamentoEstudante;
 using SME.SGP.Dominio;
@@ -40,67 +41,64 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
         {
             await CriarDadosBase();
             var useCase = ServiceProvider.GetService<IObterQuestionarioMapeamentoEstudanteUseCase>();
-            var retorno = await useCase.Executar(1, null);
+            var retorno = await useCase.Executar(new FiltroQuestoesQuestionarioMapeamentoEstudanteDto() { QuestionarioId = 1, MapeamentoEstudanteId = 1});
             retorno.ShouldNotBeNull();
-            retorno.Count().ShouldBe(20);
-            retorno.Any(q => q.NomeComponente.Equals(NomeComponenteQuestao.PARECER_CONCLUSIVO_ANO_ANTERIOR) 
+            retorno.Count().ShouldBe(19);
+            retorno.Any(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PARECER_CONCLUSIVO_ANO_ANTERIOR) 
                              && q.TipoQuestao.Equals(TipoQuestao.ComboDinamico)
                              && q.Obrigatorio).ShouldBeTrue();
-            retorno.Any(q => q.NomeComponente.Equals(NomeComponenteQuestao.TURMA_ANO_ANTERIOR)
+            retorno.Any(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.TURMA_ANO_ANTERIOR)
                              && q.TipoQuestao.Equals(TipoQuestao.Frase)
                              && q.Obrigatorio).ShouldBeTrue();
-            retorno.Any(q => q.NomeComponente.Equals(NomeComponenteQuestao.ANOTACOES_PEDAG_BIMESTRE_ANTERIOR)
+            retorno.Any(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.ANOTACOES_PEDAG_BIMESTRE_ANTERIOR)
                              && q.TipoQuestao.Equals(TipoQuestao.Texto)
                              && !q.Obrigatorio).ShouldBeTrue();
-            retorno.Any(q => q.NomeComponente.Equals(NomeComponenteQuestao.CLASSIFICADO)
+            retorno.Any(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.DISTORCAO_IDADE_ANO_SERIE)
                              && q.TipoQuestao.Equals(TipoQuestao.Radio)
                              && q.Obrigatorio).ShouldBeTrue();
-            retorno.Any(q => q.NomeComponente.Equals(NomeComponenteQuestao.RECLASSIFICADO)
+            retorno.Any(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.MIGRANTE)
                              && q.TipoQuestao.Equals(TipoQuestao.Radio)
                              && q.Obrigatorio).ShouldBeTrue();
-            retorno.Any(q => q.NomeComponente.Equals(NomeComponenteQuestao.MIGRANTE)
+            retorno.Any(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.ACOMPANHADO_SRM_CEFAI)
                              && q.TipoQuestao.Equals(TipoQuestao.Radio)
                              && q.Obrigatorio).ShouldBeTrue();
-            retorno.Any(q => q.NomeComponente.Equals(NomeComponenteQuestao.ACOMPANHADO_SRM_CEFAI)
+            retorno.Any(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.POSSUI_PLANO_AEE)
                              && q.TipoQuestao.Equals(TipoQuestao.Radio)
                              && q.Obrigatorio).ShouldBeTrue();
-            retorno.Any(q => q.NomeComponente.Equals(NomeComponenteQuestao.POSSUI_PLANO_AEE)
+            retorno.Any(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.ACOMPANHADO_NAAPA)
                              && q.TipoQuestao.Equals(TipoQuestao.Radio)
                              && q.Obrigatorio).ShouldBeTrue();
-            retorno.Any(q => q.NomeComponente.Equals(NomeComponenteQuestao.ACOMPANHADO_NAAPA)
-                             && q.TipoQuestao.Equals(TipoQuestao.Radio)
-                             && q.Obrigatorio).ShouldBeTrue();
-            retorno.Any(q => q.NomeComponente.Equals(NomeComponenteQuestao.ACOES_REDE_APOIO)
+            retorno.Any(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.ACOES_REDE_APOIO)
                              && q.TipoQuestao.Equals(TipoQuestao.EditorTexto)
                              && !q.Obrigatorio).ShouldBeTrue();
-            retorno.Any(q => q.NomeComponente.Equals(NomeComponenteQuestao.ACOES_RECUPERACAO_CONTINUA)
+            retorno.Any(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.ACOES_RECUPERACAO_CONTINUA)
                              && q.TipoQuestao.Equals(TipoQuestao.EditorTexto)
                              && !q.Obrigatorio).ShouldBeTrue();
-            retorno.Any(q => q.NomeComponente.Equals(NomeComponenteQuestao.PARTICIPA_PAP)
+            retorno.Any(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PARTICIPA_PAP)
                              && q.TipoQuestao.Equals(TipoQuestao.ComboMultiplaEscolhaDinamico)
                              && q.Obrigatorio).ShouldBeTrue();
-            retorno.Any(q => q.NomeComponente.Equals(NomeComponenteQuestao.PARTICIPA_MAIS_EDUCACAO)
+            retorno.Any(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PARTICIPA_MAIS_EDUCACAO)
                              && q.TipoQuestao.Equals(TipoQuestao.ComboMultiplaEscolhaDinamico)
                              && q.Obrigatorio).ShouldBeTrue();
-            retorno.Any(q => q.NomeComponente.Equals(NomeComponenteQuestao.PROJETO_FORTALECIMENTO_APRENDIZAGENS)
+            retorno.Any(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PROJETO_FORTALECIMENTO_APRENDIZAGENS)
                              && q.TipoQuestao.Equals(TipoQuestao.ComboMultiplaEscolhaDinamico)
                              && q.Obrigatorio).ShouldBeTrue();
-            retorno.Any(q => q.NomeComponente.Equals(NomeComponenteQuestao.PROGRAMA_SAO_PAULO_INTEGRAL)
+            retorno.Any(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PROGRAMA_SAO_PAULO_INTEGRAL)
                              && q.TipoQuestao.Equals(TipoQuestao.Radio)
                              && q.Obrigatorio).ShouldBeTrue();
-            retorno.Any(q => q.NomeComponente.Equals(NomeComponenteQuestao.HIPOTESE_ESCRITA)
+            retorno.Any(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.HIPOTESE_ESCRITA)
                              && q.TipoQuestao.Equals(TipoQuestao.Frase)
                              && !q.Obrigatorio).ShouldBeTrue();
-            retorno.Any(q => q.NomeComponente.Equals(NomeComponenteQuestao.AVALIACOES_EXTERNAS_PROVA_SP)
+            retorno.Any(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.AVALIACOES_EXTERNAS_PROVA_SP)
                              && q.TipoQuestao.Equals(TipoQuestao.AvaliacoesExternasProvaSP)
                              && !q.Obrigatorio).ShouldBeTrue();
-            retorno.Any(q => q.NomeComponente.Equals(NomeComponenteQuestao.OBS_AVALIACAO_PROCESSUAL)
+            retorno.Any(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.OBS_AVALIACAO_PROCESSUAL)
                              && q.TipoQuestao.Equals(TipoQuestao.EditorTexto)
                              && q.Obrigatorio).ShouldBeTrue();
-            retorno.Any(q => q.NomeComponente.Equals(NomeComponenteQuestao.FREQUENCIA)
+            retorno.Any(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.FREQUENCIA)
                              && q.TipoQuestao.Equals(TipoQuestao.Combo)
                              && q.Obrigatorio).ShouldBeTrue();
-            retorno.Any(q => q.NomeComponente.Equals(NomeComponenteQuestao.QDADE_REGISTROS_BUSCA_ATIVA)
+            retorno.Any(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.QDADE_REGISTROS_BUSCA_ATIVA)
                              && q.TipoQuestao.Equals(TipoQuestao.Numerico)
                              && q.Obrigatorio).ShouldBeTrue();
 

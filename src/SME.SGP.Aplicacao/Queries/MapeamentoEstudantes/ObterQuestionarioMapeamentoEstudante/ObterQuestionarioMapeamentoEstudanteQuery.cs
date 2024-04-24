@@ -9,14 +9,20 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterQuestionarioMapeamentoEstudanteQuery : IRequest<IEnumerable<QuestaoDto>>
     {
-        public ObterQuestionarioMapeamentoEstudanteQuery(long questionarioId, long? mapeamentoEstudanteId)
+        public ObterQuestionarioMapeamentoEstudanteQuery(FiltroQuestoesQuestionarioMapeamentoEstudanteDto filtro)
         {
-            QuestionarioId = questionarioId;
-            MapeamentoEstudanteId = mapeamentoEstudanteId;
+            QuestionarioId = filtro.QuestionarioId;
+            MapeamentoEstudanteId = filtro.MapeamentoEstudanteId;
+            CodigoAluno = filtro.CodigoAluno;
+            TurmaId = filtro.TurmaId;
+            Bimestre = filtro.Bimestre;
         }
 
-        public long QuestionarioId { get; }
-        public long? MapeamentoEstudanteId { get; }
+        public long QuestionarioId { get; set; }
+        public long? MapeamentoEstudanteId { get; set; }
+        public string CodigoAluno { get; set; }
+        public long? TurmaId { get; set; }
+        public int? Bimestre { get; set; }
     }
 
     public class ObterQuestionarioMapeamentoEstudanteQueryValidator : AbstractValidator<ObterQuestionarioMapeamentoEstudanteQuery>
@@ -25,7 +31,23 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(c => c.QuestionarioId)
             .NotEmpty()
-            .WithMessage("O ID do questionário deve ser informado para consulta do questionário de registro de ação.");
+            .WithMessage("Os Id do questionário deve ser informado para consulta das questões de mapeamento de estudante.");
+
+            RuleFor(x => x.CodigoAluno)
+           .NotEmpty().When(x => !x.MapeamentoEstudanteId.HasValue)
+           .WithMessage("O campo CodigoAluno é obrigatório quando QuestionarioId estiver vazio para consulta das questões de mapeamento de estudante.");
+
+            RuleFor(x => x.TurmaId)
+                .NotEmpty().When(x => !x.MapeamentoEstudanteId.HasValue)
+                .WithMessage("O campo TurmaId é obrigatório quando QuestionarioId estiver vazio para consulta das questões de mapeamento de estudante.");
+
+            RuleFor(x => x.Bimestre)
+                .NotEmpty().When(x => !x.MapeamentoEstudanteId.HasValue)
+                .WithMessage("O campo Bimestre é obrigatório quando QuestionarioId estiver vazio para consulta das questões de mapeamento de estudante.");
+
+            RuleFor(x => x.MapeamentoEstudanteId)
+                .NotEmpty().When(x => string.IsNullOrEmpty(x.CodigoAluno) && !x.TurmaId.HasValue && !x.Bimestre.HasValue)
+                .WithMessage("O campo MapeamentoEstudanteId é obrigatório quando CodigoAluno, TurmaId e Bimestre estiverem vazios para consulta das questões de mapeamento de estudante.");
         }
     }
 }

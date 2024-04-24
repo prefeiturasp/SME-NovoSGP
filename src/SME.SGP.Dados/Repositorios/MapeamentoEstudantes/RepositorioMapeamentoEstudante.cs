@@ -203,7 +203,7 @@ namespace SME.SGP.Dados.Repositorios
                 retorno.QdadeBuscasAtivasBimestre = mapeamentoEstudante.ReadFirst<int>();
                 retorno.QdadePlanosAEEAtivos = mapeamentoEstudante.ReadFirst<int>();
                 retorno.QdadeEncaminhamentosNAAPAAtivos = mapeamentoEstudante.ReadFirst<int>();
-                retorno.AnotacoesPedagogicasBimestreAnterior = mapeamentoEstudante.ReadFirst<string>();
+                retorno.AnotacoesPedagogicasBimestreAnterior = mapeamentoEstudante.ReadFirstOrDefault<string>();
             }
             return retorno;
         }
