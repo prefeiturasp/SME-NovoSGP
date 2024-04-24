@@ -1,14 +1,17 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.MapeamentoEstudante;
+using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Dtos.MapeamentoEstudantes;
+using SME.SGP.Infra.Dtos.Sondagem;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -19,6 +22,12 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class MapeamentoEstudanteController : ControllerBase
     {
+
+        public MapeamentoEstudanteController()
+        {
+        }
+
+
         [HttpPost()]
         [ProducesResponseType(typeof(IEnumerable<ResultadoMapeamentoEstudanteDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
