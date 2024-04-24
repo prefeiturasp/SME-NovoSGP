@@ -59,7 +59,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
             await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
             {
                 QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.PARECER_CONCLUSIVO_ANO_ANTERIOR)).Value,
-                Texto = "{'index': '1', 'value': 'Promovido'}",
+                Texto = "{\"index\":\"1\",\"value\":\"Promovido\"}",
                 RespostaId = null,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
@@ -154,7 +154,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
             await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
             {
                 QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.PARTICIPA_PAP)).Value,
-                Texto = "[{'index': '1663', 'value': '1663 RECUPERACAO PARALELA AUTORAL PORTUGUES'}, {'index': '1664', 'value': '1664 RECUPERACAO PARALELA AUTORAL MATEMATICA'}]",
+                Texto = "[{\"index\":\"1663\",\"value\":\"1663 RECUPERACAO PARALELA AUTORAL PORTUGUES\"}, {\"index\":\"1664\",\"value\":\"1664 RECUPERACAO PARALELA AUTORAL MATEMATICA\"}]",
                 RespostaId = null,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
@@ -163,7 +163,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
             await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
             {
                 QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.PARTICIPA_MAIS_EDUCACAO)).Value,
-                Texto = "[{'index': '1', 'value': 'XADREZ'}, {'index': '2', 'value': 'FUTEBOL'}]",
+                Texto = "[{\"index\":\"1\",\"value\":\"XADREZ\"}, {\"index\":\"2\",\"value\":\"FUTEBOL\"}]",
                 RespostaId = null,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
@@ -172,7 +172,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
             await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
             {
                 QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.PROJETO_FORTALECIMENTO_APRENDIZAGENS)).Value,
-                Texto = "[{'index': '1255', 'value': '1255 Acompanhamento Pedagógico Matemática'}, {'index': '1204', 'value': '1204 Acompanhamento Pedagógico Português'}]",
+                Texto = "[{\"index\":\"1255\",\"value\":\"1255 Acompanhamento Pedagógico Matemática\"}, {\"index\":\"1204\",\"value\":\"1204 Acompanhamento Pedagógico Português\"}]",
                 RespostaId = null,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
@@ -200,7 +200,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
             await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
             {
                 QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.AVALIACOES_EXTERNAS_PROVA_SP)).Value,
-                Texto = "[{'areaconhecimento': 'Ciências da Natureza', 'proficiencia': 95.5, 'nivel': 'Abaixo do básico'}, {'areaconhecimento': 'Ciências Humanas', 'proficiencia': 179.5, 'nivel': 'Básico'}]",
+                Texto = "[{\"areaconhecimento\":\"Ciências da Natureza\",\"proficiencia\": 95.5,\"nivel\":\"Abaixo do básico\"}, {\"areaconhecimento\":\"Ciências Humanas\",\"proficiencia\": 179.5,\"nivel\":\"Básico\"}]",
                 RespostaId = null,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,

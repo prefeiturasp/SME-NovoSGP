@@ -89,7 +89,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
             respostaMapeamento.Count().ShouldBe(19);
             respostaMapeamento.Any(a => a.QuestaoMapeamentoEstudanteId == questaoMapeamento.Where(q => q.QuestaoId ==
                                                                                                        Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PARECER_CONCLUSIVO_ANO_ANTERIOR)).Id).FirstOrDefault().Id
-                                          && a.Texto.Equals("{'index': '1', 'value': 'Promovido'}")).ShouldBeTrue();
+                                          && a.Texto.Equals("{\"index\":\"1\",\"value\":\"Promovido\"}")).ShouldBeTrue();
             
             respostaMapeamento.Any(a => a.QuestaoMapeamentoEstudanteId == questaoMapeamento.Where(q => q.QuestaoId ==
                                                                                                        Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.TURMA_ANO_ANTERIOR)).Id).FirstOrDefault().Id
@@ -110,11 +110,11 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
 
             respostaMapeamento.Any(a => a.QuestaoMapeamentoEstudanteId == questaoMapeamento.Where(q => q.QuestaoId ==
                                                                                                        Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PARTICIPA_PAP)).Id).FirstOrDefault().Id
-                                          && a.Texto.Equals("[{'index': '1663', 'value': '1663 RECUPERACAO PARALELA AUTORAL PORTUGUES'}, {'index': '1664', 'value': '1664 RECUPERACAO PARALELA AUTORAL MATEMATICA'}]")).ShouldBeTrue();
+                                          && a.Texto.Equals("[{\"index\":\"1663\",\"value\":\"1663 RECUPERACAO PARALELA AUTORAL PORTUGUES\"}, {\"index\":\"1664\",\"value\":\"1664 RECUPERACAO PARALELA AUTORAL MATEMATICA\"}]")).ShouldBeTrue();
 
             respostaMapeamento.Any(a => a.QuestaoMapeamentoEstudanteId == questaoMapeamento.Where(q => q.QuestaoId ==
                                                                                                        Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.AVALIACOES_EXTERNAS_PROVA_SP)).Id).FirstOrDefault().Id
-                                          && a.Texto.Equals("[{'areaconhecimento': 'Ciências da Natureza', 'proficiencia': 95.5, 'nivel': 'Abaixo do básico'}, {'areaconhecimento': 'Ciências Humanas', 'proficiencia': 179.5, 'nivel': 'Básico'}]")).ShouldBeTrue();
+                                          && a.Texto.Equals("[{\"areaconhecimento\":\"Ciências da Natureza\",\"proficiencia\": 95.5,\"nivel\":\"Abaixo do básico\"}, {\"areaconhecimento\":\"Ciências Humanas\",\"proficiencia\": 179.5,\"nivel\":\"Básico\"}]")).ShouldBeTrue();
 
             respostaMapeamento.Any(a => a.QuestaoMapeamentoEstudanteId == questaoMapeamento.Where(q => q.QuestaoId ==
                                                                                                        Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.HIPOTESE_ESCRITA)).Id).FirstOrDefault().Id
@@ -177,7 +177,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
             respostaMapeamento.Count().ShouldBe(19);
             respostaMapeamento.Any(a => a.QuestaoMapeamentoEstudanteId == questaoMapeamento.Where(q => q.QuestaoId ==
                                                                                                        Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PARECER_CONCLUSIVO_ANO_ANTERIOR)).Id).FirstOrDefault().Id
-                                          && a.Texto.Equals("{'index': '2', 'value': 'Retido por frequência'}")).ShouldBeTrue();
+                                          && a.Texto.Equals("{\"index\":\"2\",\"value\":\"Retido por frequência\"}")).ShouldBeTrue();
 
             respostaMapeamento.Any(a => a.QuestaoMapeamentoEstudanteId == questaoMapeamento.Where(q => q.QuestaoId ==
                                                                                                        Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.TURMA_ANO_ANTERIOR)).Id).FirstOrDefault().Id
@@ -207,11 +207,11 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
 
             respostaMapeamento.Any(a => a.QuestaoMapeamentoEstudanteId == questaoMapeamento.Where(q => q.QuestaoId ==
                                                                                                        Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PARTICIPA_PAP)).Id).FirstOrDefault().Id
-                                          && a.Texto.Equals("[{'index': '1663', 'value': '1663 RECUPERACAO PARALELA AUTORAL PORTUGUES'}, {'index': '1664', 'value': '1664 RECUPERACAO PARALELA AUTORAL MATEMATICA'}]")).ShouldBeTrue();
+                                          && a.Texto.Equals("[{\"index\":\"1663\",\"value\":\"1663 RECUPERACAO PARALELA AUTORAL PORTUGUES\"}, {\"index\":\"1664\",\"value\":\"1664 RECUPERACAO PARALELA AUTORAL MATEMATICA\"}]")).ShouldBeTrue();
 
             respostaMapeamento.Any(a => a.QuestaoMapeamentoEstudanteId == questaoMapeamento.Where(q => q.QuestaoId ==
                                                                                                        Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.AVALIACOES_EXTERNAS_PROVA_SP)).Id).FirstOrDefault().Id
-                                          && a.Texto.Equals("[{'areaconhecimento': 'Ciências da Natureza', 'proficiencia': 80.5, 'nivel': 'Abaixo do básico'}]")).ShouldBeTrue();
+                                          && a.Texto.Equals("[{\"areaconhecimento\":\"Ciências da Natureza\",\"proficiencia\": 80.5,\"nivel\":\"Abaixo do básico\"}]")).ShouldBeTrue();
 
             respostaMapeamento.Any(a => a.QuestaoMapeamentoEstudanteId == questaoMapeamento.Where(q => q.QuestaoId ==
                                                                                                        Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.HIPOTESE_ESCRITA)).Id).FirstOrDefault().Id
@@ -243,7 +243,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
                 switch (nomeComponenteQuestao)
                 {
                     case NomesComponentesMapeamentoEstudante.PARECER_CONCLUSIVO_ANO_ANTERIOR:
-                        questao.Resposta = "{'index': '2', 'value': 'Retido por frequência'}";
+                        questao.Resposta = "{\"index\":\"2\",\"value\":\"Retido por frequência\"}";
                         break;
                     case NomesComponentesMapeamentoEstudante.TURMA_ANO_ANTERIOR:
                         questao.Resposta = "EF-5B";
@@ -256,7 +256,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
                         questao.Resposta = "OBS SOBRE A AVALIAÇÃO PROCESSUAL DO ESTUDANTE ALTERADO";
                         break;
                     case NomesComponentesMapeamentoEstudante.AVALIACOES_EXTERNAS_PROVA_SP:
-                        questao.Resposta = "[{'areaconhecimento': 'Ciências da Natureza', 'proficiencia': 80.5, 'nivel': 'Abaixo do básico'}]";
+                        questao.Resposta = "[{\"areaconhecimento\":\"Ciências da Natureza\",\"proficiencia\": 80.5,\"nivel\":\"Abaixo do básico\"}]";
                         break;
                     case NomesComponentesMapeamentoEstudante.PROGRAMA_SAO_PAULO_INTEGRAL:
                         questao.Resposta = OpcoesResposta.Where(q => q.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PROGRAMA_SAO_PAULO_INTEGRAL)).Id
@@ -288,7 +288,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
                             new ()
                             {
                                 QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PARECER_CONCLUSIVO_ANO_ANTERIOR)).Id,
-                                Resposta = "{'index': '1', 'value': 'Promovido'}",
+                                Resposta = "{\"index\":\"1\",\"value\":\"Promovido\"}",
                                 TipoQuestao = TipoQuestao.ComboDinamico
                             },
                             new ()
@@ -353,19 +353,19 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
                             new ()
                             {
                                 QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PARTICIPA_PAP)).Id,
-                                Resposta = "[{'index': '1663', 'value': '1663 RECUPERACAO PARALELA AUTORAL PORTUGUES'}, {'index': '1664', 'value': '1664 RECUPERACAO PARALELA AUTORAL MATEMATICA'}]",
+                                Resposta = "[{\"index\":\"1663\",\"value\":\"1663 RECUPERACAO PARALELA AUTORAL PORTUGUES\"}, {\"index\":\"1664\",\"value\":\"1664 RECUPERACAO PARALELA AUTORAL MATEMATICA\"}]",
                                 TipoQuestao = TipoQuestao.ComboMultiplaEscolhaDinamico
                             },
                             new ()
                             {
                                 QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PARTICIPA_MAIS_EDUCACAO)).Id,
-                                Resposta = "[{'index': '1', 'value': 'XADREZ'}, {'index': '2', 'value': 'FUTEBOL'}]",
+                                Resposta = "[{\"index\":\"1\",\"value\":\"XADREZ\"}, {\"index\":\"2\",\"value\":\"FUTEBOL\"}]",
                                 TipoQuestao = TipoQuestao.ComboMultiplaEscolhaDinamico
                             },
                             new ()
                             {
                                 QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PROJETO_FORTALECIMENTO_APRENDIZAGENS)).Id,
-                                Resposta = "[{'index': '1255', 'value': '1255 Acompanhamento Pedagógico Matemática'}, {'index': '1204', 'value': '1204 Acompanhamento Pedagógico Português'}]",
+                                Resposta = "[{\"index\":\"1255\",\"value\":\"1255 Acompanhamento Pedagógico Matemática\"}, {\"index\":\"1204\",\"value\":\"1204 Acompanhamento Pedagógico Português\"}]",
                                 TipoQuestao = TipoQuestao.ComboMultiplaEscolhaDinamico
                             },
                             new ()
@@ -384,7 +384,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
                             new ()
                             {
                                 QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.AVALIACOES_EXTERNAS_PROVA_SP)).Id,
-                                Resposta = "[{'areaconhecimento': 'Ciências da Natureza', 'proficiencia': 95.5, 'nivel': 'Abaixo do básico'}, {'areaconhecimento': 'Ciências Humanas', 'proficiencia': 179.5, 'nivel': 'Básico'}]",
+                                Resposta = "[{\"areaconhecimento\":\"Ciências da Natureza\",\"proficiencia\": 95.5,\"nivel\":\"Abaixo do básico\"}, {\"areaconhecimento\":\"Ciências Humanas\",\"proficiencia\": 179.5,\"nivel\":\"Básico\"}]",
                                 TipoQuestao = TipoQuestao.ComboMultiplaEscolhaDinamico
                             },
                             new ()

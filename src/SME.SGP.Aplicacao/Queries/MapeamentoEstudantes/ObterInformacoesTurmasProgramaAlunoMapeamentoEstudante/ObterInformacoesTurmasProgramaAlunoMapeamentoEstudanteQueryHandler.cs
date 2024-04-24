@@ -130,7 +130,7 @@ namespace SME.SGP.Aplicacao
                              ? source
                              : new List<ComponenteCurricularSimplificadoDto>() { new() { Id = 0, Descricao = "Não"} };
 
-            return JsonConvert.SerializeObject(lista.Select(cc => new { index = cc.Id, value = cc.Descricao }));
+            return JsonConvert.SerializeObject(lista.Select(cc => new { index = cc.Id.ToString(), value = cc.Descricao }));
         }
     }
 }

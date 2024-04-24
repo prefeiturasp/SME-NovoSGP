@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Constantes;
+using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
@@ -42,7 +43,7 @@ namespace SME.SGP.Aplicacao
                 retorno.Add(new RespostaQuestaoMapeamentoEstudanteDto()
                 {
                     QuestaoId = questao,
-                    Texto = JsonConvert.SerializeObject(new { index = informacoesSGP.IdParecerConclusivoAnoAnterior, 
+                    Texto = JsonConvert.SerializeObject(new { index = informacoesSGP.IdParecerConclusivoAnoAnterior.ToString(), 
                                                               value = informacoesSGP.DescricaoParecerConclusivoAnoAnterior })
                 });
 
@@ -129,11 +130,12 @@ namespace SME.SGP.Aplicacao
                              : (await repositorioResposta.ObterIdOpcaoRespostaPorNomeComponenteQuestao(NomesComponentesMapeamentoEstudante.PROGRAMA_SAO_PAULO_INTEGRAL, "Não"))
             });
 
+            var sondagem = await mediator.Send(new ObterSondagemLPAlunoQuery(turma.CodigoTurma, request.CodigoAluno));
             questao = await repositorioQuestao.ObterIdQuestaoPorNomeComponenteQuestionario(request.QuestionarioId, NomesComponentesMapeamentoEstudante.HIPOTESE_ESCRITA);
             retorno.Add(new RespostaQuestaoMapeamentoEstudanteDto()
             {
                 QuestaoId = questao,
-                Texto = null
+                Texto = sondagem.ObterHipoteseEscrita(request.Bimestre)
             });
 
             questao = await repositorioQuestao.ObterIdQuestaoPorNomeComponenteQuestionario(request.QuestionarioId, NomesComponentesMapeamentoEstudante.AVALIACOES_EXTERNAS_PROVA_SP);
