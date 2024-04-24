@@ -9,6 +9,6 @@ namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso.MapeamentoEstudante
 {
     public interface IObterQuestionarioMapeamentoEstudanteUseCase
     {
-        Task<IEnumerable<QuestaoDto>> Executar(long questionarioId, long? mapeamentoEstudanteId);
+        Task<IEnumerable<QuestaoDto>> Executar(FiltroQuestoesQuestionarioMapeamentoEstudanteDto filtro);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Constantes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
@@ -17,7 +18,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IRepositorioQuestaoMapeamentoEstudante repositorioQuestao;
-
+        
         public ObterQuestionarioMapeamentoEstudanteQueryHandler(IMediator mediator, IRepositorioQuestaoMapeamentoEstudante repositorioQuestao)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -28,7 +29,10 @@ namespace SME.SGP.Aplicacao
         {
             var mapeamentoEstudante = request.MapeamentoEstudanteId.HasValue 
                                         ? await repositorioQuestao.ObterRespostasMapeamentoEstudante(request.MapeamentoEstudanteId.Value)
-                                        : Enumerable.Empty<RespostaQuestaoMapeamentoEstudanteDto>();
+                                        : await mediator.Send(new ObterRespostasAtualizadasQuestionarioMapeamentoEstudanteQuery(request.QuestionarioId,
+                                                                                                                                request.TurmaId.Value,
+                                                                                                                                request.CodigoAluno,
+                                                                                                                                request.Bimestre.Value));
 
             var questoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(request.QuestionarioId , questaoId =>
                 mapeamentoEstudante.Where(c => c.QuestaoId == questaoId)
@@ -42,6 +46,14 @@ namespace SME.SGP.Aplicacao
                         Arquivo = mapeamento.Arquivo
                     };
                 })));
+
+            var questao = questoes.FirstOrDefault(q => q.NomeComponente == NomesComponentesMapeamentoEstudante.PARECER_CONCLUSIVO_ANO_ANTERIOR);
+            if (questao.Resposta.NaoPossuiRegistros())
+                questao.SomenteLeitura = false;
+
+            questao = questoes.FirstOrDefault(q => q.NomeComponente == NomesComponentesMapeamentoEstudante.TURMA_ANO_ANTERIOR);
+            if (questao.Resposta.NaoPossuiRegistros())
+                questao.SomenteLeitura = false;
 
             return questoes;
         }

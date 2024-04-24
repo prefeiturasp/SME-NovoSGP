@@ -1,4 +1,5 @@
 ﻿using Nest;
+using SME.SGP.Aplicacao.Constantes;
 using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Constantes;
 using SME.SGP.TesteIntegracao.Setup;
@@ -57,7 +58,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
         {
             await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
             {
-                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomeComponenteQuestao.PARECER_CONCLUSIVO_ANO_ANTERIOR)).Value,
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.PARECER_CONCLUSIVO_ANO_ANTERIOR)).Value,
                 Texto = "{'index': '1', 'value': 'Promovido'}",
                 RespostaId = null,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
@@ -66,7 +67,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
             });
             await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
             {
-                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomeComponenteQuestao.TURMA_ANO_ANTERIOR)).Value,
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.TURMA_ANO_ANTERIOR)).Value,
                 Texto = "EF-4B",
                 RespostaId = null,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
@@ -75,7 +76,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
             });
             await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
             {
-                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomeComponenteQuestao.ANOTACOES_PEDAG_BIMESTRE_ANTERIOR)).Value,
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.ANOTACOES_PEDAG_BIMESTRE_ANTERIOR)).Value,
                 Texto = "ANOTAÇÕES PEDAGÓGICAS DO BIMESTRE ANTERIOR",
                 RespostaId = null,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
@@ -84,9 +85,9 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
             });
             await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
             {
-                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomeComponenteQuestao.CLASSIFICADO)).Value,
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.DISTORCAO_IDADE_ANO_SERIE)).Value,
                 Texto = "",
-                RespostaId = OpcoesResposta.Where(q => q.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomeComponenteQuestao.CLASSIFICADO)).Id
+                RespostaId = OpcoesResposta.Where(q => q.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.DISTORCAO_IDADE_ANO_SERIE)).Id
                                               && q.Nome == "Sim").FirstOrDefault().Id,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
@@ -94,9 +95,9 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
             });
             await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
             {
-                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomeComponenteQuestao.RECLASSIFICADO)).Value,
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.MIGRANTE)).Value,
                 Texto = "",
-                RespostaId = OpcoesResposta.Where(q => q.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomeComponenteQuestao.RECLASSIFICADO)).Id
+                RespostaId = OpcoesResposta.Where(q => q.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.MIGRANTE)).Id
                                               && q.Nome == "Sim").FirstOrDefault().Id,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
@@ -104,9 +105,9 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
             });
             await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
             {
-                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomeComponenteQuestao.MIGRANTE)).Value,
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.ACOMPANHADO_SRM_CEFAI)).Value,
                 Texto = "",
-                RespostaId = OpcoesResposta.Where(q => q.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomeComponenteQuestao.MIGRANTE)).Id
+                RespostaId = OpcoesResposta.Where(q => q.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.ACOMPANHADO_SRM_CEFAI)).Id
                                               && q.Nome == "Sim").FirstOrDefault().Id,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
@@ -114,9 +115,9 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
             });
             await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
             {
-                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomeComponenteQuestao.ACOMPANHADO_SRM_CEFAI)).Value,
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.POSSUI_PLANO_AEE)).Value,
                 Texto = "",
-                RespostaId = OpcoesResposta.Where(q => q.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomeComponenteQuestao.ACOMPANHADO_SRM_CEFAI)).Id
+                RespostaId = OpcoesResposta.Where(q => q.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.POSSUI_PLANO_AEE)).Id
                                               && q.Nome == "Sim").FirstOrDefault().Id,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
@@ -124,9 +125,9 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
             });
             await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
             {
-                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomeComponenteQuestao.POSSUI_PLANO_AEE)).Value,
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.ACOMPANHADO_NAAPA)).Value,
                 Texto = "",
-                RespostaId = OpcoesResposta.Where(q => q.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomeComponenteQuestao.POSSUI_PLANO_AEE)).Id
+                RespostaId = OpcoesResposta.Where(q => q.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.ACOMPANHADO_NAAPA)).Id
                                               && q.Nome == "Sim").FirstOrDefault().Id,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
@@ -134,17 +135,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
             });
             await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
             {
-                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomeComponenteQuestao.ACOMPANHADO_NAAPA)).Value,
-                Texto = "",
-                RespostaId = OpcoesResposta.Where(q => q.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomeComponenteQuestao.ACOMPANHADO_NAAPA)).Id
-                                              && q.Nome == "Sim").FirstOrDefault().Id,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-            await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
-            {
-                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomeComponenteQuestao.ACOES_REDE_APOIO)).Value,
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.ACOES_REDE_APOIO)).Value,
                 Texto = "AÇÕES DA REDE DE APOIO",
                 RespostaId = null,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
@@ -153,7 +144,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
             });
             await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
             {
-                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomeComponenteQuestao.ACOES_RECUPERACAO_CONTINUA)).Value,
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.ACOES_RECUPERACAO_CONTINUA)).Value,
                 Texto = "AÇÕES DE RECUPERAÇÃO CONTÍNUA",
                 RespostaId = null,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
@@ -162,7 +153,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
             });
             await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
             {
-                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomeComponenteQuestao.PARTICIPA_PAP)).Value,
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.PARTICIPA_PAP)).Value,
                 Texto = "[{'index': '1663', 'value': '1663 RECUPERACAO PARALELA AUTORAL PORTUGUES'}, {'index': '1664', 'value': '1664 RECUPERACAO PARALELA AUTORAL MATEMATICA'}]",
                 RespostaId = null,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
@@ -171,7 +162,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
             });
             await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
             {
-                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomeComponenteQuestao.PARTICIPA_MAIS_EDUCACAO)).Value,
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.PARTICIPA_MAIS_EDUCACAO)).Value,
                 Texto = "[{'index': '1', 'value': 'XADREZ'}, {'index': '2', 'value': 'FUTEBOL'}]",
                 RespostaId = null,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
@@ -180,7 +171,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
             });
             await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
             {
-                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomeComponenteQuestao.PROJETO_FORTALECIMENTO_APRENDIZAGENS)).Value,
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.PROJETO_FORTALECIMENTO_APRENDIZAGENS)).Value,
                 Texto = "[{'index': '1255', 'value': '1255 Acompanhamento Pedagógico Matemática'}, {'index': '1204', 'value': '1204 Acompanhamento Pedagógico Português'}]",
                 RespostaId = null,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
@@ -189,9 +180,9 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
             });
             await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
             {
-                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomeComponenteQuestao.PROGRAMA_SAO_PAULO_INTEGRAL)).Value,
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.PROGRAMA_SAO_PAULO_INTEGRAL)).Value,
                 Texto = "",
-                RespostaId = OpcoesResposta.Where(q => q.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomeComponenteQuestao.PROGRAMA_SAO_PAULO_INTEGRAL)).Id
+                RespostaId = OpcoesResposta.Where(q => q.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PROGRAMA_SAO_PAULO_INTEGRAL)).Id
                                               && q.Nome == "Sim").FirstOrDefault().Id,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
@@ -199,7 +190,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
             });
             await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
             {
-                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomeComponenteQuestao.HIPOTESE_ESCRITA)).Value,
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.HIPOTESE_ESCRITA)).Value,
                 Texto = "Não alfabético",
                 RespostaId = null,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
@@ -208,7 +199,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
             });
             await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
             {
-                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomeComponenteQuestao.AVALIACOES_EXTERNAS_PROVA_SP)).Value,
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.AVALIACOES_EXTERNAS_PROVA_SP)).Value,
                 Texto = "[{'areaconhecimento': 'Ciências da Natureza', 'proficiencia': 95.5, 'nivel': 'Abaixo do básico'}, {'areaconhecimento': 'Ciências Humanas', 'proficiencia': 179.5, 'nivel': 'Básico'}]",
                 RespostaId = null,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
@@ -217,7 +208,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
             });
             await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
             {
-                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomeComponenteQuestao.OBS_AVALIACAO_PROCESSUAL)).Value,
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.OBS_AVALIACAO_PROCESSUAL)).Value,
                 Texto = "OBS SOBRE A AVALIAÇÃO PROCESSUAL DO ESTUDANTE",
                 RespostaId = null,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
@@ -226,9 +217,9 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
             });
             await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
             {
-                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomeComponenteQuestao.FREQUENCIA)).Value,
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.FREQUENCIA)).Value,
                 Texto = "",
-                RespostaId = OpcoesResposta.Where(q => q.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomeComponenteQuestao.FREQUENCIA)).Id
+                RespostaId = OpcoesResposta.Where(q => q.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.FREQUENCIA)).Id
                                               && q.Nome == "Frequente").FirstOrDefault().Id,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
@@ -236,7 +227,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
             });
             await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
             {
-                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomeComponenteQuestao.QDADE_REGISTROS_BUSCA_ATIVA)).Value,
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.QDADE_REGISTROS_BUSCA_ATIVA)).Value,
                 Texto = "10",
                 RespostaId = null,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
@@ -248,182 +239,173 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
 
         private async Task CriarQuestoesMapeamentoEstudante(long idMapeamentoEstudanteSecao = 1)
         {
-            IdsQuestoesPorNomeComponente.Add(NomeComponenteQuestao.PARECER_CONCLUSIVO_ANO_ANTERIOR,
+            IdsQuestoesPorNomeComponente.Add(NomesComponentesMapeamentoEstudante.PARECER_CONCLUSIVO_ANO_ANTERIOR,
             await InserirNaBaseAsync(new Dominio.QuestaoMapeamentoEstudante()
             {
                 MapeamentoEstudanteSecaoId = idMapeamentoEstudanteSecao,
-                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomeComponenteQuestao.PARECER_CONCLUSIVO_ANO_ANTERIOR)).Id,
+                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PARECER_CONCLUSIVO_ANO_ANTERIOR)).Id,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             }));
-            IdsQuestoesPorNomeComponente.Add(NomeComponenteQuestao.TURMA_ANO_ANTERIOR,
+            IdsQuestoesPorNomeComponente.Add(NomesComponentesMapeamentoEstudante.TURMA_ANO_ANTERIOR,
             await InserirNaBaseAsync(new Dominio.QuestaoMapeamentoEstudante()
             {
                 MapeamentoEstudanteSecaoId = idMapeamentoEstudanteSecao,
-                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomeComponenteQuestao.TURMA_ANO_ANTERIOR)).Id,
+                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.TURMA_ANO_ANTERIOR)).Id,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             }));
-            IdsQuestoesPorNomeComponente.Add(NomeComponenteQuestao.ANOTACOES_PEDAG_BIMESTRE_ANTERIOR,
+            IdsQuestoesPorNomeComponente.Add(NomesComponentesMapeamentoEstudante.ANOTACOES_PEDAG_BIMESTRE_ANTERIOR,
             await InserirNaBaseAsync(new Dominio.QuestaoMapeamentoEstudante()
             {
                 MapeamentoEstudanteSecaoId = idMapeamentoEstudanteSecao,
-                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomeComponenteQuestao.ANOTACOES_PEDAG_BIMESTRE_ANTERIOR)).Id,
+                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.ANOTACOES_PEDAG_BIMESTRE_ANTERIOR)).Id,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             }));
-            IdsQuestoesPorNomeComponente.Add(NomeComponenteQuestao.CLASSIFICADO,
+            IdsQuestoesPorNomeComponente.Add(NomesComponentesMapeamentoEstudante.DISTORCAO_IDADE_ANO_SERIE,
             await InserirNaBaseAsync(new Dominio.QuestaoMapeamentoEstudante()
             {
                 MapeamentoEstudanteSecaoId = idMapeamentoEstudanteSecao,
-                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomeComponenteQuestao.CLASSIFICADO)).Id,
+                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.DISTORCAO_IDADE_ANO_SERIE)).Id,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             }));
-            IdsQuestoesPorNomeComponente.Add(NomeComponenteQuestao.RECLASSIFICADO,
+            IdsQuestoesPorNomeComponente.Add(NomesComponentesMapeamentoEstudante.MIGRANTE,
             await InserirNaBaseAsync(new Dominio.QuestaoMapeamentoEstudante()
             {
                 MapeamentoEstudanteSecaoId = idMapeamentoEstudanteSecao,
-                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomeComponenteQuestao.RECLASSIFICADO)).Id,
+                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.MIGRANTE)).Id,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             }));
-            IdsQuestoesPorNomeComponente.Add(NomeComponenteQuestao.MIGRANTE,
+            IdsQuestoesPorNomeComponente.Add(NomesComponentesMapeamentoEstudante.ACOMPANHADO_SRM_CEFAI,
             await InserirNaBaseAsync(new Dominio.QuestaoMapeamentoEstudante()
             {
                 MapeamentoEstudanteSecaoId = idMapeamentoEstudanteSecao,
-                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomeComponenteQuestao.MIGRANTE)).Id,
+                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.ACOMPANHADO_SRM_CEFAI)).Id,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             }));
-            IdsQuestoesPorNomeComponente.Add(NomeComponenteQuestao.ACOMPANHADO_SRM_CEFAI,
+            IdsQuestoesPorNomeComponente.Add(NomesComponentesMapeamentoEstudante.POSSUI_PLANO_AEE,
             await InserirNaBaseAsync(new Dominio.QuestaoMapeamentoEstudante()
             {
                 MapeamentoEstudanteSecaoId = idMapeamentoEstudanteSecao,
-                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomeComponenteQuestao.ACOMPANHADO_SRM_CEFAI)).Id,
+                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.POSSUI_PLANO_AEE)).Id,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             }));
-            IdsQuestoesPorNomeComponente.Add(NomeComponenteQuestao.POSSUI_PLANO_AEE,
+            IdsQuestoesPorNomeComponente.Add(NomesComponentesMapeamentoEstudante.ACOMPANHADO_NAAPA,
             await InserirNaBaseAsync(new Dominio.QuestaoMapeamentoEstudante()
             {
                 MapeamentoEstudanteSecaoId = idMapeamentoEstudanteSecao,
-                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomeComponenteQuestao.POSSUI_PLANO_AEE)).Id,
+                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.ACOMPANHADO_NAAPA)).Id,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             }));
-            IdsQuestoesPorNomeComponente.Add(NomeComponenteQuestao.ACOMPANHADO_NAAPA,
+            IdsQuestoesPorNomeComponente.Add(NomesComponentesMapeamentoEstudante.ACOES_REDE_APOIO,
             await InserirNaBaseAsync(new Dominio.QuestaoMapeamentoEstudante()
             {
                 MapeamentoEstudanteSecaoId = idMapeamentoEstudanteSecao,
-                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomeComponenteQuestao.ACOMPANHADO_NAAPA)).Id,
+                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.ACOES_REDE_APOIO)).Id,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             }));
-            IdsQuestoesPorNomeComponente.Add(NomeComponenteQuestao.ACOES_REDE_APOIO,
+            IdsQuestoesPorNomeComponente.Add(NomesComponentesMapeamentoEstudante.ACOES_RECUPERACAO_CONTINUA,
             await InserirNaBaseAsync(new Dominio.QuestaoMapeamentoEstudante()
             {
                 MapeamentoEstudanteSecaoId = idMapeamentoEstudanteSecao,
-                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomeComponenteQuestao.ACOES_REDE_APOIO)).Id,
+                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.ACOES_RECUPERACAO_CONTINUA)).Id,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             }));
-            IdsQuestoesPorNomeComponente.Add(NomeComponenteQuestao.ACOES_RECUPERACAO_CONTINUA,
+            IdsQuestoesPorNomeComponente.Add(NomesComponentesMapeamentoEstudante.PARTICIPA_PAP,
             await InserirNaBaseAsync(new Dominio.QuestaoMapeamentoEstudante()
             {
                 MapeamentoEstudanteSecaoId = idMapeamentoEstudanteSecao,
-                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomeComponenteQuestao.ACOES_RECUPERACAO_CONTINUA)).Id,
+                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PARTICIPA_PAP)).Id,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             }));
-            IdsQuestoesPorNomeComponente.Add(NomeComponenteQuestao.PARTICIPA_PAP,
+            IdsQuestoesPorNomeComponente.Add(NomesComponentesMapeamentoEstudante.PARTICIPA_MAIS_EDUCACAO,
             await InserirNaBaseAsync(new Dominio.QuestaoMapeamentoEstudante()
             {
                 MapeamentoEstudanteSecaoId = idMapeamentoEstudanteSecao,
-                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomeComponenteQuestao.PARTICIPA_PAP)).Id,
+                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PARTICIPA_MAIS_EDUCACAO)).Id,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             }));
-            IdsQuestoesPorNomeComponente.Add(NomeComponenteQuestao.PARTICIPA_MAIS_EDUCACAO,
+            IdsQuestoesPorNomeComponente.Add(NomesComponentesMapeamentoEstudante.PROJETO_FORTALECIMENTO_APRENDIZAGENS,
             await InserirNaBaseAsync(new Dominio.QuestaoMapeamentoEstudante()
             {
                 MapeamentoEstudanteSecaoId = idMapeamentoEstudanteSecao,
-                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomeComponenteQuestao.PARTICIPA_MAIS_EDUCACAO)).Id,
+                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PROJETO_FORTALECIMENTO_APRENDIZAGENS)).Id,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             }));
-            IdsQuestoesPorNomeComponente.Add(NomeComponenteQuestao.PROJETO_FORTALECIMENTO_APRENDIZAGENS,
+            IdsQuestoesPorNomeComponente.Add(NomesComponentesMapeamentoEstudante.PROGRAMA_SAO_PAULO_INTEGRAL,
             await InserirNaBaseAsync(new Dominio.QuestaoMapeamentoEstudante()
             {
                 MapeamentoEstudanteSecaoId = idMapeamentoEstudanteSecao,
-                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomeComponenteQuestao.PROJETO_FORTALECIMENTO_APRENDIZAGENS)).Id,
+                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PROGRAMA_SAO_PAULO_INTEGRAL)).Id,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             }));
-            IdsQuestoesPorNomeComponente.Add(NomeComponenteQuestao.PROGRAMA_SAO_PAULO_INTEGRAL,
+            IdsQuestoesPorNomeComponente.Add(NomesComponentesMapeamentoEstudante.HIPOTESE_ESCRITA,
             await InserirNaBaseAsync(new Dominio.QuestaoMapeamentoEstudante()
             {
                 MapeamentoEstudanteSecaoId = idMapeamentoEstudanteSecao,
-                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomeComponenteQuestao.PROGRAMA_SAO_PAULO_INTEGRAL)).Id,
+                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.HIPOTESE_ESCRITA)).Id,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             }));
-            IdsQuestoesPorNomeComponente.Add(NomeComponenteQuestao.HIPOTESE_ESCRITA,
+            IdsQuestoesPorNomeComponente.Add(NomesComponentesMapeamentoEstudante.AVALIACOES_EXTERNAS_PROVA_SP,
             await InserirNaBaseAsync(new Dominio.QuestaoMapeamentoEstudante()
             {
                 MapeamentoEstudanteSecaoId = idMapeamentoEstudanteSecao,
-                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomeComponenteQuestao.HIPOTESE_ESCRITA)).Id,
+                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.AVALIACOES_EXTERNAS_PROVA_SP)).Id,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             }));
-            IdsQuestoesPorNomeComponente.Add(NomeComponenteQuestao.AVALIACOES_EXTERNAS_PROVA_SP,
+            IdsQuestoesPorNomeComponente.Add(NomesComponentesMapeamentoEstudante.OBS_AVALIACAO_PROCESSUAL,
             await InserirNaBaseAsync(new Dominio.QuestaoMapeamentoEstudante()
             {
                 MapeamentoEstudanteSecaoId = idMapeamentoEstudanteSecao,
-                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomeComponenteQuestao.AVALIACOES_EXTERNAS_PROVA_SP)).Id,
+                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.OBS_AVALIACAO_PROCESSUAL)).Id,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             }));
-            IdsQuestoesPorNomeComponente.Add(NomeComponenteQuestao.OBS_AVALIACAO_PROCESSUAL,
+            IdsQuestoesPorNomeComponente.Add(NomesComponentesMapeamentoEstudante.FREQUENCIA,
             await InserirNaBaseAsync(new Dominio.QuestaoMapeamentoEstudante()
             {
                 MapeamentoEstudanteSecaoId = idMapeamentoEstudanteSecao,
-                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomeComponenteQuestao.OBS_AVALIACAO_PROCESSUAL)).Id,
+                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.FREQUENCIA)).Id,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             }));
-            IdsQuestoesPorNomeComponente.Add(NomeComponenteQuestao.FREQUENCIA,
+            IdsQuestoesPorNomeComponente.Add(NomesComponentesMapeamentoEstudante.QDADE_REGISTROS_BUSCA_ATIVA,
             await InserirNaBaseAsync(new Dominio.QuestaoMapeamentoEstudante()
             {
                 MapeamentoEstudanteSecaoId = idMapeamentoEstudanteSecao,
-                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomeComponenteQuestao.FREQUENCIA)).Id,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            }));
-            IdsQuestoesPorNomeComponente.Add(NomeComponenteQuestao.QDADE_REGISTROS_BUSCA_ATIVA,
-            await InserirNaBaseAsync(new Dominio.QuestaoMapeamentoEstudante()
-            {
-                MapeamentoEstudanteSecaoId = idMapeamentoEstudanteSecao,
-                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomeComponenteQuestao.QDADE_REGISTROS_BUSCA_ATIVA)).Id,
+                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.QDADE_REGISTROS_BUSCA_ATIVA)).Id,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF

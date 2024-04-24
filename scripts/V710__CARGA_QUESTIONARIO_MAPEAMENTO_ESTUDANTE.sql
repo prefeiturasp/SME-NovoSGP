@@ -22,15 +22,7 @@ begin
 		values(questionarioId, 3, 'Anotações pedagógicas do bimestre anterior', '', false, 2, '', NOW(), 'SISTEMA', '0', 12, '', 'ANOTACOES_PEDAG_BIMESTRE_ANTERIOR', true);
 	
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente, somente_leitura)
-		values(questionarioId, 4, 'Classificado', '', true, 3, '', NOW(), 'SISTEMA', '0', 4, '', 'CLASSIFICADO', false)
-		RETURNING id INTO questaoId;
-	insert into opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
-		values(questaoId, 1, 'Sim', NOW(), 'SISTEMA', '0');
-	insert into opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
-		values(questaoId, 2, 'Não', NOW(), 'SISTEMA', '0');
-		
-	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente, somente_leitura)
-		values(questionarioId, 5, 'Reclassificado', '', true, 3, '', NOW(), 'SISTEMA', '0', 4, '', 'RECLASSIFICADO', false)
+		values(questionarioId, 4, 'Distorção idade/ano/série', '', true, 3, '', NOW(), 'SISTEMA', '0', 6, '', 'DISTORCAO_IDADE_ANO_SERIE', false)
 		RETURNING id INTO questaoId;
 	insert into opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
 		values(questaoId, 1, 'Sim', NOW(), 'SISTEMA', '0');
@@ -38,7 +30,7 @@ begin
 		values(questaoId, 2, 'Não', NOW(), 'SISTEMA', '0');
 	
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente, somente_leitura)
-		values(questionarioId, 6, 'Migrante', '', true, 3, '', NOW(), 'SISTEMA', '0', 4, '', 'MIGRANTE', false)
+		values(questionarioId, 5, 'Migrante', '', true, 3, '', NOW(), 'SISTEMA', '0', 6, '', 'MIGRANTE', false)
 		RETURNING id INTO questaoId;
 	insert into opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
 		values(questaoId, 1, 'Sim', NOW(), 'SISTEMA', '0');
@@ -46,7 +38,7 @@ begin
 		values(questaoId, 2, 'Não', NOW(), 'SISTEMA', '0');
 		
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente, somente_leitura)
-		values(questionarioId, 7, 'Acompanhado pelo SRM/CEFAI', '', true, 3, '', NOW(), 'SISTEMA', '0', 4, '', 'ACOMPANHADO_SRM_CEFAI', true)
+		values(questionarioId, 6, 'Acompanhado pelo SRM/CEFAI', '', true, 3, '', NOW(), 'SISTEMA', '0', 4, '', 'ACOMPANHADO_SRM_CEFAI', true)
 		RETURNING id INTO questaoId;
 	insert into opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
 		values(questaoId, 1, 'Sim', NOW(), 'SISTEMA', '0');
@@ -54,7 +46,7 @@ begin
 		values(questaoId, 2, 'Não', NOW(), 'SISTEMA', '0');
 		
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente, somente_leitura)
-		values(questionarioId, 8, 'Possui plano AEE', '', true, 3, '', NOW(), 'SISTEMA', '0', 4, '', 'POSSUI_PLANO_AEE', true)
+		values(questionarioId, 7, 'Possui plano AEE', '', true, 3, '', NOW(), 'SISTEMA', '0', 4, '', 'POSSUI_PLANO_AEE', true)
 		RETURNING id INTO questaoId;
 	insert into opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
 		values(questaoId, 1, 'Sim', NOW(), 'SISTEMA', '0');
@@ -62,7 +54,7 @@ begin
 		values(questaoId, 2, 'Não', NOW(), 'SISTEMA', '0');
 		
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente, somente_leitura)
-		values(questionarioId, 9, 'Acompanhado pelo NAAPA', '', true, 3, '', NOW(), 'SISTEMA', '0', 4, '', 'ACOMPANHADO_NAAPA', true)
+		values(questionarioId, 8, 'Acompanhado pelo NAAPA', '', true, 3, '', NOW(), 'SISTEMA', '0', 4, '', 'ACOMPANHADO_NAAPA', true)
 		RETURNING id INTO questaoId;
 	insert into opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
 		values(questaoId, 1, 'Sim', NOW(), 'SISTEMA', '0');
@@ -70,22 +62,22 @@ begin
 		values(questaoId, 2, 'Não', NOW(), 'SISTEMA', '0');
 		
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente, somente_leitura)
-		values(questionarioId, 10, 'Ações da rede de apoio', '', false, 18, '', NOW(), 'SISTEMA', '0', 12, '', 'ACOES_REDE_APOIO', false);	
+		values(questionarioId, 9, 'Ações da rede de apoio', '', false, 18, '', NOW(), 'SISTEMA', '0', 12, '', 'ACOES_REDE_APOIO', false);	
 		
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente, somente_leitura)
-		values(questionarioId, 11, 'Ações de recuperação contínua', '', false, 18, '', NOW(), 'SISTEMA', '0', 12, '', 'ACOES_RECUPERACAO_CONTINUA', false);
+		values(questionarioId, 10, 'Ações de recuperação contínua', '', false, 18, '', NOW(), 'SISTEMA', '0', 12, '', 'ACOES_RECUPERACAO_CONTINUA', false);
 		
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente, somente_leitura)
-		values(questionarioId, 12, 'Participa do PAP', '', true, 25, '', NOW(), 'SISTEMA', '0', 6, '', 'PARTICIPA_PAP', true);
+		values(questionarioId, 11, 'Participa do PAP', '', true, 25, '', NOW(), 'SISTEMA', '0', 6, '', 'PARTICIPA_PAP', true);
 		
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente, somente_leitura)
-		values(questionarioId, 13, 'Participa de projetos do Mais Educação', '', true, 25, '', NOW(), 'SISTEMA', '0', 6, '', 'PARTICIPA_MAIS_EDUCACAO', true);	
+		values(questionarioId, 12, 'Participa de projetos do Mais Educação', '', true, 25, '', NOW(), 'SISTEMA', '0', 6, '', 'PARTICIPA_MAIS_EDUCACAO', true);	
 		
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente, somente_leitura)
-		values(questionarioId, 14, 'Projeto de fortalecimento das aprendizagens', '', true, 25, '', NOW(), 'SISTEMA', '0', 12, '', 'PROJETO_FORTALECIMENTO_APRENDIZAGENS', true);		
+		values(questionarioId, 13, 'Projeto de fortalecimento das aprendizagens', '', true, 25, '', NOW(), 'SISTEMA', '0', 12, '', 'PROJETO_FORTALECIMENTO_APRENDIZAGENS', true);		
 		
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente, somente_leitura)
-		values(questionarioId, 15, 'Programa São Paulo Integral', '', true, 3, '', NOW(), 'SISTEMA', '0', 6, '', 'PROGRAMA_SAO_PAULO_INTEGRAL', true)
+		values(questionarioId, 14, 'Programa São Paulo Integral', '', true, 3, '', NOW(), 'SISTEMA', '0', 6, '', 'PROGRAMA_SAO_PAULO_INTEGRAL', true)
 		RETURNING id INTO questaoId;
 	insert into opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
 		values(questaoId, 1, 'Sim', NOW(), 'SISTEMA', '0');
@@ -93,16 +85,16 @@ begin
 		values(questaoId, 2, 'Não', NOW(), 'SISTEMA', '0');		
 		
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente, somente_leitura)
-		values(questionarioId, 16, 'Qual a hipótese de escrita do estudante', '', false, 1, '', NOW(), 'SISTEMA', '0', 6, '', 'HIPOTESE_ESCRITA', true);	
+		values(questionarioId, 15, 'Qual a hipótese de escrita do estudante', '', false, 1, '', NOW(), 'SISTEMA', '0', 6, '', 'HIPOTESE_ESCRITA', true);	
 		
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente, somente_leitura)
-		values(questionarioId, 17, 'Avaliações externas (Prova São Paulo)', '', false, 26, '', NOW(), 'SISTEMA', '0', 12, '', 'AVALIACOES_EXTERNAS_PROVA_SP', true);		
+		values(questionarioId, 16, 'Avaliações externas (Prova São Paulo)', '', false, 26, '', NOW(), 'SISTEMA', '0', 12, '', 'AVALIACOES_EXTERNAS_PROVA_SP', true);		
 		
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente, somente_leitura)
-		values(questionarioId, 18, 'Observações sobre a avaliação processual do estudante', '', true, 18, '', NOW(), 'SISTEMA', '0', 12, '', 'OBS_AVALIACAO_PROCESSUAL', false);			
+		values(questionarioId, 17, 'Observações sobre a avaliação processual do estudante', '', true, 18, '', NOW(), 'SISTEMA', '0', 12, '', 'OBS_AVALIACAO_PROCESSUAL', false);			
 		
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente, somente_leitura)
-		values(questionarioId, 19, 'Frequência', '', true, 4, '', NOW(), 'SISTEMA', '0', 6, '', 'FREQUENCIA', true)
+		values(questionarioId, 18, 'Frequência', '', true, 4, '', NOW(), 'SISTEMA', '0', 6, '', 'FREQUENCIA', true)
 		RETURNING id INTO questaoId;
 	insert into opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
 		values(questaoId, 1, 'Frequente', NOW(), 'SISTEMA', '0');
@@ -110,6 +102,6 @@ begin
 		values(questaoId, 2, 'Não Frequente', NOW(), 'SISTEMA', '0');	
 		
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente, somente_leitura)
-		values(questionarioId, 20, 'Quantidade de registros de busca ativa', '', true, 13, '', NOW(), 'SISTEMA', '0', 6, '', 'QDADE_REGISTROS_BUSCA_ATIVA', true);			
+		values(questionarioId, 19, 'Quantidade de registros de busca ativa', '', true, 13, '', NOW(), 'SISTEMA', '0', 6, '', 'QDADE_REGISTROS_BUSCA_ATIVA', true);			
 
 end $$;

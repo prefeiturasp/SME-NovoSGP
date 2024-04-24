@@ -1,12 +1,11 @@
-﻿namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
+﻿namespace SME.SGP.Aplicacao.Constantes
 {
-    public class NomeComponenteQuestao
+    public sealed class NomesComponentesMapeamentoEstudante
     {
         public const string PARECER_CONCLUSIVO_ANO_ANTERIOR = "PARECER_CONCLUSIVO_ANO_ANTERIOR";
         public const string TURMA_ANO_ANTERIOR = "TURMA_ANO_ANTERIOR";
         public const string ANOTACOES_PEDAG_BIMESTRE_ANTERIOR = "ANOTACOES_PEDAG_BIMESTRE_ANTERIOR";
-        public const string CLASSIFICADO = "CLASSIFICADO";
-        public const string RECLASSIFICADO = "RECLASSIFICADO";
+        public const string DISTORCAO_IDADE_ANO_SERIE = "DISTORCAO_IDADE_ANO_SERIE";
         public const string MIGRANTE = "MIGRANTE";
         public const string ACOMPANHADO_SRM_CEFAI = "ACOMPANHADO_SRM_CEFAI";
         public const string POSSUI_PLANO_AEE = "POSSUI_PLANO_AEE";
