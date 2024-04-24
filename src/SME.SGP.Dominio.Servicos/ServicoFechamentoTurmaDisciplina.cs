@@ -183,7 +183,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        public async Task<AuditoriaPersistenciaDto> Salvar(long id, FechamentoTurmaDisciplinaDto entidadeDto, bool componenteSemNota = false)
+        public async Task<AuditoriaPersistenciaDto> Salvar(long id, FechamentoTurmaDisciplinaDto entidadeDto, bool componenteSemNota = false, bool processamento = false)
         {
             notasEnvioWfAprovacao = new List<FechamentoNotaDto>();
 
@@ -248,18 +248,19 @@ namespace SME.SGP.Dominio.Servicos
                         .DistinctBy(a => a.CodigoAluno)
                         .OrderBy(a => a.NomeValido());
 
-            var codigosAlunosAtivos = alunos?.Select(c => c.CodigoAluno)?.Distinct()?.ToArray();
-            var codigosAlunosFechamento = fechamentoAlunos.Select(c => c.AlunoCodigo).Distinct().ToArray();
+            if (!processamento)
+            {
+                var codigosAlunosAtivos = alunos?.Select(c => c.CodigoAluno)?.Distinct()?.ToArray();
+                var codigosAlunosFechamento = fechamentoAlunos.Select(c => c.AlunoCodigo).Distinct().ToArray();
 
-            if (codigosAlunosFechamento.Any(c => !codigosAlunosAtivos.Contains(c)))
-                throw new NegocioException(MensagemNegocioFechamentoNota.EXISTEM_ALUNOS_INATIVOS_FECHAMENTO_NOTA_BIMESTRE);
+                if (codigosAlunosFechamento.Any(c => !codigosAlunosAtivos.Contains(c)))
+                    throw new NegocioException(MensagemNegocioFechamentoNota.EXISTEM_ALUNOS_INATIVOS_FECHAMENTO_NOTA_BIMESTRE);
+            }           
 
             var parametroDiasAlteracao = await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasAlteracaoNotaFinal, turmaFechamento.AnoLetivo);
             var diasAlteracao = DateTime.Today.DayOfYear - fechamentoTurmaDisciplina.CriadoEm.Date.DayOfYear;
             var acimaDiasPermitidosAlteracao = parametroDiasAlteracao.NaoEhNulo() && diasAlteracao > int.Parse(parametroDiasAlteracao);
             var alunosComNotaAlterada = "";
-            
-            
 
             unitOfWork.IniciarTransacao();
             try
