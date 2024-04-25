@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
                     var sondagem = await mediator.Send(new ObterSondagemLPAlunoQuery(turma.CodigoTurma, aluno.CodigoAluno));
                     var avaliacoesExternasProvaSP = await mediator.Send(new ObterAvaliacoesExternasProvaSPAlunoQuery(aluno.CodigoAluno, turma.AnoLetivo));
                     if (SondagemHipoteseEscritaDiferenteAlfabetica(sondagem)
-                        || avaliacoesExternasProvaSP.Any(psp => psp.Nivel == RESULTADO_ABAIXO_BASICO_PROVA_SP)
+                        || avaliacoesExternasProvaSP.Any(psp => psp.Nivel.ToUpper() == RESULTADO_ABAIXO_BASICO_PROVA_SP.ToUpper())
                     )
                         alunosSondagemProvaSPInsuficientes.Add(aluno.CodigoAluno);
                 });
