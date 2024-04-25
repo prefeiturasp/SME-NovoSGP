@@ -45,6 +45,16 @@ namespace SME.SGP.IoC
                     c.Timeout = TimeSpan.FromSeconds(double.Parse(configuration.GetSection("HttpClientTimeoutSecond").Value));
             }).AddPolicyHandler(GetRetryPolicy());
 
+            services.AddHttpClient(name: ServicoSerapConstants.ServicoSERApLegado, c =>
+            {
+                c.BaseAddress = new Uri(configuration.GetSection("UrlApiSERApLegado").Value);
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+                c.DefaultRequestHeaders.Add("keyApi", configuration.GetSection("ChaveIntegracaoSERApLegadoApi").Value);
+
+                if (configuration.GetSection("HttpClientTimeoutSecond").Value.NaoEhNulo())
+                    c.Timeout = TimeSpan.FromSeconds(double.Parse(configuration.GetSection("HttpClientTimeoutSecond").Value));
+            }).AddPolicyHandler(GetRetryPolicy());
+
             services.AddHttpClient<IServicoAcompanhamentoEscolar, ServicoAcompanhamentoEscolar>(c =>
             {
                 c.BaseAddress = new Uri(configuration.GetSection("UrlApiAE").Value);

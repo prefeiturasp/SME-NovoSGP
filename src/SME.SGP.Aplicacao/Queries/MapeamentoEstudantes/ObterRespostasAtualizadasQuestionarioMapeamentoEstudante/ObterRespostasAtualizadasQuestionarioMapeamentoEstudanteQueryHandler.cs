@@ -138,11 +138,12 @@ namespace SME.SGP.Aplicacao
                 Texto = sondagem.ObterHipoteseEscrita(request.Bimestre)
             });
 
+            var avaliacoesExternasProvaSP = await mediator.Send(new ObterAvaliacoesExternasProvaSPAlunoQuery(request.CodigoAluno, turma.AnoLetivo)); 
             questao = await repositorioQuestao.ObterIdQuestaoPorNomeComponenteQuestionario(request.QuestionarioId, NomesComponentesMapeamentoEstudante.AVALIACOES_EXTERNAS_PROVA_SP);
             retorno.Add(new RespostaQuestaoMapeamentoEstudanteDto()
             {
                 QuestaoId = questao,
-                Texto = null
+                Texto = avaliacoesExternasProvaSP.ToList().SerializarJsonTipoQuestaoAvaliacoesExternasProvaSP()
             });
 
             string freqGeralAluno = await mediator.Send(new ObterConsultaFrequenciaGeralAlunoQuery(request.CodigoAluno, turma.CodigoTurma));
