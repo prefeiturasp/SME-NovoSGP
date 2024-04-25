@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao.Queries
         public async Task<IEnumerable<AvaliacaoExternaProvaSPDto>> Handle(ObterAvaliacoesExternasProvaSPAlunoQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient(ServicoSerapConstants.ServicoSERApLegado);
-            var resposta = await httpClient.GetAsync(string.Format(ServicoSerapConstants.URL_AVALIACOES_EXTERNAS_PROVA_SP_ALUNO_ANO_LETIVO, request.AlunoCodigo, request.AnoLetivo));
+            var resposta = await httpClient.GetAsync(string.Format(ServicoSerapConstants.URL_AVALIACOES_EXTERNAS_PROVA_SP_ALUNO_ANO_LETIVO, request.AnoLetivo, request.AlunoCodigo));
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
                 var json = await resposta.Content.ReadAsStringAsync();

@@ -29,5 +29,26 @@ namespace SME.SGP.Infra.Dtos.Sondagem
                     return string.Empty;
             }
         }
+
+        public string ObterTextoHipoteseEscrita(int bimestre)
+        {
+            var hipoteseEscrita = ObterHipoteseEscrita(bimestre);
+            switch (hipoteseEscrita)
+            {
+                case "PS":
+                    return "Pré-Silábico";
+                case "SSV":
+                    return "Silábico sem valor";
+                case "SCV":
+                    return "Silábico com valor";
+                case "SA":
+                    return "Silábico alfabético";
+                case "A":
+                    return "Alfabético";
+                default:
+                    return "";
+            }
+            
+        }
     }
 }

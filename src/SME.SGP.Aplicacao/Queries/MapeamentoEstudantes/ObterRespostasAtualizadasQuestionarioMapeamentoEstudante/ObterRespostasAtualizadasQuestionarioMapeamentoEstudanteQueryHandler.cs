@@ -134,7 +134,7 @@ namespace SME.SGP.Aplicacao
             retorno.Add(new RespostaQuestaoMapeamentoEstudanteDto()
             {
                 QuestaoId = questao,
-                Texto = sondagem.ObterHipoteseEscrita(request.Bimestre)
+                Texto = sondagem.ObterTextoHipoteseEscrita(request.Bimestre)
             });
 
             var avaliacoesExternasProvaSP = await mediator.Send(new ObterAvaliacoesExternasProvaSPAlunoQuery(request.CodigoAluno, turma.AnoLetivo)); 
