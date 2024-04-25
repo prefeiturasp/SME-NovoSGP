@@ -49,7 +49,7 @@ namespace SME.SGP.IoC
             {
                 c.BaseAddress = new Uri(configuration.GetSection("UrlApiSERApLegado").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
-                c.DefaultRequestHeaders.Add("x-serap-api-key", configuration.GetSection("ChaveIntegracaoSERApLegadoApi").Value);
+                c.DefaultRequestHeaders.Add("keyApi", configuration.GetSection("ChaveIntegracaoSERApLegadoApi").Value);
 
                 if (configuration.GetSection("HttpClientTimeoutSecond").Value.NaoEhNulo())
                     c.Timeout = TimeSpan.FromSeconds(double.Parse(configuration.GetSection("HttpClientTimeoutSecond").Value));
