@@ -41,7 +41,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterInformacoesAtualizadasAlunoMapeamentoEstudanteQuery, InformacoesAtualizadasMapeamentoEstudanteAlunoDto>), typeof(ObterInformacoesAtualizadasAlunoMapeamentoEstudanteQueryFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterInformacoesTurmasProgramaAlunoMapeamentoEstudanteQuery, InformacoesTurmasProgramaAlunoMapeamentoEstudanteAlunoDto>), typeof(ObterInformacoesTurmasProgramaAlunoMapeamentoEstudanteQueryFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoEnderecoEolQuery, AlunoEnderecoRespostaDto>), typeof(ObterAlunoEnderecoEolQueryAlunoMigranteFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterSondagemLPAlunoQuery, SondagemLPAlunoDto>), typeof(ObterSondagemLPAlunoQueryNaoAlfabetivoFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterSondagemLPAlunoQuery, SondagemLPAlunoDto>), typeof(ObterSondagemLPAlunoQueryNaoAlfabeticoFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterConsultaFrequenciaGeralAlunoQuery, string>), typeof(ObterConsultaFrequenciaGeralAlunoQueryAlunoFrequenteFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAvaliacoesExternasProvaSPAlunoQuery, IEnumerable<AvaliacaoExternaProvaSPDto>>), typeof(ObterAvaliacoesExternasProvaSPAlunoQueryFake), ServiceLifetime.Scoped));
         }
@@ -167,10 +167,10 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
             questao.Resposta.FirstOrDefault().OpcaoRespostaId.ShouldBe(questao.OpcaoResposta.FirstOrDefault(op => op.Nome == "Não").Id);
 
             questao = retorno.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.HIPOTESE_ESCRITA));
-            questao.Resposta.FirstOrDefault().Texto.ShouldBe("Não alfabético");
+            questao.Resposta.FirstOrDefault().Texto.ShouldBe("Alfabético");
 
             questao = retorno.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.AVALIACOES_EXTERNAS_PROVA_SP));
-            questao.Resposta.FirstOrDefault().Texto.ShouldBe("[{\"AreaConhecimento\":\"CIENCIAS DA NATUREZA\",\"Proficiencia\":90.5,\"Nivel\":\"ABAIXO DO BÁSICO\"},{\"AreaConhecimento\":\"LINGUA PORTUGUES\",\"Proficiencia\":179.5,\"Nivel\":\"BÁSICO\"}]");
+            questao.Resposta.FirstOrDefault().Texto.ShouldBe("[{\"AreaConhecimento\":\"CIENCIAS DA NATUREZA\",\"Proficiencia\":90.5,\"Nivel\":\"BÁSICO\"},{\"AreaConhecimento\":\"LINGUA PORTUGUES\",\"Proficiencia\":179.5,\"Nivel\":\"BÁSICO\"}]");
 
             questao = retorno.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.FREQUENCIA));
             questao.Resposta.FirstOrDefault().OpcaoRespostaId.ShouldBe(questao.OpcaoResposta.FirstOrDefault(op => op.Nome == "Frequente").Id);
