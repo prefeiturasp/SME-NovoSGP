@@ -56,12 +56,11 @@ namespace SME.SGP.Aplicacao
                     });
 
             questao = await repositorioQuestao.ObterIdQuestaoPorNomeComponenteQuestionario(request.QuestionarioId, NomesComponentesMapeamentoEstudante.ANOTACOES_PEDAG_BIMESTRE_ANTERIOR);
-            if (!string.IsNullOrEmpty(informacoesSGP.AnotacoesPedagogicasBimestreAnterior))
-                retorno.Add(new RespostaQuestaoMapeamentoEstudanteDto()
-                {
-                    QuestaoId = questao,
-                    Texto = informacoesSGP.AnotacoesPedagogicasBimestreAnterior
-                });
+            retorno.Add(new RespostaQuestaoMapeamentoEstudanteDto()
+            {
+                QuestaoId = questao,
+                Texto = informacoesSGP.AnotacoesPedagogicasBimestreAnterior
+            });
 
             var dadosEstudante = await mediator.Send(new ObterAlunoEnderecoEolQuery(request.CodigoAluno));
             questao = await repositorioQuestao.ObterIdQuestaoPorNomeComponenteQuestionario(request.QuestionarioId, NomesComponentesMapeamentoEstudante.MIGRANTE);
