@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Elastic.Apm.Api;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -9,6 +10,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -191,8 +193,8 @@ namespace SME.SGP.Dados.Repositorios
                          left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
                          where not cca.excluido and not cc.excluido and not ft.excluido 
                          and cca.aluno_codigo = @codigoAluno
-                         and t.ano_letivo = {(bimestre == 1 ? anoLetivo-1 : anoLetivo)}
-                         and pe.bimestre = {(bimestre == 1 ? 4 : bimestre-1)}
+                         and t.ano_letivo = {(bimestre == 1 ? anoLetivo - 1 : anoLetivo)}
+                         and pe.bimestre = {(bimestre == 1 ? 4 : bimestre - 1)}
                          order by cca.id desc;";
             using (var mapeamentoEstudante = await database.Conexao.QueryMultipleAsync(query, new { codigoAluno, anoLetivo, bimestre }))
             {
@@ -207,5 +209,11 @@ namespace SME.SGP.Dados.Repositorios
             }
             return retorno;
         }
+
+        public async Task<string[]> ObterCodigosAlunosComMapeamentoEstudanteBimestre(long turmaId, int bimestre)
+        => (await database.Conexao.QueryAsync<string>(@"SELECT distinct(aluno_codigo)  
+                                                        FROM mapeamento_estudante
+                                                        WHERE turma_id = @turmaId
+                                                        AND bimestre = @bimestre", new { turmaId, bimestre })).ToArray();
     }
 }

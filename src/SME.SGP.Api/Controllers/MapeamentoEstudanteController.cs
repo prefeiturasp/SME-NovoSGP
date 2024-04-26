@@ -67,13 +67,13 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(codigoAluno, turmaId, bimestre));
         }
 
-        [HttpGet("alunos/turmas/{turmaId}/prioridade-sinalizada")]
+        [HttpGet("alunos/turmas/{turmaId}/bimestres/{bimestre}/prioridade-sinalizada")]
         [ProducesResponseType(typeof(long), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ME_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterAlunosPriorizadosMapeamentoEstudante(long turmaId, [FromServices] IObterAlunosSinalizadosPrioridadeMapeamentoEstudanteUseCase useCase)
+        public async Task<IActionResult> ObterAlunosPriorizadosMapeamentoEstudante(long turmaId, int bimestre, [FromServices] IObterAlunosSinalizadosPrioridadeMapeamentoEstudanteUseCase useCase)
         {
-            return Ok(await useCase.Executar(turmaId));
+            return Ok(await useCase.Executar(turmaId, bimestre));
         }
     }
 }
