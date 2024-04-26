@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Elastic.Apm.Api;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -35,7 +36,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<long?>(sql, new { codigoAluno, turmaId, bimestre });
         }
 
-        public async Task<IEnumerable<long>> ObterIdentificadoresDosMapeamentosDoBimestreAtual()
+        public async Task<IEnumerable<long>> ObterIdentificadoresDosMapeamentosDoBimestreAtual(DateTime dataBase)
         {
             var sql = @"select me.id
                         from mapeamento_estudante me 
@@ -51,8 +52,8 @@ namespace SME.SGP.Dados.Repositorios
 
             var parametro = new
             {
-                anoLetivo = DateTime.Today.Year,
-                dataReferencia = DateTime.Today,
+                anoLetivo = dataBase.Year,
+                dataReferencia = dataBase.Date,
                 modalidade = (int)ModalidadeTipoCalendario.FundamentalMedio
             };
 

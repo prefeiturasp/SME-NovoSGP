@@ -15,4 +15,18 @@ namespace SME.SGP.Infra.Dtos.MapeamentoEstudantes
         public string Texto { get; set; }
         public Arquivo Arquivo { get; set; }
     }
+
+    public static class ClassExtensions
+    {
+        public static MapeamentoEstudanteSecaoQuestaoDto ToMapeamentoEstudanteSecaoQuestaoDto(this RespostaQuestaoMapeamentoEstudanteDto source, 
+                                                                                              TipoQuestao tipoQuestao,
+                                                                                              long respostaMapeamentoEstudanteId)
+        => new MapeamentoEstudanteSecaoQuestaoDto()
+        {
+            QuestaoId = source.QuestaoId,
+            Resposta = source.RespostaId.HasValue ? source.RespostaId.ToString() : source.Texto,
+            TipoQuestao = tipoQuestao,
+            RespostaMapeamentoEstudanteId = respostaMapeamentoEstudanteId
+        };
+    }
 }
