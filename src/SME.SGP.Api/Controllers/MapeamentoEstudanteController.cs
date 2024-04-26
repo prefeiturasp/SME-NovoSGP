@@ -68,7 +68,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("alunos/turmas/{turmaId}/bimestres/{bimestre}/prioridade-sinalizada")]
-        [ProducesResponseType(typeof(long), 200)]
+        [ProducesResponseType(typeof(IEnumerable<AlunoSinalizadoPrioridadeMapeamentoEstudanteDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ME_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterAlunosPriorizadosMapeamentoEstudante(long turmaId, int bimestre, [FromServices] IObterAlunosSinalizadosPrioridadeMapeamentoEstudanteUseCase useCase)
