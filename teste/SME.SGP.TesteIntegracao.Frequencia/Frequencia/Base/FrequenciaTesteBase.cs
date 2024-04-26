@@ -141,7 +141,7 @@ namespace SME.SGP.TesteIntegracao
             var dataAtual = DateTimeExtension.HorarioBrasilia();
             var dataInicioPeriodo = dataAtual.AddDays(-10);
             var dataFimPeriodo = dataAtual.AddDays(1);
-            var dataAula = dataAtual;
+            var dataAula = dataAtual.AddDays(-1);
 
             await CriarDadosBasicos(perfil, modalidade, tipoCalendario, dataInicioPeriodo, dataFimPeriodo, bimestre, dataAula, componenteCurricular, criarPeriodo, tipoCalendarioId, criarPeriodoEscolarEAbertura, quantidadeAula);
         }
