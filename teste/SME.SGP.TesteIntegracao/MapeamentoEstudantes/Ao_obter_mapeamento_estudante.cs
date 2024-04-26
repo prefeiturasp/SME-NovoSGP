@@ -130,7 +130,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
 
             var mediator = ServiceProvider.GetService<IMediator>();
 
-            var identificadores = await mediator.Send(new ObterIdentificadoresDosMapeamentosDoBimestreAtualQuery());
+            var identificadores = await mediator.Send(new ObterIdentificadoresDosMapeamentosDoBimestreAtualQuery(DateTimeExtension.HorarioBrasilia().Date));
 
             identificadores.ShouldNotBeNull();
             identificadores.Count().ShouldBe(2);

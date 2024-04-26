@@ -48,10 +48,201 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
 
         protected async Task GerarDadosMapeamentosEstudantes_1()
         {
-            var mapeamentoId = await CriarMapeamentoEstudante();
+            var mapeamentoId = await CriarMapeamentoEstudante(3);
             var mapeamentoSecaoId = await CriarMapeamentoEstudanteSecao(mapeamentoId);
             await CriarQuestoesMapeamentoEstudante(mapeamentoSecaoId);
             await CriarRespostasMapeamentoEstudante();
+        }
+
+        protected async Task GerarDadosMapeamentosEstudantes_2(int bimestre)
+        {
+            var mapeamentoId = await CriarMapeamentoEstudante(bimestre);
+            var mapeamentoSecaoId = await CriarMapeamentoEstudanteSecao(mapeamentoId);
+            await CriarQuestoesMapeamentoEstudante(mapeamentoSecaoId);
+            await CriarRespostasMapeamentoEstudante_2();
+        }
+
+        private async Task CriarRespostasMapeamentoEstudante_2()
+        {
+            await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
+            {
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.PARECER_CONCLUSIVO_ANO_ANTERIOR)).Value,
+                Texto = "{\"index\":\"3\",\"value\":\"Continuidade dos estudos\"}",
+                RespostaId = null,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
+            {
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.TURMA_ANO_ANTERIOR)).Value,
+                Texto = "EF-4B",
+                RespostaId = null,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
+            {
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.ANOTACOES_PEDAG_BIMESTRE_ANTERIOR)).Value,
+                Texto = "ANOTAÇÕES PEDAGÓGICAS DO BIMESTRE ANTERIOR 001",
+                RespostaId = null,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
+            {
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.DISTORCAO_IDADE_ANO_SERIE)).Value,
+                Texto = "",
+                RespostaId = OpcoesResposta.Where(q => q.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.DISTORCAO_IDADE_ANO_SERIE)).Id
+                                              && q.Nome == "Não").FirstOrDefault().Id,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
+            {
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.MIGRANTE)).Value,
+                Texto = "",
+                RespostaId = OpcoesResposta.Where(q => q.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.MIGRANTE)).Id
+                                              && q.Nome == "Sim").FirstOrDefault().Id,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
+            {
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.ACOMPANHADO_SRM_CEFAI)).Value,
+                Texto = "",
+                RespostaId = OpcoesResposta.Where(q => q.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.ACOMPANHADO_SRM_CEFAI)).Id
+                                              && q.Nome == "Não").FirstOrDefault().Id,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
+            {
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.POSSUI_PLANO_AEE)).Value,
+                Texto = "",
+                RespostaId = OpcoesResposta.Where(q => q.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.POSSUI_PLANO_AEE)).Id
+                                              && q.Nome == "Não").FirstOrDefault().Id,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
+            {
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.ACOMPANHADO_NAAPA)).Value,
+                Texto = "",
+                RespostaId = OpcoesResposta.Where(q => q.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.ACOMPANHADO_NAAPA)).Id
+                                              && q.Nome == "Não").FirstOrDefault().Id,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
+            {
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.ACOES_REDE_APOIO)).Value,
+                Texto = "AÇÕES DA REDE DE APOIO",
+                RespostaId = null,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
+            {
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.ACOES_RECUPERACAO_CONTINUA)).Value,
+                Texto = "AÇÕES DE RECUPERAÇÃO CONTÍNUA",
+                RespostaId = null,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
+            {
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.PARTICIPA_PAP)).Value,
+                Texto = "[{\"index\":\"0\",\"value\":\"Não\"}]",
+                RespostaId = null,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
+            {
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.PARTICIPA_MAIS_EDUCACAO)).Value,
+                Texto = "[{\"index\":\"0\",\"value\":\"Não\"}]",
+                RespostaId = null,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
+            {
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.PROJETO_FORTALECIMENTO_APRENDIZAGENS)).Value,
+                Texto = "[{\"index\":\"0\",\"value\":\"Não\"}]",
+                RespostaId = null,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
+            {
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.PROGRAMA_SAO_PAULO_INTEGRAL)).Value,
+                Texto = "",
+                RespostaId = OpcoesResposta.Where(q => q.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PROGRAMA_SAO_PAULO_INTEGRAL)).Id
+                                              && q.Nome == "Não").FirstOrDefault().Id,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
+            {
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.HIPOTESE_ESCRITA)).Value,
+                Texto = "Não alfabético",
+                RespostaId = null,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
+            {
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.AVALIACOES_EXTERNAS_PROVA_SP)).Value,
+                Texto = "[{\"areaconhecimento\":\"Ciências da Natureza\",\"proficiencia\": 95.5,\"nivel\":\"Abaixo do básico\"}, {\"areaconhecimento\":\"Ciências Humanas\",\"proficiencia\": 179.5,\"nivel\":\"Básico\"}]",
+                RespostaId = null,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
+            {
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.OBS_AVALIACAO_PROCESSUAL)).Value,
+                Texto = "OBS SOBRE A AVALIAÇÃO PROCESSUAL DO ESTUDANTE",
+                RespostaId = null,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
+            {
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.FREQUENCIA)).Value,
+                Texto = "",
+                RespostaId = OpcoesResposta.Where(q => q.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.FREQUENCIA)).Id
+                                              && q.Nome == "Não Frequente").FirstOrDefault().Id,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
+            {
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.QDADE_REGISTROS_BUSCA_ATIVA)).Value,
+                Texto = "10",
+                RespostaId = null,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
         }
 
         private async Task CriarRespostasMapeamentoEstudante()
@@ -423,13 +614,13 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
                 Concluido = false
             });
 
-        private async Task<long> CriarMapeamentoEstudante()
+        private async Task<long> CriarMapeamentoEstudante(int bimestre)
         => await InserirNaBaseAsync(new Dominio.MapeamentoEstudante()
             {
                 TurmaId = TURMA_ID_1,
                 AlunoCodigo = ALUNO_CODIGO_1,
                 AlunoNome = "Nome do aluno 1",
-                Bimestre = 3,
+                Bimestre = bimestre,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF

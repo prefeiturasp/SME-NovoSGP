@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
@@ -14,7 +15,11 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            var identificadores = await mediator.Send(new ObterIdentificadoresDosMapeamentosDoBimestreAtualQuery());
+            DateTime.TryParse(param.Mensagem.ToString(), out DateTime dataBase);
+            var identificadores = await mediator.Send(new ObterIdentificadoresDosMapeamentosDoBimestreAtualQuery(
+                                                                                            dataBase.Equals(DateTime.MinValue) 
+                                                                                            ? DateTimeExtension.HorarioBrasilia().Date
+                                                                                            : dataBase)); ;
            
             foreach(var identificador in identificadores)
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ExecutarAtualizacaoMapeamentoEstudantesBimestre, identificador, Guid.NewGuid(), null));

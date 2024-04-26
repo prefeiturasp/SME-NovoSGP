@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public Task<IEnumerable<long>> Handle(ObterIdentificadoresDosMapeamentosDoBimestreAtualQuery request, CancellationToken cancellationToken)
         {
-            return this.repositorio.ObterIdentificadoresDosMapeamentosDoBimestreAtual();
+            return this.repositorio.ObterIdentificadoresDosMapeamentosDoBimestreAtual(request.DataBase);
         }
     }
 }

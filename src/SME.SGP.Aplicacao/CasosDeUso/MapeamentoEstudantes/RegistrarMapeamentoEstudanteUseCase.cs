@@ -56,6 +56,13 @@ namespace SME.SGP.Aplicacao
             if (aluno.EhNulo())
                 throw new NegocioException(MensagemNegocioAluno.ESTUDANTE_NAO_ENCONTRADO);
 
+            if (!mapeamento.Id.HasValue)
+            {
+                var idMapeamentoExistente = await mediator.Send(new ObterIdentificadorMapeamentoEstudanteQuery(mapeamento.AlunoCodigo, mapeamento.TurmaId, mapeamento.Bimestre));
+                if (idMapeamentoExistente.HasValue)
+                    throw new NegocioException(MensagemNegocioMapeamentoEstudante.MAPEAMENTO_ESTUDANTE_JA_EXISTENTE);
+            }
+
             return (aluno.CodigoAluno, aluno.NomeAluno);
         }
 
