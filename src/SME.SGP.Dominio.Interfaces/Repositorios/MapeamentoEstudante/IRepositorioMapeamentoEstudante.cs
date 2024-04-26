@@ -12,5 +12,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<string>> ObterCodigoArquivoPorMapeamentoEstudanteId(long id);
         Task<IEnumerable<long>> ObterIdentificadoresDosMapeamentosDoBimestreAtual(DateTime dataBase);
         Task<InformacoesAtualizadasMapeamentoEstudanteAlunoDto> ObterInformacoesAtualizadasAlunoMapeamentoEstudante(string codigoAluno, int anoLetivo, int bimestre);
+        Task<string[]> ObterCodigosAlunosComMapeamentoEstudanteBimestre(long turmaId, int bimestre);
     }
 }

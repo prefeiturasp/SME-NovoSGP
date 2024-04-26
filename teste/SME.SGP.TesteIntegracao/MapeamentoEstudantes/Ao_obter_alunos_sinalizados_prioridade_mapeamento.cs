@@ -38,7 +38,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAvaliacoesExternasProvaSPAlunoQuery, IEnumerable<AvaliacaoExternaProvaSPDto>>), typeof(ObterAvaliacoesExternasProvaSPAlunoQueryFake), ServiceLifetime.Scoped));
         }
 
-        [Fact(DisplayName = "Mapeamento Estudantes - Obter códigos alunos com sindalização de prioridade")]
+        [Fact(DisplayName = "Mapeamento Estudantes - Obter alunos com sindalização de prioridade")]
         public async Task Ao_listar_alunos_sinalizacao_prioridade()
         {
             await CriarDadosBase();
@@ -55,11 +55,27 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            var retorno = await useCase.Executar(TURMA_ID_1);
+            for (int i = 1; i <= 2; i++)
+                await InserirNaBaseAsync(new Dominio.MapeamentoEstudante()
+                {
+                    TurmaId = TURMA_ID_1,
+                    AlunoCodigo = i.ToString(),
+                    AlunoNome = $"Nome do aluno {i}",
+                    Bimestre = 2,
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
+
+            var retorno = await useCase.Executar(TURMA_ID_1, 2);
             retorno.ShouldNotBeNull();
             retorno.Count().ShouldBe(5);
-
+            retorno.Count(r => r.PossuiMapeamentoEstudante).ShouldBe(2);
+            string.Join(",", retorno.Where(r => r.PossuiMapeamentoEstudante)
+                                    .OrderBy(r => r.CodigoAluno)
+                                    .Select(r => r.CodigoAluno)).ShouldBe("1,2");
         }
+
 
     }
 }

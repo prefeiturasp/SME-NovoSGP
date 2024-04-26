@@ -5,6 +5,7 @@ using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.MapeamentoEstudantes;
 using SME.SGP.Infra.Dtos.Sondagem;
 using System;
@@ -15,26 +16,32 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterCodigosAlunosSinalizadosPrioridadeMapeamentoEstudanteQueryHandler : IRequestHandler<ObterCodigosAlunosSinalizadosPrioridadeMapeamentoEstudanteQuery, string[]>
+    public class ObterCodigosAlunosSinalizadosPrioridadeMapeamentoEstudanteQueryHandler : IRequestHandler<ObterCodigosAlunosSinalizadosPrioridadeMapeamentoEstudanteQuery, AlunoSinalizadoPrioridadeMapeamentoEstudanteDto[]>
     {
         private readonly IRepositorioPlanoAEE repositorioPlanoAEE;
         private readonly IMediator mediator;
+        private readonly IRepositorioMapeamentoEstudante repositorioMapeamento;
+
         private const string HIPOTESE_ESCRITA_ALFABETICO = "A";
         private const string RESULTADO_ABAIXO_BASICO_PROVA_SP = "Abaixo do básico";
 
-        public ObterCodigosAlunosSinalizadosPrioridadeMapeamentoEstudanteQueryHandler(IRepositorioPlanoAEE repositorioPlanoAEE, IMediator mediator)
+        public ObterCodigosAlunosSinalizadosPrioridadeMapeamentoEstudanteQueryHandler(IRepositorioPlanoAEE repositorioPlanoAEE, 
+                                                                                      IMediator mediator,
+                                                                                      IRepositorioMapeamentoEstudante repositorioMapeamento)
         {
+            this.repositorioMapeamento = repositorioMapeamento ?? throw new System.ArgumentNullException(nameof(repositorioMapeamento));
             this.repositorioPlanoAEE = repositorioPlanoAEE ?? throw new System.ArgumentNullException(nameof(repositorioPlanoAEE));
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<string[]> Handle(ObterCodigosAlunosSinalizadosPrioridadeMapeamentoEstudanteQuery request, CancellationToken cancellationToken)
+        public async Task<AlunoSinalizadoPrioridadeMapeamentoEstudanteDto[]> Handle(ObterCodigosAlunosSinalizadosPrioridadeMapeamentoEstudanteQuery request, CancellationToken cancellationToken)
         {
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
             var alunosTurma = await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(turma.CodigoTurma, DateTimeExtension.HorarioBrasilia().Date));
             var matriculadosTurmaPAP = await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(turma.AnoLetivo, alunosTurma.Select(x => x.CodigoAluno).ToArray()));
+            var alunosComMapeamento = await repositorioMapeamento.ObterCodigosAlunosComMapeamentoEstudanteBimestre(request.TurmaId, request.Bimestre);
 
-            var retorno = new List<string>();
+            var retorno = new List<AlunoSinalizadoPrioridadeMapeamentoEstudanteDto>();
 
             var alunosSondagemProvaSPInsuficientes = new List<string>();
 
@@ -45,9 +52,9 @@ namespace SME.SGP.Aplicacao
                 {
                     var sondagem = await mediator.Send(new ObterSondagemLPAlunoQuery(turma.CodigoTurma, aluno.CodigoAluno));
                     var avaliacoesExternasProvaSP = await mediator.Send(new ObterAvaliacoesExternasProvaSPAlunoQuery(aluno.CodigoAluno, turma.AnoLetivo));
-                    if (SondagemHipoteseEscritaDiferenteAlfabetica(sondagem)
-                        || avaliacoesExternasProvaSP.Any(psp => psp.Nivel.ToUpper() == RESULTADO_ABAIXO_BASICO_PROVA_SP.ToUpper())
-                    )
+                    if ((sondagem.ObterHipoteseEscrita(request.Bimestre) != HIPOTESE_ESCRITA_ALFABETICO 
+                         && !string.IsNullOrEmpty(sondagem.ObterHipoteseEscrita(request.Bimestre)))
+                        || avaliacoesExternasProvaSP.Any(psp => psp.Nivel.ToUpper() == RESULTADO_ABAIXO_BASICO_PROVA_SP.ToUpper()))
                         alunosSondagemProvaSPInsuficientes.Add(aluno.CodigoAluno);
                 });
 
@@ -61,18 +68,12 @@ namespace SME.SGP.Aplicacao
                     || qdadePlanosAEE > 0
                     || alunosSondagemProvaSPInsuficientes.Contains(aluno.CodigoAluno)
                     )
-                    retorno.Add(aluno.CodigoAluno);
+                    retorno.Add(new AlunoSinalizadoPrioridadeMapeamentoEstudanteDto(aluno.CodigoAluno));
             }
+            retorno.ForEach(aluno => aluno.PossuiMapeamentoEstudante = alunosComMapeamento.Contains(aluno.CodigoAluno));
 
             return retorno.ToArray();
         }
 
-        private bool SondagemHipoteseEscritaDiferenteAlfabetica(SondagemLPAlunoDto sondagem)
-        {
-            return sondagem.ObterHipoteseEscrita(1) != HIPOTESE_ESCRITA_ALFABETICO && !string.IsNullOrEmpty(sondagem.ObterHipoteseEscrita(1))
-                    || sondagem.ObterHipoteseEscrita(1) != HIPOTESE_ESCRITA_ALFABETICO && !string.IsNullOrEmpty(sondagem.ObterHipoteseEscrita(2))
-                    || sondagem.ObterHipoteseEscrita(1) != HIPOTESE_ESCRITA_ALFABETICO && !string.IsNullOrEmpty(sondagem.ObterHipoteseEscrita(3))
-                    || sondagem.ObterHipoteseEscrita(1) != HIPOTESE_ESCRITA_ALFABETICO && !string.IsNullOrEmpty(sondagem.ObterHipoteseEscrita(4));
-        }
     }
 }
