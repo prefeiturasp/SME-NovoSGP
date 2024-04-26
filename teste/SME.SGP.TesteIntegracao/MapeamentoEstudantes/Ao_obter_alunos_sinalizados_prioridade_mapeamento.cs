@@ -38,7 +38,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAvaliacoesExternasProvaSPAlunoQuery, IEnumerable<AvaliacaoExternaProvaSPDto>>), typeof(ObterAvaliacoesExternasProvaSPAlunoQueryFake), ServiceLifetime.Scoped));
         }
 
-        [Fact(DisplayName = "Mapeamento Estudantes - Obter alunos com sindalização de prioridade")]
+        [Fact(DisplayName = "Mapeamento Estudantes - Obter alunos com sinalização de prioridade")]
         public async Task Ao_listar_alunos_sinalizacao_prioridade()
         {
             await CriarDadosBase();
