@@ -11,7 +11,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             MarcadorFrequenciaDto marcador = null;
 
-            string dataSituacao = $"{aluno.DataSituacao.Day}/{aluno.DataSituacao.Month}/{aluno.DataSituacao.Year}";
+            var dataSituacao = $"{aluno.DataSituacao.Day.ToString().PadLeft(2, '0')}/{aluno.DataSituacao.Month.ToString().PadLeft(2, '0')}/{aluno.DataSituacao.Year}";
           
             switch (aluno.CodigoSituacaoMatricula)
             {
@@ -26,6 +26,7 @@ namespace SME.SGP.Dominio.Servicos
                     break;
 
                 case SituacaoMatriculaAluno.Transferido:
+                case SituacaoMatriculaAluno.TransferidoSED:
                     var detalheEscola = aluno.Transferencia_Interna ?
                                         $"{MensagemNegocioAluno.PARA_ESCOLA} {aluno.EscolaTransferencia} {MensagemNegocioAluno.E_TURMA} {aluno.TurmaTransferencia}" :
                                         MensagemNegocioAluno.PARA_OUTRAS_REDES;

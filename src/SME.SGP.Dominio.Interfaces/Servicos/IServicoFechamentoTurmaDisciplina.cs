@@ -5,7 +5,7 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IServicoFechamentoTurmaDisciplina
     {
-        Task<AuditoriaPersistenciaDto> Salvar(long id, FechamentoTurmaDisciplinaDto entidadeDto, bool componenteSemNota = false);
+        Task<AuditoriaPersistenciaDto> Salvar(long id, FechamentoTurmaDisciplinaDto entidadeDto, bool componenteSemNota = false, bool processamento = false);
 
         Task Reprocessar(long fechamentoId, Usuario usuario = null);
 
