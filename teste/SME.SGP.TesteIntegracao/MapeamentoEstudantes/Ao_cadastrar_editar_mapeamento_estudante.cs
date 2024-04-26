@@ -6,6 +6,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Constantes;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.MapeamentoEstudantes;
 using SME.SGP.TesteIntegracao.Constantes;
@@ -228,7 +229,29 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
 
         }
 
-        private void PreencherIdsEdicao(MapeamentoEstudanteDto dtoUseCase)
+        [Fact(DisplayName = "Mapeamento Estudante - Consistir cadastro duplicado aluno/turma/bimestre")]
+        public async Task Ao_cadastrar_mapeamento_estudante_duplicado()
+        {
+            await CriarDadosBase();
+            await InserirNaBaseAsync(new Dominio.MapeamentoEstudante()
+            {
+                TurmaId = TURMA_ID_1,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                AlunoNome = $"Nome do aluno 1",
+                Bimestre = 3,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            var useCase = ServiceProvider.GetService<IRegistrarMapeamentoEstudanteUseCase>();
+            var dtoUseCase = ObterMapeamentoEstudanteDto();
+
+            var excecao = await Assert.ThrowsAsync<NegocioException>(async () => await useCase.Executar(dtoUseCase));
+            excecao.Message.ShouldBe(MensagemNegocioMapeamentoEstudante.MAPEAMENTO_ESTUDANTE_JA_EXISTENTE);
+        }
+
+            private void PreencherIdsEdicao(MapeamentoEstudanteDto dtoUseCase)
         {
             dtoUseCase.Id = 1;
             var secao = dtoUseCase.Secoes.FirstOrDefault();
