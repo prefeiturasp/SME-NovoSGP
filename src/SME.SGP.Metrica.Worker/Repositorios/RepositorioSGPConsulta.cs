@@ -7,6 +7,7 @@ using SME.SGP.Metrica.Worker.Repositorios.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -749,24 +750,24 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 
         public Task<IEnumerable<DevolutivaDuplicado>> ObterDevolutivaDuplicados()
 			=> database.Conexao.QueryAsync<DevolutivaDuplicado>(
-                @"select count(id) Quantidade, descricao, componente_curricular_codigo as ComponenteCurricularId, min(criado_em) as PrimeiroRegistro, 
-						max(criado_em) as UltimoRegistro, min(id) as PrimeiroId, max(id) as UltimoId 
-						from devolutiva d1
-						where exists (select 1 from devolutiva d2 
-									  where d1.id <> d2.id 
-										and d1.descricao = d2.descricao 
-										and d1.componente_curricular_codigo = d2.componente_curricular_codigo  
-										and d1.periodo_inicio = d2.periodo_inicio
-										and d1.periodo_fim = d2.periodo_fim)       
-						group by descricao, componente_curricular_codigo");
+                @"select count(id) Quantidade, 
+                         d1.periodo_inicio, d1.periodo_fim,       
+                         descricao, componente_curricular_codigo as ComponenteCurricularId, min(criado_em) as PrimeiroRegistro, 
+                         max(criado_em) as UltimoRegistro, min(id) as PrimeiroId, max(id) as UltimoId 
+                 from devolutiva d1
+                 where d1.criado_em >= @dataReferencia
+                 group by descricao, componente_curricular_codigo, d1.periodo_inicio, d1.periodo_fim 
+                 having count(id) > 1
+                 order by descricao, componente_curricular_codigo, d1.periodo_inicio, d1.periodo_fim;", new { dataReferencia = new DateTime(DateTime.Now.Year-1,01,01)});
 
         public Task<IEnumerable<DevolutivaMaisDeUmaNoDiario>> ObterDevolutivaMaisDeUmaNoDiario()
             => database.Conexao.QueryAsync<DevolutivaMaisDeUmaNoDiario>(
                 @"select count(db.id) as Quantidade, devolutiva_id as DevolutivaId
-			      from diario_bordo db inner join
-                  devolutiva d on d.id = db.devolutiva_id 
+			      from diario_bordo db 
+                  inner join devolutiva d on d.id = db.devolutiva_id 
+                  where d.criado_em >= @dataReferencia
                   group by devolutiva_id                    
-                  having count(db.id) > 1");
+                  having count(db.id) > 1", new { dataReferencia = new DateTime(DateTime.Now.Year - 1, 01, 01) });
 
         public Task<IEnumerable<DevolutivaSemDiario>> ObterDevolutivaSemDiario()
             => database.Conexao.QueryAsync<DevolutivaSemDiario>(
