@@ -70,7 +70,15 @@ namespace SME.SGP.Aplicacao
                     )
                     retorno.Add(new AlunoSinalizadoPrioridadeMapeamentoEstudanteDto(aluno.CodigoAluno));
             }
-            retorno.ForEach(aluno => aluno.PossuiMapeamentoEstudante = alunosComMapeamento.Contains(aluno.CodigoAluno));
+            
+            foreach (var alunoMapeado in alunosComMapeamento)
+            {
+                var alunoAlerta = retorno.FirstOrDefault(r => r.CodigoAluno.Equals(alunoMapeado));
+                if (alunoAlerta.NaoEhNulo())
+                    alunoAlerta.PossuiMapeamentoEstudante = true;
+                else
+                    retorno.Add(new AlunoSinalizadoPrioridadeMapeamentoEstudanteDto(alunoMapeado, true));
+            } 
 
             return retorno.ToArray();
         }
