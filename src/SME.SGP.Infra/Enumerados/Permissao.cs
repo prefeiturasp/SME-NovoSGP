@@ -566,8 +566,44 @@ namespace SME.SGP.Infra
             Url = ConstantesMenuPermissao.ROTA_SONDAGEM,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
             EhConsulta = true)]
-            S_C = 5, 
-            
+            S_C = 5,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE,
+            Menu = ConstantesMenuPermissao.MENU_MAPEAMENTO_ESTUDANTES,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_MAPEAMENTO_ESTUDANTES,
+            Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_MAPEAMENTO_ESTUDANTES,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
+            EhConsulta = true)]
+        ME_C = 272,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE,
+            Menu = ConstantesMenuPermissao.MENU_MAPEAMENTO_ESTUDANTES,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_MAPEAMENTO_ESTUDANTES,
+            Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_MAPEAMENTO_ESTUDANTES,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
+            EhInclusao = true)]
+        ME_I = 273,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE,
+            Menu = ConstantesMenuPermissao.MENU_MAPEAMENTO_ESTUDANTES,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_MAPEAMENTO_ESTUDANTES,
+            Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_MAPEAMENTO_ESTUDANTES,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
+            EhExclusao = true)]
+        ME_E = 274,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE,
+            Menu = ConstantesMenuPermissao.MENU_MAPEAMENTO_ESTUDANTES,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_MAPEAMENTO_ESTUDANTES,
+            Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_MAPEAMENTO_ESTUDANTES,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
+            EhAlteracao = true)]
+        ME_A = 275,
+
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_FECHAMENTO, 
             Menu = ConstantesMenuPermissao.MENU_FECHAMENTO_DO_BIMESTRE, 
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_FECHAMENTO,
