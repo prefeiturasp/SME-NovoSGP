@@ -7,6 +7,7 @@ using SME.SGP.Metrica.Worker.Repositorios.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -754,19 +755,19 @@ namespace SME.SGP.Metrica.Worker.Repositorios
                          descricao, componente_curricular_codigo as ComponenteCurricularId, min(criado_em) as PrimeiroRegistro, 
                          max(criado_em) as UltimoRegistro, min(id) as PrimeiroId, max(id) as UltimoId 
                  from devolutiva d1
-                 where extract(year from d1.criado_em) >= extract(year from NOW()) -1
+                 where d1.criado_em >= @dataReferencia
                  group by descricao, componente_curricular_codigo, d1.periodo_inicio, d1.periodo_fim 
                  having count(id) > 1
-                 order by descricao, componente_curricular_codigo, d1.periodo_inicio, d1.periodo_fim;");
+                 order by descricao, componente_curricular_codigo, d1.periodo_inicio, d1.periodo_fim;", new { dataReferencia = new DateTime(DateTime.Now.Year-1,01,01)});
 
         public Task<IEnumerable<DevolutivaMaisDeUmaNoDiario>> ObterDevolutivaMaisDeUmaNoDiario()
             => database.Conexao.QueryAsync<DevolutivaMaisDeUmaNoDiario>(
                 @"select count(db.id) as Quantidade, devolutiva_id as DevolutivaId
 			      from diario_bordo db 
                   inner join devolutiva d on d.id = db.devolutiva_id 
-                  where extract(year from d.criado_em) >= extract(year from NOW()) -1
+                  where d.criado_em >= @dataReferencia
                   group by devolutiva_id                    
-                  having count(db.id) > 1");
+                  having count(db.id) > 1", new { dataReferencia = new DateTime(DateTime.Now.Year - 1, 01, 01) });
 
         public Task<IEnumerable<DevolutivaSemDiario>> ObterDevolutivaSemDiario()
             => database.Conexao.QueryAsync<DevolutivaSemDiario>(
