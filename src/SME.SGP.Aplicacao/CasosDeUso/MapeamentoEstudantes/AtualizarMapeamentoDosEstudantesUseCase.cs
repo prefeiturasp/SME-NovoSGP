@@ -15,11 +15,11 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            DateTime.TryParse(param.Mensagem.ToString(), out DateTime dataBase);
+            DateTime.TryParse(param.Mensagem?.ToString() ?? string.Empty, out DateTime dataBase);
             var identificadores = await mediator.Send(new ObterIdentificadoresDosMapeamentosDoBimestreAtualQuery(
                                                                                             dataBase.Equals(DateTime.MinValue) 
                                                                                             ? DateTimeExtension.HorarioBrasilia().Date
-                                                                                            : dataBase)); ;
+                                                                                            : dataBase));
            
             foreach(var identificador in identificadores)
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ExecutarAtualizacaoMapeamentoEstudantesBimestre, identificador, Guid.NewGuid(), null));
