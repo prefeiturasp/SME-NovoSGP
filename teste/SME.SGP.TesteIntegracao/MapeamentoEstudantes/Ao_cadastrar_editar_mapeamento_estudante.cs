@@ -136,7 +136,30 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
             var excecao = await Assert.ThrowsAsync<NegocioException>(async () => await useCase.Executar(dtoUseCase));
             excecao.Message.ShouldBe("Existem questões obrigatórias não preenchidas no Mapeamento de Estudante: Seção: Mapeamento Estudante Seção 1 Questões: [2, 17]");
         }
-        
+
+        [Fact(DisplayName = "Mapeamento Estudante Turma 1º Ano EF - Não consistir questões obrigatórias ao cadastrar (PARECER E TURMA ANO ANTERIOR)")]
+        public async Task Ao_cadastrar_mapeamento_estudante_nao_consistir_questoes_obrigatorias_parecer_e_turma_ano_anterior()
+        {
+            await CriarDadosBase();
+            await CriarTurma(Dominio.Modalidade.Fundamental, ANO_1, false, tipoTurno: 2);
+            var useCase = ServiceProvider.GetService<IRegistrarMapeamentoEstudanteUseCase>();
+            var dtoUseCase = ObterMapeamentoEstudanteDto(true, TURMA_ID_2, true);
+
+            var excecao = await Assert.ThrowsAsync<NegocioException>(async () => await useCase.Executar(dtoUseCase));
+            excecao.Message.ShouldBe("Existem questões obrigatórias não preenchidas no Mapeamento de Estudante: Seção: Mapeamento Estudante Seção 1 Questões: [17]");
+        }
+
+        [Fact(DisplayName = "Mapeamento Estudante Turma DIFERENTE 1º Ano EF - Consistir questões obrigatórias ao cadastrar (PARECER E TURMA ANO ANTERIOR)")]
+        public async Task Ao_cadastrar_mapeamento_estudante_consistir_questoes_obrigatorias_parecer_e_turma_ano_anterior()
+        {
+            await CriarDadosBase();
+            var useCase = ServiceProvider.GetService<IRegistrarMapeamentoEstudanteUseCase>();
+            var dtoUseCase = ObterMapeamentoEstudanteDto(true, TURMA_ID_1, true);
+
+            var excecao = await Assert.ThrowsAsync<NegocioException>(async () => await useCase.Executar(dtoUseCase));
+            excecao.Message.ShouldBe("Existem questões obrigatórias não preenchidas no Mapeamento de Estudante: Seção: Mapeamento Estudante Seção 1 Questões: [1, 2, 17]");
+        }
+
         [Fact(DisplayName = "Mapeamento Estudante - Editar")]
         public async Task Ao_editar_mapeamento_estudante()
         {
@@ -293,11 +316,11 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
         }
 
 
-        private MapeamentoEstudanteDto ObterMapeamentoEstudanteDto(bool ignorarRespostasObrigatorias = false)
+        private MapeamentoEstudanteDto ObterMapeamentoEstudanteDto(bool ignorarRespostasObrigatorias = false, long turmaId = TURMA_ID_1, bool semParecerTurmaAnoAnterior = false)
         {
             return new MapeamentoEstudanteDto()
             {
-                TurmaId = TURMA_ID_1,
+                TurmaId = turmaId,
                 AlunoCodigo = ALUNO_CODIGO_1,
                 AlunoNome = "Nome do aluno do mapeamento",
                 Bimestre = 3,
@@ -311,13 +334,17 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
                             new ()
                             {
                                 QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PARECER_CONCLUSIVO_ANO_ANTERIOR)).Id,
-                                Resposta = "{\"index\":\"1\",\"value\":\"Promovido\"}",
+                                Resposta = semParecerTurmaAnoAnterior 
+                                           ? string.Empty 
+                                           : "{\"index\":\"1\",\"value\":\"Promovido\"}",
                                 TipoQuestao = TipoQuestao.ComboDinamico
                             },
                             new ()
                             {
                                 QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.TURMA_ANO_ANTERIOR)).Id,
-                                Resposta = ignorarRespostasObrigatorias ? string.Empty : "EF-4B",
+                                Resposta = ignorarRespostasObrigatorias || semParecerTurmaAnoAnterior
+                                           ? string.Empty 
+                                           : "EF-4B",
                                 TipoQuestao = TipoQuestao.Frase
                             },
                             new ()

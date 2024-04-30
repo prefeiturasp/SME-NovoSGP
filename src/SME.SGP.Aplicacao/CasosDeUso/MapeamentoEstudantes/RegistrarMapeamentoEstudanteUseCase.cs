@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Constantes;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
@@ -16,6 +17,8 @@ namespace SME.SGP.Aplicacao
     public class RegistrarMapeamentoEstudanteUseCase : IRegistrarMapeamentoEstudanteUseCase
     {
         private readonly IMediator mediator;
+        private const string PRIMEIRO_ANO_ENSINO_FUNDAMENTAL = "1";
+        private string[] NOMES_COMPONENTES_QUESTOES_NAO_OBRIGATORIAS_PRIMEIRO_ANO_EF = new string[] { NomesComponentesMapeamentoEstudante.PARECER_CONCLUSIVO_ANO_ANTERIOR, NomesComponentesMapeamentoEstudante.TURMA_ANO_ANTERIOR };
 
         public RegistrarMapeamentoEstudanteUseCase(IMediator mediator)
         {
@@ -26,7 +29,7 @@ namespace SME.SGP.Aplicacao
         {
             var dadosAluno = await ValidarRegras(mapeamentoDto);           
             List<QuestaoObrigatoriaNaoRespondidaDto> questoesObrigatoriasAConsistir = await ObterQuestoesObrigatoriasNaoPreechidas(mapeamentoDto);
-            ConsistirQuestoesObrigatoriasNaoPreenchidas(questoesObrigatoriasAConsistir);
+            ConsistirQuestoesObrigatoriasNaoPreenchidas(questoesObrigatoriasAConsistir, dadosAluno.MapeamentoPrimeiroAnoEF);
             PreencherConclusaoSecoes(questoesObrigatoriasAConsistir, mapeamentoDto);
 
             if (mapeamentoDto.Id.GetValueOrDefault() > 0)
@@ -46,7 +49,7 @@ namespace SME.SGP.Aplicacao
             return resultadoMapeamento;
         }
       
-        private async Task<(string CodigoAluno, string NomeAluno)> ValidarRegras(MapeamentoEstudanteDto mapeamento)
+        private async Task<(string CodigoAluno, string NomeAluno, bool MapeamentoPrimeiroAnoEF)> ValidarRegras(MapeamentoEstudanteDto mapeamento)
         {
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(mapeamento.TurmaId));
             if (turma.EhNulo())
@@ -63,7 +66,7 @@ namespace SME.SGP.Aplicacao
                     throw new NegocioException(MensagemNegocioMapeamentoEstudante.MAPEAMENTO_ESTUDANTE_JA_EXISTENTE);
             }
 
-            return (aluno.CodigoAluno, aluno.NomeAluno);
+            return (aluno.CodigoAluno, aluno.NomeAluno, turma.Ano == PRIMEIRO_ANO_ENSINO_FUNDAMENTAL);
         }
 
         private void PreencherConclusaoSecoes(List<QuestaoObrigatoriaNaoRespondidaDto> questoesObrigatoriasAConsistir, MapeamentoEstudanteDto mapeamentoDto)
@@ -75,8 +78,10 @@ namespace SME.SGP.Aplicacao
                 secao.Concluido = !secoesComQuestoesObrigatoriasAConsistir.Contains(secao.SecaoId);
         }
 
-        private void ConsistirQuestoesObrigatoriasNaoPreenchidas(List<QuestaoObrigatoriaNaoRespondidaDto> questoesObrigatoriasAConsistir)
+        private void ConsistirQuestoesObrigatoriasNaoPreenchidas(List<QuestaoObrigatoriaNaoRespondidaDto> questoesObrigatoriasAConsistir, bool mapeamentoPrimeiroAnoEF)
         {
+            if (mapeamentoPrimeiroAnoEF)
+                questoesObrigatoriasAConsistir = questoesObrigatoriasAConsistir.Where(q => !NOMES_COMPONENTES_QUESTOES_NAO_OBRIGATORIAS_PRIMEIRO_ANO_EF.Contains(q.NomeComponenteQuestao)).ToList();
             if (!questoesObrigatoriasAConsistir.Any())
                 return;
 
