@@ -18,11 +18,16 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IRepositorioQuestaoMapeamentoEstudante repositorioQuestao;
+        private readonly IRepositorioMapeamentoEstudante repositorioMapeamento;
+        private const string PRIMEIRO_ANO_ENSINO_FUNDAMENTAL = "1";
         
-        public ObterQuestionarioMapeamentoEstudanteQueryHandler(IMediator mediator, IRepositorioQuestaoMapeamentoEstudante repositorioQuestao)
+        public ObterQuestionarioMapeamentoEstudanteQueryHandler(IMediator mediator, 
+                                                                IRepositorioQuestaoMapeamentoEstudante repositorioQuestao,
+                                                                IRepositorioMapeamentoEstudante repositorioMapeamento)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioQuestao = repositorioQuestao ?? throw new ArgumentNullException(nameof(repositorioQuestao));
+            this.repositorioMapeamento = repositorioMapeamento ?? throw new ArgumentNullException(nameof(repositorioMapeamento));
         }
 
         public async Task<IEnumerable<QuestaoDto>> Handle(ObterQuestionarioMapeamentoEstudanteQuery request, CancellationToken cancellationToken)
@@ -47,14 +52,21 @@ namespace SME.SGP.Aplicacao
                     };
                 })));
 
+            var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId ?? 
+                                                                     await repositorioMapeamento
+                                                                                .ObterTurmaIdMapeamentoEstudante(request.MapeamentoEstudanteId.Value)));
+
             var questao = questoes.FirstOrDefault(q => q.NomeComponente == NomesComponentesMapeamentoEstudante.PARECER_CONCLUSIVO_ANO_ANTERIOR);
             if (questao.Resposta.NaoPossuiRegistros())
                 questao.SomenteLeitura = false;
+            questao.Obrigatorio = turma.Ano != PRIMEIRO_ANO_ENSINO_FUNDAMENTAL;
+
 
             questao = questoes.FirstOrDefault(q => q.NomeComponente == NomesComponentesMapeamentoEstudante.TURMA_ANO_ANTERIOR);
             if (questao.Resposta.NaoPossuiRegistros())
                 questao.SomenteLeitura = false;
-
+            questao.Obrigatorio = turma.Ano != PRIMEIRO_ANO_ENSINO_FUNDAMENTAL;
+            
             return questoes;
         }
 

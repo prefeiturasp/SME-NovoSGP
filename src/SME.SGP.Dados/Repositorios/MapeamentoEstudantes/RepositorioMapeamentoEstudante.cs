@@ -215,5 +215,9 @@ namespace SME.SGP.Dados.Repositorios
                                                         FROM mapeamento_estudante
                                                         WHERE turma_id = @turmaId
                                                         AND bimestre = @bimestre", new { turmaId, bimestre })).ToArray();
+
+        public Task<long> ObterTurmaIdMapeamentoEstudante(long mapeamentoEstudanteId)
+        => database.Conexao.QueryFirstOrDefaultAsync<long>("SELECT turma_id FROM mapeamento_estudante WHERE id = @mapeamentoEstudanteId ", new { mapeamentoEstudanteId });
+        
     }
 }

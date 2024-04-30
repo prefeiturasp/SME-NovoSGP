@@ -177,6 +177,17 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
 
             questao = retorno.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.QDADE_REGISTROS_BUSCA_ATIVA));
             questao.Resposta.FirstOrDefault().Texto.ShouldBe("5");
+
+            await CriarTurma(Dominio.Modalidade.Fundamental, ANO_1, false, tipoTurno: 2);
+            retorno = await useCase.Executar(new FiltroQuestoesQuestionarioMapeamentoEstudanteDto() { QuestionarioId = 1, TurmaId = TURMA_ID_2, CodigoAluno = ALUNO_CODIGO_1, Bimestre = 2 });
+            retorno.ShouldNotBeNull();
+            retorno.Count().ShouldBe(19);
+            retorno.Any(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PARECER_CONCLUSIVO_ANO_ANTERIOR)
+                             && q.TipoQuestao.Equals(TipoQuestao.ComboDinamico)
+                             && !q.Obrigatorio).ShouldBeTrue();
+            retorno.Any(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.TURMA_ANO_ANTERIOR)
+                             && q.TipoQuestao.Equals(TipoQuestao.Frase)
+                             && !q.Obrigatorio).ShouldBeTrue();
         }
 
         [Fact(DisplayName = "Mapeamento Estudantes - Listar questões por questionário (com respostas por id mapeamento editado)")]
