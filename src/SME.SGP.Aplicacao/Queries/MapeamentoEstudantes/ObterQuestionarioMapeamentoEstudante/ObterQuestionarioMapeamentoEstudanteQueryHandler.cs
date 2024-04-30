@@ -57,13 +57,13 @@ namespace SME.SGP.Aplicacao
                                                                                 .ObterTurmaIdMapeamentoEstudante(request.MapeamentoEstudanteId.Value)));
 
             var questao = questoes.FirstOrDefault(q => q.NomeComponente == NomesComponentesMapeamentoEstudante.PARECER_CONCLUSIVO_ANO_ANTERIOR);
-            if (questao.Resposta.NaoPossuiRegistros())
+            if (!questao.Resposta.NaoNuloEContemRegistrosRespondidos())
                 questao.SomenteLeitura = false;
             questao.Obrigatorio = turma.Ano != PRIMEIRO_ANO_ENSINO_FUNDAMENTAL;
 
 
             questao = questoes.FirstOrDefault(q => q.NomeComponente == NomesComponentesMapeamentoEstudante.TURMA_ANO_ANTERIOR);
-            if (questao.Resposta.NaoPossuiRegistros())
+            if (!questao.Resposta.NaoNuloEContemRegistrosRespondidos())
                 questao.SomenteLeitura = false;
             questao.Obrigatorio = turma.Ano != PRIMEIRO_ANO_ENSINO_FUNDAMENTAL;
             
