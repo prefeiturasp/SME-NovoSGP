@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao
 
         private string FormatarSenha(string codigoRf) 
         {
-            string sufixoSenha = codigoRf.Substring(codigoRf.Length - 4, 4);
+            string sufixoSenha = !string.IsNullOrWhiteSpace(codigoRf) ? codigoRf.Substring(codigoRf.Length - 4, 4) : "@1234";
             return $"Sgp{sufixoSenha}";
         }
     }

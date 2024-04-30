@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
                                                       && turma.AnoLetivo <= DateTimeExtension.HorarioBrasilia().Year
                                                       && turma.DataSituacao.Date <= DateTimeExtension.HorarioBrasilia().Date)
                                       .OrderByDescending(turma => turma.AnoLetivo)
-                                      .ThenByDescending(turma => turma.DataSituacao)
+                                      .ThenByDescending(turma => (turma.DataAtualizacaoTabela, turma.DataSituacao))
                                       .FirstOrDefault(); 
 
             if (alunoTurma.NaoEhNulo()) 
