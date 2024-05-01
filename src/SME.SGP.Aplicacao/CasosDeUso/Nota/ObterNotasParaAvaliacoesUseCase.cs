@@ -197,7 +197,7 @@ namespace SME.SGP.Aplicacao
 
                 var notasAvaliacoes = new List<NotasConceitosNotaAvaliacaoRetornoDto>();
 
-                var matriculasAluno = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(turmaCompleta.CodigoTurma, aluno.CodigoAluno));
+                var matriculasAluno = alunos.Where(a => a.CodigoAluno == aluno.CodigoAluno && a.CodigoTurma == aluno.CodigoTurma);
 
                 if (matriculasAluno.Count() > 1)
                     matriculasAluno = matriculasAluno.Where(m => m.NumeroAlunoChamada == aluno.NumeroAlunoChamada).ToList();
@@ -245,7 +245,7 @@ namespace SME.SGP.Aplicacao
                 }
 
                 notaConceitoAluno.PodeEditar =
-                       (aluno.Inativo == false || (aluno.Inativo && (aluno.DataSituacao >= periodoFechamentoBimestre?.PeriodoFechamentoInicio.Date ||
+                       (!aluno.Inativo || (aluno.Inativo && (aluno.DataSituacao >= periodoFechamentoBimestre?.PeriodoFechamentoInicio.Date ||
                        (aluno.DataSituacao >= bimestreParaAdicionar.PeriodoInicio && bimestreParaAdicionar.PeriodoFim <= aluno.DataSituacao))));
 
                 notaConceitoAluno.Marcador = await mediator
