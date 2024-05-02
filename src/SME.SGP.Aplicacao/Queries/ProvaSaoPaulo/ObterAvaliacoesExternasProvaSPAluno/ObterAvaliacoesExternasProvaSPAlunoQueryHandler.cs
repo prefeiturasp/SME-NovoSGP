@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Consts;
@@ -53,7 +54,12 @@ namespace SME.SGP.Aplicacao.Queries
 
     public static class ListExtension
     {
+        private static JsonSerializerSettings settings = new JsonSerializerSettings
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        };
+
         public static string SerializarJsonTipoQuestaoAvaliacoesExternasProvaSP(this List<AvaliacaoExternaProvaSPDto> source)
-        => JsonConvert.SerializeObject(source);
+        => JsonConvert.SerializeObject(source, settings);
     }
 }

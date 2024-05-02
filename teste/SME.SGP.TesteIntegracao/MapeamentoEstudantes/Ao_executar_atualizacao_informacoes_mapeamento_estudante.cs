@@ -96,7 +96,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
 
             respostaMapeamento.Any(a => a.QuestaoMapeamentoEstudanteId == questaoMapeamento.Where(q => q.QuestaoId ==
                                                                                                        Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.AVALIACOES_EXTERNAS_PROVA_SP)).Id).FirstOrDefault().Id
-                                          && a.Texto.Equals("[{\"AreaConhecimento\":\"CIENCIAS DA NATUREZA\",\"Proficiencia\":90.5,\"Nivel\":\"BÁSICO\"},{\"AreaConhecimento\":\"LINGUA PORTUGUES\",\"Proficiencia\":179.5,\"Nivel\":\"BÁSICO\"}]")).ShouldBeTrue();
+                                          && a.Texto.Equals("[{\"areaConhecimento\":\"CIENCIAS DA NATUREZA\",\"proficiencia\":90.5,\"nivel\":\"BÁSICO\"},{\"areaConhecimento\":\"LINGUA PORTUGUES\",\"proficiencia\":179.5,\"nivel\":\"BÁSICO\"}]")).ShouldBeTrue();
 
             respostaMapeamento.Any(a => a.QuestaoMapeamentoEstudanteId == questaoMapeamento.Where(q => q.QuestaoId ==
                                                                                                        Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.HIPOTESE_ESCRITA)).Id).FirstOrDefault().Id

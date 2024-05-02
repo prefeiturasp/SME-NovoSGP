@@ -170,7 +170,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
             questao.Resposta.FirstOrDefault().Texto.ShouldBe("Alfabético");
 
             questao = retorno.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.AVALIACOES_EXTERNAS_PROVA_SP));
-            questao.Resposta.FirstOrDefault().Texto.ShouldBe("[{\"AreaConhecimento\":\"CIENCIAS DA NATUREZA\",\"Proficiencia\":90.5,\"Nivel\":\"BÁSICO\"},{\"AreaConhecimento\":\"LINGUA PORTUGUES\",\"Proficiencia\":179.5,\"Nivel\":\"BÁSICO\"}]");
+            questao.Resposta.FirstOrDefault().Texto.ShouldBe("[{\"areaConhecimento\":\"CIENCIAS DA NATUREZA\",\"proficiencia\":90.5,\"nivel\":\"BÁSICO\"},{\"areaConhecimento\":\"LINGUA PORTUGUES\",\"proficiencia\":179.5,\"nivel\":\"BÁSICO\"}]");
 
             questao = retorno.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.FREQUENCIA));
             questao.Resposta.FirstOrDefault().OpcaoRespostaId.ShouldBe(questao.OpcaoResposta.FirstOrDefault(op => op.Nome == "Frequente").Id);

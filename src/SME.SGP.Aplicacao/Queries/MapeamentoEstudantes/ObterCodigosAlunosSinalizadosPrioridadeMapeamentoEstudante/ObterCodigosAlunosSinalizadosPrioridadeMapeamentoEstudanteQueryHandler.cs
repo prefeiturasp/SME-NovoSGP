@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
                 .Select(async aluno =>
                 {
                     var sondagem = await mediator.Send(new ObterSondagemLPAlunoQuery(turma.CodigoTurma, aluno.CodigoAluno));
-                    var avaliacoesExternasProvaSP = await mediator.Send(new ObterAvaliacoesExternasProvaSPAlunoQuery(aluno.CodigoAluno, turma.AnoLetivo));
+                    var avaliacoesExternasProvaSP = await mediator.Send(new ObterAvaliacoesExternasProvaSPAlunoQuery(aluno.CodigoAluno, turma.AnoLetivo-1));
                     if ((sondagem.ObterHipoteseEscrita(request.Bimestre) != HIPOTESE_ESCRITA_ALFABETICO 
                          && !string.IsNullOrEmpty(sondagem.ObterHipoteseEscrita(request.Bimestre)))
                         || avaliacoesExternasProvaSP.Any(psp => psp.Nivel.ToUpper() == RESULTADO_ABAIXO_BASICO_PROVA_SP.ToUpper()))
