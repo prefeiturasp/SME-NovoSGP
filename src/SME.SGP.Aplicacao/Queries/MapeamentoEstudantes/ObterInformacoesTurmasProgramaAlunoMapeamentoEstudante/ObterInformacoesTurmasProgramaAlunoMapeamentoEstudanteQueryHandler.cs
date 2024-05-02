@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
         private const long PAP_PROJETO_COLABORATIVO = 1770;
 
         private const long SRM = 1030;
-        private const long PAEE_COLABORATIVO = 1030;
+        private const long PAEE_COLABORATIVO = 1310;
 
         private const long ACOMPANHAMENTO_PEDAGOGICO_MATEMATICA = 1255;
         private const long ACOMPANHAMENTO_PEDAGOGICO_PORTUGUES = 1204;
