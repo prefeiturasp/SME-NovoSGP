@@ -137,7 +137,7 @@ namespace SME.SGP.Aplicacao
                 Texto = sondagem.ObterTextoHipoteseEscrita(request.Bimestre)
             });
 
-            var avaliacoesExternasProvaSP = await mediator.Send(new ObterAvaliacoesExternasProvaSPAlunoQuery(request.CodigoAluno, turma.AnoLetivo)); 
+            var avaliacoesExternasProvaSP = await mediator.Send(new ObterAvaliacoesExternasProvaSPAlunoQuery(request.CodigoAluno, turma.AnoLetivo-1)); 
             questao = await repositorioQuestao.ObterIdQuestaoPorNomeComponenteQuestionario(request.QuestionarioId, NomesComponentesMapeamentoEstudante.AVALIACOES_EXTERNAS_PROVA_SP);
             retorno.Add(new RespostaQuestaoMapeamentoEstudanteDto()
             {
