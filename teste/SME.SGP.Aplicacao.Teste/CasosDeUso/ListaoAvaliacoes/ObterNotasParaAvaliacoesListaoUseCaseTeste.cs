@@ -9,16 +9,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Nota
+namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ListaoAvaliacoes
 {
-    public class ObterNotasParaAvaliacoesUseCaseTeste
+    public class ObterNotasParaAvaliacoesListaoUseCaseTeste
     {
         private readonly Mock<IMediator> mediator;
         private readonly Mock<IConsultasDisciplina> consultasDisciplina;
         private readonly Mock<IConsultasPeriodoFechamento> consultasPeriodoFechamento;
         private readonly ObterNotasParaAvaliacoesUseCase useCase;
 
-        public ObterNotasParaAvaliacoesUseCaseTeste()
+        public ObterNotasParaAvaliacoesListaoUseCaseTeste()
         {
             mediator = new Mock<IMediator>();
             consultasDisciplina = new Mock<IConsultasDisciplina>();
@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Nota
             useCase = new ObterNotasParaAvaliacoesUseCase(mediator.Object, consultasDisciplina.Object, consultasPeriodoFechamento.Object);
         }
 
-        [Fact(DisplayName = "ObterNotasParaAvaliacoesUseCase - Não permite editar nota de avaliação com data inferior a data de matrícula do aluno")]
+        [Fact(DisplayName = "ObterNotasParaAvaliacoesListaoUseCase - Não permite editar nota de avaliação com data inferior a data de matrícula do aluno")]
         public async Task NaoPermiteEditarNotaAvaliacaoComDataInferiorDataMatriculaAluno()
         {
             var anoAtual = DateTimeExtension.HorarioBrasilia().Year;
@@ -131,7 +131,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Nota
             Assert.True(resultado.Bimestres.Single().Alunos.Single().NotasAvaliacoes.Single(na => na.AtividadeAvaliativaId == 2).PodeEditar);
         }
 
-        [Fact(DisplayName = "ObterNotasParaAvaliacoesUseCase - Deve desconsiderar alunos com vinculo indevido")]
+        [Fact(DisplayName = "ObterNotasParaAvaliacoesListaoUseCaseTeste - Deve desconsiderar alunos com vinculo indevido")]
         public async Task DeveDesconsiderarAlunosComVinculoIndevido()
         {
             var anoAtual = DateTimeExtension.HorarioBrasilia().Year;
