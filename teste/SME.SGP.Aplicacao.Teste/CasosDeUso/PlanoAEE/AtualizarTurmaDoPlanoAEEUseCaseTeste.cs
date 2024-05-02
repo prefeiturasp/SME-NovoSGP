@@ -27,12 +27,12 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PlanoAEE
         {
             var anoAtual = DateTimeExtension.HorarioBrasilia().Year;
             var mesAtual = DateTimeExtension.HorarioBrasilia().Month;
-            var dataSituacao = new DateTime(anoAtual, mesAtual, DateTimeExtension.HorarioBrasilia().AddDays(-2).Day);
+            var dataSituacao = new DateTime(anoAtual, mesAtual, DateTimeExtension.HorarioBrasilia().Day).AddDays(-2);
 
             var turmasAluno = new List<TurmasDoAlunoDto>()
             {
-               new () { CodigoTurma = 1, CodigoTipoTurma = 1, AnoLetivo = 2024, DataSituacao = dataSituacao, DataAtualizacaoTabela = dataSituacao  },
-               new () { CodigoTurma = 2, CodigoTipoTurma = 1, AnoLetivo = 2024, DataSituacao = dataSituacao, DataAtualizacaoTabela = dataSituacao.AddSeconds(1)  }
+               new () { CodigoTurma = 1, CodigoTipoTurma = 1, AnoLetivo = anoAtual, DataSituacao = dataSituacao, DataAtualizacaoTabela = dataSituacao  },
+               new () { CodigoTurma = 2, CodigoTipoTurma = 1, AnoLetivo = anoAtual, DataSituacao = dataSituacao, DataAtualizacaoTabela = dataSituacao.AddSeconds(1)  }
             };
 
             mediator.Setup(x => x.Send(It.Is<ObterAlunosEolPorCodigosQuery>(y => y.CodigosAluno[0] == 1 && y.TodasMatriculas), It.IsAny<CancellationToken>()))
