@@ -32,12 +32,12 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
         private const long PAP_RECUPERACAO_DE_APRENDIZAGENS = 1322;
         private const long PAP_PROJETO_COLABORATIVO = 1770;
         private const long SRM = 1030;
-        private const long PAEE_COLABORATIVO = 1030;
+        private const long PAEE_COLABORATIVO = 1310;
         private const long ACOMPANHAMENTO_PEDAGOGICO_MATEMATICA = 1255;
 
         private const string JsonComboMultiplaEscolhaDinamico_FortalecimentoAprendizagens = "[{\"index\":\"1255\",\"value\":\"1255\"}]";
         private const string JsonComboMultiplaEscolhaDinamico_PAP = "[{\"index\":\"1765\",\"value\":\"1765\"},{\"index\":\"1322\",\"value\":\"Contraturno\"},{\"index\":\"1770\",\"value\":\"Colaborativo\"}]";
-        private const string JsonComboMultiplaEscolhaDinamico_SRMCEFAI = "[{\"index\":\"1030\",\"value\":\"1030\"},{\"index\":\"1030\",\"value\":\"1030\"}]";
+        private const string JsonComboMultiplaEscolhaDinamico_SRMCEFAI = "[{\"index\":\"1030\",\"value\":\"1030\"},{\"index\":\"1310\",\"value\":\"1310\"}]";
 
         public Ao_obter_informacoes_atualizadas_mapeamento_estudante(CollectionFixture collectionFixture) : base(collectionFixture)
         {
