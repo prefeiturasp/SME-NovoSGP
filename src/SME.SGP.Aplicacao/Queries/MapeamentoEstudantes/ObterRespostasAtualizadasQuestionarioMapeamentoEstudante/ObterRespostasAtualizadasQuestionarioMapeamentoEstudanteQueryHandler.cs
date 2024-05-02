@@ -148,7 +148,7 @@ namespace SME.SGP.Aplicacao
             string freqGeralAluno = await mediator.Send(new ObterConsultaFrequenciaGeralAlunoQuery(request.CodigoAluno, turma.CodigoTurma));
             questao = await repositorioQuestao.ObterIdQuestaoPorNomeComponenteQuestionario(request.QuestionarioId, NomesComponentesMapeamentoEstudante.FREQUENCIA);
             double freqGeral = 0;
-            Double.TryParse(freqGeralAluno.Replace("%", "").Replace(",", ".").Trim(), out freqGeral);
+            Double.TryParse(freqGeralAluno.Replace("%", "").Trim(), out freqGeral);
             retorno.Add(new RespostaQuestaoMapeamentoEstudanteDto()
             {
                 QuestaoId = questao,
