@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
         {
             if (request.ParecerConclusivoId.EhNulo())
             {
-                var aluno = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(turma.CodigoTurma, request.AlunoCodigo));
+                var aluno = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(turma.CodigoTurma, request.AlunoCodigo, true));
 
                 if (aluno.Ativo)
                     throw new NegocioException(MensagemNegocioConselhoClasse.LIMPAR_PARECER_CONCLUSIVO_APENAS_ALUNO_INATIVO);
