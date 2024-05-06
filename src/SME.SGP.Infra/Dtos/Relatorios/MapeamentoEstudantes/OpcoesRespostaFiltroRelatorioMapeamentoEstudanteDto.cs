@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SME.SGP.Infra.Dtos.MapeamentoEstudantes
+namespace SME.SGP.Infra.Dtos.Relatorios.MapeamentoEstudantes
 {
     public class OpcoesRespostaFiltroRelatorioMapeamentoEstudanteDto
     {

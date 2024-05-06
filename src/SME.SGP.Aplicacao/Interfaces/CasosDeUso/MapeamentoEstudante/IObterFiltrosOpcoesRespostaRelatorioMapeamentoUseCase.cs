@@ -1,4 +1,4 @@
-﻿using SME.SGP.Infra.Dtos.MapeamentoEstudantes;
+﻿using SME.SGP.Infra.Dtos.Relatorios.MapeamentoEstudantes;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso
