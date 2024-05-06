@@ -1724,7 +1724,7 @@ namespace SME.SGP.Infra
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
             IconeDashBoard = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
             EhConsulta = true)]
-        RD_M = 276,
+        RME_C = 276,
 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_RELATORIOS, 
             Menu = ConstantesMenuPermissao.MENU_FECHAMENTO, 
