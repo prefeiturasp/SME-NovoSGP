@@ -11,6 +11,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Dtos.MapeamentoEstudantes;
+using SME.SGP.Infra.Dtos.Relatorios.MapeamentoEstudantes;
 using SME.SGP.Infra.Dtos.Sondagem;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -75,5 +76,13 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(turmaId, bimestre));
         }
+
+        [HttpGet("relatorios/filtros/opcoes-resposta")]
+        [ProducesResponseType(typeof(OpcoesRespostaFiltroRelatorioMapeamentoEstudanteDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RME_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterFiltrosOpcoesRespostaMapeamentoEstudante(
+                                            [FromServices] IObterFiltrosOpcoesRespostaRelatorioMapeamentoUseCase useCase)
+        => Ok(await useCase.Executar());
     }
 }
