@@ -35,8 +35,8 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
             retorno.OpcoesRespostaAcompanhadoNAAPA.Any(op => op.Nome.Equals("Sim")).ShouldBeTrue();
             retorno.OpcoesRespostaAcompanhadoNAAPA.Any(op => op.Nome.Equals("Não")).ShouldBeTrue();
 
-            retorno.OpcoesRespostaDistorcaoIdadeAnoASerie.Any(op => op.Nome.Equals("Sim")).ShouldBeTrue();
-            retorno.OpcoesRespostaDistorcaoIdadeAnoASerie.Any(op => op.Nome.Equals("Não")).ShouldBeTrue();
+            retorno.OpcoesRespostaDistorcaoIdadeAnoSerie.Any(op => op.Nome.Equals("Sim")).ShouldBeTrue();
+            retorno.OpcoesRespostaDistorcaoIdadeAnoSerie.Any(op => op.Nome.Equals("Não")).ShouldBeTrue();
 
             retorno.OpcoesRespostaMigrante.Any(op => op.Nome.Equals("Sim")).ShouldBeTrue();
             retorno.OpcoesRespostaMigrante.Any(op => op.Nome.Equals("Não")).ShouldBeTrue();

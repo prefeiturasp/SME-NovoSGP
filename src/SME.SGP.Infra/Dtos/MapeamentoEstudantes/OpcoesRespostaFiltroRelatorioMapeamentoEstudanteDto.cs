@@ -6,7 +6,7 @@ namespace SME.SGP.Infra.Dtos.MapeamentoEstudantes
     {
         public OpcoesRespostaFiltroRelatorioMapeamentoEstudanteDto()
         {
-            OpcoesRespostaDistorcaoIdadeAnoASerie = new List<OpcaoRespostaSimplesDto>();
+            OpcoesRespostaDistorcaoIdadeAnoSerie = new List<OpcaoRespostaSimplesDto>();
             OpcoesRespostaMigrante = new List<OpcaoRespostaSimplesDto>();
             OpcoesRespostaPossuiPlanoAEE = new List<OpcaoRespostaSimplesDto>();
             OpcoesRespostaAcompanhadoNAAPA = new List<OpcaoRespostaSimplesDto>();
@@ -16,7 +16,7 @@ namespace SME.SGP.Infra.Dtos.MapeamentoEstudantes
             OpcoesRespostaAvaliacoesExternasProvaSP = new List<string>() { "Abaixo do básico", "Básico", "Adequado", "Avançado" };
             OpcoesRespostaFrequencia = new List<OpcaoRespostaSimplesDto>();
         }
-        public List<OpcaoRespostaSimplesDto> OpcoesRespostaDistorcaoIdadeAnoASerie { get; set; }
+        public List<OpcaoRespostaSimplesDto> OpcoesRespostaDistorcaoIdadeAnoSerie { get; set; }
         public List<OpcaoRespostaSimplesDto> OpcoesRespostaMigrante { get; set; }
         public List<OpcaoRespostaSimplesDto> OpcoesRespostaPossuiPlanoAEE { get; set; }
         public List<OpcaoRespostaSimplesDto> OpcoesRespostaAcompanhadoNAAPA { get; set; }
