@@ -1418,6 +1418,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IAtualizarMapeamentoDosEstudantesUseCase, AtualizarMapeamentoDosEstudantesUseCase>();
             services.TryAddScoped<IAtualizarMapeamentoDoEstudanteDoBimestreUseCase, AtualizarMapeamentoDoEstudanteDoBimestreUseCase>();
             services.TryAddScoped<IObterAlunosSinalizadosPrioridadeMapeamentoEstudanteUseCase, ObterAlunosSinalizadosPrioridadeMapeamentoEstudanteUseCase>();
+            services.TryAddScoped<IObterFiltrosOpcoesRespostaRelatorioMapeamentoUseCase, ObterFiltrosOpcoesRespostaRelatorioMapeamentoUseCase>();
 
             RegistrarCasoDeUsoAEERabbitSgp(services);
             RegistrarCasoDeUsoAulaRabbitSgp(services);
