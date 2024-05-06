@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra.Dtos.Relatorios.MapeamentoEstudantes;
+using SME.SGP.Aplicacao.Interfaces;
+using System;
 
 
 namespace SME.SGP.Api.Controllers
