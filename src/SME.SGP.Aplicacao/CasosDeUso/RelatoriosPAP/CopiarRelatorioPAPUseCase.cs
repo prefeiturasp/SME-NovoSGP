@@ -16,7 +16,11 @@ namespace SME.SGP.Aplicacao
             //Buscar o relatorio Pap
             //Obter as questoes com respostas selecionadas para copia
             //Montar RelatorioPAPDto por aluno e verificando se o aluno ja possui relatório caso positivo deve ser alterado os dados.
-                
+            /*
+             *  ISalvarRelatorioPAPUseCase
+                IObterSecoesPAPUseCase
+                IObterQuestionarioPAPUseCase
+             */
 
 
             return retorno;
