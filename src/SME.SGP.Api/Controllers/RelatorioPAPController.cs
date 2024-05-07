@@ -25,6 +25,15 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(relatorioPAPDto));
         }
 
+        [HttpPost("copiar")]
+        [ProducesResponseType(typeof(IEnumerable<ResultadoRelatorioPAPDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RPAP_I, Policy = "Bearer")]
+        public async Task<IActionResult> Copiar([FromBody] CopiarPapDto copiarPapDto,[FromServices] ICopiarRelatorioPAPUseCase useCase)
+        {
+            return Ok(await useCase.Executar(copiarPapDto));
+        }
+
         [HttpGet("periodos/{codigoTurma}")]
         [ProducesResponseType(typeof(IEnumerable<PeriodosPAPDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
