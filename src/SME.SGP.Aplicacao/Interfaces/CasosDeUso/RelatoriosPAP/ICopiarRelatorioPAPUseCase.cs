@@ -5,6 +5,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface ICopiarRelatorioPAPUseCase
     {
-        Task<ResultadoRelatorioPAPDto> Executar(CopiarPapDto copiarPapDto);
+        Task<bool> Executar(CopiarPapDto copiarPapDto);
     }
 }
