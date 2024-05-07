@@ -14,41 +14,30 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(CopiarPapDto copiarPapDto)
         {
-            var listaDeQuestoesIds = new List<long>();
-            var secoesIds = copiarPapDto.Secoes.Select(x => x.SecaoId);
-            var questoesIds = copiarPapDto.Secoes.Select(dto => dto.QuestoesIds);
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(copiarPapDto.CodigoTurma));
-            foreach (var ids in questoesIds) 
-                listaDeQuestoesIds.AddRange(ids);
-            
             foreach (var estudante in copiarPapDto.Estudantes)
             {
 
-                var obterSecoes = await mediator.Send(new ObterSecoesPAPQuery(copiarPapDto.CodigoTurma, estudante.AlunoCodigo, copiarPapDto.PeriodoRelatorioPAPId));
+                var obterSecoesOrigem = await mediator.Send(new ObterSecoesPAPQuery(copiarPapDto.CodigoTurmaOrigem, copiarPapDto.CodigoAlunoOrigem, copiarPapDto.PeriodoRelatorioPAPId));
                 var relatorioPAPDto = new RelatorioPAPDto()
                 {
                     periodoRelatorioPAPId = copiarPapDto.PeriodoRelatorioPAPId,
                     TurmaId = turma.Id,
                     AlunoCodigo = estudante.AlunoCodigo,
                     AlunoNome = estudante.AlunoNome,
-                    PAPTurmaId = obterSecoes.PAPTurmaId,
-                    PAPAlunoId = obterSecoes.PAPAlunoId
+                    PAPTurmaId = obterSecoesOrigem.PAPTurmaId,
+                    PAPAlunoId = obterSecoesOrigem.PAPAlunoId
                 };
-                var questionariosSecaoIds = obterSecoes.Secoes.Where(x => secoesIds.Contains(x.Id));
-
-                var questoesSelecionadas =
-                    questionariosSecaoIds.Where(x => listaDeQuestoesIds.Contains(x.QuestionarioId));
                 
-                
-                foreach (var questionarioSecaoId in questoesSelecionadas)
+                foreach (var questionarioSecaoId in obterSecoesOrigem.Secoes)
                 {
                     var sessao = new RelatorioPAPSecaoDto()
                     {
                         Id = questionarioSecaoId.Id,
                         SecaoId = questionarioSecaoId.Id
                     };
-                    var questoes = await mediator.Send(new ObterQuestionarioPAPPorPeriodoQuery(copiarPapDto.CodigoTurma,
-                                                                                                                        estudante.AlunoCodigo,
+                    var questoes = await mediator.Send(new ObterQuestionarioPAPPorPeriodoQuery(copiarPapDto.CodigoTurmaOrigem,
+                                                                                                                        copiarPapDto.CodigoAlunoOrigem,
                                                                                                                         copiarPapDto.PeriodoRelatorioPAPId,
                                                                                                                         questionarioSecaoId.QuestionarioId,
                                                                                                                         questionarioSecaoId.Id));
