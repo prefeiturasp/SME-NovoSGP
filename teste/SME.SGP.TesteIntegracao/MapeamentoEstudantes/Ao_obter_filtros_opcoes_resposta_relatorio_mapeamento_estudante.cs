@@ -38,9 +38,6 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
             retorno.OpcoesRespostaDistorcaoIdadeAnoSerie.Any(op => op.Nome.Equals("Sim")).ShouldBeTrue();
             retorno.OpcoesRespostaDistorcaoIdadeAnoSerie.Any(op => op.Nome.Equals("Não")).ShouldBeTrue();
 
-            retorno.OpcoesRespostaMigrante.Any(op => op.Nome.Equals("Sim")).ShouldBeTrue();
-            retorno.OpcoesRespostaMigrante.Any(op => op.Nome.Equals("Não")).ShouldBeTrue();
-
             retorno.OpcoesRespostaPossuiPlanoAEE.Any(op => op.Nome.Equals("Sim")).ShouldBeTrue();
             retorno.OpcoesRespostaPossuiPlanoAEE.Any(op => op.Nome.Equals("Não")).ShouldBeTrue();
 
@@ -49,12 +46,6 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
 
             retorno.OpcoesRespostaFrequencia.Any(op => op.Nome.Equals("Frequente")).ShouldBeTrue();
             retorno.OpcoesRespostaFrequencia.Any(op => op.Nome.Equals("Não Frequente")).ShouldBeTrue();
-
-            retorno.OpcoesRespostaParticipaPAP.Any(op => op.Equals("Sim")).ShouldBeTrue();
-            retorno.OpcoesRespostaParticipaPAP.Any(op => op.Equals("Não")).ShouldBeTrue();
-
-            retorno.OpcoesRespostaParticipaPAP.Any(op => op.Equals("Sim")).ShouldBeTrue();
-            retorno.OpcoesRespostaParticipaPAP.Any(op => op.Equals("Não")).ShouldBeTrue();
 
             retorno.OpcoesRespostaHipoteseEscritaEstudante.Any(op => op.Equals("Pré-Silábico")).ShouldBeTrue();
             retorno.OpcoesRespostaHipoteseEscritaEstudante.Any(op => op.Equals("Silábico sem valor")).ShouldBeTrue();

@@ -15,7 +15,7 @@ namespace SME.SGP.Infra
         public long? OpcaoRespostaIdDistorcaoIdadeAnoSerie { get; set; }
         public long? OpcaoRespostaIdPossuiPlanoAEE { get; set; }
         public long? OpcaoRespostaIdAcompanhadoNAAPA { get; set; }
-        public string OpcaoRespostaPossuiPAP { get; set; }
+        public bool? ParticipaPAP { get; set; }
         public long? OpcaoRespostaIdProgramaSPIntegral { get; set; }
         public string OpcaoRespostaHipoteseEscrita { get; set; }
         public string OpcaoRespostaAvaliacaoExternaProvaSP { get; set; }

@@ -26,9 +26,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             var opcoesResposta = await mediator.Send(new ObterOpcoesRespostaPorNomeComponenteQuestaoTipoQuestionarioQuery(NomesComponentesMapeamentoEstudante.DISTORCAO_IDADE_ANO_SERIE, TipoQuestionario.MapeamentoEstudante));
             retorno.OpcoesRespostaDistorcaoIdadeAnoSerie.AddRange(opcoesResposta);
 
-            opcoesResposta = await mediator.Send(new ObterOpcoesRespostaPorNomeComponenteQuestaoTipoQuestionarioQuery(NomesComponentesMapeamentoEstudante.MIGRANTE, TipoQuestionario.MapeamentoEstudante));
-            retorno.OpcoesRespostaMigrante.AddRange(opcoesResposta);
-
             opcoesResposta = await mediator.Send(new ObterOpcoesRespostaPorNomeComponenteQuestaoTipoQuestionarioQuery(NomesComponentesMapeamentoEstudante.POSSUI_PLANO_AEE, TipoQuestionario.MapeamentoEstudante));
             retorno.OpcoesRespostaPossuiPlanoAEE.AddRange(opcoesResposta);
 
