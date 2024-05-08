@@ -20,6 +20,6 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.ServicosFakes
         {}
 
         public Task<AlunoEnderecoRespostaDto> Handle(ObterAlunoEnderecoEolQuery request, CancellationToken cancellationToken)
-        => Task.Run(() => new AlunoEnderecoRespostaDto() { EhImigrante = true });
+        => Task.Run(() => new AlunoEnderecoRespostaDto() { Nacionalidade = "Brasil" });
     }
 }

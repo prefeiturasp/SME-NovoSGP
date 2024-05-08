@@ -69,7 +69,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
             questaoMapeamento.Any(a => a.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.TURMA_ANO_ANTERIOR)).Id).ShouldBeTrue();
             questaoMapeamento.Any(a => a.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.ANOTACOES_PEDAG_BIMESTRE_ANTERIOR)).Id).ShouldBeTrue();
             questaoMapeamento.Any(a => a.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.DISTORCAO_IDADE_ANO_SERIE)).Id).ShouldBeTrue();
-            questaoMapeamento.Any(a => a.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.MIGRANTE)).Id).ShouldBeTrue();
+            questaoMapeamento.Any(a => a.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.NACIONALIDADE)).Id).ShouldBeTrue();
             questaoMapeamento.Any(a => a.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.ACOMPANHADO_SRM_CEFAI)).Id).ShouldBeTrue();
             questaoMapeamento.Any(a => a.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.POSSUI_PLANO_AEE)).Id).ShouldBeTrue();
             questaoMapeamento.Any(a => a.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.ACOMPANHADO_NAAPA)).Id).ShouldBeTrue();
@@ -362,10 +362,9 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
                             },
                             new ()
                             {
-                                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.MIGRANTE)).Id,
-                                Resposta = OpcoesResposta.Where(q => q.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.MIGRANTE)).Id
-                                                                     && q.Nome == "Sim").FirstOrDefault().Id.ToString(),
-                                TipoQuestao = TipoQuestao.Radio
+                                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.NACIONALIDADE)).Id,
+                                Resposta = "Brasil",
+                                TipoQuestao = TipoQuestao.Frase
                             },
                             new ()
                             {
