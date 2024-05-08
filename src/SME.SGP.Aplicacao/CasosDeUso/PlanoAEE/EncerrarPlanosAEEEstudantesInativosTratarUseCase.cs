@@ -67,7 +67,7 @@ namespace SME.SGP.Aplicacao
                     encerrarPlanoAee = true;
                 else if (ultimaSituacao!.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido || ultimaSituacao!.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo)
                 {
-                    if (turmaDoPlanoAee.AnoLetivo < anoLetivo)
+                    if (turmaDoPlanoAee.AnoLetivo <= anoLetivo)
                     {
                         var turmaAtualDoAluno = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(ultimaSituacao.CodigoTurma.ToString()));
 
