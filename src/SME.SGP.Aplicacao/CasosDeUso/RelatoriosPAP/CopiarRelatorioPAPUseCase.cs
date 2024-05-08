@@ -55,11 +55,11 @@ namespace SME.SGP.Aplicacao
                         if (copiarPapDto.Secoes.SelectMany(s => s.QuestoesIds).Contains(questao.Id))
                         {
                             var questaoOrigem = questoesOrigem.FirstOrDefault(x => x.Id == questao.Id);
-                            CriarRelatorioPAPResposta(questaoOrigem, sessao, true);
+                            CriarRelatorioPAPRespostaDto(questaoOrigem, sessao, true);
                         }
                         else
                         {
-                            CriarRelatorioPAPResposta(questao, sessao, false);
+                            CriarRelatorioPAPRespostaDto(questao, sessao, false);
                         }
                     }
                     
@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
-        private static void CriarRelatorioPAPResposta(QuestaoDto questao, RelatorioPAPSecaoDto sessao, bool ehquestaoOrigem)
+        private static void CriarRelatorioPAPRespostaDto(QuestaoDto questao, RelatorioPAPSecaoDto sessao, bool ehquestaoOrigem)
         {
             foreach (var respostas in questao.Resposta)
             {
