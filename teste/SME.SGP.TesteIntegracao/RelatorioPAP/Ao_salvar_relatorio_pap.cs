@@ -83,7 +83,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
                 }
             };
 
-            var useCase = ServiceProvider.GetService<ISalvarRelatorioPAPUseCase>();
+            var useCase = ServiceProvider.GetService<  ISalvarRelatorioPAPUseCase>();
 
             var retorno = await useCase.Executar(relatorio);
 
