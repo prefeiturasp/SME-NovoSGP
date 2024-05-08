@@ -48,6 +48,6 @@
         public const string DADOS_CRIACAO_AULA_AUTOMATICA_INFANTIL_REGENCIA_TURMA = "dados-criacao-aula-automatica-infantil-regencia-turma:{0}";
         public const string ATRIBUICOES_RESPONSAVEIS_ATIVAS = "atribuicoes-responsaveis-tipo:{0}";
         public const string ATRIBUICOES_ESPORADICAS_ATIVAS = "atribuicoes-esporadicas";
-        public const string OBTER_QUESTOES_ORIGEM_RELATORIO_PAP = "questoes_origem_pap_turma:{0}/codigo-aluno:{1}";
+        public const string OBTER_QUESTOES_ORIGEM_RELATORIO_PAP = "questoes_origem_pap_turma:{0}/codigo-aluno:{1}/sessaoPap:{2}";
     }
 }

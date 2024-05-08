@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<QuestaoDto>> ObterQuestoesOrigem(CopiarPapDto copiarPapDto, SecaoPAPDto secaoOrigem)
         {
-            var chaveCache = string.Format(NomeChaveCache.OBTER_QUESTOES_ORIGEM_RELATORIO_PAP, copiarPapDto.CodigoTurmaOrigem, copiarPapDto.CodigoAlunoOrigem);
+            var chaveCache = string.Format(NomeChaveCache.OBTER_QUESTOES_ORIGEM_RELATORIO_PAP, copiarPapDto.CodigoTurmaOrigem, copiarPapDto.CodigoAlunoOrigem,secaoOrigem.PAPSecaoId);
             return await repositorioCache.ObterAsync(chaveCache,
                 async () => await mediator.Send(new ObterQuestionarioPAPPorPeriodoQuery(copiarPapDto.CodigoTurmaOrigem,
                     copiarPapDto.CodigoAlunoOrigem, copiarPapDto.PeriodoRelatorioPAPId, secaoOrigem.QuestionarioId,
