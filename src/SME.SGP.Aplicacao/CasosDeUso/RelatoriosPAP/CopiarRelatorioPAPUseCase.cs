@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
@@ -10,9 +13,11 @@ namespace SME.SGP.Aplicacao
     public class CopiarRelatorioPAPUseCase : AbstractUseCase, ICopiarRelatorioPAPUseCase
     {
         private readonly IUnitOfWork unitOfWork;
-        public CopiarRelatorioPAPUseCase(IMediator mediator,IUnitOfWork unitOfWork) : base(mediator)
+        private readonly IRepositorioCache repositorioCache;
+        public CopiarRelatorioPAPUseCase(IMediator mediator,IUnitOfWork unitOfWork,IRepositorioCache repositorioCache) : base(mediator)
         {
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
         public async Task<bool> Executar(CopiarPapDto copiarPapDto)
@@ -42,9 +47,7 @@ namespace SME.SGP.Aplicacao
                         var sessaoDestino = new RelatorioPAPSecaoDto()
                             { Id = questionarioSecaoId.PAPSecaoId, SecaoId = questionarioSecaoId.Id };
                         var secaoOrigem = obterSecoesOrigem.Secoes.FirstOrDefault(x => x.Id == questionarioSecaoId.Id);
-                        var questoesOrigem = await mediator.Send(new ObterQuestionarioPAPPorPeriodoQuery(
-                            copiarPapDto.CodigoTurmaOrigem, copiarPapDto.CodigoAlunoOrigem,
-                            copiarPapDto.PeriodoRelatorioPAPId, secaoOrigem.QuestionarioId, secaoOrigem.PAPSecaoId));
+                        var questoesOrigem = await ObterQuestoesOrigem(copiarPapDto, secaoOrigem);
 
                         var questoesDestino = await mediator.Send(new ObterQuestionarioPAPPorPeriodoQuery(
                             copiarPapDto.CodigoTurma, estudante.AlunoCodigo,
@@ -78,6 +81,15 @@ namespace SME.SGP.Aplicacao
                 throw;
             }
             return true;
+        }
+
+        private async Task<IEnumerable<QuestaoDto>> ObterQuestoesOrigem(CopiarPapDto copiarPapDto, SecaoPAPDto secaoOrigem)
+        {
+            var chaveCache = string.Format(NomeChaveCache.OBTER_QUESTOES_ORIGEM_RELATORIO_PAP, copiarPapDto.CodigoTurmaOrigem, copiarPapDto.CodigoAlunoOrigem);
+            return await repositorioCache.ObterAsync(chaveCache,
+                async () => await mediator.Send(new ObterQuestionarioPAPPorPeriodoQuery(copiarPapDto.CodigoTurmaOrigem,
+                    copiarPapDto.CodigoAlunoOrigem, copiarPapDto.PeriodoRelatorioPAPId, secaoOrigem.QuestionarioId,
+                    secaoOrigem.PAPSecaoId)));
         }
 
         private static void CriarRelatorioPAPRespostaDto(QuestaoDto questao, RelatorioPAPSecaoDto sessao, bool ehquestaoOrigem)
