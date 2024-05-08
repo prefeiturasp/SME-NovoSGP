@@ -24,7 +24,8 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
 
         protected virtual async Task CriarDadosBase()
         {
-            ExecutarScripts(new List<ScriptCarga> { ScriptCarga.CARGA_QUESTIONARIO_MAPEAMENTO_ESTUDANTE });
+            ExecutarScripts(new List<ScriptCarga> { ScriptCarga.CARGA_QUESTIONARIO_MAPEAMENTO_ESTUDANTE, 
+                                                    ScriptCarga.ALTERAR_QUESTAO_MIGRANTE_MAPEAMENTO_ESTUDANTE });
 
             await CriarDreUePerfilComponenteCurricular();
 
@@ -103,10 +104,8 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
             });
             await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
             {
-                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.MIGRANTE)).Value,
-                Texto = "",
-                RespostaId = OpcoesResposta.Where(q => q.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.MIGRANTE)).Id
-                                              && q.Nome == "Sim").FirstOrDefault().Id,
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.NACIONALIDADE)).Value,
+                Texto = "Brasil",
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
@@ -286,10 +285,8 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
             });
             await InserirNaBase(new Dominio.RespostaMapeamentoEstudante()
             {
-                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.MIGRANTE)).Value,
-                Texto = "",
-                RespostaId = OpcoesResposta.Where(q => q.QuestaoId == Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.MIGRANTE)).Id
-                                              && q.Nome == "Sim").FirstOrDefault().Id,
+                QuestaoMapeamentoEstudanteId = IdsQuestoesPorNomeComponente.FirstOrDefault(pair => pair.Key.Equals(NomesComponentesMapeamentoEstudante.NACIONALIDADE)).Value,
+                Texto = "Brasil",
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
@@ -466,11 +463,11 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             }));
-            IdsQuestoesPorNomeComponente.Add(NomesComponentesMapeamentoEstudante.MIGRANTE,
+            IdsQuestoesPorNomeComponente.Add(NomesComponentesMapeamentoEstudante.NACIONALIDADE,
             await InserirNaBaseAsync(new Dominio.QuestaoMapeamentoEstudante()
             {
                 MapeamentoEstudanteSecaoId = idMapeamentoEstudanteSecao,
-                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.MIGRANTE)).Id,
+                QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.NACIONALIDADE)).Id,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF

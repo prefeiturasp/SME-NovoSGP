@@ -151,6 +151,7 @@
         public const string ROTA_RELATORIOS_DIARIO_CLASSE_CONTROLE_GRADE = "/relatorios/diario-classe/controle-grade";
         public const string ROTA_RELATORIOS_DIARIO_CLASSE_PLANEJAMENTO_DIARIO = "/relatorios/diario-classe/planejamento-diario";
         public const string ROTA_RELATORIOS_PLANEJAMENTO_DEVOLUTIVAS = "/relatorios/planejamento/devolutivas";
+        public const string ROTA_RELATORIOS_DIARIO_CLASSE_MAPEAMENTO_ESTUDANTES = "/relatorios/diario-classe/mapeamento-estudantes";
         public const string ROTA_RELATORIOS_NOTAS_CONCEITOS_FINAIS = "/relatorios/notas-conceitos-finais";
         public const string ROTA_RELATORIOS_PARECER_CONCLUSIVO = "/relatorios/parecer-conclusivo";
         public const string ROTA_RELATORIOS_FECHAMENTOS_ACOMPANHAMENTO_FECHAMENTO = "/relatorios/fechamentos/acompanhamento-fechamento";
@@ -310,7 +311,8 @@
         public const int ORDEM_SUB_MENU_RELATORIO_DIARIO_DE_CLASSE = 1;
         public const int ORDEM_SUB_MENU_RELATORIO_CONTROLE_DE_PLANEJAMENTO_DIARIO = 2;
         public const int ORDEM_SUB_MENU_RELATORIO_DEVOLUTIVAS = 3;
-        
+        public const int ORDEM_SUB_MENU_RELATORIO_MAPEAMENTO_ESTUDANTES = 4;
+
         public const int ORDEM_SUB_MENU_RELATORIO_NOTAS_E_CONCEITOS_FINAIS = 1;
         public const int ORDEM_SUB_MENU_RELATORIO_PARECER_CONCLUSIVO = 2;
         public const int ORDEM_SUB_MENU_RELATORIO_ACOMPANHAMENTO_DO_FECHAMENTO = 3;

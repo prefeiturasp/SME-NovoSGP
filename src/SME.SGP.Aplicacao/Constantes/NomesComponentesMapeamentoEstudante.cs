@@ -6,7 +6,7 @@
         public const string TURMA_ANO_ANTERIOR = "TURMA_ANO_ANTERIOR";
         public const string ANOTACOES_PEDAG_BIMESTRE_ANTERIOR = "ANOTACOES_PEDAG_BIMESTRE_ANTERIOR";
         public const string DISTORCAO_IDADE_ANO_SERIE = "DISTORCAO_IDADE_ANO_SERIE";
-        public const string MIGRANTE = "MIGRANTE";
+        public const string NACIONALIDADE = "NACIONALIDADE";
         public const string ACOMPANHADO_SRM_CEFAI = "ACOMPANHADO_SRM_CEFAI";
         public const string POSSUI_PLANO_AEE = "POSSUI_PLANO_AEE";
         public const string ACOMPANHADO_NAAPA = "ACOMPANHADO_NAAPA";

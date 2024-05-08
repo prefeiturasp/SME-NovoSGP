@@ -294,5 +294,13 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(codigoTurmaRegular, codigoAluno, bimestre));
         }
+
+        [HttpGet("anos-letivos/{anoLetivo}/modalidades/{modalidade}/pareceres-conclusivos")]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(IEnumerable<ParecerConclusivoDto>), 200)]
+        [Permissao(Permissao.RPC_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterPareceresConclusivosAnoLetivoModalidade(int anoLetivo, Modalidade modalidade, [FromServices] IObterPareceresConclusivosAnoLetivoModalidadeUseCase obterPareceresConclusivosUseCase)
+         => Ok(await obterPareceresConclusivosUseCase.Executar(anoLetivo, modalidade));
     }
 }

@@ -1712,7 +1712,20 @@ namespace SME.SGP.Infra
             IconeDashBoard = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
             EhConsulta = true)]
         RD_C = 214,
-        
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_RELATORIOS,
+            Menu = ConstantesMenuPermissao.MENU_DIARIO_DE_CLASSE,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_RELATORIOS,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_RELATORIO_DIARIO_DE_CLASSE,
+            EhSubMenu = true,
+            SubMenu = ConstantesMenuPermissao.MENU_MAPEAMENTO_ESTUDANTES,
+            OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_RELATORIO_MAPEAMENTO_ESTUDANTES,
+            Url = ConstantesMenuPermissao.ROTA_RELATORIOS_DIARIO_CLASSE_MAPEAMENTO_ESTUDANTES,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
+            IconeDashBoard = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
+            EhConsulta = true)]
+        RME_C = 276,
+
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_RELATORIOS, 
             Menu = ConstantesMenuPermissao.MENU_FECHAMENTO, 
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_RELATORIOS,

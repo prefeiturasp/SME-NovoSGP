@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
                                                                                     .Contains(cc.codigoComponenteCurricular))
                                                                       .Select(cc => new ComponenteCurricularSimplificadoDto() { Id = cc.codigoComponenteCurricular, 
                                                                                                                                 Descricao =  cc.nomeComponenteCurricular})
-                                                                      .Distinct());
+                                                                      .DistinctBy(cc => cc.Id));
                 retorno.ComponentesPAP.AddRange(componentesTurmasAluno.Where(cc => new List<long> { PAP_RECUPERACAO_DE_APRENDIZAGENS }
                                                                                     .Contains(cc.codigoComponenteCurricular))
                                                                       .Select(cc => new ComponenteCurricularSimplificadoDto()
@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
                                                                           Id = cc.codigoComponenteCurricular,
                                                                           Descricao = "Contraturno"
                                                                       })
-                                                                      .Distinct());
+                                                                      .DistinctBy(cc => cc.Id));
                 retorno.ComponentesPAP.AddRange(componentesTurmasAluno.Where(cc => new List<long> { PAP_PROJETO_COLABORATIVO }
                                                                                     .Contains(cc.codigoComponenteCurricular))
                                                                       .Select(cc => new ComponenteCurricularSimplificadoDto()
@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
                                                                           Id = cc.codigoComponenteCurricular,
                                                                           Descricao = "Colaborativo"
                                                                       })
-                                                                      .Distinct());
+                                                                      .DistinctBy(cc => cc.Id));
 
                 //SRM/CEFAI 
                 retorno.ComponentesSRMCEFAI.AddRange(componentesTurmasAluno.Where(cc => new List<long> { SRM, PAEE_COLABORATIVO }
@@ -84,7 +84,7 @@ namespace SME.SGP.Aplicacao
                                                                           Id = cc.codigoComponenteCurricular,
                                                                           Descricao = cc.nomeComponenteCurricular
                                                                       })
-                                                                      .Distinct());
+                                                                      .DistinctBy(cc => cc.Id));
 
                 //Fortalecimento de Aprendizagens 
                 retorno.ComponentesFortalecimentoAprendizagens.AddRange(componentesTurmasAluno.Where(cc => new List<long> { ACOMPANHAMENTO_PEDAGOGICO_MATEMATICA,
@@ -98,7 +98,7 @@ namespace SME.SGP.Aplicacao
                                                                           Id = cc.codigoComponenteCurricular,
                                                                           Descricao = cc.nomeComponenteCurricular
                                                                       })
-                                                                      .Distinct());
+                                                                      .DistinctBy(cc => cc.Id));
 
                 //Mais Educação
                 retorno.ComponentesMaisEducacao.AddRange(componentesTurmasAluno.Where(cc =>
@@ -113,7 +113,7 @@ namespace SME.SGP.Aplicacao
                                                                           Id = cc.codigoComponenteCurricular,
                                                                           Descricao = cc.nomeComponenteCurricular
                                                                       })
-                                                                      .Distinct());
+                                                                      .DistinctBy(cc => cc.Id));
             }
 
             return retorno;

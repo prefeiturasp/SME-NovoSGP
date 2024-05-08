@@ -334,5 +334,15 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(filtro));
         }
+
+        [HttpPost("mapeamento-estudante")]
+        [ProducesResponseType(typeof(Boolean), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RME_C, Policy = "Bearer")]
+        public async Task<IActionResult> MapeamentoEstudante([FromBody] FiltroRelatorioMapeamentoEstudantesDto filtro,
+                                                             [FromServices] IRelatorioMapeamentoEstudantesUseCase relatorioUseCase)
+        {
+            return Ok(await relatorioUseCase.Executar(filtro));
+        }
     }
 }
