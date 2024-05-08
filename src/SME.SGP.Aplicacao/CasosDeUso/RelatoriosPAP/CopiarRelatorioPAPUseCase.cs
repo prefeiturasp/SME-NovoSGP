@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
                 
                 foreach (var questionarioSecaoId in obterSecoesDestino.Secoes)
                 {
-                    var sessao = new RelatorioPAPSecaoDto()
+                    var sessaoDestino = new RelatorioPAPSecaoDto()
                     {
                         Id = questionarioSecaoId.PAPSecaoId,
                         SecaoId = questionarioSecaoId.Id
@@ -55,15 +55,15 @@ namespace SME.SGP.Aplicacao
                         if (copiarPapDto.Secoes.SelectMany(s => s.QuestoesIds).Contains(questao.Id))
                         {
                             var questaoOrigem = questoesOrigem.FirstOrDefault(x => x.Id == questao.Id);
-                            CriarRelatorioPAPRespostaDto(questaoOrigem, sessao, true);
+                            CriarRelatorioPAPRespostaDto(questaoOrigem, sessaoDestino, true);
                         }
                         else
                         {
-                            CriarRelatorioPAPRespostaDto(questao, sessao, false);
+                            CriarRelatorioPAPRespostaDto(questao, sessaoDestino, false);
                         }
                     }
                     
-                    relatorioPAPDto.Secoes.Add(sessao);
+                    relatorioPAPDto.Secoes.Add(sessaoDestino);
 
                 }
                 await mediator.Send(new PersistirRelatorioPAPCommand(relatorioPAPDto));

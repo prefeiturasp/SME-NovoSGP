@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -21,14 +23,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
         [Fact(DisplayName = "Copiar relatório pap para aluno")]
         public async Task Ao_copiar_relatorio_pap_aluno()
         {
-            var resultado = await CriarPapPorAluno();
             var useCaseCopiar = ServiceProvider.GetService<ICopiarRelatorioPAPUseCase>();
-            var relatorioTurmaOrigem = ObterTodos<RelatorioPeriodicoPAPTurma>();
-            var relatorioAlunoOrigem = ObterTodos<RelatorioPeriodicoPAPAluno>();
-            var relatorioSecaoOrigem = ObterTodos<RelatorioPeriodicoPAPSecao>();
-            var relatorioQuestaoOrigem = ObterTodos<RelatorioPeriodicoPAPQuestao>();
-            var relatorioRespostaOrigem = ObterTodos<RelatorioPeriodicoPAPResposta>();
-
             var dtoCopiar = new CopiarPapDto
             {
                 PeriodoRelatorioPAPId = ConstantesTestePAP.PERIODO_RELATORIO_PAP_ID_1,
@@ -69,11 +64,60 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
                 }
             };
             await useCaseCopiar.Executar(dtoCopiar);
+            
             var relatorioTurmaAposCopiar = ObterTodos<RelatorioPeriodicoPAPTurma>();
+            relatorioTurmaAposCopiar.ShouldNotBeNull();
+            relatorioTurmaAposCopiar.Count.ShouldBe(2);
+            relatorioTurmaAposCopiar.Any(a => a.TurmaId == TURMA_ID_2 && a.PeriodoRelatorioId == ConstantesTestePAP.PERIODO_RELATORIO_PAP_ID_1).ShouldBeTrue();
+            
             var relatorioAlunoAposCopiar = ObterTodos<RelatorioPeriodicoPAPAluno>();
+            relatorioAlunoAposCopiar.ShouldNotBeNull();
+            relatorioAlunoAposCopiar.Count.ShouldBe(2);
+            relatorioAlunoAposCopiar.Any(a => a.CodigoAluno == CODIGO_ALUNO_2 && a.NomeAluno == "Aluno PAP Copiar").ShouldBeTrue();
+            
             var relatorioSecaoAposCopiar = ObterTodos<RelatorioPeriodicoPAPSecao>();
+            relatorioSecaoAposCopiar.ShouldNotBeNull();
+            relatorioSecaoAposCopiar.Count.ShouldBe(7);
+            relatorioSecaoAposCopiar.Any(a => a.SecaoRelatorioPeriodicoId == ConstantesTestePAP.SECAO_RELATORIO_PERIODICO_PAP_DIFICULDADES_APRESENTADAS_ID_2).ShouldBeTrue();
+            relatorioSecaoAposCopiar.Any(a => a.SecaoRelatorioPeriodicoId == ConstantesTestePAP.SECAO_RELATORIO_PERIODICO_PAP_SECAO_AVANC_APREND_BIMES_ID_3).ShouldBeTrue();
+            relatorioSecaoAposCopiar.Any(a => a.SecaoRelatorioPeriodicoId == ConstantesTestePAP.SECAO_RELATORIO_PERIODICO_PAP_SECAO_OBS_ID_4).ShouldBeTrue();
+            
             var relatorioQuestaoAposCopiar = ObterTodos<RelatorioPeriodicoPAPQuestao>();
+            relatorioQuestaoAposCopiar.ShouldNotBeNull();
+            relatorioQuestaoAposCopiar.Count.ShouldBe(9);
+
+            var questaoDificuldade = relatorioQuestaoAposCopiar.Find(a => a.QuestaoId == ConstantesTestePAP.QUESTAO_DIFICULDADES_APRESENTADAS_ID_2);
+            questaoDificuldade.ShouldNotBeNull();
+
+            var questaoDificuldadeObservacao = relatorioQuestaoAposCopiar.Find(a => a.QuestaoId == ConstantesTestePAP.QUESTAO_OBSERVACAO_ID_3);
+            questaoDificuldadeObservacao.ShouldNotBeNull();
+
+            var questaoAvancos = relatorioQuestaoAposCopiar.Find(a => a.QuestaoId == ConstantesTestePAP.QUESTAO_AVANÇOS_NA_APRENDIZAGEM_DURANTE_O_BIMESTRE_ID_4);
+            questaoAvancos.ShouldNotBeNull();
+
+            var questaoObsevacao = relatorioQuestaoAposCopiar.Find(a => a.QuestaoId == ConstantesTestePAP.QUESTAO_OBSERVACOES_ID_5);
+            questaoObsevacao.ShouldNotBeNull();
+            
             var relatorioRespostaAposCopiar = ObterTodos<RelatorioPeriodicoPAPResposta>();
+            relatorioRespostaAposCopiar.ShouldNotBeNull();
+            relatorioRespostaAposCopiar.Count.ShouldBe(9);
+
+            var respostaDificuldade = relatorioRespostaAposCopiar.Find(r => r.RelatorioPeriodicoQuestaoId == questaoDificuldade.Id);
+            respostaDificuldade.ShouldNotBeNull();
+            respostaDificuldade.RespostaId.ShouldNotBeNull();
+            respostaDificuldade.RespostaId.ShouldBe(long.Parse(ConstantesTestePAP.OPCAO_RESPOSTA_LEITURA_ID));
+
+            var respostaDificuldadeObservacao = relatorioRespostaAposCopiar.Find(r => r.RelatorioPeriodicoQuestaoId == questaoDificuldadeObservacao.Id);
+            respostaDificuldadeObservacao.ShouldNotBeNull();
+            respostaDificuldadeObservacao.Texto.ShouldBe("Observação dificuldades apresentadas");
+
+            var respostaQuestaoAvancos = relatorioRespostaAposCopiar.Find(r => r.RelatorioPeriodicoQuestaoId == questaoAvancos.Id);
+            respostaQuestaoAvancos.ShouldNotBeNull();
+            respostaQuestaoAvancos.Texto.ShouldBe("Avanços na aprendizagem durante o bimestre");
+
+            var respostaObsevacao = relatorioRespostaAposCopiar.Find(r => r.RelatorioPeriodicoQuestaoId == questaoObsevacao.Id);
+            respostaObsevacao.ShouldNotBeNull();
+            respostaObsevacao.Texto.ShouldBe("Observações");
         }
 
         private async Task<ResultadoRelatorioPAPDto> CriarPapPorAluno()
