@@ -1,72 +1,81 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
     public class CopiarRelatorioPAPUseCase : AbstractUseCase, ICopiarRelatorioPAPUseCase
     {
-        public CopiarRelatorioPAPUseCase(IMediator mediator) : base(mediator)
+        private readonly IUnitOfWork unitOfWork;
+        public CopiarRelatorioPAPUseCase(IMediator mediator,IUnitOfWork unitOfWork) : base(mediator)
         {
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task<bool> Executar(CopiarPapDto copiarPapDto)
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(copiarPapDto.CodigoTurma));
             var obterSecoesOrigem = await mediator.Send(new ObterSecoesPAPQuery(copiarPapDto.CodigoTurmaOrigem, copiarPapDto.CodigoAlunoOrigem, copiarPapDto.PeriodoRelatorioPAPId));
-            foreach (var estudante in copiarPapDto.Estudantes)
+            unitOfWork.IniciarTransacao();
+            try
             {
+                foreach (var estudante in copiarPapDto.Estudantes)
+                {
 
-                var obterSecoesDestino = await mediator.Send(new ObterSecoesPAPQuery(copiarPapDto.CodigoTurma, estudante.AlunoCodigo, copiarPapDto.PeriodoRelatorioPAPId));
-                var relatorioPAPDto = new RelatorioPAPDto()
-                {
-                    periodoRelatorioPAPId = copiarPapDto.PeriodoRelatorioPAPId,
-                    TurmaId = turma.Id,
-                    AlunoCodigo = estudante.AlunoCodigo,
-                    AlunoNome = estudante.AlunoNome,
-                    PAPTurmaId = obterSecoesDestino.PAPTurmaId,
-                    PAPAlunoId = obterSecoesDestino.PAPAlunoId
-                };
-                
-                foreach (var questionarioSecaoId in obterSecoesDestino.Secoes)
-                {
-                    var sessaoDestino = new RelatorioPAPSecaoDto()
+                    var obterSecoesDestino = await mediator.Send(new ObterSecoesPAPQuery(copiarPapDto.CodigoTurma,
+                        estudante.AlunoCodigo, copiarPapDto.PeriodoRelatorioPAPId));
+                    var relatorioPAPDto = new RelatorioPAPDto()
                     {
-                        Id = questionarioSecaoId.PAPSecaoId,
-                        SecaoId = questionarioSecaoId.Id
+                        periodoRelatorioPAPId = copiarPapDto.PeriodoRelatorioPAPId,
+                        TurmaId = turma.Id,
+                        AlunoCodigo = estudante.AlunoCodigo,
+                        AlunoNome = estudante.AlunoNome,
+                        PAPTurmaId = obterSecoesDestino.PAPTurmaId,
+                        PAPAlunoId = obterSecoesDestino.PAPAlunoId
                     };
-                    var secaoOrigem = obterSecoesOrigem.Secoes.FirstOrDefault(x => x.Id == questionarioSecaoId.Id);
-                    var questoesOrigem = await mediator.Send(new ObterQuestionarioPAPPorPeriodoQuery(copiarPapDto.CodigoTurmaOrigem,
-                                                                                                                        copiarPapDto.CodigoAlunoOrigem,
-                                                                                                                        copiarPapDto.PeriodoRelatorioPAPId,
-                                                                                                                        secaoOrigem.QuestionarioId,
-                                                                                                                        secaoOrigem.PAPSecaoId));
-                    
-                    var questoesDestino = await mediator.Send(new ObterQuestionarioPAPPorPeriodoQuery(copiarPapDto.CodigoTurma,
-                                                                                                                                        estudante.AlunoCodigo,
-                                                                                                                                        copiarPapDto.PeriodoRelatorioPAPId,
-                                                                                                                                        questionarioSecaoId.QuestionarioId,
-                                                                                                                                        questionarioSecaoId.PAPSecaoId));
 
-                    foreach (var questao in questoesDestino)
+                    foreach (var questionarioSecaoId in obterSecoesDestino.Secoes)
                     {
-                        if (copiarPapDto.Secoes.SelectMany(s => s.QuestoesIds).Contains(questao.Id))
-                        {
-                            var questaoOrigem = questoesOrigem.FirstOrDefault(x => x.Id == questao.Id);
-                            CriarRelatorioPAPRespostaDto(questaoOrigem, sessaoDestino, true);
-                        }
-                        else
-                        {
-                            CriarRelatorioPAPRespostaDto(questao, sessaoDestino, false);
-                        }
-                    }
-                    
-                    relatorioPAPDto.Secoes.Add(sessaoDestino);
+                        var sessaoDestino = new RelatorioPAPSecaoDto()
+                            { Id = questionarioSecaoId.PAPSecaoId, SecaoId = questionarioSecaoId.Id };
+                        var secaoOrigem = obterSecoesOrigem.Secoes.FirstOrDefault(x => x.Id == questionarioSecaoId.Id);
+                        var questoesOrigem = await mediator.Send(new ObterQuestionarioPAPPorPeriodoQuery(
+                            copiarPapDto.CodigoTurmaOrigem, copiarPapDto.CodigoAlunoOrigem,
+                            copiarPapDto.PeriodoRelatorioPAPId, secaoOrigem.QuestionarioId, secaoOrigem.PAPSecaoId));
 
+                        var questoesDestino = await mediator.Send(new ObterQuestionarioPAPPorPeriodoQuery(
+                            copiarPapDto.CodigoTurma, estudante.AlunoCodigo,
+                            copiarPapDto.PeriodoRelatorioPAPId, questionarioSecaoId.QuestionarioId,
+                            questionarioSecaoId.PAPSecaoId));
+
+                        foreach (var questao in questoesDestino)
+                        {
+                            if (copiarPapDto.Secoes.SelectMany(s => s.QuestoesIds).Contains(questao.Id))
+                            {
+                                var questaoOrigem = questoesOrigem.FirstOrDefault(x => x.Id == questao.Id);
+                                CriarRelatorioPAPRespostaDto(questaoOrigem, sessaoDestino, true);
+                            }
+                            else
+                            {
+                                CriarRelatorioPAPRespostaDto(questao, sessaoDestino, false);
+                            }
+                        }
+
+                        relatorioPAPDto.Secoes.Add(sessaoDestino);
+
+                    }
+
+                    await mediator.Send(new PersistirRelatorioPAPCommand(relatorioPAPDto));
+                    unitOfWork.PersistirTransacao();
                 }
-                await mediator.Send(new PersistirRelatorioPAPCommand(relatorioPAPDto));
+            }
+            catch (Exception)
+            {
+                unitOfWork.Rollback();
+                throw;
             }
             return true;
         }
