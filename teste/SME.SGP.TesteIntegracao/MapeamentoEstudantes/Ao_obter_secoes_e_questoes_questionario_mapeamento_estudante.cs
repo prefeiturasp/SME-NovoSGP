@@ -86,9 +86,9 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
             retorno.Any(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.DISTORCAO_IDADE_ANO_SERIE)
                              && q.TipoQuestao.Equals(TipoQuestao.Radio)
                              && q.Obrigatorio).ShouldBeTrue();
-            retorno.Any(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.MIGRANTE)
-                             && q.TipoQuestao.Equals(TipoQuestao.Radio)
-                             && q.Obrigatorio).ShouldBeTrue();
+            retorno.Any(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.NACIONALIDADE)
+                             && q.TipoQuestao.Equals(TipoQuestao.Frase)
+                             && !q.Obrigatorio).ShouldBeTrue();
             retorno.Any(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.ACOMPANHADO_SRM_CEFAI)
                              && q.TipoQuestao.Equals(TipoQuestao.Radio)
                              && q.Obrigatorio).ShouldBeTrue();
@@ -142,8 +142,8 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
             questao = retorno.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.ANOTACOES_PEDAG_BIMESTRE_ANTERIOR));
             questao.Resposta.FirstOrDefault().Texto.ShouldBe("ANOTAÇÕES PEDAGÓGICAS DO BIMESTRE ANTERIOR");
 
-            questao = retorno.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.MIGRANTE));
-            questao.Resposta.FirstOrDefault().OpcaoRespostaId.ShouldBe(questao.OpcaoResposta.FirstOrDefault(op => op.Nome == "Sim").Id);
+            questao = retorno.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.NACIONALIDADE));
+            questao.Resposta.FirstOrDefault().Texto.ShouldBe("Brasil");
 
             questao = retorno.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.ACOMPANHADO_SRM_CEFAI));
             questao.Resposta.FirstOrDefault().OpcaoRespostaId.ShouldBe(questao.OpcaoResposta.FirstOrDefault(op => op.Nome == "Sim").Id);
@@ -212,8 +212,8 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
             questao = retorno.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.DISTORCAO_IDADE_ANO_SERIE));
             questao.Resposta.FirstOrDefault().OpcaoRespostaId.ShouldBe(questao.OpcaoResposta.FirstOrDefault(op => op.Nome == "Sim").Id);
 
-            questao = retorno.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.MIGRANTE));
-            questao.Resposta.FirstOrDefault().OpcaoRespostaId.ShouldBe(questao.OpcaoResposta.FirstOrDefault(op => op.Nome == "Sim").Id);
+            questao = retorno.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.NACIONALIDADE));
+            questao.Resposta.FirstOrDefault().Texto.ShouldBe("Brasil");
 
             questao = retorno.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.ACOMPANHADO_SRM_CEFAI));
             questao.Resposta.FirstOrDefault().OpcaoRespostaId.ShouldBe(questao.OpcaoResposta.FirstOrDefault(op => op.Nome == "Sim").Id);

@@ -63,13 +63,11 @@ namespace SME.SGP.Aplicacao
             });
 
             var dadosEstudante = await mediator.Send(new ObterAlunoEnderecoEolQuery(request.CodigoAluno));
-            questao = await repositorioQuestao.ObterIdQuestaoPorNomeComponenteQuestionario(request.QuestionarioId, NomesComponentesMapeamentoEstudante.MIGRANTE);
+            questao = await repositorioQuestao.ObterIdQuestaoPorNomeComponenteQuestionario(request.QuestionarioId, NomesComponentesMapeamentoEstudante.NACIONALIDADE);
             retorno.Add(new RespostaQuestaoMapeamentoEstudanteDto()
             {
                 QuestaoId = questao,
-                RespostaId = dadosEstudante.EhImigrante
-                             ? (await repositorioResposta.ObterIdOpcaoRespostaPorNomeComponenteQuestao(NomesComponentesMapeamentoEstudante.MIGRANTE, "Sim"))
-                             : (await repositorioResposta.ObterIdOpcaoRespostaPorNomeComponenteQuestao(NomesComponentesMapeamentoEstudante.MIGRANTE, "Não"))
+                Texto = dadosEstudante.Nacionalidade
             });
 
             questao = await repositorioQuestao.ObterIdQuestaoPorNomeComponenteQuestionario(request.QuestionarioId, NomesComponentesMapeamentoEstudante.ACOMPANHADO_SRM_CEFAI);
