@@ -290,7 +290,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             await CriaConceito();
 
-            await CriarConselhoClasseParecerAno(filtroConselhoClasse.AnoParecerAnterior);
+            await CriarConselhoClasseParecerAno(filtroConselhoClasse.ConsiderarAnoAnterior || filtroConselhoClasse.AnoParecerAnterior);
         }
 
         protected async Task CriarFechamentoTurmaDisciplinaAlunoNota(FiltroConselhoClasseDto filtroConselhoClasseDto)
