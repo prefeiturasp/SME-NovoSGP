@@ -22,11 +22,6 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
         public async Task Ao_copiar_relatorio_pap_aluno_novo_e_existente()
         {
             await CriarPapPorAluno();
-            var relatorioTurmaOrigem = ObterTodos<RelatorioPeriodicoPAPTurma>();
-            var relatorioAlunoOrigem = ObterTodos<RelatorioPeriodicoPAPAluno>();
-            var relatorioSecaoOrigem = ObterTodos<RelatorioPeriodicoPAPSecao>();
-            var relatorioQuestaoOrigem = ObterTodos<RelatorioPeriodicoPAPQuestao>();
-            var relatorioRespostaOrigem = ObterTodos<RelatorioPeriodicoPAPResposta>();
             var useCaseCopiar = ServiceProvider.GetService<ICopiarRelatorioPAPUseCase>();
             var dtoCopiar = new CopiarPapDto
             {
