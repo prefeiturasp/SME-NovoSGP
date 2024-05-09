@@ -11,7 +11,7 @@ namespace SME.SGP.Api.Controllers
     [ApiController]
     [Route("api/v1/abae")]
     [ValidaDto]
-    [Authorize("Bearer")]
+    //[Authorize("Bearer")]
     public class ABAEController : ControllerBase
     {
         [HttpPost]
@@ -67,6 +67,21 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> BuscarPaginada([FromQuery] FiltroDreIdUeIdNomeSituacaoABAEDto filtro, [FromServices] IObterPaginadoCadastroAcessoABAEUseCase obterPaginadoCadastroAcessoAbaeUseCase)
         {
             return Ok(await obterPaginadoCadastroAcessoAbaeUseCase.Executar(filtro));
+        }
+
+        [Route("dres/{codigoDre}/ues/{codigoUe}/funcionarios")]
+        [HttpGet]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        //[Permissao(Permissao.ABA_C, Permissao.RBA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterFuncionarios(string codigoDre, string codigoUe, 
+                                                            [FromQuery] string codigoRf, [FromQuery] string nomeServidor,
+                                                           [FromServices] IObterFuncionariosABAEUseCase obterFuncionariosUseCase)
+        {
+            return Ok(await obterFuncionariosUseCase.Executar(new FiltroFuncionarioDto(codigoDre,
+                                                                                       codigoUe,
+                                                                                       codigoRf,
+                                                                                       nomeServidor)));
         }
     }
 }
