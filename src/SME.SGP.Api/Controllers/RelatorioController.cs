@@ -344,5 +344,15 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await relatorioUseCase.Executar(filtro));
         }
+
+        [HttpPost("busca-ativa")]
+        [ProducesResponseType(typeof(Boolean), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RBA_C, Policy = "Bearer")]
+        public async Task<IActionResult> BuscaAtiva([FromBody] FiltroRelatorioBuscasAtivasDto filtro,
+                                                             [FromServices] IRelatorioBuscasAtivasUseCase relatorioUseCase)
+        {
+            return Ok(await relatorioUseCase.Executar(filtro));
+        }
     }
 }
