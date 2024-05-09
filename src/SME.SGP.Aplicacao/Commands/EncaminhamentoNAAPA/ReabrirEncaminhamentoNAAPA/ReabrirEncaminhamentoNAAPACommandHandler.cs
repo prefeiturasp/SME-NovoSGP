@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<SituacaoDto> Handle(ReabrirEncaminhamentoNAAPACommand request, CancellationToken cancellationToken)
         {
-            var encaminhamentoNAAPA = (await mediator.Send(new ObterCabecalhoEncaminhamentoNAAPAQuery(request.EncaminhamentoId)));
+            var encaminhamentoNAAPA = await mediator.Send(new ObterCabecalhoEncaminhamentoNAAPAQuery(request.EncaminhamentoId), cancellationToken);
             await ValidarRegras(encaminhamentoNAAPA);
 
             var encaminhamentoNAAPAPersistido = encaminhamentoNAAPA.Clone();
@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
                 try
                 {
                     await repositorioEncaminhamentoNAAPA.SalvarAsync(encaminhamentoNAAPA);
-                    await mediator.Send(new RegistrarHistoricoDeAlteracaoDaSituacaoDoEncaminhamentoNAAPACommand(encaminhamentoNAAPAPersistido, encaminhamentoNAAPA.Situacao));
+                    await mediator.Send(new RegistrarHistoricoDeAlteracaoDaSituacaoDoEncaminhamentoNAAPACommand(encaminhamentoNAAPAPersistido, encaminhamentoNAAPA.Situacao), cancellationToken);
                     unitOfWork.PersistirTransacao();
                 }
                 catch (Exception)
@@ -58,6 +58,7 @@ namespace SME.SGP.Aplicacao
             return (await repositorioEncaminhamentoNAAPA.EncaminhamentoContemAtendimentosItinerancia(encaminhamentoId))
                     ? SituacaoNAAPA.EmAtendimento : SituacaoNAAPA.AguardandoAtendimento;
         }
+
         private async Task ValidarRegras(EncaminhamentoNAAPA encaminhamentoNAAPA)
         {
             if (encaminhamentoNAAPA.EhNulo() || encaminhamentoNAAPA.Id == 0)
@@ -66,18 +67,22 @@ namespace SME.SGP.Aplicacao
             if (encaminhamentoNAAPA.Situacao != SituacaoNAAPA.Encerrado)
                 throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.ENCAMINHAMENTO_NAO_PODE_SER_REABERTO_NESTA_SITUACAO);
 
-            var matriculasAlunoEol = (await mediator.Send(new ObterAlunosEolPorCodigosQuery(long.Parse(encaminhamentoNAAPA.AlunoCodigo), true)));
+            var matriculasAlunoEol = await mediator
+                .Send(new ObterAlunosEolPorCodigosQuery(long.Parse(encaminhamentoNAAPA.AlunoCodigo), true));
+
             var matriculaVigenteAluno = FiltrarMatriculaVigenteAluno(matriculasAlunoEol);
+
             if (matriculaVigenteAluno.EhNulo() || matriculaVigenteAluno.Inativo)
                 throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.ENCAMINHAMENTO_ALUNO_INATIVO_NAO_PODE_SER_REABERTO);
         }
-        private TurmasDoAlunoDto FiltrarMatriculaVigenteAluno(IEnumerable<TurmasDoAlunoDto> matriculasAluno)
+
+        private static TurmasDoAlunoDto FiltrarMatriculaVigenteAluno(IEnumerable<TurmasDoAlunoDto> matriculasAluno)
         {
             return matriculasAluno.Where(turma => turma.CodigoTipoTurma == (int)TipoTurma.Regular
                                                      && turma.AnoLetivo <= DateTimeExtension.HorarioBrasilia().Year
                                                      && turma.DataSituacao.Date <= DateTimeExtension.HorarioBrasilia().Date)
                                      .OrderByDescending(turma => turma.AnoLetivo)
-                                     .ThenByDescending(turma => turma.DataSituacao)
+                                     .ThenByDescending(turma => (turma.DataSituacao.Ticks, turma.DataAtualizacaoTabela.Ticks))
                                      .FirstOrDefault();
         }
     }
