@@ -11,7 +11,7 @@ namespace SME.SGP.Api.Controllers
     [ApiController]
     [Route("api/v1/abae")]
     [ValidaDto]
-    //[Authorize("Bearer")]
+    [Authorize("Bearer")]
     public class ABAEController : ControllerBase
     {
         [HttpPost]
@@ -73,7 +73,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.ABA_C, Permissao.RBA_C, Policy = "Bearer")]
+        [Permissao(Permissao.ABA_C, Permissao.RBA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterFuncionarios(string codigoDre, string codigoUe, 
                                                             [FromQuery] string codigoRf, [FromQuery] string nomeServidor,
                                                            [FromServices] IObterFuncionariosABAEUseCase obterFuncionariosUseCase)
