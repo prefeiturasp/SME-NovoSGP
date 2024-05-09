@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.Questionario;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -23,6 +22,15 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Salvar([FromBody] RelatorioPAPDto relatorioPAPDto, [FromServices] ISalvarRelatorioPAPUseCase useCase)
         {
             return Ok(await useCase.Executar(relatorioPAPDto));
+        }
+
+        [HttpPost("copiar")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RPAP_I, Policy = "Bearer")]
+        public async Task<IActionResult> Copiar([FromBody] CopiarPapDto copiarPapDto,[FromServices] ICopiarRelatorioPAPUseCase useCase)
+        {
+            return Ok(await useCase.Executar(copiarPapDto));
         }
 
         [HttpGet("periodos/{codigoTurma}")]
