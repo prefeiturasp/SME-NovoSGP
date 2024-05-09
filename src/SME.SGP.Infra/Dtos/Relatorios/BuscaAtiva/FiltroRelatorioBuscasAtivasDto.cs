@@ -12,7 +12,7 @@ namespace SME.SGP.Infra
         public int? Semestre { get; set; }
         public string[] TurmasCodigo { get; set; }
         public string AlunoCodigo { get; set; }
-        public string RfABAE { get; set; }
+        public string CpfABAE { get; set; }
         public DateTime? DataInicioRegistroAcao { get; set; }
         public DateTime? DataFimRegistroAcao { get; set; }
         public string UsuarioNome { get; set; }
