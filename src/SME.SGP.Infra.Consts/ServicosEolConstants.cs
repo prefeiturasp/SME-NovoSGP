@@ -68,7 +68,7 @@
 
         public const string URL_ALUNOS_ANO_LETIVO_ALUNOS = "alunos/anoLetivo/{0}/alunos";
 
-        public const string URL_ALUNOS_TURMAS_ANOS_LETIVOS_HISTORICO_FILTRAR_SITUACAO = "alunos/{0}/turmas/anosLetivos/{1}/historico/{2}/filtrar-situacao/{3}";
+        public const string URL_ALUNOS_TURMAS_ANOS_LETIVOS_HISTORICO_FILTRAR_SITUACAO = "alunos/{0}/turmas/anosLetivos/{1}/historico/{2}/filtrar-situacao/{3}/tipo-turma/{4}";
 
         public const string URL_ALUNOS_ANO_LETIVO_MATRICULADOS_QUANTIDADE = "alunos/ano-letivo/{0}/matriculados/quantidade";
 
@@ -246,5 +246,7 @@
         public const string URL_ABRANGENCIAS_PERFIS_USUARIO = "abrangencia/perfis/usuarios";
         
         public const string URL_COMPONENTES_CURRICULARES_TURMA_SEM_ATRIBUICAO_AULA = "v1/componentes-curriculares/turmas/{0}/sem-atribuicao/{1}";
+
+        public const string URL_COMPONENTES_CURRICULARES_PROGRAMA_ALUNO = "alunos/{0}/turmas-programa/{1}/componentes-curriculares";
     }
 }

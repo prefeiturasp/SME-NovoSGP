@@ -1,23 +1,26 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterQuantidadeAtendimentoNAAPAPorProfissionalMesQuery : IRequest<GraficoEncaminhamentoNAAPADto>
     {
-        public ObterQuantidadeAtendimentoNAAPAPorProfissionalMesQuery(int anoLetivo, long dreId, long? ueId, int? mes)
+        public ObterQuantidadeAtendimentoNAAPAPorProfissionalMesQuery(int anoLetivo, long dreId, long? ueId, int? mes, Modalidade? modalidade)
         {
             AnoLetivo = anoLetivo;
             DreId = dreId;
             UeId = ueId;
             Mes = mes;
+            Modalidade = modalidade;
         }
 
         public int AnoLetivo { get; set; }
         public long DreId { get; set; }
         public long? UeId { get; set; }
         public int? Mes { get; set; }
+        public Modalidade? Modalidade { get; set; }
     }
 
     public class ObterQuantidadeEncaminhamentoNAAPAPorProfissionalMesQueryValidator : AbstractValidator<ObterQuantidadeAtendimentoNAAPAPorProfissionalMesQuery>

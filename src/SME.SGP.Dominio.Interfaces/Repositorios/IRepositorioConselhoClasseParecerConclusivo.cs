@@ -15,5 +15,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<ParecerConclusivoSituacaoQuantidadeDto>> ObterParecerConclusivoSituacao(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre);
         Task<WFAprovacaoParecerConclusivo> VerificaSePossuiAprovacaoParecerConclusivo(long? conselhoClasseAlunoId);
         Task<IEnumerable<ParecerConclusivoDto>> ObterPareceresConclusivos(int anoLetivo, int anoTurma, Modalidade modalidade);
+        Task<IEnumerable<ParecerConclusivoDto>> ObterPareceresConclusivos(int anoLetivo, Modalidade modalidade);
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -41,7 +42,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("listagem-turmas")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> Listar([FromQuery]FiltroTurmaDto filtroTurmaDto, [FromServices] IListarTurmasComComponentesUseCase listarTurmasComComponentesUseCase)
+        public async Task<IActionResult> Listar([FromQuery] FiltroTurmaDto filtroTurmaDto, [FromServices] IListarTurmasComComponentesUseCase listarTurmasComComponentesUseCase)
         {
             var retorno = await listarTurmasComComponentesUseCase.Executar(filtroTurmaDto);
 
@@ -49,6 +50,15 @@ namespace SME.SGP.Api.Controllers
                 return NoContent();
 
             return Ok(retorno);
+        }
+
+        [HttpGet("ues/{ueCodigo}/sondagem")]
+        [ProducesResponseType(typeof(IEnumerable<TurmaRetornoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterTurmasSondagem(string ueCodigo, [FromQuery] int anoLetivo, [FromServices] IObterTurmaSondagemUseCase useCase)
+        {
+            return Ok(await useCase.Executar(ueCodigo, anoLetivo));
         }
     }
 }

@@ -45,7 +45,8 @@ namespace SME.SGP.Aplicacao
             var atividadesAvaliativaEBimestres = await mediator
                 .Send(new ObterAtividadesAvaliativasPorCCTurmaPeriodoQuery(componentesCurriculares.Select(a => a.ToString()).ToArray(), filtro.TurmaCodigo, periodoInicio, periodoFim));
 
-            var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(filtro.TurmaCodigo));
+            var alunos = (await mediator.Send(new ObterAlunosDentroPeriodoQuery(filtro.TurmaCodigo, (periodoInicio, periodoFim))))
+                .Where(a => a.CodigoSituacaoMatricula != SituacaoMatriculaAluno.VinculoIndevido);
 
             if (alunos.EhNulo() || !alunos.Any())
                 throw new NegocioException("Não foi encontrado alunos para a turma informada");
@@ -144,7 +145,7 @@ namespace SME.SGP.Aplicacao
                     Nome = aluno.NomeValido(),
                     NumeroChamada = aluno.ObterNumeroAlunoChamada()
                 };
-                var matriculasAluno = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(turmaCompleta.CodigoTurma, aluno.CodigoAluno));
+                var matriculasAluno = alunos.Where(a => a.CodigoAluno == aluno.CodigoAluno && a.CodigoTurma == aluno.CodigoTurma);
 
                 var notasAvaliacoes = new List<NotasConceitosNotaAvaliacaoListaoRetornoDto>();
                 foreach (var atividadeAvaliativa in atividadesAvaliativasdoBimestre)

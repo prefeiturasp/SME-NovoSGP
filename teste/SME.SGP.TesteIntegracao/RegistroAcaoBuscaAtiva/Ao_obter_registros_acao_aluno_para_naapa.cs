@@ -29,9 +29,9 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
 
             await CriarDadosBase(filtro);
             var dataRegistro = DateTimeExtension.HorarioBrasilia().Date;
-            await GerarDadosRegistroAcao_3PrimeirasQuestoes(dataRegistro.AddMonths(-1), true);
-            await GerarDadosRegistroAcao_3PrimeirasQuestoes(dataRegistro, true);
-            await GerarDadosRegistroAcao_3PrimeirasQuestoes(dataRegistro.AddMonths(1), true);
+            await GerarDadosRegistroAcao_2PrimeirasQuestoes(dataRegistro.AddMonths(-1), true);
+            await GerarDadosRegistroAcao_2PrimeirasQuestoes(dataRegistro, true);
+            await GerarDadosRegistroAcao_2PrimeirasQuestoes(dataRegistro.AddMonths(1), true);
 
             var useCase = ServiceProvider.GetService<IObterRegistrosDeAcaoParaNAAPAUseCase>();
             var resultado = await useCase.Executar(ALUNO_CODIGO_1);
@@ -39,7 +39,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             resultado.ShouldNotBeNull();
             resultado.TotalRegistros.ShouldBe(3);
             var item1 = resultado.Items.First();
-            item1.ContatoEfetuadoResponsavel.ShouldBe("Sim");
+            item1.ConseguiuContatoResponsavel.ShouldBe("Sim");
             item1.ProcedimentoRealizado.ShouldBe("Ligação telefonica");
             item1.Turma.ShouldBe("EF-Turma Nome 1");
             item1.Usuario.ShouldBe("Sistema (1)");
@@ -65,9 +65,9 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             await Executor.ExecutarComando(new PublicarQuestionarioBuscaAtivaComando(this));
 
             var dataRegistro = DateTimeExtension.HorarioBrasilia().Date;
-            await GerarDadosRegistroAcao_3PrimeirasQuestoes(dataRegistro.AddMonths(-1), true);
-            await GerarDadosRegistroAcao_3PrimeirasQuestoes(dataRegistro, true);
-            await GerarDadosRegistroAcao_3PrimeirasQuestoes(dataRegistro.AddMonths(1), true);
+            await GerarDadosRegistroAcao_2PrimeirasQuestoes(dataRegistro.AddMonths(-1), true);
+            await GerarDadosRegistroAcao_2PrimeirasQuestoes(dataRegistro, true);
+            await GerarDadosRegistroAcao_2PrimeirasQuestoes(dataRegistro.AddMonths(1), true);
 
             var useCase = ServiceProvider.GetService<IObterRegistrosDeAcaoParaNAAPAUseCase>();
             var resultado = await useCase.Executar(ALUNO_CODIGO_1);
@@ -77,7 +77,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             resultado.TotalPaginas.ShouldBe(2);
             resultado.Items.Count().ShouldBe(2);
             var item1 = resultado.Items.First();
-            item1.ContatoEfetuadoResponsavel.ShouldBe("Sim");
+            item1.ConseguiuContatoResponsavel.ShouldBe("Sim");
             item1.ProcedimentoRealizado.ShouldBe("Ligação telefonica");
             item1.Turma.ShouldBe("EF-Turma Nome 1");
             item1.Usuario.ShouldBe("Sistema (1)");

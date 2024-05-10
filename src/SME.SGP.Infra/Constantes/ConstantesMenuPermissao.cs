@@ -81,6 +81,7 @@
         public const string MENU_CONS_CRIANCAS_ESTUD_AUSENTES = "Consulta de crianças/estudantes ausentes";
         public const string MENU_REGISTRO_ACOES = "Registro de ações";
         public const string MENU_REGISTRO_COLETIVO_NAAPA = "Registro coletivo ";
+        public const string MENU_MAPEAMENTO_ESTUDANTES = "Mapeamento de estudantes";
 
         public const string AGRUPAMENTO_PLANEJAMENTO = "Planejamento";
         public const string AGRUPAMENTO_DIARIO_DE_CLASSE = "Diário de Classe";
@@ -110,6 +111,7 @@
         public const string ROTA_DIARIO_CLASSE_COMPENSACAO_AUSENCIA = "/diario-classe/compensacao-ausencia";
         public const string ROTA_DIARIO_CLASSE_DIARIO_BORDO = "/diario-classe/diario-bordo";
         public const string ROTA_DIARIO_CLASSE_REGISTRO_INDIVIDUAL = "/diario-classe/registro-individual";
+        public const string ROTA_DIARIO_CLASSE_MAPEAMENTO_ESTUDANTES = "/diario-classe/mapeamento-estudantes";
         public const string ROTA_GESTAO_ATRIBUICAO_CJS = "/gestao/atribuicao-cjs";
         public const string ROTA_GESTAO_ATRIBUICAO_CJS_EDITAR = "/gestao/atribuicao-cjs/editar";
         public const string ROTA_DIARIO_CLASSE_ACOMPANHAMENTO_FREQUENCIA = "/diario-classe/acompanhamento-frequencia";
@@ -149,6 +151,7 @@
         public const string ROTA_RELATORIOS_DIARIO_CLASSE_CONTROLE_GRADE = "/relatorios/diario-classe/controle-grade";
         public const string ROTA_RELATORIOS_DIARIO_CLASSE_PLANEJAMENTO_DIARIO = "/relatorios/diario-classe/planejamento-diario";
         public const string ROTA_RELATORIOS_PLANEJAMENTO_DEVOLUTIVAS = "/relatorios/planejamento/devolutivas";
+        public const string ROTA_RELATORIOS_DIARIO_CLASSE_MAPEAMENTO_ESTUDANTES = "/relatorios/diario-classe/mapeamento-estudantes";
         public const string ROTA_RELATORIOS_NOTAS_CONCEITOS_FINAIS = "/relatorios/notas-conceitos-finais";
         public const string ROTA_RELATORIOS_PARECER_CONCLUSIVO = "/relatorios/parecer-conclusivo";
         public const string ROTA_RELATORIOS_FECHAMENTOS_ACOMPANHAMENTO_FECHAMENTO = "/relatorios/fechamentos/acompanhamento-fechamento";
@@ -237,7 +240,8 @@
         public const int ORDEM_MENU_ACOMPANHAMENTO_DE_FREQUENCIA = 10;
         public const int ORDEM_MENU_RELATORIO_DE_PAP  = 11;
         public const int ORDEM_MENU_SONDAGEM_ACESSO = 12;
-        
+        public const int ORDEM_MENU_MAPEAMENTO_ESTUDANTES = 13;
+
         public const int ORDEM_MENU_FECHAMENTO_DO_BIMESTRE = 1;
         public const int ORDEM_MENU_CONSELHO_DE_CLASSE = 2;
         public const int ORDEM_MENU_ACOMPANHAMENTO_DO_FECHAMENTO = 3;
@@ -307,7 +311,8 @@
         public const int ORDEM_SUB_MENU_RELATORIO_DIARIO_DE_CLASSE = 1;
         public const int ORDEM_SUB_MENU_RELATORIO_CONTROLE_DE_PLANEJAMENTO_DIARIO = 2;
         public const int ORDEM_SUB_MENU_RELATORIO_DEVOLUTIVAS = 3;
-        
+        public const int ORDEM_SUB_MENU_RELATORIO_MAPEAMENTO_ESTUDANTES = 4;
+
         public const int ORDEM_SUB_MENU_RELATORIO_NOTAS_E_CONCEITOS_FINAIS = 1;
         public const int ORDEM_SUB_MENU_RELATORIO_PARECER_CONCLUSIVO = 2;
         public const int ORDEM_SUB_MENU_RELATORIO_ACOMPANHAMENTO_DO_FECHAMENTO = 3;

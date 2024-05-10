@@ -138,10 +138,10 @@ namespace SME.SGP.TesteIntegracao
 
         protected async Task CriarDadosBasicosVigenciaRelativa(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, int bimestre, string componenteCurricular, bool criarPeriodo = true, long tipoCalendarioId = 1, bool criarPeriodoEscolarEAbertura = true, int quantidadeAula = 1)
         {
-            var dataAtual = DateTimeExtension.HorarioBrasilia();
+            var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
             var dataInicioPeriodo = dataAtual.AddDays(-10);
             var dataFimPeriodo = dataAtual.AddDays(1);
-            var dataAula = dataAtual;
+            var dataAula = DATA_25_04_FIM_BIMESTRE_1;
 
             await CriarDadosBasicos(perfil, modalidade, tipoCalendario, dataInicioPeriodo, dataFimPeriodo, bimestre, dataAula, componenteCurricular, criarPeriodo, tipoCalendarioId, criarPeriodoEscolarEAbertura, quantidadeAula);
         }
@@ -168,7 +168,7 @@ namespace SME.SGP.TesteIntegracao
             await CriarParametrosSistema(dataInicio.Year);
         }
 
-        protected async Task CriarDadosBasicosSemPeriodoEscolar(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataAula, string componenteCurricular, int quantidadeAula = QUANTIDADE_3)
+        protected async Task CriarDadosBasicosSemPeriodoEscolar(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataAula, string componenteCurricular, int quantidadeAula = QUANTIDADE_3, int tipoTurnoEOL = 0)
         {
             await CriarTipoCalendario(tipoCalendario);
 
@@ -180,7 +180,7 @@ namespace SME.SGP.TesteIntegracao
 
             await CriarUsuarios();
 
-            await CriarTurma(modalidade);
+            await CriarTurma(modalidade, tipoTurnoEol : tipoTurnoEOL);
 
             await CriarAula(componenteCurricular, dataAula, RecorrenciaAula.AulaUnica, quantidadeAula);
         }

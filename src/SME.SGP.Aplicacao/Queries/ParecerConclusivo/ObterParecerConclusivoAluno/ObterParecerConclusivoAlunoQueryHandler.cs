@@ -147,10 +147,10 @@ namespace SME.SGP.Aplicacao
 
             if (informacoesAluno.NaoEhNulo() && informacoesAluno.Any())
             {
-                frequencias = from f in frequencias
-                              from dm in informacoesAluno.Select(ia => new { ia.DataMatricula, ia.DataSituacao, ia.Ativo })
-                              where dm.Ativo && dm.DataMatricula.Date < f.PeriodoFim.Date || !dm.Ativo && dm.DataSituacao.Date >= f.PeriodoInicio.Date
-                              select f;
+                frequencias = (from f in frequencias
+                               from dm in informacoesAluno.Select(ia => new { ia.DataMatricula, ia.DataSituacao, ia.Ativo })
+                               where dm.Ativo && dm.DataMatricula.Date < f.PeriodoFim.Date || !dm.Ativo && dm.DataSituacao.Date >= f.PeriodoInicio.Date
+                               select f).Distinct();
             }
 
             if (FrequenciaAnualPorComponenteCritica(AgruparValoresPorDisciplina(frequencias), parametroFrequenciaBaseNacional, turma.AnoLetivo))

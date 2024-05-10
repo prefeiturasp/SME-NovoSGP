@@ -23,7 +23,7 @@ namespace SME.SGP.Dados.Repositorios
             if (consideraHistorico)
                 query += $" and ae.ano_letivo < {DateTime.Now.Year}";
 
-            query += @"union 
+            query += @" union 
                        select t.ano_letivo from atribuicao_cj ac
                        inner join turma t on ac.turma_id = t.turma_id where ac.professor_rf = @professorRF and t.historica = @consideraHistorico;";
 

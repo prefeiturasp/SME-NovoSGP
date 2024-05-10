@@ -1,10 +1,8 @@
-﻿using MediatR;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio;
-using SME.SGP.TesteIntegracao;
 using SME.SGP.TesteIntegracao.Commands;
 using SME.SGP.TesteIntegracao.Constantes;
 using SME.SGP.TesteIntegracao.Setup;
@@ -86,7 +84,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             public bool CriarTurmaPadrao { get; set; }
         }
 
-        protected async Task GerarDadosRegistroAcao_3PrimeirasQuestoes(DateTime dataRegistro, bool adicionarRespostasComplementarConseguiuContatoResponsavel = false)
+        protected async Task GerarDadosRegistroAcao_2PrimeirasQuestoes(DateTime dataRegistro, bool adicionarRespostasComplementarConseguiuContatoResponsavel = false)
         {
             await CriarRegistroAcao();
             var registrosAcaoId = ObterTodos<Dominio.RegistroAcaoBuscaAtiva>().Max(ra => ra.Id);
@@ -110,7 +108,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             idRegistroAcaoQuestao++;
 
             var opcoesResposta = ObterTodos<OpcaoResposta>();
-            var opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP 
+            var opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP
                                                          && q.Nome == ConstantesQuestionarioBuscaAtiva.QUESTAO_OPCAO_RESPOSTA_SIM).FirstOrDefault();
             await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
             {
@@ -122,44 +120,10 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             });
             idRegistroAcaoQuestao++;
 
-            await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
-            {
-                QuestaoRegistroAcaoBuscaAtivaId = idRegistroAcaoQuestao,
-                Texto = "OBS GERAL",
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-            idRegistroAcaoQuestao++;
-
             if (adicionarRespostasComplementarConseguiuContatoResponsavel)
             {
-                opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_1_ID_CONTATO_COM_RESPONSAVEL 
-                                                         && q.Nome == ConstantesQuestionarioBuscaAtiva.QUESTAO_OPCAO_RESPOSTA_SIM).FirstOrDefault();
-                await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
-                {
-                    QuestaoRegistroAcaoBuscaAtivaId = idRegistroAcaoQuestao,
-                    RespostaId = opcaoRespostaBase.Id,
-                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF
-                });
-                idRegistroAcaoQuestao++;
-
-                opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_2_ID_APOS_CONTATO_CRIANCA_RETORNOU_ESCOLA 
-                                                         && q.Nome == ConstantesQuestionarioBuscaAtiva.QUESTAO_OPCAO_RESPOSTA_SIM).FirstOrDefault();
-                await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
-                {
-                    QuestaoRegistroAcaoBuscaAtivaId = idRegistroAcaoQuestao,
-                    RespostaId = opcaoRespostaBase.Id,
-                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF
-                });
-                idRegistroAcaoQuestao++;
-
-                opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_3_ID_JUSTIFICATIVA_MOTIVO_FALTA 
-                                                         && q.Nome == "Há suspeita de ausência por estar realizando trabalho infantil").FirstOrDefault();
+                opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_3_ID_JUSTIFICATIVA_MOTIVO_FALTA
+                                                            && q.Nome == "Estudante grávida").FirstOrDefault();
                 await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
                 {
                     QuestaoRegistroAcaoBuscaAtivaId = idRegistroAcaoQuestao,
@@ -181,8 +145,17 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
                     CriadoRF = SISTEMA_CODIGO_RF
                 });
                 idRegistroAcaoQuestao++;
-            }
 
+                await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
+                {
+                    QuestaoRegistroAcaoBuscaAtivaId = idRegistroAcaoQuestao,
+                    Texto = "OBS GERAL",
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
+                idRegistroAcaoQuestao++;
+            }
         }
 
         private async Task CriarQuestoesRegistroAcao(long idRegistroAcaoSecao = 1, bool adicionarRespostasComplementarConseguiuContatoResponsavel = false)
@@ -205,35 +178,8 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            await InserirNaBase(new Dominio.QuestaoRegistroAcaoBuscaAtiva()
-            {
-                RegistroAcaoBuscaAtivaSecaoId = idRegistroAcaoSecao,
-                QuestaoId = ConstantesQuestionarioBuscaAtiva.QUESTAO_3_ID_OBS_GERAL,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
             if (adicionarRespostasComplementarConseguiuContatoResponsavel)
             {
-                await InserirNaBase(new Dominio.QuestaoRegistroAcaoBuscaAtiva()
-                {
-                    RegistroAcaoBuscaAtivaSecaoId = idRegistroAcaoSecao,
-                    QuestaoId = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_1_ID_CONTATO_COM_RESPONSAVEL,
-                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF
-                });
-
-                await InserirNaBase(new Dominio.QuestaoRegistroAcaoBuscaAtiva()
-                {
-                    RegistroAcaoBuscaAtivaSecaoId = idRegistroAcaoSecao,
-                    QuestaoId = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_2_ID_APOS_CONTATO_CRIANCA_RETORNOU_ESCOLA,
-                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF
-                });
-
                 await InserirNaBase(new Dominio.QuestaoRegistroAcaoBuscaAtiva()
                 {
                     RegistroAcaoBuscaAtivaSecaoId = idRegistroAcaoSecao,
@@ -251,7 +197,17 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
                     CriadoPor = SISTEMA_NOME,
                     CriadoRF = SISTEMA_CODIGO_RF
                 });
+
+                await InserirNaBase(new Dominio.QuestaoRegistroAcaoBuscaAtiva()
+                {
+                    RegistroAcaoBuscaAtivaSecaoId = idRegistroAcaoSecao,
+                    QuestaoId = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_5_ID_OBS_GERAL,
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
             }
+
         }
 
         private async Task CriarRegistroAcaoSecao(long idRegistroAcao = 1)

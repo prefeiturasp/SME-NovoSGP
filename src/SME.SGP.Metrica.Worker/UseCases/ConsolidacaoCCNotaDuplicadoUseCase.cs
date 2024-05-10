@@ -30,7 +30,7 @@ namespace SME.SGP.Metrica.Worker.UseCases
             foreach (var registroDuplicado in registrosDuplicados)
             {
                 await repositorioDuplicados.InserirAsync(registroDuplicado);
-                await mediator.Send(new PublicarFilaCommand(Rotas.RotasRabbitMetrica.LimpezaConsolidacaoCCNotaDuplicado, registrosDuplicados));
+                await mediator.Send(new PublicarFilaCommand(Rotas.RotasRabbitMetrica.LimpezaConsolidacaoCCNotaDuplicado, registroDuplicado));
             }
 
             return true;

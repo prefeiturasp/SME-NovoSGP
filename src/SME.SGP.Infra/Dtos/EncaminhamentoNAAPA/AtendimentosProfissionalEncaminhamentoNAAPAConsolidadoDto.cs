@@ -1,10 +1,10 @@
-﻿using SME.SGP.Dominio.Enumerados;
+﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Infra
 {
     public class AtendimentosProfissionalEncaminhamentoNAAPAConsolidadoDto
     {
-        public AtendimentosProfissionalEncaminhamentoNAAPAConsolidadoDto(long ueId, int anoLetivo, int mes, string nomeProfissional, string rfProfissional, long quantidade)
+        public AtendimentosProfissionalEncaminhamentoNAAPAConsolidadoDto(long ueId, int anoLetivo, int mes, string nomeProfissional, string rfProfissional, long quantidade, Modalidade modalidade)
         {
             UeId = ueId;
             AnoLetivo = anoLetivo;  
@@ -12,6 +12,7 @@ namespace SME.SGP.Infra
             NomeProfissional = nomeProfissional;
             RfProfissional = rfProfissional;
             Quantidade = quantidade;
+            Modalidade = modalidade;
         }
         public long UeId { get; set; }
         public int AnoLetivo { get; set; }
@@ -19,5 +20,6 @@ namespace SME.SGP.Infra
         public string NomeProfissional { get; set; }
         public string RfProfissional { get; set; }
         public long Quantidade { get; set; }
+        public Modalidade Modalidade { get; set; }
     }
 }

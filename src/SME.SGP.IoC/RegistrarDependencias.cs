@@ -26,6 +26,7 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.ObterDadosDeLeituraDeCo
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.ObterDadosDeLeituraDeComunicadosPorModalidade;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.ObterDadosDeLeituraDeComunicadosPorModalidadeETurma;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.SolicitarReiniciarSenha;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.MapeamentoEstudante;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.Turma;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados;
@@ -504,6 +505,7 @@ namespace SME.SGP.IoC
 
             // Frequência turma evasão
             services.TryAddScoped<IRepositorioFrequenciaTurmaEvasao, RepositorioFrequenciaTurmaEvasao>();
+            services.TryAddScoped<IRepositorioFrequenciaTurmaEvasaoAluno, RepositorioFrequenciaTurmaEvasaoAluno>();
 
             // Consolidação Devolutivas
             services.TryAddScoped<IRepositorioConsolidacaoDevolutivas, RepositorioConsolidacaoDevolutivas>();
@@ -588,6 +590,15 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioRegistroColetivo, RepositorioRegistroColetivo>();
             services.TryAddScoped<IRepositorioRegistroColetivoUe, RepositorioRegistroColetivoUe>();
             services.TryAddScoped<IRepositorioRegistroColetivoAnexo, RepositorioRegistroColetivoAnexo>();
+
+            services.TryAddScoped<IRepositorioObjetivoAprendizagemConsulta, RepositorioObjetivoAprendizagemConsulta>();
+
+            // Mapeamento Estudante
+            services.TryAddScoped<IRepositorioSecaoMapeamentoEstudante, RepositorioSecaoMapeamentoEstudante>();
+            services.TryAddScoped<IRepositorioMapeamentoEstudante, RepositorioMapeamentoEstudante>();
+            services.TryAddScoped<IRepositorioMapeamentoEstudanteSecao, RepositorioMapeamentoEstudanteSecao>();
+            services.TryAddScoped<IRepositorioQuestaoMapeamentoEstudante, RepositorioQuestaoMapeamentoEstudante>();
+            services.TryAddScoped<IRepositorioRespostaMapeamentoEstudante, RepositorioRespostaMapeamentoEstudante>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)
@@ -841,6 +852,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<ISalvarConselhoClasseAlunoRecomendacaoUseCase, SalvarConselhoClasseAlunoRecomendacaoUseCase>();
             services.TryAddScoped<IObterPareceresConclusivosTurmaUseCase, ObterPareceresConclusivosTurmaUseCase>();
             services.TryAddScoped<IAlterarParecerConclusivoUseCase, AlterarParecerConclusivoUseCase>();
+            services.TryAddScoped<IObterPareceresConclusivosAnoLetivoModalidadeUseCase, ObterPareceresConclusivosAnoLetivoModalidadeUseCase>();
 
             // Fechamento
             services.TryAddScoped<IExecutarVarreduraFechamentosEmProcessamentoPendentes, ExecutarVarreduraFechamentosEmProcessamentoPendentes>();
@@ -1290,7 +1302,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRegistrarEncaminhamentoNAAPAUseCase, RegistrarEncaminhamentoNAAPAUseCase>();
             services.TryAddScoped<IEncerrarEncaminhamentoNAAPAUseCase, EncerrarEncaminhamentoNAAPAUseCase>();
             services.TryAddScoped<IReabrirEncaminhamentoNAAPAUseCase, ReabrirEncaminhamentoNAAPAUseCase>();
-            
+            services.TryAddScoped<IObterAlunosDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoUseCase, ObterAlunosDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoUseCase>();
+            services.TryAddScoped<IObterAlunosDashboardFrequenciaTurmaEvasaoSemPresencaUseCase, ObterAlunosDashboardFrequenciaTurmaEvasaoSemPresencaUseCase>();
+
             services.TryAddScoped<IVerificarExistenciaRelatorioPorCodigoUseCase, VerificarExistenciaRelatorioPorCodigoUseCase>();
             services.TryAddScoped<IObterPAAIPorDreUseCase, ObterPAAIPorDreUseCase>();
             services.TryAddScoped<IObterResponsaveisPorDreUseCase, ObterResponsaveisPorDreUseCase>();
@@ -1326,7 +1340,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterQuantidadeAtendimentoNAAPAPorProfissionalMesUseCase, ObterQuantidadeAtendimentoNAAPAPorProfissionalMesUseCase>();
             services.TryAddScoped<IExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase, ExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase>();
             services.TryAddScoped<IObterRegistrosDeAcaoParaNAAPAUseCase, ObterRegistrosDeAcaoParaNAAPAUseCase>();
-            services.TryAddScoped<IObterItensDeImprimirAnexosNAAPAUseCase, ObterItensDeImprimirAnexosNAAPAUseCase>();
+            services.TryAddScoped<IObterTiposDeImprimirAnexosNAAPAUseCase, ObterTiposDeImprimirAnexosNAAPAUseCase>();
+            services.TryAddScoped<IObterProfissionaisEnvolvidosAtendimentoNAAPANAAPAUseCase, ObterProfissionaisEnvolvidosAtendimentoNAAPANAAPAUseCase>();
 
             //Relatório Dinâmico NAAPA
             services.TryAddScoped<IRelatorioDinamicoObterEncaminhamentoNAAPAUseCase, RelatorioDinamicoObterEncaminhamentoNAAPAUseCase>();
@@ -1338,6 +1353,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterAlunosPorPeriodoPAPUseCase, ObterAlunosPorPeriodoPAPUseCase>();
             services.TryAddScoped<ISalvarRelatorioPAPUseCase, SalvarRelatorioPAPUseCase>();
             services.TryAddScoped<IExcluirArquivoPAPUseCase, ExcluirArquivoPAPUseCase>();
+            services.TryAddScoped<IObterRelatorioPAPConselhoClasseUseCase, ObterRelatorioPAPConselhoClasseUseCase>();
 
             // Historico Escolar Observação
             services.TryAddScoped<IObterHistoricoEscolarObservacaoUseCase, ObterHistoricoEscolarObservacaoUseCase>();
@@ -1384,15 +1400,28 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterQuantidadeBuscaAtivaPorMotivosAusenciaUseCase, ObterQuantidadeBuscaAtivaPorMotivosAusenciaUseCase>();
             services.TryAddScoped<IObterQuantidadeBuscaAtivaPorProcedimentosTrabalhoDreUseCase, ObterQuantidadeBuscaAtivaPorProcedimentosTrabalhoDreUseCase>();
             services.TryAddScoped<IObterQuantidadeBuscaAtivaPorReflexoFrequenciaMesUseCase, ObterQuantidadeBuscaAtivaPorReflexoFrequenciaMesUseCase>();
-            
-
+           
             //Registro Coletivo 
             services.TryAddScoped<IObterTiposDeReuniaoUseCase, ObterTiposDeReuniaoUseCase>();
             services.TryAddScoped<ISalvarRegistroColetivoUseCase, SalvarRegistroColetivoUseCase>();
             services.TryAddScoped<IExcluirRegistroColetivoUseCase, ExcluirRegistroColetivoUseCase>();
             services.TryAddScoped<IObterRegistrosColetivosNAAPAUseCase, ObterRegistrosColetivosNAAPAUseCase>();
             services.TryAddScoped<IObterRegistroColetivoNAAPAPorIdUseCase, ObterRegistroColetivoNAAPAPorIdUseCase>();
-            
+
+            //Turma
+            services.TryAddScoped<IObterTurmaSondagemUseCase, ObterTurmaSondagemUseCase>();
+
+            //Mapeamento de estudantes
+            services.TryAddScoped<IObterSecoesMapeamentoSecaoUseCase, ObterSecoesMapeamentoSecaoUseCase>();
+            services.TryAddScoped<IObterQuestionarioMapeamentoEstudanteUseCase, ObterQuestionarioMapeamentoEstudanteUseCase>();
+            services.TryAddScoped<IObterIdentificadorMapeamentoEstudanteUseCase, ObterIdentificadorMapeamentoEstudanteUseCase>();
+            services.TryAddScoped<IRegistrarMapeamentoEstudanteUseCase, RegistrarMapeamentoEstudanteUseCase>();
+            services.TryAddScoped<IAtualizarMapeamentoDosEstudantesUseCase, AtualizarMapeamentoDosEstudantesUseCase>();
+            services.TryAddScoped<IAtualizarMapeamentoDoEstudanteDoBimestreUseCase, AtualizarMapeamentoDoEstudanteDoBimestreUseCase>();
+            services.TryAddScoped<IObterAlunosSinalizadosPrioridadeMapeamentoEstudanteUseCase, ObterAlunosSinalizadosPrioridadeMapeamentoEstudanteUseCase>();
+            services.TryAddScoped<IObterFiltrosOpcoesRespostaRelatorioMapeamentoUseCase, ObterFiltrosOpcoesRespostaRelatorioMapeamentoUseCase>();
+            services.TryAddScoped<IRelatorioMapeamentoEstudantesUseCase, RelatorioMapeamentoEstudantesUseCase>();
+
             RegistrarCasoDeUsoAEERabbitSgp(services);
             RegistrarCasoDeUsoAulaRabbitSgp(services);
             RegistrarCasoDeUsoFechamentoRabbitSgp(services);

@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao
                 Mascara = questao.Mascara,
                 NomeComponente = questao.NomeComponente,
                 OpcaoResposta = questao.OpcoesRespostas.Where(opcaoResposta => !opcaoResposta.Excluido || 
-                                                              ExisteOpcaoResposta(obterRespostas(questaoId), opcaoResposta.Id))
+                                                              (obterRespostas.NaoEhNulo() && ExisteOpcaoResposta(obterRespostas(questaoId), opcaoResposta.Id)))
                                                         .Select(opcaoResposta =>
                 {
                     return new OpcaoRespostaDto()

@@ -1,11 +1,18 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Moq;
 using Shouldly;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.Frequencia.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -14,7 +21,12 @@ namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
     public class Ao_registrar_frequencia_turma_evasao : TesteBase
     {
         public Ao_registrar_frequencia_turma_evasao(CollectionFixture collectionFixture) : base(collectionFixture)
+        { }
+
+        protected override void RegistrarFakes(IServiceCollection services)
         {
+            base.RegistrarFakes(services);
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosEolPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosEolPorTurmaEvasaoFrequenciaQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         [Fact]
@@ -22,7 +34,6 @@ namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
         {
             await CriarItensBasicos();
             await CriarRegistrosConsolidacaoFrequenciaAlunoMensal();
-
             var useCase = ServiceProvider.GetService<IConsolidarFrequenciaTurmaEvasaoUseCase>();
             var mensagem = new FiltroConsolidacaoFrequenciaTurmaEvasao(1, 5);
             var jsonMensagem = JsonSerializer.Serialize(mensagem);
@@ -30,13 +41,19 @@ namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
 
             var consolidacoes = ObterTodos<Dominio.FrequenciaTurmaEvasao>();
-
             consolidacoes.ShouldNotBeEmpty();
-
             consolidacoes.Count.ShouldBe(1);
             consolidacoes.FirstOrDefault().Mes.ShouldBe(5);
             consolidacoes.FirstOrDefault().QuantidadeAlunosAbaixo50Porcento.ShouldBe(2);
             consolidacoes.FirstOrDefault().QuantidadeAlunos0Porcento.ShouldBe(2);
+
+            var consolidacoesAluno = ObterTodos<Dominio.FrequenciaTurmaEvasaoAluno>();
+            consolidacoesAluno.ShouldNotBeEmpty();
+            consolidacoesAluno.Count.ShouldBe(4);
+            consolidacoesAluno.Any(ca => ca.AlunoCodigo.Equals("3") && ca.PercentualFrequencia.Equals(40)).ShouldBeTrue();
+            consolidacoesAluno.Any(ca => ca.AlunoCodigo.Equals("4") && ca.PercentualFrequencia.Equals(30)).ShouldBeTrue();
+            consolidacoesAluno.Any(ca => ca.AlunoCodigo.Equals("5") && ca.PercentualFrequencia.Equals(0)).ShouldBeTrue();
+            consolidacoesAluno.Any(ca => ca.AlunoCodigo.Equals("6") && ca.PercentualFrequencia.Equals(0)).ShouldBeTrue();
         }
 
         private async Task CriarRegistrosConsolidacaoFrequenciaAlunoMensal()

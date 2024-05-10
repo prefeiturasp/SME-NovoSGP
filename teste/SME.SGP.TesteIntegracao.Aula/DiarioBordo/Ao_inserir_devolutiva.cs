@@ -91,7 +91,7 @@ namespace SME.SGP.TesteIntegracao.Aula.DiarioBordo
 
             var dto = await useCase.Executar(parametro);
             dto.ShouldNotBeNull();
-            var devolutivas = ObterTodos<Devolutiva>();
+            var devolutivas = ObterTodos<Dominio.Devolutiva>();
             devolutivas.ShouldNotBeNull();
             devolutivas.Count.ShouldBe(1);
             devolutivas.Exists(x => x.CodigoComponenteCurricular == COMPONENTE_CURRICULAR_512).ShouldBeTrue();

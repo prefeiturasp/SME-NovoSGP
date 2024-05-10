@@ -284,6 +284,7 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<RetornoCopiarAtividadeAvaliativaDto>> CopiarAtividadeAvaliativa(AtividadeAvaliativaDto atividadeAvaliativaDto, string usuarioRf)
         {
             var mensagens = new List<RetornoCopiarAtividadeAvaliativaDto>();
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             if (atividadeAvaliativaDto.TurmasParaCopiar.NaoEhNulo() && atividadeAvaliativaDto.TurmasParaCopiar.Any())
             {
@@ -300,7 +301,7 @@ namespace SME.SGP.Aplicacao
                     try
                     {
                         await Validar(MapearDtoParaFiltroValidacao(atividadeAvaliativaDto));
-                        var atividadeParaCopiar = MapearDtoParaEntidade(new AtividadeAvaliativa(), atividadeAvaliativaDto, usuarioRf);
+                        var atividadeParaCopiar = MapearDtoParaEntidade(new AtividadeAvaliativa(), atividadeAvaliativaDto, usuarioRf, usuario.EhProfessorCj());
                         await Salvar(atividadeParaCopiar, atividadeAvaliativaDto, true);
 
                         mensagens.Add(new RetornoCopiarAtividadeAvaliativaDto($"Atividade copiada para a turma: '{turma.TurmaId}' na data '{turma.DataAtividadeAvaliativa.ToString("dd/MM/yyyy")}'.", true));
@@ -339,7 +340,7 @@ namespace SME.SGP.Aplicacao
             return atividadeAvaliativa;
         }
 
-        private AtividadeAvaliativa MapearDtoParaEntidade(AtividadeAvaliativa atividadeAvaliativa, AtividadeAvaliativaDto dto, string usuarioRf)
+        private AtividadeAvaliativa MapearDtoParaEntidade(AtividadeAvaliativa atividadeAvaliativa, AtividadeAvaliativaDto dto, string usuarioRf, bool ehCj)
         {
             atividadeAvaliativa.ProfessorRf = usuarioRf;
             atividadeAvaliativa.UeId = dto.UeId;
@@ -351,6 +352,7 @@ namespace SME.SGP.Aplicacao
             atividadeAvaliativa.DescricaoAvaliacao = dto.Descricao;
             atividadeAvaliativa.DataAvaliacao = dto.DataAvaliacao.Local();
             atividadeAvaliativa.EhRegencia = dto.EhRegencia;
+            atividadeAvaliativa.EhCj = ehCj;
             return atividadeAvaliativa;
         }
 

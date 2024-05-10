@@ -31,8 +31,8 @@ namespace SME.SGP.Dominio
         [Display(Name = "46E1E074-37D6-E911-ABD6-F81654FE895D")]
         DIRETOR = 9,
         
-        [Display(Name = "3fe1e074-37d6-e911-abd6-f81654fe895d")]
-        POA = 10,
+        [Display(Name = "2e89cf10-e42b-476f-8673-2dfbeeee3cd0")]
+        POA_ALFABETIZACAO = 10,
         
         [Display(Name = "40E1E074-37D6-E911-ABD6-F81654FE895D")]
         PROFESSOR = 11,
@@ -95,6 +95,18 @@ namespace SME.SGP.Dominio
         ABAE = 30,
         
         [Display(Name = "52E1E074-37D6-E911-ABD6-F81654FE895D")]
-        NAAPA_SME = 31
+        NAAPA_SME = 31,
+
+        [Display(Name = "57a7b9ab-8e61-4093-b692-a0bb1f9f46bd")]
+        POA_LINGUA_PORTUGUESA = 32,
+
+        [Display(Name = "cf181fd4-dd30-47cf-a97d-57e602fd8d10")]
+        POA_MATEMATICA = 33,
+
+        [Display(Name = "2c7ced81-7109-4276-9262-5c56efd8992f")]
+        POA_HUMANAS = 34,
+
+        [Display(Name = "3104735d-c369-4710-ae64-bca37bc78f3b")]
+        POA_NATURAIS = 35
     }
 }

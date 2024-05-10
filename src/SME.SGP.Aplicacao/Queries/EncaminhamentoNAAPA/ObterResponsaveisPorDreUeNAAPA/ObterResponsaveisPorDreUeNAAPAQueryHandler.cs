@@ -19,14 +19,18 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<FuncionarioUnidadeDto>> Handle(ObterResponsaveisPorDreUeNAAPAQuery request, CancellationToken cancellationToken)
         {
-            var perfisDre = new Guid[] { Perfis.PERFIL_COORDENADOR_NAAPA };
+            var perfisDre = new Guid[] { Perfis.PERFIL_COORDENADOR_NAAPA, Perfis.PERFIL_PSICOLOGO_ESCOLAR, Perfis.PERFIL_PSICOPEDAGOGO };
             var tiposAtribuicaoUe = new TipoResponsavelAtribuicao[] { TipoResponsavelAtribuicao.Psicopedagogo,
                                         TipoResponsavelAtribuicao.PsicologoEscolar,
                                         TipoResponsavelAtribuicao.AssistenteSocial };
 
-            var responsaveisDre = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(request.CodigoUe, perfisDre))).ToList();
+            var responsaveisDre = string.IsNullOrEmpty(request.CodigoUe) 
+                                  ? Enumerable.Empty<FuncionarioUnidadeDto>()
+                                  : (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(request.CodigoUe, perfisDre))).ToList();
             if (!responsaveisDre.Any())
-                responsaveisDre = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(request.CodigoDre, perfisDre))).ToList();
+                responsaveisDre = string.IsNullOrEmpty(request.CodigoDre)
+                                  ? Enumerable.Empty<FuncionarioUnidadeDto>()
+                                  : (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(request.CodigoDre, perfisDre))).ToList();
 
             var responsaveisUe = (await mediator.Send(new ObterResponsaveisAtribuidosUePorDreUeTiposQuery(request.CodigoDre, request.CodigoUe, tiposAtribuicaoUe)))
                                 .Select(atribuicaoResponsavel => new FuncionarioUnidadeDto()

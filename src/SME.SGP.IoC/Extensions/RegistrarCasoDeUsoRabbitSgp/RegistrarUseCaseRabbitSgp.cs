@@ -28,6 +28,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExecutarExclusaoPendenciaParametroEvento, ExecutarExclusaoPendenciaParametroEvento>();
             services.TryAddScoped<INotificacaoReuniaoPedagogicaUseCase, NotificacaoReuniaoPedagogicaUseCase>();
             services.TryAddScoped<ITrataNotificacoesNiveisCargosUseCase, TrataNotificacoesNiveisCargosUseCase>();
+            services.TryAddScoped<ITrataNotificacoesNiveisCargosDreUseCase, TrataNotificacoesNiveisCargosDreUseCase>();
+            services.TryAddScoped<ITrataNotificacoesNiveisCargosUeUseCase, TrataNotificacoesNiveisCargosUeUseCase>();
             services.TryAddScoped<IGerarPendenciaAusenciaRegistroIndividualUseCase, GerarPendenciaAusenciaRegistroIndividualUseCase>();
             services.TryAddScoped<IAtualizarPendenciaRegistroIndividualUseCase, AtualizarPendenciaRegistroIndividualUseCase>();
             services.TryAddScoped<INotificarCompensacaoAusenciaUseCase, NotificarCompensacaoAusenciaUseCase>();
@@ -52,7 +54,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IAlterarRecorrenciaEventosUseCase, AlterarRecorrenciaEventosUseCase>();
             services.TryAddScoped<IExecutarSincronizacaoObjetivosComJuremaUseCase, ExecutarSincronizacaoObjetivosComJuremaUseCase>();
             services.TryAddScoped<IExecutarNotificacaoAlunosFaltososBimestreUseCase, ExecutarNotificacaoAlunosFaltososBimestreUseCase>();
-            services.TryAddScoped<IExecutarTratamentoNotificacoesNiveisCargosUseCase, ExecutarTratamentoNotificacoesNiveisCargosUseCase>();
             services.TryAddScoped<IExecutarSincronismoComponentesCurricularesUseCase, ExecutarSincronismoComponentesCurricularesUseCase>();
             services.TryAddScoped<IExecutaSincronismoComponentesCurricularesEolUseCase, ExecutaSincronismoComponentesCurricularesEolUseCase>();
             services.TryAddScoped<IExecutarSyncGeralGoogleClassroomUseCase, ExecutarSyncGeralGoogleClassroomUseCase>();
@@ -83,6 +84,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExecutarExclusaoNotificacaoInformativoUsuariosUseCase, ExecutarExclusaoNotificacaoInformativoUsuariosUseCase>();
             services.TryAddScoped<IExecutarExclusaoNotificacaoInformativoUsuarioUseCase, ExecutarExclusaoNotificacaoInformativoUsuarioUseCase>();
             services.TryAddScoped<IGerarCacheAtribuicaoResponsaveisUseCase, GerarCacheAtribuicaoResponsaveisUseCase>();
+            services.TryAddScoped<IExecutarExclusaoNotificacoesPeriodicamenteUseCase, ExecutarExclusaoNotificacoesPeriodicamenteUseCase>();
+            services.TryAddScoped<IExecutarExclusaoNotificacaoUseCase, ExecutarExclusaoNotificacaoUseCase>();
+            services.TryAddScoped<IAtualizarMapeamentoDosEstudantesUseCase, AtualizarMapeamentoDosEstudantesUseCase>();
+            services.TryAddScoped<IAtualizarMapeamentoDoEstudanteDoBimestreUseCase, AtualizarMapeamentoDoEstudanteDoBimestreUseCase>();
         }
     }
 }

@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -22,9 +20,9 @@ namespace SME.SGP.Aplicacao
         public async Task<GraficoEncaminhamentoNAAPADto> Executar(FiltroGraficoEncaminhamentoPorSituacaoDto param)
         {
             var graficos = new GraficoEncaminhamentoNAAPADto();
-            var consultaDados = await repositorio.ObterDadosGraficoSitaucaoPorUeAnoLetivo(param.AnoLetivo,param.UeId,param.DreId);
+            var consultaDados = await repositorio.ObterDadosGraficoSituacaoPorUeAnoLetivo(param.AnoLetivo, param.UeId, param.DreId, (int?)param.Modalidade);
 
-            graficos.DataUltimaConsolidacao = await mediator.Send(new ObterDataUltimaConsolicacaoDashboardNaapaQuery(TipoParametroSistema.GerarConsolidadoEncaminhamentoNAAPA));
+            graficos.DataUltimaConsolidacao = await mediator.Send(new ObterDataUltimaConsolicacaoDashboardNaapaQuery(TipoParametroSistema.GerarConsolidadoEncaminhamentoNAAPA, param.AnoLetivo));
             
             foreach (var grafico in consultaDados)
             {

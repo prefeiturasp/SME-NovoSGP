@@ -25,7 +25,7 @@ namespace SME.SGP.Dados.Repositorios
                                         inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id 
                                          left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
                                          left join wf_aprovacao_nota_fechamento wf on wf.fechamento_nota_id = n.id and not wf.excluido
-                                        where fa.fechamento_turma_disciplina_id = ANY(@fechamentosTurmaDisciplinaId)";
+                                        where fa.fechamento_turma_disciplina_id = ANY(@fechamentosTurmaDisciplinaId) and not n.excluido";
 
         const string queryNotasFechamento = @"with lista as (
                         select  fn.disciplina_id as ComponenteCurricularCodigo, 

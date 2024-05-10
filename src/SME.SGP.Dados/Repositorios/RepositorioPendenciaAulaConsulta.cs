@@ -310,7 +310,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<long>(query, new { aulaId, tipoPendencia });
         }
 
-        public async Task<bool> PossuiPendenciasPorAulasId(long[] aulasId, bool ehInfantil, long[] componentesCurricularesId)
+        public async Task<bool> PossuiPendenciasPorAulasId(long[] aulasId, bool ehInfantil, int etapaEJA, long[] componentesCurricularesId)
         {
             string sql;
 
@@ -338,10 +338,10 @@ namespace SME.SGP.Dados.Repositorios
                         AND aula.data_aula::date < @hoje
                         AND rfa.id is null 
                         AND coalesce(cc.permite_registro_frequencia, true)
-                        AND turma.etapa_eja = 0";
+                        AND {(etapaEJA > 0 ? "turma.etapa_eja = @etapaEJA" : "turma.etapa_eja = 0")}";
             }   
 
-            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date, componentesCurricularesId}));
+            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date, componentesCurricularesId, etapaEJA }));
         }
 
         public async Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulasId(long[] aulasId)
@@ -399,7 +399,7 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aula = aulaId, hoje = DateTime.Today.Date }));
         }
 
-        public async Task<PendenciaAulaDto> PossuiPendenciasPorAulaId(long aulaId, bool ehInfantil, Usuario usuarioLogado, long? disciplinaIdTerritorio = null)
+        public async Task<PendenciaAulaDto> PossuiPendenciasPorAulaId(long aulaId, bool ehInfantil, int etapaEja, Usuario usuarioLogado, long? disciplinaIdTerritorio = null)
         {
 
             var sql = new StringBuilder();
@@ -436,7 +436,7 @@ namespace SME.SGP.Dados.Repositorios
             else
             {
                 sql.AppendLine($@"select
-                              CASE WHEN rf.id is null and cc.permite_registro_frequencia and turma.etapa_eja = 0 THEN 1
+                              CASE WHEN rf.id is null and cc.permite_registro_frequencia and {(etapaEja > 0 ? "turma.etapa_eja = @etapaEja" : "turma.etapa_eja = 0")} THEN 1
                                     ELSE 0
                               END PossuiPendenciaFrequencia,
                                0 PossuiPendenciaPlanoAula 
@@ -455,7 +455,7 @@ namespace SME.SGP.Dados.Repositorios
                                 and rf.id is null");
             }
 
-            return (await database.Conexao.QueryFirstOrDefaultAsync<PendenciaAulaDto>(sql.ToString(), new { aula = aulaId, hoje = DateTime.Today.Date, usuarioLogadoRf = usuarioLogado.CodigoRf, disciplinaIdTerritorio }));
+            return (await database.Conexao.QueryFirstOrDefaultAsync<PendenciaAulaDto>(sql.ToString(), new { aula = aulaId, hoje = DateTime.Today.Date, usuarioLogadoRf = usuarioLogado.CodigoRf, disciplinaIdTerritorio, etapaEja}));
         }
 
         public async Task<IEnumerable<PendenciaAulaProfessorDto>> ObterPendenciaIdPorComponenteProfessorEBimestre(long componenteCurricularId, string codigoRf, long periodoEscolarId, TipoPendencia tipoPendencia, string turmaCodigo, long ueId)

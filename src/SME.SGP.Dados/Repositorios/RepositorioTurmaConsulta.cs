@@ -80,6 +80,7 @@ namespace SME.SGP.Dados.Repositorios
                             t.tipo_turma,
                             t.data_inicio,
                             t.historica,
+                            t.etapa_eja,
                             u.id as UeId,
                             u.id,
                             u.ue_id,
@@ -1120,6 +1121,25 @@ namespace SME.SGP.Dados.Repositorios
                             AND NOT (tca.tipo_ciclo_id = ANY(@ignorarTiposCiclos)) ";
 
             return await contexto.QueryAsync<TurmaDTO>(query, new { ueId, anoLetivo, tiposTurma, modalidades, ignorarTiposCiclos });
+        }
+
+        public async Task<IEnumerable<TurmaRetornoDto>> ObterTurmasSondagem(string codigoUe, int anoLetivo)
+        {
+            var query = @"select t.turma_id AS Codigo, t.nome  
+                          from turma t
+                         inner join ue on ue.id = t.ue_id 
+                         where t.ano_letivo = @anoLetivo 
+                           and ue.ue_id = @codigoUe 
+                           and t.modalidade_codigo = @modalidade
+                           and t.tipo_turma = @tipoTurma";
+
+            return await contexto.Conexao.QueryAsync<TurmaRetornoDto>(query, 
+                new { 
+                    codigoUe, 
+                    anoLetivo, 
+                    modalidade = (int)Modalidade.Fundamental,
+                    tipoTurma = (int)TipoTurma.Regular
+                });
         }
     }
 }
