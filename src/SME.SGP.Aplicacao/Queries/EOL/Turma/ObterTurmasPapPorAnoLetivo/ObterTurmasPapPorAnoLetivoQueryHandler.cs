@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<TurmasPapDto>> Handle(ObterTurmasPapPorAnoLetivoQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
-            var url = string.Format(ServicosEolConstants.URL_TURMAS_TURMAS_PAP,request.AnoLetivo,$"codigoEscola?codigoEscola={request.CodigoUe}");
+            var url = string.Format(ServicosEolConstants.URL_TURMAS_TURMAS_PAP,request.AnoLetivo,request.CodigoUe);
 
             try
             {
