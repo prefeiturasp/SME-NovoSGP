@@ -18,9 +18,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso.Turma
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<TurmasPapDto>> Executar(long anoLetivo)
+        public async Task<IEnumerable<TurmasPapDto>> Executar(long anoLetivo, string codigoUe)
         {
-            return await mediator.Send(new ObterTurmasPapPorAnoLetivoQuery(anoLetivo));
+            return await mediator.Send(new ObterTurmasPapPorAnoLetivoQuery(anoLetivo,codigoUe));
         }
     }
 }

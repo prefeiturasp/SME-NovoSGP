@@ -95,13 +95,13 @@ namespace SME.SGP.Api.Controllers
             return BadRequest();
         }
 
-        [HttpGet("turmas-pap/{anoLetivo}")]
+        [HttpGet("turmas-pap/{anoLetivo}/ue/{codigoUe}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterTurmasPapPorAnoLetivo([FromRoute] long anoLetivo, [FromServices] IObterTurmasPapPorAnoLetivoUseCase usecase)
+        public async Task<IActionResult> ObterTurmasPapPorAnoLetivo([FromRoute] long anoLetivo, string codigoUe,[FromServices] IObterTurmasPapPorAnoLetivoUseCase usecase)
         {
-            return Ok(await usecase.Executar(anoLetivo));
+            return Ok(await usecase.Executar(anoLetivo,codigoUe));
         }
     }
 }
