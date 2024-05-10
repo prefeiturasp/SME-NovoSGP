@@ -7,6 +7,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.Turma;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -92,6 +93,15 @@ namespace SME.SGP.Api.Controllers
                 return Ok(await useCase.Executar(file, Dominio.TipoArquivo.EncaminhamentoNAAPA));
 
             return BadRequest();
+        }
+
+        [HttpGet("turmas-pap/{anoLetivo}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterTurmasPapPorAnoLetivo([FromRoute] long anoLetivo, [FromServices] IObterTurmasPapPorAnoLetivoUseCase usecase)
+        {
+            return Ok(await usecase.Executar(anoLetivo));
         }
     }
 }

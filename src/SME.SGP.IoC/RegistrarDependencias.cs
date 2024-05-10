@@ -1354,6 +1354,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExcluirArquivoPAPUseCase, ExcluirArquivoPAPUseCase>();
             services.TryAddScoped<IObterRelatorioPAPConselhoClasseUseCase, ObterRelatorioPAPConselhoClasseUseCase>();
             services.TryAddScoped<ICopiarRelatorioPAPUseCase, CopiarRelatorioPAPUseCase>();
+            services.TryAddScoped<IObterTurmasPapPorAnoLetivoUseCase, ObterTurmasPapPorAnoLetivoUseCase>();
 
             // Historico Escolar Observação
             services.TryAddScoped<IObterHistoricoEscolarObservacaoUseCase, ObterHistoricoEscolarObservacaoUseCase>();
