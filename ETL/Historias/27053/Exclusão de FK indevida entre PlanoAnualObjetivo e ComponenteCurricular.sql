@@ -1,1 +1,0 @@
-ALTER TABLE public.planejamento_anual_objetivos_aprendizagem DROP CONSTRAINT if exists planejamento_anual_objetivos_aprendizagem_planejamento_anual_fk;

@@ -1,1 +1,0 @@
-ALTER TABLE public.supervisor_escola_dre ADD excluido bool NOT NULL DEFAULT false;

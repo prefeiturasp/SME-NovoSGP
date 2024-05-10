@@ -1,1 +1,0 @@
-ALTER TABLE if exists public.compensacao_ausencia ADD if not exists migrado bool NOT NULL DEFAULT false;

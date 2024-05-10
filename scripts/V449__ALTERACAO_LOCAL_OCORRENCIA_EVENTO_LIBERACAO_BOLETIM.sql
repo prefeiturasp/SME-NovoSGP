@@ -1,1 +1,0 @@
-update evento_tipo set local_ocorrencia = 3 where  id = 7

@@ -1,2 +1,0 @@
-ALTER TABLE public.frequencia_aluno DROP CONSTRAINT if exists frequencia_aluno_un;
-ALTER TABLE public.frequencia_aluno ADD CONSTRAINT frequencia_aluno_un UNIQUE (codigo_aluno, tipo, disciplina_id, periodo_inicio, periodo_fim, turma_id);

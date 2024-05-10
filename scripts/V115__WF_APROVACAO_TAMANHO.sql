@@ -1,1 +1,0 @@
-﻿alter table wf_aprovacao alter column NOTIFICACAO_MENSAGEM type VARCHAR USING notificacao_mensagem::varchar;

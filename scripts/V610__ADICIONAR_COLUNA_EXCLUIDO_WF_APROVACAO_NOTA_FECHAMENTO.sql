@@ -1,1 +1,0 @@
-ALTER TABLE if exists public.wf_aprovacao_nota_fechamento ADD column if not exists excluido bool NOT NULL DEFAULT false;

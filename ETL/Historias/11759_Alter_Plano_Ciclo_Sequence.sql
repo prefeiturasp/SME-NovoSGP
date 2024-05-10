@@ -1,1 +1,0 @@
-ALTER SEQUENCE public.plano_ciclo_id_seq RESTART WITH 9258;

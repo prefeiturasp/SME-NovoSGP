@@ -1,1 +1,0 @@
-ALTER TABLE public.nota_conceito_bimestre DROP CONSTRAINT nota_conceito_bimestre_conceito_fk;

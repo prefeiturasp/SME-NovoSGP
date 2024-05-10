@@ -1,1 +1,0 @@
-ALTER TABLE public.frequencia_aluno ADD IF NOT EXISTS professor_rf varchar(15) NULL;

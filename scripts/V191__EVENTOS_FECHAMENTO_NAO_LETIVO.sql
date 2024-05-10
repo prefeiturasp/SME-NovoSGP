@@ -1,1 +1,0 @@
-update public.evento set letivo = 0 where tipo_evento_id = 3;

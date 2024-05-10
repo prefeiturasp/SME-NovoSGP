@@ -1,1 +1,0 @@
-ALTER TABLE consolidado_fechamento_componente_turma DROP CONSTRAINT IF exists consolidado_fechamento_componente_turma_componente_curricular_f;

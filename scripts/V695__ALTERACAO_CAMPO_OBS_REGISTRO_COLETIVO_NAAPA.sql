@@ -1,1 +1,0 @@
-ALTER TABLE public.registrocoletivo ALTER COLUMN observacao TYPE varchar(1000);

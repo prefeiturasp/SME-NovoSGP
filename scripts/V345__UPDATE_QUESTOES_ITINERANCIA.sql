@@ -1,1 +1,0 @@
-update public.questao set obrigatorio = true where questionario_id in (select id from questionario where tipo in (3,4));

@@ -1,1 +1,0 @@
-update componente_curricular_grupo_area_ordenacao set area_conhecimento_id = 9 where grupo_matriz_id = 6 and ordem = 1;

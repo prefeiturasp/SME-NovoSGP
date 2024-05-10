@@ -1,6 +1,0 @@
-﻿USE [Manutencao]
-
-update ETL_TURMAS_ANO
-set ETL_TURMAS_ANO.id = ETL_UES.id
-from ETL_TURMAS_ANO INNER JOIN ETL_UES 
-ON ETL_TURMAS_ANO.cd_escola = ETL_UES.ue_id

@@ -1,2 +1,0 @@
-CREATE index if not exists atividade_avaliativa_turma_id_idx ON public.atividade_avaliativa (turma_id);
-CREATE index if not exists atividade_avaliativa_data_avaliacao_idx ON public.atividade_avaliativa (data_avaliacao);

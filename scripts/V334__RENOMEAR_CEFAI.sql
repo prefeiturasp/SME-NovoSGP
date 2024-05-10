@@ -1,1 +1,0 @@
-update prioridade_perfil set nome_perfil = 'Coordenador CEFAI' where codigo_perfil = '4be1e074-37d6-e911-abd6-f81654fe895d'

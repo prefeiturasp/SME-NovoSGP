@@ -1,1 +1,0 @@
-select turma_id, etapa_eja from turma where modalidade_codigo = 3 and ano_letivo < date_part('year', now()) and etapa_eja is null order by turma_id
