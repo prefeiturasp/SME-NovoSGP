@@ -58,5 +58,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<long>> ObterIdsPorCodigos(string[] codigosTurma);
         Task<IEnumerable<TurmaAlunoDto>> ObterPorAlunos(long[] codigoAlunos, int anoLetivo);
         Task<IEnumerable<TurmaDTO>> ObterTurmasAulasNormais(long ueId, int anoLetivo, int[] tiposTurma, int[] modalidades, int[] ignorarTiposCiclos);
+        Task<IEnumerable<TurmaRetornoDto>> ObterTurmasSondagem(string codigoUe, int anoLetivo);
     }
 }

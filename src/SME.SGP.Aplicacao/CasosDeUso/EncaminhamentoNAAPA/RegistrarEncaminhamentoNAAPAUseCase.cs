@@ -104,7 +104,8 @@ namespace SME.SGP.Aplicacao
         }
         public async Task AlterarEncaminhamento(EncaminhamentoNAAPADto encaminhamentoNAAPADto, EncaminhamentoNAAPA encaminhamentoNAAPA)
         {
-            await mediator.Send(new AlterarSituacaoNAAPACommand(encaminhamentoNAAPA, encaminhamentoNAAPADto.Situacao));
+            if(encaminhamentoNAAPADto.Situacao != encaminhamentoNAAPA.Situacao)
+                await mediator.Send(new AlterarSituacaoNAAPACommand(encaminhamentoNAAPA, encaminhamentoNAAPADto.Situacao));
 
             foreach (var secao in encaminhamentoNAAPADto.Secoes)
             {

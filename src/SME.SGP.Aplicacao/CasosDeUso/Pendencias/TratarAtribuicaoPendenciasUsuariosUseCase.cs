@@ -47,7 +47,6 @@ namespace SME.SGP.Aplicacao
                     case Dominio.PerfilUsuario.ADMSME:
                     case Dominio.PerfilUsuario.ADMCOTIC:
                     case Dominio.PerfilUsuario.ADMDRE:
-                    case Dominio.PerfilUsuario.POA:
                     case Dominio.PerfilUsuario.SECRETARIO:
                     case Dominio.PerfilUsuario.SUPERVISOR:
                     case Dominio.PerfilUsuario.PAEE:

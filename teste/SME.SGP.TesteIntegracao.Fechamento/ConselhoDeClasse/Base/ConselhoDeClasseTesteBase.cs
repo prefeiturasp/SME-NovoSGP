@@ -36,6 +36,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         protected new const string ALUNO_CODIGO_2 = "2";
         protected new const string ALUNO_CODIGO_3 = "3";
         protected new const string ALUNO_CODIGO_4 = "4";
+        protected new const string ALUNO_CODIGO_14 = "14";
 
         protected new const double NOTA_1 = 1;
         protected new const double NOTA_2 = 2;
@@ -60,6 +61,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         protected const int CONSELHO_CLASSE_ALUNO_ID_1 = 1;
         protected const string JUSTIFICATIVA = "Nota pós conselho";
         private const string COMPONENTE_CURRICULAR_GRUPO_AREA_ORDENACAO = "componente_curricular_grupo_area_ordenacao";
+
+        protected const int PARECER_CONCLUSIVO_ID_1 = 1;
+        protected const int PARECER_CONCLUSIVO_ID_2 = 2;
 
         protected ConselhoDeClasseTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -1017,6 +1021,19 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 Tipo = TipoParametroSistema.PercentualFrequenciaCriticoBaseNacional,
                 Valor = "50",
                 Ano = dataAtualAnoAtual.Year,
+                Ativo = true,
+                CriadoEm = dataAtualAnoAtual,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoPor = SISTEMA_NOME
+            });
+
+            await InserirNaBase(new ParametrosSistema()
+            {
+                Nome = "AprovacaoAlteracaoParecerConclusivo",
+                Descricao = "Solicita aprovação nas alterações de parecer conclusivo do aluno",
+                Tipo = TipoParametroSistema.AprovacaoAlteracaoParecerConclusivo,
+                Valor = "",
+                Ano = dataAtualAnoAtual.AddYears(-1).Year,
                 Ativo = true,
                 CriadoEm = dataAtualAnoAtual,
                 CriadoRF = SISTEMA_CODIGO_RF,

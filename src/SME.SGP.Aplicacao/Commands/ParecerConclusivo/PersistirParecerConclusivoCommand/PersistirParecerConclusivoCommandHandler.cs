@@ -2,7 +2,6 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,6 +22,7 @@ namespace SME.SGP.Aplicacao
         {
             var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorIdAsync(request.ConselhoClasseAlunoId);
             conselhoClasseAluno.ConselhoClasseParecerId = request.ParecerConclusivoId;
+            conselhoClasseAluno.ParecerAlteradoManual = request.ParecerAlteradoManual;
 
             await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
 
@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
             var mensagemConsolidacaoConselhoClasseAluno = new MensagemConsolidacaoConselhoClasseAlunoDto(conselhoClasseAluno.AlunoCodigo, 
                                                                                                          request.TurmaId, 
                                                                                                          request.Bimestre,
-                                                                                                         alunoDaTurma.Inativo, null, true);
+                                                                                                         alunoDaTurma?.Inativo ?? true, null, true);
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaConselhoClasseAlunoTratar, mensagemConsolidacaoConselhoClasseAluno, Guid.NewGuid(), null));
 

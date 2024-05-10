@@ -83,7 +83,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExecutarNotificacaoInformativoUsuarioUseCase, ExecutarNotificacaoInformativoUsuarioUseCase>();
             services.TryAddScoped<IExecutarExclusaoNotificacaoInformativoUsuariosUseCase, ExecutarExclusaoNotificacaoInformativoUsuariosUseCase>();
             services.TryAddScoped<IExecutarExclusaoNotificacaoInformativoUsuarioUseCase, ExecutarExclusaoNotificacaoInformativoUsuarioUseCase>();
-            services.TryAddScoped<IGerarCacheAtribuicaoResponsaveisUseCase, GerarCacheAtribuicaoResponsaveisUseCase>();            
+            services.TryAddScoped<IGerarCacheAtribuicaoResponsaveisUseCase, GerarCacheAtribuicaoResponsaveisUseCase>();
+            services.TryAddScoped<IExecutarExclusaoNotificacoesPeriodicamenteUseCase, ExecutarExclusaoNotificacoesPeriodicamenteUseCase>();
+            services.TryAddScoped<IExecutarExclusaoNotificacaoUseCase, ExecutarExclusaoNotificacaoUseCase>();
         }
     }
 }

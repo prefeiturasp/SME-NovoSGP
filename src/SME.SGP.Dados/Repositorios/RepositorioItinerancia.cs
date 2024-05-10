@@ -294,7 +294,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<ItineranciaNomeRfCriadorRetornoDto>(query);
         }
 
-        public async Task<IEnumerable<DashboardItineranciaDto>> ObterQuantidadeVisitasPAAI(int ano, long dreId, long ueId, int mes)
+        public async Task<DashboardItineranciaVisitaPaais> ObterQuantidadeVisitasPAAI(int ano, long dreId, long ueId, int mes)
         {
             var sql = new StringBuilder("");
             var where = new StringBuilder("where i.ano_letivo = @ano and not i.excluido ");
@@ -309,7 +309,7 @@ namespace SME.SGP.Dados.Repositorios
                             inner join dre on ue.dre_id = dre.id ");
 
             if (dreId > 0)
-                where.AppendLine(" and dre.id = @dreId ");
+                where.AppendLine(" and ue.dre_id = @dreId ");
 
             if (ueId > 0)
                 where.AppendLine(" and ue.id = @ueId ");
@@ -324,8 +324,20 @@ namespace SME.SGP.Dados.Repositorios
             else
                 sql.AppendLine(" group by dre.abreviacao order by 1;");
 
+            sql.AppendLine(@$"select count(i.id) as Total
+                             from itinerancia i
+                             inner join ue on i.ue_id = ue.id 
+                             {where.ToString()};");
 
-            return await database.Conexao.QueryAsync<DashboardItineranciaDto>(sql.ToString(), new {ano, dreId, ueId, mes});
+            var retorno = new DashboardItineranciaVisitaPaais();
+
+            using (var multi = await database.Conexao.QueryMultipleAsync(sql.ToString(), new { ano, dreId, ueId, mes }))
+            {
+                retorno.DashboardItinerancias = multi.Read<DashboardItineranciaDto>();
+                retorno.TotalRegistro = multi.ReadFirst<long>();
+            }
+
+            return retorno;
         }
 
         public async Task<IEnumerable<DashboardItineranciaDto>> ObterQuantidadeObjetivos(int ano, long dreId, long ueId, int mes, string codigoRF)

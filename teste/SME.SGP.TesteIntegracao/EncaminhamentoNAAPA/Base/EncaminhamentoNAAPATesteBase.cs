@@ -4,6 +4,7 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
+using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Linq;
@@ -41,6 +42,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected const long ID_QUESTAO_ENSINO_APRENDIZAGEM = 41;
         protected const long ID_QUESTAO_HIPOTESE_ESCRITA = 42;
         protected const long ID_QUESTAO_PERMANENCIA_ESCOLAR = 43;
+        protected const long ID_QUESTAO_ANEXO = 47;
+        protected const long ID_QUESTAO_ANEXOS_ITINERANCIA = 48;
+        protected const long ID_QUESTAO_PROFISSIONAIS_ENVOLVIDOS = 49;
 
         protected const long ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_DATA_ENTRADA_QUEIXA = 17;
         protected const long ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PRIORIDADE = 18;
@@ -62,6 +66,10 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected const long ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_PERMANENCIA_ESCOLAR = 32;
         protected const long ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS = 33;
         protected const long ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL = 34;
+
+        protected const long ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_MES = 44;
+        protected const long ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_MODALIDADE_ATENCAO = 45;
+        protected const long ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PROCEDIMENTO_TRABALHO = 46;
 
         protected const long ID_OPCAO_RESPOSTA_NORMAL = 1;
         protected const long ID_OPCAO_RESPOSTA_CARTEIRA_VACINAS_ATRASADA = 3;
@@ -109,7 +117,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected const long ID_QUESTIONARIO_INFORMACOES_ESTUDANTE = 1;
         protected const long ID_QUESTIONARIO_QUESTOES_APRESENTADAS_INFANTIL = 2;
         protected const long ID_QUESTIONARIO_NAAPA_ITINERANCIA = 3;
-
+        
         protected const long ID_ATENDIMENTO_NAO_PRESENCIAL = 12;
         protected const long ID_GRUPO_DE_TRABALHO_NAAPA = 13;
         protected const long ID_ACOES_LUDICAS = 14;
@@ -121,6 +129,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected const long QUESTIONARIO_RELATORIO_DINAMICO_ENCAMINHAMENTO_NAAPA_4 = 4;
         protected const long QUESTIONARIO_RELATORIO_DINAMICO_ENCAMINHAMENTO_NAAPA_INFANTIL_5 = 5;
         protected const long QUESTIONARIO_RELATORIO_DINAMICO_ENCAMINHAMENTO_NAAPA_EF_EJA_CIEJA_MOVA_CMCT_ETEC_6 = 6;
+        protected const long QUESTIONARIO_RELATORIO_DINAMICO_ENCAMINHAMENTO_NAAPA_ATENDIMENTO_7 = 7;
 
         protected const string QUESTAO_NOME_DATA_DE_ENTRADA_DA_QUEIXA = "Data de entrada da queixa";
         protected const string QUESTAO_NOME_COMPONENTE_DATA_DE_ENTRADA_DA_QUEIXA = "DATA_ENTRADA_QUEIXA";
@@ -173,6 +182,19 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
         protected const string QUESTAO_NOME_VULNERABILIDADE_SOCIAL = "Vulnerabilidade Social";
         protected const string QUESTAO_NOME_COMPONENTE_VULNERABILIDADE_SOCIAL = "VULNERABILIDADE_SOCIAL";
+
+        protected const string QUESTAO_NOME_MES_ATENDIMENTO = "Mês";
+        protected const string QUESTAO_NOME_COMPONENTE_DATA_DO_ATENDIMENTO = "DATA_DO_ATENDIMENTO";
+
+        protected const string QUESTAO_NOME_MODALIDADE_ATENCAO = "Modalidade de atenção";
+        protected const string QUESTAO_NOME_COMPONENTE_TIPO_DO_ATENDIMENTO = "TIPO_DO_ATENDIMENTO";
+
+        protected const string QUESTAO_NOME_PROCEDIMENTO_TRABALHO = "Procedimento de trabalho";
+        protected const string QUESTAO_NOME_COMPONENTE_PROCEDIMENTO_DE_TRABALHO = "PROCEDIMENTO_DE_TRABALHO";
+
+        protected const string QUESTAO_NOME_COMPONENTE_ANEXOS = "ANEXOS";
+        protected const string QUESTAO_NOME_COMPONENTE_ANEXO_ITINERANCIA = "ANEXO_ITINERANCIA";
+        protected const string QUESTAO_NOME_COMPONENTE_PROFISSIONAIS_ENVOLVIDOS = "PROFISSIONAIS_ENVOLVIDOS_ATENDIMENTO";
 
         protected const long ID_OPCAO_RESPOSTA_DOENCA_CRONICA_OU_EM_TRATAMENTO_DE_LONGA_DURACAO_71_1099 = 71;
         protected const long ID_QUESTAO_COMPLEMENTAR_SELECIONE_UM_FILTRO_DOENCA_CRONICA_OU_EM_TRATAMENTO_DE_LONGA_DURACAO_28_303 = 28;
@@ -273,9 +295,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //Id 3
             await InserirNaBase(new SecaoEncaminhamentoNAAPA()
             {
-                QuestionarioId = 3,
+                QuestionarioId = ID_QUESTIONARIO_NAAPA_ITINERANCIA,
                 Nome = "Apoio e Acompanhamento",
-                NomeComponente = "QUESTOES_ITINERACIA",
+                NomeComponente = EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA,
                 Etapa = 1,
                 Ordem = 3,
                 CriadoPor = SISTEMA_NOME,
@@ -311,6 +333,19 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 NomeComponente = NOME_SECAO_ENCAMINHAMENTO_NAAPA_QUESTOES_APRESENTADAS_FUNDAMENTAL,
                 Etapa = 1, Ordem = 2,
                 CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+            });
+
+            //Id 7
+            await InserirNaBase(new SecaoEncaminhamentoNAAPA()
+            {
+                QuestionarioId = QUESTIONARIO_RELATORIO_DINAMICO_ENCAMINHAMENTO_NAAPA_ATENDIMENTO_7,
+                Nome = "Apoio e acompanhamento",
+                NomeComponente = EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA,
+                Etapa = 1,
+                Ordem = 3,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
         }
 
@@ -365,6 +400,16 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             return ServiceProvider.GetService<IRegistrarEncaminhamentoItinerarioNAAPAUseCase>();
         }
 
+        protected IExcluirArquivoItineranciaNAAPAUseCase ObterServicoExcluirArquivoItineranciaNAAPAUseCase()
+        {
+            return ServiceProvider.GetService<IExcluirArquivoItineranciaNAAPAUseCase>();
+        }
+
+        protected IUploadDeArquivoUseCase ObterServicoUploadDeArquivoUseCase()
+        {
+            return ServiceProvider.GetService<IUploadDeArquivoUseCase>();
+        }
+
         protected IObterSecoesItineranciaDeEncaminhamentoNAAPAUseCase ObterServicoListagemSecoesItineranciaEncaminhamentoNaapa()
         {
             return ServiceProvider.GetService<IObterSecoesItineranciaDeEncaminhamentoNAAPAUseCase>();
@@ -393,6 +438,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected IObterEncaminhamentoNAAPAPorIdUseCase ObterServicoObterEncaminhamentoNAAPAPorId()
         {
             return ServiceProvider.GetService<IObterEncaminhamentoNAAPAPorIdUseCase>();
+        }
+
+        protected IObterProfissionaisEnvolvidosAtendimentoNAAPANAAPAUseCase ObterServicoObtencaoProfissionaisEnvolvidosAtendimentoNAAPANAAPAUseCase()
+        {
+            return ServiceProvider.GetService<IObterProfissionaisEnvolvidosAtendimentoNAAPANAAPAUseCase>();
         }
 
         protected IObterQuestionarioItinerarioEncaminhamentoNAAPAUseCase ObterServicoObterQuestionarioItinerarioEncaminhamentoNAAPA()
@@ -600,7 +650,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 {
                     QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
                     Ordem = 1,
-                    Nome = "Atendimento não presencial",
+                    Nome = "Itinerância",
                     Excluido = true,
                     CriadoPor = SISTEMA_NOME,
                     CriadoRF = SISTEMA_CODIGO_RF,
@@ -634,7 +684,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 {
                     QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
                     Ordem = 2,
-                    Nome = "Outro procedimento",
+                    Nome = "Análise Documental",
                     CriadoPor = SISTEMA_NOME,
                     CriadoRF = SISTEMA_CODIGO_RF,
                     CriadoEm = DateTime.Now
@@ -2390,6 +2440,72 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                     CriadoRF = SISTEMA_CODIGO_RF,
                     CriadoEm = DateTime.Now
                 });
+
+                //id 202
+                await InserirNaBase(new OpcaoResposta()
+                {
+                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_MES,
+                    Ordem = 1,
+                    Nome = "Janeiro",
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF,
+                    CriadoEm = DateTime.Now
+                });
+
+                //id 202
+                await InserirNaBase(new OpcaoResposta()
+                {
+                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_MES,
+                    Ordem = 2,
+                    Nome = "Fevereiro",
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF,
+                    CriadoEm = DateTime.Now
+                });
+
+                //id 203
+                await InserirNaBase(new OpcaoResposta()
+                {
+                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_MODALIDADE_ATENCAO,
+                    Ordem = 1,
+                    Nome = "Itinerância",
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF,
+                    CriadoEm = DateTime.Now
+                });
+
+                //id 204
+                await InserirNaBase(new OpcaoResposta()
+                {
+                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_MODALIDADE_ATENCAO,
+                    Ordem = 2,
+                    Nome = "Grupo de Trabalho NAAPA",
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF,
+                    CriadoEm = DateTime.Now
+                });
+
+                //id 205
+                await InserirNaBase(new OpcaoResposta()
+                {
+                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PROCEDIMENTO_TRABALHO,
+                    Ordem = 1,
+                    Nome = "Ações Lúdicas",
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF,
+                    CriadoEm = DateTime.Now
+                });
+
+                //id 206
+                await InserirNaBase(new OpcaoResposta()
+                {
+                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PROCEDIMENTO_TRABALHO,
+                    Ordem = 2,
+                    Nome = "Análise Documental",
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF,
+                    CriadoEm = DateTime.Now
+                });
         }
 
 
@@ -2445,6 +2561,16 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             await InserirNaBase(new Questionario()
             {
                 Nome = "Questionário Relatório Dinâmico Encaminhamento NAAPA - Fundamental, Médio, EJA, CIEJA, MOVA, CMCT, ETEC",
+                Tipo = TipoQuestionario.RelatorioDinamicoEncaminhamentoNAAPA,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //7
+            await InserirNaBase(new Questionario()
+            {
+                Nome = "Questionário Relatório Dinâmico Encaminhamento NAAPA - Atendimento",
                 Tipo = TipoQuestionario.RelatorioDinamicoEncaminhamentoNAAPA,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
@@ -2544,11 +2670,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //id 7
             await InserirNaBase(new Questao()
             {
-                QuestionarioId = 3,
-                Ordem = 1,
+                QuestionarioId = ID_QUESTIONARIO_NAAPA_ITINERANCIA,
+                Ordem = 0,
                 Nome = "Data do atendimento",
                 Obrigatorio = true,
-                Tipo = TipoQuestao.Combo,
+                Tipo = TipoQuestao.Data,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now,
@@ -2558,8 +2684,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //id 8
             await InserirNaBase(new Questao()
             {
-                QuestionarioId = 3,
-                Ordem = 2,
+                QuestionarioId = ID_QUESTIONARIO_NAAPA_ITINERANCIA,
+                Ordem = 1,
                 Nome = "Modalidade de atenção",
                 Obrigatorio = true,
                 Tipo = TipoQuestao.Combo,
@@ -2572,8 +2698,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //id 9
             await InserirNaBase(new Questao()
             {
-                QuestionarioId = 3,
-                Ordem = 3,
+                QuestionarioId = ID_QUESTIONARIO_NAAPA_ITINERANCIA,
+                Ordem = 2,
                 Nome = "Procedimento de trabalho",
                 Obrigatorio = true,
                 Tipo = TipoQuestao.ComboMultiplaEscolha,
@@ -2586,8 +2712,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //id 10
             await InserirNaBase(new Questao()
             {
-                QuestionarioId = 3,
-                Ordem = 4,
+                QuestionarioId = ID_QUESTIONARIO_NAAPA_ITINERANCIA,
+                Ordem = 6,
                 Nome = "Descrição do atendimento",
                 Obrigatorio = true,
                 Tipo = TipoQuestao.EditorTexto,
@@ -2600,7 +2726,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //id 11
             await InserirNaBase(new Questao()
             {
-                QuestionarioId = 3,
+                QuestionarioId = ID_QUESTIONARIO_NAAPA_ITINERANCIA,
                 Ordem = 1,
                 Nome = "Descrição do procedimento de trabalho",
                 Obrigatorio = true,
@@ -2995,6 +3121,91 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now
             });
+
+            //44
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = QUESTIONARIO_RELATORIO_DINAMICO_ENCAMINHAMENTO_NAAPA_ATENDIMENTO_7,
+                Ordem = 1,
+                Nome = QUESTAO_NOME_MES_ATENDIMENTO,
+                NomeComponente = QUESTAO_NOME_COMPONENTE_DATA_DO_ATENDIMENTO,
+                Tipo = TipoQuestao.ComboMultiplaEscolha,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 45
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = QUESTIONARIO_RELATORIO_DINAMICO_ENCAMINHAMENTO_NAAPA_ATENDIMENTO_7,
+                Ordem = 2,
+                Nome = QUESTAO_NOME_MODALIDADE_ATENCAO,
+                Obrigatorio = true,
+                Tipo = TipoQuestao.Combo,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now,
+                NomeComponente = QUESTAO_NOME_COMPONENTE_TIPO_DO_ATENDIMENTO
+            });
+
+            //id 46
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = QUESTIONARIO_RELATORIO_DINAMICO_ENCAMINHAMENTO_NAAPA_ATENDIMENTO_7,
+                Ordem = 3,
+                Nome = QUESTAO_NOME_PROCEDIMENTO_TRABALHO,
+                Obrigatorio = true,
+                Tipo = TipoQuestao.ComboMultiplaEscolha,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now,
+                NomeComponente = QUESTAO_NOME_COMPONENTE_PROCEDIMENTO_DE_TRABALHO
+            });
+
+            //id 47
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = ID_QUESTIONARIO_INFORMACOES_ESTUDANTE,
+                Ordem = 3,
+                Nome = "Anexo",
+                Obrigatorio = false,
+                Tipo = TipoQuestao.Upload,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now,
+                NomeComponente = QUESTAO_NOME_COMPONENTE_ANEXOS
+            });
+
+            //id 48
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = ID_QUESTIONARIO_NAAPA_ITINERANCIA,
+                Ordem = 7,
+                Nome = "Anexos",
+                Obrigatorio = false,
+                Tipo = TipoQuestao.Upload,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now,
+                NomeComponente = QUESTAO_NOME_COMPONENTE_ANEXO_ITINERANCIA
+            });
+
+            //id 49
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = ID_QUESTIONARIO_NAAPA_ITINERANCIA,
+                Ordem = 5,
+                Nome = "Profissionais envolvidos",
+                Obrigatorio = false,
+                Tipo = TipoQuestao.ProfissionaisEnvolvidos,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now,
+                NomeComponente = QUESTAO_NOME_COMPONENTE_PROFISSIONAIS_ENVOLVIDOS
+            });
+
+
         }
 
         protected class FiltroNAAPADto

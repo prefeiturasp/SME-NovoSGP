@@ -7,6 +7,7 @@ using SME.SGP.Metrica.Worker.Repositorios.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -196,73 +197,65 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 
         public Task<IEnumerable<ConselhoClasseNaoConsolidado>> ObterConselhosClasseNaoConsolidados(long ueId)
             => database.Conexao.QueryAsync<ConselhoClasseNaoConsolidado>(
-                @"select fa.aluno_codigo as AlunoCodigo,
-	                p.bimestre ,
-	                t.id as TurmaId,
-	                t.turma_id as TurmaCodigo,
-	                u.id as UeId,
-	                u.ue_id as UeCodigo, 
-	                cc1.id as ComponenteCurricularId,
-	                cc1.descricao as ComponenteCurricular,
-	                fn.criado_em as CriadoEm, 
-	                fn.alterado_em as AlteradoEm, 
-	                true as EhFechamento,
-	                false as EhConselho,
-	                fn.criado_rf as CriadoRF
-	            from fechamento_turma ft
-	            inner join conselho_classe cc on cc.fechamento_turma_id = ft.id and not cc.excluido
-	            inner join turma t on t.id = ft.turma_id and t.tipo_turma = 1
-	            inner join ue u on u.id = t.ue_id
-	            inner join fechamento_turma_disciplina f on f.fechamento_turma_id = ft.id and not f.excluido
-	            inner join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = f.id and not fa.excluido
-	            inner join conselho_classe_aluno cca on cca.conselho_classe_id = cc.id and not cca.excluido and fa.aluno_codigo = cca.aluno_codigo
-	            inner join fechamento_nota fn on fn.fechamento_aluno_id = fa.id and not fn.excluido
-	            inner join componente_curricular cc1 on cc1.id = fn.disciplina_id and cc1.permite_lancamento_nota
-	            left join periodo_escolar p on p.id = ft.periodo_escolar_id
-	            left join consolidado_conselho_classe_aluno_turma cccat on cccat.aluno_codigo = fa.aluno_codigo and cccat.turma_id = t.id
-	            left join consolidado_conselho_classe_aluno_turma_nota cccatn on cccatn.consolidado_conselho_classe_aluno_turma_id = cccat.id
-	                                                                            and coalesce(cccatn.bimestre, 0) = coalesce(p.bimestre, 0)
-	                                                                            and cccatn.componente_curricular_id = cc1.id
-	            where
-	                not cccat.excluido
-	                and not ft.excluido    
-	                and cccatn.id is null
-	                and t.ano_letivo = extract(year from NOW())
-	                and u.id = @ueId
-
-                union all
-
-	            select cca.aluno_codigo as AlunoCodigo,
-	                p.bimestre,
-	                t.id as TurmaId,
-	                t.turma_id as TurmaCodigo,
-	                u.id as UeId, 
-	                u.ue_id as UeCodigo, 
-	                cc1.id as ComponenteCurricularId,
-	                cc1.descricao as ComponenteCurricular,
-	                ccn.criado_em as CriadoEm, 
-	                ccn.alterado_em as AlteradoEm,
-	                false as EhFechamento,
-	                true as EhConselho,
-	                ccn.criado_rf as CriadoRF
-	            from fechamento_turma ft     
-	            inner join conselho_classe cc on cc.fechamento_turma_id = ft.id and not cc.excluido
-	            inner join turma t on t.id = ft.turma_id and t.tipo_turma = 1
-	            inner join ue u on u.id = t.ue_id
-	            inner join conselho_classe_aluno cca on cca.conselho_classe_id = cc.id
-	            inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id
-	            inner join componente_curricular cc1 on cc1.id = ccn.componente_curricular_codigo and cc1.permite_lancamento_nota
-	            left join periodo_escolar p on p.id = ft.periodo_escolar_id
-	            left join consolidado_conselho_classe_aluno_turma cccat on cccat.aluno_codigo = cca.aluno_codigo and cccat.turma_id = t.id
-	            left join consolidado_conselho_classe_aluno_turma_nota cccatn on cccatn.consolidado_conselho_classe_aluno_turma_id = cccat.id
-	                                                                            and coalesce(cccatn.bimestre, 0) = coalesce(p.bimestre, 0)
-	                                                                            and cccatn.componente_curricular_id = cc1.id
-	            where
-	                not cccat.excluido
-	                and not ft.excluido    
-	                and cccatn.id is null
-	                and t.ano_letivo = extract(year from NOW())
-	                and u.id = @ueId", new { ueId });
+                @"with vw_notas_conceitos_ue as
+                      (select distinct t.id turma_id,
+                        t.turma_id codigo_turma,
+                        coalesce(cca.aluno_codigo, fa.aluno_codigo) aluno_codigo,
+                        coalesce(pe.bimestre, 0) as bimestre,
+                        ftd.disciplina_id,
+                        coalesce(ccn.nota, fn.nota) nota_conselho_classe_fechamento,
+                        coalesce(ccn.conceito_id, fn.conceito_id) conceito_id_conselho_classe_fechamento,
+                        coalesce(ccn.criado_rf, fn.criado_rf) as criado_rf,
+                        coalesce(ccn.criado_em, fn.criado_em) as criado_em,
+                        coalesce(ccn.alterado_em, fn.alterado_em) as alterado_em,
+                        case when fn.id is not null and ccn.id is null then true else false end EhFechamento,
+                        case when ccn.id is not null then true else false end EhConselho,
+                        row_number() over (partition by t.id, cca.aluno_codigo, coalesce(pe.bimestre, 0), ftd.disciplina_id order by coalesce(ccn.id, fn.id) desc) sequencia
+                      from fechamento_turma ft
+                      inner join turma t on ft.turma_id = t.id
+                      inner join ue u on t.ue_id = u.id
+                      inner join fechamento_turma_disciplina ftd on ft.id = ftd.fechamento_turma_id
+                      inner join conselho_classe cc on ft.id = cc.fechamento_turma_id and not cc.excluido
+                      inner join conselho_classe_aluno cca on cc.id = cca.conselho_classe_id and not cca.excluido
+                      left join periodo_escolar pe on ft.periodo_escolar_id = pe.id
+                      left join fechamento_aluno fa on ftd.id = fa.fechamento_turma_disciplina_id and fa.aluno_codigo = cca.aluno_codigo and not fa.excluido
+                      left join fechamento_nota fn on fa.id = fn.fechamento_aluno_id and not fn.excluido and fn.disciplina_id = ftd.disciplina_id
+                      left join conselho_classe_nota ccn on cca.id = ccn.conselho_classe_aluno_id and ftd.disciplina_id = ccn.componente_curricular_codigo and  not ccn.excluido
+                      where not ft.excluido
+                       and not ftd.excluido
+                       and (ccn.id is not null or fn.id is not null)
+                       and t.ano_letivo >= extract(year from NOW()) -1
+                        and u.id = @ueId
+                        )
+                select 
+                    tmp.aluno_codigo as AlunoCodigo, 
+                    t.id as TurmaId, 
+                    t.turma_id as TurmaCodigo, 
+                    t.ano_letivo as AnoLetivo,
+                    t.ue_id as UeId,
+                    ue.ue_id as UeCodigo,
+                    tmp.disciplina_id as ComponenteCurricularId, 
+                    cc.descricao_sgp as ComponenteCurricular, 
+                    tmp.bimestre, 
+                    tmp.criado_rf as CriadoRF,
+                    tmp.criado_em as CriadoEm,
+                    tmp.alterado_em as AlteradoEm,
+                    tmp.EhFechamento, tmp.EhConselho,
+                    tmp.nota_conselho_classe_fechamento as NotaConselhoFechamento, 
+                    tmp.conceito_id_conselho_classe_fechamento as ConceitoConselhoFechamento,
+                    cccatn.nota as NotaConsolidacao, 
+                    cccatn.conceito_id as ConceitoConsolidacao
+                from vw_notas_conceitos_ue tmp
+                inner join turma t on tmp.turma_id = t.id
+                inner join ue on t.ue_id = ue.id
+                inner join dre on ue.dre_id = dre.id
+                inner join componente_curricular cc on tmp.disciplina_id::int8 = cc.id
+                left join consolidado_conselho_classe_aluno_turma cccat on tmp.turma_id = cccat.turma_id and tmp.aluno_codigo = cccat.aluno_codigo and not cccat.excluido
+                left join consolidado_conselho_classe_aluno_turma_nota cccatn on cccat.id = cccatn.consolidado_conselho_classe_aluno_turma_id 
+                                                                                 and tmp.bimestre = coalesce(cccatn.bimestre, 0) and tmp.disciplina_id::int8 = cccatn.componente_curricular_id
+                where tmp.sequencia = 1
+                      and coalesce(coalesce(tmp.nota_conselho_classe_fechamento, tmp.conceito_id_conselho_classe_fechamento), 0)
+                          <> coalesce(coalesce(cccatn.nota, cccatn.conceito_id), 0);", new { ueId });
 
         public Task<IEnumerable<FrequenciaAlunoInconsistente>> ObterFrequenciaAlunoInconsistente(long turmaId)
             => database.Conexao.QueryAsync<FrequenciaAlunoInconsistente>(
@@ -757,24 +750,24 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 
         public Task<IEnumerable<DevolutivaDuplicado>> ObterDevolutivaDuplicados()
 			=> database.Conexao.QueryAsync<DevolutivaDuplicado>(
-                @"select count(id) Quantidade, descricao, componente_curricular_codigo as ComponenteCurricularId, min(criado_em) as PrimeiroRegistro, 
-						max(criado_em) as UltimoRegistro, min(id) as PrimeiroId, max(id) as UltimoId 
-						from devolutiva d1
-						where exists (select 1 from devolutiva d2 
-									  where d1.id <> d2.id 
-										and d1.descricao = d2.descricao 
-										and d1.componente_curricular_codigo = d2.componente_curricular_codigo  
-										and d1.periodo_inicio = d2.periodo_inicio
-										and d1.periodo_fim = d2.periodo_fim)       
-						group by descricao, componente_curricular_codigo");
+                @"select count(id) Quantidade, 
+                         d1.periodo_inicio, d1.periodo_fim,       
+                         descricao, componente_curricular_codigo as ComponenteCurricularId, min(criado_em) as PrimeiroRegistro, 
+                         max(criado_em) as UltimoRegistro, min(id) as PrimeiroId, max(id) as UltimoId 
+                 from devolutiva d1
+                 where d1.criado_em >= @dataReferencia
+                 group by descricao, componente_curricular_codigo, d1.periodo_inicio, d1.periodo_fim 
+                 having count(id) > 1
+                 order by descricao, componente_curricular_codigo, d1.periodo_inicio, d1.periodo_fim;", new { dataReferencia = new DateTime(DateTime.Now.Year-1,01,01)});
 
         public Task<IEnumerable<DevolutivaMaisDeUmaNoDiario>> ObterDevolutivaMaisDeUmaNoDiario()
             => database.Conexao.QueryAsync<DevolutivaMaisDeUmaNoDiario>(
                 @"select count(db.id) as Quantidade, devolutiva_id as DevolutivaId
-			      from diario_bordo db inner join
-                  devolutiva d on d.id = db.devolutiva_id 
+			      from diario_bordo db 
+                  inner join devolutiva d on d.id = db.devolutiva_id 
+                  where d.criado_em >= @dataReferencia
                   group by devolutiva_id                    
-                  having count(db.id) > 1");
+                  having count(db.id) > 1", new { dataReferencia = new DateTime(DateTime.Now.Year - 1, 01, 01) });
 
         public Task<IEnumerable<DevolutivaSemDiario>> ObterDevolutivaSemDiario()
             => database.Conexao.QueryAsync<DevolutivaSemDiario>(

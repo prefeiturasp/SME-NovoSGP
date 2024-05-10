@@ -83,6 +83,12 @@ namespace SME.SGP.Dominio
         [Display(Name = "relatorio/pap")]
         RelatorioPAP = 26,
 
+        [Display(Name = "registro-coletivo")]
+        RegistroColetivo = 27,
+
+        [Display(Name = "encaminhamento/naapa/itinerancia")]
+        ItineranciaEncaminhamentoNAAPA = 28,
+
         [Display(Name = "temp")]
         temp = 99
     }

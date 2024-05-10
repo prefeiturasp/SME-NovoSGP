@@ -1,7 +1,4 @@
 ﻿using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
@@ -18,6 +15,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.ConselhoClasseParecerId).ToColumn("conselho_classe_parecer_id");
             Map(c => c.Excluido).ToColumn("excluido");
             Map(c => c.Migrado).ToColumn("migrado");
+            Map(c => c.ParecerAlteradoManual).ToColumn("parecer_alterado_manual");
         }
     }
 }

@@ -1,5 +1,4 @@
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -14,5 +13,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task AtualizarMensagemPorWorkFlowAprovacao(long[] ids, string mensagem);
 
         Task<long[]> ObterIdsAsync(string turmaCodigo, NotificacaoCategoria categoria, NotificacaoTipo tipo, int ano);
+        Task<IEnumerable<long>> ObterIdsNotificacoesParaExclusao(int ano, long? diasLidasDeAlerta, long? diasLidasDeAviso, long? diasNaoLidasDeAvisoEAlerta);
+        Task<bool> ExcluirTotalPorIdsAsync(long id);
     }
 }

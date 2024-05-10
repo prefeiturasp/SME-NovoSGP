@@ -11,7 +11,6 @@ namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepci
     public class ObterSecoesEncaminhamentosSecaoNAAPAQueryHandler : IRequestHandler<ObterSecoesEncaminhamentosSecaoNAAPAQuery, IEnumerable<SecaoQuestionarioDto>>
     {
         private readonly IRepositorioSecaoEncaminhamentoNAAPA repositorioSecaoEncaminhamentoNAPPA;
-        private const string SECAO_ITINERANCIA = "QUESTOES_ITINERACIA";
 
         public ObterSecoesEncaminhamentosSecaoNAAPAQueryHandler(IRepositorioSecaoEncaminhamentoNAAPA repositorioSecaoEncaminhamentoNAPPA)
         {
@@ -35,7 +34,7 @@ namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepci
                     Nome = secao.Nome,
                     QuestionarioId = secao.QuestionarioId,
                     Etapa = secao.Etapa,
-                    Concluido = (secao.NomeComponente == SECAO_ITINERANCIA) || (secao.EncaminhamentoNAAPASecao?.Concluido ?? false),
+                    Concluido = (secao.NomeComponente == EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA) || (secao.EncaminhamentoNAAPASecao?.Concluido ?? false),
                     NomeComponente = secao.NomeComponente,
                     Auditoria = (AuditoriaDto)secao.EncaminhamentoNAAPASecao,
                     TipoQuestionario = secao.Questionario.Tipo

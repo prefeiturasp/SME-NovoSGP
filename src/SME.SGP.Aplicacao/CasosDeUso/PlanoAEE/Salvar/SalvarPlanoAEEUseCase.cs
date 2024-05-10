@@ -1,5 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
@@ -11,10 +13,12 @@ namespace SME.SGP.Aplicacao.CasosDeUso
     public class SalvarPlanoAEEUseCase : ISalvarPlanoAEEUseCase
     {
         private readonly IMediator mediator;
+        private readonly IUnitOfWork unitOfWork;
 
-        public SalvarPlanoAEEUseCase(IMediator mediator)
+        public SalvarPlanoAEEUseCase(IMediator mediator, IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task<RetornoPlanoAEEDto> Executar(PlanoAEEPersistenciaDto planoAeeDto)
@@ -30,13 +34,28 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             if (aluno.EhNulo())
                 throw new NegocioException(MensagemNegocioAluno.ESTUDANTE_NAO_ENCONTRADO);
 
-            var planoAeePersistidoDto = await mediator.Send(new SalvarPlanoAeeCommand(planoAeeDto, turma.Id, aluno.NomeAluno, aluno.CodigoAluno, aluno.ObterNumeroAlunoChamada()));
+            using var transacao = unitOfWork.IniciarTransacao();
 
-            await mediator.Send(new SalvarPlanoAEETurmaAlunoCommand(planoAeePersistidoDto.PlanoId, aluno.CodigoAluno));
+            try
+            {
+                var planoAeePersistidoDto = await mediator
+                    .Send(new SalvarPlanoAeeCommand(planoAeeDto, turma.Id, aluno.NomeAluno, aluno.CodigoAluno, aluno.ObterNumeroAlunoChamada()));
 
-            await ValidaQuestaoPeriodoEscolarSeEstaNoPeriodoCorreto(planoAeePersistidoDto);
+                await mediator
+                    .Send(new SalvarPlanoAEETurmaAlunoCommand(planoAeePersistidoDto.PlanoId, aluno.CodigoAluno));
 
-            return planoAeePersistidoDto;
+                unitOfWork.PersistirTransacao();
+
+                await ValidaQuestaoPeriodoEscolarSeEstaNoPeriodoCorreto(planoAeePersistidoDto);
+
+                return planoAeePersistidoDto;
+            }
+            catch (Exception ex)
+            {
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível salvar o Plano AEE {planoAeeDto.Id}", LogNivel.Negocio, LogContexto.Geral, ex.Message, rastreamento: ex.StackTrace, innerException: ex.InnerException.ToString()));
+                unitOfWork.Rollback();
+                throw;
+            }
         }
 
         private async Task ValidaQuestaoPeriodoEscolarSeEstaNoPeriodoCorreto(RetornoPlanoAEEDto planoAeePersistidoDto)

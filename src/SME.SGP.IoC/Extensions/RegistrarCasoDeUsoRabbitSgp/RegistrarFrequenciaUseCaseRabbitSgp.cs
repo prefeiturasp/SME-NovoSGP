@@ -58,6 +58,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IIdentificarFrequenciaAlunoPresencasMaiorTotalAulasPorUeUseCase, IdentificarFrequenciaAlunoPresencasMaiorTotalAulasPorUeUseCase>();
             services.TryAddScoped<IRegularizarFrequenciaAlunoPresencasMaiorQuantidadeAulasUseCase, RegularizarFrequenciaAlunoPresencasMaiorQuantidadeAulasUseCase>();
             services.TryAddScoped<IRegularizarFrequenciaAlunoPresencasMaiorQuantidadeAulasPorRegistroUseCase, RegularizarFrequenciaAlunoPresencasMaiorQuantidadeAulasPorRegistroUseCase>();
+            services.TryAddScoped<IConsolidarReflexoFrequenciaBuscaAtivaUseCase, ConsolidarReflexoFrequenciaBuscaAtivaUseCase>();
+            services.TryAddScoped<IConsolidarReflexoFrequenciaBuscaAtivaDreUseCase, ConsolidarReflexoFrequenciaBuscaAtivaDreUseCase>();
+            services.TryAddScoped<IConsolidarReflexoFrequenciaBuscaAtivaUeUseCase, ConsolidarReflexoFrequenciaBuscaAtivaUeUseCase>();
+            services.TryAddScoped<IConsolidarReflexoFrequenciaBuscaAtivaAlunoUseCase, ConsolidarReflexoFrequenciaBuscaAtivaAlunoUseCase>();
         }
     }
 }

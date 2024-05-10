@@ -17,7 +17,6 @@ using System.Threading.Tasks;
 using SME.SGP.TesteIntegracao.Mocks;
 using Xunit;
 using System.Linq;
-using System;
 
 //[assembly: CollectionBehavior(DisableTestParallelization = true)]
 namespace SME.SGP.TesteIntegracao

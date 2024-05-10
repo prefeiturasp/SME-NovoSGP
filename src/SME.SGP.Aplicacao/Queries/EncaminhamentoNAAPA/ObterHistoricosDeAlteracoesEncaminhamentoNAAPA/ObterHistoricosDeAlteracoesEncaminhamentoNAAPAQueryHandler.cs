@@ -14,7 +14,6 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterHistoricosDeAlteracoesEncaminhamentoNAAPAQueryHandler : IRequestHandler<ObterHistoricosDeAlteracoesEncaminhamentoNAAPAQuery, EncaminhamentoNAAPAHistoricoAlteracoes>
     {
-        private const string SECAO_ITINERANCIA = "QUESTOES_ITINERACIA";
         private List<string> camposInseridos;
         private List<string> camposAlterados;
         private readonly IRepositorioQuestao repositorioQuestao;
@@ -77,7 +76,7 @@ namespace SME.SGP.Aplicacao
 
         private bool SecaoEhItinerancia(EncaminhamentoNAAPASecao encaminhamentoSecaoExistente)
         {
-            return encaminhamentoSecaoExistente?.SecaoEncaminhamentoNAAPA?.NomeComponente == SECAO_ITINERANCIA;
+            return encaminhamentoSecaoExistente?.SecaoEncaminhamentoNAAPA?.NomeComponente == EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA;
         }
 
         private string ObterCamposFormatados(List<string> campos)
@@ -127,7 +126,8 @@ namespace SME.SGP.Aplicacao
 
         private bool CampoPodeSerInserido(EncaminhamentoNAAPASecaoQuestaoDto respostasEncaminhamento)
         {
-            if (respostasEncaminhamento.TipoQuestao == TipoQuestao.TurmasPrograma)
+            if (respostasEncaminhamento.TipoQuestao == TipoQuestao.TurmasPrograma
+                || respostasEncaminhamento.TipoQuestao == TipoQuestao.ProfissionaisEnvolvidos)
                 return respostasEncaminhamento.Resposta != "[]";
 
             if (EhCampoLista(respostasEncaminhamento))
@@ -267,7 +267,8 @@ namespace SME.SGP.Aplicacao
         private bool EhCampoLista(EncaminhamentoNAAPASecaoQuestaoDto respostaAlteracao)
         {
             return EnumExtension.EhUmDosValores(respostaAlteracao.TipoQuestao, new Enum[] { TipoQuestao.Endereco, TipoQuestao.ContatoResponsaveis,
-                                                                                            TipoQuestao.AtividadesContraturno, TipoQuestao.TurmasPrograma});
+                                                                                            TipoQuestao.AtividadesContraturno, TipoQuestao.TurmasPrograma,
+                                                                                            TipoQuestao.ProfissionaisEnvolvidos});
         }
 
         private async Task<string> ObterNomeQuestao(Questao questao)

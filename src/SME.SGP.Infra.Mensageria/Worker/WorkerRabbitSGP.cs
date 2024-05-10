@@ -2,9 +2,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using MongoDB.Driver.Core.Bindings;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using RabbitMQ.Client.Exceptions;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
@@ -13,16 +15,21 @@ using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.AccessControl;
 using System.Text;
 using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Infra.Worker
 {
     public abstract class WorkerRabbitSGP : IHostedService
     {
-        protected readonly IModel canalRabbit;
-        private readonly IConnection conexaoRabbit;
+        protected  IModel canalRabbit;
+        private IConnection conexaoRabbit;
+        private IConnectionFactory factory;
+        private IOptions<ConsumoFilasOptions> consumoFilasOptions;
         private readonly IServiceScopeFactory serviceScopeFactory;
         private readonly IServicoTelemetria servicoTelemetria;
         private readonly IServicoMensageriaSGP servicoMensageria;
@@ -48,27 +55,15 @@ namespace SME.SGP.Infra.Worker
             this.servicoMensageria = servicoMensageria ?? throw new ArgumentNullException(nameof(servicoMensageria));
             this.servicoMensageriaMetricas = servicoMensageriaMetricas ?? throw new ArgumentNullException(nameof(servicoMensageriaMetricas));
             this.telemetriaOptions = telemetriaOptions.Value ?? throw new ArgumentNullException(nameof(telemetriaOptions));
-
-            if (consumoFilasOptions.EhNulo())
-                throw new ArgumentNullException(nameof(consumoFilasOptions));
+            this.factory = factory ?? throw new ArgumentNullException(nameof(factory));
+            this.consumoFilasOptions = consumoFilasOptions ?? throw new ArgumentNullException(nameof(consumoFilasOptions));
 
             this.apmTransactionType = apmTransactionType ?? "WorkerRabbitSGP";
             this.tipoRotas = tipoRotas ?? throw new ArgumentNullException(nameof(tipoRotas));
             this.retryAutomatico = retryAutomatico;
-            conexaoRabbit = factory.CreateConnection();
-            canalRabbit = conexaoRabbit.CreateModel();
-
-            canalRabbit.BasicQos(0, consumoFilasOptions.Value.Qos, false);
-
-            canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.Sgp, ExchangeType.Direct, true, false);
-            canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.SgpDeadLetter, ExchangeType.Direct, true, false);
-            canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.SgpLogs, ExchangeType.Direct, true, false);
-            canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.QueueLogs, ExchangeType.Direct, true, false);
-
             Comandos = new Dictionary<string, ComandoRabbit>();
             RegistrarUseCases();
-
-            DeclararFilas();
+            ConectarRabbitMQ();
         }
 
         protected Dictionary<string, ComandoRabbit> Comandos { get; }
@@ -176,7 +171,6 @@ namespace SME.SGP.Infra.Worker
                 {
                     using var scope = serviceScopeFactory.CreateScope();
                     AtribuirContextoAplicacao(mensagemRabbit, scope);
-
                     IRabbitUseCase casoDeUso = (IRabbitUseCase)scope.ServiceProvider.GetService(comandoRabbit.TipoCasoUso);
 
                     await servicoTelemetria.RegistrarAsync(
@@ -215,8 +209,8 @@ namespace SME.SGP.Infra.Worker
                 }
                 catch (Exception ex)
                 {
-                     transacao?.CaptureException(ex);
- 
+                    transacao?.CaptureException(ex);
+
                     var rejeicoes = GetRetryCount(ea.BasicProperties);
                     if (++rejeicoes >= comandoRabbit.QuantidadeReprocessamentoDeadLetter)
                     {
@@ -248,6 +242,50 @@ namespace SME.SGP.Infra.Worker
             }
         }
 
+        private void ConectarRabbitMQ()
+        {
+            conexaoRabbit = factory.CreateConnection();
+            canalRabbit = conexaoRabbit.CreateModel();
+
+            canalRabbit.BasicQos(0, consumoFilasOptions.Value.Qos, false);
+
+            canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.Sgp, ExchangeType.Direct, true, false);
+            canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.SgpDeadLetter, ExchangeType.Direct, true, false);
+            canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.SgpLogs, ExchangeType.Direct, true, false);
+            canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.QueueLogs, ExchangeType.Direct, true, false);
+            DeclararFilas();
+        }
+
+        private void RegistrarConsumerSgp()
+        {
+            var consumer = new EventingBasicConsumer(canalRabbit);
+            consumer.Received += async (ch, ea) =>
+            {
+                try
+                {
+                    await TratarMensagem(ea);
+                }
+                catch (AlreadyClosedException ex)
+                {
+                    if (canalRabbit.IsClosed)
+                        ReconectarRabbitMQ();
+                    await RegistrarErro($"Erro Conexão RabbitMQ Fechada - {ea.RoutingKey}", LogNivel.Critico, $"{ex.Message} - {Encoding.UTF8.GetString(ea.Body.Span)}");
+                }
+                catch (Exception ex)
+                {
+                    await RegistrarErro($"Erro ao tratar mensagem {ea.DeliveryTag} - {ea.RoutingKey}", LogNivel.Critico, ex.Message);
+                    canalRabbit.BasicReject(ea.DeliveryTag, false);
+                }
+            };
+
+            RegistrarConsumerSgp(consumer, tipoRotas);
+        }
+
+        private void ReconectarRabbitMQ()
+        {
+            ConectarRabbitMQ();
+            RegistrarConsumerSgp();
+        }
 
         protected virtual Task RegistrarErroTratamentoMensagem(BasicDeliverEventArgs ea, MensagemRabbit mensagemRabbit, Exception ex, LogNivel logNivel, string observacao)
         {
@@ -271,22 +309,7 @@ namespace SME.SGP.Infra.Worker
         public Task StartAsync(CancellationToken stoppingToken)
         {
             stoppingToken.ThrowIfCancellationRequested();
-            var consumer = new EventingBasicConsumer(canalRabbit);
-
-            consumer.Received += async (ch, ea) =>
-            {
-                try
-                {
-                    await TratarMensagem(ea);
-                }
-                catch (Exception ex)
-                {
-                    await RegistrarErro($"Erro ao tratar mensagem {ea.DeliveryTag} - {ea.RoutingKey}", LogNivel.Critico, ex.Message);
-                    canalRabbit.BasicReject(ea.DeliveryTag, false);
-                }
-            };
-
-            RegistrarConsumerSgp(consumer, tipoRotas);
+            RegistrarConsumerSgp();
             return Task.CompletedTask;
         }
 

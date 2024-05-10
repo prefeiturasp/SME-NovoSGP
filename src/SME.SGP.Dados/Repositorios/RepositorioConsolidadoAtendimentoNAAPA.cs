@@ -1,6 +1,5 @@
 ﻿using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
@@ -25,13 +24,18 @@ namespace SME.SGP.Dados
             return await database.Conexao.QueryAsync<long>(query, new { anoLetivo, ueId, mes }, commandTimeout: 60);
         }
 
-        public async Task<ConsolidadoAtendimentoNAAPA> ObterPorUeIdMesAnoLetivoProfissional(long ueId, int mes, int anoLetivo, string rfProfissional)
+        public async Task<ConsolidadoAtendimentoNAAPA> ObterPorUeIdMesAnoLetivoProfissional(long ueId, int mes, int anoLetivo, string rfProfissional, int modalidade)
         {
-            var query = " select * from consolidado_atendimento_naapa can where can.ue_id = @ueId and can.ano_letivo = @anoLetivo and can.mes = @mes and can.rf_profissional = @rfProfissional ";
-            return await database.Conexao.QueryFirstOrDefaultAsync<ConsolidadoAtendimentoNAAPA>(query, new { ueId, mes, anoLetivo, rfProfissional }, commandTimeout: 60);
+            var query = @" select * from consolidado_atendimento_naapa can 
+                           where can.ue_id = @ueId 
+                             and can.ano_letivo = @anoLetivo 
+                             and can.mes = @mes 
+                             and can.rf_profissional = @rfProfissional 
+                             and can.modalidade_codigo = @modalidade";
+            return await database.Conexao.QueryFirstOrDefaultAsync<ConsolidadoAtendimentoNAAPA>(query, new { ueId, mes, anoLetivo, rfProfissional, modalidade }, commandTimeout: 60);
         }
 
-        public async Task<IEnumerable<GraficoQuantitativoNAAPADto>> ObterQuantidadeAtendimentoNAAPAPorProfissionalMes(int anoLetivo, long dreId, long? ueId, int? mes)
+        public async Task<IEnumerable<GraficoQuantitativoNAAPADto>> ObterQuantidadeAtendimentoNAAPAPorProfissionalMes(int anoLetivo, long dreId, long? ueId, int? mes, int? modalidade)
         {
             var query = @"  select nome_profissional as Descricao, sum(quantidade) as Quantidade,
                             COALESCE(max(can.alterado_em), max(can.criado_em)) as DataUltimaConsolidacao
@@ -46,10 +50,13 @@ namespace SME.SGP.Dados
             if (mes.HasValue)
                 query += " and can.mes = @mes";
 
+            if (modalidade.HasValue)
+                query += " and can.modalidade_codigo = @modalidade";
+
             query += @" group by nome_profissional
                         order by nome_profissional";
 
-            return await database.Conexao.QueryAsync<GraficoQuantitativoNAAPADto>(query, new { anoLetivo, dreId, ueId, mes }, commandTimeout: 60);
+            return await database.Conexao.QueryAsync<GraficoQuantitativoNAAPADto>(query, new { anoLetivo, dreId, ueId, mes, modalidade }, commandTimeout: 60);
         }
     }
 }

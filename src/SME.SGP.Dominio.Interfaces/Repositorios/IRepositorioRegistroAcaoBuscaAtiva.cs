@@ -7,6 +7,8 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioRegistroAcaoBuscaAtiva : IRepositorioBase<RegistroAcaoBuscaAtiva>
     {
+        Task<IEnumerable<long>> ObterIdsRegistrosAlunoResponsavelContatado(DateTime dataRef, long ueId, int anoLetivo);
+        Task<RegistroAcaoBuscaAtivaAlunoDto> ObterRegistroBuscaAtivaAluno(long id);
         Task<PaginacaoResultadoDto<RegistroAcaoBuscaAtivaCriancaEstudanteAusenteDto>> ListarPaginadoCriancasEstudantesAusentes(string codigoAluno, long turmaId, Paginacao paginacao);
         Task<RegistroAcaoBuscaAtiva> ObterRegistroAcaoPorId(long id);
         Task<RegistroAcaoBuscaAtiva> ObterRegistroAcaoComTurmaPorId(long id);
@@ -14,5 +16,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<PaginacaoResultadoDto<RegistroAcaoBuscaAtivaListagemDto>> ListarPaginado(FiltroTurmaRegistrosAcaoDto filtroTurma,
                                                                                       FiltroRespostaRegistrosAcaoDto filtroRespostas, 
                                                                                       Paginacao paginacao);
+        Task<PaginacaoResultadoDto<RegistroAcaoBuscaAtivaNAAPADto>> ListarPaginadoRegistroAcaoParaNAAPA(string codigoAluno, Paginacao paginacao);
     }
 }
