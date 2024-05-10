@@ -1,0 +1,1 @@
+update pendencia set descricao = replace(descricao, '/relatorios/aee', '/aee') where descricao like '%/relatorios/aee/%'

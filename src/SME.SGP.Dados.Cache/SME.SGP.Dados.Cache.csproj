@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="prometheus-net.AspNetCore" Version="5.0.1" />
+    <PackageReference Include="StackExchange.Redis" Version="2.2.50" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SME.SGP.Dominio\SME.SGP.Dominio.csproj" />
+    <ProjectReference Include="..\SME.SGP.Infra.Mensageria\SME.SGP.Infra.Mensageria.csproj" />
+    <ProjectReference Include="..\SME.SGP.Infra.Telemetria\SME.SGP.Infra.Telemetria.csproj" />
+    <ProjectReference Include="..\SME.SGP.Infra.Utilitarios\SME.SGP.Infra.Utilitarios.csproj" />
+    <ProjectReference Include="..\SME.SGP.Infra\SME.SGP.Infra.csproj" />
+  </ItemGroup>
+
+</Project>

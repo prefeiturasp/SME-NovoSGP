@@ -1,0 +1,1 @@
+update questao set nome_componente = 'FLUXO_ALERTA' where nome = 'Aplicação do fluxo de alerta';

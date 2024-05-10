@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SME.SGP.Dominio\SME.SGP.Dominio.csproj" />
+    <ProjectReference Include="..\SME.SGP.Infra\SME.SGP.Infra.csproj" />
+  </ItemGroup>
+
+</Project>

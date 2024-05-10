@@ -1,0 +1,6 @@
+USE Manutencao
+GO
+
+  SELECT *
+    FROM [DBO].[ETL_SGP_PLANO_DE_CICLO]
+   ORDER BY id

@@ -1,0 +1,75 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <UserSecretsId>874d00b9-29fa-4e52-be2b-2ea73c09535a</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Commands\PendenciaFechamento\AtualizarPendenciaFechamento\**" />
+    <Compile Remove="Interfaces\CasosDeUso\Aluno\**" />
+    <Compile Remove="Queries\AcompanhamentoFrequencia\**" />
+    <EmbeddedResource Remove="Commands\PendenciaFechamento\AtualizarPendenciaFechamento\**" />
+    <EmbeddedResource Remove="Interfaces\CasosDeUso\Aluno\**" />
+    <EmbeddedResource Remove="Queries\AcompanhamentoFrequencia\**" />
+    <None Remove="Commands\PendenciaFechamento\AtualizarPendenciaFechamento\**" />
+    <None Remove="Interfaces\CasosDeUso\Aluno\**" />
+    <None Remove="Queries\AcompanhamentoFrequencia\**" />
+    <Compile Remove="Queries\EOL\Aluno\ObterAlunosPorTurma\ObterAlunosPorTurmaQuery.cs" />
+    <Compile Remove="Queries\Turma\ObterDadosTurmaEol\ObterDadosTurmaEolQueryHandler.cs" />
+    <Compile Remove="Queries\Turma\ObterDadosTurmaEol\ObterDadosTurmaEolQuery.cs" />
+    <Compile Remove="Queries\Turma\ObterDadosTurmaEol\**" />
+    <EmbeddedResource Remove="Queries\Turma\ObterDadosTurmaEol\**" />
+    <None Remove="Queries\Turma\ObterDadosTurmaEol\**" />
+    <Compile Remove="Queries\Professores\ObterProfessoresTitularesDaTurma\ObterProfessoresTitularesDaTurmaQueryHandler.cs" />
+    <Compile Remove="Queries\Professores\ObterProfessoresTitularesDaTurma\ObterProfessoresTitularesDaTurmaQuery.cs" />
+    <Compile Remove="Queries\Professores\ObterProfessoresTitularesDaTurma\**" />
+    <EmbeddedResource Remove="Queries\Professores\ObterProfessoresTitularesDaTurma\**" />
+    <None Remove="Queries\Professores\ObterProfessoresTitularesDaTurma\**" />
+    <Compile Remove="Queries\Frequencia\ObterRegistroFrequenciaPorId\ObterRegistroFrequenciaPorIdQuery.cs" />
+    <Compile Remove="Queries\Frequencia\ObterRegistroFrequenciaPorId\ObterRegistroFrequenciaPorIdQueryHandler.cs" />
+    <Compile Remove="Queries\Frequencia\ObterRegistroFrequenciaPorId\**" />
+    <EmbeddedResource Remove="Queries\Frequencia\ObterRegistroFrequenciaPorId\**" />
+    <None Remove="Queries\Frequencia\ObterRegistroFrequenciaPorId\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Queries\Usuario\EscolaAqui\Comunicados\ObterCuminicadosPaginados\ObterComunicadosPaginadosQueryValidator.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation.AspNetCore" Version="10.3.3" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="10.3.3" />
+    <PackageReference Include="MailKit" Version="2.15.0" />
+    <PackageReference Include="MediatR" Version="9.0.0" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="5.0.1" />
+    <PackageReference Include="Polly" Version="7.2.2" />
+    <PackageReference Include="Polly.Extensions.Http" Version="3.0.0" />
+    <PackageReference Include="Sentry.AspNetCore" Version="3.9.4" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.12.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SME.SGP.Core\SME.SGP.Core.csproj" />
+    <ProjectReference Include="..\SME.SGP.Dados.Cache\SME.SGP.Dados.Cache.csproj" />
+    <ProjectReference Include="..\SME.SGP.Dados\SME.SGP.Dados.csproj" />
+    <ProjectReference Include="..\SME.SGP.Dominio.Interfaces\SME.SGP.Dominio.Interfaces.csproj" />
+    <ProjectReference Include="..\SME.SGP.Dominio\SME.SGP.Dominio.csproj" />
+    <ProjectReference Include="..\SME.SGP.Infra.Consts\SME.SGP.Infra.Consts.csproj" />
+    <ProjectReference Include="..\SME.SGP.Infra\SME.SGP.Infra.csproj" />
+    <ProjectReference Include="..\SME.SGP.Notificacoes.Hub.Interface\SME.SGP.Notificacoes.Hub.Interface.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Commands\FechamentoTurmaDisciplina\" />
+    <Folder Include="obj\" />
+    <Folder Include="Queries\ConselhoClasseAcompanhamento\ObterAlunoEStatusConselhoClasseConsolidadoPorTurmaEBimestre\" />
+    <Folder Include="Queries\TipoCalendario\ObterTiposCalendariosAulaAutomaticaPorAnoLetivoEModalidades\" />
+    <Folder Include="Servicos\Interfaces\" />
+  </ItemGroup>
+</Project>

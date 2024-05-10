@@ -1,0 +1,1 @@
+ALTER TABLE public.pendencia alter column titulo type varchar(200);

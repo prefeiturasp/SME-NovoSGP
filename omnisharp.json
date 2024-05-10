@@ -1,0 +1,14 @@
+{
+    "RoslynExtensionsOptions": {
+        "EnableAnalyzersSupport": true,
+		"diagnosticWorkersThreadCount": 2,
+		"fileOptions": {
+			"systemExcludeSearchPatterns": [
+				"**/node_modules/**/*",
+				"**/bin/**/*",
+				"**/obj/**/*"
+			],
+			"excludeSearchPatterns": []
+		}
+    }
+}
