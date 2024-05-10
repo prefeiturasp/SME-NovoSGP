@@ -1,0 +1,32 @@
+﻿using MediatR;
+using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace SME.SGP.Aplicacao
+{
+    public class ExecutaNotificacaoConclusaoEncaminhamentoAEECommandHandler : IRequestHandler<ExecutaNotificacaoConclusaoEncaminhamentoAEECommand, bool>
+    {
+        private readonly IMediator mediator;
+
+        public ExecutaNotificacaoConclusaoEncaminhamentoAEECommandHandler(IMediator mediator)
+        {
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        }
+
+        public async Task<bool> Handle(ExecutaNotificacaoConclusaoEncaminhamentoAEECommand request, CancellationToken cancellationToken)
+        {
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAEE.RotaNotificacaoRegistroConclusaoEncaminhamentoAEE,
+                new NotificacaoEncaminhamentoAEEDto
+                {
+                    EncaminhamentoAEEId = request.EncaminhamentoAEEId,
+                    UsuarioRF = request.UsuarioRF,
+                    UsuarioNome = request.UsuarioNome
+                }, Guid.NewGuid(), null));
+
+            return true;
+        }
+    }
+}

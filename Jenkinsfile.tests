@@ -1,0 +1,165 @@
+pipeline {  
+    options {
+      buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
+      disableConcurrentBuilds()
+      skipDefaultCheckout()
+    }
+
+  agent none
+    stages {
+            stage('Checkout') {
+                agent { label "sme" }
+                steps {
+                    script {
+                     def nodes = nodesByLabel label: 'jenkinsnodes'
+                     nodes = nodes.sort()
+
+                        Map tasks = [:]
+                        
+                        for (int i = 0; i < nodes.size(); i++) {
+                            def label = nodes[i]
+                            def stageName = "Checkout ${nodes[i]}"
+                            tasks[label] = {
+                                node(label) {
+                                    stage(stageName) {
+                                      checkout scm
+                                    }
+                                }
+                            }
+                        }
+                        
+                        timeout(time: 3, unit: 'MINUTES') {
+                            parallel(tasks)
+                        }
+                    }
+                }
+            }
+
+          stage('Build do Projeto'){
+            agent { kubernetes {
+               label 'dotnet5-sonar'
+               defaultContainer 'dotnet5-sonar'
+              }
+            }
+            steps{
+              script{
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
+                  sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
+                  sh 'dotnet build SME.SGP.sln'
+                  //stash includes: "**/*" , name: "bintestes"
+                  sh "tar cf - . | pigz > bintestes.tar.gz"
+                  stash includes: "bintestes.tar.gz" , name: "bintestes"
+                  sh "ls -ltra"
+                  }
+               }
+            }
+
+        stage('Sonar & Testes') {
+        parallel {
+          stage('TesteIntegracao & build'){
+            agent { kubernetes {
+               label 'dotnet5-sonar'
+               defaultContainer 'dotnet5-sonar'
+              }
+            }
+            steps{
+              script{
+                    unstash 'bintestes'
+                    sh "unpigz bintestes.tar.gz"
+                    sh "tar -xvf bintestes.tar"
+                    sh "dotnet restore SME.SGP.sln"
+                    sh 'dotnet test teste/SME.SGP.TesteIntegracao --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+                  }
+               }
+            }          
+
+          stage('TesteIntegracao.AEE'){
+            agent { kubernetes {
+               label 'dotnet5-sonar'
+               defaultContainer 'dotnet5-sonar'
+              }
+            }
+            steps{
+              script{
+                    unstash 'bintestes'
+                    sh "unpigz bintestes.tar.gz"
+                    sh "tar -xvf bintestes.tar"
+                    sh "dotnet restore SME.SGP.sln"
+                    sh 'dotnet test teste/SME.SGP.TesteIntegracao.AEE --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+               }
+            }
+          }
+
+          stage('TesteIntegracao.Aula'){
+            agent { kubernetes {
+               label 'dotnet5-sonar'
+               defaultContainer 'dotnet5-sonar'
+              }
+            }
+            steps{
+              script{
+                    unstash 'bintestes'
+                    sh "unpigz bintestes.tar.gz"
+                    sh "tar -xvf bintestes.tar"
+                    sh "dotnet restore SME.SGP.sln"
+                    sh 'dotnet test teste/SME.SGP.TesteIntegracao.Aula --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+               }
+            }
+          }
+
+          stage('TesteIntegracao.Fechamento'){
+            agent { kubernetes {
+               label 'dotnet5-sonar'
+               defaultContainer 'dotnet5-sonar'
+              }
+            }
+            steps{
+              script{
+                    unstash 'bintestes'
+                    sh "unpigz bintestes.tar.gz"
+                    sh "tar -xvf bintestes.tar"
+                    sh "dotnet restore SME.SGP.sln"
+                    sh 'dotnet test teste/SME.SGP.TesteIntegracao.Fechamento --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+               }
+            }
+          }
+
+          stage('TesteIntegracao.Frequencia'){
+            agent { kubernetes {
+               label 'dotnet5-sonar'
+               defaultContainer 'dotnet5-sonar'
+              }
+            }
+            steps{
+              script{
+                    unstash 'bintestes'
+                    sh "unpigz bintestes.tar.gz"
+                    sh "tar -xvf bintestes.tar"
+                    sh "dotnet restore SME.SGP.sln"
+                    sh 'dotnet test teste/SME.SGP.TesteIntegracao.Frequencia --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+               }
+            }
+          }
+
+          stage('TesteIntegracao.Pendencia'){
+            agent { kubernetes {
+               label 'dotnet5-sonar'
+               defaultContainer 'dotnet5-sonar'
+              }
+            }
+            steps{
+              script{
+                    unstash 'bintestes'
+                    sh "unpigz bintestes.tar.gz"
+                    sh "tar -xvf bintestes.tar"
+                    sh "dotnet restore SME.SGP.sln"
+                    sh 'dotnet test teste/SME.SGP.TesteIntegracao.Pendencia --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+               }
+            }
+          }
+         }
+        }
+       }
+   }

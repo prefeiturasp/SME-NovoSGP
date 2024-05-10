@@ -1,0 +1,28 @@
+const tipoEscola = {
+  0: 'NA',
+  1: 'EMEF',
+  2: 'EMEI',
+  3: 'EMEFM',
+  4: 'EMEBS',
+  16: 'CEU EMEF',
+  10: 'CEIDIRET',
+  11: 'CEIINDIR',
+  12: 'CRPCONV',
+  13: 'CIEJA',
+  14: 'CCICIPS',
+  15: 'ESCPART',
+  17: 'CEUEMEI',
+  18: 'CEUCEI',
+  19: 'CEU',
+  22: 'MOVA',
+  23: 'CMCT',
+  25: 'ETEC',
+  26: 'ESPCONV',
+  27: 'CEUATCOMPL',
+  29: 'CCA',
+  28: 'CEMEI',
+  30: 'CECI',
+  31: 'CEUCEMEI',
+};
+
+export default tipoEscola;

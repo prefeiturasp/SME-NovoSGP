@@ -1,0 +1,70 @@
+
+version: "3"
+
+services:
+  setup-rabbitmq:
+    image: rabbitmq:3.7-management-alpine
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+    volumes:
+      - rabbitmq:/var/lib/rabbitmq
+    depends_on:
+      rabbitmq:
+          condition: service_healthy
+    command: >
+     bash -c '  
+       echo "Setting Rabbitmq";
+       rabbitmqctl -n rabbit@sgp-rabbitmq add_vhost "${RABBITMQ_VHOST_APP}"
+       rabbitmqctl -n rabbit@sgp-rabbitmq set_permissions -p "${RABBITMQ_VHOST_APP}" user ".*" ".*" ".*"
+       rabbitmqadmin -H sgp-rabbitmq -u "${RABBITMQ_DEFAULT_USER}" -p "${RABBITMQ_DEFAULT_PASS}" --vhost=logs declare exchange name="ExchangeApplicationLog" type=topic
+       rabbitmqadmin -H sgp-rabbitmq -u "${RABBITMQ_DEFAULT_USER}" -p "${RABBITMQ_DEFAULT_PASS}" --vhost=logs declare queue name="ApplicationLog" durable=true
+       rabbitmqadmin -H sgp-rabbitmq -u "${RABBITMQ_DEFAULT_USER}" -p "${RABBITMQ_DEFAULT_PASS}" --vhost=logs declare binding source="ExchangeApplicationLog" destination_type="queue" destination="ApplicationLog" routing_key="ApplicationLog"
+       echo "All done!";'
+    networks:
+      - sgp-network
+
+  rabbitmq:
+    image: rabbitmq:3.7-management-alpine
+    hostname: sgp-rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+      - RABBITMQ_DEFAULT_VHOST=logs
+    volumes:
+      - rabbitmq:/var/lib/rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - sgp-network
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.1.1
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+    mem_limit: 1073741824
+    volumes:
+      - ./configuracoes/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    depends_on:
+      rabbitmq:
+          condition: service_healthy
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    networks:
+      - sgp-network 
+      
+networks:
+  sgp-network:
+
+volumes:
+  rabbitmq:
+    driver: local  

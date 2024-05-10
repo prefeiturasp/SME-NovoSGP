@@ -1,0 +1,141 @@
+﻿using MediatR;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace SME.SGP.Aplicacao
+{
+    public class InserirAtribuicaoCJCommandHandler : IRequestHandler<InserirAtribuicaoCJCommand>
+    {
+        private static readonly long[] componentesQueNaoPodemSerSubstituidos = { 1033, 1051, 1052, 1053, 1054, 1030 };
+
+        private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
+        private readonly IRepositorioAbrangencia repositorioAbrangencia;      
+        private readonly IRepositorioAulaConsulta repositorioAula;
+        private readonly IMediator mediator;
+
+        public InserirAtribuicaoCJCommandHandler(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IRepositorioAbrangencia repositorioAbrangencia,
+                                                 IRepositorioAulaConsulta repositorioAula, IMediator mediator)
+        {
+            this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
+            this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
+            this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        }
+
+        public async Task<Unit> Handle(InserirAtribuicaoCJCommand request, CancellationToken cancellationToken)
+        {
+            var atribuicaoCJ = request.AtribuicaoCJ;
+            var atribuicoesAtuais = request.AtribuicoesAtuais;
+            var excluiAbrangencia = request.ExcluiAbrangencia;
+
+            await ValidaComponentesCurricularesQueNaoPodemSerSubstituidos(atribuicaoCJ);
+
+            if (request.AtribuicoesAtuais.EhNulo())
+                request.AtribuicoesAtuais = await repositorioAtribuicaoCJ.ObterPorFiltros(atribuicaoCJ.Modalidade, atribuicaoCJ.TurmaId,
+                    atribuicaoCJ.UeId, 0, atribuicaoCJ.ProfessorRf, string.Empty, null);
+
+            var atribuicaoJaCadastrada = atribuicoesAtuais.FirstOrDefault(a => a.DisciplinaId == atribuicaoCJ.DisciplinaId);
+
+            if (atribuicaoJaCadastrada.EhNulo())
+            {
+                if (!atribuicaoCJ.Substituir)
+                    return Unit.Value;
+            }
+            else
+            {
+                if (atribuicaoCJ.Substituir == atribuicaoJaCadastrada.Substituir)
+                {
+                    await TratarAbrangencia(atribuicaoCJ, atribuicoesAtuais.ToList(), request.EhHistorico, excluiAbrangencia);
+                    return Unit.Value;
+                }
+
+                atribuicaoJaCadastrada.Substituir = atribuicaoCJ.Substituir;
+                atribuicaoCJ = atribuicaoJaCadastrada;
+
+                if (!atribuicaoCJ.Substituir)
+                    await ValidaSeTemAulaCriada(atribuicaoCJ);
+            }
+
+            ValidaSePerfilPodeIncluir(request.Usuario);
+
+            await repositorioAtribuicaoCJ.SalvarAsync(atribuicaoCJ);
+            await TratarAbrangencia(atribuicaoCJ, atribuicoesAtuais.ToList(), request.EhHistorico, excluiAbrangencia);
+
+            return Unit.Value;
+        }
+
+        private async Task TratarAbrangencia(AtribuicaoCJ atribuicaoCJ, List<AtribuicaoCJ> atribuicoesAtuais, bool ehHistorico, bool excluiAbrangencia)
+        {
+            var perfil = atribuicaoCJ.Modalidade == Modalidade.EducacaoInfantil ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
+
+            var abrangenciasAtuais = await repositorioAbrangencia.ObterAbrangenciaSintetica(atribuicaoCJ.ProfessorRf, perfil, atribuicaoCJ.TurmaId, ehHistorico);
+
+            if (atribuicaoCJ.Substituir)
+            {
+                if (abrangenciasAtuais.NaoEhNulo() && !abrangenciasAtuais.Any())
+                {
+                    var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(atribuicaoCJ.TurmaId));
+                    if (turma.EhNulo())
+                        throw new NegocioException($"Não foi possível localizar a turma {atribuicaoCJ.TurmaId} da abrangência.");
+
+                    var abrangencias = new Abrangencia[] { new Abrangencia() { Perfil = perfil, TurmaId = turma.Id, Historico = ehHistorico } };
+
+                    await repositorioAbrangencia.InserirAbrangencias(abrangencias, atribuicaoCJ.ProfessorRf);
+                }
+            }
+            else if (!atribuicaoCJ.Substituir)
+            {
+                if (ehHistorico)
+                    await repositorioAbrangencia.ExcluirAbrangenciasHistoricas(abrangenciasAtuais.Select(a => a.Id).ToArray());
+                else if (excluiAbrangencia)
+                    await repositorioAbrangencia.ExcluirAbrangencias(abrangenciasAtuais.Select(a => a.Id).ToArray());
+
+                if(!atribuicoesAtuais.Any(a => a.Id != atribuicaoCJ.Id && a.Substituir))
+                    await repositorioAtribuicaoCJ.RemoverRegistros(atribuicaoCJ.DreId, atribuicaoCJ.UeId, atribuicaoCJ.TurmaId, atribuicaoCJ.ProfessorRf, atribuicaoCJ.DisciplinaId);
+
+            }
+        }
+
+        private async Task ValidaComponentesCurricularesQueNaoPodemSerSubstituidos(AtribuicaoCJ atribuicaoCJ)
+        {
+            if (componentesQueNaoPodemSerSubstituidos.Any(a => a == atribuicaoCJ.DisciplinaId))
+            {
+                var nomeComponenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(atribuicaoCJ.DisciplinaId));
+                if (nomeComponenteCurricular.NaoEhNulo())
+                {
+                    throw new NegocioException($"O componente curricular {nomeComponenteCurricular.Nome} não pode ser substituido.");
+                }
+                else throw new NegocioException($"Não foi possível localizar o nome do componente curricular de identificador {atribuicaoCJ.DisciplinaId} no EOL.");
+            }
+        }
+
+        private void ValidaSePerfilPodeIncluir(Usuario usuario)
+        {
+            if (usuario.EhNulo())
+                throw new NegocioException("Não foi possível obter o usuário logado.");
+
+            if (usuario.PerfilAtual == Perfis.PERFIL_CP || usuario.PerfilAtual == Perfis.PERFIL_DIRETOR)
+                throw new NegocioException("Este perfil não pode fazer substituição.");
+        }
+
+        private async Task ValidaSeTemAulaCriada(AtribuicaoCJ atribuicaoCJ)
+        {
+            if (atribuicaoCJ.Id > 0 && !atribuicaoCJ.Substituir)
+            {
+                var aulas = await repositorioAula.ObterAulas(atribuicaoCJ.TurmaId, atribuicaoCJ.UeId, atribuicaoCJ.ProfessorRf, null, atribuicaoCJ.DisciplinaId.ToString());
+                aulas = aulas.NaoEhNulo() ? aulas.Where(a => a.AulaCJ) : null;
+                if (aulas.NaoEhNulo() && aulas.Any())
+                {
+                    var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(atribuicaoCJ.DisciplinaId));
+                    var nomeComponenteCurricular = componenteCurricular?.Nome ?? atribuicaoCJ.DisciplinaId.ToString();
+                    throw new NegocioException($"Não é possível remover a substituição da turma {atribuicaoCJ.Turma.Nome} no componente curricular {nomeComponenteCurricular} porque existem aulas cadastradas.");
+                }
+            }
+        }
+    }
+}

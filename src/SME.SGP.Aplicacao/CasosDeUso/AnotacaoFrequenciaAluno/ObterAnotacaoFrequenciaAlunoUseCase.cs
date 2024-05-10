@@ -1,0 +1,30 @@
+﻿using MediatR;
+using SME.SGP.Dominio;
+using SME.SGP.Infra;
+using System.Threading.Tasks;
+
+namespace SME.SGP.Aplicacao
+{
+    public class ObterAnotacaoFrequenciaAlunoUseCase : AbstractUseCase, IObterAnotacaoFrequenciaAlunoUseCase
+    {
+        public ObterAnotacaoFrequenciaAlunoUseCase(IMediator mediator) : base(mediator)
+        {
+        }
+
+        public async Task<AnotacaoFrequenciaAlunoDto> Executar(FiltroAnotacaoFrequenciaAlunoDto param)
+            => MapearParaDto(await mediator.Send(new ObterAnotacaoFrequenciaAlunoQuery(param.CodigoAluno, param.AulaId)));
+
+        private AnotacaoFrequenciaAlunoDto MapearParaDto(AnotacaoFrequenciaAluno anotacao)
+            => anotacao.EhNulo() ? null :
+            new AnotacaoFrequenciaAlunoDto()
+            {
+                Id = anotacao.Id,
+                CodigoAluno = anotacao.CodigoAluno,
+                AulaId = anotacao.AulaId,
+                MotivoAusenciaId = anotacao.MotivoAusenciaId ?? 0,
+                Anotacao = anotacao.Anotacao,
+                Auditoria = (AuditoriaDto)anotacao
+            };
+
+    }
+}

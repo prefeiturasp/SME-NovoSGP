@@ -1,0 +1,3697 @@
+{
+  "items": [
+    {
+      "eixoDescricao": "Sondagem",
+      "objetivos": [
+        {
+          "anos": [
+            {
+              "anoDescricao": 3,
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Alfabético",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Silábico com valor sonoro",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Silábico sem valor sonoro",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Pré silábico",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Silábico alfabético",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 4,
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Silábico com valor sonoro",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Silábico sem valor sonoro",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Pré silábico",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Silábico alfabético",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 5,
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Alfabético",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Silábico com valor sonoro",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Silábico sem valor sonoro",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Pré silábico",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Silábico alfabético",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 6,
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Alfabético",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Silábico com valor sonoro",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Silábico sem valor sonoro",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Pré silábico",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 1.17096018735363,
+                  "quantidade": 5,
+                  "respostaDescricao": "Silábico alfabético",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 7,
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Alfabético",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Silábico com valor sonoro",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Silábico sem valor sonoro",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Pré silábico",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Silábico alfabético",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 8,
+              "respostas": [
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Silábico com valor sonoro",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Silábico sem valor sonoro",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Pré silábico",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Silábico alfabético",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 9,
+              "respostas": [
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Silábico alfabético",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "ciclos": [
+            {
+              "cicloDescricao": "Alfabetização",
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Alfabético",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Silábico com valor sonoro",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Silábico sem valor sonoro",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Pré silábico",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Silábico alfabético",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "cicloDescricao": "Interdisciplinar",
+              "respostas": [
+                {
+                  "porcentagem": 1.405152224824356,
+                  "quantidade": 6,
+                  "respostaDescricao": "Silábico com valor sonoro",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 1.17096018735363,
+                  "quantidade": 5,
+                  "respostaDescricao": "Silábico sem valor sonoro",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 1.873536299765808,
+                  "quantidade": 8,
+                  "respostaDescricao": "Pré silábico",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 2.1077283372365341,
+                  "quantidade": 9,
+                  "respostaDescricao": "Silábico alfabético",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Alfabético",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "cicloDescricao": "Autoral",
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Alfabético",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 1.405152224824356,
+                  "quantidade": 6,
+                  "respostaDescricao": "Silábico com valor sonoro",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Silábico sem valor sonoro",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Pré silábico",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 1.873536299765808,
+                  "quantidade": 8,
+                  "respostaDescricao": "Silábico alfabético",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "objetivoDescricao": "Hipótese de escrita",
+          "total": [
+            {
+              "porcentagem": 0.0,
+              "quantidade": 0,
+              "respostaDescricao": null,
+              "totalPorcentagem": 14,
+              "totalQuantidade": 64
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "eixoDescricao": "Prática e Leitura de Textos",
+      "objetivos": [
+        {
+          "anos": [
+            {
+              "anoDescricao": 3,
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 4,
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 5,
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 6,
+              "respostas": [
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 7,
+              "respostas": [
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 8,
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 9,
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "ciclos": [
+            {
+              "cicloDescricao": "Alfabetização",
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "cicloDescricao": "Interdisciplinar",
+              "respostas": [
+                {
+                  "porcentagem": 1.405152224824356,
+                  "quantidade": 6,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 1.405152224824356,
+                  "quantidade": 6,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 1.405152224824356,
+                  "quantidade": 6,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "cicloDescricao": "Autoral",
+              "respostas": [
+                {
+                  "porcentagem": 1.405152224824356,
+                  "quantidade": 6,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 2.1077283372365341,
+                  "quantidade": 9,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "objetivoDescricao": "Lê por si mesmo textos diversos utilizando-se de índice linguísticos e contextuais para antecipar, inferir e validar o que está escrito",
+          "total": [
+            {
+              "porcentagem": 0.0,
+              "quantidade": 0,
+              "respostaDescricao": null,
+              "totalPorcentagem": 12,
+              "totalQuantidade": 53
+            }
+          ]
+        },
+        {
+          "anos": [
+            {
+              "anoDescricao": 3,
+              "respostas": [
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 4,
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 5,
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 6,
+              "respostas": [
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 1.873536299765808,
+                  "quantidade": 8,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 7,
+              "respostas": [
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 9,
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "ciclos": [
+            {
+              "cicloDescricao": "Alfabetização",
+              "respostas": [
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "cicloDescricao": "Interdisciplinar",
+              "respostas": [
+                {
+                  "porcentagem": 1.405152224824356,
+                  "quantidade": 6,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 2.34192037470726,
+                  "quantidade": 10,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 1.405152224824356,
+                  "quantidade": 6,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 1.17096018735363,
+                  "quantidade": 5,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "cicloDescricao": "Autoral",
+              "respostas": [
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 1.17096018735363,
+                  "quantidade": 5,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "objetivoDescricao": "Realiza antecipações a respeito do conteúdo do texto, utilizando o repertório pessoal de conhecimento sobre o assunto, gênero, autor, portador e veículo de publicação, verificando ao longo da leitura se as antecipações realizadas se confirmaram ou não",
+          "total": [
+            {
+              "porcentagem": 0.0,
+              "quantidade": 0,
+              "respostaDescricao": null,
+              "totalPorcentagem": 11,
+              "totalQuantidade": 48
+            }
+          ]
+        },
+        {
+          "anos": [
+            {
+              "anoDescricao": 5,
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 6,
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 7,
+              "respostas": [
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "ciclos": [
+            {
+              "cicloDescricao": "Interdisciplinar",
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "cicloDescricao": "Autoral",
+              "respostas": [
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "objetivoDescricao": "Localiza informações explícitas, considerando a finalidade da leitura",
+          "total": [
+            {
+              "porcentagem": 0.0,
+              "quantidade": 0,
+              "respostaDescricao": null,
+              "totalPorcentagem": 4,
+              "totalQuantidade": 18
+            }
+          ]
+        },
+        {
+          "anos": [
+            {
+              "anoDescricao": 5,
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 6,
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 7,
+              "respostas": [
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "ciclos": [
+            {
+              "cicloDescricao": "Interdisciplinar",
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "cicloDescricao": "Autoral",
+              "respostas": [
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "objetivoDescricao": "Infere informações a partir do texto (inferência local) ou de conhecimento prévio do assunto (inferência global), a depender da complexidade do texto selecionado",
+          "total": [
+            {
+              "porcentagem": 0.0,
+              "quantidade": 0,
+              "respostaDescricao": null,
+              "totalPorcentagem": 3,
+              "totalQuantidade": 16
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "eixoDescricao": "Prática de Produção de Textos Escritos",
+      "objetivos": [
+        {
+          "anos": [
+            {
+              "anoDescricao": 5,
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 6,
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 7,
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "ciclos": [
+            {
+              "cicloDescricao": "Interdisciplinar",
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "cicloDescricao": "Autoral",
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "objetivoDescricao": "Produz o texto planejado, refletindo sobre o encadeamento das ideias",
+          "total": [
+            {
+              "porcentagem": 0.0,
+              "quantidade": 0,
+              "respostaDescricao": null,
+              "totalPorcentagem": 4,
+              "totalQuantidade": 18
+            }
+          ]
+        },
+        {
+          "anos": [
+            {
+              "anoDescricao": 5,
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 6,
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 7,
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "ciclos": [
+            {
+              "cicloDescricao": "Interdisciplinar",
+              "respostas": [
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "cicloDescricao": "Autoral",
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "objetivoDescricao": "Revisa o texto, considerando as características do contexto de produção e realizando os ajustes necessários para garantir a sua legibilidade e efeitos de sentido pretendidos",
+          "total": [
+            {
+              "porcentagem": 0.0,
+              "quantidade": 0,
+              "respostaDescricao": null,
+              "totalPorcentagem": 4,
+              "totalQuantidade": 18
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "eixoDescricao": "Prática de Escuta e Produção de Textos Orais",
+      "objetivos": [
+        {
+          "anos": [
+            {
+              "anoDescricao": 6,
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 7,
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "ciclos": [
+            {
+              "cicloDescricao": "Interdisciplinar",
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "cicloDescricao": "Autoral",
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "objetivoDescricao": "Produz textos orais, considerando a situação comunicativa",
+          "total": [
+            {
+              "porcentagem": 0.0,
+              "quantidade": 0,
+              "respostaDescricao": null,
+              "totalPorcentagem": 2,
+              "totalQuantidade": 12
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "eixoDescricao": "Análise Linguística / Multimodal",
+      "objetivos": [
+        {
+          "anos": [
+            {
+              "anoDescricao": 6,
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 7,
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "ciclos": [
+            {
+              "cicloDescricao": "Interdisciplinar",
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "cicloDescricao": "Autoral",
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "objetivoDescricao": "Elimina repetições indesejadas nos textos, substituindo o referente por outra palavra – nome, pronome, apelido, classe relacionada etc., ou utilizando elipse",
+          "total": [
+            {
+              "porcentagem": 0.0,
+              "quantidade": 0,
+              "respostaDescricao": null,
+              "totalPorcentagem": 2,
+              "totalQuantidade": 12
+            }
+          ]
+        },
+        {
+          "anos": [
+            {
+              "anoDescricao": 6,
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 7,
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "ciclos": [
+            {
+              "cicloDescricao": "Interdisciplinar",
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "cicloDescricao": "Autoral",
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "objetivoDescricao": "Organiza o texto de acordo com as especificidades do gênero",
+          "total": [
+            {
+              "porcentagem": 0.0,
+              "quantidade": 0,
+              "respostaDescricao": null,
+              "totalPorcentagem": 2,
+              "totalQuantidade": 12
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "eixoDescricao": "Números",
+      "objetivos": [
+        {
+          "anos": [
+            {
+              "anoDescricao": 6,
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 7,
+              "respostas": [
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "ciclos": [
+            {
+              "cicloDescricao": "Interdisciplinar",
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "cicloDescricao": "Autoral",
+              "respostas": [
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "objetivoDescricao": "Lê, escreve, compara, ordena, compõe e decompõe números naturais pela compreensão e uso das regras do sistema de numeração decimal",
+          "total": [
+            {
+              "porcentagem": 0.0,
+              "quantidade": 0,
+              "respostaDescricao": null,
+              "totalPorcentagem": 2,
+              "totalQuantidade": 12
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "eixoDescricao": "Analisa, interpreta e soluciona problemas envolvendo...",
+      "objetivos": [
+        {
+          "anos": [
+            {
+              "anoDescricao": 6,
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 7,
+              "respostas": [
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "ciclos": [
+            {
+              "cicloDescricao": "Interdisciplinar",
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "cicloDescricao": "Autoral",
+              "respostas": [
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "objetivoDescricao": "Significados do campo aditivo composição e transformação",
+          "total": [
+            {
+              "porcentagem": 0.0,
+              "quantidade": 0,
+              "respostaDescricao": null,
+              "totalPorcentagem": 2,
+              "totalQuantidade": 12
+            }
+          ]
+        },
+        {
+          "anos": [
+            {
+              "anoDescricao": 6,
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 7,
+              "respostas": [
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "ciclos": [
+            {
+              "cicloDescricao": "Interdisciplinar",
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "cicloDescricao": "Autoral",
+              "respostas": [
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "objetivoDescricao": "Significados do campo multiplicativo proporcionalidade e multiplicação comparativa",
+          "total": [
+            {
+              "porcentagem": 0.0,
+              "quantidade": 0,
+              "respostaDescricao": null,
+              "totalPorcentagem": 2,
+              "totalQuantidade": 12
+            }
+          ]
+        },
+        {
+          "anos": [
+            {
+              "anoDescricao": 6,
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 7,
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "ciclos": [
+            {
+              "cicloDescricao": "Interdisciplinar",
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "cicloDescricao": "Autoral",
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "objetivoDescricao": "Grandezas de comprimento, capacidade e massa",
+          "total": [
+            {
+              "porcentagem": 0.0,
+              "quantidade": 0,
+              "respostaDescricao": null,
+              "totalPorcentagem": 2,
+              "totalQuantidade": 12
+            }
+          ]
+        },
+        {
+          "anos": [
+            {
+              "anoDescricao": 6,
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 7,
+              "respostas": [
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "ciclos": [
+            {
+              "cicloDescricao": "Interdisciplinar",
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "cicloDescricao": "Autoral",
+              "respostas": [
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "objetivoDescricao": "Leitura e representação da localização/ movimentação de pessoas ou objetos no espaço",
+          "total": [
+            {
+              "porcentagem": 0.0,
+              "quantidade": 0,
+              "respostaDescricao": null,
+              "totalPorcentagem": 2,
+              "totalQuantidade": 12
+            }
+          ]
+        },
+        {
+          "anos": [
+            {
+              "anoDescricao": 6,
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 7,
+              "respostas": [
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "ciclos": [
+            {
+              "cicloDescricao": "Interdisciplinar",
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "cicloDescricao": "Autoral",
+              "respostas": [
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "objetivoDescricao": "Dados apresentados em tabelas e gráficos",
+          "total": [
+            {
+              "porcentagem": 0.0,
+              "quantidade": 0,
+              "respostaDescricao": null,
+              "totalPorcentagem": 2,
+              "totalQuantidade": 12
+            }
+          ]
+        },
+        {
+          "anos": [
+            {
+              "anoDescricao": 6,
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 7,
+              "respostas": [
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "ciclos": [
+            {
+              "cicloDescricao": "Interdisciplinar",
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "cicloDescricao": "Autoral",
+              "respostas": [
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "objetivoDescricao": "Comparação e a equivalência de valores do sistema monetário brasileiro",
+          "total": [
+            {
+              "porcentagem": 0.0,
+              "quantidade": 0,
+              "respostaDescricao": null,
+              "totalPorcentagem": 2,
+              "totalQuantidade": 12
+            }
+          ]
+        },
+        {
+          "anos": [
+            {
+              "anoDescricao": 6,
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 7,
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "ciclos": [
+            {
+              "cicloDescricao": "Interdisciplinar",
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "cicloDescricao": "Autoral",
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "objetivoDescricao": "Regularidades em sequências numéricas ou figurais recursivas",
+          "total": [
+            {
+              "porcentagem": 0.0,
+              "quantidade": 0,
+              "respostaDescricao": null,
+              "totalPorcentagem": 2,
+              "totalQuantidade": 12
+            }
+          ]
+        },
+        {
+          "anos": [
+            {
+              "anoDescricao": 6,
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 7,
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "ciclos": [
+            {
+              "cicloDescricao": "Interdisciplinar",
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "cicloDescricao": "Autoral",
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "objetivoDescricao": "Significados do campo aditivo comparação e composição de transformações",
+          "total": [
+            {
+              "porcentagem": 0.0,
+              "quantidade": 0,
+              "respostaDescricao": null,
+              "totalPorcentagem": 2,
+              "totalQuantidade": 12
+            }
+          ]
+        },
+        {
+          "anos": [
+            {
+              "anoDescricao": 6,
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 7,
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "ciclos": [
+            {
+              "cicloDescricao": "Interdisciplinar",
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "cicloDescricao": "Autoral",
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "objetivoDescricao": "Significados do campo multiplicativo configuração retangular e combinatória",
+          "total": [
+            {
+              "porcentagem": 0.0,
+              "quantidade": 0,
+              "respostaDescricao": null,
+              "totalPorcentagem": 2,
+              "totalQuantidade": 12
+            }
+          ]
+        },
+        {
+          "anos": [
+            {
+              "anoDescricao": 6,
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 7,
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "ciclos": [
+            {
+              "cicloDescricao": "Interdisciplinar",
+              "respostas": [
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "cicloDescricao": "Autoral",
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "objetivoDescricao": "Cálculo do perímetro de figuras planas",
+          "total": [
+            {
+              "porcentagem": 0.0,
+              "quantidade": 0,
+              "respostaDescricao": null,
+              "totalPorcentagem": 2,
+              "totalQuantidade": 12
+            }
+          ]
+        },
+        {
+          "anos": [
+            {
+              "anoDescricao": 6,
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 7,
+              "respostas": [
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "ciclos": [
+            {
+              "cicloDescricao": "Interdisciplinar",
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "cicloDescricao": "Autoral",
+              "respostas": [
+                {
+                  "porcentagem": 0.702576112412178,
+                  "quantidade": 3,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.936768149882904,
+                  "quantidade": 4,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "objetivoDescricao": "Grandezas tempo e temperatura",
+          "total": [
+            {
+              "porcentagem": 0.0,
+              "quantidade": 0,
+              "respostaDescricao": null,
+              "totalPorcentagem": 2,
+              "totalQuantidade": 12
+            }
+          ]
+        },
+        {
+          "anos": [
+            {
+              "anoDescricao": 6,
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "anoDescricao": 7,
+              "respostas": [
+                {
+                  "porcentagem": 1.17096018735363,
+                  "quantidade": 5,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "ciclos": [
+            {
+              "cicloDescricao": "Interdisciplinar",
+              "respostas": [
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            },
+            {
+              "cicloDescricao": "Autoral",
+              "respostas": [
+                {
+                  "porcentagem": 1.17096018735363,
+                  "quantidade": 5,
+                  "respostaDescricao": "Realizou plenamente",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.468384074941452,
+                  "quantidade": 2,
+                  "respostaDescricao": "Realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não realizou",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                },
+                {
+                  "porcentagem": 0.234192037470726,
+                  "quantidade": 1,
+                  "respostaDescricao": "Não avaliado",
+                  "totalPorcentagem": 0,
+                  "totalQuantidade": 0
+                }
+              ]
+            }
+          ],
+          "objetivoDescricao": "Cálculo de áreas de figuras planas",
+          "total": [
+            {
+              "porcentagem": 0.0,
+              "quantidade": 0,
+              "respostaDescricao": null,
+              "totalPorcentagem": 2,
+              "totalQuantidade": 12
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "totalPaginas": 9,
+  "totalRegistros": 9
+}

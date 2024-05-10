@@ -1,0 +1,1 @@
+update evento_tipo set letivo = 3 where codigo = 3

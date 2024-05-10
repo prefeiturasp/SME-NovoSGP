@@ -1,0 +1,5 @@
+{
+  "API_URL": "${API_URL}",
+  "TRACKING_ID": "${TRACKING_ID}",
+  "URL_SONDAGEM": "${URL_SONDAGEM}"
+}

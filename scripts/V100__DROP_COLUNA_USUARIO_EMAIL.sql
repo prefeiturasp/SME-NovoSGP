@@ -1,0 +1,1 @@
+﻿ALTER TABLE public.Usuario DROP COLUMN email;
