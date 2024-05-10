@@ -1,3 +1,0 @@
-USE Manutencao
-go
-drop table etl_sgp_periodo_reabertura

@@ -1,1 +1,0 @@
-ALTER table if exists public.aula ADD column if not exists aula_cj bool NOT NULL DEFAULT false;

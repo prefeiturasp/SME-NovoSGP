@@ -1,1 +1,0 @@
-update parametros_sistema set ativo = false where tipo = 58;

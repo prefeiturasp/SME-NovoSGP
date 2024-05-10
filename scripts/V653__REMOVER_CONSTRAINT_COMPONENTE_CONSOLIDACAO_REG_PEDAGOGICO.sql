@@ -1,1 +1,0 @@
-ALTER TABLE consolidacao_registros_pedagogicos DROP CONSTRAINT IF exists consolidacao_registros_pedagogicos_componente_curricular_fk;

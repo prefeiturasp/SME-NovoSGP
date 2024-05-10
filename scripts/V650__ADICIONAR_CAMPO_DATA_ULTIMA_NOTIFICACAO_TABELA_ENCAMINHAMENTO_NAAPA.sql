@@ -1,1 +1,0 @@
-ALTER TABLE public.encaminhamento_naapa ADD column IF NOT exists data_ultima_notificacao_sem_atendimento date NULL;

@@ -1,1 +1,0 @@
-alter table conselho_classe add if not exists situacao int not null default 2;

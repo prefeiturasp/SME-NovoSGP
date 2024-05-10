@@ -1,2 +1,0 @@
-ALTER TABLE if exists public.aula_prevista ADD column if not exists migrado bool NOT NULL DEFAULT false;
-ALTER TABLE if exists public.aula_prevista_bimestre ADD column if not exists migrado bool NOT NULL DEFAULT false;

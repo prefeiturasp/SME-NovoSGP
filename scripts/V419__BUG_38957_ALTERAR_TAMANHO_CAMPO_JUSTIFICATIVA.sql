@@ -1,1 +1,0 @@
-ALTER TABLE fechamento_turma_disciplina ALTER COLUMN justificativa TYPE varchar(1000);

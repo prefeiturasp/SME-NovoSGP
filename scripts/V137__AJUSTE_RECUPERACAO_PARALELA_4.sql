@@ -1,2 +1,0 @@
-update parametros_sistema set descricao = 'Percentual de frequência onde a recuperação paralela considera abaixo do limite para alunos pouco frequentes' 
-where nome = 'RecuperacaoParalelaPoucoFrequente';

@@ -1,1 +1,0 @@
-update fechamento_turma_disciplina set situacao = 4 where situacao = 1

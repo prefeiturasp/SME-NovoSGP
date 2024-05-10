@@ -1,1 +1,0 @@
-﻿alter table if exists public.plano_anual add column if not exists migrado boolean not null default false

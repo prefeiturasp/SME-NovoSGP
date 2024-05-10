@@ -1,1 +1,0 @@
-CREATE INDEX if not EXISTS aula_wf_aprovacao_id_idx ON public.aula USING btree (wf_aprovacao_id);

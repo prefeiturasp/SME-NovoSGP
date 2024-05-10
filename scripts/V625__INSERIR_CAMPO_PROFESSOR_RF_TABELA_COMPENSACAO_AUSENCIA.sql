@@ -1,1 +1,0 @@
-alter table public.compensacao_ausencia add column if not exists professor_rf varchar(15) null;

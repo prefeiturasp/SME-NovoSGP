@@ -1,1 +1,0 @@
-﻿ALTER TABLE ATIVIDADE_AVALIATIVA ADD COLUMN IF NOT EXISTS eh_cj boolean default false;
