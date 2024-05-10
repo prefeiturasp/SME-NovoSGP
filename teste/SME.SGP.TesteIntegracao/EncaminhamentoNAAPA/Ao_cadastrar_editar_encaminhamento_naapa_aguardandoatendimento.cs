@@ -396,9 +396,102 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             respostasEncaminhamentoNAAPASecao2.Select(resposta => resposta.RespostaId).ShouldContain(ID_OPCAO_RESPOSTA_ADOECE_COM_FREQUENCIA);
         }
 
-        private async Task GerarDadosEncaminhamentoNAAPA(DateTime dataQueixa)
+        [Fact(DisplayName = "Encaminhamento NAAPA - Alterar encaminhamento NAAPA Em Atendimento sem alterar situação")]
+        public async Task Ao_editar_encaminhamento_em_atendimento_sem_alterar_situacao()
         {
-            await CriarEncaminhamentoNAAPA();
+            var filtroNAAPA = new FiltroNAAPADto()
+            {
+                Perfil = ObterPerfilCP(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8",
+                DreId = 1,
+                CodigoUe = "1",
+                TurmaId = TURMA_ID_1,
+                Situacao = (int)SituacaoNAAPA.Rascunho,
+                Prioridade = NORMAL
+            };
+
+            await CriarDadosBase(filtroNAAPA);
+
+            var registrarEncaminhamentoNaapaUseCase = ObterServicoRegistrarEncaminhamento();
+
+            var dataQueixa = DateTimeExtension.HorarioBrasilia().Date;
+            dataQueixa.AddDays(-10);
+
+            await GerarDadosEncaminhamentoNAAPA(dataQueixa, true);
+
+            dataQueixa.AddDays(4);
+
+            var encaminhamentosNaapaDto = new EncaminhamentoNAAPADto()
+            {
+                Id = 1,
+                TurmaId = TURMA_ID_1,
+                Situacao = SituacaoNAAPA.EmAtendimento,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                AlunoNome = "Nome do aluno do naapa",
+                Secoes = new List<EncaminhamentoNAAPASecaoDto>()
+                {
+                    new ()
+                    {
+                        SecaoId = 2,
+                        Questoes = new List<EncaminhamentoNAAPASecaoQuestaoDto>()
+                        {
+                            new ()
+                            {
+                                QuestaoId = ID_QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS,
+                                Resposta = ID_OPCAO_RESPOSTA_DOENCA_CRONICA.ToString(),
+                                TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
+
+                            },
+                            new ()
+                            {
+                                QuestaoId = ID_QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS,
+                                Resposta = ID_OPCAO_RESPOSTA_ADOECE_COM_FREQUENCIA.ToString(),
+                                TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
+
+                            },
+                            new ()
+                            {
+                                QuestaoId = ID_QUESTAO_TIPO_ADOECE_COM_FREQUENCIA,
+                                Resposta = ID_OPCAO_RESPOSTA_OUTRAS_QUESTAO_TIPO_ADOECE_COM_FREQUENCIA.ToString(),
+                                TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
+
+                            },
+                            new ()
+                            {
+                                QuestaoId = ID_QUESTAO_TIPO_DOENCA_CRONICA,
+                                Resposta = ID_OPCAO_RESPOSTA_OUTRAS_QUESTAO_TIPO_DOENCA_CRONICA.ToString(),
+                                TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
+
+                            },
+                            new ()
+                            {
+                                QuestaoId = ID_QUESTAO_OBS_AGRUPAMENTO_PROMOCAO_CUIDADOS,
+                                Resposta = "Observações preenchidas para [Adoece com frequência sem receber cuidados médicos] e [Doença crônica ou em tratamento de longa duração]",
+                                TipoQuestao = TipoQuestao.Texto,
+
+                            }
+                        }
+                    }
+                }
+            };
+
+            var retorno = await registrarEncaminhamentoNaapaUseCase.Executar(encaminhamentosNaapaDto);
+            retorno.ShouldNotBeNull("Nenhum ResultadoEncaminhamentoNAAPADto obtido ao registrar Encaminhamento NAAPA");
+
+            var encaminhamentoNAAPA = ObterTodos<Dominio.EncaminhamentoNAAPA>();
+            encaminhamentoNAAPA.Any(en => en.Situacao.Equals(SituacaoNAAPA.EmAtendimento)).ShouldBeTrue();
+            
+        }
+
+        private async Task GerarDadosEncaminhamentoNAAPA(DateTime dataQueixa, bool situacaoEmAtendimento = false)
+        {
+            if (!situacaoEmAtendimento)
+                await CriarEncaminhamentoNAAPA();
+            else
+                await CriarEncaminhamentoNAAPAEmAtendimento();
+
             await CriarEncaminhamentoNAAPASecao();
             await CriarQuestoesEncaminhamentoNAAPA();
             await CriarRespostasEncaminhamentoNAAPA(dataQueixa);
@@ -457,6 +550,20 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Situacao = SituacaoNAAPA.Rascunho,
                 AlunoNome = "Nome do aluno 1",
                 CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
+        }
+
+        private async Task CriarEncaminhamentoNAAPAEmAtendimento()
+        {
+            await InserirNaBase(new Dominio.EncaminhamentoNAAPA()
+            {
+                TurmaId = TURMA_ID_1,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                Situacao = SituacaoNAAPA.EmAtendimento,
+                AlunoNome = "Nome do aluno 1",
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
         }
     }

@@ -51,6 +51,8 @@ namespace SME.SGP.Dominio
                 if (alunos.EhNulo() || !alunos.Any())
                     throw new NegocioException("Não foi encontrado nenhum aluno para a turma informada");
 
+                var podeNotificar = await mediator.Send(new VerificaSeExisteParametroSistemaPorTipoQuery(TipoParametroSistema.GerarNotificacaoAlteracaoEmAtividadeAvaliativa));
+
                 var usuario = await  mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
                 await ValidarAvaliacoes(idsAtividadesAvaliativas, atividadesAvaliativas, professorRf, disciplinaId,usuario.EhGestorEscolar(), turma);
@@ -78,7 +80,7 @@ namespace SME.SGP.Dominio
                 foreach (var notasPorAvaliacao in notasPorAvaliacoes)
                 {
                     var avaliacao = atividadesAvaliativas.FirstOrDefault(x => x.Id == notasPorAvaliacao.Key);
-                    entidadesSalvar.AddRange(await ValidarEObter(notasPorAvaliacao.ToList(), avaliacao, alunos, disciplinaId, usuario, turma));
+                    entidadesSalvar.AddRange(await ValidarEObter(notasPorAvaliacao.ToList(), avaliacao, alunos, disciplinaId, usuario, turma, podeNotificar));
                 }
 
                 await SalvarNoBanco(entidadesSalvar, turma.CodigoTurma);
@@ -87,7 +89,8 @@ namespace SME.SGP.Dominio
                     .Select(a => a.CodigoAluno)
                     .ToList();
 
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAvaliacao.RotaValidarMediaAlunos, new FiltroValidarMediaAlunosDto(idsAtividadesAvaliativas, alunosId, usuario, disciplinaId, turma.CodigoTurma, hostAplicacao, false, consideraHistorico), Guid.NewGuid(), usuario));
+                if (podeNotificar)
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAvaliacao.RotaValidarMediaAlunos, new FiltroValidarMediaAlunosDto(idsAtividadesAvaliativas, alunosId, usuario, disciplinaId, turma.CodigoTurma, hostAplicacao, false, consideraHistorico), Guid.NewGuid(), usuario));
 
             }
             catch (Exception ex)
@@ -269,7 +272,7 @@ namespace SME.SGP.Dominio
 
         private async Task<IEnumerable<NotaConceito>> ValidarEObter(IEnumerable<NotaConceito> notasConceitos,
             AtividadeAvaliativa atividadeAvaliativa, IEnumerable<AlunoPorTurmaResposta> alunos, string disciplinaId,
-            Usuario usuario, Turma turma)
+            Usuario usuario, Turma turma, bool podeNotificar)
         {
                 var notasMultidisciplina = new List<NotaConceito>();
                 var alunosNotasExtemporaneas = new StringBuilder();
@@ -280,7 +283,7 @@ namespace SME.SGP.Dominio
                 var notaParametro =
                     await mediator.Send(new ObterNotaParametroPorDataAvaliacaoQuery(atividadeAvaliativa.DataAvaliacao));
                 var dataAtual = DateTime.Now;
-
+                
                 // Verifica Bimestre Atual
                 var dataPesquisa = DateTime.Today;
                 var periodosEscolares = await BuscarPeriodosEscolaresDaAtividade(atividadeAvaliativa);
@@ -354,7 +357,7 @@ namespace SME.SGP.Dominio
                     }
                 }
 
-                if (alunosNotasExtemporaneas.ToString().Length > 0)
+                if (podeNotificar && alunosNotasExtemporaneas.ToString().Length > 0)
                 {
                     string mensagemNotificacao = $"<p>Os resultados da atividade avaliativa '{atividadeAvaliativa.NomeAvaliacao}' da turma {turma.Nome} da {turma.Ue.Nome} (DRE {turma.Ue.Dre.Nome}) no bimestre {bimestreAvaliacao} de {turma.AnoLetivo} foram alterados " +
                                                  $"pelo Professor {usuario.Nome} ({usuario.CodigoRf}) em {dataAtual.ToString("dd/MM/yyyy")} às {dataAtual.ToString("HH:mm")} para os seguintes alunos:</p><br/>{alunosNotasExtemporaneas.ToString()}" +

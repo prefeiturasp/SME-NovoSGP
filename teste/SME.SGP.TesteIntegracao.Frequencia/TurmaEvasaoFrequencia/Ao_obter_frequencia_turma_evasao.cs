@@ -34,10 +34,17 @@ namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
 
             var resultados = await useCase.Executar(filtro);
 
-            resultados.ShouldNotBeEmpty();
-            resultados.Count().ShouldBe(2);
-            resultados.FirstOrDefault(c => c.Descricao == "BT").Quantidade.ShouldBe(10);
-            resultados.FirstOrDefault(c => c.Descricao == "JT").Quantidade.ShouldBe(3);
+            resultados.ShouldNotBeNull();
+            resultados.GraficosFrequencia.Count().ShouldBe(2);
+            resultados.TotalEstudantes.ShouldBe(13);
+            resultados.GraficosFrequencia.FirstOrDefault(c => c.Descricao == "BT" 
+                                                              && c.DreCodigo == "1"
+                                                              && string.IsNullOrEmpty(c.UeCodigo)
+                                                              && string.IsNullOrEmpty(c.TurmaCodigo)).Quantidade.ShouldBe(10);
+            resultados.GraficosFrequencia.FirstOrDefault(c => c.Descricao == "JT"
+                                                              && c.DreCodigo == "2"
+                                                              && string.IsNullOrEmpty(c.UeCodigo)
+                                                              && string.IsNullOrEmpty(c.TurmaCodigo)).Quantidade.ShouldBe(3);
         }
 
         [Fact]
@@ -58,9 +65,13 @@ namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
 
             var resultados = await useCase.Executar(filtro);
 
-            resultados.ShouldNotBeEmpty();
-            resultados.Count().ShouldBe(1);
-            resultados.FirstOrDefault().Quantidade.ShouldBe(10);
+            resultados.ShouldNotBeNull();
+            resultados.GraficosFrequencia.Count().ShouldBe(1);
+            resultados.TotalEstudantes.ShouldBe(10);
+            resultados.GraficosFrequencia.FirstOrDefault().UeCodigo.ShouldBe("1");
+            resultados.GraficosFrequencia.FirstOrDefault().TurmaCodigo.ShouldBeNullOrEmpty();
+            resultados.GraficosFrequencia.FirstOrDefault().DreCodigo.ShouldBeNullOrEmpty();
+            resultados.GraficosFrequencia.FirstOrDefault().Quantidade.ShouldBe(10);
         }
 
         [Fact]
@@ -81,9 +92,13 @@ namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
 
             var resultados = await useCase.Executar(filtro);            
 
-            resultados.ShouldNotBeEmpty();
-            resultados.Count().ShouldBe(1);
-            resultados.FirstOrDefault().Quantidade.ShouldBe(10);
+            resultados.ShouldNotBeNull();
+            resultados.GraficosFrequencia.Count().ShouldBe(1);
+            resultados.TotalEstudantes.ShouldBe(10);
+            resultados.GraficosFrequencia.FirstOrDefault().TurmaCodigo.ShouldBe("1");
+            resultados.GraficosFrequencia.FirstOrDefault().UeCodigo.ShouldBeNullOrEmpty();
+            resultados.GraficosFrequencia.FirstOrDefault().DreCodigo.ShouldBeNullOrEmpty();
+            resultados.GraficosFrequencia.FirstOrDefault().Quantidade.ShouldBe(10);
         }
 
         [Fact]
@@ -99,15 +114,55 @@ namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Modalidade = Modalidade.Medio,
                 DreCodigo = "-99",
-                UeCodigo = "-99"
+                UeCodigo = "-99",
+                Mes = 3
             };
 
             var resultados = await useCase.Executar(filtro);
 
-            resultados.ShouldNotBeEmpty();
-            resultados.Count().ShouldBe(2);
-            resultados.FirstOrDefault(c => c.Descricao == "BT").Quantidade.ShouldBe(4);
-            resultados.FirstOrDefault(c => c.Descricao == "JT").Quantidade.ShouldBe(2);
+            resultados.ShouldNotBeNull();
+            resultados.GraficosFrequencia.Count().ShouldBe(2);
+            resultados.TotalEstudantes.ShouldBe(3);
+            resultados.GraficosFrequencia.FirstOrDefault(c => c.Descricao == "BT"
+                                                              && c.DreCodigo == "1"
+                                                              && string.IsNullOrEmpty(c.UeCodigo)
+                                                              && string.IsNullOrEmpty(c.TurmaCodigo)).Quantidade.ShouldBe(2);
+            resultados.GraficosFrequencia.FirstOrDefault(c => c.Descricao == "JT"
+                                                              && c.DreCodigo == "2"
+                                                              && string.IsNullOrEmpty(c.UeCodigo)
+                                                              && string.IsNullOrEmpty(c.TurmaCodigo)).Quantidade.ShouldBe(1);
+        }
+
+        [Fact(DisplayName = "Dashboard NAAPA - Alunos sem presenca acumulado por dre")]
+        public async Task Deve_obter_apenas_registros_com_quantidade_alunos_sem_presenca_acumulado_agrupado_por_dre()
+        {
+            await CriarItensBasicos();
+            await CriarRegistrosParaConsulta();
+
+            var useCase = ServiceProvider.GetService<IObterDashboardFrequenciaTurmaEvasaoSemPresencaUseCase>();
+
+            var filtro = new FiltroGraficoFrequenciaTurmaEvasaoDto()
+            {
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                Modalidade = Modalidade.Medio,
+                DreCodigo = "-99",
+                UeCodigo = "-99",
+                Mes = 0
+            };
+
+            var resultados = await useCase.Executar(filtro);
+
+            resultados.ShouldNotBeNull();
+            resultados.GraficosFrequencia.Count().ShouldBe(2);
+            resultados.TotalEstudantes.ShouldBe(4);
+            resultados.GraficosFrequencia.FirstOrDefault(c => c.Descricao == "BT"
+                                                              && c.DreCodigo == "1"
+                                                              && string.IsNullOrEmpty(c.UeCodigo)
+                                                              && string.IsNullOrEmpty(c.TurmaCodigo)).Quantidade.ShouldBe(2);
+            resultados.GraficosFrequencia.FirstOrDefault(c => c.Descricao == "JT"
+                                                              && c.DreCodigo == "2"
+                                                              && string.IsNullOrEmpty(c.UeCodigo)
+                                                              && string.IsNullOrEmpty(c.TurmaCodigo)).Quantidade.ShouldBe(2);
         }
 
         [Fact]
@@ -123,14 +178,47 @@ namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 DreCodigo = "1",
                 Modalidade = Modalidade.Medio,
-                UeCodigo = "-99"
+                UeCodigo = "-99",
+                Mes = 5
             };
 
             var resultados = await useCase.Executar(filtro);
 
-            resultados.ShouldNotBeEmpty();
-            resultados.Count().ShouldBe(1);
-            resultados.FirstOrDefault().Quantidade.ShouldBe(4);
+            resultados.ShouldNotBeNull();
+            resultados.GraficosFrequencia.Count().ShouldBe(1);
+            resultados.TotalEstudantes.ShouldBe(1);
+            resultados.GraficosFrequencia.FirstOrDefault().UeCodigo.ShouldBe("1");
+            resultados.GraficosFrequencia.FirstOrDefault().TurmaCodigo.ShouldBeNullOrEmpty();
+            resultados.GraficosFrequencia.FirstOrDefault().DreCodigo.ShouldBeNullOrEmpty();
+            resultados.GraficosFrequencia.FirstOrDefault().Quantidade.ShouldBe(1);
+        }
+
+        [Fact(DisplayName = "Dashboard NAAPA - Alunos sem presenca acumulado por ue")]
+        public async Task Deve_obter_apenas_registros_com_quantidade_alunos_sem_presenca_acumulado_agrupado_por_ue()
+        {
+            await CriarItensBasicos();
+            await CriarRegistrosParaConsulta();
+
+            var useCase = ServiceProvider.GetService<IObterDashboardFrequenciaTurmaEvasaoSemPresencaUseCase>();
+
+            var filtro = new FiltroGraficoFrequenciaTurmaEvasaoDto()
+            {
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                DreCodigo = "1",
+                Modalidade = Modalidade.Medio,
+                UeCodigo = "-99",
+                Mes = 0
+            };
+
+            var resultados = await useCase.Executar(filtro);
+
+            resultados.ShouldNotBeNull();
+            resultados.GraficosFrequencia.Count().ShouldBe(1);
+            resultados.TotalEstudantes.ShouldBe(2);
+            resultados.GraficosFrequencia.FirstOrDefault().UeCodigo.ShouldBe("1");
+            resultados.GraficosFrequencia.FirstOrDefault().TurmaCodigo.ShouldBeNullOrEmpty();
+            resultados.GraficosFrequencia.FirstOrDefault().DreCodigo.ShouldBeNullOrEmpty();
+            resultados.GraficosFrequencia.FirstOrDefault().Quantidade.ShouldBe(2);
         }
 
         [Fact]
@@ -146,14 +234,47 @@ namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 DreCodigo = "1",
                 UeCodigo = "1",
-                Modalidade = Modalidade.Medio
+                Modalidade = Modalidade.Medio,
+                Mes = 4
             };
 
             var resultados = await useCase.Executar(filtro);
 
-            resultados.ShouldNotBeEmpty();
-            resultados.Count().ShouldBe(1);
-            resultados.FirstOrDefault().Quantidade.ShouldBe(4);
+            resultados.ShouldNotBeNull();
+            resultados.GraficosFrequencia.Count().ShouldBe(1);
+            resultados.TotalEstudantes.ShouldBe(1);
+            resultados.GraficosFrequencia.FirstOrDefault().TurmaCodigo.ShouldBe("1");
+            resultados.GraficosFrequencia.FirstOrDefault().UeCodigo.ShouldBeNullOrEmpty();
+            resultados.GraficosFrequencia.FirstOrDefault().DreCodigo.ShouldBeNullOrEmpty();
+            resultados.GraficosFrequencia.FirstOrDefault().Quantidade.ShouldBe(1);
+        }
+
+        [Fact(DisplayName = "Dashboard NAAPA - Alunos sem presenca acumulado por turma")]
+        public async Task Deve_obter_apenas_registros_com_quantidade_alunos_sem_presenca_acumulado_agrupado_por_turma()
+        {
+            await CriarItensBasicos();
+            await CriarRegistrosParaConsulta();
+
+            var useCase = ServiceProvider.GetService<IObterDashboardFrequenciaTurmaEvasaoSemPresencaUseCase>();
+
+            var filtro = new FiltroGraficoFrequenciaTurmaEvasaoDto()
+            {
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                DreCodigo = "1",
+                UeCodigo = "1",
+                Modalidade = Modalidade.Medio,
+                Mes = 0
+            };
+
+            var resultados = await useCase.Executar(filtro);
+
+            resultados.ShouldNotBeNull();
+            resultados.GraficosFrequencia.Count().ShouldBe(1);
+            resultados.TotalEstudantes.ShouldBe(2);
+            resultados.GraficosFrequencia.FirstOrDefault().TurmaCodigo.ShouldBe("1");
+            resultados.GraficosFrequencia.FirstOrDefault().UeCodigo.ShouldBeNullOrEmpty();
+            resultados.GraficosFrequencia.FirstOrDefault().DreCodigo.ShouldBeNullOrEmpty();
+            resultados.GraficosFrequencia.FirstOrDefault().Quantidade.ShouldBe(2);
         }
 
         private async Task CriarItensBasicos()
@@ -229,7 +350,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
                 TurmaId = 1,
                 Mes = 0,
                 QuantidadeAlunosAbaixo50Porcento = 10,
-                QuantidadeAlunos0Porcento = 0
+                QuantidadeAlunos0Porcento = 2
             });
             await InserirNaBase(new Dominio.FrequenciaTurmaEvasao
             {
@@ -237,7 +358,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
                 TurmaId = 2,
                 Mes = 0,
                 QuantidadeAlunosAbaixo50Porcento = 3,
-                QuantidadeAlunos0Porcento = 0
+                QuantidadeAlunos0Porcento = 2
             });
 
             await InserirNaBase(new Dominio.FrequenciaTurmaEvasao

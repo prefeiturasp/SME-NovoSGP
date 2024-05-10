@@ -22,6 +22,11 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioComponenteCurricularJurema repositorioComponenteCurricularJurema;
+
+        private const int ID_COMPONENTE_INFORMATICA_OIE = 1060;
+        private const int ID_COMPONENTE_LEITURA_OSL = 1061;
+        private static readonly long[] IDS_COMPONENTES_COMPARTILHADOS_EJA_EF = { ID_COMPONENTE_INFORMATICA_OIE, ID_COMPONENTE_LEITURA_OSL };
+
         public ConsultasDisciplina(IRepositorioCache repositorioCache,
             IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
             IRepositorioComponenteCurricularJurema repositorioComponenteCurricularJurema,
@@ -181,25 +186,20 @@ namespace SME.SGP.Aplicacao
             }
 
             //Exceção para disciplinas 1060 e 1061 que são compartilhadas entre EF e EJA
-            if (turma.ModalidadeCodigo == Modalidade.EJA && disciplinasDto.Any())
-            {
-                var idComponenteInformaticaOie = 1060;
-                var idComponenteLeituraOsl = 1061;
-                foreach (var disciplina in disciplinasDto)
+            if (turma.ModalidadeCodigo == Modalidade.EJA)
+                disciplinasDto.ForEach(disciplina =>
                 {
-                    disciplina.PossuiObjetivos = false;
-                    if (disciplina.CodigoComponenteCurricular == idComponenteInformaticaOie || disciplina.CodigoComponenteCurricular == idComponenteLeituraOsl)
+                    if (IDS_COMPONENTES_COMPARTILHADOS_EJA_EF.Contains(disciplina.CodigoComponenteCurricular))
                         disciplina.RegistraFrequencia = false;
-                }
-            }
+                });
 
             if (turma.ModalidadeCodigo == Modalidade.Medio && turma.TipoTurno == (int)TipoTurnoEOL.Noite && disciplinasDto.Any())
             {
                 var idComponenteSalaLeituraEM = 1347;
-                var idComponenteTecAprendizagem = 1359;
+                var idsComponenteTecAprendizagem = new long[] { 1359, 1347, 1312 };
                 foreach (var disciplina in disciplinasDto)
                 {
-                    if (disciplina.CodigoComponenteCurricular == idComponenteSalaLeituraEM || disciplina.CodigoComponenteCurricular == idComponenteTecAprendizagem)
+                    if (disciplina.CodigoComponenteCurricular == idComponenteSalaLeituraEM || idsComponenteTecAprendizagem.Contains(disciplina.CodigoComponenteCurricular))
                         disciplina.RegistraFrequencia = false;
                 }
             }

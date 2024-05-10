@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         }
 
         [Theory]
-        [InlineData("user.test", "", "", "Sgptest")]
+        [InlineData("user.test", "", "", "Sgp@1234")]
         [InlineData("111111", "", "", "Sgp1111")]
         [InlineData("222222", "", "", "Sgp2222")]
         [InlineData("333333", "", "", "Sgp3333")]

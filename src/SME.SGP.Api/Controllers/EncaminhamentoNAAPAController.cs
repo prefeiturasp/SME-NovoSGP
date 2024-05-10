@@ -272,7 +272,6 @@ namespace SME.SGP.Api.Controllers
             return BadRequest();
         }
 
-
         [HttpGet("aluno/{codigoAluno}/registros-acao")]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<RegistroAcaoBuscaAtivaNAAPADto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -282,13 +281,23 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(codigoAluno));
         }
 
-        [HttpGet("{encaminhamentoId}/imprimirAnexos")]
+        [HttpGet("{encaminhamentoId}/anexos/tipos-impressao")]
         [ProducesResponseType(typeof(IEnumerable<ImprimirAnexoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterItensDeImprimirAnexos(long encaminhamentoId, [FromServices] IObterItensDeImprimirAnexosNAAPAUseCase useCase)
+        public async Task<IActionResult> ObterTiposDeImprimirAnexos(long encaminhamentoId, [FromServices] IObterTiposDeImprimirAnexosNAAPAUseCase useCase)
         {
             return Ok(await useCase.Executar(encaminhamentoId));
+        }
+
+        [HttpGet("secoes-itinerancia/profissionais-envolvidos")]
+        [ProducesResponseType(typeof(IEnumerable<FuncionarioUnidadeDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterProfissionaisEnvolvidosAtendimento([FromQuery] FiltroBuscarProfissionaisEnvolvidosAtendimentoNAAPA filtro,
+            [FromServices] IObterProfissionaisEnvolvidosAtendimentoNAAPANAAPAUseCase obterProfissionaisEnvolvidosAtendimentoNAAPANAAPAUseCase)
+        {
+            return Ok(await obterProfissionaisEnvolvidosAtendimentoNAAPANAAPAUseCase.Executar(filtro));
         }
     }
 }

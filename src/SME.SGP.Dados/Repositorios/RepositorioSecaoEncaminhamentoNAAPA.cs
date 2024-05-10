@@ -1,11 +1,9 @@
 ﻿using Dapper;
-using Polly.Caching;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,7 +24,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<SecaoQuestionarioDto>> ObterSecoesQuestionarioDto(int modalidade, long? encaminhamentoNAAPAId = null)
         {
-            var query = @"SELECT sea.id
+            var query = $@"SELECT sea.id
                                 , sea.nome
                                 , sea.questionario_id as questionarioId
                                 , eas.concluido
@@ -39,7 +37,7 @@ namespace SME.SGP.Dados.Repositorios
                                                                  and eas.secao_encaminhamento_id = sea.id
                                                                  and not eas.excluido   
                          left join secao_encaminhamento_naapa_modalidade senm on senm.secao_encaminhamento_id = sea.id 
-                         WHERE not sea.excluido and sea.nome_componente <> 'QUESTOES_ITINERACIA'
+                         WHERE not sea.excluido and sea.nome_componente <> '{EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA}'
                             AND ((senm.modalidade_codigo = @modalidade) or (senm.modalidade_codigo is null)) 
                             AND q.tipo = @tipoQuestionario
                          ORDER BY sea.etapa, sea.ordem ";
@@ -49,13 +47,13 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<SecaoEncaminhamentoNAAPA>> ObterSecoesEncaminhamentoPorModalidade(int? modalidade, long? encaminhamentoNAAPAId = null)
         {
-            var query = new StringBuilder(@"SELECT sea.*, eas.*, q.*
+            var query = new StringBuilder($@"SELECT sea.*, eas.*, q.*
                                             FROM secao_encaminhamento_naapa sea 
                                                 join questionario q on q.id = sea.questionario_id 
                                                 left join encaminhamento_naapa_secao eas on eas.encaminhamento_naapa_id = @encaminhamentoNAAPAId
                                                                                         and eas.secao_encaminhamento_id = sea.id
                                                                                         and not eas.excluido  
-                                                                                        and sea.nome_componente <> 'QUESTOES_ITINERACIA'
+                                                                                        and sea.nome_componente <> '{EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA}'
                                                 left join secao_encaminhamento_naapa_modalidade senm on senm.secao_encaminhamento_id = sea.id 
                                             WHERE not sea.excluido 
                                                   AND ((senm.modalidade_codigo = @modalidade) or (senm.modalidade_codigo is null)) 
@@ -283,7 +281,9 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<AtendimentosProfissionalEncaminhamentoNAAPAConsolidadoDto>> ObterQuantidadeAtendimentosProfissionalPorUeAnoLetivoMes(long ueId, int mes, int anoLetivo)
         {
-            var query = @$"select ens.criado_por as Nome, ens.criado_rf as Rf, count(ens.id) as Quantidade from encaminhamento_naapa_secao ens 
+            var query = @$"select ens.criado_por as Nome, ens.criado_rf as Rf, 
+                                  count(ens.id) as Quantidade, t.modalidade_codigo as Modalidade
+                        from encaminhamento_naapa_secao ens
                         inner join encaminhamento_naapa_questao enq on enq.encaminhamento_naapa_secao_id = ens.id
                         inner join questao q on q.id = enq.questao_id 
                         inner join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id 
@@ -299,11 +299,11 @@ namespace SME.SGP.Dados.Repositorios
                         and EXTRACT('Year' FROM to_date(enr.texto,'yyyy-mm-dd')) = @anoLetivo
                         and EXTRACT('Month' FROM to_date(enr.texto,'yyyy-mm-dd')) = @mes
                         and t.ue_id = @ueId
-                        group by ens.criado_por, ens.criado_rf; ";
+                        group by ens.criado_por, ens.criado_rf, t.modalidade_codigo; ";
 
             var retorno = await database.Conexao.QueryAsync<AtendimentosPorProfissionalEncaminhamentoNAAPADto>(query, new { ueId, mes, anoLetivo });
             if (retorno.Any())
-                return retorno.Select(atendimento => new AtendimentosProfissionalEncaminhamentoNAAPAConsolidadoDto(ueId, anoLetivo, mes, atendimento.Nome, atendimento.Rf, atendimento.Quantidade));
+                return retorno.Select(atendimento => new AtendimentosProfissionalEncaminhamentoNAAPAConsolidadoDto(ueId, anoLetivo, mes, atendimento.Nome, atendimento.Rf, atendimento.Quantidade, atendimento.Modalidade));
 
             return Enumerable.Empty<AtendimentosProfissionalEncaminhamentoNAAPAConsolidadoDto>();
 

@@ -161,5 +161,8 @@ namespace SME.SGP.Dominio
             
         [Display(Name = "relatorios/plano-anual", ShortName = "Plano Anual", Description = "Relatório Plano Anual")]
         RelatorioPlanoAnual = 53,
+
+        [Display(Name = "relatorios/mapeamentosestudantes", ShortName = "MapeamentosEstudantes", Description = "Relatório de Mapeamento de estudantes")]
+        RelatorioMapeamentosEstudantes = 54,
     }
 }

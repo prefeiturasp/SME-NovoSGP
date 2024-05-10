@@ -28,6 +28,7 @@ namespace SME.SGP.Aplicacao
                     AnoLetivo = encaminhamento.AnoLetivo,
                     Quantidade = encaminhamento.Quantidade,
                     Situacao = encaminhamento.Situacao,
+                    Modalidade = encaminhamento.Modalidade
                 };
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpNAAPA.ExecutarInserirConsolidadoEncaminhamentoNAAPA, entidade, Guid.NewGuid()));
             }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace SME.SGP.TesteIntegracao.Constantes
 {
@@ -14,25 +10,21 @@ namespace SME.SGP.TesteIntegracao.Constantes
 
         public const string QUESTAO_1_NOME_COMPONENTE_DATA_REGISTRO_ACAO = "DATA_REGISTRO_ACAO";
         public const string QUESTAO_2_NOME_COMPONENTE_CONSEGUIU_CONTATO_RESP = "CONSEGUIU_CONTATO_RESP";
-        public const string QUESTAO_2_1_NOME_COMPONENTE_CONTATO_COM_RESPONSAVEL = "CONTATO_COM_RESPONSAVEL";
-        public const string QUESTAO_2_2_NOME_COMPONENTE_APOS_CONTATO_CRIANCA_RETORNOU_ESCOLA = "APOS_CONTATO_CRIANCA_RETORNOU_ESCOLA";
         public const string QUESTAO_2_3_NOME_COMPONENTE_JUSTIFICATIVA_MOTIVO_FALTA = "JUSTIFICATIVA_MOTIVO_FALTA";
         public const string QUESTAO_2_3_1_NOME_COMPONENTE_JUSTIFICATIVA_MOTIVO_FALTA_OUTROS = "JUSTIFICATIVA_MOTIVO_FALTA_OUTROS";
         public const string QUESTAO_2_4_NOME_COMPONENTE_PROCEDIMENTO_REALIZADO = "PROCEDIMENTO_REALIZADO";
-        public const string QUESTAO_2_1_NOME_COMPONENTE_PROCEDIMENTO_REALIZADO_NAO_CONTATOU_RESP = "PROCEDIMENTO_REALIZADO_NAO_CONTATOU_RESP";
         public const string QUESTAO_2_4_1_NOME_COMPONENTE_QUESTOES_OBS_DURANTE_VISITA = "QUESTOES_OBS_DURANTE_VISITA";
-        public const string QUESTAO_3_NOME_COMPONENTE_OBS_GERAL = "OBS_GERAL";
+        public const string QUESTAO_2_5_NOME_COMPONENTE_OBS_GERAL = "OBS_GERAL";
+        public const string QUESTAO_2_2_NOME_COMPONENTE_OBS_GERAL_NAO_CONTATOU_RESP = "OBS_GERAL_NAO_CONTATOU_RESP";
 
         public const long QUESTAO_1_ID_DATA_REGISTRO_ACAO = 1;
         public const long QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP = 2;
-        public const long QUESTAO_2_1_ID_CONTATO_COM_RESPONSAVEL = 4;
-        public const long QUESTAO_2_2_ID_APOS_CONTATO_CRIANCA_RETORNOU_ESCOLA = 5;
-        public const long QUESTAO_2_3_ID_JUSTIFICATIVA_MOTIVO_FALTA = 6;
-        public const long QUESTAO_2_3_1_ID_JUSTIFICATIVA_MOTIVO_FALTA_OUTROS = 7;
+        public const long QUESTAO_2_3_ID_JUSTIFICATIVA_MOTIVO_FALTA = 4;
+        public const long QUESTAO_2_3_1_ID_JUSTIFICATIVA_MOTIVO_FALTA_OUTROS = 5;
         public const long QUESTAO_2_4_ID_PROCEDIMENTO_REALIZADO = 3;
-        public const long QUESTAO_2_4_1_ID_QUESTOES_OBS_DURANTE_VISITA = 8;
-        public const long QUESTAO_3_ID_OBS_GERAL = 9;
-        public const long QUESTAO_2_1_ID_PROCEDIMENTO_REALIZADO_NAO_CONTATOU_RESP = 10;
+        public const long QUESTAO_2_4_1_ID_QUESTOES_OBS_DURANTE_VISITA = 6;
+        public const long QUESTAO_2_5_ID_OBS_GERAL = 7;
+        public const long QUESTAO_2_2_ID_OBS_GERAL_NAO_CONTATOU_RESP = 8;
 
         public const string QUESTAO_OPCAO_RESPOSTA_SIM = "Sim";
         public const string QUESTAO_JUSTIFICATIVA_MOTIVO_FALTA_RESPOSTA_OUTROS = "Outros";
@@ -44,35 +36,34 @@ namespace SME.SGP.TesteIntegracao.Constantes
         public static IEnumerable<(long id, string descricao)> ObterOpcoesRespostas_JUSTIFICATIVA_MOTIVO_FALTA()
         {
             var opcoesRespostas = new List<(long id, string descricao)>();
-            opcoesRespostas.Add((1, "Ausência por gripe ou resfriado (tosse, febre, dor de garganta)"));
-            opcoesRespostas.Add((2, "Ausência por enjôo, diarreia, vômito"));
-            opcoesRespostas.Add((3, "Ausência por doenças crônicas como anemia, diabetes, câncer, problemas cardíacos ou neurológicos, convulsões ou transplantados"));
-            opcoesRespostas.Add((4, "Ausência por questões de diagnóstico de transtorno mental ou em sofrimento psíquico (depressão, ansiedade)"));
-            opcoesRespostas.Add((5, "Ausência por deficiência que impeça ou dificulte o acesso e permanência à Unidade Educacional"));
-            opcoesRespostas.Add((6, "Ausência do adolescente por motivo de cumprimento de medidas socioeducativas em regime fechado"));
-            opcoesRespostas.Add((7, "Ausência do adolescente por motivo de cumprimento de medidas socioeducativas em casa"));
-            opcoesRespostas.Add((8, "Ausência por estarem viajando no período"));
-            opcoesRespostas.Add((9, "Ausência porque mora distante da escola e apresente dificuldades no deslocamento"));
-            opcoesRespostas.Add((10, "Ausência por estarem cuidando de irmãos, pais ou avós"));
-            opcoesRespostas.Add((11, "Ausência por motivo de falecimento"));
-            opcoesRespostas.Add((12, "Há suspeita de ausência por estar realizando trabalho infantil"));
-            opcoesRespostas.Add((13, "Ausência por motivo de gravidez da estudante"));
-            opcoesRespostas.Add((14, "Ausência por relato do estudante que não deseja voltar para a escola"));
-            opcoesRespostas.Add((15, "Ausência por não ter material escolar/uniforme"));
-            opcoesRespostas.Add((16, "Ausência por falta de transporte escolar"));
-            opcoesRespostas.Add((17, "Ausência por negligência da família sobre a frequência escolar (não sabe/não se preocupa/não se importa)"));
-            opcoesRespostas.Add((18, "Ausência por estar em situação de rua ou na rua"));
-            opcoesRespostas.Add((19, "Ausência por enfrentar dificuldades financeiras"));
-            opcoesRespostas.Add((20, "Ausência por não ter moradia fixa"));
-            opcoesRespostas.Add((21, "Ausência por ter sido vitima de preconceito, discriminação ou bullyng na unidade educacional"));
-            opcoesRespostas.Add((22, "Ausência pelo estudante estar em luto"));
-            opcoesRespostas.Add((23, "Ausência por não haver um responsável para levar para a escola"));
-            opcoesRespostas.Add((24, "Ausência por ter perdido a vaga"));
-            opcoesRespostas.Add((25, "Ausência devido aos seus responsáveis serem pessoas com deficiência e/ou apresentarem problemas de saúde mental ou dependência química (alcoolismo, drogas, medicamentos)"));
-            opcoesRespostas.Add((26, "Ausência porque os responsáveis não querem levar o bebê/criança/adolescente para a unidade educacional"));
-            opcoesRespostas.Add((27, "Ausência por envolvimento do estudante com ácool, drogas ou medicamentos"));
-            opcoesRespostas.Add((28, "Ausência devido a violência do território (comunidade, bairro)"));
-            opcoesRespostas.Add((29, "Outros"));
+            opcoesRespostas.Add((1, "Estudante com questões de saúde mental (depressão, ansiedade, etc.)"));
+            opcoesRespostas.Add((2, "Estudante em luto por familiar/ responsável falecido"));
+            opcoesRespostas.Add((3, "Estudante com doenças crônicas (diabete, câncer, doença do coração, epilepsia, etc.)"));
+            opcoesRespostas.Add((4, "Estudante está doente (enjoo, diarreia, vômito, gripe, resfriado, etc.)"));
+            opcoesRespostas.Add((5, "Estudante grávida"));
+            opcoesRespostas.Add((6, "Estudante é pessoa com deficiência"));
+            opcoesRespostas.Add((7, "Estudante está cuidando de familiares"));
+            opcoesRespostas.Add((8, "Trabalho infantil (vende bala no farol, pede coisas, cuida de outras crianças, responsável por trabalho doméstico)"));
+            opcoesRespostas.Add((9, "Mora na rua"));
+            opcoesRespostas.Add((10, "Não tem moradia fixa (ficando temporariamente em casas diferentes)"));
+            opcoesRespostas.Add((11, "Responsável justifica que não tem material escolar/uniforme"));
+            opcoesRespostas.Add((12, "Falta de transporte escolar"));
+            opcoesRespostas.Add((13, "Família em situação de extrema pobreza"));
+            opcoesRespostas.Add((14, "Responsável justifica a ausência da estudante por questões relacionadas à menstruação"));
+            opcoesRespostas.Add((15, "Estudante não deseja voltar para a escola"));
+            opcoesRespostas.Add((16, "Não há um responsável para levar para a escola"));
+            opcoesRespostas.Add((17, "Responsável não compreende a obrigatoriedade da frequência escolar"));
+            opcoesRespostas.Add((18, "Responsável não quer levar para a escola"));
+            opcoesRespostas.Add((19, "Responsável é pessoa com deficiência"));
+            opcoesRespostas.Add((20, "Mora distante da escola e apresenta dificuldades para o deslocamento"));
+            opcoesRespostas.Add((21, "Violência no território (comunidade/ bairro)"));
+            opcoesRespostas.Add((22, "Estudante é vítima de preconceito/ discriminação/ bullying na escola"));
+            opcoesRespostas.Add((23, "Estudante faleceu"));
+            opcoesRespostas.Add((24, "Adolescente na Fundação Casa (medidas socioeducativas, aplicáveis a adolescentes envolvidos na prática de um ato infracional)"));
+            opcoesRespostas.Add((25, "Responsável informa que o bebê/criança/adolescente perdeu a vaga"));
+            opcoesRespostas.Add((26, "Viagem"));
+            opcoesRespostas.Add((27, "Outros"));
+
             return opcoesRespostas;
         }
 

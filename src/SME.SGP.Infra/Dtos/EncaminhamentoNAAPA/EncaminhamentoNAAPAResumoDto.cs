@@ -15,5 +15,9 @@ namespace SME.SGP.Infra
         public string Situacao { get; set; }
         public string Prioridade { get; set; }
         public bool EhMatriculadoTurmaPAP { get; set; }
+        public DateTime? DataUltimoAtendimento { get; set; }
+        public string Turma { get; set; }
+        public string TurmaNome { get; set; }
+        public Modalidade TurmaModalidade { get; set; }
     }
 }

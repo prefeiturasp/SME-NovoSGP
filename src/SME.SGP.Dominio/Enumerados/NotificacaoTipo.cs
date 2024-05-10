@@ -37,6 +37,9 @@ namespace SME.SGP.Dominio
         NAAPA = 11,
 
         [Display(Name = "Customizado")]
-        Customizado = 12        
+        Customizado = 12,
+
+        [Display(Name = "Busca ativa")]
+        BuscaAtiva = 13
     }
 }

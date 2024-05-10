@@ -5,17 +5,19 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPendenciasAulaPorAulaIdQuery : IRequest<long[]>
     {
-        public ObterPendenciasAulaPorAulaIdQuery(long aulaId, Usuario usuarioLogado, bool temAtividadeAvaliativa = false, bool ehModalidadeInfantil = false)
+        public ObterPendenciasAulaPorAulaIdQuery(long aulaId, Usuario usuarioLogado, bool temAtividadeAvaliativa = false, bool ehModalidadeInfantil = false, int etapaEJA = 0)
         {
             AulaId = aulaId;
             TemAtividadeAvaliativa = temAtividadeAvaliativa;
             EhModalidadeInfantil = ehModalidadeInfantil;
             UsuarioLogado = usuarioLogado;
+            EtapaEJA = etapaEJA;
         }
 
         public long AulaId { get; set; }
         public bool EhModalidadeInfantil { get; set; }
         public bool TemAtividadeAvaliativa { get; set; }
         public Usuario UsuarioLogado { get; set; }
+        public int EtapaEJA { get; set; }
     }
 }

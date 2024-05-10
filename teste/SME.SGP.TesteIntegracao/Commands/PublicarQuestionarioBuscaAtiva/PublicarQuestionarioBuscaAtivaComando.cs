@@ -1,11 +1,8 @@
-﻿using MediatR;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.TesteIntegracao.Constantes;
 using System;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.Commands
@@ -52,22 +49,7 @@ namespace SME.SGP.TesteIntegracao.Commands
 
             var opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP 
                                                          && q.Nome == ConstantesQuestionarioBuscaAtiva.QUESTAO_OPCAO_RESPOSTA_SIM).FirstOrDefault();
-            await _teste.InserirNaBase(new OpcaoQuestaoComplementar()
-            {
-                OpcaoRespostaId = opcaoRespostaBase.Id,
-                QuestaoComplementarId = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_1_ID_CONTATO_COM_RESPONSAVEL,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTime.Now
-            });
-            await _teste.InserirNaBase(new OpcaoQuestaoComplementar()
-            {
-                OpcaoRespostaId = opcaoRespostaBase.Id,
-                QuestaoComplementarId = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_2_ID_APOS_CONTATO_CRIANCA_RETORNOU_ESCOLA,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTime.Now
-            });
+
             await _teste.InserirNaBase(new OpcaoQuestaoComplementar()
             {
                 OpcaoRespostaId = opcaoRespostaBase.Id,
@@ -76,14 +58,7 @@ namespace SME.SGP.TesteIntegracao.Commands
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now
             });
-            await _teste.InserirNaBase(new OpcaoQuestaoComplementar()
-            {
-                OpcaoRespostaId = opcaoRespostaBase.Id,
-                QuestaoComplementarId = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_4_ID_PROCEDIMENTO_REALIZADO,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTime.Now
-            });
+
 
             opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_3_ID_JUSTIFICATIVA_MOTIVO_FALTA 
                                                      && q.Nome == ConstantesQuestionarioBuscaAtiva.QUESTAO_JUSTIFICATIVA_MOTIVO_FALTA_RESPOSTA_OUTROS).FirstOrDefault();
@@ -108,11 +83,22 @@ namespace SME.SGP.TesteIntegracao.Commands
             });
 
             opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP 
+                                                     && q.Nome == ConstantesQuestionarioBuscaAtiva.QUESTAO_OPCAO_RESPOSTA_SIM).FirstOrDefault();
+            await _teste.InserirNaBase(new OpcaoQuestaoComplementar()
+            {
+                OpcaoRespostaId = opcaoRespostaBase.Id,
+                QuestaoComplementarId = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_5_ID_OBS_GERAL,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP 
                                                      && q.Nome == ConstantesQuestionarioBuscaAtiva.QUESTAO_OPCAO_RESPOSTA_NAO).FirstOrDefault();
             await _teste.InserirNaBase(new OpcaoQuestaoComplementar()
             {
                 OpcaoRespostaId = opcaoRespostaBase.Id,
-                QuestaoComplementarId = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_1_ID_PROCEDIMENTO_REALIZADO_NAO_CONTATOU_RESP,
+                QuestaoComplementarId = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_2_ID_OBS_GERAL_NAO_CONTATOU_RESP,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now
@@ -161,46 +147,6 @@ namespace SME.SGP.TesteIntegracao.Commands
                 CriadoEm = DateTime.Now
             });
 
-            await _teste.InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_1_ID_CONTATO_COM_RESPONSAVEL,
-                Ordem = 1,
-                Nome = "Sim",
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTime.Now
-            });
-
-            await _teste.InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_1_ID_CONTATO_COM_RESPONSAVEL,
-                Ordem = 2,
-                Nome = "Não",
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTime.Now
-            });
-
-            await _teste.InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_2_ID_APOS_CONTATO_CRIANCA_RETORNOU_ESCOLA,
-                Ordem = 1,
-                Nome = "Sim",
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTime.Now
-            });
-
-            await _teste.InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_2_ID_APOS_CONTATO_CRIANCA_RETORNOU_ESCOLA,
-                Ordem = 2,
-                Nome = "Não",
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTime.Now
-            });
-
             foreach (var opcoesRespostas in ConstantesQuestionarioBuscaAtiva.ObterOpcoesRespostas_JUSTIFICATIVA_MOTIVO_FALTA())
                 await _teste.InserirNaBase(new OpcaoResposta()
                 {
@@ -224,26 +170,6 @@ namespace SME.SGP.TesteIntegracao.Commands
                     CriadoRF = SISTEMA_CODIGO_RF,
                     CriadoEm = DateTime.Now
                 });
-
-            await _teste.InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_1_ID_PROCEDIMENTO_REALIZADO_NAO_CONTATOU_RESP,
-                Ordem = 1,
-                Nome = "Ligação telefonica",
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTime.Now
-            });
-
-            await _teste.InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_1_ID_PROCEDIMENTO_REALIZADO_NAO_CONTATOU_RESP,
-                Ordem = 2,
-                Nome = "Visita Domiciliar",
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTime.Now
-            });
         }
 
 
@@ -258,7 +184,6 @@ namespace SME.SGP.TesteIntegracao.Commands
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now
             });
-
         }
 
         private async Task CriarQuestoes()
@@ -307,34 +232,6 @@ namespace SME.SGP.TesteIntegracao.Commands
 
             await _teste.InserirNaBase(new Questao()
             {
-                Id = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_1_ID_CONTATO_COM_RESPONSAVEL,
-                QuestionarioId = ConstantesQuestionarioBuscaAtiva.QUESTIONARIO_REGISTRO_ACAO_ID_1,
-                Ordem = 1,
-                Nome = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_1_NOME_COMPONENTE_CONTATO_COM_RESPONSAVEL,
-                Obrigatorio = true,
-                Tipo = TipoQuestao.Checkbox,
-                NomeComponente = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_1_NOME_COMPONENTE_CONTATO_COM_RESPONSAVEL,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTime.Now
-            });
-
-            await _teste.InserirNaBase(new Questao()
-            {
-                Id = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_2_ID_APOS_CONTATO_CRIANCA_RETORNOU_ESCOLA,
-                QuestionarioId = ConstantesQuestionarioBuscaAtiva.QUESTIONARIO_REGISTRO_ACAO_ID_1,
-                Ordem = 2,
-                Nome = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_2_NOME_COMPONENTE_APOS_CONTATO_CRIANCA_RETORNOU_ESCOLA,
-                Obrigatorio = true,
-                Tipo = TipoQuestao.Checkbox,
-                NomeComponente = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_2_NOME_COMPONENTE_APOS_CONTATO_CRIANCA_RETORNOU_ESCOLA,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTime.Now
-            });
-
-            await _teste.InserirNaBase(new Questao()
-            {
                 Id = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_3_ID_JUSTIFICATIVA_MOTIVO_FALTA,
                 QuestionarioId = ConstantesQuestionarioBuscaAtiva.QUESTIONARIO_REGISTRO_ACAO_ID_1,
                 Ordem = 3,
@@ -367,7 +264,7 @@ namespace SME.SGP.TesteIntegracao.Commands
                 QuestionarioId = ConstantesQuestionarioBuscaAtiva.QUESTIONARIO_REGISTRO_ACAO_ID_1,
                 Ordem = 1,
                 Nome = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_4_1_NOME_COMPONENTE_QUESTOES_OBS_DURANTE_VISITA,
-                Obrigatorio = true,
+                Obrigatorio = false,
                 Tipo = TipoQuestao.ComboMultiplaEscolha,
                 NomeComponente = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_4_1_NOME_COMPONENTE_QUESTOES_OBS_DURANTE_VISITA,
                 CriadoPor = SISTEMA_NOME,
@@ -377,26 +274,27 @@ namespace SME.SGP.TesteIntegracao.Commands
 
             await _teste.InserirNaBase(new Questao()
             {
-                Id = ConstantesQuestionarioBuscaAtiva.QUESTAO_3_ID_OBS_GERAL,
+                Id = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_5_ID_OBS_GERAL,
                 QuestionarioId = ConstantesQuestionarioBuscaAtiva.QUESTIONARIO_REGISTRO_ACAO_ID_1,
-                Ordem = 3,
-                Nome = ConstantesQuestionarioBuscaAtiva.QUESTAO_3_NOME_COMPONENTE_OBS_GERAL,
-                Obrigatorio = false,
+                Ordem = 5,
+                Nome = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_5_NOME_COMPONENTE_OBS_GERAL,
+                Obrigatorio = true,
                 Tipo = TipoQuestao.Texto,
-                NomeComponente = ConstantesQuestionarioBuscaAtiva.QUESTAO_3_NOME_COMPONENTE_OBS_GERAL,
+                NomeComponente = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_5_NOME_COMPONENTE_OBS_GERAL,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now
             });
+
             await _teste.InserirNaBase(new Questao()
             {
-                Id = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_1_ID_PROCEDIMENTO_REALIZADO_NAO_CONTATOU_RESP,
+                Id = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_2_ID_OBS_GERAL_NAO_CONTATOU_RESP,
                 QuestionarioId = ConstantesQuestionarioBuscaAtiva.QUESTIONARIO_REGISTRO_ACAO_ID_1,
-                Ordem = 1,
-                Nome = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_1_NOME_COMPONENTE_PROCEDIMENTO_REALIZADO_NAO_CONTATOU_RESP,
-                Obrigatorio = true,
-                Tipo = TipoQuestao.Checkbox,
-                NomeComponente = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_1_NOME_COMPONENTE_PROCEDIMENTO_REALIZADO_NAO_CONTATOU_RESP,
+                Ordem = 2,
+                Nome = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_2_NOME_COMPONENTE_OBS_GERAL_NAO_CONTATOU_RESP,
+                Obrigatorio = false,
+                Tipo = TipoQuestao.Texto,
+                NomeComponente = ConstantesQuestionarioBuscaAtiva.QUESTAO_2_2_NOME_COMPONENTE_OBS_GERAL_NAO_CONTATOU_RESP,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now

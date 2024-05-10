@@ -8,6 +8,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Dtos.ConselhoClasse;
+using SME.SGP.Infra.Dtos.Questionario;
 using SME.SGP.Infra.Dtos.Relatorios;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -269,9 +270,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<ParecerConclusivoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(204)]
-        public async Task<IActionResult> ObterPareceresConclusivosTurma(long turmaId, [FromServices] IObterPareceresConclusivosTurmaUseCase useCase)
+        public async Task<IActionResult> ObterPareceresConclusivosTurma(long turmaId, [FromServices] IObterPareceresConclusivosTurmaUseCase useCase, [FromQuery] bool anoLetivoAnterior = false)
         {
-            return Ok(await useCase.Executar(turmaId));
+            return Ok(await useCase.Executar(turmaId, anoLetivoAnterior));
         }
 
         [HttpPut("parecer-conclusivo")]
@@ -279,9 +280,27 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(ParecerConclusivoDto), 200)]
         [Permissao(Permissao.CC_A, Policy = "Bearer")]
-        public IActionResult AlterarParecerConclusivo(AlterarParecerConclusivoDto alterarParecerConclusivo, [FromServices] IAlterarParecerConclusivoUseCase useCase)
+        public async Task<IActionResult> AlterarParecerConclusivo(AlterarParecerConclusivoDto alterarParecerConclusivo, [FromServices] IAlterarParecerConclusivoUseCase useCase)
         {
-            return Ok(useCase.Executar(alterarParecerConclusivo));
+            return Ok(await useCase.Executar(alterarParecerConclusivo));
         }
+
+        [HttpGet("turmas/{codigoTurmaRegular}/alunos/{codigoAluno}/relatorios-pap")]
+        [ProducesResponseType(typeof(IEnumerable<SecaoQuestoesDTO>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.RPAP_C, Permissao.CC_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterQuestionarioPAPConselhoClasse(string codigoTurmaRegular, string codigoAluno, int bimestre, [FromServices] IObterRelatorioPAPConselhoClasseUseCase useCase)
+        {
+            return Ok(await useCase.Executar(codigoTurmaRegular, codigoAluno, bimestre));
+        }
+
+        [HttpGet("anos-letivos/{anoLetivo}/modalidades/{modalidade}/pareceres-conclusivos")]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(IEnumerable<ParecerConclusivoDto>), 200)]
+        [Permissao(Permissao.RPC_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterPareceresConclusivosAnoLetivoModalidade(int anoLetivo, Modalidade modalidade, [FromServices] IObterPareceresConclusivosAnoLetivoModalidadeUseCase obterPareceresConclusivosUseCase)
+         => Ok(await obterPareceresConclusivosUseCase.Executar(anoLetivo, modalidade));
     }
 }

@@ -108,12 +108,17 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<FechamentoAluno>> ObterPorFechamentoTurmaDisciplina(long fechamentoTurmaDisciplinaId)
         {
-            var query = @"select fa.*, n.*
-                            from fechamento_aluno fa
-                           inner join fechamento_nota n on n.fechamento_aluno_id = fa.id
-                           where fa.fechamento_turma_disciplina_id = @fechamentoTurmaDisciplinaId";
+            var query = @"with lista as (
+                            select fa.*, n.*, row_number() over (partition by fa.aluno_codigo, n.disciplina_id order by n.id desc) sequencia
+                                from fechamento_aluno fa
+                                    inner join fechamento_nota n 
+                                        on n.fechamento_aluno_id = fa.id
+                            where fa.fechamento_turma_disciplina_id = @fechamentoTurmaDisciplinaId)
+                         select * 
+                            from lista
+                         where sequencia = 1;";
 
-            List<FechamentoAluno> fechamentosAlunos = new List<FechamentoAluno>();
+            List<FechamentoAluno> fechamentosAlunos = new();
 
             await database.Conexao.QueryAsync<FechamentoAluno, FechamentoNota, FechamentoAluno>(query
                 , (fechamentoAluno, fechamentoNota) =>

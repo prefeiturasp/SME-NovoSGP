@@ -467,6 +467,12 @@ namespace SME.SGP.Dados.Repositorios
                 return await database.Conexao.QueryAsync<AulasDiasPendenciaDto>(sql.ToString(), new { anoLetivoInformado,ueid,situacoesPendencia,tiposPendenciaFechamento,tiposPendenciaDiarioBordo,tiposPendenciaAula },commandTimeout:60);
         }
 
+        public async Task<IEnumerable<Pendencia>> ObterPorIdsAsync(long[] pendenciasId)
+        {
+            var query = "select * from pendencia where id = any(@pendenciasId);";
+            return await database.Conexao.QueryAsync<Pendencia>(query, new { pendenciasId });
+        }
+
         private static string QuantidadeDiasPendenciasDiarioBordo()
         {
             var sql = new StringBuilder(); 
@@ -606,5 +612,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return query;
         }
+
+       
     }
 }

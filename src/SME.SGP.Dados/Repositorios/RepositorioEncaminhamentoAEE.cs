@@ -95,6 +95,9 @@ namespace SME.SGP.Dados.Repositorios
         {
             sql.AppendLine(" where not ea.excluido ");
 
+            if (ueId > 0)
+                sql.AppendLine(" and ue.id = @ueId ");
+
             if (!string.IsNullOrEmpty(alunoCodigo))
                 sql.AppendLine(" and ea.aluno_codigo = @alunoCodigo ");
             if (situacao.HasValue && situacao > 0)
@@ -107,8 +110,6 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(" and ((ue.dre_id = @dreId ");
             sql.AppendLine(" and t.ano_letivo = @anoLetivo ");
 
-            if (ueId > 0)
-                sql.AppendLine(" and ue.id = @ueId ");
             if (turmaId > 0)
                 sql.AppendLine(" and t.id = @turmaId ");
             if (turmasCodigos.NaoEhNulo() && turmaId == 0)
@@ -248,7 +249,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<UsuarioEolRetornoDto>(sql.ToString(), new { dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo, situacoesEncerrado });
         }
 
-        public async Task<IEnumerable<AEESituacaoEncaminhamentoDto>> ObterQuantidadeSituacoes(int ano, long dreId, long ueId)
+        public async Task<DashboardAEEEncaminhamentosDto> ObterDashBoardAEEEncaminhamentos(int ano, long dreId, long ueId)
         {
             var sql = new StringBuilder(@"select situacao, count(ea.id) as Quantidade from encaminhamento_aee ea ");
             sql.Append(" inner join turma t on ea.turma_id = t.id ");
@@ -257,21 +258,35 @@ namespace SME.SGP.Dados.Repositorios
             var where = new StringBuilder(@" where t.ano_letivo = @ano ");
 
             if (dreId > 0)
-            {
-                sql.Append(" inner join dre on ue.dre_id = dre.id ");
-                where.Append(" and dre.id = @dreId");
-            }
-
+                where.Append(" and ue.dre_id = @dreId");
+            
             if (ueId > 0)
-            {
                 where.Append(" and ue.id = @ueId");
-            }
-
+            
             sql.Append(where.ToString());
 
-            sql.Append(" group by ea.situacao ");
+            sql.Append(" group by ea.situacao; ");
 
-            return await database.Conexao.QueryAsync<AEESituacaoEncaminhamentoDto>(sql.ToString(), new { ano, dreId, ueId });
+            sql.Append(ObterQueryTotalEncaminhamento(where.ToString(), false));
+            sql.Append(ObterQueryTotalEncaminhamento(where.ToString(), true));
+
+            var situacaoEmAnalise = new int[] 
+            { 
+                (int)SituacaoAEE.AtribuicaoPAAI, 
+                (int)SituacaoAEE.Encaminhado, 
+                (int)SituacaoAEE.Analise 
+            };
+
+            var retorno = new DashboardAEEEncaminhamentosDto();
+
+            using (var multi = await database.Conexao.QueryMultipleAsync(sql.ToString(), new { ano, dreId, ueId, situacaoEmAnalise }))
+            {
+                retorno.SituacoesEncaminhamentoAEE = multi.Read<AEESituacaoEncaminhamentoDto>();
+                retorno.QtdeEncaminhamentosSituacao = multi.ReadFirst<long>();
+                retorno.TotalEncaminhamentosAnalise = multi.ReadFirst<long>();
+            }
+
+            return retorno;
         }
 
         public async Task<IEnumerable<AEETurmaDto>> ObterQuantidadeDeferidos(int ano, long dreId, long ueId)
@@ -360,6 +375,25 @@ namespace SME.SGP.Dados.Repositorios
             sql += " order by ea.id";
 
             return await database.Conexao.QueryAsync<EncaminhamentoAEEVigenteDto>(sql, new { anoLetivo });
+        }
+
+        private string ObterQueryTotalEncaminhamento(string where, bool emAnalise)
+        {
+            var sql = new StringBuilder(@"select count(ea.id) as Quantidade from encaminhamento_aee ea ");
+            sql.Append(" inner join turma t on ea.turma_id = t.id ");
+            sql.Append(" inner join ue on t.ue_id = ue.id ");
+
+            where += " and ea.situacao";
+
+            if (emAnalise)
+                where += " = ANY(@situacaoEmAnalise)";
+            else
+                where += $" <> {(int)SituacaoAEE.EncerradoAutomaticamente}";
+
+            sql.Append(where);
+            sql.Append(";");
+
+            return sql.ToString();
         }
     }
 }

@@ -37,23 +37,19 @@ namespace SME.SGP.Aplicacao
                 .WithMessage("A data do registro não foi informada!");
 
             RuleFor(a => a.RegistroColetivo.QuantidadeParticipantes)
-                .NotEmpty()
+                .GreaterThanOrEqualTo(0)
                 .WithMessage("A quantidade de participantes não foi informado!");
 
             RuleFor(a => a.RegistroColetivo.QuantidadeEducadores)
-                .NotEmpty()
+                .GreaterThanOrEqualTo(0)
                 .WithMessage("A quantidade de educadores não foi informado!");
 
             RuleFor(a => a.RegistroColetivo.QuantidadeEducandos)
-               .NotEmpty()
+               .GreaterThanOrEqualTo(0)
                .WithMessage("A quantidade de educandos não foi informado!");
 
             RuleFor(a => a.RegistroColetivo.QuantidadeCuidadores)
-               .NotEmpty()
-               .WithMessage("A quantidade de cuidadores não foi informado!");
-
-            RuleFor(a => a.RegistroColetivo.QuantidadeCuidadores)
-               .NotEmpty()
+               .GreaterThanOrEqualTo(0)
                .WithMessage("A quantidade de cuidadores não foi informado!");
 
             RuleFor(a => a.RegistroColetivo.Descricao)

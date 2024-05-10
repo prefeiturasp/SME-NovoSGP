@@ -62,6 +62,35 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         {
             await CriarDadosBase(ObterFiltroFechamentoNotaDto(ObterPerfilCP(), ANO_1,true));
             await ExecutarComandoConceito();
+
+            var wf = ObterTodos<WorkflowAprovacao>();
+            wf.ShouldNotBeNull();
+            wf.Count.ShouldBe(0);
+        }
+
+        [Fact(DisplayName = "Fechamento - Deve haver pendência com situação valida com notificacao")]
+        public async Task deve_haver_pendencia_com_situacao_valida_com_notificacao()
+        {
+            await CriarDadosBase(ObterFiltroFechamentoNotaDto(ObterPerfilCP(), ANO_1, true));
+
+            await InserirNaBase(new ParametrosSistema()
+            {
+                Nome = "GerarNotificacaoPendenciaFechamento",
+                Descricao = "GerarNotificacaoPendenciaFechamento",
+                Ano = DateTimeExtension.HorarioBrasilia().Year,
+                Ativo = true,
+                Tipo = TipoParametroSistema.GerarNotificacaoPendenciaFechamento,
+                Valor = "",
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+
+            await ExecutarComandoConceito();
+
+            var wf = ObterTodos<WorkflowAprovacao>();
+            wf.ShouldNotBeNull();
+            wf.Count.ShouldBe(1);
         }
 
         private async Task ExecutarComandoConceito()

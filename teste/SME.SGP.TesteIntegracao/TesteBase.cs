@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using SME.SGP.TesteIntegracao.Mocks;
 using Xunit;
+using System.Linq;
 
 //[assembly: CollectionBehavior(DisableTestParallelization = true)]
 namespace SME.SGP.TesteIntegracao
@@ -24,7 +25,6 @@ namespace SME.SGP.TesteIntegracao
     public class TesteBase : BaseMock, IClassFixture<TestFixture>
     {
         protected readonly CollectionFixture _collectionFixture;
-
         public ServiceProvider ServiceProvider => _collectionFixture.ServiceProvider;
 
         public TesteBase(CollectionFixture collectionFixture)
@@ -35,6 +35,11 @@ namespace SME.SGP.TesteIntegracao
 
             RegistrarFakes(_collectionFixture.Services);
             _collectionFixture.BuildServiceProvider();
+        }
+
+        public void ExecutarScripts(List<ScriptCarga> scriptsCarga)
+        {
+            _collectionFixture.ExecutarScripts(scriptsCarga);
         }
 
         protected virtual void RegistrarFakes(IServiceCollection services)
@@ -96,7 +101,11 @@ namespace SME.SGP.TesteIntegracao
             _collectionFixture.Database.Inserir(objeto);
             return Task.CompletedTask;
         }
-        
+        public Task<long> InserirNaBaseAsync<T>(T objeto) where T : class, new()
+        {
+            return _collectionFixture.Database.InserirAsync(objeto);
+        }
+
         public Task AtualizarNaBase<T>(T objeto) where T : class, new()
         {
             _collectionFixture.Database.Atualizar(objeto);
@@ -118,6 +127,17 @@ namespace SME.SGP.TesteIntegracao
         public List<T> ObterTodos<T>() where T : class, new()
         {
             return _collectionFixture.Database.ObterTodos<T>();
+        }
+
+        public long ObterProximoId<T>() where T : EntidadeBase, new()
+        {
+            return ObterUltimoId<T>() + 1;
+        }
+
+        public long ObterUltimoId<T>() where T : EntidadeBase, new()
+        {
+            var registros = _collectionFixture.Database.ObterTodos<T>();
+            return registros.Max(reg => reg.Id);
         }
 
         public T ObterPorId<T, K>(K id)

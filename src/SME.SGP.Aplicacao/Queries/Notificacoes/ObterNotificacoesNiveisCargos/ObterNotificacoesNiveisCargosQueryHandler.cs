@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<NotificacoesParaTratamentoCargosNiveisDto>> Handle(ObterNotificacoesNiveisCargosQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioNotificacao.ObterNotificacoesParaTratamentoCargosNiveis();
+            return await repositorioNotificacao.ObterNotificacoesParaTratamentoCargosNiveis(request.CodigoUe);
         }
     }
 }

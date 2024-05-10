@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
                     TurmaCodigo = c.TurmaId
                 }).FirstOrDefault(c => c.TurmaCodigo == aula.TurmaId);
 
-            var pendencias = await repositorioPendenciaAula.PossuiPendenciasPorAulaId(request.AulaId, request.EhModalidadeInfantil, request.UsuarioLogado, (componenteCorrespondente?.CodigoComponenteTerritorioSaber ?? 0) > 0 ? componenteCorrespondente?.CodigoComponenteTerritorioSaber : null);
+            var pendencias = await repositorioPendenciaAula.PossuiPendenciasPorAulaId(request.AulaId, request.EhModalidadeInfantil, request.EtapaEJA, request.UsuarioLogado, (componenteCorrespondente?.CodigoComponenteTerritorioSaber ?? 0) > 0 ? componenteCorrespondente?.CodigoComponenteTerritorioSaber : null);
 
             if (pendencias.EhNulo())
                 return null;

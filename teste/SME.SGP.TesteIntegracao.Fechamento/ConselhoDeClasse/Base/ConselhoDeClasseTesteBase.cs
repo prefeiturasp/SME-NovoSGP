@@ -290,7 +290,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             await CriaConceito();
 
-            await CriarConselhoClasseParecerAno();
+            await CriarConselhoClasseParecerAno(filtroConselhoClasse.ConsiderarAnoAnterior || filtroConselhoClasse.AnoParecerAnterior);
         }
 
         protected async Task CriarFechamentoTurmaDisciplinaAlunoNota(FiltroConselhoClasseDto filtroConselhoClasseDto)
@@ -1376,15 +1376,18 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         }
 
 
-        private async Task CriarConselhoClasseParecerAno()
+        private async Task CriarConselhoClasseParecerAno(bool anoAnterior)
         {
+            var anoParecer = anoAnterior ? DateTimeExtension.HorarioBrasilia().Date.AddYears(-1).Year : DateTimeExtension.HorarioBrasilia().Date.Year;
+            var inicioVigencia = new DateTime(anoParecer, 01, 01);
+
             await InserirNaBase(new ConselhoClasseParecer()
             {
                 Nome = "Promovido",
                 Aprovado = true,
                 Frequencia = true,
                 Conselho = false,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 Nota = true,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
@@ -1397,7 +1400,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 Aprovado = true,
                 Frequencia = false,
                 Conselho = true,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 Nota = false,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
@@ -1410,7 +1413,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 Aprovado = true,
                 Frequencia = true,
                 Conselho = false,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 Nota = false,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
@@ -1423,7 +1426,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 Aprovado = false,
                 Frequencia = false,
                 Conselho = true,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 Nota = true,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
@@ -1436,7 +1439,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 Aprovado = false,
                 Frequencia = true,
                 Conselho = false,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 Nota = false,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
@@ -1448,7 +1451,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 3,
                 AnoTurma = 1,
                 Modalidade = 5,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1459,7 +1462,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 3,
                 AnoTurma = 2,
                 Modalidade = 5,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1470,7 +1473,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 3,
                 AnoTurma = 4,
                 Modalidade = 5,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1481,7 +1484,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 3,
                 AnoTurma = 5,
                 Modalidade = 5,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1492,7 +1495,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 3,
                 AnoTurma = 7,
                 Modalidade = 5,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1503,7 +1506,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 3,
                 AnoTurma = 8,
                 Modalidade = 5,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1514,7 +1517,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 5,
                 AnoTurma = 1,
                 Modalidade = 3,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1525,7 +1528,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 5,
                 AnoTurma = 1,
                 Modalidade = 5,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1536,7 +1539,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 5,
                 AnoTurma = 2,
                 Modalidade = 5,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1547,7 +1550,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 5,
                 AnoTurma = 4,
                 Modalidade = 5,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1558,7 +1561,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 5,
                 AnoTurma = 5,
                 Modalidade = 5,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1569,7 +1572,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 1,
                 AnoTurma = 1,
                 Modalidade = 3,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1580,7 +1583,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 1,
                 AnoTurma = 2,
                 Modalidade = 3,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1591,7 +1594,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 1,
                 AnoTurma = 3,
                 Modalidade = 3,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1602,7 +1605,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 1,
                 AnoTurma = 4,
                 Modalidade = 3,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1613,7 +1616,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 1,
                 AnoTurma = 3,
                 Modalidade = 5,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1624,7 +1627,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 1,
                 AnoTurma = 6,
                 Modalidade = 5,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1635,7 +1638,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 1,
                 AnoTurma = 9,
                 Modalidade = 5,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1646,7 +1649,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 1,
                 AnoTurma = 1,
                 Modalidade = 6,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1657,7 +1660,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 1,
                 AnoTurma = 2,
                 Modalidade = 6,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1668,7 +1671,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 2,
                 AnoTurma = 1,
                 Modalidade = 3,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1679,7 +1682,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 2,
                 AnoTurma = 2,
                 Modalidade = 3,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1690,7 +1693,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 2,
                 AnoTurma = 3,
                 Modalidade = 3,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1701,7 +1704,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 2,
                 AnoTurma = 4,
                 Modalidade = 3,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1712,7 +1715,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 2,
                 AnoTurma = 3,
                 Modalidade = 5,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1723,7 +1726,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 2,
                 AnoTurma = 6,
                 Modalidade = 5,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1734,7 +1737,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 2,
                 AnoTurma = 9,
                 Modalidade = 5,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1745,7 +1748,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 2,
                 AnoTurma = 1,
                 Modalidade = 6,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1756,7 +1759,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 2,
                 AnoTurma = 2,
                 Modalidade = 6,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1767,7 +1770,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 2,
                 AnoTurma = 3,
                 Modalidade = 6,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1778,7 +1781,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 4,
                 AnoTurma = 1,
                 Modalidade = 3,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1789,7 +1792,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 4,
                 AnoTurma = 2,
                 Modalidade = 3,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1800,7 +1803,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 4,
                 AnoTurma = 3,
                 Modalidade = 3,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1811,7 +1814,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 4,
                 AnoTurma = 4,
                 Modalidade = 3,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1822,7 +1825,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 4,
                 AnoTurma = 3,
                 Modalidade = 5,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1833,7 +1836,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 4,
                 AnoTurma = 6,
                 Modalidade = 5,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1844,7 +1847,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 4,
                 AnoTurma = 9,
                 Modalidade = 5,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1855,7 +1858,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 4,
                 AnoTurma = 1,
                 Modalidade = 6,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1866,7 +1869,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 4,
                 AnoTurma = 2,
                 Modalidade = 6,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1877,7 +1880,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 4,
                 AnoTurma = 3,
                 Modalidade = 6,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1888,7 +1891,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 5,
                 AnoTurma = 2,
                 Modalidade = 3,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1899,7 +1902,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 5,
                 AnoTurma = 3,
                 Modalidade = 3,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1910,7 +1913,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 5,
                 AnoTurma = 4,
                 Modalidade = 3,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1921,7 +1924,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 5,
                 AnoTurma = 3,
                 Modalidade = 5,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1932,7 +1935,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 5,
                 AnoTurma = 6,
                 Modalidade = 5,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1943,7 +1946,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 5,
                 AnoTurma = 7,
                 Modalidade = 5,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1954,7 +1957,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 5,
                 AnoTurma = 8,
                 Modalidade = 5,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1965,7 +1968,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 5,
                 AnoTurma = 9,
                 Modalidade = 5,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1976,7 +1979,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 5,
                 AnoTurma = 1,
                 Modalidade = 6,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1987,7 +1990,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 5,
                 AnoTurma = 2,
                 Modalidade = 6,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1998,7 +2001,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 5,
                 AnoTurma = 3,
                 Modalidade = 6,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -2009,7 +2012,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 1,
                 AnoTurma = 3,
                 Modalidade = 6,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -2020,7 +2023,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 2,
                 AnoTurma = 4,
                 Modalidade = 6,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -2031,7 +2034,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 4,
                 AnoTurma = 4,
                 Modalidade = 6,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -2042,7 +2045,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 5,
                 AnoTurma = 4,
                 Modalidade = 6,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -2053,7 +2056,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 1,
                 AnoTurma = 4,
                 Modalidade = 6,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                InicioVigencia = inicioVigencia,
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -2108,6 +2111,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             public int BimestreConselhoClasse { get; set; }
             public SalvarConselhoClasseAlunoNotaDto SalvarConselhoClasseAlunoNotaDto { get; set; }
             public bool CriarPeriodoReabertura { get; set; } = true;
+            public bool AnoParecerAnterior { get; set; }
         }
     }
 }

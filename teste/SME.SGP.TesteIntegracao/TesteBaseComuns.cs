@@ -11,6 +11,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using SME.SGP.Dominio.Enumerados;
 using Sentry.Protocol;
+using Nest;
+using System.Linq;
 
 namespace SME.SGP.TesteIntegracao
 {
@@ -84,6 +86,9 @@ namespace SME.SGP.TesteIntegracao
         protected const long COMPONENTE_CURRICULAR_DESCONHECIDO_ID_999999 = 999999;
         protected const string COMPONENTE_CURRICULAR_DESCONHECIDO_NOME = "Desconhecido";
 
+        protected const long COMPONENTE_CURRICULAR_LIBRAS_COMPARTILHADA_ID_1116 = 1116;
+        protected const string COMPONENTE_CURRICULAR_LIBRAS_COMPARTILHADA_NOME = "'LIBRAS COMPARTILHADA'";
+
         protected const long COMPONENTE_CURRICULAR_LEITURA_OSL_ID_1061 = 1061;
 
         protected const long COMPONENTE_CURRICULAR_INFORMATICA_OIE_ID_1060 = 1060;
@@ -133,6 +138,9 @@ namespace SME.SGP.TesteIntegracao
         protected const long COMPONENTE_CURRICULAR_PAP_PROJETO_COLABORATIVO = 1770;
         protected const string COMPONENTE_CURRICULAR_PAP_PROJETO_COLABORATIVO_NOME = "'PAP PROJETO COLABORATIVO'";
 
+        protected const long COMPONENTE_CURRICULAR_TEC_APRENDIZAGEM = 1312;
+        protected const string COMPONENTE_CURRICULAR_TEC_APRENDIZAGEM_NOME = "'TECNOLOGIAS DE APRENDIZAGEM'";
+
         private const string COMPONENTE_CURRICULAR = "componente_curricular";
         private const string COMPONENTE_CURRICULAR_AREA_CONHECIMENTO = "componente_curricular_area_conhecimento";
         private const string AREA_DE_CONHECIMENTO_1 = "'Área de conhecimento 1'";
@@ -141,7 +149,8 @@ namespace SME.SGP.TesteIntegracao
         private const string AREA_DE_CONHECIMENTO_3 = "'Área de conhecimento 3'";
         private const string AREA_DE_CONHECIMENTO_4 = "'Área de conhecimento 4'";
         private const string AREA_DE_CONHECIMENTO_5 = "'Área de conhecimento 5'";
-        
+        private const string AREA_DE_CONHECIMENTO_10 = "'Área de conhecimento 10'";
+
         protected const string CLASSIFICACAO_DOCUMENTO = "classificacao_documento";
         protected const string TIPO_DOCUMENTO = "tipo_documento";
         protected const string DOCUMENTO_ARQUIVO = "documento_arquivo";
@@ -166,6 +175,7 @@ namespace SME.SGP.TesteIntegracao
         private const string GRUPO_MATRIZ_3 = "'Grupo matriz 3'";
         private const string GRUPO_MATRIZ_4 = "'Grupo matriz 4'";
         private const string GRUPO_MATRIZ_8 = "'Grupo matriz 8'";
+        private const string GRUPO_MATRIZ_7 = "'Grupo matriz 7'";
 
         private const string COMPONENTE_CURRICULAR_GRUPO_AREA_ORDENACAO = "componente_curricular_grupo_area_ordenacao";
 
@@ -175,6 +185,8 @@ namespace SME.SGP.TesteIntegracao
         protected const string CODIGO_8 = "8";
         protected const string CODIGO_4 = "4";
         protected const string CODIGO_5 = "5";
+        protected const string CODIGO_7 = "7";
+        protected const string CODIGO_10 = "10";
         protected const string NULO = "null";
         
         protected const int NUMERO_0 = 0;
@@ -246,7 +258,7 @@ namespace SME.SGP.TesteIntegracao
         public const string USUARIO_LOGIN_COOD_NAAPA = "NAAP11111";
         public const string USUARIO_LOGIN_ADM_DRE = "DRE111111";
         public const string USUARIO_LOGIN_ADM_SME = "SME111111";
-        public const string USUARIO_LOGIN_PAP = "PAP111111";
+        public const string USUARIO_LOGIN_PAP = "PAP111111";        
 
         protected const string USUARIO_CP_LOGIN_3333333 = "3333333";
         protected const string USUARIO_CEFAI_LOGIN_3333333 = "3333333";
@@ -694,6 +706,10 @@ namespace SME.SGP.TesteIntegracao
         {
             return Guid.Parse(PerfilUsuario.PAP.Name()).ToString();
         }
+        protected string ObterPerfilPOA_Portugues()
+        {
+            return Guid.Parse(PerfilUsuario.POA_LINGUA_PORTUGUESA.Name()).ToString();
+        }
 
         protected async Task CriarPeriodoEscolarEncerrado()
         {
@@ -977,9 +993,18 @@ namespace SME.SGP.TesteIntegracao
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
+            await InserirNaBase(new Usuario
+            {
+                Login = SISTEMA_NOME,
+                CodigoRf = SISTEMA_NOME,
+                PerfilAtual = Guid.Parse(PerfilUsuario.ADMSME.ObterNome()),
+                Nome = SISTEMA_NOME,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
         }
 
-        protected async Task CriarTurma(Modalidade modalidade, bool turmaHistorica = false, bool turmasMesmaUe = false)
+        protected async Task CriarTurma(Modalidade modalidade, bool turmaHistorica = false, bool turmasMesmaUe = false, int tipoTurnoEol = 0)
         {
             await InserirNaBase(new Dominio.Turma
             {
@@ -991,7 +1016,8 @@ namespace SME.SGP.TesteIntegracao
                 AnoLetivo = turmaHistorica ? ANO_LETIVO_ANO_ANTERIOR : ANO_LETIVO_ANO_ATUAL,
                 Semestre = SEMESTRE_1,
                 Nome = TURMA_NOME_1,
-                TipoTurma = TipoTurma.Regular
+                TipoTurma = TipoTurma.Regular,
+                TipoTurno = tipoTurnoEol
             });
             
             await InserirNaBase(new Dominio.Turma
@@ -1004,7 +1030,8 @@ namespace SME.SGP.TesteIntegracao
                 AnoLetivo = turmaHistorica ? ANO_LETIVO_ANO_ANTERIOR : ANO_LETIVO_ANO_ATUAL,
                 Semestre = SEMESTRE_1,
                 Nome = TURMA_NOME_2,
-                TipoTurma = TipoTurma.Regular
+                TipoTurma = TipoTurma.Regular,
+                TipoTurno = tipoTurnoEol
             });
             
             await InserirNaBase(new Dominio.Turma
@@ -1017,7 +1044,8 @@ namespace SME.SGP.TesteIntegracao
                 AnoLetivo = turmaHistorica ? ANO_LETIVO_ANO_ANTERIOR : ANO_LETIVO_ANO_ATUAL,
                 Semestre = SEMESTRE_1,
                 Nome = TURMA_NOME_3,
-                TipoTurma = TipoTurma.Regular
+                TipoTurma = TipoTurma.Regular,
+                TipoTurno = tipoTurnoEol
             });
         }
 
@@ -1105,6 +1133,27 @@ namespace SME.SGP.TesteIntegracao
                 CodigoUe = codigoUe,
                 DreId = 1,
                 Nome = UE_NOME_2,
+            });
+        }
+
+        protected async Task CriarDreUe(string codigoDre, string nomeDre, string codigoUe, string nomeUe)
+        {
+            var dres = ObterTodos<Dre>();
+            long? idDre = dres.Where(d => d.CodigoDre.Equals(codigoDre)).FirstOrDefault()?.Id;
+
+            if (!idDre.HasValue)
+                await InserirNaBase(new Dre
+                {
+                    CodigoDre = codigoDre,
+                    Abreviacao = nomeDre,
+                    Nome = nomeDre
+                });
+            
+            await InserirNaBase(new Ue
+            {
+                CodigoUe = codigoUe,
+                DreId = idDre ?? dres.Count+1,
+                Nome = nomeUe,
             });
         }
         protected async Task CriarAtividadeAvaliativaFundamental(DateTime dataAvaliacao)
@@ -1416,13 +1465,16 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_MATRIZ, CODIGO_3, GRUPO_MATRIZ_3);
             await InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_MATRIZ, CODIGO_4, GRUPO_MATRIZ_4);
             await InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_MATRIZ, CODIGO_8, GRUPO_MATRIZ_8);
-            
+            await InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_MATRIZ, CODIGO_7, GRUPO_MATRIZ_7);
+
+
             await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_1, AREA_DE_CONHECIMENTO_1);
             await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_2, AREA_DE_CONHECIMENTO_2);
             await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_3, AREA_DE_CONHECIMENTO_3);
             await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_4, AREA_DE_CONHECIMENTO_4);
             await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_5, AREA_DE_CONHECIMENTO_5);
             await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_8, AREA_DE_CONHECIMENTO_8);
+            await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_10, AREA_DE_CONHECIMENTO_10);
 
             await InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_AREA_ORDENACAO, CODIGO_1, CODIGO_1, CODIGO_1);
             await InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_AREA_ORDENACAO, CODIGO_2, CODIGO_2, CODIGO_2);
@@ -1430,6 +1482,7 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_AREA_ORDENACAO, CODIGO_4, CODIGO_4, CODIGO_4);
             await InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_AREA_ORDENACAO, CODIGO_4, CODIGO_5, CODIGO_5);
             await InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_AREA_ORDENACAO, CODIGO_8, CODIGO_8, CODIGO_8);
+            await InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_AREA_ORDENACAO, CODIGO_8, CODIGO_10, CODIGO_10);
 
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), NULO, CODIGO_1, CODIGO_1, COMPONENTE_CURRICULAR_LINGUA_PORTUGUESA_NOME, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, COMPONENTE_CURRICULAR_LINGUA_PORTUGUESA_NOME, NULO);
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), NULO, CODIGO_1, CODIGO_1, COMPONENTE_CURRICULAR_ARTES_NOME, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, COMPONENTE_CURRICULAR_ARTES_NOME, NULO);
@@ -1453,6 +1506,9 @@ namespace SME.SGP.TesteIntegracao
             
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_PAP_PROJETO_COLABORATIVO.ToString(), COMPONENTE_CURRICULAR_PAP_PROJETO_COLABORATIVO.ToString(), CODIGO_1, CODIGO_1, COMPONENTE_CURRICULAR_PAP_PROJETO_COLABORATIVO_NOME, FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, COMPONENTE_CURRICULAR_PAP_PROJETO_COLABORATIVO_NOME, COMPONENTE_CURRICULAR_PAP_PROJETO_COLABORATIVO_NOME);
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_513.ToString(), COMPONENTE_CURRICULAR_512.ToString(), CODIGO_1, NULO, COMPONENTE_ED_INF_EMEI_2HS_NOME, TRUE, FALSE, FALSE, FALSE, TRUE, FALSE, COMPONENTE_REGENCIA_CLASSE_INFANTIL_NOME, COMPONENTE_REGENCIA_INFANTIL_EMEI_2H_NOME);
+            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_TEC_APRENDIZAGEM.ToString(), NULO, CODIGO_7, CODIGO_10, COMPONENTE_CURRICULAR_TEC_APRENDIZAGEM_NOME, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, COMPONENTE_CURRICULAR_TEC_APRENDIZAGEM_NOME, NULO);
+
+            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_LIBRAS_COMPARTILHADA_ID_1116.ToString(), NULO, CODIGO_1, CODIGO_1, COMPONENTE_CURRICULAR_LIBRAS_COMPARTILHADA_NOME, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, COMPONENTE_CURRICULAR_LIBRAS_COMPARTILHADA_NOME, NULO);
         }
         
         protected async Task CriarPeriodoEscolarCustomizadoQuartoBimestre(bool periodoEscolarValido = false)

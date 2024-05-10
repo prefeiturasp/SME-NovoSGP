@@ -5,7 +5,6 @@ using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.Commands;
 using SME.SGP.TesteIntegracao.Constantes;
 using SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
@@ -61,7 +60,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             };
 
             await CriarDadosBase(filtro);
-            await GerarDadosRegistroAcao_3PrimeirasQuestoes(DateTimeExtension.HorarioBrasilia().Date);
+            await GerarDadosRegistroAcao_2PrimeirasQuestoes(DateTimeExtension.HorarioBrasilia().Date);
             var useCase = ObterUseCaseListagemQuestionario();
             var retorno = await useCase.Executar(ConstantesQuestionarioBuscaAtiva.QUESTIONARIO_REGISTRO_ACAO_ID_1, 1);
             retorno.ShouldNotBeNull();
@@ -76,10 +75,6 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             retorno.Where(q => q.Id == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP).FirstOrDefault()
                             .Resposta.FirstOrDefault()
                             .OpcaoRespostaId.ShouldBe(opcaoRespostaBase.Id);
-            
-            retorno.Where(q => q.Id == ConstantesQuestionarioBuscaAtiva.QUESTAO_3_ID_OBS_GERAL).FirstOrDefault()
-                            .Resposta.FirstOrDefault()
-                            .Texto.ShouldBe("OBS GERAL");
         }
 
         [Fact(DisplayName = "Registro de Ação - Obter registro de ação por id")]
@@ -94,7 +89,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             };
 
             await CriarDadosBase(filtro);
-            await GerarDadosRegistroAcao_3PrimeirasQuestoes(DateTimeExtension.HorarioBrasilia().Date);
+            await GerarDadosRegistroAcao_2PrimeirasQuestoes(DateTimeExtension.HorarioBrasilia().Date);
             var useCase = ObterUseCaseObtencaoRegistroAcao();
             var retorno = await useCase.Executar(1);
             retorno.ShouldNotBeNull();
@@ -132,9 +127,9 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
 
             await CriarDadosBase(filtro);
             var dataRegistro = DateTimeExtension.HorarioBrasilia().Date;
-            await GerarDadosRegistroAcao_3PrimeirasQuestoes(dataRegistro.AddMonths(-1));
-            await GerarDadosRegistroAcao_3PrimeirasQuestoes(dataRegistro);
-            await GerarDadosRegistroAcao_3PrimeirasQuestoes(dataRegistro.AddMonths(1));
+            await GerarDadosRegistroAcao_2PrimeirasQuestoes(dataRegistro.AddMonths(-1));
+            await GerarDadosRegistroAcao_2PrimeirasQuestoes(dataRegistro);
+            await GerarDadosRegistroAcao_2PrimeirasQuestoes(dataRegistro.AddMonths(1));
             var useCase = ObterUseCaseListagemRegistrosAcao_EstudantesAusentes();
             var retorno = await useCase.Executar(new FiltroRegistrosAcaoCriancasEstudantesAusentesDto()
             {
