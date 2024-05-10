@@ -16,9 +16,10 @@ do $$
 		where q.questionario_id = (select id from questionario where tipo = 8)
 		and q.nome_componente = 'JUSTIFICATIVA_MOTIVO_FALTA_OUTROS' and not q.excluido);
 		
-		opcaoQuestaoComplementarIdExistente := (select id from opcao_questao_complementar where opcao_resposta_id = questaoId_justificativa_motivo_falta_outros and questao_complementar_id = questaoId_justificativa_motivo_falta_outros);
+		opcaoQuestaoComplementarIdExistente := (select id from opcao_questao_complementar where opcao_resposta_id = opcaoresposta_outros_justificativa_falta 
+		and questao_complementar_id = questaoId_justificativa_motivo_falta_outros);
 	
-		if (opcaoQuestaoComplementarIdExistente IS NOT NULL) then
+		if (opcaoQuestaoComplementarIdExistente IS NULL) then
 		   insert into opcao_questao_complementar (opcao_resposta_id, questao_complementar_id, criado_em, criado_por, criado_rf)
 			      values(opcaoresposta_outros_justificativa_falta, questaoId_justificativa_motivo_falta_outros, NOW(), 'SISTEMA', '0');
      	end if;
