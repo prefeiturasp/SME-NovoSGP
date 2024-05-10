@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao.Queries
         public async Task<bool> Handle(VerificaNotasTodosComponentesCurricularesQuery request, CancellationToken cancellationToken)
         {
             string[] turmasCodigos;
-            
+
             var turmasItinerarioEnsinoMedio = (await mediator.Send(ObterTurmaItinerarioEnsinoMedioQuery.Instance, cancellationToken)).ToList();
 
             if (request.Turma.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)request.Turma.TipoTurma))
@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao.Queries
                         turmasCodigos = new string[] { request.Turma.CodigoTurma };
                 }
             }
-            else 
+            else
                 turmasCodigos = new[] { request.Turma.CodigoTurma };
 
             var conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEBimestreQuery(turmasCodigos, request.Bimestre), cancellationToken);
@@ -86,7 +86,7 @@ namespace SME.SGP.Aplicacao.Queries
 
                 notasParaVerificar.AddRange(todasAsNotas.Where(a => a.Bimestre == bimestre));
             }
-            
+
             var matriculasDoAluno = await mediator.Send(new ObterMatriculasTurmaPorCodigoAlunoQuery(request.AlunoCodigo, dataAula: request.PeriodoEscolar?.PeriodoFim, request.Turma.AnoLetivo));
             turmasCodigos = DefinirTurmasConsideradasDeAcordoComMatricula(matriculasDoAluno, request.PeriodoEscolar, turmasCodigos);
 
@@ -98,25 +98,28 @@ namespace SME.SGP.Aplicacao.Queries
             return disciplinasLancamNota.All(componenteCurricular => notasParaVerificar.Any(c => c.ComponenteCurricularCodigo == componenteCurricular.CodigoComponenteCurricular));
         }
 
-        private string[] DefinirTurmasConsideradasDeAcordoComMatricula(IEnumerable<AlunoPorTurmaResposta> matriculasDoAluno, Dominio.PeriodoEscolar periodoEscolar, string[] turmasCodigos)
+        private static string[] DefinirTurmasConsideradasDeAcordoComMatricula(IEnumerable<AlunoPorTurmaResposta> matriculasDoAluno, Dominio.PeriodoEscolar periodoEscolar, string[] turmasCodigos)
         {
             if (periodoEscolar.NaoEhNulo())
             {
-                var matriculasOrdenadas = matriculasDoAluno.OrderByDescending(x => x.DataSituacao)?.GroupBy(x => x.CodigoTurma)
-                                        .Select(x => x.FirstOrDefault(x => x.DataMatricula < periodoEscolar.PeriodoFim));
-
-                var turmasConsideradas = matriculasOrdenadas.Where(x => ((!x.Inativo && x.DataMatricula.Date <= periodoEscolar.PeriodoFim) ||
-                                                                   (x.Inativo && x.DataSituacao.Date > periodoEscolar.PeriodoInicio))
-                                                                   && turmasCodigos.Contains(x.CodigoTurma.ToString())).Select(x => x.CodigoTurma.ToString()).ToArray();
-                if (turmasConsideradas.Any())
-                    turmasCodigos = turmasConsideradas;
+                var turmasConsideradas = (from m in matriculasDoAluno
+                                          where ((m.Ativo && m.DataMatricula.Date < periodoEscolar.PeriodoFim) ||
+                                                 (m.Inativo && m.DataMatricula.Date < periodoEscolar.PeriodoFim && m.DataSituacao.Date >= periodoEscolar.PeriodoInicio)) &&
+                                                  m.CodigoSituacaoMatricula != SituacaoMatriculaAluno.VinculoIndevido
+                                          select m.CodigoTurma).Distinct();
             }
-            else {
-                var matriculasAtivas = matriculasDoAluno.Where(x=>x.Ativo && turmasCodigos.Contains(x.CodigoTurma.ToString()));
+            else
+            {
+                var matriculasAtivas = matriculasDoAluno
+                    .Where(x => x.Ativo && turmasCodigos.Contains(x.CodigoTurma.ToString()));
+
                 if (!matriculasAtivas.Any())
                     return turmasCodigos;
 
-                turmasCodigos = matriculasAtivas.OrderByDescending(x => x.DataSituacao)?.GroupBy(x => x.CodigoTurma).Select(x=>x.First().CodigoTurma.ToString()).ToArray();
+                turmasCodigos = matriculasAtivas
+                    .OrderByDescending(x => x.DataSituacao)?
+                        .GroupBy(x => x.CodigoTurma)
+                            .Select(x => x.First().CodigoTurma.ToString()).ToArray();
             }
 
             return turmasCodigos;
