@@ -106,6 +106,8 @@ namespace SME.SGP.Aplicacao
                 };
                 sessao.Respostas.Add(resposta);
             }
+            if (!questao.Resposta.Any())
+                sessao.Respostas.Add(new RelatorioPAPRespostaDto(){QuestaoId = questao.Id, TipoQuestao = questao.TipoQuestao});
         }
     }
 }
