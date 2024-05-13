@@ -197,12 +197,37 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 
         public Task<IEnumerable<ConselhoClasseNaoConsolidado>> ObterConselhosClasseNaoConsolidados(long ueId)
             => database.Conexao.QueryAsync<ConselhoClasseNaoConsolidado>(
-                @"with vw_notas_conceitos_ue as
+                @"with vw_disciplinas_conselho_aluno as (
+                           select cca.id as conselho_classe_aluno_id,
+                           fn.disciplina_id 
+                           from fechamento_turma ft
+                           inner join turma t on ft.turma_id = t.id
+                           inner join ue u on t.ue_id = u.id
+                           inner join fechamento_turma_disciplina ftd on ft.id = ftd.fechamento_turma_id
+                           inner join conselho_classe cc on ft.id = cc.fechamento_turma_id and not cc.excluido
+                           inner join conselho_classe_aluno cca on cc.id = cca.conselho_classe_id and not cca.excluido
+                           inner join fechamento_aluno fa on ftd.id = fa.fechamento_turma_disciplina_id and fa.aluno_codigo = cca.aluno_codigo and not fa.excluido
+                           inner join fechamento_nota fn on fa.id = fn.fechamento_aluno_id and not fn.excluido 
+                           where t.ano_letivo >= extract(year from NOW()) -1
+                                                   and u.id = @ueId
+                           union                       
+                           select cca.id as conselho_classe_aluno_id,
+                           ccn.componente_curricular_codigo as disciplina_id
+                           from fechamento_turma ft
+                           inner join turma t on ft.turma_id = t.id
+                           inner join ue u on t.ue_id = u.id
+                           inner join fechamento_turma_disciplina ftd on ft.id = ftd.fechamento_turma_id
+                           inner join conselho_classe cc on ft.id = cc.fechamento_turma_id and not cc.excluido
+                           inner join conselho_classe_aluno cca on cc.id = cca.conselho_classe_id and not cca.excluido
+                           inner join conselho_classe_nota ccn on cca.id = ccn.conselho_classe_aluno_id and  not ccn.excluido
+                           where t.ano_letivo >= extract(year from NOW()) -1
+                                                   and u.id = @ueId),
+                  vw_notas_conceitos_ue as
                       (select distinct t.id turma_id,
                         t.turma_id codigo_turma,
                         coalesce(cca.aluno_codigo, fa.aluno_codigo) aluno_codigo,
                         coalesce(pe.bimestre, 0) as bimestre,
-                        ftd.disciplina_id,
+                        vw_disciplinas.disciplina_id,
                         coalesce(ccn.nota, fn.nota) nota_conselho_classe_fechamento,
                         coalesce(ccn.conceito_id, fn.conceito_id) conceito_id_conselho_classe_fechamento,
                         coalesce(ccn.criado_rf, fn.criado_rf) as criado_rf,
@@ -210,17 +235,18 @@ namespace SME.SGP.Metrica.Worker.Repositorios
                         coalesce(ccn.alterado_em, fn.alterado_em) as alterado_em,
                         case when fn.id is not null and ccn.id is null then true else false end EhFechamento,
                         case when ccn.id is not null then true else false end EhConselho,
-                        row_number() over (partition by t.id, cca.aluno_codigo, coalesce(pe.bimestre, 0), ftd.disciplina_id order by coalesce(ccn.id, fn.id) desc) sequencia
+                        row_number() over (partition by t.id, cca.aluno_codigo, coalesce(pe.bimestre, 0), vw_disciplinas.disciplina_id order by coalesce(ccn.id, fn.id) desc) sequencia
                       from fechamento_turma ft
                       inner join turma t on ft.turma_id = t.id
                       inner join ue u on t.ue_id = u.id
                       inner join fechamento_turma_disciplina ftd on ft.id = ftd.fechamento_turma_id
                       inner join conselho_classe cc on ft.id = cc.fechamento_turma_id and not cc.excluido
                       inner join conselho_classe_aluno cca on cc.id = cca.conselho_classe_id and not cca.excluido
+                      inner join vw_disciplinas_conselho_aluno vw_disciplinas on vw_disciplinas.conselho_classe_aluno_id = cca.id
                       left join periodo_escolar pe on ft.periodo_escolar_id = pe.id
                       left join fechamento_aluno fa on ftd.id = fa.fechamento_turma_disciplina_id and fa.aluno_codigo = cca.aluno_codigo and not fa.excluido
-                      left join fechamento_nota fn on fa.id = fn.fechamento_aluno_id and not fn.excluido and fn.disciplina_id = ftd.disciplina_id
-                      left join conselho_classe_nota ccn on cca.id = ccn.conselho_classe_aluno_id and ftd.disciplina_id = ccn.componente_curricular_codigo and  not ccn.excluido
+                      left join fechamento_nota fn on fa.id = fn.fechamento_aluno_id and not fn.excluido and fn.disciplina_id = vw_disciplinas.disciplina_id
+                      left join conselho_classe_nota ccn on cca.id = ccn.conselho_classe_aluno_id and  not ccn.excluido and ccn.componente_curricular_codigo = vw_disciplinas.disciplina_id
                       where not ft.excluido
                        and not ftd.excluido
                        and (ccn.id is not null or fn.id is not null)

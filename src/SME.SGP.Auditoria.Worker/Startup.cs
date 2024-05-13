@@ -1,5 +1,6 @@
 using Dapper.FluentMap;
 using Dapper.FluentMap.Dommel;
+using Elastic.Apm.Api;
 using Elastic.Apm.AspNetCore;
 using Elastic.Apm.DiagnosticSource;
 using Elastic.Apm.SqlClient;
@@ -42,6 +43,7 @@ namespace SME.SGP.Auditoria.Worker
             RegistrarDependencias(services);
             RegistrarMapeamentos();
             RegistrarTelemetria(services);
+            ConfigurarConsumoFilas(services);
             RegistrarRabbitMQ(services);
         }
 
@@ -56,6 +58,13 @@ namespace SME.SGP.Auditoria.Worker
                 .Bind(Configuration.GetSection(TelemetriaOptions.Secao), c => c.BindNonPublicProperties = true);
             services.AddSingleton<TelemetriaOptions>();
             services.AddSingleton<IServicoTelemetria, ServicoTelemetria>();
+        }
+
+        private void ConfigurarConsumoFilas(IServiceCollection services)
+        {
+            services.AddOptions<ConsumoFilasOptions>()
+               .Bind(Configuration.GetSection("ConsumoFilas"), c => c.BindNonPublicProperties = true);
+            services.AddSingleton<ConsumoFilasOptions>();
         }
 
         private void RegistrarRabbitMQ(IServiceCollection services)
