@@ -28,7 +28,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<InformativoAnexoDto>> ObterAnexosPorInformativoIdAsync(long informativoId)
         {
-            const string query = @"select da.Id, da.informativo_id informativoId, da.arquivo_id arquivoId, a.codigo  
+            const string query = @"select da.Id, da.informativo_id informativoId, da.arquivo_id arquivoId, a.codigo, a.nome  
                                    from informativo_anexo da 
                                      join arquivo a on da.arquivo_id = a.id 
                                     where informativo_id = @informativoId";
