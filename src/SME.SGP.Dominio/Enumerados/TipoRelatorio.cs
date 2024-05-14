@@ -164,5 +164,8 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "relatorios/mapeamentosestudantes", ShortName = "MapeamentosEstudantes", Description = "Relatório de Mapeamento de estudantes")]
         RelatorioMapeamentosEstudantes = 54,
+
+        [Display(Name = "relatorios/buscasativas", ShortName = "BuscasAtivas", Description = "Relatório de Busca ativa")]
+        RelatorioBuscasAtivas = 55,
     }
 }

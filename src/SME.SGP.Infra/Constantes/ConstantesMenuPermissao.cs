@@ -166,6 +166,7 @@
         public const string ROTA_RELATORIOS_AEE_PLANO = "/relatorios/aee/plano";
         public const string ROTA_RELATORIOS_AEE_REGISTRO_ITINERANCIA = "/relatorios/aee/registro-itinerancia";
         public const string ROTA_RELATORIOS_NAAPA_ENCMAINHAMENTO = "/relatorios/naapa/encaminhamento";
+        public const string ROTA_RELATORIOS_NAAPA_BUSCA_ATIVA = "/relatorios/naapa/busca-ativa";
         public const string ROTA_RELATORIOS_SONDAGEM_ANALITICOS = "/relatorios/sondagem/analitico";
         public const string ROTA_RELATORIOS_DIARIO_CLASSE_BOLETIM_SIMPLES = "/relatorios/diario-classe/boletim-simples";
         public const string ROTA_RELATORIOS_ATAS_ATA_BIMESTRAL = "/relatorios/atas/ata-bimestral";
@@ -330,7 +331,8 @@
         public const int ORDEM_SUB_MENU_RELATORIO_REGISTRO_DE_ITINERANCIA = 3;
         
         public const int ORDEM_SUB_MENU_RELATORIO_ENCAMINHAMENTO_NAAPA = 1;
-        
+        public const int ORDEM_SUB_MENU_RELATORIO_BUSCA_ATIVA = 2;
+
         public const int ORDEM_SUB_MENU_RELATORIO_RELATORIOS_ANALITICOS = 1;
         public const int ORDEM_SUB_MENU_RELATORIO_RELATORIO_ADESAO = 2;
         public const int ORDEM_SUB_MENU_RELATORIO_RELATORIO_LEITURA = 3;

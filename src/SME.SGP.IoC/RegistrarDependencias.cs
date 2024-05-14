@@ -1402,7 +1402,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterQuantidadeBuscaAtivaPorMotivosAusenciaUseCase, ObterQuantidadeBuscaAtivaPorMotivosAusenciaUseCase>();
             services.TryAddScoped<IObterQuantidadeBuscaAtivaPorProcedimentosTrabalhoDreUseCase, ObterQuantidadeBuscaAtivaPorProcedimentosTrabalhoDreUseCase>();
             services.TryAddScoped<IObterQuantidadeBuscaAtivaPorReflexoFrequenciaMesUseCase, ObterQuantidadeBuscaAtivaPorReflexoFrequenciaMesUseCase>();
-           
+            services.TryAddScoped<IRelatorioBuscasAtivasUseCase, RelatorioBuscasAtivasUseCase>();
+            services.TryAddScoped<IObterFuncionariosABAEUseCase, ObterFuncionariosABAEUseCase>();
+            services.TryAddScoped<IObterOpcoesRespostaMotivoAusenciaBuscaAtivaUseCase, ObterOpcoesRespostaMotivoAusenciaBuscaAtivaUseCase>();
+
             //Registro Coletivo 
             services.TryAddScoped<IObterTiposDeReuniaoUseCase, ObterTiposDeReuniaoUseCase>();
             services.TryAddScoped<ISalvarRegistroColetivoUseCase, SalvarRegistroColetivoUseCase>();
