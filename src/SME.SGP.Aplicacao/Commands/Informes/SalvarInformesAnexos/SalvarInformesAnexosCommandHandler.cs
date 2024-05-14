@@ -23,13 +23,13 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(SalvarInformesAnexosCommand request, CancellationToken cancellationToken)
         {
             var arquivos = (await mediator.Send(new ObterArquivosPorCodigosQuery(request.CodigosAnexo))).ToList();
-            foreach (var documentoArquivo in arquivos.Select(arquivo => new InformativoAnexo
+            foreach (var informativoAnexo in arquivos.Select(arquivo => new InformativoAnexo
             {
                 ArquivoId = arquivo.Id,
                 InformativoId = request.InformativoId
             }))
             {
-                await repositorio.SalvarAsync(documentoArquivo);
+                await repositorio.SalvarAsync(informativoAnexo);
             }
 
             return true;
