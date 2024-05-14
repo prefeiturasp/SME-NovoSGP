@@ -1900,7 +1900,7 @@ namespace SME.SGP.Infra
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_RELATORIOS,
             OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_RELATORIO_NAAPA,
             EhSubMenu = true,
-            SubMenu = ConstantesMenuPermissao.MENU_ENCAMINHAMENTO,
+            SubMenu = ConstantesMenuPermissao.MENU_BUSCA_ATIVA,
             OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_RELATORIO_BUSCA_ATIVA,
             Url = ConstantesMenuPermissao.ROTA_RELATORIOS_NAAPA_BUSCA_ATIVA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
