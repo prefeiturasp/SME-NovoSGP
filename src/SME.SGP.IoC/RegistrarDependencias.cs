@@ -568,6 +568,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioInformativo, RepositorioInformativo>();
             services.TryAddScoped<IRepositorioInformativoPerfil, RepositorioInformativoPerfil>();
             services.TryAddScoped<IRepositorioInformativoNotificacao, RepositorioInformativoNotificacao>();
+            services.TryAddScoped<IRepositorioInformativoAnexo, RepositorioInformativoAnexo>();
+
 
             //CadastroAcessoABAE
             services.TryAddScoped<IRepositorioCadastroAcessoABAE, RepositorioCadastroAcessoABAE>();
