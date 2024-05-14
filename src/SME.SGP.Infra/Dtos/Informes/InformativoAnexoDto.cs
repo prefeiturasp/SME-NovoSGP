@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Dominio;
+using System;
 
 namespace SME.SGP.Infra.Dtos
 {
@@ -9,5 +10,6 @@ namespace SME.SGP.Infra.Dtos
         public long ArquivoId { get; set; }
         public Guid Codigo { get; set; }
         public string Nome { get; set; }
+        public TipoArquivo Tipo { get; set;}
     }
 }

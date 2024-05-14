@@ -1383,6 +1383,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterInformeUseCase, ObterInformeUseCase>();
             services.TryAddScoped<IObterInformesPorFiltroUseCase, ObterInformesPorFiltroUseCase>();
             services.TryAddScoped<IExcluirArquivoInformeUseCase, ExcluirArquivoInformeUseCase>();
+            services.TryAddScoped<IDownloadTodosAnexosInformativoUseCase, DownloadTodosAnexosInformativoUseCase>();
 
             //Consulta Crianças Estudantes Ausentes
             services.TryAddScoped<IObterTurmasAlunosAusentesUseCase, ObterTurmasAlunosAusentesUseCase>();
