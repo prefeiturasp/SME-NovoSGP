@@ -8,6 +8,7 @@ using SME.SGP.Infra.Dtos;
 using SME.SGP.TesteIntegracao.Informe.Base;
 using SME.SGP.TesteIntegracao.Informe.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,7 +35,10 @@ namespace SME.SGP.TesteIntegracao.Informe
         {
             const string TITULO = "todas dres";
             await CriarDadosBase();
+            await IncluirArquivos();
             var useCase = ServiceProvider.GetService<ISalvarInformesUseCase>();
+
+            var arquivos = ObterTodos<Arquivo>();
             var dto = new InformesDto()
             {
                 Perfis = new List<GruposDeUsuariosDto>()
@@ -48,6 +52,7 @@ namespace SME.SGP.TesteIntegracao.Informe
                         Id = PERFIL_ADM_COTIC
                     }
                 },
+                Arquivos = arquivos.Select(arq => arq.Codigo).ToArray(),
                 Titulo = TITULO,
                 Texto = "teste"
             };
@@ -70,6 +75,10 @@ namespace SME.SGP.TesteIntegracao.Informe
             informesNotificacao.ShouldNotBeNull();
             informesNotificacao.Count().ShouldBe(2);
 
+            var informesAnexo = ObterTodos<InformativoAnexo>();
+            informesAnexo.ShouldNotBeNull();
+            informesAnexo.Count().ShouldBe(2);
+
             var notificacoes = ObterTodos<Notificacao>();
             notificacoes.ShouldNotBeNull();
             notificacoes.Count().ShouldBe(2);
@@ -80,7 +89,10 @@ namespace SME.SGP.TesteIntegracao.Informe
         {
             const string TITULO = "por dre";
             await CriarDadosBase();
+            await IncluirArquivos();
             var useCase = ServiceProvider.GetService<ISalvarInformesUseCase>();
+
+            var arquivos = ObterTodos<Arquivo>();
             var dto = new InformesDto()
             {
                 DreId = DRE_ID_1,
@@ -95,6 +107,7 @@ namespace SME.SGP.TesteIntegracao.Informe
                         Id = PERFIL_ADM_COTIC
                     }
                 },
+                Arquivos = arquivos.Select(arq => arq.Codigo).ToArray(),
                 Titulo = TITULO,
                 Texto = "teste"
             };
@@ -117,6 +130,10 @@ namespace SME.SGP.TesteIntegracao.Informe
             informesNotificacao.ShouldNotBeNull();
             informesNotificacao.Count().ShouldBe(2);
 
+            var informesAnexo = ObterTodos<InformativoAnexo>();
+            informesAnexo.ShouldNotBeNull();
+            informesAnexo.Count().ShouldBe(2);
+
             var notificacoes = ObterTodos<Notificacao>();
             notificacoes.ShouldNotBeNull();
             notificacoes.Count().ShouldBe(2);
@@ -127,7 +144,10 @@ namespace SME.SGP.TesteIntegracao.Informe
         {
             const string TITULO = "por ue";
             await CriarDadosBase();
+            await IncluirArquivos();
             var useCase = ServiceProvider.GetService<ISalvarInformesUseCase>();
+
+            var arquivos = ObterTodos<Arquivo>();
             var dto = new InformesDto()
             {
                 DreId = DRE_ID_1,
@@ -143,6 +163,7 @@ namespace SME.SGP.TesteIntegracao.Informe
                         Id = PERFIL_ADM_COTIC
                     }
                 },
+                Arquivos = arquivos.Select(arq => arq.Codigo).ToArray(),
                 Titulo = TITULO,
                 Texto = "teste"
             };
@@ -165,9 +186,38 @@ namespace SME.SGP.TesteIntegracao.Informe
             informesNotificacao.ShouldNotBeNull();
             informesNotificacao.Count().ShouldBe(2);
 
+            var informesAnexo = ObterTodos<InformativoAnexo>();
+            informesAnexo.ShouldNotBeNull();
+            informesAnexo.Count().ShouldBe(2);
+
             var notificacoes = ObterTodos<Notificacao>();
             notificacoes.ShouldNotBeNull();
             notificacoes.Count().ShouldBe(2);
+        }
+
+        private async Task IncluirArquivos()
+        {
+            await InserirNaBase(new Arquivo()
+            {
+                Codigo = Guid.NewGuid(),
+                Nome = $"Arquivo - 1",
+                Tipo = TipoArquivo.Informativo,
+                TipoConteudo = "application/pdf",
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+
+            await InserirNaBase(new Arquivo()
+            {
+                Codigo = Guid.NewGuid(),
+                Nome = $"Arquivo - 2",
+                Tipo = TipoArquivo.Informativo,
+                TipoConteudo = "application/pdf",
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
         }
     }
 }
