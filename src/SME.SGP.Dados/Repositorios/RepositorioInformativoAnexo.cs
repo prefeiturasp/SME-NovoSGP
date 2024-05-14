@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Dapper;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -34,6 +35,20 @@ namespace SME.SGP.Dados.Repositorios
                                     where informativo_id = @informativoId";
 
             return await database.Conexao.QueryAsync<InformativoAnexoDto>(query, new { informativoId });
+        }
+
+        public async Task<bool> RemoverLogicoPorInformativoIdAsync(long informativoId)
+        {
+            var query = @"update informativo_anexo set excluido = true where informativo_id = @informativoId";
+
+            return await database.Conexao.ExecuteScalarAsync<bool>(query, new { informativoId });
+        }
+
+        public async Task<bool> RemoverPorInformativoIdAsync(long informativoId)
+        {
+            const string query = @"delete from informativo_anexo where informativo_id = @informativoId";
+            await database.Conexao.ExecuteAsync(query, new { informativoId });
+            return true;
         }
     }
 }
