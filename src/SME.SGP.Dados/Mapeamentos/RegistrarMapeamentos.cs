@@ -254,7 +254,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new MapeamentoEstudanteSecaoMap());
                config.AddMap(new QuestaoMapeamentoEstudanteMap());
                config.AddMap(new RespostaMapeamentoEstudanteMap());
-
+               config.AddMap(new InformativoAnexoMap());
 
                config.ForDommel();
            });
