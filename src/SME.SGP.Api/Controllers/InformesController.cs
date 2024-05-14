@@ -5,6 +5,7 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Dtos.Informes;
@@ -89,6 +90,18 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ExcluirArquivo([FromQuery] Guid arquivoCodigo, [FromServices] IExcluirArquivoInformeUseCase useCase)
         {
             return Ok(await useCase.Executar(arquivoCodigo));
+        }
+
+        [HttpGet("{informativoId}/anexos/compactados")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> DownloadAnexosCompactados(long informativoId, [FromServices] IDownloadTodosAnexosInformativoUseCase useCase)
+        {
+            var (arquivo, contentType, nomeArquivo) = await useCase.Executar(informativoId);
+            if (arquivo.EhNulo()) return NoContent();
+
+            return File(arquivo, contentType, nomeArquivo);
         }
     }
 }
