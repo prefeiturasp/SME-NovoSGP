@@ -19,11 +19,32 @@ namespace SME.SGP.Aplicacao
                                             .download-list li {
                                               margin-left: 1.5em; 
                                             }
+
+                                            .titulo-anexos-container {
+                                                    display: flex;
+                                                    justify-content: space-between;
+                                                    align-items: center;
+                                                }
+                                            .titulo-anexos-left {
+                                                    font-weight: bold;
+                                                    text-align: left;
+                                                }
+                                            .titulo-anexos-right {
+                                                    text-align: right;
+                                                }
                                           </style>";
-        private const string urlDownloadAnexo = "v1/armazenamento/{0}";
-        private const string urlDownloadTodosAnexos = "v1/informes/{0}/anexos/compactados";
-        private const string htmlCabecalhoAnexos = @$"<p style=""display: flex; justify-content: space-between; align-items: center;""><strong>Anexo(s):</strong> 
-                                                        <a href=""{urlDownloadTodosAnexos}"">Baixar todos os anexos</a></p>";
+        private const string urlDownloadAnexo = "{0}/v1/armazenamento/informes/{1}";
+        private const string urlDownloadTodosAnexos = "{0}/v1/armazenamento/informes/{1}/anexos/compactados";
+        private const string htmlCabecalhoAnexos = @$"<div class=""titulo-anexos-container"">
+                                                        <div class=""titulo-anexos-left"">Anexo(s):</div>
+                                                        <div class=""titulo-anexos-right"">
+                                                            <ul class=""download-list"">
+                                                                <li><a href=""{urlDownloadTodosAnexos}"" download>Baixar todos os anexos</a></li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>";
+            /*@$"<p style=""display: flex; justify-content: space-between; align-items: center;""><strong>Anexo(s):</strong> 
+                                                        <a href="""">Baixar todos os anexos</a></p>";*/
 
         public ObterMsgNotificacaoAnexosInformativoPorIdNotificacaoQueryHandler(IRepositorioInformativo repositorio, IMediator mediator)
         {
@@ -39,10 +60,10 @@ namespace SME.SGP.Aplicacao
                 return string.Empty;
 
             var htmlAnexos = @$"{styleCss}
-                                {string.Format(htmlCabecalhoAnexos, informativoId)}
+                                {string.Format(htmlCabecalhoAnexos, "/api", informativoId)}
                                 <ul class=""download-list"">";
             foreach (var anexo in anexos)
-                htmlAnexos += @$"<li><a href=""{string.Format(urlDownloadAnexo, anexo.Codigo)}"">{anexo.Nome}</a></li>";
+                htmlAnexos += @$"<li><a href=""{string.Format(urlDownloadAnexo, "/api", anexo.Codigo)}"" download>{anexo.Nome}</a></li>";
 
             htmlAnexos += "</ul>";
             return htmlAnexos;
