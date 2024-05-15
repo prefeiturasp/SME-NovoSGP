@@ -17,7 +17,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/informes")]
-    //[Authorize("Bearer")]
+    [Authorize("Bearer")]
     public class InformesController : Controller
     {
         [HttpPost("salvar")]
