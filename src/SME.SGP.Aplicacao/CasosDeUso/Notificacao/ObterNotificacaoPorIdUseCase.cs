@@ -83,6 +83,8 @@ namespace SME.SGP.Aplicacao
             {
                 case NotificacaoCategoria.Workflow_Aprovacao:
                     return await ObterMensagemWorkflowAprovacao(notificacao);
+                case NotificacaoCategoria.Informe:
+                    return await ObterMensagemInformativo(notificacao);
                 case NotificacaoCategoria.Alerta:
                 case NotificacaoCategoria.Aviso:
                 default:
@@ -119,6 +121,11 @@ namespace SME.SGP.Aplicacao
                     return notificacao.Mensagem;
             }
         }
+
+        private async Task<string> ObterMensagemInformativo(Notificacao notificacao)
+        => notificacao.Mensagem
+           + await mediator.Send(new ObterMsgNotificacaoAnexosInformativoPorIdNotificacaoQuery(notificacao.Id));
+           
 
         private static string ObterCodigoArquivo(string mensagem)
         {

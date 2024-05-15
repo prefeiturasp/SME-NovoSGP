@@ -16,6 +16,7 @@ namespace SME.SGP.Aplicacao
         public async Task<(byte[], string, string)> Executar(long informativoId)
         {
             List<(string Nome, byte[] Conteudo)> arquivos = await ObterByteArrayArquivosAnexosInformativo(informativoId);
+
             byte[] arquivoZipBytes;
             using (MemoryStream ms = new MemoryStream())
             {
@@ -33,7 +34,7 @@ namespace SME.SGP.Aplicacao
                 arquivoZipBytes = ms.ToArray();
             }
 
-            return (arquivoZipBytes, "application/zip", $"AnexosInformativo{informativoId}");
+            return (arquivoZipBytes, "application/zip", $"AnexosInformativo{informativoId}.zip");
         }
 
         private async Task<List<(string Nome, byte[] Conteudo)>> ObterByteArrayArquivosAnexosInformativo(long informativoId)
