@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
                                           </style>";
         private const string urlDownloadAnexo = "{0}/v1/armazenamento/informes/{1}";
         private const string urlDownloadTodosAnexos = "{0}/v1/armazenamento/informes/{1}/anexos/compactados";
-        private const string htmlCabecalhoAnexos = @$"<div class=""titulo-anexos-container"">
+        private string htmlCabecalhoAnexos = @$"<div class=""titulo-anexos-container"">
                                                         <div class=""titulo-anexos-left"">Anexo(s):</div>
                                                         <div class=""titulo-anexos-right"">
                                                             <ul class=""download-list"">
