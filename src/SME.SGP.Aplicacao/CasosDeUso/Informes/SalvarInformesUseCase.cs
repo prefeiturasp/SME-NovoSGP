@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var perfil in informesDto.Perfis) 
                     await mediator.Send(new SalvarInformesPerfilsCommand(informes.Id, perfil.Id));
-                if (informesDto.Arquivos.Any())
+                if (informesDto.Arquivos.PossuiRegistros())
                     await mediator.Send(new SalvarInformesAnexosCommand(informes.Id, informesDto.Arquivos));
                 
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoInformativo, informes.Id, Guid.NewGuid()));
