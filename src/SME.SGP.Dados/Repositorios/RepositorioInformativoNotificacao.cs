@@ -14,6 +14,15 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
+        public async Task<long> ObterIdInformativoPorNotificacaoIdAsync(long notificacaoId)
+        {
+            var query = @$" select informativo_id
+                            from informativo_notificacao 
+                            where notificacao_id = @notificacaoId ";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { notificacaoId });
+        }
+
         public async Task<IEnumerable<long>> ObterIdsNotificacoesPorInformativoIdAsync(long informativoId)
         {
             var query = @$" select notificacao_id
