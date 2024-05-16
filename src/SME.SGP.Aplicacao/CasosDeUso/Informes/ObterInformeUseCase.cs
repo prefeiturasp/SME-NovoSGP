@@ -24,6 +24,8 @@ namespace SME.SGP.Aplicacao
             if (informe.EhNulo())
                 throw new NegocioException(MensagemNegocioInformes.INFORMES_NAO_ENCONTRADO);
 
+            var anexos = await mediator.Send(new ObterAnexosPorInformativoIdQuery(informeId)); 
+
             var perfils = await mediator.Send(new ObterGruposDeUsuariosQuery((int)TipoPerfil.SME));
 
             return new InformesRespostaDto()
@@ -36,6 +38,11 @@ namespace SME.SGP.Aplicacao
                 Texto = informe.Texto,
                 Titulo = informe.Titulo,
                 Perfis = ObterPerfils(perfils, informe.Perfis),
+                Anexos = anexos.Select(anx => new ArquivoResumidoDto()
+                {
+                    Codigo = anx.Codigo,
+                    Nome = anx.Nome
+                }).ToList(),
                 Auditoria = new AuditoriaDto()
                 {
                     CriadoEm = informe.CriadoEm,

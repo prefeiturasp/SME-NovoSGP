@@ -76,10 +76,8 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
             
             var relatorioSecaoAposCopiar = ObterTodos<RelatorioPeriodicoPAPSecao>();
             relatorioSecaoAposCopiar.ShouldNotBeNull();
-            relatorioSecaoAposCopiar.Count.ShouldBe(8);
-            relatorioSecaoAposCopiar.Count(a => a.SecaoRelatorioPeriodicoId == ConstantesTestePAP.SECAO_RELATORIO_PERIODICO_PAP_FREQUENCIA_NA_TURMA_PAP_ID_1).ShouldBe(2);
-            relatorioSecaoAposCopiar.Count(a => a.SecaoRelatorioPeriodicoId == ConstantesTestePAP.SECAO_RELATORIO_PERIODICO_PAP_FREQUENCIA_NA_TURMA_PAP_ID_1 && a.RelatorioPeriodicoAlunoId.ToString() == CODIGO_ALUNO_2).ShouldBe(1);
-            relatorioSecaoAposCopiar.Count(a => a.SecaoRelatorioPeriodicoId == ConstantesTestePAP.SECAO_RELATORIO_PERIODICO_PAP_FREQUENCIA_NA_TURMA_PAP_ID_1 && a.RelatorioPeriodicoAlunoId.ToString() == CODIGO_ALUNO_1).ShouldBe(1);
+            relatorioSecaoAposCopiar.Count.ShouldBe(6);
+            relatorioSecaoAposCopiar.Count(a => a.SecaoRelatorioPeriodicoId == ConstantesTestePAP.SECAO_RELATORIO_PERIODICO_PAP_FREQUENCIA_NA_TURMA_PAP_ID_1).ShouldBe(0);
             
             relatorioSecaoAposCopiar.Count(a => a.SecaoRelatorioPeriodicoId == ConstantesTestePAP.SECAO_RELATORIO_PERIODICO_PAP_DIFICULDADES_APRESENTADAS_ID_2).ShouldBe(2);
             relatorioSecaoAposCopiar.Count(a => a.SecaoRelatorioPeriodicoId == ConstantesTestePAP.SECAO_RELATORIO_PERIODICO_PAP_DIFICULDADES_APRESENTADAS_ID_2 && a.RelatorioPeriodicoAlunoId.ToString() == CODIGO_ALUNO_2).ShouldBe(1);
@@ -96,12 +94,11 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
             
             var relatorioQuestaoAposCopiar = ObterTodos<RelatorioPeriodicoPAPQuestao>();
             relatorioQuestaoAposCopiar.ShouldNotBeNull();
-            relatorioQuestaoAposCopiar.Count.ShouldBe(10);
+            relatorioQuestaoAposCopiar.Count.ShouldBe(8);
 
             var questaoum = relatorioQuestaoAposCopiar.Find(a => a.QuestaoId == ConstantesTestePAP.QUESTAO_ID_1);
-            questaoum.ShouldNotBeNull();
-            relatorioQuestaoAposCopiar.Count(x => x.QuestaoId  == ConstantesTestePAP.QUESTAO_ID_1).ShouldBe(2);
-                
+            questaoum.ShouldBeNull();
+
             var questaoDificuldade = relatorioQuestaoAposCopiar.Find(a => a.QuestaoId == ConstantesTestePAP.QUESTAO_DIFICULDADES_APRESENTADAS_ID_2);
             questaoDificuldade.ShouldNotBeNull();
             relatorioQuestaoAposCopiar.Count(x => x.QuestaoId  == ConstantesTestePAP.QUESTAO_DIFICULDADES_APRESENTADAS_ID_2).ShouldBe(2);
@@ -120,11 +117,8 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
             
             var relatorioRespostaAposCopiar = ObterTodos<RelatorioPeriodicoPAPResposta>();
             relatorioRespostaAposCopiar.ShouldNotBeNull();
-            relatorioRespostaAposCopiar.Count.ShouldBe(14);
+            relatorioRespostaAposCopiar.Count.ShouldBe(12);
 
-            
-            var respostaQuestaoUm = relatorioRespostaAposCopiar.Find(r => r.RelatorioPeriodicoQuestaoId == questaoum.Id);
-            respostaQuestaoUm.ShouldNotBeNull();
             
             var respostaDificuldade = relatorioRespostaAposCopiar.Find(r => r.RelatorioPeriodicoQuestaoId == questaoDificuldade.Id);
             respostaDificuldade.ShouldNotBeNull();
@@ -204,14 +198,14 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
             
             var relatorioSecaoAposCopiar = ObterTodos<RelatorioPeriodicoPAPSecao>();
             relatorioSecaoAposCopiar.ShouldNotBeNull();
-            relatorioSecaoAposCopiar.Count.ShouldBe(7);
+            relatorioSecaoAposCopiar.Count.ShouldBe(6);
             relatorioSecaoAposCopiar.Any(a => a.SecaoRelatorioPeriodicoId == ConstantesTestePAP.SECAO_RELATORIO_PERIODICO_PAP_DIFICULDADES_APRESENTADAS_ID_2).ShouldBeTrue();
             relatorioSecaoAposCopiar.Any(a => a.SecaoRelatorioPeriodicoId == ConstantesTestePAP.SECAO_RELATORIO_PERIODICO_PAP_SECAO_AVANC_APREND_BIMES_ID_3).ShouldBeTrue();
             relatorioSecaoAposCopiar.Any(a => a.SecaoRelatorioPeriodicoId == ConstantesTestePAP.SECAO_RELATORIO_PERIODICO_PAP_SECAO_OBS_ID_4).ShouldBeTrue();
             
             var relatorioQuestaoAposCopiar = ObterTodos<RelatorioPeriodicoPAPQuestao>();
             relatorioQuestaoAposCopiar.ShouldNotBeNull();
-            relatorioQuestaoAposCopiar.Count.ShouldBe(9);
+            relatorioQuestaoAposCopiar.Count.ShouldBe(8);
 
             var questaoDificuldade = relatorioQuestaoAposCopiar.Find(a => a.QuestaoId == ConstantesTestePAP.QUESTAO_DIFICULDADES_APRESENTADAS_ID_2);
             questaoDificuldade.ShouldNotBeNull();
@@ -227,7 +221,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
             
             var relatorioRespostaAposCopiar = ObterTodos<RelatorioPeriodicoPAPResposta>();
             relatorioRespostaAposCopiar.ShouldNotBeNull();
-            relatorioRespostaAposCopiar.Count.ShouldBe(9);
+            relatorioRespostaAposCopiar.Count.ShouldBe(8);
 
             var respostaDificuldade = relatorioRespostaAposCopiar.Find(r => r.RelatorioPeriodicoQuestaoId == questaoDificuldade.Id);
             respostaDificuldade.ShouldNotBeNull();

@@ -9,6 +9,7 @@ using SME.SGP.Infra.Dtos;
 using SME.SGP.TesteIntegracao.Informe.Base;
 using SME.SGP.TesteIntegracao.Informe.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -60,6 +61,7 @@ namespace SME.SGP.TesteIntegracao.Informe
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
+            await IncluirAnexos(INFORME_ID_1);
             var useCase = ServiceProvider.GetService<IObterInformeUseCase>();
 
             var resultado = await useCase.Executar(INFORME_ID_1);
@@ -71,6 +73,11 @@ namespace SME.SGP.TesteIntegracao.Informe
             resultado.Perfis.ShouldNotBeNull();
             resultado.Perfis.ToList().Exists(p => p.Id == PERFIL_AD).ShouldBeTrue();
             resultado.Perfis.ToList().Exists(p => p.Id == PERFIL_ADM_COTIC).ShouldBeTrue();
+            var anexos = resultado.Anexos;
+            anexos.ShouldNotBeNull();
+            anexos.Count.ShouldBe(2);
+            anexos.Any(anx => anx.Nome.Equals("Arquivo - 1")).ShouldBeTrue();
+            anexos.Any(anx => anx.Nome.Equals("Arquivo - 2")).ShouldBeTrue();
             resultado.Auditoria.ShouldNotBeNull();
             resultado.Auditoria.CriadoPor.ShouldBe(SISTEMA_NOME);
         }
@@ -110,6 +117,7 @@ namespace SME.SGP.TesteIntegracao.Informe
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
+            await IncluirAnexos(INFORME_ID_1);
             var useCase = ServiceProvider.GetService<IObterInformeUseCase>();
 
             var resultado = await useCase.Executar(INFORME_ID_1);
@@ -121,8 +129,50 @@ namespace SME.SGP.TesteIntegracao.Informe
             resultado.Perfis.ShouldNotBeNull();
             resultado.Perfis.ToList().Exists(p => p.Id == PERFIL_AD).ShouldBeTrue();
             resultado.Perfis.ToList().Exists(p => p.Id == PERFIL_ADM_COTIC).ShouldBeTrue();
+            var anexos = resultado.Anexos;
+            anexos.ShouldNotBeNull();
+            anexos.Count.ShouldBe(2);
+            anexos.Any(anx => anx.Nome.Equals("Arquivo - 1")).ShouldBeTrue();
+            anexos.Any(anx => anx.Nome.Equals("Arquivo - 2")).ShouldBeTrue();
             resultado.Auditoria.ShouldNotBeNull();
             resultado.Auditoria.CriadoPor.ShouldBe(SISTEMA_NOME);
+        }
+
+        private async Task IncluirAnexos(long informativoId = INFORME_ID_1)
+        {
+            var idArquivo = await InserirNaBaseAsync(new Arquivo()
+            {
+                Codigo = Guid.NewGuid(),
+                Nome = $"Arquivo - 1",
+                Tipo = TipoArquivo.Informativo,
+                TipoConteudo = "application/pdf",
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+
+            await InserirNaBase(new InformativoAnexo()
+            {
+                ArquivoId = idArquivo,
+                InformativoId = informativoId
+            });
+
+            idArquivo = await InserirNaBaseAsync(new Arquivo()
+            {
+                Codigo = Guid.NewGuid(),
+                Nome = $"Arquivo - 2",
+                Tipo = TipoArquivo.Informativo,
+                TipoConteudo = "application/pdf",
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+
+            await InserirNaBase(new InformativoAnexo()
+            {
+                ArquivoId = idArquivo,
+                InformativoId = informativoId
+            });
         }
     }
 }
