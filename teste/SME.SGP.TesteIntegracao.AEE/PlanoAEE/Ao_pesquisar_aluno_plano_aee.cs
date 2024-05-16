@@ -37,7 +37,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             {
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year.ToString(),
                 CodigoUe = "1",
-                CodigoTurmas = new long[] { 1 },
+                CodigoTurma = 1,
                 Codigo = int.Parse(ALUNO_CODIGO_1),
                 Nome = ALUNO_CODIGO_1
             };
@@ -59,7 +59,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             {
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year.ToString(),
                 CodigoUe = "1",
-                CodigoTurmas = new long[] { 1 },
+                CodigoTurma = 1,
                 Nome = ALUNO_CODIGO_1
             };
             var obterAlunosServico = ObterAlunosPorCodigoEolNomeUseCase();
