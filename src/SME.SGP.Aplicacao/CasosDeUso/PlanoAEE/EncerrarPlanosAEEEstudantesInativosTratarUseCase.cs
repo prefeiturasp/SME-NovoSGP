@@ -81,6 +81,8 @@ namespace SME.SGP.Aplicacao
                 else if (matriculas.Select(m => m.CodigoTurma).Distinct().Count() > 1 && AlunoFoiTransferidoDaUnidadeEscolar(matriculas, turmaDoPlanoAee))
                     encerrarPlanoAee = true;
             }
+            else
+                encerrarPlanoAee = true;
 
             if (encerrarPlanoAee || (turmaDoPlanoAee.EhTurmaPrograma() && ultimaSituacao.EhNulo()))
                 await EncerrarPlanoAee(planoAEE, ultimaSituacao?.SituacaoMatricula ?? "Inativo", ultimaSituacao?.DataSituacao ?? DateTimeExtension.HorarioBrasilia());
