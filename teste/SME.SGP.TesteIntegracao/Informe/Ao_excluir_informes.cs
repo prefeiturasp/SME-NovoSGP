@@ -9,6 +9,7 @@ using SME.SGP.Infra.Dtos;
 using SME.SGP.TesteIntegracao.Informe.Base;
 using SME.SGP.TesteIntegracao.Informe.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -106,6 +107,7 @@ namespace SME.SGP.TesteIntegracao.Informe
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
+            await IncluirAnexos();
             var useCase = ServiceProvider.GetService<IExcluirInformesUseCase>();
 
             await useCase.Executar(INFORME_ID_1);
@@ -121,6 +123,12 @@ namespace SME.SGP.TesteIntegracao.Informe
             
             var notificacoes = ObterTodos<Notificacao>();
             notificacoes.All(notificacao => notificacao.Excluida).ShouldBeTrue();
+
+            var anexosInformatico = ObterTodos<InformativoAnexo>();
+            anexosInformatico.Count.ShouldBe(0);
+
+            var arquivos = ObterTodos<Arquivo>();
+            arquivos.Count.ShouldBe(0);
         }
 
 
@@ -203,6 +211,7 @@ namespace SME.SGP.TesteIntegracao.Informe
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
+            await IncluirAnexos();
             var useCase = ServiceProvider.GetService<IExcluirInformesUseCase>();
 
             await useCase.Executar(INFORME_ID_1);
@@ -218,6 +227,49 @@ namespace SME.SGP.TesteIntegracao.Informe
 
             var notificacoes = ObterTodos<Notificacao>();
             notificacoes.All(notificacao => notificacao.Excluida).ShouldBeTrue();
+
+            var anexosInformatico = ObterTodos<InformativoAnexo>();
+            anexosInformatico.Count.ShouldBe(0);
+
+            var arquivos = ObterTodos<Arquivo>();
+            arquivos.Count.ShouldBe(0);
+        }
+
+        private async Task IncluirAnexos(long informativoId = INFORME_ID_1)
+        {
+            var idArquivo = await InserirNaBaseAsync(new Arquivo()
+            {
+                Codigo = Guid.NewGuid(),
+                Nome = $"Arquivo - 1",
+                Tipo = TipoArquivo.Informativo,
+                TipoConteudo = "application/pdf",
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+
+            await InserirNaBase(new InformativoAnexo()
+            {
+                ArquivoId = idArquivo,
+                InformativoId = informativoId
+            });
+
+            idArquivo = await InserirNaBaseAsync(new Arquivo()
+            {
+                Codigo = Guid.NewGuid(),
+                Nome = $"Arquivo - 2",
+                Tipo = TipoArquivo.Informativo,
+                TipoConteudo = "application/pdf",
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+
+            await InserirNaBase(new InformativoAnexo()
+            {
+                ArquivoId = idArquivo,
+                InformativoId = informativoId
+            });
         }
     }
 }

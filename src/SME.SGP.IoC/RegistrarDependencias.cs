@@ -568,6 +568,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioInformativo, RepositorioInformativo>();
             services.TryAddScoped<IRepositorioInformativoPerfil, RepositorioInformativoPerfil>();
             services.TryAddScoped<IRepositorioInformativoNotificacao, RepositorioInformativoNotificacao>();
+            services.TryAddScoped<IRepositorioInformativoAnexo, RepositorioInformativoAnexo>();
+
 
             //CadastroAcessoABAE
             services.TryAddScoped<IRepositorioCadastroAcessoABAE, RepositorioCadastroAcessoABAE>();
@@ -1380,6 +1382,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExcluirInformesUseCase, ExcluirInformesUseCase>();
             services.TryAddScoped<IObterInformeUseCase, ObterInformeUseCase>();
             services.TryAddScoped<IObterInformesPorFiltroUseCase, ObterInformesPorFiltroUseCase>();
+            services.TryAddScoped<IExcluirArquivoInformeUseCase, ExcluirArquivoInformeUseCase>();
+            services.TryAddScoped<IDownloadTodosAnexosInformativoUseCase, DownloadTodosAnexosInformativoUseCase>();
+            services.TryAddScoped<IDownloadArquivoInformativoUseCase, DownloadArquivoInformativoUseCase>();
 
             //Consulta Crianças Estudantes Ausentes
             services.TryAddScoped<IObterTurmasAlunosAusentesUseCase, ObterTurmasAlunosAusentesUseCase>();

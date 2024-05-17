@@ -89,6 +89,9 @@ namespace SME.SGP.Dominio
         [Display(Name = "encaminhamento/naapa/itinerancia")]
         ItineranciaEncaminhamentoNAAPA = 28,
 
+        [Display(Name = "informativo")]
+        Informativo = 29,
+
         [Display(Name = "temp")]
         temp = 99
     }
