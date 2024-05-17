@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
 
         public async Task<IEnumerable<AlunoSimplesDto>> Handle(ObterAlunosPorCodigoEolNomeQuery request, CancellationToken cancellationToken)
         {
-            var alunosEOL = await ObterAlunosPorNomeCodigoEol(request.AnoLetivo, request.CodigoUe, request.CodigoTurma, request.Nome, request.CodigoEOL, request.SomenteAtivos);
+            var alunosEOL = await ObterAlunosPorNomeCodigoEol(request.AnoLetivo, request.CodigoUe, request.CodigoTurmas, request.Nome, request.CodigoEOL, request.SomenteAtivos);
             var alunoSimplesDto = new List<AlunoSimplesDto>();
             var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(alunosEOL.Select(al => al.CodigoTurma.ToString()).ToArray()));
 
@@ -65,13 +65,13 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
             return string.Empty;
         }
 
-        private async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorNomeCodigoEol(string anoLetivo, string codigoUe, long codigoTurma, string nome, long? codigoEol, bool? somenteAtivos)
+        private async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorNomeCodigoEol(string anoLetivo, string codigoUe, long[] codigoTurmas, string nome, long? codigoEol, bool? somenteAtivos)
         {
             var alunos = Enumerable.Empty<AlunoPorTurmaResposta>();
             var url = string.Format(ServicosEolConstants.URL_ALUNOS_UES_ANOS_LETIVOS_AUTOCOMPLETE, codigoUe, anoLetivo);
-            var operadorCodigoEol = codigoTurma > 0 ? "&" : "?";
-            var operadorNomeAluno = codigoEol.NaoEhNulo() || codigoTurma > 0 ? "&" : "?";
-            var urlComplementar = (codigoTurma > 0 ? $"?codigoTurma={codigoTurma}" : null)
+            var operadorCodigoEol = codigoTurmas.PossuiRegistros() ? "&" : "?";
+            var operadorNomeAluno = codigoEol.NaoEhNulo() || codigoTurmas.PossuiRegistros() ? "&" : "?";
+            var urlComplementar = (codigoTurmas.PossuiRegistros() ? $"?codigoTurmas={string.Join("&codigoTurmas=", codigoTurmas)}" : null)
                                       + (codigoEol.HasValue ? $"{operadorCodigoEol + $"codigoEol={codigoEol}"}" : "")
                                       + (nome.NaoEhNulo() ? $"{operadorNomeAluno + $"nomeAluno={nome}"}" : "")
                                       + (somenteAtivos == true ? $"&somenteAtivos={somenteAtivos}" : "");
