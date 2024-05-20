@@ -81,7 +81,7 @@ namespace SME.SGP.Aplicacao
                 else if (matriculas.Select(m => m.CodigoTurma).Distinct().Count() > 1 && AlunoFoiTransferidoDaUnidadeEscolar(matriculas, turmaDoPlanoAee))
                     encerrarPlanoAee = true;
             }
-            else
+            else if (planoAEE.Situacao != SituacaoPlanoAEE.EncerradoAutomaticamente)
                 encerrarPlanoAee = true;
 
             if (encerrarPlanoAee || (turmaDoPlanoAee.EhTurmaPrograma() && ultimaSituacao.EhNulo()))
