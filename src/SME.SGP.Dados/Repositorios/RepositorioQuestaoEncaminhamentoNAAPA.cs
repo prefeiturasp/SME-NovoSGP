@@ -23,10 +23,10 @@ namespace SME.SGP.Dados.Repositorios
                             inner join questionario qti on qti.id = sen.questionario_id
                             inner join questao qta on qta.questionario_id = qti.id
                             inner join opcao_resposta opre on opre.questao_id = qta.id
-                            where sen.etapa = @etapa and qta.nome = @questaoPrioridade and qti.id = 8
+                            where sen.etapa = @etapa and qta.nome = @questaoPrioridade and qti.tipo = @tipoQuestionario
                             order by opre.ordem";
 
-            return await database.Conexao.QueryAsync<PrioridadeEncaminhamentoNAAPADto>(query, new { etapa = ETAPA_1, questaoPrioridade = QUESTAO_PRIORIDADE });
+            return await database.Conexao.QueryAsync<PrioridadeEncaminhamentoNAAPADto>(query, new { etapa = ETAPA_1, questaoPrioridade = QUESTAO_PRIORIDADE, tipoQuestionario = (int)TipoQuestionario.EncaminhamentoNAAPA });
         }
 
         public async Task<QuestaoEncaminhamentoNAAPA> ObterQuestaoEnderecoResidencialPorEncaminhamentoId(long encaminhamentoNAAPAId)
