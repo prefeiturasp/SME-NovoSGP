@@ -10,18 +10,19 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsolidarInformacoesProdutividadeFrequenciaBimestreUseCase : AbstractUseCase, IConsolidarInformacoesProdutividadeFrequenciaBimestreUseCase
     {
-        private readonly IRepositorioConsolidacaoProdutividadeFrequencia repositorioConsolidacao;
+        private readonly IRepositorioFrequenciaConsulta repositorioFrequencia;
 
-        public ConsolidarInformacoesProdutividadeFrequenciaBimestreUseCase(IMediator mediator, IRepositorioConsolidacaoProdutividadeFrequencia repositorioConsolidacao) : base(mediator)
+        public ConsolidarInformacoesProdutividadeFrequenciaBimestreUseCase(IMediator mediator, IRepositorioFrequenciaConsulta repositorioFrequencia) : base(mediator)
         {
-            this.repositorioConsolidacao = repositorioConsolidacao ?? throw new System.ArgumentNullException(nameof(repositorioConsolidacao)); 
+            this.repositorioFrequencia = repositorioFrequencia ?? throw new System.ArgumentNullException(nameof(repositorioFrequencia)); 
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
             var filtro = mensagem.ObterObjetoMensagem<FiltroConsolicacaoProdutividadeFrequenciaUeBimestreDTO>();
-            
-
+            var registrosFrequenciaProdutividade = await repositorioFrequencia.ObterInformacoesProdutividadeFrequencia(filtro.AnoLetivo, filtro.CodigoUe, filtro.Bimestre);
+            foreach (var regFrequencia in registrosFrequenciaProdutividade)
+                await mediator.Send(new SalvarConsolidacaoProdutividadeFrequenciaCommand(regFrequencia.ToEntity()));
             return true;
         }
     }

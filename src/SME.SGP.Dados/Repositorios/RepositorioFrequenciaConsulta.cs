@@ -10,6 +10,7 @@ using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -895,5 +896,38 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
         }
 
+        public Task<IEnumerable<RegistroFrequenciaProdutividadeDto>> ObterInformacoesProdutividadeFrequencia(int anoLetivo, string ueCodigo, int bimestre)
+        => database.Conexao
+                .QueryAsync<RegistroFrequenciaProdutividadeDto>(@"
+                                    select t.turma_id as TurmaCodigo
+                                           ,t.nome as TurmaNome 
+                                           ,t.modalidade_codigo as Modalidade
+                                           ,ue.ue_id as UeCodigo
+                                           ,ue.nome as UeNome
+                                           ,ue.tipo_escola as TipoEscola
+                                           ,dre.dre_id as DreCodigo
+                                           ,dre.abreviacao  as DreAbreviacao
+                                           ,rf.criado_em as DataFrequencia
+	                                       ,a.data_aula as DataAula
+	                                       ,DATE_PART('day', rf.criado_em - a.data_aula) as DifDias
+	                                       ,pe.bimestre 
+                                           ,t.ano_letivo as AnoLetivo
+                                           ,a.disciplina_id as ComponenteCodigo
+                                           ,cc.descricao_sgp as ComponenteNome
+                                           ,rf.criado_rf as ProfRf
+                                           ,rf.criado_por  as ProfNome
+                                    from aula a 
+                                    inner join registro_frequencia rf on rf.aula_id = a.id and not rf.excluido 
+                                    inner join turma t on t.turma_id = a.turma_id
+                                    inner join ue on ue.id = t.ue_id 
+                                    inner join dre on dre.id = ue.dre_id 
+                                    inner join periodo_escolar pe on pe.tipo_calendario_id  = a.tipo_calendario_id 
+                                    left join componente_curricular cc on cc.id = a.disciplina_id::int8
+                                    where not a.excluido and not rf.excluido
+                                      and t.ano_letivo = @anoLetivo	
+                                      and pe.bimestre = @bimestre
+                                      and a.data_aula between pe.periodo_inicio and periodo_fim
+                                      and ue.ue_id = @ueCodigo
+                                      and DATE_PART('day', rf.criado_em - a.data_aula) > 0;", new { ueCodigo, anoLetivo, bimestre });
     }
 }
