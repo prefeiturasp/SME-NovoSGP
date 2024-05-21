@@ -54,5 +54,6 @@
         public const string RotaRelatoriosSolicitadosPlanoAnual = "sr.relatorios.solicitados.planoanual";
         public const string RotaRelatoriosSolicitadosMapeamentoEstudante = "sr.relatorios.solicitados.mapeamentoestudante";
         public const string RotaRelatoriosSolicitadosBuscaAtiva = "sr.relatorios.solicitados.buscaativa";
+        public const string RotaRelatoriosSolicitadosProdutividadeFrequencia = "sr.relatorios.solicitados.produtividade.frequencia";
     }
 }

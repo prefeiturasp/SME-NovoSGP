@@ -1018,6 +1018,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRelatorioPlanoAnualUseCase, RelatorioPlanoAnualUseCase>();
             services.TryAddScoped<IRelatorioUsuariosUseCase, RelatorioUsuariosUseCase>();
             services.TryAddScoped<IRelatorioControleFrequenciaMensalUseCase, RelatorioControleFrequenciaMensalUseCase>();
+            services.TryAddScoped<IGerarRelatorioProdutividadeFrequenciaUseCase, GerarRelatorioProdutividadeFrequenciaUseCase>();
 
             //Sincronismo CC Eol
             services.TryAddScoped<IListarComponentesCurricularesEolUseCase, ListarComponentesCurricularesEolUseCase>();
