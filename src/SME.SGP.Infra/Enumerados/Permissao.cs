@@ -1673,7 +1673,20 @@ namespace SME.SGP.Infra
             IconeDashBoard = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
             EhAlteracao = true)]
         RCA_C = 172,
-            
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_RELATORIOS,
+            Menu = ConstantesMenuPermissao.MENU_FREQUENCIA,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_RELATORIOS,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_RELATORIO_FREQUENCIA,
+            EhSubMenu = true,
+            SubMenu = ConstantesMenuPermissao.MENU_PRODUTIVIDADE_FREQUENCIA,
+            OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_RELATORIO_PRODUTIVIDADE_FREQUENCIA,
+            Url = ConstantesMenuPermissao.ROTA_RELATORIOS_PRODUTIVIDADE_FREQUENCIA,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
+            IconeDashBoard = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
+            EhConsulta = true)]
+        RPF_C = 278,
+
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_RELATORIOS, 
             Menu = ConstantesMenuPermissao.MENU_DIARIO_DE_CLASSE, 
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_RELATORIOS,
