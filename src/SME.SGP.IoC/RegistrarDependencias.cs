@@ -601,6 +601,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioMapeamentoEstudanteSecao, RepositorioMapeamentoEstudanteSecao>();
             services.TryAddScoped<IRepositorioQuestaoMapeamentoEstudante, RepositorioQuestaoMapeamentoEstudante>();
             services.TryAddScoped<IRepositorioRespostaMapeamentoEstudante, RepositorioRespostaMapeamentoEstudante>();
+
+            services.TryAddScoped<IRepositorioConsolidacaoProdutividadeFrequencia, RepositorioConsolidacaoProdutividadeFrequencia>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)
