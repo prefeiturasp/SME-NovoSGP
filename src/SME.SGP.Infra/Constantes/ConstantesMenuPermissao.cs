@@ -14,7 +14,7 @@
         public const string MENU_FREQUENCIA_PLANO_AULA = "Frequência/Plano de aula";
         public const string MENU_NOTAS = "Notas";
         public const string MENU_COMPENSACAO_AUSENCIA = "Compensação de Ausência";
-        public const string MENU_PRODUTIVIDADE_FREQUENCIA = "Produtividade de Frequência";
+        public const string MENU_PRODUTIVIDADE_FREQUENCIA = "Produtividade";
         public const string MENU_DIARIO_BORDO = "Diário de Bordo";
         public const string MENU_REGISTRO_INDIVIDUAL = "Registro Individual";
         public const string MENU_ATRIBUICAO_CJ = "Atribuição de CJ";
