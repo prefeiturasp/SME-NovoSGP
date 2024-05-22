@@ -62,7 +62,9 @@ namespace SME.SGP.TesteIntegracao.Frequencia.ConsolidacaoReflexoFrequenciaBuscaA
                                     && cc.RfProfessor.Equals(USUARIO_PROFESSOR_CODIGO_RF_2222222)
                                     && cc.DescricaoUe.Equals("EMEF Nome da UE")
                                     && cc.DescricaoDre.Equals("DRE 1")
-                                    && cc.Bimestre.Equals(3)).ShouldBeTrue();
+                                    && cc.Bimestre.Equals(3)
+                                    && cc.CodigoDre.Equals(DRE_CODIGO_1)
+                                    && cc.CodigoUe.Equals(UE_CODIGO_1)).ShouldBeTrue();
 
             var consolidacoesTurma1 = consolidacoes.Where(cc => cc.CodigoTurma.Equals(TURMA_CODIGO_1));
             consolidacoesTurma1.Count().ShouldBe(2);
