@@ -182,6 +182,7 @@ pipeline {
             steps{
               script{
                   sh "ls -ltra"
+                  
                   sh "pwd"
                   sh "hostname"
                   withSonarQubeEnv('sonarqube-local'){
