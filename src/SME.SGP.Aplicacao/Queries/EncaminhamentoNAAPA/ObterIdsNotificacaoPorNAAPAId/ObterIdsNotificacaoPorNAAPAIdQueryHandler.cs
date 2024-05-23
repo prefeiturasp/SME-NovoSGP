@@ -8,16 +8,16 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterIdsNotificacaoPorInatividadeAtendimentoIdQueryHandler : IRequestHandler<ObterIdsNotificacaoPorInatividadeAtendimentoIdQuery, IEnumerable<long>>
+    public class ObterIdsNotificacaoPorNAAPAIdQueryHandler : IRequestHandler<ObterIdsNotificacaoPorNAAPAIdQuery, IEnumerable<long>>
     {
         private readonly IRepositorioInatividadeAtendimentoNAAPANotificacao repositorio;
 
-        public ObterIdsNotificacaoPorInatividadeAtendimentoIdQueryHandler(IRepositorioInatividadeAtendimentoNAAPANotificacao repositorio)
+        public ObterIdsNotificacaoPorNAAPAIdQueryHandler(IRepositorioInatividadeAtendimentoNAAPANotificacao repositorio)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
 
-        public Task<IEnumerable<long>> Handle(ObterIdsNotificacaoPorInatividadeAtendimentoIdQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<long>> Handle(ObterIdsNotificacaoPorNAAPAIdQuery request, CancellationToken cancellationToken)
         {
             return repositorio.ObterIdsNotificacoesPorNAAPAIdAsync(request.EncaminhamentoNAAPAId);
         }

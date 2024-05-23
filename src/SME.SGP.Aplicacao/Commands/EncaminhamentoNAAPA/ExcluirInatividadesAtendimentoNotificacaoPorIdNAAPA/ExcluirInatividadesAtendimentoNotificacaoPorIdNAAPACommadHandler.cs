@@ -16,10 +16,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public Task<bool> Handle(ExcluirInatividadesAtendimentoNotificacaoPorIdNAAPACommand request, CancellationToken cancellationToken)
-        {
-            if (request.ExclusaoLogica)
-                return repositorio.RemoverLogicoPorNAAPAIdAsync(request.EncaminhamentoNAAPAId);
-            return repositorio.RemoverPorNAAPAIdAsync(request.EncaminhamentoNAAPAId);
-        }
+        => repositorio.RemoverLogicoPorNAAPAIdAsync(request.EncaminhamentoNAAPAId);
+           
     }
 }
