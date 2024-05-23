@@ -913,7 +913,7 @@ namespace SME.SGP.Dados.Repositorios
 	                                       ,pe.bimestre 
                                            ,t.ano_letivo as AnoLetivo
                                            ,a.disciplina_id as ComponenteCodigo
-                                           ,cc.descricao_sgp as ComponenteNome
+                                           ,coalesce(cc.descricao_infantil , cc.descricao_sgp, cc.descricao) as ComponenteNome
                                            ,rf.criado_rf as ProfRf
                                            ,rf.criado_por  as ProfNome
                                     from aula a 
