@@ -27,12 +27,13 @@ namespace SME.SGP.Aplicacao
 
             foreach (var responsavel in reponsaveisNoticar)
             {
-                await mediator.Send(new NotificarUsuarioCommand(
+                var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(
                                             ObterTitulo(),
                                             ObterMensagem(),
                                             responsavel.Login,
                                             NotificacaoCategoria.Aviso,
                                             NotificacaoTipo.NAAPA));
+                await mediator.Send(new SalvarInatividadeAtendimentoNAAPANotificacaoCommand(informacaoNotificacao.EncaminhamentoId, notificacaoId));
             }
 
             if (reponsaveisNoticar.Any())

@@ -603,6 +603,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioRespostaMapeamentoEstudante, RepositorioRespostaMapeamentoEstudante>();
 
             services.TryAddScoped<IRepositorioConsolidacaoProdutividadeFrequencia, RepositorioConsolidacaoProdutividadeFrequencia>();
+            services.TryAddScoped<IRepositorioInatividadeAtendimentoNAAPANotificacao, RepositorioInatividadeAtendimentoNAAPANotificacao>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)
