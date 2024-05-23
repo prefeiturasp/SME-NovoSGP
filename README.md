@@ -38,6 +38,9 @@ Nosso produto *oferece interfaces amigáveis para o usuário e diversas automaç
 
 ## É / Não é / Faz / Não faz:
 
+
+
+
 - **É**: Sistema para registros pedagógicos.
 - **Não é**: Repositório de arquivos, sistema de gestão de usuários e gestão administrativa.
 - **Faz**: Registros de aulas e frequência, planejamento das turmas e aulas, lançamento de notas e fechamento bimestral, além da geração de documentos legais (boletim, atas) e demais relatórios pedagógicos.
