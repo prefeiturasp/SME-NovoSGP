@@ -5,13 +5,11 @@ namespace SME.SGP.Aplicacao
 {
     public class ExcluirInatividadesAtendimentoNotificacaoPorIdNAAPACommand : IRequest<bool>
     {
-        public ExcluirInatividadesAtendimentoNotificacaoPorIdNAAPACommand(long encaminhamentoNAAPAId, bool exclusaoLogica = false)
+        public ExcluirInatividadesAtendimentoNotificacaoPorIdNAAPACommand(long encaminhamentoNAAPAId)
         {
             EncaminhamentoNAAPAId = encaminhamentoNAAPAId;
-            ExclusaoLogica = exclusaoLogica;
         }
         public long EncaminhamentoNAAPAId { get; }
-        public bool ExclusaoLogica { get; }
     }
 
     public class ExcluirInatividadesAtendimentoNotificacaoPorIdNAAPACommandValidator : AbstractValidator<ExcluirInatividadesAtendimentoNotificacaoPorIdNAAPACommand>

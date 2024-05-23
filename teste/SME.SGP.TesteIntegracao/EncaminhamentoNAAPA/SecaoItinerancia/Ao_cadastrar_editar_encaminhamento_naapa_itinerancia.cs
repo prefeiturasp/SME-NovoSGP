@@ -1,8 +1,13 @@
-﻿using Shouldly;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Shouldly;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.Informe.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
@@ -19,6 +24,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
         
         public Ao_cadastrar_editar_encaminhamento_naapa_itinerancia(CollectionFixture collectionFixture) : base(collectionFixture)
         {
+        }
+
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaSgpCommand, bool>), typeof(PublicarFilaSgpCommandFakeItinerancia), ServiceLifetime.Scoped));
         }
 
         [Fact(DisplayName = "Encaminhamento NAAPA - Cadastrar encaminhamento NAAPA itinerância (campos obrigatório não preenchidos)")]
@@ -471,12 +482,13 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
             arquivos.Count().ShouldBe(0);
         }
 
-        private async Task GerarDadosEncaminhamentoNAAPA(DateTime dataQueixa)
+        private async Task<long> GerarDadosEncaminhamentoNAAPA(DateTime dataQueixa)
         {
-            await CriarEncaminhamentoNAAPA();
+            var id = await CriarEncaminhamentoNAAPA();
             await CriarEncaminhamentoNAAPASecao();
             await CriarQuestoesEncaminhamentoNAAPA();
             await CriarRespostasEncaminhamentoNAAPA(dataQueixa);
+            return id;
         }
 
 
@@ -637,9 +649,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
             });
         }
 
-        private async Task CriarEncaminhamentoNAAPA()
+        private async Task<long> CriarEncaminhamentoNAAPA()
         {
-            await InserirNaBase(new Dominio.EncaminhamentoNAAPA()
+            return await InserirNaBaseAsync(new Dominio.EncaminhamentoNAAPA()
             {
                 TurmaId = TURMA_ID_1,
                 AlunoCodigo = ALUNO_CODIGO_1,
@@ -714,6 +726,131 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
             {
                 QuestaoEncaminhamentoId = 8,
                 Texto = PROFISSIONAIS_ENVOLVIDOS_01,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+        }
+
+        [Fact(DisplayName = "Encaminhamento NAAPA - Cadastrar encaminhamento NAAPA itinerância e Excluir notificações de inatividade de atendimento")]
+        public async Task Ao_cadastrar_encaminhamento_itinerancia_excluir_notificacoes()
+        {
+            var filtroNAAPA = new FiltroNAAPADto()
+            {
+                Perfil = ObterPerfilCP(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8",
+                DreId = 1,
+                CodigoUe = "1",
+                TurmaId = TURMA_ID_1,
+                Situacao = (int)SituacaoNAAPA.AguardandoAtendimento,
+                Prioridade = NORMAL
+            };
+
+            await CriarDadosBase(filtroNAAPA);
+            var useCase = ObterServicoRegistrarEncaminhamentoItinerario();
+
+            var dataQueixa = DateTimeExtension.HorarioBrasilia().Date;
+            dataQueixa.AddDays(-10);
+
+            var encaminhamentoId = await GerarDadosEncaminhamentoNAAPA(dataQueixa);
+            await InserirNotificacoesInatividadeAtendimento(encaminhamentoId);
+
+            dataQueixa.AddDays(4);
+
+            var dto = new EncaminhamentoNAAPAItineranciaDto()
+            {
+                EncaminhamentoId = 1,
+                EncaminhamentoNAAPASecao = new EncaminhamentoNAAPASecaoDto()
+                {
+                    SecaoId = 3,
+                    Questoes = new List<EncaminhamentoNAAPASecaoQuestaoDto>()
+                    {
+                        new ()
+                        {
+                            QuestaoId = ID_QUESTAO_DATA_ATENDIMENTO,
+                            TipoQuestao = TipoQuestao.Data,
+                            Resposta = dataQueixa.ToString("dd/MM/yyyy")
+                        },
+                        new ()
+                        {
+                            QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
+                            TipoQuestao = TipoQuestao.Combo,
+                            Resposta =  ID_ATENDIMENTO_NAO_PRESENCIAL.ToString()
+                        },
+                        new ()
+                        {
+                            QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
+                            TipoQuestao = TipoQuestao.Combo,
+                            Resposta = ID_ACOES_LUDICAS.ToString()
+                        },
+                        new ()
+                        {
+                            QuestaoId = ID_QUESTAO_DESCRICAO_ATENDIMENTO,
+                            TipoQuestao = TipoQuestao.EditorTexto,
+                            Resposta = "Descrição do atendimento"
+                        },
+                        new ()
+                        {
+                            QuestaoId = ID_QUESTAO_PROFISSIONAIS_ENVOLVIDOS,
+                            TipoQuestao = TipoQuestao.ProfissionaisEnvolvidos,
+                            Resposta = PROFISSIONAIS_ENVOLVIDOS_01
+                        }
+                    }
+                }
+            };
+
+            await useCase.Executar(dto);
+            var notificacoes = ObterTodos<Notificacao>();
+            notificacoes.Count().ShouldBe(2);
+            notificacoes.All(n => n.Excluida).ShouldBeTrue();
+            var notificacoesInatividadeAtendimento = ObterTodos<InatividadeAtendimentoNAAPANotificacao>();
+            notificacoesInatividadeAtendimento.Count().ShouldBe(2);
+            notificacoesInatividadeAtendimento.All(n => n.Excluido).ShouldBeTrue();
+        }
+
+        private async Task InserirNotificacoesInatividadeAtendimento(long encaminhamentoNAAPAId)
+        {
+            var id = await InserirNaBaseAsync(new Notificacao()
+            {
+                Codigo = 1,
+                Tipo = NotificacaoTipo.InatividadeAtendimentoNAAPA,
+                Categoria = NotificacaoCategoria.Aviso,
+                Titulo = "Notificação Usuário 01",
+                Mensagem = "Notificação Usuário 01",
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                UsuarioId = USUARIO_ID_1
+            });
+
+            await InserirNaBase(new InatividadeAtendimentoNAAPANotificacao()
+            {
+                EncaminhamentoNAAPAId = encaminhamentoNAAPAId,
+                NotificacaoId = id,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            id = await InserirNaBaseAsync (new Notificacao()
+            {
+                Codigo = 2,
+                Tipo = NotificacaoTipo.InatividadeAtendimentoNAAPA,
+                Categoria = NotificacaoCategoria.Aviso,
+                Titulo = "Notificação Usuário 02",
+                Mensagem = "Notificação Usuário 02",
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                UsuarioId = USUARIO_ID_1
+            });
+
+            await InserirNaBase(new InatividadeAtendimentoNAAPANotificacao()
+            {
+                EncaminhamentoNAAPAId = encaminhamentoNAAPAId,
+                NotificacaoId = id,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
