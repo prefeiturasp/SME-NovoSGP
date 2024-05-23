@@ -84,6 +84,11 @@ namespace SME.SGP.Frequencia.Worker
             Comandos.Add(RotasRabbitSgpFrequencia.ExecutarNotificacaoAlunosBaixaFrequenciaBuscaAtivaDre, new ComandoRabbit("Notificar profissionais NAAPA sobre alunos com frequência mensal insuficiente (Busca Ativa) (Dre)", typeof(IExecutarNotificacaoAlunosFreqMensalInsuficienteBuscaAtivaDreUseCase)));
             Comandos.Add(RotasRabbitSgpFrequencia.ExecutarNotificacaoAlunosBaixaFrequenciaBuscaAtivaUe, new ComandoRabbit("Notificar profissionais NAAPA sobre alunos com frequência mensal insuficiente (Busca Ativa) (Ue)", typeof(IExecutarNotificacaoAlunosFreqMensalInsuficienteBuscaAtivaUeUseCase)));
             Comandos.Add(RotasRabbitSgpFrequencia.ExecutarNotificacaoAlunosBaixaFrequenciaBuscaAtivaProfissionaisNAAPA, new ComandoRabbit("Notificar profissionais NAAPA sobre alunos com frequência mensal insuficiente (Busca Ativa)", typeof(IExecutarNotificacaoAlunosFreqMensalInsuficienteBuscaAtivaProfissionaisUseCase)));
+
+            Comandos.Add(RotasRabbitSgpFrequencia.ConsolidarInformacoesProdutividadeFrequencia, new ComandoRabbit("Consolidar informações produtividade de frequência", typeof(IConsolidarInformacoesProdutividadeFrequenciaUseCase)));
+            Comandos.Add(RotasRabbitSgpFrequencia.ConsolidarInformacoesProdutividadeFrequenciaDre, new ComandoRabbit("Consolidar informações produtividade de frequência (Dre)", typeof(IConsolidarInformacoesProdutividadeFrequenciaDreUseCase)));
+            Comandos.Add(RotasRabbitSgpFrequencia.ConsolidarInformacoesProdutividadeFrequenciaUe, new ComandoRabbit("Consolidar informações produtividade de frequência (Ue)", typeof(IConsolidarInformacoesProdutividadeFrequenciaUeUseCase)));
+            Comandos.Add(RotasRabbitSgpFrequencia.ConsolidarInformacoesProdutividadeFrequenciaBimestre, new ComandoRabbit("Consolidar informações produtividade de frequência (Bimestre)", typeof(IConsolidarInformacoesProdutividadeFrequenciaBimestreUseCase)));
         }
     }
 }

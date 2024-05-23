@@ -14,6 +14,7 @@
         public const string MENU_FREQUENCIA_PLANO_AULA = "Frequência/Plano de aula";
         public const string MENU_NOTAS = "Notas";
         public const string MENU_COMPENSACAO_AUSENCIA = "Compensação de Ausência";
+        public const string MENU_PRODUTIVIDADE_FREQUENCIA = "Produtividade";
         public const string MENU_DIARIO_BORDO = "Diário de Bordo";
         public const string MENU_REGISTRO_INDIVIDUAL = "Registro Individual";
         public const string MENU_ATRIBUICAO_CJ = "Atribuição de CJ";
@@ -147,6 +148,7 @@
         public const string ROTA_RELATORIOS_FREQUENCIA_FREQUENCIA = "/relatorios/frequencia/frequencia";
         public const string ROTA_RELATORIOS_FREQUENCIA_MENSAL = "/relatorios/frequencia/mensal";
         public const string ROTA_RELATORIOS_FREQUENCIA_CONTROLE_MENSAL = "/relatorios/frequencia/controle-mensal";
+        public const string ROTA_RELATORIOS_PRODUTIVIDADE_FREQUENCIA = "/relatorios/frequencia/produtividade";
         public const string ROTA_RELATORIOS_COMPENSACAO_AUSENCIA = "/relatorios/compensacao-ausencia";
         public const string ROTA_RELATORIOS_DIARIO_CLASSE_CONTROLE_GRADE = "/relatorios/diario-classe/controle-grade";
         public const string ROTA_RELATORIOS_DIARIO_CLASSE_PLANEJAMENTO_DIARIO = "/relatorios/diario-classe/planejamento-diario";
@@ -308,7 +310,8 @@
         public const int ORDEM_SUB_MENU_RELATORIO_FREQUENCIA_MENSAL = 2;
         public const int ORDEM_SUB_MENU_RELATORIO_CONTROLE_DE_FREQUENCIA_MENSAL = 3;
         public const int ORDEM_SUB_MENU_RELATORIO_COMPENSACAO_AUSENCIA = 4;
-        
+        public const int ORDEM_SUB_MENU_RELATORIO_PRODUTIVIDADE_FREQUENCIA = 5;
+
         public const int ORDEM_SUB_MENU_RELATORIO_DIARIO_DE_CLASSE = 1;
         public const int ORDEM_SUB_MENU_RELATORIO_CONTROLE_DE_PLANEJAMENTO_DIARIO = 2;
         public const int ORDEM_SUB_MENU_RELATORIO_DEVOLUTIVAS = 3;

@@ -354,5 +354,15 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await relatorioUseCase.Executar(filtro));
         }
+
+        [HttpPost("produtividade-frequencia")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RFP_C, Policy = "Bearer")]
+        public async Task<IActionResult> ProdutividadeFrequencia([FromBody] FiltroRelatorioProdutividadeFrequenciaDto filtroRelatorio,
+            [FromServices] IGerarRelatorioProdutividadeFrequenciaUseCase gerarRelatorio)
+        {
+            return Ok(await gerarRelatorio.Executar(filtroRelatorio));
+        }
     }
 }

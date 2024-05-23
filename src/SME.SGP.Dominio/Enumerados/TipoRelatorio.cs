@@ -167,5 +167,8 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "relatorios/buscasativas", ShortName = "BuscasAtivas", Description = "Relatório de Busca ativa")]
         RelatorioBuscasAtivas = 55,
+
+        [Display(Name = "relatorios/produtividade-frequencia", ShortName = "RelatorioProdutividadeFrequencia", Description = "Relatório de Produtividade de Frequência")]
+        ProdutividadeFrequencia = 56,
     }
 }
