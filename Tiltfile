@@ -17,6 +17,8 @@ dc_resource('minio',trigger_mode = TRIGGER_MODE_MANUAL, labels="minio")
 dc_resource('prometheus',trigger_mode = TRIGGER_MODE_MANUAL, labels="monitor")
 dc_resource('grafana',trigger_mode = TRIGGER_MODE_MANUAL, labels="monitor")
 
+
+
 config.define_string_list("to-run", args=True)
 cfg = config.parse()
 groups = {
