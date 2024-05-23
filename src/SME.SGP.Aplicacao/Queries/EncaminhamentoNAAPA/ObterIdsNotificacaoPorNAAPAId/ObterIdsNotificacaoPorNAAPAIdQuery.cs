@@ -4,18 +4,18 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterIdsNotificacaoPorInatividadeAtendimentoIdQuery : IRequest<IEnumerable<long>>
+    public class ObterIdsNotificacaoPorNAAPAIdQuery : IRequest<IEnumerable<long>>
     {
-        public ObterIdsNotificacaoPorInatividadeAtendimentoIdQuery(long encaminhamentoNAAPAId)
+        public ObterIdsNotificacaoPorNAAPAIdQuery(long encaminhamentoNAAPAId)
         {
             EncaminhamentoNAAPAId = encaminhamentoNAAPAId;
         }
         public long EncaminhamentoNAAPAId { get; }
     }
 
-    public class ObterIdsNotificacaoPorInatividadeAtendimentoIdQueryValidator : AbstractValidator<ObterIdsNotificacaoPorInatividadeAtendimentoIdQuery>
+    public class ObterIdsNotificacaoPorNAAPAIdQueryValidator : AbstractValidator<ObterIdsNotificacaoPorNAAPAIdQuery>
     {
-        public ObterIdsNotificacaoPorInatividadeAtendimentoIdQueryValidator()
+        public ObterIdsNotificacaoPorNAAPAIdQueryValidator()
         {
             RuleFor(c => c.EncaminhamentoNAAPAId)
                 .GreaterThan(0)
