@@ -16,6 +16,8 @@ pipeline {
       buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '5'))
       disableConcurrentBuilds()
       skipDefaultCheckout()
+
+        
       office365ConnectorWebhooks([
         [name: "Office 365", url: "${URL_WEBHOOK_SGP}", notifyBackToNormal: false, notifyFailure: true, notifyRepeatedFailure: false, notifySuccess: true, notifyAborted: true]
       ])
