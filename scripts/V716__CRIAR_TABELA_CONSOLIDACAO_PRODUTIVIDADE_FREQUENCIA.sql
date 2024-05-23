@@ -15,7 +15,7 @@ CREATE table if not exists public.consolidacao_produtividade_frequencia (
 	dif_data_aula_reg_freq int4 not null,
 	ano_letivo int4 not null,
 	componente_curricular_id varchar(15) not null,
-	componente_curricular_nm varchar(100) not null,
+	componente_curricular_nm varchar(100),
 	criado_em timestamp NOT NULL,
 	criado_por varchar(200) NOT NULL,
 	alterado_em timestamp NULL,
