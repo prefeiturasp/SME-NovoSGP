@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
+using SME.SGP.Dados;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -14,10 +15,13 @@ namespace SME.SGP.Aplicacao
     {
         private EncaminhamentoNAAPAInformacoesNotificacaoInatividadeAtendimentoDto informacaoNotificacao;
         private readonly IConfiguration configuration;
+        private readonly IUnitOfWork unitOfWork;
 
-        public NotificarInatividadeDoAtendimentoNAAPAInformacaoUseCase(IMediator mediator, IConfiguration configuration) : base(mediator)
+
+        public NotificarInatividadeDoAtendimentoNAAPAInformacaoUseCase(IMediator mediator, IConfiguration configuration, IUnitOfWork unitOfWork) : base(mediator)
         {
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task<bool> Executar(MensagemRabbit param)
@@ -25,21 +29,30 @@ namespace SME.SGP.Aplicacao
             informacaoNotificacao = param.ObterObjetoMensagem<EncaminhamentoNAAPAInformacoesNotificacaoInatividadeAtendimentoDto>();
             var reponsaveisNoticar = await mediator.Send(new ObterResponsaveisPorDreUeNAAPAQuery(informacaoNotificacao.DreCodigo, informacaoNotificacao.UeCodigo));
 
-            foreach (var responsavel in reponsaveisNoticar)
+            unitOfWork.IniciarTransacao();
+            try
             {
-                var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(
-                                            ObterTitulo(),
-                                            ObterMensagem(),
-                                            responsavel.Login,
-                                            NotificacaoCategoria.Aviso,
-                                            NotificacaoTipo.NAAPA));
-                await mediator.Send(new SalvarInatividadeAtendimentoNAAPANotificacaoCommand(informacaoNotificacao.EncaminhamentoId, notificacaoId));
+                foreach (var responsavel in reponsaveisNoticar)
+                {
+                    var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(
+                                                ObterTitulo(),
+                                                ObterMensagem(),
+                                                responsavel.Login,
+                                                NotificacaoCategoria.Aviso,
+                                                NotificacaoTipo.NAAPA));
+                    await mediator.Send(new SalvarInatividadeAtendimentoNAAPANotificacaoCommand(informacaoNotificacao.EncaminhamentoId, notificacaoId));
+                }
+                if (reponsaveisNoticar.Any())
+                    await mediator.Send(new AlterarDataUltimaNotificacaoInatividadeAtendimentoNAAPACommand(informacaoNotificacao.EncaminhamentoId));
+
+                unitOfWork.PersistirTransacao();
+                return true;
             }
-
-            if (reponsaveisNoticar.Any())
-                await mediator.Send(new AlterarDataUltimaNotificacaoInatividadeAtendimentoNAAPACommand(informacaoNotificacao.EncaminhamentoId));
-
-            return true;
+            catch
+            {
+                unitOfWork.Rollback();
+                throw;
+            }
         }
 
         private string ObterTitulo()

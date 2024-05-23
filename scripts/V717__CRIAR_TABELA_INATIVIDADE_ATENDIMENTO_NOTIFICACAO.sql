@@ -8,6 +8,7 @@ CREATE table IF NOT EXISTS public.inatividade_atendimento_naapa_notificacao(
 	alterado_por varchar(200) NULL,
 	criado_rf varchar(200) NOT NULL,
 	alterado_rf varchar(200) NULL,
+	excluido bool not null default false,
 	CONSTRAINT inatividade_atendimento_naapa_notificacao_pk PRIMARY KEY (id)
 );
 
