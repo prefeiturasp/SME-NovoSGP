@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
                                                 ObterMensagem(),
                                                 responsavel.Login,
                                                 NotificacaoCategoria.Aviso,
-                                                NotificacaoTipo.NAAPA));
+                                                NotificacaoTipo.InatividadeAtendimentoNAAPA));
                     await mediator.Send(new SalvarInatividadeAtendimentoNAAPANotificacaoCommand(informacaoNotificacao.EncaminhamentoId, notificacaoId));
                 }
                 if (reponsaveisNoticar.Any())
