@@ -6,6 +6,7 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IRepositorioInatividadeAtendimentoNAAPANotificacao : IRepositorioBase<InatividadeAtendimentoNAAPANotificacao>
     {
         Task<bool> RemoverLogicoPorNAAPAIdAsync(long encaminhamentoNAAPAId);
+        Task<bool> RemoverPorNAAPAIdAsync(long encaminhamentoNAAPAId);
         Task<IEnumerable<long>> ObterIdsNotificacoesPorNAAPAIdAsync(long encaminhamentoNAAPAId);
     }
 }

@@ -29,5 +29,12 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.ExecuteScalarAsync<bool>(query, new { encaminhamentoNAAPAId });
         }
+
+        public async Task<bool> RemoverPorNAAPAIdAsync(long encaminhamentoNAAPAId)
+        {
+            var query = @"delete from inatividade_atendimento_naapa_notificacao where encaminhamento_naapa_id = @encaminhamentoNAAPAId";
+
+            return await database.Conexao.ExecuteScalarAsync<bool>(query, new { encaminhamentoNAAPAId });
+        }
     }
 }
