@@ -50,7 +50,7 @@
         public const string RotaExecutarExclusaoDaNotificacao = "sgp.notificacao.excluir";
         public const string ExecutarAtualizacaoMapeamentoEstudantes = "sgp.mapeamento.estudantes.atualizar";
         public const string ExecutarAtualizacaoMapeamentoEstudantesBimestre = "sgp.mapeamento.estudantes.bimestre.atualizar";
-
+        
         #region Relatórios
 
         public const string RotaRelatoriosProntos = "sgp.relatorios.prontos.notificar";
