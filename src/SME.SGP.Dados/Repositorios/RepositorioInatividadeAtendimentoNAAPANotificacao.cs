@@ -18,14 +18,14 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @$" select notificacao_id
                             from inatividade_atendimento_naapa_notificacao 
-                            where encaminhamento_naapa_id = @encaminhamentoNAAPAId ";
+                            where encaminhamento_naapa_id = @encaminhamentoNAAPAId and not excluido ";
 
             return await database.Conexao.QueryAsync<long>(query, new { encaminhamentoNAAPAId });
         }
 
         public async Task<bool> RemoverLogicoPorNAAPAIdAsync(long encaminhamentoNAAPAId)
         {
-            var query = @"update inatividade_atendimento_naapa_notificacao set excluido = true where encaminhamento_naapa_id = @encaminhamentoNAAPAId";
+            var query = @"update inatividade_atendimento_naapa_notificacao set excluido = true where encaminhamento_naapa_id = @encaminhamentoNAAPAId and not excluido";
 
             return await database.Conexao.ExecuteScalarAsync<bool>(query, new { encaminhamentoNAAPAId });
         }
