@@ -21,11 +21,14 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AlunoDadosBasicosDto>> Handle(ObterDadosAlunosQuery request, CancellationToken cancellationToken)
         {
-            var dadosAlunos = await mediator.Send(new ObterAlunosPorTurmaQuery(request.TurmaCodigo, request.ConsideraInativos));
+            var dadosAlunos = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(request.TurmaCodigo)), cancellationToken);
             if (dadosAlunos.EhNulo() || !dadosAlunos.Any())
                 throw new NegocioException($"Não foram localizados dados dos alunos para turma {request.TurmaCodigo} no EOL para o ano letivo {request.AnoLetivo}");
 
             var dadosAlunosDto = new List<AlunoDadosBasicosDto>();
+
+            if (!request.ConsideraInativos)
+                dadosAlunos = dadosAlunos.Where(a => a.Ativo);
 
             foreach (var dadoAluno in dadosAlunos)
             {
@@ -43,7 +46,7 @@ namespace SME.SGP.Aplicacao
             return dadosAlunosDto;
         }
 
-        private string ObterTipoResponsavel(string tipoResponsavel)
+        private static string ObterTipoResponsavel(string tipoResponsavel)
         {
             switch (tipoResponsavel)
             {
@@ -67,7 +70,7 @@ namespace SME.SGP.Aplicacao
             return TipoResponsavel.Filiacao1.ToString();
         }
 
-        public MarcadorFrequenciaDto ObterMarcadorAluno(AlunoPorTurmaResposta aluno, PeriodoEscolar bimestre, bool ehInfantil = false)
+        public static MarcadorFrequenciaDto ObterMarcadorAluno(AlunoPorTurmaResposta aluno, PeriodoEscolar bimestre, bool ehInfantil = false)
         {
             MarcadorFrequenciaDto marcador = null;
 
