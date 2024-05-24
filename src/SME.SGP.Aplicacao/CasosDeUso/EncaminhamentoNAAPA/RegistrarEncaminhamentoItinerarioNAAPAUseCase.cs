@@ -100,7 +100,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
             }
 
             await mediator.Send(new RegistrarHistoricoDeAlteracaoEncaminhamentoNAAPACommand(secaoDto, secaoEncaminhamento, TipoHistoricoAlteracoesEncaminhamentoNAAPA.Inserido));
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExcluirNotificacaoInatividadeAtendimento, encaminhamentoNAAPAItineranciaDto.EncaminhamentoId, Guid.NewGuid()));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpNAAPA.RotaExcluirNotificacaoInatividadeAtendimento, encaminhamentoNAAPAItineranciaDto.EncaminhamentoId, Guid.NewGuid()));
             return true;
         }
 

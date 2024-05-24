@@ -24,7 +24,7 @@ namespace SME.SGP.TesteIntegracao.Informe.ServicosFake
 
             return request.Rota switch
             {
-                RotasRabbitSgp.RotaExcluirNotificacaoInatividadeAtendimento => executarExclusaoNotificacaoInatividadeAtendimentoNAAPAUseCase.Executar(mensagem),
+                RotasRabbitSgpNAAPA.RotaExcluirNotificacaoInatividadeAtendimento => executarExclusaoNotificacaoInatividadeAtendimentoNAAPAUseCase.Executar(mensagem),
                 RotasRabbitSgpNotificacoes.Exclusao => Task.FromResult(true),
                 RotasRabbitSgpNotificacoes.Criacao => Task.FromResult(true),
                 _ => throw new NotImplementedException($"Rota: {request.Rota} não implementada para o teste"),

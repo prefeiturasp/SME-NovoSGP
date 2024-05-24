@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Workers;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
@@ -41,6 +42,7 @@ namespace SME.SGP.NAAPA.Worker
             Comandos.Add(RotasRabbitSgpNAAPA.ExecutarNotificacaoInatividadeAtendimentoNAAPA, new ComandoRabbit("Executar notificação de inatividade do atendimento NAAPA", typeof(INotificarInatividadeDoAtendimentoNAAPAUseCase), true));
             Comandos.Add(RotasRabbitSgpNAAPA.ExecutarNotificacaoInatividadeAtendimentoPorUeNAAPA, new ComandoRabbit("Executar notificação de inatividade do atendimento NAAPA por ue", typeof(INotificarInatividadeDoAtendimentoNAAPAPorUeUseCase), true));
             Comandos.Add(RotasRabbitSgpNAAPA.ExecutarNotificacaoInatividadeAtendimentoInformacaoNAAPA, new ComandoRabbit("Executar notificação de inatividade do atendimento informação NAAPA", typeof(INotificarInatividadeDoAtendimentoNAAPAInformacaoUseCase), true));
+            Comandos.Add(RotasRabbitSgpNAAPA.RotaExcluirNotificacaoInatividadeAtendimento, new ComandoRabbit("Executar exclusão notificações de inatividade de atendimentos NAAPA", typeof(IExecutarExclusaoNotificacaoInatividadeAtendimentoNAAPAUseCase), true));
         }
     }
 }
