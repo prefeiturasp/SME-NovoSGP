@@ -27,6 +27,7 @@ namespace SME.SGP.TesteIntegracao.Informe.ServicosFake
                 RotasRabbitSgpNAAPA.RotaExcluirNotificacaoInatividadeAtendimento => executarExclusaoNotificacaoInatividadeAtendimentoNAAPAUseCase.Executar(mensagem),
                 RotasRabbitSgpNotificacoes.Exclusao => Task.FromResult(true),
                 RotasRabbitSgpNotificacoes.Criacao => Task.FromResult(true),
+                RotasRabbitSgp.RemoverArquivoArmazenamento => Task.FromResult(true),
                 _ => throw new NotImplementedException($"Rota: {request.Rota} não implementada para o teste"),
             };
         }
