@@ -40,8 +40,13 @@ namespace SME.SGP.Aplicacao
 
             turmasCodigo.Add(turmaRegular.CodigoTurma);
 
+            var tipoCalendarioTurma = await mediator
+                .Send(new ObterTipoCalendarioIdPorTurmaQuery(turmaRegular));
+
+            var periodoFechamento = await mediator.Send(new ObterPeriodoFechamentoPorCalendarioIdEBimestreQuery(tipoCalendarioTurma, turmaRegular.EhTurmaInfantil, param.Bimestre));
+
             var alunosDaTurma = (await mediator
-                .Send(new ObterAlunosDentroPeriodoQuery(turmaRegular.CodigoTurma, (periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim))))?.DistinctBy(x => x.NomeAluno);
+                .Send(new ObterAlunosDentroPeriodoQuery(turmaRegular.CodigoTurma, (periodoFechamento?.InicioDoFechamento ?? periodoEscolar.PeriodoInicio, periodoFechamento?.FinalDoFechamento ?? periodoEscolar.PeriodoFim))))?.DistinctBy(x => x.NomeAluno);
 
             var turmaComplementares = await mediator
                 .Send(new ObterTurmasComplementaresPorAlunoQuery(alunosDaTurma.Select(x => x.CodigoAluno).ToArray()));
@@ -85,9 +90,6 @@ namespace SME.SGP.Aplicacao
                 .Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasDosAlunos, perfil, usuarioLogado.CodigoRf, turmaRegular.EnsinoEspecial, turmaRegular.TurnoParaComponentesCurriculares)))
                 .Where(w => w.LancaNota)
                 .ToArray();
-
-            var tipoCalendarioTurma = await mediator
-                .Send(new ObterTipoCalendarioIdPorTurmaQuery(turmaRegular));
 
             var fechamentoTurma = await mediator
                 .Send(new ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestreTipoCalendarioQuery(param.Bimestre, turmaRegular.CodigoTurma, turmaRegular.AnoLetivo, turmaRegular.Semestre, tipoCalendarioTurma));
