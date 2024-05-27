@@ -78,8 +78,11 @@ namespace SME.SGP.Aplicacao
                         }
                     }
                 }
+                else if (EhSituacaoMatriculaTransferencia(ultimaSituacao.CodigoSituacaoMatricula))
+                    encerrarPlanoAee = true;
                 else if (matriculas.Select(m => m.CodigoTurma).Distinct().Count() > 1 && AlunoFoiTransferidoDaUnidadeEscolar(matriculas, turmaDoPlanoAee))
                     encerrarPlanoAee = true;
+
             }
 
             if (encerrarPlanoAee || (turmaDoPlanoAee.EhTurmaPrograma() && ultimaSituacao.EhNulo()))
@@ -250,6 +253,13 @@ namespace SME.SGP.Aplicacao
                     !registroMatriculaTurmaAnterior.CodigoEscola.Equals(registroMatriculaMaisRecente.CodigoEscola))) &&
                    !registroMatriculaTurmaAnterior.CodigoEscola.Equals(registroMatriculaMaisRecente.CodigoEscola);
         }
+
+        private bool EhSituacaoMatriculaTransferencia(SituacaoMatriculaAluno situacao)
+            => (new[] { SituacaoMatriculaAluno.Transferido,
+                         SituacaoMatriculaAluno.Deslocamento,
+                         SituacaoMatriculaAluno.TransferidoSED,
+                         SituacaoMatriculaAluno.Desistente
+                    }).Contains(situacao);
 
         private async Task ReaverPlanoEncerradoIndevidamente(PlanoAEE planoAEE, Turma turmaPlano)
         {
