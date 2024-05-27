@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Dominio;
+using System;
 using System.Collections.Generic;
 
 namespace SME.SGP.Infra.Dtos
@@ -12,5 +13,6 @@ namespace SME.SGP.Infra.Dtos
         public Guid[] Arquivos { get; set; }
         public string Titulo { get; set; }
         public string Texto { get; set; }
+        public IEnumerable<Modalidade> Modalidades { get; set; }
     }
 }
