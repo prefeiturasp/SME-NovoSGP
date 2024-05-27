@@ -6,7 +6,7 @@ namespace SME.SGP.Dados.Mapeamentos
     {
         public InformativoModalidadeMap()
         {
-            ToTable("informativo");
+            ToTable("informativo_modalidade");
             Map(c => c.InformativoId).ToColumn("informativo_id");
             Map(c => c.Modalidade).ToColumn("modalidade_codigo");
         }

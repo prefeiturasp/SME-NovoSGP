@@ -195,6 +195,53 @@ namespace SME.SGP.TesteIntegracao.Informe
             notificacoes.Count().ShouldBe(2);
         }
 
+        [Fact(DisplayName = "Informes - Salvar informes com modalidades")]
+        public async Task Ao_salvar_informes_com_modalidades()
+        {
+            await CriarDadosBase();
+            var useCase = ServiceProvider.GetService<ISalvarInformesUseCase>();
+
+            var dto = new InformesDto()
+            {
+                DreId = DRE_ID_1,
+                Perfis = new List<GruposDeUsuariosDto>()
+                {
+                    new GruposDeUsuariosDto()
+                    {
+                        Id = PERFIL_AD
+                    },
+                    new GruposDeUsuariosDto()
+                    {
+                        Id = PERFIL_ADM_UE
+                    }
+                },
+                Modalidades = new List<Modalidade>()
+                {
+                    Modalidade.Fundamental,
+                    Modalidade.Medio
+                },
+                Titulo = "Informa com modalidade",
+                Texto = "teste"
+            };
+            var resultado = await useCase.Executar(dto);
+            resultado.ShouldNotBeNull();
+
+            var informes = ObterTodos<Informativo>().FirstOrDefault();
+            informes.ShouldNotBeNull();
+            informes.DreId.ShouldBe(DRE_ID_1);
+            informes.DataEnvio.ShouldBe(DateTimeExtension.HorarioBrasilia().Date);
+            informes.Titulo.ShouldBe(dto.Titulo);
+            informes.Texto.ShouldBe(dto.Texto);
+
+            var informesPerfil = ObterTodos<InformativoPerfil>();
+            informesPerfil.ShouldNotBeNull();
+            informesPerfil.Count().ShouldBe(2);
+
+            var informesModalidade = ObterTodos<InformativoModalidade>();
+            informesModalidade.ShouldNotBeNull();
+            informesModalidade.Count().ShouldBe(2);
+        }
+
         private async Task IncluirArquivos()
         {
             await InserirNaBase(new Arquivo()
