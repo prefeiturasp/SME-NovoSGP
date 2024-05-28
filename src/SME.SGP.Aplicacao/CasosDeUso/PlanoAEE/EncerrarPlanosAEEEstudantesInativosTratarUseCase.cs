@@ -84,6 +84,8 @@ namespace SME.SGP.Aplicacao
                     encerrarPlanoAee = true;
 
             }
+            else if (planoAEE.Situacao != SituacaoPlanoAEE.EncerradoAutomaticamente)
+                encerrarPlanoAee = true;
 
             if (encerrarPlanoAee || (turmaDoPlanoAee.EhTurmaPrograma() && ultimaSituacao.EhNulo()))
                 await EncerrarPlanoAee(planoAEE, ultimaSituacao?.SituacaoMatricula ?? "Inativo", ultimaSituacao?.DataSituacao ?? DateTimeExtension.HorarioBrasilia());
