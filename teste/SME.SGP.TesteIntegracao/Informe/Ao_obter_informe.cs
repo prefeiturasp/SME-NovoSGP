@@ -138,6 +138,80 @@ namespace SME.SGP.TesteIntegracao.Informe
             resultado.Auditoria.CriadoPor.ShouldBe(SISTEMA_NOME);
         }
 
+        [Fact(DisplayName = "Informes - Obter informe com modalidades")]
+        public async Task Ao_obter_informe_com_modalidades()
+        {
+            await CriarDadosBase();
+
+            await InserirNaBase(new Informativo()
+            {
+                Titulo = "informes sem dre",
+                Texto = "teste",
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new InformativoPerfil()
+            {
+                InformativoId = INFORME_ID_1,
+                CodigoPerfil = PERFIL_AD,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new InformativoPerfil()
+            {
+                InformativoId = INFORME_ID_1,
+                CodigoPerfil = PERFIL_ADM_COTIC,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new InformativoModalidade()
+            {
+                InformativoId = INFORME_ID_1,
+                Modalidade = Modalidade.Fundamental,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new InformativoModalidade()
+            {
+                InformativoId = INFORME_ID_1,
+                Modalidade = Modalidade.Medio,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await IncluirAnexos(INFORME_ID_1);
+            var useCase = ServiceProvider.GetService<IObterInformeUseCase>();
+
+            var resultado = await useCase.Executar(INFORME_ID_1);
+            resultado.ShouldNotBeNull();
+            resultado.DreNome.ShouldBe("Todas");
+            resultado.UeNome.ShouldBe("Todas");
+            resultado.Texto.ShouldBe("teste");
+            resultado.Titulo.ShouldBe("informes sem dre");
+            resultado.Perfis.ShouldNotBeNull();
+            resultado.Perfis.ToList().Exists(p => p.Id == PERFIL_AD).ShouldBeTrue();
+            resultado.Perfis.ToList().Exists(p => p.Id == PERFIL_ADM_COTIC).ShouldBeTrue();
+            resultado.Modalidades.Count().ShouldBe(2);
+            resultado.Modalidades.FirstOrDefault().Nome.ShouldBe("Ensino Fundamental");
+            resultado.Modalidades.LastOrDefault().Nome.ShouldBe("Ensino Médio");
+            var anexos = resultado.Anexos;
+            anexos.ShouldNotBeNull();
+            anexos.Count.ShouldBe(2);
+            anexos.Any(anx => anx.Nome.Equals("Arquivo - 1")).ShouldBeTrue();
+            anexos.Any(anx => anx.Nome.Equals("Arquivo - 2")).ShouldBeTrue();
+            resultado.Auditoria.ShouldNotBeNull();
+            resultado.Auditoria.CriadoPor.ShouldBe(SISTEMA_NOME);
+        }
+
         private async Task IncluirAnexos(long informativoId = INFORME_ID_1)
         {
             var idArquivo = await InserirNaBaseAsync(new Arquivo()
