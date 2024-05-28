@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Dominio
 {
@@ -15,5 +14,6 @@ namespace SME.SGP.Dominio
         public DateTime DataEnvio { get; set; }
         public List<InformativoPerfil> Perfis { get; set; }
         public bool Excluido { get; set; }
+        public List<InformativoModalidade> Modalidades { get; set; }
     }
 }

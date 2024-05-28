@@ -18,5 +18,6 @@ namespace SME.SGP.Infra.Dtos
         public string Texto { get; set; }
         public AuditoriaDto Auditoria { get; set; }
         public List<ArquivoResumidoDto> Anexos { get; set; } 
+        public IEnumerable<ModalidadeRetornoDto> Modalidades { get; set; }
     }
 }

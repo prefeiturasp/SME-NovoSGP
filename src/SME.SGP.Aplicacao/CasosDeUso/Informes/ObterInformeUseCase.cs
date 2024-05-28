@@ -5,6 +5,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -38,6 +39,7 @@ namespace SME.SGP.Aplicacao
                 Texto = informe.Texto,
                 Titulo = informe.Titulo,
                 Perfis = ObterPerfils(perfils, informe.Perfis),
+                Modalidades = ObterModalidades(informe.Modalidades),
                 Anexos = anexos.Select(anx => new ArquivoResumidoDto()
                 {
                     Codigo = anx.Codigo,
@@ -53,7 +55,13 @@ namespace SME.SGP.Aplicacao
                     AlteradoRF = informe.AlteradoRF
                 }
             };
+        }
 
+        private IEnumerable<ModalidadeRetornoDto> ObterModalidades(List<InformativoModalidade> modalidades)
+        {
+            return modalidades.Select(modalidade => new ModalidadeRetornoDto() { 
+                                                        Id = (int)modalidade.Modalidade, 
+                                                        Nome = modalidade.Modalidade.GetAttribute<DisplayAttribute>()?.GetName() });
         }
 
         private List<GruposDeUsuariosDto> ObterPerfils(
