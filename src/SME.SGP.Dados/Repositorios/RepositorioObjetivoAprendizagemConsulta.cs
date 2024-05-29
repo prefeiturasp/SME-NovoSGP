@@ -25,7 +25,7 @@ namespace SME.SGP.Dados.Repositorios
         => await contextoConsulta.Conexao.QueryAsync<ObjetivoAprendizagemDto>($@"select id, descricao, codigo, 
                     ano_turma as ano, componente_curricular_id as idComponenteCurricular, componente_curricular_id as ComponenteCurricularEolId 
                     from objetivo_aprendizagem 
-                    where  componente_curricular_id = ANY(@componentes) 
+                    where  componente_curricular_id = ANY(@componentes) and excluido = false
                     {(ano.HasValue ? " and ano_turma = @ano " : "")} ",
                     new { ano = ano?.Name(), componentes = juremaIds });
     }
