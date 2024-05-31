@@ -110,7 +110,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => registrarEncaminhamentoNaapaUseCase.Executar(encaminhamentosNaapaDto));
 
             excecao.Message.ShouldBe(String.Format(MensagemNegocioEncaminhamentoNAAPA.EXISTEM_QUESTOES_OBRIGATORIAS_NAO_PREENCHIDAS,
-                                                    "Seção: Informações do Estudante Questões: [12], Seção: Questões apresentadas Questões: [5]"));
+                                                    "Seção: Questões apresentadas Questões: [5]"));
         }
 
 
@@ -539,7 +539,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
+           await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
             {
                 EncaminhamentoNAAPASecaoId = 1,
                 QuestaoId = ID_QUESTAO_ESTA_EM_CLASSE_HOSPITALAR,
