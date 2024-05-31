@@ -73,7 +73,7 @@ namespace SME.SGP.TesteIntegracao.Informe.ServicosFake
                     Id = 42,
                     Nome = "Comunicados DRE",
                     GuidPerfil = Guid.NewGuid()
-                },
+                }
             };
         }
     }
