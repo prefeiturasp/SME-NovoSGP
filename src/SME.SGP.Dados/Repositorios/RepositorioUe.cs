@@ -90,7 +90,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<string>> ObterCodigoUePorModalidade(string[] codigoUes, Modalidade[] modalidades)
         {
-            var sql = @"select ue.ue_id
+            var sql = @"select distinct ue.ue_id
                         from ue 
                         inner join turma t on t.ue_id = ue.id 
                         where ue.ue_id = any(@codigoUes) 
