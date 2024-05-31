@@ -84,9 +84,9 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             public bool CriarTurmaPadrao { get; set; }
         }
 
-        protected async Task GerarDadosRegistroAcao_2PrimeirasQuestoes(DateTime dataRegistro, bool adicionarRespostasComplementarConseguiuContatoResponsavel = false)
+        protected async Task GerarDadosRegistroAcao_2PrimeirasQuestoes(DateTime dataRegistro, bool adicionarRespostasComplementarConseguiuContatoResponsavel = false, long turmaId = TURMA_ID_1)
         {
-            await CriarRegistroAcao();
+            await CriarRegistroAcao(turmaId);
             var registrosAcaoId = ObterTodos<Dominio.RegistroAcaoBuscaAtiva>().Max(ra => ra.Id);
             await CriarRegistroAcaoSecao(registrosAcaoId);
             var registrosAcaoSecaoId = ObterTodos<Dominio.RegistroAcaoBuscaAtivaSecao>().Max(ra => ra.Id);
@@ -223,11 +223,11 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             });
         }
 
-        private async Task CriarRegistroAcao()
+        private async Task CriarRegistroAcao(long turmaId)
         {
             await InserirNaBase(new Dominio.RegistroAcaoBuscaAtiva()
             {
-                TurmaId = TURMA_ID_1,
+                TurmaId = turmaId,
                 AlunoCodigo = ALUNO_CODIGO_1,
                 AlunoNome = "Nome do aluno 1",
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),

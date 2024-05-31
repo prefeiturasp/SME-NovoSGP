@@ -83,6 +83,46 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             retorno.Items.Any(ra => ra.DataRegistro == dataRegistro).ShouldBeTrue();
             retorno.Items.Any(ra => ra.DataRegistro == dataRegistro.AddMonths(1)).ShouldBeTrue();
         }
+
+        [Fact(DisplayName = "Registro de Ação - Listar registros de ação por filtros - todas ues")]
+        public async Task Ao_listar_registros_acao_com_filtros_todas_ues()
+        {
+            var filtro = new FiltroRegistroAcaoDto()
+            {
+                Perfil = ObterPerfilCP(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8"
+            };
+
+            await CriarDadosBase(filtro);
+            await CriarTurma(Modalidade.Fundamental, ANO_6, TURMA_CODIGO_2, Dominio.Enumerados.TipoTurma.Regular, UE_ID_2, DateTimeExtension.HorarioBrasilia().Year);
+            await CriarTurma(Modalidade.Fundamental, ANO_6, TURMA_CODIGO_3, Dominio.Enumerados.TipoTurma.Regular, UE_ID_3, DateTimeExtension.HorarioBrasilia().Year);
+            var dataRegistro = DateTimeExtension.HorarioBrasilia().Date;
+            await GerarDadosRegistroAcao_2PrimeirasQuestoes(dataRegistro.AddMonths(-1), true, TURMA_ID_2);
+            await GerarDadosRegistroAcao_2PrimeirasQuestoes(dataRegistro, true, TURMA_ID_3);
+            await GerarDadosRegistroAcao_2PrimeirasQuestoes(dataRegistro.AddMonths(1), true, TURMA_ID_3);
+            var useCase = ObterUseCaseListagemRegistrosAcao();
+            
+            var retorno = await useCase.Executar(new FiltroRegistrosAcaoDto()
+            {
+                AnoLetivo = dataRegistro.Year,
+                DreId = DRE_ID_2,
+                Modalidade = (int)Modalidade.Fundamental,
+                OrdemProcedimentoRealizado = ConstantesQuestionarioBuscaAtiva.QUESTAO_PROCEDIMENTO_REALIZADO_ORDEM_RESPOSTA_LIG_TELEFONICA,
+                CodigoNomeAluno = ALUNO_CODIGO_1,
+                DataRegistroInicio = dataRegistro.AddMonths(-1),
+                DataRegistroFim = dataRegistro.AddMonths(1)
+            });
+            retorno.ShouldNotBeNull();
+            retorno.TotalRegistros.ShouldBe(3);
+            retorno.Items.Count().ShouldBe(3);
+            retorno.Items.Any(ra => ra.DataRegistro == dataRegistro.AddMonths(-1)).ShouldBeTrue();
+            retorno.Items.Any(ra => ra.DataRegistro == dataRegistro).ShouldBeTrue();
+            retorno.Items.Any(ra => ra.DataRegistro == dataRegistro.AddMonths(1)).ShouldBeTrue();
+            retorno.Items.Where(ra => ra.Ue.Equals("EMEF UE 2")).Count().ShouldBe(1);
+            retorno.Items.Where(ra => ra.Ue.Equals("EMEF UE 3")).Count().ShouldBe(2);
+        }
     }
 }
 

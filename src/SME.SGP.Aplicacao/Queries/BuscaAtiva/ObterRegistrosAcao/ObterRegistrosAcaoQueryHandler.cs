@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
                                                                   CodigoNomeAluno = request.Filtros.CodigoNomeAluno,
                                                                   DataRegistroInicio = request.Filtros.DataRegistroInicio,
                                                                   DataRegistroFim = request.Filtros.DataRegistroFim,
-                                                                  OrdemRespostaQuestaoProcedimentoRealizado = request.Filtros.OrdemProcedimentoRealizado },
+                                                                  OrdemRespostaQuestaoProcedimentoRealizado = request.Filtros.OrdemProcedimentoRealizado},
                                                                   Paginacao);
         }
     }
