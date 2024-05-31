@@ -27,8 +27,8 @@ namespace SME.SGP.Dados.Repositorios
             var informativo = new Informativo();
 
             await database.Conexao
-                .QueryAsync<Informativo, Dre, Ue, InformativoPerfil, Informativo>(
-                    sql.ToString(), (informes, dre, ue, informativoPerfil) =>
+                .QueryAsync<Informativo, Dre, Ue, InformativoPerfil, InformativoModalidade, Informativo>(
+                    sql.ToString(), (informes, dre, ue, informativoPerfil, informativoModalidade) =>
                     {
                         if (informativo.Id == 0)
                         {
@@ -36,9 +36,16 @@ namespace SME.SGP.Dados.Repositorios
                             informativo.Dre = dre;
                             informativo.Ue = ue;
                             informativo.Perfis = new List<InformativoPerfil>();
+                            informativo.Modalidades = new List<InformativoModalidade>();
                         }
 
-                        informativo.Perfis.Add(informativoPerfil);
+                        if (informativoPerfil.NaoEhNulo() &&
+                            !informativo.Perfis.Exists(perfil => perfil.Id == informativoPerfil.Id))
+                            informativo.Perfis.Add(informativoPerfil);
+
+                        if (informativoModalidade.NaoEhNulo() &&
+                            !informativo.Modalidades.Exists(modalidade => modalidade.Id == informativoModalidade.Id))
+                            informativo.Modalidades.Add(informativoModalidade);
 
                         return informativo;
                     }, new { id });
@@ -65,8 +72,8 @@ namespace SME.SGP.Dados.Repositorios
             var queryPaginado = ObterQueryInformesPaginado(filtro);
 
             await database.Conexao
-                .QueryAsync<Informativo, Dre, Ue, InformativoPerfil, Informativo>(
-                    queryPaginado, (informes, dre, ue, informativoPerfil) =>
+                .QueryAsync<Informativo, Dre, Ue, InformativoPerfil, InformativoModalidade, Informativo>(
+                    queryPaginado, (informes, dre, ue, informativoPerfil, informativoModalidade) =>
                     {
                         if (informativo.Id != informes.Id)
                         {
@@ -74,10 +81,17 @@ namespace SME.SGP.Dados.Repositorios
                             informativo.Dre = dre;
                             informativo.Ue = ue;
                             informativo.Perfis = new List<InformativoPerfil>();
+                            informativo.Modalidades = new List<InformativoModalidade>();
                             itens.Add(informativo);
                         }
 
-                        informativo.Perfis.Add(informativoPerfil);
+                        if (informativoPerfil.NaoEhNulo() &&
+                            !informativo.Perfis.Exists(perfil => perfil.Id == informativoPerfil.Id))
+                            informativo.Perfis.Add(informativoPerfil);
+
+                        if (informativoModalidade.NaoEhNulo() &&
+                            !informativo.Modalidades.Exists(modalidade => modalidade.Id == informativoModalidade.Id))
+                            informativo.Modalidades.Add(informativoModalidade);
 
                         return informativo;
                     }, parametros);
@@ -122,9 +136,11 @@ namespace SME.SGP.Dados.Repositorios
                             inf.alterado_por, inf.criado_rf, inf.alterado_rf,
                             dre.id, dre.nome, dre.abreviacao, dre.dre_id as CodigoDre,
                             ue.id, ue.nome, ue.tipo_escola, ue.ue_id as CodigoUe,
-                            inf_p.id, inf_p.informativo_id, inf_p.codigo_perfil
+                            inf_p.id, inf_p.informativo_id, inf_p.codigo_perfil,
+                            inf_m.id, inf_m.informativo_id, inf_m.modalidade_codigo
                             FROM informativo inf
                             INNER JOIN informativo_perfil inf_p ON inf_p.informativo_id = inf.id
+                            LEFT JOIN informativo_modalidade inf_m ON inf_m.informativo_id = inf.id
                             LEFT JOIN dre ON dre.id = inf.dre_id
                             LEFT JOIN ue ON ue.id = inf.ue_id ");
 

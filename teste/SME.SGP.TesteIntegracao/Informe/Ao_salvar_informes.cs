@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.TesteIntegracao.Informe.Base;
 using SME.SGP.TesteIntegracao.Informe.ServicosFake;
@@ -26,7 +27,7 @@ namespace SME.SGP.TesteIntegracao.Informe
         {
             base.RegistrarFakes(services);
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaSgpCommand, bool>), typeof(PublicarFilaSgpCommandFakeInforme), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterRfsUsuariosPorPerfisDreUeQuery, string[]>), typeof(ObterRfsUsuariosPorPerfisDreUeQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterRfsUsuariosPorPerfisDreUeQuery, IEnumerable<UsuarioPerfilsAbrangenciaDto>>), typeof(ObterRfsUsuariosPorPerfisDreUeQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterGruposDeUsuariosQuery, IEnumerable<GruposDeUsuariosDto>>), typeof(ObterGruposDeUsuariosQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
@@ -73,7 +74,7 @@ namespace SME.SGP.TesteIntegracao.Informe
 
             var informesNotificacao = ObterTodos<InformativoNotificacao>();
             informesNotificacao.ShouldNotBeNull();
-            informesNotificacao.Count().ShouldBe(2);
+            informesNotificacao.Count().ShouldBe(3);
 
             var informesAnexo = ObterTodos<InformativoAnexo>();
             informesAnexo.ShouldNotBeNull();
@@ -81,7 +82,7 @@ namespace SME.SGP.TesteIntegracao.Informe
 
             var notificacoes = ObterTodos<Notificacao>();
             notificacoes.ShouldNotBeNull();
-            notificacoes.Count().ShouldBe(2);
+            notificacoes.Count().ShouldBe(3);
         }
 
         [Fact(DisplayName = "Informes - Salvar informes por dre")]
@@ -128,7 +129,7 @@ namespace SME.SGP.TesteIntegracao.Informe
 
             var informesNotificacao = ObterTodos<InformativoNotificacao>();
             informesNotificacao.ShouldNotBeNull();
-            informesNotificacao.Count().ShouldBe(2);
+            informesNotificacao.Count().ShouldBe(3);
 
             var informesAnexo = ObterTodos<InformativoAnexo>();
             informesAnexo.ShouldNotBeNull();
@@ -136,7 +137,7 @@ namespace SME.SGP.TesteIntegracao.Informe
 
             var notificacoes = ObterTodos<Notificacao>();
             notificacoes.ShouldNotBeNull();
-            notificacoes.Count().ShouldBe(2);
+            notificacoes.Count().ShouldBe(3);
         }
 
         [Fact(DisplayName = "Informes - Salvar informes por ue")]
@@ -184,7 +185,7 @@ namespace SME.SGP.TesteIntegracao.Informe
 
             var informesNotificacao = ObterTodos<InformativoNotificacao>();
             informesNotificacao.ShouldNotBeNull();
-            informesNotificacao.Count().ShouldBe(2);
+            informesNotificacao.Count().ShouldBe(3);
 
             var informesAnexo = ObterTodos<InformativoAnexo>();
             informesAnexo.ShouldNotBeNull();
@@ -192,7 +193,120 @@ namespace SME.SGP.TesteIntegracao.Informe
 
             var notificacoes = ObterTodos<Notificacao>();
             notificacoes.ShouldNotBeNull();
-            notificacoes.Count().ShouldBe(2);
+            notificacoes.Count().ShouldBe(3);
+        }
+
+        [Fact(DisplayName = "Informes - Salvar informes com modalidades")]
+        public async Task Ao_salvar_informes_com_modalidades()
+        {
+            await CriarDadosBase();
+            await CriarTurma(Modalidade.Fundamental);
+
+            var useCase = ServiceProvider.GetService<ISalvarInformesUseCase>();
+
+            var dto = new InformesDto()
+            {
+                DreId = DRE_ID_1,
+                Perfis = new List<GruposDeUsuariosDto>()
+                {
+                    new GruposDeUsuariosDto()
+                    {
+                        Id = PERFIL_AD
+                    },
+                    new GruposDeUsuariosDto()
+                    {
+                        Id = PERFIL_ADM_UE
+                    },
+                    new GruposDeUsuariosDto()
+                    {
+                        Id = PERFIL_ADM_DRE
+                    }
+                },
+                Modalidades = new List<Modalidade>()
+                {
+                    Modalidade.Fundamental,
+                    Modalidade.Medio
+                },
+                Titulo = "Informa com modalidade",
+                Texto = "teste"
+            };
+            var resultado = await useCase.Executar(dto);
+            resultado.ShouldNotBeNull();
+
+            var informes = ObterTodos<Informativo>().FirstOrDefault();
+            informes.ShouldNotBeNull();
+            informes.DreId.ShouldBe(DRE_ID_1);
+            informes.DataEnvio.ShouldBe(DateTimeExtension.HorarioBrasilia().Date);
+            informes.Titulo.ShouldBe(dto.Titulo);
+            informes.Texto.ShouldBe(dto.Texto);
+
+            var informesPerfil = ObterTodos<InformativoPerfil>();
+            informesPerfil.ShouldNotBeNull();
+            informesPerfil.Count().ShouldBe(3);
+
+            var informesModalidade = ObterTodos<InformativoModalidade>();
+            informesModalidade.ShouldNotBeNull();
+            informesModalidade.Count().ShouldBe(2);
+
+            var notificacao = ObterTodos<Notificacao>();
+            notificacao.ShouldNotBeNull();
+            notificacao.Count().ShouldBe(3);
+        }
+
+        [Fact(DisplayName = "Informes - Salvar informes com modalidades sem ue")]
+        public async Task Ao_salvar_informes_com_modalidades_sem_ue()
+        {
+            await CriarDadosBase();
+            await CriarTurma(Modalidade.Fundamental);
+
+            var useCase = ServiceProvider.GetService<ISalvarInformesUseCase>();
+
+            var dto = new InformesDto()
+            {
+                DreId = DRE_ID_1,
+                Perfis = new List<GruposDeUsuariosDto>()
+                {
+                    new GruposDeUsuariosDto()
+                    {
+                        Id = PERFIL_AD
+                    },
+                    new GruposDeUsuariosDto()
+                    {
+                        Id = PERFIL_ADM_UE
+                    },
+                    new GruposDeUsuariosDto()
+                    {
+                        Id = PERFIL_ADM_DRE
+                    }
+                },
+                Modalidades = new List<Modalidade>()
+                {
+                    Modalidade.EducacaoInfantil
+                },
+                Titulo = "Informa com modalidade",
+                Texto = "teste"
+            };
+            var resultado = await useCase.Executar(dto);
+            resultado.ShouldNotBeNull();
+
+            var informes = ObterTodos<Informativo>().FirstOrDefault();
+            informes.ShouldNotBeNull();
+            informes.DreId.ShouldBe(DRE_ID_1);
+            informes.DataEnvio.ShouldBe(DateTimeExtension.HorarioBrasilia().Date);
+            informes.Titulo.ShouldBe(dto.Titulo);
+            informes.Texto.ShouldBe(dto.Texto);
+
+            var informesPerfil = ObterTodos<InformativoPerfil>();
+            informesPerfil.ShouldNotBeNull();
+            informesPerfil.Count().ShouldBe(3);
+
+            var informesModalidade = ObterTodos<InformativoModalidade>();
+            informesModalidade.ShouldNotBeNull();
+            informesModalidade.Count().ShouldBe(1);
+
+            var notificacao = ObterTodos<Notificacao>();
+            notificacao.ShouldNotBeNull();
+            notificacao.Count().ShouldBe(2);
         }
 
         private async Task IncluirArquivos()
