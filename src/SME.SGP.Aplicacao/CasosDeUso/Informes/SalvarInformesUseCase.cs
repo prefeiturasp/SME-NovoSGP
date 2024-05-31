@@ -26,8 +26,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var perfil in informesDto.Perfis) 
                     await mediator.Send(new SalvarInformesPerfilsCommand(informes.Id, perfil.Id));
 
-                foreach (var modalidade in informesDto.Modalidades)
-                    await mediator.Send(new SalvarInformesModalidadeCommand(informes.Id, modalidade));
+                await CadastrarModalidades(informes.Id, informesDto);
 
                 if (informesDto.Arquivos.PossuiRegistros())
                     await mediator.Send(new SalvarInformesAnexosCommand(informes.Id, informesDto.Arquivos));
@@ -42,6 +41,15 @@ namespace SME.SGP.Aplicacao
                 unitOfWork.Rollback();
                 throw;
             }
+        }
+
+        private async Task CadastrarModalidades(long id, InformesDto informesDto)
+        {
+            if (informesDto.Modalidades == null)
+                return;
+
+            foreach (var modalidade in informesDto?.Modalidades)
+                await mediator.Send(new SalvarInformesModalidadeCommand(id, modalidade));
         }
 
         private AuditoriaDto ObterAuditoria(Informativo informativo)
