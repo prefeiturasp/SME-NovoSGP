@@ -40,6 +40,7 @@ namespace SME.SGP.Infra
         public DateTime? DataAtualizacaoContato { get; set; }
         public string CodigoEscola { get; set; }
         public int CodigoTipoTurma { get; set; }
+        public DateTime DataAtualizacaoTabela { get; set; }
 
         public bool Inativo
         {

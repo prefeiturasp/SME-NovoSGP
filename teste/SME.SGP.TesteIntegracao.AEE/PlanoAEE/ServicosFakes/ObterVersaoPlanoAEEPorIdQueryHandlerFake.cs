@@ -14,7 +14,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
             return Task.FromResult(new PlanoAEEVersaoDto()
             {
                 Id = 1,
-                Numero = 1,
+                Numero = 2,
                 AlteradoEm = null,
                 AlteradoPor = null,
                 AlteradoRF = null,

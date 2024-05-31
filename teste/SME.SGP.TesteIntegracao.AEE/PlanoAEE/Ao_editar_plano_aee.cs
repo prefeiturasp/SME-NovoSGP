@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Elastic.Apm.Api;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -164,7 +165,47 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             obterTodosPendenciasAee.Count(x => x.Situacao == SituacaoPendencia.Resolvida).ShouldBeEquivalentTo(1);
             obterTodosPendenciasAee.Count(x => x.Situacao == SituacaoPendencia.Pendente).ShouldBeEquivalentTo(1);
         }
-        
+
+        [Fact(DisplayName = "Plano AEE - Ao atualizar um plano, o periodo escolar tem que ser o atual")]
+        public async Task Ao_atualizar_um_plano_o_periodo_escolar_tem_que_ser_atual()
+        {
+            var salvarPlanoAeeUseCase = ObterServicoSalvarPlanoAEEUseCase();
+
+            await CriarDadosBasicos(new FiltroPlanoAee()
+            {
+                Modalidade = Modalidade.Fundamental,
+                Perfil = ObterPerfilCP(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+            });
+
+            var planoAeePersistenciaDto = new PlanoAEEPersistenciaDto()
+            {
+                TurmaId = TURMA_ID_1,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                Situacao = 0,
+                Questoes = ObterQuestoes(),
+                TurmaCodigo = TURMA_CODIGO_1,
+                ResponsavelRF = USUARIO_CP_LOGIN_3333333
+            };
+
+            var planoAeeDto = await salvarPlanoAeeUseCase.Executar(planoAeePersistenciaDto);
+
+            var filtroObter = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(planoAeeDto.PlanoId, TURMA_CODIGO_1, 1);
+
+            var obterPlanoAeeUseCase = ObterServicoObterPlanoAEEPorIdUseCase();
+            var retornoObter = await obterPlanoAeeUseCase.Executar(filtroObter);
+            retornoObter.ShouldNotBeNull();
+            retornoObter.Situacao.ShouldBeEquivalentTo(SituacaoPlanoAEE.ParecerCP);
+
+            var questao = retornoObter.Questoes.FirstOrDefault(x => x.TipoQuestao == TipoQuestao.PeriodoEscolar);
+
+            questao.ShouldNotBeNull();
+
+            var respostaPeriodoEscolar = questao.Resposta.FirstOrDefault(x => x.Texto == "4");
+
+            respostaPeriodoEscolar.ShouldNotBeNull();
+        }
+
         [Fact(DisplayName = "Plano AEE - Com usuário do CP alterar qualquer campo do plano e submeter a alteração.")]
         public async Task Com_usuario_do_cp_alterar_qualquer_campo()
         {
@@ -313,7 +354,6 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             };
 
         }
-
         private async Task CriarPlanoAeePorSituacao(SituacaoPlanoAEE situacaoPlanoAee)
         {
             var salvarPlanoAeeUseCase = ObterServicoSalvarPlanoAEEUseCase();

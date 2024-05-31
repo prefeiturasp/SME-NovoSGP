@@ -569,7 +569,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioInformativoPerfil, RepositorioInformativoPerfil>();
             services.TryAddScoped<IRepositorioInformativoNotificacao, RepositorioInformativoNotificacao>();
             services.TryAddScoped<IRepositorioInformativoAnexo, RepositorioInformativoAnexo>();
-
+            services.TryAddScoped<IRepositorioInformativoModalidade, RepositorioInformativoModalidade>();
 
             //CadastroAcessoABAE
             services.TryAddScoped<IRepositorioCadastroAcessoABAE, RepositorioCadastroAcessoABAE>();
@@ -601,6 +601,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioMapeamentoEstudanteSecao, RepositorioMapeamentoEstudanteSecao>();
             services.TryAddScoped<IRepositorioQuestaoMapeamentoEstudante, RepositorioQuestaoMapeamentoEstudante>();
             services.TryAddScoped<IRepositorioRespostaMapeamentoEstudante, RepositorioRespostaMapeamentoEstudante>();
+
+            services.TryAddScoped<IRepositorioConsolidacaoProdutividadeFrequencia, RepositorioConsolidacaoProdutividadeFrequencia>();
+            services.TryAddScoped<IRepositorioInatividadeAtendimentoNAAPANotificacao, RepositorioInatividadeAtendimentoNAAPANotificacao>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)
@@ -1018,6 +1021,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRelatorioPlanoAnualUseCase, RelatorioPlanoAnualUseCase>();
             services.TryAddScoped<IRelatorioUsuariosUseCase, RelatorioUsuariosUseCase>();
             services.TryAddScoped<IRelatorioControleFrequenciaMensalUseCase, RelatorioControleFrequenciaMensalUseCase>();
+            services.TryAddScoped<IGerarRelatorioProdutividadeFrequenciaUseCase, GerarRelatorioProdutividadeFrequenciaUseCase>();
 
             //Sincronismo CC Eol
             services.TryAddScoped<IListarComponentesCurricularesEolUseCase, ListarComponentesCurricularesEolUseCase>();
@@ -1407,7 +1411,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterQuantidadeBuscaAtivaPorMotivosAusenciaUseCase, ObterQuantidadeBuscaAtivaPorMotivosAusenciaUseCase>();
             services.TryAddScoped<IObterQuantidadeBuscaAtivaPorProcedimentosTrabalhoDreUseCase, ObterQuantidadeBuscaAtivaPorProcedimentosTrabalhoDreUseCase>();
             services.TryAddScoped<IObterQuantidadeBuscaAtivaPorReflexoFrequenciaMesUseCase, ObterQuantidadeBuscaAtivaPorReflexoFrequenciaMesUseCase>();
-           
+            services.TryAddScoped<IRelatorioBuscasAtivasUseCase, RelatorioBuscasAtivasUseCase>();
+            services.TryAddScoped<IObterFuncionariosABAEUseCase, ObterFuncionariosABAEUseCase>();
+            services.TryAddScoped<IObterOpcoesRespostaMotivoAusenciaBuscaAtivaUseCase, ObterOpcoesRespostaMotivoAusenciaBuscaAtivaUseCase>();
+
             //Registro Coletivo 
             services.TryAddScoped<IObterTiposDeReuniaoUseCase, ObterTiposDeReuniaoUseCase>();
             services.TryAddScoped<ISalvarRegistroColetivoUseCase, SalvarRegistroColetivoUseCase>();

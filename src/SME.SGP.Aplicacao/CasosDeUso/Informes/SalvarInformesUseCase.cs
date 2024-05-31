@@ -3,7 +3,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -26,11 +25,15 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var perfil in informesDto.Perfis) 
                     await mediator.Send(new SalvarInformesPerfilsCommand(informes.Id, perfil.Id));
+
+                await CadastrarModalidades(informes.Id, informesDto);
+
                 if (informesDto.Arquivos.PossuiRegistros())
                     await mediator.Send(new SalvarInformesAnexosCommand(informes.Id, informesDto.Arquivos));
                 
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoInformativo, informes.Id, Guid.NewGuid()));
                 unitOfWork.PersistirTransacao();
+
                 return ObterAuditoria(informes);
             }
             catch
@@ -38,6 +41,15 @@ namespace SME.SGP.Aplicacao
                 unitOfWork.Rollback();
                 throw;
             }
+        }
+
+        private async Task CadastrarModalidades(long id, InformesDto informesDto)
+        {
+            if (informesDto.Modalidades == null)
+                return;
+
+            foreach (var modalidade in informesDto?.Modalidades)
+                await mediator.Send(new SalvarInformesModalidadeCommand(id, modalidade));
         }
 
         private AuditoriaDto ObterAuditoria(Informativo informativo)

@@ -1673,7 +1673,20 @@ namespace SME.SGP.Infra
             IconeDashBoard = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
             EhAlteracao = true)]
         RCA_C = 172,
-            
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_RELATORIOS,
+            Menu = ConstantesMenuPermissao.MENU_FREQUENCIA,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_RELATORIOS,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_RELATORIO_FREQUENCIA,
+            EhSubMenu = true,
+            SubMenu = ConstantesMenuPermissao.MENU_PRODUTIVIDADE_FREQUENCIA,
+            OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_RELATORIO_PRODUTIVIDADE_FREQUENCIA,
+            Url = ConstantesMenuPermissao.ROTA_RELATORIOS_PRODUTIVIDADE_FREQUENCIA,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
+            IconeDashBoard = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
+            EhConsulta = true)]
+        RFP_C = 278,
+
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_RELATORIOS, 
             Menu = ConstantesMenuPermissao.MENU_DIARIO_DE_CLASSE, 
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_RELATORIOS,
@@ -1894,7 +1907,20 @@ namespace SME.SGP.Infra
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhAlteracao = true)]
         RENAAPA_C = 241,
-        
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_RELATORIOS,
+            Menu = ConstantesMenuPermissao.MENU_NAAPA,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_RELATORIOS,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_RELATORIO_NAAPA,
+            EhSubMenu = true,
+            SubMenu = ConstantesMenuPermissao.MENU_BUSCA_ATIVA,
+            OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_RELATORIO_BUSCA_ATIVA,
+            Url = ConstantesMenuPermissao.ROTA_RELATORIOS_NAAPA_BUSCA_ATIVA,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            IconeDashBoard = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
+            EhConsulta = true)]
+        RBA_C = 277,
+
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_RELATORIOS, 
             Menu = ConstantesMenuPermissao.MENU_SONDAGEM, 
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_RELATORIOS,

@@ -20,5 +20,6 @@
         public const string ExecutarNotificacaoInatividadeAtendimentoNAAPA = "sgp.encaminhamento.naapa.inatividade.atendimento.notificar";
         public const string ExecutarNotificacaoInatividadeAtendimentoPorUeNAAPA = "sgp.encaminhamento.naapa.inatividade.atendimento.notificar.ue";
         public const string ExecutarNotificacaoInatividadeAtendimentoInformacaoNAAPA = "sgp.encaminhamento.naapa.inatividade.atendimento.informacao.notificar";
+        public const string RotaExcluirNotificacaoInatividadeAtendimento = "sgp.notificacao.inatividade.atendimento.naapa.excluir";
     }
 }
