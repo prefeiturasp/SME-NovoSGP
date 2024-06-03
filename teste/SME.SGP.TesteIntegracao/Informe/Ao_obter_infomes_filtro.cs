@@ -590,8 +590,9 @@ namespace SME.SGP.TesteIntegracao.Informe
             item1.DataEnvio.ShouldBe(DateTimeExtension.HorarioBrasilia().ToString("dd/MM/yyyy"));
             item1.EnviadoPor.ShouldBe($"{SISTEMA_NOME} ({SISTEMA_CODIGO_RF})");
             item1.Modalidades.Count().ShouldBe(2);
-            item1.Modalidades.FirstOrDefault().Nome.ShouldBe("Ensino Fundamental");
-            item1.Modalidades.LastOrDefault().Nome.ShouldBe("Ensino Médio");
+            var modalidades = item1.Modalidades.OrderBy(item => item.Nome);
+            modalidades.FirstOrDefault().Nome.ShouldBe("Ensino Fundamental");
+            modalidades.LastOrDefault().Nome.ShouldBe("Ensino Médio");
             var item2 = resultado.Items.FirstOrDefault(item => item.Id == 2);
             item2.DreNome.ShouldBe(DRE_NOME_1);
             item2.UeNome.ShouldBe($"{TipoEscola.EMEF.ShortName()} {UE_NOME_1}");
