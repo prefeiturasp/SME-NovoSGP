@@ -206,7 +206,6 @@ namespace SME.SGP.TesteIntegracao.Informe
 
             var dto = new InformesDto()
             {
-                DreId = DRE_ID_1,
                 Perfis = new List<GruposDeUsuariosDto>()
                 {
                     new GruposDeUsuariosDto()
@@ -235,7 +234,6 @@ namespace SME.SGP.TesteIntegracao.Informe
 
             var informes = ObterTodos<Informativo>().FirstOrDefault();
             informes.ShouldNotBeNull();
-            informes.DreId.ShouldBe(DRE_ID_1);
             informes.DataEnvio.ShouldBe(DateTimeExtension.HorarioBrasilia().Date);
             informes.Titulo.ShouldBe(dto.Titulo);
             informes.Texto.ShouldBe(dto.Texto);
@@ -263,7 +261,6 @@ namespace SME.SGP.TesteIntegracao.Informe
 
             var dto = new InformesDto()
             {
-                DreId = DRE_ID_1,
                 Perfis = new List<GruposDeUsuariosDto>()
                 {
                     new GruposDeUsuariosDto()
@@ -291,7 +288,6 @@ namespace SME.SGP.TesteIntegracao.Informe
 
             var informes = ObterTodos<Informativo>().FirstOrDefault();
             informes.ShouldNotBeNull();
-            informes.DreId.ShouldBe(DRE_ID_1);
             informes.DataEnvio.ShouldBe(DateTimeExtension.HorarioBrasilia().Date);
             informes.Titulo.ShouldBe(dto.Titulo);
             informes.Texto.ShouldBe(dto.Texto);
@@ -306,7 +302,7 @@ namespace SME.SGP.TesteIntegracao.Informe
 
             var notificacao = ObterTodos<Notificacao>();
             notificacao.ShouldNotBeNull();
-            notificacao.Count().ShouldBe(2);
+            notificacao.Count().ShouldBe(1);
         }
 
         private async Task IncluirArquivos()

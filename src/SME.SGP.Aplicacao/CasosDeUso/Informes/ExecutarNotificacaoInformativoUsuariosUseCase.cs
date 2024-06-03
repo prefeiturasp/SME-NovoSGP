@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
 
             var guidPerfis = await ObterPerfisPorCodigos(informativo.Perfis.Select(perfil => perfil.CodigoPerfil));
             var usuariosPerfils = await mediator.Send(new ObterRfsUsuariosPorPerfisDreUeQuery(informativo.Ue?.CodigoUe, informativo.Dre?.CodigoDre, guidPerfis));
-            var rfUsuarios = await ObterRfUsuarios(usuariosPerfils, informativo);
+            var rfUsuarios = await ObterRfUsuarios(usuariosPerfils, informativo, guidPerfis);
 
             foreach (var usuario in rfUsuarios)
             {
@@ -46,21 +46,22 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
-        private async Task<IEnumerable<string>> ObterRfUsuarios(IEnumerable<UsuarioPerfilsAbrangenciaDto> usuariosPerfils, Informativo informativo)
+        private async Task<IEnumerable<string>> ObterRfUsuarios(IEnumerable<UsuarioPerfilsAbrangenciaDto> usuariosPerfils, Informativo informativo, string[] perfis)
         {
             if (informativo.Modalidades.Any())
-                return await ObterRfUsuarioPorPerfilModalidade(usuariosPerfils, informativo.Modalidades);
+                return await ObterRfUsuarioPorPerfilModalidade(usuariosPerfils, informativo.Modalidades, perfis);
 
            return usuariosPerfils.Select(up => up.UsuarioRf);
         }
 
-        private async Task<IEnumerable<string>> ObterRfUsuarioPorPerfilModalidade(IEnumerable<UsuarioPerfilsAbrangenciaDto> usuariosPerfils, IEnumerable<InformativoModalidade> informativoModalidades)
+        private async Task<IEnumerable<string>> ObterRfUsuarioPorPerfilModalidade(IEnumerable<UsuarioPerfilsAbrangenciaDto> usuariosPerfils, IEnumerable<InformativoModalidade> informativoModalidades, string[] perfis)
         {
             var rfUsuarios = new List<string>();
-            var perfis = usuariosPerfils.Where(usuario => !(usuario.Perfils is null))
-                                          .SelectMany(usuario => usuario.Perfils);
-            var perfisUe = perfis.Where(perfil => Perfis.EhPerfilPorUe(new Guid(perfil.Perfil)));
-            var perfilSemUe = perfis.Except(perfisUe);
+            var perfisUsuarios = usuariosPerfils.Where(usuario => !(usuario.Perfils is null))
+                                          .SelectMany(usuario => usuario.Perfils)
+                                          .Where(perfil => perfis.Contains(perfil.Perfil));
+            var perfisUe = perfisUsuarios.Where(perfil => Perfis.EhPerfilPorUe(new Guid(perfil.Perfil)));
+            var perfilSemUe = perfisUsuarios.Except(perfisUe);
 
             if (perfisUe.Any())
                 rfUsuarios.AddRange(await ObterUsuariosUesModalidade(usuariosPerfils, perfisUe, informativoModalidades));
