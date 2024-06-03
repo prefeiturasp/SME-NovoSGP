@@ -21,7 +21,7 @@ namespace SME.SGP.TesteIntegracao.Informe.ServicosFake
                         {
                             new PerfilsAbrangenciaDto()
                             {
-                                Perfil = PerfilUsuario.DIRETOR.ObterNome(),
+                                Perfil = PerfilUsuario.AD.ObterNome().ToLower(),
                                 Ues = new List<string>()
                                 {
                                     "1"
@@ -35,10 +35,10 @@ namespace SME.SGP.TesteIntegracao.Informe.ServicosFake
                         {
                             new PerfilsAbrangenciaDto()
                             {
-                                Perfil = PerfilUsuario.ADMDRE.ObterNome(),
+                                Perfil = PerfilUsuario.ADMUE.ObterNome(),
                                 Ues = new List<string>()
                                 {
-                                    "2"
+                                    "1"
                                 }
                             }
                         }},
@@ -48,7 +48,7 @@ namespace SME.SGP.TesteIntegracao.Informe.ServicosFake
                         {
                             new PerfilsAbrangenciaDto()
                             {
-                                Perfil = PerfilUsuario.ADMSME.ObterNome()
+                                Perfil = PerfilUsuario.ADMDRE.ObterNome()
                             }
                         }
                     }

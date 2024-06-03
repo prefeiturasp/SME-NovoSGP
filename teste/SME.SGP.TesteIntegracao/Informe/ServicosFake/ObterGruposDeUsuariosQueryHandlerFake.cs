@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
@@ -18,31 +19,31 @@ namespace SME.SGP.TesteIntegracao.Informe.ServicosFake
                 {
                     Id = 11,
                     Nome = "AD",
-                    GuidPerfil = Guid.NewGuid()
+                    GuidPerfil = new Guid(PerfilUsuario.AD.ObterNome().ToLower())
                 },
                 new GruposDeUsuariosDto()
                 {
                     Id = 33,
                     Nome = "ADM COTIC",
-                    GuidPerfil = Guid.NewGuid()
+                    GuidPerfil = new Guid(PerfilUsuario.ADMCOTIC.ObterNome())
                 },
                 new GruposDeUsuariosDto()
                 {
                     Id = 14,
                     Nome = "ADM DRE",
-                    GuidPerfil = Guid.NewGuid()
+                    GuidPerfil = new Guid(PerfilUsuario.ADMDRE.ObterNome())
                 },
                 new GruposDeUsuariosDto()
                 {
                     Id = 32,
                     Nome = "ADM SME",
-                    GuidPerfil = Guid.NewGuid()
+                    GuidPerfil = new Guid(PerfilUsuario.ADMSME.ObterNome())
                 },
                 new GruposDeUsuariosDto()
                 {
                     Id = 8,
                     Nome = "ADM UE",
-                    GuidPerfil = Guid.NewGuid()
+                    GuidPerfil = new Guid(PerfilUsuario.ADMUE.ObterNome())
                 },
                 new GruposDeUsuariosDto()
                 {
@@ -54,7 +55,7 @@ namespace SME.SGP.TesteIntegracao.Informe.ServicosFake
                 {
                     Id = 47,
                     Nome = "Assistente Social",
-                    GuidPerfil = Guid.NewGuid()
+                    GuidPerfil = new Guid(PerfilUsuario.ASSISTENTE_SOCIAL.ObterNome())
                 },
                 new GruposDeUsuariosDto()
                 {
