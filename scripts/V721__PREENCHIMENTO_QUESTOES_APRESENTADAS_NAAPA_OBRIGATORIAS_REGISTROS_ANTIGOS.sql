@@ -40,7 +40,7 @@ BEGIN
 			where or2.nome = 'Não se aplica' and q2.tipo = 5 and q2.id = naapasUpdate.questionario_id
 			order by q.questionario_id, q.ordem
 		LOOP
-			encaminhamento_questao_id := (select enq.id from encaminhamento_naapa_questao enq
+			encaminhamento_questao_id := (select max(enq.id) from encaminhamento_naapa_questao enq
 											where enq.questao_id = questoes.questao_id
 												and enq.encaminhamento_naapa_secao_id = encaminhamento_secao_id
 												and not enq.excluido);
