@@ -13,6 +13,9 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioConselhoClasseParecerConclusivoConsulta : RepositorioBase<ConselhoClasseParecerConclusivo>, IRepositorioConselhoClasseParecerConclusivo
     {
+        private const char ANO_IDENTIFICACAO_TURMA_BILINGUE_OU_INFANTIL_LIBRAS = 'S';
+        private const string ANO_IDENTIFICACAO_TURMA_TECNICA_P = "P",  ANO_IDENTIFICACAO_TURMA_TECNICA_Q = "Q";
+
         public RepositorioConselhoClasseParecerConclusivoConsulta(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
@@ -45,7 +48,14 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = string.Format(ObterSqlParecerConclusivoTurma(), where);
 
-            var param = new { parametro, dataConsulta, modalidadeEja = (int)Modalidade.EJA };
+            var param = new 
+            { 
+                parametro, 
+                dataConsulta, 
+                modalidadeEja = (int)Modalidade.EJA, 
+                anoBilingueOuInfantilLibras = ANO_IDENTIFICACAO_TURMA_BILINGUE_OU_INFANTIL_LIBRAS,
+                anosTurmasTecnicas = new string[] { ANO_IDENTIFICACAO_TURMA_TECNICA_P, ANO_IDENTIFICACAO_TURMA_TECNICA_Q }
+            };
 
             return await database.Conexao.QueryAsync<ConselhoClasseParecerConclusivo>(sql, param);
         }
@@ -55,7 +65,7 @@ namespace SME.SGP.Dados.Repositorios
             return @"select ccp.* from conselho_classe_parecer ccp 
                         inner join conselho_classe_parecer_ano ccpa on ccp.id = ccpa.parecer_id 
                         inner join turma t on ccpa.modalidade = t.modalidade_codigo 
-                                                                    and ((t.ano = 'S' and ccpa.ano_turma = 1) or (t.ano = 'P' and ccpa.ano_turma = 1) or cast(ccpa.ano_turma as varchar) = t.ano) 
+                                                                    and ((t.ano = @anoBilingueOuInfantilLibras and ccpa.ano_turma = 1) or (t.ano = any(@anosTurmasTecnicas) and ccpa.ano_turma = 1) or cast(ccpa.ano_turma as varchar) = t.ano)
                                                                     and ((t.modalidade_codigo = @modalidadeEja and t.etapa_eja = ccpa.etapa_eja) 
                                                                            or (t.modalidade_codigo <> @modalidadeEja and ccpa.etapa_eja is null))
                         where {0} and ccpa.inicio_vigencia <= @dataConsulta and (ccpa.fim_vigencia >= @dataConsulta or ccpa.fim_vigencia is null)";
