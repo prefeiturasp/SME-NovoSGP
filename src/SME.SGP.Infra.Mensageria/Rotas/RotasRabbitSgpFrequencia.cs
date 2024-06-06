@@ -54,5 +54,13 @@
         public const string ConsolidarReflexoFrequenciaBuscaAtivaDre = "sgp.consolidacao.reflexo.frequencia.busca.ativa.dre";
         public const string ConsolidarReflexoFrequenciaBuscaAtivaUe = "sgp.consolidacao.reflexo.frequencia.busca.ativa.ue";
         public const string ConsolidarReflexoFrequenciaBuscaAtivaAluno = "sgp.consolidacao.reflexo.frequencia.busca.ativa.aluno";
+        public const string ExecutarNotificacaoAlunosBaixaFrequenciaBuscaAtiva = "sgp.frequencia.aluno.percentual.minimo.mes.insuficiente.busca.ativa.notificar";
+        public const string ExecutarNotificacaoAlunosBaixaFrequenciaBuscaAtivaUe = "sgp.frequencia.aluno.percentual.minimo.mes.insuficiente.busca.ativa.ue.notificar";
+        public const string ExecutarNotificacaoAlunosBaixaFrequenciaBuscaAtivaDre = "sgp.frequencia.aluno.percentual.minimo.mes.insuficiente.busca.ativa.dre.notificar";
+        public const string ExecutarNotificacaoAlunosBaixaFrequenciaBuscaAtivaProfissionaisNAAPA = "sgp.frequencia.aluno.percentual.minimo.mes.insuficiente.busca.ativa.profissionais.notificar";
+        public const string ConsolidarInformacoesProdutividadeFrequencia = "sgp.consolidacao.produtividade.frequencia";
+        public const string ConsolidarInformacoesProdutividadeFrequenciaDre = "sgp.consolidacao.produtividade.frequencia.dre";
+        public const string ConsolidarInformacoesProdutividadeFrequenciaUe = "sgp.consolidacao.produtividade.frequencia.ue";
+        public const string ConsolidarInformacoesProdutividadeFrequenciaBimestre = "sgp.consolidacao.produtividade.frequencia.bimestre";
     }
 }

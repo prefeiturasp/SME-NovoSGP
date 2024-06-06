@@ -34,5 +34,7 @@
         PlanoAula = 30,
         Cache = 31,
         ComprimirArquivos = 32,
+        ApiSondagem = 33,
+        ApiSERAp = 34,
     }
 }

@@ -82,8 +82,13 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
             var notificacoes = ObterTodos<Notificacao>();
             notificacoes.ShouldNotBeNull();
             notificacoes.Count.ShouldBe(4);
+            notificacoes.All(n => n.Tipo == NotificacaoTipo.InatividadeAtendimentoNAAPA).ShouldBeTrue();
             var notificacao = notificacoes.FirstOrDefault();
             UtilRegex.RemoverTagsHtml(notificacao.Mensagem).ShouldBe(ObterMensagem());
+
+            var notificacoesInatividadeAtendimento = ObterTodos<InatividadeAtendimentoNAAPANotificacao>();
+            notificacoesInatividadeAtendimento.ShouldNotBeNull();
+            notificacoesInatividadeAtendimento.Count.ShouldBe(4);
         }
 
         private string ObterMensagem()

@@ -1,9 +1,11 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Infra;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterRfsUsuariosPorPerfisDreUeQuery : IRequest<string[]>
+    public class ObterRfsUsuariosPorPerfisDreUeQuery : IRequest<IEnumerable<UsuarioPerfilsAbrangenciaDto>>
     {
         public ObterRfsUsuariosPorPerfisDreUeQuery(string ue, string dre, string[] perfis)
         {

@@ -87,5 +87,16 @@ namespace SME.SGP.Dados.Repositorios
         {
             await contexto.Conexao.UpdateAsync(ueParaAtualizar);
         }
+
+        public async Task<IEnumerable<string>> ObterCodigoUePorModalidade(string[] codigoUes, Modalidade[] modalidades)
+        {
+            var sql = @"select distinct ue.ue_id
+                        from ue 
+                        inner join turma t on t.ue_id = ue.id 
+                        where ue.ue_id = any(@codigoUes) 
+                        and t.modalidade_codigo = any(@modalidades)";
+
+            return await contexto.Conexao.QueryAsync<string>(sql, new { codigoUes, modalidades = modalidades.Select(a => (int)a).ToArray() });
+        }
     }
 }
