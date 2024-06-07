@@ -15,7 +15,31 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
         public Ao_alterar_ocorrencia(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
+        [Fact(DisplayName = "Ocorrencia - Alterar Descricao contendo palavra tempo")]
+        public async Task AlterarOcorrenciaDescricaoContendoPalavraTempo()
+        {
+            await CriarDadosBasicos();
+            var dtoIncluir = new InserirOcorrenciaDto
+            {
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                DreId = 1,
+                UeId = 1,
+                Modalidade = 5,
+                Semestre = 3,
+                TurmaId = 1,
+                DataOcorrencia = DateTimeExtension.HorarioBrasilia(),
+                Titulo = "Lorem ipsum",
+                Descricao = "tempo, Tempo, TEMPO",
+                OcorrenciaTipoId = 1,
+                HoraOcorrencia = "17:34",
+            };
+            var useCaseIncluir = InserirOcorrenciaUseCase();
+            await useCaseIncluir.Executar(dtoIncluir);
 
+            dtoIncluir.ShouldNotBeNull();
+            dtoIncluir.Descricao.ShouldBeEquivalentTo("tempo, Tempo, TEMPO");
+
+        }
         [Fact(DisplayName = "Ocorrencia - Alterar Ocorrencia com Turma")]
         public async Task AlterarOcorrenciaComTurma()
         {
