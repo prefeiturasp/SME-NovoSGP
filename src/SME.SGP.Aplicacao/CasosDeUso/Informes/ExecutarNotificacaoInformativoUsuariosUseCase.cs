@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi possível encontrar o Informativo informado");
 
             var guidPerfis = await ObterPerfisPorCodigos(informativo.Perfis.Select(perfil => perfil.CodigoPerfil));
-            var usuarios = await mediator.Send(new ObterRfsUsuariosPorPerfisDreUeQuery(informativo.Ue?.CodigoUe, informativo.Dre?.CodigoDre, guidPerfis));
+            var usuarios = await ObterUsuarios(informativo, guidPerfis);
             foreach (var usuario in usuarios)
             {
                 var notificacaoInformativoUsuario = new NotificacaoInformativoUsuarioFiltro()
@@ -43,6 +43,30 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoInformativoUsuario, notificacaoInformativoUsuario, Guid.NewGuid(), null));  
             }               
             return true;
+        }
+
+        private async Task<string[]> ObterUsuarios(Informativo informativo, string[] guidPerfis)
+        {
+            var usuarios = new List<string>();
+            if (informativo.Ue?.CodigoUe is null 
+                && informativo.Dre?.CodigoDre is null)
+            {
+                var dres = await mediator.Send(ObterTodasDresQuery.Instance);
+                var tasks = dres
+                     .AsParallel()
+                     .WithDegreeOfParallelism(4)
+                     .Select(async dre =>
+                     {
+                         usuarios.AddRange(await mediator.Send(new ObterRfsUsuariosPorPerfisDreUeQuery(informativo.Ue?.CodigoUe, dre.CodigoDre, guidPerfis)));
+                     });
+
+                await Task.WhenAll(tasks);
+                    
+            }
+            else
+                usuarios.AddRange(await mediator.Send(new ObterRfsUsuariosPorPerfisDreUeQuery(informativo.Ue?.CodigoUe, informativo.Dre?.CodigoDre, guidPerfis)));
+
+            return usuarios.Distinct().ToArray();
         }
 
         private async Task<string[]> ObterPerfisPorCodigos(IEnumerable<long> codigosPerfis)
