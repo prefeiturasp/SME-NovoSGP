@@ -1031,5 +1031,17 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<Turma>(query, new { perfilCP = Guid.Parse(PerfilUsuario.CP.Name().ToString()), anoLetivo, codigoRf, modalidadeTurma, anoTurma, turmaIdReferencia });
         }
+
+        public async Task<bool> UsuarioPossuiSomenteAbrangenciaHistorica(long turmaId, long usuarioId)
+        {
+            var query = $@"select a.historico and not t.historica
+                              from abrangencia a
+                                 inner join turma t
+                                    on a.turma_id = t.id
+                           where a.turma_id = @turmaId and
+                                 a.usuario_id = @usuarioId;";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { turmaId, usuarioId });
+        }
     }
 }
