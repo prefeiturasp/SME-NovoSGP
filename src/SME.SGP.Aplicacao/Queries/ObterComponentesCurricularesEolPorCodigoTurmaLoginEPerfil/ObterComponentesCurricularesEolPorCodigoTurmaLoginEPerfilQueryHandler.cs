@@ -21,22 +21,21 @@ namespace SME.SGP.Aplicacao
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator)); ;
         }
-                                                                       
+
         public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery request, CancellationToken cancellationToken)
         {
             var componenteCurricularEol = new List<ComponenteCurricularEol>();
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
-            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_COMPONENTES_CURRICULARES_TURMAS_FUNCIONARIOS_PERFIS, 
-                                                                    request.CodigoTurma, 
-                                                                    request.Login, 
-                                                                    request.Perfil, 
-                                                                    request.RealizarAgrupamentoComponente) + $"?checaMotivoDisponibilizacao={request.ChecaMotivoDisponibilizacao}&consideraTurmaInfantil={request.ConsideraTurmaInfantil}");
-            
+            var urlComParametros = string.Format(ServicosEolConstants.URL_COMPONENTES_CURRICULARES_TURMAS_FUNCIONARIOS_PERFIS,
+                request.CodigoTurma, request.Login, request.Perfil, request.RealizarAgrupamentoComponente) + $"?checaMotivoDisponibilizacao={request.ChecaMotivoDisponibilizacao}&consideraTurmaInfantil={request.ConsideraTurmaInfantil}&usuarioPossuiSomenteAbrangenciaHistorica={request.UsuarioPossuiSomenteAbrangenciaHistorica}";
+
+            var resposta = await httpClient.GetAsync(urlComParametros, cancellationToken);
+
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
-                var json = await resposta.Content.ReadAsStringAsync();
+                var json = await resposta.Content.ReadAsStringAsync(cancellationToken);
                 componenteCurricularEol = JsonConvert.DeserializeObject<List<ComponenteCurricularEol>>(json);
-                var componentesCurricularesSgp = await mediator.Send(new ObterInfoPedagogicasComponentesCurricularesPorIdsQuery(componenteCurricularEol.ObterCodigos()));
+                var componentesCurricularesSgp = await mediator.Send(new ObterInfoPedagogicasComponentesCurricularesPorIdsQuery(componenteCurricularEol.ObterCodigos()), cancellationToken);
                 componenteCurricularEol.PreencherInformacoesPegagogicasSgp(componentesCurricularesSgp);
                 return componenteCurricularEol;
             }
