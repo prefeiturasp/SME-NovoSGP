@@ -1,18 +1,14 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Dapper.FluentMap;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Dados;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Data;
-using System.Text;
-using Dapper.FluentMap;
-using Xunit;
 using System.Globalization;
-using Elastic.Apm.Api;
-using MediatR;
-using System.Reflection;
-using SME.SGP.TesteIntegracao.Commands;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+using System.Text;
+using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Setup
 {
@@ -21,13 +17,18 @@ namespace SME.SGP.TesteIntegracao.Setup
         public IServiceCollection Services { get; set; }
         public InMemoryDatabase Database { get; }
         public ServiceProvider ServiceProvider { get; set; }
-
+        
         public CollectionFixture()
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             Database = new InMemoryDatabase();
 
             IniciarServicos();
+        }
+
+        public void ExecutarScripts(List<ScriptCarga> scriptsCarga)
+        {
+            Database.ExecutarScripts(scriptsCarga);
         }
 
         public void IniciarServicos()

@@ -1,9 +1,11 @@
 using Dapper;
+using Elastic.Apm.Api;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -33,5 +35,11 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.ExecuteAsync(query, new { planoAEEId, turmaId });                  
         }
 
+        public Task<int> ObterQdadePlanosAEEAtivosAluno(string codigoAluno)
+        => database.Conexao.QueryFirstOrDefaultAsync<int>(@$"select count(pa.id) from plano_aee pa 
+                                            where pa.aluno_codigo = @codigoAluno 
+                                            and not pa.excluido 
+                                            and not situacao in({(int)SituacaoPlanoAEE.Encerrado}, {(int)SituacaoPlanoAEE.EncerradoAutomaticamente})", 
+            new { codigoAluno });                  
     }
 }

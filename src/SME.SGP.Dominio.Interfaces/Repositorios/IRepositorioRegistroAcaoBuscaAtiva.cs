@@ -17,5 +17,6 @@ namespace SME.SGP.Dominio.Interfaces
                                                                                       FiltroRespostaRegistrosAcaoDto filtroRespostas, 
                                                                                       Paginacao paginacao);
         Task<PaginacaoResultadoDto<RegistroAcaoBuscaAtivaNAAPADto>> ListarPaginadoRegistroAcaoParaNAAPA(string codigoAluno, Paginacao paginacao);
+        Task<int> ObterQdadeRegistrosAcaoAlunoMes(string alunoCodigo, int mes, int anoLetivo);
     }
 }

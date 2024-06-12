@@ -119,6 +119,8 @@ namespace SME.SGP.Worker.RabbitMQ
             Comandos.Add(RotasRabbitSgp.GerarCacheAtribuicaoResponsaveis, new ComandoRabbit("Gerar cache atribuições de responsáveis ativos", typeof(IGerarCacheAtribuicaoResponsaveisUseCase), true));
             Comandos.Add(RotasRabbitSgp.RotaExecutarExclusaoDasNotificacoesPeriodicamente, new ComandoRabbit("Executar exclusão notificações peridicamente", typeof(IExecutarExclusaoNotificacoesPeriodicamenteUseCase), true));
             Comandos.Add(RotasRabbitSgp.RotaExecutarExclusaoDaNotificacao, new ComandoRabbit("Executar exclusão notificação", typeof(IExecutarExclusaoNotificacaoUseCase), true));
+            Comandos.Add(RotasRabbitSgp.ExecutarAtualizacaoMapeamentoEstudantes, new ComandoRabbit("Executar atualização do mapeamento dos estudantes", typeof(IAtualizarMapeamentoDosEstudantesUseCase), true));
+            Comandos.Add(RotasRabbitSgp.ExecutarAtualizacaoMapeamentoEstudantesBimestre, new ComandoRabbit("Executar atualização do mapeamento do estudante do bimestre", typeof(IAtualizarMapeamentoDoEstudanteDoBimestreUseCase), true));
         }
     }
 }

@@ -17,7 +17,7 @@ using SME.SGP.Dominio.Constantes;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterRfsUsuariosPorPerfisDreUeQueryHandler : IRequestHandler<ObterRfsUsuariosPorPerfisDreUeQuery, string[]>
+    public class ObterRfsUsuariosPorPerfisDreUeQueryHandler : IRequestHandler<ObterRfsUsuariosPorPerfisDreUeQuery, IEnumerable<UsuarioPerfilsAbrangenciaDto>>
     {
         private readonly IMediator mediator;
         private readonly IHttpClientFactory httpClientFactory;
@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
-        public async Task<string[]> Handle(ObterRfsUsuariosPorPerfisDreUeQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<UsuarioPerfilsAbrangenciaDto>> Handle(ObterRfsUsuariosPorPerfisDreUeQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
             var parametros = JsonConvert.SerializeObject(request);
@@ -40,11 +40,12 @@ namespace SME.SGP.Aplicacao
             {
                 var mensagem = await resposta.Content.ReadAsStringAsync();
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro ao obter os usuários por perfil/ue/dre no EOL, código de erro: {resposta.StatusCode}, mensagem: {mensagem ?? "Sem mensagem"},Parametros:{parametros}, Request: {JsonConvert.SerializeObject(resposta.RequestMessage)}, ", LogNivel.Negocio, LogContexto.ApiEol, string.Empty));
-                return new string[] { };
+                
+                return Enumerable.Empty<UsuarioPerfilsAbrangenciaDto>();
             }
 
             var json = resposta.Content.ReadAsStringAsync().Result;
-            return JsonConvert.DeserializeObject<string[]>(json);
+            return JsonConvert.DeserializeObject<IEnumerable<UsuarioPerfilsAbrangenciaDto>>(json);
         }
 
     }

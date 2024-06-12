@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.Questionario;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.Turma;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -23,6 +23,15 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Salvar([FromBody] RelatorioPAPDto relatorioPAPDto, [FromServices] ISalvarRelatorioPAPUseCase useCase)
         {
             return Ok(await useCase.Executar(relatorioPAPDto));
+        }
+
+        [HttpPost("copiar")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RPAP_I, Policy = "Bearer")]
+        public async Task<IActionResult> Copiar([FromBody] CopiarPapDto copiarPapDto,[FromServices] ICopiarRelatorioPAPUseCase useCase)
+        {
+            return Ok(await useCase.Executar(copiarPapDto));
         }
 
         [HttpGet("periodos/{codigoTurma}")]
@@ -84,6 +93,15 @@ namespace SME.SGP.Api.Controllers
                 return Ok(await useCase.Executar(file, Dominio.TipoArquivo.EncaminhamentoNAAPA));
 
             return BadRequest();
+        }
+
+        [HttpGet("turmas-pap/{anoLetivo}/ues/{codigoUe}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterTurmasPapPorAnoLetivo([FromRoute] long anoLetivo, string codigoUe,[FromServices] IObterTurmasPapPorAnoLetivoUseCase usecase)
+        {
+            return Ok(await usecase.Executar(anoLetivo,codigoUe));
         }
     }
 }

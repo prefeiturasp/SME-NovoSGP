@@ -125,6 +125,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<long>> ObterIdsNotificacoesParaExclusao(int ano, long? diasLidasDeAlerta, long? diasLidasDeAviso, long? diasNaoLidasDeAvisoEAlerta)
         {
+            var tiposNotificacaoIgnorados = new int[] { (int)NotificacaoTipo.InatividadeAtendimentoNAAPA };
             var sql = new StringBuilder();
 
             if (diasLidasDeAlerta.NaoEhNulo())
@@ -132,6 +133,7 @@ namespace SME.SGP.Dados.Repositorios
                                  FROM notificacao n
                                  WHERE n.status = {(int)NotificacaoStatus.Lida} 
                                  AND n.categoria = {(int)NotificacaoCategoria.Alerta} 
+                                 AND n.tipo <> any(@tiposNotificacaoIgnorados)
                                  AND CAST(TO_CHAR(CURRENT_DATE - (n.criado_em  -  INTERVAL '1 DAY'), 'DD') AS INTEGER) >= @diasLidasDeAlerta 
                                  AND n.ano = @ano");
 
@@ -144,6 +146,7 @@ namespace SME.SGP.Dados.Repositorios
                                     FROM notificacao n
                                     WHERE n.status = {(int)NotificacaoStatus.Lida} 
                                     AND n.categoria = {(int)NotificacaoCategoria.Aviso} 
+                                    AND n.tipo <> any(@tiposNotificacaoIgnorados) 
                                     AND CAST(TO_CHAR(CURRENT_DATE - (n.criado_em  -  INTERVAL '1 DAY'), 'DD') AS INTEGER) >= @diasLidasDeAviso 
                                     AND n.ano = @ano");
             }
@@ -157,11 +160,12 @@ namespace SME.SGP.Dados.Repositorios
                                   FROM notificacao n
                                   WHERE n.status = {(int)NotificacaoStatus.Pendente} 
                                   AND n.categoria in({(int)NotificacaoCategoria.Alerta}, {(int)NotificacaoCategoria.Aviso}) 
+                                  AND n.tipo <> any(@tiposNotificacaoIgnorados)
                                   AND CAST(TO_CHAR(CURRENT_DATE - (n.criado_em  -  INTERVAL '1 DAY'), 'DD') AS INTEGER) >= @diasNaoLidasDeAvisoEAlerta 
                                   AND n.ano = @ano");
             }
 
-            return await database.Conexao.QueryAsync<long>(sql.ToString(), new { ano, diasLidasDeAlerta, diasLidasDeAviso, diasNaoLidasDeAvisoEAlerta });
+            return await database.Conexao.QueryAsync<long>(sql.ToString(), new { ano, diasLidasDeAlerta, diasLidasDeAviso, diasNaoLidasDeAvisoEAlerta, tiposNotificacaoIgnorados });
         }
 
         public async Task<bool> ExcluirTotalPorIdsAsync(long id)
