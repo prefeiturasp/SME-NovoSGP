@@ -30,8 +30,6 @@ namespace SME.SGP.TesteIntegracao.ABAE
             base.RegistrarFakes(services);
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorDreEolQuery, IEnumerable<UsuarioEolRetornoDto>>),
                 typeof(ObterFuncionariosPorDreEolQueryHandlerFake), ServiceLifetime.Scoped));
-
-
         }
 
         [Fact(DisplayName = "ABAE - Obter funcionários com acessos ABAE por dre")]
@@ -88,6 +86,61 @@ namespace SME.SGP.TesteIntegracao.ABAE
 
             funcionarios.ShouldNotBeNull();
             funcionarios.Count().ShouldBe(2);
+        }
+
+        [Fact(DisplayName = "ABAE - Obter cadastros desconsiderando registros excluídos")]
+        public async Task Obter_cadastros_desconsiderando_registros_excluidos()
+        {
+            var dataAtual = DateTimeExtension.HorarioBrasilia();
+            var dre = new Dre() { CodigoDre = "1", DataAtualizacao = dataAtual };
+            var ue = new Ue() { CodigoUe = "1", DreId = 1, DataAtualizacao = dataAtual };
+            var cadAbae1 = new CadastroAcessoABAE()
+            {
+                UeId = 1,
+                Nome = "cad1",
+                Cpf = "1",
+                Email = "@",
+                Telefone = "1",
+                Cep = "1",
+                Endereco = "Rua",
+                Numero = 1,
+                CriadoEm = dataAtual,
+                CriadoPor = "Sistema",
+                CriadoRF = "0"
+            };
+            var cadAbae2 = new CadastroAcessoABAE()
+            {
+                UeId = 1,
+                Nome = "cad2",
+                Cpf = "2",
+                Email = "@",
+                Telefone = "1",
+                Cep = "1",
+                Endereco = "Rua",
+                Numero = 2,
+                CriadoEm = dataAtual,
+                CriadoPor = "Sistema",
+                CriadoRF = "0",
+                Excluido = true
+            };
+
+            CriarClaimUsuario(ObterPerfilDiretor());
+            await CriarUsuarios();
+            await InserirNaBase(dre);
+            await InserirNaBase(ue);
+            await InserirNaBase(cadAbae1);
+            await InserirNaBase(cadAbae2);
+
+            var useCase = ServiceProvider.GetService<IObterFuncionariosUseCase>();
+
+            var resultado = await useCase.Executar(new FiltroFuncionarioDto()
+            {
+                CodigoDRE = "1",
+                CodigoUE = "1"                
+            });
+
+            resultado.ShouldNotBeNull();
+            resultado.ShouldNotContain(x => x.CodigoRf == cadAbae2.Cpf && x.NomeServidor == cadAbae2.Nome);
         }
     }
 }
