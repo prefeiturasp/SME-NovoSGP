@@ -1,4 +1,7 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
+using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,10 +9,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using SME.SGP.Dominio;
-using SME.SGP.Infra;
-using Org.BouncyCastle.Asn1.Ocsp;
 
 namespace SME.SGP.Aplicacao
 {
@@ -18,7 +17,7 @@ namespace SME.SGP.Aplicacao
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IMediator mediator;
 
-        public ObterProfessorPorRFUeDreAnoLetivoQueryHandler(IHttpClientFactory httpClientFactory,IMediator mediator)
+        public ObterProfessorPorRFUeDreAnoLetivoQueryHandler(IHttpClientFactory httpClientFactory, IMediator mediator)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -26,20 +25,24 @@ namespace SME.SGP.Aplicacao
         public async Task<ProfessorResumoDto> Handle(ObterProfessorPorRFUeDreAnoLetivoQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+
             ValidarParametroDreId(request);
+
             var (paramUeId, paramDreId) = ObterParametrosDreUe(request);
             var url = string.Format(ServicosEolConstants.URL_PROFESSORES_BUSCAR_POR_RF_DRE_UE, request.CodigoRF, request.AnoLetivo);
-            var resposta = await httpClient.GetAsync($"{url}?{string.Concat(paramUeId, paramDreId)}buscarOutrosCargos={request.BuscarOutrosCargos}");
+            var resposta = await httpClient.GetAsync($"{url}?{string.Concat(paramUeId, paramDreId)}buscarOutrosCargos={request.BuscarOutrosCargos}", cancellationToken);
 
             if (!resposta.IsSuccessStatusCode)
                 throw new NegocioException("Ocorreu uma falha ao consultar o professor");
+
             var retorno = await TratarRepostaSemConteudo(resposta, request);
             if (retorno.NaoEhNulo())
                 return retorno;
 
-            var json = await resposta.Content.ReadAsStringAsync();
+            var json = await resposta.Content.ReadAsStringAsync(cancellationToken);
             retorno = JsonConvert.DeserializeObject<ProfessorResumoDto>(json);
             retorno.UsuarioId = await ObterIdUsuario(retorno.CodigoRF);
+
             return retorno;
         }
 
@@ -68,16 +71,19 @@ namespace SME.SGP.Aplicacao
                     if (possuiAtribuicaoNaUE)
                         return new ProfessorResumoDto { CodigoRF = request.CodigoRF, Nome = dadosUsuarioLogado.Nome, UsuarioId = dadosUsuarioLogado.Id };
                 }
-                throw new NegocioException($"Não foi encontrado professor com RF {request.CodigoRF}");
+                return new ProfessorResumoDto { CodigoRF = request.CodigoRF, Nome = dadosUsuarioLogado.Nome, UsuarioId = dadosUsuarioLogado.Id };
             }
             return null;
         }
-        
+
         private async Task<IEnumerable<AtribuicaoCJ>> ObterAtribuicoesCJAtivasProfessor(string codigoRf)
         {
-            var obterAtribuicoesCJAtivas = await mediator.Send(new ObterAtribuicoesCJAtivasQuery(codigoRf, false));
+            var obterAtribuicoesCJAtivas = await mediator
+                .Send(new ObterAtribuicoesCJAtivasQuery(codigoRf, false));
+
             if (obterAtribuicoesCJAtivas.NaoPossuiRegistros())
-                throw new NegocioException($"Não foi encontrado professor com RF {codigoRf}");
+                return Enumerable.Empty<AtribuicaoCJ>();
+
             return obterAtribuicoesCJAtivas;
         }
 
@@ -88,7 +94,7 @@ namespace SME.SGP.Aplicacao
             if (!dadosUsuarioLogado.EhProfessorCj() && !ehGestorEscolar)
                 throw new NegocioException($"Não foi encontrado professor com RF {codigoRf}");
             return (dadosUsuarioLogado, ehGestorEscolar);
-        } 
+        }
 
         private async Task<bool> EhFuncionarioGestorEscolarDaUe(string codigoRfUsuarioLogado, ObterProfessorPorRFUeDreAnoLetivoQuery request)
         {
@@ -102,11 +108,10 @@ namespace SME.SGP.Aplicacao
                                                             new List<int> { (int)Cargo.AD, (int)Cargo.Diretor, (int)Cargo.CP }, request.DreId));
             return funcionariosDaUe.Any(f => f.FuncionarioRF == codigoRfUsuarioLogado);
         }
-                    
 
-private static void ValidarParametroDreId(ObterProfessorPorRFUeDreAnoLetivoQuery request)
+        private static void ValidarParametroDreId(ObterProfessorPorRFUeDreAnoLetivoQuery request)
         {
-            if (!request.BuscarPorTodasDre 
+            if (!request.BuscarPorTodasDre
                 && string.IsNullOrWhiteSpace(request.DreId))
                 throw new NegocioException("É necessario informar o codigoRF Dre, UE e o ano letivo");
         }
