@@ -27,9 +27,9 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi possível encontrar o Informativo informado");
 
             var guidPerfis = await ObterPerfisPorCodigos(informativo.Perfis.Select(perfil => perfil.CodigoPerfil));
-            var usuariosPerfils = await mediator.Send(new ObterRfsUsuariosPorPerfisDreUeQuery(informativo.Ue?.CodigoUe, informativo.Dre?.CodigoDre, guidPerfis));
-            var rfUsuarios = await ObterRfUsuarios(usuariosPerfils, informativo, guidPerfis);
-
+            var usuariosPerfils = await ObterUsuarios(informativo, guidPerfis); 
+            var rfUsuarios = await ObterRfUsuarios(usuariosPerfils, informativo, guidPerfis); 
+            
             foreach (var usuario in rfUsuarios)
             {
                 var notificacaoInformativoUsuario = new NotificacaoInformativoUsuarioFiltro()
@@ -46,12 +46,36 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
+        private async Task<IEnumerable<UsuarioPerfilsAbrangenciaDto>> ObterUsuarios(Informativo informativo, string[] guidPerfis)
+        {
+            var usuarios = new List<UsuarioPerfilsAbrangenciaDto>();
+            if (informativo.Ue?.CodigoUe is null
+                && informativo.Dre?.CodigoDre is null)
+            {
+                var dres = await mediator.Send(ObterTodasDresQuery.Instance);
+                var tasks = dres
+                     .AsParallel()
+                     .WithDegreeOfParallelism(4)
+                     .Select(async dre =>
+                     {
+                         usuarios.AddRange(await mediator.Send(new ObterRfsUsuariosPorPerfisDreUeQuery(informativo.Ue?.CodigoUe, dre.CodigoDre, guidPerfis)));
+                     });
+
+                await Task.WhenAll(tasks);
+
+            }
+            else
+                usuarios.AddRange(await mediator.Send(new ObterRfsUsuariosPorPerfisDreUeQuery(informativo.Ue?.CodigoUe, informativo.Dre?.CodigoDre, guidPerfis)));
+
+            return usuarios;
+        }
+
         private async Task<IEnumerable<string>> ObterRfUsuarios(IEnumerable<UsuarioPerfilsAbrangenciaDto> usuariosPerfils, Informativo informativo, string[] perfis)
         {
             if (informativo.Modalidades.Any())
                 return await ObterRfUsuarioPorPerfilModalidade(usuariosPerfils, informativo.Modalidades, perfis);
 
-           return usuariosPerfils.Select(up => up.UsuarioRf);
+           return usuariosPerfils.Select(up => up.UsuarioRf).Distinct();
         }
 
         private async Task<IEnumerable<string>> ObterRfUsuarioPorPerfilModalidade(IEnumerable<UsuarioPerfilsAbrangenciaDto> usuariosPerfils, IEnumerable<InformativoModalidade> informativoModalidades, string[] perfis)
