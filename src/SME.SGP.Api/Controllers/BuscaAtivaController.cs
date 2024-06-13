@@ -91,5 +91,11 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await atualizarDadosResponsaveisUseCase.Executar(usuarioDto));
         }
+
+        [HttpGet("motivos-ausencia")]
+        [ProducesResponseType(typeof(IEnumerable<OpcaoRespostaSimplesDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RBA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterMotivosAusencia([FromServices] IObterOpcoesRespostaMotivoAusenciaBuscaAtivaUseCase useCase) => Ok(await useCase.Executar());
     }
 }

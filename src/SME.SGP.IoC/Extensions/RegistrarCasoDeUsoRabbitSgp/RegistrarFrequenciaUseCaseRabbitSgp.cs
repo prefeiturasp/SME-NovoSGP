@@ -62,6 +62,16 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsolidarReflexoFrequenciaBuscaAtivaDreUseCase, ConsolidarReflexoFrequenciaBuscaAtivaDreUseCase>();
             services.TryAddScoped<IConsolidarReflexoFrequenciaBuscaAtivaUeUseCase, ConsolidarReflexoFrequenciaBuscaAtivaUeUseCase>();
             services.TryAddScoped<IConsolidarReflexoFrequenciaBuscaAtivaAlunoUseCase, ConsolidarReflexoFrequenciaBuscaAtivaAlunoUseCase>();
+
+            services.TryAddScoped<IExecutarNotificacaoAlunosFreqMensalInsuficienteBuscaAtivaUseCase, ExecutarNotificacaoAlunosFreqMensalInsuficienteBuscaAtivaUseCase>();
+            services.TryAddScoped<IExecutarNotificacaoAlunosFreqMensalInsuficienteBuscaAtivaDreUseCase, ExecutarNotificacaoAlunosFreqMensalInsuficienteBuscaAtivaDreUseCase>();
+            services.TryAddScoped<IExecutarNotificacaoAlunosFreqMensalInsuficienteBuscaAtivaUeUseCase, ExecutarNotificacaoAlunosFreqMensalInsuficienteBuscaAtivaUeUseCase>();
+            services.TryAddScoped<IExecutarNotificacaoAlunosFreqMensalInsuficienteBuscaAtivaProfissionaisUseCase, ExecutarNotificacaoAlunosFreqMensalInsuficienteBuscaAtivaProfissionaisUseCase>();
+
+            services.TryAddScoped<IConsolidarInformacoesProdutividadeFrequenciaUseCase, ConsolidarInformacoesProdutividadeFrequenciaUseCase>();
+            services.TryAddScoped<IConsolidarInformacoesProdutividadeFrequenciaDreUseCase, ConsolidarInformacoesProdutividadeFrequenciaDreUseCase>();
+            services.TryAddScoped<IConsolidarInformacoesProdutividadeFrequenciaUeUseCase, ConsolidarInformacoesProdutividadeFrequenciaUeUseCase>();
+            services.TryAddScoped<IConsolidarInformacoesProdutividadeFrequenciaBimestreUseCase, ConsolidarInformacoesProdutividadeFrequenciaBimestreUseCase>();
         }
     }
 }

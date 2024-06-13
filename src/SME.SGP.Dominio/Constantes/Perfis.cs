@@ -38,6 +38,8 @@ namespace SME.SGP.Dominio
         public readonly static Guid PERFIL_POA_MATEMATICA = Guid.Parse("cf181fd4-dd30-47cf-a97d-57e602fd8d10");
         public readonly static Guid PERFIL_POA_HUMANAS = Guid.Parse("2c7ced81-7109-4276-9262-5c56efd8992f");
         public readonly static Guid PERFIL_POA_NATURAIS = Guid.Parse("3104735d-c369-4710-ae64-bca37bc78f3b");
+        public readonly static Guid PERFIL_ATE = Guid.Parse("3BE1E074-37D6-E911-ABD6-F81654FE895D");
+        public readonly static Guid PERFIL_ADM_UE = Guid.Parse("42E1E074-37D6-E911-ABD6-F81654FE895D");
 
         public static bool EhPerfilPOA(this Guid source)
             => source == PERFIL_POA_ALFABETIZACAO
@@ -45,6 +47,15 @@ namespace SME.SGP.Dominio
                   || source == PERFIL_POA_LINGUA_PORTUGUESA
                   || source == PERFIL_POA_MATEMATICA
                   || source == PERFIL_POA_NATURAIS;
+
+        public static bool EhPerfilPorUe(Guid perfil)
+             => perfil == PERFIL_ATE
+                    || perfil == PERFIL_AD
+                    || perfil == PERFIL_CP
+                    || perfil == PERFIL_DIRETOR
+                    || perfil == PERFIL_ADM_UE
+                    || perfil == PERFIL_ABAE
+                    || perfil == PERFIL_PAEE;
     }
 
 }

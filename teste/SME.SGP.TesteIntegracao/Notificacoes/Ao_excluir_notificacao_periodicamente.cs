@@ -277,5 +277,86 @@ namespace SME.SGP.TesteIntegracao.Notificacoes
             notificacao.ShouldNotBeNull();
             notificacao.Count().ShouldBe(0);
         }
+
+        [Fact(DisplayName = "Notificação - Não excluir notificação de aviso não lida com mais de 30 dias quando for Inatividade Atendimento NAAPA")]
+        public async Task Ao_excluir_notificacao_aviso_alerta_nao_deve_excluir_notificacao_inatividade_atendimento_naapa()
+        {
+            await CriarDreUePerfil();
+            CriarClaimUsuario(ObterPerfilCP());
+            await CriarUsuarios();
+
+            await InserirNaBase(new ParametrosSistema()
+            {
+                Nome = "DiasExclusaoNotificacoesNaoLidasDeAvisoEAlerta",
+                Descricao = "DiasExclusaoNotificacoesNaoLidasDeAvisoEAlerta",
+                Ano = DateTimeExtension.HorarioBrasilia().Year,
+                Ativo = true,
+                Tipo = TipoParametroSistema.DiasExclusaoNotificacoesNaoLidasDeAvisoEAlerta,
+                Valor = "30",
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+
+            await InserirNaBase(new Notificacao()
+            {
+                Codigo = 1,
+                Tipo = NotificacaoTipo.Fechamento,
+                Status = NotificacaoStatus.Pendente,
+                Categoria = NotificacaoCategoria.Aviso,
+                DreId = DRE_CODIGO_1,
+                UeId = UE_CODIGO_1,
+                Ano = DateTimeExtension.HorarioBrasilia().Year,
+                Titulo = "Notificação Titulo",
+                Mensagem = "Notificação mensagem",
+                CriadoEm = DateTimeExtension.HorarioBrasilia().AddDays(-30),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                UsuarioId = USUARIO_ID_1
+            });
+
+            await InserirNaBase(new Notificacao()
+            {
+                Codigo = 2,
+                Tipo = NotificacaoTipo.Fechamento,
+                Status = NotificacaoStatus.Pendente,
+                Categoria = NotificacaoCategoria.Alerta,
+                DreId = DRE_CODIGO_1,
+                UeId = UE_CODIGO_1,
+                Ano = DateTimeExtension.HorarioBrasilia().Year,
+                Titulo = "Notificação Titulo",
+                Mensagem = "Notificação mensagem",
+                CriadoEm = DateTimeExtension.HorarioBrasilia().AddDays(-30),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                UsuarioId = USUARIO_ID_1
+            });
+
+            await InserirNaBase(new Notificacao()
+            {
+                Codigo = 3,
+                Tipo = NotificacaoTipo.InatividadeAtendimentoNAAPA,
+                Status = NotificacaoStatus.Pendente,
+                Categoria = NotificacaoCategoria.Aviso,
+                DreId = DRE_CODIGO_1,
+                UeId = UE_CODIGO_1,
+                Ano = DateTimeExtension.HorarioBrasilia().Year,
+                Titulo = "Notificação Titulo",
+                Mensagem = "Notificação mensagem",
+                CriadoEm = DateTimeExtension.HorarioBrasilia().AddDays(-30),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                UsuarioId = USUARIO_ID_1
+            });
+
+            var useCase = ServiceProvider.GetService<IExecutarExclusaoNotificacoesPeriodicamenteUseCase>();
+
+            await useCase.Executar(new MensagemRabbit());
+
+            var notificacao = ObterTodos<Notificacao>();
+            notificacao.ShouldNotBeNull();
+            notificacao.Count().ShouldBe(1);
+            notificacao.FirstOrDefault().Tipo.ShouldBe(NotificacaoTipo.InatividadeAtendimentoNAAPA);
+        }
     }
 }

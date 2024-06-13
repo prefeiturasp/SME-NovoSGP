@@ -45,6 +45,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected const long ID_QUESTAO_ANEXO = 47;
         protected const long ID_QUESTAO_ANEXOS_ITINERANCIA = 48;
         protected const long ID_QUESTAO_PROFISSIONAIS_ENVOLVIDOS = 49;
+        protected const long ID_QUESTAO_ESTA_EM_CLASSE_HOSPITALAR = 50;
 
         protected const long ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_DATA_ENTRADA_QUEIXA = 17;
         protected const long ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PRIORIDADE = 18;
@@ -83,7 +84,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected const long ID_OPCAO_RESPOSTA_GRUPO_TRAB_NAAPA = 13;
         protected const long ID_OPCAO_RESPOSTA_ACOES_LUDICAS = 14;
         protected const long ID_OPCAO_RESPOSTA_OUTRO_PROCEDIMENTO = 15;
-        protected const long ID_OPCAO_RESPOSTA_SIM = 168;
+        protected const long ID_OPCAO_RESPOSTA_SIM = 168; 
         protected const long ID_OPCAO_RESPOSTA_MASCULINO = 170;
         protected const long ID_OPCAO_RESPOSTA_BRANCO = 172;
         protected const long ID_OPCAO_RESPOSTA_AGITACAO_MOTORA = 176;
@@ -109,6 +110,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected const long ID_OPCAO_RESPOSTA_OBSERVACAO = 199;
         protected const long ID_OPCAO_RESPOSTA_PROJETO_TECER = 200;
         protected const long ID_OPCAO_RESPOSTA_VISITA_TECNICA = 201;
+
+        protected const long ID_OPCAO_RESPOSTA_SIM_ESTA_EM_SALA_HOSPITALAR = 207; 
 
         protected const long ID_SECAO_ENCAMINHAMENTO_NAAPA_INFORMACOES_ESTUDANTE = 1;
         protected const long ID_SECAO_ENCAMINHAMENTO_NAAPA_QUESTOES_APRESENTADAS_INFANTIL = 2;
@@ -195,6 +198,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected const string QUESTAO_NOME_COMPONENTE_ANEXOS = "ANEXOS";
         protected const string QUESTAO_NOME_COMPONENTE_ANEXO_ITINERANCIA = "ANEXO_ITINERANCIA";
         protected const string QUESTAO_NOME_COMPONENTE_PROFISSIONAIS_ENVOLVIDOS = "PROFISSIONAIS_ENVOLVIDOS_ATENDIMENTO";
+        protected const string QUESTAO_NOME_COMPONENTE_ESTA_EM_CLASSE_HOSPÍTALAR = "ESTA_EM_CLASSE_HOSPITALAR";
 
         protected const long ID_OPCAO_RESPOSTA_DOENCA_CRONICA_OU_EM_TRATAMENTO_DE_LONGA_DURACAO_71_1099 = 71;
         protected const long ID_QUESTAO_COMPLEMENTAR_SELECIONE_UM_FILTRO_DOENCA_CRONICA_OU_EM_TRATAMENTO_DE_LONGA_DURACAO_28_303 = 28;
@@ -272,7 +276,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //Id 1
             await InserirNaBase(new SecaoEncaminhamentoNAAPA()
             {
-                QuestionarioId = 1,
+                QuestionarioId = ID_QUESTIONARIO_INFORMACOES_ESTUDANTE,
                 Nome = "Informações do Estudante",
                 NomeComponente = NOME_SECAO_ENCAMINHAMENTO_NAAPA_INFORMACOES_ESTUDANTE,
                 Etapa = 1, Ordem = 1,
@@ -282,7 +286,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //Id 2
             await InserirNaBase(new SecaoEncaminhamentoNAAPA()
             {
-                QuestionarioId = 2,
+                QuestionarioId = ID_QUESTIONARIO_QUESTOES_APRESENTADAS_INFANTIL,
                 Nome = "Questões apresentadas",
                 NomeComponente = NOME_SECAO_ENCAMINHAMENTO_NAAPA_QUESTOES_APRESENTADAS_INFANTIL,
                 Etapa = 1,
@@ -2506,6 +2510,28 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                     CriadoRF = SISTEMA_CODIGO_RF,
                     CriadoEm = DateTime.Now
                 });
+
+                //id 207
+                await InserirNaBase(new OpcaoResposta()
+                {
+                    QuestaoId = ID_QUESTAO_ESTA_EM_CLASSE_HOSPITALAR,
+                    Ordem = 1,
+                    Nome = "Sim",
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF,
+                    CriadoEm = DateTime.Now
+                });
+
+                //id 208
+                await InserirNaBase(new OpcaoResposta()
+                {
+                    QuestaoId = ID_QUESTAO_ESTA_EM_CLASSE_HOSPITALAR,
+                    Ordem = 2,
+                    Nome = "Não",
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF,
+                    CriadoEm = DateTime.Now
+                });
         }
 
 
@@ -2583,7 +2609,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //id 1
             await InserirNaBase(new Questao()
             {
-                QuestionarioId = 1,
+                QuestionarioId = ID_QUESTIONARIO_INFORMACOES_ESTUDANTE,
                 Ordem = 0,
                 Nome = "Data de entrada da queixa",
                 SomenteLeitura = true,
@@ -2596,7 +2622,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //id 2
             await InserirNaBase(new Questao()
             {
-                QuestionarioId = 1,
+                QuestionarioId = ID_QUESTIONARIO_INFORMACOES_ESTUDANTE,
                 Ordem = 1,
                 Nome = "Prioridade",
                 Obrigatorio = true,
@@ -2608,7 +2634,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //id 3
             await InserirNaBase(new Questao()
             {
-                QuestionarioId = 2,
+                QuestionarioId = ID_QUESTIONARIO_QUESTOES_APRESENTADAS_INFANTIL,
                 Ordem = 4,
                 Nome = "Questões no agrupamento promoção de cuidados",
                 SomenteLeitura = true,
@@ -2623,7 +2649,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //id 4
             await InserirNaBase(new Questao()
             {
-                QuestionarioId = 2,
+                QuestionarioId = ID_QUESTIONARIO_QUESTOES_APRESENTADAS_INFANTIL,
                 Ordem = 1,
                 Nome = "Selecione um tipo",
                 Observacao = "Adoece com frequência sem receber cuidados médicos",
@@ -2639,7 +2665,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //id 5
             await InserirNaBase(new Questao()
             {
-                QuestionarioId = 2,
+                QuestionarioId = ID_QUESTIONARIO_QUESTOES_APRESENTADAS_INFANTIL,
                 Ordem = 1,
                 Nome = "Selecione um tipo",
                 Observacao = "Doença crônica ou em tratamento de longa duração",
@@ -2655,7 +2681,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //id 6
             await InserirNaBase(new Questao()
             {
-                QuestionarioId = 2,
+                QuestionarioId = ID_QUESTIONARIO_QUESTOES_APRESENTADAS_INFANTIL,
                 Ordem = 5,
                 Nome = "Observações",
                 SomenteLeitura = true,
@@ -2740,7 +2766,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //id 12
             await InserirNaBase(new Questao()
             {
-                QuestionarioId = 1,
+                QuestionarioId = ID_QUESTIONARIO_INFORMACOES_ESTUDANTE,
                 Ordem = 6,
                 Nome = "Endereço residencial",
                 Obrigatorio = false,
@@ -2754,8 +2780,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //id 13
             await InserirNaBase(new Questao()
             {
-                QuestionarioId = 1,
-                Ordem = 15,
+                QuestionarioId = ID_QUESTIONARIO_INFORMACOES_ESTUDANTE,
+                Ordem = 16,
                 Nome = "Turmas de programa",
                 Obrigatorio = false,
                 Tipo = TipoQuestao.TurmasPrograma,
@@ -2768,8 +2794,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //id 14
             await InserirNaBase(new Questao()
             {
-                QuestionarioId = 1,
-                Ordem = 2,
+                QuestionarioId = ID_QUESTIONARIO_INFORMACOES_ESTUDANTE,
+                Ordem = 3,
                 Nome = "NIS (Número de Identificação Social)",
                 NomeComponente = "NIS",
                 Obrigatorio = false,
@@ -2782,8 +2808,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //id 15
             await InserirNaBase(new Questao()
             {
-                QuestionarioId = 1,
-                Ordem = 3,
+                QuestionarioId = ID_QUESTIONARIO_INFORMACOES_ESTUDANTE,
+                Ordem = 13,
                 Nome = "UBS de referência",
                 NomeComponente = "UBS",
                 Obrigatorio = false,
@@ -2796,8 +2822,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //id 16
             await InserirNaBase(new Questao()
             {
-                QuestionarioId = 1,
-                Ordem = 4,
+                QuestionarioId = ID_QUESTIONARIO_INFORMACOES_ESTUDANTE,
+                Ordem = 17,
                 Nome = "Descrição do encaminhamento",
                 NomeComponente = "DESCRICAO_ENCAMINHAMENTO",
                 Obrigatorio = false,
@@ -3008,8 +3034,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //ID 35
             await InserirNaBase(new Questao()
             {
-                QuestionarioId = 1,
-                Ordem = 5,
+                QuestionarioId = ID_QUESTIONARIO_INFORMACOES_ESTUDANTE,
+                Ordem = 10,
                 Nome = QUESTAO_NOME_ESTUDANTE_MIGRANTE,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_ESTUDANTE_MIGRANTE,
                 Tipo = TipoQuestao.Radio,
@@ -3021,8 +3047,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //ID 36
             await InserirNaBase(new Questao()
             {
-                QuestionarioId = 1,
-                Ordem = 6,
+                QuestionarioId = ID_QUESTIONARIO_INFORMACOES_ESTUDANTE,
+                Ordem = 8,
                 Nome = QUESTAO_NOME_GENERO,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_GENERO,
                 Tipo = TipoQuestao.Combo,
@@ -3034,8 +3060,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //ID 37
             await InserirNaBase(new Questao()
             {
-                QuestionarioId = 1,
-                Ordem = 7,
+                QuestionarioId = ID_QUESTIONARIO_INFORMACOES_ESTUDANTE,
+                Ordem = 9,
                 Nome = QUESTAO_NOME_GRUPO_ETNICO,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_GRUPO_ETNICO,
                 Tipo = TipoQuestao.Combo,
@@ -3047,8 +3073,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //ID 38
             await InserirNaBase(new Questao()
             {
-                QuestionarioId = 1,
-                Ordem = 8,
+                QuestionarioId = ID_QUESTIONARIO_INFORMACOES_ESTUDANTE,
+                Ordem = 2,
                 Nome = QUESTAO_NOME_PORTA_ENTRADA,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_PORTA_ENTRADA,
                 Tipo = TipoQuestao.Combo,
@@ -3060,7 +3086,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //ID 39
             await InserirNaBase(new Questao()
             {
-                QuestionarioId = 2,
+                QuestionarioId = ID_QUESTIONARIO_QUESTOES_APRESENTADAS_INFANTIL,
                 Ordem = 1,
                 Nome = QUESTAO_NOME_AGRUPAMENTO_DESENVOLVIMENTO,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_AGRUPAMENTO_DESENVOLVIMENTO,
@@ -3073,7 +3099,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //ID 40
             await InserirNaBase(new Questao()
             {
-                QuestionarioId = 2,
+                QuestionarioId = ID_QUESTIONARIO_QUESTOES_APRESENTADAS_INFANTIL,
                 Ordem = 2,
                 Nome = QUESTAO_NOME_AGRUPAMENTO_PROTECAO,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_AGRUPAMENTO_PROTECAO,
@@ -3086,7 +3112,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //id 41
             await InserirNaBase(new Questao()
             {
-                QuestionarioId = 1,
+                QuestionarioId = ID_QUESTIONARIO_QUESTOES_APRESENTADAS_INFANTIL,
                 Ordem = 9,
                 Nome = QUESTAO_NOME_ENSINO_APRENDIZAGEM,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_ENSINO_APRENDIZAGEM,
@@ -3099,7 +3125,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //id 42
             await InserirNaBase(new Questao()
             {
-                QuestionarioId = 1,
+                QuestionarioId = ID_QUESTIONARIO_INFORMACOES_ESTUDANTE,
                 Ordem = 10,
                 Nome = QUESTAO_NOME_HIPOTESE_ESCRITA,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_HIPOTESE_ESCRITA,
@@ -3112,7 +3138,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //id 43
             await InserirNaBase(new Questao()
             {
-                QuestionarioId = 1,
+                QuestionarioId = ID_QUESTIONARIO_QUESTOES_APRESENTADAS_INFANTIL,
                 Ordem = 11,
                 Nome = QUESTAO_NOME_PERMANENCIA_ESCOLAR,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_PERMANENCIA_ESCOLAR,
@@ -3167,7 +3193,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             await InserirNaBase(new Questao()
             {
                 QuestionarioId = ID_QUESTIONARIO_INFORMACOES_ESTUDANTE,
-                Ordem = 3,
+                Ordem = 18,
                 Nome = "Anexo",
                 Obrigatorio = false,
                 Tipo = TipoQuestao.Upload,
@@ -3203,6 +3229,20 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_PROFISSIONAIS_ENVOLVIDOS
+            });
+
+            //id 50
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = ID_QUESTIONARIO_INFORMACOES_ESTUDANTE,
+                Ordem = 12,
+                Nome = "Está em classe hospitalar",
+                Obrigatorio = true,
+                Tipo = TipoQuestao.Combo,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now,
+                NomeComponente = QUESTAO_NOME_COMPONENTE_ESTA_EM_CLASSE_HOSPÍTALAR
             });
 
 

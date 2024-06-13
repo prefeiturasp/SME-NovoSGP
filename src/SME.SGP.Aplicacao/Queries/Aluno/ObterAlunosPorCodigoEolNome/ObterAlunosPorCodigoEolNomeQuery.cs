@@ -12,14 +12,14 @@ namespace SME.SGP.Aplicacao
             AnoLetivo = filtroEstudante.AnoLetivo;
             CodigoEOL = filtroEstudante.Codigo;
             Nome = filtroEstudante.Nome;
-            CodigoTurma = filtroEstudante.CodigoTurma; ;
+            CodigoTurmas = filtroEstudante.CodigoTurmas;
             SomenteAtivos = true;
         }
 
         public string CodigoUe { get; set; }
         public string AnoLetivo { get; set; }
         public long? CodigoEOL { get; set; }
-        public long CodigoTurma { get; set; }
+        public long[] CodigoTurmas { get; set; }
         public string Nome { get; set; }
         public bool SomenteAtivos { get; set; }
     }
