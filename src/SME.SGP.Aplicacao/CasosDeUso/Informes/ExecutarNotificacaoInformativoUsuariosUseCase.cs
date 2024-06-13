@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
-            var param = mensagem.ObterObjetoMensagem<string>();
+             var param = mensagem.ObterObjetoMensagem<string>();
             if (string.IsNullOrEmpty(param)) return false;
             var informativoId = long.Parse(param);
 
@@ -56,13 +56,12 @@ namespace SME.SGP.Aplicacao
                 var tasks = dres
                      .AsParallel()
                      .WithDegreeOfParallelism(4)
-                     .Select(async dre =>
-                     {
-                         usuarios.AddRange(await mediator.Send(new ObterRfsUsuariosPorPerfisDreUeQuery(informativo.Ue?.CodigoUe, dre.CodigoDre, guidPerfis)));
-                     });
+                     .Select(dre => mediator.Send(new ObterRfsUsuariosPorPerfisDreUeQuery(informativo.Ue?.CodigoUe, dre.CodigoDre, guidPerfis)));
 
-                await Task.WhenAll(tasks);
-
+                var results = await Task.WhenAll(tasks);
+                foreach (var result in results)
+                    usuarios.AddRange(result);
+                
             }
             else
                 usuarios.AddRange(await mediator.Send(new ObterRfsUsuariosPorPerfisDreUeQuery(informativo.Ue?.CodigoUe, informativo.Dre?.CodigoDre, guidPerfis)));
@@ -94,7 +93,7 @@ namespace SME.SGP.Aplicacao
                                                       usuario.Perfils.Exists(perfil => perfilSemUe.Contains(perfil)))
                                                 .Select(up => up.UsuarioRf));
 
-            return rfUsuarios;
+            return rfUsuarios.Distinct();
         }
 
         private async Task<IEnumerable<string>> ObterUsuariosUesModalidade(
