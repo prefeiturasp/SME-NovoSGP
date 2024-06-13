@@ -7,6 +7,7 @@ using SME.SGP.Infra.Dtos.Informes;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -43,7 +44,9 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private IEnumerable<InformeResumoDto> MapearParaDto(IEnumerable<Informativo> informativos, IEnumerable<GruposDeUsuariosDto> perfils)
+        private IEnumerable<InformeResumoDto> MapearParaDto(
+                                    IEnumerable<Informativo> informativos, 
+                                    IEnumerable<GruposDeUsuariosDto> perfils)
         {
             var informes = new List<InformeResumoDto>();
 
@@ -57,11 +60,21 @@ namespace SME.SGP.Aplicacao
                     DreNome = informativo.Dre.NaoEhNulo() ? informativo.Dre.Abreviacao : TODAS,
                     Perfis = ObterPerfils(perfils, informativo.Perfis),
                     Titulo = informativo.Titulo,
-                    EnviadoPor = $"{informativo.CriadoPor} ({informativo.CriadoRF})"
+                    EnviadoPor = $"{informativo.CriadoPor} ({informativo.CriadoRF})",
+                    Modalidades = ObterModalidades(informativo.Modalidades)
                 }); 
             }
 
             return informes;
+        }
+
+        private IEnumerable<ModalidadeRetornoDto> ObterModalidades(List<InformativoModalidade> modalidades)
+        {
+            return modalidades.Select(modalidade => new ModalidadeRetornoDto()
+            {
+                Id = (int)modalidade.Modalidade,
+                Nome = modalidade.Modalidade.GetAttribute<DisplayAttribute>()?.GetName()
+            });
         }
 
         private List<GruposDeUsuariosDto> ObterPerfils(

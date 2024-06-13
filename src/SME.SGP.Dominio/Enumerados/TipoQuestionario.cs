@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Dominio
+﻿namespace SME.SGP.Dominio
 {
     public enum TipoQuestionario
     {
@@ -13,6 +9,7 @@ namespace SME.SGP.Dominio
         EncaminhamentoNAAPA = 5,
         RelatorioPAP = 6,
         RelatorioDinamicoEncaminhamentoNAAPA = 7,
-        RegistroAcaoBuscaAtiva = 8
+        RegistroAcaoBuscaAtiva = 8,
+        MapeamentoEstudante = 9
     }
 }

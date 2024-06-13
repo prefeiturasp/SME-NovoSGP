@@ -152,6 +152,22 @@ namespace SME.SGP.Dados.Repositorios
                 modalidade = (int)modalidade
             });
         }
+
+        public async Task<IEnumerable<ParecerConclusivoDto>> ObterPareceresConclusivos(int anoLetivo, Modalidade modalidade)
+        {
+            var query = $@"select distinct ccp.id, ccp.nome
+                            from conselho_classe_parecer ccp
+                            inner join conselho_classe_parecer_ano ccpa on ccpa.parecer_id = ccp.id
+                            where ccpa.modalidade = @modalidade
+                            and ccpa.inicio_vigencia <= @dataConsulta 
+                            and (ccpa.fim_vigencia >= @dataConsulta or ccpa.fim_vigencia is null)";
+
+            return await database.Conexao.QueryAsync<ParecerConclusivoDto>(query, new
+            {
+                dataConsulta = new DateTime(anoLetivo, 01, 01),
+                modalidade = (int)modalidade
+            });
+        }
     }
 }
 

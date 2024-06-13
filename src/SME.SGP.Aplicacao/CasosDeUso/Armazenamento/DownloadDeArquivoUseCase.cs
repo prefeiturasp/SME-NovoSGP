@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -11,9 +12,9 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<(byte[], string, string)> Executar(Guid codigoArquivo)
+        public async virtual Task<(byte[], string, string)> Executar(Guid codigoArquivo)
         {
-            var entidadeArquivo = await mediator.Send(new ObterArquivoPorCodigoQuery(codigoArquivo));
+            var entidadeArquivo = await ObterArquivoPorCodigo(codigoArquivo);
             
             var extensao = Path.GetExtension(entidadeArquivo.Nome);
 
@@ -23,5 +24,8 @@ namespace SME.SGP.Aplicacao
 
             return (arquivoFisico, entidadeArquivo.TipoConteudo, entidadeArquivo.Nome);
         }
+
+        protected virtual Task<Arquivo> ObterArquivoPorCodigo(Guid codigoArquivo)
+            => mediator.Send(new ObterArquivoPorCodigoQuery(codigoArquivo));
     }
 }

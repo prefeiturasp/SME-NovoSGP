@@ -86,6 +86,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IGerarCacheAtribuicaoResponsaveisUseCase, GerarCacheAtribuicaoResponsaveisUseCase>();
             services.TryAddScoped<IExecutarExclusaoNotificacoesPeriodicamenteUseCase, ExecutarExclusaoNotificacoesPeriodicamenteUseCase>();
             services.TryAddScoped<IExecutarExclusaoNotificacaoUseCase, ExecutarExclusaoNotificacaoUseCase>();
+            services.TryAddScoped<IAtualizarMapeamentoDosEstudantesUseCase, AtualizarMapeamentoDosEstudantesUseCase>();
+            services.TryAddScoped<IAtualizarMapeamentoDoEstudanteDoBimestreUseCase, AtualizarMapeamentoDoEstudanteDoBimestreUseCase>();
         }
     }
 }

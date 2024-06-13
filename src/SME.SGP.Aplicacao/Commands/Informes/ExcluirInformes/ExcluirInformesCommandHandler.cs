@@ -32,6 +32,7 @@ namespace SME.SGP.Aplicacao
                 {
                     await mediator.Send(new ExcluirInformesPerfilsPorIdInformesCommad(request.Id));
                     await mediator.Send(new ExcluirInformativosNotificacaoPorIdInformativoCommad(request.Id));
+                    await mediator.Send(new ExcluirAnexosInformativoPorIdInformativoCommad(request.Id)); 
                     await repositorio.RemoverLogico(request.Id);
 
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExcluirNotificacaoInformativo, request.Id, Guid.NewGuid()));
