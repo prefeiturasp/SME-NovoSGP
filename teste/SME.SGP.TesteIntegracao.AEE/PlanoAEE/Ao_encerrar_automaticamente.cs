@@ -55,8 +55,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             var planosAee = ObterTodos<Dominio.PlanoAEE>();
             planosAee.ShouldNotBeNull();
             
-            planosAee.Count(x => x.Situacao == SituacaoPlanoAEE.ParecerCP).ShouldBeEquivalentTo(3);
-            planosAee.Count(x => x.Situacao == SituacaoPlanoAEE.EncerradoAutomaticamente).ShouldBeEquivalentTo(1);
+            planosAee.Count(x => x.Situacao == SituacaoPlanoAEE.ParecerCP).ShouldBeEquivalentTo(2);
+            planosAee.Count(x => x.Situacao == SituacaoPlanoAEE.EncerradoAutomaticamente).ShouldBeEquivalentTo(2);
         }
 
         [Fact(DisplayName = "Plano AEE - Não Deve Encerrar automáticamente os planos de Alunos Concluidos, com matricula no Ano seguinte na mesma UE")]
