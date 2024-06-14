@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         public async Task ObterComponentesCurricularesPorProfessorETurmaConsiderandoComponentesInfantilAgrupados()
         {
             var usuario = new Usuario() { Login = "1", PerfilAtual = Perfis.PERFIL_PROFESSOR_INFANTIL };
-            usuario.DefinirPerfis(new List<PrioridadePerfil>() { new PrioridadePerfil() { CodigoPerfil = Perfis.PERFIL_PROFESSOR_INFANTIL } });
+            usuario.DefinirPerfis(new List<PrioridadePerfil>() { new() { CodigoPerfil = Perfis.PERFIL_PROFESSOR_INFANTIL } });
 
             mediator.Setup(x => x.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(usuario);
@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                 .ReturnsAsync("2020");
 
             mediator.Setup(x => x.Send(It.IsAny<ObterTurmaComUeEDrePorCodigoQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new Turma() { ModalidadeCodigo = Modalidade.EducacaoInfantil });
+                .ReturnsAsync(new Turma() { CodigoTurma = "1", ModalidadeCodigo = Modalidade.EducacaoInfantil });
 
             mediator.Setup(x => x.Send(It.IsAny<ObterParametroSistemaPorTipoEAnoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new ParametrosSistema() { Valor = string.Empty });
@@ -56,7 +56,45 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             var resultado = await consulta.ObterComponentesCurricularesPorProfessorETurma("1", false);
 
             mediator.Verify(x =>
-                x.Send(It.Is<ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery>(x => x.RealizarAgrupamentoComponente), It.IsAny<CancellationToken>()), Times.Once);
+                x.Send(It.Is<ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery>(x => x.CodigoTurma == "1" && x.Login == "1" && x.RealizarAgrupamentoComponente), It.IsAny<CancellationToken>()), Times.Once);
+
+            Assert.NotNull(resultado);
+        }
+
+        [Fact(DisplayName = "Consultas Disciplina - Obter componentes considerando que usuário possui somente abrangência histórica")]
+        public async Task ObterComponentesConsiderandoQueUsuarioPossuiSomenteAbrangenciaHistorica()
+        {
+            var usuario = new Usuario() { Id = 1, Login = "1", PerfilAtual = Perfis.PERFIL_PROFESSOR_INFANTIL };
+            usuario.DefinirPerfis(new List<PrioridadePerfil>() { new() { CodigoPerfil = Perfis.PERFIL_PROFESSOR_INFANTIL } });
+
+            mediator.Setup(x => x.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(usuario);
+
+            mediator.Setup(x => x.Send(It.IsAny<ObterParametroSistemaPorTipoQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync("2020");
+
+            mediator.Setup(x => x.Send(It.IsAny<ObterTurmaComUeEDrePorCodigoQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Turma() { Id = 1, CodigoTurma = "1", ModalidadeCodigo = Modalidade.EducacaoInfantil });
+
+            mediator.Setup(x => x.Send(It.IsAny<ObterParametroSistemaPorTipoEAnoQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new ParametrosSistema() { Valor = string.Empty });
+
+            mediator.Setup(x => x.Send(It.Is<UsuarioPossuiSomenteAbrangenciaHistoricaNaTurmaQuery>(y => y.TurmaId == 1 && y.UsuarioId == 1), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+
+            mediator.Setup(x => x.Send(It.IsAny<ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<ComponenteCurricularEol>());
+
+            var consulta = new ConsultasDisciplina(repositorioCache.Object,
+                                                   consultasObjetivoAprendizagem.Object,
+                                                   repositorioComponenteCurricularJurema.Object,
+                                                   repositorioAtribuicaoCJ.Object,
+                                                   mediator.Object);
+
+            var resultado = await consulta.ObterComponentesCurricularesPorProfessorETurma("1", false);
+
+            mediator.Verify(x =>
+                x.Send(It.Is<ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery>(x => x.CodigoTurma == "1" && x.Login == "1" && x.UsuarioPossuiSomenteAbrangenciaHistorica), It.IsAny<CancellationToken>()), Times.Once);
 
             Assert.NotNull(resultado);
         }
