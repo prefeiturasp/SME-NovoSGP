@@ -9,6 +9,17 @@ namespace SME.SGP.Infra
         public string CodigoUE { get; set; }
         public string NomeServidor { get; set; }
 
+        public FiltroFuncionarioDto()
+        {}
+
+        public FiltroFuncionarioDto(string codigoDre, string codigoUe, string codigoRf, string nomeServidor)
+        {
+            CodigoDRE = codigoDre;
+            CodigoUE = codigoUe;
+            CodigoRF = codigoRf;
+            NomeServidor = nomeServidor;
+        }
+
         public void AtualizaCodigoDre(string codigoDre)
         {
             CodigoDRE = codigoDre;

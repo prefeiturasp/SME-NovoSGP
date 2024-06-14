@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
                 var ordem = ObterOrdemQuestao(questao, questaoPaiOrdem);
 
                 if (EhQuestaoObrigatoriaNaoRespondida(questao))
-                    questoesObrigatoriasAConsistir.Add(new QuestaoObrigatoriaNaoRespondidaDto(secao.Id, secao.Nome, ordem));
+                    questoesObrigatoriasAConsistir.Add(new QuestaoObrigatoriaNaoRespondidaDto(secao.Id, secao.Nome, ordem, questao.NomeComponente));
                 else if (QuestaoRespondida(questao))
                 {
                     foreach (var resposta in questao.Resposta)

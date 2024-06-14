@@ -501,5 +501,105 @@ namespace SME.SGP.TesteIntegracao.Informe
             item2.DataEnvio.ShouldBe(DateTimeExtension.HorarioBrasilia().ToString("dd/MM/yyyy"));
             item2.EnviadoPor.ShouldBe($"{SISTEMA_NOME} ({SISTEMA_CODIGO_RF})");
         }
+
+        [Fact(DisplayName = "Informes - Obter informes com modalidades")]
+        public async Task Ao_obter_informes_com_modalidades()
+        {
+            await CriarDadosBase();
+
+            await InserirNaBase(new Informativo()
+            {
+                Titulo = "informe 1",
+                Texto = "teste 1",
+                DataEnvio = DateTimeExtension.HorarioBrasilia(),
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new InformativoPerfil()
+            {
+                InformativoId = INFORME_ID_1,
+                CodigoPerfil = PERFIL_AD,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new InformativoPerfil()
+            {
+                InformativoId = INFORME_ID_1,
+                CodigoPerfil = PERFIL_ADM_COTIC,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new InformativoModalidade()
+            {
+                InformativoId = INFORME_ID_1,
+                Modalidade = Modalidade.Fundamental,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new InformativoModalidade()
+            {
+                InformativoId = INFORME_ID_1,
+                Modalidade = Modalidade.Medio,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new Informativo()
+            {
+                DreId = DRE_ID_1,
+                UeId = UE_ID_1,
+                Titulo = "informe 2",
+                Texto = "teste 2",
+                DataEnvio = DateTimeExtension.HorarioBrasilia(),
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new InformativoPerfil()
+            {
+                InformativoId = INFORME_ID_2,
+                CodigoPerfil = PERFIL_ADM_UE,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            var filtro = new InformeFiltroDto();
+            var useCase = ServiceProvider.GetService<IObterInformesPorFiltroUseCase>();
+            var resultado = await useCase.Executar(filtro);
+
+            resultado.ShouldNotBeNull();
+            resultado.TotalPaginas.ShouldBe(1);
+            resultado.TotalRegistros.ShouldBe(2);
+            resultado.Items.ShouldNotBeNull();
+            resultado.Items.Count().ShouldBe(2);
+            var item1 = resultado.Items.FirstOrDefault(item => item.Id == 1);
+            item1.DreNome.ShouldBe("Todas");
+            item1.UeNome.ShouldBe("Todas");
+            item1.Titulo.ShouldBe("informe 1");
+            item1.DataEnvio.ShouldBe(DateTimeExtension.HorarioBrasilia().ToString("dd/MM/yyyy"));
+            item1.EnviadoPor.ShouldBe($"{SISTEMA_NOME} ({SISTEMA_CODIGO_RF})");
+            item1.Modalidades.Count().ShouldBe(2);
+            var modalidades = item1.Modalidades.OrderBy(item => item.Nome);
+            modalidades.FirstOrDefault().Nome.ShouldBe("Ensino Fundamental");
+            modalidades.LastOrDefault().Nome.ShouldBe("Ensino Médio");
+            var item2 = resultado.Items.FirstOrDefault(item => item.Id == 2);
+            item2.DreNome.ShouldBe(DRE_NOME_1);
+            item2.UeNome.ShouldBe($"{TipoEscola.EMEF.ShortName()} {UE_NOME_1}");
+            item2.Titulo.ShouldBe("informe 2");
+            item2.DataEnvio.ShouldBe(DateTimeExtension.HorarioBrasilia().ToString("dd/MM/yyyy"));
+            item2.EnviadoPor.ShouldBe($"{SISTEMA_NOME} ({SISTEMA_CODIGO_RF})");
+            item2.Modalidades.Count().ShouldBe(0);
+        }
     }
 }

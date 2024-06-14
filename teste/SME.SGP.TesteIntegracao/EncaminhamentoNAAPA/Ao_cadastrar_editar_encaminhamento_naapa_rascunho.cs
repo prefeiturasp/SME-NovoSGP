@@ -73,14 +73,20 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                         {
                             new ()
                             {
-                                QuestaoId = 1,
+                                QuestaoId = ID_QUESTAO_DATA_ENTRADA_QUEIXA,
                                 Resposta = dataQueixa.ToString("dd/MM/yyyy"),
                                 TipoQuestao = TipoQuestao.Data
                             },
                             new ()
                             {
-                                QuestaoId = 2,
+                                QuestaoId = ID_QUESTAO_PRIORIDADE,
                                 Resposta = "1",
+                                TipoQuestao = TipoQuestao.Combo
+                            },
+                            new ()
+                            {
+                                QuestaoId = ID_QUESTAO_ESTA_EM_CLASSE_HOSPITALAR,
+                                Resposta = ID_OPCAO_RESPOSTA_SIM_ESTA_EM_SALA_HOSPITALAR.ToString(),
                                 TipoQuestao = TipoQuestao.Combo
                             }
                         }
@@ -107,13 +113,14 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             
             var questaoEncaminhamentoNAAPA = ObterTodos<QuestaoEncaminhamentoNAAPA>();
             questaoEncaminhamentoNAAPA.ShouldNotBeNull();
-            questaoEncaminhamentoNAAPA.Count.ShouldBe(2);
+            questaoEncaminhamentoNAAPA.Count.ShouldBe(3);
             questaoEncaminhamentoNAAPA.Any(a => a.QuestaoId == 1).ShouldBeTrue();
             questaoEncaminhamentoNAAPA.Any(a => a.QuestaoId == 2).ShouldBeTrue();
+            questaoEncaminhamentoNAAPA.Any(a => a.QuestaoId == ID_QUESTAO_ESTA_EM_CLASSE_HOSPITALAR).ShouldBeTrue();
 
             var respostaEncaminhamentoNAAPA = ObterTodos<RespostaEncaminhamentoNAAPA>();
             respostaEncaminhamentoNAAPA.ShouldNotBeNull();
-            respostaEncaminhamentoNAAPA.Count.ShouldBe(2);
+            respostaEncaminhamentoNAAPA.Count.ShouldBe(3);
             respostaEncaminhamentoNAAPA.Any(a => a.RespostaId == 1).ShouldBeTrue();
             respostaEncaminhamentoNAAPA.Any(a => a.Texto.Equals(dataQueixa.ToString("dd/MM/yyyy"))).ShouldBeTrue();
         }

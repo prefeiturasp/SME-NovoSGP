@@ -12,14 +12,14 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<ParecerConclusivoDto>> Executar(long param)
+        public async Task<IEnumerable<ParecerConclusivoDto>> Executar(long turmaId, bool anoLetivoAnterior)
         {
-            var turma = await mediator.Send(new ObterTurmaPorIdQuery(param));
+            var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
 
             if (turma.EhNulo())
                 throw new NegocioException("Turma não encontrada.");
 
-            return await mediator.Send(new ObterPareceresConclusivosTurmaQuery(turma));
+            return await mediator.Send(new ObterPareceresConclusivosTurmaQuery(turma, anoLetivoAnterior));
         }
     }
 }

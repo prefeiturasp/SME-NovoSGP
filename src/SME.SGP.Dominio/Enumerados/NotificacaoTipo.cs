@@ -33,10 +33,17 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "AEE")]
         AEE = 10,
+
         [Display(Name = "NAAPA")]
         NAAPA = 11,
 
         [Display(Name = "Customizado")]
-        Customizado = 12        
+        Customizado = 12,
+
+        [Display(Name = "Busca ativa")]
+        BuscaAtiva = 13,
+
+        [Display(Name = "NAAPA - Inatividade Atendimento")]
+        InatividadeAtendimentoNAAPA = 14,
     }
 }

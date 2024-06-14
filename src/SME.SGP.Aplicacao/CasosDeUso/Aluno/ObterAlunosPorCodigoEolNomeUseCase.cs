@@ -13,6 +13,8 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<PaginacaoResultadoDto<AlunoSimplesDto>> Executar(FiltroBuscaEstudanteDto filtroEstudantes)
         {
+            if (filtroEstudantes.CodigoTurma != 0)
+                filtroEstudantes.CodigoTurmas = new long[] { filtroEstudantes.CodigoTurma };
             var resultado = new PaginacaoResultadoDto<AlunoSimplesDto>();
             resultado.Items = await mediator.Send(new ObterAlunosPorCodigoEolNomeQuery(filtroEstudantes));
             resultado.TotalPaginas = 1;

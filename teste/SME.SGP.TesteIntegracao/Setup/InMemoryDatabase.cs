@@ -15,12 +15,14 @@ namespace SME.SGP.TesteIntegracao.Setup
     {
         public NpgsqlConnection Conexao;
         private readonly PostgresRunner _postgresRunner;
+        private readonly ConstrutorDeTabelas _construtorDeTabelas;
 
         public InMemoryDatabase()
         {
             _postgresRunner = PostgresRunner.Start();
             CriarConexaoEAbrir();
-            new ConstrutorDeTabelas().Construir(Conexao);
+            _construtorDeTabelas = new ConstrutorDeTabelas(Conexao);
+            _construtorDeTabelas.Construir();
         }
 
         public void CriarConexaoEAbrir()
@@ -36,12 +38,16 @@ namespace SME.SGP.TesteIntegracao.Setup
                 Conexao.Insert(objeto);
             }
         }
-
+        
         public void Inserir<T>(T objeto) where T : class, new()
         {
             Conexao.Insert(objeto);
         }
-        
+        public async Task<long> InserirAsync<T>(T objeto) where T : class, new()
+        {
+            return (long)(await Conexao.InsertAsync(objeto));
+        }
+
         public void Atualizar<T>(T objeto) where T : class, new()
         {
             Conexao.Update(objeto);
@@ -57,6 +63,11 @@ namespace SME.SGP.TesteIntegracao.Setup
             where K : struct
         {
             return Conexao.Get<T>(id);
+        }
+
+        public void ExecutarScripts(List<ScriptCarga> scriptsCarga)
+        {
+            _construtorDeTabelas.ExecutarScripts(scriptsCarga);
         }
 
         public void LimparBase()

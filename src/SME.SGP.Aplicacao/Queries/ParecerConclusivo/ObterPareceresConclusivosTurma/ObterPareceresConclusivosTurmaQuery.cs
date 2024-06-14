@@ -8,12 +8,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPareceresConclusivosTurmaQuery : IRequest<IEnumerable<ParecerConclusivoDto>>
     {
-        public ObterPareceresConclusivosTurmaQuery(Turma turma)
+        public ObterPareceresConclusivosTurmaQuery(Turma turma, bool anoLetivoAnterior)
         {
             Turma = turma;
+            AnoLetivoAnterior = anoLetivoAnterior;
         }
 
         public Turma Turma { get; set; }
+        public bool AnoLetivoAnterior { get; set; }
     }
 
     public class ObterPareceresConclusivosTurmaQueryValidator : AbstractValidator<ObterPareceresConclusivosTurmaQuery>
