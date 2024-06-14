@@ -91,8 +91,6 @@ namespace SME.SGP.Aplicacao
         {
             var dadosUsuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var ehGestorEscolar = dadosUsuarioLogado.PossuiPerfilGestorEscolar();
-            if (!dadosUsuarioLogado.EhProfessorCj() && !ehGestorEscolar)
-                throw new NegocioException($"Não foi encontrado professor com RF {codigoRf}");
             return (dadosUsuarioLogado, ehGestorEscolar);
         }
 
