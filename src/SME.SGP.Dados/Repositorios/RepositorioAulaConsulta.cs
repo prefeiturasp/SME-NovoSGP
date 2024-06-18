@@ -1171,13 +1171,13 @@ namespace SME.SGP.Dados.Repositorios
                            and a.data_aula >= @dataInicio
                            and a.data_aula <= @dataFim ";
 
-            var lookup = new Dictionary<long, DiarioBordoPorPeriodoDto>();
+            var lookup = new List<DiarioBordoPorPeriodoDto>();
             await database.Conexao.QueryAsync<DiarioBordoPorPeriodoDto, AuditoriaDto, DiarioBordoPorPeriodoDto>(query, (diarioBordoPorPeriodoDto, auditoriaDto) =>
                  {
                      if (auditoriaDto.NaoEhNulo())
                          diarioBordoPorPeriodoDto.Auditoria = auditoriaDto;
 
-                     lookup.Add(diarioBordoPorPeriodoDto.AulaId, diarioBordoPorPeriodoDto);
+                     lookup.Add(diarioBordoPorPeriodoDto);
 
                      return diarioBordoPorPeriodoDto;
                  }, new
@@ -1189,7 +1189,7 @@ namespace SME.SGP.Dados.Repositorios
                      dataInicio
                  });
 
-            return lookup.Values;
+            return lookup;
 
         }
 
