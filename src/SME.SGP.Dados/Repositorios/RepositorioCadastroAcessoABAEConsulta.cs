@@ -120,7 +120,7 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(@"FROM cadastro_acesso_abae a
                               INNER JOIN ue ON ue.id = a.ue_id
                               INNER JOIN dre ON dre.id = ue.dre_id ");
-            sql.AppendLine("WHERE dre.dre_id = @codigoDre ");
+            sql.AppendLine("WHERE not a.excluido and dre.dre_id = @codigoDre ");
 
             if (!string.IsNullOrEmpty(codigoUe))
                 sql.AppendLine(" AND ue.ue_id = @codigoUe");
