@@ -357,7 +357,6 @@ namespace SME.SGP.Dados.Repositorios
             var sql = new StringBuilder();
 
             queryFiltro += $@" AND sen.nome_componente = '{EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA}'";
-                              //AND np.id = ANY(@encaminhamentosIds)";
 
             sql.AppendLine(ObterQuery(queryFiltro, queryTabelaResposta, "COUNT(distinct ens.id) totalAtendimento", true));
 
@@ -368,8 +367,6 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = new StringBuilder();
             var adicionarUnion = false;
-
-            //queryFiltro += @" AND np.id = ANY(@encaminhamentosIds)";
 
             sql.AppendLine(queryTabelaResposta);
 
