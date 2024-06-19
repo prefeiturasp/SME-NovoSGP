@@ -58,20 +58,20 @@ namespace SME.SGP.Aplicacao
         {
             if (resposta.StatusCode == HttpStatusCode.NoContent)
             {
-                var (dadosUsuarioLogado, ehGestorEscolar) = await ObterDadosUsuarioLogado(request.CodigoRF);
+                var (dadosUsuario, ehGestorEscolar) = await ObterDadosUsuario(request.CodigoRF);
                 if (ehGestorEscolar)
                 {
-                    if (await EhFuncionarioGestorEscolarDaUe(dadosUsuarioLogado.CodigoRf, request))
-                        return new ProfessorResumoDto { CodigoRF = request.CodigoRF, Nome = dadosUsuarioLogado.Nome, UsuarioId = dadosUsuarioLogado.Id };
+                    if (await EhFuncionarioGestorEscolarDaUe(dadosUsuario.CodigoRf, request))
+                        return new ProfessorResumoDto { CodigoRF = request.CodigoRF, Nome = dadosUsuario.Nome, UsuarioId = dadosUsuario.Id };
                 }
                 else
                 {
                     var obterAtribuicoesCJAtivas = await ObterAtribuicoesCJAtivasProfessor(request.CodigoRF);
                     var possuiAtribuicaoNaUE = obterAtribuicoesCJAtivas.PossuiRegistros(a => a.UeId == request.UeId);
                     if (possuiAtribuicaoNaUE)
-                        return new ProfessorResumoDto { CodigoRF = request.CodigoRF, Nome = dadosUsuarioLogado.Nome, UsuarioId = dadosUsuarioLogado.Id };
+                        return new ProfessorResumoDto { CodigoRF = request.CodigoRF, Nome = dadosUsuario.Nome, UsuarioId = dadosUsuario.Id };
                 }
-                return new ProfessorResumoDto { CodigoRF = request.CodigoRF, Nome = dadosUsuarioLogado.Nome, UsuarioId = dadosUsuarioLogado.Id };
+                return new ProfessorResumoDto { CodigoRF = request.CodigoRF, Nome = dadosUsuario.Nome, UsuarioId = dadosUsuario.Id };
             }
             return null;
         }
@@ -87,11 +87,13 @@ namespace SME.SGP.Aplicacao
             return obterAtribuicoesCJAtivas;
         }
 
-        private async Task<(Usuario UsuarioLogado, bool EhGestorEscolar)> ObterDadosUsuarioLogado(string codigoRf)
+        private async Task<(Usuario Usuario, bool EhGestorEscolar)> ObterDadosUsuario(string codigoRf)
         {
-            var dadosUsuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
-            var ehGestorEscolar = dadosUsuarioLogado.PossuiPerfilGestorEscolar();
-            return (dadosUsuarioLogado, ehGestorEscolar);
+            var dadosUsuario = (await mediator
+                .Send(new ObterUsuariosPorRfOuCriaQuery(new string[] { codigoRf }, true))).FirstOrDefault() ?? throw new NegocioException($"Usuário com RF {codigoRf} não localizado");
+
+            var ehGestorEscolar = dadosUsuario.PossuiPerfilGestorEscolar();
+            return (dadosUsuario, ehGestorEscolar);
         }
 
         private async Task<bool> EhFuncionarioGestorEscolarDaUe(string codigoRfUsuarioLogado, ObterProfessorPorRFUeDreAnoLetivoQuery request)
