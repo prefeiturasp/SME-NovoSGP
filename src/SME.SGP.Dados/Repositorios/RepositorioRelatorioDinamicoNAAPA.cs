@@ -95,7 +95,8 @@ namespace SME.SGP.Dados.Repositorios
                              FROM questionario q
                              JOIN secao_encaminhamento_naapa sen on sen.questionario_id = q.id
                              JOIN questao on q.id = questao.questionario_id
-                            WHERE q.tipo = @tipo {condicaoAtendimento}");
+                            WHERE q.tipo = @tipo {condicaoAtendimento}
+                            order by questao.nome_componente");
 
             return contexto.Conexao.QueryAsync<string>(sql.ToString(), new { tipo = (int)TipoQuestionario.RelatorioDinamicoEncaminhamentoNAAPA });
         }
@@ -204,7 +205,8 @@ namespace SME.SGP.Dados.Repositorios
                                                      FROM questionario q
                                                      JOIN secao_encaminhamento_naapa sen on sen.questionario_id = q.id
                                                      JOIN questao on q.id = questao.questionario_id
-                                                     WHERE q.tipo = {(int)TipoQuestionario.RelatorioDinamicoEncaminhamentoNAAPA}') AS tab_pivot
+                                                     WHERE q.tipo = {(int)TipoQuestionario.RelatorioDinamicoEncaminhamentoNAAPA}
+                                                     order by questao.nome_componente') AS tab_pivot
                                                     (id int8 {colunas}))");
 
             return sql.ToString();
@@ -243,7 +245,8 @@ namespace SME.SGP.Dados.Repositorios
                                                      JOIN secao_encaminhamento_naapa sen on sen.questionario_id = q.id
                                                      JOIN questao on q.id = questao.questionario_id
                                                      WHERE q.tipo = {(int)TipoQuestionario.RelatorioDinamicoEncaminhamentoNAAPA}
-                                                     AND sen.nome_componente = ''{EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA}''') AS tab_pivot
+                                                     AND sen.nome_componente = ''{EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA}''
+                                                     order by questao.nome_componente') AS tab_pivot
                                                     (id int8 {colunas}))");
 
             return sql.ToString();
