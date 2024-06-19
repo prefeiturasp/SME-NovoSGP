@@ -257,7 +257,7 @@ namespace SME.SGP.Dados.Repositorios
                                         on a.dre_id = act.dre_id
                             where a.login = @login and  ");
 
-            if (consideraHistorico && anoLetivo > 0)
+            if (anoLetivo.HasValue && anoLetivo.Value > 0)
                 query.AppendLine(" act.turma_ano_letivo = @anoLetivo and ");
 
             query.AppendLine(@" a.perfil_id = @perfil and      
@@ -273,7 +273,7 @@ namespace SME.SGP.Dados.Repositorios
                                         on a.ue_id = act.ue_id
                             where a.login = @login and ");
 
-            if (consideraHistorico && anoLetivo > 0)
+            if (anoLetivo.HasValue && anoLetivo.Value > 0)
                 query.AppendLine(" act.turma_ano_letivo = @anoLetivo and ");
 
             query.AppendLine(@"  a.perfil_id = @perfil 
@@ -300,8 +300,8 @@ namespace SME.SGP.Dados.Repositorios
                                     inner join v_abrangencia_cadeia_turmas act
                                         on a.turma_id = act.turma_id
                             where a.login = @login and  ");
-            
-            if (consideraHistorico && anoLetivo > 0)
+
+            if (anoLetivo.HasValue && anoLetivo.Value > 0)
                 query.AppendLine(" act.turma_ano_letivo = @anoLetivo and ");
             
             query.AppendLine(@"  a.perfil_id = @perfil and
