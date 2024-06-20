@@ -36,9 +36,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(AtribuicaoEsporadicaCompletaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.AE_C, Policy = "Bearer")]
-        public IActionResult Obter(long id, [FromServices] IConsultasAtribuicaoEsporadica consultasAtribuicaoEsporadica)
+        public async Task<IActionResult> Obter(long id, [FromServices] IConsultasAtribuicaoEsporadica consultasAtribuicaoEsporadica)
         {
-            var atribuicaoEsporadica = consultasAtribuicaoEsporadica.ObterPorId(id);
+            var atribuicaoEsporadica = await consultasAtribuicaoEsporadica.ObterPorId(id);
 
             if (atribuicaoEsporadica is null)
                 return NoContent();
