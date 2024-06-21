@@ -107,8 +107,7 @@ namespace SME.SGP.Dominio
 
             if (turmaEOL.TipoTurma == Enumerados.TipoTurma.EdFisica)
             {
-                var turma = await mediator.Send(new ObterTurmaPorIdQuery(Convert.ToInt64(atividadeAvaliativa.TurmaId)));
-                
+                var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(atividadeAvaliativa.TurmaId));
                 return await mediator.Send(new ObterNotaTipoValorPorTurmaIdQuery(turma));
             }
             if (await ModalidadeTurmaEhCelp(turmaEOL))
