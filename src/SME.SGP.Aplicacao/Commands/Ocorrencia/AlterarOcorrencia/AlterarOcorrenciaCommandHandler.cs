@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using SME.SGP.Infra.Utilitarios;
+using System.Text.RegularExpressions;
 
 namespace SME.SGP.Aplicacao
 {
@@ -104,9 +105,15 @@ namespace SME.SGP.Aplicacao
             entidade.DataOcorrencia = request.DataOcorrencia;
             entidade.SetHoraOcorrencia(request.HoraOcorrencia);
             entidade.Titulo = request.Titulo;
-            entidade.Descricao = request.Descricao.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
+            entidade.Descricao = TratativaReplaceTempParaArquivoPorRegex(request.Descricao);
             entidade.UeId = request.UeId;
             entidade.SetOcorrenciaTipo(ocorrenciaTipo);
+        }
+
+        private string TratativaReplaceTempParaArquivoPorRegex(string descricao)
+        {
+            string pattern = $@"\b{configuracaoArmazenamentoOptions.Value.BucketTemp}\b";
+            return Regex.Replace(descricao, pattern, configuracaoArmazenamentoOptions.Value.BucketArquivos);
         }
     }
 }
