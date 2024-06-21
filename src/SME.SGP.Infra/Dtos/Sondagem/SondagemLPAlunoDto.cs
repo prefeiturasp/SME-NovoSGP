@@ -45,6 +45,14 @@ namespace SME.SGP.Infra.Dtos.Sondagem
                     return "Silábico alfabético";
                 case "A":
                     return "Alfabético";
+                case "Nivel1":
+                    return "Nível 1";
+                case "Nivel2":
+                    return "Nível 2";
+                case "Nivel3":
+                    return "Nível 3";
+                case "Nivel4":
+                    return "Nível 4";
                 default:
                     return "";
             }

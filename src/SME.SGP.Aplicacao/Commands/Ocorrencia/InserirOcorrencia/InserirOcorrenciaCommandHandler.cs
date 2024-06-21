@@ -6,6 +6,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
 using System;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -47,10 +48,10 @@ namespace SME.SGP.Aplicacao
                     if (ocorrenciaTipo is null)
                         throw new NegocioException("O tipo da ocorrência informado não foi encontrado.");
 
-                    var ocorrencia = new Ocorrencia(request.DataOcorrencia, 
+                    var ocorrencia = new Ocorrencia(request.DataOcorrencia,
                                                     request.HoraOcorrencia,
-                                                    request.Titulo, 
-                                                    request.Descricao.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos),
+                                                    request.Titulo,
+                                                    TratativaReplaceTempParaArquivoPorRegex(request.Descricao),
                                                     ocorrenciaTipo,
                                                     request.TurmaId,
                                                     request.UeId);
@@ -86,6 +87,11 @@ namespace SME.SGP.Aplicacao
             {
                 await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.Ocorrencia, string.Empty, novo.Descricao));
             }
+        }
+        private string TratativaReplaceTempParaArquivoPorRegex(string descricao)
+        {
+            string pattern = $@"\b{configuracaoArmazenamentoOptions.Value.BucketTemp}\b";
+            return Regex.Replace(descricao, pattern, configuracaoArmazenamentoOptions.Value.BucketArquivos);
         }
     }
 }
