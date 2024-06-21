@@ -107,15 +107,11 @@ namespace SME.SGP.Aplicacao
 
                 if (!usuarioLogado.TemPerfilGestaoUes())
                 {
-                    var agruparComponente = consideraTurmaInfantil && (turma.EhTurmaInfantil || realizarAgrupamentoComponente);
-                    var usuarioPossuiSomenteAbrangenciaHistorica = await mediator
-                        .Send(new UsuarioPossuiSomenteAbrangenciaHistoricaNaTurmaQuery(turma.Id, usuarioLogado.Id));
-
                     componentesCurriculares = (await mediator
-                        .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, agruparComponente, usuarioPossuiSomenteAbrangenciaHistorica: usuarioPossuiSomenteAbrangenciaHistorica))).ToList();
+                        .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, consideraTurmaInfantil ? turma.EhTurmaInfantil || realizarAgrupamentoComponente : false))).ToList();
 
                     componentesCurriculares ??= (await mediator
-                        .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, agruparComponente, false, usuarioPossuiSomenteAbrangenciaHistorica: usuarioPossuiSomenteAbrangenciaHistorica))).ToList();
+                        .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, consideraTurmaInfantil ? turma.EhTurmaInfantil || realizarAgrupamentoComponente : false, false))).ToList();
                 }
                 else
                 {
