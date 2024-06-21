@@ -7,7 +7,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery : IRequest<IEnumerable<ComponenteCurricularEol>>
     {
-        public ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(string codigoTurma, string login, Guid perfil, bool realizarAgrupamentoComponente = false, bool checaMotivoDisponibilizacao = true, bool consideraTurmaInfantil = false, bool usuarioPossuiSomenteAbrangenciaHistorica = false)
+        public ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(string codigoTurma, string login, Guid perfil, bool realizarAgrupamentoComponente = false, bool checaMotivoDisponibilizacao = true, bool consideraTurmaInfantil = false)
         {
             CodigoTurma = codigoTurma;
             Login = login;
@@ -15,7 +15,6 @@ namespace SME.SGP.Aplicacao
             RealizarAgrupamentoComponente = realizarAgrupamentoComponente;
             ChecaMotivoDisponibilizacao = checaMotivoDisponibilizacao;
             ConsideraTurmaInfantil = consideraTurmaInfantil;
-            UsuarioPossuiSomenteAbrangenciaHistorica = usuarioPossuiSomenteAbrangenciaHistorica;
         }
 
         public string CodigoTurma { get; set; }
@@ -24,6 +23,5 @@ namespace SME.SGP.Aplicacao
         public bool RealizarAgrupamentoComponente { get; set; }
         public bool ChecaMotivoDisponibilizacao { get; set; }
         public bool ConsideraTurmaInfantil { get; set; }
-        public bool UsuarioPossuiSomenteAbrangenciaHistorica { get; set; }
     }
 }
