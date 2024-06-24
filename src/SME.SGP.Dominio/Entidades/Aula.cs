@@ -180,7 +180,8 @@ namespace SME.SGP.Dominio
             if (Turma.EhNulo())
                 throw new NegocioException("A turma não foi preenchida.");
 
-            return !(EhAulaCompartilhada || (EhTecnologiaAprendizagem && Turma.ModalidadeCodigo == Modalidade.EJA));
+            return !(EhAulaCompartilhada || (EhTecnologiaAprendizagem && Turma.ModalidadeCodigo == Modalidade.EJA)
+                || (EhTecAprendizagemELeitura && Turma.ModalidadeCodigo == Modalidade.Medio && Turma.TipoTurno == (int)TipoTurnoEOL.Noite));
         }
 
         public void PodeSerAlterada(Usuario usuario)
