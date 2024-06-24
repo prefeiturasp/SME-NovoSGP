@@ -51,25 +51,12 @@ namespace SME.SGP.Dados.Repositorios
         {            
         }
 
-        public async Task<IEnumerable<AulaPrevistaBimestreQuantidade>> ObterBimestresAulasPrevistasPorFiltro(long tipoCalendarioId, string turmaId, string disciplinaId, string disciplinaIdEquivalenteConsiderada = null, string professor = null)
+        public async Task<IEnumerable<AulaPrevistaBimestre>> ObterAulasPrevistasPorTurmaTipoCalendarioDisciplina(long tipoCalendarioId, string turmaId, string[] disciplinasId, int? bimestre)
         {
-            StringBuilder query = new StringBuilder();            
 
-            query.Append(string.Format(Select, !string.IsNullOrEmpty(disciplinaIdEquivalenteConsiderada) ? " or a.disciplina_id = @disciplinaIdEquivalenteConsiderada " : string.Empty,
-                                               !string.IsNullOrEmpty(professor) ? "and a.professor_rf = @professor" : string.Empty));
-            query.Append(@" where tp.situacao and not tp.excluido and
-                        p.tipo_calendario_id = @tipoCalendarioId and
-                        ap.turma_id = @turmaId and
-                        ap.disciplina_id = @disciplinaId ");
-            query.Append(GroupOrderBy);
-
-            return (await database.Conexao.QueryAsync<AulaPrevistaBimestreQuantidade>(query.ToString(), new { tipoCalendarioId, turmaId, disciplinaId, disciplinaIdEquivalenteConsiderada, professor }));
-        }
-
-        public async Task<IEnumerable<AulaPrevistaBimestre>> ObterAulasPrevistasPorTurmaTipoCalendarioDisciplina(long tipoCalendarioId, string turmaId, string[] disciplinasId, int? bimestre, string codigoRf = null)
-        {
-            var sql = @"select
-                            apb.*
+            var sql = @"select * from 
+                        (select
+                            apb.id, apb.aula_prevista_id, apb.aulas_previstas, apb.bimestre, row_number() over (partition by ap.disciplina_id, apb.bimestre order by apb.aula_prevista_id) sequencia
                         from
                             aula_prevista ap
                         inner join
@@ -83,10 +70,9 @@ namespace SME.SGP.Dados.Repositorios
             if (bimestre.NaoEhNulo())
                 sql += " and apb.bimestre = @bimestre";
 
-            if (!string.IsNullOrWhiteSpace(codigoRf))
-                sql += " and ap.criado_rf = @codigoRf";
+            sql += ") as consulta_ignora_duplicidade where sequencia = 1;";
 
-            var parametros = new { tipoCalendarioId, turmaId, disciplinasId, bimestre, codigoRf };
+            var parametros = new { tipoCalendarioId, turmaId, disciplinasId, bimestre };
             return await database.Conexao.QueryAsync<AulaPrevistaBimestre>(sql, parametros);
         }
 
