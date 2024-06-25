@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
         public async Task<List<DiaLetivoDto>> Handle(ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery request, CancellationToken cancellationToken)
         {
             var chaveCache = string.Format(NomeChaveCache.DIAS_LETIVOS_E_NAO_LETIVOS_PERIODO_ESCOLAR_IDS_CONSIDERADOS_DESCONSIDERA_CRIACAO_DIA_LETIVO_PROXIMAS_UES,
-                string.Join(",", request.PeriodosEscolares.Select(p => p.Id)), request.DesconsiderarCriacaoDiaLetivoProximasUes);
+                string.Join(",", request.PeriodosEscolares.Select(p => p.Id)), request.DesconsiderarCriacaoDiaLetivoProximasUes, request.UeCodigo);
 
             return await repositorioCache.ObterAsync(chaveCache, async
                 () => await ProcessarDiasLetivos(request.TipoCalendarioId, request.PeriodosEscolares, request.UeCodigo, request.DesconsiderarCriacaoDiaLetivoProximasUes), minutosParaExpirar: 300);
