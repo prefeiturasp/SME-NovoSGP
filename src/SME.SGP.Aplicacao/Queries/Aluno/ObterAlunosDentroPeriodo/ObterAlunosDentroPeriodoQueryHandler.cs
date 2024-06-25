@@ -31,8 +31,7 @@ namespace SME.SGP.Aplicacao
 
             return alunosEol
                 .Where(a => ((!a.Inativo && a.DataMatricula.Date < request.Periodo.dataFim.Date) ||
-                             (a.Inativo && a.DataMatricula.Date < request.Periodo.dataFim.Date && a.DataSituacao.Date >= request.Periodo.dataInicio.Date) ||
-                             a.ChecarSituacaoConcluidoEMatriculaNaMesmaData(request.Periodo.dataFim.Date)) &&
+                             (a.Inativo && a.DataMatricula.Date < request.Periodo.dataFim.Date && a.DataSituacao.Date >= request.Periodo.dataInicio.Date)) &&
                              a.CodigoSituacaoMatricula != SituacaoMatriculaAluno.VinculoIndevido);
         }
     }
