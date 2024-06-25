@@ -144,7 +144,7 @@ namespace SME.SGP.Aplicacao
                 .Send(new ObterPeriodosEscolaresPorTipoCalendarioIdEDataQuery(aula.TipoCalendarioId, aula.DataAula))
                 ?? throw new NegocioException("Ocorreu um erro, esta aula está fora do período escolar.");
             var alunosDaTurmaNaData = await mediator
-                .Send(new ObterAlunosDentroPeriodoQuery(aula.TurmaId, (aula.DataAula, aula.DataAula)));
+                .Send(new ObterAlunosDentroPeriodoQuery(aula.TurmaId, (periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim)));
             if (alunosDaTurmaNaData.NaoPossuiRegistros())
                 throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
 
