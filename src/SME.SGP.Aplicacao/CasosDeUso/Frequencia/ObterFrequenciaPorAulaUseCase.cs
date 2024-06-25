@@ -18,13 +18,17 @@ namespace SME.SGP.Aplicacao
 
         public async Task<FrequenciaDto> Executar(FiltroFrequenciaDto param)
         {
-            (Aula aula, Turma turma, IEnumerable<AlunoPorTurmaResposta> alunosDaTurmaNaData, PeriodoEscolar periodoEscolar) = await ValidarParametros(param);
+            (Aula aula, Turma turma, IEnumerable<AlunoPorTurmaResposta> alunosDaTurmaNaData) = await ValidarParametros(param);
             var registroFrequenciaDto = await ObterRegistroFrequencia(aula, turma);
             var frequenciaAlunos = await mediator.Send(new ObterRegistrosFrequenciasAlunosSimplificadoPorAulaIdQuery(aula.Id))
                                    ?? Enumerable.Empty<FrequenciaAlunoSimplificadoDto>();
             var compensacaoAusenciaAlunoAulas = await mediator.Send(new ObterCompensacaoAusenciaAlunoAulaSimplificadoPorAulaIdsQuery(aula.Id)) 
                                                 ?? Enumerable.Empty<CompensacaoAusenciaAlunoAulaSimplificadoDto>();
             
+            var periodoEscolar = await mediator
+                .Send(new ObterPeriodosEscolaresPorTipoCalendarioIdEDataQuery(aula.TipoCalendarioId, aula.DataAula))
+                ?? throw new NegocioException("Ocorreu um erro, esta aula está fora do período escolar.");
+
             var mesmoAnoLetivo = DateTime.Today.Year == aula.DataAula.Year;
 
             registroFrequenciaDto.TemPeriodoAberto = await mediator
@@ -134,21 +138,18 @@ namespace SME.SGP.Aplicacao
             return componenteCurricularAula;
         }
 
-        private async Task<(Aula aula, Turma turma, IEnumerable<AlunoPorTurmaResposta> alunosTurmaNoPeriodo, PeriodoEscolar periodoEscolar)> ValidarParametros(FiltroFrequenciaDto param)
+        private async Task<(Aula aula, Turma turma, IEnumerable<AlunoPorTurmaResposta> alunosTurmaNoPeriodo)> ValidarParametros(FiltroFrequenciaDto param)
         {
             var aula = await mediator
                 .Send(new ObterAulaPorIdQuery(param.AulaId)) ?? throw new NegocioException("Aula não encontrada.");
             var turma = await mediator
                 .Send(new ObterTurmaComUeEDrePorCodigoQuery(aula.TurmaId)) ?? throw new NegocioException(MensagensNegocioFrequencia.TURMA_NAO_ENCONTRADA_POR_CODIGO);
-            var periodoEscolar = await mediator
-                .Send(new ObterPeriodosEscolaresPorTipoCalendarioIdEDataQuery(aula.TipoCalendarioId, aula.DataAula))
-                ?? throw new NegocioException("Ocorreu um erro, esta aula está fora do período escolar.");
             var alunosDaTurmaNaData = await mediator
-                .Send(new ObterAlunosDentroPeriodoQuery(aula.TurmaId, (periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim)));
+                .Send(new ObterAlunosDentroPeriodoQuery(aula.TurmaId, (aula.DataAula, aula.DataAula)));
             if (alunosDaTurmaNaData.NaoPossuiRegistros())
                 throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
 
-            return (aula, turma, alunosDaTurmaNaData.OrderBy(a => a.NomeSocialAluno ?? a.NomeAluno), periodoEscolar);
+            return (aula, turma, alunosDaTurmaNaData.OrderBy(a => a.NomeSocialAluno ?? a.NomeAluno));
         }
 
         private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(IEnumerable<AlunoPorTurmaResposta> alunosDaTurmaNaData, Turma turma)
