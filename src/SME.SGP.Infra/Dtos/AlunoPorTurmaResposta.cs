@@ -154,7 +154,7 @@ namespace SME.SGP.Infra
         /// </summary>
         /// <param name="dataReferencia">Data de referência utilzada para verificar a posterioridade da situação com o período bimestral </param>
         /// <returns></returns>
-        private bool ChecarSituacaoConcluidoEMatriculaNaMesmaData(DateTime dataReferencia)
+        public bool ChecarSituacaoConcluidoEMatriculaNaMesmaData(DateTime dataReferencia)
             => DataMatricula.Date > dataReferencia && DataMatricula.Date.Equals(DataSituacao.Date) && CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido);
 
         public bool VerificaSeMatriculaEstaDentroDoPeriodoSelecionado(DateTime dataReferencia)
