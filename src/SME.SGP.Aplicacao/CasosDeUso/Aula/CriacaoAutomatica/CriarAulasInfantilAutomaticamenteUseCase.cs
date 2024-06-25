@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
                 return false;
             }
 
-            var dadosCriacaoAulaInfantil = mensagemRabbit.NaoEhNulo() && mensagemRabbit.Mensagem.NaoEhNulo() ?
+             var dadosCriacaoAulaInfantil = mensagemRabbit.NaoEhNulo() && mensagemRabbit.Mensagem.NaoEhNulo() ?
                 mensagemRabbit.ObterObjetoMensagem<DadosCriacaoAulasAutomaticasCarregamentoDto>() : new DadosCriacaoAulasAutomaticasCarregamentoDto();
 
             var anoAtual = DateTimeExtension.HorarioBrasilia().Year;
