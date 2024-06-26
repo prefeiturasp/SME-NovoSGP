@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
             foreach(var acesso in acessosABAE)
                 funcionarios.Add(new UsuarioEolRetornoDto()
                 {
-                    CodigoRf = acesso.Cpf,
+                    CodigoRf = acesso.Cpf.SomenteNumeros(),
                     NomeServidor = acesso.Nome
                 });
 

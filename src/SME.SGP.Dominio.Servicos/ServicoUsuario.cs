@@ -297,7 +297,7 @@ namespace SME.SGP.Dominio
 
             var retornoEol = await mediator.Send(new ObterPerfisPorLoginQuery(usuario.Login));
             if (retornoEol.EhNulo())
-                throw new NegocioException("Ocorreu um erro ao obter os dados do usuário no EOL.");
+                throw new NegocioException("Ocorreu um erro ao obter os dados/perfis do usuário no EOL.");
 
 
             var perfisUsuario = repositorioPrioridadePerfil.ObterPerfisPorIds(retornoEol.Perfis);
