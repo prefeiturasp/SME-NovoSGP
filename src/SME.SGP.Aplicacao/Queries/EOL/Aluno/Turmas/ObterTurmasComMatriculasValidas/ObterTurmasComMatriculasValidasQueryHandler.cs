@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,10 +24,7 @@ namespace SME.SGP.Aplicacao
             
             foreach (string codTurma in request.TurmasCodigos)
             {
-                var matriculasAluno = (await mediator
-                    .Send(new ObterMatriculasAlunoNaTurmaQuery(codTurma, request.AlunoCodigo), cancellationToken))
-                    .Where(m => m.CodigoSituacaoMatricula != SituacaoMatriculaAluno.VinculoIndevido);
-
+                var matriculasAluno = await ObterMatriculasAlunoTurma(codTurma, request.AlunoCodigo, request.PeriodoInicio, cancellationToken);
                 if (matriculasAluno.NaoEhNulo() || matriculasAluno.Any())
                 {
                     if (matriculasAluno.Any(m => m.CodigoTurma.ToString() == codTurma &&
@@ -38,6 +36,18 @@ namespace SME.SGP.Aplicacao
             }
 
             return turmasCodigosComMatriculasValidas;
+        }
+
+        private async Task<IEnumerable<AlunoPorTurmaResposta>> ObterMatriculasAlunoTurma(string codigoTurma, string codigoAluno, DateTime dataBaseInicio, CancellationToken cancellationToken)
+        {
+            if (dataBaseInicio.EhAnoAtual())
+                return (await mediator
+                        .Send(new ObterMatriculasAlunoNaTurmaQuery(codigoTurma, codigoAluno), cancellationToken))
+                        .Where(m => m.CodigoSituacaoMatricula != SituacaoMatriculaAluno.VinculoIndevido);
+            else
+                return (await mediator
+                        .Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(codigoTurma), int.Parse(codigoAluno)), cancellationToken))
+                        .Where(m => m.CodigoSituacaoMatricula != SituacaoMatriculaAluno.VinculoIndevido);
         }
     }
 }
