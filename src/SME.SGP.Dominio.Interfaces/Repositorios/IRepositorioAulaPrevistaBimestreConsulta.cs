@@ -7,10 +7,7 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IRepositorioAulaPrevistaBimestreConsulta : IRepositorioBase<AulaPrevistaBimestre>
     {
         Task<IEnumerable<AulaPrevistaBimestreQuantidade>> ObterBimestresAulasPrevistasPorId(long? aulaPrevistaId, string disciplinaIdEquivalenteConsiderada = null, string professor = null);
-
-        Task<IEnumerable<AulaPrevistaBimestreQuantidade>> ObterBimestresAulasPrevistasPorFiltro(long tipoCalendarioId, string turmaId, string disciplinaId, string disciplinaIdEquivalenteConsiderada = null, string professor = null);
-
-        Task<IEnumerable<AulaPrevistaBimestre>> ObterAulasPrevistasPorTurmaTipoCalendarioDisciplina(long tipoCalendarioId, string turmaId, string[] disciplinasId, int? bimestre, string codigoRf = null);
+        Task<IEnumerable<AulaPrevistaBimestre>> ObterAulasPrevistasPorTurmaTipoCalendarioDisciplina(long tipoCalendarioId, string turmaId, string[] disciplinasId, int? bimestre);
         Task<IEnumerable<AulaPrevistaBimestre>> ObterAulasPrevistasPorTurmaTipoCalendarioBimestre(long tipoCalendarioId, string codigoTurma, int bimestre);
         Task<IEnumerable<AulaPrevistaTurmaComponenteDto>> ObterBimestresAulasTurmasComponentesCumpridasAsync(string[] turmasCodigos, string[] componentesCurricularesId, long tipoCalendarioId, int[] bimestres);
     }
