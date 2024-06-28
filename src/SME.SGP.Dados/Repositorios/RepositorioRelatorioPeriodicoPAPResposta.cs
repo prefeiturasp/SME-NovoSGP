@@ -64,9 +64,6 @@ namespace SME.SGP.Dados.Repositorios
                                                                                             from periodo_escolar_relatorio_pap perp 
                                                                                             inner join periodo_escolar pe on pe.id = perp.periodo_escolar_id 
                                                                                             where perp.periodo_relatorio_pap_id = @periodoRelatorioId)
-                                                                        and prp.periodo = (select max(periodo) 
-                                                                                           from periodo_relatorio_pap prp 
-                                                                                           where prp.configuracao_relatorio_pap_id = crp.id)
                                                                         and rppa.aluno_codigo = @codigoAluno 
                                                                         and t.turma_id = @codigoTurma)
                            and not rppq.excluido 
