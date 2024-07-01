@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
                 return false;
             }
 
-            var dadosCriacaoAulaInfantil = mensagemRabbit.NaoEhNulo() && mensagemRabbit.Mensagem.NaoEhNulo() ?
+             var dadosCriacaoAulaInfantil = mensagemRabbit.NaoEhNulo() && mensagemRabbit.Mensagem.NaoEhNulo() ?
                 mensagemRabbit.ObterObjetoMensagem<DadosCriacaoAulasAutomaticasCarregamentoDto>() : new DadosCriacaoAulasAutomaticasCarregamentoDto();
 
             var anoAtual = DateTimeExtension.HorarioBrasilia().Year;
@@ -59,9 +59,6 @@ namespace SME.SGP.Aplicacao
                 return false;
             }
 
-            var diasLetivosENaoLetivos = await mediator
-                .Send(new ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(periodosEscolares, tipoCalendarioId));
-
             var diasForaDoPeriodoEscolar = await mediator
                 .Send(new ObterDiasForaDoPeriodoEscolarQuery(periodosEscolares));
 
@@ -77,6 +74,9 @@ namespace SME.SGP.Aplicacao
 
             foreach (var turma in turmas)
             {
+                var diasLetivosENaoLetivos = await mediator
+                .Send(new ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(periodosEscolares, tipoCalendarioId, turma.Ue.CodigoUe));
+
                 var chaveCache = string.Format(NomeChaveCache.DADOS_CRIACAO_AULA_AUTOMATICA_INFANTIL_REGENCIA_TURMA, turma.CodigoTurma);
                 var dadosAulaCriadaAutomaticamente = new DadosAulaCriadaAutomaticamenteDto((CODIGO_COMPONENTE_REGENCIA_INFANTIL, "Regência de classe infantil"));                
                 var comando = new CriarAulasInfantilERegenciaAutomaticamenteCommand(diasLetivosENaoLetivos.ToList(), turma, tipoCalendarioId, diasForaDoPeriodoEscolar, new string[] { CODIGO_COMPONENTE_REGENCIA_INFANTIL }, dadosAulaCriadaAutomaticamente);
