@@ -5,6 +5,7 @@ using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.Fechamento.NotaFechamentoBimestre.ServicosFakes;
@@ -52,7 +53,18 @@ namespace SME.SGP.TesteIntegracao.Fechamento.Notificacoes
             await CriarUsuarios();
 
             await CriarTipoCalendario(ModalidadeTipoCalendario.FundamentalMedio, false);
-            await CriarTurma(Modalidade.Fundamental, ANO_1, false);
+            await InserirNaBase(new Dominio.Turma
+            {
+                UeId = 1,
+                Ano = ANO_1,
+                CodigoTurma = TURMA_CODIGO_1,
+                ModalidadeCodigo = Modalidade.Fundamental,
+                AnoLetivo = ANO_LETIVO_ANO_ATUAL,
+                Semestre = DateTime.Now.Semestre(),
+                Nome = TURMA_NOME_1,
+                TipoTurma = TipoTurma.Regular,
+                TipoTurno = (int)TipoTurno.Tarde
+            });
             await CriarPeriodoEscolarCustomizadoQuartoBimestre(true);
             await CriarPeriodoFechamento();
             await CriarFechamento();
