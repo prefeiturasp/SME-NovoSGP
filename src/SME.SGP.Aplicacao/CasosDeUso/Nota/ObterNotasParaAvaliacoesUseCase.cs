@@ -175,12 +175,8 @@ namespace SME.SGP.Aplicacao
             var frequenciasDosAlunos = await mediator
                 .Send(new ObterFrequenciasPorAlunosTurmaCCDataQuery(alunosAtivosCodigos, periodoFim, TipoFrequenciaAluno.PorDisciplina, filtro.TurmaCodigo, filtro.DisciplinaCodigo.ToString()));
 
-            PeriodoFechamentoVigenteDto periodoFechamentoBimestre = null;
-
-            if (turmaCompleta.AnoLetivo >= DateTime.Now.Year)
-                periodoFechamentoBimestre = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamentoVigente(turmaCompleta, DateTimeExtension.HorarioBrasilia(), filtro.Bimestre);
-            else
-                periodoFechamentoBimestre = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamentoAnoAnterior(turmaCompleta, filtro.Bimestre);
+            var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorAnoLetivoEModalidadeQuery(turmaCompleta.ModalidadeTipoCalendario, turmaCompleta.AnoLetivo, turmaCompleta.Semestre));
+            var periodoFechamentoBimestre = await mediator.Send(new ObterPeriodoFechamentoPorCalendarioIdEBimestreQuery(tipoCalendarioId, turmaCompleta.EhTurmaInfantil, filtro.Bimestre));
 
             var dadosAlunosQuePossuemPlanoAEEAtivo = await mediator.Send(new VerificaPlanosAEEPorCodigosAlunosEAnoQuery(alunosAtivosCodigos, turmaCompleta.AnoLetivo));
             var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(alunosAtivos.Select(x => x.CodigoAluno).ToArray(), turmaCompleta);
@@ -245,7 +241,7 @@ namespace SME.SGP.Aplicacao
                 }
 
                 notaConceitoAluno.PodeEditar =
-                       (!aluno.Inativo || (aluno.Inativo && (aluno.DataSituacao >= periodoFechamentoBimestre?.PeriodoFechamentoInicio.Date ||
+                       (!aluno.Inativo || (aluno.Inativo && (aluno.DataSituacao >= periodoFechamentoBimestre?.InicioDoFechamento.Date ||
                        (aluno.DataSituacao >= bimestreParaAdicionar.PeriodoInicio && bimestreParaAdicionar.PeriodoFim <= aluno.DataSituacao))));
 
                 notaConceitoAluno.Marcador = await mediator
