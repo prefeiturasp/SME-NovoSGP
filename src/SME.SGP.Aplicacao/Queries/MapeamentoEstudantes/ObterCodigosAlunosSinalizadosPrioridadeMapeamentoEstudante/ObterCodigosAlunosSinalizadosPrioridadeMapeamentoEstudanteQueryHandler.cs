@@ -43,7 +43,8 @@ namespace SME.SGP.Aplicacao
 
             var retorno = new List<AlunoSinalizadoPrioridadeMapeamentoEstudanteDto>();
 
-            var alunosSondagemProvaSPInsuficientes = new List<string>();
+            var alunosSondagemInsuficiente = new List<string>();
+            var alunosProvaSPInsuficiente = new List<string>();
 
             var tasks = alunosTurma
                 .AsParallel()
@@ -52,10 +53,11 @@ namespace SME.SGP.Aplicacao
                 {
                     var sondagem = await mediator.Send(new ObterSondagemLPAlunoQuery(turma.CodigoTurma, aluno.CodigoAluno));
                     var avaliacoesExternasProvaSP = await mediator.Send(new ObterAvaliacoesExternasProvaSPAlunoQuery(aluno.CodigoAluno, turma.AnoLetivo-1));
-                    if ((sondagem.ObterHipoteseEscrita(request.Bimestre) != HIPOTESE_ESCRITA_ALFABETICO 
+                    if (sondagem.ObterHipoteseEscrita(request.Bimestre) != HIPOTESE_ESCRITA_ALFABETICO 
                          && !string.IsNullOrEmpty(sondagem.ObterHipoteseEscrita(request.Bimestre)))
-                        || avaliacoesExternasProvaSP.Any(psp => psp.Nivel.ToUpper() == RESULTADO_ABAIXO_BASICO_PROVA_SP.ToUpper()))
-                        alunosSondagemProvaSPInsuficientes.Add(aluno.CodigoAluno);
+                        alunosSondagemInsuficiente.Add(aluno.CodigoAluno);
+                    if (avaliacoesExternasProvaSP.Any(psp => psp.Nivel.ToUpper() == RESULTADO_ABAIXO_BASICO_PROVA_SP.ToUpper()))
+                        alunosProvaSPInsuficiente.Add(aluno.CodigoAluno);
                 });
 
             await Task.WhenAll(tasks);
@@ -64,11 +66,14 @@ namespace SME.SGP.Aplicacao
             foreach (var aluno in alunosTurma)
             {
                 var qdadePlanosAEE = await repositorioPlanoAEE.ObterQdadePlanosAEEAtivosAluno(aluno.CodigoAluno);
-                if (matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == aluno.CodigoAluno)
-                    || qdadePlanosAEE > 0
-                    || alunosSondagemProvaSPInsuficientes.Contains(aluno.CodigoAluno)
-                    )
-                    retorno.Add(new AlunoSinalizadoPrioridadeMapeamentoEstudanteDto(aluno.CodigoAluno));
+                var alertaLaranja = (matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == aluno.CodigoAluno)
+                                    || qdadePlanosAEE > 0
+                                    || alunosProvaSPInsuficiente.Contains(aluno.CodigoAluno));
+                var alertaVermelho = alunosSondagemInsuficiente.Contains(aluno.CodigoAluno);
+
+
+                if (alertaLaranja || alertaVermelho) 
+                    retorno.Add(new AlunoSinalizadoPrioridadeMapeamentoEstudanteDto(aluno.CodigoAluno, alertaLaranja, alertaVermelho));
             }
             
             foreach (var alunoMapeado in alunosComMapeamento)
@@ -77,7 +82,7 @@ namespace SME.SGP.Aplicacao
                 if (alunoAlerta.NaoEhNulo())
                     alunoAlerta.PossuiMapeamentoEstudante = true;
                 else
-                    retorno.Add(new AlunoSinalizadoPrioridadeMapeamentoEstudanteDto(alunoMapeado, true));
+                    retorno.Add(new AlunoSinalizadoPrioridadeMapeamentoEstudanteDto(alunoMapeado, possuiMapeamentoEstudante: true));
             } 
 
             return retorno.ToArray();
