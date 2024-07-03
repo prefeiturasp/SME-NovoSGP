@@ -38,7 +38,9 @@ namespace SME.SGP.Aplicacao
 
             foreach (var alterar in request.EntidadesAlterar)
             {
-                var atividade = atividadeAvaliativas.Find(atividade => atividade.Id == alterar.Id);
+                var atividade = atividadeAvaliativas.Find(atividade => atividade.Id == alterar.Id 
+                                                          && atividade.AlunoId == alterar.AlunoId 
+                                                          && atividade.DisciplinaId == alterar.DisciplinaId);
 
                 if (atividade.NaoEhNulo())
                 {
