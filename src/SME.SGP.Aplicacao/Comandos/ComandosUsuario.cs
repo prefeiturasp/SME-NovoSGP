@@ -248,8 +248,7 @@ namespace SME.SGP.Aplicacao
         public void Sair()
         {
             var login = servicoUsuario.ObterLoginAtual();
-            var chaveCache = string.Format(NomeChaveCache.PERFIS_USUARIO, login);
-            repositorioCache.SalvarAsync(chaveCache, string.Empty);
+            servicoUsuario.RemoverPerfisUsuarioCache(login);
         }
 
         public Task<string> SolicitarRecuperacaoSenha(string login)
