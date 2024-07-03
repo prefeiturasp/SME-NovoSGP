@@ -71,6 +71,8 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
             retorno.ShouldNotBeNull();
             retorno.Count().ShouldBe(5);
             retorno.Count(r => r.PossuiMapeamentoEstudante).ShouldBe(2);
+            retorno.Count(r => r.AlertaVermelho).ShouldBe(1);
+            retorno.Count(r => r.AlertaLaranja).ShouldBe(4);
             string.Join(",", retorno.Where(r => r.PossuiMapeamentoEstudante)
                                     .OrderBy(r => r.CodigoAluno)
                                     .Select(r => r.CodigoAluno)).ShouldBe("1,2");

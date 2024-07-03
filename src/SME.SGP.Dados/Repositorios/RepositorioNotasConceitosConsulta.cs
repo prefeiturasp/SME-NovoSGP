@@ -120,10 +120,10 @@ namespace SME.SGP.Dados.Repositorios
                             nc.alterado_em, 
                             nc.alterado_por, 
                             nc.alterado_rf,
-                            nc.status_gsa 
+                            nc.status_gsa,
+                            nc.disciplina_id
                         from notas_conceito nc 
                         join atividade_avaliativa aa on nc.atividade_avaliativa  = aa.id 
-                        join atividade_avaliativa_disciplina aad on aad.atividade_avaliativa_id  = aa.id
                         join turma t on aa.turma_id = t.turma_id::text 
                         where aa.turma_id  = @codigoTurma";
 
