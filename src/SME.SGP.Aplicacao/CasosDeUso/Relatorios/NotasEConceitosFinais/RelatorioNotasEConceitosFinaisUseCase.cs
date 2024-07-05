@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         private async Task<bool> GerarRelatorioPorDre(FiltroRelatorioNotasEConceitosFinaisDto filtro, Usuario usuarioLogado)
         {
             var dres = await mediator.Send(ObterTodasDresQuery.Instance);
-            foreach (var dre in dres.Take(3).ToList())
+            foreach (var dre in dres)
             {
                 filtro.DreCodigo = dre.CodigoDre;
                 await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.NotasEConceitosFinais, filtro, usuarioLogado, formato: filtro.TipoFormatoRelatorio, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosNotasConceitosFinais));
