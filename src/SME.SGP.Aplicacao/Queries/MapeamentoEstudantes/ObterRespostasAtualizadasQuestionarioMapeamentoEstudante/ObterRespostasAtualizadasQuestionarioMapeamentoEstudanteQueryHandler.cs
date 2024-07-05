@@ -7,6 +7,7 @@ using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.MapeamentoEstudantes;
+using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,7 +47,7 @@ namespace SME.SGP.Aplicacao
                     Texto = JsonConvert.SerializeObject(new { index = informacoesSGP.IdParecerConclusivoAnoAnterior.ToString(), 
                                                               value = informacoesSGP.DescricaoParecerConclusivoAnoAnterior })
                 });
-
+            
             questao = await repositorioQuestao.ObterIdQuestaoPorNomeComponenteQuestionario(request.QuestionarioId, NomesComponentesMapeamentoEstudante.TURMA_ANO_ANTERIOR);
             if (!string.IsNullOrEmpty(informacoesSGP.TurmaAnoAnterior))
                 retorno.Add(new RespostaQuestaoMapeamentoEstudanteDto()
@@ -59,7 +60,10 @@ namespace SME.SGP.Aplicacao
             retorno.Add(new RespostaQuestaoMapeamentoEstudanteDto()
             {
                 QuestaoId = questao,
-                Texto = informacoesSGP.AnotacoesPedagogicasBimestreAnterior
+                Texto = UtilRegex.AdicionarEspacos(
+                            UtilRegex.RemoverTagsHtml(
+                                UtilRegex.RemoverTagsHtmlMidia(
+                                    informacoesSGP.AnotacoesPedagogicasBimestreAnterior??string.Empty)))
             });
 
             var dadosEstudante = await mediator.Send(new ObterAlunoEnderecoEolQuery(request.CodigoAluno));
