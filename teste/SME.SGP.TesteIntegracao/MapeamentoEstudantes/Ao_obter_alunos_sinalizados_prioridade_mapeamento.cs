@@ -32,7 +32,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosAtivosPorTurmaCodigoQueryMapEstudanteHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosDentroPeriodoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosDentroPeriodoQueryMapEstudanteHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosTurmaProgramaPapEolQuery, IEnumerable<AlunosTurmaProgramaPapDto>>), typeof(ObterAlunosAtivosTurmaProgramaPapEolQueryMapEstudanteHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterSondagemLPAlunoQuery, SondagemLPAlunoDto>), typeof(ObterSondagemLPAlunoQueryNaoAlfabeticoFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAvaliacoesExternasProvaSPAlunoQuery, IEnumerable<AvaliacaoExternaProvaSPDto>>), typeof(ObterAvaliacoesExternasProvaSPAlunoQueryFake), ServiceLifetime.Scoped));
@@ -71,6 +71,8 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
             retorno.ShouldNotBeNull();
             retorno.Count().ShouldBe(5);
             retorno.Count(r => r.PossuiMapeamentoEstudante).ShouldBe(2);
+            retorno.Count(r => r.AlertaVermelho).ShouldBe(1);
+            retorno.Count(r => r.AlertaLaranja).ShouldBe(4);
             string.Join(",", retorno.Where(r => r.PossuiMapeamentoEstudante)
                                     .OrderBy(r => r.CodigoAluno)
                                     .Select(r => r.CodigoAluno)).ShouldBe("1,2");

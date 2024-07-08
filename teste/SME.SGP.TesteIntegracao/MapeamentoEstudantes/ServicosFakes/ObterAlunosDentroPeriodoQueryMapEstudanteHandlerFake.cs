@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.ServicosFakes
 {
-    public class ObterAlunosAtivosPorTurmaCodigoQueryMapEstudanteHandlerFake : IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>
+    public class ObterAlunosDentroPeriodoQueryMapEstudanteHandlerFake : IRequestHandler<ObterAlunosDentroPeriodoQuery, IEnumerable<AlunoPorTurmaResposta>>
     {
-        public ObterAlunosAtivosPorTurmaCodigoQueryMapEstudanteHandlerFake()
+        public ObterAlunosDentroPeriodoQueryMapEstudanteHandlerFake()
         {
         }
 
-        public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosAtivosPorTurmaCodigoQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosDentroPeriodoQuery request, CancellationToken cancellationToken)
         {
             return await Task.FromResult(new List<AlunoPorTurmaResposta> {
                 new AlunoPorTurmaResposta
