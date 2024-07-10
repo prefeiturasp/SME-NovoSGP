@@ -84,9 +84,12 @@ namespace SME.SGP.Aplicacao
                     }
 
                     var aulasId = aulasDoDia.Select(a => a.Id).ToArray();
-                    if (turma.ModalidadeCodigo == Modalidade.EJA)
+                    if (turma.EhEJA()
+                        || turma.EhMedioNoturno())
                     {
-                        var aulas = aulasDoDia.Where(a => !a.EhTecnologiaAprendizagem);
+                        var aulas = aulasDoDia.Where(a => !(a.EhAulaCompartilhada
+                                                            || (turma.EhEJA() && a.EhTecnologiaAprendizagem)
+                                                            || (turma.EhMedioNoturno() && a.EhTecAprendizagemELeitura)));
                         aulasId = aulas.NaoEhNulo() && aulas.Any() ? aulas.Select(a => a.Id).ToArray() : null;
                     }
 
