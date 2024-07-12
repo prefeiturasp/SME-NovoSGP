@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Minio.DataModel;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
@@ -25,12 +26,16 @@ namespace SME.SGP.Aplicacao
         {
             var atividadeAvaliativas = await ObterCacheAtividadeAvaliativa(request);
 
+            if (request.AtividadesAvaliativasId.PossuiRegistros())
+                atividadeAvaliativas = atividadeAvaliativas.Where(nc => request.AtividadesAvaliativasId.Contains(nc.AtividadeAvaliativaID));
 
-            var notaConceitoFiltrada = from aac in atividadeAvaliativas.ToList()
-                                       join aai in request.AtividadesAvaliativasId.Distinct() on aac.AtividadeAvaliativaID equals aai
-                                       select aac;
+            if (!string.IsNullOrEmpty(request.ComponenteCurricularId))
+                atividadeAvaliativas = atividadeAvaliativas.Where(nc => nc.DisciplinaId.Equals(request.ComponenteCurricularId) || string.IsNullOrEmpty(nc.DisciplinaId));
 
-            return notaConceitoFiltrada;
+            if (request.AlunosId.PossuiRegistros())
+                atividadeAvaliativas = atividadeAvaliativas.Where(nc => request.AlunosId.Contains(nc.AlunoId));
+
+            return atividadeAvaliativas;
         }
 
         private Task<IEnumerable<NotaConceito>> ObterCacheAtividadeAvaliativa(ObterNotasPorAlunosAtividadesAvaliativasQuery request)

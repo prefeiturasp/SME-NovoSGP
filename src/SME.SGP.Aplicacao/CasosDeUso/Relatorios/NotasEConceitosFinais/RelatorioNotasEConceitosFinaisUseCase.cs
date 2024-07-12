@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Minio.DataModel;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -44,8 +45,26 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                         break;
                 }
             }
+            if (!string.IsNullOrEmpty(filtro.DreCodigo))
+                return await GerarRelatorio(filtro, usuarioLogado);
 
+            return await GerarRelatorioPorDre(filtro, usuarioLogado);
+        }
+
+        private async Task<bool> GerarRelatorio(FiltroRelatorioNotasEConceitosFinaisDto filtro, Usuario usuarioLogado)
+        {
             return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.NotasEConceitosFinais, filtro, usuarioLogado, formato: filtro.TipoFormatoRelatorio, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosNotasConceitosFinais));
+        }
+
+        private async Task<bool> GerarRelatorioPorDre(FiltroRelatorioNotasEConceitosFinaisDto filtro, Usuario usuarioLogado)
+        {
+            var dres = await mediator.Send(ObterTodasDresQuery.Instance);
+            foreach (var dre in dres)
+            {
+                filtro.DreCodigo = dre.CodigoDre;
+                await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.NotasEConceitosFinais, filtro, usuarioLogado, formato: filtro.TipoFormatoRelatorio, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosNotasConceitosFinais));
+            }
+            return true;
         }
     }
 }

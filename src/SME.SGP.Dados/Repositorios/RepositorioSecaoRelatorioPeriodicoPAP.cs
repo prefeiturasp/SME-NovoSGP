@@ -15,11 +15,26 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<SecaoTurmaAlunoPAPDto> ObterSecoesPorAluno(string codigoTurma, string codigoAluno, long pAPPeriodoId)
         {
             var secao = new SecaoTurmaAlunoPAPDto();
-            var sql = @"select srpp.id, 
+            var sql = @"with vw_relatorio_anterior_existente as (
+                        select coalesce(max(rppa.id), 0) 
+                        	from relatorio_periodico_pap_aluno rppa 
+	                        inner join relatorio_periodico_pap_turma rppt on rppt.id = rppa.relatorio_periodico_pap_turma_id 
+	                        inner join periodo_relatorio_pap prp on prp.id = rppt.periodo_relatorio_pap_id 
+	                        inner join periodo_escolar_relatorio_pap perp on perp.periodo_relatorio_pap_id = prp.id
+	                        inner join periodo_escolar pe on pe.id = perp.periodo_escolar_id 
+	                        inner join configuracao_relatorio_pap crp on crp.id = prp.configuracao_relatorio_pap_id 
+	                        inner join turma t on t.id = rppt.turma_id
+	                        where pe.bimestre < (select max(bimestre) 
+	                                            from periodo_escolar_relatorio_pap perp 
+	                                            inner join periodo_escolar pe on pe.id = perp.periodo_escolar_id 
+	                                            where perp.periodo_relatorio_pap_id = @pAPPeriodoId)
+	                        and rppa.aluno_codigo = @codigoAluno 
+	                        and t.turma_id = @codigoTurma)
+                        select srpp.id, 
                         srpp.nome, srpp.nome_componente NomeComponente, srpp.ordem, srpp.questionario_id QuestionarioId, 
                         case when questao is null then false else true end QuestoesObrigatorias,
                         alunoTurma.PAPSecaoId, 
-                        case when alunoTurma.concluido is null then false else true end Concluido,
+                        case when alunoTurma.concluido is null and (select * from vw_relatorio_anterior_existente) = 0 then false else true end Concluido,
                         alunoTurma.PAPTurmaId, alunoTurma.PAPAlunoId,
                         alunoTurma.id,
                         alunoTurma.AlteradoEm,
