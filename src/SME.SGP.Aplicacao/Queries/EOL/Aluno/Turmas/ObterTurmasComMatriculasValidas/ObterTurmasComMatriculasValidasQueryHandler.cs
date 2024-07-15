@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
                 var matriculasAluno = await ObterMatriculasAlunoTurma(codTurma, request.AlunoCodigo, request.PeriodoInicio, cancellationToken);
                 if (matriculasAluno.NaoEhNulo() || matriculasAluno.Any())
                 {
-                    var fncInstanciarTurma = async () => await mediator.Send(new ObterTurmaPorCodigoQuery(codTurma));
+                    Func<Task<Turma>> fncInstanciarTurma = async () => await mediator.Send(new ObterTurmaPorCodigoQuery(codTurma));
                     if (matriculasAluno.Any(m => m.CodigoTurma.ToString() == codTurma &&
                        ((m.PossuiSituacaoAtiva() && m.DataMatricula <= request.PeriodoFim) 
                        || (!m.PossuiSituacaoAtiva() && m.DataSituacao >= request.PeriodoInicio && m.DataSituacao <= request.PeriodoFim) 
