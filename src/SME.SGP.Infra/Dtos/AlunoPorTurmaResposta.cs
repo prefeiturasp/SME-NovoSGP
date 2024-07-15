@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dominio;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Infra
 {
@@ -74,6 +75,13 @@ namespace SME.SGP.Infra
         public bool PossuiSituacaoAtiva()
         {
             return SituacoesAtiva.Contains(CodigoSituacaoMatricula);
+        }
+
+        public bool PossuiSituacaoDispensadoTurmaEdFisica(Func<Task<Turma>> instanciarTurma)
+        {
+            if (CodigoSituacaoMatricula == SituacaoMatriculaAluno.DispensadoEdFisica)
+                return (instanciarTurma().Result).EhTurmaEdFisica();
+            return false;
         }
 
         public bool DeveMostrarNaChamada(DateTime dataAula, DateTime periodoInicio)
