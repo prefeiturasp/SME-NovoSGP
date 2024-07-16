@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
@@ -37,6 +38,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosAtivosPorTurmaCodigoQueryHandlerParecerConclusivo), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ProfessorPodePersistirTurmaQuery, bool>), typeof(ProfessorPodePersistirTurmaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosEolPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosEolPorTurmaQueryHandlerParecerConclusivo), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<VerificaNotasTodosComponentesCurricularesQuery, bool>), typeof(VerificaNotasTodosComponentesCurricularesQueryHandlerFake), ServiceLifetime.Scoped));
         }
         
         [Fact]
