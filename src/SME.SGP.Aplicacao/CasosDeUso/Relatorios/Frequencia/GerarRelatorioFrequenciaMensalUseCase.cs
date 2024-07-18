@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.Relatorios;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -21,8 +22,26 @@ namespace SME.SGP.Aplicacao
             filtro.UsuarioNome = usuario.Nome;
             filtro.UsuarioRf = usuario.CodigoRf;
 
-            return await _mediator.Send(new GerarRelatorioCommand(TipoRelatorio.FrequenciaMensal, filtro, usuario,
+            if (!filtro.CodigoDre.EhFiltroTodos())
+                return await GerarRelatorio(filtro, usuario);
+
+            return await GerarRelatorioPorDre(filtro, usuario);
+        }
+
+        private async Task<bool> GerarRelatorio(FiltroRelatorioFrequenciaMensalDto filtro, Usuario usuarioLogado)
+            => await _mediator.Send(new GerarRelatorioCommand(TipoRelatorio.FrequenciaMensal, filtro, usuarioLogado,
                 RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosFrequenciaMensal, filtro.TipoFormatoRelatorio));
+
+        private async Task<bool> GerarRelatorioPorDre(FiltroRelatorioFrequenciaMensalDto filtro, Usuario usuarioLogado)
+        {
+            var dres = await _mediator.Send(ObterTodasDresQuery.Instance);
+            foreach (var dre in dres)
+            {
+                filtro.CodigoDre = dre.CodigoDre;
+                await _mediator.Send(new GerarRelatorioCommand(TipoRelatorio.FrequenciaMensal, filtro, usuarioLogado,
+                    RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosFrequenciaMensal, filtro.TipoFormatoRelatorio));
+            }
+            return true;
         }
     }
 }
