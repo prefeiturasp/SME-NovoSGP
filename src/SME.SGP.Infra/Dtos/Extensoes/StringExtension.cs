@@ -152,5 +152,8 @@ namespace SME.SGP.Infra
 
         public static string FormatarCPF(this string cpf)
         => Regex.Replace(cpf.SomenteNumeros(), @"(\d{3})(\d{3})(\d{3})(\d{2})", "$1.$2.$3-$4");
+
+        public static bool EhFiltroTodos(this string codigoFiltro)
+            => string.IsNullOrEmpty(codigoFiltro) || codigoFiltro.Contains("-99");
     }
 }
