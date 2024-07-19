@@ -22,10 +22,7 @@ namespace SME.SGP.Aplicacao
             filtro.UsuarioNome = usuario.Nome;
             filtro.UsuarioRf = usuario.CodigoRf;
 
-            if (!filtro.CodigoDre.EhFiltroTodos())
-                return await GerarRelatorio(filtro, usuario);
-
-            return await GerarRelatorioPorDre(filtro, usuario);
+            return await GerarRelatorio(filtro, usuario);
         }
 
         private async Task<bool> GerarRelatorio(FiltroRelatorioFrequenciaMensalDto filtro, Usuario usuarioLogado)
