@@ -23,48 +23,7 @@ namespace SME.SGP.Aplicacao.Queries
 
         public async Task<bool> Handle(VerificaNotasTodosComponentesCurricularesQuery request, CancellationToken cancellationToken)
         {
-            string[] turmasCodigos;
-
-            var turmasItinerarioEnsinoMedio = (await mediator.Send(ObterTurmaItinerarioEnsinoMedioQuery.Instance, cancellationToken)).ToList();
-
-            if (request.Turma.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)request.Turma.TipoTurma))
-            {
-                var tiposTurmas = new List<int> { (int)request.Turma.TipoTurma };
-
-                tiposTurmas.AddRange(request.Turma.ObterTiposRegularesDiferentes());
-                tiposTurmas.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id).Where(c => tiposTurmas.All(x => x != c)));
-
-                var turmasCodigosEol = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(request.Turma.AnoLetivo, request.AlunoCodigo, tiposTurmas,
-                   dataReferencia: request.PeriodoEscolar?.PeriodoFim, semestre: request.Turma.EhEJA() ? request.Turma.Semestre : null), cancellationToken);
-
-                if (request.Historico.HasValue && request.Historico.Value)
-                {
-                    var turmasCodigosHistorico = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigosEol), cancellationToken);
-
-                    if (turmasCodigosHistorico.Any(x => x.EhTurmaHistorica))
-                    {
-                        turmasCodigos = turmasCodigosEol;
-                        turmasCodigos = !turmasCodigosEol.Contains(request.Turma.CodigoTurma) ? turmasCodigos.Concat(new[] { request.Turma.CodigoTurma }).ToArray() : turmasCodigosEol;
-                    }
-                    else
-                        turmasCodigos = new[] { request.Turma.CodigoTurma };
-                }
-                else
-                    turmasCodigos = !turmasCodigosEol.Contains(request.Turma.CodigoTurma) ? turmasCodigosEol.Concat(new[] { request.Turma.CodigoTurma }).ToArray() : turmasCodigosEol;
-
-                if (turmasCodigos.Length > 0)
-                {
-                    var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigos.ToArray()));
-
-                    if (turmas.Select(t => t.TipoTurma).Distinct().Count() == 1 && request.Turma.ModalidadeCodigo != Modalidade.Medio)
-                        turmasCodigos = new string[] { request.Turma.CodigoTurma };
-                    else if (ValidaPossibilidadeMatricula2TurmasRegularesNovoEM(turmas, request.Turma))
-                        turmasCodigos = new string[] { request.Turma.CodigoTurma };
-                }
-            }
-            else
-                turmasCodigos = new[] { request.Turma.CodigoTurma };
-
+            string[] turmasCodigos = await ObterTurmasAluno(request, cancellationToken);
             var conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEBimestreQuery(turmasCodigos, request.Bimestre), cancellationToken);
 
             var notasParaVerificar = new List<NotaConceitoBimestreComponenteDto>();
@@ -98,6 +57,45 @@ namespace SME.SGP.Aplicacao.Queries
             return disciplinasLancamNota.All(componenteCurricular => notasParaVerificar.Any(c => c.ComponenteCurricularCodigo == componenteCurricular.CodigoComponenteCurricular));
         }
 
+        private async Task<string[]> ObterTurmasAluno(VerificaNotasTodosComponentesCurricularesQuery request, CancellationToken cancellationToken)
+        {
+            string[] turmasCodigos = new[] { request.Turma.CodigoTurma };
+            var turmasItinerarioEnsinoMedio = (await mediator.Send(ObterTurmaItinerarioEnsinoMedioQuery.Instance, cancellationToken)).ToList();
+            if (request.Turma.DeveVerificarRegraRegulares() 
+                || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)request.Turma.TipoTurma))
+            {
+                var tiposTurmas = new List<int> { (int)request.Turma.TipoTurma };
+                tiposTurmas.AddRange(request.Turma.ObterTiposRegularesDiferentes());
+                tiposTurmas.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id).Where(c => tiposTurmas.All(x => x != c)));
+
+                var turmasCodigosEol = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(request.Turma.AnoLetivo, request.AlunoCodigo, tiposTurmas,
+                   dataReferencia: request.PeriodoEscolar?.PeriodoFim, semestre: request.Turma.EhEJA() ? request.Turma.Semestre : null), cancellationToken);
+
+                if (request.Historico.HasValue && request.Historico.Value)
+                {
+                    var turmasCodigosHistorico = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigosEol), cancellationToken);
+                    if (turmasCodigosHistorico.Any(x => x.EhTurmaHistorica))
+                    {
+                        turmasCodigos = turmasCodigosEol;
+                        turmasCodigos = !turmasCodigosEol.Contains(request.Turma.CodigoTurma) ? turmasCodigos.Concat(new[] { request.Turma.CodigoTurma }).ToArray() : turmasCodigosEol;
+                    }
+                }
+                else
+                    turmasCodigos = !turmasCodigosEol.Contains(request.Turma.CodigoTurma) ? turmasCodigosEol.Concat(new[] { request.Turma.CodigoTurma }).ToArray() : turmasCodigosEol;
+
+                if (turmasCodigos.Any())
+                {
+                    var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigos.ToArray()));
+                    if (turmas.Select(t => t.TipoTurma).Distinct().Count() == 1 
+                        && request.Turma.ModalidadeCodigo != Modalidade.Medio)
+                        turmasCodigos = new string[] { request.Turma.CodigoTurma };
+                    else if (ValidaPossibilidadeMatricula2TurmasRegularesNovoEM(turmas, request.Turma))
+                        turmasCodigos = new string[] { request.Turma.CodigoTurma };
+                }
+            };
+            return turmasCodigos;
+        }
+
         private static string[] DefinirTurmasConsideradasDeAcordoComMatricula(IEnumerable<AlunoPorTurmaResposta> matriculasDoAluno, Dominio.PeriodoEscolar periodoEscolar, string[] turmasCodigos)
         {
             if (periodoEscolar.NaoEhNulo())
@@ -106,7 +104,10 @@ namespace SME.SGP.Aplicacao.Queries
                                           where ((m.Ativo && m.DataMatricula.Date < periodoEscolar.PeriodoFim) ||
                                                  (m.Inativo && m.DataMatricula.Date < periodoEscolar.PeriodoFim && m.DataSituacao.Date >= periodoEscolar.PeriodoInicio)) &&
                                                   m.CodigoSituacaoMatricula != SituacaoMatriculaAluno.VinculoIndevido
-                                          select m.CodigoTurma).Distinct();
+                                                  && turmasCodigos.Contains(m.CodigoTurma.ToString())
+                                          select m.CodigoTurma.ToString()).Distinct();
+                if (turmasConsideradas.Any())
+                    return turmasConsideradas.ToArray();
             }
             else
             {
