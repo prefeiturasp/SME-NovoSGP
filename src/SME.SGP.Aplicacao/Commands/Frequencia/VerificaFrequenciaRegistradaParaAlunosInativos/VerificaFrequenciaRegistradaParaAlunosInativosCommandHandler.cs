@@ -90,7 +90,9 @@ namespace SME.SGP.Aplicacao
         }
 
         private DateTime? ObterDataReferencia(AlunoPorTurmaResposta aluno, Turma turma) =>
-            !aluno.PossuiSituacaoAtiva() && aluno.DataSituacao.Year == turma.AnoLetivo ? aluno.DataSituacao : null;
+            !aluno.PossuiSituacaoAtiva() 
+                ? aluno.DataSituacao.Year == turma.AnoLetivo ? aluno.DataSituacao : new DateTime(turma.AnoLetivo, 01, 01)
+                : null;
 
         public async Task VerificaCompensacoesDeAlunosInativos(IEnumerable<FrequenciaAlunoTurmaDto> frequenciasAluno, IEnumerable<PeriodoEscolar> periodosEscolares, string codigoAluno, string turmaCodigo)
         {
