@@ -10,12 +10,8 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterInformacoesTurmasProgramaAlunoMapeamentoEstudanteQueryFake : IRequestHandler<ObterInformacoesTurmasProgramaAlunoMapeamentoEstudanteQuery, InformacoesTurmasProgramaAlunoMapeamentoEstudanteAlunoDto>
     {
-        private const long RECUPERACAO_PARALELA_AUTORAL_PORTUGUES = 1663;
-
         private const long SRM = 1030;
         private const long PAEE_COLABORATIVO = 1310;
-        private const long ACOMPANHAMENTO_PEDAGOGICO_MATEMATICA = 1255;
-        private const long ACOMPANHAMENTO_PEDAGOGICO_PORTUGUES = 1204;
 
         public ObterInformacoesTurmasProgramaAlunoMapeamentoEstudanteQueryFake()
         { }
@@ -25,7 +21,6 @@ namespace SME.SGP.Aplicacao
         {
             ComponentesPAP = new List<ComponenteCurricularSimplificadoDto> 
             { 
-                new() { Id = RECUPERACAO_PARALELA_AUTORAL_PORTUGUES, Descricao = RECUPERACAO_PARALELA_AUTORAL_PORTUGUES.ToString()},
                 new() { Id = ComponentesCurricularesConstants.CODIGO_PAP_RECUPERACAO_APRENDIZAGENS, Descricao = "Contraturno"},
                 new() { Id = ComponentesCurricularesConstants.CODIGO_PAP_PROJETO_COLABORATIVO, Descricao = "Colaborativo"}
             },
@@ -36,9 +31,9 @@ namespace SME.SGP.Aplicacao
             },
             ComponentesFortalecimentoAprendizagens = new List<ComponenteCurricularSimplificadoDto>
             {
-                new() { Id = ACOMPANHAMENTO_PEDAGOGICO_MATEMATICA, Descricao = ACOMPANHAMENTO_PEDAGOGICO_MATEMATICA.ToString()},
-                new() { Id = ACOMPANHAMENTO_PEDAGOGICO_PORTUGUES, Descricao = ACOMPANHAMENTO_PEDAGOGICO_PORTUGUES.ToString()}
-            },
+                new() { Id = ComponentesCurricularesConstants.CODIGO_RECUPERACAO_PARALELA_AUTORAL_PORTUGUES, Descricao = ComponentesCurricularesConstants.CODIGO_RECUPERACAO_PARALELA_AUTORAL_PORTUGUES.ToString()},
+                new() { Id = ComponentesCurricularesConstants.CODIGO_RECUPERACAO_PARALELA_AUTORAL_MATEMATICA, Descricao = ComponentesCurricularesConstants.CODIGO_RECUPERACAO_PARALELA_AUTORAL_MATEMATICA.ToString()},
+            }            
         });
     }
 }

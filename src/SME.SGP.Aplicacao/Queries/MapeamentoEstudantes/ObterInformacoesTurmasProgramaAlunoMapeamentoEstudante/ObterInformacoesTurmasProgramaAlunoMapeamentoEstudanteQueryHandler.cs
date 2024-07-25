@@ -20,12 +20,6 @@ namespace SME.SGP.Aplicacao
         private const long SRM = 1030;
         private const long PAEE_COLABORATIVO = 1310;
 
-        private const long ACOMPANHAMENTO_PEDAGOGICO_MATEMATICA = 1255;
-        private const long ACOMPANHAMENTO_PEDAGOGICO_PORTUGUES = 1204;
-        private const long ACOMPANHAMENTO_LEITURA = 1304;
-        private const long REFORCO_ACOMPANHAMENTO_ALFABETIZACAO = 1302;
-        private const long REFORCO_ACOMPANHAMENTO_CIENCIAS = 1295;
-
         public ObterInformacoesTurmasProgramaAlunoMapeamentoEstudanteQueryHandler(IHttpClientFactory httpClientFactory)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
