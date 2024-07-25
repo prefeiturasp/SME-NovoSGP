@@ -36,21 +36,29 @@ begin
 			values (opcaoRespostaId, questaoComplementarId, NOW(), 'SISTEMA', '0');
 	end if;	
 	
-	update questao set nome = 'Pussui assistência de AVE (Auxiliar de vida escolar)'
+	questionarioId := (select id from questionario q 
+						where q.tipo = 2 and q.nome like '%Plano AEE%');		
+	
+	update questao set nome = 'Possui assistência de AVE (Auxiliar de vida escolar)'
 		where id in (select q2.id from questao q2
-			inner join questionario q on q.id = q2.questionario_id
-			where q.tipo = 2 and q.nome like '%Plano AEE%' 
+			where q2.questionario_id = questionarioId
 			and q2.id not in (select oqc.questao_complementar_id from opcao_questao_complementar oqc)
 			and q2.nome_componente = 'POSSUI_AVE'
 			order by q2.ordem);
 		
 	update questao set nome = 'Possui assistência de estagiário na turma'
 		where id in (select q2.id from questao q2
-			inner join questionario q on q.id = q2.questionario_id
-			where q.tipo = 2 and q.nome like '%Plano AEE%' 
+			where q2.questionario_id = questionarioId
 			and q2.id not in (select oqc.questao_complementar_id from opcao_questao_complementar oqc)
 			and q2.nome_componente = 'POSSUI_ESTAGIARIO_TURMA'
 			order by q2.ordem);	
-	
+			
+	questaoIdExistente := (select q.id  
+							from questao q 
+							where q.questionario_id = questionarioId and q.nome_componente = 'AVALIACAO_REESTRUTURACAO_PLANO_BIMESTRE');
+	if (questaoIdExistente IS NULL) then					
+		insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, nome_componente, dimensao)
+				values(questionarioId, 14, 'Registre aqui a avaliação e reestruturação do plano no bimestre', '', false, 2, '', NOW(), 'SISTEMA', '0', 'AVALIACAO_REESTRUTURACAO_PLANO_BIMESTRE', 12);
+	end if;	
 end $$;
 		
