@@ -22,21 +22,19 @@ using System.Threading.Tasks;
 using Xunit;
 using System.Text;
 using Newtonsoft.Json;
+using SME.SGP.Dominio.Constantes;
 
 namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
 {
 
     public class Ao_obter_informacoes_atualizadas_mapeamento_estudante : MapeamentoBase
     {
-        private const long RECUPERACAO_PARALELA_AUTORAL_HISTORIA = 1765;
-        private const long PAP_RECUPERACAO_DE_APRENDIZAGENS = 1322;
-        private const long PAP_PROJETO_COLABORATIVO = 1770;
         private const long SRM = 1030;
         private const long PAEE_COLABORATIVO = 1310;
         private const long ACOMPANHAMENTO_PEDAGOGICO_MATEMATICA = 1255;
 
-        private const string JsonComboMultiplaEscolhaDinamico_FortalecimentoAprendizagens = "[{\"index\":\"1255\",\"value\":\"1255\"}]";
-        private const string JsonComboMultiplaEscolhaDinamico_PAP = "[{\"index\":\"1765\",\"value\":\"1765\"},{\"index\":\"1322\",\"value\":\"Contraturno\"},{\"index\":\"1770\",\"value\":\"Colaborativo\"}]";
+        private const string JsonComboMultiplaEscolhaDinamico_FortalecimentoAprendizagens = "[{\"index\":\"1765\",\"value\":\"1765\"}]";
+        private const string JsonComboMultiplaEscolhaDinamico_PAP = "[{\"index\":\"1322\",\"value\":\"Contraturno\"},{\"index\":\"1770\",\"value\":\"Colaborativo\"}]";
         private const string JsonComboMultiplaEscolhaDinamico_SRMCEFAI = "[{\"index\":\"1030\",\"value\":\"1030\"},{\"index\":\"1310\",\"value\":\"1310\"}]";
 
         public Ao_obter_informacoes_atualizadas_mapeamento_estudante(CollectionFixture collectionFixture) : base(collectionFixture)
@@ -71,9 +69,9 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
 
             var componenteTurmaAlunoDto = new List<ComponenteTurmaAlunoDto>()
             {
-                new(ALUNO_CODIGO_1, long.Parse(TURMA_CODIGO_1), RECUPERACAO_PARALELA_AUTORAL_HISTORIA, RECUPERACAO_PARALELA_AUTORAL_HISTORIA.ToString()),
-                new(ALUNO_CODIGO_1, long.Parse(TURMA_CODIGO_2), PAP_RECUPERACAO_DE_APRENDIZAGENS, PAP_RECUPERACAO_DE_APRENDIZAGENS.ToString()),
-                new(ALUNO_CODIGO_1, long.Parse(TURMA_CODIGO_2), PAP_PROJETO_COLABORATIVO, PAP_PROJETO_COLABORATIVO.ToString()),
+                new(ALUNO_CODIGO_1, long.Parse(TURMA_CODIGO_1), ComponentesCurricularesConstants.CODIGO_RECUPERACAO_PARALELA_AUTORAL_HISTORIA, ComponentesCurricularesConstants.CODIGO_RECUPERACAO_PARALELA_AUTORAL_HISTORIA.ToString()),
+                new(ALUNO_CODIGO_1, long.Parse(TURMA_CODIGO_2), ComponentesCurricularesConstants.CODIGO_PAP_RECUPERACAO_APRENDIZAGENS, ComponentesCurricularesConstants.CODIGO_PAP_RECUPERACAO_APRENDIZAGENS.ToString()),
+                new(ALUNO_CODIGO_1, long.Parse(TURMA_CODIGO_2), ComponentesCurricularesConstants.CODIGO_PAP_PROJETO_COLABORATIVO, ComponentesCurricularesConstants.CODIGO_PAP_PROJETO_COLABORATIVO.ToString()),
                 new(ALUNO_CODIGO_1, long.Parse(TURMA_CODIGO_3), SRM, SRM.ToString()),
                 new(ALUNO_CODIGO_1, long.Parse(TURMA_CODIGO_3), PAEE_COLABORATIVO, PAEE_COLABORATIVO.ToString()),
                 new(ALUNO_CODIGO_1, long.Parse(TURMA_CODIGO_4), ACOMPANHAMENTO_PEDAGOGICO_MATEMATICA, ACOMPANHAMENTO_PEDAGOGICO_MATEMATICA.ToString()),

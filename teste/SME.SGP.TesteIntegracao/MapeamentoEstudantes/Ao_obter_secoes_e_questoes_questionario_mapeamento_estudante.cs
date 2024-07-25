@@ -155,13 +155,13 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
             questao.Resposta.FirstOrDefault().OpcaoRespostaId.ShouldBe(questao.OpcaoResposta.FirstOrDefault(op => op.Nome == "Sim").Id);
 
             questao = retorno.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PARTICIPA_PAP));
-            questao.Resposta.FirstOrDefault().Texto.ShouldBe("[{\"index\":\"1663\",\"value\":\"1663\"},{\"index\":\"1322\",\"value\":\"Contraturno\"},{\"index\":\"1770\",\"value\":\"Colaborativo\"}]");
+            questao.Resposta.FirstOrDefault().Texto.ShouldBe("[{\"index\":\"1322\",\"value\":\"Contraturno\"},{\"index\":\"1770\",\"value\":\"Colaborativo\"}]");
 
             questao = retorno.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PARTICIPA_MAIS_EDUCACAO));
             questao.Resposta.FirstOrDefault().Texto.ShouldBe("[{\"index\":\"0\",\"value\":\"Não\"}]");
 
             questao = retorno.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PROJETO_FORTALECIMENTO_APRENDIZAGENS));
-            questao.Resposta.FirstOrDefault().Texto.ShouldBe("[{\"index\":\"1255\",\"value\":\"1255\"},{\"index\":\"1204\",\"value\":\"1204\"}]");
+            questao.Resposta.FirstOrDefault().Texto.ShouldBe("[{\"index\":\"1663\",\"value\":\"1663\"},{\"index\":\"1664\",\"value\":\"1664\"}]");
 
             questao = retorno.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PROGRAMA_SAO_PAULO_INTEGRAL));
             questao.Resposta.FirstOrDefault().OpcaoRespostaId.ShouldBe(questao.OpcaoResposta.FirstOrDefault(op => op.Nome == "Não").Id);
