@@ -9,21 +9,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterInformacoesTurmasProgramaAlunoMapeamentoEstudanteQueryHandler : IRequestHandler<ObterInformacoesTurmasProgramaAlunoMapeamentoEstudanteQuery, InformacoesTurmasProgramaAlunoMapeamentoEstudanteAlunoDto>
     {
         private readonly IHttpClientFactory httpClientFactory;
-        private const long RECUPERACAO_PARALELA_AUTORAL_PORTUGUES = 1663;
-        private const long RECUPERACAO_PARALELA_AUTORAL_MATEMATICA = 1664;
-        private const long RECUPERACAO_PARALELA_AUTORAL_CIENCIAS_NATURAIS = 1665;
-        private const long RECUPERACAO_PARALELA_AUTORAL_CIENCIAS_HUMANAS = 1666;
-        private const long RECUPERACAO_PARALELA_AUTORAL_GEOGRAFIA = 1764;
-        private const long RECUPERACAO_PARALELA_AUTORAL_HISTORIA = 1765;
-
-        private const long PAP_RECUPERACAO_DE_APRENDIZAGENS = 1322;
-        private const long PAP_PROJETO_COLABORATIVO = 1770;
 
         private const long SRM = 1030;
         private const long PAEE_COLABORATIVO = 1310;
@@ -49,17 +41,18 @@ namespace SME.SGP.Aplicacao
                 var json = await resposta.Content.ReadAsStringAsync();
                 var componentesTurmasAluno = JsonConvert.DeserializeObject<IEnumerable<ComponenteTurmaAlunoDto>>(json);
                 //PAP
-                retorno.ComponentesPAP.AddRange(componentesTurmasAluno.Where(cc => new List<long> { RECUPERACAO_PARALELA_AUTORAL_PORTUGUES,
-                                                                                                    RECUPERACAO_PARALELA_AUTORAL_MATEMATICA,
-                                                                                                    RECUPERACAO_PARALELA_AUTORAL_CIENCIAS_NATURAIS,
-                                                                                                    RECUPERACAO_PARALELA_AUTORAL_CIENCIAS_HUMANAS,
-                                                                                                    RECUPERACAO_PARALELA_AUTORAL_GEOGRAFIA,
-                                                                                                    RECUPERACAO_PARALELA_AUTORAL_HISTORIA}
+                retorno.ComponentesPAP.AddRange(componentesTurmasAluno.Where(cc => new List<long> { ComponentesCurricularesConstants.CODIGO_RECUPERACAO_PARALELA_MATEMATICA,
+                                                                                                    ComponentesCurricularesConstants.CODIGO_RECUPERACAO_PARALELA_CIENCIAS,
+                                                                                                    ComponentesCurricularesConstants.CODIGO_RECUPERACAO_PARALELA_GEOGRAFIA,
+                                                                                                    ComponentesCurricularesConstants.CODIGO_RECUPERACAO_PARALELA_HISTORIA,
+                                                                                                    ComponentesCurricularesConstants.CODIGO_RECUPERACAO_PARALELA_PORTUGUES,
+                                                                                                    ComponentesCurricularesConstants.CODIGO_PAP_2_ANO_ALFABETIZACAO,
+                                                                                                    ComponentesCurricularesConstants.CODIGO_PAP_2_ANO_COLABORATIVO_ALFABETIZACAO  }
                                                                                     .Contains(cc.codigoComponenteCurricular))
                                                                       .Select(cc => new ComponenteCurricularSimplificadoDto() { Id = cc.codigoComponenteCurricular, 
                                                                                                                                 Descricao =  cc.nomeComponenteCurricular})
                                                                       .DistinctBy(cc => cc.Id));
-                retorno.ComponentesPAP.AddRange(componentesTurmasAluno.Where(cc => new List<long> { PAP_RECUPERACAO_DE_APRENDIZAGENS }
+                retorno.ComponentesPAP.AddRange(componentesTurmasAluno.Where(cc => new List<long> { ComponentesCurricularesConstants.CODIGO_PAP_RECUPERACAO_APRENDIZAGENS }
                                                                                     .Contains(cc.codigoComponenteCurricular))
                                                                       .Select(cc => new ComponenteCurricularSimplificadoDto()
                                                                       {
@@ -67,7 +60,7 @@ namespace SME.SGP.Aplicacao
                                                                           Descricao = "Contraturno"
                                                                       })
                                                                       .DistinctBy(cc => cc.Id));
-                retorno.ComponentesPAP.AddRange(componentesTurmasAluno.Where(cc => new List<long> { PAP_PROJETO_COLABORATIVO }
+                retorno.ComponentesPAP.AddRange(componentesTurmasAluno.Where(cc => new List<long> { ComponentesCurricularesConstants.CODIGO_PAP_PROJETO_COLABORATIVO }
                                                                                     .Contains(cc.codigoComponenteCurricular))
                                                                       .Select(cc => new ComponenteCurricularSimplificadoDto()
                                                                       {
@@ -87,11 +80,13 @@ namespace SME.SGP.Aplicacao
                                                                       .DistinctBy(cc => cc.Id));
 
                 //Fortalecimento de Aprendizagens 
-                retorno.ComponentesFortalecimentoAprendizagens.AddRange(componentesTurmasAluno.Where(cc => new List<long> { ACOMPANHAMENTO_PEDAGOGICO_MATEMATICA,
-                                                                                                                            ACOMPANHAMENTO_PEDAGOGICO_PORTUGUES,
-                                                                                                                            ACOMPANHAMENTO_LEITURA,
-                                                                                                                            REFORCO_ACOMPANHAMENTO_ALFABETIZACAO,
-                                                                                                                            REFORCO_ACOMPANHAMENTO_CIENCIAS }
+                retorno.ComponentesFortalecimentoAprendizagens.AddRange(componentesTurmasAluno.Where(cc => new List<long> { ComponentesCurricularesConstants.CODIGO_RECUPERACAO_PARALELA_AUTORAL_PORTUGUES,
+                                                                                                    ComponentesCurricularesConstants.CODIGO_RECUPERACAO_PARALELA_AUTORAL_MATEMATICA,
+                                                                                                    ComponentesCurricularesConstants.CODIGO_RECUPERACAO_PARALELA_AUTORAL_CIENCIAS_NATURAIS,
+                                                                                                    ComponentesCurricularesConstants.CODIGO_RECUPERACAO_PARALELA_AUTORAL_CIENCIAS_HUMANAS,
+                                                                                                    ComponentesCurricularesConstants.CODIGO_RECUPERACAO_PARALELA_AUTORAL_GEOGRAFIA,
+                                                                                                    ComponentesCurricularesConstants.CODIGO_RECUPERACAO_PARALELA_AUTORAL_HISTORIA
+                                                                                                     }
                                                                                     .Contains(cc.codigoComponenteCurricular))
                                                                       .Select(cc => new ComponenteCurricularSimplificadoDto()
                                                                       {
