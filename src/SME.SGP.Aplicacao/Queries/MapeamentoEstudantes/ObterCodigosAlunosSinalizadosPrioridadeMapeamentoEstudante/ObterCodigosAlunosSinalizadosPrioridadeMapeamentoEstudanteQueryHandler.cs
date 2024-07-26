@@ -11,6 +11,7 @@ using SME.SGP.Infra.Dtos.Sondagem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Intrinsics.X86;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,7 +23,7 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private readonly IRepositorioMapeamentoEstudante repositorioMapeamento;
 
-        private const string HIPOTESE_ESCRITA_ALFABETICO = "A";
+        private readonly string[] HIPOTESES_ESCRITA_NAO_ALFABETICAS = new string[] { "PS", "SSV", "SCV", "SA" };
         private const string RESULTADO_ABAIXO_BASICO_PROVA_SP = "Abaixo do básico";
 
         public ObterCodigosAlunosSinalizadosPrioridadeMapeamentoEstudanteQueryHandler(IRepositorioPlanoAEE repositorioPlanoAEE, 
@@ -56,8 +57,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var sondagem = await mediator.Send(new ObterSondagemLPAlunoQuery(turma.CodigoTurma, aluno.CodigoAluno));
                     var avaliacoesExternasProvaSP = await mediator.Send(new ObterAvaliacoesExternasProvaSPAlunoQuery(aluno.CodigoAluno, turma.AnoLetivo-1));
-                    if (sondagem.ObterHipoteseEscrita(request.Bimestre) != HIPOTESE_ESCRITA_ALFABETICO 
-                         && !string.IsNullOrEmpty(sondagem.ObterHipoteseEscrita(request.Bimestre)))
+                    if (HIPOTESES_ESCRITA_NAO_ALFABETICAS.Contains(sondagem.ObterHipoteseEscrita(request.Bimestre)))
                         alunosSondagemInsuficiente.Add(aluno.CodigoAluno);
                     if (avaliacoesExternasProvaSP.Any(psp => psp.Nivel.ToUpper() == RESULTADO_ABAIXO_BASICO_PROVA_SP.ToUpper()))
                         alunosProvaSPInsuficiente.Add(aluno.CodigoAluno);
