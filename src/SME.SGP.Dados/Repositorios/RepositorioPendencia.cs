@@ -40,29 +40,38 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task AtualizarPendencias(long fechamentoId, SituacaoPendencia situacaoPendencia, TipoPendencia tipoPendencia)
         {
-            const string query = @"update pendencia p
-                                    set situacao = @situacaoPendencia
-                                    from pendencia_fechamento f
-                                    where f.pendencia_id = p.id
-                                    and p.tipo = @tipoPendencia
-                                    and f.fechamento_turma_disciplina_id = @fechamentoId
-                                    and not p.excluido ";
+            string query = "select fechamento_turma_id, disciplina_id from fechamento_turma_disciplina where id = @fechamentoId";
+            (long fechamentoTurmaId, long disciplinaId) = await database.Conexao.QueryFirstOrDefaultAsync<(long fechamentoTurmaId, long disciplinaId)>(query, new { fechamentoId });
+            query = @"update pendencia p
+                                     set situacao = @situacaoPendencia
+                                   from pendencia_fechamento f
+                                   inner join fechamento_turma_disciplina ftd on ftd.id = f.fechamento_turma_disciplina_id                                    
+                                     where f.pendencia_id = p.id
+                                     and p.tipo = @tipoPendencia
+                                     and ftd.fechamento_turma_id = @fechamentoTurmaId
+                                     and ftd.disciplina_id = @disciplinaId
+                                     and not p.excluido  ";
 
-            await database.Conexao.ExecuteAsync(query, new { fechamentoId, situacaoPendencia, tipoPendencia });
+            await database.Conexao.ExecuteAsync(query, new { fechamentoTurmaId, disciplinaId, situacaoPendencia, tipoPendencia });
         }
 
         public async Task ExcluirPendenciasFechamento(long fechamentoId, TipoPendencia tipoPendencia)
         {
-            const string query = @"update pendencia p
-                                    set excluido = true
-                                    from pendencia_fechamento f
-                                    where not p.excluido
-                                    and p.situacao = 1
-                                    and p.id = f.pendencia_id
-                                    and p.tipo = @tipoPendencia
-                                    and f.fechamento_turma_disciplina_id = @fechamentoId";
+            string query = "select fechamento_turma_id, disciplina_id from fechamento_turma_disciplina where id = @fechamentoId";
+            (long fechamentoTurmaId, long disciplinaId) = await database.Conexao.QueryFirstOrDefaultAsync<(long fechamentoTurmaId, long disciplinaId)>(query, new { fechamentoId });
 
-            await database.Conexao.ExecuteAsync(query, new { fechamentoId, tipoPendencia });
+            query = @"update pendencia p
+                        set excluido = true
+                      from pendencia_fechamento f
+                      inner join fechamento_turma_disciplina ftd on ftd.id = f.fechamento_turma_disciplina_id                                    
+                        where not p.excluido
+                          and p.situacao = 1
+                          and p.id = f.pendencia_id
+                          and p.tipo = @tipoPendencia
+                          and ftd.fechamento_turma_id = @fechamentoTurmaId
+                          and ftd.disciplina_id = @disciplinaId";
+
+            await database.Conexao.ExecuteAsync(query, new { fechamentoTurmaId, disciplinaId, tipoPendencia });
         }
 
         public async Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuarioSemFiltro(long usuarioId, Paginacao paginacao)

@@ -39,7 +39,8 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("                a.data_aula DataAula,");
             sqlQuery.AppendLine("                a.aula_cj AulaCJ,");
             sqlQuery.AppendLine("                t.id Id,");
-            sqlQuery.AppendLine("                t.modalidade_codigo ModalidadeCodigo");
+            sqlQuery.AppendLine("                t.modalidade_codigo ModalidadeCodigo,");
+            sqlQuery.AppendLine("                t.tipo_turno");
             sqlQuery.AppendLine("      from aula a");
             sqlQuery.AppendLine("          inner join tipo_calendario tc");
             sqlQuery.AppendLine("              on a.tipo_calendario_id = tc.id");

@@ -426,7 +426,7 @@ namespace SME.SGP.Dados.Repositorios
                 totalAtendimentoQuestao.Descricao = questao?.Nome;
                 totalAtendimentoQuestao.TotalAtendimentoQuestaoPorRespostas = new List<TotalDeAtendimentoQuestaoPorRespostaDto>();
 
-                foreach(var questaoValor in componenteValor)
+                foreach(var questaoValor in componenteValor.Where(x => x.Valor.HasValue).ToList())
                 {
                     var totalQuestaoResposta = new TotalDeAtendimentoQuestaoPorRespostaDto();
                     var resposta = questao?.OpcoesRespostas.FirstOrDefault(or => or.Ordem == questaoValor.Valor);

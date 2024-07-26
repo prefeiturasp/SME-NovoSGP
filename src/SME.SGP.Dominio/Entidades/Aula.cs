@@ -171,17 +171,12 @@ namespace SME.SGP.Dominio
             if (turma.EhNulo())
                 throw new NegocioException("A turma deve ser informada.");
 
-            return !(EhAulaCompartilhada || (EhTecnologiaAprendizagem && turma.ModalidadeCodigo == Modalidade.EJA) 
-                || (EhTecAprendizagemELeitura && turma.ModalidadeCodigo == Modalidade.Medio && turma.TipoTurno == (int)TipoTurnoEOL.Noite));
+            return !(EhAulaCompartilhada 
+                     || (EhTecnologiaAprendizagem && turma.EhEJA()) 
+                     || (EhTecAprendizagemELeitura && turma.EhMedioNoturno()));
         }
 
-        public bool PermiteRegistroFrequencia()
-        {
-            if (Turma.EhNulo())
-                throw new NegocioException("A turma não foi preenchida.");
-
-            return !(EhAulaCompartilhada || (EhTecnologiaAprendizagem && Turma.ModalidadeCodigo == Modalidade.EJA));
-        }
+        public bool PermiteRegistroFrequencia() => PermiteRegistroFrequencia(Turma);
 
         public void PodeSerAlterada(Usuario usuario)
         {

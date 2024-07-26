@@ -65,6 +65,9 @@ namespace SME.SGP.Dominio
         public bool EhEJA()
             => ModalidadeCodigo == Modalidade.EJA;
 
+        public bool EhMedioNoturno()
+            => ModalidadeCodigo == Modalidade.Medio && TipoTurno == (int)TipoTurnoEOL.Noite;
+
         public bool EhCELP()
             => ModalidadeCodigo == Modalidade.CELP;
 
