@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(AtribuirResponsavelPlanoAEECommand request, CancellationToken cancellationToken)
         {
-            request.PlanoAEE.Situacao = Dominio.Enumerados.SituacaoPlanoAEE.ParecerPAAI;
+            request.PlanoAEE.Situacao = request.PlanoAEE.ObterSituacaoAoAtribuirResponsavelPAAI();
             request.PlanoAEE.ResponsavelPaaiId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(request.ResponsavelRF));
 
             return await SalvarGerarPendenciaPaai(request, request.PlanoAEE);
@@ -54,6 +54,9 @@ namespace SME.SGP.Aplicacao
 
         private async Task VerificaGeracaoPendenciaPAAI(PlanoAEE planoAEE, Turma turma)
         {
+            if (planoAEE.EhSituacaoExpiradoValidado())
+                return;
+
             await ExcluirPendenciaCEFAI(planoAEE);
 
             if (!await ParametroGeracaoPendenciaAtivo() || await AtribuidoAoMesmoUsuario(planoAEE))
