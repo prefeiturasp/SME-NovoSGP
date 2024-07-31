@@ -29,5 +29,19 @@ namespace SME.SGP.Dominio
             => Situacao == SituacaoPlanoAEE.ParecerCP
             || Situacao == SituacaoPlanoAEE.ParecerPAAI
             || Situacao == SituacaoPlanoAEE.AtribuicaoPAAI;
+
+        public bool EhSituacaoExpiradoValidado()
+            => Situacao.EhUmDosValores(SituacaoPlanoAEE.Expirado, 
+                                        SituacaoPlanoAEE.Validado);
+
+        public SituacaoPlanoAEE ObterSituacaoAoRemoverResponsavelPAAI()
+            => EhSituacaoExpiradoValidado()
+                ? Situacao
+                : SituacaoPlanoAEE.AtribuicaoPAAI;
+
+        public SituacaoPlanoAEE ObterSituacaoAoAtribuirResponsavelPAAI()
+            => EhSituacaoExpiradoValidado()
+                ? Situacao
+                : SituacaoPlanoAEE.ParecerPAAI;
     }
 }
