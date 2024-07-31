@@ -52,8 +52,8 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task<bool> PodeAtribuirResponsavel(PlanoAEE planoAEE, Usuario usuario, Turma turma)
-            => (planoAEE.Situacao == SituacaoPlanoAEE.AtribuicaoPAAI || planoAEE.Situacao == SituacaoPlanoAEE.ParecerPAAI)
-            && await EhCoordenadorCEFAI(usuario, turma);
+            => planoAEE.Situacao.EhUmDosValores(SituacaoPlanoAEE.AtribuicaoPAAI, SituacaoPlanoAEE.ParecerPAAI, SituacaoPlanoAEE.Validado, SituacaoPlanoAEE.Expirado)
+               && await EhCoordenadorCEFAI(usuario, turma);
 
         private async Task<bool> EhCoordenadorCEFAI(Usuario usuarioLogado, Turma turma)
         {
@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private bool PodeEditarParecerPAAI(PlanoAEE planoAEE, Usuario usuario)
-            => planoAEE.Situacao == SituacaoPlanoAEE.ParecerPAAI
+            => planoAEE.Situacao.EhUmDosValores(SituacaoPlanoAEE.ParecerPAAI, SituacaoPlanoAEE.Validado, SituacaoPlanoAEE.Expirado)
             && (planoAEE.ResponsavelPaaiId.GetValueOrDefault() == usuario.Id);
 
         private async Task<bool> PodeEditarParecerCP(PlanoAEE planoAEE, Usuario usuario, Turma turma)

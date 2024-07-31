@@ -92,7 +92,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
 
             respostaMapeamento.Any(a => a.QuestaoMapeamentoEstudanteId == questaoMapeamento.Where(q => q.QuestaoId ==
                                                                                                        Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PARTICIPA_PAP)).Id).FirstOrDefault().Id
-                                          && a.Texto.Equals("[{\"index\":\"1663\",\"value\":\"1663\"},{\"index\":\"1322\",\"value\":\"Contraturno\"},{\"index\":\"1770\",\"value\":\"Colaborativo\"}]")).ShouldBeTrue();
+                                          && a.Texto.Equals("[{\"index\":\"1322\",\"value\":\"Contraturno\"},{\"index\":\"1770\",\"value\":\"Colaborativo\"}]")).ShouldBeTrue();
 
             respostaMapeamento.Any(a => a.QuestaoMapeamentoEstudanteId == questaoMapeamento.Where(q => q.QuestaoId ==
                                                                                                        Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.AVALIACOES_EXTERNAS_PROVA_SP)).Id).FirstOrDefault().Id

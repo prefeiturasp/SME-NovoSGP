@@ -68,7 +68,43 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             pendencias.Count(x => x.Situacao == SituacaoPendencia.Pendente && x.Excluido).ShouldBeEquivalentTo(1);
             
         }
-        
+
+        [Fact(DisplayName = "Plano AEE - Com o Coordenador do CEFAI realizar atribuição do PAAI quando expirado/validado.")]
+        public async Task Realizar_atribuicao_paai_com_usuario_cefai_expirado_validado()
+        {
+            await CriarDadosBasicos(new FiltroPlanoAee()
+            {
+                Modalidade = Modalidade.Fundamental,
+                Perfil = ObterPerfilCoordenadorCefai(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+            });
+
+            var idPlano1 = await CriarPlanoAeePorSituacao(SituacaoPlanoAEE.Expirado);
+            var idPlano2 = await CriarPlanoAeePorSituacao(SituacaoPlanoAEE.Validado);
+            const int qdadePendenciasOriginadasInclusao = 2;
+
+            var servicoAtribuicaoResponsavel = ObterServicoAtribuirResponsavelPlanoAEEUseCase();
+            var retornoAtribuicaoUsuarioPaai = await servicoAtribuicaoResponsavel.Executar(idPlano1, USUARIO_LOGIN_PAAI);
+            retornoAtribuicaoUsuarioPaai.ShouldBeTrue();
+            retornoAtribuicaoUsuarioPaai = await servicoAtribuicaoResponsavel.Executar(idPlano2, USUARIO_LOGIN_PAAI);
+            retornoAtribuicaoUsuarioPaai.ShouldBeTrue();
+
+            var retornoObterPlanoAlterado = ObterTodos<Dominio.PlanoAEE>();
+            var usuarios = ObterTodos<Usuario>();
+            retornoObterPlanoAlterado.ShouldNotBeNull();
+
+            var paaiAtribuido = usuarios.FirstOrDefault(x => x.CodigoRf == USUARIO_LOGIN_PAAI);
+            retornoObterPlanoAlterado.FirstOrDefault()!.ResponsavelPaaiId.ShouldBeEquivalentTo(paaiAtribuido!.Id);
+            retornoObterPlanoAlterado.FirstOrDefault()!.Situacao.Equals(SituacaoPlanoAEE.Expirado).ShouldBeTrue();
+            retornoObterPlanoAlterado.LastOrDefault()!.ResponsavelPaaiId.ShouldBeEquivalentTo(paaiAtribuido!.Id);
+            retornoObterPlanoAlterado.LastOrDefault()!.Situacao.Equals(SituacaoPlanoAEE.Validado).ShouldBeTrue();
+
+            var pendencias = ObterTodos<Pendencia>();
+            pendencias.ShouldNotBeNull();
+            pendencias.Count().ShouldBeEquivalentTo(qdadePendenciasOriginadasInclusao);
+
+        }
+
         [Fact(DisplayName = "Plano AEE - Alterar o PAAI atribuído - A pendência deverá ser transferida para o novo PAAI")]
         public async Task Alterar_o_paai_atribuído()
         {
