@@ -135,7 +135,15 @@ namespace SME.SGP.Dados.Repositorios
                                         inner join pendencia_usuario pu2 on p.id = pu2.pendencia_id and pu2.usuario_id = :usuarioId
                                     where not p.excluido
                                     and aee.responsavel_id = @usuarioId
-                                    and p.situacao = @situacao) t 
+                                    and p.situacao = @situacao
+                                    union all
+                                    select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
+                                    from pendencia p 
+                                        inner join pendencia_usuario pu on pu.pendencia_id = p.id
+                                        inner join pendencia_plano_aee ppaee on p.id = ppaee.pendencia_id
+                                    where not p.excluido 
+                                    and pu.usuario_id = @usuarioId
+                                    and situacao = @situacao) t 
                                     order by CriadoEm desc";
 
             if (paginacao.EhNulo() || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
