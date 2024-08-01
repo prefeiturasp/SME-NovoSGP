@@ -46,9 +46,30 @@ namespace SME.SGP.Aplicacao.Queries
                 notasParaVerificar.AddRange(todasAsNotas.Where(a => a.Bimestre == bimestre));
             }
 
-            var matriculasDoAluno = await mediator.Send(new ObterMatriculasTurmaPorCodigoAlunoQuery(request.AlunoCodigo, dataAula: request.PeriodoEscolar?.PeriodoFim, request.Turma.AnoLetivo));
-            turmasCodigos = DefinirTurmasConsideradasDeAcordoComMatricula(matriculasDoAluno, request.PeriodoEscolar, turmasCodigos);
+            var tipoCalendario = await mediator.Send(new ObterTipoCalendarioPorAnoLetivoEModalidadeQuery(request.Turma.AnoLetivo, request.Turma.ModalidadeTipoCalendario, request.Turma.Semestre));
+            if (tipoCalendario.EhNulo())
+                throw new NegocioException(MensagemNegocioTipoCalendario.TIPO_CALENDARIO_NAO_ENCONTRADO);
+            var periodosLetivos = (await mediator
+                .Send(new ObterPeriodosEscolaresPorTipoCalendarioQuery(tipoCalendario.Id))).ToList();
+                        
 
+            if (periodosLetivos.EhNulo() || !periodosLetivos.Any())
+                throw new NegocioException(MensagemNegocioPeriodo.NAO_FORAM_ENCONTRADOS_PERIODOS_TIPO_CALENDARIO);
+
+            var periodoInicio = request.PeriodoEscolar?.PeriodoInicio ?? periodosLetivos.OrderBy(pl => pl.Bimestre).First().PeriodoInicio;
+            var periodoFim = request.PeriodoEscolar?.PeriodoFim ?? periodosLetivos.OrderBy(pl => pl.Bimestre).Last().PeriodoFim;
+            var bimestrePeriodo = request.PeriodoEscolar?.Bimestre ?? (int)Dominio.Bimestre.Final;
+
+            var turmasComMatriculasValidas = await mediator.Send(new ObterTurmasComMatriculasValidasPeriodoQuery(request.AlunoCodigo,
+                                                                                                                    request.Turma.EhTurmaInfantil,
+                                                                                                                    bimestrePeriodo,
+                                                                                                                    tipoCalendario.Id,
+                                                                                                                    turmasCodigos.ToArray(),
+                                                                                                                    periodoInicio,
+                                                                                                                    periodoFim));
+            if (turmasComMatriculasValidas.Any())
+                turmasCodigos = turmasComMatriculasValidas.ToArray();
+            
             var componentesCurriculares = await ObterComponentesTurmas(turmasCodigos, request.Turma.EnsinoEspecial, request.Turma.TurnoParaComponentesCurriculares);
             var disciplinasDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(componentesCurriculares.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray(), codigoTurma: request.Turma.CodigoTurma), cancellationToken);
 
@@ -93,36 +114,6 @@ namespace SME.SGP.Aplicacao.Queries
                         turmasCodigos = new string[] { request.Turma.CodigoTurma };
                 }
             };
-            return turmasCodigos;
-        }
-
-        private static string[] DefinirTurmasConsideradasDeAcordoComMatricula(IEnumerable<AlunoPorTurmaResposta> matriculasDoAluno, Dominio.PeriodoEscolar periodoEscolar, string[] turmasCodigos)
-        {
-            if (periodoEscolar.NaoEhNulo())
-            {
-                var turmasConsideradas = (from m in matriculasDoAluno
-                                          where ((m.Ativo && m.DataMatricula.Date < periodoEscolar.PeriodoFim) ||
-                                                 (m.Inativo && m.DataMatricula.Date < periodoEscolar.PeriodoFim && m.DataSituacao.Date >= periodoEscolar.PeriodoInicio)) &&
-                                                  m.CodigoSituacaoMatricula != SituacaoMatriculaAluno.VinculoIndevido
-                                                  && turmasCodigos.Contains(m.CodigoTurma.ToString())
-                                          select m.CodigoTurma.ToString()).Distinct();
-                if (turmasConsideradas.Any())
-                    return turmasConsideradas.ToArray();
-            }
-            else
-            {
-                var matriculasAtivas = matriculasDoAluno
-                    .Where(x => x.Ativo && turmasCodigos.Contains(x.CodigoTurma.ToString()));
-
-                if (!matriculasAtivas.Any())
-                    return turmasCodigos;
-
-                turmasCodigos = matriculasAtivas
-                    .OrderByDescending(x => x.DataSituacao)?
-                        .GroupBy(x => x.CodigoTurma)
-                            .Select(x => x.First().CodigoTurma.ToString()).ToArray();
-            }
-
             return turmasCodigos;
         }
 
