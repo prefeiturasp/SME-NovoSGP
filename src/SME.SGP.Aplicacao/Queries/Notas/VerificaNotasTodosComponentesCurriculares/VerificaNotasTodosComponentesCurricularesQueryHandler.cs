@@ -46,8 +46,31 @@ namespace SME.SGP.Aplicacao.Queries
                 notasParaVerificar.AddRange(todasAsNotas.Where(a => a.Bimestre == bimestre));
             }
 
-            var matriculasDoAluno = await mediator.Send(new ObterMatriculasTurmaPorCodigoAlunoQuery(request.AlunoCodigo, dataAula: request.PeriodoEscolar?.PeriodoFim, request.Turma.AnoLetivo));
-            turmasCodigos = DefinirTurmasConsideradasDeAcordoComMatricula(matriculasDoAluno, request.PeriodoEscolar, turmasCodigos);
+            var tipoCalendario = await mediator.Send(new ObterTipoCalendarioPorAnoLetivoEModalidadeQuery(request.Turma.AnoLetivo, request.Turma.ModalidadeTipoCalendario, request.Turma.Semestre));
+            if (tipoCalendario.EhNulo())
+                throw new NegocioException(MensagemNegocioTipoCalendario.TIPO_CALENDARIO_NAO_ENCONTRADO);
+            var periodosLetivos = (await mediator
+                .Send(new ObterPeriodosEscolaresPorTipoCalendarioQuery(tipoCalendario.Id))).ToList();
+                        
+
+            if (periodosLetivos.EhNulo() || !periodosLetivos.Any())
+                throw new NegocioException(MensagemNegocioPeriodo.NAO_FORAM_ENCONTRADOS_PERIODOS_TIPO_CALENDARIO);
+
+            var periodoInicio = request.PeriodoEscolar?.PeriodoInicio ?? periodosLetivos.OrderBy(pl => pl.Bimestre).First().PeriodoInicio;
+            var periodoFim = request.PeriodoEscolar?.PeriodoFim ?? periodosLetivos.OrderBy(pl => pl.Bimestre).Last().PeriodoFim;
+            var bimestrePeriodo = request.PeriodoEscolar?.Bimestre ?? (int)Dominio.Bimestre.Final;
+
+            var turmasComMatriculasValidas = await mediator.Send(new ObterTurmasComMatriculasValidasPeriodoQuery(request.AlunoCodigo,
+                                                                                                                    request.Turma.EhTurmaInfantil,
+                                                                                                                    bimestrePeriodo,
+                                                                                                                    tipoCalendario.Id,
+                                                                                                                    turmasCodigos.ToArray(),
+                                                                                                                    periodoInicio,
+                                                                                                                    periodoFim));
+            if (turmasComMatriculasValidas.Any())
+                turmasCodigos = turmasComMatriculasValidas.ToArray();
+            //var matriculasDoAluno = await mediator.Send(new ObterMatriculasTurmaPorCodigoAlunoQuery(request.AlunoCodigo, dataAula: request.PeriodoEscolar?.PeriodoFim, request.Turma.AnoLetivo));
+            //turmasCodigos = await DefinirTurmasConsideradasDeAcordoComMatricula(matriculasDoAluno, request.PeriodoEscolar, turmasCodigos);
 
             var componentesCurriculares = await ObterComponentesTurmas(turmasCodigos, request.Turma.EnsinoEspecial, request.Turma.TurnoParaComponentesCurriculares);
             var disciplinasDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(componentesCurriculares.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray(), codigoTurma: request.Turma.CodigoTurma), cancellationToken);
@@ -96,18 +119,26 @@ namespace SME.SGP.Aplicacao.Queries
             return turmasCodigos;
         }
 
-        private static string[] DefinirTurmasConsideradasDeAcordoComMatricula(IEnumerable<AlunoPorTurmaResposta> matriculasDoAluno, Dominio.PeriodoEscolar periodoEscolar, string[] turmasCodigos)
+        private async Task<string[]> DefinirTurmasConsideradasDeAcordoComMatricula(IEnumerable<AlunoPorTurmaResposta> matriculasDoAluno, Dominio.PeriodoEscolar periodoEscolar, string[] turmasCodigos)
         {
             if (periodoEscolar.NaoEhNulo())
             {
-                var turmasConsideradas = (from m in matriculasDoAluno
-                                          where ((m.Ativo && m.DataMatricula.Date < periodoEscolar.PeriodoFim) ||
-                                                 (m.Inativo && m.DataMatricula.Date < periodoEscolar.PeriodoFim && m.DataSituacao.Date >= periodoEscolar.PeriodoInicio)) &&
-                                                  m.CodigoSituacaoMatricula != SituacaoMatriculaAluno.VinculoIndevido
-                                                  && turmasCodigos.Contains(m.CodigoTurma.ToString())
-                                          select m.CodigoTurma.ToString()).Distinct();
-                if (turmasConsideradas.Any())
-                    return turmasConsideradas.ToArray();
+                var turmasCodigosComMatriculasValidas = new List<string>();
+                foreach (string codTurma in turmasCodigos)
+                {
+                    Func<Task<Turma>> fncInstanciarTurma = async () => await mediator.Send(new ObterTurmaPorCodigoQuery(codTurma));
+                    var turmasConsideradas = (from m in matriculasDoAluno
+                                              where ((m.Ativo && m.DataMatricula.Date < periodoEscolar.PeriodoFim) ||
+                                                     (m.Inativo && m.DataMatricula.Date < periodoEscolar.PeriodoFim && m.DataSituacao.Date >= periodoEscolar.PeriodoInicio)) &&
+                                                      m.CodigoSituacaoMatricula != SituacaoMatriculaAluno.VinculoIndevido
+                                                      && !(m.PossuiSituacaoDispensadoTurmaEdFisica(fncInstanciarTurma)
+                                                      && m.CodigoTurma.ToString() == codTurma)
+                                              select m.CodigoTurma.ToString()).Distinct();
+                    if (turmasConsideradas.Any())
+                        turmasCodigosComMatriculasValidas.Add(codTurma);
+                }
+                if (turmasCodigosComMatriculasValidas.Any())
+                    return turmasCodigosComMatriculasValidas.ToArray();
             }
             else
             {
