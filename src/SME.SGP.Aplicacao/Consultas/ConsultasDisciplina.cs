@@ -215,10 +215,8 @@ namespace SME.SGP.Aplicacao
                         ComponenteCurricularEol componenteEOL,
                         IEnumerable<ComponenteCurricularJurema> componentesCurricularesJurema)
         {
-            const long PAP_RECUPERACAO_APRENDIZAGENS = 1322;
-            const long PAP_PROJETO_COLABORATIVO = 1770;
-
-            var componentesPAPs = new long[] { PAP_RECUPERACAO_APRENDIZAGENS, PAP_PROJETO_COLABORATIVO };
+            
+            var componentesPAPs = ComponentesCurricularesConstants.IDS_COMPONENTES_CURRICULARES_PAP_NOVO.Select(i => (long)i).ToArray();
 
             return turma.AnoLetivo >= anoInicioSgp
                     && (turma.TipoTurma != TipoTurma.Programa || componentesPAPs.Contains(componenteEOL.Codigo))

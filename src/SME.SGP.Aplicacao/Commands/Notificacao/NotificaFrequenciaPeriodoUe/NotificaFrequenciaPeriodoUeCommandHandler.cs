@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
@@ -85,7 +86,7 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<ComponenteCurricularDto>> VerificaComponentesUe(Ue ue)
         {
             var componentesUe = await mediator.Send(new ObterComponentesCurricularesEOLPorTurmaECodigoUeQuery(null, ue.CodigoUe));
-            var componentesNotificacao = new[] { "1060", "1061", "1322" };
+            var componentesNotificacao = new[] { "1060", "1061", ComponentesCurricularesConstants.CODIGO_PAP_RECUPERACAO_APRENDIZAGENS.ToString() };
 
             return componentesUe.Where(a => componentesNotificacao.Contains(a.Codigo.ToString()));
         }
@@ -113,7 +114,7 @@ namespace SME.SGP.Aplicacao
                 Modalidade = Modalidade.Fundamental,
                 CodigoDre = ue.Dre.CodigoDre,
                 CodigoUe = ue.CodigoUe,
-                ComponentesCurriculares = new List<string>() { "1060", "1061", "1322" },
+                ComponentesCurriculares = new List<string>() { "1060", "1061", ComponentesCurricularesConstants.CODIGO_PAP_RECUPERACAO_APRENDIZAGENS.ToString() },
                 TipoRelatorio = TipoRelatorioFaltasFrequencia.Ano,
                 Condicao = CondicoesRelatorioFaltasFrequencia.TodosEstudantes,
                 TipoFormatoRelatorio = TipoFormatoRelatorio.Pdf,

@@ -66,7 +66,40 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             pendencias.Count(x => x.Situacao == SituacaoPendencia.Pendente && !x.Excluido).ShouldBeEquivalentTo(1);
             pendencias.Count(x => x.Situacao == SituacaoPendencia.Pendente && x.Excluido).ShouldBeEquivalentTo(1);
         }
-        
+
+        [Fact(DisplayName = "Plano AEE - Com o Coordenador do CEFAI remover atribuição do PAAI quando expirado/validado.")]
+        public async Task Remover_atribuicao_paai_com_usuario_cefai_situacao_expirado_validado()
+        {
+            await CriarDadosBasicos(new FiltroPlanoAee()
+            {
+                Modalidade = Modalidade.Fundamental,
+                Perfil = ObterPerfilCoordenadorCefai(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+            });
+
+            var idPlano1 = await CriarPlanoAeePorSituacao(SituacaoPlanoAEE.Expirado);
+            var idPlano2 = await CriarPlanoAeePorSituacao(SituacaoPlanoAEE.Validado);
+            const int qdadePendenciasOriginadasInclusao = 2;
+            
+
+            var servicoRemocaoAtribuicaoResponsavel = ObterServicoRemocaoAtribuirResponsavelPlanoAEEUseCase();
+            var retornoAtribuicaoUsuarioPaai = await servicoRemocaoAtribuicaoResponsavel.Executar(idPlano1);
+            retornoAtribuicaoUsuarioPaai.ShouldBeTrue();
+
+            retornoAtribuicaoUsuarioPaai = await servicoRemocaoAtribuicaoResponsavel.Executar(idPlano2);
+            retornoAtribuicaoUsuarioPaai.ShouldBeTrue();
+
+            var retornoObterPlanoAlterado = ObterTodos<Dominio.PlanoAEE>();
+            retornoObterPlanoAlterado.ShouldNotBeNull();
+            (retornoObterPlanoAlterado.FirstOrDefault().Situacao == SituacaoPlanoAEE.Expirado).ShouldBeTrue();
+            retornoObterPlanoAlterado.FirstOrDefault().ResponsavelPaaiId.ShouldBeNull();
+            (retornoObterPlanoAlterado.LastOrDefault().Situacao == SituacaoPlanoAEE.Validado).ShouldBeTrue();
+            retornoObterPlanoAlterado.LastOrDefault().ResponsavelPaaiId.ShouldBeNull();
+
+            var pendencias = ObterTodos<Pendencia>();
+            pendencias.Count().ShouldBeEquivalentTo(qdadePendenciasOriginadasInclusao);
+        }
+
         private async Task<long> CriarPlanoAeePorSituacao(SituacaoPlanoAEE situacaoPlanoAee)
         {
             var salvarPlanoAeeUseCase = ObterServicoSalvarPlanoAEEUseCase();

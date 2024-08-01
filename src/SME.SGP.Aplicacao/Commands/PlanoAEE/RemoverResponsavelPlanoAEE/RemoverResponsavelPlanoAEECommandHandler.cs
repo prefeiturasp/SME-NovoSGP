@@ -34,24 +34,16 @@ namespace SME.SGP.Aplicacao
             if (turma.EhNulo())
                 throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
-            planoAee.Situacao = Dominio.Enumerados.SituacaoPlanoAEE.AtribuicaoPAAI;
+            planoAee.Situacao = planoAee.ObterSituacaoAoRemoverResponsavelPAAI();
             
             planoAee.ResponsavelPaaiId = null;
-
-            var pendenciaPlanoAEE = await mediator.Send(new ObterUltimaPendenciaPlanoAEEQuery(planoAee.Id));
-            
+                        
             unitOfWork.IniciarTransacao();
             
             try
             {
                 await repositorioPlanoAee.SalvarAsync(planoAee);
-               
-                if (pendenciaPlanoAEE.NaoEhNulo())
-                   await mediator.Send(new ExcluirPendenciaPlanoAEECommand(planoAee.Id));
-                
-                if (await ParametroGeracaoPendenciaAtivo())
-                    await mediator.Send(new GerarPendenciaValidacaoPlanoAEECommand(planoAee.Id, PerfilUsuario.CEFAI));
-                
+                await VerificaGeracaoPendenciaCEFAI(planoAee);
                 unitOfWork.PersistirTransacao();
             }
             catch
@@ -62,7 +54,21 @@ namespace SME.SGP.Aplicacao
 
             return planoAee.Id != 0;
         }
-        
+
+        private async Task VerificaGeracaoPendenciaCEFAI(PlanoAEE planoAEE)
+        {
+            if (planoAEE.EhSituacaoExpiradoValidado())
+                return;
+
+            var pendenciaPlanoAEE = await mediator.Send(new ObterUltimaPendenciaPlanoAEEQuery(planoAEE.Id));
+            if (pendenciaPlanoAEE.NaoEhNulo())
+                await mediator.Send(new ExcluirPendenciaPlanoAEECommand(planoAEE.Id));
+
+            if (await ParametroGeracaoPendenciaAtivo())
+                await mediator.Send(new GerarPendenciaValidacaoPlanoAEECommand(planoAEE.Id, PerfilUsuario.CEFAI));
+        }
+
+
         private async Task<bool> ParametroGeracaoPendenciaAtivo()
         {
             var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.GerarPendenciasPlanoAEE, DateTime.Today.Year));

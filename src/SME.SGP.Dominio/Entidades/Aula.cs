@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Dominio.Constantes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -43,9 +44,7 @@ namespace SME.SGP.Dominio
             ComponentesDeAEEContraturno = new List<string> {
                 "1030",
             };
-            ComponentesDeAulaPAP = new List<string> {
-                "1322",
-            };
+            ComponentesDeAulaPAP = ComponentesCurricularesConstants.IDS_COMPONENTES_CURRICULARES_PAP_NOVO.Select(i => i.ToString()).ToList();
             ComponentesDeTecAprendizageELeitura = new List<string> {
                 "1359",
                 "1347",
