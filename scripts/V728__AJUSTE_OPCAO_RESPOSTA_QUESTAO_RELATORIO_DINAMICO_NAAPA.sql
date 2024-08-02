@@ -9,7 +9,7 @@ begin
 		
 	questaoId := (select q.id  
 							from questao q 
-							where q.questionario_id = 45 and q.nome_componente = 'GRUPO_ETNICO');
+							where q.questionario_id = questionarioId and q.nome_componente = 'GRUPO_ETNICO');
 						
 	opcaoRespostaId := (select or2.id from opcao_resposta or2 
 							where or2.questao_id = questaoId and ordem = 7);
