@@ -69,9 +69,8 @@ namespace SME.SGP.Aplicacao
             questao.Obrigatorio = turma.Ano != PRIMEIRO_ANO_ENSINO_FUNDAMENTAL;
 
             questao = questoes.FirstOrDefault(q => q.NomeComponente == NomesComponentesMapeamentoEstudante.HIPOTESE_ESCRITA);
-            if (!questao.Resposta.NaoNuloEContemRegistrosRespondidos())
-                if (ANOS_TURMA_SONDAGEM_INTERAUTORAL.Contains(turma.Ano))
-                    questao.SomenteLeitura = false;
+            if (ANOS_TURMA_SONDAGEM_INTERAUTORAL.Contains(turma.Ano))
+                questao.SomenteLeitura = false;
             
             return questoes;
         }
