@@ -71,7 +71,7 @@ namespace SME.SGP.Dominio
 
         public bool Excluido { get; set; }
         public bool Migrado { get; set; }
-        public bool PermiteSubstituicaoFrequencia => !(EhAEE || EhAEEContraturno || EhRecuperacaoParalela);
+        public bool PermiteSubstituicaoFrequencia => !(EhAEE || EhAEEContraturno);
 
         public string ProfessorRf { get; set; }
 
