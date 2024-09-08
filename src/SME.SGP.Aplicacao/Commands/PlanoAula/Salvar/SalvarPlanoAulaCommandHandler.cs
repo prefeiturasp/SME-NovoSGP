@@ -256,6 +256,9 @@ namespace SME.SGP.Aplicacao
         }
         private string TratativaReplaceTempParaArquivoPorRegex(string descricao)
         {
+            if (descricao == null)
+                return descricao; 
+
             string pattern = $@"\b{configuracaoArmazenamentoOptions.Value.BucketTemp}\b";
             return Regex.Replace(descricao, pattern, configuracaoArmazenamentoOptions.Value.BucketArquivos);
         }
