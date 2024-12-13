@@ -32,8 +32,7 @@ namespace SME.SGP.IoC
                 
                 if (configuration.GetSection("HttpClientTimeoutSecond").Value.NaoEhNulo())
                     c.Timeout = TimeSpan.FromSeconds(double.Parse(configuration.GetSection("HttpClientTimeoutSecond").Value));
-
-            }).AddPolicyHandler(GetRetryPolicy());
+            });
 
             services.AddHttpClient(name: ServicoSondagemConstants.Servico, c =>
             {
