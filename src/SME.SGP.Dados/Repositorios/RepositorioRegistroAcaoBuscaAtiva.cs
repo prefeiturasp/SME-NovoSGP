@@ -183,6 +183,7 @@ namespace SME.SGP.Dados.Repositorios
                                 ,raba.criado_em as DataCriacao
                                 ,qProcedRealizado.ProcedimentoRealizado
                                 ,qContatoEfetuadoComResponsavel.ContatoRealizado as ConseguiuContatoResponsavel
+                                ,motivo_ausencia.descricao as DescMotivoAusencia
                 ");
             }
             sql.AppendLine(@" from registro_acao_busca_ativa raba 
@@ -191,7 +192,9 @@ namespace SME.SGP.Dados.Repositorios
                               inner join dre d on d.id = u.dre_id 
                               left join vw_resposta_data qdata on qdata.registro_acao_busca_ativa_id = raba.id
                               left join vw_resposta_procedimento_realizado qProcedRealizado on qProcedRealizado.registro_acao_busca_ativa_id = raba.id
-                              left join vw_resposta_conseguiu_contato_com_responsavel qContatoEfetuadoComResponsavel on qContatoEfetuadoComResponsavel.registro_acao_busca_ativa_id = raba.id");
+                              left join vw_resposta_conseguiu_contato_com_responsavel qContatoEfetuadoComResponsavel on qContatoEfetuadoComResponsavel.registro_acao_busca_ativa_id = raba.id
+                              left join anotacao_frequencia_aluno on raba.aluno_codigo = anotacao_frequencia_aluno.codigo_aluno
+							  left join motivo_ausencia on anotacao_frequencia_aluno.motivo_ausencia_id = motivo_ausencia.id ");
         }
 
         private void ObterFiltro(StringBuilder sql, string codigoAluno, long? turmaId)
