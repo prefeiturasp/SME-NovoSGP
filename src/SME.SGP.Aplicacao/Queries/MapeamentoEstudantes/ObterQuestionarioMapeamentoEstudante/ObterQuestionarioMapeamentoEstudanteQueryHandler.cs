@@ -20,7 +20,8 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioQuestaoMapeamentoEstudante repositorioQuestao;
         private readonly IRepositorioMapeamentoEstudante repositorioMapeamento;
         private const string PRIMEIRO_ANO_ENSINO_FUNDAMENTAL = "1";
-        
+        private readonly string[] ANOS_TURMA_SONDAGEM_INTERAUTORAL = new string[] { "4", "5", "6", "7", "8", "9" };
+
         public ObterQuestionarioMapeamentoEstudanteQueryHandler(IMediator mediator, 
                                                                 IRepositorioQuestaoMapeamentoEstudante repositorioQuestao,
                                                                 IRepositorioMapeamentoEstudante repositorioMapeamento)
@@ -66,6 +67,10 @@ namespace SME.SGP.Aplicacao
             if (!questao.Resposta.NaoNuloEContemRegistrosRespondidos())
                 questao.SomenteLeitura = false;
             questao.Obrigatorio = turma.Ano != PRIMEIRO_ANO_ENSINO_FUNDAMENTAL;
+
+            questao = questoes.FirstOrDefault(q => q.NomeComponente == NomesComponentesMapeamentoEstudante.HIPOTESE_ESCRITA);
+            if (ANOS_TURMA_SONDAGEM_INTERAUTORAL.Contains(turma.Ano))
+                questao.SomenteLeitura = false;
             
             return questoes;
         }

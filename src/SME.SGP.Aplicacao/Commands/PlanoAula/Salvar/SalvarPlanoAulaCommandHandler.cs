@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra.Utilitarios;
+using System.Text.RegularExpressions;
 
 namespace SME.SGP.Aplicacao
 {
@@ -229,9 +230,9 @@ namespace SME.SGP.Aplicacao
                 planoAula = new PlanoAula();
 
             planoAula.AulaId = planoDto.AulaId;
-            planoAula.Descricao = planoDto.Descricao?.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
+            planoAula.Descricao = TratativaReplaceTempParaArquivoPorRegex(planoDto.Descricao);
             planoAula.RecuperacaoAula = planoDto.RecuperacaoAula?.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
-            planoAula.LicaoCasa = planoDto.LicaoCasa?.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
+            planoAula.LicaoCasa = TratativaReplaceTempParaArquivoPorRegex(planoDto.LicaoCasa);
 
             return planoAula;
         }
@@ -252,6 +253,14 @@ namespace SME.SGP.Aplicacao
         {
             if (!ehProfessorCj && !await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula))
                 throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
+        }
+        private string TratativaReplaceTempParaArquivoPorRegex(string descricao)
+        {
+            if (descricao == null)
+                return descricao; 
+
+            string pattern = $@"\b{configuracaoArmazenamentoOptions.Value.BucketTemp}\b";
+            return Regex.Replace(descricao, pattern, configuracaoArmazenamentoOptions.Value.BucketArquivos);
         }
     }
 }
