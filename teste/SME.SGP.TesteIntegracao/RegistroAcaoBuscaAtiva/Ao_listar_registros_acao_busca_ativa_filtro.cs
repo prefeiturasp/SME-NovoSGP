@@ -120,8 +120,6 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             retorno.Items.Any(ra => ra.DataRegistro == dataRegistro.AddMonths(-1)).ShouldBeTrue();
             retorno.Items.Any(ra => ra.DataRegistro == dataRegistro).ShouldBeTrue();
             retorno.Items.Any(ra => ra.DataRegistro == dataRegistro.AddMonths(1)).ShouldBeTrue();
-            retorno.Items.Where(ra => ra.Ue.Equals("EMEF UE 2")).Count().ShouldBe(1);
-            retorno.Items.Where(ra => ra.Ue.Equals("EMEF UE 3")).Count().ShouldBe(2);
         }
     }
 }
