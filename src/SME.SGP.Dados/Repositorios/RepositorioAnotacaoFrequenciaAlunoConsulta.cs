@@ -2,13 +2,13 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.AnotacaoFrequenciaAluno;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Schema;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -218,21 +218,19 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<AnotacaoAlunoAulaPorPeriodoDto>> ObterPorAlunoPorPeriodo(string codigoAluno, DateTime dataInicio, DateTime dataFim)
         {
-            var query = @" SELECT afa.codigo_aluno as CodigoAluno
+            var query = @"SELECT afa.codigo_aluno as CodigoAluno
                                , afa.aula_id as aulaId
                                , afa.motivo_ausencia_id 
                                , afa.anotacao
                                , a.data_aula as DataAula
                                , ma.descricao as DescricaoMotivoAusencia
-                               , afa.id
                            FROM anotacao_frequencia_aluno afa
                            INNER JOIN aula a on a.id = afa.aula_id
-                           LEFT JOIN motivo_ausencia ma on afa.motivo_ausencia_id = ma.id 
+                           INNER JOIN motivo_ausencia ma on afa.motivo_ausencia_id = ma.id 
                            WHERE not afa.excluido
                             AND not a.excluido
                             AND afa.codigo_aluno = @codigoAluno
-                            AND a.data_aula BETWEEN @dataInicio AND @dataFim
-                            ORDER BY a.data_aula DESC, afa.id DESC;";
+                            AND a.data_aula BETWEEN @dataInicio AND @dataFim";
 
             return await database.Conexao.QueryAsync<AnotacaoAlunoAulaPorPeriodoDto>(query, new { codigoAluno, dataInicio, dataFim });
         }
