@@ -86,7 +86,7 @@ namespace SME.SGP.Dados.Repositorios
             {
                 sql.AppendLine(" group by raba.id, to_date(qdata.DataRegistro, 'yyyy-mm-dd'), t.nome, t.modalidade_codigo, raba.aluno_nome, raba.aluno_codigo,  ");
                 sql.AppendLine(" qdata.DataRegistro, raba.criado_por, raba.criado_rf, raba.criado_em, qProcedRealizado.ProcedimentoRealizado,  ");
-                sql.AppendLine(" qContatoEfetuadoComResponsavel.ContatoRealizado, u.nome, u.tipo_escola,te.descricao || ' ' || u.nome ");
+                sql.AppendLine(" qContatoEfetuadoComResponsavel.ContatoRealizado, u.nome, u.tipo_escola,te.descricao || ' ' || u.nome "); 
                 sql.AppendLine(" order by to_date(qdata.DataRegistro,'yyyy-mm-dd') desc ");
             }
 
