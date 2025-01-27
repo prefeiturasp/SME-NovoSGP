@@ -51,6 +51,26 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             Assert.NotEmpty(resultado);
             Assert.Equal(101, resultado.First().AulaId);
         }
-        
+
+        [Fact]
+        public async Task Nao_Deve_Obter_Anotacao_Se_Data_Final_Menor_Que_Data_Inicial()
+        {
+
+            var filtroInvalido = new Infra.FiltroAnotacaoFrequenciaAlunoPorPeriodoDto(
+                "12345",
+                new DateTime(2025, 12, 31),
+                new DateTime(2025, 1, 1)
+            );
+
+            mediator.Setup(a => a.Send(It.IsAny<ObterAnotacaoFrequenciaAlunoPorPeriodoQuery>(), It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new ArgumentException("A data final não pode ser menor que a data inicial."));
+
+            var exception = await Assert.ThrowsAsync<ArgumentException>(() =>
+                obterAnotacaoFrequenciaAlunoPorPeriodoUseCase.Executar(filtroInvalido));
+
+            Assert.Equal("A data final não pode ser menor que a data inicial.", exception.Message);
+        }
+
+
     }
 }
