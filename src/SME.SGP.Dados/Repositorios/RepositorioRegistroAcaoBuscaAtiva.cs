@@ -215,7 +215,7 @@ namespace SME.SGP.Dados.Repositorios
                  ,u.nome UeNome 
 					,u.tipo_escola TipoEscola
 					,te.descricao  || ' ' || u.nome as Ue
-                 ,STRING_AGG(qTodasRespostasComResponsavel.DescMotivoAusencia, ', ') as DescMotivoAusencia ");
+                 ,STRING_AGG(qTodasRespostasComResponsavel.DescMotivoAusencia, ' | ') as DescMotivoAusencia ");
             }
             sql.AppendLine(@" from registro_acao_busca_ativa raba
              inner join turma t on t.id = raba.turma_id
