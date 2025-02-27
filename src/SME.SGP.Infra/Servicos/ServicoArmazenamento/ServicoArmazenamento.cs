@@ -6,6 +6,7 @@ using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Infra
@@ -91,7 +92,7 @@ namespace SME.SGP.Infra
                 await Copiar(nomeArquivo);
 
                 await Excluir(nomeArquivo, configuracaoArmazenamentoOptions.BucketTemp);
-                
+
                 await OtimizarArquivos(nomeArquivo);
             }
 
@@ -101,7 +102,7 @@ namespace SME.SGP.Infra
         private async Task OtimizarArquivos(string nomeArquivo)
         {
             var ehImagem = nomeArquivo.EhArquivoImagemParaOtimizar();
-            
+
             var ehVideo = nomeArquivo.EhArquivoVideoParaOtimizar();
 
             if (ehImagem || ehVideo)
@@ -148,8 +149,36 @@ namespace SME.SGP.Infra
 
         private string ObterUrl(string nomeArquivo, string bucketName)
         {
-            var hostAplicacao = configuration["UrlFrontEnd"];
-            return $"{hostAplicacao}{bucketName}/{nomeArquivo}";
+            var hostAplicacao = configuracaoArmazenamentoOptions.EndPoint;
+            var path = $"{hostAplicacao}/{bucketName}/{nomeArquivo}";
+
+            var arquivoExixte = VerificarArquivo(path);
+            if (!arquivoExixte)
+                path = $"{hostAplicacao}/{configuracaoArmazenamentoOptions.BucketArquivosOld}/{nomeArquivo}";
+
+            return path;
+        }
+
+        private bool VerificarArquivo(string arquivopath)
+        { 
+            if (!arquivopath.StartsWith("http://") && !arquivopath.StartsWith("https://"))
+                arquivopath = "http://" + arquivopath;
+
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    HttpResponseMessage response = client.GetAsync(arquivopath).Result;
+                    if (response.IsSuccessStatusCode)
+                        return true;
+                }
+                catch (HttpRequestException e)
+                {
+                    return false;
+                }
+            }
+
+            return false;
         }
     }
 }
