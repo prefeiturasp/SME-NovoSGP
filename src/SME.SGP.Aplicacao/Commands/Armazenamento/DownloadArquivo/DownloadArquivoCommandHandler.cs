@@ -1,13 +1,11 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using System;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Infra.Interface;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
@@ -28,6 +26,9 @@ namespace SME.SGP.Aplicacao
 
             if (!string.IsNullOrEmpty(enderecoArquivo))
             {
+                if (!enderecoArquivo.StartsWith("http://") && !enderecoArquivo.StartsWith("https://"))
+                    enderecoArquivo = "http://" + enderecoArquivo;
+
                 var response = await new HttpClient().GetAsync(enderecoArquivo);
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
