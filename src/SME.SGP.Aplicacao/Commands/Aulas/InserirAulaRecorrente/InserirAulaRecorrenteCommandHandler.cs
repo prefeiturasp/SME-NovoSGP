@@ -399,7 +399,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var codigosComponentesConsiderados = new List<long>() { long.Parse(aula.DisciplinaId) };
 
-                    var retornoPodeCadastrarAula = await PodeCadastrarAula(0, aula.TurmaId, codigosComponentesConsiderados.ToArray(), dia, ehRegencia, aulaRecorrente.TipoAula);
+                    var retornoPodeCadastrarAula = await PodeCadastrarAula(0, aula.TurmaId, codigosComponentesConsiderados.ToArray(), dia, ehRegencia, aulaRecorrente.TipoAula, usuario.CodigoRf);
 
                     if (retornoPodeCadastrarAula.PodeCadastrarAula)
                     {
@@ -433,7 +433,7 @@ namespace SME.SGP.Aplicacao
             return (aula, aulasQueDeramErro);
         }
 
-        private async Task<CadastroAulaDto> PodeCadastrarAula(int aulaId, string turmaCodigo, long[] disciplinasId, DateTime dataAula, bool ehRegencia, TipoAula tipoAula)
+        private async Task<CadastroAulaDto> PodeCadastrarAula(int aulaId, string turmaCodigo, long[] disciplinasId, DateTime dataAula, bool ehRegencia, TipoAula tipoAula, string codigoRf)
         {
             var podeCadastrar = CriandoAula(aulaId) || await AlterandoDataAula(aulaId, dataAula);
             
@@ -443,7 +443,7 @@ namespace SME.SGP.Aplicacao
             return new CadastroAulaDto()
             {
                 PodeCadastrarAula = true,
-                Grade = tipoAula == TipoAula.Reposicao ? null : await mediator.Send(new ObterGradeAulasPorTurmaEProfessorQuery(turmaCodigo, disciplinasId, dataAula, ehRegencia: ehRegencia))
+                Grade = tipoAula == TipoAula.Reposicao ? null : await mediator.Send(new ObterGradeAulasPorTurmaEProfessorQuery(turmaCodigo, disciplinasId, dataAula, ehRegencia: ehRegencia, codigoRf: codigoRf))
             };
         }
 
