@@ -28,6 +28,9 @@ namespace SME.SGP.Aplicacao
 
             if (!string.IsNullOrEmpty(enderecoArquivo))
             {
+                if (!enderecoArquivo.StartsWith("http://") && !enderecoArquivo.StartsWith("https://"))
+                    enderecoArquivo = "http://" + enderecoArquivo;
+
                 var response = await new HttpClient().GetAsync(enderecoArquivo);
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
