@@ -101,28 +101,28 @@ Nosso produto *oferece interfaces amigáveis para o usuário e diversas automaç
 ## Jornadas:
 
 **Login - Fluxo Resumido**
-![1. Fluxo Resumido_login.png](http://amcom.educacao.ws/images/1-fluxo-resumido-login.png)
+![1. Fluxo Resumido_login.png](https://raw.githubusercontent.com/KarolDegan/SME-NovoSGP/refs/heads/correcao-imagens/Imagens/fluxo%20resumido.png)
 
 **Login - Fluxo Completo**
-![2. Fluxo Completo_Login.png](http://amcom.educacao.ws/images/2-fluxo-completo-login.png)
+![2. Fluxo Completo_Login.png](https://raw.githubusercontent.com/KarolDegan/SME-NovoSGP/refs/heads/correcao-imagens/Imagens/fluxo%20completo.png)
 
 **Calendário**
-![3. Calendário.png](http://amcom.educacao.ws/images/3-calendario.png)
+![3. Calendário.png](https://raw.githubusercontent.com/KarolDegan/SME-NovoSGP/refs/heads/correcao-imagens/Imagens/calend%C3%A1rio.png)
 
 **Criação de aula**
-![4. Criação de aula.png](http://amcom.educacao.ws/images/4-criacao-aula.png)
+![4. Criação de aula.png](https://raw.githubusercontent.com/KarolDegan/SME-NovoSGP/refs/heads/correcao-imagens/Imagens/cria%C3%A7%C3%A3o%20de%20aula.png)
 
 **Plano de Aula**
-![5. Plano de Aula.png](http://amcom.educacao.ws/images/5-plano-aula.png)
+![5. Plano de Aula.png](https://raw.githubusercontent.com/KarolDegan/SME-NovoSGP/refs/heads/correcao-imagens/Imagens/plano%20de%20aula.png)
 
 **Frequência**
-![6. Frequência.png](http://amcom.educacao.ws/images/6-frequencia.png)
+![6. Frequência.png](https://raw.githubusercontent.com/KarolDegan/SME-NovoSGP/refs/heads/correcao-imagens/Imagens/frequ%C3%AAncia.png)
 
 **Atribuição CJ**
-![7. Atribuição CJ.png](http://amcom.educacao.ws/images/7-atribuicao-cj.png)
+![7. Atribuição CJ.png](https://raw.githubusercontent.com/KarolDegan/SME-NovoSGP/refs/heads/correcao-imagens/Imagens/atribui%C3%A7%C3%A3o%20cj.png)
 
 **Notificação**
-![8. Notificacao.png](http://amcom.educacao.ws/images/8-notificacao.png)
+![8. Notificacao.png](https://raw.githubusercontent.com/KarolDegan/SME-NovoSGP/refs/heads/correcao-imagens/Imagens/notifica%C3%A7%C3%A3o.png)
 
 
 # Comunicação:
