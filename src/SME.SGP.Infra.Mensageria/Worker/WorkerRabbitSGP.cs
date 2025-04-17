@@ -166,6 +166,13 @@ namespace SME.SGP.Infra.Worker
                 var mensagemRabbit = JsonConvert.DeserializeObject<MensagemRabbit>(mensagem);
                 var comandoRabbit = Comandos[rota];
 
+                if (mensagemRabbit == null)
+                {
+                    canalRabbit.BasicAck(ea.DeliveryTag, false);
+                    await servicoMensageriaMetricas.Concluido(rota);
+                    return;
+                }
+
                 var transacao = telemetriaOptions.Apm ? Agent.Tracer.StartTransaction(rota, apmTransactionType) : null;
                 try
                 {
