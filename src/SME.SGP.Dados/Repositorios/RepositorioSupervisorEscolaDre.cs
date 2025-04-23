@@ -115,30 +115,30 @@ namespace SME.SGP.Dados.Repositorios
         }
         public async Task<List<SupervisorEscolasDreDto>> ObterTodosAtribuicaoResponsavelPorDreCodigo(string dreCodigo)
         {
-            StringBuilder query = new();
-
-            query.AppendLine(@"SELECT 
-                                sed.id as AtribuicaoSupervisorId,
-                                 sed.dre_id AS DreId,
-                                 sed.escola_id AS UeId,
-                                 sed.supervisor_id AS SupervisorId,
-                                 sed.criado_em AS CriadoEm,
-                                 sed.criado_por AS CriadoPor,
-                                 sed.alterado_em AS AlteradoEm,
-                                 sed.alterado_por AS AlteradoPor,
-                                 sed.criado_rf AS CriadoRf,
-                                 sed.alterado_rf AS AlteradoRf,
-                                 sed.excluido AtribuicaoExcluida,
-                                 sed.tipo AS TipoAtribuicao,
-                                 d.abreviacao  AS DreNome,
-                                 u.nome AS UeNome,
-                                 u.tipo_escola AS TipoEscola
-                            FROM supervisor_escola_dre sed
-                             INNER JOIN dre d ON sed.dre_id = d.dre_id
-                             INNER JOIN ue u ON u.ue_id  = sed.escola_id 
-                            WHERE sed.dre_id = @dreCodigo 
-                                and not sed.excluido
-                            ORDER BY u.tipo_escola ,u.nome ");
+            StringBuilder query = new(); 
+            
+            query.AppendLine(@"
+            SELECT 
+                sed.id as AtribuicaoSupervisorId,
+                 sed.dre_id AS DreId,
+                 u.ue_id AS UeId,
+                 sed.supervisor_id AS SupervisorId,
+                 sed.criado_em AS CriadoEm,
+                 sed.criado_por AS CriadoPor,
+                 sed.alterado_em AS AlteradoEm,
+                 sed.alterado_por AS AlteradoPor,
+                 sed.criado_rf AS CriadoRf,
+                 sed.alterado_rf AS AlteradoRf,
+                 sed.excluido AtribuicaoExcluida,
+                 sed.tipo AS TipoAtribuicao,
+                 d.abreviacao  AS DreNome,
+                 u.nome AS UeNome,
+                 u.tipo_escola AS TipoEscola
+            FROM ue u
+            INNER JOIN dre d ON u.dre_id =d.id
+            LEFT JOIN supervisor_escola_dre sed ON u.ue_id  = sed.escola_id and not sed.excluido
+            WHERE d.dre_id = @dreCodigo
+            ORDER BY u.tipo_escola ,u.nome ");
 
             var consulta = await database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new { dreCodigo });
             return consulta.ToList();
