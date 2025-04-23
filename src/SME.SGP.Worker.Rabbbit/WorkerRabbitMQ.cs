@@ -13,7 +13,7 @@ namespace SME.SGP.Worker.RabbitMQ
 {
     public class WorkerRabbitMQ : WorkerRabbitAplicacao
     {
-        private const int TENTATIVA_REPROCESSAR_10 = 10;
+        private const int TENTATIVA_REPROCESSAR_10 = 4;
 
         public WorkerRabbitMQ(IServiceScopeFactory serviceScopeFactory,
             IServicoTelemetria servicoTelemetria,

@@ -12,7 +12,7 @@ namespace SME.SGP.Frequencia.Worker
 {
     public class WorkerRabbitFrequencia : WorkerRabbitAplicacao
     {
-        private const int TENTATIVA_REPROCESSAR_10 = 10;
+        private const int TENTATIVA_REPROCESSAR_10 = 4;
         public WorkerRabbitFrequencia(IServiceScopeFactory serviceScopeFactory,
             IServicoTelemetria servicoTelemetria,
             IServicoMensageriaSGP servicoMensageria,
