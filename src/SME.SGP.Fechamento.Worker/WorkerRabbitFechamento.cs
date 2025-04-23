@@ -12,7 +12,7 @@ namespace SME.SGP.Fechamento.Worker
 {
     public class WorkerRabbitFechamento : WorkerRabbitAplicacao
     {
-        private const int TENTATIVA_REPROCESSAR_10 = 10;
+        private const int TENTATIVA_REPROCESSAR_10 = 1;
 
         public WorkerRabbitFechamento(IServiceScopeFactory serviceScopeFactory,
             IServicoTelemetria servicoTelemetria,
