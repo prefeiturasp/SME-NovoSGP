@@ -138,7 +138,7 @@ namespace SME.SGP.Aplicacao
 
                 responsavelEscolaDreDtoComTiposNaoExistente = responsavelEscolaDreDtoComTiposNaoExistente.Concat(responsavelEscolaDreDto).ToList();
 
-                responsavelEscolaDreDtoComTiposNaoExistente = [.. responsavelEscolaDreDtoComTiposNaoExistente.Where(x => x.TipoAtribuicao != 0)];
+                responsavelEscolaDreDtoComTiposNaoExistente = responsavelEscolaDreDtoComTiposNaoExistente.Where(x => x.TipoAtribuicao != 0).ToList();
 
                 if (!string.IsNullOrEmpty(filtro.UeCodigo) && !filtro.UESemResponsavel)
                     responsavelEscolaDreDtoComTiposNaoExistente = responsavelEscolaDreDtoComTiposNaoExistente.Where(x => x.UeId == filtro.UeCodigo).ToList();
