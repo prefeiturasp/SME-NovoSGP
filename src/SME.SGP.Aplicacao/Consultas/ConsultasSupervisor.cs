@@ -103,6 +103,7 @@ namespace SME.SGP.Aplicacao
 
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
             var listaCodigoSupervisor = filtro.SupervisorId.NaoEhNulo() ? filtro.SupervisorId.Split(",").ToArray() : new string[] { };
+            var responsavelEscolaDreDtoComTiposNaoExistente = new List<SupervisorEscolasDreDto>();
 
             if (responsavelEscolaDreDto.Count > 0)
             {
@@ -130,34 +131,38 @@ namespace SME.SGP.Aplicacao
                                 AtribuicaoExcluida = true,
                                 UeId = supervisorEscolasDreDto.FirstOrDefault().UeId,
                             };
-                            responsavelEscolaDreDto.Add(registro);
+                            responsavelEscolaDreDtoComTiposNaoExistente.Add(registro);
                         }
                     }
                 }
 
+                responsavelEscolaDreDtoComTiposNaoExistente = responsavelEscolaDreDtoComTiposNaoExistente.Concat(responsavelEscolaDreDto).ToList();
+
+                responsavelEscolaDreDtoComTiposNaoExistente = responsavelEscolaDreDtoComTiposNaoExistente.Where(x => x.TipoAtribuicao != 0).ToList();
+
                 if (!string.IsNullOrEmpty(filtro.UeCodigo) && !filtro.UESemResponsavel)
-                    responsavelEscolaDreDto = responsavelEscolaDreDto.Where(x => x.UeId == filtro.UeCodigo).ToList();
+                    responsavelEscolaDreDtoComTiposNaoExistente = responsavelEscolaDreDtoComTiposNaoExistente.Where(x => x.UeId == filtro.UeCodigo).ToList();
 
                 if (filtro.TipoCodigo > 0)
-                    responsavelEscolaDreDto = responsavelEscolaDreDto.Where(x => x.TipoAtribuicao == filtro.TipoCodigo).ToList();
+                    responsavelEscolaDreDtoComTiposNaoExistente = responsavelEscolaDreDtoComTiposNaoExistente.Where(x => x.TipoAtribuicao == filtro.TipoCodigo).ToList();
                 else
                 {
                     if (perfilAtual == Perfis.PERFIL_CEFAI)
-                        responsavelEscolaDreDto = responsavelEscolaDreDto.Where(f => f.TipoAtribuicao.Equals((int)TipoResponsavelAtribuicao.PAAI)).ToList();
+                        responsavelEscolaDreDtoComTiposNaoExistente = responsavelEscolaDreDtoComTiposNaoExistente.Where(f => f.TipoAtribuicao.Equals((int)TipoResponsavelAtribuicao.PAAI)).ToList();
                     else if (perfilAtual == Perfis.PERFIL_COORDENADOR_NAAPA)
-                        responsavelEscolaDreDto = responsavelEscolaDreDto.Where(f => f.TipoAtribuicao.Equals((int)TipoResponsavelAtribuicao.AssistenteSocial) ||
+                        responsavelEscolaDreDtoComTiposNaoExistente = responsavelEscolaDreDtoComTiposNaoExistente.Where(f => f.TipoAtribuicao.Equals((int)TipoResponsavelAtribuicao.AssistenteSocial) ||
                                                                                      f.TipoAtribuicao.Equals((int)TipoResponsavelAtribuicao.PsicologoEscolar) ||
                                                                                      f.TipoAtribuicao.Equals((int)TipoResponsavelAtribuicao.Psicopedagogo)).ToList();
                 }
 
                 if (listaCodigoSupervisor.Any())
-                    responsavelEscolaDreDto = responsavelEscolaDreDto.Where(x => listaCodigoSupervisor.Contains(x.SupervisorId) && !x.AtribuicaoExcluida).ToList();
+                    responsavelEscolaDreDtoComTiposNaoExistente = responsavelEscolaDreDtoComTiposNaoExistente.Where(x => listaCodigoSupervisor.Contains(x.SupervisorId) && !x.AtribuicaoExcluida).ToList();
 
                 if (filtro.SupervisorId?.Length == 0 || filtro.SupervisorId.EhNulo() && filtro.UESemResponsavel || filtro.UESemResponsavel)
-                    responsavelEscolaDreDto = responsavelEscolaDreDto.Where(x => x.AtribuicaoExcluida).ToList();
+                    responsavelEscolaDreDtoComTiposNaoExistente = responsavelEscolaDreDtoComTiposNaoExistente.Where(x => x.AtribuicaoExcluida).ToList();
             }
 
-            return responsavelEscolaDreDto.OrderBy(x => x.Nome).ToList();
+            return responsavelEscolaDreDtoComTiposNaoExistente.OrderBy(x => x.TipoEscola).ThenBy(x => x.Nome).ToList();
         }
 
         private static void TrataEscolasSemResponsaveis(IEnumerable<AbrangenciaUeRetorno> escolasPorDre, List<ResponsavelEscolasDto> listaRetorno)
