@@ -1,0 +1,104 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using Moq;
+using Moq.Protected;
+using Newtonsoft.Json;
+using SME.SGP.Aplicacao;
+using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
+using Xunit;
+
+namespace SME.SGP.Aplicacao.Teste.Queries.EOL.Turma.ObterTurmasApiEol
+{
+    public class ObterTurmasApiEolHandlerTeste
+    {
+        [Fact(DisplayName = "Deve retornar turmas ao chamar a API EOL com sucesso")]
+        public async Task DeveRetornarTurmasQuandoRespostaEhSucesso()
+        {
+            // Arrange
+            var turmasEsperadas = new List<TurmaApiEolDto>
+            {
+                new TurmaApiEolDto { Codigo = 2839516},
+                new TurmaApiEolDto { Codigo = 2849122}
+            };
+
+            var respostaJson = JsonConvert.SerializeObject(turmasEsperadas);
+
+            var handlerMock = new Mock<HttpMessageHandler>();
+            handlerMock.Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>()
+                )
+                .ReturnsAsync(new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StringContent(respostaJson)
+                });
+
+            var httpClient = new HttpClient(handlerMock.Object)
+            {
+                BaseAddress = new System.Uri("https://api.eol.com.br/somefakeurl")
+            };
+
+            var httpClientFactoryMock = new Mock<IHttpClientFactory>();
+            httpClientFactoryMock.Setup(f => f.CreateClient(It.Is<string>(s => s == ServicosEolConstants.SERVICO)))
+                .Returns(httpClient);
+
+            var handler = new ObterTurmasApiEolHandler(httpClientFactoryMock.Object);
+
+            var query = new ObterTurmasApiEolQuery(new List<string> { "2839516", "2849122" });
+
+            // Act
+            var resultado = await handler.Handle(query, CancellationToken.None);
+
+            // Assert
+            Assert.NotNull(resultado);
+            Assert.Equal(turmasEsperadas.Count, resultado.Count);
+            Assert.Equal(turmasEsperadas[0].Codigo, resultado[0].Codigo);
+        }
+
+
+        [Fact(DisplayName = "Deve retornar lista vazia quando resposta da API for NoContent")]
+        public async Task DeveRetornarListaVaziaQuandoApiRetornarNoContent()
+        {
+            // Arrange
+            var responseMessage = new HttpResponseMessage(HttpStatusCode.NoContent)
+            {
+                Content = new StringContent(string.Empty) // Corpo vazio simula o 204
+            };
+
+            var handlerStub = new HttpMessageHandlerStub(async (request, cancellationToken) =>
+            {
+                return await Task.FromResult(responseMessage);
+            });
+
+            var httpClient = new HttpClient(handlerStub)
+            {
+                BaseAddress = new Uri("https://fakeurl.api")
+            };
+
+            var httpClientFactoryMock = new Mock<IHttpClientFactory>();
+            httpClientFactoryMock
+                .Setup(factory => factory.CreateClient(It.Is<string>(s => s == ServicosEolConstants.SERVICO)))
+                .Returns(httpClient);
+
+            var handler = new ObterTurmasApiEolHandler(httpClientFactoryMock.Object);
+
+            var query = new ObterTurmasApiEolQuery(new List<string> { "2839516", "2849122" });
+
+            // Act
+            var resultado = await handler.Handle(query, CancellationToken.None);
+
+            // Assert
+            Assert.NotNull(resultado);
+            Assert.Empty(resultado);
+        }
+
+    }
+}
