@@ -48,45 +48,11 @@ namespace SME.SGP.Aplicacao
                 listaTurmaEOL.Select(x => x.Codigo.ToString())
             );
 
-            // Dados mocados
-            var turmasFakes = new[]
-            {
-                new AbrangenciaTurmaRetorno
-                {
-                    Ano = "2025",
-                    AnoLetivo = 2025,
-                    Codigo = "0002 TURMA123",
-                    CodigoModalidade = (int)Modalidade.Fundamental,
-                    Nome = "Turma Teste 1",
-                    Semestre = 1,
-                    EnsinoEspecial = false,
-                    Id = 1,
-                    TipoTurma = 10,
-                    NomeFiltro = "0 ATurma Teste 1"
-                },
-                new AbrangenciaTurmaRetorno
-                {
-                    Ano = "2025",
-                    AnoLetivo = 2025,
-                    Codigo = "0003 TURMA456",
-                    CodigoModalidade = (int)Modalidade.Medio,
-                    Nome = "Turma Teste 2",
-                    Semestre = 2,
-                    EnsinoEspecial = false,
-                    Id = 2,
-                    TipoTurma = 20,
-                    NomeFiltro = "0 ATurma Teste 2"
-                }
-            };
-
-            //result = (result ?? Enumerable.Empty<AbrangenciaTurmaRetorno>()).Concat(turmasFakes);
-
             // Filtrando as turmas com base nas turmas atualizada.
             var resultatualizado = result
                 .Where(x => !string.IsNullOrEmpty(x.Codigo) && codigosValidos.Contains(x.Codigo))
                 .ToList();
-
-            //return OrdernarTurmasItinerario(result);
+            
             return OrdernarTurmasItinerario(resultatualizado);            
         }  
  
