@@ -38,17 +38,14 @@ namespace SME.SGP.Aplicacao
             var result = await repositorioAbrangencia.ObterTurmasPorTipos(request.CodigoUe, login, perfil,
                 request.Modalidade, request.Tipos.NaoEhNulo() && request.Tipos.Any() ? request.Tipos : null, request.Periodo,
                 request.ConsideraHistorico, request.AnoLetivo, anosInfantilDesconsiderar);
-
-            // Com base no codigo das turmas listada, é feito uma busca na Api Eol que está atualizada. 
+                        
             var codigosTurmas = result?.Select(t => t.Codigo.ToString())?.ToList();
             var listaTurmaEOL = await mediator.Send(new ObterTurmasApiEolQuery(codigosTurmas));
-
-            // Transforma codigo em string e remove os repetidos.
+                        
             var codigosValidos = new HashSet<string>(
                 listaTurmaEOL.Select(x => x.Codigo.ToString())
             );
-
-            // Filtrando as turmas com base nas turmas atualizada.
+                        
             var resultatualizado = result
                 .Where(x => !string.IsNullOrEmpty(x.Codigo) && codigosValidos.Contains(x.Codigo))
                 .ToList();
