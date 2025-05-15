@@ -1,7 +1,8 @@
+version: '3.1'
+
 volumes:
   postgres-data: {}
   minio-data:
-  elasticsearch_data:
 
 services:
   sme-db:
@@ -30,6 +31,21 @@ services:
     networks:
       - sme-network
 
+  grafana:
+    container_name: sme-grafana
+    restart: always
+    image: grafana/grafana
+    ports:
+      - '3000:3000'
+    volumes:
+      # Data persistency
+      # sudo mkdir -p /srv/docker/influxdb/data
+      - grafana-data:/var/lib/grafana
+    networks:
+      - sme-network
+    depends_on:
+      - 'prometheus'
+
   prometheus:
     container_name: sme-prometheus
     image: sme-prometheus
@@ -40,6 +56,8 @@ services:
       - 9090:9090
     networks:
       - sme-network
+    depends_on:
+      - 'sme-api'
 
   sme-redis:
     image: redis:5.0.5-alpine
@@ -76,14 +94,6 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
-    command: >
-      sh -c "
-        rabbitmq-server & 
-        sleep 10 &&
-        rabbitmqctl add_vhost dev &&
-        rabbitmqctl set_permissions -p dev user '.*' '.*' '.*' &&
-        tail -f /dev/null"
-    
 
   elasticsearch:
     container_name: ElasticSearch
@@ -146,6 +156,7 @@ services:
       - sme-network      
 networks:
   sme-network:
-    external: true
-    name: sme-network
-
+    driver: bridge
+    external:
+      name: sme-network
+    name: sme_external_network
