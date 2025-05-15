@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra;
+using System.Linq;
 
 namespace SME.SGP.Aplicacao
 {
@@ -25,8 +26,7 @@ namespace SME.SGP.Aplicacao
         {
             var listaTurmas = new List<TurmaApiEolDto>();
             var filtro = JsonConvert.SerializeObject(request.CodigosTurmas);
-            
-            
+                        
             using (var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO))
             {
                 var resposta = await httpClient.PostAsync("turmas/listar-turmas", new StringContent(filtro, Encoding.UTF8, "application/json-patch+json"));
@@ -37,9 +37,10 @@ namespace SME.SGP.Aplicacao
                 var json = await resposta.Content.ReadAsStringAsync();
 
                 listaTurmas = JsonConvert.DeserializeObject<List<TurmaApiEolDto>>(json);
+
             }
 
-            return listaTurmas;
+            return listaTurmas?.Where(t => t.Extinta == false).ToList() ?? new List<TurmaApiEolDto>();
         }
     }
 }

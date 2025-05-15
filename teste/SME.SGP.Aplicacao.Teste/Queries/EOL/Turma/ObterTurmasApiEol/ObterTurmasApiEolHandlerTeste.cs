@@ -22,8 +22,9 @@ namespace SME.SGP.Aplicacao.Teste.Queries.EOL.Turma.ObterTurmasApiEol
             // Arrange
             var turmasEsperadas = new List<TurmaApiEolDto>
             {
-                new TurmaApiEolDto { Codigo = 2839516},
-                new TurmaApiEolDto { Codigo = 2849122}
+                new TurmaApiEolDto { Codigo = 2839516, Extinta = false},
+                new TurmaApiEolDto { Codigo = 2849122, Extinta = true},
+                new TurmaApiEolDto { Codigo = 2877516, Extinta = false},
             };
 
             var respostaJson = JsonConvert.SerializeObject(turmasEsperadas);
@@ -52,15 +53,15 @@ namespace SME.SGP.Aplicacao.Teste.Queries.EOL.Turma.ObterTurmasApiEol
 
             var handler = new ObterTurmasApiEolHandler(httpClientFactoryMock.Object);
 
-            var query = new ObterTurmasApiEolQuery(new List<string> { "2839516", "2849122" });
+            var query = new ObterTurmasApiEolQuery(new List<string> { "2839516", "2849122", "2877516" });
 
             // Act
             var resultado = await handler.Handle(query, CancellationToken.None);
 
             // Assert
             Assert.NotNull(resultado);
-            Assert.Equal(turmasEsperadas.Count, resultado.Count);
-            Assert.Equal(turmasEsperadas[0].Codigo, resultado[0].Codigo);
+            Assert.Equal(2, resultado.Count);
+            Assert.DoesNotContain(resultado, t => t.Extinta == true);
         }
 
 
