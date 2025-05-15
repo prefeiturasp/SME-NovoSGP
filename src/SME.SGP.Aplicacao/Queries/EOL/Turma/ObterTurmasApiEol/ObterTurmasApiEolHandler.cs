@@ -25,10 +25,8 @@ namespace SME.SGP.Aplicacao
         {
             var listaTurmas = new List<TurmaApiEolDto>();
             var filtro = JsonConvert.SerializeObject(request.CodigosTurmas);
-
-            //servicoEOL - ServicosEolConstants.SERVICO
-            //using (var httpClient = httpClientFactory.CreateClient("apiEOL"))
-            //using (var httpClient = httpClientFactory.CreateClient("UrlApiEOL"))
+            
+            
             using (var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO))
             {
                 var resposta = await httpClient.PostAsync("turmas/listar-turmas", new StringContent(filtro, Encoding.UTF8, "application/json-patch+json"));
