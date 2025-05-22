@@ -1,0 +1,34 @@
+version: "3.1"
+
+volumes:
+  postgres-data: {}
+
+services:
+  sme-db:
+    container_name: sme-db
+    restart: always
+    image: postgres:11-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres      
+      POSTGRES_DB: sgp_db
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - sme-network
+  sme-flyway:
+    container_name: sme-flyway
+    restart: on-failure:5
+    image: boxfuse/flyway:5.2.4
+    command: -url=jdbc:postgresql://sme-db:5432/sgp_db?user=postgres&password=postgres -locations='filesystem:/opt/scripts' -outOfOrder=true migrate
+    volumes:
+      - ./scripts:/opt/scripts
+    depends_on:
+      - sme-db
+    networks:
+      - sme-network
+networks:
+  sme-network:
+    driver: bridge
+    name: sme_external_network
