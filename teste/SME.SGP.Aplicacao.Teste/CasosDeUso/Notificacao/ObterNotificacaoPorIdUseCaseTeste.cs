@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         {
             var id = 123;
             mediatorMock.Setup(m => m.Send(It.IsAny<ObterNotificacaoPorIdQuery>(), It.IsAny<CancellationToken>()))
-                        .ReturnsAsync((Notificacao)null);
+                        .ReturnsAsync((Dominio.Notificacao)null);
 
             var ex = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(id));
             Assert.Equal($"Notificação de Id: '{id}' não localizada.", ex.Message);
@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         public async Task Executar_DeveChamarSalvarELeitura_QuandoNaoLidaEMarcarComoLidaAoObterDetalhe()
         {
             var id = 1;
-            var notificacao = new Notificacao
+            var notificacao = new Dominio.Notificacao
             {
                 Id = 1,
                 Titulo = "Teste",
@@ -72,7 +72,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         {
             var id = 789;
             var guid = Guid.NewGuid();
-            var notificacao = new Notificacao
+            var notificacao = new Dominio.Notificacao
             {
                 Id = id,
                 CriadoEm = DateTime.Now,
@@ -101,7 +101,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         [Fact(DisplayName = "Deve retornar detalhes da notificação quando encontrada")]
         public async Task DeveRetornarDetalhesQuandoNotificacaoEncontrada()
         {
-            var notificacao = new Notificacao
+            var notificacao = new Dominio.Notificacao
             {
                 Id = 1,
                 Titulo = "Teste",
