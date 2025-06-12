@@ -10,13 +10,11 @@ namespace SME.SGP.Notificacoes.Worker
     public class NotificacaoSgpHub : INotificacaoSgpHub
     {
         private readonly HubConnection conexao;
-        private readonly string endpoint;
-        private readonly string token;
 
         public NotificacaoSgpHub(IOptions<HubOptions> hubOptions)
         {
-            endpoint = hubOptions.Value.Endpoint;
-            token = hubOptions.Value.HubNotificacoesToken;
+            var endpoint = hubOptions.Value.Endpoint;
+            var token = hubOptions.Value.HubNotificacoesToken;
 
             conexao = new HubConnectionBuilder()
                 .WithUrl($"{endpoint}/notificacao", options =>
