@@ -16,9 +16,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Abrangencia
             var mediatorMock = new Mock<IMediator>();
             var useCase = new CarregarAbrangenciaUsusarioUseCase(mediatorMock.Object);
 
-            //loga com o usuário da Iara
-            var login = "8577099"; 
-            var perfil = Guid.Parse("60e1e074-37d6-e911-abd6-f81654fe895d");
+            var login = "5555555"; 
+            var perfil = Guid.NewGuid();
             var usuarioPerfil = new UsuarioPerfilDto(login, perfil);
 
             mediatorMock

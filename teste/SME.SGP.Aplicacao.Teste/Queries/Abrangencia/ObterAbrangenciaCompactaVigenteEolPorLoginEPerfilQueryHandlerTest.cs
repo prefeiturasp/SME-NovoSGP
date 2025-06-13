@@ -17,14 +17,14 @@ namespace SME.SGP.Aplicacao.Teste.Queries.Abrangencia
         [Fact]
         public async Task Deve_Retornar_Abrangencia_Quando_Sucesso()
         {
-            var login = "8577099"; //IARA
-            var perfil = Guid.Parse("60e1e074-37d6-e911-abd6-f81654fe895d");
+            var login = "5555555";
+            var perfil = Guid.NewGuid();
             var abrangenciaEsperada = new AbrangenciaCompactaVigenteRetornoEOLDTO
             {
                 Login = login,
-                IdDres = new[] { "108100" }, //BUTANTÃ
-                IdUes = new[] { "090484" }, //PROF ISABEL COLOMBO
-                IdTurmas = new[] { "2839524" } //7C
+                IdDres = new[] { "111111" },
+                IdUes = new[] { "111111" }, 
+                IdTurmas = new[] { "1111111" } 
             };
 
             var respostaJson = JsonConvert.SerializeObject(abrangenciaEsperada);
@@ -61,9 +61,8 @@ namespace SME.SGP.Aplicacao.Teste.Queries.Abrangencia
         [Fact]
         public async Task Deve_Lancar_Excecao_Quando_Nao_Encontrar_Abrangencia()
         {
-
-            var login = "8577099"; //IARA
-            var perfil = Guid.Parse("60e1e074-37d6-e911-abd6-f81654fe895d");
+            var login = "5555555";
+            var perfil = Guid.NewGuid();
 
             var handlerMock = new Mock<HttpMessageHandler>();
             handlerMock.Protected()
