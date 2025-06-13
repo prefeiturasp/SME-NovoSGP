@@ -27,8 +27,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                 AnoLetivo = 2025,
                 Modalidade = Modalidade.Fundamental,
                 TipoFormatoRelatorio = TipoFormatoRelatorio.Pdf,
-                CodigoDre = "108100", //BUTANTA
-                CodigoUe = "092819" //EMEF BRASIL-JAPAO
+                CodigoDre = "111111", 
+                CodigoUe = "111111" 
             };
         }
 
@@ -36,8 +36,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         {
             return new Usuario
             {
-                CodigoRf = "marlon.amcom",
-                Nome = "Marlon Goncalves"
+                CodigoRf = "1111111",
+                Nome = "Usuario Teste"
             };
         }
 
