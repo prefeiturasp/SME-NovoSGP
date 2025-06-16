@@ -62,9 +62,9 @@ namespace SME.SGP.Aplicacao
             
             await mediator.Send(new RecalcularFrequenciaPorTurmaCommand(aula.TurmaId, aula.DisciplinaId, aula.Id), cancellationToken);
 
-            await ExcluirArquivoAnotacaoFrequencia(request.AulaId);
-            await ExcluirArquivosPlanoAula(request.AulaId);
-            await RemoverArquivosDiarioBordo(request.AulaId);
+            await ExcluirArquivoAnotacaoFrequencia(request.Aula.Id);
+            await ExcluirArquivosPlanoAula(request.Aula.Id);
+            await RemoverArquivosDiarioBordo(request.Aula.Id);
 
             var retorno = new RetornoBaseDto();
             retorno.Mensagens.Add("Aula excluída com sucesso.");
