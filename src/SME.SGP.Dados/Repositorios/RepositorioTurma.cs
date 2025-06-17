@@ -211,7 +211,7 @@ namespace SME.SGP.Dados.Repositorios
             }
             catch (Exception ex)
             {
-                var erro = new Exception("Erro ao atualizar ou excluir turmas extintas", ex);
+                new Exception("Erro ao atualizar ou excluir turmas extintas", ex);
                 transacao.Rollback();
             }
         }
