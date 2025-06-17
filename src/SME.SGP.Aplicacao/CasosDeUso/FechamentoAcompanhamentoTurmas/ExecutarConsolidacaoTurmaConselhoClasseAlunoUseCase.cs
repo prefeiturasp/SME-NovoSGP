@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
                         componenteEdFisicaEJANecessitaConversaoNotaConceito = await TipoNotaEhConceito(turmaRegular, (filtro.Bimestre ?? 0));
 
                     turma = turmaRegular;
-                    filtro.TurmaId = turma.Id;
+                    filtro.TurmaId = turma?.Id ?? 0;
 
                 }
                 else if (turma.EhTurmaRegular() && turma.EhEJA())

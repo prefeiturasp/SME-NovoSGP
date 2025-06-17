@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,6 +36,9 @@ namespace SME.SGP.Aplicacao
 
                 if (titulares.Count() == 1)
                     titulares = titulares.FirstOrDefault().Split(',');
+
+                if (titulares == null)
+                    titulares = new List<string>();
 
                 foreach (var titular in titulares)
                 {
