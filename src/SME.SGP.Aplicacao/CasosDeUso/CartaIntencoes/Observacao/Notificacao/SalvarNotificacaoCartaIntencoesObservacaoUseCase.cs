@@ -1,11 +1,11 @@
 ﻿using MediatR;
-using Microsoft.Extensions.Configuration;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -50,6 +50,9 @@ namespace SME.SGP.Aplicacao
 
                 if (titulares.Count() == 1)
                     titulares = titulares.FirstOrDefault().Split(',');
+
+                if (titulares == null)
+                    titulares = new List<string>();
 
                 foreach (var titular in titulares)
                 {

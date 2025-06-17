@@ -369,7 +369,7 @@ namespace SME.SGP.Aplicacao
 
                     if (nota.NaoEhNulo())
                     {
-                        var valorNota = tipoNota.EhNota() ? nota.Nota : nota.ConceitoId;
+                        var valorNota = tipoNota.EhNota() ? nota?.Nota : nota?.ConceitoId;
 
                         if (valorNota.HasValue)
                             notaConceitoTurma.NotaConceito = valorNota;
@@ -455,7 +455,7 @@ namespace SME.SGP.Aplicacao
                                             nota?.Nota.ToString() :
                                             nota?.ConceitoId.ToString();
 
-                listaRetorno.Add(new FechamentoNotaAlunoDto(nota.Bimestre.Value,
+                listaRetorno.Add(new FechamentoNotaAlunoDto(nota?.Bimestre.Value ?? 0,
                                                             notaParaAdicionar,
                                                             nota.ComponenteCurricularId,
                                                             nota.AlunoCodigo));

@@ -2,8 +2,6 @@
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -27,7 +25,7 @@ namespace SME.SGP.Aplicacao
             var periodoEscolar = turma.AnoLetivo.Equals(DateTime.Today.Year) ? await mediator.Send(new ObterPeriodoEscolarAtualQuery(turmaId, DateTime.Now.Date)) : null;
 
             return periodoEscolar.EhNulo() ? null :
-                new BimestreDto() { Id = periodoEscolar.Id, Numero = periodoEscolar.Bimestre };
+                new BimestreDto() { Id = periodoEscolar?.Id ?? 0, Numero = periodoEscolar?.Bimestre ?? 0 };
         }
     }
 }

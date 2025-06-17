@@ -198,6 +198,9 @@ namespace SME.SGP.Aplicacao
                     var consultaAlunosAlterarFaltasCompensada = obterFrequenciaPorListaDeAlunosDisciplinaData
                         .Where(o => alunosCodigos.Contains(o.CodigoAluno) && disciplinasId.Contains(o.DisciplinaId) && o.PeriodoFim == periodo.PeriodoFim && o.TurmaId == turma.CodigoTurma);
 
+                    if (alunosAlterarFaltasCompensada == null)
+                        alunosAlterarFaltasCompensada = new List<CompensacaoAusenciaAluno>();
+
                     foreach (var aluno in alunosAlterarFaltasCompensada)
                     {
                         var frequenciaAluno = consultaAlunosAlterarFaltasCompensada
@@ -245,7 +248,7 @@ namespace SME.SGP.Aplicacao
                             continue;
                         }
 
-                        if (alunoDto.QtdFaltasCompensadas > frequenciaAluno.NumeroFaltasNaoCompensadas && frequenciaAluno.NumeroFaltasNaoCompensadas > 0)
+                        if (alunoDto.QtdFaltasCompensadas > frequenciaAluno?.NumeroFaltasNaoCompensadas && frequenciaAluno.NumeroFaltasNaoCompensadas > 0)
                         {
                             mensagensExcessao.Append(
                                 $"O aluno(a) [{alunoDto.Id}] possui apenas {frequenciaAluno.NumeroFaltasNaoCompensadas} faltas não compensadas. ");
