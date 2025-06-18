@@ -458,7 +458,7 @@ namespace SME.SGP.Aplicacao
                 listaRetorno.Add(new FechamentoNotaAlunoDto(nota?.Bimestre.Value ?? 0,
                                                             notaParaAdicionar,
                                                             nota.ComponenteCurricularId,
-                                                            nota.AlunoCodigo));
+                                                            nota?.AlunoCodigo));
             }
 
             return listaRetorno;

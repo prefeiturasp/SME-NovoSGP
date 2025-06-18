@@ -30,12 +30,12 @@ namespace SME.SGP.Aplicacao
             {
                 if ((request?.CicloSgp?.Descricao != request?.CicloEol?.Descricao)
                     || (request?.CicloSgp?.CodigoModalidadeEnsino != request?.CicloEol?.CodigoModalidadeEnsino) 
-                    || (request?.CicloSgp?.CodigoEtapaEnsino != request?.CicloSgp?.CodigoEtapaEnsino))
+                    || (request?.CicloSgp?.CodigoEtapaEnsino != request?.CicloEol?.CodigoEtapaEnsino))
                 {
                     request.CicloSgp.Descricao = request?.CicloEol?.Descricao;
                     request.CicloSgp.DtAtualizacao = request.CicloEol.DtAtualizacao;
                     request.CicloSgp.CodigoModalidadeEnsino = request.CicloEol.CodigoModalidadeEnsino;
-                    request.CicloSgp.CodigoEtapaEnsino = request.CicloSgp.CodigoEtapaEnsino;
+                    request.CicloSgp.CodigoEtapaEnsino = request.CicloEol.CodigoEtapaEnsino;
                                         
                     await repositorioCicloEnsino.SalvarAsync(request.CicloSgp);
                 }                

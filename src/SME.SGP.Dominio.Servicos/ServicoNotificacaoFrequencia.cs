@@ -346,7 +346,7 @@ namespace SME.SGP.Dominio.Servicos
                 if (disciplinaEols.NaoEhNulo())
                     foreach (var disciplina in disciplinaEols)
                     {
-                        return await RetornaUsuarios(disciplina.ProfessorRf);
+                        return await RetornaUsuarios(disciplina?.ProfessorRf);
                     }
             }
             else

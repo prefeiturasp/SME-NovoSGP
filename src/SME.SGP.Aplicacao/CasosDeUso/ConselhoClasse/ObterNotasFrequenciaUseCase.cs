@@ -577,10 +577,10 @@ namespace SME.SGP.Aplicacao
                                                                            .Any(d => d.Ativo && d.DataMatricula < a.PeriodoFim ||
                                                                                 !d.Ativo && d.DataMatricula < a.PeriodoFim && d.DataSituacao > a.PeriodoInicio))?.ToList();
 
-            if (frequenciasAluno.NaoEhNulo() && frequenciasAluno.Any())
+            if (frequenciasAluno != null && frequenciasAluno.Any())
                 frequenciasAlunoRetorno.AddRange(frequenciasAluno);
 
-            if (aulasComponentesTurmas.NaoEhNulo())
+            if (aulasComponentesTurmas != null)
             {
                 foreach (var aulaComponenteTurma in aulasComponentesTurmas)
                 {

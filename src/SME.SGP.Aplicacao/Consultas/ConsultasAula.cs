@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -120,7 +119,7 @@ namespace SME.SGP.Aplicacao
                                 })
                                 .FirstOrDefault();
 
-            if(dadosDisciplina.EhNulo() && disciplinaCJ.NaoEhNulo())
+            if(dadosDisciplina != null && disciplinaCJ != null)
                 return await ObterAulasNosPeriodos(periodosEscolares, anoLetivo, turmaCodigo, disciplinaCJ.DisciplinaId.ToString(), usuarioLogado, usuarioRF);
             else
                 return await ObterAulasNosPeriodos(periodosEscolares, anoLetivo, turmaCodigo, dadosDisciplina.CodigoComponenteCurricular, usuarioLogado, usuarioRF);
@@ -277,7 +276,7 @@ namespace SME.SGP.Aplicacao
             }
 
             var disciplina = disciplinasUsuario?.FirstOrDefault(x => x.CodigoComponenteCurricular.ToString().Equals(aula.DisciplinaId));
-            var disciplinaId = disciplina.EhNulo() ? null : disciplina.CodigoComponenteCurricular.ToString();
+            var disciplinaId = disciplina.EhNulo() ? null : disciplina?.CodigoComponenteCurricular.ToString();
             return disciplinaId;
         }
 

@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
                 {
                     if ((fechamentoTurma?.Justificativa).NaoEhNulo())
                     {
-                        var tamanhoJustificativa = await mediator.Send(new ObterTamanhoCaracteresJustificativaNotaQuery(fechamentoTurma.Justificativa));
+                        var tamanhoJustificativa = await mediator.Send(new ObterTamanhoCaracteresJustificativaNotaQuery(fechamentoTurma?.Justificativa));
                         var limite = int.Parse(FechamentoTurmaDisciplinaEnum.TamanhoCampoJustificativa.Description());
                         
                         if (tamanhoJustificativa > limite)
@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao
                 }
                 catch (Exception e)
                 {
-                    listaAuditoria.Add(new AuditoriaPersistenciaDto() { Sucesso = false, MensagemConsistencia = $"{fechamentoTurma.Bimestre}º Bimestre: {e.Message}" });
+                    listaAuditoria.Add(new AuditoriaPersistenciaDto() { Sucesso = false, MensagemConsistencia = $"{fechamentoTurma?.Bimestre}º Bimestre: {e.Message}" });
                 }
             }
 

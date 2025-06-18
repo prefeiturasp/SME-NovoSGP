@@ -83,7 +83,7 @@ namespace SME.SGP.Aplicacao
 
                 disciplinasDto = (await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurriculares.Select(a => a.Codigo).ToArray())))?.OrderBy(c => c.Nome)?.ToList();
                     
-                disciplinasDto.ForEach(d =>
+                disciplinasDto?.ForEach(d =>
                 {
                     var componenteEOL = componentesCurriculares.FirstOrDefault(a => a.Codigo == d.CodigoComponenteCurricular);
                     d.PossuiObjetivos = turma.AnoLetivo < Convert.ToInt32(dataInicioNovoSGP) ? false : componenteEOL.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turma.ModalidadeCodigo);
