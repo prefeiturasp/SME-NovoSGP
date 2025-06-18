@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             var alunoPorTurmaResposta = (await mediator.Send(new ObterTurmasAlunoPorFiltroPlanoAeeQuery(request.CodigoAluno, request.AnoLetivo, false, request.TipoTurma), cancellationToken))
                                                        .OrderByDescending(a => a.DataSituacao).ThenByDescending(a => a.NumeroAlunoChamada)?.FirstOrDefault();
 
-            if (alunoPorTurmaResposta.EhNulo())
+            if (alunoPorTurmaResposta == null)
                 return default;
 
             var alunoReduzido = new AlunoReduzidoDto()
