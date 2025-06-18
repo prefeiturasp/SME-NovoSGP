@@ -20,5 +20,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<ExisteAtribuicaoExcluidaDto>> VerificarSeJaExisteAtribuicaoExcluida(string dreCodigo, string[] uesCodigos, int tipoAtribuicao);
         Task<IEnumerable<SupervisorEscolasDreDto>> ObterResponsaveisPorDreUeTiposAtribuicaoAsync(string codigoDre, string codigoUe, TipoResponsavelAtribuicao[] tiposResponsavelAtribuicao);
         Task<IEnumerable<SupervisorEscolasDreDto>> ObterSupervisoresPorUeTipo(string ueId, TipoResponsavelAtribuicao tipoResponsavelAtribuicao);
+        Task RemoverAtribuicoesEmLote(IEnumerable<long> atribuicoesIds);
     }
 }
