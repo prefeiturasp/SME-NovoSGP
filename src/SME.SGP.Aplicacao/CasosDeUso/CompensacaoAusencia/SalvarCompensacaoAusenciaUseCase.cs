@@ -237,6 +237,9 @@ namespace SME.SGP.Aplicacao
                     var consultaAlunosFrequencia = obterFrequenciaPorListaDeAlunosDisciplinaData
                         .Where(c => listaIdsAluno.Contains(c.CodigoAluno) && disciplinasId.Contains(c.DisciplinaId) && c.PeriodoFim == periodo.PeriodoFim && c.TurmaId == turma.CodigoTurma);
 
+                    if (listaAlunosDto == null)
+                        listaAlunosDto = new List<CompensacaoAusenciaAlunoDto>();
+
                     foreach (var alunoDto in listaAlunosDto)
                     {
                         var frequenciaAluno = consultaAlunosFrequencia?

@@ -130,7 +130,7 @@ namespace SME.SGP.Aplicacao
             var responsaveisEolOuCoreSSO = await ObterResponsaveisEolOuCoreSSO(filtro?.DreCodigo, filtro?.TipoResponsavelAtribuicao);
 
             //-> Obtem os resposáveis já atribuidos
-            var responsaveisAtribuidos = (await mediator.Send(new ObterResponsaveisPorDreQuery(filtro.DreCodigo, filtro.TipoResponsavelAtribuicao)))
+            var responsaveisAtribuidos = (await mediator.Send(new ObterResponsaveisPorDreQuery(filtro?.DreCodigo, filtro.TipoResponsavelAtribuicao)))
                 .DistinctBy(c => c.SupervisorId);
 
             var nomesResponsaveisAtribuidos = await ObterNomesResponsaveisAtribuidos(responsaveisAtribuidos, filtro.TipoResponsavelAtribuicao);

@@ -51,20 +51,23 @@ namespace SME.SGP.Aplicacao
             var tiposEscolasValidos = ObterTiposDeEscolasValidos();
             ues = ues?.Where(ue => tiposEscolasValidos.Contains(ue.TipoEscola)).ToList();
 
-            foreach (var ue in ues)
+            if (ues != null)
             {
-                try
+                foreach (var ue in ues)
                 {
-                    if (!(await mediator.Send(new ExistePendenciaDiasLetivosCalendarioUeQuery(tipoCalendarioId, ue.Id))))
+                    try
                     {
-                        var diasLetivos = await mediator.Send(new ObterQuantidadeDiasLetivosPorCalendarioQuery(tipoCalendarioId, ue.Dre.CodigoDre, ue.CodigoUe));
-                        if (diasLetivos.EstaAbaixoPermitido)
-                            await GerarPendenciaCalendarioUe(ue, diasLetivos.Dias, tipoCalendarioId);
+                        if (!(await mediator.Send(new ExistePendenciaDiasLetivosCalendarioUeQuery(tipoCalendarioId, ue.Id))))
+                        {
+                            var diasLetivos = await mediator.Send(new ObterQuantidadeDiasLetivosPorCalendarioQuery(tipoCalendarioId, ue.Dre.CodigoDre, ue.CodigoUe));
+                            if (diasLetivos.EstaAbaixoPermitido)
+                                await GerarPendenciaCalendarioUe(ue, diasLetivos.Dias, tipoCalendarioId);
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    await mediator.Send(new SalvarLogViaRabbitCommand($"Erro na verificação da pendência do calendário da UE.", LogNivel.Negocio, LogContexto.Calendario, ex.Message));
+                    catch (Exception ex)
+                    {
+                        await mediator.Send(new SalvarLogViaRabbitCommand($"Erro na verificação da pendência do calendário da UE.", LogNivel.Negocio, LogContexto.Calendario, ex.Message));
+                    }
                 }
             }
         }

@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
                 if (param?.DataInicio.Value > param?.DataFim.Value)
                     throw new NegocioException("A data de início não pode ser maior que a data de fim.");
 
-                if (param.DataFim.Value < param.DataFim.Value)
+                if (param?.DataFim.Value < param?.DataInicio.Value)
                     throw new NegocioException("A data de fim não pode ser menor que a data de início.");
             }
         }

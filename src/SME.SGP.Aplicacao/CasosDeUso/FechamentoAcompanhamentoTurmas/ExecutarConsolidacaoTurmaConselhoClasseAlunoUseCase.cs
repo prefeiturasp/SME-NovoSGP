@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
             };
 
             var componentesComNotaFechamentoOuConselho = (await mediator
-                                .Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma.AnoLetivo, turmasCodigos.ToArray(), filtro.Bimestre, filtro.AlunoCodigo))).ToList();
+                                .Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma?.AnoLetivo ?? 0, turmasCodigos.ToArray(), filtro.Bimestre, filtro.AlunoCodigo))).ToList();
 
             if (PodeAdicionarNota(filtro, componentesComNotaFechamentoOuConselho))
             {

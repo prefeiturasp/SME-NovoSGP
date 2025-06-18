@@ -30,9 +30,9 @@ namespace SME.SGP.Aplicacao
             if (respostaEnderecoResidencialNAAPA.NaoEhNulo())
             {
                 var enderecoResidencialNAAPA = JsonConvert.DeserializeObject<List<RespostaEnderecoResidencialEncaminhamentoNAAPADto>>(respostaEnderecoResidencialNAAPA?.Texto);
-                if (enderecoResidencialAluno.Equals(enderecoResidencialNAAPA?.FirstOrDefault())) return false;
+                if (enderecoResidencialAluno.EhIgual(enderecoResidencialNAAPA?.FirstOrDefault())) return false;
 
-                var respostaEnderecoAtualizado = MapearDTO(questaoEnderecoResidencialNAAPA.QuestaoId, respostaEnderecoResidencialNAAPA.Id, enderecoResidencialAluno);
+                var respostaEnderecoAtualizado = MapearDTO(questaoEnderecoResidencialNAAPA.QuestaoId, respostaEnderecoResidencialNAAPA?.Id ?? 0, enderecoResidencialAluno);
                 return await mediator.Send(new AlterarEncaminhamentoNAAPASecaoQuestaoRespostaCommand(respostaEnderecoResidencialNAAPA,
                                                                                                   respostaEnderecoAtualizado));
             }

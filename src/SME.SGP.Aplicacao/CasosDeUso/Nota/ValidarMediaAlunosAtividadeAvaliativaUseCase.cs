@@ -153,7 +153,7 @@ namespace SME.SGP.Aplicacao
                 anoCicloModalidade = abrangenciaFiltroRetorno.Ano == AnoCiclo.Alfabetizacao.Name()
                     ? AnoCiclo.Alfabetizacao.Description() : abrangenciaFiltroRetorno.Ano;
 
-            var ciclo = await repositorioCiclo.ObterCicloPorAnoModalidade(anoCicloModalidade, abrangenciaFiltroRetorno.Modalidade);
+            var ciclo = await repositorioCiclo.ObterCicloPorAnoModalidade(anoCicloModalidade, abrangenciaFiltroRetorno?.Modalidade ?? 0);
 
             if (ciclo.EhNulo())
                 throw new NegocioException(MensagemNegocioTurma.CICLO_TURMA_NAO_ENCONTRADO);

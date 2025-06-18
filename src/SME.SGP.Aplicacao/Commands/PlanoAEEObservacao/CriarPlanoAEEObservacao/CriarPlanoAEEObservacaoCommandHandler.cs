@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
             var usuarioAtual = request.PossuiUsuarios ? await mediator.Send(ObterUsuarioLogadoQuery.Instance) : null;
 
             if (request.PossuiUsuarios)
-                request.TratarUsuariosNotificacao(usuarioAtual.Id);
+                request.TratarUsuariosNotificacao(usuarioAtual?.Id ?? 0);
 
             using (var transacao = unitOfWork.IniciarTransacao())
             {
