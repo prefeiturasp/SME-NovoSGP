@@ -29,7 +29,6 @@ namespace SME.SGP.Aplicacao
                 await VerificaPendenciasPlanoAula(filtro);
                 await VerificaPendenciasDiarioClasseFechamento(filtro);
                 await VerificaPendenciasTurmasComponentesSemAulas(filtro);
-
                 return true;
             }
 

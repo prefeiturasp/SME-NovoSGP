@@ -42,6 +42,7 @@ namespace SME.SGP.Aula.Worker
             Comandos.Add(RotasRabbitSgpAula.RotaExecutaPendenciasAulaFrequencia, new ComandoRabbit("Verifica as pendências de aula e cria caso exista", typeof(IPendenciaAulaFrequenciaUseCase), true));
             Comandos.Add(RotasRabbitSgpAula.RotaExecutaPendenciasAulaPlanoAula, new ComandoRabbit("Verifica as pendências de aula e cria caso exista", typeof(IPendenciaAulaPlanoAulaUseCase), true));
             Comandos.Add(RotasRabbitSgpAula.RotaAvaliarPendenciasAulaDiarioClasseFechamento, new ComandoRabbit("Verifica se as pendências de diário de classe são para turmas/disciplinas em fechamento para geração de pendência de fechamento", typeof(IPendenciaAulaFechamentoUseCase), true));
+            Comandos.Add(RotasRabbitSgpAula.RotaExcluirPendenciasDiarioBordo, new ComandoRabbit("Executa exclusão de pendências de diário de bordo já resolvidas", typeof(IPendenciaDiarioBordoParaExcluirUseCase)));
             Comandos.Add(RotasRabbitSgpAula.PendenciasGeraisAulas, new ComandoRabbit("Pendencias gerais", typeof(IExecutaVerificacaoPendenciasGeraisAulaUseCase), true));
             Comandos.Add(RotasRabbitSgpAula.RotaExecutaExclusaoPendenciasAula, new ComandoRabbit("Executa exclusão de pendências da aula", typeof(IExecutarExclusaoPendenciasAulaUseCase)));
             Comandos.Add(RotasRabbitSgpAula.RotaExecutaExclusaoPendenciaDiarioBordoAula, new ComandoRabbit("Executa exclusão de pendencias de diário de bordo por aula", typeof(IExcluirPendenciaDiarioBordoPorAulaIdUseCase)));

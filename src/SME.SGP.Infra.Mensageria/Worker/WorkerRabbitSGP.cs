@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using MongoDB.Driver.Core.Bindings;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -15,18 +14,15 @@ using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.AccessControl;
 using System.Text;
 using System.Threading;
-using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Infra.Worker
 {
     public abstract class WorkerRabbitSGP : IHostedService
     {
-        protected  IModel canalRabbit;
+        protected IModel canalRabbit;
         private IConnection conexaoRabbit;
         private IConnectionFactory factory;
         private IOptions<ConsumoFilasOptions> consumoFilasOptions;
@@ -120,7 +116,7 @@ namespace SME.SGP.Infra.Worker
 
             if (Comandos.ContainsKey(fila) && Comandos[fila].ModeLazy)
                 args.Add("x-queue-mode", "lazy");
-            
+
             return args;
         }
 
@@ -146,7 +142,7 @@ namespace SME.SGP.Infra.Worker
                 var deathProperties = (List<object>)properties.Headers["x-death"];
                 var lastRetry = (Dictionary<string, object>)deathProperties[0];
                 var count = lastRetry["count"];
-                return (ulong) Convert.ToInt64(count);
+                return (ulong)Convert.ToInt64(count);
             }
             else
             {
