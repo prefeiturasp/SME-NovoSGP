@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
 
             var codigoComponente = long.Parse(ComponenteCurricularId);
 
-            if (disciplinaDto.NaoEhNulo())
+            if (disciplinaDto != null)
                 codigoComponente = disciplinaDto?.Id > 0 ? disciplinaDto.Id : disciplinaDto.CodigoComponenteCurricular;
 
             foreach (var periodoEscolar in periodosEscolaresAulasInicioFim)
