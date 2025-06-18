@@ -3,16 +3,23 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SME.SGP.Infra;
+using System;
 
 namespace SME.SGP.Metrica.Worker
 {
     public class Program
     {
-        protected Program() { }
-
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            try
+            {
+                CreateHostBuilder(args).Build().Run();
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Erro inesperado: {ex}");
+                throw;
+            }
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -20,19 +27,27 @@ namespace SME.SGP.Metrica.Worker
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
                     config.AddEnvironmentVariables();
-                    config.AddUserSecrets<Program>();
+
+                    if (hostingContext.HostingEnvironment.IsDevelopment())
+                    {
+                        config.AddUserSecrets<Program>();
+                    }
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
                 })
-                .ConfigureServices(services =>
+                .ConfigureServices((context, services) =>
                 {
-                    services.AddHostedService<WorkerRabbitMetrica>();
-                    services.AddHealthChecks()
-                        .AddElasticSearchSgp();
-                    services.AddHealthChecksUiSgp();
-                })
-            ;
+                    ConfigureCustomServices(services);
+                });
+
+        private static void ConfigureCustomServices(IServiceCollection services)
+        {
+            services.AddHostedService<WorkerRabbitMetrica>();
+            services.AddHealthChecks().AddElasticSearchSgp();
+            services.AddHealthChecksUiSgp();
+        }
     }
+
 }
