@@ -277,3 +277,5 @@ src/SME.SGP.Api/healthchecksdb
 /src/SME.SGP.WebClient/local-storage.json
 /src/SME.SGP.Api/Imagens/*
 /src/SME.SGP.Api/Arquivos/*
+/src/SME.SGP.Aplicacao/.editorconfig
+.editorconfig

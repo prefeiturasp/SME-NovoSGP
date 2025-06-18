@@ -73,11 +73,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Responsavel
 
             mediatorMock.Setup(m => m.Send(It.Is<ObterDREIdPorCodigoQuery>(q => q.CodigoDre == atribuicaoDto.DreId), It.IsAny<CancellationToken>()))
                         .ReturnsAsync(1);
-            var dreSimulada = new SME.SGP.Dominio.Dre { CodigoDre = atribuicaoDto.DreId };
+            var dreSimulada = new Dre { CodigoDre = atribuicaoDto.DreId };
             var ueCompletaSimulada = new Ue
             {
                 Nome = "ESCOLA TESTE",
-                TipoEscola = Dominio.TipoEscola.EMEF,
+                TipoEscola = TipoEscola.EMEF,
                 Dre = dreSimulada // Inclui a DRE para a primeira validação
             };
 
@@ -151,7 +151,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Responsavel
 
             foreach (var ueId in atribuicaoDto.UesIds)
             {
-                var dreSimulada = new SME.SGP.Dominio.Dre { CodigoDre = atribuicaoDto.DreId };
+                var dreSimulada = new Dre { CodigoDre = atribuicaoDto.DreId };
                 var ueSimulada = new Ue { Dre = dreSimulada };
 
                 mediatorMock.Setup(m => m.Send(It.Is<ObterUeComDrePorCodigoQuery>(q => q.UeCodigo == ueId), It.IsAny<CancellationToken>()))
