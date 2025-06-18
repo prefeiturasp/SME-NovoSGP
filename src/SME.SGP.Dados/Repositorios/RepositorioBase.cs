@@ -133,7 +133,7 @@ namespace SME.SGP.Dados.Repositorios
         
         public virtual async Task<bool> RemoverLogico(long[] ids, string coluna = null)
         {
-            var tableName = Dommel.Resolvers.Table(typeof(T), database.Conexao);
+            var tableName = Resolvers.Table(typeof(T), database.Conexao);
             var columName = coluna ?? "id";
 
             var query = $@"update {tableName} 
