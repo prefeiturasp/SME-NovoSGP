@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
             return listaTitulares?.Select(x => x.ProfessorRf);
         }
 
-        private string ConstruirMensagem(Turma turma, IEnumerable<DateTime> datasAulas)
+        private static string ConstruirMensagem(Turma turma, IEnumerable<DateTime> datasAulas)
         {
             var mensagem = new StringBuilder($"As seguintes aulas da turma {turma.ModalidadeCodigo.ShortName()} - {turma.Nome} da {turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) não foram excluídas pela rotina automática pois já possuem registros de frequência.<br>");
 
@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
             return mensagem.ToString();
         }
 
-        private IEnumerable<string> ObterListaRfs(IEnumerable<string> titulares)
+        private static IEnumerable<string> ObterListaRfs(IEnumerable<string> titulares)
         {
             if (titulares.Count() == 1)
                 return titulares.First().Split(',').Select(rf => rf.Trim());
