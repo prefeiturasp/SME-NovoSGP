@@ -340,33 +340,39 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<IEnumerable<(Cargo? Cargo, Usuario Usuario)>> BuscaProfessorAula(RegistroFrequenciaFaltanteDto turma)
         {
-            if (turma.ModalidadeTurma == Modalidade.EducacaoInfantil)
-            {
-                var disciplinaEols = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(turma.CodigoTurma));
-                var professores = new List<(Cargo? Cargo, Usuario Usuario)>();
+            return turma.ModalidadeTurma == Modalidade.EducacaoInfantil
+                ? await BuscarProfessoresEducacaoInfantil(turma?.CodigoTurma)
+                : await BuscarProfessorUltimaAula(turma);
+        }
 
-                if (disciplinaEols != null)
-                    foreach (var disciplina in disciplinaEols)
-                    {
-                        if (!string.IsNullOrWhiteSpace(disciplina?.ProfessorRf))
-                        {
-                            var usuarios = await RetornaUsuarios(disciplina?.ProfessorRf);
-                            if (usuarios != null)
-                                professores.AddRange(usuarios);
-                        }
-                    }
+        private async Task<IEnumerable<(Cargo? Cargo, Usuario Usuario)>> BuscarProfessoresEducacaoInfantil(string codigoTurma)
+        {
+            var professores = new List<(Cargo? Cargo, Usuario Usuario)>();
+            var disciplinaEols = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(codigoTurma));
+
+            if (disciplinaEols == null)
                 return professores;
-            }
-            else
+
+            foreach (var disciplina in disciplinaEols)
             {
-                // Buscar professor da ultima aula
-                var professorRf = turma.Aulas
-                        .OrderBy(o => o.DataAula)
-                        .Last().ProfessorId;
+                if (string.IsNullOrWhiteSpace(disciplina?.ProfessorRf))
+                    continue;
 
-                return await this.RetornaUsuarios(professorRf);
-
+                var usuarios = await RetornaUsuarios(disciplina?.ProfessorRf);
+                if (usuarios != null)
+                    professores.AddRange(usuarios);
             }
+
+            return professores;
+        }
+
+        private async Task<IEnumerable<(Cargo? Cargo, Usuario Usuario)>> BuscarProfessorUltimaAula(RegistroFrequenciaFaltanteDto turma)
+        {
+            var professorRf = turma?.Aulas
+                ?.OrderBy(o => o.DataAula)
+                ?.Last()?.ProfessorId;
+
+            return await RetornaUsuarios(professorRf);
         }
 
         private async Task<IEnumerable<(Cargo? Cargo, Usuario Usuario)>> RetornaUsuarios(string procurarRfs)
