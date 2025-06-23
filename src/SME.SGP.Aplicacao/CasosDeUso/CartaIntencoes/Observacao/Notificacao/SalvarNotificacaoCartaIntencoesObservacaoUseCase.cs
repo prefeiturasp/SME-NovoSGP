@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
             return professores?.Select(x => x.ProfessorRf);
         }
 
-        private string ConstruirMensagem(SalvarNotificacaoCartaIntencoesObservacaoDto dados, Turma turma)
+        private static string ConstruirMensagem(SalvarNotificacaoCartaIntencoesObservacaoDto dados, Turma turma)
         {
             var mensagem = new StringBuilder(
                 $"O usuário {dados.Usuario.Nome} ({dados.Usuario.CodigoRf}) inseriu uma nova observação na Carta de intenções da turma " +
@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
             return mensagem.ToString();
         }
 
-        private IEnumerable<string> ObterListaRfs(IEnumerable<string> titulares)
+        private static IEnumerable<string> ObterListaRfs(IEnumerable<string> titulares)
         {
             if (titulares.Count() == 1)
                 return titulares.First().Split(',').Select(rf => rf.Trim());
