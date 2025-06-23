@@ -212,7 +212,7 @@ namespace SME.SGP.Dados.Repositorios
             catch (Exception ex)
             {
                 transacao.Rollback();
-                throw new Exception("Erro ao atualizar ou excluir turmas extintas", ex);
+                throw new NegocioException("Erro ao atualizar ou excluir turmas extintas", ex);
             }
         }
         private string MapearParaCodigosQuerySql(IEnumerable<string> codigos)

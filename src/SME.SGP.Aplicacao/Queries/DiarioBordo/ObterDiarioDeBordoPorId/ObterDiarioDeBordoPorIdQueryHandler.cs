@@ -33,11 +33,8 @@ namespace SME.SGP.Aplicacao
 
             Aula aula = await mediator.Send(new ObterAulaPorIdQuery(diariosBordo.FirstOrDefault(diario => diario.Id == request.Id).AulaId));
 
-            if (aula != null)
-            {
-                if (!aula.Excluido)
-                    componenteCurricularIdPrincipal = await RetornaComponenteCurricularIdPrincipalDoProfessor(aula.TurmaId, long.Parse(aula.DisciplinaId));
-            }
+            if (aula != null && !aula.Excluido)
+                componenteCurricularIdPrincipal = await RetornaComponenteCurricularIdPrincipalDoProfessor(aula.TurmaId, long.Parse(aula.DisciplinaId));
 
             if (componenteCurricularIdPrincipal == 0)
                 throw new NegocioException($"Componente Curricular não encontrado");
