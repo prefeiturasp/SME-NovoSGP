@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
                 var dadosBasicos = (AlunoDadosBasicosDto)dadoAluno;
                 dadosBasicos.DataMatricula = dadoAluno.DataMatricula;
 
-                dadosBasicos.TipoResponsavel = ObterTipoResponsavel(dadoAluno.TipoResponsavel);
+                dadosBasicos.TipoResponsavel = Dominio.ResponsavelExtension.ObterTipoResponsavel(dadoAluno.TipoResponsavel);
                 // se informado periodo escolar carrega marcadores no periodo
                 if (request.PeriodoEscolar.NaoEhNulo())
                     dadosBasicos.Marcador = ObterMarcadorAluno(dadoAluno, request.PeriodoEscolar);
@@ -44,30 +44,6 @@ namespace SME.SGP.Aplicacao
             }
 
             return dadosAlunosDto;
-        }
-
-        private static string ObterTipoResponsavel(string tipoResponsavel)
-        {
-            switch (tipoResponsavel)
-            {
-                case "1":
-                    {
-                        return TipoResponsavel.Filiacao1.Name();
-                    }
-                case "2":
-                    {
-                        return TipoResponsavel.Filiacao2.Name();
-                    }
-                case "3":
-                    {
-                        return TipoResponsavel.ResponsavelLegal.Name();
-                    }
-                case "4":
-                    {
-                        return TipoResponsavel.ProprioEstudante.Name();
-                    }
-            }
-            return TipoResponsavel.Filiacao1.ToString();
         }
 
         public static MarcadorFrequenciaDto ObterMarcadorAluno(AlunoPorTurmaResposta aluno, PeriodoEscolar bimestre, bool ehInfantil = false)

@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
                     dadosBasicos.NomeResponsavel = dadoAluno.NomeSocialAluno;
                 }
 
-                dadosBasicos.TipoResponsavel = ObterTipoResponsavel(dadoAluno.TipoResponsavel);
+                dadosBasicos.TipoResponsavel = Dominio.ResponsavelExtension.ObterTipoResponsavel(dadoAluno.TipoResponsavel);
                 // se informado periodo escolar carrega marcadores no periodo
                 if (request.PeriodoEscolar.NaoEhNulo())
                     dadosBasicos.Marcador = await mediator.Send(new ObterMarcadorAlunoQuery(dadoAluno, request.PeriodoEscolar.PeriodoInicio, request.EhInfantil));
@@ -49,13 +49,6 @@ namespace SME.SGP.Aplicacao
             }
 
             return dadosAlunosDto;
-        }
-
-        private string ObterTipoResponsavel(string tipoResponsavel)
-        {
-            return !string.IsNullOrEmpty(tipoResponsavel) ?
-                 ((TipoResponsavel)Enum.Parse(typeof(TipoResponsavel), tipoResponsavel)).Name() :
-                 TipoResponsavel.Filiacao1.Name();
         }
     }
 }
