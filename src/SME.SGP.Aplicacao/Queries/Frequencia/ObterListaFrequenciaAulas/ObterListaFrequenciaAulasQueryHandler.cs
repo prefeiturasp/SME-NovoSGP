@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
                     DataSituacao = aluno.DataSituacao,
                     DataNascimento = aluno.DataNascimento,
                     NomeResponsavel = aluno.NomeResponsavel,
-                    TipoResponsavel = ObterTipoResponsavel(aluno.TipoResponsavel),
+                    TipoResponsavel = Dominio.ResponsavelExtension.ObterTipoResponsavel(aluno.TipoResponsavel),
                     CelularResponsavel = aluno.CelularResponsavel,
                     DataAtualizacaoContato = aluno.DataAtualizacaoContato,
                     EhAtendidoAEE = alunoPossuiPlanoAEE,
@@ -90,7 +90,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, int anoLetivo)
         {
-            return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
+            return await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
         }
         private bool RegistraFrequencia(bool registraFrequencia, IEnumerable<Aula> aulas, Turma turma)
         {
@@ -116,30 +116,5 @@ namespace SME.SGP.Aplicacao
 
             return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Info, Percentual = percentualFrequenciaLabel };
         }
-
-        private string ObterTipoResponsavel(string tipoResponsavel)
-        {
-            switch (tipoResponsavel)
-            {
-                case "1":
-                    {
-                        return TipoResponsavel.Filiacao1.Name();
-                    }
-                case "2":
-                    {
-                        return TipoResponsavel.Filiacao2.Name();
-                    }
-                case "3":
-                    {
-                        return TipoResponsavel.ResponsavelLegal.Name();
-                    }
-                case "4":
-                    {
-                        return TipoResponsavel.ProprioEstudante.Name();
-                    }
-            }
-            return TipoResponsavel.Filiacao1.ToString();
-        }
-
     }
 }

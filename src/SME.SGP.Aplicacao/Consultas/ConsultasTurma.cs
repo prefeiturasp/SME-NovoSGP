@@ -137,7 +137,7 @@ namespace SME.SGP.Aplicacao
                     dadosBasicos.NomeResponsavel = dadoAluno.NomeSocialAluno;
                 }
 
-                dadosBasicos.TipoResponsavel = ObterTipoResponsavel(dadoAluno.TipoResponsavel);
+                dadosBasicos.TipoResponsavel = Dominio.ResponsavelExtension.ObterTipoResponsavel(dadoAluno.TipoResponsavel);
                 // se informado periodo escolar carrega marcadores no periodo
                 if (periodoEscolar.NaoEhNulo())
                     dadosBasicos.Marcador = servicoAluno.ObterMarcadorAluno(dadoAluno, periodoEscolar, ehInfantil);
@@ -152,29 +152,5 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> ObterTurmaEspecialPorCodigo(string turmaCodigo)
             => await repositorioTurma.ObterTurmaEspecialPorCodigo(turmaCodigo);
-
-        private string ObterTipoResponsavel(string tipoResponsavel)
-        {
-            switch (tipoResponsavel)
-            {
-                case "1":
-                    {
-                        return TipoResponsavel.Filiacao1.Name();
-                    }
-                case "2":
-                    {
-                        return TipoResponsavel.Filiacao2.Name();
-                    }
-                case "3":
-                    {
-                        return TipoResponsavel.ResponsavelLegal.Name();
-                    }
-                case "4":
-                    {
-                        return TipoResponsavel.ProprioEstudante.Name();
-                    }
-            }
-            return TipoResponsavel.Filiacao1.ToString();
-        }
     }
 }

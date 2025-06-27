@@ -63,9 +63,9 @@ namespace SME.SGP.Aplicacao
                     NumeroChamada = aluno.ObterNumeroAlunoChamada(),
                     Situacao = aluno.SituacaoMatricula,
                     SituacaoCodigo = aluno.CodigoSituacaoMatricula,
-                    TipoResponsavel = ObterTipoResponsavel(aluno.TipoResponsavel),
+                    TipoResponsavel = Dominio.ResponsavelExtension.ObterTipoResponsavel(aluno.TipoResponsavel),
                     EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, anoLetivo)),
-                    Frequencia=frequencia,
+                    Frequencia = frequencia,
                 },
                 Anotacao = anotacao.Anotacao,
                 Auditoria = (AuditoriaDto)anotacao,
@@ -80,30 +80,6 @@ namespace SME.SGP.Aplicacao
                     },
                 MotivoAusenciaId = anotacao.MotivoAusenciaId.NaoEhNulo() ? anotacao.MotivoAusenciaId.Value : 0,
             };
-        }
-
-        private string ObterTipoResponsavel(string tipoResponsavel)
-        {
-            switch (tipoResponsavel)
-            {
-                case "1":
-                    {
-                        return TipoResponsavel.Filiacao1.Name();
-                    }
-                case "2":
-                    {
-                        return TipoResponsavel.Filiacao2.Name();
-                    }
-                case "3":
-                    {
-                        return TipoResponsavel.ResponsavelLegal.Name();
-                    }
-                case "4":
-                    {
-                        return TipoResponsavel.ProprioEstudante.Name();
-                    }
-            }
-            return TipoResponsavel.Filiacao1.ToString();
         }
     }
 }
