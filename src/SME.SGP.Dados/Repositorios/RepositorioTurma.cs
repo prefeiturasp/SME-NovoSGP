@@ -211,8 +211,8 @@ namespace SME.SGP.Dados.Repositorios
             }
             catch (Exception ex)
             {
-                var erro = new Exception("Erro ao atualizar ou excluir turmas extintas", ex);
                 transacao.Rollback();
+                throw new NegocioException("Erro ao atualizar ou excluir turmas extintas", ex);
             }
         }
         private string MapearParaCodigosQuerySql(IEnumerable<string> codigos)

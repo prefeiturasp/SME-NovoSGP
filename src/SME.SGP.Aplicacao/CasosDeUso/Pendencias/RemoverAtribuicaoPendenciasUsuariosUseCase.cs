@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
     public class RemoverAtribuicaoPendenciasUsuariosUseCase : AbstractUseCase, IRemoverAtribuicaoPendenciasUsuariosUseCase
     {
         public RemoverAtribuicaoPendenciasUsuariosUseCase(IMediator mediator) : base(mediator)
-        {}
+        { }
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
@@ -29,7 +29,8 @@ namespace SME.SGP.Aplicacao
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendencia.PendenciaId, pendencia.UeId), Guid.NewGuid()));
 
                 var pendenciasSemUes = pendenciaFuncionarios.Where(w => !w.UeId.HasValue).Select(s => s.PendenciaId).Distinct();
-                foreach (var pendencia in pendenciasSemUes)
+
+                if (pendenciasSemUes?.Count() > 0)
                     throw new NegocioException($"Erro na remoção de atribuição de Pendência Perfil Usuário.");
             }
             catch (Exception)

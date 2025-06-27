@@ -91,7 +91,7 @@ namespace SME.SGP.Aplicacao
             foreach (var diarioDeBordo in diariosDeBordos)
             {
                 if((diarioDeBordo?.Planejamento).NaoEhNulo())
-                    await ExcluirArquivo(diarioDeBordo.Planejamento,TipoArquivo.DiarioBordo);
+                    await ExcluirArquivo(diarioDeBordo?.Planejamento,TipoArquivo.DiarioBordo);
             }
         }
         

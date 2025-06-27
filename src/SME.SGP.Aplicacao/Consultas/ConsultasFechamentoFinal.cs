@@ -1,17 +1,15 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.Infra.Utilitarios;
-using SME.SGP.Aplicacao.Queries;
-using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -79,14 +77,14 @@ namespace SME.SGP.Aplicacao
 
             if (fechamentoDoUltimoBimestre.EhNulo() || !fechamentoDoUltimoBimestre.Any())
                 throw new NegocioException($"Para acessar este aba você precisa realizar o fechamento do {ultimoPeriodoEscolar.Bimestre}º  bimestre.");
-            
+
             var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turma.CodigoTurma, turma.AnoLetivo));
-            
+
             if (alunosDaTurma.EhNulo() || !alunosDaTurma.Any())
                 throw new NegocioException("Não foram encontrandos alunos para a turma informada.");
 
             var turmaEOL = await mediator.Send(new ObterDadosTurmaEolPorCodigoQuery(turma.CodigoTurma));
-            
+
             var tipoNota = await mediator.Send(new ObterNotaTipoValorPorTurmaIdQuery(turma));
             if (tipoNota.EhNulo())
                 throw new NegocioException("Não foi possível localizar o tipo de nota para esta turma.");
@@ -100,7 +98,7 @@ namespace SME.SGP.Aplicacao
 
             var periodoFechamentoFinal = await mediator.Send(new ObterPeriodoFechamentoPorCalendarioIdEBimestreQuery(tipoCalendario.Id, turma.EhTurmaInfantil, turma.EhTurmaModalidadeSemestral() ? 2 : 4));
 
-            if(periodoFechamentoFinal.EhNulo())
+            if (periodoFechamentoFinal.EhNulo())
                 throw new NegocioException("Não foi possível localizar o período de fechamento final para essa turma.");
 
             var datasFechamentoFinal = new PeriodoEscolar()
@@ -228,7 +226,7 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
-        private async Task<IEnumerable<FechamentoNotaAlunoDto>> ObterNotasFechamentosBimestres(long disciplinaCodigo, Turma turma, bool ehNota,long? tipoCalendario = null)
+        private async Task<IEnumerable<FechamentoNotaAlunoDto>> ObterNotasFechamentosBimestres(long disciplinaCodigo, Turma turma, bool ehNota, long? tipoCalendario = null)
         {
             var listaRetorno = new List<FechamentoNotaAlunoDto>();
             var fechamentosTurmaDisciplina = await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(turma.Id, new long[] { disciplinaCodigo }, -1, tipoCalendario);
@@ -241,10 +239,11 @@ namespace SME.SGP.Aplicacao
                                             nota?.Nota.ToString() :
                                             nota?.ConceitoId.ToString();
 
-                listaRetorno.Add(new FechamentoNotaAlunoDto(nota.Bimestre.Value,
-                                                            notaParaAdicionar,
-                                                            nota.ComponenteCurricularId,
-                                                            nota.AlunoCodigo));
+                if (nota != null)
+                    listaRetorno.Add(new FechamentoNotaAlunoDto(nota.Bimestre.Value,
+                                                                notaParaAdicionar,
+                                                                nota.ComponenteCurricularId,
+                                                                nota.AlunoCodigo));
             }
 
             return listaRetorno;
@@ -274,7 +273,7 @@ namespace SME.SGP.Aplicacao
             var percentualFrequencia = frequenciaAluno?.PercentualFrequencia;
 
             if (frequenciaAluno.NaoEhNulo() && turma.AnoLetivo.Equals(2020))
-                percentualFrequencia = frequenciaAluno.PercentualFrequenciaFinal;
+                percentualFrequencia = frequenciaAluno?.PercentualFrequenciaFinal;
 
             var percentualFrequenciaFormatado = percentualFrequencia.HasValue ? FrequenciaAluno.FormatarPercentual(percentualFrequencia.GetValueOrDefault()) : string.Empty;
 

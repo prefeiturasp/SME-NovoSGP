@@ -13,7 +13,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
-using SME.SGP.Auditoria.Worker;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
 using SME.SGP.Infra.Utilitarios;
