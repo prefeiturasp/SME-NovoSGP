@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<RetornoBaseDto> Handle(ExcluirAulaUnicaCommand request, CancellationToken cancellationToken)
         {
-            var aula = await repositorioAula.ObterPorIdAsync(request.AulaId);
+            var aula = request.Aula;
 
             if (await mediator.Send(new AulaPossuiAvaliacaoQuery(aula, request.Usuario.CodigoRf), cancellationToken))
                 throw new NegocioException("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");            
@@ -62,9 +62,9 @@ namespace SME.SGP.Aplicacao
             
             await mediator.Send(new RecalcularFrequenciaPorTurmaCommand(aula.TurmaId, aula.DisciplinaId, aula.Id), cancellationToken);
 
-            await ExcluirArquivoAnotacaoFrequencia(request.AulaId);
-            await ExcluirArquivosPlanoAula(request.AulaId);
-            await RemoverArquivosDiarioBordo(request.AulaId);
+            await ExcluirArquivoAnotacaoFrequencia(request.Aula.Id);
+            await ExcluirArquivosPlanoAula(request.Aula.Id);
+            await RemoverArquivosDiarioBordo(request.Aula.Id);
 
             var retorno = new RetornoBaseDto();
             retorno.Mensagens.Add("Aula excluída com sucesso.");
