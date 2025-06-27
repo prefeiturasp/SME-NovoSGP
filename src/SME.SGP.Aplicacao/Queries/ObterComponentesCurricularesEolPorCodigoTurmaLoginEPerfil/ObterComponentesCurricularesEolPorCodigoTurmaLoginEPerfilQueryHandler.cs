@@ -34,6 +34,8 @@ namespace SME.SGP.Aplicacao
             
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
+                var jsonTest = Newtonsoft.Json.JsonConvert.SerializeObject(request);
+                Console.WriteLine(jsonTest);
                 var json = await resposta.Content.ReadAsStringAsync();
                 componenteCurricularEol = JsonConvert.DeserializeObject<List<ComponenteCurricularEol>>(json);
                 var componentesCurricularesSgp = await mediator.Send(new ObterInfoPedagogicasComponentesCurricularesPorIdsQuery(componenteCurricularEol.ObterCodigos()));

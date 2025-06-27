@@ -21,6 +21,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesDoProfessorNaTurmaQuery request, CancellationToken cancellationToken)
         {
+            // Quero o json do request
+            var jsonTest = Newtonsoft.Json.JsonConvert.SerializeObject(request);
             string nomechavecache = string.Format(NomeChaveCache.COMPONENTES_PROFESSOR_TURMA,
                                                   request.Login,
                                                   request.CodigoTurma,

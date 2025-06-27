@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.Xml;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -90,7 +91,10 @@ namespace SME.SGP.Aplicacao
                                                                                  dataConsulta);
 
                 if (usuarioLogado.EhSomenteProfessorCj())
-                    componentesCurricularesEolProfessor.AddRange(await ObterComponentesCurricularesProfessorCJ(usuarioLogado.Login));               
+                    componentesCurricularesEolProfessor.AddRange(await ObterComponentesCurricularesProfessorCJ(usuarioLogado.Login));          
+                
+                var jsonAulasTest = JsonSerializer.Serialize(aulasDoDia, new JsonSerializerOptions { WriteIndented = true });
+                var jsonComponentesCurricularesTest = JsonSerializer.Serialize(componentesCurricularesEolProfessor, new JsonSerializerOptions { WriteIndented = true });
 
                 aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesEolProfessor);
             }

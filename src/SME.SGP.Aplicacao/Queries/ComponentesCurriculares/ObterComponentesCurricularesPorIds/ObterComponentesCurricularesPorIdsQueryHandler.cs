@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes;
+using System.Text.Json;
 
 namespace SME.SGP.Aplicacao
 {
@@ -51,6 +52,7 @@ namespace SME.SGP.Aplicacao
             
             var resposta = await httpClient.PostAsync(ServicosEolConstants.URL_COMPONENTES_CURRICULARES_AGRUPAMENTO_TERRITORIO_SABER, 
                                                     new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
+
             if (!resposta.IsSuccessStatusCode)
             {
                 var mensagem = await resposta.Content.ReadAsStringAsync();

@@ -51,7 +51,9 @@ namespace SME.SGP.Aplicacao
                 
             var aulasCriadasPeloSistema = aulas.Except(aulasCriadasOuExcluidasPorUsuario);
             if (aulas.NaoPossuiRegistros())
-            {
+            { // Esse if não faz sentido pois o método FiltrarAulasCriacao ira excluir todas as aulasCriadasPeloSistema que estão em aulasCriadasOuExcluidasPorUsuario
+              // Então, se o método não retornar nada não há necessidade de continuar o processamento.
+              // ObterAulasParaCriacao usam os dados de aulasCriadasPeloSistema como base para fazer o retorno
                 var periodoTurmaConsiderado = FiltrarDiasAposInicioTurma(diasParaCriarAula, turma);
                 await RecuperarDiariosBordoComAulaExcluida(request.CodigosDisciplinasConsideradas.ToArray(), tipoCalendarioId, diariosBordoComAulaExcluida, turma.CodigoTurma, periodoTurmaConsiderado, cancellationToken);
                 var aulasCriacao = FiltrarAulasCriacao(await ObterAulasParaCriacao(request, periodoTurmaConsiderado, diasLetivos, diasNaoLetivos, aulasCriadasPeloSistema),
@@ -216,7 +218,7 @@ namespace SME.SGP.Aplicacao
                                                                                                 IEnumerable<Aula> aulasCriadasPeloSistema)
         {
             var diasParaCriar = diasDoPeriodo
-                .Where(l => !l.Data.FimDeSemana() && (diasLetivos.NaoEhNulo() && diasLetivos.Any(n => n.Data == l.Data) || (diasNaoLetivos.EhNulo() || !diasNaoLetivos.Any(n => n.Data == l.Data))))?
+                .Where(l => !l.Data.FimDeSemana() && (diasLetivos.NaoEhNulo() && diasLetivos.Any(n => n.Data == l.Data) || diasNaoLetivos.EhNulo() || !diasNaoLetivos.Any(n => n.Data == l.Data)))?
                 .ToList();
 
             return await ObterListaDeAulas(diasParaCriar?.DistinctBy(c => c.Data)?.ToList(), 
