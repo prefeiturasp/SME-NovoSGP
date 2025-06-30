@@ -1,29 +1,38 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using SME.SGP.Aplicacao;
+using Microsoft.Extensions.ObjectPool;
+using RabbitMQ.Client;
 using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados;
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Consts;
 using SME.SGP.Infra.Contexto;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
+using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC;
 using SME.SGP.TesteIntegracao.ServicosFakes;
+using System;
 using System.Data;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.ObjectPool;
-using RabbitMQ.Client;
-using SME.SGP.Infra.Interface;
-using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.TesteIntegracao.Setup
 {
-    public class RegistradorDependencias : RegistrarDependencias
+    public class RegistradorDependenciasTeste : RegistrarDependencias
     {
+        // Handler único para ser configurado pelos testes
+        public static readonly FakeHttpMessageHandler HttpHandlerFake = new FakeHttpMessageHandler();
+
+        public override void Registrar(IServiceCollection services, IConfiguration configuration)
+        {
+            // Limpa cenários anteriores para garantir o isolamento entre coleções de testes
+            HttpHandlerFake.LimparCenarios();
+            base.Registrar(services, configuration);
+        }
         protected override void RegistrarContextos(IServiceCollection services)
         {
             services.TryAddScoped<IHttpContextAccessor, HttpContextAccessorFake>();
