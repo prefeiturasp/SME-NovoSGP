@@ -140,8 +140,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private Task SalvarCacheUsuario(Usuario usuario)
-            => mediator.Send(new SalvarCachePorValorObjetoCommand(string.Format(NomeChaveCache.USUARIO, usuario.Login)
-                                                                , usuario));
+            => mediator.Send(new SalvarCachePorValorObjetoCommand(string.Format(NomeChaveCache.USUARIO, usuario.Login), usuario, 1440));
 
         private AdministradorSuporteDto ObterAdministradorSuporte(SuporteUsuario suporte, Usuario usuarioSimulado)
         {
