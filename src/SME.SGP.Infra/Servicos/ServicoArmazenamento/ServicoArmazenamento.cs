@@ -99,7 +99,7 @@ namespace SME.SGP.Infra
             return $"{configuracaoArmazenamentoOptions.BucketArquivos}/{nomeArquivo}";
         }
 
-        private async Task OtimizarArquivos(string nomeArquivo)
+        public async Task OtimizarArquivos(string nomeArquivo)
         {
             var ehImagem = nomeArquivo.EhArquivoImagemParaOtimizar();
 

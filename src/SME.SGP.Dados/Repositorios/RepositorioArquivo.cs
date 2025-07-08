@@ -69,5 +69,17 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { arquivoCodigo });
         }
+
+        public async Task<IEnumerable<Arquivo>> ObterComprimir(DateTime dataInicio, DateTime dataFim)
+        {
+            const string query = @"select * 
+                                    from arquivo
+                                    where criado_em > @dataInicio
+                                        and criado_em < @dataFim
+                                        and tipo_conteudo <> 'application/pdf'
+                                    order by criado_em desc";
+
+            return await database.Conexao.QueryAsync<Arquivo>(query, new { dataInicio, dataFim });
+        }
     }
 }

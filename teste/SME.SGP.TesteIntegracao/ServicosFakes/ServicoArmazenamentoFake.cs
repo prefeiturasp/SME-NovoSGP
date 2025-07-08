@@ -72,5 +72,10 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
         {
             return urlImagemArquivo;
         }
+
+        public Task OtimizarArquivos(string nomeArquivo)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

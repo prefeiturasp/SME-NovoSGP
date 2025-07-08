@@ -13,5 +13,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<bool> ExcluirArquivoPorId(long id);
         Task<long> ObterIdPorCodigo(Guid arquivoCodigo);
         Task<bool> ExcluirArquivosPorIds(long[] ids);
+        Task<IEnumerable<Arquivo>> ObterComprimir(DateTime dataInicio, DateTime dataFim);
     }
 }

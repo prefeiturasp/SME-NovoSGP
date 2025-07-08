@@ -12,5 +12,6 @@ namespace SME.SGP.Infra.Interface
         Task<bool> Excluir(string nomeArquivo, string nomeBucket = "");
         Task<IEnumerable<string>> ObterBuckets();
         string Obter(string nomeArquivo, bool ehPastaTemp);
+        Task OtimizarArquivos(string nomeArquivo);
     }
 }

@@ -1,16 +1,18 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Infra.Interface;
 using System;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
     public class DownloadArquivoInformativoUseCase : DownloadDeArquivoUseCase, IDownloadArquivoInformativoUseCase
     {
-        public DownloadArquivoInformativoUseCase(IMediator mediator) : base(mediator)
+        private readonly IServicoArmazenamento servicoArmazenamento;
+        public DownloadArquivoInformativoUseCase(IMediator mediator, IServicoArmazenamento servicoArmazenamento) : base(mediator, servicoArmazenamento)
         {
+            this.servicoArmazenamento = servicoArmazenamento;
         }
 
         protected override async Task<Arquivo> ObterArquivoPorCodigo(Guid codigoArquivo)
