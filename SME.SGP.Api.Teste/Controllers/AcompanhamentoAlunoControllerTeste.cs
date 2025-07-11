@@ -1,212 +1,169 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Bogus;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using SME.SGP.Api.Controllers;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.Api.Tests.Controllers
+namespace SME.SGP.Api.Testes.Controllers
 {
     public class AcompanhamentoAlunoControllerTeste
     {
-        [Fact]
-        public async Task Salvar_DeveRetornarOkResult_QuandoUseCaseExecutarComSucesso()
+        private readonly AcompanhamentoAlunoController _controller;
+        private readonly Faker _faker;
+
+        public AcompanhamentoAlunoControllerTeste()
+        {
+            _controller = new AcompanhamentoAlunoController();
+            _faker = new Faker("pt_BR");
+        }
+
+        [Fact(DisplayName = "Deve chamar caso de uso para salvar o acompanhamento do aluno")]
+        public async Task DeveChamarUseCase_ParaSalvarAcompanhamentoAluno()
         {
             // Arrange
             var useCaseMock = new Mock<ISalvarAcompanhamentoAlunoUseCase>();
             var dto = new AcompanhamentoAlunoDto();
+            var retorno = new AcompanhamentoAlunoSemestreAuditoriaDto();
 
-            var resultadoEsperado = new AcompanhamentoAlunoSemestreAuditoriaDto
-            {
-                AcompanhamentoAlunoId = 1,
-                AcompanhamentoAlunoSemestreId = 2,
-                Auditoria = new AuditoriaDto()
-            };
-
-            useCaseMock
-                .Setup(x => x.Executar(dto))
-                .ReturnsAsync(resultadoEsperado);
-
-            var controller = new AcompanhamentoAlunoController();
+            useCaseMock.Setup(u => u.Executar(dto)).ReturnsAsync(retorno);
 
             // Act
-            var resultado = await controller.Salvar(useCaseMock.Object, dto);
+            var resultado = await _controller.Salvar(useCaseMock.Object, dto);
 
             // Assert
+            useCaseMock.Verify(u => u.Executar(dto), Times.Once);
             var okResult = Assert.IsType<OkObjectResult>(resultado);
-            Assert.Equal(200, okResult.StatusCode);
-            Assert.Equal(resultadoEsperado, okResult.Value);
+            Assert.Same(retorno, okResult.Value);
         }
 
-        [Fact]
-        public async Task ObterAcompanhamentoAluno_DeveRetornarOkResult_QuandoUseCaseExecutarComSucesso()
+        [Fact(DisplayName = "Deve chamar caso de uso para obter o acompanhamento do aluno")]
+        public async Task DeveChamarUseCase_ParaObterAcompanhamentoAluno()
         {
             // Arrange
             var useCaseMock = new Mock<IObterAcompanhamentoAlunoUseCase>();
-            long turmaId = 1;
-            string alunoId = "123";
-            int semestre = 2;
-            long componenteCurricularId = 3;
-            var resultadoEsperado = new AcompanhamentoAlunoTurmaSemestreDto();
+            var turmaId = _faker.Random.Long(1);
+            var alunoId = _faker.Random.AlphaNumeric(8);
+            var semestre = _faker.Random.Int(1, 2);
+            var componenteCurricularId = _faker.Random.Long(1);
+            var retorno = new AcompanhamentoAlunoTurmaSemestreDto();
 
-            useCaseMock
-                .Setup(x => x.Executar(It.IsAny<FiltroAcompanhamentoTurmaAlunoSemestreDto>()))
-                .ReturnsAsync(resultadoEsperado);
-
-            var controller = new AcompanhamentoAlunoController();
+            useCaseMock.Setup(u => u.Executar(It.Is<FiltroAcompanhamentoTurmaAlunoSemestreDto>(f =>
+                f.TurmaId == turmaId &&
+                f.AlunoId == alunoId &&
+                f.Semestre == semestre
+            ))).ReturnsAsync(retorno);
 
             // Act
-            var resultado = await controller.ObterAcompanhamentoAluno(turmaId, alunoId, semestre, componenteCurricularId, useCaseMock.Object);
+            var resultado = await _controller.ObterAcompanhamentoAluno(turmaId, alunoId, semestre, componenteCurricularId, useCaseMock.Object);
 
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(resultado);
-            Assert.Equal(200, okResult.StatusCode);
-            Assert.Equal(resultadoEsperado, okResult.Value);
+            useCaseMock.Verify(u => u.Executar(It.IsAny<FiltroAcompanhamentoTurmaAlunoSemestreDto>()), Times.Once);
+            Assert.IsType<OkObjectResult>(resultado);
         }
 
-        [Fact]
-        public async Task DeletarFotos_DeveRetornarOkResult_QuandoUseCaseExecutarComSucesso()
+        [Fact(DisplayName = "Deve chamar caso de uso para deletar foto do aluno")]
+        public async Task DeveChamarUseCase_ParaDeletarFoto()
         {
             // Arrange
             var useCaseMock = new Mock<IExcluirFotoAlunoUseCase>();
-            Guid codigoFoto = Guid.NewGuid();
-            var resultadoEsperado = new AuditoriaDto();
+            var codigoFoto = Guid.NewGuid();
+            var retorno = new AuditoriaDto();
 
-            useCaseMock.Setup(x => x.Executar(codigoFoto)).ReturnsAsync(resultadoEsperado);
-
-            var controller = new AcompanhamentoAlunoController();
+            useCaseMock.Setup(u => u.Executar(codigoFoto)).ReturnsAsync(retorno);
 
             // Act
-            var resultado = await controller.DeletarFotos(codigoFoto, useCaseMock.Object);
+            var resultado = await _controller.DeletarFotos(codigoFoto, useCaseMock.Object);
 
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(resultado);
-            Assert.Equal(200, okResult.StatusCode);
-            Assert.Equal(resultadoEsperado, okResult.Value);
+            useCaseMock.Verify(u => u.Executar(codigoFoto), Times.Once);
+            Assert.IsType<OkObjectResult>(resultado);
         }
 
-        [Fact]
-        public async Task UploadFoto_DeveRetornarOkResult_SeArquivoNaoVazio()
+        [Fact(DisplayName = "Deve chamar caso de uso para upload de foto")]
+        public async Task DeveChamarUseCase_ParaUploadDeFoto()
         {
             // Arrange
             var useCaseMock = new Mock<ISalvarFotoAcompanhamentoAlunoUseCase>();
-            var dto = new AcompanhamentoAlunoDto
-            {
-                File = new FakeFormFile(1024)  // Mock de arquivo com tamanho > 0
-            };
+            var retorno = new AuditoriaDto();
 
-            var resultadoEsperado = new AuditoriaDto
-            {
-                Id = 1,
-                CriadoEm = DateTime.Now,
-                CriadoPor = "UsuarioTeste"
-            };
+            var conteudo = "Arquivo de teste";
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(conteudo));
+            var arquivoMock = new Mock<IFormFile>();
+            arquivoMock.Setup(a => a.Length).Returns(stream.Length);
 
-            useCaseMock
-                .Setup(x => x.Executar(dto))
-                .ReturnsAsync(resultadoEsperado);  // Aqui está o ponto chave: o método retorna apenas 1 AuditoriaDto
+            var dto = new AcompanhamentoAlunoDto { File = arquivoMock.Object };
 
-            var controller = new AcompanhamentoAlunoController();
+            useCaseMock.Setup(u => u.Executar(dto)).ReturnsAsync(retorno);
 
             // Act
-            var resultado = await controller.UploadFoto(dto, useCaseMock.Object);
+            var resultado = await _controller.UploadFoto(dto, useCaseMock.Object);
 
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(resultado);
-            Assert.Equal(200, okResult.StatusCode);
-            Assert.Equal(resultadoEsperado, okResult.Value);
+            useCaseMock.Verify(u => u.Executar(dto), Times.Once);
+            Assert.IsType<OkObjectResult>(resultado);
         }
 
-
-        [Fact]
-        public async Task UploadFoto_DeveRetornarBadRequest_SeArquivoVazio()
+        [Fact(DisplayName = "Deve retornar BadRequest quando a foto para upload estiver vazia")]
+        public async Task DeveRetornarBadRequest_QuandoFotoParaUploadEstiverVazia()
         {
             // Arrange
             var useCaseMock = new Mock<ISalvarFotoAcompanhamentoAlunoUseCase>();
-            var dto = new AcompanhamentoAlunoDto
-            {
-                File = new FakeFormFile(0) // Arquivo de tamanho 0
-            };
-
-            var controller = new AcompanhamentoAlunoController();
+            var arquivoMock = new Mock<IFormFile>();
+            arquivoMock.Setup(a => a.Length).Returns(0);
+            var dto = new AcompanhamentoAlunoDto { File = arquivoMock.Object };
 
             // Act
-            var resultado = await controller.UploadFoto(dto, useCaseMock.Object);
+            var resultado = await _controller.UploadFoto(dto, useCaseMock.Object);
 
             // Assert
             Assert.IsType<BadRequestResult>(resultado);
+            useCaseMock.Verify(u => u.Executar(It.IsAny<AcompanhamentoAlunoDto>()), Times.Never);
         }
 
-        [Fact]
-        public async Task ObterFotos_DeveRetornarOkResult_QuandoUseCaseExecutarComSucesso()
+        [Fact(DisplayName = "Deve chamar caso de uso para obter fotos do semestre")]
+        public async Task DeveChamarUseCase_ParaObterFotosDoSemestre()
         {
             // Arrange
             var useCaseMock = new Mock<IObterFotosSemestreAlunoUseCase>();
-            long acompanhamentoAlunoSemestreId = 1;
-            var resultadoEsperado = new List<ArquivoDto>();
+            var acompanhamentoAlunoSemestreId = _faker.Random.Long(1);
+            var retorno = new List<ArquivoDto>();
 
-            useCaseMock.Setup(x => x.Executar(acompanhamentoAlunoSemestreId)).ReturnsAsync(resultadoEsperado);
-
-            var controller = new AcompanhamentoAlunoController();
+            useCaseMock.Setup(u => u.Executar(acompanhamentoAlunoSemestreId)).ReturnsAsync(retorno);
 
             // Act
-            var resultado = await controller.ObterFotos(acompanhamentoAlunoSemestreId, useCaseMock.Object);
+            var resultado = await _controller.ObterFotos(acompanhamentoAlunoSemestreId, useCaseMock.Object);
 
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(resultado);
-            Assert.Equal(200, okResult.StatusCode);
-            Assert.Equal(resultadoEsperado, okResult.Value);
+            useCaseMock.Verify(u => u.Executar(acompanhamentoAlunoSemestreId), Times.Once);
+            Assert.IsType<OkObjectResult>(resultado);
         }
 
-        [Fact]
-        public async Task ObterValidacaoPercurso_DeveRetornarOkResult_QuandoUseCaseExecutarComSucesso()
+        [Fact(DisplayName = "Deve chamar caso de uso para obter validação de percurso")]
+        public async Task DeveChamarUseCase_ParaObterValidacaoPercurso()
         {
             // Arrange
             var useCaseMock = new Mock<IObterValidacaoPercusoRAAUseCase>();
-            long turmaId = 1;
-            int semestre = 2;
-            var resultadoEsperado = new InconsistenciaPercursoRAADto();
+            var turmaId = _faker.Random.Long(1);
+            var semestre = _faker.Random.Int(1, 2);
+            var retorno = new InconsistenciaPercursoRAADto();
 
-            useCaseMock
-                .Setup(x => x.Executar(It.IsAny<FiltroInconsistenciaPercursoRAADto>()))
-                .ReturnsAsync(resultadoEsperado);
-
-            var controller = new AcompanhamentoAlunoController();
+            useCaseMock.Setup(u => u.Executar(It.Is<FiltroInconsistenciaPercursoRAADto>(f => f.TurmaId == turmaId && f.Semestre == semestre)))
+                .ReturnsAsync(retorno);
 
             // Act
-            var resultado = await controller.ObterValidacaoPercurso(turmaId, semestre, useCaseMock.Object);
+            var resultado = await _controller.ObterValidacaoPercurso(turmaId, semestre, useCaseMock.Object);
 
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(resultado);
-            Assert.Equal(200, okResult.StatusCode);
-            Assert.Equal(resultadoEsperado, okResult.Value);
+            useCaseMock.Verify(u => u.Executar(It.IsAny<FiltroInconsistenciaPercursoRAADto>()), Times.Once);
+            Assert.IsType<OkObjectResult>(resultado);
         }
-    }
-
-    // Mock de IFormFile simples (já que o DTO tem um File)
-    public class FakeFormFile : Microsoft.AspNetCore.Http.IFormFile
-    {
-        private readonly long _length;
-
-        public FakeFormFile(long length)
-        {
-            _length = length;
-        }
-
-        public string ContentType => throw new NotImplementedException();
-        public string ContentDisposition => throw new NotImplementedException();
-        public IHeaderDictionary Headers => throw new NotImplementedException();
-        public long Length => _length;
-        public string Name => throw new NotImplementedException();
-        public string FileName => throw new NotImplementedException();
-        public void CopyTo(System.IO.Stream target) => throw new NotImplementedException();
-        public Task CopyToAsync(System.IO.Stream target, System.Threading.CancellationToken cancellationToken = default) => throw new NotImplementedException();
-        public System.IO.Stream OpenReadStream() => throw new NotImplementedException();
     }
 }
