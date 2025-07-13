@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao
 
                 if (turma.ModalidadeCodigo != Modalidade.Fundamental && codigosComplementares.Any())
                     turmasCodigos.AddRange(codigosComplementares);
-                
+
                 var componentesDaTurmaES = await mediator.Send(new ObterInfoComponentesCurricularesESPorTurmasCodigoQuery(turmasCodigos.ToArray()));
 
                 if (componentesDaTurmaES.NaoEhNulo() && componentesDaTurmaES.Any())
@@ -102,7 +102,12 @@ namespace SME.SGP.Aplicacao
 
                     //Exceção de disciplina ED. Fisica para modalidade EJA
                     if (turma.EhEJA())
-                        componentesDaTurmaES = componentesDaTurmaES.Where(a => a.Codigo != EdFisica);
+                    {
+                        var matriculasAluno = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(turma.CodigoTurma, filtro.AlunoCodigo));
+                        var dispensadoEdFisica = matriculasAluno?.Where(m => m.CodigoTurma.ToString() == turma.CodigoTurma && m.CodigoSituacaoMatricula == SituacaoMatriculaAluno.DispensadoEdFisica)?.FirstOrDefault();
+                        if (dispensadoEdFisica != null)
+                            componentesDaTurmaES = componentesDaTurmaES.Where(a => a.Codigo != EdFisica);
+                    }
 
                     var possuiComponentesSemNotaConceito = componentesDaTurmaES
                         .Where(ct => ct.LancaNota && !ct.EhTerritorioSaber)
@@ -161,11 +166,11 @@ namespace SME.SGP.Aplicacao
         }
 
         private bool PodeAdicionarNota(
-                                       MensagemConsolidacaoConselhoClasseAlunoDto filtro, 
+                                       MensagemConsolidacaoConselhoClasseAlunoDto filtro,
                                        List<ComponenteCurricularDto> componentes)
         {
             var possuiIdComponente = filtro.ComponenteCurricularId.HasValue && filtro.ComponenteCurricularId != 0;
-            
+
             return possuiIdComponente && !componentes.Any(cc => cc.Codigo.Equals(filtro.ComponenteCurricularId.ToString()));
         }
 
@@ -284,7 +289,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task<bool> SalvarConsolidacaoConselhoClasseNota(Turma turma, long componenteCurricularId, long consolidadoTurmaAlunoId,
-                                                                      IEnumerable<NotaConceitoBimestreComponenteDto> notaConceitoBimestreComponenteDto, 
+                                                                      IEnumerable<NotaConceitoBimestreComponenteDto> notaConceitoBimestreComponenteDto,
                                                                       IEnumerable<FechamentoNotaAlunoAprovacaoDto> fechamentoNotas,
                                                                       MensagemConsolidacaoConselhoClasseAlunoDto filtro,
                                                                       (double? Nota, long? ConceitoId, bool EhNotaConceitoConselhoCache) notaConceitoCache)
