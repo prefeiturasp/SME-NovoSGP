@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace SME.SGP.Dominio
 {
-   public class NotificacaoAulaPrevista :EntidadeBase
+    [ExcludeFromCodeCoverage]
+    public class NotificacaoAulaPrevista :EntidadeBase
     {
         public long NotificacaoCodigo { get; set; }
         public string DisciplinaId { get; set; }

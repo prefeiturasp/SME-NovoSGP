@@ -1,7 +1,9 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SME.SGP.Dominio.Entidades
 {
+    [ExcludeFromCodeCoverage]
     public class ConselhoClasseParecer: EntidadeBase
     {
         public string Nome { get; set; }
