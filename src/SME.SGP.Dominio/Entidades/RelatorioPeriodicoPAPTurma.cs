@@ -1,8 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SME.SGP.Dominio
 {
+    [ExcludeFromCodeCoverage]
     public class RelatorioPeriodicoPAPTurma : EntidadeBase
     {
         public long TurmaId { get; set; }

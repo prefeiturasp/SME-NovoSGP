@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace SME.SGP.Dominio
 {
+    [ExcludeFromCodeCoverage]
     public class HistoricoEscolarObservacao : EntidadeBase
 	{
         public HistoricoEscolarObservacao() { }

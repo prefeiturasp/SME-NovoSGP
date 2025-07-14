@@ -1,5 +1,8 @@
-﻿namespace SME.SGP.Dominio
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace SME.SGP.Dominio
 {
+    [ExcludeFromCodeCoverage]
     public class AulaPrevista : EntidadeBase
     {
         public long TipoCalendarioId { get; set; }

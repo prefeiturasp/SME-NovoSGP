@@ -1,7 +1,9 @@
 ﻿using SME.SGP.Dominio.Enumerados;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SME.SGP.Dominio
 {
+    [ExcludeFromCodeCoverage]
     public class ConsolidadoEncaminhamentoNAAPA : EntidadeBase
     {
         public ConsolidadoEncaminhamentoNAAPA()

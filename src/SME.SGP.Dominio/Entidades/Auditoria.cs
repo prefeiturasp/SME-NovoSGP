@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SME.SGP.Dominio
 {
+    [ExcludeFromCodeCoverage]
     public class Auditoria
     {
         public string Acao { get; set; }
