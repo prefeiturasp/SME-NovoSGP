@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DiarioBordo
             string turmaId = "TURMA-1";
             DateTime dataAula = DateTime.Today;
 
-            var aula = new Aula
+            var aula = new SME.SGP.Dominio.Aula
             {
                 Id = aulaId,
                 TurmaId = turmaId,
