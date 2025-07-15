@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
         {
             var turmas = await mediator.Send(new ObterTurmasInfantilPorUEQuery(anoAtual, ueCodigo));
 
-            if (turmas.EhNulo() && !turmas.Any())
+            if (turmas == null || !turmas.Any())
                 throw new NegocioException("Não foi possível localizar turmas para consolidar dados de Média de Registros Individuais");
 
             return turmas;
