@@ -152,7 +152,7 @@ namespace SME.SGP.Aplicacao
                 dadosAlunos = dadosAlunos.Where(d => !d.EstaInativo() || d.EstaInativo() && d.SituacaoCodigo != SituacaoMatriculaAluno.VinculoIndevido && d.DataSituacao >= dataInicioPrimeiroBimestre);
             }
 
-            var dadosAluno = dadosAlunos.FirstOrDefault(da => da.CodigoEOL.Contains(notasFrequenciaDto.AlunoCodigo));
+            var dadosAluno = dadosAlunos.OrderByDescending(x => x.DataMatricula).FirstOrDefault(da => da.CodigoEOL.Contains(notasFrequenciaDto.AlunoCodigo));
 
             if (situacoesAlunoNaTurma.Count() > 1)
                 dadosAluno = situacoesAlunoNaTurma.Select(d => new AlunoDadosBasicosDto()
@@ -162,7 +162,7 @@ namespace SME.SGP.Aplicacao
                     DataSituacao = d.DataSituacao,
                     SituacaoCodigo = d.CodigoSituacaoMatricula,
                     NumeroChamada = d.NumeroAlunoChamada ?? 0
-                }).FirstOrDefault(d => d.DataMatricula <= periodoFim && d.DataSituacao.Date >= periodoInicio) ?? dadosAluno;
+                }).OrderByDescending(x => x.DataMatricula).FirstOrDefault(d => d.EstaAtivo() && d.DataMatricula <= periodoFim && d.DataSituacao.Date >= periodoInicio) ?? dadosAluno;
 
             bool validaMatricula = false;
 
