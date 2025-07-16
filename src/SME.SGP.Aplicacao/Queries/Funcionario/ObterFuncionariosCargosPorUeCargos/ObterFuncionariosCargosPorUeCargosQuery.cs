@@ -6,9 +6,6 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterFuncionariosCargosPorUeCargosQuery : IRequest<IEnumerable<FuncionarioCargoDTO>>
     {
-        public string UeCodigo;
-        public IEnumerable<int> cargosIdsDaUe;
-
         public ObterFuncionariosCargosPorUeCargosQuery(string ueCodigo, IEnumerable<int> cargosIdsDaUe, string dreCodigo)
         {
             this.UeCodigo = ueCodigo;
@@ -16,6 +13,8 @@ namespace SME.SGP.Aplicacao
             DreCodigo = dreCodigo;
         }
 
+        public string UeCodigo { get; set; }
+        public IEnumerable<int> cargosIdsDaUe { get; set; }
         public string DreCodigo { get; internal set; }
     }
 }

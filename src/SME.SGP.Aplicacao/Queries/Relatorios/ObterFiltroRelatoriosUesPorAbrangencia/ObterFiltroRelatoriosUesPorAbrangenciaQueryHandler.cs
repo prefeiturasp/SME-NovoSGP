@@ -2,7 +2,6 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -37,10 +36,10 @@ namespace SME.SGP.Aplicacao
             var possuiAbrangenciaEmTodasAsUes = await mediator
                 .Send(new ObterUsuarioPossuiAbrangenciaEmTodasAsUesQuery(request.UsuarioLogado.PerfilAtual));
 
-            if (ues.NaoEhNulo() && ues.Any())
+            if (ues != null && ues.Any())
                 ues = ues.OrderBy(c => c.Nome).ToList();
 
-            if (possuiAbrangenciaEmTodasAsUes && ues.Count > 1)
+            if (possuiAbrangenciaEmTodasAsUes && ues?.Count > 1)
                 ues?.Insert(0, new AbrangenciaUeRetorno { Codigo = "-99", NomeSimples = "Todas" });
 
             return ues;

@@ -1,5 +1,8 @@
-﻿namespace SME.SGP.Dominio
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace SME.SGP.Dominio
 {
+    [ExcludeFromCodeCoverage]
     public class AnotacaoFechamentoAluno : EntidadeBase
     {
         public FechamentoAluno FechamentoAluno { get; set; }

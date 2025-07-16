@@ -6,7 +6,6 @@ using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -181,13 +180,13 @@ namespace SME.SGP.Aplicacao
             if (EnumExtension.EhUmDosValores(questaoExistente?.Questao.Tipo, new Enum[] { TipoQuestao.ComboMultiplaEscolha, TipoQuestao.Upload }))
             {
                 if (await RespostaFoiRemovida(questaoExistente, respostasEncaminhamento))
-                    camposAlterados.Add(await ObterNomeQuestao(questaoExistente.Questao));
+                    camposAlterados.Add(await ObterNomeQuestao(questaoExistente?.Questao));
             }
             else
             {
                 var respostasExistentes = questaoExistente?.Respostas?.Where(s => respostasEncaminhamento.Any(c => c.RespostaEncaminhamentoId == s.Id));
 
-                if (respostasExistentes.NaoEhNulo())
+                if (respostasExistentes != null)
                 {
                     foreach (var respostaExistente in respostasExistentes)
                     {

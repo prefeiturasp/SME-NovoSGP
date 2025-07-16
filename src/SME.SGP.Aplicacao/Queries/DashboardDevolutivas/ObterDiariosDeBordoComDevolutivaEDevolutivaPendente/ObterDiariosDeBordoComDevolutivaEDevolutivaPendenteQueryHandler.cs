@@ -25,24 +25,27 @@ namespace SME.SGP.Aplicacao
             var diariosDeBordoPorTurmaAno = await repositorioDiarioBordo.ObterDiariosDeBordoComDevolutivaEDevolutivaPendenteAsync(request.AnoLetivo, request.Modalidade, request.DataAula, request.DreId, request.UeId);
             if (!diariosDeBordoPorTurmaAno?.Any() ?? true) return resultado;
 
-            foreach (var diarioDeBordoPorTurmaAno in diariosDeBordoPorTurmaAno)
+            if (diariosDeBordoPorTurmaAno != null)
             {
-                var diariosComDevolutiva = new GraficoDiariosDeBordoComDevolutivaEDevolutivaPendenteDto
+                foreach (var diarioDeBordoPorTurmaAno in diariosDeBordoPorTurmaAno)
                 {
-                    Descricao = DashboardDevolutivasConstants.QuantidadeComDevolutiva,
-                    Quantidade = diarioDeBordoPorTurmaAno.DiariosComDevolutivas,
-                    TurmaAno = ObterDescricaoTurmaAno(request.UeId.HasValue, diarioDeBordoPorTurmaAno.TurmaAno, request.Modalidade)
-                };
+                    var diariosComDevolutiva = new GraficoDiariosDeBordoComDevolutivaEDevolutivaPendenteDto
+                    {
+                        Descricao = DashboardDevolutivasConstants.QuantidadeComDevolutiva,
+                        Quantidade = diarioDeBordoPorTurmaAno.DiariosComDevolutivas,
+                        TurmaAno = ObterDescricaoTurmaAno(request.UeId.HasValue, diarioDeBordoPorTurmaAno.TurmaAno, request.Modalidade)
+                    };
 
-                var diariosComDevolutivaPendente = new GraficoDiariosDeBordoComDevolutivaEDevolutivaPendenteDto
-                {
-                    Descricao = DashboardDevolutivasConstants.QuantidadeComDevolutivaPendente,
-                    Quantidade = diarioDeBordoPorTurmaAno.DiariosComDevolutivasPendentes,
-                    TurmaAno = ObterDescricaoTurmaAno(request.UeId.HasValue, diarioDeBordoPorTurmaAno.TurmaAno, request.Modalidade)
-                };
+                    var diariosComDevolutivaPendente = new GraficoDiariosDeBordoComDevolutivaEDevolutivaPendenteDto
+                    {
+                        Descricao = DashboardDevolutivasConstants.QuantidadeComDevolutivaPendente,
+                        Quantidade = diarioDeBordoPorTurmaAno.DiariosComDevolutivasPendentes,
+                        TurmaAno = ObterDescricaoTurmaAno(request.UeId.HasValue, diarioDeBordoPorTurmaAno.TurmaAno, request.Modalidade)
+                    };
 
-                resultado.Add(diariosComDevolutiva);
-                resultado.Add(diariosComDevolutivaPendente);
+                    resultado.Add(diariosComDevolutiva);
+                    resultado.Add(diariosComDevolutivaPendente);
+                }
             }
 
             return resultado;

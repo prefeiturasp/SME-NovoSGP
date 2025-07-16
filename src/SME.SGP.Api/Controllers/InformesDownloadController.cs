@@ -17,6 +17,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/armazenamento/informes")]
+    [Authorize("Bearer")]
     public class InformesDownloadController : Controller
     {
         [HttpGet("{informativoId}/anexos/compactados")]

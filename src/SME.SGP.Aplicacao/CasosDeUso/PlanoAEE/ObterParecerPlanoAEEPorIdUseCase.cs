@@ -31,9 +31,9 @@ namespace SME.SGP.Aplicacao
 
             var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
-            var usuarioCoreSSO = responsavel.NaoEhNulo() ? await mediator.Send(new ObterUsuarioCoreSSOQuery(responsavel.CodigoRf)) : null;
+            var usuarioCoreSSO = responsavel != null ? await mediator.Send(new ObterUsuarioCoreSSOQuery(responsavel?.CodigoRf)) : null;
 
-            if (usuarioCoreSSO.NaoEhNulo() && !string.IsNullOrEmpty(usuarioCoreSSO.Nome))
+            if (usuarioCoreSSO.NaoEhNulo() && !string.IsNullOrEmpty(usuarioCoreSSO?.Nome))
                 responsavel.Nome = usuarioCoreSSO.Nome;
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(planoAEE.TurmaId));

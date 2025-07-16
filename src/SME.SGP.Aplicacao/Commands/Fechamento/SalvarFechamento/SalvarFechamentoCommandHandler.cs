@@ -412,7 +412,7 @@ namespace SME.SGP.Aplicacao
                     //verificar retorno e disciplina regencia
                     fechamentoTurmaDisciplina = await mediator.Send(new ObterFechamentoTurmaDisciplinaQuery(fechamentoDto.TurmaId, disciplinaId));
 
-                if (fechamentoTurmaDisciplina.EhNulo())
+                if (fechamentoTurmaDisciplina == null)
                     fechamentoTurmaDisciplina = new FechamentoTurmaDisciplina { DisciplinaId = disciplinaId, Situacao = SituacaoFechamento.ProcessadoComSucesso };
 
                 fechamentoTurmaDisciplina.FechamentoTurma = fechamentoFinalTurma;

@@ -348,7 +348,7 @@ namespace SME.SGP.Aplicacao
                             DisciplinaCodigo = disciplinaParaAdicionar.CodigoComponenteCurricular,
                         };
 
-                        if (nota.NaoEhNulo() && !string.IsNullOrEmpty(nota.NotaConceito))
+                        if (nota != null && !string.IsNullOrEmpty(nota.NotaConceito))
                             notaConceitoTurma.NotaConceito = double.Parse(nota.NotaConceito);
 
                         fechamentoFinalAluno.NotasConceitoBimestre.Add(notaConceitoTurma);
@@ -367,9 +367,9 @@ namespace SME.SGP.Aplicacao
                         EmAprovacao = nota?.EmAprovacao ?? false
                     };
 
-                    if (nota.NaoEhNulo())
+                    if (nota != null)
                     {
-                        var valorNota = tipoNota.EhNota() ? nota.Nota : nota.ConceitoId;
+                        var valorNota = tipoNota.EhNota() ? nota?.Nota : nota?.ConceitoId;
 
                         if (valorNota.HasValue)
                             notaConceitoTurma.NotaConceito = valorNota;
@@ -455,10 +455,10 @@ namespace SME.SGP.Aplicacao
                                             nota?.Nota.ToString() :
                                             nota?.ConceitoId.ToString();
 
-                listaRetorno.Add(new FechamentoNotaAlunoDto(nota.Bimestre.Value,
+                listaRetorno.Add(new FechamentoNotaAlunoDto(nota?.Bimestre.Value ?? 0,
                                                             notaParaAdicionar,
-                                                            nota.ComponenteCurricularId,
-                                                            nota.AlunoCodigo));
+                                                            nota?.ComponenteCurricularId ?? 0,
+                                                            nota?.AlunoCodigo));
             }
 
             return listaRetorno;

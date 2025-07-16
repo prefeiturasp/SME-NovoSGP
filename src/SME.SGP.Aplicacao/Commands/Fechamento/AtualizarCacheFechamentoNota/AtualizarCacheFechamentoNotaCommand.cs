@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
         public string CodigoTurma { get; set; }
         public long DisciplinaId { get; set; }
         public bool EmAprovacao { get; set; }
-        public ConselhoClasseAlunosNotaPorFechamentoIdDto ConselhosClasseAlunos;
+        public ConselhoClasseAlunosNotaPorFechamentoIdDto ConselhosClasseAlunos { get; set; }
     }
 
     public class AtualizarCacheFechamentoNotaCommandValidator : AbstractValidator<AtualizarCacheFechamentoNotaCommand>

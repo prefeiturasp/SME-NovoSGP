@@ -9,7 +9,6 @@ namespace SME.SGP.Metrica.Worker
     public class Program
     {
         protected Program() { }
-
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();

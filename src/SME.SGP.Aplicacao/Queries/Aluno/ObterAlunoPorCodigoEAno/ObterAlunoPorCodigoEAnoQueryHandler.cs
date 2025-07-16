@@ -1,13 +1,10 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,12 +23,12 @@ namespace SME.SGP.Aplicacao
         {
             var alunoPorTurmaResposta = (await mediator.Send(new ObterTurmasAlunoPorFiltroQuery(request.CodigoAluno, request.AnoLetivo, false, request.TipoTurma))).OrderByDescending(a => a.DataSituacao).ThenByDescending(a => a.NumeroAlunoChamada)?.FirstOrDefault();
 
-            if (alunoPorTurmaResposta.EhNulo())
+            if (alunoPorTurmaResposta == null)
                 throw new NegocioException("Aluno não localizado");
 
             var alunoReduzido = new AlunoReduzidoDto()
             {
-                Nome = !string.IsNullOrEmpty(alunoPorTurmaResposta.NomeAluno) ? alunoPorTurmaResposta.NomeAluno : alunoPorTurmaResposta.NomeSocialAluno,
+                Nome = !string.IsNullOrEmpty(alunoPorTurmaResposta?.NomeAluno) ? alunoPorTurmaResposta?.NomeAluno : alunoPorTurmaResposta?.NomeSocialAluno,
                 NumeroAlunoChamada = alunoPorTurmaResposta.ObterNumeroAlunoChamada(),
                 DataNascimento = alunoPorTurmaResposta.DataNascimento,
                 DataSituacao = alunoPorTurmaResposta.DataSituacao,
@@ -54,7 +51,7 @@ namespace SME.SGP.Aplicacao
             var turmaNome = "";
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
 
-            if (turma.NaoEhNulo())
+            if (turma != null)
             {
                 var nomeTurno = "";
                 if (Enum.IsDefined(typeof(TipoTurnoEOL), turma.TipoTurno))

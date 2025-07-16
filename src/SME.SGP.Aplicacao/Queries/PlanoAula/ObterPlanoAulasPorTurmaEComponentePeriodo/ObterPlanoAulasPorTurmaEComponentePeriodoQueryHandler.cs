@@ -66,8 +66,8 @@ namespace SME.SGP.Aplicacao
 
             var codigoComponente = long.Parse(ComponenteCurricularId);
 
-            if (disciplinaDto.NaoEhNulo())
-                codigoComponente = disciplinaDto.Id > 0 ? disciplinaDto.Id : disciplinaDto.CodigoComponenteCurricular;
+            if (disciplinaDto != null)
+                codigoComponente = disciplinaDto?.Id > 0 ? disciplinaDto.Id : disciplinaDto.CodigoComponenteCurricular;
 
             foreach (var periodoEscolar in periodosEscolaresAulasInicioFim)
             {
@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao
                 if (planejamentoAnualPeriodoId == 0
                     && turma.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year
                     && !usuarioLogado.PerfilAtual.Equals(Perfis.PERFIL_CJ)
-                    && !(disciplinaDto.NaoEhNulo() && disciplinaDto.TerritorioSaber))
+                    && !(disciplinaDto != null && disciplinaDto.TerritorioSaber))
                     throw new NegocioException("Não foi possível carregar o plano de aula porque não há plano anual cadastrado");
             }
             return temPlanoAnual.Any(s => s > 0);

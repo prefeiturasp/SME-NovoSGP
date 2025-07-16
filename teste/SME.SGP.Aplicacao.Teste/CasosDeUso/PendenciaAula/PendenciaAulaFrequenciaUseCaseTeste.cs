@@ -27,9 +27,9 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         public async Task Deve_Salvar_Pendencia_Aula_Frequencia()
         {
             // arrange
-            var aula = new List<Aula>
+            var aula = new List<SME.SGP.Dominio.Aula>
             {
-                new Aula()
+                new SME.SGP.Dominio.Aula()
                 {
                     Id = 12456,
                     DisciplinaId = "512",

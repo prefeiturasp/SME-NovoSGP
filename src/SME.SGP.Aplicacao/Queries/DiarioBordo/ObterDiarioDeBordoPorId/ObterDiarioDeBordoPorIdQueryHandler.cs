@@ -32,8 +32,8 @@ namespace SME.SGP.Aplicacao
             long componenteCurricularIdPrincipal = 0;
 
             Aula aula = await mediator.Send(new ObterAulaPorIdQuery(diariosBordo.FirstOrDefault(diario => diario.Id == request.Id).AulaId));
-            
-            if (aula != null || !aula.Excluido)
+
+            if (aula != null && !aula.Excluido)
                 componenteCurricularIdPrincipal = await RetornaComponenteCurricularIdPrincipalDoProfessor(aula.TurmaId, long.Parse(aula.DisciplinaId));
 
             if (componenteCurricularIdPrincipal == 0)
@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
             var diarioIrmao = diariosBordo.FirstOrDefault(diario => diario.ComponenteCurricularId != componenteCurricularIdPrincipal);
             var observacoes = diarioBordo != null ? await mediator.Send(new ListarObservacaoDiarioBordoQuery(diarioBordo.Id, usuario)) : null;
             var observacoesComUsuariosNotificados = observacoes != null ? await ObterUsuariosNotificados(observacoes) : null;
-            
+
             return MapearParaDto(diarioBordo, observacoesComUsuariosNotificados, diarioIrmao, componentes, componenteCurricularIdPrincipal);
         }
 
@@ -90,10 +90,10 @@ namespace SME.SGP.Aplicacao
             return listaObservacoes;
         }
         private DiarioBordoDetalhesDto MapearParaDto(
-                                                    Dominio.DiarioBordo diarioBordo, 
+                                                    Dominio.DiarioBordo diarioBordo,
                                                     IEnumerable<ListarObservacaoDiarioBordoDto> observacoes,
-                                                    DiarioBordo diarioBordoIrmao, 
-                                                    IEnumerable<DisciplinaDto> disciplinas, 
+                                                    DiarioBordo diarioBordoIrmao,
+                                                    IEnumerable<DisciplinaDto> disciplinas,
                                                     long componenteCurricularIdPrincipal)
         {
             return new DiarioBordoDetalhesDto()
