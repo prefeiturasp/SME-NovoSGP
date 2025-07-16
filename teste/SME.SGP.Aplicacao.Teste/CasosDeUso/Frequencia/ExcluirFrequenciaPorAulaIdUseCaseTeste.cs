@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Frequencia
             var filtroId = new FiltroIdDto(aulaId);
             var mensagemRabbit = new MensagemRabbit("ExcluirFrequencia", JsonConvert.SerializeObject(filtroId), Guid.NewGuid(), "RF12345");
 
-            var aulaMock = new Aula
+            var aulaMock = new Dominio.Aula
             {
                 DataAula = dataAula,
                 Quantidade = 1,
@@ -132,7 +132,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Frequencia
             var filtroId = new FiltroIdDto(aulaId);
             var mensagemRabbit = new MensagemRabbit("ExcluirFrequencia", JsonConvert.SerializeObject(filtroId), Guid.NewGuid(), "RF12345");
 
-            var aulaMock = new Aula
+            var aulaMock = new Dominio.Aula
             {
                 DataAula = dataAula,
                 Quantidade = 1,
