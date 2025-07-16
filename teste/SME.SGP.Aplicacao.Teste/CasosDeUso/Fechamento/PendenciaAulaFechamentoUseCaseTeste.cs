@@ -37,9 +37,9 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Fechamento
                 ModalidadeCodigo = Modalidade.Fundamental
             };
 
-            var aulas = new List<Aula>
+            var aulas = new List<Dominio.Aula>
             {
-                new Aula
+                new Dominio.Aula
                 {
                     Id = 1,
                     TurmaId = "TURMA001",
@@ -76,7 +76,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Fechamento
                 .ReturnsAsync(aulas);
 
             _mediatorMock.Setup(x => x.Send(It.IsAny<ObterPendenciasAtividadeAvaliativaQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<Aula>());
+                .ReturnsAsync(new List<Dominio.Aula>());
 
             _mediatorMock.Setup(x => x.Send(It.IsAny<ExcluirNotificacaoPendenciasFechamentoCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
@@ -122,17 +122,17 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Fechamento
                 ModalidadeCodigo = Modalidade.Fundamental
             };
 
-            var aulas = new List<Aula>
+            var aulas = new List<Dominio.Aula>
             {
-                new Aula { Id = 1, TurmaId = "TURMA001", DisciplinaId = "1", Turma = turma1 },
-                new Aula { Id = 2, TurmaId = "TURMA002", DisciplinaId = "1", Turma = turma2 }
+                new Dominio.Aula { Id = 1, TurmaId = "TURMA001", DisciplinaId = "1", Turma = turma1 },
+                new Dominio.Aula { Id = 2, TurmaId = "TURMA002", DisciplinaId = "1", Turma = turma2 }
             };
 
             _mediatorMock.Setup(x => x.Send(It.IsAny<ObterPendenciasAulasPorTipoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(aulas);
 
             _mediatorMock.Setup(x => x.Send(It.IsAny<ObterPendenciasAtividadeAvaliativaQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<Aula>());
+                .ReturnsAsync(new List<Dominio.Aula>());
 
             _mediatorMock.Setup(x => x.Send(It.IsAny<ObterPeriodoEscolarFechamentoEmAbertoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<PeriodoEscolar>());
@@ -166,9 +166,9 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Fechamento
                 ModalidadeCodigo = Modalidade.Fundamental
             };
 
-            var aulas = new List<Aula>
+            var aulas = new List<Dominio.Aula>
             {
-                new Aula { Id = 1, TurmaId = "TURMA001", DisciplinaId = "1", Turma = turma }
+                new Dominio.Aula { Id = 1, TurmaId = "TURMA001", DisciplinaId = "1", Turma = turma }
             };
 
             var periodoEscolar = new PeriodoEscolar { Id = 1, Bimestre = 1 };
@@ -193,7 +193,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Fechamento
                 .ReturnsAsync(aulas);
 
             _mediatorMock.Setup(x => x.Send(It.IsAny<ObterPendenciasAtividadeAvaliativaQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<Aula>());
+                .ReturnsAsync(new List<Dominio.Aula>());
 
             _mediatorMock.Setup(x => x.Send(It.IsAny<ObterPeriodoEscolarFechamentoEmAbertoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<PeriodoEscolar> { periodoEscolar });
@@ -234,9 +234,9 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Fechamento
                 ModalidadeCodigo = Modalidade.Fundamental
             };
 
-            var aulas = new List<Aula>
+            var aulas = new List<Dominio.Aula>
             {
-                new Aula { Id = 1, TurmaId = "TURMA001", DisciplinaId = "1", Turma = turma }
+                new Dominio.Aula { Id = 1, TurmaId = "TURMA001", DisciplinaId = "1", Turma = turma }
             };
 
             var periodoEscolar = new PeriodoEscolar { Id = 1, Bimestre = 1 };
@@ -261,7 +261,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Fechamento
                 .ReturnsAsync(aulas);
 
             _mediatorMock.Setup(x => x.Send(It.IsAny<ObterPendenciasAtividadeAvaliativaQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<Aula>());
+                .ReturnsAsync(new List<Dominio.Aula>());
 
             _mediatorMock.Setup(x => x.Send(It.IsAny<ObterPeriodoEscolarFechamentoEmAbertoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<PeriodoEscolar> { periodoEscolar });
@@ -298,9 +298,9 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Fechamento
                 ModalidadeCodigo = Modalidade.Fundamental
             };
 
-            var aulas = new List<Aula>
+            var aulas = new List<Dominio.Aula>
             {
-                new Aula
+                new Dominio.Aula
                 {
                     Id = 1,
                     TurmaId = "TURMA001",
@@ -328,7 +328,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Fechamento
                 .ReturnsAsync(aulas);
 
             _mediatorMock.Setup(x => x.Send(It.IsAny<ObterPendenciasAtividadeAvaliativaQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<Aula>());
+                .ReturnsAsync(new List<Dominio.Aula>());
 
             _mediatorMock.Setup(x => x.Send(It.IsAny<ObterPeriodoEscolarFechamentoEmAbertoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<PeriodoEscolar> { periodoEscolar });
@@ -355,10 +355,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Fechamento
             mensagemRabbit.Mensagem = System.Text.Json.JsonSerializer.Serialize(dreUeDto);
 
             _mediatorMock.Setup(x => x.Send(It.IsAny<ObterPendenciasAulasPorTipoQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<Aula>());
+                .ReturnsAsync(new List<Dominio.Aula>());
 
             _mediatorMock.Setup(x => x.Send(It.IsAny<ObterPendenciasAtividadeAvaliativaQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<Aula>());
+                .ReturnsAsync(new List<Dominio.Aula>());
 
             _mediatorMock.Setup(x => x.Send(It.IsAny<ObterFechamentoTurmaDisciplinaAnoAtualDTOPorUeSituacaoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<FechamentoTurmaDisciplinaPendenciaDto>());
