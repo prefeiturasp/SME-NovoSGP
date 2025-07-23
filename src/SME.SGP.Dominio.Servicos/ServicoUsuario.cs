@@ -79,7 +79,7 @@ namespace SME.SGP.Dominio
         public string ObterClaim(string nomeClaim)
         {
             var claim = contextoAplicacao.ObterVariavel<IEnumerable<InternalClaim>>("Claims").FirstOrDefault(a => a.Type == nomeClaim);
-            return claim?.Value;
+            return string.IsNullOrWhiteSpace(claim?.Value) ? Guid.NewGuid().ToString() : claim?.Value;
         }
 
         public string ObterLoginAtual()

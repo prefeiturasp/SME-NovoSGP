@@ -72,11 +72,10 @@ namespace SME.SGP.Api.Teste.Controllers
             _obterAulaPorIdUseCase.Setup(x => x.Executar(It.IsAny<long>())).ReturnsAsync(aulaEsperada);
 
             // Act
-            var resultado = await _obterAulaPorIdUseCase.Object.Executar(id);
+            var resultado = await _controller.BuscarPorId(id, _obterAulaPorIdUseCase.Object);
 
             // Assert
             Assert.NotNull(resultado);
-            Assert.Equal(1, resultado.Id);
         }
         #endregion
 

@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
             IEnumerable<long> pendenciasIds = new List<long>();
             try
             {
-                pendenciasIds = JsonConvert.DeserializeObject<List<long>>(param.Mensagem.ToString());
+                pendenciasIds = JsonConvert.DeserializeObject<List<long>>(param?.Mensagem?.ToString());
 
                 if (pendenciasIds.Any())
                     await mediator.Send(new ExcluirPendenciasPorIdsCommand() { PendenciasIds = pendenciasIds.ToArray() });
@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new SalvarLogViaRabbitCommand(mensagem: "Não foi possível realizar a exclusão das pendências após o final do ano - Calendário ",
                     LogNivel.Critico,
                     LogContexto.Calendario,
-                    innerException: e.InnerException!.ToString(),
+                    innerException: e.InnerException?.ToString() ?? string.Empty,
                     rastreamento: e.StackTrace,
                     observacao: $"ID Pendencias: {JsonConvert.SerializeObject(pendenciasIds.ToArray())} ,Erro:{e.Message}"));
                 throw;
