@@ -9,17 +9,27 @@ namespace SME.SGP.Dados.Contexto
 {
     public class SgpContext : ISgpContext
     {
-        private readonly IDbConnection conexao; //Raphael - Trocado classe concreta de PgConnection pra IDbConnection
+        private readonly IDbConnection conexao;
         private readonly IContextoAplicacao contextoAplicacao;
+        private bool disposed = false;
 
         public SgpContext(IConfiguration configuration, IContextoAplicacao contextoAplicacao, string stringConexao = "SGP_Postgres")
         {
-            conexao = new NpgsqlConnection(configuration.GetConnectionString(stringConexao));
+            var connectionString = configuration.GetConnectionString(stringConexao);
+
+            // Adiciona configurações de pool se não estiverem presentes
+            if (!connectionString.Contains("Maximum Pool Size"))
+            {
+                connectionString += ";Maximum Pool Size=100;Minimum Pool Size=5;Connection Idle Lifetime=300;Connection Pruning Interval=10;Pooling=true;";
+            }
+
+            conexao = new NpgsqlConnection(connectionString);
             this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));
-            Open();
+
+            // Não abre a conexão automaticamente - deixa para ser aberta quando necessário
         }
 
-        //Ctor para ser usado com o teste.
+        // Construtor para testes
         public SgpContext(IDbConnection conexao, IContextoAplicacao contextoAplicacao)
         {
             this.conexao = conexao;
@@ -30,11 +40,18 @@ namespace SME.SGP.Dados.Contexto
         {
             get
             {
+                if (disposed)
+                    throw new ObjectDisposedException(nameof(SgpContext));
+
                 return conexao;
             }
         }
 
-        public string ConnectionString { get { return Conexao.ConnectionString; } set { Conexao.ConnectionString = value; } }
+        public string ConnectionString
+        {
+            get { return Conexao.ConnectionString; }
+            set { Conexao.ConnectionString = value; }
+        }
 
         public int ConnectionTimeout => Conexao.ConnectionTimeout;
 
@@ -42,29 +59,69 @@ namespace SME.SGP.Dados.Contexto
 
         public ConnectionState State => Conexao.State;
 
-        public string UsuarioLogado =>
-                                       contextoAplicacao.UsuarioLogado;
+        public string UsuarioLogado => contextoAplicacao.UsuarioLogado;
 
-        public string UsuarioLogadoNomeCompleto =>
-                                          contextoAplicacao.NomeUsuario;
+        public string UsuarioLogadoNomeCompleto => contextoAplicacao.NomeUsuario;
+
         public string PerfilUsuario => contextoAplicacao.PerfilUsuario;
 
-        public string UsuarioLogadoRF =>
-                                          contextoAplicacao.ObterVariavel<string>("RF") ?? "0";
+        public string UsuarioLogadoRF => contextoAplicacao.ObterVariavel<string>("RF") ?? "0";
 
         public string Administrador => contextoAplicacao.Administrador;
 
         public IDbTransaction BeginTransaction()
         {
-            if (conexao.State == ConnectionState.Closed)
-                conexao.Open();
+            if (disposed)
+                throw new ObjectDisposedException(nameof(SgpContext));
 
-            return conexao.BeginTransaction();
+            try
+            {
+                if (conexao.State != ConnectionState.Open)
+                    conexao.Open();
+
+                return conexao.BeginTransaction();
+            }
+            catch (Exception)
+            {
+                // Se falhar ao abrir conexão ou iniciar transação, tenta fechar a conexão
+                try
+                {
+                    if (conexao.State == ConnectionState.Open)
+                        conexao.Close();
+                }
+                catch
+                {
+                    // Ignora erros ao fechar
+                }
+                throw;
+            }
         }
 
         public IDbTransaction BeginTransaction(IsolationLevel il)
         {
-            return conexao.BeginTransaction(il);
+            if (disposed)
+                throw new ObjectDisposedException(nameof(SgpContext));
+
+            try
+            {
+                if (conexao.State != ConnectionState.Open)
+                    conexao.Open();
+
+                return conexao.BeginTransaction(il);
+            }
+            catch (Exception)
+            {
+                try
+                {
+                    if (conexao.State == ConnectionState.Open)
+                        conexao.Close();
+                }
+                catch
+                {
+                    // Ignora erros ao fechar
+                }
+                throw;
+            }
         }
 
         public void ChangeDatabase(string databaseName)
@@ -74,30 +131,56 @@ namespace SME.SGP.Dados.Contexto
 
         public void Close()
         {
-            conexao.Close();
+            if (disposed)
+                return;
+
+            try
+            {
+                if (conexao.State != ConnectionState.Closed)
+                    conexao.Close();
+            }
+            catch
+            {
+                // Ignora erros ao fechar
+            }
         }
 
         public IDbCommand CreateCommand()
         {
+            if (disposed)
+                throw new ObjectDisposedException(nameof(SgpContext));
+
             return conexao.CreateCommand();
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (conexao.State == ConnectionState.Open)
-                conexao.Close();
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         public void Open()
         {
+            if (disposed)
+                throw new ObjectDisposedException(nameof(SgpContext));
+
             if (conexao.State != ConnectionState.Open)
-                conexao.Open();
+            {
+                try
+                {
+                    conexao.Open();
+                }
+                catch (Exception)
+                {
+                    // Se falhar ao abrir, tenta limpar o pool de conexões
+                    if (conexao is NpgsqlConnection npgsqlConn)
+                    {
+                        try
+                        {
+                            NpgsqlConnection.ClearPool(npgsqlConn);
+                        }
+                        catch
+                        {
+                            // Ignora erros ao limpar pool
+                        }
+                    }
+                    throw;
+                }
+            }
         }
 
         public void AbrirConexao()
@@ -107,10 +190,47 @@ namespace SME.SGP.Dados.Contexto
 
         public void FecharConexao()
         {
-            if (conexao.State != ConnectionState.Closed)
+            Close();
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
             {
-                Close();
+                if (disposing)
+                {
+                    try
+                    {
+                        if (conexao?.State == ConnectionState.Open)
+                            conexao.Close();
+                    }
+                    catch
+                    {
+                        // Ignora erros ao fechar
+                    }
+
+                    try
+                    {
+                        conexao?.Dispose();
+                    }
+                    catch
+                    {
+                        // Ignora erros no dispose
+                    }
+                }
+                disposed = true;
             }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        ~SgpContext()
+        {
+            Dispose(false);
         }
     }
 }
