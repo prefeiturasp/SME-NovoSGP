@@ -26,7 +26,18 @@ namespace SME.SGP.Dados.Contexto
             conexao = new NpgsqlConnection(connectionString);
             this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));
 
-            // Não abre a conexão automaticamente - deixa para ser aberta quando necessário
+            try
+            {
+                if (conexao.State != ConnectionState.Open)
+                {
+                    conexao.Open();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"ERRO CRÍTICO: Falha ao abrir a conexão com o banco de dados. Mensagem: {ex.Message}");
+                throw new InvalidOperationException("Falha ao inicializar SgpContext: Não foi possível abrir a conexão com o banco de dados.", ex);
+            }
         }
 
         // Construtor para testes
@@ -40,9 +51,6 @@ namespace SME.SGP.Dados.Contexto
         {
             get
             {
-                if (disposed)
-                    throw new ObjectDisposedException(nameof(SgpContext));
-
                 return conexao;
             }
         }
