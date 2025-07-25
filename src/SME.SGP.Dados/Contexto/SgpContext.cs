@@ -17,12 +17,6 @@ namespace SME.SGP.Dados.Contexto
         {
             var connectionString = configuration.GetConnectionString(stringConexao);
 
-            // Adiciona configurações de pool se não estiverem presentes
-            if (!connectionString.Contains("Maximum Pool Size"))
-            {
-                connectionString += ";Maximum Pool Size=100;Minimum Pool Size=5;Connection Idle Lifetime=300;Connection Pruning Interval=10;Pooling=true;";
-            }
-
             conexao = new NpgsqlConnection(connectionString);
             this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));
 
