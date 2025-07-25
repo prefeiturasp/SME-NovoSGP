@@ -1,5 +1,4 @@
-﻿using Bogus;
-using MediatR;
+﻿using MediatR;
 using Moq;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -15,13 +14,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Relatorio
     {
         private readonly Mock<IMediator> _mediatorMock;
         private readonly GerarRelatorioFrequenciaUseCase _useCase;
-        private readonly Faker _faker;
 
         public GerarRelatorioFrequenciaUseCaseTeste()
         {
             _mediatorMock = new Mock<IMediator>();
             _useCase = new GerarRelatorioFrequenciaUseCase(_mediatorMock.Object);
-            _faker = new Faker("pt_BR");
         }
 
         [Fact]
@@ -183,9 +180,9 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Relatorio
         {
             return new Usuario
             {
-                Id = _faker.Random.Long(1, 10000),
-                Nome = _faker.Person.FullName,
-                CodigoRf = _faker.Random.Int().ToString(),
+                Id = 25,
+                Nome = "Usuário de teste",
+                CodigoRf = "51324",
                 PerfilAtual = Guid.NewGuid()
             };
         }
