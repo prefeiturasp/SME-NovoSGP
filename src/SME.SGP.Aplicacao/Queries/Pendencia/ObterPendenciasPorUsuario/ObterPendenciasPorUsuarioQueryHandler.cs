@@ -14,13 +14,13 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPendenciasPorUsuarioQueryHandler : ConsultasBase, IRequestHandler<ObterPendenciasPorUsuarioQuery, PaginacaoResultadoDto<PendenciaDto>>
     {
-        private readonly IRepositorioPendencia repositorioPendencia;
+        private readonly IRepositorioPendenciaConsulta repositorioPendenciaConsulta;
         private readonly IMediator mediator;
 
-        public ObterPendenciasPorUsuarioQueryHandler(IContextoAplicacao contextoAplicacao, IMediator mediator, IRepositorioPendencia repositorioPendencia) : base(contextoAplicacao)
+        public ObterPendenciasPorUsuarioQueryHandler(IContextoAplicacao contextoAplicacao, IMediator mediator, IRepositorioPendencia repositorioPendencia, IRepositorioPendenciaConsulta repositorioPendenciaConsulta) : base(contextoAplicacao)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.repositorioPendencia = repositorioPendencia ?? throw new ArgumentNullException(nameof(repositorioPendencia));
+            this.repositorioPendenciaConsulta = repositorioPendenciaConsulta;
         }
 
         public async Task<PaginacaoResultadoDto<PendenciaDto>> Handle(ObterPendenciasPorUsuarioQuery request, CancellationToken cancellationToken)
@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
             if (ParametrosValidos(request))
             {
                 var tiposPendenciasGruposFiltrar = ObterTiposPendenciasGrupos(request.TipoPendencia);
-                pendenciaPaginada = await repositorioPendencia.ListarPendenciasUsuarioComFiltro(request.UsuarioId,
+                pendenciaPaginada = await repositorioPendenciaConsulta.ListarPendenciasUsuarioComFiltro(request.UsuarioId,
                                                                                                 tiposPendenciasGruposFiltrar.ToArray(),
                                                                                                 request.TituloPendencia,
                                                                                                 request.TurmaCodigo,
@@ -39,15 +39,15 @@ namespace SME.SGP.Aplicacao
                 
                 if (!string.IsNullOrEmpty(request.TurmaCodigo) && request.TipoPendencia == 0)
                 {
-                    listaPendenciasUsuario = (await repositorioPendencia.FiltrarListaPendenciasUsuario(request.TurmaCodigo,
+                    listaPendenciasUsuario = (await repositorioPendenciaConsulta.FiltrarListaPendenciasUsuario(request.TurmaCodigo,
                                                                                                        pendenciaPaginada.Items.ToList())).ToList();
                     pendenciaPaginada.Items = pendenciaPaginada.Items.Where(pendencia => listaPendenciasUsuario.Any(c => c == pendencia.Id));
                 }
                 return await MapearParaDtoPaginado(pendenciaPaginada);
             }
 
-            pendenciaPaginada = await repositorioPendencia.ListarPendenciasUsuarioSemFiltro(request.UsuarioId, Paginacao);
-            listaPendenciasUsuario = (await repositorioPendencia.FiltrarListaPendenciasUsuario(request.TurmaCodigo, pendenciaPaginada.Items.ToList())).ToList();
+            pendenciaPaginada = await repositorioPendenciaConsulta.ListarPendenciasUsuarioSemFiltro(request.UsuarioId, Paginacao);
+            listaPendenciasUsuario = (await repositorioPendenciaConsulta.FiltrarListaPendenciasUsuario(request.TurmaCodigo, pendenciaPaginada.Items.ToList())).ToList();
             pendenciaPaginada.Items = pendenciaPaginada.Items.Where(pendencia => listaPendenciasUsuario.Any(c => c == pendencia.Id));
            
             return await MapearParaDtoPaginado(pendenciaPaginada);

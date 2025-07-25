@@ -1,16 +1,15 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Dapper;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
+using SME.SGP.Infra.Interfaces;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioFechamentoReaberturaBimestre : RepositorioBase<FechamentoReaberturaBimestre>, IRepositorioFechamentoReaberturaBimestre
     {
-        public RepositorioFechamentoReaberturaBimestre(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
+        public RepositorioFechamentoReaberturaBimestre(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

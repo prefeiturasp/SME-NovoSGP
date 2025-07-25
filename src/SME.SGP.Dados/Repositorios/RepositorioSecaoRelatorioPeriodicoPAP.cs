@@ -2,13 +2,14 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
+using SME.SGP.Infra.Interfaces;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioSecaoRelatorioPeriodicoPAP : RepositorioBase<SecaoRelatorioPeriodicoPAP>, IRepositorioSecaoRelatorioPeriodicoPAP
     {
-        public RepositorioSecaoRelatorioPeriodicoPAP(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
+        public RepositorioSecaoRelatorioPeriodicoPAP(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

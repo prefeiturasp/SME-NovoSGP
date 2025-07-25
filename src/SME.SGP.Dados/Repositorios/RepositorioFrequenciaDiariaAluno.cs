@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interfaces;
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioFrequenciaDiariaAluno : IRepositorioFrequenciaDiariaAluno
     {
         private readonly ISgpContext database;
-        public RepositorioFrequenciaDiariaAluno(ISgpContext database)
+        public RepositorioFrequenciaDiariaAluno(ISgpContextConsultas database)
         {
             this.database = database ?? throw new ArgumentNullException(nameof(database));
         }
