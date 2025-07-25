@@ -64,5 +64,18 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
 
             Assert.True(retorno.Any());
         }
+
+        [Theory]
+        [InlineData(new string[] { "POA Alfabetização", "POEI Lingua Portuguesa" }, new string[] { "POA", "POEI" })]
+        [InlineData(new string[] { "POA Portugues", "PAP Matematica" }, new string[] { "POA", "PAP" })]
+        [InlineData(new string[] { "PAP" }, new string[] { "PAP" })]
+        [InlineData(new string[] { "Alteracao de Calendario" }, new string[] { "Alteracao de Calendario" })]
+        [InlineData(new string[] { "SPI - Anexo IV" }, new string[] { "SPI - Anexo IV" })]
+        public void Quando_Perfil_Contem_Acronimo_Deve_Retornar_Apenas_Acronimo(string[] perfis, string[] resultadoEsperado)
+        {
+            string[] perfisNormalizados = ListarTiposDeDocumentosUseCase.NormalizarPerfisComAcronimo(perfis);
+
+            Assert.Equal(resultadoEsperado, perfisNormalizados);
+        }
     }
 }
