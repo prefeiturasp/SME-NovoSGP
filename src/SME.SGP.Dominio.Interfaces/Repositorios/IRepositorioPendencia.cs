@@ -10,9 +10,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task ExcluirPendenciasFechamento(long fechamentoId, TipoPendencia tipoPendencia);
         Task ExclusaoLogicaPendencia(long pendenciaId);
         Task ExclusaoLogicaPendenciaIds(long[] pendenciasIds);
-        Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuarioComFiltro(long usuarioId, int[] tiposPendenciasGrupos, string tituloPendencia, string turmaCodigo, Paginacao paginacao);
-        Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuarioSemFiltro(long usuarioId, Paginacao paginacao);
-        Task<IEnumerable<long>> FiltrarListaPendenciasUsuario(string turmaCodigo, List<Pendencia> pendencias);
         Task<long[]> ObterIdsPendenciasPorPlanoAEEId(long planoAeeId);
         Task AtualizarStatusPendenciasPorIds(long[] ids, SituacaoPendencia situacaoPendencia);
         Task<IEnumerable<PendenciaPendenteDto>> ObterPendenciasPendentes();

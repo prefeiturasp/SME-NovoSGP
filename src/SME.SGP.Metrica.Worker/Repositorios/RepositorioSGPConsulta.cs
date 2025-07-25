@@ -1,14 +1,12 @@
-﻿using Nest;
-using SME.SGP.Dados;
+﻿using SME.SGP.Dados;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interfaces;
 using SME.SGP.Metrica.Worker.Entidade;
 using SME.SGP.Metrica.Worker.Repositorios.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.Xml;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Metrica.Worker.Repositorios
@@ -16,9 +14,9 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 
     public class RepositorioSGPConsulta : IRepositorioSGPConsulta
     {
-        private readonly ISgpContext database;
+        private readonly ISgpContextConsultas database;
 
-        public RepositorioSGPConsulta(ISgpContext database)
+        public RepositorioSGPConsulta(ISgpContextConsultas database)
         {
             this.database = database ?? throw new ArgumentNullException(nameof(database));
         }
