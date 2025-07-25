@@ -20,7 +20,7 @@ namespace SME.SGP.Dados.Contexto
             // Adiciona configurações de pool se não estiverem presentes
             if (!connectionString.Contains("Maximum Pool Size"))
             {
-                connectionString += ";Maximum Pool Size=100;Minimum Pool Size=5;Connection Idle Lifetime=300;Connection Pruning Interval=10;Pooling=true;";
+                connectionString += ";Maximum Pool Size=300;Minimum Pool Size=20;Connection Idle Lifetime=300;Connection Pruning Interval=10;Pooling=true;";
             }
 
             conexao = new NpgsqlConnection(connectionString);
