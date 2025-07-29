@@ -30,6 +30,8 @@ namespace SME.SGP.Notificacoes.Hub
             services.ConfigurarTelemetria(Configuration);
             services.AddPolicies();
 
+            services.ConfigurarRabbitParaLogs(Configuration);
+
             RegistrarCache(services);
             RegistrarEventosNotificacao(services);
             RegistrarAutenticacao(services);
