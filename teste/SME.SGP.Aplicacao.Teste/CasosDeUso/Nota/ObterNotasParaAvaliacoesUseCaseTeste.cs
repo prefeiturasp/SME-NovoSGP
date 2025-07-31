@@ -353,7 +353,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Nota
             Assert.Equal("Componente curricular informado não encontrado no EOL", ex2.Message);
         }
 
-        [Fact(Skip = "Precisa revisar")]
+        [Fact]
         public async Task Executar_ComponenteComRegencia_Deve_Retornar_Apenas_Atividades_Com_EhRegencia()
         {
             var filtro = CriarFiltroSimples();
@@ -670,7 +670,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Nota
             exception.Message.Should().Be("Não foram encontradas as disciplinas de regência");
         }
 
-        [Fact(Skip = "Precisa revisar")]
+        [Fact]
         public async Task Executar_Componente_Referencia_Eh_Regencia_E_Usuario_Nao_Eh_Professor_Cj_Deve_Buscar_Disciplinas_Regencia_Eol()
         {
             var filtro = CriarFiltroBase();
@@ -716,7 +716,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Nota
             exception.Message.Should().Be("Não foram encontradas disciplinas de regência no EOL");
         }
 
-        [Fact(Skip = "Precisa revisar")]
+        [Fact]
         public async Task Executar_Turma_Eh_EJA_ComEducacao_Fisica_Deve_Excluir_Educacao_Fisica_Das_Regencias()
         {
             var filtro = CriarFiltroBase();
@@ -746,7 +746,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Nota
                 It.IsAny<CancellationToken>()), Times.Once);
         }
 
-        [Fact(Skip = "Precisa revisar")]
+        [Fact]
         public async Task Executar_Turma_Nao_Eh_EJA_Deve_Incluir_Todas_Disciplinas_Regencia()
         {
             var filtro = CriarFiltroBase();
@@ -1762,11 +1762,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Nota
         public void Deve_Atualizar_Nota_Quando_Data_Nova_For_Mais_Recente()
         {
             var service = new NotaAuditoriaService();
-            service.DataUltimaNotaConceitoAlterada = new DateTime(2024, 5, 1);
+            service.DataUltimaNotaConceitoAlterada = new DateTime(2024, 5, 1); 
 
             var nota = new NotaConceito
             {
-                AlteradoEm = new DateTime(2024, 6, 1),
+                AlteradoEm = new DateTime(2024, 6, 1), 
                 AlteradoPor = "Prof Y",
                 AlteradoRF = "456"
             };
@@ -1787,7 +1787,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Nota
 
             var nota = new NotaConceito
             {
-                AlteradoEm = new DateTime(2024, 5, 1),
+                AlteradoEm = new DateTime(2024, 5, 1), 
                 AlteradoPor = "Prof Z",
                 AlteradoRF = "789"
             };
@@ -2241,7 +2241,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Nota
             Assert.Equal(notaEmAprovacao.NotaEmAprovacao, notaFinalAluno.NotaConceito);
         }
 
-        #region Métodos auxiliares
+         #region Métodos auxiliares
         private void VerificaNotaEmAprovacao(double notaEmAprovacao, FechamentoNotaRetornoDto nota)
         {
             if (notaEmAprovacao > 0)
