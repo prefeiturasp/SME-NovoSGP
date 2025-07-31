@@ -11,9 +11,9 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioDashBoardFrequencia : IRepositorioDashBoardFrequencia
     {
-        private readonly ISgpContextConsultas database;
+        private readonly ISgpContext database;
 
-        public RepositorioDashBoardFrequencia(ISgpContextConsultas database)
+        public RepositorioDashBoardFrequencia(ISgpContext database)
         {
             this.database = database ?? throw new ArgumentNullException(nameof(database));
         }
