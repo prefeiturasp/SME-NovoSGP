@@ -3,7 +3,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.PendenciaAula;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -555,24 +554,6 @@ namespace SME.SGP.Dados.Repositorios
             ;
 
             return (await database.Conexao.QueryAsync<long>(sql.ToString(), new { tipo, turmaId, disciplinaId, periodoInicio, periodoFim })).ToArray();
-        }
-
-        public async Task<IEnumerable<PendenciaAulasDto>> ObterPendenciasAulasPorPendenciaIds(long[] pendenciaIds)
-        {
-            var query = @"select distinct a.data_aula as DataAula, pa.Motivo, (a.tipo_aula = @tipoAulaReposicao) ehReposicao, a.turma_id TurmaId, a.ue_id UeId, p.Id as PendenciaId,
-                                          a.disciplina_id DisciplinaId, aa.nome_avaliacao as TituloAvaliacao, pe.bimestre, t.modalidade_codigo ModalidadeCodigo, t.nome NomeTurma
-                           from pendencia_aula pa
-                           join pendencia p on p.id = pa.pendencia_id
-                           join aula a on a.id = pa.aula_id
-                           join periodo_escolar pe on a.tipo_calendario_id = pe.tipo_calendario_id and a.data_aula between pe.periodo_inicio and pe.periodo_fim
-                           join turma t on t.turma_id = a.turma_id
-                           left join atividade_avaliativa aa on aa.turma_id = a.turma_id 
-                                       and aa.data_avaliacao::date = a.data_aula::date                                        
-                                    and a.professor_rf = aa.professor_rf and p.tipo = @tipoPendenciaAvaliacao                           
-                          where pa.pendencia_id = any(@pendenciaIds)
-                          order by a.data_aula desc";
-
-            return await database.Conexao.QueryAsync<PendenciaAulasDto>(query, new { pendenciaIds, tipoAulaReposicao = (int)TipoAula.Reposicao, tipoPendenciaAvaliacao = (int)TipoPendencia.Avaliacao });
         }
     }
 }
