@@ -49,10 +49,22 @@ namespace SME.SGP.Aplicacao
 
             var pendencias = await ListarPendenciasUsuarioSemFiltro(request.UsuarioId);
 
+            // Paginação feita em código porque estava causando timeout no banco
+            // Foi separada em queries menores para performar melhor
+            var pagina = Paginacao;
+            if (Paginacao.EhNulo() || (Paginacao.QuantidadeRegistros == 0 && Paginacao.QuantidadeRegistrosIgnorados == 0))
+                pagina = new Paginacao(1, 10);
+
+            var paginaPendencias = pendencias
+                            .OrderByDescending(p => p.CriadoEm)
+                            .Skip(pagina.QuantidadeRegistrosIgnorados)
+                            .Take(pagina.QuantidadeRegistros)
+                            .ToList();
+
             pendenciaPaginada = new PaginacaoResultadoDto<Pendencia>();
             pendenciaPaginada.Items = pendencias;
             pendenciaPaginada.TotalRegistros = pendencias.Count();
-            pendenciaPaginada.TotalPaginas = 1;
+            pendenciaPaginada.TotalPaginas = (int)Math.Ceiling((double)pendenciaPaginada.TotalRegistros / pagina.QuantidadeRegistros);
 
             listaPendenciasUsuario = (await repositorioPendenciaConsulta.FiltrarListaPendenciasUsuario(request.TurmaCodigo, pendenciaPaginada.Items.ToList())).ToList();
             pendenciaPaginada.Items = pendenciaPaginada.Items.Where(pendencia => listaPendenciasUsuario.Any(c => c == pendencia.Id));
@@ -131,8 +143,6 @@ namespace SME.SGP.Aplicacao
         {
             switch (true)
             {
-                //case var _ when pendencia.EhPendenciaAula() || pendencia.EhPendenciaCadastroEvento() || pendencia.EhPendenciaCalendarioUe():
-                //    return await ObterPendenciasAulasFormatadas(pendencia);
                 case var _ when pendencia.EhPendenciaAusenciaAvaliacaoProfessor():
                     return await ObterPendenciaAusenciaAvaliacaoProfessor(pendencia);
                 case var _ when pendencia.EhPendenciaAusenciaAvaliacaoCP():
