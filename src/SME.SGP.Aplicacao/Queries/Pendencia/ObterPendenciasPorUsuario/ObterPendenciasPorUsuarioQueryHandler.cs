@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Queries.PendenciaAula.ObterPendenciasAulasPorPendenciaIds;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -46,11 +47,45 @@ namespace SME.SGP.Aplicacao
                 return await MapearParaDtoPaginado(pendenciaPaginada);
             }
 
-            pendenciaPaginada = await repositorioPendenciaConsulta.ListarPendenciasUsuarioSemFiltro(request.UsuarioId, Paginacao);
+            var pendencias = await ListarPendenciasUsuarioSemFiltro(request.UsuarioId);
+
+            // Paginação feita em código porque estava causando timeout no banco
+            // Foi separada em queries menores para performar melhor
+            var pagina = Paginacao;
+            if (Paginacao.EhNulo() || (Paginacao.QuantidadeRegistros == 0 && Paginacao.QuantidadeRegistrosIgnorados == 0))
+                pagina = new Paginacao(1, 10);
+
+            var paginaPendencias = pendencias
+                            .OrderByDescending(p => p.CriadoEm)
+                            .Skip(pagina.QuantidadeRegistrosIgnorados)
+                            .Take(pagina.QuantidadeRegistros)
+                            .ToList();
+
+            pendenciaPaginada = new PaginacaoResultadoDto<Pendencia>();
+            pendenciaPaginada.Items = pendencias;
+            pendenciaPaginada.TotalRegistros = pendencias.Count();
+            pendenciaPaginada.TotalPaginas = (int)Math.Ceiling((double)pendenciaPaginada.TotalRegistros / pagina.QuantidadeRegistros);
+
             listaPendenciasUsuario = (await repositorioPendenciaConsulta.FiltrarListaPendenciasUsuario(request.TurmaCodigo, pendenciaPaginada.Items.ToList())).ToList();
             pendenciaPaginada.Items = pendenciaPaginada.Items.Where(pendencia => listaPendenciasUsuario.Any(c => c == pendencia.Id));
            
             return await MapearParaDtoPaginado(pendenciaPaginada);
+        }
+
+        private async Task<IEnumerable<Pendencia>> ListarPendenciasUsuarioSemFiltro(long usuarioId)
+        {
+            var listaPendencias = new List<Pendencia>();
+
+            listaPendencias.AddRange(await repositorioPendenciaConsulta.ListarPendenciasUsuarioPerfil(usuarioId));
+            listaPendencias.AddRange(await repositorioPendenciaConsulta.ListarPendenciasUsuarioAula(usuarioId));
+            listaPendencias.AddRange(await repositorioPendenciaConsulta.ListarPendenciasUsuarioProfessor(usuarioId));
+            listaPendencias.AddRange(await repositorioPendenciaConsulta.ListarPendenciasUsuarioFechamento(usuarioId));
+            listaPendencias.AddRange(await repositorioPendenciaConsulta.ListarPendenciasUsuarioDiarioBordo(usuarioId));
+            listaPendencias.AddRange(await repositorioPendenciaConsulta.ListarPendenciasUsuarioDevolutiva(usuarioId));
+            listaPendencias.AddRange(await repositorioPendenciaConsulta.ListarPendenciasUsuarioEncaminhamentoAEE(usuarioId));
+            listaPendencias.AddRange(await repositorioPendenciaConsulta.ListarPendenciasUsuarioPlanoAEE(usuarioId));
+
+            return listaPendencias;
         }
 
         private bool ParametrosValidos(ObterPendenciasPorUsuarioQuery request) =>
@@ -90,7 +125,15 @@ namespace SME.SGP.Aplicacao
             var listaPendenciasDto = new List<PendenciaDto>();
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
-            foreach (var pendencia in pendencias)
+            var pendenciasAulas = pendencias.Where(p => p.EhPendenciaAula() || p.EhPendenciaCadastroEvento() || p.EhPendenciaCalendarioUe()).ToList();
+
+            listaPendenciasDto.AddRange(await ObterPendenciasAulasFormatada(pendenciasAulas));
+
+            var pendenciasRestantes = pendencias
+                                        .Where(p => !(p.EhPendenciaAula() || p.EhPendenciaCadastroEvento() || p.EhPendenciaCalendarioUe()))
+                                        .ToList();
+
+            foreach (var pendencia in pendenciasRestantes)
                 listaPendenciasDto.AddRange(await ObterPendencias(pendencia, usuarioLogado.CodigoRf));
 
             return listaPendenciasDto;
@@ -100,8 +143,6 @@ namespace SME.SGP.Aplicacao
         {
             switch (true)
             {
-                case var _ when pendencia.EhPendenciaAula() || pendencia.EhPendenciaCadastroEvento() || pendencia.EhPendenciaCalendarioUe():
-                    return await ObterPendenciasAulasFormatadas(pendencia);
                 case var _ when pendencia.EhPendenciaAusenciaAvaliacaoProfessor():
                     return await ObterPendenciaAusenciaAvaliacaoProfessor(pendencia);
                 case var _ when pendencia.EhPendenciaAusenciaAvaliacaoCP():
@@ -196,6 +237,44 @@ namespace SME.SGP.Aplicacao
             pendenciasProfessor.Add(pendenciaFormatada);
 
             return pendenciasProfessor;
+        }
+
+        private async Task<IEnumerable<PendenciaDto>> ObterPendenciasAulasFormatada(List<Pendencia> pendencias)
+        {
+            var pendenciaIds = pendencias.Select(p => p.Id).ToArray();
+
+            var pendenciasAulas = await mediator.Send(new ObterPendenciasAulasPorPendenciaIdsQuery(pendenciaIds));
+
+            var pendenciasAulasAgrupadas = pendenciasAulas
+                .GroupBy(p => p.PendenciaId)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            var resultado = new List<PendenciaDto>();
+
+            foreach (var pendencia in pendencias)
+            {
+                if (!pendenciasAulasAgrupadas.TryGetValue(pendencia.Id, out var aulasDaPendencia))
+                    continue;
+
+                var agrupamentoPendenciasBimestres = aulasDaPendencia
+                    .GroupBy(g => new { g.Bimestre, g.DisciplinaId, g.ModalidadeCodigo, g.NomeTurma }, (key, group) =>
+                        new PendenciaAgrupamentoDto()
+                        {
+                            Bimestre = key.Bimestre,
+                            ModalidadeCodigo = key.ModalidadeCodigo,
+                            NomeTurma = key.NomeTurma,
+                            PendenciaDetalhes = group.Select(s => new PendenciaDetalheDto()
+                            {
+                                DataAula = s.DataAula,
+                                EhReposicao = s.EhReposicao
+                            })
+                        });
+
+                var pendenciasFormatadas = ObterPendenciasFormatadas(pendencia, agrupamentoPendenciasBimestres);
+                resultado.AddRange(pendenciasFormatadas);
+            }
+
+            return resultado;
         }
 
         private async Task<IEnumerable<PendenciaDto>> ObterPendenciasAulasFormatadas(Pendencia pendencia)
