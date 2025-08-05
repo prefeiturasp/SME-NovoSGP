@@ -46,11 +46,35 @@ namespace SME.SGP.Aplicacao
                 return await MapearParaDtoPaginado(pendenciaPaginada);
             }
 
-            pendenciaPaginada = await repositorioPendenciaConsulta.ListarPendenciasUsuarioSemFiltro(request.UsuarioId, Paginacao);
+            var pendencias = await ListarPendenciasUsuarioSemFiltro(request.UsuarioId);
+
+            pendenciaPaginada = new PaginacaoResultadoDto<Pendencia>();
+            pendenciaPaginada.Items = pendencias;
+            pendenciaPaginada.TotalRegistros = pendencias.Count();
+            pendenciaPaginada.TotalPaginas = 1;
+
+            //pendenciaPaginada = await repositorioPendenciaConsulta.ListarPendenciasUsuarioSemFiltro(request.UsuarioId, Paginacao);
+
             listaPendenciasUsuario = (await repositorioPendenciaConsulta.FiltrarListaPendenciasUsuario(request.TurmaCodigo, pendenciaPaginada.Items.ToList())).ToList();
             pendenciaPaginada.Items = pendenciaPaginada.Items.Where(pendencia => listaPendenciasUsuario.Any(c => c == pendencia.Id));
            
             return await MapearParaDtoPaginado(pendenciaPaginada);
+        }
+
+        private async Task<IEnumerable<Pendencia>> ListarPendenciasUsuarioSemFiltro(long usuarioId)
+        {
+            var listaPendencias = new List<Pendencia>();
+
+            listaPendencias.AddRange(await repositorioPendenciaConsulta.ListarPendenciasUsuarioPerfil(usuarioId));
+            listaPendencias.AddRange(await repositorioPendenciaConsulta.ListarPendenciasUsuarioAula(usuarioId));
+            listaPendencias.AddRange(await repositorioPendenciaConsulta.ListarPendenciasUsuarioProfessor(usuarioId));
+            listaPendencias.AddRange(await repositorioPendenciaConsulta.ListarPendenciasUsuarioFechamento(usuarioId));
+            listaPendencias.AddRange(await repositorioPendenciaConsulta.ListarPendenciasUsuarioDiarioBordo(usuarioId));
+            listaPendencias.AddRange(await repositorioPendenciaConsulta.ListarPendenciasUsuarioDevolutiva(usuarioId));
+            listaPendencias.AddRange(await repositorioPendenciaConsulta.ListarPendenciasUsuarioEncaminhamentoAEE(usuarioId));
+            listaPendencias.AddRange(await repositorioPendenciaConsulta.ListarPendenciasUsuarioPlanoAEE(usuarioId));
+
+            return listaPendencias;
         }
 
         private bool ParametrosValidos(ObterPendenciasPorUsuarioQuery request) =>
