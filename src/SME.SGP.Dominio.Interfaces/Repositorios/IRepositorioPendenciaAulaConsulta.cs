@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.PendenciaAula;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -34,5 +35,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<long>> ObterPendenciasAulaPorDreUeTipoModalidade(long dreId, long ueId, TipoPendencia tipoPendencia, Modalidade modalidade);
         Task<IEnumerable<long>> ObterIdsPendencias(int anoLetivo, string codigoUE);
         Task<long[]> ObterPendenciasAulaDiarioClassePorTurmaDisciplinaPeriodo(string turmaId, string disciplinaId, DateTime periodoInicio, DateTime periodoFim);
+        Task<IEnumerable<PendenciaAulasDto>> ObterPendenciasAulasPorPendenciaIds(long[] pendenciaIds);
     }
 }
