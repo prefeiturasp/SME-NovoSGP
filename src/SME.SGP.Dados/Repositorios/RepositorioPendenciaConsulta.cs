@@ -18,7 +18,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioPendenciaConsulta : RepositorioBase<Pendencia>, IRepositorioPendenciaConsulta
     {
-        public RepositorioPendenciaConsulta(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
+        public RepositorioPendenciaConsulta(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 
@@ -37,6 +37,7 @@ namespace SME.SGP.Dados.Repositorios
                             WHERE NOT p.excluido 
                             AND ppu.usuario_id = @usuarioId 
                             AND p.situacao = @situacao
+                            AND p.Criado_em > @dataPendencia
             
                             UNION ALL 
             
@@ -47,7 +48,8 @@ namespace SME.SGP.Dados.Repositorios
                             WHERE NOT p.excluido 
                             AND pu.usuario_id = @usuarioId
                             AND p.situacao = @situacao
-            
+                            AND p.Criado_em > @dataPendencia
+
                             UNION ALL
             
                             SELECT DISTINCT p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em, p.criado_por, p.alterado_em, p.alterado_por
@@ -57,6 +59,7 @@ namespace SME.SGP.Dados.Repositorios
                             WHERE NOT p.excluido 
                             AND pu.usuario_id = @usuarioId
                             AND p.situacao = @situacao
+                            AND p.Criado_em > @dataPendencia  
             
                             UNION ALL
             
@@ -67,6 +70,7 @@ namespace SME.SGP.Dados.Repositorios
                             WHERE NOT p.excluido 
                             AND pu.usuario_id = @usuarioId
                             AND p.situacao = @situacao
+                            AND p.Criado_em > @dataPendencia
             
                             UNION ALL
             
@@ -79,6 +83,7 @@ namespace SME.SGP.Dados.Repositorios
                             AND NOT a.excluido
                             AND pu.usuario_id = @usuarioId
                             AND p.situacao = @situacao 
+                            AND p.Criado_em > @dataPendencia
             
                             UNION ALL
             
@@ -89,6 +94,7 @@ namespace SME.SGP.Dados.Repositorios
                             WHERE NOT p.excluido 
                             AND pu.usuario_id = @usuarioId
                             AND p.situacao = @situacao 
+                            AND p.Criado_em > @dataPendencia
             
                             UNION ALL
             
@@ -100,6 +106,7 @@ namespace SME.SGP.Dados.Repositorios
                             WHERE NOT p.excluido
                             AND aee.responsavel_id = @usuarioId
                             AND p.situacao = @situacao
+                            AND p.Criado_em > @dataPendencia
             
                             UNION ALL
             
@@ -109,12 +116,14 @@ namespace SME.SGP.Dados.Repositorios
                                 INNER JOIN pendencia_plano_aee ppaee ON p.id = ppaee.pendencia_id
                             WHERE NOT p.excluido 
                             AND pu.usuario_id = @usuarioId
-                            AND p.situacao = @situacao";
+                            AND p.situacao = @situacao
+                            AND p.Criado_em > @dataPendencia";
 
             var parametros = new
             {
                 usuarioId,
-                situacao
+                situacao,
+                dataPendencia = new DateTime(DateTime.Now.Year - 1, 1, 1)
             };
 
             var resultado = await database.Conexao.QueryAsync(query, parametros);
@@ -255,7 +264,7 @@ namespace SME.SGP.Dados.Repositorios
                         if (!string.IsNullOrEmpty(turmaCodigo))
                             query.Append(@" INNER JOIN turma t on t.id = p.turma_id");
 
-                        query.Append(@" WHERE p.id = any(@pendenciasIds) ");
+                        query.Append(@" WHERE p.id = any(@pendenciasIds) AND p.Criado_em > @dataPendencia ");
                         break;
                 }
 
@@ -272,7 +281,8 @@ namespace SME.SGP.Dados.Repositorios
                 pendenciasIdsRegistroIndividual,
                 pendenciasIdsDevolutiva,
                 pendenciasIds,
-                turmaCodigo
+                turmaCodigo,
+                dataPendencia = new DateTime(DateTime.Now.Year - 1, 1, 1)
             });
         }
 
