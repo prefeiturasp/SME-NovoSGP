@@ -30,8 +30,6 @@ namespace SME.SGP.Dados.Repositorios
                 paginacao = new Paginacao(1, 10);
 
             const string query = @" 
-                        SELECT p.*, COUNT(*) OVER() as TotalCount
-                        FROM (
                             SELECT DISTINCT p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em, p.criado_por, p.alterado_em, p.alterado_por
                             FROM pendencia p 
                                 INNER JOIN pendencia_perfil pp ON pp.pendencia_id = p.id 
@@ -111,17 +109,11 @@ namespace SME.SGP.Dados.Repositorios
                                 INNER JOIN pendencia_plano_aee ppaee ON p.id = ppaee.pendencia_id
                             WHERE NOT p.excluido 
                             AND pu.usuario_id = @usuarioId
-                            AND p.situacao = @situacao
-                        ) p 
-                        ORDER BY p.criado_em DESC
-                        OFFSET @qtde_registros_ignorados ROWS 
-                        FETCH NEXT @qtde_registros ROWS ONLY";
+                            AND p.situacao = @situacao";
 
             var parametros = new
             {
                 usuarioId,
-                qtde_registros_ignorados = paginacao.QuantidadeRegistrosIgnorados,
-                qtde_registros = paginacao.QuantidadeRegistros,
                 situacao
             };
 
@@ -137,9 +129,16 @@ namespace SME.SGP.Dados.Repositorios
                 return retornoPaginado;
             }
 
+            // Paginação feita em código porque estava causando timeout no banco
+            var paginaPendencias = resultado
+                            .OrderByDescending(p => p.CriadoEm)
+                            .Skip(paginacao.QuantidadeRegistrosIgnorados)
+                            .Take(paginacao.QuantidadeRegistros)
+                            .ToList();
+
             var totalRegistros = resultado.Count();
 
-            retornoPaginado.Items = resultado.Select(r => new Pendencia
+            retornoPaginado.Items = paginaPendencias.Select(r => new Pendencia
             {
                 Id = r?.id,
                 Titulo = r?.titulo,
