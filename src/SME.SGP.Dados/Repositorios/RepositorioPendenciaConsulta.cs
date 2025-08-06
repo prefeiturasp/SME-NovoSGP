@@ -18,7 +18,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioPendenciaConsulta : RepositorioBase<Pendencia>, IRepositorioPendenciaConsulta
     {
-        public RepositorioPendenciaConsulta(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
+        public RepositorioPendenciaConsulta(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 
@@ -30,6 +30,8 @@ namespace SME.SGP.Dados.Repositorios
                 paginacao = new Paginacao(1, 10);
 
             const string query = @" 
+                        SELECT p.*, COUNT(*) OVER() as TotalCount
+                        FROM (
                             SELECT DISTINCT p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em, p.criado_por, p.alterado_em, p.alterado_por
                             FROM pendencia p 
                                 INNER JOIN pendencia_perfil pp ON pp.pendencia_id = p.id 
@@ -37,7 +39,6 @@ namespace SME.SGP.Dados.Repositorios
                             WHERE NOT p.excluido 
                             AND ppu.usuario_id = @usuarioId 
                             AND p.situacao = @situacao
-                            AND p.Criado_em > @dataPendencia
             
                             UNION ALL 
             
@@ -48,8 +49,7 @@ namespace SME.SGP.Dados.Repositorios
                             WHERE NOT p.excluido 
                             AND pu.usuario_id = @usuarioId
                             AND p.situacao = @situacao
-                            AND p.Criado_em > @dataPendencia
-
+            
                             UNION ALL
             
                             SELECT DISTINCT p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em, p.criado_por, p.alterado_em, p.alterado_por
@@ -59,7 +59,6 @@ namespace SME.SGP.Dados.Repositorios
                             WHERE NOT p.excluido 
                             AND pu.usuario_id = @usuarioId
                             AND p.situacao = @situacao
-                            AND p.Criado_em > @dataPendencia  
             
                             UNION ALL
             
@@ -70,7 +69,6 @@ namespace SME.SGP.Dados.Repositorios
                             WHERE NOT p.excluido 
                             AND pu.usuario_id = @usuarioId
                             AND p.situacao = @situacao
-                            AND p.Criado_em > @dataPendencia
             
                             UNION ALL
             
@@ -83,7 +81,6 @@ namespace SME.SGP.Dados.Repositorios
                             AND NOT a.excluido
                             AND pu.usuario_id = @usuarioId
                             AND p.situacao = @situacao 
-                            AND p.Criado_em > @dataPendencia
             
                             UNION ALL
             
@@ -94,7 +91,6 @@ namespace SME.SGP.Dados.Repositorios
                             WHERE NOT p.excluido 
                             AND pu.usuario_id = @usuarioId
                             AND p.situacao = @situacao 
-                            AND p.Criado_em > @dataPendencia
             
                             UNION ALL
             
@@ -106,7 +102,6 @@ namespace SME.SGP.Dados.Repositorios
                             WHERE NOT p.excluido
                             AND aee.responsavel_id = @usuarioId
                             AND p.situacao = @situacao
-                            AND p.Criado_em > @dataPendencia
             
                             UNION ALL
             
@@ -117,13 +112,17 @@ namespace SME.SGP.Dados.Repositorios
                             WHERE NOT p.excluido 
                             AND pu.usuario_id = @usuarioId
                             AND p.situacao = @situacao
-                            AND p.Criado_em > @dataPendencia";
+                        ) p 
+                        ORDER BY p.criado_em DESC
+                        OFFSET @qtde_registros_ignorados ROWS 
+                        FETCH NEXT @qtde_registros ROWS ONLY";
 
             var parametros = new
             {
                 usuarioId,
-                situacao,
-                dataPendencia = new DateTime(DateTime.Now.Year - 1, 1, 1)
+                qtde_registros_ignorados = paginacao.QuantidadeRegistrosIgnorados,
+                qtde_registros = paginacao.QuantidadeRegistros,
+                situacao
             };
 
             var resultado = await database.Conexao.QueryAsync(query, parametros);
@@ -138,16 +137,9 @@ namespace SME.SGP.Dados.Repositorios
                 return retornoPaginado;
             }
 
-            // Paginação feita em código porque estava causando timeout no banco
-            var paginaPendencias = resultado
-                            .OrderByDescending(p => p.CriadoEm)
-                            .Skip(paginacao.QuantidadeRegistrosIgnorados)
-                            .Take(paginacao.QuantidadeRegistros)
-                            .ToList();
-
             var totalRegistros = resultado.Count();
 
-            retornoPaginado.Items = paginaPendencias.Select(r => new Pendencia
+            retornoPaginado.Items = resultado.Select(r => new Pendencia
             {
                 Id = r?.id,
                 Titulo = r?.titulo,
@@ -264,7 +256,7 @@ namespace SME.SGP.Dados.Repositorios
                         if (!string.IsNullOrEmpty(turmaCodigo))
                             query.Append(@" INNER JOIN turma t on t.id = p.turma_id");
 
-                        query.Append(@" WHERE p.id = any(@pendenciasIds) AND p.Criado_em > @dataPendencia ");
+                        query.Append(@" WHERE p.id = any(@pendenciasIds) ");
                         break;
                 }
 
@@ -281,8 +273,7 @@ namespace SME.SGP.Dados.Repositorios
                 pendenciasIdsRegistroIndividual,
                 pendenciasIdsDevolutiva,
                 pendenciasIds,
-                turmaCodigo,
-                dataPendencia = new DateTime(DateTime.Now.Year - 1, 1, 1)
+                turmaCodigo
             });
         }
 
