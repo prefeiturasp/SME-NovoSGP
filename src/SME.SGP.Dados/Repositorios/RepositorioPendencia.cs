@@ -2,14 +2,12 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.PendenciaPendente;
 using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Enumerados;
 using TipoPendencia = SME.SGP.Dominio.TipoPendencia;
 
 namespace SME.SGP.Dados.Repositorios
@@ -164,6 +162,150 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(" union all     ");
             sql.AppendLine(QuantidadeDiasPendenciasDiarioBordo());
             return await database.Conexao.QueryAsync<AulasDiasPendenciaDto>(sql.ToString(), new { anoLetivoInformado, ueid, situacoesPendencia, tiposPendenciaFechamento, tiposPendenciaDiarioBordo, tiposPendenciaAula }, commandTimeout: 60);
+        }
+
+        public async Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuarioSemFiltro(long usuarioId, Paginacao paginacao)
+        {
+            const SituacaoPendencia situacao = SituacaoPendencia.Pendente;
+
+            if (paginacao.EhNulo() || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
+                paginacao = new Paginacao(1, 10);
+
+            const string query = @" 
+                            SELECT DISTINCT p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em, p.criado_por, p.alterado_em, p.alterado_por
+                            FROM pendencia p 
+                                INNER JOIN pendencia_perfil pp ON pp.pendencia_id = p.id 
+                                INNER JOIN pendencia_perfil_usuario ppu ON ppu.pendencia_perfil_id = pp.id
+                            WHERE NOT p.excluido 
+                            AND ppu.usuario_id = @usuarioId 
+                            AND p.situacao = @situacao
+                            AND p.Criado_em > @dataPendencia
+            
+                            UNION ALL 
+            
+                            SELECT DISTINCT p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em, p.criado_por, p.alterado_em, p.alterado_por
+                            FROM pendencia p 
+                                INNER JOIN pendencia_usuario pu ON pu.pendencia_id = p.id
+                                INNER JOIN pendencia_aula pa ON p.id = pa.pendencia_id
+                            WHERE NOT p.excluido 
+                            AND pu.usuario_id = @usuarioId
+                            AND p.situacao = @situacao
+                            AND p.Criado_em > @dataPendencia
+
+                            UNION ALL
+            
+                            SELECT DISTINCT p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em, p.criado_por, p.alterado_em, p.alterado_por
+                            FROM pendencia p 
+                                INNER JOIN pendencia_usuario pu ON pu.pendencia_id = p.id
+                                INNER JOIN pendencia_professor pp ON p.id = pp.pendencia_id
+                            WHERE NOT p.excluido 
+                            AND pu.usuario_id = @usuarioId
+                            AND p.situacao = @situacao
+                            AND p.Criado_em > @dataPendencia  
+            
+                            UNION ALL
+            
+                            SELECT DISTINCT p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em, p.criado_por, p.alterado_em, p.alterado_por
+                            FROM pendencia p 
+                                INNER JOIN pendencia_usuario pu ON pu.pendencia_id = p.id
+                                INNER JOIN pendencia_fechamento pf ON p.id = pf.pendencia_id
+                            WHERE NOT p.excluido 
+                            AND pu.usuario_id = @usuarioId
+                            AND p.situacao = @situacao
+                            AND p.Criado_em > @dataPendencia
+            
+                            UNION ALL
+            
+                            SELECT DISTINCT p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em, p.criado_por, p.alterado_em, p.alterado_por
+                            FROM pendencia p 
+                                INNER JOIN pendencia_usuario pu ON pu.pendencia_id = p.id
+                                INNER JOIN pendencia_diario_bordo pdb ON p.id = pdb.pendencia_id
+                                INNER JOIN aula a ON a.id = pdb.aula_id
+                            WHERE NOT p.excluido 
+                            AND NOT a.excluido
+                            AND pu.usuario_id = @usuarioId
+                            AND p.situacao = @situacao 
+                            AND p.Criado_em > @dataPendencia
+            
+                            UNION ALL
+            
+                            SELECT DISTINCT p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em, p.criado_por, p.alterado_em, p.alterado_por
+                            FROM pendencia p 
+                                INNER JOIN pendencia_usuario pu ON pu.pendencia_id = p.id
+                                INNER JOIN pendencia_devolutiva pd ON p.id = pd.pendencia_id
+                            WHERE NOT p.excluido 
+                            AND pu.usuario_id = @usuarioId
+                            AND p.situacao = @situacao 
+                            AND p.Criado_em > @dataPendencia
+            
+                            UNION ALL
+            
+                            SELECT DISTINCT p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em, p.criado_por, p.alterado_em, p.alterado_por
+                            FROM pendencia p                                                      
+                                INNER JOIN pendencia_encaminhamento_aee eaee ON eaee.pendencia_id = p.id
+                                INNER JOIN encaminhamento_aee aee ON eaee.encaminhamento_aee_id = aee.id
+                                INNER JOIN pendencia_usuario pu2 ON p.id = pu2.pendencia_id AND pu2.usuario_id = @usuarioId
+                            WHERE NOT p.excluido
+                            AND aee.responsavel_id = @usuarioId
+                            AND p.situacao = @situacao
+                            AND p.Criado_em > @dataPendencia
+            
+                            UNION ALL
+            
+                            SELECT DISTINCT p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em, p.criado_por, p.alterado_em, p.alterado_por
+                            FROM pendencia p 
+                                INNER JOIN pendencia_usuario pu ON pu.pendencia_id = p.id
+                                INNER JOIN pendencia_plano_aee ppaee ON p.id = ppaee.pendencia_id
+                            WHERE NOT p.excluido 
+                            AND pu.usuario_id = @usuarioId
+                            AND p.situacao = @situacao
+                            AND p.Criado_em > @dataPendencia";
+
+            var parametros = new
+            {
+                usuarioId,
+                situacao,
+                dataPendencia = new DateTime(DateTime.Now.Year - 1, 1, 1)
+            };
+
+            var resultado = await database.Conexao.QueryAsync(query, parametros);
+
+            var retornoPaginado = new PaginacaoResultadoDto<Pendencia>();
+
+            if (!resultado.Any())
+            {
+                retornoPaginado.Items = new List<Pendencia>();
+                retornoPaginado.TotalRegistros = 0;
+                retornoPaginado.TotalPaginas = 0;
+                return retornoPaginado;
+            }
+
+            // Paginação feita em código porque estava causando timeout no banco
+            var paginaPendencias = resultado
+                            .OrderByDescending(p => p.CriadoEm)
+                            .Skip(paginacao.QuantidadeRegistrosIgnorados)
+                            .Take(paginacao.QuantidadeRegistros)
+                            .ToList();
+
+            var totalRegistros = resultado.Count();
+
+            retornoPaginado.Items = paginaPendencias.Select(r => new Pendencia
+            {
+                Id = r?.id,
+                Titulo = r?.titulo,
+                Descricao = r?.descricao,
+                Situacao = (SituacaoPendencia)r?.situacao,
+                Tipo = (TipoPendencia)r?.tipo,
+                CriadoEm = r?.criado_em,
+                CriadoPor = r?.criado_por,
+                AlteradoEm = r?.alterado_em,
+                AlteradoPor = r?.alterado_por
+            }).ToList();
+
+            retornoPaginado.TotalRegistros = totalRegistros;
+            retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)totalRegistros / paginacao.QuantidadeRegistros);
+
+            return retornoPaginado;
         }
 
         public async Task<IEnumerable<Pendencia>> ObterPorIdsAsync(long[] pendenciasId)

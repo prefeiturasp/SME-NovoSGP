@@ -16,12 +16,14 @@ namespace SME.SGP.Aplicacao
     public class ObterPendenciasPorUsuarioQueryHandler : ConsultasBase, IRequestHandler<ObterPendenciasPorUsuarioQuery, PaginacaoResultadoDto<PendenciaDto>>
     {
         private readonly IRepositorioPendenciaConsulta repositorioPendenciaConsulta;
+        private readonly IRepositorioPendencia repositorioPendencia; 
         private readonly IMediator mediator;
 
         public ObterPendenciasPorUsuarioQueryHandler(IContextoAplicacao contextoAplicacao, IMediator mediator, IRepositorioPendencia repositorioPendencia, IRepositorioPendenciaConsulta repositorioPendenciaConsulta) : base(contextoAplicacao)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioPendenciaConsulta = repositorioPendenciaConsulta;
+            this.repositorioPendencia = repositorioPendencia;
         }
 
         public async Task<PaginacaoResultadoDto<PendenciaDto>> Handle(ObterPendenciasPorUsuarioQuery request, CancellationToken cancellationToken)
@@ -47,7 +49,7 @@ namespace SME.SGP.Aplicacao
                 return await MapearParaDtoPaginado(pendenciaPaginada);
             }
 
-            pendenciaPaginada = await repositorioPendenciaConsulta.ListarPendenciasUsuarioSemFiltro(request.UsuarioId, Paginacao);
+            pendenciaPaginada = await repositorioPendencia.ListarPendenciasUsuarioSemFiltro(request.UsuarioId, Paginacao);
 
             listaPendenciasUsuario = (await repositorioPendenciaConsulta.FiltrarListaPendenciasUsuario(request.TurmaCodigo, pendenciaPaginada.Items.ToList())).ToList();
             pendenciaPaginada.Items = pendenciaPaginada.Items.Where(pendencia => listaPendenciasUsuario.Any(c => c == pendencia.Id));
