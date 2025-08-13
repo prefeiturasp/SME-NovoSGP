@@ -226,7 +226,9 @@ namespace SME.SGP.Dominio.Servicos
             {
                 var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaCodigo);
 
+
                 var notaTipoValor = await mediator.Send(new ObterNotaTipoValorPorTurmaIdQuery(turma));
+
 
                 await AtualizarNotasFechamento(notasEmAprovacao, criadoRF, criadoPor, workFlowId, notaTipoValor.TipoNota);
 
@@ -235,9 +237,11 @@ namespace SME.SGP.Dominio.Servicos
         }
 
         private async Task AtualizarNotasFechamento(IEnumerable<WfAprovacaoNotaFechamentoTurmaDto> notasEmAprovacao, string criadoRF, string criadoPor, long workFlowId, TipoNota tipoNota)
+        private async Task AtualizarNotasFechamento(IEnumerable<WfAprovacaoNotaFechamentoTurmaDto> notasEmAprovacao, string criadoRF, string criadoPor, long workFlowId, TipoNota tipoNota)
         {
             var fechamentoAluno = notasEmAprovacao.First().FechamentoNota.FechamentoAluno;
             var fechamentoTurmaDisciplinaId = fechamentoAluno.FechamentoTurmaDisciplinaId;
+
 
             // Resolve a pendencia de fechamento
             await repositorioPendencia.AtualizarPendencias(fechamentoTurmaDisciplinaId, SituacaoPendencia.Resolvida, TipoPendencia.AlteracaoNotaFechamento);
@@ -280,10 +284,12 @@ namespace SME.SGP.Dominio.Servicos
                 notaEmAprovacao.FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.FechamentoTurma.PeriodoEscolarId
             });
             foreach (var notaEmAprovacao in agrupamento)
+            foreach (var notaEmAprovacao in agrupamento)
                 await RemoverCacheFechamentoNota(notaEmAprovacao.Key.TurmaId, notaEmAprovacao.Key.DisciplinaId, notaEmAprovacao.Key.PeriodoEscolarId);
         }
 
         private async Task AtualizarCacheFechamentoNota(
+                                WfAprovacaoNotaFechamentoTurmaDto notaEmAprovacao,
                                 WfAprovacaoNotaFechamentoTurmaDto notaEmAprovacao,
                                 FechamentoNota fechamentoNota)
         {
@@ -454,6 +460,7 @@ namespace SME.SGP.Dominio.Servicos
             if (nivel.Cargo.HasValue)
             {
                 usuarios = await ObterUsuariosParaEnviarNotificacoes(nivel, nivel.Cargo, nivel.Workflow.UeId);
+                usuarios = await ObterUsuariosParaEnviarNotificacoes(nivel, nivel.Cargo, nivel.Workflow.UeId);
             }
 
             foreach (var usuario in usuarios)
@@ -506,6 +513,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (nivel.Cargo.HasValue)
             {
+                usuarios = await ObterUsuariosParaEnviarNotificacoes(nivel, nivel.Cargo, nivel.Workflow.UeId);
                 usuarios = await ObterUsuariosParaEnviarNotificacoes(nivel, nivel.Cargo, nivel.Workflow.UeId);
             }
 
@@ -610,6 +618,7 @@ namespace SME.SGP.Dominio.Servicos
 
             int? bimestre = notasEmAprovacao.First().Bimestre;
             var notaConceitoTitulo = notasEmAprovacao.First().WfAprovacao.ConceitoId.HasValue ? "conceito(s)" : "nota(s)";
+
 
             var usuariosRfs = notasEmAprovacao.Select(n => n.UsuarioSolicitanteRf);
 
@@ -984,9 +993,12 @@ namespace SME.SGP.Dominio.Servicos
         {
             var notasEmAprovacao = await ObterNotasEmAprovacao(workflow.Id);
 
+
             await AtualizarNotasFechamento(notasEmAprovacao);
 
+
             var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(workflow.TurmaId);
+
 
             await NotificarAprovacaoNotasFechamento(notasEmAprovacao, codigoDaNotificacao, turma, false, motivo);
         }

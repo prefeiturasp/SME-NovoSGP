@@ -147,6 +147,8 @@
 
         public const string URL_ESCOLAS_FUNCIONARIOS_FUNCOES_EXTERNAS = "/api/escolas/{0}/funcionarios/funcoes-externas/{1}";
 
+        public const string URL_ESCOLAS_FUNCIONARIOS_FUNCOES_ATIVIDADES = "/api/escolas/{0}/funcionarios/funcoes-atividades/{1}";
+
         public const string URL_PROFESSORES_TITULARES_TURMA = "professores/{0}/titulares/realizaAgrupamentoComponente/{1}";
 
         public const string URL_PROFESSORES_DISCIPLINA_TURMAS = "professores/{0}/disciplina/{1}/turmas";
