@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace SME.SGP.Dominio.Enumerados
+namespace SME.SGP.Dominio
 {
     public enum FuncaoAtividade
     {
@@ -11,9 +11,9 @@ namespace SME.SGP.Dominio.Enumerados
         COORDERNADOR_PEDAGOGICO_CIEJA = 44,
 
         [Display(Name = "Assistente Coord. Geral CIEJA")]
-        ASSISTENTE_COORDERNADOR_CIEJA = 43,
+        ASSISTENTE_COORDERNADOR_GERAL_CIEJA = 43,
 
         [Display(Name = "Coord. Geral CIEJA")]
-        COORDERNADOR_CIEJA = 42
+        COORDERNADOR_GERAL_CIEJA = 42
     }
 }
