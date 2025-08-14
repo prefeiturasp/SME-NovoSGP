@@ -23,12 +23,15 @@ namespace SME.SGP.Aplicacao
             var perfisPendenciaSemAtribuicao = perfisPendencia.Where(c => !c.PendenciasPerfilUsuarios.Any());
 
             foreach (var pendenciaPerfil in perfisPendenciaSemAtribuicao)
+            foreach (var pendenciaPerfil in perfisPendenciaSemAtribuicao)
             {
                 switch (pendenciaPerfil.PerfilCodigo)
                 {
                     case Dominio.PerfilUsuario.CP:
                     case Dominio.PerfilUsuario.AD:
                     case Dominio.PerfilUsuario.DIRETOR:
+                        await TratarAtribuicaoPerfisGestao(filtro.UeId, pendenciaPerfil.PerfilCodigo, pendenciaPerfil.Id);
+                        break;
                         await TratarAtribuicaoPerfisGestao(filtro.UeId, pendenciaPerfil.PerfilCodigo, pendenciaPerfil.Id);
                         break;
                     case Dominio.PerfilUsuario.CEFAI:
