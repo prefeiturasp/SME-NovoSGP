@@ -80,6 +80,8 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> PodeEditarParecerCP(PlanoAEE planoAEE, Usuario usuario, Turma turma)
             => SituacaoPermiteEdicaoCP(planoAEE.Situacao) &&
               (usuario.EhGestorEscolar() &&
+               await UsuarioGestorDoPlano(usuario, turma) 
+              || usuario.EhGestorCIEJA() &&
                await UsuarioGestorDoPlano(usuario, turma));
 
         private bool SituacaoPermiteEdicaoCP(SituacaoPlanoAEE situacao)

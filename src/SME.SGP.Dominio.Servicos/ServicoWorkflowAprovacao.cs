@@ -559,8 +559,8 @@ namespace SME.SGP.Dominio.Servicos
                     var CargosParaFuncoesAtividades = new Dictionary<Cargo, FuncaoAtividade>
                     {
                         { Cargo.CP, FuncaoAtividade.COORDERNADOR_PEDAGOGICO_CIEJA },
-                        { Cargo.AD, FuncaoAtividade.ASSISTENTE_COORDERNADOR_CIEJA },
-                        { Cargo.Diretor, FuncaoAtividade.COORDERNADOR_CIEJA }
+                        { Cargo.AD, FuncaoAtividade.ASSISTENTE_COORDERNADOR_GERAL_CIEJA },
+                        { Cargo.Diretor, FuncaoAtividade.COORDERNADOR_GERAL_CIEJA }
                     };
 
                     if (CargosParaFuncoesAtividades.TryGetValue(nivel.Cargo.Value, out var funcaoAtividade))
