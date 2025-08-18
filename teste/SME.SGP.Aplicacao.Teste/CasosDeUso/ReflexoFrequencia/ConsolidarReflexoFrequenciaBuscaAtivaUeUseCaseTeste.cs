@@ -59,11 +59,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ReflexoFrequencia
             Assert.True(resultado);
 
             mediatorMock.Verify(m => m.Send(
-                It.Is<ExcluirConsolidacoesReflexoFrequenciaBuscaAtivaUeMesCommand>(cmd => cmd.UeCodigo == ueCodigo && cmd.Mes == filtro.Data.Month && cmd.AnoLetivo == filtro.Data.Year),
-                It.IsAny<CancellationToken>()), Times.Once);
-
-            mediatorMock.Verify(m => m.Send(
-                It.Is<ExcluirConsolidacoesReflexoFrequenciaBuscaAtivaUeMesCommand>(cmd => cmd.UeCodigo == ueCodigo && cmd.Mes == 0 && cmd.AnoLetivo == filtro.Data.Year),
+                It.Is<ExcluirConsolidacoesReflexoFrequenciaBuscaAtivaUeMesCommand>(
+                    cmd => cmd.UeCodigo == ueCodigo
+                        && cmd.Mes == filtro.Data.Month
+                        && cmd.AnoLetivo == filtro.Data.Year),
                 It.IsAny<CancellationToken>()), Times.Once);
 
             mediatorMock.Verify(m => m.Send(
