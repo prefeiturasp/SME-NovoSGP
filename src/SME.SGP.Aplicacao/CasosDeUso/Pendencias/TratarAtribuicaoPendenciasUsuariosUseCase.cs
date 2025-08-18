@@ -1,9 +1,7 @@
 ﻿using MediatR;
-using Minio.DataModel;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -68,9 +66,16 @@ namespace SME.SGP.Aplicacao
         private async Task TratarAtribuicaoPerfisGestao(long ueId, PerfilUsuario perfilUsuario, long pendenciaPerfilId)
         {
             var dreUe = await ObterCodigoDREUE(ueId);
-            var atribuiuPerfisPorCargo = await AtribuirPerfisUsuarioPorCargo(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
-            if (!atribuiuPerfisPorCargo)
-                await AtribuirPerfisUsuarioPorFuncaoExterna(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
+            var tipoEscola = await ObterTipoEscolaUE(dreUe.UeCodigo);
+            var atribuiuPerfis = false;
+
+            if(tipoEscola == TipoEscola.CIEJA)
+                atribuiuPerfis = await AtribuirPerfisUsuarioCIEJA(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
+
+            if (!atribuiuPerfis)
+                atribuiuPerfis = await AtribuirPerfisUsuarioPorFuncaoExterna(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
+            else
+                atribuiuPerfis = await AtribuirPerfisUsuarioPorCargo(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);           
         }
 
         private async Task TratarAtribuicaoPerfilCEFAI(IEnumerable<long> CEFAIs, PerfilUsuario perfilUsuario, long pendenciaPerfilId)
@@ -102,6 +107,10 @@ namespace SME.SGP.Aplicacao
 
         private async Task<DreUeCodigoDto> ObterCodigoDREUE(long ueId)
             => await mediator.Send(new ObterCodigoUEDREPorIdQuery(ueId));
+
+        private async Task<TipoEscola> ObterTipoEscolaUE(string codigoUE)
+            => await mediator.Send(new ObterTipoEscolaPorCodigoUEQuery(codigoUE));
+ 
 
         private async Task AtribuirPerfilUsuario(long usuarioId, PerfilUsuario perfil, long pendenciaPerfilId)
         {
