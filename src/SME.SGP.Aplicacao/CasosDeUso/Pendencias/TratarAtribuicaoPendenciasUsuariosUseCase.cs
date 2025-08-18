@@ -72,10 +72,12 @@ namespace SME.SGP.Aplicacao
             if(tipoEscola == TipoEscola.CIEJA)
                 atribuiuPerfis = await AtribuirPerfisUsuarioCIEJA(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
 
+            if (tipoEscola != TipoEscola.CIEJA)
+                atribuiuPerfis = await AtribuirPerfisUsuarioPorFuncaoExterna(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);            
+            
             if (!atribuiuPerfis)
-                atribuiuPerfis = await AtribuirPerfisUsuarioPorFuncaoExterna(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
-            else
-                atribuiuPerfis = await AtribuirPerfisUsuarioPorCargo(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);           
+                atribuiuPerfis = await AtribuirPerfisUsuarioPorCargo(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
+            
         }
 
         private async Task TratarAtribuicaoPerfilCEFAI(IEnumerable<long> CEFAIs, PerfilUsuario perfilUsuario, long pendenciaPerfilId)
