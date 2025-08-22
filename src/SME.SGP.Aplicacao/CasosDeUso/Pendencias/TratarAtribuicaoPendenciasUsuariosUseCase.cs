@@ -70,19 +70,14 @@ namespace SME.SGP.Aplicacao
 
             if (tipoEscola == TipoEscola.CIEJA)
             {
-                await AtribuirPerfisUsuarioPorFuncaoAtividade(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
-                return;
+                await AtribuirPerfisUsuarioCIEJA(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
             }
-
-            if (tipoEscola == TipoEscola.CEIINDIR || tipoEscola == TipoEscola.CRPCONV)
+            else
             {
-                await AtribuirPerfisUsuarioPorFuncaoExterna(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
-                return;
+                var atribuirPerfisPorCargo = await AtribuirPerfisUsuarioPorCargo(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
+                if (!atribuirPerfisPorCargo)
+                    await AtribuirPerfisUsuarioPorFuncaoExterna(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
             }
-
-            var atribuirPerfisPorCargo = await AtribuirPerfisUsuarioPorCargo(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
-            if (!atribuirPerfisPorCargo)
-                await AtribuirPerfisUsuarioPorFuncaoExterna(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
         }
 
         private async Task TratarAtribuicaoPerfilCEFAI(IEnumerable<long> CEFAIs, PerfilUsuario perfilUsuario, long pendenciaPerfilId)

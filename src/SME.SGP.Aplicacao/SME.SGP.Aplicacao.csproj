@@ -39,6 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.105.0" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="10.3.3" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="10.3.3" />
     <PackageReference Include="MailKit" Version="2.15.0" />
@@ -66,6 +67,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Commands\ImportarArquivo\Idep\" />
+    <Folder Include="Commands\ImportarArquivo\FluenciaLeitora\" />
     <Folder Include="Commands\FechamentoTurmaDisciplina\" />
     <Folder Include="obj\" />
     <Folder Include="Queries\ConselhoClasseAcompanhamento\ObterAlunoEStatusConselhoClasseConsolidadoPorTurmaEBimestre\" />
