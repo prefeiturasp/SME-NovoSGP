@@ -1,8 +1,9 @@
 ﻿namespace SME.SGP.Infra.Dtos.ImportarArquivo
 {
-    public class ArquivoIdebDto {
-        public ArquivoIdebDto(int serieAno, string codigoEOLEscola, decimal nota) 
-        { 
+    public class ArquivoIdebDto : ArquivoImportacaoBaseDto
+    {
+        public ArquivoIdebDto(int serieAno, string codigoEOLEscola, decimal nota)
+        {
             SerieAno = serieAno;
             CodigoEOLEscola = codigoEOLEscola;
             Nota = nota;
