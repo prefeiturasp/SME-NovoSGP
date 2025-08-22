@@ -2,24 +2,19 @@
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using SME.SGP.Aplicacao.Commands.ImportarArquivo;
-using SME.SGP.Aplicacao.Commands.ImportarArquivo.Ideb;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.ImportarArquivo;
 using SME.SGP.Infra.Enumerados;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 
@@ -27,18 +22,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
 {
     public class CasoDeUsoImportacaoArquivoIdeb : AbstractUseCase, ICasoDeUsoImportacaoArquivoIdeb
     {
-        private const int INICIO_LINHA_TITULO = 1;
-        private const int INICIO_LINHA_DADOS = 2;
-
-        private const string COLUNA_SERIE_ANO = "Série";
-        private const string COLUNA_CODIGO_EOL_ESCOLA = "Código Escola";
-        private const string COLUNA_NOTA = "Nota";
-
-        private const int COLUNA_SERIE_ANO_NUMERO = 1;
-        private const int COLUNA_CODIGO_EOL_ESCOLA_NUMERO = 2;
-        private const int COLUNA_NOTA_NUMERO = 3;
-
         private readonly IRepositorioImportacaoLog repositorioImportacaoLog;
+
+        private List<ImportacaoLogErroDto> ProcessadosComFalha;
         public CasoDeUsoImportacaoArquivoIdeb(
             IMediator mediator,
             IRepositorioImportacaoLog repositorioImportacaoLog
@@ -61,56 +47,101 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
 
         public async Task<bool> ProcessarArquivoAsync(Stream arquivo, ImportacaoLog importacaoLog)
         {
-            var processadosComSucesso = new List<ArquivoIdebDto>();
-            var processadosComFalha = new List<ImportacaoLogErroDto>();
+            var listaImportacaoArquivoIdebDto = new List<ArquivoIdebDto>();
+            ProcessadosComFalha = new List<ImportacaoLogErroDto>();
+            var totalLinhas = 0;
+            var tarefasSalvar = new List<Task>();
 
-            using (var package = new XLWorkbook(arquivo))
+            try
             {
-                var planilha = package.Worksheets.FirstOrDefault();
-
-                if (planilha == null)
-                    return false;
-
-                var totalLinhas = planilha.LastRowUsed().RowNumber();
-
-                var linhasParaProcessar = Enumerable.Range(INICIO_LINHA_DADOS, totalLinhas - INICIO_LINHA_DADOS + 1).ToList();
-                var quantidadeLinhasEmLote = 10; // virá das secrets/configMaps
-
-                foreach (var loteDeLinhas in linhasParaProcessar.Chunk(quantidadeLinhasEmLote))
+                // TODO: Validar se o arquivo é do tipo XLSX
+                // TODO: Testar com arquivo sem  colunas
+                // TODO: Testar com arquivo sem  linhas
+                // TODO: Testar com arquivo sem  informação em algumas colunas
+                using (var package = new XLWorkbook(arquivo))
                 {
-                    var tasks = loteDeLinhas.Select(numeroLinha => Task.Run(() =>
+                    var planilha = package.Worksheets.FirstOrDefault();
+
+                    if (planilha == null)
+                        return false;
+
+                    totalLinhas = planilha.LastRowUsed().RowNumber();
+                    var quantidadeLinhasEmLote = 3; // virá das secrets/configMaps
+
+                    for (int linha = 2; linha <= totalLinhas; linha++)
                     {
                         try
                         {
-                            var codigoEOLEscola = planilha.ObterValorDaCelula(numeroLinha, COLUNA_CODIGO_EOL_ESCOLA_NUMERO);
-                            var serieAno = int.Parse(planilha.ObterValorDaCelula(numeroLinha, COLUNA_SERIE_ANO_NUMERO));
-                            var nota = Math.Round(decimal.Parse(planilha.ObterValorDaCelula(numeroLinha, COLUNA_NOTA_NUMERO), CultureInfo.InvariantCulture), 2);
+                            var codigoEOLEscola = planilha.ObterValorDaCelula(linha, COLUNA_CODIGO_EOL_ESCOLA_NUMERO);
+                            var serieAno = int.Parse(planilha.ObterValorDaCelula(linha, COLUNA_SERIE_ANO_NUMERO));
+                            var nota = Math.Round(decimal.Parse(planilha.ObterValorDaCelula(linha, COLUNA_NOTA_NUMERO), CultureInfo.InvariantCulture), 2);
+
                             var arquivoIdebDto = new ArquivoIdebDto(serieAno, codigoEOLEscola, nota);
+                            arquivoIdebDto.LinhaAtual = linha;
 
-                            var erros = ValidarRegistros(arquivoIdebDto, importacaoLog.Id, numeroLinha);
+                            listaImportacaoArquivoIdebDto.Add(arquivoIdebDto);
 
-                            if (erros.Any())
-                                processadosComFalha.AddRange(erros);
-
+                            // atingiu o limite do lote
+                            if (listaImportacaoArquivoIdebDto.Count == quantidadeLinhasEmLote)
+                            {
+                                tarefasSalvar.AddRange(SalvarArquivoIdebEmLote(listaImportacaoArquivoIdebDto, importacaoLog.Id));
+                                listaImportacaoArquivoIdebDto.Clear();
+                            }
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
-                            throw;
+                            ProcessadosComFalha.Add(new ImportacaoLogErroDto(importacaoLog.Id, linha, ex.Message));
                         }
-                        //finally
-                        //{
-                        //    importacaoLog.TotalRegistros = totalLinhas - 1;
-                        //    importacaoLog.RegistrosProcessados = processadosComSucesso.Count();
-                        //    importacaoLog.RegistrosComFalha = processadosComFalha.Count();
-                        //    importacaoLog.DataFimProcessamento = DateTime.Now;
-                        //    await repositorioImportacaoLog.SalvarAsync(importacaoLog);
-                        //}
-                    })).ToList();
+                    }
 
-                    await Task.WhenAll(tasks);
+                    // salva as linhas restantes (último lote incompleto)
+                    if (listaImportacaoArquivoIdebDto.Any())
+                        tarefasSalvar.AddRange(SalvarArquivoIdebEmLote(listaImportacaoArquivoIdebDto, importacaoLog.Id));
+
+                    // aguarda todas as tasks de persistência
+                    await Task.WhenAll(tarefasSalvar);
                 }
             }
+            catch (Exception ex)
+            {
+                ProcessadosComFalha.Add(new ImportacaoLogErroDto(importacaoLog.Id, 0, ex.Message));
+            }
+            finally
+            {
+                importacaoLog.TotalRegistros = totalLinhas - 1;
+                importacaoLog.RegistrosProcessados = totalLinhas - ProcessadosComFalha.Count();
+                importacaoLog.RegistrosComFalha = ProcessadosComFalha.Count();
+                importacaoLog.DataFimProcessamento = DateTime.Now;
+                await repositorioImportacaoLog.SalvarAsync(importacaoLog);
+            }
+
             return true;
+        }
+
+        /// <summary>
+        /// Cria uma lista de tasks, uma por registro do lote.
+        /// </summary>
+        private IEnumerable<Task> SalvarArquivoIdebEmLote(List<ArquivoIdebDto> listaImportacaoArquivoIdebDto, long importacaoLogId)
+        {
+            var tarefas = new List<Task>();
+            foreach (var arquivoIdebDto in listaImportacaoArquivoIdebDto)
+            {
+                try
+                {
+                    var erros = ValidarRegistros(arquivoIdebDto, importacaoLogId, arquivoIdebDto.LinhaAtual);
+
+                    if (erros.Any())
+                        ProcessadosComFalha.AddRange(erros);
+                    else
+                        tarefas.Add(mediator.Send(new SalvarImportacaoArquivoIdebCommand(arquivoIdebDto, importacaoLogId)));
+
+                }
+                catch (Exception ex)
+                {
+                    ProcessadosComFalha.Add(new ImportacaoLogErroDto(importacaoLogId, arquivoIdebDto.LinhaAtual, ex.Message));
+                }
+            }
+            return tarefas;
         }
 
         private List<ImportacaoLogErroDto> ValidarRegistros(ArquivoIdebDto arquivoIdeb, long importacaoLogId, long numeroLinha)
@@ -124,6 +155,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
 
             if (!serieAnosValidos.Contains(arquivoIdeb.SerieAno))
                 erros.Add(new ImportacaoLogErroDto(importacaoLogId, numeroLinha, "Série/Ano inválido."));
+
+            // TODO: Verificar a dependencia com o EOL
 
             if (arquivoIdeb.Nota > 0)
                 erros.Add(new ImportacaoLogErroDto(importacaoLogId, numeroLinha, "Nota inválida."));
