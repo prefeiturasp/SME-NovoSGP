@@ -62,5 +62,6 @@
         public const string ConsolidarInformacoesProdutividadeFrequenciaDre = "sgp.consolidacao.produtividade.frequencia.dre";
         public const string ConsolidarInformacoesProdutividadeFrequenciaUe = "sgp.consolidacao.produtividade.frequencia.ue";
         public const string ConsolidarInformacoesProdutividadeFrequenciaBimestre = "sgp.consolidacao.produtividade.frequencia.bimestre";
+        public const string ConsolidarInformacoesFrequenciaPainelEducacional = "sgp.consolidacao.frequencia.painel.educacional";
     }
 }
