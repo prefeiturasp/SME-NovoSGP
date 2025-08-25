@@ -227,6 +227,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioAulaPrevistaConsulta, RepositorioAulaPrevistaConsulta>();
             services.TryAddScoped<IRepositorioAulaPrevistaBimestreConsulta, RepositorioAulaPrevistaBimestreConsulta>();
             services.TryAddScoped<IRepositorioConsolidacaoMatriculaTurma, RepositorioConsolidacaoMatriculaTurma>();
+            services.TryAddScoped<IRepositorioImportacaoLog, RepositorioImportacaoLog>();
         }
 
         protected virtual void RegistrarContextos(IServiceCollection services)
@@ -612,6 +613,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioImportacaoLog, RepositorioImportacaoLog>();
             services.TryAddScoped<IRepositorioImportacaoLogErro, RepositorioImportacaoLogErro>();
             services.TryAddScoped<IRepositorioArquivoIdeb, RepositorioArquivoIdeb>();
+            services.TryAddScoped<IRepositorioArquivoIdep, RepositorioArquivoIdep>();
+            services.TryAddScoped<IRepositorioArquivoFluenciaLeitora, RepositorioArquivoFluenciaLeitora>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)
@@ -1445,7 +1448,11 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRelatorioMapeamentoEstudantesUseCase, RelatorioMapeamentoEstudantesUseCase>();
 
             //ImportacaoLog - Arquivos
-            services.TryAddScoped<ICasoDeUsoImportacaoArquivoIdeb, CasoDeUsoImportacaoArquivoIdeb>();
+            services.TryAddScoped<IImportacaoLogUseCase, ImportacaoLogUseCase>();
+            services.TryAddScoped<IImportacaoLogErroUseCase, ImportacaoLogErroUseCase>();
+            services.TryAddScoped<IImportacaoArquivoIdebUseCase, ImportacaoArquivoIdebUseCase>();
+            services.TryAddScoped<IImportacaoArquivoIdepUseCase, ImportacaoArquivoIdepUseCase>();
+            services.TryAddScoped<IImportacaoArquivoFluenciaLeitoraUseCase, ImportacaoArquivoFluenciaLeitoraUseCase>();
 
             RegistrarCasoDeUsoAEERabbitSgp(services);
             RegistrarCasoDeUsoAulaRabbitSgp(services);
