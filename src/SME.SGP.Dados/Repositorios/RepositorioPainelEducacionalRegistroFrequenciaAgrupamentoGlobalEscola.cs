@@ -2,7 +2,7 @@
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
-using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -15,7 +15,21 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task ExcluirFrequenciaGlobal(PainelEducacionalRegistroFrequenciaAgrupamentoEscola entidade)
         {
-           await RemoverAsync(entidade);
+            await RemoverAsync(entidade);
+        }
+
+        public async Task<IEnumerable<PainelEducacionalRegistroFrequenciaAgrupamentoEscola>> ObterFrequenciaGlobal(string codigoDre, string codigoUe)
+        {
+            var sql = $@"SELECT * FROM painel_educacional_registro_frequencia_agrupamento_escola
+                        WHERE 1=1";
+
+            if (!string.IsNullOrWhiteSpace(codigoDre))
+                sql += " AND codigo_dre = codigoDre";
+            
+            if (!string.IsNullOrWhiteSpace(codigoUe))
+                sql += " AND codigo_ue = codigoUe";
+
+            return await database.QueryAsync<PainelEducacionalRegistroFrequenciaAgrupamentoEscola>(sql, new { codigoDre, codigoUe });
         }
 
         public async Task<bool> SalvarFrequenciaGlobal(PainelEducacionalRegistroFrequenciaAgrupamentoEscola entidade)

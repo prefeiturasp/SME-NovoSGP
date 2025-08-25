@@ -1,4 +1,6 @@
 ﻿using SME.SGP.Dominio.Entidades;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces.Repositorios
@@ -7,5 +9,6 @@ namespace SME.SGP.Dominio.Interfaces.Repositorios
     {
         Task ExcluirFrequenciaMensal(PainelEducacionalRegistroFrequenciaAgrupamentoMensal entidade);
         Task<bool> SalvarFrequenciaMensal(PainelEducacionalRegistroFrequenciaAgrupamentoMensal entidade);
+        Task<IEnumerable<PainelEducacionalRegistroFrequenciaAgrupamentoMensal>> ObterFrequenciaMensal(string codigoDre, string codigoUe);
     }
 }
