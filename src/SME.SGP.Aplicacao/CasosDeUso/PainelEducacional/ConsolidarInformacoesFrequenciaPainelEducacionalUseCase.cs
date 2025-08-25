@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
-            var registrosFrequencia = await repositorioFrequencia.ObterInformacoesFrequenciaPainelEducacional(2024);
+            var registrosFrequencia = await repositorioFrequencia.ObterInformacoesFrequenciaPainelEducacional(DateTime.Now.Year);
 
             await SalvarAgrupamentoMensal(registrosFrequencia);
             await SalvarAgrupamentoGlobal(registrosFrequencia);
@@ -50,8 +50,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                         TotalFaltas = g.Sum(x => x.QuantidadeAusencias),
                         PercentualFrequencia = g.Average(x => x.Percentual)
                     })
-                    .OrderBy(x => x.Mes)
-                    .ToList();
+                    .OrderBy(x => x.Mes);
 
             await mediator.Send(new PainelEducacionalExcluirAgrupamentoMensalCommand());
             await mediator.Send(new PainelEducacionalSalvarAgrupamentoMensalCommand(registroFrequenciaMensal));
@@ -70,8 +69,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                         PercentualFrequencia = g.Average(x => x.Percentual),
                         TotalAlunos = g.Select(x => x.CodigoAluno).Distinct().ToList().Count()
                     })
-                    .OrderBy(x => x.Modalidade)
-                    .ToList();
+                    .OrderBy(x => x.Modalidade);
 
             await mediator.Send(new PainelEducacionalExcluirAgrupamentoGlobalCommand());
             await mediator.Send(new PainelEducacionalSalvarAgrupamentoGlobalCommand(registroFrequenciaGlobal));
@@ -89,10 +87,10 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                         TotalCompensacoes = g.Sum(x => x.QuantidadeCompensacoes),
                         PercentualFrequencia = g.Average(x => x.Percentual),
                         UE = g.Select(x => x.Ue).FirstOrDefault(),
+                        CodigoDre = g.Select(x => x.CodigoDre).FirstOrDefault(),
                         TotalAlunos = g.Select(x => x.CodigoAluno).Distinct().ToList().Count()
                     })
-                    .OrderBy(x => x.CodigoUe)
-                    .ToList();
+                    .OrderBy(x => x.CodigoUe);
 
             await mediator.Send(new PainelEducacionalExcluirAgrupamentoGlobalEscolaCommand());
             await mediator.Send(new PainelEducacionalSalvarAgrupamentoGlobalEscolaCommand(registroFrequenciaEscola));
