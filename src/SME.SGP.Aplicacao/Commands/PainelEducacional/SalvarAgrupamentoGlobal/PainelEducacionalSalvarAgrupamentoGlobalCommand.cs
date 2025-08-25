@@ -4,7 +4,7 @@ using SME.SGP.Dominio.Entidades;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarAgrupamentoMensal
+namespace SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarAgrupamentoGlobal
 {
     public class PainelEducacionalSalvarAgrupamentoGlobalCommand : IRequest<bool>
     {
