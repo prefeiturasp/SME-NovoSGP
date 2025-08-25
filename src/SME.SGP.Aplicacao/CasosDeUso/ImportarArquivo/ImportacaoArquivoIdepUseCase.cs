@@ -42,6 +42,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
 
         public async Task<ImportacaoLogRetornoDto> Executar(IFormFile arquivo, int anoLetivo)
         {
+            if (anoLetivo == 0)
+                throw new NegocioException("Informe o ano letivo.");
+
             if (arquivo == null || arquivo.Length == 0)
                 throw new NegocioException(MensagemNegocioComuns.ARQUIVO_VAZIO);
 
@@ -58,7 +61,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
             return ImportacaoLogRetornoDto.RetornarSucesso(MensagemNegocioComuns.ARQUIVO_IMPORTADO_COM_SUCESSO, importacaoLog.Id);
         }
 
-        public async Task<bool> ProcessarArquivoAsync(Stream arquivo, ImportacaoLog importacaoLog, int anoLetivo)
+        private async Task<bool> ProcessarArquivoAsync(Stream arquivo, ImportacaoLog importacaoLog, int anoLetivo)
         {
             var listaLote = new List<ArquivoIdepDto>();
             ProcessadosComFalha = new List<SalvarImportacaoLogErroDto>();

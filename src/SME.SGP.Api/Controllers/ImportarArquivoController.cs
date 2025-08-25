@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SME.SGP.Api.Filtros;
-using SME.SGP.Api.Middlewares;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.ImportarArquivo;
