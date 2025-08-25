@@ -38,6 +38,6 @@ namespace SME.SGP.Dominio.Constantes.MensagensNegocio
         public const string ARQUIVO_VAZIO = "É necessário informar o arquivo a ser carregado";
         public const string ARQUIVO_IMPORTADO_COM_SUCESSO = "Arquivo importado com sucesso";
         public const string CONTENT_TYPE_EXCEL = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-        public const string A_PLANILHA_DE_IDEB_NAO_TEM_O_NOME_DA_COLUNA_Y_NA_COLUNA_Z = "A planilha de IDEB deveria apresentar o nome '{0}' na coluna '{1}', conforme previsto planilha modelo.";
+        public const string ARQUIVO_NUMERO_COLUNAS_INVALIDO = "A planilha não possui o mínimo colunas necessárias.";
     }
 }
