@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterFrequenciaGlobal
 
         public async Task<IEnumerable<PainelEducacionalRegistroFrequenciaAgrupamentoGlobalDto>> Handle(PainelEducacionalRegistroFrequenciaAgrupamentoGlobalQuery request, CancellationToken cancellationToken)
         {
-            var registros = await repositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobal.ListarAsync();
+            var registros = await repositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobal.ObterFrequenciaGlobal(request.CodigoDre, request.CodigoUe);
 
             return MapearParaDto(registros);
         }

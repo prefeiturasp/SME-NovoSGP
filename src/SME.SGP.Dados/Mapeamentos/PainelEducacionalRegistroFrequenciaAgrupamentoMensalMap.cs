@@ -7,6 +7,8 @@ namespace SME.SGP.Dados.Mapeamentos
         public PainelEducacionalRegistroFrequenciaAgrupamentoMensalMap()
         {
             ToTable("painel_educacional_registro_frequencia_agrupamento_mensal");
+            Map(c => c.CodigoDre).ToColumn("codigo_dre");
+            Map(c => c.CodigoUe).ToColumn("codigo_ue");
             Map(c => c.Modalidade).ToColumn("modalidade");
             Map(c => c.AnoLetivo).ToColumn("ano_letivo");
             Map(c => c.Mes).ToColumn("mes");

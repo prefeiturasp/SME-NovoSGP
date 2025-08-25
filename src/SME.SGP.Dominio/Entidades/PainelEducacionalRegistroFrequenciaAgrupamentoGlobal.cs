@@ -2,6 +2,8 @@
 {
     public class PainelEducacionalRegistroFrequenciaAgrupamentoGlobal : EntidadeBase
     {
+        public string CodigoDre { get; set; }
+        public string CodigoUe { get; set; }
         public int Modalidade { get; set; }
         public int TotalAulas { get; set; }
         public int TotalAusencias { get; set; }

@@ -48,6 +48,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                         Mes = g.Key.Mes,
                         TotalAulas = g.Sum(x => x.QuantidadeAulas),
                         TotalFaltas = g.Sum(x => x.QuantidadeAusencias),
+                        CodigoUe = g.Select(x => x.CodigoUe).FirstOrDefault(),
+                        CodigoDre = g.Select(x => x.CodigoDre).FirstOrDefault(),
                         PercentualFrequencia = g.Average(x => x.Percentual)
                     })
                     .OrderBy(x => x.Mes);
@@ -63,6 +65,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                     .Select(g => new PainelEducacionalRegistroFrequenciaAgrupamentoGlobal
                     {
                         Modalidade = g.Key.ModalidadeCodigo,
+                        CodigoUe = g.Select(x => x.CodigoUe).FirstOrDefault(),
+                        CodigoDre = g.Select(x => x.CodigoDre).FirstOrDefault(),
                         TotalAulas = g.Sum(x => x.QuantidadeAulas),
                         TotalAusencias = g.Sum(x => x.QuantidadeAusencias),
                         TotalCompensacoes = g.Sum(x => x.QuantidadeCompensacoes),
