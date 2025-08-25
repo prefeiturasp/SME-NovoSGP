@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo
 {
     public interface IImportacaoArquivoFluenciaLeitoraUseCase
     {
-        Task<ImportacaoLogRetornoDto> Executar(IFormFile arquivo, int anoLetivo, string perido);
+        Task<ImportacaoLogRetornoDto> Executar(IFormFile arquivo, int anoLetivo, string periodo);
     }
 }
