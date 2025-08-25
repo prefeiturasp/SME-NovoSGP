@@ -3,7 +3,7 @@ using SME.SGP.Dominio.Interfaces.Repositorios;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarAgrupamentoMensal
+namespace SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarAgrupamentoGlobal
 {
     public class PainelEducacionalSalvarAgrupamentoGlobalCommandHandler : IRequestHandler<PainelEducacionalSalvarAgrupamentoGlobalCommand, bool>
     {

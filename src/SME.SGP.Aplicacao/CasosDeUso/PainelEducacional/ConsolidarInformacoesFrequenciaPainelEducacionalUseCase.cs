@@ -1,4 +1,9 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Commands.PainelEducacional.ExcluirAgrupamentoEscola;
+using SME.SGP.Aplicacao.Commands.PainelEducacional.ExcluirAgrupamentoGlobal;
+using SME.SGP.Aplicacao.Commands.PainelEducacional.ExcluirAgrupamentoMensal;
+using SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarAgrupamentoEscola;
+using SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarAgrupamentoGlobal;
 using SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarAgrupamentoMensal;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 using SME.SGP.Dominio.Entidades;
@@ -23,7 +28,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
-            var registrosFrequencia = await repositorioFrequencia.ObterInformacoesFrequenciaPainelEducacional(DateTime.Now.Year);
+            var registrosFrequencia = await repositorioFrequencia.ObterInformacoesFrequenciaPainelEducacional(2024);
 
             await SalvarAgrupamentoMensal(registrosFrequencia);
             await SalvarAgrupamentoGlobal(registrosFrequencia);
@@ -48,6 +53,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                     .OrderBy(x => x.Mes)
                     .ToList();
 
+            await mediator.Send(new PainelEducacionalExcluirAgrupamentoMensalCommand());
             await mediator.Send(new PainelEducacionalSalvarAgrupamentoMensalCommand(registroFrequenciaMensal));
         }
 
@@ -67,6 +73,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                     .OrderBy(x => x.Modalidade)
                     .ToList();
 
+            await mediator.Send(new PainelEducacionalExcluirAgrupamentoGlobalCommand());
             await mediator.Send(new PainelEducacionalSalvarAgrupamentoGlobalCommand(registroFrequenciaGlobal));
         }
 
@@ -87,6 +94,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                     .OrderBy(x => x.CodigoUe)
                     .ToList();
 
+            await mediator.Send(new PainelEducacionalExcluirAgrupamentoGlobalEscolaCommand());
             await mediator.Send(new PainelEducacionalSalvarAgrupamentoGlobalEscolaCommand(registroFrequenciaEscola));
         }
     }
