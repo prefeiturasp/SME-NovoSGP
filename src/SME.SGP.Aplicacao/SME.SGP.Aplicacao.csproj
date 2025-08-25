@@ -67,8 +67,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Commands\ImportarArquivo\Idep\" />
-    <Folder Include="Commands\ImportarArquivo\FluenciaLeitora\" />
     <Folder Include="Commands\FechamentoTurmaDisciplina\" />
     <Folder Include="obj\" />
     <Folder Include="Queries\ConselhoClasseAcompanhamento\ObterAlunoEStatusConselhoClasseConsolidadoPorTurmaEBimestre\" />
