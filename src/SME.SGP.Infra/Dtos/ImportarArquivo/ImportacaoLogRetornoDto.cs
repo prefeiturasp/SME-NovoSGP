@@ -1,16 +1,14 @@
-﻿using System;
-
-namespace SME.SGP.Infra.Dtos.ImportarArquivo
+﻿namespace SME.SGP.Infra.Dtos.ImportarArquivo
 {
-    public class RetornoDto
+    public class ImportacaoLogRetornoDto
     {
         public bool Sucesso { get; set; }
         public string Mensagem { get; set; }
         public long Id { get; set; }
 
-        public static RetornoDto RetornarSucesso(string mensagem, long id)
+        public static ImportacaoLogRetornoDto RetornarSucesso(string mensagem, long id)
         {
-            return new RetornoDto
+            return new ImportacaoLogRetornoDto
             {
                 Sucesso = true,
                 Mensagem = mensagem,
@@ -18,9 +16,9 @@ namespace SME.SGP.Infra.Dtos.ImportarArquivo
             };
         }
 
-        public static RetornoDto RetornarSucesso(string mensagem)
+        public static ImportacaoLogRetornoDto RetornarSucesso(string mensagem)
         {
-            return new RetornoDto
+            return new ImportacaoLogRetornoDto
             {
                 Sucesso = true,
                 Mensagem = mensagem
