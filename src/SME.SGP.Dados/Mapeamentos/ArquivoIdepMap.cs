@@ -2,11 +2,11 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ArquivoIdebMap : BaseMap<ArquivoIdeb>
+    public class ArquivoIdepMap : BaseMap<ArquivoIdep>
     {
-        public ArquivoIdebMap()
+        public ArquivoIdepMap()
         {
-            ToTable("arquivo_ideb");
+            ToTable("arquivo_idep");
             Map(c => c.AnoLetivo).ToColumn("ano_letivo");
             Map(c => c.SerieAno).ToColumn("serie_ano");
             Map(c => c.CodigoEOLEscola).ToColumn("codigo_eol_escola");

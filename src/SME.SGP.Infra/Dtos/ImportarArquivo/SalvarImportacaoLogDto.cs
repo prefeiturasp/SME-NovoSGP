@@ -1,18 +1,15 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
+﻿using System;
 
-public class ImportacaoLogDto
+public class SalvarImportacaoLogDto
 {
-    public ImportacaoLogDto(IFormFile arquivo, string tipoArquivoImportacao, string statusImportacao)
+    public SalvarImportacaoLogDto(string nomeArquivo, string tipoArquivoImportacao, string statusImportacao)
     {
-        Arquivo = arquivo;
-        NomeArquivo = arquivo.FileName;
+        NomeArquivo = nomeArquivo;
         TipoArquivoImportacao = tipoArquivoImportacao;
         StatusImportacao = statusImportacao;
     }
 
     public long Id { get; set; }
-    public IFormFile Arquivo { get; set; }
     public string NomeArquivo { get; set; }
     public string TipoArquivoImportacao { get; set; }
     public DateTime DataInicioProcessamento { get; set; }

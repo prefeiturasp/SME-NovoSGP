@@ -11,9 +11,9 @@ namespace SME.SGP.Infra.Enumerados
         Processando = 2,
 
         [Display(Name = "Processado com falhas")]
-        Processado = 3,
+        ProcessadoComFalhas = 3,
 
         [Display(Name = "Processado com sucesso")]
-        Cancelado = 4,
+        ProcessadoComSucesso = 4,
     }
 }

@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Infra.Enumerados
 {
-    public enum FluenciaEnum
+    public enum FluenciaLeitoraEnum
     {
         [Display(Name = "Pré-leitor 1")]
         Fluencia1 = 1,

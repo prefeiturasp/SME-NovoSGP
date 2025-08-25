@@ -261,6 +261,8 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ImportacaoLogMap());
                config.AddMap(new ImportacaoLogErroMap());
                config.AddMap(new ArquivoIdebMap());
+               config.AddMap(new ArquivoIdepMap());
+               config.AddMap(new ArquivoFluenciaLeitoraMap());
 
                config.ForDommel();
            });

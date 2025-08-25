@@ -1,6 +1,6 @@
-﻿public class ImportacaoLogErroDto
+﻿public class SalvarImportacaoLogErroDto
 {
-    public ImportacaoLogErroDto(long importacaoLogId, long linhaArquivo, string motivoFalha)
+    public SalvarImportacaoLogErroDto(long importacaoLogId, long linhaArquivo, string motivoFalha)
     {
         ImportacaoLogId = importacaoLogId;
         LinhaArquivo = linhaArquivo;

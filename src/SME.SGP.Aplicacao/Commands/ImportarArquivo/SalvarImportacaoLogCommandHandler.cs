@@ -18,8 +18,7 @@ namespace SME.SGP.Aplicacao.Commands.ImportarArquivo
         {
             var importacaoLog = MapearParaEntidade(request);
 
-            var importacaoLogId =  await repositorioImportacaoLog.SalvarAsync(importacaoLog);
-            importacaoLog.Id = importacaoLogId;
+            await repositorioImportacaoLog.SalvarAsync(importacaoLog);     
 
             return importacaoLog;
         }
@@ -27,7 +26,7 @@ namespace SME.SGP.Aplicacao.Commands.ImportarArquivo
         private ImportacaoLog MapearParaEntidade(SalvarImportacaoLogCommand request)
             => new ImportacaoLog()
             {
-                NomeArquivo = request.ImportacaoLog.Arquivo.FileName,
+                NomeArquivo = request.ImportacaoLog.NomeArquivo,
                 TipoArquivoImportacao = request.ImportacaoLog.TipoArquivoImportacao,
                 StatusImportacao = request.ImportacaoLog.StatusImportacao,
                 DataInicioProcessamento = DateTime.Now,
