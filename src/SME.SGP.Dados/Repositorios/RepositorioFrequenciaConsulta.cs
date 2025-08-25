@@ -942,7 +942,7 @@ namespace SME.SGP.Dados.Repositorios
                                  cfam.quantidade_ausencias as QuantidadeAusencias,
                                  cfam.quantidade_compensacoes as QuantidadeCompensacoes,
                                  t.modalidade_codigo as ModalidadeCodigo,
-                                 t.ano_letivo  
+                                 t.ano_letivo AS AnoLetivo
                             FROM consolidacao_frequencia_aluno_mensal cfam
                             INNER JOIN turma t ON t.id = cfam.turma_id
                             INNER JOIN ue u ON u.id = t.ue_id

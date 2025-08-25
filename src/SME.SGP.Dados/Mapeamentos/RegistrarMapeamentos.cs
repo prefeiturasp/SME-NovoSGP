@@ -258,11 +258,15 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ConsolidacaoProdutividadeFrequenciaMap());
                config.AddMap(new InatividadeAtendimentoNAAPANotificacaoMap());
                config.AddMap(new InformativoModalidadeMap());
+
                config.AddMap(new ImportacaoLogMap());
                config.AddMap(new ImportacaoLogErroMap());
                config.AddMap(new ArquivoIdebMap());
                config.AddMap(new ArquivoIdepMap());
                config.AddMap(new ArquivoFluenciaLeitoraMap());
+               config.AddMap(new PainelEducacionalRegistroFrequenciaAgrupamentoMensalMap());
+               config.AddMap(new PainelEducacionalRegistroFrequenciaAgrupamentoGlobalMap());
+               config.AddMap(new PainelEducacionalRegistroFrequenciaAgrupamentoEscolaMap());
 
                config.ForDommel();
            });
