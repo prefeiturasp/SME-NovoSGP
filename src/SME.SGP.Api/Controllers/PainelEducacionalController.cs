@@ -18,16 +18,16 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterFrequenciaGlobal([FromServices] IConsultasRegistroFrequenciaAgrupamentoGlobalUseCase consultasRegistroFrequenciaAgrupamentoGlobalUseCase)
-           => Ok(await consultasRegistroFrequenciaAgrupamentoGlobalUseCase.ObterFrequencia());
+        public async Task<IActionResult> ObterFrequenciaGlobal(string codigoDre, string codigoUe, [FromServices] IConsultasRegistroFrequenciaAgrupamentoGlobalUseCase consultasRegistroFrequenciaAgrupamentoGlobalUseCase)
+           => Ok(await consultasRegistroFrequenciaAgrupamentoGlobalUseCase.ObterFrequencia(codigoDre, codigoUe));
 
         [HttpGet("frequencia-mensal")]
         [ProducesResponseType(typeof(PainelEducacionalRegistroFrequenciaAgrupamentoMensalDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterFrequenciaMensal([FromServices] IConsultasRegistroFrequenciaAgrupamentoMensalUseCase consultasRegistroFrequenciaAgrupamentoMensalUseCase)
-          => Ok(await consultasRegistroFrequenciaAgrupamentoMensalUseCase.ObterFrequencia());
+        public async Task<IActionResult> ObterFrequenciaMensal(string codigoDre, string codigoUe, [FromServices] IConsultasRegistroFrequenciaAgrupamentoMensalUseCase consultasRegistroFrequenciaAgrupamentoMensalUseCase)
+          => Ok(await consultasRegistroFrequenciaAgrupamentoMensalUseCase.ObterFrequencia(codigoDre, codigoUe));
 
         [HttpGet("frequencia-ranking")]
         [ProducesResponseType(typeof(PainelEducacionalRegistroFrequenciaRankingDto), 200)]
