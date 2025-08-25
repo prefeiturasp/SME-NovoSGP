@@ -14,21 +14,22 @@ namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.Ideb
         public ArquivoIdebDto ArquivoIdeb { get; }
     }
 
-    public class ImportarArquivoIdebCommandValidator : AbstractValidator<SalvarImportacaoArquivoIdebCommand>
+    public class SalvarImportacaoArquivoIdebCommandValidator : AbstractValidator<SalvarImportacaoArquivoIdebCommand>
     {
-        public ImportarArquivoIdebCommandValidator()
+        public SalvarImportacaoArquivoIdebCommandValidator()
         {
             RuleFor(x => x.ArquivoIdeb.AnoLetivo)
-                .NotNull().WithMessage("Ano Letivo inválido");
+                .GreaterThan(0).WithMessage("Ano Letivo inválido");
 
             RuleFor(x => x.ArquivoIdeb.CodigoEOLEscola)
-                .NotNull().WithMessage("Código EOL da UE inválido");
+                .NotEmpty().WithMessage("Código EOL da UE inválido")
+                .Must(x => !string.IsNullOrWhiteSpace(x)).WithMessage("Código EOL da UE inválido");
 
             RuleFor(x => x.ArquivoIdeb.SerieAno)
-                .NotNull().WithMessage("Série/Ano inválido");
+                .GreaterThan(0).WithMessage("Ano Letivo inválido");
 
             RuleFor(x => x.ArquivoIdeb.Nota)
-                .NotNull().WithMessage("Nota inválida");
+                .GreaterThan(0).WithMessage("Ano Letivo inválido");
         }
     }
 }

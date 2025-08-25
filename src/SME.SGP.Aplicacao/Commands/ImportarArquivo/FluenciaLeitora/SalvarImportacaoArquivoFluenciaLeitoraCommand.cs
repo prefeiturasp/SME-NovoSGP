@@ -14,9 +14,9 @@ namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.FluenciaLeitora
         public ArquivoFluenciaLeitoraDto ArquivoFluenciaLeitora { get; }
     }
 
-    public class ImportarArquivoFluenciaLeitoraCommandValidator : AbstractValidator<SalvarImportacaoArquivoFluenciaLeitoraCommand>
+    public class SalvarImportacaoArquivoIdebCommandFluenciaLeitoraCommandValidator : AbstractValidator<SalvarImportacaoArquivoFluenciaLeitoraCommand>
     {
-        public ImportarArquivoFluenciaLeitoraCommandValidator()
+        public SalvarImportacaoArquivoIdebCommandFluenciaLeitoraCommandValidator()
         {
             RuleFor(x => x.ArquivoFluenciaLeitora.AnoLetivo)
                 .NotNull().WithMessage("Ano Letivo inválido");
