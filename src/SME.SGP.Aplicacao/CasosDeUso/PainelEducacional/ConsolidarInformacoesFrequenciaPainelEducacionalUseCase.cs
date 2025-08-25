@@ -1,9 +1,12 @@
 ﻿using MediatR;
-using Microsoft.Win32;
+using SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarAgrupamentoMensal;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.PainelEducacional;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,51 +25,69 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
         {
             var registrosFrequencia = await repositorioFrequencia.ObterInformacoesFrequenciaPainelEducacional(DateTime.Now.Year);
 
-            var outroMes = registrosFrequencia.Where(f => f.Mes != 2)?.ToList();
+            await SalvarAgrupamentoMensal(registrosFrequencia);
+            await SalvarAgrupamentoGlobal(registrosFrequencia);
+            await SalvarAgrupamentoGlobalEscola(registrosFrequencia);
 
-            var agrupadoMensal = registrosFrequencia
-                    .GroupBy(r => new { r.Mes, r.ModalidadeCodigo })
-                    .Select(g => new
+            return true;
+        }
+
+        private async Task SalvarAgrupamentoMensal(IEnumerable<RegistroFrequenciaPainelEducacionalDto> registrosFrequencia)
+        {
+            var registroFrequenciaMensal = registrosFrequencia
+                    .GroupBy(r => new { r.AnoLetivo, r.Mes, r.ModalidadeCodigo })
+                    .Select(g => new PainelEducacionalRegistroFrequenciaAgrupamentoMensal
                     {
+                        Modalidade = g.Key.ModalidadeCodigo,
+                        AnoLetivo = g.Key.AnoLetivo,
                         Mes = g.Key.Mes,
+                        TotalAulas = g.Sum(x => x.QuantidadeAulas),
+                        TotalFaltas = g.Sum(x => x.QuantidadeAusencias),
+                        PercentualFrequencia = g.Average(x => x.Percentual)
+                    })
+                    .OrderBy(x => x.Mes)
+                    .ToList();
+
+            await mediator.Send(new PainelEducacionalSalvarAgrupamentoMensalCommand(registroFrequenciaMensal));
+        }
+
+        private async Task SalvarAgrupamentoGlobal(IEnumerable<RegistroFrequenciaPainelEducacionalDto> registrosFrequencia)
+        {
+            var registroFrequenciaGlobal = registrosFrequencia
+                    .GroupBy(r => new { r.ModalidadeCodigo })
+                    .Select(g => new PainelEducacionalRegistroFrequenciaAgrupamentoGlobal
+                    {
                         Modalidade = g.Key.ModalidadeCodigo,
                         TotalAulas = g.Sum(x => x.QuantidadeAulas),
                         TotalAusencias = g.Sum(x => x.QuantidadeAusencias),
                         TotalCompensacoes = g.Sum(x => x.QuantidadeCompensacoes),
-                        MediaPercentual = g.Average(x => x.Percentual),
-                        Alunos = g.Select(x => x.CodigoAluno).Distinct().ToList(),
+                        PercentualFrequencia = g.Average(x => x.Percentual),
+                        TotalAlunos = g.Select(x => x.CodigoAluno).Distinct().ToList().Count()
                     })
                     .OrderBy(x => x.Modalidade)
-                    .ThenBy(x => x.Mes).ToList();
+                    .ToList();
 
-            var agrupadoGlobal = registrosFrequencia
-                  .GroupBy(r => new { r.ModalidadeCodigo })
-                  .Select(g => new
-                  {
-                      Modalidade = g.Key.ModalidadeCodigo,
-                      TotalAulas = g.Sum(x => x.QuantidadeAulas),
-                      TotalAusencias = g.Sum(x => x.QuantidadeAusencias),
-                      TotalCompensacoes = g.Sum(x => x.QuantidadeCompensacoes),
-                      MediaPercentual = g.Average(x => x.Percentual),
-                      Alunos = g.Select(x => x.CodigoAluno).Distinct().ToList()
-                  })
-                  .OrderBy(x => x.Modalidade).ToList();
+            await mediator.Send(new PainelEducacionalSalvarAgrupamentoGlobalCommand(registroFrequenciaGlobal));
+        }
 
-            var agrupadoEscola = registrosFrequencia
+        private async Task SalvarAgrupamentoGlobalEscola(IEnumerable<RegistroFrequenciaPainelEducacionalDto> registrosFrequencia)
+        {
+            var registroFrequenciaEscola = registrosFrequencia
                     .GroupBy(r => new { r.CodigoUe })
-                    .Select(g => new
+                    .Select(g => new PainelEducacionalRegistroFrequenciaAgrupamentoEscola
                     {
                         CodigoUe = g.Key.CodigoUe,
                         TotalAulas = g.Sum(x => x.QuantidadeAulas),
                         TotalAusencias = g.Sum(x => x.QuantidadeAusencias),
                         TotalCompensacoes = g.Sum(x => x.QuantidadeCompensacoes),
-                        MediaPercentual = g.Average(x => x.Percentual),
-                        Alunos = g.Select(x => x.CodigoAluno).Distinct().ToList(),
-                        UE = g.Select(x => x.Ue).Distinct().ToList()
+                        PercentualFrequencia = g.Average(x => x.Percentual),
+                        UE = g.Select(x => x.Ue).FirstOrDefault(),
+                        TotalAlunos = g.Select(x => x.CodigoAluno).Distinct().ToList().Count()
                     })
-                    .OrderBy(x => x.CodigoUe).ToList();
+                    .OrderBy(x => x.CodigoUe)
+                    .ToList();
 
-            return true;
+            await mediator.Send(new PainelEducacionalSalvarAgrupamentoGlobalEscolaCommand(registroFrequenciaEscola));
         }
     }
 }

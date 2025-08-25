@@ -263,6 +263,9 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ArquivoIdebMap());
                config.AddMap(new ArquivoIdepMap());
                config.AddMap(new ArquivoFluenciaLeitoraMap());
+               config.AddMap(new PainelEducacionalRegistroFrequenciaAgrupamentoMensalMap());
+               config.AddMap(new PainelEducacionalRegistroFrequenciaAgrupamentoGlobalMap());
+               config.AddMap(new PainelEducacionalRegistroFrequenciaAgrupamentoEscolaMap());
 
                config.ForDommel();
            });
