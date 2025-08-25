@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Xml.Linq;
 
 namespace SME.SGP.Dominio
 {
@@ -82,7 +84,10 @@ namespace SME.SGP.Dominio
         EMEFPFOM = 32,
 
         [Display(Name = "ESCOLA MUNICIPAL DE EDUCACAO INFANTIL PRIVADA FOMENTO", ShortName = "EMEI P FOM")]
-        EMEIPFOM = 33
+        EMEIPFOM = 33,
+
+        [Display(Name = "CENTRO DE ESTUDO DE LÍNGUAS", ShortName = "CELP P FORM")]
+        CELP = 38
     }
 
 }
