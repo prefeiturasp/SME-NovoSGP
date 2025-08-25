@@ -5,7 +5,7 @@ namespace SME.SGP.Dominio.Interfaces.Repositorios
 {
     public interface IRepositorioPainelEducacionalRegistroFrequenciaAgrupamentoMensal : IRepositorioBase<PainelEducacionalRegistroFrequenciaAgrupamentoMensal>
     {
-        Task ExcluirFrequenciaMensal(long frequenciaId);
+        Task ExcluirFrequenciaMensal(PainelEducacionalRegistroFrequenciaAgrupamentoMensal entidade);
         Task<bool> SalvarFrequenciaMensal(PainelEducacionalRegistroFrequenciaAgrupamentoMensal entidade);
     }
 }
