@@ -67,17 +67,17 @@ namespace SME.SGP.Aplicacao
         {
             var dreUe = await ObterCodigoDREUE(ueId);
             var tipoEscola = await ObterTipoEscolaUE(dreUe.UeCodigo);
-            var atribuiuPerfis = false;
 
-            if(tipoEscola == TipoEscola.CIEJA)
-                atribuiuPerfis = await AtribuirPerfisUsuarioCIEJA(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
-
-            if (tipoEscola != TipoEscola.CIEJA)
-                atribuiuPerfis = await AtribuirPerfisUsuarioPorFuncaoExterna(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);            
-            
-            if (!atribuiuPerfis)
-                atribuiuPerfis = await AtribuirPerfisUsuarioPorCargo(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
-            
+            if (tipoEscola == TipoEscola.CIEJA)
+            {
+                await AtribuirPerfisUsuarioCIEJA(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
+            }
+            else
+            {
+                var atribuirPerfisPorCargo = await AtribuirPerfisUsuarioPorCargo(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
+                if (!atribuirPerfisPorCargo)
+                    await AtribuirPerfisUsuarioPorFuncaoExterna(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
+            }
         }
 
         private async Task TratarAtribuicaoPerfilCEFAI(IEnumerable<long> CEFAIs, PerfilUsuario perfilUsuario, long pendenciaPerfilId)
@@ -112,7 +112,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<TipoEscola> ObterTipoEscolaUE(string codigoUE)
             => await mediator.Send(new ObterTipoEscolaPorCodigoUEQuery(codigoUE));
- 
+
 
         private async Task AtribuirPerfilUsuario(long usuarioId, PerfilUsuario perfil, long pendenciaPerfilId)
         {

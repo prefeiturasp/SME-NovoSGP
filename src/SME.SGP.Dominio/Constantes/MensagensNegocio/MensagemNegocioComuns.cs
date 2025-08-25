@@ -34,5 +34,10 @@ namespace SME.SGP.Dominio.Constantes.MensagensNegocio
         public const string TELEFONE_DEVE_ESTAR_COM_A_SEGUINTE_MASCARA = "O telefone deve estar com a seguinte máscara (XX) XXXX-XXXX";
         public const string VOCE_NAO_PODE_CRIAR_AULAS_PARA_COMPONENTES_SEM_ATRIBUICAO_NA_DATA_SELECIONADA = "Você não pode criar aulas para componentes sem atribuição na data selecionada.";
         public const string REGISTRO_COLETIVO_NAO_ENCONTRADA = "Registro coletivo não encontrado";
+        public const string SOMENTE_ARQUIVO_XLSX_SUPORTADO = "Esse arquivo não é um XLSX. Somente arquivos do tipo XLSX são permitidos";
+        public const string ARQUIVO_VAZIO = "É necessário informar o arquivo a ser carregado";
+        public const string ARQUIVO_IMPORTADO_COM_SUCESSO = "Arquivo importado com sucesso";
+        public const string CONTENT_TYPE_EXCEL = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+        public const string ARQUIVO_NUMERO_COLUNAS_INVALIDO = "A planilha não possui o mínimo colunas necessárias.";
     }
 }
