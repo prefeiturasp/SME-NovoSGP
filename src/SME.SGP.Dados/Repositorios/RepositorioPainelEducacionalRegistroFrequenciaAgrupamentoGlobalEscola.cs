@@ -13,9 +13,9 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public Task ExcluirFrequenciaGlobal(long frequenciaId)
+        public async Task ExcluirFrequenciaGlobal(PainelEducacionalRegistroFrequenciaAgrupamentoEscola entidade)
         {
-            throw new NotImplementedException();
+           await RemoverAsync(entidade);
         }
 
         public async Task<bool> SalvarFrequenciaGlobal(PainelEducacionalRegistroFrequenciaAgrupamentoEscola entidade)

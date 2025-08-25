@@ -2,7 +2,6 @@
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
-using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -13,9 +12,9 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task ExcluirFrequenciaMensal(long frequenciaId)
+        public async Task ExcluirFrequenciaMensal(PainelEducacionalRegistroFrequenciaAgrupamentoMensal entidade)
         {
-            throw new NotImplementedException();
+            await RemoverAsync(entidade);
         }
 
         public async Task<bool> SalvarFrequenciaMensal(PainelEducacionalRegistroFrequenciaAgrupamentoMensal entidade)

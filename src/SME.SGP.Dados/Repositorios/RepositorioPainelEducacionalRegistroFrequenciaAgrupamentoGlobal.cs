@@ -1,8 +1,8 @@
-﻿using SME.SGP.Dominio.Entidades;
+﻿using Dommel;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
-using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -13,9 +13,9 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public Task ExcluirFrequenciaGlobal(long frequenciaId)
+        public async Task ExcluirFrequenciaGlobal(PainelEducacionalRegistroFrequenciaAgrupamentoGlobal entidade)
         {
-            throw new NotImplementedException();
+             await RemoverAsync(entidade);
         }
 
         public async Task<bool> SalvarFrequenciaGlobal(PainelEducacionalRegistroFrequenciaAgrupamentoGlobal entidade)
