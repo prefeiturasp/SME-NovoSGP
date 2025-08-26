@@ -156,7 +156,7 @@ namespace SME.SGP.Dominio
             => Perfis.Any(p => p.CodigoPerfil == Dominio.Perfis.PERFIL_AD
                                 || p.CodigoPerfil == Dominio.Perfis.PERFIL_CP
                                 || p.CodigoPerfil == Dominio.Perfis.PERFIL_DIRETOR
-                                || p.CodigoPerfil == Dominio.Perfis.PERFIL_COORDENADOR_CELP);
+                                || p.CodigoPerfil == Dominio.Perfis.PERFIL_COORDENADOR_POLO_FORMACAO);
 
         public bool EhGestorCIEJA()
             => PerfilAtual == Dominio.Perfis.PERFIL_COORDENADOR_PEDAGOGICO_CIEJA
@@ -167,7 +167,7 @@ namespace SME.SGP.Dominio
             => PerfilAtual == Dominio.Perfis.PERFIL_CP;
 
         public bool EhCCELP()
-            => PerfilAtual == Dominio.Perfis.PERFIL_COORDENADOR_CELP;
+            => PerfilAtual == Dominio.Perfis.PERFIL_COORDENADOR_POLO_FORMACAO;
 
         private bool EhAD()
             => PerfilAtual == Dominio.Perfis.PERFIL_AD;
@@ -267,7 +267,7 @@ namespace SME.SGP.Dominio
         private void ConsistirEdicaoEventoPerfilAtualDiferenteGestao()
         {
             if (PerfilAtual != Dominio.Perfis.PERFIL_DIRETOR && PerfilAtual != Dominio.Perfis.PERFIL_AD
-                                 && PerfilAtual != Dominio.Perfis.PERFIL_CP && PerfilAtual != Dominio.Perfis.PERFIL_COORDENADOR_CELP)
+                                 && PerfilAtual != Dominio.Perfis.PERFIL_CP && PerfilAtual != Dominio.Perfis.PERFIL_COORDENADOR_POLO_FORMACAO)
                 throw new NegocioException("Você não tem permissão para alterar este evento.");
         }
         private void ConsistirEdicaoEventoSME(Evento evento)
@@ -324,7 +324,7 @@ namespace SME.SGP.Dominio
             return (PerfilAtual == Dominio.Perfis.PERFIL_AD
                  || PerfilAtual == Dominio.Perfis.PERFIL_CP
                  || PerfilAtual == Dominio.Perfis.PERFIL_DIRETOR
-                 || PerfilAtual == Dominio.Perfis.PERFIL_COORDENADOR_CELP
+                 || PerfilAtual == Dominio.Perfis.PERFIL_COORDENADOR_POLO_FORMACAO
                  || EhPerfilSME()
                  || EhPerfilDRE());
         }
@@ -337,7 +337,7 @@ namespace SME.SGP.Dominio
                 return (PerfilAtual == Dominio.Perfis.PERFIL_DIRETOR 
                                         || PerfilAtual == Dominio.Perfis.PERFIL_AD 
                                         || PerfilAtual == Dominio.Perfis.PERFIL_CP 
-                                        || PerfilAtual == Dominio.Perfis.PERFIL_COORDENADOR_CELP 
+                                        || PerfilAtual == Dominio.Perfis.PERFIL_COORDENADOR_POLO_FORMACAO
                                         || PerfilAtual == Dominio.Perfis.PERFIL_SECRETARIO);
 
             else return true;
@@ -420,7 +420,7 @@ namespace SME.SGP.Dominio
                                           || PerfilAtual == Dominio.Perfis.PERFIL_AD
                                           || PerfilAtual == Dominio.Perfis.PERFIL_SECRETARIO
                                           || PerfilAtual == Dominio.Perfis.PERFIL_CP
-                                          || PerfilAtual == Dominio.Perfis.PERFIL_COORDENADOR_CELP
+                                          || PerfilAtual == Dominio.Perfis.PERFIL_COORDENADOR_POLO_FORMACAO
                                           || EhPerfilSME()
                                           || EhPerfilDRE());
 
