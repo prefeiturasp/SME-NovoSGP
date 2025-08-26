@@ -610,6 +610,13 @@ namespace SME.SGP.IoC
 
             services.TryAddScoped<IRepositorioConsolidacaoProdutividadeFrequencia, RepositorioConsolidacaoProdutividadeFrequencia>();
             services.TryAddScoped<IRepositorioInatividadeAtendimentoNAAPANotificacao, RepositorioInatividadeAtendimentoNAAPANotificacao>();
+
+            //ImportacaoLog - Arquivos
+            services.TryAddScoped<IRepositorioImportacaoLog, RepositorioImportacaoLog>();
+            services.TryAddScoped<IRepositorioImportacaoLogErro, RepositorioImportacaoLogErro>();
+            services.TryAddScoped<IRepositorioArquivoIdeb, RepositorioArquivoIdeb>();
+            services.TryAddScoped<IRepositorioArquivoIdep, RepositorioArquivoIdep>();
+            services.TryAddScoped<IRepositorioArquivoFluenciaLeitora, RepositorioArquivoFluenciaLeitora>();
             
             services.TryAddScoped<IRepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobal, RepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobal>();
             services.TryAddScoped<IRepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobalEscola, RepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobalEscola>();
