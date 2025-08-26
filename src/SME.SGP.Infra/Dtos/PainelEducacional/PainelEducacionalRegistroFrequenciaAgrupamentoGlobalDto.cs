@@ -1,10 +1,8 @@
-﻿namespace SME.SGP.Dominio.Entidades
+﻿namespace SME.SGP.Infra.Dtos.PainelEducacional
 {
-    public class PainelEducacionalRegistroFrequenciaAgrupamentoGlobal : EntidadeBase
+    public class PainelEducacionalRegistroFrequenciaAgrupamentoGlobalDto
     {
-        public string CodigoDre { get; set; }
-        public string CodigoUe { get; set; }
-        public int Modalidade { get; set; }
+        public string Modalidade { get; set; }
         public int TotalAulas { get; set; }
         public int TotalAusencias { get; set; }
         public int TotalCompensacoes { get; set; }

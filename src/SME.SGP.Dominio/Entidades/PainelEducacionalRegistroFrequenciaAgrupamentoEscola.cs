@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace SME.SGP.Dominio.Entidades
+﻿namespace SME.SGP.Dominio.Entidades
 {
    public class PainelEducacionalRegistroFrequenciaAgrupamentoEscola : EntidadeBase
     {
@@ -9,6 +7,7 @@ namespace SME.SGP.Dominio.Entidades
         public int TotalCompensacoes { get; set; }
         public decimal PercentualFrequencia { get; set; }
         public int TotalAlunos { get; set; }
+        public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }
         public string UE { get; set; }
     }
