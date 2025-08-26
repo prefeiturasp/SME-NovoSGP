@@ -15,6 +15,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.TotalCompensacoes).ToColumn("total_compensacoes");
             Map(c => c.PercentualFrequencia).ToColumn("percentual_frequencia");
             Map(c => c.TotalAlunos).ToColumn("total_alunos");
+            Map(c => c.Mes).ToColumn("mes");
         }
     }
 }
