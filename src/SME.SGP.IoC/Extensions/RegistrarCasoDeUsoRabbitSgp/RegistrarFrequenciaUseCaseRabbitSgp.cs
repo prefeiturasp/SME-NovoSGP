@@ -2,7 +2,9 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.CasosDeUso;
+using SME.SGP.Aplicacao.CasosDeUso.PainelEducacional;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 
 namespace SME.SGP.IoC
 {
@@ -72,6 +74,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsolidarInformacoesProdutividadeFrequenciaDreUseCase, ConsolidarInformacoesProdutividadeFrequenciaDreUseCase>();
             services.TryAddScoped<IConsolidarInformacoesProdutividadeFrequenciaUeUseCase, ConsolidarInformacoesProdutividadeFrequenciaUeUseCase>();
             services.TryAddScoped<IConsolidarInformacoesProdutividadeFrequenciaBimestreUseCase, ConsolidarInformacoesProdutividadeFrequenciaBimestreUseCase>();
+            services.TryAddScoped<IConsolidarInformacoesFrequenciaPainelEducacionalUseCase, ConsolidarInformacoesFrequenciaPainelEducacionalUseCase>();
         }
     }
 }
