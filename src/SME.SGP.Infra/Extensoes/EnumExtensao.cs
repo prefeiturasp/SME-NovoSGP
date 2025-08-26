@@ -218,5 +218,14 @@ namespace SME.SGP.Infra
         {
             return (!valor.HasValue || valor.Equals(-99) || valor.Equals(0));
         }
+
+        public static string ObterDisplayName(this Enum value)
+        {
+            var field = value.GetType().GetField(value.ToString());
+
+            var attribute = field?.GetCustomAttribute<DisplayAttribute>();
+
+            return attribute?.Name ?? value.ToString();
+        }
     }
 }
