@@ -34,27 +34,20 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterFrequenciaMensal
             var frequenciaGlobal = new List<PainelEducacionalRegistroFrequenciaAgrupamentoMensalDto>();
             foreach (var item in registros)
             {
-                try
-                {
-                    var modalidade = (Modalidade)item.Modalidade;
-                    var modalidadeInfo = typeof(Modalidade).GetMember(modalidade.ToString()).First();
-                    var displayAttribute = modalidadeInfo.GetCustomAttribute<DisplayAttribute>();
-                    var modalidadeNome = displayAttribute?.Name ?? modalidade.ToString();
+                var modalidade = (Modalidade)item.Modalidade;
+                var modalidadeInfo = typeof(Modalidade).GetMember(modalidade.ToString()).First();
+                var displayAttribute = modalidadeInfo.GetCustomAttribute<DisplayAttribute>();
+                var modalidadeNome = displayAttribute?.Name ?? modalidade.ToString();
 
-                    frequenciaGlobal.Add(new PainelEducacionalRegistroFrequenciaAgrupamentoMensalDto()
-                    {
-                        Modalidade = modalidadeNome,
-                        PercentualFrequencia = item.PercentualFrequencia,
-                        TotalAulas = item.TotalAulas,
-                        TotalAusencias = item.TotalFaltas,
-                        Ano = item.AnoLetivo,
-                        Mes = item.Mes
-                    });
-                }
-                catch (Exception e)
+                frequenciaGlobal.Add(new PainelEducacionalRegistroFrequenciaAgrupamentoMensalDto()
                 {
-                    throw e;
-                }
+                    Modalidade = modalidadeNome,
+                    PercentualFrequencia = item.PercentualFrequencia,
+                    TotalAulas = item.TotalAulas,
+                    TotalAusencias = item.TotalFaltas,
+                    Ano = item.AnoLetivo,
+                    Mes = item.Mes
+                });
             }
 
             return frequenciaGlobal;
