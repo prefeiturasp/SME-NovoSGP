@@ -13,9 +13,11 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task ExcluirFrequenciaGlobal(PainelEducacionalRegistroFrequenciaAgrupamentoGlobal entidade)
+        public async Task ExcluirFrequenciaGlobal()
         {
-             await RemoverAsync(entidade);
+            const string comando = @"delete from public.painel_educacional_registro_frequencia_agrupamento_global";
+
+            await database.Conexao.ExecuteAsync(comando);
         }
 
         public async Task<IEnumerable<PainelEducacionalRegistroFrequenciaAgrupamentoGlobal>> ObterFrequenciaGlobal(string codigoDre, string codigoUe)
