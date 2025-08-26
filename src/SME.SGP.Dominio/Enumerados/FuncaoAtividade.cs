@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Dominio
 {
@@ -14,6 +11,15 @@ namespace SME.SGP.Dominio
         ASSISTENTE_COORDERNADOR_GERAL_CIEJA = 43,
 
         [Display(Name = "Coord. Geral CIEJA")]
-        COORDERNADOR_GERAL_CIEJA = 42
+        COORDERNADOR_GERAL_CIEJA = 42,
+
+        [Display(Name = "Assistente Pedagógico Polo Formação")]
+        ASSISTENTE_PEDAGOGICO_POLO_FORMACAO = 1056,
+
+        [Display(Name = "Coordenador Polo Formação")]
+        COORDENADOR_POLO_FORMACAO = 39,
+
+        [Display(Name = "Secretário Polo Formação")]
+        SECRETARIO_POLO_FORMACAO = 35
     }
 }

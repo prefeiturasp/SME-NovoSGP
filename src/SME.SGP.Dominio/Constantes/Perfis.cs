@@ -30,7 +30,7 @@ namespace SME.SGP.Dominio
         public readonly static Guid PERFIL_ASSISTENTE_SOCIAL = Guid.Parse("68e1e074-37d6-e911-abd6-f81654fe895d");
         public readonly static Guid PERFIL_COORDENADOR_NAAPA = Guid.Parse("65e1e074-37d6-e911-abd6-f81654fe895d");
         public readonly static Guid PERFIL_NAAPA_DRE = Guid.Parse("4CE1E074-37D6-E911-ABD6-F81654FE895D");
-        public readonly static Guid PERFIL_COORDENADOR_CELP = Guid.Parse("32C01A4F-B251-4A0F-933D-5B61C8B5DDBF");
+        public readonly static Guid PERFIL_COORDENADOR_POLO_FORMACAO = Guid.Parse("32C01A4F-B251-4A0F-933D-5B61C8B5DDBF");
         public readonly static Guid PERFIL_ABAE = Guid.Parse("EA741BF4-47EA-486D-8B88-5327521BCFC5");
 
         public readonly static Guid PERFIL_POA_ALFABETIZACAO = Guid.Parse("2e89cf10-e42b-476f-8673-2dfbeeee3cd0");
@@ -44,6 +44,8 @@ namespace SME.SGP.Dominio
         public readonly static Guid PERFIL_COORDENADOR_PEDAGOGICO_CIEJA = Guid.Parse("76E1E074-37D6-E911-ABD6-F81654FE895D");
         public readonly static Guid PERFIL_ASSISTENTE_COORDENADOR_GERAL_CIEJA = Guid.Parse("77E1E074-37D6-E911-ABD6-F81654FE895D");
         public readonly static Guid PERFIL_COORDENADOR_GERAL_CIEJA = Guid.Parse("78E1E074-37D6-E911-ABD6-F81654FE895D");
+        public readonly static Guid PERFIL_SECRETARIO_FORMACAO_CELP = Guid.Parse("79E1E074-37D6-E911-ABD6-F81654FE895D");
+        public readonly static Guid PERFIL_ASSISTENTE_PEDAGOGICO_POLO_CELP = Guid.Parse("88E1E074-37D6-E911-ABD6-F81654FE895D");
 
         public static bool EhPerfilPOA(this Guid source)
             => source == PERFIL_POA_ALFABETIZACAO
