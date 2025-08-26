@@ -12,6 +12,8 @@
         public int QuantidadeAusencias { get; set; }
         public int QuantidadeCompensacoes { get; set; }
         public int ModalidadeCodigo { get; set; }
+        public string Modalidade { get; set; }
         public int AnoLetivo { get; set; }
+        public string AnoTurma { get; set; }
     }
 }
