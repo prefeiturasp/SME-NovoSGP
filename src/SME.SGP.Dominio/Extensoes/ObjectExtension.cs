@@ -4,12 +4,6 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 
-using Newtonsoft.Json;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-
 namespace SME.SGP.Dominio
 {
     public static class ObjectExtension
