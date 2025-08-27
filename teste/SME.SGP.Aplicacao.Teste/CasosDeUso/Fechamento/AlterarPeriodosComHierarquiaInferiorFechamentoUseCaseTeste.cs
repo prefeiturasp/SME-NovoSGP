@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Fechamento
                 FinalDoFechamento = new DateTime(2025, 3, 31)
             };
 
-            var fechamento = new PeriodoFechamento(dre, ue);
+            var fechamento = new SME.SGP.Dominio.PeriodoFechamento(dre, ue);
             fechamento.AdicionarFechamentoBimestre(fechamentoBimestre);
 
             var mensagem = new MensagemRabbit
@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Fechamento
             var resultado = await useCase.Executar(mensagem);
 
             Assert.True(resultado);
-            servicoPeriodoFechamentoMock.Verify(s => s.AlterarPeriodosComHierarquiaInferior(It.Is<PeriodoFechamento>(f => f.DreId == dre.Id && f.UeId == ue.Id)), Times.Once);
+            servicoPeriodoFechamentoMock.Verify(s => s.AlterarPeriodosComHierarquiaInferior(It.Is<SME.SGP.Dominio.PeriodoFechamento>(f => f.DreId == dre.Id && f.UeId == ue.Id)), Times.Once);
         }
     }
 }
