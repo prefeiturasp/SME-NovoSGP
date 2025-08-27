@@ -26,10 +26,10 @@ namespace SME.SGP.Dados.Repositorios
                         WHERE 1=1";
 
             if (!string.IsNullOrWhiteSpace(codigoDre))
-                sql += " AND codigo_dre = codigoDre";
+                sql += " AND codigo_dre = @codigoDre";
             
             if (!string.IsNullOrWhiteSpace(codigoUe))
-                sql += " AND codigo_ue = codigoUe";
+                sql += " AND codigo_ue = @codigoUe";
 
             return await database.QueryAsync<PainelEducacionalRegistroFrequenciaAgrupamentoEscola>(sql, new { codigoDre, codigoUe });
         }
