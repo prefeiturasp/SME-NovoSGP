@@ -46,6 +46,7 @@ namespace SME.SGP.Dominio
         public readonly static Guid PERFIL_COORDENADOR_GERAL_CIEJA = Guid.Parse("78E1E074-37D6-E911-ABD6-F81654FE895D");
         public readonly static Guid PERFIL_SECRETARIO_FORMACAO_CELP = Guid.Parse("79E1E074-37D6-E911-ABD6-F81654FE895D");
         public readonly static Guid PERFIL_ASSISTENTE_PEDAGOGICO_POLO_CELP = Guid.Parse("88E1E074-37D6-E911-ABD6-F81654FE895D");
+        public readonly static Guid PERFIL_SECRETARIO_EDUCACAO = Guid.Parse("89e1e074-37d6-e911-abd6-f81654fe895d");
 
         public static bool EhPerfilPOA(this Guid source)
             => source == PERFIL_POA_ALFABETIZACAO
