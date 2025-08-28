@@ -1344,7 +1344,7 @@ namespace SME.SGP.Infra
            Url = ConstantesMenuPermissao.ROTA_GESTAO_INFORMACOES_EDUCACIONAIS,
            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CERTIFICATE,
            EhConsulta = true)]
-        IE_C = 300,
+        IE_C = 279,
 
         [PermissaoMenu(
             Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
@@ -1354,7 +1354,7 @@ namespace SME.SGP.Infra
             Url = ConstantesMenuPermissao.ROTA_GESTAO_INFORMACOES_EDUCACIONAIS,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CERTIFICATE,
             EhInclusao = true)]
-        IE_I = 301,
+        IE_I = 280,
 
         [PermissaoMenu(
             Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
@@ -1364,7 +1364,7 @@ namespace SME.SGP.Infra
             Url = ConstantesMenuPermissao.ROTA_GESTAO_INFORMACOES_EDUCACIONAIS,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CERTIFICATE,
             EhAlteracao = true)]
-        IE_A = 302,
+        IE_A = 282,
 
         [PermissaoMenu(
             Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
@@ -1374,7 +1374,7 @@ namespace SME.SGP.Infra
             Url = ConstantesMenuPermissao.ROTA_GESTAO_INFORMACOES_EDUCACIONAIS,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CERTIFICATE,
             EhExclusao = true)]
-        IE_E = 303,
+        IE_E = 281,
 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_AEE,
             Menu = ConstantesMenuPermissao.MENU_ENCAMINHAMENTO,
