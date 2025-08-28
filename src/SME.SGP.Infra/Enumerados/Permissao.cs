@@ -2207,12 +2207,49 @@ namespace SME.SGP.Infra
             EhAlteracao = true)]
         N_A = 41,
 
+        [PermissaoMenu(
+           Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
+           Menu = ConstantesMenuPermissao.MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
+           OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+           OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
+           Url = ConstantesMenuPermissao.ROTA_GESTAO_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
+           Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CERTIFICATE,
+           EhConsulta = true)]
+        IE_I_P_C = 283,
+
+        [PermissaoMenu(
+            Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
+            Menu = ConstantesMenuPermissao.MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
+            Url = ConstantesMenuPermissao.ROTA_GESTAO_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CERTIFICATE,
+            EhInclusao = true)]
+        IE_I_P_I = 284,
+
+        [PermissaoMenu(
+            Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
+            Menu = ConstantesMenuPermissao.MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
+            Url = ConstantesMenuPermissao.ROTA_GESTAO_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CERTIFICATE,
+            EhAlteracao = true)]
+        IE_I_P_A = 285,
+
+        [PermissaoMenu(
+            Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
+            Menu = ConstantesMenuPermissao.MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
+            Url = ConstantesMenuPermissao.ROTA_GESTAO_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CERTIFICATE,
+            EhExclusao = true)]
+        IE_I_P_E = 286,
 
 
 
 
-
-       
 
     }
 }
