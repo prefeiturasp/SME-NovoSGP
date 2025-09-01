@@ -47,6 +47,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
 using SME.SGP.Infra.Utilitarios;
+using SME.SGP.IoC.Extensions.RegistrarCasoDeUsoRabbitSgp;
 
 namespace SME.SGP.IoC
 {
@@ -707,6 +708,11 @@ namespace SME.SGP.IoC
         public virtual void RegistrarCasoDeUsoAvaliacaoRabbitSgp(IServiceCollection services)
         {
             services.RegistrarAvaliacaoUseCaseRabbitSgp();
+        }
+
+        public virtual void RegistrarCasoDeUsoPainelEducacionalRabbitSgp(IServiceCollection services)
+        {
+            services.RegistrarPainelEducacionalUseCaseRabbitSgp();
         }
 
         protected virtual void RegistrarCasosDeUso(IServiceCollection services)
@@ -1484,6 +1490,7 @@ namespace SME.SGP.IoC
             RegistrarCasoDeUsoPendenciasRabbitSgp(services);
             RegistrarCasoDeUsoNAAPARabbitSgp(services);
             RegistrarCasoDeUsoRabbitSgp(services);
+            RegistrarCasoDeUsoPainelEducacionalRabbitSgp(services);
         }
 
         public virtual void RegistrarTelemetria(IServiceCollection services, IConfiguration configuration)
