@@ -70,14 +70,19 @@ namespace SME.SGP.Aplicacao
 
             if (tipoEscola == TipoEscola.CIEJA)
             {
-                await AtribuirPerfisUsuarioCIEJA(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
+                await AtribuirPerfisUsuarioPorFuncaoAtividade(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
+                return;
             }
-            else
+
+            if (tipoEscola == TipoEscola.CEIINDIR || tipoEscola == TipoEscola.CRPCONV)
             {
-                var atribuirPerfisPorCargo = await AtribuirPerfisUsuarioPorCargo(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
-                if (!atribuirPerfisPorCargo)
-                    await AtribuirPerfisUsuarioPorFuncaoExterna(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
+                await AtribuirPerfisUsuarioPorFuncaoExterna(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
+                return;
             }
+
+            var atribuirPerfisPorCargo = await AtribuirPerfisUsuarioPorCargo(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
+            if (!atribuirPerfisPorCargo)
+                await AtribuirPerfisUsuarioPorFuncaoExterna(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
         }
 
         private async Task TratarAtribuicaoPerfilCEFAI(IEnumerable<long> CEFAIs, PerfilUsuario perfilUsuario, long pendenciaPerfilId)
@@ -153,7 +158,7 @@ namespace SME.SGP.Aplicacao
             return false;
         }
 
-        private async Task<bool> AtribuirPerfisUsuarioCIEJA(string ueCodigo, PerfilUsuario perfilUsuario, long pendenciaPerfilId)
+        private async Task<bool> AtribuirPerfisUsuarioPorFuncaoAtividade(string ueCodigo, PerfilUsuario perfilUsuario, long pendenciaPerfilId)
         {
             var funcionariosFuncoeAtividade = await mediator.Send(new ObterFuncionariosPorFuncaoAtividadeHierarquicoQuery(ueCodigo, perfilUsuario.ObterFuncaoAtividadePorPerfil()));
             if (funcionariosFuncoeAtividade.NaoEhNulo() && funcionariosFuncoeAtividade.Any())
