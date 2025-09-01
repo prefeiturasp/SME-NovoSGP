@@ -67,15 +67,22 @@ namespace SME.SGP.Aplicacao
         {
             var dreUe = await ObterCodigoDREUE(ueId);
             var tipoEscola = await ObterTipoEscolaUE(dreUe.UeCodigo);
-            var atribuiuPerfis = false;
 
-            if(tipoEscola == TipoEscola.CIEJA)
-                atribuiuPerfis = await AtribuirPerfisUsuarioCIEJA(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
+            if (tipoEscola == TipoEscola.CIEJA)
+            {
+                await AtribuirPerfisUsuarioPorFuncaoAtividade(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
+                return;
+            }
 
-            if (!atribuiuPerfis)
-                atribuiuPerfis = await AtribuirPerfisUsuarioPorFuncaoExterna(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
-            else
-                atribuiuPerfis = await AtribuirPerfisUsuarioPorCargo(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);           
+            if (tipoEscola == TipoEscola.CEIINDIR || tipoEscola == TipoEscola.CRPCONV)
+            {
+                await AtribuirPerfisUsuarioPorFuncaoExterna(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
+                return;
+            }
+
+            var atribuirPerfisPorCargo = await AtribuirPerfisUsuarioPorCargo(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
+            if (!atribuirPerfisPorCargo)
+                await AtribuirPerfisUsuarioPorFuncaoExterna(dreUe.UeCodigo, perfilUsuario, pendenciaPerfilId);
         }
 
         private async Task TratarAtribuicaoPerfilCEFAI(IEnumerable<long> CEFAIs, PerfilUsuario perfilUsuario, long pendenciaPerfilId)
@@ -145,6 +152,21 @@ namespace SME.SGP.Aplicacao
                 {
                     var usuarioId = await ObterUsuarioId(funcionario.FuncionarioCpf);
                     await AtribuirPerfilUsuario(usuarioId, funcionario.FuncaoExternaId.ObterPerfilPorFuncaoExterna(), pendenciaPerfilId);
+                }
+                return true;
+            }
+            return false;
+        }
+
+        private async Task<bool> AtribuirPerfisUsuarioPorFuncaoAtividade(string ueCodigo, PerfilUsuario perfilUsuario, long pendenciaPerfilId)
+        {
+            var funcionariosFuncoeAtividade = await mediator.Send(new ObterFuncionariosPorFuncaoAtividadeHierarquicoQuery(ueCodigo, perfilUsuario.ObterFuncaoAtividadePorPerfil()));
+            if (funcionariosFuncoeAtividade.NaoEhNulo() && funcionariosFuncoeAtividade.Any())
+            {
+                foreach (var funcionario in funcionariosFuncoeAtividade)
+                {
+                    var usuarioId = await ObterUsuarioId(funcionario.FuncionarioRf);
+                    await AtribuirPerfilUsuario(usuarioId, funcionario.CodigoFuncaoAtividade.ObterPerfilPorFuncaoAtividade(), pendenciaPerfilId);
                 }
                 return true;
             }
