@@ -9,8 +9,8 @@ namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.Ideb
 {
     public class SalvarImportacaoArquivoIdebCommandHandler : IRequestHandler<SalvarImportacaoArquivoIdebCommand, Dominio.Ideb>
     {
-        private readonly IRepositorioArquivoIdeb repositorioArquivoIbep;
-        public SalvarImportacaoArquivoIdebCommandHandler(IRepositorioArquivoIdeb repositorioArquivoIbep)
+        private readonly IRepositorioIdeb repositorioArquivoIbep;
+        public SalvarImportacaoArquivoIdebCommandHandler(IRepositorioIdeb repositorioArquivoIbep)
         {
             this.repositorioArquivoIbep = repositorioArquivoIbep ?? throw new ArgumentNullException(nameof(repositorioArquivoIbep));
         }
