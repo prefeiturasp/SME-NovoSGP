@@ -1336,46 +1336,6 @@ namespace SME.SGP.Infra
             EhConsulta = true)]
         ABA_C = 258,
 
-        [PermissaoMenu(
-           Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
-           Menu = ConstantesMenuPermissao.MENU_INFORMACOES_EDUCACIONAIS,
-           OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
-           OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMACOES_EDUCACIONAIS,
-           Url = ConstantesMenuPermissao.ROTA_GESTAO_INFORMACOES_EDUCACIONAIS,
-           Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CERTIFICATE,
-           EhConsulta = true)]
-        IE_C = 279,
-
-        [PermissaoMenu(
-            Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
-            Menu = ConstantesMenuPermissao.MENU_INFORMACOES_EDUCACIONAIS,
-            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
-            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMACOES_EDUCACIONAIS,
-            Url = ConstantesMenuPermissao.ROTA_GESTAO_INFORMACOES_EDUCACIONAIS,
-            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CERTIFICATE,
-            EhInclusao = true)]
-        IE_I = 280,
-
-        [PermissaoMenu(
-            Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
-            Menu = ConstantesMenuPermissao.MENU_INFORMACOES_EDUCACIONAIS,
-            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
-            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMACOES_EDUCACIONAIS,
-            Url = ConstantesMenuPermissao.ROTA_GESTAO_INFORMACOES_EDUCACIONAIS,
-            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CERTIFICATE,
-            EhAlteracao = true)]
-        IE_A = 282,
-
-        [PermissaoMenu(
-            Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
-            Menu = ConstantesMenuPermissao.MENU_INFORMACOES_EDUCACIONAIS,
-            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
-            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMACOES_EDUCACIONAIS,
-            Url = ConstantesMenuPermissao.ROTA_GESTAO_INFORMACOES_EDUCACIONAIS,
-            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CERTIFICATE,
-            EhExclusao = true)]
-        IE_E = 281,
-
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_AEE,
             Menu = ConstantesMenuPermissao.MENU_ENCAMINHAMENTO,
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_AEE,
@@ -2207,49 +2167,110 @@ namespace SME.SGP.Infra
             EhAlteracao = true)]
         N_A = 41,
 
-        [PermissaoMenu(
-           Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
-           Menu = ConstantesMenuPermissao.MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
-           OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
-           OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
-           Url = ConstantesMenuPermissao.ROTA_GESTAO_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
-           Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CERTIFICATE,
-           EhConsulta = true)]
+
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
+          Menu = ConstantesMenuPermissao.MENU_INFORMACOES_EDUCACIONAIS,
+          OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+          OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMACOES_EDUCACIONAIS,
+          EhSubMenu = true,
+          SubMenu = ConstantesMenuPermissao.MENU_INFORMACOES_EDUCACIONAIS_PAINEL,
+          OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_INFORMACOES_EDUCACIONAIS_PAINEL,
+          Url = ConstantesMenuPermissao.ROTA_GESTAO_INFORMACOES_EDUCACIONAIS,
+          Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
+          IconeDashBoard = ConstantesMenuPermissao.ICONE_FAR_FA_CHECK_SQUARE,
+          EhConsulta = true)]
+        IE_C = 279,
+        
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
+          Menu = ConstantesMenuPermissao.MENU_INFORMACOES_EDUCACIONAIS,
+          OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+          OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMACOES_EDUCACIONAIS,
+          EhSubMenu = true,
+          SubMenu = ConstantesMenuPermissao.MENU_INFORMACOES_EDUCACIONAIS_PAINEL,
+          OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_INFORMACOES_EDUCACIONAIS_PAINEL,
+          Url = ConstantesMenuPermissao.ROTA_GESTAO_INFORMACOES_EDUCACIONAIS,
+          Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
+          IconeDashBoard = ConstantesMenuPermissao.ICONE_FAR_FA_CHECK_SQUARE,
+          EhInclusao = true)]
+        IE_I = 280,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
+          Menu = ConstantesMenuPermissao.MENU_INFORMACOES_EDUCACIONAIS,
+          OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+          OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMACOES_EDUCACIONAIS,
+          EhSubMenu = true,
+          SubMenu = ConstantesMenuPermissao.MENU_INFORMACOES_EDUCACIONAIS_PAINEL,
+          OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_INFORMACOES_EDUCACIONAIS_PAINEL,
+          Url = ConstantesMenuPermissao.ROTA_GESTAO_INFORMACOES_EDUCACIONAIS,
+          Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
+          IconeDashBoard = ConstantesMenuPermissao.ICONE_FAR_FA_CHECK_SQUARE,
+          EhAlteracao = true)]
+        IE_A = 282,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
+          Menu = ConstantesMenuPermissao.MENU_INFORMACOES_EDUCACIONAIS,
+          OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+          OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMACOES_EDUCACIONAIS,
+          EhSubMenu = true,
+          SubMenu = ConstantesMenuPermissao.MENU_INFORMACOES_EDUCACIONAIS_PAINEL,
+          OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_INFORMACOES_EDUCACIONAIS_PAINEL,
+          Url = ConstantesMenuPermissao.ROTA_GESTAO_INFORMACOES_EDUCACIONAIS,
+          Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
+          IconeDashBoard = ConstantesMenuPermissao.ICONE_FAR_FA_CHECK_SQUARE,
+          EhExclusao = true)]
+        IE_E = 281,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
+          Menu = ConstantesMenuPermissao.MENU_INFORMACOES_EDUCACIONAIS,
+          OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+          OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMACOES_EDUCACIONAIS,
+          EhSubMenu = true,
+          SubMenu = ConstantesMenuPermissao.MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
+          OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
+          Url = ConstantesMenuPermissao.ROTA_GESTAO_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
+          Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
+          IconeDashBoard = ConstantesMenuPermissao.ICONE_FAR_FA_CHECK_SQUARE,
+          EhConsulta = true)]
         IE_I_P_C = 283,
 
-        [PermissaoMenu(
-            Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
-            Menu = ConstantesMenuPermissao.MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
-            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
-            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
-            Url = ConstantesMenuPermissao.ROTA_GESTAO_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
-            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CERTIFICATE,
-            EhInclusao = true)]
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
+          Menu = ConstantesMenuPermissao.MENU_INFORMACOES_EDUCACIONAIS,
+          OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+          OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMACOES_EDUCACIONAIS,
+          EhSubMenu = true,
+          SubMenu = ConstantesMenuPermissao.MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
+          OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
+          Url = ConstantesMenuPermissao.ROTA_GESTAO_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
+          Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
+          IconeDashBoard = ConstantesMenuPermissao.ICONE_FAR_FA_CHECK_SQUARE,
+          EhInclusao = true)]
         IE_I_P_I = 284,
 
-        [PermissaoMenu(
-            Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
-            Menu = ConstantesMenuPermissao.MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
-            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
-            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
-            Url = ConstantesMenuPermissao.ROTA_GESTAO_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
-            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CERTIFICATE,
-            EhAlteracao = true)]
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
+          Menu = ConstantesMenuPermissao.MENU_INFORMACOES_EDUCACIONAIS,
+          OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+          OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMACOES_EDUCACIONAIS,
+          EhSubMenu = true,
+          SubMenu = ConstantesMenuPermissao.MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
+          OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
+          Url = ConstantesMenuPermissao.ROTA_GESTAO_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
+          Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
+          IconeDashBoard = ConstantesMenuPermissao.ICONE_FAR_FA_CHECK_SQUARE,
+          EhAlteracao = true)]
         IE_I_P_A = 285,
 
-        [PermissaoMenu(
-            Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
-            Menu = ConstantesMenuPermissao.MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
-            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
-            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
-            Url = ConstantesMenuPermissao.ROTA_GESTAO_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
-            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CERTIFICATE,
-            EhExclusao = true)]
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
+          Menu = ConstantesMenuPermissao.MENU_INFORMACOES_EDUCACIONAIS,
+          OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+          OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMACOES_EDUCACIONAIS,
+          EhSubMenu = true,
+          SubMenu = ConstantesMenuPermissao.MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
+          OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
+          Url = ConstantesMenuPermissao.ROTA_GESTAO_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS,
+          Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
+          IconeDashBoard = ConstantesMenuPermissao.ICONE_FAR_FA_CHECK_SQUARE,
+          EhExclusao = true)]
         IE_I_P_E = 286,
-
-
-
-
-
     }
 }
