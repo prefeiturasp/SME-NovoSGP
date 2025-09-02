@@ -5,7 +5,7 @@ using SME.SGP.Infra.Dtos.ImportarArquivo;
 
 namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.FluenciaLeitora
 {
-    public class SalvarImportacaoArquivoFluenciaLeitoraCommand : IRequest<ArquivoFluenciaLeitora>
+    public class SalvarImportacaoArquivoFluenciaLeitoraCommand : IRequest<Dominio.FluenciaLeitora>
     {
         public SalvarImportacaoArquivoFluenciaLeitoraCommand(ArquivoFluenciaLeitoraDto arquivoFluenciaLeitora)
         {
