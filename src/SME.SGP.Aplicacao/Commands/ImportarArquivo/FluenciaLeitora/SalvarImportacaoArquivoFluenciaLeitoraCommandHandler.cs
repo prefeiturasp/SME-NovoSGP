@@ -7,15 +7,15 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.FluenciaLeitora
 {
-    public class SalvarImportacaoArquivoFluenciaLeitoraCommandHandler : IRequestHandler<SalvarImportacaoArquivoFluenciaLeitoraCommand, ArquivoFluenciaLeitora>
+    public class SalvarImportacaoArquivoFluenciaLeitoraCommandHandler : IRequestHandler<SalvarImportacaoArquivoFluenciaLeitoraCommand, Dominio.FluenciaLeitora>
     {
-        private readonly IRepositorioArquivoFluenciaLeitora repositorioArquivoIbep;
-        public SalvarImportacaoArquivoFluenciaLeitoraCommandHandler(IRepositorioArquivoFluenciaLeitora repositorioArquivoIbep)
+        private readonly IRepositorioFluenciaLeitora repositorioArquivoIbep;
+        public SalvarImportacaoArquivoFluenciaLeitoraCommandHandler(IRepositorioFluenciaLeitora repositorioArquivoIbep)
         {
             this.repositorioArquivoIbep = repositorioArquivoIbep ?? throw new ArgumentNullException(nameof(repositorioArquivoIbep));
         }
 
-        public async Task<ArquivoFluenciaLeitora> Handle(SalvarImportacaoArquivoFluenciaLeitoraCommand request, CancellationToken cancellationToken)
+        public async Task<Dominio.FluenciaLeitora> Handle(SalvarImportacaoArquivoFluenciaLeitoraCommand request, CancellationToken cancellationToken)
         {
             var arquivoFluenciaLeitora = MapearParaEntidade(request);
 
@@ -24,8 +24,8 @@ namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.FluenciaLeitora
             return arquivoFluenciaLeitora;
         }
 
-        private ArquivoFluenciaLeitora MapearParaEntidade(SalvarImportacaoArquivoFluenciaLeitoraCommand request)
-        => new ArquivoFluenciaLeitora()
+        private Dominio.FluenciaLeitora MapearParaEntidade(SalvarImportacaoArquivoFluenciaLeitoraCommand request)
+        => new Dominio.FluenciaLeitora()
         {
             CodigoEOLTurma = request.ArquivoFluenciaLeitora.CodigoEOLTurma,
             CodigoEOLAluno = request.ArquivoFluenciaLeitora.CodigoEOLAluno,

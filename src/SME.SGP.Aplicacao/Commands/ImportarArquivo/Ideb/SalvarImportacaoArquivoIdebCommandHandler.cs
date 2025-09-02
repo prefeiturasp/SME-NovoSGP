@@ -7,15 +7,15 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.Ideb
 {
-    public class SalvarImportacaoArquivoIdebCommandHandler : IRequestHandler<SalvarImportacaoArquivoIdebCommand, ArquivoIdeb>
+    public class SalvarImportacaoArquivoIdebCommandHandler : IRequestHandler<SalvarImportacaoArquivoIdebCommand, Dominio.Ideb>
     {
-        private readonly IRepositorioArquivoIdeb repositorioArquivoIbep;
-        public SalvarImportacaoArquivoIdebCommandHandler(IRepositorioArquivoIdeb repositorioArquivoIbep)
+        private readonly IRepositorioIdeb repositorioArquivoIbep;
+        public SalvarImportacaoArquivoIdebCommandHandler(IRepositorioIdeb repositorioArquivoIbep)
         {
             this.repositorioArquivoIbep = repositorioArquivoIbep ?? throw new ArgumentNullException(nameof(repositorioArquivoIbep));
         }
 
-        public async Task<ArquivoIdeb> Handle(SalvarImportacaoArquivoIdebCommand request, CancellationToken cancellationToken)
+        public async Task<Dominio.Ideb> Handle(SalvarImportacaoArquivoIdebCommand request, CancellationToken cancellationToken)
         {
             var arquivoIdeb = MapearParaEntidade(request);
 
@@ -24,8 +24,8 @@ namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.Ideb
             return arquivoIdeb;
         }
 
-        private ArquivoIdeb MapearParaEntidade(SalvarImportacaoArquivoIdebCommand request)
-        => new ArquivoIdeb()
+        private Dominio.Ideb MapearParaEntidade(SalvarImportacaoArquivoIdebCommand request)
+        => new Dominio.Ideb()
         {
             AnoLetivo = request.ArquivoIdeb.AnoLetivo,
             SerieAno = request.ArquivoIdeb.SerieAno,
