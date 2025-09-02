@@ -9,8 +9,8 @@ namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.FluenciaLeitora
 {
     public class SalvarImportacaoArquivoFluenciaLeitoraCommandHandler : IRequestHandler<SalvarImportacaoArquivoFluenciaLeitoraCommand, Dominio.FluenciaLeitora>
     {
-        private readonly IRepositorioArquivoFluenciaLeitora repositorioArquivoIbep;
-        public SalvarImportacaoArquivoFluenciaLeitoraCommandHandler(IRepositorioArquivoFluenciaLeitora repositorioArquivoIbep)
+        private readonly IRepositorioFluenciaLeitora repositorioArquivoIbep;
+        public SalvarImportacaoArquivoFluenciaLeitoraCommandHandler(IRepositorioFluenciaLeitora repositorioArquivoIbep)
         {
             this.repositorioArquivoIbep = repositorioArquivoIbep ?? throw new ArgumentNullException(nameof(repositorioArquivoIbep));
         }
