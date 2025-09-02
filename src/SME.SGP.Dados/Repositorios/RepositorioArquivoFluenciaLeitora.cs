@@ -5,7 +5,7 @@ using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioArquivoFluenciaLeitora : RepositorioBase<ArquivoFluenciaLeitora>, IRepositorioArquivoFluenciaLeitora
+    public class RepositorioArquivoFluenciaLeitora : RepositorioBase<FluenciaLeitora>, IRepositorioArquivoFluenciaLeitora
     {
         public RepositorioArquivoFluenciaLeitora(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {

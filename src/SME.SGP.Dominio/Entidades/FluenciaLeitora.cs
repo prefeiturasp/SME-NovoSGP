@@ -3,7 +3,7 @@
 namespace SME.SGP.Dominio
 {
     [ExcludeFromCodeCoverage]
-    public class ArquivoFluenciaLeitora : EntidadeBase
+    public class FluenciaLeitora : EntidadeBase
     {
         public string CodigoEOLTurma{ get; set; }
         public string CodigoEOLAluno { get; set; }

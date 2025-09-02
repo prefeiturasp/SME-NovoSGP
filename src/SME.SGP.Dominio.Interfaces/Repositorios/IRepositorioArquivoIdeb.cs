@@ -1,6 +1,6 @@
 ﻿namespace SME.SGP.Dominio.Interfaces.Repositorios
 {
-    public interface IRepositorioArquivoIdeb : IRepositorioBase<ArquivoIdeb>
+    public interface IRepositorioArquivoIdeb : IRepositorioBase<Ideb>
     {
     }
 }
