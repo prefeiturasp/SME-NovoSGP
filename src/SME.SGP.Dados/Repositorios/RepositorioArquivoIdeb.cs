@@ -5,7 +5,7 @@ using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioArquivoIdeb : RepositorioBase<ArquivoIdeb>, IRepositorioArquivoIdeb
+    public class RepositorioArquivoIdeb : RepositorioBase<Ideb>, IRepositorioArquivoIdeb
     {
         public RepositorioArquivoIdeb(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {

@@ -3,7 +3,7 @@
 namespace SME.SGP.Dominio
 {
     [ExcludeFromCodeCoverage]
-    public class ArquivoIdep : EntidadeBase
+    public class Ideb : EntidadeBase
     {
         public int AnoLetivo { get; set; }
         public int SerieAno { get; set; }

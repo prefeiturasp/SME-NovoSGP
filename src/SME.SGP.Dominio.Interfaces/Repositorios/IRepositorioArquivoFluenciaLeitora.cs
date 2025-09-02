@@ -1,6 +1,6 @@
 ﻿namespace SME.SGP.Dominio.Interfaces.Repositorios
 {
-    public interface IRepositorioArquivoFluenciaLeitora : IRepositorioBase<ArquivoFluenciaLeitora>
+    public interface IRepositorioArquivoFluenciaLeitora : IRepositorioBase<FluenciaLeitora>
     {
     }
 }
