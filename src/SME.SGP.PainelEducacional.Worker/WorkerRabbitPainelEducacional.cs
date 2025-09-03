@@ -7,6 +7,7 @@ using SME.SGP.Infra;
 using RabbitMQ.Client;
 using SME.SGP.Infra.Mensageria.Rotas;
 using System.Diagnostics.CodeAnalysis;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 using SME.SGP.Aplicacao.Interfaces;
 
 namespace SME.SGP.PainelEducacional.Worker
@@ -23,11 +24,13 @@ namespace SME.SGP.PainelEducacional.Worker
             IConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria, servicoMensageria, servicoMensageriaMetricas,
                 telemetriaOptions, consumoFilasOptions, factory, "WorkerRabbitPainelEducacional",
                 typeof(RotasRabbitSgpPainelEducacional))
-        {            
+        {
+
         }
 
         protected override void RegistrarUseCases()
         {
+            Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarIdepPainelEducacional, new ComandoRabbit("Consolidar idep para painel educacional", typeof(IConsolidarIdepPainelEducacionalUseCase)));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarNivelEscritaAlfabetizacao, new ComandoRabbit("Sincronização e Consolidação dos Dados da Sondagem do Nível de Escrita", typeof(IConsolidarInformacoesNivelEscritaAlfabetizacaoPainelEducacionalUseCase), false));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarNivelEscritaAlfabetizacaoCritico, new ComandoRabbit("Sincronização e Consolidação dos Dados da Sondagem da Alfabetização Crítica Escrita", typeof(IConsolidarInformacoesAlfabetizacaoCriticaEscritaPainelEducacionalUseCase), false));
         }
