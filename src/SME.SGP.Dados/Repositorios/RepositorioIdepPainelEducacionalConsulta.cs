@@ -86,7 +86,7 @@ namespace SME.SGP.Dados.Repositorios
              ORDER BY f.ano_letivo, f.etapa, f.faixa;";
 
             return await policy.ExecuteAsync(() =>
-            database.Conexao.QueryAsync<PainelEducacionalIdep>(query, new { anoLetivo })
+            database.Conexao.QueryAsync<PainelEducacionalIdep>(query)
             );
         }
     }
