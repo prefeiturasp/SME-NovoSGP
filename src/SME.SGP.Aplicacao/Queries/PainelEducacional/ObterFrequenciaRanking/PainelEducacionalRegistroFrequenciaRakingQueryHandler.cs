@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterFrequenciaRanking
                        Ue = g.Select(x => x.UE).FirstOrDefault(),
                        PercentualFrequencia = g.Average(x => x.PercentualFrequencia)
                    })
-                   .Where(x => x.PercentualFrequencia > 94)
+                   .Where(x => x.PercentualFrequencia > 90)
                    .OrderBy(x => x.Ue);
 
             return frequenciaRanking;
