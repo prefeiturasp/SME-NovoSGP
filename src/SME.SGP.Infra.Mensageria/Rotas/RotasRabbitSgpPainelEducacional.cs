@@ -1,4 +1,4 @@
-﻿namespace SME.SGP.Infra.Mensageria.Rotas
+﻿namespace SME.SGP.Infra
 {
     public class RotasRabbitSgpPainelEducacional
     {
@@ -7,3 +7,4 @@
         public const string ConsolidarNivelEscritaAlfabetizacaoCritico = "sgp.consolidar.nivel.escrita.alfabetizacao.critico";
     }
 }
+
