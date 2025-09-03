@@ -7,6 +7,7 @@ using SME.SGP.Infra;
 using RabbitMQ.Client;
 using SME.SGP.Infra.Mensageria.Rotas;
 using System.Diagnostics.CodeAnalysis;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 
 namespace SME.SGP.PainelEducacional.Worker
 {
@@ -23,10 +24,11 @@ namespace SME.SGP.PainelEducacional.Worker
                 telemetriaOptions, consumoFilasOptions, factory, "WorkerRabbitPainelEducacional",
                 typeof(RotasRabbitSgpPainelEducacional))
         {
-            
+
         }
         protected override void RegistrarUseCases()
         {
+            Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarIdepPainelEducacional, new ComandoRabbit("Consolidar idep para painel educacional", typeof(IConsolidarIdepPainelEducacionalUseCase)));
         }
     }
 }
