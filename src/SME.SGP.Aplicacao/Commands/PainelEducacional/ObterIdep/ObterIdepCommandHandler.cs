@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterIdepCommandHandler : IRequestHandler<ObterIdepCommand, IEnumerable<PainelEducacionalIdep>>
+    public class ObterIdepCommandHandler : IRequestHandler<ObterIdepCommand, IEnumerable<PainelEducacionalConsolidacaoIdep>>
     {
         private readonly IRepositorioIdepPainelEducacionalConsulta repositorioIdepConsulta;
 
@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioIdepConsulta = repositorioIdepConsulta ?? throw new ArgumentNullException(nameof(repositorioIdepConsulta));
         }
 
-        public async Task<IEnumerable<PainelEducacionalIdep>> Handle(ObterIdepCommand request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<PainelEducacionalConsolidacaoIdep>> Handle(ObterIdepCommand request, CancellationToken cancellationToken)
         {
             return await repositorioIdepConsulta.ObterTodosIdep();
         }

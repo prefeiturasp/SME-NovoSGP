@@ -6,9 +6,9 @@ namespace SME.SGP.Aplicacao
 {
     public class InserirConsolidacaoIdepCommand : IRequest<bool>
     {
-        public IEnumerable<PainelEducacionalIdep> DadosIdep { get; }
+        public IEnumerable<PainelEducacionalConsolidacaoIdep> DadosIdep { get; }
 
-        public InserirConsolidacaoIdepCommand(IEnumerable<PainelEducacionalIdep> dadosIdep)
+        public InserirConsolidacaoIdepCommand(IEnumerable<PainelEducacionalConsolidacaoIdep> dadosIdep)
         {
             DadosIdep = dadosIdep;
         }
