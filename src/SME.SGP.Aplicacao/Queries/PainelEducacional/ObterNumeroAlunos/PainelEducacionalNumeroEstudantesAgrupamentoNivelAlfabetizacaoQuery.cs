@@ -6,13 +6,17 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNumeroAlunos
 {
     public class PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoQuery : IRequest<IEnumerable<PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoDto>>
     {
-        public PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoQuery(string anoLetivo, string periodo)
+        public PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoQuery(int anoLetivo, int periodo, string codigoDre = null, string codigoUe = null)
         {
             AnoLetivo = anoLetivo;
             Periodo = periodo;
+            CodigoDre = codigoDre;
+            CodigoUe = codigoUe;
         }
 
-        public string AnoLetivo { get; set; }
-        public string Periodo { get; set; }
+        public int AnoLetivo { get; set; }
+        public int Periodo { get; set; }
+        public string CodigoDre { get; set; }
+        public string CodigoUe { get; set; }
     }
 }

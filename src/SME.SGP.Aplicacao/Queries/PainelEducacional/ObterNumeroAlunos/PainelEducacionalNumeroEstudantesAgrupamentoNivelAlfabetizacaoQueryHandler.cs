@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNumeroAlunos
 
         public async Task<IEnumerable<PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoDto>> Handle(PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoQuery request, CancellationToken cancellationToken)
         {
-            var registros = await repositorioPainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacao.ObterNumeroAlunos(request.AnoLetivo, request.Periodo);
+            var registros = await repositorioPainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacao.ObterNumeroAlunos(request.AnoLetivo, request.Periodo, request.CodigoDre, request.CodigoUe);
 
             return MapearParaDto(registros);
         }
@@ -33,6 +33,8 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNumeroAlunos
                 {
                     NivelAlfabetizacao = item.NivelAlfabetizacao,
                     NivelAlfabetizacaoDescricao = item.NivelAlfabetizacaoDescricao,
+                    Dre = item.Dre,
+                    Ue = item.Ue,
                     Ano = item.Ano,
                     TotalAlunos = item.TotalAlunos,
                     Periodo = item.Periodo
