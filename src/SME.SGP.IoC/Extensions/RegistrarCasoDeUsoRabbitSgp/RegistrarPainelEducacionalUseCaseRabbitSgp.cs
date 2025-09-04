@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using SME.SGP.Aplicacao.CasosDeUso.PainelEducacional;
+using SME.SGP.Aplicacao.Interfaces;
 
 namespace SME.SGP.IoC.Extensions.RegistrarCasoDeUsoRabbitSgp
 {
@@ -6,7 +8,9 @@ namespace SME.SGP.IoC.Extensions.RegistrarCasoDeUsoRabbitSgp
     {
         internal static void RegistrarPainelEducacionalUseCaseRabbitSgp(this IServiceCollection services)
         {
-            // Adicione aqui os serviços relacionados ao Painel Educacional
+            services
+                .AddScoped<IConsolidarInformacoesNivelEscritaAlfabetizacaoPainelEducacionalUseCase, 
+                           ConsolidarInformacoesNivelEscritaAlfabetizacaoPainelEducacionalUseCase>();
         }
     }
 }
