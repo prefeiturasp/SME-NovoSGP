@@ -23,10 +23,10 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNumeroAlunos
         {
             var registros = await repositorioConsolidacaoAlfabetizacaoNivelEscrita.ObterNumeroAlunos(request.AnoLetivo, request.Periodo, request.CodigoDre, request.CodigoUe);
 
-            return MapearParaDto(registros);
+            return MapearParaDto(registros, request);
         }
 
-        private IEnumerable<PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoDto> MapearParaDto(IEnumerable<ConsolidacaoAlfabetizacaoNivelEscrita> registros)
+        private IEnumerable<PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoDto> MapearParaDto(IEnumerable<ContagemNivelEscritaDto> registros, PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoQuery request)
         {
             var numeroAlunos = new List<PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoDto>();
             foreach (var item in registros)
@@ -44,11 +44,11 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNumeroAlunos
                 {
                     NivelAlfabetizacao = nivelAlfabetizacao,
                     NivelAlfabetizacaoDescricao = nivelAlfabetizacaoDescricao,
-                    Dre = item.DreCodigo,
-                    Ue = item.UeCodigo,
-                    Ano = item.AnoLetivo,
+                    Dre = request.CodigoDre,
+                    Ue = request.CodigoUe,
+                    Ano = request.AnoLetivo,
                     TotalAlunos = item.Quantidade,
-                    Periodo = item.Periodo
+                    Periodo = request.Periodo
                 });
             }
 
