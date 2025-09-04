@@ -6,6 +6,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Dtos.Frequencia;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
@@ -956,6 +957,26 @@ namespace SME.SGP.Dados.Repositorios
             };
 
             return await database.Conexao.QueryAsync<RegistroFrequenciaPainelEducacionalDto>(query, parametros);
+        }
+
+        public async Task<ComponenteCurricularSugeridoDto> ObterPrimeiroRegistroFrequenciaPorDataETurma(string turmaId, DateTime dataAula)
+        {
+            var query = $@"select 
+                                t1.aula_id
+                              , t2.quantidade as quantidadeAulas
+                              , t3.descricao_sgp as componenteCurricularSugerido
+                            from registro_frequencia t1
+                            inner join aula t2 on t2.id = t1.aula_id
+                            inner join componente_curricular t3 on (t3.id = CAST(t2.disciplina_id AS INT))
+                            where t2.turma_id = @turmaId and DATE(t2.data_aula) = @dataAula";
+
+            var parametros = new
+            {
+                turmaId,
+                dataAula
+            };
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<ComponenteCurricularSugeridoDto>(query, parametros);
         }
     }
 }
