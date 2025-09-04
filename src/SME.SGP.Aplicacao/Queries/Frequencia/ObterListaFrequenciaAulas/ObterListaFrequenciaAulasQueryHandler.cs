@@ -82,9 +82,7 @@ namespace SME.SGP.Aplicacao
                                 new ObterRegistrosFrequenciasAlunosSimplificadoPorAulaIdQuery(primeiroRegistroFrequenciaDataTurma.AulaId))
                                 ?? Enumerable.Empty<FrequenciaAlunoSimplificadoDto>();
 
-                                var numeroAulaSugerida = primeiroRegistroFrequenciaDataTurma.QuantidadeAulas <= aula.Quantidade
-                                ? aula.Quantidade
-                                : primeiroRegistroFrequenciaDataTurma.QuantidadeAulas;
+                                var numeroAulaSugerida = Math.Max(primeiroRegistroFrequenciaDataTurma.QuantidadeAulas, aula.Quantidade);
 
                                 frequenciaSugerida = frequenciaSugeridaAlunos.FirstOrDefault(
                                     a => a.NumeroAula == numeroAulaSugerida
