@@ -623,6 +623,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobalEscola, RepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobalEscola>();
             services.TryAddScoped<IRepositorioPainelEducacionalRegistroFrequenciaAgrupamentoMensal, RepositorioPainelEducacionalRegistroFrequenciaAgrupamentoMensal>(); 
             services.TryAddScoped<IRepositorioConsolidacaoAlfabetizacaoNivelEscrita, RepositorioConsolidacaoAlfabetizacaoNivelEscrita>();
+            services.TryAddScoped<IRepositorioPainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacao, RepositorioPainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacao>();
+            services.TryAddScoped<IRepositorioConsolidacaoAlfabetizacaoNivelEscrita, RepositorioConsolidacaoAlfabetizacaoNivelEscrita>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)
