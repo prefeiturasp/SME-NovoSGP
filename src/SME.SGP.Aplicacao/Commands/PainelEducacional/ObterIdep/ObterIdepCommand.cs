@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao.Commands.PainelEducacional.ObterIdep
 {
-    public class ObterIdepCommand : IRequest<IEnumerable<PainelEducacionalIdep>>
+    public class ObterIdepCommand : IRequest<IEnumerable<PainelEducacionalConsolidacaoIdep>>
     {
     }
 }

@@ -3,6 +3,7 @@
     public class PainelEducacionalIdep : EntidadeBase
     {
         public int AnoLetivo { get; set; }
+        public int Etapa { get; set; }
         public int SerieAno { get; set; }
         public int CodigoEolEscola { get; set; }
         public int Nota { get; set; }

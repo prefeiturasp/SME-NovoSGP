@@ -6,6 +6,6 @@ namespace SME.SGP.Dominio.Interfaces.Repositorios
 {
     public interface IRepositorioIdepPainelEducacionalConsulta : IRepositorioBase<PainelEducacionalIdep>
     {
-        Task<IEnumerable<PainelEducacionalIdep>> ObterTodosIdep();
+        Task<IEnumerable<PainelEducacionalConsolidacaoIdep>> ObterTodosIdep();
     }
 }

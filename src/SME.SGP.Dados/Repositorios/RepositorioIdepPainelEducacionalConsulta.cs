@@ -3,7 +3,9 @@ using Polly.Registry;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.PainelEducacional;
 using SME.SGP.Infra.Interface;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -20,14 +22,14 @@ namespace SME.SGP.Dados.Repositorios
             policy = registry.Get<IAsyncPolicy>(PoliticaPolly.SGP);
         }
 
-        public async Task<IEnumerable<PainelEducacionalIdep>> ObterTodosIdep()
+        public async Task<IEnumerable<PainelEducacionalConsolidacaoIdep>> ObterTodosIdep()
         {
             var query = @"WITH base AS (
                  SELECT
                      ano_letivo,
                      CASE
-                         WHEN serie_ano BETWEEN 1 AND 5 THEN 'anos_iniciais'
-                         WHEN serie_ano BETWEEN 6 AND 9 THEN 'anos_finais'
+                         WHEN serie_ano BETWEEN 1 AND 5 THEN 1 -- 'anos_iniciais'
+                         WHEN serie_ano BETWEEN 6 AND 9 THEN 2 -- 'anos_finais'
                      END AS etapa,
                      nota,
                      CASE
@@ -44,27 +46,27 @@ namespace SME.SGP.Dados.Repositorios
                      END AS faixa,
                      criado_em
                  FROM arquivo_idep
-                 -- REMOVA o filtro por ano para pegar TODOS!
-                 -- WHERE ano_letivo = 2025
+                   WHERE nota IS NOT NULL
+                   AND nota BETWEEN 0 AND 10
              ),
              faixas AS (
                  SELECT
-                     ano_letivo,  -- ← Adicione ano_letivo aqui!
+                     ano_letivo, 
                      etapa,
                      faixa,
                      COUNT(*) AS quantidade
                  FROM base
                  WHERE etapa IS NOT NULL
-                 GROUP BY ano_letivo, etapa, faixa  -- ← Agrupe por ano também
+                 GROUP BY ano_letivo, etapa, faixa 
              ),
              medias AS (
                  SELECT
-                     ano_letivo,  -- ← Adicione ano_letivo aqui!
+                     ano_letivo, 
                      etapa,
                      ROUND(AVG(nota), 2) AS media_geral
                  FROM base
                  WHERE etapa IS NOT NULL
-                 GROUP BY ano_letivo, etapa  -- ← Agrupe por ano também
+                 GROUP BY ano_letivo, etapa 
              ),
              ultima_data AS (
                  SELECT
@@ -74,7 +76,7 @@ namespace SME.SGP.Dados.Repositorios
                  GROUP BY ano_letivo
              )
              SELECT
-                 f.ano_letivo,  -- ← Agora vem do faixas
+                 f.ano_letivo, 
                  f.etapa,
                  f.faixa,
                  f.quantidade,
@@ -86,7 +88,7 @@ namespace SME.SGP.Dados.Repositorios
              ORDER BY f.ano_letivo, f.etapa, f.faixa;";
 
             return await policy.ExecuteAsync(() =>
-            database.Conexao.QueryAsync<PainelEducacionalIdep>(query)
+            database.Conexao.QueryAsync<PainelEducacionalConsolidacaoIdep>(query)
             );
         }
     }
