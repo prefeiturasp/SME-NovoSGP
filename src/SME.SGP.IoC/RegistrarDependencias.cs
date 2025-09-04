@@ -623,7 +623,8 @@ namespace SME.SGP.IoC
             
             services.TryAddScoped<IRepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobal, RepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobal>();
             services.TryAddScoped<IRepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobalEscola, RepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobalEscola>();
-            services.TryAddScoped<IRepositorioPainelEducacionalRegistroFrequenciaAgrupamentoMensal, RepositorioPainelEducacionalRegistroFrequenciaAgrupamentoMensal>();
+            services.TryAddScoped<IRepositorioPainelEducacionalRegistroFrequenciaAgrupamentoMensal, RepositorioPainelEducacionalRegistroFrequenciaAgrupamentoMensal>(); 
+            services.TryAddScoped<IRepositorioConsolidacaoAlfabetizacaoNivelEscrita, RepositorioConsolidacaoAlfabetizacaoNivelEscrita>();
 
             //ImportacaoLog - Arquivos
             services.TryAddScoped<IRepositorioImportacaoLog, RepositorioImportacaoLog>();
@@ -799,8 +800,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IIniciaConsolidacaoTurmaGeralUseCase, IniciaConsolidacaoTurmaGeralUseCase>();
             services.TryAddScoped<IConsultasIndicadoresNivelAlfabetizacaoCriticaUseCase, ConsultasIndicadoresNivelAlfabetizacaoCriticaUseCase>();
             services.TryAddScoped<IConsultasNumeroEstudantesAgrupamentoNivelAlfabetizacaoUseCase, ConsultasNumeroEstudantesAgrupamentoNivelAlfabetizacaoUseCase>();
-            services.TryAddScoped<IRepositorioPainelEducacionalIndicadoresNivelAlfabetizacaoCritica, RepositorioPainelEducacionalIndicadoresNivelAlfabetizacaoCritica>();
-            services.TryAddScoped<IRepositorioPainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacao, RepositorioPainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacao>();
+            services.TryAddScoped<IRepositorioPainelEducacionalIndicadoresNivelAlfabetizacaoCritica, RepositorioPainelEducacionalIndicadoresNivelAlfabetizacaoCritica>();            
 
 
             services.TryAddScoped<IObterDashBoardUseCase, ObterDashBoardUseCase>();
