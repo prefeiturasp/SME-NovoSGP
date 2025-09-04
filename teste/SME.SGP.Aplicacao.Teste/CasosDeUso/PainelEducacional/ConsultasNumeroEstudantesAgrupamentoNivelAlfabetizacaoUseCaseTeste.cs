@@ -2,6 +2,8 @@
 using Moq;
 using SME.SGP.Aplicacao.CasosDeUso.PainelEducacional;
 using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNumeroAlunos;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using System.Collections.Generic;
 using System.Threading;
@@ -24,14 +26,15 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
         [Fact]
         public async Task Deve_Retornar_Estudantes_Quando_Mediator_Retornar_Dados()
         {
-            var anoLetivo = "2025";
-            var periodo = "1";
+            // Arrange
+            var anoLetivo = 2025;
+            var periodo = 1;
             var resultadoEsperado = new List<PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoDto>
             {
                 new PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoDto
                 {
                     Ano = 1,
-                    NivelAlfabetizacao = "A1",
+                    NivelAlfabetizacao = NivelAlfabetizacao.PreSilabico,
                     NivelAlfabetizacaoDescricao = "Alfabetização Básica",
                     TotalAlunos = 30,
                     Periodo = 1
@@ -42,11 +45,13 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                 .Setup(m => m.Send(It.IsAny<PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(resultadoEsperado);
 
+            // Act
             var resultado = await useCase.ObterNumeroEstudantes(anoLetivo, periodo);
 
+            // Assert
             Assert.NotNull(resultado);
-            Assert.Single(resultado);
-            Assert.Equal("A1", ((List<PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoDto>)resultado)[0].NivelAlfabetizacao);
+            Assert.NotEmpty(resultado);
+            Assert.Equal(resultadoEsperado, resultado);
             mediatorMock.Verify(m => m.Send(It.IsAny<PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoQuery>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
@@ -57,7 +62,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                 .Setup(m => m.Send(It.IsAny<PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoDto>());
 
-            var resultado = await useCase.ObterNumeroEstudantes("2025", "1");
+            var resultado = await useCase.ObterNumeroEstudantes(2025, 1);
 
             Assert.NotNull(resultado);
             Assert.Empty(resultado);
@@ -70,7 +75,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                 .Setup(m => m.Send(It.IsAny<PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoQuery>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new System.Exception("Erro no Mediator"));
 
-            await Assert.ThrowsAsync<System.Exception>(() => useCase.ObterNumeroEstudantes("2025", "1"));
+            await Assert.ThrowsAsync<System.Exception>(() => useCase.ObterNumeroEstudantes(2025, 1));
         }
     }
 }
