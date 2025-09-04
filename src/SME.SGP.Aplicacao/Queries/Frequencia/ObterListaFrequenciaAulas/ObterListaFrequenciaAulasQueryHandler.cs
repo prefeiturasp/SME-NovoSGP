@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
 
                 // Indicativo de Frequencia (%)
                 registroFrequenciaAluno.IndicativoFrequencia = ObterIndicativoFrequencia(frequenciaAluno, request.PercentualAlerta, request.PercentualCritico);
-                
+
                 TipoFrequencia? frequenciaSugerida = null;
 
                 if (request.Aulas.Any())
@@ -73,21 +73,20 @@ namespace SME.SGP.Aplicacao
                             var primeiroRegistroFrequenciaDataTurma = await mediator.Send(
                                 new ObterPrimeiroRegistroFrequenciaPorDataETurmaQuery(request.Turma.CodigoTurma, aula.DataAula));
 
-                            if (primeiroRegistroFrequenciaDataTurma is not null)
+                            if (primeiroRegistroFrequenciaDataTurma is not null && primeiroRegistroFrequenciaDataTurma.AulaId > 0)
                             {
                                 var aulaAtual = registrosFrequencias.Aulas.FirstOrDefault(a => a.AulaId == aula.Id);
-                                aulaAtual.ComponenteCurricularSugerido = primeiroRegistroFrequenciaDataTurma.ComponenteCurricularSugerido;
+                                    aulaAtual.ComponenteCurricularSugerido = primeiroRegistroFrequenciaDataTurma.ComponenteCurricularSugerido;
+                                    var frequenciaSugeridaAlunos = await mediator.Send(
+                                    new ObterRegistrosFrequenciasAlunosSimplificadoPorAulaIdQuery(primeiroRegistroFrequenciaDataTurma.AulaId))
+                                    ?? Enumerable.Empty<FrequenciaAlunoSimplificadoDto>();
 
-                                var frequenciaSugeridaAlunos = await mediator.Send(
-                                new ObterRegistrosFrequenciasAlunosSimplificadoPorAulaIdQuery(primeiroRegistroFrequenciaDataTurma.AulaId))
-                                ?? Enumerable.Empty<FrequenciaAlunoSimplificadoDto>();
+                                    var numeroAulaSugerida = Math.Max(primeiroRegistroFrequenciaDataTurma.QuantidadeAulas, aula.Quantidade);
 
-                                var numeroAulaSugerida = Math.Max(primeiroRegistroFrequenciaDataTurma.QuantidadeAulas, aula.Quantidade);
-
-                                frequenciaSugerida = frequenciaSugeridaAlunos.FirstOrDefault(
-                                    a => a.NumeroAula == numeroAulaSugerida
-                                    && a.CodigoAluno == aluno.CodigoAluno
-                                    && a.TipoFrequencia > 0)?.TipoFrequencia;
+                                    frequenciaSugerida = frequenciaSugeridaAlunos.FirstOrDefault(
+                                        a => a.NumeroAula == numeroAulaSugerida
+                                        && a.CodigoAluno == aluno.CodigoAluno
+                                        && a.TipoFrequencia > 0)?.TipoFrequencia;
                             }
                         }
                     }

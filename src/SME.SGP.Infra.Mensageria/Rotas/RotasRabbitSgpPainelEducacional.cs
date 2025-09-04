@@ -2,9 +2,7 @@
 {
     public class RotasRabbitSgpPainelEducacional
     {
-        protected RotasRabbitSgpPainelEducacional()
-        {
-
-        }
+        protected RotasRabbitSgpPainelEducacional() { }
+        public const string ConsolidarNivelEscritaAlfabetizacao = "sgp.consolidar.nivel.escrita.alfabetizacao";
     }
 }

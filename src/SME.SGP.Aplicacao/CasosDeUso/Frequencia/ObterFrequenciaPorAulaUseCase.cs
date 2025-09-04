@@ -95,7 +95,7 @@ namespace SME.SGP.Aplicacao
                     var primeiroRegistroFrequenciaDataTurma = await mediator.Send(
                         new ObterPrimeiroRegistroFrequenciaPorDataETurmaQuery(turma.CodigoTurma, aula.DataAula));
 
-                    if (primeiroRegistroFrequenciaDataTurma is not null)
+                    if (primeiroRegistroFrequenciaDataTurma is not null && primeiroRegistroFrequenciaDataTurma.AulaId > 0)
                     {
                         registroFrequenciaDto.ComponenteCurricularSugerido = primeiroRegistroFrequenciaDataTurma.ComponenteCurricularSugerido;
 
