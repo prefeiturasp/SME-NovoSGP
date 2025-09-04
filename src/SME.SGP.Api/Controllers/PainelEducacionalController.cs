@@ -42,7 +42,15 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterDadosAlfabetizacao(string anoLetivo, string periodo, [FromServices] IConsultasNumeroEstudantesAgrupamentoNivelAlfabetizacaoUseCase consultasNumeroEstudantesAgrupamentoNivelAlfabetizacaoUseCase)
-         => Ok(await consultasNumeroEstudantesAgrupamentoNivelAlfabetizacaoUseCase.ObterNumeroEstudantes(anoLetivo, periodo));
+        public async Task<IActionResult> ObterDadosAlfabetizacao([FromQuery] FiltroPainelEducacionalAnoLetivoPeriodo filtro, [FromServices] IConsultasNumeroEstudantesAgrupamentoNivelAlfabetizacaoUseCase consultasNumeroEstudantesAgrupamentoNivelAlfabetizacaoUseCase)
+         => Ok(await consultasNumeroEstudantesAgrupamentoNivelAlfabetizacaoUseCase.ObterNumeroEstudantes(filtro.AnoLetivo, filtro.Periodo, filtro.CodigoDre, filtro.CodigoUe));
+
+        [HttpGet("indicadores-alfabetizacao-critica")]
+        [ProducesResponseType(typeof(PainelEducacionalIndicadorAlfabetizacaoCriticaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterIndicadoresAlfabetizacaoCritica([FromQuery] FiltroPainelEducacionalDreUe filtro, [FromServices] IConsultasIndicadoresNivelAlfabetizacaoCriticaUseCase consultasIndicadoresNivelAlfabetizacaoCriticaUseCase)
+         => Ok(await consultasIndicadoresNivelAlfabetizacaoCriticaUseCase.ObterNumeroEstudantes(filtro.CodigoDre, filtro.CodigoUe));
     }
 }

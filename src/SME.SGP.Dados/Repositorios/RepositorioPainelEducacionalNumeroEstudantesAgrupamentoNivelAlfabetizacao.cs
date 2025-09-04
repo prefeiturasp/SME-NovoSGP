@@ -12,19 +12,25 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioPainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacao(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
-
-        public async Task<IEnumerable<PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacao>> ObterNumeroAlunos(string anoLetivo, string periodo)
+        public async Task<IEnumerable<PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacao>> ObterNumeroAlunos(int anoLetivo, int periodo, string codigoDre = null, string codigoUe = null)
         {
-            var sql = $@"SELECT * FROM painel_educacional_registro_frequencia_agrupamento_mensal
-                        WHERE 1=1";
 
-            if (!string.IsNullOrWhiteSpace(anoLetivo))
-                sql += " AND ano = @anoLetivo";
+            var sql = $@"SELECT * FROM consolidacao_alfabetizacao_nivel_escrita
+                        WHERE 1 = 1";
 
-            if (!string.IsNullOrWhiteSpace(periodo))
+            if (anoLetivo != -99 && anoLetivo != 0)
+                sql += " AND ano_letivo = @anoLetivo";
+
+            if (periodo != -99 && periodo != 0)
                 sql += " AND periodo = @periodo";
 
-            return await database.QueryAsync<PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacao>(sql, new { anoLetivo, periodo });
+            if (!string.IsNullOrWhiteSpace(codigoDre) && !codigoDre.Equals("-99"))
+                sql += " AND dre_codigo = @codigoDre";
+
+            if (!string.IsNullOrWhiteSpace(codigoUe) && !codigoUe.Equals("-99"))
+                sql += " AND ue_codigo = @codigoUe";
+
+            return await database.QueryAsync<PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacao>(sql, new { anoLetivo, periodo, codigoDre, codigoUe });
         }
     }
 }
