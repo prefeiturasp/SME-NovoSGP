@@ -6,7 +6,7 @@ namespace SME.SGP.IoC.Extensions.RegistrarCasoDeUsoRabbitSgp
     {
         internal static void RegistrarPainelEducacionalUseCaseRabbitSgp(this IServiceCollection services)
         {
-            // Adicione aqui os serviços relacionados ao Painel Educacional
+            services.AddScoped<Aplicacao.Interfaces.CasosDeUso.PainelEducacional.IConsolidarIdepPainelEducacionalUseCase, Aplicacao.CasosDeUso.PainelEducacional.ConsolidarIdepPainelEducacionalUseCase>();
         }
     }
 }
