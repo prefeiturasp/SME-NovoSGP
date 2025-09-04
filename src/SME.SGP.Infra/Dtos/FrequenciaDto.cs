@@ -17,6 +17,8 @@ namespace SME.SGP.Infra
             ListaFrequencia = new List<RegistroFrequenciaAlunoDto>();
         }
 
+        public string ComponenteCurricularSugerido { get; set; }
+
         public DateTime? AlteradoEm { get; set; }
 
         public string AlteradoPor { get; set; }
