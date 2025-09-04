@@ -32,10 +32,10 @@ namespace SME.SGP.Aplicacao.Teste.Queries.PainelEducacional
         {
             // Arrange
             var query = new PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoQuery(2025, 1, "108300", "094002");
-            var dadosDoRepositorio = new List<ConsolidacaoAlfabetizacaoNivelEscrita>
+            var dadosDoRepositorio = new List<ContagemNivelEscritaDto>
             {
-                new ConsolidacaoAlfabetizacaoNivelEscrita { NivelEscrita = "PS", Quantidade = 10, DreCodigo = "108300", UeCodigo = "094002", AnoLetivo = 2025, Periodo = 1 },
-                new ConsolidacaoAlfabetizacaoNivelEscrita { NivelEscrita = "A", Quantidade = 20, DreCodigo = "108300", UeCodigo = "094002", AnoLetivo = 2025, Periodo = 1 }
+                new ContagemNivelEscritaDto { NivelEscrita = "PS", Quantidade = 10 },
+                new ContagemNivelEscritaDto {NivelEscrita = "A", Quantidade = 20}
             };
 
             _repositorioMock.Setup(r => r.ObterNumeroAlunos(query.AnoLetivo, query.Periodo, query.CodigoDre, query.CodigoUe))
@@ -73,9 +73,9 @@ namespace SME.SGP.Aplicacao.Teste.Queries.PainelEducacional
         {
             // Arrange
             var query = new PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoQuery(2025, 1);
-            var registroUnico = new List<ConsolidacaoAlfabetizacaoNivelEscrita>
+            var registroUnico = new List<ContagemNivelEscritaDto>
             {
-                new ConsolidacaoAlfabetizacaoNivelEscrita { NivelEscrita = nivelEscritaString, Quantidade = _faker.Random.Int(1, 50) }
+                new ContagemNivelEscritaDto { NivelEscrita = nivelEscritaString, Quantidade = _faker.Random.Int(1, 50) }
             };
 
             _repositorioMock.Setup(r => r.ObterNumeroAlunos(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()))
@@ -96,7 +96,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries.PainelEducacional
             // Arrange
             var query = new PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoQuery(2025, 1);
             _repositorioMock.Setup(r => r.ObterNumeroAlunos(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()))
-                            .ReturnsAsync(new List<ConsolidacaoAlfabetizacaoNivelEscrita>());
+                            .ReturnsAsync(new List<ContagemNivelEscritaDto>());
             // Act
             var resultado = await _sut.Handle(query, CancellationToken.None);
 
