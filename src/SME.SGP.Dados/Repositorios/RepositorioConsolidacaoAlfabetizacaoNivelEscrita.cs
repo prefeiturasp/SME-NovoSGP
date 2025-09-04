@@ -29,9 +29,13 @@ namespace SME.SGP.Dados.Repositorios
             return (long)(await database.Conexao.InsertAsync(entidade)) > 0;
         }
 
-        public async Task<IEnumerable<ConsolidacaoAlfabetizacaoNivelEscrita>> ObterNumeroAlunos(int anoLetivo, int periodo, string codigoDre = null, string codigoUe = null)
+        public async Task<IEnumerable<ContagemNivelEscritaDto>> ObterNumeroAlunos(int anoLetivo, int periodo, string codigoDre = null, string codigoUe = null)
         {
-            var query = new StringBuilder("SELECT * FROM consolidacao_alfabetizacao_nivel_escrita");
+            var query = new StringBuilder(@"
+                SELECT 
+                    nivel_escrita AS NivelEscrita, 
+                    SUM(quantidade) AS Quantidade 
+                FROM consolidacao_alfabetizacao_nivel_escrita");
             var condicoes = new List<string>();
             var parametros = new DynamicParameters();
 
@@ -64,8 +68,9 @@ namespace SME.SGP.Dados.Repositorios
                 query.Append(" WHERE ");
                 query.Append(string.Join(" AND ", condicoes));
             }
+            query.Append(" GROUP BY nivel_escrita");
 
-            return await database.QueryAsync<ConsolidacaoAlfabetizacaoNivelEscrita>(query.ToString(), parametros);
+            return await database.QueryAsync<ContagemNivelEscritaDto>(query.ToString(), parametros);
         }
     }
 }
