@@ -6,5 +6,6 @@
 
         public const string URL_LINGUA_PORTUGUESA_ALUNO = "integracoes/portugues/turmas/{0}/alunos/{1}";
         public const string URL_CONSOLIDACAO_NIVEL_ESCRITA_ALFABETIZACAO = "SondagemPortugues/ObterConsolidadoNivelEscrita";
+        public const string URL_CONSOLIDACAO_ALFABETIZACAO_CRITICA_ESCRITA = "SondagemPortugues/ObterConsoliadadoNivelEscritaCriticos";
     }
 }

@@ -626,6 +626,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPainelEducacionalRegistroFrequenciaAgrupamentoMensal, RepositorioPainelEducacionalRegistroFrequenciaAgrupamentoMensal>(); 
             services.TryAddScoped<IRepositorioConsolidacaoAlfabetizacaoNivelEscrita, RepositorioConsolidacaoAlfabetizacaoNivelEscrita>();
             services.TryAddScoped<IRepositorioPainelEducacionalIndicadoresNivelAlfabetizacaoCritica, RepositorioPainelEducacionalIndicadoresNivelAlfabetizacaoCritica>();
+            services.TryAddScoped<IRepositorioConsolidacaoAlfabetizacaoCriticaEscrita, RepositorioConsolidacaoAlfabetizacaoCriticaEscrita>();
 
             //ImportacaoLog - Arquivos
             services.TryAddScoped<IRepositorioImportacaoLog, RepositorioImportacaoLog>();
