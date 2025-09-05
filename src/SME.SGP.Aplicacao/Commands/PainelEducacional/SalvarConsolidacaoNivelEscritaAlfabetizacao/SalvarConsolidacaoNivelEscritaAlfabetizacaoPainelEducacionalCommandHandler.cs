@@ -44,8 +44,7 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarConsolidacaoNivelEs
             NivelEscrita = dto.NivelEscrita,
             Periodo = dto.Periodo,
             Quantidade = dto.QuantidadeAlunos,
-            UeCodigo = dto.UeCodigo,
-            AnoLetivo = short.Parse(dto.AnoLetivo)
+            UeCodigo = dto.UeCodigo
         };
     }
 }

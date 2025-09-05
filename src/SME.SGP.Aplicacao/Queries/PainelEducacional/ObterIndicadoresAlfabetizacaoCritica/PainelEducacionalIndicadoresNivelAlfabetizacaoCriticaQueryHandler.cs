@@ -10,32 +10,30 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterIndicadoresAlfabetiza
 {
     public class PainelEducacionalIndicadoresNivelAlfabetizacaoCriticaQueryHandler : IRequestHandler<PainelEducacionalIndicadoresNivelAlfabetizacaoCriticaQuery, IEnumerable<PainelEducacionalIndicadorAlfabetizacaoCriticaDto>>
     {
-        private readonly IRepositorioConsolidacaoAlfabetizacaoCriticaEscrita repositorioConsolidacaoAlfabetizacaoCriticaEscrita;
+        private readonly IRepositorioPainelEducacionalIndicadoresNivelAlfabetizacaoCritica repositorioPainelEducacionalIndicadoresNivelAlfabetizacaoCritica;
 
-        public PainelEducacionalIndicadoresNivelAlfabetizacaoCriticaQueryHandler(IRepositorioConsolidacaoAlfabetizacaoCriticaEscrita repositorioConsolidacaoAlfabetizacaoCriticaEscrita)
+        public PainelEducacionalIndicadoresNivelAlfabetizacaoCriticaQueryHandler(IRepositorioPainelEducacionalIndicadoresNivelAlfabetizacaoCritica repositorioPainelEducacionalIndicadoresNivelAlfabetizacaoCritica)
         {
-            this.repositorioConsolidacaoAlfabetizacaoCriticaEscrita = repositorioConsolidacaoAlfabetizacaoCriticaEscrita;
+            this.repositorioPainelEducacionalIndicadoresNivelAlfabetizacaoCritica = repositorioPainelEducacionalIndicadoresNivelAlfabetizacaoCritica;
         }
 
         public async Task<IEnumerable<PainelEducacionalIndicadorAlfabetizacaoCriticaDto>> Handle(PainelEducacionalIndicadoresNivelAlfabetizacaoCriticaQuery request, CancellationToken cancellationToken)
         {
-            var registros = await repositorioConsolidacaoAlfabetizacaoCriticaEscrita.ObterNumeroEstudantes(request.CodigoDre, request.CodigoUe);
+            var registros = await repositorioPainelEducacionalIndicadoresNivelAlfabetizacaoCritica.ObterNumeroEstudantes(request.CodigoDre, request.CodigoUe);
 
             return MapearParaDto(registros);
         }
 
-        private IEnumerable<PainelEducacionalIndicadorAlfabetizacaoCriticaDto> MapearParaDto(IEnumerable<ConsolidacaoAlfabetizacaoCriticaEscrita> registros)
+        private IEnumerable<PainelEducacionalIndicadorAlfabetizacaoCriticaDto> MapearParaDto(IEnumerable<PainelEducacionalIndicadoresNivelAlfabetizacaoCritica> registros)
         {
             var numeroAlunos = new List<PainelEducacionalIndicadorAlfabetizacaoCriticaDto>();
             foreach (var item in registros)
             {
                 numeroAlunos.Add(new PainelEducacionalIndicadorAlfabetizacaoCriticaDto()
                 {
-                    Posicao = item.Posicao.ToString(),
-                    Ue = item.UeNome,
-                    CodigoUe = item.UeCodigo,
-                    Dre = item.DreNome,
-                    CodigoDre = item.DreCodigo,
+                    Posicao = item.Posicao,
+                    Ue = item.Ue,
+                    Dre = item.Dre,
                     TotalAlunosNaoAlfabetizados = item.TotalAlunosNaoAlfabetizados,
                     PercentualTotalAlunos = item.PercentualTotalAlunos
                 });
