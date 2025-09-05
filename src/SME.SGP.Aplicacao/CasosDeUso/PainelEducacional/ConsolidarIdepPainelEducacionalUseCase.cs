@@ -1,6 +1,6 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Commands.PainelEducacional.ObterIdep;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
+using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterIdep;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
 
@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            var registrosIdep = await mediator.Send(new ObterIdepCommand());
+            var registrosIdep = await mediator.Send(new ObterIdepQuery());
 
             return await mediator.Send(new InserirConsolidacaoIdepCommand(registrosIdep));
         }
