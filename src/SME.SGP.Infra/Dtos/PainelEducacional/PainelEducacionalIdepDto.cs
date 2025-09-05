@@ -6,7 +6,6 @@ namespace SME.SGP.Infra.Dtos.PainelEducacional
     {
         public int AnoSolicitado { get; set; }
         public int AnoUtilizado { get; set; }
-        //public bool UltimoResultadoDisponivel { get; set; }
         public bool AnoSolicitadoSemDados { get; set; }
         public string Etapa { get; set; }
         public double MediaGeral { get; set; }

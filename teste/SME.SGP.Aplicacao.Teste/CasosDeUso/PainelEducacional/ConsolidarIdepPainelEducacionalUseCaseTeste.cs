@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Moq;
 using SME.SGP.Aplicacao.CasosDeUso.PainelEducacional;
-using SME.SGP.Aplicacao.Commands.PainelEducacional.ObterIdep;
+using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterIdep;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             var mensagemRabbit = new MensagemRabbit();
             var registrosIdep = new List<PainelEducacionalConsolidacaoIdep>();
 
-            mediator.Setup(x => x.Send(It.IsAny<ObterIdepCommand>(), It.IsAny<CancellationToken>()))
+            mediator.Setup(x => x.Send(It.IsAny<ObterIdepQuery>(), It.IsAny<CancellationToken>()))
                    .ReturnsAsync(registrosIdep);
 
             mediator.Setup(x => x.Send(It.IsAny<InserirConsolidacaoIdepCommand>(), It.IsAny<CancellationToken>()))
@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             var resultado = await useCase.Executar(mensagemRabbit);
 
             Assert.True(resultado);
-            mediator.Verify(x => x.Send(It.IsAny<ObterIdepCommand>(), It.IsAny<CancellationToken>()), Times.Once);
+            mediator.Verify(x => x.Send(It.IsAny<ObterIdepQuery>(), It.IsAny<CancellationToken>()), Times.Once);
             mediator.Verify(x => x.Send(It.IsAny<InserirConsolidacaoIdepCommand>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             var mensagemRabbit = new MensagemRabbit();
             var registrosIdep = new List<PainelEducacionalConsolidacaoIdep>();
 
-            mediator.Setup(x => x.Send(It.IsAny<ObterIdepCommand>(), It.IsAny<CancellationToken>()))
+            mediator.Setup(x => x.Send(It.IsAny<ObterIdepQuery>(), It.IsAny<CancellationToken>()))
                    .ReturnsAsync(registrosIdep);
 
             mediator.Setup(x => x.Send(It.IsAny<InserirConsolidacaoIdepCommand>(), It.IsAny<CancellationToken>()))
@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             var resultado = await useCase.Executar(mensagemRabbit);
 
             Assert.False(resultado);
-            mediator.Verify(x => x.Send(It.IsAny<ObterIdepCommand>(), It.IsAny<CancellationToken>()), Times.Once);
+            mediator.Verify(x => x.Send(It.IsAny<ObterIdepQuery>(), It.IsAny<CancellationToken>()), Times.Once);
             mediator.Verify(x => x.Send(It.IsAny<InserirConsolidacaoIdepCommand>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
@@ -67,7 +67,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             var registrosIdep = new List<PainelEducacionalConsolidacaoIdep>();
             var chamadas = new List<string>();
 
-            mediator.Setup(x => x.Send(It.IsAny<ObterIdepCommand>(), It.IsAny<CancellationToken>()))
+            mediator.Setup(x => x.Send(It.IsAny<ObterIdepQuery>(), It.IsAny<CancellationToken>()))
                    .Callback(() => chamadas.Add("ObterIdepCommand"))
                    .ReturnsAsync(registrosIdep);
 
