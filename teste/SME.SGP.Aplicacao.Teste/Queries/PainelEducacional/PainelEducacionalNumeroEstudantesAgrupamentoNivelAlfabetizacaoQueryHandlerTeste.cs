@@ -1,16 +1,17 @@
 ﻿using Bogus;
+using FluentAssertions;
 using Moq;
 using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNumeroAlunos;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
-using SME.SGP.Dominio;
 using System.Collections.Generic;
-using System.Threading;
-using Xunit;
-using System.Threading.Tasks;
-using FluentAssertions;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using SME.SGP.Infra;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.Queries.PainelEducacional
 {
@@ -63,7 +64,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries.PainelEducacional
             resultado.Should().NotBeNull();
             resultado.Should().HaveCount(2);
 
-            var resultadoPreSilabico = resultado.FirstOrDefault(r => r.NivelAlfabetizacao == NivelAlfabetizacao.PreSilabico);
+            var resultadoPreSilabico = resultado.FirstOrDefault(r => r.CodigoNivelAlfabetizacao == (int)NivelAlfabetizacao.PreSilabico);
             resultadoPreSilabico.Should().NotBeNull();
             resultadoPreSilabico.TotalAlunos.Should().Be(10);
             resultadoPreSilabico.Dre.Should().Be(query.CodigoDre);
@@ -71,7 +72,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries.PainelEducacional
             resultadoPreSilabico.Ano.Should().Be(query.AnoLetivo);
             resultadoPreSilabico.Periodo.Should().Be(query.Periodo);
 
-            var resultadoAlfabetico = resultado.FirstOrDefault(r => r.NivelAlfabetizacao == NivelAlfabetizacao.Alfabetico);
+            var resultadoAlfabetico = resultado.FirstOrDefault(r => r.CodigoNivelAlfabetizacao == (int)NivelAlfabetizacao.Alfabetico);
             resultadoAlfabetico.Should().NotBeNull();
             resultadoAlfabetico.TotalAlunos.Should().Be(20);
             resultadoAlfabetico.Dre.Should().Be(query.CodigoDre);
@@ -88,24 +89,44 @@ namespace SME.SGP.Aplicacao.Teste.Queries.PainelEducacional
         [InlineData("SCV", NivelAlfabetizacao.SilabicoComValor)]
         [InlineData("SA", NivelAlfabetizacao.SilabicoAlfabetico)]
         [InlineData("A", NivelAlfabetizacao.Alfabetico)]
-        [InlineData(" ps ", NivelAlfabetizacao.PreSilabico)] 
-        [InlineData("a", NivelAlfabetizacao.Alfabetico)]   
+        [InlineData(" ps ", NivelAlfabetizacao.PreSilabico)]
+        [InlineData("a", NivelAlfabetizacao.Alfabetico)]
+        [InlineData("", NivelAlfabetizacao.PreSilabico)]   
+        [InlineData(null, NivelAlfabetizacao.PreSilabico)] 
         public async Task Handle_DeveMapearNivelEscritaStringParaEnumCorretamente(string nivelEscritaString, NivelAlfabetizacao nivelEsperado)
         {
             var query = new PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoQuery(2025, 1);
             var registroUnico = new List<ConsolidacaoAlfabetizacaoNivelEscrita>
-            {
-                new ConsolidacaoAlfabetizacaoNivelEscrita { NivelEscrita = nivelEscritaString, Quantidade = _faker.Random.Int(1, 50) }
-            };
+             {
+                 new ConsolidacaoAlfabetizacaoNivelEscrita
+                 {
+                     NivelEscrita = nivelEscritaString,
+                     Quantidade = _faker.Random.Int(1, 50),
+                     DreCodigo = "DRE001",
+                     UeCodigo = "UE001",
+                     AnoLetivo = 2025,
+                     Periodo = 1
+                 }
+             };
 
             _repositorioMock.Setup(r => r.ObterNumeroAlunos(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()))
                             .ReturnsAsync(registroUnico);
 
+            var displayAttribute = nivelEsperado.GetType()
+                .GetField(nivelEsperado.ToString())
+                ?.GetCustomAttribute<DisplayAttribute>();
+
+            var nomeEsperado = displayAttribute?.Name ?? nivelEsperado.ToString();
+            var descricaoEsperada = displayAttribute?.Description ?? nivelEsperado.ToString();
+
             var resultado = await _sut.Handle(query, CancellationToken.None);
 
+            resultado.Should().NotBeEmpty();
             var dto = resultado.First();
-            dto.NivelAlfabetizacao.Should().Be(nivelEsperado);
-            dto.NivelAlfabetizacaoDescricao.Should().Be(nivelEsperado.Description());
+
+            dto.CodigoNivelAlfabetizacao.Should().Be((int)nivelEsperado, "o código deve corresponder ao ID do enum");
+            dto.NivelAlfabetizacao.Should().Be(nomeEsperado, "o nome deve corresponder ao valor Name do DisplayAttribute");
+            dto.NivelAlfabetizacaoDescricao.Should().Be(descricaoEsperada, "a descrição deve corresponder ao valor Description do DisplayAttribute");
         }
 
         [Fact]
