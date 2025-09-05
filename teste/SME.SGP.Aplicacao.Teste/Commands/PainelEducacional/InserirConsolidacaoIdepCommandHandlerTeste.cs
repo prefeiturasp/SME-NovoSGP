@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.Aplicacao.Teste
+namespace SME.SGP.Aplicacao.Teste.Commands.PainelEducacional
 {
     public class InserirConsolidacaoIdepCommandHandlerTeste
     {

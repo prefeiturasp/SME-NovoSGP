@@ -1,5 +1,3 @@
-using Dapper.FluentMap;
-using Dapper.FluentMap.Dommel;
 using Elastic.Apm.AspNetCore;
 using Elastic.Apm.DiagnosticSource;
 using Elastic.Apm.SqlClient;
@@ -9,14 +7,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using SME.SGP.Dados.Contexto;
-using SME.SGP.Dados.Repositorios;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using SME.SGP.IoC;
 using SME.SGP.IoC.Extensions;
-using SME.SGP.PainelEducacional.Worker.Mapeamentos;
 
 namespace SME.SGP.PainelEducacional.Worker
 {
@@ -27,8 +20,6 @@ namespace SME.SGP.PainelEducacional.Worker
             Configuration = configuration;
         }
 
-
-
         public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
@@ -36,17 +27,6 @@ namespace SME.SGP.PainelEducacional.Worker
             var registrarDependencias = new RegistrarDependencias();
             registrarDependencias.RegistrarParaWorkers(services, Configuration);
             registrarDependencias.RegistrarCasoDeUsoPainelEducacionalRabbitSgp(services);
-            RegistrarMapeamentos();
-        }
-
-        private static void RegistrarMapeamentos()
-        {
-            FluentMapper.Initialize(config =>
-            {
-                config.AddMap(new PainelEducacionalMap());
-
-                config.ForDommel();
-            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -1,13 +1,12 @@
-﻿using Dapper.FluentMap.Dommel.Mapping;
+﻿using SME.SGP.Dominio.Entidades;
 
-namespace SME.SGP.PainelEducacional.Worker.Mapeamentos
+namespace SME.SGP.Dados.Mapeamentos
 {
-    public class PainelEducacionalMap : DommelEntityMap<SME.SGP.Dominio.Entidades.PainelEducacionalConsolidacaoIdep>
+    public class PainelEducacionalMap : BaseMap<PainelEducacionalConsolidacaoIdep>
     {
         public PainelEducacionalMap()
         {
             ToTable("painel_educacional_consolidacao_idep");
-            Map(c => c.Id).ToColumn("id").IsKey();
             Map(c => c.AnoLetivo).ToColumn("ano_letivo");
             Map(c => c.Etapa).ToColumn("etapa");
             Map(c => c.Faixa).ToColumn("faixa");
