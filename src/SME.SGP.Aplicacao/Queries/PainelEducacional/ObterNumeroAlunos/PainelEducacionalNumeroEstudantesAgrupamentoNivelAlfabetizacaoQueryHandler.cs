@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -37,12 +38,10 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNumeroAlunos
             {
                 var nivelAlfabetizacaoEnum = ObterNivelAlfabetizacao(item.NivelEscrita);
 
-                var displayAttribute = nivelAlfabetizacaoEnum.GetType()
-                    .GetField(nivelAlfabetizacaoEnum.ToString())
-                    ?.GetCustomAttribute<DisplayAttribute>();
+                var displayAttribute = nivelAlfabetizacaoEnum.Name();
 
-                var nomeNivel = displayAttribute?.Name ?? nivelAlfabetizacaoEnum.ToString();
-                var descricaoNivel = displayAttribute?.Description ?? nivelAlfabetizacaoEnum.ToString();
+                var nomeNivel = nivelAlfabetizacaoEnum.Name() ?? nivelAlfabetizacaoEnum.ToString();
+                var descricaoNivel = nivelAlfabetizacaoEnum.Description() ?? nivelAlfabetizacaoEnum.ToString();
 
                 numeroAlunos.Add(new PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoDto
                 {
