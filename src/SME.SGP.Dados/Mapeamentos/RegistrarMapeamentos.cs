@@ -267,6 +267,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new PainelEducacionalRegistroFrequenciaAgrupamentoGlobalMap());
                config.AddMap(new PainelEducacionalRegistroFrequenciaAgrupamentoEscolaMap());
                config.AddMap(new ConsolidacaoAlfabetizacaoNivelEscritaMap());
+               config.AddMap(new ConsolidacaoAlfabetizacaoCriticaEscritaMap());
 
                config.ForDommel();
            });
