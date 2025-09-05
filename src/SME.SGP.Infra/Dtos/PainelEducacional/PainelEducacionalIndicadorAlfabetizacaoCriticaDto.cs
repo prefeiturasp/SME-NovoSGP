@@ -4,8 +4,10 @@
     {
         public string Posicao { get; set; }
         public string Ue { get; set; }
+        public string CodigoUe { get; set; }
         public string Dre { get; set; }
-        public int TotalAlunosNaoAlfabetizados { get; set; }
+        public string CodigoDre { get; set; }
+        public long TotalAlunosNaoAlfabetizados { get; set; }
         public decimal PercentualTotalAlunos { get; set; }
     }
 }

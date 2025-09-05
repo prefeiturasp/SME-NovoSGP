@@ -30,33 +30,54 @@ namespace SME.SGP.Aplicacao.Teste.Queries.PainelEducacional
         [Fact]
         public async Task Handle_QuandoRepositorioRetornaDados_DeveMapearParaDtoCorretamente()
         {
-            // Arrange
             var query = new PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoQuery(2025, 1, "108300", "094002");
-            var dadosDoRepositorio = new List<ContagemNivelEscritaDto>
-            {
-                new ContagemNivelEscritaDto { NivelEscrita = "PS", Quantidade = 10 },
-                new ContagemNivelEscritaDto {NivelEscrita = "A", Quantidade = 20}
-            };
 
-            _repositorioMock.Setup(r => r.ObterNumeroAlunos(query.AnoLetivo, query.Periodo, query.CodigoDre, query.CodigoUe))
-                            .ReturnsAsync(dadosDoRepositorio);
+            var dadosDoRepositorio = new List<ConsolidacaoAlfabetizacaoNivelEscrita>
+             {
+                 new ConsolidacaoAlfabetizacaoNivelEscrita
+                 {
+                     NivelEscrita = "PS",
+                     Quantidade = 10,
+                     DreCodigo = query.CodigoDre,
+                     UeCodigo = query.CodigoUe,
+                     AnoLetivo = (short)query.AnoLetivo,
+                     Periodo = (short) query.Periodo
+                 },
+                 new ConsolidacaoAlfabetizacaoNivelEscrita
+                 {
+                     NivelEscrita = "A",
+                     Quantidade = 20,
+                     DreCodigo = query.CodigoDre,
+                     UeCodigo = query.CodigoUe,
+                     AnoLetivo = (short) query.AnoLetivo,
+                     Periodo = (short) query.Periodo
+                 }
+             };
 
-            // Act
+            _repositorioMock
+                .Setup(r => r.ObterNumeroAlunos(query.AnoLetivo, query.Periodo, query.CodigoDre, query.CodigoUe))
+                .ReturnsAsync(dadosDoRepositorio);
+
             var resultado = await _sut.Handle(query, CancellationToken.None);
 
-            // Assert
             resultado.Should().NotBeNull();
             resultado.Should().HaveCount(2);
 
             var resultadoPreSilabico = resultado.FirstOrDefault(r => r.NivelAlfabetizacao == NivelAlfabetizacao.PreSilabico);
             resultadoPreSilabico.Should().NotBeNull();
             resultadoPreSilabico.TotalAlunos.Should().Be(10);
-            resultadoPreSilabico.Dre.Should().Be("108300");
+            resultadoPreSilabico.Dre.Should().Be(query.CodigoDre);
+            resultadoPreSilabico.Ue.Should().Be(query.CodigoUe);
+            resultadoPreSilabico.Ano.Should().Be(query.AnoLetivo);
+            resultadoPreSilabico.Periodo.Should().Be(query.Periodo);
 
             var resultadoAlfabetico = resultado.FirstOrDefault(r => r.NivelAlfabetizacao == NivelAlfabetizacao.Alfabetico);
             resultadoAlfabetico.Should().NotBeNull();
             resultadoAlfabetico.TotalAlunos.Should().Be(20);
-            resultadoAlfabetico.Ano.Should().Be(2025);
+            resultadoAlfabetico.Dre.Should().Be(query.CodigoDre);
+            resultadoAlfabetico.Ue.Should().Be(query.CodigoUe);
+            resultadoAlfabetico.Ano.Should().Be(query.AnoLetivo);
+            resultadoAlfabetico.Periodo.Should().Be(query.Periodo);
 
             _repositorioMock.Verify(r => r.ObterNumeroAlunos(2025, 1, "108300", "094002"), Times.Once);
         }
@@ -67,24 +88,21 @@ namespace SME.SGP.Aplicacao.Teste.Queries.PainelEducacional
         [InlineData("SCV", NivelAlfabetizacao.SilabicoComValor)]
         [InlineData("SA", NivelAlfabetizacao.SilabicoAlfabetico)]
         [InlineData("A", NivelAlfabetizacao.Alfabetico)]
-        [InlineData(" ps ", NivelAlfabetizacao.PreSilabico)] // Testa Trim e ToUpper
-        [InlineData("a", NivelAlfabetizacao.Alfabetico)]   // Testa ToUpper
+        [InlineData(" ps ", NivelAlfabetizacao.PreSilabico)] 
+        [InlineData("a", NivelAlfabetizacao.Alfabetico)]   
         public async Task Handle_DeveMapearNivelEscritaStringParaEnumCorretamente(string nivelEscritaString, NivelAlfabetizacao nivelEsperado)
         {
-            // Arrange
             var query = new PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoQuery(2025, 1);
-            var registroUnico = new List<ContagemNivelEscritaDto>
+            var registroUnico = new List<ConsolidacaoAlfabetizacaoNivelEscrita>
             {
-                new ContagemNivelEscritaDto { NivelEscrita = nivelEscritaString, Quantidade = _faker.Random.Int(1, 50) }
+                new ConsolidacaoAlfabetizacaoNivelEscrita { NivelEscrita = nivelEscritaString, Quantidade = _faker.Random.Int(1, 50) }
             };
 
             _repositorioMock.Setup(r => r.ObterNumeroAlunos(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()))
                             .ReturnsAsync(registroUnico);
 
-            // Act
             var resultado = await _sut.Handle(query, CancellationToken.None);
 
-            // Assert
             var dto = resultado.First();
             dto.NivelAlfabetizacao.Should().Be(nivelEsperado);
             dto.NivelAlfabetizacaoDescricao.Should().Be(nivelEsperado.Description());
@@ -93,14 +111,11 @@ namespace SME.SGP.Aplicacao.Teste.Queries.PainelEducacional
         [Fact]
         public async Task Handle_QuandoRepositorioRetornaVazio_DeveRetornarVazio()
         {
-            // Arrange
             var query = new PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoQuery(2025, 1);
             _repositorioMock.Setup(r => r.ObterNumeroAlunos(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()))
-                            .ReturnsAsync(new List<ContagemNivelEscritaDto>());
-            // Act
+                            .ReturnsAsync(new List<ConsolidacaoAlfabetizacaoNivelEscrita>());
             var resultado = await _sut.Handle(query, CancellationToken.None);
 
-            // Assert
             resultado.Should().NotBeNull();
             resultado.Should().BeEmpty();
         }

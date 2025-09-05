@@ -5,6 +5,7 @@ using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,9 +27,11 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNumeroAlunos
             return MapearParaDto(registros, request);
         }
 
-        private IEnumerable<PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoDto> MapearParaDto(IEnumerable<ContagemNivelEscritaDto> registros, PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoQuery request)
+        private IEnumerable<PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoDto> MapearParaDto(IEnumerable<ConsolidacaoAlfabetizacaoNivelEscrita> registros,
+        PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoQuery request)
         {
             var numeroAlunos = new List<PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoDto>();
+
             foreach (var item in registros)
             {
                 var nivelAlfabetizacao = item.NivelEscrita.Trim().ToUpper() switch
@@ -37,22 +40,39 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNumeroAlunos
                     "SSV" => NivelAlfabetizacao.SilabicoSemValor,
                     "SCV" => NivelAlfabetizacao.SilabicoComValor,
                     "SA" => NivelAlfabetizacao.SilabicoAlfabetico,
-                    "A" => NivelAlfabetizacao.Alfabetico
+                    "A" => NivelAlfabetizacao.Alfabetico,
+                    _ => NivelAlfabetizacao.PreSilabico // fallback
                 };
+
                 var nivelAlfabetizacaoDescricao = nivelAlfabetizacao.Description();
-                numeroAlunos.Add(new PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoDto()
+
+                numeroAlunos.Add(new PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoDto
                 {
                     NivelAlfabetizacao = nivelAlfabetizacao,
                     NivelAlfabetizacaoDescricao = nivelAlfabetizacaoDescricao,
-                    Dre = request.CodigoDre,
-                    Ue = request.CodigoUe,
-                    Ano = request.AnoLetivo,
+                    Dre = item.DreCodigo,
+                    Ue = item.UeCodigo,
+                    Ano = item.AnoLetivo,
                     TotalAlunos = item.Quantidade,
-                    Periodo = request.Periodo
+                    Periodo = item.Periodo
                 });
             }
 
-            return numeroAlunos;
+            var agrupados = numeroAlunos
+                .GroupBy(p => p.NivelAlfabetizacao)
+                .Select(g => new PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoDto
+                {
+                    NivelAlfabetizacao = g.Key,
+                    NivelAlfabetizacaoDescricao = g.First().NivelAlfabetizacaoDescricao,
+                    Dre = g.First().Dre,     
+                    Ue = g.First().Ue,
+                    Ano = g.First().Ano,
+                    Periodo = g.First().Periodo,
+                    TotalAlunos = g.Sum(x => x.TotalAlunos)
+                })
+                .ToList();
+
+            return agrupados;
         }
     }
 }
