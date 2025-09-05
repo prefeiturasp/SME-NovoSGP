@@ -8,6 +8,6 @@ namespace SME.SGP.Dominio.Interfaces.Repositorios
     {
         Task ExcluirConsolidacaoNivelEscrita();
         Task<bool> SalvarConsolidacaoNivelEscrita(ConsolidacaoAlfabetizacaoNivelEscrita entidade);
-        Task<IEnumerable<ContagemNivelEscritaDto>> ObterNumeroAlunos(int anoLetivo, int periodo, string codigoDre = null, string codigoUe = null);
+        Task<IEnumerable<ConsolidacaoAlfabetizacaoNivelEscrita>> ObterNumeroAlunos(int anoLetivo, int periodo, string codigoDre = null, string codigoUe = null);
     }
 }
