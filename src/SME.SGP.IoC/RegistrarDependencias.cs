@@ -625,6 +625,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioConsolidacaoAlfabetizacaoNivelEscrita, RepositorioConsolidacaoAlfabetizacaoNivelEscrita>();
             services.TryAddScoped<IRepositorioPainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacao, RepositorioPainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacao>();
             services.TryAddScoped<IRepositorioConsolidacaoAlfabetizacaoNivelEscrita, RepositorioConsolidacaoAlfabetizacaoNivelEscrita>();
+            services.TryAddScoped<IRepositorioConsolidacaoAlfabetizacaoCriticaEscrita, RepositorioConsolidacaoAlfabetizacaoCriticaEscrita>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)

@@ -4,5 +4,6 @@
     {
         protected RotasRabbitSgpPainelEducacional() { }
         public const string ConsolidarNivelEscritaAlfabetizacao = "sgp.consolidar.nivel.escrita.alfabetizacao";
+        public const string ConsolidarNivelEscritaAlfabetizacaoCritico = "sgp.consolidar.nivel.escrita.alfabetizacao.critico";
     }
 }
