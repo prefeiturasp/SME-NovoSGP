@@ -33,6 +33,7 @@ namespace SME.SGP.PainelEducacional.Worker
         {
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarIdepPainelEducacional, new ComandoRabbit("Consolidar idep para painel educacional", typeof(IConsolidarIdepPainelEducacionalUseCase)));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarIdepPainelEducacional, new ComandoRabbit("Consolidar idep para painel educacional", typeof(IConsolidarIdepPainelEducacionalUseCase)));
+            Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarIdepPainelEducacional, new ComandoRabbit("Consolidar idep para painel educacional", typeof(IConsolidarIdepPainelEducacionalUseCase)));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarNivelEscritaAlfabetizacao, new ComandoRabbit("Sincronização e Consolidação dos Dados da Sondagem do Nível de Escrita", typeof(IConsolidarInformacoesNivelEscritaAlfabetizacaoPainelEducacionalUseCase), false));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarNivelEscritaAlfabetizacaoCritico, new ComandoRabbit("Sincronização e Consolidação dos Dados da Sondagem da Alfabetização Crítica Escrita", typeof(IConsolidarInformacoesAlfabetizacaoCriticaEscritaPainelEducacionalUseCase), false));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarNivelEscritaAlfabetizacao, new ComandoRabbit("Sincronização e Consolidação dos Dados da Sondagem do Nível de Escrita", typeof(IConsolidarInformacoesNivelEscritaAlfabetizacaoPainelEducacionalUseCase), false));
