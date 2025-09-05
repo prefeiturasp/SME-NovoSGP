@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.Ideb
 {
-    public class SalvarImportacaoArquivoIdepCommandHandler : IRequestHandler<SalvarImportacaoArquivoIdepCommand, ArquivoIdep>
+    public class SalvarImportacaoArquivoIdepCommandHandler : IRequestHandler<SalvarImportacaoArquivoIdepCommand, Dominio.Idep>
     {
-        private readonly IRepositorioArquivoIdep repositorioArquivoIbep;
-        public SalvarImportacaoArquivoIdepCommandHandler(IRepositorioArquivoIdep repositorioArquivoIbep)
+        private readonly IRepositorioIdep repositorioArquivoIbep;
+        public SalvarImportacaoArquivoIdepCommandHandler(IRepositorioIdep repositorioArquivoIbep)
         {
             this.repositorioArquivoIbep = repositorioArquivoIbep ?? throw new ArgumentNullException(nameof(repositorioArquivoIbep));
         }
 
-        public async Task<ArquivoIdep> Handle(SalvarImportacaoArquivoIdepCommand request, CancellationToken cancellationToken)
+        public async Task<Dominio.Idep> Handle(SalvarImportacaoArquivoIdepCommand request, CancellationToken cancellationToken)
         {
             var arquivoIdep = MapearParaEntidade(request);
 
@@ -25,8 +25,8 @@ namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.Ideb
             return arquivoIdep;
         }
 
-        private ArquivoIdep MapearParaEntidade(SalvarImportacaoArquivoIdepCommand request)
-        => new ArquivoIdep()
+        private Dominio.Idep MapearParaEntidade(SalvarImportacaoArquivoIdepCommand request)
+        => new Dominio.Idep()
         {
             AnoLetivo = request.ArquivoIdep.AnoLetivo,
             SerieAno = request.ArquivoIdep.SerieAno,
