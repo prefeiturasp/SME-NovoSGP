@@ -1,4 +1,4 @@
-﻿using Bogus;
+using Bogus;
 using FluentAssertions;
 using MediatR;
 using Moq;
@@ -36,7 +36,6 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
         [Fact]
         public async Task Executar_QuandoDadosSaoObtidosESalvosComSucesso_DeveRetornarTrue()
         {
-            // Arrange
             var dadosConsolidados = _dtoFaker.Generate(3);
             var mensagemRabbit = new MensagemRabbit();
 
@@ -48,10 +47,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                 .Setup(m => m.Send(It.IsAny<SalvarConsolidacaoAlfabetizacaoCriticaEscritaCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
 
-            // Act
             var resultado = await _sut.Executar(mensagemRabbit);
 
-            // Assert
             resultado.Should().BeTrue();
             _mediatorMock.Verify(m => m.Send(It.IsAny<ObterConsolidacaoAlfabetizacaoCriticaEscritaQuery>(), It.IsAny<CancellationToken>()), Times.Once);
             _mediatorMock.Verify(m => m.Send(It.IsAny<SalvarConsolidacaoAlfabetizacaoCriticaEscritaCommand>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -60,17 +57,14 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
         [Fact]
         public async Task Executar_QuandoQueryRetornaNulo_DeveRetornarFalseENaoChamarSalvar()
         {
-            // Arrange
             var mensagemRabbit = new MensagemRabbit();
 
             _mediatorMock
                 .Setup(m => m.Send(It.IsAny<ObterConsolidacaoAlfabetizacaoCriticaEscritaQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((IEnumerable<SondagemConsolidacaoAlfabetizacaoCriticaEscritaDto>)null);
 
-            // Act
             var resultado = await _sut.Executar(mensagemRabbit);
 
-            // Assert
             resultado.Should().BeFalse();
             _mediatorMock.Verify(m => m.Send(It.IsAny<ObterConsolidacaoAlfabetizacaoCriticaEscritaQuery>(), It.IsAny<CancellationToken>()), Times.Once);
             _mediatorMock.Verify(m => m.Send(It.IsAny<SalvarConsolidacaoAlfabetizacaoCriticaEscritaCommand>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -79,7 +73,6 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
         [Fact]
         public async Task Executar_QuandoMediatorLancaExcecao_DevePropagarExcecao()
         {
-            // Arrange
             var mensagemRabbit = new MensagemRabbit();
             var mensagemErro = "Erro simulado ao buscar dados";
 
@@ -87,10 +80,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                 .Setup(m => m.Send(It.IsAny<ObterConsolidacaoAlfabetizacaoCriticaEscritaQuery>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new InvalidOperationException(mensagemErro));
 
-            // Act
             Func<Task> act = async () => await _sut.Executar(mensagemRabbit);
 
-            // Assert
             await act.Should().ThrowAsync<InvalidOperationException>().WithMessage(mensagemErro);
             _mediatorMock.Verify(m => m.Send(It.IsAny<SalvarConsolidacaoAlfabetizacaoCriticaEscritaCommand>(), It.IsAny<CancellationToken>()), Times.Never);
         }
