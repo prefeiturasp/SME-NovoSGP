@@ -3,7 +3,6 @@ using Moq;
 using SME.SGP.Aplicacao.CasosDeUso.PainelEducacional;
 using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNumeroAlunos;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using System.Collections.Generic;
 using System.Threading;
@@ -26,7 +25,6 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
         [Fact]
         public async Task Deve_Retornar_Estudantes_Quando_Mediator_Retornar_Dados()
         {
-            // Arrange
             var anoLetivo = 2025;
             var periodo = 1;
             var resultadoEsperado = new List<PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoDto>
@@ -34,8 +32,9 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                 new PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoDto
                 {
                     Ano = 1,
-                    NivelAlfabetizacao = NivelAlfabetizacao.PreSilabico,
-                    NivelAlfabetizacaoDescricao = "Alfabetização Básica",
+                    CodigoNivelAlfabetizacao = (int)NivelAlfabetizacao.PreSilabico,
+                    NivelAlfabetizacaoDescricao = "Pré-silábico",
+                    NivelAlfabetizacao = "Sem relação entre fala e escrita",
                     TotalAlunos = 30,
                     Periodo = 1
                 }
@@ -45,10 +44,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                 .Setup(m => m.Send(It.IsAny<PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(resultadoEsperado);
 
-            // Act
             var resultado = await useCase.ObterNumeroEstudantes(anoLetivo, periodo);
 
-            // Assert
             Assert.NotNull(resultado);
             Assert.NotEmpty(resultado);
             Assert.Equal(resultadoEsperado, resultado);

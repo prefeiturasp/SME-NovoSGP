@@ -5,7 +5,9 @@ using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -34,22 +36,18 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNumeroAlunos
 
             foreach (var item in registros)
             {
-                var nivelAlfabetizacao = item.NivelEscrita.Trim().ToUpper() switch
-                {
-                    "PS" => NivelAlfabetizacao.PreSilabico,
-                    "SSV" => NivelAlfabetizacao.SilabicoSemValor,
-                    "SCV" => NivelAlfabetizacao.SilabicoComValor,
-                    "SA" => NivelAlfabetizacao.SilabicoAlfabetico,
-                    "A" => NivelAlfabetizacao.Alfabetico,
-                    _ => NivelAlfabetizacao.PreSilabico // fallback
-                };
+                var nivelAlfabetizacaoEnum = ObterNivelAlfabetizacao(item.NivelEscrita);
 
-                var nivelAlfabetizacaoDescricao = nivelAlfabetizacao.Description();
+                var displayAttribute = nivelAlfabetizacaoEnum.Name();
+
+                var nomeNivel = nivelAlfabetizacaoEnum.Name() ?? nivelAlfabetizacaoEnum.ToString();
+                var descricaoNivel = nivelAlfabetizacaoEnum.Description() ?? nivelAlfabetizacaoEnum.ToString();
 
                 numeroAlunos.Add(new PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoDto
                 {
-                    NivelAlfabetizacao = nivelAlfabetizacao,
-                    NivelAlfabetizacaoDescricao = nivelAlfabetizacaoDescricao,
+                    CodigoNivelAlfabetizacao = (int)nivelAlfabetizacaoEnum, 
+                    NivelAlfabetizacao = nomeNivel, 
+                    NivelAlfabetizacaoDescricao = descricaoNivel, 
                     Dre = item.DreCodigo,
                     Ue = item.UeCodigo,
                     Ano = item.AnoLetivo,
@@ -59,20 +57,35 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNumeroAlunos
             }
 
             var agrupados = numeroAlunos
-                .GroupBy(p => p.NivelAlfabetizacao)
+                .GroupBy(p => p.CodigoNivelAlfabetizacao)
                 .Select(g => new PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoDto
                 {
-                    NivelAlfabetizacao = g.Key,
-                    NivelAlfabetizacaoDescricao = g.First().NivelAlfabetizacaoDescricao,
-                    Dre = g.First().Dre,     
+                    CodigoNivelAlfabetizacao = g.Key, 
+                    NivelAlfabetizacao = g.First().NivelAlfabetizacao,
+                    NivelAlfabetizacaoDescricao = g.First().NivelAlfabetizacaoDescricao, 
+                    Dre = g.First().Dre,
                     Ue = g.First().Ue,
                     Ano = g.First().Ano,
                     Periodo = g.First().Periodo,
                     TotalAlunos = g.Sum(x => x.TotalAlunos)
                 })
+                .OrderBy(x => x.CodigoNivelAlfabetizacao) 
                 .ToList();
 
             return agrupados;
+        }
+
+        private NivelAlfabetizacao ObterNivelAlfabetizacao(string nivelEscrita)
+        {
+            return nivelEscrita?.Trim().ToUpper() switch
+            {
+                "PS" => NivelAlfabetizacao.PreSilabico,
+                "SSV" => NivelAlfabetizacao.SilabicoSemValor,
+                "SCV" => NivelAlfabetizacao.SilabicoComValor,
+                "SA" => NivelAlfabetizacao.SilabicoAlfabetico,
+                "A" => NivelAlfabetizacao.Alfabetico,
+                _ => NivelAlfabetizacao.PreSilabico
+            };
         }
     }
 }
