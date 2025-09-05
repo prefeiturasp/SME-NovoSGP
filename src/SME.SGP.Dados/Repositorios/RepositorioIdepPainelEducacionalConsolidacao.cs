@@ -1,10 +1,7 @@
-﻿using Polly;
-using Polly.Registry;
-using SME.SGP.Dominio.Entidades;
+﻿using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -12,14 +9,10 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioIdepPainelEducacionalConsolidacao : RepositorioBase<PainelEducacionalConsolidacaoIdep>, IRepositorioIdepPainelEducacionalConsolidacao
     {
-        private readonly IAsyncPolicy _policy;
-
         public RepositorioIdepPainelEducacionalConsolidacao(ISgpContext database,
-            IReadOnlyPolicyRegistry<string> registry,
-            IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
-        {
-            _policy = registry.Get<IAsyncPolicy>(PoliticaPolly.SGP);
-        }
+            IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria) { }
+
+
 
         public async Task<bool> Inserir(IEnumerable<PainelEducacionalConsolidacaoIdep> consolidacoes)
         {
