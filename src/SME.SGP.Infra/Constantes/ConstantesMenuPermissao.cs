@@ -84,6 +84,7 @@
         public const string MENU_REGISTRO_COLETIVO_NAAPA = "Registro coletivo ";
         public const string MENU_MAPEAMENTO_ESTUDANTES = "Mapeamento de estudantes";
         public const string MENU_INFORMACOES_EDUCACIONAIS = "Informações Educacionais";
+        public const string MENU_INFORMACOES_EDUCACIONAIS_PAINEL = "Painel";
         public const string MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS = "Importação de dados";
 
         public const string AGRUPAMENTO_PLANEJAMENTO = "Planejamento";
@@ -349,6 +350,9 @@
 
         public const int ORDEM_SUB_MENU_BUSCA_ATIVA_CONS_CRIANCAS_ESTUD_AUSENTES = 1;
         public const int ORDEM_SUB_MENU_BUSCA_ATIVA_REGISTRO_ACOES = 2;
+
+        public const int ORDEM_SUB_MENU_INFORMACOES_EDUCACIONAIS_PAINEL = 1;
+        public const int ORDEM_SUB_MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS = 2;
 
     }
 }

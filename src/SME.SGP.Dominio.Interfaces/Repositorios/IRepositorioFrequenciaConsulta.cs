@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dto;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Dtos.Frequencia;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using System;
 using System.Collections.Generic;
@@ -35,5 +36,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<PaginacaoResultadoDto<AlunoFrequenciaTurmaEvasaoDto>> ObterAlunosDashboardFrequenciaTurmaEvasaoSemPresencaPaginado(int mes, FiltroAbrangenciaGraficoFrequenciaTurmaEvasaoAlunoDto filtroAbrangencia, Paginacao paginacao);
         Task<IEnumerable<RegistroFrequenciaProdutividadeDto>> ObterInformacoesProdutividadeFrequencia(int anoLetivo, string ueCodigo, int bimestre);
         Task<IEnumerable<RegistroFrequenciaPainelEducacionalDto>> ObterInformacoesFrequenciaPainelEducacional(int anoLetivo);
+        Task<ComponenteCurricularSugeridoDto> ObterPrimeiroRegistroFrequenciaPorDataETurma(string turmaId, DateTime dataAula);
     }
 }

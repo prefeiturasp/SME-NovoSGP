@@ -28,7 +28,7 @@ namespace SME.SGP.Dados.Repositorios
                             id
                           , linha_arquivo
                           , motivo_falha
-                    order by criado_em desc ";
+                    order by linha_arquivo ";
 
             sql += $" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY; ";
 
