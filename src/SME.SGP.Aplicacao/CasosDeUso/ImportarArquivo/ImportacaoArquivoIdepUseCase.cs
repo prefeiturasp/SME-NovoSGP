@@ -1,6 +1,4 @@
 ﻿using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Spreadsheet;
-using Elasticsearch.Net;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using SME.SGP.Aplicacao.Commands.ImportarArquivo;
@@ -147,9 +145,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
         private IEnumerable<Task> SalvarArquivoIdepEmLote(List<ArquivoIdepDto> lista, long importacaoLogId)
         {
             var serieAnosValidos = new int[] {
-                (int)SerieAnoArquivoIdebIdepEnum.AnosIniciais,
-                (int)SerieAnoArquivoIdebIdepEnum.AnosFinais,
-                (int)SerieAnoArquivoIdebIdepEnum.EnsinoMedio
+                (int)SerieAnoIdepEnum.AnosIniciais,
+                (int)SerieAnoIdepEnum.AnosFinais
             };
 
             foreach (var dto in lista)
