@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
+using RabbitMQ.Client;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 using SME.SGP.Aplicacao.Workers;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
@@ -31,6 +33,7 @@ namespace SME.SGP.PainelEducacional.Worker
 
         protected override void RegistrarUseCases()
         {
+            Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarIdepPainelEducacional, new ComandoRabbit("Consolidar idep para painel educacional", typeof(IConsolidarIdepPainelEducacionalUseCase)));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarIdepPainelEducacional, new ComandoRabbit("Consolidar idep para painel educacional", typeof(IConsolidarIdepPainelEducacionalUseCase)));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarIdepPainelEducacional, new ComandoRabbit("Consolidar idep para painel educacional", typeof(IConsolidarIdepPainelEducacionalUseCase)));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarIdepPainelEducacional, new ComandoRabbit("Consolidar idep para painel educacional", typeof(IConsolidarIdepPainelEducacionalUseCase)));

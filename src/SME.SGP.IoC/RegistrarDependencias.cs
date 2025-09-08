@@ -628,6 +628,10 @@ namespace SME.SGP.IoC
             //Painel Educacional
             services.AddTransient<IRepositorioIdepPainelEducacionalConsulta, RepositorioIdepPainelEducacionalConsulta>();
             services.AddTransient<IRepositorioIdepPainelEducacionalConsolidacao, RepositorioIdepPainelEducacionalConsolidacao>();
+
+            //Painel Educacional
+            services.AddTransient<IRepositorioIdepPainelEducacionalConsulta, RepositorioIdepPainelEducacionalConsulta>();
+            services.AddTransient<IRepositorioIdepPainelEducacionalConsolidacao, RepositorioIdepPainelEducacionalConsolidacao>();
             services.TryAddScoped<IRepositorioConsolidacaoAlfabetizacaoNivelEscrita, RepositorioConsolidacaoAlfabetizacaoNivelEscrita>();
             services.TryAddScoped<IRepositorioConsolidacaoAlfabetizacaoCriticaEscrita, RepositorioConsolidacaoAlfabetizacaoCriticaEscrita>();
 
@@ -646,7 +650,7 @@ namespace SME.SGP.IoC
             services.AddTransient<IRepositorioIdepPainelEducacionalConsulta, RepositorioIdepPainelEducacionalConsulta>();
             services.AddTransient<IRepositorioIdepPainelEducacionalConsolidacao, RepositorioIdepPainelEducacionalConsolidacao>();
             services.TryAddScoped<IRepositorioConsolidacaoAlfabetizacaoNivelEscrita, RepositorioConsolidacaoAlfabetizacaoNivelEscrita>();
-            services.TryAddScoped<IRepositorioPainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacao, RepositorioPainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacao>();
+            services.TryAddScoped<IRepositorioConsolidacaoAlfabetizacaoCriticaEscrita, RepositorioConsolidacaoAlfabetizacaoCriticaEscrita>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)
