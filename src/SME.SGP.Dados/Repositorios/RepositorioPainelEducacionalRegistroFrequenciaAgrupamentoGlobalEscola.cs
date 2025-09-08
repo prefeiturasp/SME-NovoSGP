@@ -22,15 +22,14 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<PainelEducacionalRegistroFrequenciaAgrupamentoEscola>> ObterFrequenciaGlobal(string codigoDre, string codigoUe)
         {
-            var sql = $@"SELECT *, d.abreviacao as Dre FROM painel_educacional_registro_frequencia_agrupamento_escola p
-                         INNER JOIN dre d on d.dre_id = p.codigo_dre 
-                         WHERE 1=1";
+            var sql = $@"SELECT * FROM painel_educacional_registro_frequencia_agrupamento_escola
+                        WHERE 1=1";
 
             if (!string.IsNullOrWhiteSpace(codigoDre))
-                sql += " AND p.codigo_dre = @codigoDre";
-
+                sql += " AND codigo_dre = @codigoDre";
+            
             if (!string.IsNullOrWhiteSpace(codigoUe))
-                sql += " AND p.codigo_ue = @codigoUe";
+                sql += " AND codigo_ue = @codigoUe";
 
             return await database.QueryAsync<PainelEducacionalRegistroFrequenciaAgrupamentoEscola>(sql, new { codigoDre, codigoUe });
         }
