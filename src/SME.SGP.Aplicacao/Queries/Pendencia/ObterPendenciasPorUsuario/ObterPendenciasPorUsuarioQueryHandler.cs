@@ -94,18 +94,35 @@ namespace SME.SGP.Aplicacao
             var listaPendenciasDto = new List<PendenciaDto>();
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
-            var pendenciasAulas = pendencias.Where(p => p.EhPendenciaAula() || p.EhPendenciaCadastroEvento() || p.EhPendenciaCalendarioUe()).ToList();
+            foreach (var pendencia in pendencias)
+            {
+                var pendenciasDto = await ObterPendencias(pendencia, usuarioLogado.CodigoRf);
 
-            listaPendenciasDto.AddRange(await ObterPendenciasAulasFormatada(pendenciasAulas));
+                foreach (var dto in pendenciasDto)
+                {
+                    var criadoEmUtc = DateTime.SpecifyKind(pendencia.CriadoEm, DateTimeKind.Utc);
+                    var dias = (DateTime.UtcNow - criadoEmUtc).TotalDays;
 
-            var pendenciasRestantes = pendencias
-                                        .Where(p => !(p.EhPendenciaAula() || p.EhPendenciaCadastroEvento() || p.EhPendenciaCalendarioUe()))
-                                        .ToList();
+                    dto.MensagemTooltip = ObterMensagemTooltip(pendencia, dias);
+                }
 
-            foreach (var pendencia in pendenciasRestantes)
-                listaPendenciasDto.AddRange(await ObterPendencias(pendencia, usuarioLogado.CodigoRf));
+                listaPendenciasDto.AddRange(pendenciasDto);
+            }
 
             return listaPendenciasDto;
+        }
+
+        private string ObterMensagemTooltip(Pendencia pendencia, double dias)
+        {
+            if (dias <= 10) return null;
+
+            return pendencia.Tipo switch
+            {
+                (TipoPendencia)7 => "Esta aula está sem registro de frequência há mais de 10 dias",
+                (TipoPendencia)3 => "Esta aula está sem plano de aula registrado há mais de 10 dias.",
+                (TipoPendencia)9 => "Esta aula está sem registro no diário de bordo há mais de 10 dias.",
+                _ => null
+            };
         }
 
         private async Task<IEnumerable<PendenciaDto>> ObterPendencias(Pendencia pendencia, string codigoRf)
