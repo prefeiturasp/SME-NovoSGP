@@ -11,6 +11,7 @@ namespace SME.SGP.Infra
         public string Titulo { get; set; }
         public string Detalhe { get; set; }
         public string Bimestre { get; set; }
+        public string MensagemTooltip { get; set; }
     }
 
     public class PendenciaAgrupamentoDto
