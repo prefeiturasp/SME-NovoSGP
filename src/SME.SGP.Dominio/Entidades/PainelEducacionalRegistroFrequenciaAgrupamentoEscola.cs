@@ -10,7 +10,6 @@
         public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }
         public string UE { get; set; }
-        public string DRE { get; set; }
         public int Mes { get; set; }
     }
 }
