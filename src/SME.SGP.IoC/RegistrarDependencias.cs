@@ -234,7 +234,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioConsolidacaoMatriculaTurma, RepositorioConsolidacaoMatriculaTurma>();
             services.TryAddScoped<IRepositorioImportacaoLog, RepositorioImportacaoLog>();
             services.TryAddScoped<IConsultasVisaoGeralPainelEducacionalUseCase, ConsultasPainelEducacionalVisaoGeralUseCase>();
-            services.TryAddScoped<IConsultasVisaoGeralPainelEducacionalUseCase, ConsultasPainelEducacionalVisaoGeralUseCase>();
         }
 
         protected virtual void RegistrarContextos(IServiceCollection services)
@@ -622,28 +621,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioIdeb, RepositorioIdeb>();
             services.TryAddScoped<IRepositorioIdep, RepositorioIdep>();
             services.TryAddScoped<IRepositorioFluenciaLeitora, RepositorioFluenciaLeitora>();
-            
-            services.TryAddScoped<IRepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobal, RepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobal>();
-            services.TryAddScoped<IRepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobalEscola, RepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobalEscola>();
-            services.TryAddScoped<IRepositorioPainelEducacionalRegistroFrequenciaAgrupamentoMensal, RepositorioPainelEducacionalRegistroFrequenciaAgrupamentoMensal>();
-
-            //Painel Educacional
-            services.AddTransient<IRepositorioIdepPainelEducacionalConsulta, RepositorioIdepPainelEducacionalConsulta>();
-            services.AddTransient<IRepositorioIdepPainelEducacionalConsolidacao, RepositorioIdepPainelEducacionalConsolidacao>();
-
-            //Painel Educacional
-            services.AddTransient<IRepositorioIdepPainelEducacionalConsulta, RepositorioIdepPainelEducacionalConsulta>();
-            services.AddTransient<IRepositorioIdepPainelEducacionalConsolidacao, RepositorioIdepPainelEducacionalConsolidacao>();
-            services.TryAddScoped<IRepositorioConsolidacaoAlfabetizacaoNivelEscrita, RepositorioConsolidacaoAlfabetizacaoNivelEscrita>();
-            services.TryAddScoped<IRepositorioConsolidacaoAlfabetizacaoCriticaEscrita, RepositorioConsolidacaoAlfabetizacaoCriticaEscrita>();
-            services.TryAddScoped<IRepositorioPainelEducacionalVisaoGeral, RepositorioPainelEducacionalVisaoGeral>();
-
-            //ImportacaoLog - Arquivos
-            services.TryAddScoped<IRepositorioImportacaoLog, RepositorioImportacaoLog>();
-            services.TryAddScoped<IRepositorioImportacaoLogErro, RepositorioImportacaoLogErro>();
-            services.TryAddScoped<IRepositorioArquivoIdeb, RepositorioArquivoIdeb>();
-            services.TryAddScoped<IRepositorioArquivoIdep, RepositorioArquivoIdep>();
-            services.TryAddScoped<IRepositorioArquivoFluenciaLeitora, RepositorioArquivoFluenciaLeitora>();
             
             services.TryAddScoped<IRepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobal, RepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobal>();
             services.TryAddScoped<IRepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobalEscola, RepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobalEscola>();
