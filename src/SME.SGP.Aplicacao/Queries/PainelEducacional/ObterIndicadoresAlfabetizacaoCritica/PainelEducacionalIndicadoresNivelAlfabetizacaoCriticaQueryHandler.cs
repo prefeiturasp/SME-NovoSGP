@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterIndicadoresAlfabetiza
             {
                 numeroAlunos.Add(new PainelEducacionalIndicadorAlfabetizacaoCriticaDto()
                 {
-                    Posicao = item.Posicao.ToString(),
+                    Posicao = item.Posicao.ToString().PadLeft(2, '0'),
                     Ue = item.UeNome,
                     CodigoUe = item.UeCodigo,
                     Dre = item.DreNome,
