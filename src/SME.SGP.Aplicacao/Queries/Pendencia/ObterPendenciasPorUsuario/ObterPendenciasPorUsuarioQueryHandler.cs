@@ -118,8 +118,8 @@ namespace SME.SGP.Aplicacao
 
             return pendencia.Tipo switch
             {
-                (TipoPendencia)7 => "Esta aula está sem registro de frequência há mais de 10 dias",
-                (TipoPendencia)3 => "Esta aula está sem plano de aula registrado há mais de 10 dias.",
+                (TipoPendencia)7 or (TipoPendencia)4 => "Esta aula está sem registro de frequência há mais de 10 dias",
+                (TipoPendencia)3 or (TipoPendencia)8 => "Esta aula está sem plano de aula registrado há mais de 10 dias.",
                 (TipoPendencia)9 => "Esta aula está sem registro no diário de bordo há mais de 10 dias.",
                 _ => null
             };
