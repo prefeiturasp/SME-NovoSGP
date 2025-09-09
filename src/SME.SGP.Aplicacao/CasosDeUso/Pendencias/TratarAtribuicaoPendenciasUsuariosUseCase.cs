@@ -31,8 +31,6 @@ namespace SME.SGP.Aplicacao
                     case Dominio.PerfilUsuario.DIRETOR:
                         await TratarAtribuicaoPerfisGestao(filtro.UeId, pendenciaPerfil.PerfilCodigo, pendenciaPerfil.Id);
                         break;
-                        await TratarAtribuicaoPerfisGestao(filtro.UeId, pendenciaPerfil.PerfilCodigo, pendenciaPerfil.Id);
-                        break;
                     case Dominio.PerfilUsuario.CEFAI:
                         var dre = await ObterCodigoDREUE(filtro.UeId);
                         var CEFAIs = await mediator.Send(new ObtemUsuarioCEFAIDaDreQuery(dre.DreCodigo));
@@ -119,7 +117,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<TipoEscola> ObterTipoEscolaUE(string codigoUE)
             => await mediator.Send(new ObterTipoEscolaPorCodigoUEQuery(codigoUE));
- 
+
 
         private async Task AtribuirPerfilUsuario(long usuarioId, PerfilUsuario perfil, long pendenciaPerfilId)
         {
