@@ -49,5 +49,10 @@ namespace SME.SGP.Dados.Repositorios
         {
             return await contexto.Conexao.QueryFirstOrDefaultAsync<DataCriacaoRelatorioDto>("SELECT criado_em AS CriadoEm FROM relatorio_correlacao rc WHERE codigo = @codigoCorrelacao", new { codigoCorrelacao });
         }
+
+        public async Task<RelatorioCorrelacao> ObterPorCodigoCorrelacaoAsync(Guid codigoCorrelacao)
+        {
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<RelatorioCorrelacao>("select * from relatorio_correlacao where codigo = @codigoCorrelacao", new { codigoCorrelacao });
+        }
     }
 }
