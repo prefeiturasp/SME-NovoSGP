@@ -16,7 +16,14 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<RelatorioCorrelacao> Handle(ObterCorrelacaoRelatorioQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioCorrelacaoRelatorio.ObterCorrelacaoJasperPorCodigoAsync(request.CodigoCorrelacao);            
+            var relatorio = await repositorioCorrelacaoRelatorio.ObterCorrelacaoJasperPorCodigoAsync(request.CodigoCorrelacao);
+
+            if ( relatorio == null)
+            {
+                return await repositorioCorrelacaoRelatorio.ObterPorCodigoCorrelacaoAsync(request.CodigoCorrelacao);
+            }
+
+            return relatorio;
         }
     }
 
