@@ -14,6 +14,9 @@ namespace SME.SGP.Dominio
         {
             get
             {
+                if(string.IsNullOrWhiteSpace(Nome))
+                    return Nome;
+
                 string novaSigla = "DRE";
                 string textoParaSubstituir = "DIRETORIA REGIONAL DE EDUCACAO";
                 var nomeFormatado = Nome.ToUpper().Replace(textoParaSubstituir, novaSigla).Trim();
