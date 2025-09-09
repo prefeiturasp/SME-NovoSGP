@@ -13,6 +13,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.Quantidade).ToColumn("quantidade");
             Map(c => c.MediaGeral).ToColumn("media_geral");
             Map(c => c.UltimaAtualizacao).ToColumn("ultima_atualizacao");
+            Map(c => c.CodigoDre).ToColumn("codigo_dre");
         }
     }
 }
