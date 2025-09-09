@@ -57,9 +57,9 @@ namespace SME.SGP.Aplicacao.Teste.Commands.PainelEducacional
 
             var uesRetorno = new List<Ue>
             {
-                new() { CodigoUe = "UE1", Nome = "EMEF UE 1", Dre = new Dre { CodigoDre = "DRE1", Nome = "DRE UM" } },
-                new() { CodigoUe = "UE2", Nome = "EMEF UE 2", Dre = new Dre { CodigoDre = "DRE2", Nome = "DRE DOIS" } },
-                new() { CodigoUe = "UE3", Nome = "EMEF UE 3", Dre = new Dre { CodigoDre = "DRE2", Nome = "DRE DOIS" } }
+                new() { CodigoUe = "UE1", Nome = "UE 1", TipoEscola = TipoEscola.EMEF, Dre = new Dre { CodigoDre = "DRE1", Nome = "DIRETORIA REGIONAL DE EDUCACAO UM" } },
+                new() { CodigoUe = "UE2", Nome = "UE 2", TipoEscola = TipoEscola.EMEF, Dre = new Dre { CodigoDre = "DRE2", Nome = "DIRETORIA REGIONAL DE EDUCACAO DOIS" } },
+                new() { CodigoUe = "UE3", Nome = "UE 3", TipoEscola = TipoEscola.EMEF, Dre = new Dre { CodigoDre = "DRE2", Nome = "DIRETORIA REGIONAL DE EDUCACAO DOIS" } }
             };
 
             _mediatorMock.Setup(m => m.Send(It.IsAny<ObterUesComDrePorCodigoUesQuery>(), It.IsAny<CancellationToken>()))
