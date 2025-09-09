@@ -237,7 +237,6 @@ namespace SME.SGP.Dominio.Servicos
         }
 
         private async Task AtualizarNotasFechamento(IEnumerable<WfAprovacaoNotaFechamentoTurmaDto> notasEmAprovacao, string criadoRF, string criadoPor, long workFlowId, TipoNota tipoNota)
-        private async Task AtualizarNotasFechamento(IEnumerable<WfAprovacaoNotaFechamentoTurmaDto> notasEmAprovacao, string criadoRF, string criadoPor, long workFlowId, TipoNota tipoNota)
         {
             var fechamentoAluno = notasEmAprovacao.First().FechamentoNota.FechamentoAluno;
             var fechamentoTurmaDisciplinaId = fechamentoAluno.FechamentoTurmaDisciplinaId;
@@ -283,13 +282,12 @@ namespace SME.SGP.Dominio.Servicos
                 notaEmAprovacao.FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.DisciplinaId,
                 notaEmAprovacao.FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.FechamentoTurma.PeriodoEscolarId
             });
-            foreach (var notaEmAprovacao in agrupamento)
+
             foreach (var notaEmAprovacao in agrupamento)
                 await RemoverCacheFechamentoNota(notaEmAprovacao.Key.TurmaId, notaEmAprovacao.Key.DisciplinaId, notaEmAprovacao.Key.PeriodoEscolarId);
         }
 
         private async Task AtualizarCacheFechamentoNota(
-                                WfAprovacaoNotaFechamentoTurmaDto notaEmAprovacao,
                                 WfAprovacaoNotaFechamentoTurmaDto notaEmAprovacao,
                                 FechamentoNota fechamentoNota)
         {
