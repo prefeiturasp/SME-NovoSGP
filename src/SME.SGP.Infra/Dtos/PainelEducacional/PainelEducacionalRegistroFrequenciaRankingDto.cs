@@ -11,6 +11,7 @@ namespace SME.SGP.Infra.Dtos.PainelEducacional
 
     public class PainelEducacionalRegistroFrequenciaRankingItemDto
     {
+        public string Dre { get; set; }
         public string Ue { get; set; }
         public decimal PercentualFrequencia { get; set; }
     }
