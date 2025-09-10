@@ -8,6 +8,6 @@ namespace SME.SGP.Dominio.Interfaces.Repositorios
     public interface IRepositorioIdepPainelEducacionalConsulta : IRepositorioBase<PainelEducacionalIdep>
     {
         Task<IEnumerable<PainelEducacionalConsolidacaoIdep>> ObterTodosIdep();
-        Task<IEnumerable<PainelEducacionalConsolidacaoIdep>> ObterIdepPorAnoEtapa(int ano, int etapa);
+        Task<IEnumerable<PainelEducacionalIdepDto>> ObterIdepPorAnoEtapa(int anoLetivo, string etapa, string codigoDre);
     }
 }
