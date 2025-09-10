@@ -3,11 +3,7 @@ using Moq;
 using SME.SGP.Api.Controllers;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 using SME.SGP.Infra.Dtos.PainelEducacional;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -28,6 +24,7 @@ namespace SME.SGP.Api.Teste.Controllers
         {
             // Arrange
             var codigoDre = "123";
+            var codigoUe= "456";
             var anoLetivo = 2025;
 
             var retornoEsperado = new List<PainelEducacionalVisaoGeralRetornoDto>
@@ -52,11 +49,11 @@ namespace SME.SGP.Api.Teste.Controllers
             };
 
             _consultasVisaoGeralPainelEducacionalUseCase
-                .Setup(x => x.ObterVisaoGeralConsolidada(anoLetivo, codigoDre))
+                .Setup(x => x.ObterVisaoGeralConsolidada(anoLetivo, codigoDre, codigoUe))
                 .Returns(Task.FromResult<IEnumerable<PainelEducacionalVisaoGeralRetornoDto>>(retornoEsperado));
 
             // Act
-            var result = await _controller.ObterVisaoGeral(codigoDre, anoLetivo, _consultasVisaoGeralPainelEducacionalUseCase.Object);
+            var result = await _controller.ObterVisaoGeral(anoLetivo, codigoDre, codigoUe, _consultasVisaoGeralPainelEducacionalUseCase.Object);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);

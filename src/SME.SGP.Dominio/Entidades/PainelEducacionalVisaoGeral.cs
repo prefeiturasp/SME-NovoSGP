@@ -3,6 +3,7 @@
     public class PainelEducacionalVisaoGeral : EntidadeBase
     {
         public string CodigoDre { get; set; }
+        public string CodigoUe { get; set; }
         public int AnoLetivo { get; set; }
         public string Indicador { get; set; }
         public string Serie { get; set; }

@@ -16,9 +16,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             this.mediator = mediator;
         }
 
-        public async Task<IEnumerable<PainelEducacionalVisaoGeralRetornoDto>> ObterVisaoGeralConsolidada(int anoLetivo, string codigoDre)
+        public async Task<IEnumerable<PainelEducacionalVisaoGeralRetornoDto>> ObterVisaoGeralConsolidada(int anoLetivo, string codigoDre, string codigoUe)
         {
-            return await mediator.Send(new PainelEducacionalVisaoGeralQuery(anoLetivo, codigoDre));
+            return await mediator.Send(new PainelEducacionalVisaoGeralQuery(anoLetivo, codigoDre, codigoUe));
         }
     }
 }

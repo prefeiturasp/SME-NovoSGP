@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional
 {
     public interface IConsultasVisaoGeralPainelEducacionalUseCase
     {
-        Task<IEnumerable<PainelEducacionalVisaoGeralRetornoDto>> ObterVisaoGeralConsolidada(int anoLetivo, string codigoDre);
+        Task<IEnumerable<PainelEducacionalVisaoGeralRetornoDto>> ObterVisaoGeralConsolidada(int anoLetivo, string codigoDre, string codigoUe);
     }
 }

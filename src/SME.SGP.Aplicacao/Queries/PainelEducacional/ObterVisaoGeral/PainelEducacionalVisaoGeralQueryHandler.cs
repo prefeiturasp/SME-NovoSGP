@@ -27,7 +27,13 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterFrequenciaRanking
                 throw new NegocioException("Informe o ano letivo");
             }
 
-            var registros = await repositorioPainelEducacionalVisaoGeral.ObterVisaoGeralConsolidada(request.AnoLetivo, request.CodigoDre);
+            if (request.CodigoDre == "-99")
+                request.CodigoDre = "";
+
+            if (request.CodigoUe == "-99")
+                request.CodigoUe = "";
+
+            var registros = await repositorioPainelEducacionalVisaoGeral.ObterVisaoGeralConsolidada(request.AnoLetivo, request.CodigoDre, request.CodigoUe);
 
             return MapearParaDto(registros);
         }
