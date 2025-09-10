@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioIdepPainelEducacionalConsulta : RepositorioBase<Dominio.Entidades.PainelEducacionalIdep>, IRepositorioIdepPainelEducacionalConsulta
+    public class RepositorioIdepPainelEducacionalConsulta : RepositorioBase<PainelEducacionalIdep>, IRepositorioIdepPainelEducacionalConsulta
     {
         private readonly IAsyncPolicy policy;
 
@@ -98,7 +98,7 @@ namespace SME.SGP.Dados.Repositorios
                           ON f.ano_letivo = u.ano_letivo 
                          AND f.codigo_dre = u.codigo_dre
                       ORDER BY f.ano_letivo, f.etapa, f.codigo_dre, f.faixa;";
-            
+
             return await policy.ExecuteAsync(() =>
             database.Conexao.QueryAsync<PainelEducacionalConsolidacaoIdep>(query)
             );
@@ -123,20 +123,10 @@ namespace SME.SGP.Dados.Repositorios
                           peci.ano_letivo DESC,
                           peci.codigo_dre,
                           peci.faixa;";
-            
 
-
-            try
-            {
             return await policy.ExecuteAsync(() =>
                 database.Conexao.QueryAsync<PainelEducacionalIdepDto>(query, new { anoLetivo, etapa, codigoDre })
             );
-            }
-            catch(Exception ex)
-            {
-                var teste = "";
-                return null;
-            }
         }
     }
 }
