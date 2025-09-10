@@ -11,7 +11,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/painel-educacional")]
-    [Authorize("Bearer")]
+    //[Authorize("Bearer")]
     public class PainelEducacionalController : ControllerBase
     {
         [HttpGet("frequencia-global")]
@@ -59,9 +59,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(PainelEducacionalConsolidacaoIdep), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterIdepPorAnoEtapa(int anoLetivo, int etapa, [FromServices] IConsultasIdepPainelEducacionalUseCase consultasIdepPainelEducacionalUseCase)
-            => Ok(await consultasIdepPainelEducacionalUseCase.ObterIdepPorAnoEtapa(anoLetivo, etapa));
+        //[Permissao(Permissao.FB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterIdepPorAnoEtapa(int anoLetivo, string etapa, string codigoDre, [FromServices] IConsultasIdepPainelEducacionalUseCase consultasIdepPainelEducacionalUseCase)
+            => Ok(await consultasIdepPainelEducacionalUseCase.ObterIdepPorAnoEtapa(anoLetivo, etapa, codigoDre));
 
     }
 }
