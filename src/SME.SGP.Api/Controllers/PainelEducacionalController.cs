@@ -54,7 +54,6 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterIndicadoresAlfabetizacaoCritica([FromQuery] FiltroPainelEducacionalDreUe filtro, [FromServices] IConsultasAlfabetizacaoCriticaEscritaPainelEducacionalUseCase consultasIndicadoresNivelAlfabetizacaoCriticaUseCase)
          => Ok(await consultasIndicadoresNivelAlfabetizacaoCriticaUseCase.ObterNumeroEstudantes(filtro.CodigoDre, filtro.CodigoUe));
 
-
         [HttpGet("idep")]
         [ProducesResponseType(typeof(PainelEducacionalConsolidacaoIdep), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
