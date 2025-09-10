@@ -9,6 +9,7 @@ namespace SME.SGP.Infra.Dtos.PainelEducacional
         public bool AnoSolicitadoSemDados { get; set; }
         public string Etapa { get; set; }
         public double MediaGeral { get; set; }
+        public string CodigoDre { get; set; }
         public List<FaixaQuantidade> Distribuicao { get; set; }
     }
 
