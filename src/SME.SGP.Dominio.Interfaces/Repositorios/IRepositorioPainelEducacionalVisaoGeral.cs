@@ -8,7 +8,7 @@ namespace SME.SGP.Dominio.Interfaces.Repositorios
     public interface IRepositorioPainelEducacionalVisaoGeral : IRepositorioBase<PainelEducacionalVisaoGeral>
     {
         Task<IEnumerable<PainelEducacionalVisaoGeralDto>> ObterVisaoGeralPainelEducacional();
-        Task<IEnumerable<PainelEducacionalVisaoGeralDto>> ObterVisaoGeralConsolidada(int anoLetivo, string codigoDre);
+        Task<IEnumerable<PainelEducacionalVisaoGeralDto>> ObterVisaoGeralConsolidada(int anoLetivo, string codigoDre, string codigoUe);
         Task ExcluirVisaoGeral();
         Task<bool> SalvarVisaoGeral(PainelEducacionalVisaoGeral entidade);
     }

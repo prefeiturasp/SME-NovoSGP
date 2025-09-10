@@ -8,6 +8,7 @@ namespace SME.SGP.Dados.Mapeamentos
         {
             ToTable("painel_educacional_visao_geral");
             Map(c => c.CodigoDre).ToColumn("codigo_dre");
+            Map(c => c.CodigoUe).ToColumn("codigo_ue");
             Map(c => c.AnoLetivo).ToColumn("ano_letivo");
             Map(c => c.Indicador).ToColumn("indicador");
             Map(c => c.Serie).ToColumn("serie");

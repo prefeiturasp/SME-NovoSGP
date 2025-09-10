@@ -35,13 +35,14 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
         private async Task SalvarAgrupamentoVisaoGeral(IEnumerable<PainelEducacionalVisaoGeralDto> registro)
         {
             var registroVisaoGeral = registro
-                    .GroupBy(r => new { r.CodigoDre, r.AnoLetivo, r.Indicador, r.Serie })
+                    .GroupBy(r => new { r.CodigoDre, r.CodigoUe, r.Indicador, r.Serie })
                     .Select(g => new PainelEducacionalVisaoGeral
                     {
                         CodigoDre = g.Key.CodigoDre,
-                        AnoLetivo = g.Key.AnoLetivo,
+                        CodigoUe = g.Key.CodigoUe,
                         Indicador = g.Key.Indicador,
                         Serie = MapearReferencia(g.Key.Indicador, g.Key.Serie),
+                        AnoLetivo = g.Select(x => x.AnoLetivo).FirstOrDefault(),
                         Valor = g.Average(x => x.Valor)
                     })
                     .OrderBy(x => x.AnoLetivo).ToList();
