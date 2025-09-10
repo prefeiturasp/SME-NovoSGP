@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using System;
