@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
         private async Task SalvarAgrupamentoMensal(IEnumerable<RegistroFrequenciaPainelEducacionalDto> registrosFrequencia)
         {
             var registroFrequenciaMensal = registrosFrequencia
-                    .GroupBy(r => new { r.Mes, r.Modalidade, r.CodigoUe })
+                    .GroupBy(r => new { r.Mes, r.Modalidade, r.CodigoUe, r.CodigoDre })
                     .Select(g => new PainelEducacionalRegistroFrequenciaAgrupamentoMensal
                     {
                         Modalidade = g.Key.Modalidade,
@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                         TotalAulas = g.Sum(x => x.QuantidadeAulas),
                         TotalFaltas = g.Sum(x => x.QuantidadeAusencias),
                         CodigoUe = g.Key.CodigoUe,
-                        CodigoDre = g.Select(x => x.CodigoDre).FirstOrDefault(),
+                        CodigoDre = g.Key.CodigoDre,
                         PercentualFrequencia = g.Average(x => x.Percentual)
                     })
                     .OrderBy(x => x.Mes).ToList();
@@ -64,12 +64,12 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
         private async Task SalvarAgrupamentoGlobal(IEnumerable<RegistroFrequenciaPainelEducacionalDto> registrosFrequencia)
         {
             var registroFrequenciaGlobal = registrosFrequencia
-                    .GroupBy(r => new { r.Modalidade })
+                    .GroupBy(r => new { r.Modalidade, r.CodigoDre })
                     .Select(g => new PainelEducacionalRegistroFrequenciaAgrupamentoGlobal
                     {
                         Modalidade = g.Key.Modalidade,
                         CodigoUe = g.Select(x => x.CodigoUe).FirstOrDefault(),
-                        CodigoDre = g.Select(x => x.CodigoDre).FirstOrDefault(),
+                        CodigoDre = g.Key.CodigoDre,
                         TotalAulas = g.Sum(x => x.QuantidadeAulas),
                         TotalAusencias = g.Sum(x => x.QuantidadeAusencias),
                         TotalCompensacoes = g.Sum(x => x.QuantidadeCompensacoes),
@@ -125,7 +125,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             });
         }
 
-        private string ObterNomeModalidade(int modalidadeCodigo, string anoTurma)
+        private static string ObterNomeModalidade(int modalidadeCodigo, string anoTurma)
         {
             if (modalidadeCodigo == (int)Modalidade.EducacaoInfantil)
             {

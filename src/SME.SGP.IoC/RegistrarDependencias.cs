@@ -231,6 +231,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioAulaPrevistaBimestreConsulta, RepositorioAulaPrevistaBimestreConsulta>();
             services.TryAddScoped<IRepositorioConsolidacaoMatriculaTurma, RepositorioConsolidacaoMatriculaTurma>();
             services.TryAddScoped<IRepositorioImportacaoLog, RepositorioImportacaoLog>();
+            services.TryAddScoped<IConsultasVisaoGeralPainelEducacionalUseCase, ConsultasPainelEducacionalVisaoGeralUseCase>();
         }
 
         protected virtual void RegistrarContextos(IServiceCollection services)
@@ -627,6 +628,7 @@ namespace SME.SGP.IoC
             services.AddTransient<IRepositorioIdepPainelEducacionalConsolidacao, RepositorioIdepPainelEducacionalConsolidacao>();
             services.TryAddScoped<IRepositorioConsolidacaoAlfabetizacaoNivelEscrita, RepositorioConsolidacaoAlfabetizacaoNivelEscrita>();
             services.TryAddScoped<IRepositorioConsolidacaoAlfabetizacaoCriticaEscrita, RepositorioConsolidacaoAlfabetizacaoCriticaEscrita>();
+            services.TryAddScoped<IRepositorioPainelEducacionalVisaoGeral, RepositorioPainelEducacionalVisaoGeral>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)

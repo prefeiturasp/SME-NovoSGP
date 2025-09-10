@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.Sondagem;
 using System;
 using System.Collections.Generic;
@@ -55,12 +56,13 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarConsolidacaoAlfabet
             foreach (var itemWithIndex in dtoOrdenado.Select((item, i) => new { Item = item, Index = i }))
             {
                 var ue = ues.FirstOrDefault(u => u.CodigoUe == itemWithIndex.Item.UeCodigo && u.Dre.CodigoDre == itemWithIndex.Item.DreCodigo);
+                var ueShortName = ue.TipoEscola.ShortName();
                 resultado.Add(new ConsolidacaoAlfabetizacaoCriticaEscrita()
                 {
                     DreCodigo = itemWithIndex.Item.DreCodigo,
                     UeCodigo = itemWithIndex.Item.UeCodigo,
-                    DreNome = ue.Dre.Nome,
-                    UeNome = ue.Nome,
+                    DreNome = ue.Dre.PrefixoDoNomeAbreviado,
+                    UeNome = $"{ueShortName} {ue.Nome}",
                     PercentualTotalAlunos = itemWithIndex.Item.PercentualNaoAlfabetizados,
                     TotalAlunosNaoAlfabetizados = itemWithIndex.Item.QuantidadeNaoAlfabetizados,
                     Posicao = itemWithIndex.Index + 1
