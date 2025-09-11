@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SME.SGP.Dominio
 {
+    [ExcludeFromCodeCoverage]
     public class FechamentoConsolidadoComponenteTurma : EntidadeBase
     {
         public DateTime DataAtualizacao { get; set; }

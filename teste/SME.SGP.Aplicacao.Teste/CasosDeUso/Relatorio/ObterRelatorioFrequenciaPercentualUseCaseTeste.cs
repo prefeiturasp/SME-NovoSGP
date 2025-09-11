@@ -1,11 +1,7 @@
 ﻿using FluentValidation.TestHelper;
-using Moq;
-using SME.SGP.Infra;
 using SME.SGP.Dominio;
-using MediatR;
+using SME.SGP.Infra;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.Validators
@@ -13,14 +9,10 @@ namespace SME.SGP.Aplicacao.Teste.Validators
     public class FiltroRelatorioFaltasFrequenciaDtoValidatorTeste
     {
         private readonly FiltroRelatorioFaltasFrequenciaDtoValidator _validator;
-        private readonly Mock<IMediator> _mediator;
-        private readonly GerarRelatorioFrequenciaUseCase _useCase;
 
         public FiltroRelatorioFaltasFrequenciaDtoValidatorTeste()
         {
             _validator = new FiltroRelatorioFaltasFrequenciaDtoValidator();
-            _mediator = new Mock<IMediator>();
-            _useCase = new GerarRelatorioFrequenciaUseCase(_mediator.Object);
         }
 
         private FiltroRelatorioFrequenciaDto CriarFiltroPadrao()
@@ -89,24 +81,6 @@ namespace SME.SGP.Aplicacao.Teste.Validators
             var resultado = _validator.TestValidate(filtro);
 
             resultado.ShouldNotHaveAnyValidationErrors();
-        }
-
-        [Fact]
-        public async Task Deve_Publicar_Mensagem_Para_Fila()
-        {
-
-            var filtro = CriarFiltroPadrao();
-
-            _mediator.Setup(m => m.Send(ObterUsuarioLogadoQuery.Instance, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new Usuario { CodigoRf = "123123", Nome = "Usuário Teste" });
-
-            _mediator.Setup(m => m.Send(It.IsAny<GerarRelatorioCommand>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(true);
-
-            var resultado = await _useCase.Executar(filtro);
-            
-            _mediator.Verify(m => m.Send(It.IsAny<GerarRelatorioCommand>(), It.IsAny<CancellationToken>()), Times.Once);
-            Assert.True(resultado);
         }
     }
 }

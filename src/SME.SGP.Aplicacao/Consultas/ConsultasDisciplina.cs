@@ -9,7 +9,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -187,7 +186,7 @@ namespace SME.SGP.Aplicacao
 
             //Exceção para disciplinas 1060 e 1061 que são compartilhadas entre EF e EJA
             if (turma.ModalidadeCodigo == Modalidade.EJA)
-                disciplinasDto.ForEach(disciplina =>
+                disciplinasDto?.ForEach(disciplina =>
                 {
                     if (IDS_COMPONENTES_COMPARTILHADOS_EJA_EF.Contains(disciplina.CodigoComponenteCurricular))
                         disciplina.RegistraFrequencia = false;
@@ -312,7 +311,7 @@ namespace SME.SGP.Aplicacao
 
                 disciplinasDto = (await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurriculares.Select(a => a.Codigo).ToArray())))?.OrderBy(c => c.Nome)?.ToList();
                 
-                disciplinasDto.ForEach(d =>
+                disciplinasDto?.ForEach(d =>
                 {
                     var componenteEOL = componentesCurriculares.FirstOrDefault(a => a.Codigo == d.CodigoComponenteCurricular);
                     d.PossuiObjetivos = turma.AnoLetivo < Convert.ToInt32(dataInicioNovoSGP) ? false : componenteEOL.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turma.ModalidadeCodigo);

@@ -155,7 +155,7 @@ namespace SME.SGP.Aplicacao
             var usuario = request.UsuarioConsiderado != default ?
                 await mediator.Send(new ObterUsuarioPorRfQuery(request.UsuarioConsiderado.rf)) : null;
 
-            if (usuario.NaoEhNulo())
+            if (usuario != null)
                 usuario.PerfilAtual = Guid.Parse(request.UsuarioConsiderado.perfil);
 
             return usuario;

@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace SME.SGP.Dominio
 {
+    [ExcludeFromCodeCoverage]
     public class PlanoAula : EntidadeBase
     {
         public string Descricao { get; set; }

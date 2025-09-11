@@ -13,6 +13,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.DataAtualizacao).ToColumn("data_atualizacao");
             Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
             Map(c => c.Nome).ToColumn("nome");
+            Map(c => c.PrefixoDoNomeAbreviado).Ignore();
         }
     }
 }

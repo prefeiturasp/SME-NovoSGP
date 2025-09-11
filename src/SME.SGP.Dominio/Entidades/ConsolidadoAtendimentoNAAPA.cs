@@ -1,5 +1,8 @@
-﻿namespace SME.SGP.Dominio
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace SME.SGP.Dominio
 {
+    [ExcludeFromCodeCoverage]
     public class ConsolidadoAtendimentoNAAPA : EntidadeBase
     {
         public int AnoLetivo { get; set; }

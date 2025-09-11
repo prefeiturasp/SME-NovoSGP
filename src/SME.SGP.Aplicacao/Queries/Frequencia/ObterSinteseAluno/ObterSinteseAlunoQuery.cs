@@ -13,9 +13,9 @@ namespace SME.SGP.Aplicacao
             AnoLetivo = anoLetivo;
         }
 
-        public double? PercentualFrequencia;
-        public DisciplinaDto Disciplina;
-        public int AnoLetivo;
+        public double? PercentualFrequencia { get; set; }
+        public DisciplinaDto Disciplina { get; set; }
+        public int AnoLetivo { get; set; }
     }
 
     public class ObterSinteseAlunoQueryValidator : AbstractValidator<ObterSinteseAlunoQuery>

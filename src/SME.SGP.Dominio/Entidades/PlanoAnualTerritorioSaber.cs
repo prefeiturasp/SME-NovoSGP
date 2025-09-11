@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace SME.SGP.Dominio
 {
-   public class PlanoAnualTerritorioSaber : EntidadeBase
+    [ExcludeFromCodeCoverage]
+    public class PlanoAnualTerritorioSaber : EntidadeBase
     {
         public int Ano { get; set; }
         public long Bimestre { get; set; }

@@ -22,6 +22,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<MenuRetornoDto>> ObterMenu()
         {
             var ajudas = (await mediator.Send(ObterAjudasDoSistemaQuery.Instance)).ToList();
+
             var permissoes = servicoUsuario.ObterPermissoes();
 
             var agrupamentos = permissoes.Where(c => Enum.IsDefined(typeof(Permissao), c)).GroupBy(item => new

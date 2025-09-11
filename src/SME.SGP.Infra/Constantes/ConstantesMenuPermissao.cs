@@ -83,6 +83,9 @@
         public const string MENU_REGISTRO_ACOES = "Registro de ações";
         public const string MENU_REGISTRO_COLETIVO_NAAPA = "Registro coletivo ";
         public const string MENU_MAPEAMENTO_ESTUDANTES = "Mapeamento de estudantes";
+        public const string MENU_INFORMACOES_EDUCACIONAIS = "Informações Educacionais";
+        public const string MENU_INFORMACOES_EDUCACIONAIS_PAINEL = "Painel";
+        public const string MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS = "Importação de dados";
 
         public const string AGRUPAMENTO_PLANEJAMENTO = "Planejamento";
         public const string AGRUPAMENTO_DIARIO_DE_CLASSE = "Diário de Classe";
@@ -137,6 +140,8 @@
         public const string ROTA_GESTAO_COMUNICADOS_NOVO = "/gestao/comunicados/novo";
         public const string ROTA_GESTAO_OCORRENCIAS = "/gestao/ocorrencias";
         public const string ROTA_GESTAO_CADASTRO_DE_ABAE = "/cadastro-abae";
+        public const string ROTA_GESTAO_INFORMACOES_EDUCACIONAIS = "/gestao/informacoes-educacionais";
+        public const string ROTA_GESTAO_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS = "/gestao/importacao-dados";
         public const string ROTA_INFORMES = "/informes";
         public const string ROTA_AEE_ENCAMINHAMENTO = "/aee/encaminhamento";
         public const string ROTA_AEE_PLANO = "/aee/plano";
@@ -213,7 +218,8 @@
         public const string ICONE_FAS_FA_CALENDAR_ALT = "fas fa-calendar-alt";
         public const string ICONE_FAS_FA_CALENDAR_CHECK = "far fa-calendar-check";
         public const string ICONE_FAS_FA_UNIVERSAL_ACCESS = "fas fa-universal-access";
-        
+        public const string ICONE_FAS_FA_CERTIFICATE = "fas fa-certificate";
+
         public const int ORDEM_AGRUPAMENTO_PLANEJAMENTO = 1;
         public const int ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE = 2;
         public const int ORDEM_AGRUPAMENTO_FECHAMENTO = 3;
@@ -267,7 +273,9 @@
         public const int ORDEM_MENU_OCORRENCIAS = 14;
         public const int ORDEM_MENU_INFORMES = 15;
         public const int ORDEM_MENU_CADASTRO_DE_ABAE = 16;
-        
+        public const int ORDEM_MENU_INFORMACOES_EDUCACIONAIS = 17;
+        public const int ORDEM_MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS = 18;
+
         public const int ORDEM_MENU_ENCAMINHAMENTO_AEE = 1;
         public const int ORDEM_MENU_PLANO_AEE = 2;
         public const int ORDEM_MENU_REGISTRO_DE_ITINERANCIA = 3;
@@ -342,6 +350,9 @@
 
         public const int ORDEM_SUB_MENU_BUSCA_ATIVA_CONS_CRIANCAS_ESTUD_AUSENTES = 1;
         public const int ORDEM_SUB_MENU_BUSCA_ATIVA_REGISTRO_ACOES = 2;
+
+        public const int ORDEM_SUB_MENU_INFORMACOES_EDUCACIONAIS_PAINEL = 1;
+        public const int ORDEM_SUB_MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS = 2;
 
     }
 }

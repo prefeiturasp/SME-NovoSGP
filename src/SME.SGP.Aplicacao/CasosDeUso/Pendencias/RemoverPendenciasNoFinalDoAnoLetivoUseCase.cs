@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            var pendenciasIds = JsonConvert.DeserializeObject<List<long>>(param.Mensagem.ToString());
+            var pendenciasIds = JsonConvert.DeserializeObject<List<long>>(param?.Mensagem?.ToString());
 
             if (pendenciasIds.Any())
             {

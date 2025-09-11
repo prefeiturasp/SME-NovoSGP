@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using Minio.DataModel;
 using Polly;
 using Polly.Registry;
 using SME.SGP.Dominio;
@@ -7,10 +6,11 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Dtos.Frequencia;
+using SME.SGP.Infra.Dtos.PainelEducacional;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -929,5 +929,55 @@ namespace SME.SGP.Dados.Repositorios
                                       and a.data_aula between pe.periodo_inicio and periodo_fim
                                       and ue.ue_id = @ueCodigo
                                       and DATE_PART('day', rf.criado_em - a.data_aula) > 0;", new { ueCodigo, anoLetivo, bimestre });
+
+        public async Task<IEnumerable<RegistroFrequenciaPainelEducacionalDto>> ObterInformacoesFrequenciaPainelEducacional(int anoLetivo)
+        {
+            var query = $@"SELECT cfam.id,
+                                 cfam.aluno_codigo as CodigoAluno,
+                                 d.dre_id AS CodigoDre,
+                                 u.ue_id AS CodigoUe,
+                                 coalesce(te.descricao || ' ', '') || coalesce(u.nome, '') as Ue,
+                                 cfam.mes,
+                                 cfam.percentual,
+                                 cfam.quantidade_aulas as QuantidadeAulas,
+                                 cfam.quantidade_ausencias as QuantidadeAusencias,
+                                 cfam.quantidade_compensacoes as QuantidadeCompensacoes,
+                                 t.modalidade_codigo as ModalidadeCodigo,
+                                 t.ano_letivo AS AnoLetivo,
+                                 t.ano AS AnoTurma
+                            FROM consolidacao_frequencia_aluno_mensal cfam
+                            INNER JOIN turma t ON t.id = cfam.turma_id
+                            INNER JOIN ue u ON u.id = t.ue_id
+                            INNER JOIN tipo_escola te ON te.cod_tipo_escola_eol = u.tipo_escola
+                            INNER JOIN dre d ON d.id = u.dre_id
+                            WHERE t.ano_letivo =  @anoLetivo";
+
+            var parametros = new
+            {
+                anoLetivo
+            };
+
+            return await database.Conexao.QueryAsync<RegistroFrequenciaPainelEducacionalDto>(query, parametros);
+        }
+
+        public async Task<ComponenteCurricularSugeridoDto> ObterPrimeiroRegistroFrequenciaPorDataETurma(string turmaId, DateTime dataAula)
+        {
+            var query = $@"select 
+                                t1.aula_id
+                              , t2.quantidade as quantidadeAulas
+                              , t3.descricao_sgp as componenteCurricularSugerido
+                            from registro_frequencia t1
+                            inner join aula t2 on t2.id = t1.aula_id
+                            inner join componente_curricular t3 on (t3.id = CAST(t2.disciplina_id AS INT))
+                            where t2.turma_id = @turmaId and DATE(t2.data_aula) = @dataAula";
+
+            var parametros = new
+            {
+                turmaId,
+                dataAula
+            };
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<ComponenteCurricularSugeridoDto>(query, parametros);
+        }
     }
 }

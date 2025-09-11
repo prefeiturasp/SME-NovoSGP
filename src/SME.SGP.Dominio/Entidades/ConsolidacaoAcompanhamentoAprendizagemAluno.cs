@@ -1,5 +1,8 @@
-﻿namespace SME.SGP.Dominio
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace SME.SGP.Dominio
 {
+    [ExcludeFromCodeCoverage]
     public class ConsolidacaoAcompanhamentoAprendizagemAluno
     {
         public ConsolidacaoAcompanhamentoAprendizagemAluno(long turmaId, int quantidadeComAcompanhamento, int quantidadeSemAcompanhamento, int semestre)

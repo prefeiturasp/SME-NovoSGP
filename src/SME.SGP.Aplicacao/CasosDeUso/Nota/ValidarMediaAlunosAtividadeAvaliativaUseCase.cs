@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
@@ -12,6 +7,10 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -99,7 +98,7 @@ namespace SME.SGP.Aplicacao
                 {
                     if (nota.Nota >= notaParametro.Media)
                         retorno++;
-                } else if (valorConceito.NaoEhNulo() && valorConceito.Aprovado)
+                } else if (valorConceito != null && valorConceito.Aprovado)
                     retorno++;
 
             }
@@ -150,11 +149,11 @@ namespace SME.SGP.Aplicacao
         {
             var anoCicloModalidade = string.Empty;
 
-            if (!String.IsNullOrEmpty(abrangenciaFiltroRetorno?.Ano))
+            if (!string.IsNullOrEmpty(abrangenciaFiltroRetorno?.Ano))
                 anoCicloModalidade = abrangenciaFiltroRetorno.Ano == AnoCiclo.Alfabetizacao.Name()
                     ? AnoCiclo.Alfabetizacao.Description() : abrangenciaFiltroRetorno.Ano;
 
-            var ciclo = await repositorioCiclo.ObterCicloPorAnoModalidade(anoCicloModalidade, abrangenciaFiltroRetorno.Modalidade);
+            var ciclo = await repositorioCiclo.ObterCicloPorAnoModalidade(anoCicloModalidade, abrangenciaFiltroRetorno?.Modalidade ?? 0);
 
             if (ciclo.EhNulo())
                 throw new NegocioException(MensagemNegocioTurma.CICLO_TURMA_NAO_ENCONTRADO);

@@ -354,5 +354,9 @@ namespace SME.SGP.Dados.Repositorios
             
             
         }
+        public async Task RemoverAtribuicoesEmLote(IEnumerable<long> atribuicoesIds)
+        {
+            await RemoverLogico(atribuicoesIds.ToArray());
+        }
     }
 }

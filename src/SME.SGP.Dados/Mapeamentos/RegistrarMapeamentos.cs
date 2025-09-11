@@ -1,5 +1,6 @@
 ﻿using Dapper.FluentMap;
 using Dapper.FluentMap.Dommel;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
@@ -258,6 +259,18 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ConsolidacaoProdutividadeFrequenciaMap());
                config.AddMap(new InatividadeAtendimentoNAAPANotificacaoMap());
                config.AddMap(new InformativoModalidadeMap());
+               config.AddMap(new ImportacaoLogMap());
+               config.AddMap(new ImportacaoLogErroMap());
+               config.AddMap(new IdebMap());
+               config.AddMap(new IdepMap());
+               config.AddMap(new FluenciaLeitoraMap());
+               config.AddMap(new PainelEducacionalRegistroFrequenciaAgrupamentoMensalMap());
+               config.AddMap(new PainelEducacionalRegistroFrequenciaAgrupamentoGlobalMap());
+               config.AddMap(new PainelEducacionalRegistroFrequenciaAgrupamentoEscolaMap());
+               config.AddMap(new PainelEducacionalVisaoGeralMap());
+               config.AddMap(new PainelEducacionalMap());
+               config.AddMap(new ConsolidacaoAlfabetizacaoNivelEscritaMap());
+               config.AddMap(new ConsolidacaoAlfabetizacaoCriticaEscritaMap());
 
                config.ForDommel();
            });

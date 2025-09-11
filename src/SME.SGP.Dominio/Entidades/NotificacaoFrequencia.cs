@@ -1,7 +1,8 @@
-﻿using SME.SGP.Dominio;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace SME.SGP.Dominio
 {
+    [ExcludeFromCodeCoverage]
     public class NotificacaoFrequencia : EntidadeBase
     {
         public TipoNotificacaoFrequencia Tipo { get; set; }

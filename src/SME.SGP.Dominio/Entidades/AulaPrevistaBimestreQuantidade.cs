@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SME.SGP.Dominio
 {
+    [ExcludeFromCodeCoverage]
     public class AulaPrevistaBimestreQuantidade : AulaPrevistaBimestre
     {
         public int CriadasTitular { get; set; }

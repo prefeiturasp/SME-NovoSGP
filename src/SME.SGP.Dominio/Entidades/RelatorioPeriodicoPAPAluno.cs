@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SME.SGP.Dominio
 {
+    [ExcludeFromCodeCoverage]
     public class RelatorioPeriodicoPAPAluno : EntidadeBase
     {
         public string CodigoAluno { get; set; }

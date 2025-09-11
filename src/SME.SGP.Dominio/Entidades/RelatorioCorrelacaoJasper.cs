@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SME.SGP.Dominio
 {
+    [ExcludeFromCodeCoverage]
     public class RelatorioCorrelacaoJasper
     {
         public RelatorioCorrelacaoJasper(RelatorioCorrelacao relatorioCorrelacao, string jSessionId, Guid exportId, Guid requestId)

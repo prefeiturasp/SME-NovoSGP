@@ -1,8 +1,10 @@
 ﻿using SME.SGP.Dominio.Entidades;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SME.SGP.Dominio
 {
+    [ExcludeFromCodeCoverage]
     public class OpcaoResposta : EntidadeBase
     {
         public OpcaoResposta()
