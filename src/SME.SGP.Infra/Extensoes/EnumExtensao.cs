@@ -68,6 +68,21 @@ namespace SME.SGP.Infra
             }
         }
 
+        public static FuncaoAtividade ObterFuncaoAtividadePorPerfil(this PerfilUsuario perfilCodigo)
+        {
+            switch (perfilCodigo)
+            {
+                case PerfilUsuario.CP:
+                    return FuncaoAtividade.COORDERNADOR_PEDAGOGICO_CIEJA;
+                case PerfilUsuario.AD:
+                    return FuncaoAtividade.ASSISTENTE_COORDERNADOR_GERAL_CIEJA;
+                case PerfilUsuario.DIRETOR:
+                    return FuncaoAtividade.ASSISTENTE_COORDERNADOR_GERAL_CIEJA;
+                default:
+                    throw new NegocioException("Perfil não relacionado com Função Atividade");
+            }
+        }
+
         public static PerfilUsuario ObterPerfilPorCargo(this Cargo cargoId)
         {
             switch (cargoId)
@@ -96,6 +111,21 @@ namespace SME.SGP.Infra
                 case FuncaoExterna.AD:
                     return PerfilUsuario.AD;
                 case FuncaoExterna.Diretor:
+                    return PerfilUsuario.DIRETOR;
+                default:
+                    throw new NegocioException("Funcao Externa não relacionada a um Perfil");
+            }
+        }
+
+        public static PerfilUsuario ObterPerfilPorFuncaoAtividade(this FuncaoAtividade codigoFuncaoAtividade)
+        {
+            switch (codigoFuncaoAtividade)
+            {
+                case FuncaoAtividade.COORDERNADOR_PEDAGOGICO_CIEJA:
+                    return PerfilUsuario.CP;
+                case FuncaoAtividade.ASSISTENTE_COORDERNADOR_GERAL_CIEJA:
+                    return PerfilUsuario.AD;
+                case FuncaoAtividade.COORDERNADOR_GERAL_CIEJA:
                     return PerfilUsuario.DIRETOR;
                 default:
                     throw new NegocioException("Funcao Externa não relacionada a um Perfil");
