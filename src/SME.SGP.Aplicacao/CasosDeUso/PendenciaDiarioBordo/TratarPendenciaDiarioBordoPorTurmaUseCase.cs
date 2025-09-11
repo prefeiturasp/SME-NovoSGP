@@ -39,19 +39,17 @@ namespace SME.SGP.Aplicacao
                         {
                             professoresEComponentes.AddRange(professorDaTurma.DisciplinasId()
                                 .Select(disciplinaId => new ProfessorEComponenteInfantilDto()
-                                {
-                                    CodigoRf = codigoRfProfessor,
-                                    DisciplinaId = disciplinaId,
-                                    DescricaoComponenteCurricular = componentesSgp.FirstOrDefault(f => f.Codigo.Equals(disciplinaId.ToString()))?.Descricao,
-                                }));
+                            {
+                                CodigoRf = codigoRfProfessor,
+                                DisciplinaId = disciplinaId,
+                                DescricaoComponenteCurricular = componentesSgp.FirstOrDefault(f => f.Codigo.Equals(disciplinaId.ToString()))?.Descricao,
+                            }));
                         }
                     }
                 }
 
                 await BuscaPendenciaESalva(turmasDreUe.FirstOrDefault(), professoresEComponentes);
             }
-
-            await BuscaPendenciaParaExcluirEPublica(turmaId);
 
             return true;
         }
@@ -87,7 +85,7 @@ namespace SME.SGP.Aplicacao
 
                     if (professoresParaGerarPendencia.Any())
                     {
-                        filtroPendenciaDiarioBordoTurmaAula.AulasProfessoresComponentesCurriculares.AddRange(professoresParaGerarPendencia.Select(s => new AulaProfessorComponenteDto()
+                        filtroPendenciaDiarioBordoTurmaAula.AulasProfessoresComponentesCurriculares.AddRange(professoresParaGerarPendencia.Select(s=> new AulaProfessorComponenteDto()
                         {
                             AulaId = aula.Id,
                             PeriodoEscolarId = aula.PeriodoEscolarId,
@@ -103,17 +101,6 @@ namespace SME.SGP.Aplicacao
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand("Gerar pendências de diário de bordo por turma", LogNivel.Critico, LogContexto.Pendencia, ex.Message));
             }
-        }
-
-        private async Task BuscaPendenciaParaExcluirEPublica(string turmaId)
-        {
-            var pendenciasDiarioDeBordoParaExcluir = await mediator.Send(new ObterAulasComPendenciaDiarioBordoResolvidaPorTurmaCommand(turmaId));
-
-            if (pendenciasDiarioDeBordoParaExcluir.Any())
-            {
-                var filtro = new FiltroListaAulaIdComponenteCurricularIdDto(pendenciasDiarioDeBordoParaExcluir);
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaExcluirPendenciasDiarioBordo, filtro));
-            }
-        }
+        } 
     }
 }

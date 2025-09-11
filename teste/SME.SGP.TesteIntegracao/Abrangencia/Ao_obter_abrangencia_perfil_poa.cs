@@ -12,14 +12,9 @@ using SME.SGP.TesteIntegracao.Abrangencia.Base;
 using SME.SGP.TesteIntegracao.Abrangencia.Fake;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Net;
 using System.Threading.Tasks;
 using Xunit;
-using Newtonsoft.Json;
-using Microsoft.Extensions.Configuration;
 
 namespace SME.SGP.TesteIntegracao.Abrangencia
 {
@@ -180,21 +175,6 @@ namespace SME.SGP.TesteIntegracao.Abrangencia
         [Fact(DisplayName = "Abrangência - Obter turmas da abrangência para perfil POA")]
         public async Task Ao_obter_turmas_abrangencia_perfil_poa()
         {
-            // ARRANGE - Configuração do cenário HTTP FAKE
-            var turmasEolFake = new List<TurmaApiEolDto>
-            {
-                // Simula que a API do EOL retornou a turma que o SGP irá procurar.
-                new TurmaApiEolDto { Codigo = int.Parse(TURMA_CODIGO_1) }
-            };
-
-            var jsonResposta = JsonConvert.SerializeObject(turmasEolFake);
-            var conteudoHttp = new StringContent(jsonResposta, System.Text.Encoding.UTF8, "application/json");
-
-            // A URL aqui é um prefixo. A implementação do handler usará 'StartsWith' para encontrá-la.
-            var urlApiEol = ServiceProvider.GetService<IConfiguration>()["UrlApiEOL"];
-            RegistradorDependenciasTeste.HttpHandlerFake.AdicionarCenario(urlApiEol, HttpStatusCode.OK, conteudoHttp);
-
-            // ARRANGE - Continuação do setup do teste
             var filtro = new FiltroTesteDto()
             {
                 Perfil = ObterPerfilPOA_Portugues(),

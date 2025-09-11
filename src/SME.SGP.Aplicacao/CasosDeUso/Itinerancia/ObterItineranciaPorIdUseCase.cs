@@ -3,6 +3,7 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,7 +26,7 @@ namespace SME.SGP.Aplicacao
             var questoesBase = await mediator.Send(ObterQuestoesBaseItineranciaEAlunoQuery.Instance);
 
             var verificaWorkflow = await mediator.Send(new ObterWorkflowItineranciaPorItineranciaIdQuery(itinerancia.Id));
-            WorkflowAprovacao workflow = new WorkflowAprovacao();
+            WorkflowAprovacao workflow = null;
 
             if (verificaWorkflow.NaoEhNulo())
                 workflow = await mediator.Send(new ObterWorkflowPorIdQuery(verificaWorkflow.WfAprovacaoId));

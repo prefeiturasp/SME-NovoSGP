@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
@@ -6,7 +7,6 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IRepositorioDreConsulta
     {
         IEnumerable<Dre> ListarPorCodigos(string[] dresCodigos);
-        Task<IEnumerable<Dre>> ListarPorCodigosAsync(string[] dresCodigos);
 
         (IEnumerable<Dre> Dres, string[] CodigosDresNaoEncontrados) MaterializarCodigosDre(string[] idDres);
 

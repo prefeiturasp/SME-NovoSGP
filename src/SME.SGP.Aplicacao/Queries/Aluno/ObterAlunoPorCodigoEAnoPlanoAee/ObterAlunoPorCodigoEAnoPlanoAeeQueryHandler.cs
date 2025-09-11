@@ -24,12 +24,12 @@ namespace SME.SGP.Aplicacao
             var alunoPorTurmaResposta = (await mediator.Send(new ObterTurmasAlunoPorFiltroPlanoAeeQuery(request.CodigoAluno, request.AnoLetivo, false, request.TipoTurma), cancellationToken))
                                                        .OrderByDescending(a => a.DataSituacao).ThenByDescending(a => a.NumeroAlunoChamada)?.FirstOrDefault();
 
-            if (alunoPorTurmaResposta == null)
+            if (alunoPorTurmaResposta.EhNulo())
                 return default;
 
             var alunoReduzido = new AlunoReduzidoDto()
             {
-                Nome = !string.IsNullOrEmpty(alunoPorTurmaResposta?.NomeAluno) ? alunoPorTurmaResposta?.NomeAluno : alunoPorTurmaResposta?.NomeSocialAluno,
+                Nome = !string.IsNullOrEmpty(alunoPorTurmaResposta.NomeAluno) ? alunoPorTurmaResposta.NomeAluno : alunoPorTurmaResposta.NomeSocialAluno,
                 NumeroAlunoChamada = alunoPorTurmaResposta.ObterNumeroAlunoChamada(),
                 DataNascimento = alunoPorTurmaResposta.DataNascimento,
                 DataSituacao = alunoPorTurmaResposta.DataSituacao,

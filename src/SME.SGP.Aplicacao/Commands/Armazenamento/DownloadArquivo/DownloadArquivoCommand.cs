@@ -1,6 +1,8 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
@@ -13,9 +15,8 @@ namespace SME.SGP.Aplicacao
             Tipo = tipo;
         }
 
-        public Guid Codigo { get; set; }
-
-        public string Nome { get; set; }
-        public TipoArquivo Tipo { get; set; }
+        public Guid Codigo;
+        public string Nome;
+        public TipoArquivo Tipo;
     }
 }

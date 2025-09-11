@@ -27,13 +27,11 @@ namespace SME.SGP.Aplicacao
             var usuariosCPs = await ObterUsuariosPorCodigoUeETipo(filtro.CodigoUe, Cargo.CP);
 
             foreach (var usuarioCP in usuariosCPs)
-                if (usuarioCP != null)
-                    await NotificarUsuario(filtro, usuarioCP);
+                await NotificarUsuario(filtro, usuarioCP);
 
             var usuarioDiretor = (await ObterUsuariosPorCodigoUeETipo(filtro.CodigoUe, Cargo.CP)).FirstOrDefault();
 
-            if (usuarioDiretor != null)
-                await NotificarUsuario(filtro, usuarioDiretor);
+            await NotificarUsuario(filtro, usuarioDiretor);
 
             return true;
         }
@@ -64,11 +62,7 @@ namespace SME.SGP.Aplicacao
         {
             var usuarios = new List<Usuario>();
             foreach (var cpUe in listaCPsUe)
-            {
-                var usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(cpUe.CodigoRF);
-                if (usuario != null)
-                    usuarios.Add(usuario);
-            }
+                usuarios.Add(await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(cpUe.CodigoRF));
             return usuarios;
         }
     }

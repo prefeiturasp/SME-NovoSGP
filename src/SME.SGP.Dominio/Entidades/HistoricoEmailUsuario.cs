@@ -1,8 +1,8 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using SME.SGP.Dominio.Enumerados;
+using System;
 
 namespace SME.SGP.Dominio
 {
-    [ExcludeFromCodeCoverage]
     public class HistoricoEmailUsuario : EntidadeBase
     {
         public long UsuarioId { get; set; }

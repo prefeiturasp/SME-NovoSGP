@@ -8,8 +8,8 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAtribuicaoResponsaveisPorUeTipoQuery : IRequest<IEnumerable<AtribuicaoResponsavelDto>>
     {
-        public string CodigoUE { get; set; }
-        public TipoResponsavelAtribuicao Tipo { get; set; }
+        public string CodigoUE;
+        public TipoResponsavelAtribuicao Tipo;
 
         public ObterAtribuicaoResponsaveisPorUeTipoQuery(string codigoUE, TipoResponsavelAtribuicao tipo)
         {

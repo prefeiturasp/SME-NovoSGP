@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
                 return retorno;
             }
 
-            foreach (var id in ids ?? new List<long>())
+            foreach (var id in ids)
             {
                 var retornoExclusao = await mediator.Send(new ExcluirOcorrenciaCommand { Id = id });
                 if (retornoExclusao.ExistemErros)

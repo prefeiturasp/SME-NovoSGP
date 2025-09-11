@@ -168,7 +168,7 @@ namespace SME.SGP.Dominio.Servicos
 
             foreach (var turmaAgrupada in turmasAgrupadas)
             {
-                var alunosDaTurma = await mediator.Send(new ObterAlunosEolPorTurmaQuery(turmaAgrupada.Key));
+                var alunosDaTurma =  await  mediator.Send(new ObterAlunosEolPorTurmaQuery(turmaAgrupada.Key));
                 var alunosFaltososTurma = alunosDaTurma.Where(c => turmaAgrupada.Any(a => a.AlunoCodigo == c.CodigoAluno));
 
                 mensagem.AppendLine($"<p>Turma <b>{turmaAgrupada.First().TurmaModalidade.ObterNomeCurto()} - {turmaAgrupada.First().TurmaNome}</b></p>");
@@ -243,7 +243,7 @@ namespace SME.SGP.Dominio.Servicos
                 if (!alunosFaltososNaTurma.Any())
                     continue;
 
-                var alunosTurmaEOL = await mediator.Send(new ObterAlunosEolPorTurmaQuery(turmaAgrupamento.Key));
+                var alunosTurmaEOL =  await  mediator.Send(new ObterAlunosEolPorTurmaQuery(turmaAgrupamento.Key));
                 var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaAgrupamento.Key);
 
                 var alunosFaltososEOL = alunosTurmaEOL.Where(c => alunosFaltososNaTurma.Any(a => a.CodigoAluno == c.CodigoAluno));
@@ -340,39 +340,27 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<IEnumerable<(Cargo? Cargo, Usuario Usuario)>> BuscaProfessorAula(RegistroFrequenciaFaltanteDto turma)
         {
-            return turma.ModalidadeTurma == Modalidade.EducacaoInfantil
-                ? await BuscarProfessoresEducacaoInfantil(turma?.CodigoTurma)
-                : await BuscarProfessorUltimaAula(turma);
-        }
-
-        private async Task<IEnumerable<(Cargo? Cargo, Usuario Usuario)>> BuscarProfessoresEducacaoInfantil(string codigoTurma)
-        {
-            var professores = new List<(Cargo? Cargo, Usuario Usuario)>();
-            var disciplinaEols = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(codigoTurma));
-
-            if (disciplinaEols == null)
-                return professores;
-
-            foreach (var disciplina in disciplinaEols)
+            if (turma.ModalidadeTurma == Modalidade.EducacaoInfantil)
             {
-                if (string.IsNullOrWhiteSpace(disciplina?.ProfessorRf))
-                    continue;
+                var disciplinaEols = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(turma.CodigoTurma));
+                if (disciplinaEols.NaoEhNulo())
+                    foreach (var disciplina in disciplinaEols)
+                    {
+                        return await RetornaUsuarios(disciplina.ProfessorRf);
+                    }
+            }
+            else
+            {
+                // Buscar professor da ultima aula
+                var professorRf = turma.Aulas
+                        .OrderBy(o => o.DataAula)
+                        .Last().ProfessorId;
 
-                var usuarios = await RetornaUsuarios(disciplina?.ProfessorRf);
-                if (usuarios != null)
-                    professores.AddRange(usuarios);
+                return await this.RetornaUsuarios(professorRf);
+
             }
 
-            return professores;
-        }
-
-        private async Task<IEnumerable<(Cargo? Cargo, Usuario Usuario)>> BuscarProfessorUltimaAula(RegistroFrequenciaFaltanteDto turma)
-        {
-            var professorRf = turma?.Aulas
-                ?.OrderBy(o => o.DataAula)
-                ?.Last()?.ProfessorId;
-
-            return await RetornaUsuarios(professorRf);
+            return null;
         }
 
         private async Task<IEnumerable<(Cargo? Cargo, Usuario Usuario)>> RetornaUsuarios(string procurarRfs)
@@ -466,7 +454,7 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     // Carrega todas as aulas sem registro de frequencia da turma e disciplina para notificação
                     turma.Aulas = repositorioFrequencia.ObterAulasSemRegistroFrequencia(turma.CodigoTurma, turma.DisciplinaId, tipo);
-                    if (turma.Aulas.PossuiRegistros()
+                    if (turma.Aulas.PossuiRegistros() 
                         && turma.Aulas.Count() >= qtdAulasNotificacao)
                     {
                         // Busca Professor/Gestor/Supervisor da Turma ou Ue
@@ -485,7 +473,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public record CargoNaoNotificadoTurma(string CodigoTurma, Cargo? Cargo);
 
-        private IEnumerable<CargoNaoNotificadoTurma> FiltrarCargosNaoNotificados(IEnumerable<(Cargo? Cargo, Usuario Usuario)> usuarios,
+        private IEnumerable<CargoNaoNotificadoTurma> FiltrarCargosNaoNotificados(IEnumerable<(Cargo? Cargo, Usuario Usuario)> usuarios, 
                                                                                  string codigoTurma,
                                                                                  List<(string CodigoTurma, Cargo? Cargo)> cargosNotificados)
         => usuarios.Select(u => u.Cargo)
@@ -504,7 +492,7 @@ namespace SME.SGP.Dominio.Servicos
             var disciplina = await mediator.Send(new ObterComponenteCurricularPorIdQuery(long.Parse(turmaSemRegistro.DisciplinaId)));
             if (disciplina.NaoEhNulo() && disciplina.RegistraFrequencia)
             {
-
+            
                 if (disciplina.RegistraFrequencia)
                 {
                     var tituloMensagem = $"Frequência da turma {turmaSemRegistro.NomeTurma} - {turmaSemRegistro.DisciplinaId} ({turmaSemRegistro.NomeUe})";

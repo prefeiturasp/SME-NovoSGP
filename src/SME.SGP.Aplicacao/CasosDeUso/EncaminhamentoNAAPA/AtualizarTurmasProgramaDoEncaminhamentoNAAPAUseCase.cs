@@ -1,8 +1,14 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Math.EC.Rfc7748;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.Dto;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,12 +34,12 @@ namespace SME.SGP.Aplicacao
             var respostaTurmasProgramaNAAPA = questaoTurmasProgramaNAAPA.Respostas?.FirstOrDefault();
             if (respostaTurmasProgramaNAAPA.NaoEhNulo())
             {
-                var turmasProgramaNaapa = JsonConvert.DeserializeObject<List<RespostaTurmaProgramaEncaminhamentoNAAPADto>>(respostaTurmasProgramaNAAPA?.Texto);
+                var turmasProgramaNaapa = JsonConvert.DeserializeObject<List<RespostaTurmaProgramaEncaminhamentoNAAPADto>>(respostaTurmasProgramaNAAPA.Texto);
                 if (turmasProgramaAluno.Count == turmasProgramaNaapa?.Count &&
-                    turmasProgramaAluno.All(turmaProgramaAluno => turmasProgramaNaapa.NaoEhNulo() && turmasProgramaNaapa.Any(x => x.EhIgual(turmaProgramaAluno)))) 
+                    turmasProgramaAluno.All(turmaProgramaAluno => turmasProgramaNaapa.NaoEhNulo() && turmasProgramaNaapa.Any(x => x.Equals(turmaProgramaAluno)))) 
                     return false;
 
-                var respostaEnderecoAtualizado = MapearDTO(questaoTurmasProgramaNAAPA.QuestaoId, respostaTurmasProgramaNAAPA?.Id ?? 0, turmasProgramaAluno);
+                var respostaEnderecoAtualizado = MapearDTO(questaoTurmasProgramaNAAPA.QuestaoId, respostaTurmasProgramaNAAPA.Id, turmasProgramaAluno);
                 return await mediator.Send(new AlterarEncaminhamentoNAAPASecaoQuestaoRespostaCommand(respostaTurmasProgramaNAAPA,
                                                                                                   respostaEnderecoAtualizado));
             }

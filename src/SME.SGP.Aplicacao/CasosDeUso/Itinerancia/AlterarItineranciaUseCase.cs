@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao.Interfaces
         private async Task EnviarNotificacao(Itinerancia itinerancia, ItineranciaDto dto)
         {
             var verificaWorkflow = await mediator.Send(new ObterWorkflowItineranciaPorItineranciaIdQuery(itinerancia.Id));
-            WorkflowAprovacao workflow = new WorkflowAprovacao();
+            WorkflowAprovacao workflow = null;
 
             if (verificaWorkflow.NaoEhNulo())
                 workflow = await mediator.Send(new ObterWorkflowPorIdQuery(verificaWorkflow.WfAprovacaoId));

@@ -1,8 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace SME.SGP.Dominio
 {
-    [ExcludeFromCodeCoverage]
     public class PlanoAEEReestruturacao : EntidadeBase
     {
         public PlanoAEEVersao PlanoAEEVersao { get; set; }

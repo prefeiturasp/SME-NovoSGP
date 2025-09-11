@@ -27,17 +27,12 @@ namespace SME.SGP.Aplicacao
         {
             var cargo = ObterCargoPorPerfil(request.Perfil);
             var funcaoExterna = ObterFuncaoExternaPorPerfil(request.Perfil);
-            var funcaoAtividadeGestaoCIEJA = ObterPorPerfilGestaoCIEJA(request.Perfil);
 
             using (var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO))
             {
                 HttpResponseMessage resposta;
                 if (request.UsuarioRf.EhLoginCpf())
                     resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_ESCOLAS_FUNCIONARIOS_FUNCOES_EXTERNAS, request.UeCodigo, funcaoExterna));
-                
-                else if (funcaoAtividadeGestaoCIEJA > 0)
-                    resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_ESCOLAS_FUNCIONARIOS_FUNCOES_ATIVIDADES, request.UeCodigo, funcaoAtividadeGestaoCIEJA));
-                
                 else
                     resposta = await httpClient.GetAsync($"/api/" + string.Format(ServicosEolConstants.URL_ESCOLAS_FUNCIONARIOS_CARGOS, request.UeCodigo, cargo));
                     
@@ -73,18 +68,6 @@ namespace SME.SGP.Aplicacao
                 return (int)FuncaoExterna.AD;
             if (perfil == Perfis.PERFIL_DIRETOR)
                 return (int)FuncaoExterna.Diretor;
-
-            return 0;
-        }
-
-        private int ObterPorPerfilGestaoCIEJA(Guid perfil)
-        {
-            if (perfil == Perfis.PERFIL_COORDENADOR_PEDAGOGICO_CIEJA)
-                return (int)FuncaoAtividade.COORDERNADOR_PEDAGOGICO_CIEJA;
-            if (perfil == Perfis.PERFIL_ASSISTENTE_COORDENADOR_GERAL_CIEJA)
-                return (int)FuncaoAtividade.ASSISTENTE_COORDERNADOR_GERAL_CIEJA;
-            if (perfil == Perfis.PERFIL_COORDENADOR_GERAL_CIEJA)
-                return (int)FuncaoAtividade.COORDERNADOR_GERAL_CIEJA;
 
             return 0;
         }

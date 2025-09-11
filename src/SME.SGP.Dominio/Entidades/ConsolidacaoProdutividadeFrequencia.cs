@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace SME.SGP.Dominio
 {
-    [ExcludeFromCodeCoverage]
     public class ConsolidacaoProdutividadeFrequencia : EntidadeBase
     {
         public string CodigoTurma { get; set; }

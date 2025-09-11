@@ -1,9 +1,11 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,7 +28,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ProfessorResumoDto>> ObterResumoAutoComplete(int anoLetivo, string dreId, string ueId, string nomeProfessor)
         {
-            if (string.IsNullOrEmpty(nomeProfessor) && nomeProfessor?.Length < 2)
+            if (String.IsNullOrEmpty(nomeProfessor) && nomeProfessor.Length < 2)
                 return null;
             var retornoProfessores = await mediator.Send(new ObterProfessoresAutoCompleteQuery(anoLetivo, dreId, ueId, nomeProfessor));
             for (int i = 0; i < retornoProfessores.Count(); i++)

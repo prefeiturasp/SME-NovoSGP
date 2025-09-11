@@ -25,27 +25,24 @@ namespace SME.SGP.Aplicacao
             if (!frequenciasGlobaisPorDre?.Any() ?? true)
                 return resultado;
 
-            if (frequenciasGlobaisPorDre != null)
+            foreach (var frequenciaGlobalPorDre in frequenciasGlobaisPorDre)
             {
-                foreach (var frequenciaGlobalPorDre in frequenciasGlobaisPorDre)
+                var graficoFrequenciaAcimaDoMinimo = new GraficoFrequenciaGlobalPorDREDto
                 {
-                    var graficoFrequenciaAcimaDoMinimo = new GraficoFrequenciaGlobalPorDREDto
-                    {
-                        Dre = FormatarAbreviacaoDre(frequenciaGlobalPorDre.Dre),
-                        Descricao = DashboardConstants.QuantidadeAcimaMinimoFrequenciaDescricao,
-                        Quantidade = frequenciaGlobalPorDre.QuantidadeAcimaMinimoFrequencia
-                    };
+                    Dre = FormatarAbreviacaoDre(frequenciaGlobalPorDre.Dre),
+                    Descricao = DashboardConstants.QuantidadeAcimaMinimoFrequenciaDescricao,
+                    Quantidade = frequenciaGlobalPorDre.QuantidadeAcimaMinimoFrequencia
+                };
 
-                    var graficoFrequenciaAbaixoDoMinimo = new GraficoFrequenciaGlobalPorDREDto
-                    {
-                        Dre = FormatarAbreviacaoDre(frequenciaGlobalPorDre.Dre),
-                        Descricao = DashboardConstants.QuantidadeAbaixoMinimoFrequenciaDescricao,
-                        Quantidade = frequenciaGlobalPorDre.QuantidadeAbaixoMinimoFrequencia
-                    };
+                var graficoFrequenciaAbaixoDoMinimo = new GraficoFrequenciaGlobalPorDREDto
+                {
+                    Dre = FormatarAbreviacaoDre(frequenciaGlobalPorDre.Dre),
+                    Descricao = DashboardConstants.QuantidadeAbaixoMinimoFrequenciaDescricao,
+                    Quantidade = frequenciaGlobalPorDre.QuantidadeAbaixoMinimoFrequencia
+                };
 
-                    resultado.Add(graficoFrequenciaAcimaDoMinimo);
-                    resultado.Add(graficoFrequenciaAbaixoDoMinimo);
-                }
+                resultado.Add(graficoFrequenciaAcimaDoMinimo);
+                resultado.Add(graficoFrequenciaAbaixoDoMinimo);
             }
 
             return resultado;

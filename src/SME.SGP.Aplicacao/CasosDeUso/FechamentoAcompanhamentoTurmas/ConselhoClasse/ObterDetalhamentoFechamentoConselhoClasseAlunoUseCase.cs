@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
             else
             {
                 turmasCodigos = new string[1] { turma.CodigoTurma };
-                conselhosClassesIds = new long[1] { conselhoClasse?.Id ?? 0 };
+                conselhosClassesIds = new long[1] { conselhoClasse.Id };
             }
 
             var notasConselhoClasseAluno = new List<NotaConceitoBimestreComponenteDto>();

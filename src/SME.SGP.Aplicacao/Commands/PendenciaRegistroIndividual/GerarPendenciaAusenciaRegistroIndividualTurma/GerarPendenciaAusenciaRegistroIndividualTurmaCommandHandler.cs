@@ -91,14 +91,12 @@ namespace SME.SGP.Aplicacao
 
 
             var professoresRfsParaBusca = new List<string>();
-            if (professoresDaTurma != null)
+            foreach (var professores in professoresDaTurma)
             {
-                foreach (var professores in professoresDaTurma)
-                {
-                    var listaProfessorComVirgulas = professores.Split(',');
-                    professoresRfsParaBusca.AddRange(listaProfessorComVirgulas.Select(a => a.Trim()));
-                }
+                var listaProfessorComVirgulas = professores.Split(',');
+                professoresRfsParaBusca.AddRange(listaProfessorComVirgulas.Select( a => a.Trim()));
             }
+
 
             await AdicionarUsuariosDaPendenciaAsync(pendencia, turma, professoresRfsParaBusca);
             await AdicionarPendenciaRegistroIndividualAsync(pendencia, turma, alunosTurmaComAusenciaRegistroIndividualPorDias);

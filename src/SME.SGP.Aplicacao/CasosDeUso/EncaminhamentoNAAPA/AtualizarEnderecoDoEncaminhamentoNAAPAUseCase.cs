@@ -1,8 +1,11 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,10 +32,10 @@ namespace SME.SGP.Aplicacao
             var respostaEnderecoResidencialNAAPA = questaoEnderecoResidencialNAAPA.Respostas?.FirstOrDefault();
             if (respostaEnderecoResidencialNAAPA.NaoEhNulo())
             {
-                var enderecoResidencialNAAPA = JsonConvert.DeserializeObject<List<RespostaEnderecoResidencialEncaminhamentoNAAPADto>>(respostaEnderecoResidencialNAAPA?.Texto);
-                if (enderecoResidencialAluno.EhIgual(enderecoResidencialNAAPA?.FirstOrDefault())) return false;
+                var enderecoResidencialNAAPA = JsonConvert.DeserializeObject<List<RespostaEnderecoResidencialEncaminhamentoNAAPADto>>(respostaEnderecoResidencialNAAPA.Texto);
+                if (enderecoResidencialAluno.Equals(enderecoResidencialNAAPA?.FirstOrDefault())) return false;
 
-                var respostaEnderecoAtualizado = MapearDTO(questaoEnderecoResidencialNAAPA.QuestaoId, respostaEnderecoResidencialNAAPA?.Id ?? 0, enderecoResidencialAluno);
+                var respostaEnderecoAtualizado = MapearDTO(questaoEnderecoResidencialNAAPA.QuestaoId, respostaEnderecoResidencialNAAPA.Id, enderecoResidencialAluno);
                 return await mediator.Send(new AlterarEncaminhamentoNAAPASecaoQuestaoRespostaCommand(respostaEnderecoResidencialNAAPA,
                                                                                                   respostaEnderecoAtualizado));
             }

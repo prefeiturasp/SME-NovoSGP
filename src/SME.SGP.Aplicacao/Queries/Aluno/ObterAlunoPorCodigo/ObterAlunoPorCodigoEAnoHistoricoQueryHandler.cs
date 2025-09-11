@@ -20,12 +20,12 @@ namespace SME.SGP.Aplicacao
         public async Task<AlunoReduzidoDto> Handle(ObterAlunoPorCodigoQuery request, CancellationToken cancellationToken)
         {
             var alunoPorTurmaResposta = (await mediator.Send(new ObterTurmaAlunoPorCodigoAlunoQuery(request.CodigoAluno))).OrderByDescending(a => a.DataSituacao)?.FirstOrDefault();
-            if (alunoPorTurmaResposta == null)
+            if (alunoPorTurmaResposta.EhNulo())
                 throw new NegocioException("Aluno não localizado");
 
             var alunoReduzido = new AlunoReduzidoDto()
             {
-                Nome = !string.IsNullOrEmpty(alunoPorTurmaResposta?.NomeAluno) ? alunoPorTurmaResposta?.NomeAluno : alunoPorTurmaResposta?.NomeSocialAluno,
+                Nome = !string.IsNullOrEmpty(alunoPorTurmaResposta.NomeAluno) ? alunoPorTurmaResposta.NomeAluno : alunoPorTurmaResposta.NomeSocialAluno,
                 NumeroAlunoChamada = alunoPorTurmaResposta.ObterNumeroAlunoChamada(),
                 DataNascimento = alunoPorTurmaResposta.DataNascimento,
                 DataSituacao = alunoPorTurmaResposta.DataSituacao,

@@ -37,12 +37,11 @@ namespace SME.SGP.Infra
             IEnumerable<CompensacaoAusenciaAlunoAulaSimplificadoDto> compensacaoAusenciaAlunoAula,
             AlunoPorTurmaResposta aluno, 
             IEnumerable<AnotacaoAlunoAulaDto> anotacoesTurma, 
-            FrequenciaPreDefinidaDto frequenciaPreDefinida,
-            TipoFrequencia? frequenciaSugerida)
+            FrequenciaPreDefinidaDto frequenciaPreDefinida)
         {
             foreach (var aula in aulas.OrderBy(a => a.DataAula))
             {
-                Aulas.Add(new FrequenciaAulaDetalheDto(aula, aluno, registrosFrequenciaAlunos, compensacaoAusenciaAlunoAula, anotacoesTurma, frequenciaPreDefinida, frequenciaSugerida));
+                Aulas.Add(new FrequenciaAulaDetalheDto(aula, aluno, registrosFrequenciaAlunos, compensacaoAusenciaAlunoAula, anotacoesTurma, frequenciaPreDefinida));
             }
         }
 

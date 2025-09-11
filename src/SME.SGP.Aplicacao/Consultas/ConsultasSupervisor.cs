@@ -1,4 +1,4 @@
-using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
@@ -216,7 +217,7 @@ namespace SME.SGP.Aplicacao
                                 break;
                             }
                     }
-                string nomeResponsavel = listaResponsaveis != null ? listaResponsaveis?.NomeServidor + " - " + listaResponsaveis?.CodigoRfOuLogin
+                string nomeResponsavel = listaResponsaveis.NaoEhNulo() ? listaResponsaveis.NomeServidor + " - " + listaResponsaveis.CodigoRfOuLogin
                                          : string.Empty;
 
                 var itemRetorno = new ResponsavelEscolasDto()

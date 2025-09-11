@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Moq;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -19,10 +20,11 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IConsultasPeriodoEscolar> consultasPeriodoEscolar;
         private readonly Mock<IConsultasTipoCalendario> consultasTipoCalendario;
         private readonly Mock<IConsultasTurma> consultasTurma;
-        private readonly Mock<IRepositorioAulaConsulta> repositorioAula;
+        private readonly Mock<IRepositorioAulaConsulta> repositorioAula;      
         private readonly Mock<IServicoUsuario> servicoUsuario;
         private readonly Mock<IRepositorioTipoCalendarioConsulta> repositorio;
         private readonly Mock<IMediator> mediator;
+        private readonly Mock<IRepositorioAulaConsulta> repositorioConsulta;
 
         public ConsultasAulasTeste()
         {
@@ -39,6 +41,16 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
 
             Setup();
         }
+
+        //[Fact]
+        //public async Task DeveObterAulaPorId()
+        //{
+        //    var aulaDto = await consultas.BuscarPorId(1);
+
+        //    Assert.NotNull(aulaDto);
+        //    Assert.True(aulaDto.Id == 1);
+        //    Assert.True(aulaDto.Quantidade == 3);
+        //}
 
         [Fact]
         public async Task DeveObterDatasDeAulasPorCalendarioTurmaEDisciplina()
@@ -58,12 +70,12 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             Assert.True(qtd == 4);
         }
 
-        private void SetupObterDatasDeAulas()
+        private async void SetupObterDatasDeAulas()
         {
             var usuario = new Usuario()
             {
                 CodigoRf = "111111",
-                PerfilAtual = Perfis.PERFIL_CJ
+                PerfilAtual = Dominio.Perfis.PERFIL_CJ
             };
 
             var disciplina = new DisciplinaDto()
@@ -104,10 +116,8 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                 CriadoRF = "111111"
             };
 
-            var listaAtribuicaoCJ = new List<AtribuicaoCJ>
-            {
-                atribuicaoCJ
-            };
+            var listaAtribuicaoCJ = new List<AtribuicaoCJ>();
+            listaAtribuicaoCJ.Add(atribuicaoCJ);
 
             var periodoEscolarDtoLista = new List<PeriodoEscolarDto>();
 
@@ -116,7 +126,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                 Id = 1,
                 Bimestre = 1,
                 PeriodoInicio = DateTime.Now,
-                PeriodoFim = DateTime.Now.AddDays(2)
+                PeriodoFim = DateTime.Now.AddDays(2) 
             };
 
             periodoEscolarDtoLista.Add(periodoEscolarDto);
@@ -136,26 +146,11 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                 Turma = turma
             };
 
-            var listaAula = new List<Aula>
-            {
-                aula
-            };
+            var listaAula = new List<Aula>();
+            listaAula.Add(aula);
 
             IEnumerable<long> periodosId = periodoEscolarListaDto.Periodos.Select(x => x.Id);
 
-            var componentesCurriculares = new List<ComponenteCurricularEol>
-            {
-                new ComponenteCurricularEol
-                {
-                    Codigo = 7,
-                    Descricao = "Portugues",
-                    Regencia = false,
-                    TerritorioSaber = false
-                }
-            };
-
-            mediator.Setup(x => x.Send(It.IsAny<ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery>(), It.IsAny<CancellationToken>()))
-                    .ReturnsAsync(componentesCurriculares);
 
             repositorioAula.Setup(c => c.ObterDatasDeAulasPorAnoTurmaEDisciplina(It.IsAny<IEnumerable<long>>(),
                                                                                     It.IsAny<int>(),

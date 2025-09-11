@@ -1,8 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace SME.SGP.Dominio.Entidades
+﻿namespace SME.SGP.Dominio.Entidades
 {
-    [ExcludeFromCodeCoverage]
     public class EventoTipo : EntidadeBase
     {
         public EventoTipo()

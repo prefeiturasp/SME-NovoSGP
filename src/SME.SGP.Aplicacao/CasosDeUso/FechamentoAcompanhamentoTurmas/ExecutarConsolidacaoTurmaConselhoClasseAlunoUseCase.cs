@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
                         componenteEdFisicaEJANecessitaConversaoNotaConceito = await TipoNotaEhConceito(turmaRegular, (filtro.Bimestre ?? 0));
 
                     turma = turmaRegular;
-                    filtro.TurmaId = turma?.Id ?? 0;
+                    filtro.TurmaId = turma.Id;
 
                 }
                 else if (turma.EhTurmaRegular() && turma.EhEJA())
@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
             };
 
             var componentesComNotaFechamentoOuConselho = (await mediator
-                                .Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma?.AnoLetivo ?? 0, turmasCodigos.ToArray(), filtro.Bimestre, filtro.AlunoCodigo))).ToList();
+                                .Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma.AnoLetivo, turmasCodigos.ToArray(), filtro.Bimestre, filtro.AlunoCodigo))).ToList();
 
             if (PodeAdicionarNota(filtro, componentesComNotaFechamentoOuConselho))
             {
@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao
 
                 if (turma.ModalidadeCodigo != Modalidade.Fundamental && codigosComplementares.Any())
                     turmasCodigos.AddRange(codigosComplementares);
-
+                
                 var componentesDaTurmaES = await mediator.Send(new ObterInfoComponentesCurricularesESPorTurmasCodigoQuery(turmasCodigos.ToArray()));
 
                 if (componentesDaTurmaES.NaoEhNulo() && componentesDaTurmaES.Any())
@@ -102,12 +102,7 @@ namespace SME.SGP.Aplicacao
 
                     //Exceção de disciplina ED. Fisica para modalidade EJA
                     if (turma.EhEJA())
-                    {
-                        var matriculasAluno = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(turma.CodigoTurma, filtro.AlunoCodigo));
-                        var dispensadoEdFisica = matriculasAluno?.Where(m => m.CodigoTurma.ToString() == turma.CodigoTurma && m.CodigoSituacaoMatricula == SituacaoMatriculaAluno.DispensadoEdFisica)?.FirstOrDefault();
-                        if (dispensadoEdFisica != null)
-                            componentesDaTurmaES = componentesDaTurmaES.Where(a => a.Codigo != EdFisica);
-                    }
+                        componentesDaTurmaES = componentesDaTurmaES.Where(a => a.Codigo != EdFisica);
 
                     var possuiComponentesSemNotaConceito = componentesDaTurmaES
                         .Where(ct => ct.LancaNota && !ct.EhTerritorioSaber)
@@ -166,11 +161,11 @@ namespace SME.SGP.Aplicacao
         }
 
         private bool PodeAdicionarNota(
-                                       MensagemConsolidacaoConselhoClasseAlunoDto filtro,
+                                       MensagemConsolidacaoConselhoClasseAlunoDto filtro, 
                                        List<ComponenteCurricularDto> componentes)
         {
             var possuiIdComponente = filtro.ComponenteCurricularId.HasValue && filtro.ComponenteCurricularId != 0;
-
+            
             return possuiIdComponente && !componentes.Any(cc => cc.Codigo.Equals(filtro.ComponenteCurricularId.ToString()));
         }
 
@@ -289,7 +284,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task<bool> SalvarConsolidacaoConselhoClasseNota(Turma turma, long componenteCurricularId, long consolidadoTurmaAlunoId,
-                                                                      IEnumerable<NotaConceitoBimestreComponenteDto> notaConceitoBimestreComponenteDto,
+                                                                      IEnumerable<NotaConceitoBimestreComponenteDto> notaConceitoBimestreComponenteDto, 
                                                                       IEnumerable<FechamentoNotaAlunoAprovacaoDto> fechamentoNotas,
                                                                       MensagemConsolidacaoConselhoClasseAlunoDto filtro,
                                                                       (double? Nota, long? ConceitoId, bool EhNotaConceitoConselhoCache) notaConceitoCache)

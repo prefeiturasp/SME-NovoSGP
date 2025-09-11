@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 
 namespace SME.SGP.Dto
 {
-    [ExcludeFromCodeCoverage]
     public class AbrangenciaDreRetornoEolDto
     {
         public AbrangenciaDreRetornoEolDto()

@@ -1,8 +1,7 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
 
 namespace SME.SGP.Dominio
 {
-    [ExcludeFromCodeCoverage]
     public class ConselhoClasseConsolidadoTurmaAlunoNota 
     {
         public long Id { get; set; }

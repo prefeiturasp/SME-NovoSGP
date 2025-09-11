@@ -28,13 +28,6 @@ namespace SME.SGP.Dados.Repositorios
             return contexto.Conexao.Query<Dre>(query, new { dresCodigos });
         }
 
-        public async Task<IEnumerable<Dre>> ListarPorCodigosAsync(string[] dresCodigos)
-        {
-            var query = "select id, dre_id, abreviacao, nome from dre d where d.dre_id = ANY(@dresCodigos)";
-
-            return await contexto.Conexao.QueryAsync<Dre>(query, new { dresCodigos });
-        }
-
         public (IEnumerable<Dre> Dres,string[] CodigosDresNaoEncontrados) MaterializarCodigosDre(string[] idDres)
         {
             string[] naoEncontradas;

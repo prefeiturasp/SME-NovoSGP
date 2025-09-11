@@ -30,6 +30,5 @@ namespace SME.SGP.Infra
         public bool AulaCj { get; }
         public bool PodeEditar { get; }
         public bool EhDataSelecionadaFutura => Data.Date > DateTime.Now.Date;
-        public string ComponenteCurricularSugerido { get; set; }
     }
 }

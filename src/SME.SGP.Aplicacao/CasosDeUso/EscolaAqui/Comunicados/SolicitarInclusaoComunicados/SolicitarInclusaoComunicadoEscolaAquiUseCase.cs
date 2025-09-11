@@ -47,13 +47,13 @@ namespace SME.SGP.Aplicacao
             await ValidarAbrangenciaUsuario(comunicado, usuarioLogado);
 
             if (comunicado.CodigoDre == TODAS && !comunicado.CodigoUe.Equals(TODAS))
-                throw new NegocioException("Não é possível especificar uma escola quando o comunicado é para todas as DREs");
+                throw new NegocioException("Não é possivel especificar uma escola quando o comunicado é para todas as DREs");
 
             if (comunicado.CodigoUe == TODAS && !comunicado.Turmas.Any(a => a == TODAS))
-                throw new NegocioException("Não é possível especificar uma turma quando o comunicado é para todas as UEs");
+                throw new NegocioException("Não é possivel especificar uma turma quando o comunicado é para todas as UEs");
 
             if ((comunicado.Turmas.EhNulo() || comunicado.Turmas.Any(a => a == TODAS)) && (comunicado.AlunoEspecificado || (comunicado.Alunos?.Any() ?? false)))
-                throw new NegocioException("Não é possível especificar alunos quando o comunicado é para todas as Turmas");
+                throw new NegocioException("Não é possivel especificar alunos quando o comunicado é para todas as Turmas");
         }
 
         private async Task ValidarAbrangenciaUsuario(ComunicadoInserirDto comunicado, Usuario usuarioLogado)
@@ -97,17 +97,17 @@ namespace SME.SGP.Aplicacao
         private async Task ValidarAbrangenciaTurma(ComunicadoInserirDto comunicado, Usuario usuarioLogado)
         {
             var abrangencia = await mediator.Send(new ObterAbrangenciaCompactaVigenteEolPorLoginEPerfilQuery(usuarioLogado.Login, usuarioLogado.PerfilAtual));
-
             bool abrangenciaPermitida = abrangencia.Abrangencia.Abrangencia == Infra.Enumerados.Abrangencia.UE
                                         || abrangencia.Abrangencia.Abrangencia == Infra.Enumerados.Abrangencia.Dre
                                         || abrangencia.Abrangencia.Abrangencia == Infra.Enumerados.Abrangencia.SME;
+
 
             foreach (var turma in comunicado.Turmas)
             {
                 var abrangenciaTurmas = await mediator.Send(new ObterAbrangenciaTurmaQuery(turma, usuarioLogado.Login, usuarioLogado.PerfilAtual, false, abrangenciaPermitida));
 
-                if (abrangenciaTurmas == null)
-                    throw new NegocioException($"Usuário não possui permissão para enviar comunicados para a Turma com código {turma}");
+                if (abrangenciaTurmas.EhNulo())
+                    throw new NegocioException($"Usuário não possui permissão para enviar comunicados para a Turma com codigo {turma}");
             }
         }
     }

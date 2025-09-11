@@ -1,4 +1,6 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;

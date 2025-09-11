@@ -1,8 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace SME.SGP.Dominio
+﻿namespace SME.SGP.Dominio
 {
-    [ExcludeFromCodeCoverage]
     public class InatividadeAtendimentoNAAPANotificacao : EntidadeBase
     {
         public long EncaminhamentoNAAPAId { get; set; }

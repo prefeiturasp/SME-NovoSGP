@@ -41,11 +41,6 @@ namespace SME.SGP.Dados.Repositorios
                     return correlacao;
                 }, new { codigoCorrelacao });
 
-            if (result.FirstOrDefault() == null)
-            {
-                throw new NegocioException( $"Não foi possível obter a correlação do relatório pronto: {codigoCorrelacao} | conn: {contexto.ConnectionString} | query: {query}");
-            }
-
             return result.FirstOrDefault();
 
         }
@@ -53,11 +48,6 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<DataCriacaoRelatorioDto> ObterDataCriacaoRelatorio(Guid codigoCorrelacao)
         {
             return await contexto.Conexao.QueryFirstOrDefaultAsync<DataCriacaoRelatorioDto>("SELECT criado_em AS CriadoEm FROM relatorio_correlacao rc WHERE codigo = @codigoCorrelacao", new { codigoCorrelacao });
-        }
-
-        public async Task<RelatorioCorrelacao> ObterPorCodigoCorrelacaoAsync(Guid codigoCorrelacao)
-        {
-            return await contexto.Conexao.QueryFirstOrDefaultAsync<RelatorioCorrelacao>("select * from relatorio_correlacao where codigo = @codigoCorrelacao", new { codigoCorrelacao });
         }
     }
 }

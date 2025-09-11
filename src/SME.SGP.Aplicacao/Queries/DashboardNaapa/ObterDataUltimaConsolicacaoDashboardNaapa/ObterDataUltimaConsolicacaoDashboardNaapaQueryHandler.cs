@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             var parametroSistema = (await mediator.Send(new ObterParametrosSistemaPorTipoEAnoQuery(request.Tipo, request.AnoLetivo)))?.FirstOrDefault();
             
-            if (parametroSistema.NaoEhNulo() && !string.IsNullOrEmpty(parametroSistema?.Valor))
+            if (parametroSistema.NaoEhNulo() && !string.IsNullOrEmpty(parametroSistema.Valor))
                 return DateTime.Parse(parametroSistema.Valor);
             
             return null;

@@ -13,7 +13,7 @@ namespace SME.SGP.Infra.Dtos
         }
 
         public PeriodoFechamentoBimestre PeriodoFechamentoBimestre { get; set; }
-        public ModalidadeTipoCalendario ModalidadeTipoCalendario { get; set; }
+        public ModalidadeTipoCalendario ModalidadeTipoCalendario;
     }
 
     public class FiltroPeriodoFechamentoBimestreDtoValidator : AbstractValidator<FiltroPeriodoFechamentoBimestreDto>

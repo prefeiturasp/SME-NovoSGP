@@ -1,8 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace SME.SGP.Dominio.Entidades
 {
-    [ExcludeFromCodeCoverage]
     public class ComunicadoTurma : EntidadeBase
     {
         public string CodigoTurma { get; set; }

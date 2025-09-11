@@ -48,15 +48,10 @@ namespace SME.SGP.Aplicacao
             var atividadesAvaliativaEBimestres = await mediator
                 .Send(new ObterAtividadesAvaliativasPorCCTurmaPeriodoQuery(componentesCurriculares.Select(a => a.ToString()).ToArray(), filtro.TurmaCodigo, periodoInicio, periodoFim));
 
-            var respostaAlunos = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turmaCompleta.CodigoTurma)));
+            var alunos = (await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turmaCompleta.CodigoTurma))))
+                .Where(a => a.CodigoSituacaoMatricula != SituacaoMatriculaAluno.VinculoIndevido);
 
-            if (respostaAlunos == null || !respostaAlunos.Any())
-                throw new NegocioException("Não foi encontrado alunos para a turma informada");
-
-            var alunos = respostaAlunos
-               .Where(a => a.CodigoSituacaoMatricula != SituacaoMatriculaAluno.VinculoIndevido);
-
-            if (alunos == null || !alunos.Any())
+            if (alunos.EhNulo() || !alunos.Any())
                 throw new NegocioException("Não foi encontrado alunos para a turma informada");
 
             var componentesCurricularesCompletos = await mediator.Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(new long[] { filtro.DisciplinaCodigo }, codigoTurma: turmaCompleta.CodigoTurma));

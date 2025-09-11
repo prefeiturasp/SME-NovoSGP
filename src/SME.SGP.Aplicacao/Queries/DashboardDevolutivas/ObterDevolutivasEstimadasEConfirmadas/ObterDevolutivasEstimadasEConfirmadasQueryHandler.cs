@@ -25,27 +25,24 @@ namespace SME.SGP.Aplicacao.Queries.DashboardDevolutivas.ObterDevolutivasEstimad
             var consolidacaoDeDevolutivas = await repositorioConsolidacaoDevolutivas.ObterDevolutivasEstimadasEConfirmadasAsync(request.AnoLetivo, request.Modalidade, request.DreId, request.UeId);
             if (!consolidacaoDeDevolutivas?.Any() ?? true) return resultado;
 
-            if (consolidacaoDeDevolutivas != null)
+            foreach (var consolidacaoDeDevolutiva in consolidacaoDeDevolutivas)
             {
-                foreach (var consolidacaoDeDevolutiva in consolidacaoDeDevolutivas)
+                var devolutivasEstimadas = new GraficoDevolutivasEstimadasEConfirmadasDto
                 {
-                    var devolutivasEstimadas = new GraficoDevolutivasEstimadasEConfirmadasDto
-                    {
-                        Descricao = DashboardDevolutivasConstants.QuantidadeDeDevolutivasEstimadas,
-                        Quantidade = consolidacaoDeDevolutiva.DevolutivasEstimadas,
-                        TurmaAno = ObterDescricaoTurmaAno(request.UeId.HasValue, consolidacaoDeDevolutiva.TurmaAno, request.Modalidade)
-                    };
+                    Descricao = DashboardDevolutivasConstants.QuantidadeDeDevolutivasEstimadas,
+                    Quantidade = consolidacaoDeDevolutiva.DevolutivasEstimadas,
+                    TurmaAno = ObterDescricaoTurmaAno(request.UeId.HasValue, consolidacaoDeDevolutiva.TurmaAno, request.Modalidade)
+                };
 
-                    var devolutivasRegistradas = new GraficoDevolutivasEstimadasEConfirmadasDto
-                    {
-                        Descricao = DashboardDevolutivasConstants.QuantidadeDeDevolutivasRegistradas,
-                        Quantidade = consolidacaoDeDevolutiva.DevolutivasRegistradas,
-                        TurmaAno = ObterDescricaoTurmaAno(request.UeId.HasValue, consolidacaoDeDevolutiva.TurmaAno, request.Modalidade)
-                    };
+                var devolutivasRegistradas = new GraficoDevolutivasEstimadasEConfirmadasDto
+                {
+                    Descricao = DashboardDevolutivasConstants.QuantidadeDeDevolutivasRegistradas,
+                    Quantidade = consolidacaoDeDevolutiva.DevolutivasRegistradas,
+                    TurmaAno = ObterDescricaoTurmaAno(request.UeId.HasValue, consolidacaoDeDevolutiva.TurmaAno, request.Modalidade)
+                };
 
-                    resultado.Add(devolutivasEstimadas);
-                    resultado.Add(devolutivasRegistradas);
-                }
+                resultado.Add(devolutivasEstimadas);
+                resultado.Add(devolutivasRegistradas);
             }
 
             return resultado.OrderBy(r => r.TurmaAno);

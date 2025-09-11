@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,7 +22,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<UsuarioEolRetornoDto>> Handle(ObterFuncionariosPorPerfilDreQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
-            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_FUNCIONARIOS_PERFIS_DRES, request.CodigoPerfil, request.CodigoDre), cancellationToken);
+            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_FUNCIONARIOS_PERFIS_DRES, request.CodigoPerfil, request.CodigoDre));
 
             if (resposta.IsSuccessStatusCode)
             {

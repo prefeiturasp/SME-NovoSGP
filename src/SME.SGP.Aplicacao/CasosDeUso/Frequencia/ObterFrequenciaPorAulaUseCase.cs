@@ -22,9 +22,9 @@ namespace SME.SGP.Aplicacao
             var registroFrequenciaDto = await ObterRegistroFrequencia(aula, turma);
             var frequenciaAlunos = await mediator.Send(new ObterRegistrosFrequenciasAlunosSimplificadoPorAulaIdQuery(aula.Id))
                                    ?? Enumerable.Empty<FrequenciaAlunoSimplificadoDto>();
-            var compensacaoAusenciaAlunoAulas = await mediator.Send(new ObterCompensacaoAusenciaAlunoAulaSimplificadoPorAulaIdsQuery(aula.Id))
+            var compensacaoAusenciaAlunoAulas = await mediator.Send(new ObterCompensacaoAusenciaAlunoAulaSimplificadoPorAulaIdsQuery(aula.Id)) 
                                                 ?? Enumerable.Empty<CompensacaoAusenciaAlunoAulaSimplificadoDto>();
-
+            
             var periodoEscolar = await mediator
                 .Send(new ObterPeriodosEscolaresPorTipoCalendarioIdEDataQuery(aula.TipoCalendarioId, aula.DataAula))
                 ?? throw new NegocioException("Ocorreu um erro, esta aula está fora do período escolar.");
@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
 
             var parametroPercentualAlerta = await mediator
                 .Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaAlerta, periodoEscolar.PeriodoInicio.Year))
-                ?? throw new NegocioException("Parâmetro de percentual de frequência em alerta não encontrado contate a SME.");
+                ?? throw new NegocioException("Parâmetro de percentual de frequência em alerta não encontrado contate a SME.");   
 
             var percentualAlerta = int.Parse(parametroPercentualAlerta.Valor);
             var codigosComponentesConsiderados = new long[] { param.ComponenteCurricularId ?? long.Parse(aula.DisciplinaId) };
@@ -63,12 +63,10 @@ namespace SME.SGP.Aplicacao
                 var tipoFrequenciaPreDefinida = await mediator
                     .Send(new ObterFrequenciaPreDefinidaPorAlunoETurmaQuery(turma.Id, long.Parse(aula.DisciplinaId), aluno.CodigoAluno));
 
-                string tipoFrequenciaSugerida = null;
-
                 var alunoPossuiPlanoAEE = await mediator
                     .Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo));
 
-                var periodoDeCompensacaoAberto = new PeriodoDeCompensacaoAbertoUseCase(mediator);   
+                var periodoDeCompensacaoAberto = new PeriodoDeCompensacaoAbertoUseCase(mediator);
 
                 var registroFrequenciaAluno = new RegistroFrequenciaAlunoDto
                 {
@@ -89,25 +87,6 @@ namespace SME.SGP.Aplicacao
                     TipoFrequenciaPreDefinido = tipoFrequenciaPreDefinida.ShortName(),
                     EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == aluno.CodigoAluno)
                 };
-
-                if (registroFrequenciaDto.Id == 0)
-                {
-                    var primeiroRegistroFrequenciaDataTurma = await mediator.Send(
-                        new ObterPrimeiroRegistroFrequenciaPorDataETurmaQuery(turma.CodigoTurma, aula.DataAula));
-
-                    if (primeiroRegistroFrequenciaDataTurma is not null && primeiroRegistroFrequenciaDataTurma.AulaId > 0)
-                    {
-                        registroFrequenciaDto.ComponenteCurricularSugerido = primeiroRegistroFrequenciaDataTurma.ComponenteCurricularSugerido;
-
-                        var frequenciaSugeridaAlunos = await mediator.Send(
-                            new ObterRegistrosFrequenciasAlunosSimplificadoPorAulaIdQuery(primeiroRegistroFrequenciaDataTurma.AulaId))
-                            ?? Enumerable.Empty<FrequenciaAlunoSimplificadoDto>();
-
-                        var numeroAulaSugerida = Math.Max(primeiroRegistroFrequenciaDataTurma.QuantidadeAulas, aula.Quantidade);
-
-                        tipoFrequenciaSugerida = ObterFrequenciaAluno(frequenciaSugeridaAlunos, aluno.CodigoAluno, numeroAulaSugerida, tipoFrequenciaPreDefinida);
-                    }
-                }
 
                 // Marcador visual da situação
                 registroFrequenciaAluno.Marcador = await mediator
@@ -130,8 +109,7 @@ namespace SME.SGP.Aplicacao
                     registroFrequenciaAluno.Aulas.Add(new FrequenciaAulaDto
                     {
                         NumeroAula = numeroAula,
-                        TipoFrequencia = tipoFrequenciaSugerida ?? ObterFrequenciaAluno(frequenciaAlunos, aluno.CodigoAluno, numeroAula, tipoFrequenciaPreDefinida),
-                        TipoFrequenciaSugerida = tipoFrequenciaSugerida,
+                        TipoFrequencia = ObterFrequenciaAluno(frequenciaAlunos, aluno.CodigoAluno, numeroAula, tipoFrequenciaPreDefinida),
                         PossuiCompensacao = compensacaoAusenciaAlunoAulas.Any(t => t.CodigoAluno == aluno.CodigoAluno && t.NumeroAula == numeroAula)
                     });
                 }
@@ -177,7 +155,7 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(IEnumerable<AlunoPorTurmaResposta> alunosDaTurmaNaData, Turma turma)
         {
             var alunosCodigos = alunosDaTurmaNaData.Select(x => x.CodigoAluno).ToArray();
-            return await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(turma.AnoLetivo, alunosCodigos));
+            return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(turma.AnoLetivo, alunosCodigos));
         }
 
         private string ObterFrequenciaAluno(IEnumerable<FrequenciaAlunoSimplificadoDto> frequenciaAlunos, string codigoAluno, int numeroAula, TipoFrequencia tipoFrequenciaPreDefinida)

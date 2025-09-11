@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         private async Task PublicarMensagemConsolidarDevolutivasPorTurmasInfantil(IEnumerable<DevolutivaTurmaDTO> turmasInfantil, int anoLetivo)
         {
-            if (turmasInfantil == null || !turmasInfantil.Any())
+            if (turmasInfantil.EhNulo() && !turmasInfantil.Any())
                 throw new NegocioException("Não foi possível localizar turmas para consolidar dados de devolutivas");
 
             foreach (var turma in turmasInfantil)

@@ -2,7 +2,9 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,7 +29,7 @@ namespace SME.SGP.Aplicacao
             {
                 await repositorioPendenciaDiarioBordo.ExcluirPorAulaId(request.AulaId);
 
-                foreach (var pendencia in pendenciasEUsuarios)
+                foreach(var pendencia in pendenciasEUsuarios)
                 {
                     await mediator.Send(new ExcluirPendenciaUsuarioPorPendenciaIdEUsuarioIdCommand(pendencia.PendenciaId, pendencia.UsuarioId));
 

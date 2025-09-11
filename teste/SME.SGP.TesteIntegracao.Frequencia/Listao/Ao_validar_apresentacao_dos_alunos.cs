@@ -47,8 +47,8 @@ namespace SME.SGP.TesteIntegracao.Listao
             await CriarMotivoAusencia();
             await CriarFrequenciaPreDefinida(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
 
-            var frequenciasSalvar = new List<FrequenciaSalvarAulaAlunosDto>
-            {
+            var frequenciasSalvar = new List<FrequenciaSalvarAulaAlunosDto>();
+            frequenciasSalvar.Add(
                 new FrequenciaSalvarAulaAlunosDto
                 {
                     AulaId = AULA_ID,
@@ -60,8 +60,7 @@ namespace SME.SGP.TesteIntegracao.Listao
                             Frequencias = ObterFrequenciaAula(CODIGO_ALUNO_1)
                         }
                     }
-                }
-};
+                });
 
             var useCaseSalvar = ServiceProvider.GetService<IInserirFrequenciaListaoUseCase>();
             useCaseSalvar.ShouldNotBeNull();
@@ -109,8 +108,8 @@ namespace SME.SGP.TesteIntegracao.Listao
 
             await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
 
-            var frequenciasSalvar = new List<FrequenciaSalvarAulaAlunosDto>
-            {
+            var frequenciasSalvar = new List<FrequenciaSalvarAulaAlunosDto>();
+            frequenciasSalvar.Add(
                 new FrequenciaSalvarAulaAlunosDto
                 {
                     AulaId = AULA_ID,
@@ -122,8 +121,7 @@ namespace SME.SGP.TesteIntegracao.Listao
                             Frequencias = ObterFrequenciaAula(CODIGO_ALUNO_1)
                         }
                     }
-                }
-            };
+                });
 
             var useCaseSalvar = ServiceProvider.GetService<IInserirFrequenciaListaoUseCase>();
             useCaseSalvar.ShouldNotBeNull();

@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
             var dadosTurmas = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasDoAlunoNoAno.ToArray()));
             var turmasRegulares = dadosTurmas?.Where(d => d.TipoTurma == TipoTurma.Regular);
 
-            if (turmasRegulares != null)
+            if (turmasRegulares.Any())
             {
                 foreach (var turma in turmasRegulares)
                 {

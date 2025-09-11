@@ -1,15 +1,16 @@
 ﻿using MediatR;
-using Microsoft.Extensions.Options;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao
 {
@@ -117,8 +118,9 @@ namespace SME.SGP.Aplicacao
                             })?.ToList()
                         })?.ToList();
 
-                        if (componentes != null)
+                        if (componentes.NaoEhNulo())
                         {
+
                             foreach (var componente in componentes)
                             {
                                 var planejamentoAnualComponente = await repositorioPlanejamentoAnualComponente.ObterPorPlanejamentoAnualPeriodoEscolarId(componente.ComponenteCurricularId, planejamentoAnualPeriodoEscolar.Id);
@@ -130,7 +132,7 @@ namespace SME.SGP.Aplicacao
                                         PlanejamentoAnualPeriodoEscolarId = planejamentoAnualPeriodoEscolar.Id,
                                     };
                                 }
-                                listaDescricao.Add(new PlanejamentoAnualComponenteResumidoDto() { DescricaoNovo = componente.Descricao, DescricaoAtual = planejamentoAnualComponente.Descricao });
+                                listaDescricao.Add(new PlanejamentoAnualComponenteResumidoDto() { DescricaoNovo = componente.Descricao,DescricaoAtual = planejamentoAnualComponente.Descricao });
                                 planejamentoAnualComponente.Descricao = componente.Descricao = componente.Descricao.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
                                 await repositorioPlanejamentoAnualComponente.SalvarAsync(planejamentoAnualComponente);
                                 auditoria.Componentes.Add(new PlanejamentoAnualComponenteDto

@@ -114,10 +114,6 @@ namespace SME.SGP.Aplicacao
                     (encaminhamento.Situacao == SituacaoAEE.Encaminhado || 
                      encaminhamento.Situacao == SituacaoAEE.Devolvido ||
                      encaminhamento.Situacao == SituacaoAEE.Rascunho))
-                || (usuarioLogado.EhGestorCIEJA() &&
-                                    (encaminhamento.Situacao == SituacaoAEE.Encaminhado ||
-                                     encaminhamento.Situacao == SituacaoAEE.Devolvido ||
-                                     encaminhamento.Situacao == SituacaoAEE.Rascunho))
                 || (usuarioLogado.EhCoordenadorCEFAI() && encaminhamento.Situacao == SituacaoAEE.AtribuicaoPAAI)
                 || ((usuarioLogado.EhProfessorPaee() || usuarioLogado.EhPerfilPaai()) && 
                     (encaminhamento.Situacao == SituacaoAEE.Analise || encaminhamento.Situacao == SituacaoAEE.Rascunho));

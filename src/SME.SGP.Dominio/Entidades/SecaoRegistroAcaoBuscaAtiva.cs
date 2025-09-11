@@ -1,8 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace SME.SGP.Dominio
 {
-    [ExcludeFromCodeCoverage]
     public class SecaoRegistroAcaoBuscaAtiva : EntidadeBase
     {
         public Questionario Questionario { get; set; }

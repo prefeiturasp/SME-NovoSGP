@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace SME.SGP.Dominio.Entidades
 {
-    [ExcludeFromCodeCoverage]
     public class NotaConceitoCicloParametro : EntidadeBase
     {
         public bool Ativo { get; set; }

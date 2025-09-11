@@ -1,18 +1,22 @@
-﻿using Elastic.Apm;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Elastic.Apm;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using SME.SGP.Aplicacao.Workers;
+using SME.SGP.Auditoria.Worker.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Utilitarios;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace SME.SGP.ComprimirArquivos.Worker
 {
@@ -128,7 +132,7 @@ namespace SME.SGP.ComprimirArquivos.Worker
                 var useCase = ObterUseCases(rota);
                 
                 if (telemetriaOptions.Apm)
-                    transacao?.CaptureSpan("RegistrarComprimirArquivos", "RabbitMQ", () =>useCase.Executar(mensagemRabbit)).Wait();
+                    transacao.CaptureSpan("RegistrarComprimirArquivos", "RabbitMQ", () =>useCase.Executar(mensagemRabbit)).Wait();
                 else
                     useCase.Executar(mensagemRabbit).Wait();
 

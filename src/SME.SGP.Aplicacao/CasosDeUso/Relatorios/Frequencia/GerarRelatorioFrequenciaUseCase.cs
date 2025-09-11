@@ -23,9 +23,6 @@ namespace SME.SGP.Aplicacao
             if (usuario.EhNulo())
                 throw new NegocioException("Não foi possível localizar o usuário.");
 
-            if (filtro.CodigoDre == "-99")
-                throw new NegocioException("Não é possível gerar esse relatório para todas as DREs");
-
             filtro.NomeUsuario = usuario.Nome;
             filtro.CodigoRf = usuario.CodigoRf;
 

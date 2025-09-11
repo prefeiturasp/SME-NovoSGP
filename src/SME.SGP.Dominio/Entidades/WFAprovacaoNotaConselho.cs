@@ -1,8 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace SME.SGP.Dominio
+﻿namespace SME.SGP.Dominio
 {
-    [ExcludeFromCodeCoverage]
     public class WFAprovacaoNotaConselho : EntidadeBase
     {
         public long? WfAprovacaoId { get; set; }

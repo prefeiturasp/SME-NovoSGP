@@ -12,7 +12,7 @@ namespace SME.SGP.Infra
             NotificarErroUsuario = notificarErroUsuario;
             UsuarioLogadoNomeCompleto = usuarioLogado?.Nome;
             UsuarioLogadoRF = usuarioLogado?.CodigoRf;
-            PerfilUsuario = usuarioLogado == null ? Guid.Empty : usuarioLogado.PerfilAtual;
+            PerfilUsuario = usuarioLogado.EhNulo() ? Guid.Empty : usuarioLogado.PerfilAtual;
             NomeFila = nomeFila;
         }
 

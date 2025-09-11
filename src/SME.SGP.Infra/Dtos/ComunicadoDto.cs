@@ -30,7 +30,7 @@ namespace SME.SGP.Dto
         public long? EventoId { get; set; }
         public string[] AnosEscolares { get; set; }
 
-        public bool EmEdicao { get; private set; } = true;
+        public bool EmEdicao = true;
 
         public static explicit operator ComunicadoDto(Comunicado comunicado)
         => comunicado.EhNulo() ? null : new ComunicadoDto
@@ -51,8 +51,7 @@ namespace SME.SGP.Dto
             AlunoEspecificado = comunicado.AlunoEspecificado,
             TipoCalendarioId = comunicado.TipoCalendarioId,
             EventoId = comunicado.EventoId,
-            AnosEscolares = comunicado.AnosEscolares,
-            EmEdicao = true
+            AnosEscolares = comunicado.AnosEscolares
         };
     }
 }

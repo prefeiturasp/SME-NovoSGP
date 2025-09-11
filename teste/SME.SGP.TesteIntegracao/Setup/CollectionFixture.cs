@@ -5,7 +5,6 @@ using SME.SGP.Dados;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Globalization;
 using System.Text;
@@ -18,7 +17,7 @@ namespace SME.SGP.TesteIntegracao.Setup
         public IServiceCollection Services { get; set; }
         public InMemoryDatabase Database { get; }
         public ServiceProvider ServiceProvider { get; set; }
-
+        
         public CollectionFixture()
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -42,7 +41,7 @@ namespace SME.SGP.TesteIntegracao.Setup
 
             Services.AddSingleton<IConfiguration>(config);
             Services.AddMemoryCache();
-
+            
             FluentMapper.EntityMaps.Clear();
 
             var culture = CultureInfo.CreateSpecificCulture("pt-BR");
@@ -51,11 +50,7 @@ namespace SME.SGP.TesteIntegracao.Setup
             CultureInfo.DefaultThreadCurrentCulture = culture;
             CultureInfo.DefaultThreadCurrentUICulture = culture;
 
-            var registraDependencias = new RegistradorDependenciasTeste();
-            registraDependencias.Registrar(Services, config);
-            registraDependencias.RegistrarGoogleClassroomSync(Services, config);
-            registraDependencias.RegistrarHttpClients(Services, config);
-            registraDependencias.RegistrarPolicies(Services);
+            new RegistradorDependencias().Registrar(Services, config);
         }
 
         public void BuildServiceProvider()
@@ -67,7 +62,6 @@ namespace SME.SGP.TesteIntegracao.Setup
         public void Dispose()
         {
             Database.Dispose();
-            GC.SuppressFinalize(this);
         }
     }
 

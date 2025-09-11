@@ -91,34 +91,9 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             foreach (var pendencia in pendencias)
-            {
-                var pendenciasDto = await ObterPendencias(pendencia, usuarioLogado.CodigoRf);
-
-                foreach (var dto in pendenciasDto)
-                {
-                    var criadoEmUtc = DateTime.SpecifyKind(pendencia.CriadoEm, DateTimeKind.Utc);
-                    var dias = (DateTime.UtcNow - criadoEmUtc).TotalDays;
-
-                    dto.MensagemTooltip = ObterMensagemTooltip(pendencia, dias);
-                }
-
-                listaPendenciasDto.AddRange(pendenciasDto);
-            }
+                listaPendenciasDto.AddRange(await ObterPendencias(pendencia, usuarioLogado.CodigoRf));
 
             return listaPendenciasDto;
-        }
-
-        private string ObterMensagemTooltip(Pendencia pendencia, double dias)
-        {
-            if (dias <= 10) return null;
-
-            return pendencia.Tipo switch
-            {
-                (TipoPendencia)7 or (TipoPendencia)4 => "Esta aula está sem registro de frequência há mais de 10 dias",
-                (TipoPendencia)3 or (TipoPendencia)8 => "Esta aula está sem plano de aula registrado há mais de 10 dias.",
-                (TipoPendencia)9 => "Esta aula está sem registro no diário de bordo há mais de 10 dias.",
-                _ => null
-            };
         }
 
         private async Task<IEnumerable<PendenciaDto>> ObterPendencias(Pendencia pendencia, string codigoRf)

@@ -1,38 +1,29 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.ObjectPool;
-using RabbitMQ.Client;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados;
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Consts;
 using SME.SGP.Infra.Contexto;
-using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
-using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC;
 using SME.SGP.TesteIntegracao.ServicosFakes;
-using System;
 using System.Data;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.ObjectPool;
+using RabbitMQ.Client;
+using SME.SGP.Infra.Interface;
+using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.TesteIntegracao.Setup
 {
-    public class RegistradorDependenciasTeste : RegistrarDependencias
+    public class RegistradorDependencias : RegistrarDependencias
     {
-        // Handler único para ser configurado pelos testes
-        public static readonly FakeHttpMessageHandler HttpHandlerFake = new FakeHttpMessageHandler();
-
-        public override void Registrar(IServiceCollection services, IConfiguration configuration)
-        {
-            // Limpa cenários anteriores para garantir o isolamento entre coleções de testes
-            HttpHandlerFake.LimparCenarios();
-            base.Registrar(services, configuration);
-        }
         protected override void RegistrarContextos(IServiceCollection services)
         {
             services.TryAddScoped<IHttpContextAccessor, HttpContextAccessorFake>();
@@ -54,28 +45,6 @@ namespace SME.SGP.TesteIntegracao.Setup
 
             services.TryAddScoped<IUnitOfWork, UnitOfWork>();
             base.RegistrarPolicies(services);
-        }
-
-        public override void RegistrarHttpClients(IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddHttpClient();
-
-            services.AddHttpClient(name: ServicosEolConstants.SERVICO, c =>
-            {
-                c.BaseAddress = new Uri(configuration.GetSection("UrlApiEOL").Value);
-                c.DefaultRequestHeaders.Add("Accept", "application/json");
-                // Adicione outros headers se o handler real os utilizar
-            })
-                .ConfigurePrimaryHttpMessageHandler(() => HttpHandlerFake);
-
-            services.AddHttpClient(name: ServicoSondagemConstants.Servico, c =>
-            {
-                c.BaseAddress = new Uri(configuration.GetSection("UrlApiSondagem").Value);
-                c.DefaultRequestHeaders.Add("Accept", "application/json");
-            })
-                .ConfigurePrimaryHttpMessageHandler(() => HttpHandlerFake);
-
-            // Adicione aqui os outros clients que desejar "mockar", seguindo o mesmo padrão.
         }
 
         protected override void RegistrarServicos(IServiceCollection services)

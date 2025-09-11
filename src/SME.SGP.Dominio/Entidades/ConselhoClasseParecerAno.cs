@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
+using System.Collections.Generic;
+using System.Text;
 
 namespace SME.SGP.Dominio
 {
-    [ExcludeFromCodeCoverage]
     public class ConselhoClasseParecerAno : EntidadeBase
     {
         public long ParecerId { get; set; }

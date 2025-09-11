@@ -1,1 +1,0 @@
-update prioridade_perfil set nome_perfil = 'Coordenador Polo de Formação' where codigo_perfil = '32c01a4f-b251-4a0f-933d-5b61c8b5ddbf'

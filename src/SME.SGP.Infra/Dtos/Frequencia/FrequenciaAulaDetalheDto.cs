@@ -12,8 +12,7 @@ namespace SME.SGP.Infra
                                         IEnumerable<RegistroFrequenciaAlunoPorAulaDto> registrosFrequenciaAlunos,
                                         IEnumerable<CompensacaoAusenciaAlunoAulaSimplificadoDto> compensacaoAusenciaAlunos,
                                         IEnumerable<AnotacaoAlunoAulaDto> anotacoesTurma,
-                                        FrequenciaPreDefinidaDto frequenciaPreDefinida,
-                                        TipoFrequencia? frequenciaSugerida = null)
+                                        FrequenciaPreDefinidaDto frequenciaPreDefinida)
         {
             DetalheFrequencia = new List<FrequenciaDetalheAulaDto>();
 
@@ -21,10 +20,9 @@ namespace SME.SGP.Infra
             Desabilitado = !aluno.EstaAtivo(aula.DataAula) || aula.EhDataSelecionadaFutura;
             PossuiAnotacao = anotacoesTurma.Any(a => a.AulaId == AulaId);
             EhReposicao = TipoAula.Reposicao == aula.TipoAula ? true : false;
-            TipoFrequenciaSugerida = frequenciaSugerida?.ShortName();
 
             var registrosFrequenciaAula = registrosFrequenciaAlunos.Where(a => a.AulaId == AulaId);
-            CarregarDetalheFrequencia(aula, registrosFrequenciaAula, compensacaoAusenciaAlunos, frequenciaPreDefinida, frequenciaSugerida);
+            CarregarDetalheFrequencia(aula, registrosFrequenciaAula, compensacaoAusenciaAlunos, frequenciaPreDefinida);
             Tipo = ObterTipoFrequenciaDaAula();
         }
 
@@ -32,8 +30,7 @@ namespace SME.SGP.Infra
         public bool Desabilitado { get; set; }
         public bool PossuiAnotacao { get; set; }
         private TipoFrequencia? Tipo { get; set; }
-        public string TipoFrequencia  { get => TipoFrequenciaSugerida ?? Tipo?.ShortName() ?? ""; }
-        public string TipoFrequenciaSugerida  { get; set; }
+        public string TipoFrequencia  { get => Tipo?.ShortName() ?? ""; }
         public IList<FrequenciaDetalheAulaDto> DetalheFrequencia { get; set; }
         public bool EhReposicao { get; set; }
 
@@ -41,15 +38,14 @@ namespace SME.SGP.Infra
             Aula aula, 
             IEnumerable<RegistroFrequenciaAlunoPorAulaDto> registrosFrequenciaAula,
             IEnumerable<CompensacaoAusenciaAlunoAulaSimplificadoDto> compensacaoAusenciaAlunos,
-            FrequenciaPreDefinidaDto frequenciaPreDefinida,
-            TipoFrequencia? frequenciaSugerida)
+            FrequenciaPreDefinidaDto frequenciaPreDefinida)
         {
             for (int numeroAula = 1; numeroAula <= aula.Quantidade; numeroAula++)
             {
                 DetalheFrequencia.Add(new FrequenciaDetalheAulaDto()
                 {
                     NumeroAula = numeroAula,
-                    Tipo = frequenciaSugerida ?? ObterTipoFrequencia(numeroAula, registrosFrequenciaAula, frequenciaPreDefinida),
+                    Tipo = ObterTipoFrequencia(numeroAula, registrosFrequenciaAula, frequenciaPreDefinida),
                     PossuiCompensacao = compensacaoAusenciaAlunos.Any(t => t.AulaId == aula.Id && t.NumeroAula == numeroAula)
                 });
             }

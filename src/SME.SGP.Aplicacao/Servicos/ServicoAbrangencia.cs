@@ -265,7 +265,7 @@ namespace SME.SGP.Aplicacao.Servicos
             else
                 consultaEol = await mediator.Send(new ObterAbrangenciaCompactaVigenteEolPorLoginEPerfilQuery(login, perfil));
 
-            if (consultaEol != null || abrangenciaEol != null)
+            if (consultaEol.NaoEhNulo() || abrangenciaEol.NaoEhNulo())
             {
                 // Enquanto o EOl consulta, tentamos ganhar tempo obtendo a consulta sintetica
                 var consultaAbrangenciaSintetica = repositorioAbrangencia.ObterAbrangenciaSintetica(login, perfil, string.Empty);
@@ -274,23 +274,23 @@ namespace SME.SGP.Aplicacao.Servicos
                     abrangenciaEol = consultaEol;
                 var abrangenciaSintetica = await consultaAbrangenciaSintetica;
 
-                if (abrangenciaEol != null)
+                if (abrangenciaEol.NaoEhNulo())
                 {
                     // sincronizamos as dres, ues e turmas
                     var estrutura = await MaterializarEstruturaInstitucional(abrangenciaEol);
                     
                     // sincronizamos a abrangencia do login + perfil
-                    await SincronizarAbrangencia(abrangenciaSintetica, abrangenciaEol?.Abrangencia?.Abrangencia, ehSupervisor, estrutura, login, perfil);
+                    await SincronizarAbrangencia(abrangenciaSintetica, abrangenciaEol.Abrangencia?.Abrangencia, ehSupervisor, estrutura, login, perfil);
                 }
             }
         }
 
         private async Task<IEnumerable<Turma>> ImportarTurmasNaoEncontradas(string[] codigosNaoEncontrados)
         {
-            if (codigosNaoEncontrados != null && codigosNaoEncontrados.Length > 0)
+            if (codigosNaoEncontrados.NaoEhNulo() && codigosNaoEncontrados.Length > 0)
             {
                 var estruturaInstitucionalRetornoEolDTO = await mediator.Send(new ObterEstruturaInstuticionalVigentePorTurmaQuery(codigosTurma: codigosNaoEncontrados));
-                if (estruturaInstitucionalRetornoEolDTO != null)
+                if (estruturaInstitucionalRetornoEolDTO.NaoEhNulo())
                     await SincronizarEstruturaInstitucional(estruturaInstitucionalRetornoEolDTO);
             }
 

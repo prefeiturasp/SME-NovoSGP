@@ -132,7 +132,7 @@ namespace SME.SGP.Aplicacao
                 }
             };
 
-            if (recuperacaoParalelaPeriodo?.Id == 1)
+            if (recuperacaoParalelaPeriodo.Id == 1)
                 //parecer conclusivo
                 recuperacaoRetorno.Periodo.Alunos
                     .Where(w => w.Id == 0 && w.EhParecerConclusisoPromocao())

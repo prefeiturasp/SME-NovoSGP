@@ -36,12 +36,12 @@ namespace SME.SGP.Aplicacao
             if (periodoEscolar.EhNulo())
                 throw new NegocioException("Período escolar não localizado.");           
 
-            var planejamentoAnualPeriodoId = await mediator.Send(new ExistePlanejamentoAnualParaTurmaPeriodoEComponenteQuery(filtro.TurmaId, periodoEscolar.Id, disciplinaDto.NaoEhNulo() ? disciplinaDto?.CodigoComponenteCurricular ?? 0 : long.Parse(aulaDto.DisciplinaId)));
+            var planejamentoAnualPeriodoId = await mediator.Send(new ExistePlanejamentoAnualParaTurmaPeriodoEComponenteQuery(filtro.TurmaId, periodoEscolar.Id, disciplinaDto.NaoEhNulo() ? disciplinaDto.CodigoComponenteCurricular : long.Parse(aulaDto.DisciplinaId)));
             
             if (planejamentoAnualPeriodoId == 0 
                 && periodoEscolar.TipoCalendario.AnoLetivo.Equals(DateTime.Now.Year) 
                 && !usuario.PerfilAtual.Equals(Perfis.PERFIL_CJ)
-                && !(disciplinaDto != null && disciplinaDto.TerritorioSaber))
+                && !(disciplinaDto.NaoEhNulo() && disciplinaDto.TerritorioSaber))
                 throw new NegocioException("Não foi possível carregar o plano de aula porque não há plano anual cadastrado");
 
             var atividadeAvaliativa = await mediator.Send(new ObterAtividadeAvaliativaQuery(aulaDto.DataAula.Date, aulaDto.DisciplinaId, aulaDto.TurmaId, aulaDto.UeId));

@@ -177,7 +177,7 @@ namespace SME.SGP.Dominio
             if (!String.IsNullOrEmpty(turma?.Ano))
                 anoCicloModalidade = turma.Ano == AnoCiclo.Alfabetizacao.Name() ? AnoCiclo.Alfabetizacao.Description() : turma.Ano;
 
-            var ciclo = await mediator.Send(new ObterCicloPorAnoModalidadeQuery(anoCicloModalidade, turma?.Modalidade ?? 0));
+            var ciclo = await mediator.Send(new ObterCicloPorAnoModalidadeQuery(anoCicloModalidade, turma.Modalidade));
 
             if (ciclo.EhNulo())
                 throw new NegocioException(MensagensNegocioLancamentoNota.Nao_foi_encontrado_o_ciclo_da_turma_informada);

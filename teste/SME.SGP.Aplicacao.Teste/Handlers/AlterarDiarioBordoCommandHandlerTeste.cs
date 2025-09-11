@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
         public Task Deve_Alterar_Diario_De_Bordo()
         {
             // Arrange
-            var mockEntity = new SME.SGP.Dominio.DiarioBordo
+            var mockEntity = new DiarioBordo
             {
                 Id = 1,
                 AulaId = 1,
@@ -68,13 +68,13 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
 
             consultaDisciplina.Setup(x => x.ObterComponentesCurricularesPorProfessorETurma("1", false, false, false)).Returns(disciplinaDto);
 
-            repositorioDiarioBordo.Setup(a => a.SalvarAsync(It.IsAny<SME.SGP.Dominio.DiarioBordo>()))
+            repositorioDiarioBordo.Setup(a => a.SalvarAsync(It.IsAny<DiarioBordo>()))
                 .ReturnsAsync(1);
             // Act
             var auditoriaDto = inserirDiarioBordoCommandHandler.Handle(new AlterarDiarioBordoCommand(1, 1, "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",1), new System.Threading.CancellationToken());
 
             // Assert
-            repositorioDiarioBordo.Verify(x => x.SalvarAsync(It.IsAny<SME.SGP.Dominio.DiarioBordo>()), Times.Once);
+            repositorioDiarioBordo.Verify(x => x.SalvarAsync(It.IsAny<DiarioBordo>()), Times.Once);
             Assert.True(auditoriaDto.Id > 0);
 
             return Task.CompletedTask;

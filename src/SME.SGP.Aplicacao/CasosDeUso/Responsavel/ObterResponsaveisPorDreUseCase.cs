@@ -127,13 +127,13 @@ namespace SME.SGP.Aplicacao
             if ((int)(filtro?.TipoResponsavelAtribuicao ?? 0) == 0)
                 return listaResponsaveis;
 
-            var responsaveisEolOuCoreSSO = await ObterResponsaveisEolOuCoreSSO(filtro?.DreCodigo, filtro?.TipoResponsavelAtribuicao);
+            var responsaveisEolOuCoreSSO = await ObterResponsaveisEolOuCoreSSO(filtro.DreCodigo, filtro.TipoResponsavelAtribuicao);
 
             //-> Obtem os resposáveis já atribuidos
-            var responsaveisAtribuidos = (await mediator.Send(new ObterResponsaveisPorDreQuery(filtro?.DreCodigo, filtro?.TipoResponsavelAtribuicao)))
+            var responsaveisAtribuidos = (await mediator.Send(new ObterResponsaveisPorDreQuery(filtro.DreCodigo, filtro.TipoResponsavelAtribuicao)))
                 .DistinctBy(c => c.SupervisorId);
 
-            var nomesResponsaveisAtribuidos = await ObterNomesResponsaveisAtribuidos(responsaveisAtribuidos, filtro?.TipoResponsavelAtribuicao);
+            var nomesResponsaveisAtribuidos = await ObterNomesResponsaveisAtribuidos(responsaveisAtribuidos, filtro.TipoResponsavelAtribuicao);
 
             if (responsaveisEolOuCoreSSO.NaoEhNulo() && responsaveisEolOuCoreSSO.Any())
             {

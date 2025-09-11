@@ -225,20 +225,20 @@ namespace SME.SGP.Dominio.Servicos
             if (notasEmAprovacao.NaoEhNulo() && notasEmAprovacao.Any())
             {
                 var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaCodigo);
-
+                
                 var notaTipoValor = await mediator.Send(new ObterNotaTipoValorPorTurmaIdQuery(turma));
-
+                
                 await AtualizarNotasFechamento(notasEmAprovacao, criadoRF, criadoPor, workFlowId, notaTipoValor.TipoNota);
 
                 await NotificarAprovacaoNotasFechamento(notasEmAprovacao, codigoDaNotificacao, turma);
             }
         }
 
-        private async Task AtualizarNotasFechamento(IEnumerable<WfAprovacaoNotaFechamentoTurmaDto> notasEmAprovacao, string criadoRF, string criadoPor, long workFlowId, TipoNota tipoNota)
+        private async Task AtualizarNotasFechamento(IEnumerable<WfAprovacaoNotaFechamentoTurmaDto> notasEmAprovacao, string criadoRF, string criadoPor, long workFlowId,TipoNota tipoNota)
         {
             var fechamentoAluno = notasEmAprovacao.First().FechamentoNota.FechamentoAluno;
             var fechamentoTurmaDisciplinaId = fechamentoAluno.FechamentoTurmaDisciplinaId;
-
+            
             // Resolve a pendencia de fechamento
             await repositorioPendencia.AtualizarPendencias(fechamentoTurmaDisciplinaId, SituacaoPendencia.Resolvida, TipoPendencia.AlteracaoNotaFechamento);
 
@@ -279,12 +279,12 @@ namespace SME.SGP.Dominio.Servicos
                 notaEmAprovacao.FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.DisciplinaId,
                 notaEmAprovacao.FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.FechamentoTurma.PeriodoEscolarId
             });
-            foreach (var notaEmAprovacao in agrupamento)
+            foreach(var notaEmAprovacao in agrupamento)
                 await RemoverCacheFechamentoNota(notaEmAprovacao.Key.TurmaId, notaEmAprovacao.Key.DisciplinaId, notaEmAprovacao.Key.PeriodoEscolarId);
         }
 
         private async Task AtualizarCacheFechamentoNota(
-                                WfAprovacaoNotaFechamentoTurmaDto notaEmAprovacao,
+                                WfAprovacaoNotaFechamentoTurmaDto notaEmAprovacao, 
                                 FechamentoNota fechamentoNota)
         {
             await mediator.Send(new AtualizarCacheFechamentoNotaCommand(
@@ -453,7 +453,19 @@ namespace SME.SGP.Dominio.Servicos
 
             if (nivel.Cargo.HasValue)
             {
-                usuarios = await ObterUsuariosParaEnviarNotificacoes(nivel, nivel.Cargo, nivel.Workflow.UeId);
+                var funcionariosRetorno = servicoNotificacao.ObterFuncionariosPorNivel(nivel.Workflow.UeId, nivel.Cargo, true, true);
+
+                foreach (var funcionario in funcionariosRetorno)
+                {
+                    try
+                    {
+                        usuarios.Add(await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(string.Empty, funcionario.Id, buscaLogin: true));
+                    }
+                    catch (Exception e)
+                    {
+                        _ = mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao enviar notificação para nível", LogNivel.Negocio, LogContexto.WorkflowAprovacao, e.Message)).Result;
+                    }
+                }
             }
 
             foreach (var usuario in usuarios)
@@ -506,7 +518,19 @@ namespace SME.SGP.Dominio.Servicos
 
             if (nivel.Cargo.HasValue)
             {
-                usuarios = await ObterUsuariosParaEnviarNotificacoes(nivel, nivel.Cargo, nivel.Workflow.UeId);
+                var funcionariosRetorno = await servicoNotificacao.ObterFuncionariosPorNivelAsync(nivel.Workflow.UeId, nivel.Cargo, true, true);
+
+                foreach (var funcionario in funcionariosRetorno)
+                {
+                    try
+                    {
+                        usuarios.Add(await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(string.Empty, funcionario.Id, buscaLogin: true));
+                    }
+                    catch (Exception e)
+                    {
+                        _ = mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao enviar notificação para nível", LogNivel.Negocio, LogContexto.WorkflowAprovacao, e.Message)).Result;
+                    }
+                }
             }
 
             foreach (var usuario in usuarios)
@@ -546,71 +570,13 @@ namespace SME.SGP.Dominio.Servicos
             return nivel.Cargo;
         }
 
-        private async Task<List<Usuario>> ObterUsuariosParaEnviarNotificacoes(WorkflowAprovacaoNivel nivel, Cargo? cargo, string codigoUe)
-        {
-            List<Usuario> usuarios = nivel.Usuarios.ToList();
-            var escola = repositorioUe.ObterPorCodigo(codigoUe);
-
-            if (nivel.Cargo.HasValue)
-            {
-                var funcionariosRetorno = await ObterFuncionariosAsync(escola.TipoEscola, cargo, nivel.Workflow.UeId);
-
-                foreach (var funcionario in funcionariosRetorno)
-                {
-                    try
-                    {
-                        usuarios.Add(await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(string.Empty, funcionario.Id, buscaLogin: true));
-                    }
-                    catch (Exception e)
-                    {
-                        _ = mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao enviar notificação para nível", LogNivel.Negocio, LogContexto.WorkflowAprovacao, e.Message)).Result;
-                    }
-                }
-            }
-            return usuarios;
-        }
-
-        private async Task<IEnumerable<(Cargo? cargo, string Id)>> ObterFuncionariosAsync(
-            TipoEscola tipoEscola, Cargo? cargo, string codigoUe)
-        {
-            if (tipoEscola == TipoEscola.CIEJA && cargo.HasValue && GestaoCIEJA.TryGetValue((tipoEscola, cargo.Value), out var fa))
-                return (await servicoNotificacao.ObterFuncionariosPorNivelFuncaoAtividadeAsync(codigoUe, fa, true, true))
-                    .Select(f => (cargo, Id: f.Id));
-
-            if ((tipoEscola == TipoEscola.CRPCONV || tipoEscola == TipoEscola.CEIINDIR)
-                && cargo.HasValue && GestaoUnidadesConveniadas.TryGetValue((tipoEscola, cargo.Value), out var fe))
-                return (await mediator.Send(new ObterFuncionariosPorUeEFuncaoExternaQuery(codigoUe, (int)fe)))
-                    .Select(f => (cargo, Id: f.CodigoRF));
-
-            return await servicoNotificacao.ObterFuncionariosPorNivelAsync(codigoUe, cargo, true, true);
-        }
-
-        private static readonly Dictionary<(TipoEscola, Cargo?), FuncaoAtividade> GestaoCIEJA =
-            new[]
-            {
-                (Cargo.CP, FuncaoAtividade.COORDERNADOR_PEDAGOGICO_CIEJA),
-                (Cargo.AD, FuncaoAtividade.ASSISTENTE_COORDERNADOR_GERAL_CIEJA),
-                (Cargo.Diretor, FuncaoAtividade.COORDERNADOR_GERAL_CIEJA)
-            }
-            .ToDictionary(x => (TipoEscola.CIEJA, (Cargo?)x.Item1), x => x.Item2);
-
-        private static readonly Dictionary<(TipoEscola, Cargo?), FuncaoExterna> GestaoUnidadesConveniadas =
-            new[] { TipoEscola.CRPCONV, TipoEscola.CEIINDIR }
-                .SelectMany(t => new[]
-            {
-                    (t, Cargo.CP, FuncaoExterna.CP),
-                    (t, Cargo.AD, FuncaoExterna.AD),
-                    (t, Cargo.Diretor, FuncaoExterna.Diretor)
-             })
-             .ToDictionary(x => (x.t, (Cargo?)x.Item2), x => x.Item3);
-
         private async Task NotificarAprovacaoNotasFechamento(IEnumerable<WfAprovacaoNotaFechamentoTurmaDto> notasEmAprovacao, long codigoDaNotificacao, Turma turma, bool aprovada = true, string justificativa = "")
         {
             await ExcluirWfNotasFechamento(notasEmAprovacao);
 
             int? bimestre = notasEmAprovacao.First().Bimestre;
             var notaConceitoTitulo = notasEmAprovacao.First().WfAprovacao.ConceitoId.HasValue ? "conceito(s)" : "nota(s)";
-
+            
             var usuariosRfs = notasEmAprovacao.Select(n => n.UsuarioSolicitanteRf);
 
             foreach (var usuarioRf in usuariosRfs.Distinct())
@@ -983,11 +949,11 @@ namespace SME.SGP.Dominio.Servicos
         private async Task TrataReprovacaoAlteracaoNotaFechamento(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo)
         {
             var notasEmAprovacao = await ObterNotasEmAprovacao(workflow.Id);
-
+            
             await AtualizarNotasFechamento(notasEmAprovacao);
-
+            
             var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(workflow.TurmaId);
-
+            
             await NotificarAprovacaoNotasFechamento(notasEmAprovacao, codigoDaNotificacao, turma, false, motivo);
         }
 

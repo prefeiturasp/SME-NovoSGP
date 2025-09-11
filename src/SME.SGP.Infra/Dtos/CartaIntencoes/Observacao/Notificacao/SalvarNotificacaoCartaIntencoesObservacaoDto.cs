@@ -1,5 +1,8 @@
 ﻿using FluentValidation;
 using SME.SGP.Dominio;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 
 namespace SME.SGP.Infra.Dtos
@@ -17,7 +20,7 @@ namespace SME.SGP.Infra.Dtos
         public Turma Turma { get; set; }
         public Usuario Usuario { get; set; }
 
-        public long CartaIntencoesObservacaoId { get; set; }
+        public long CartaIntencoesObservacaoId;
         public string Observacao { get; set; }
     }
 

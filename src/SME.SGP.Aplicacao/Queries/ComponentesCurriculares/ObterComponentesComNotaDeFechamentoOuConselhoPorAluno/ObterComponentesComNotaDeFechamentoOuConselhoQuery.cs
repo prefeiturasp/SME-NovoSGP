@@ -15,10 +15,10 @@ namespace SME.SGP.Aplicacao
             CodigoAluno = codigoAluno;
         }
 
-        public int AnoLetivo { get; set; }
-        public string[] TurmasId { get; set; }
-        public int? Bimestre { get; set; }
-        public string CodigoAluno { get; set; }
+        public int AnoLetivo;
+        public string[] TurmasId;
+        public int? Bimestre;
+        public string CodigoAluno;
 
 
         public class ObterComponentesComNotaDeFechamentoOuConselhoQueryValidator : AbstractValidator<ObterComponentesComNotaDeFechamentoOuConselhoQuery>
@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
                     .WithMessage("Necessário informar o ano letivo para obter os componententes.");
                 RuleFor(a => a.TurmasId)
                    .NotEmpty()
-                   .WithMessage("Necessário informar o código do aluno para  obter os componententes.");
+                   .WithMessage("Necessário informar o código do aluno para  obter os componententes.");                
                 RuleFor(a => a.CodigoAluno)
                   .NotEmpty()
                   .WithMessage("Necessário informar o código do aluno para obter os componententes.");

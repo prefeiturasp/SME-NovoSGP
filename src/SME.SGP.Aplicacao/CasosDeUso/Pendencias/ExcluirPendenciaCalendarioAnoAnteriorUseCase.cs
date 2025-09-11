@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new SalvarLogViaRabbitCommand(mensagem: "Não foi possível realizar a exclusão das pendências após o final do ano - Calendário ",
                     LogNivel.Critico,
                     LogContexto.Calendario,
-                    innerException: e.InnerException?.ToString() ?? string.Empty,
+                    innerException: e.InnerException!.ToString(),
                     rastreamento: e.StackTrace,
                     observacao: e.Message));
                 throw;

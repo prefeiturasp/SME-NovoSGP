@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -135,14 +134,6 @@ namespace SME.SGP.Dominio.Servicos
                     return funcionarios.Select(f => (Cargo: cargo, Id: f.CodigoRf));
             }
 
-        }
-
-
-        public async Task<IEnumerable<(FuncaoAtividade? FuncaoAtividade, string Id)>> ObterFuncionariosPorNivelFuncaoAtividadeAsync(string codigoUe, FuncaoAtividade? funcaoAtividade, bool primeiroNivel = true, bool? notificacaoExigeAcao = false)
-        {
-            var funcionarios = await mediator.Send(new ObterFuncionariosPorFuncaoAtividadeUeQuery(codigoUe, (int)funcaoAtividade));
-            var funcionariosDisponiveis = funcionarios?.Where(f => !f.EstaAfastado);
-            return funcionarios.Select(f => (CodigoFuncaoAtividade: funcaoAtividade, Id: f.CodigoRf));
         }
 
         public Cargo? ObterProximoNivel(Cargo? cargo, bool primeiroNivel)

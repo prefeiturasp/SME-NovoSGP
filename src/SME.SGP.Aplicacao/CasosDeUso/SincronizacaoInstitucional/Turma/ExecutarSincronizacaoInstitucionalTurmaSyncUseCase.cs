@@ -5,6 +5,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -42,10 +43,6 @@ namespace SME.SGP.Aplicacao
                 return true;
 
             var usuarioSistema = await mediator.Send(new ObterUsuarioPorRfQuery("Sistema"));
-
-            if (codigosTurma == null)
-                codigosTurma = new List<long>();
-
             foreach (var codigoTurma in codigosTurma)
             {
                 try

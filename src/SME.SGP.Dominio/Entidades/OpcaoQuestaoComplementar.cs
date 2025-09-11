@@ -1,8 +1,7 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SME.SGP.Dominio.Entidades
 {
-    [ExcludeFromCodeCoverage]
     public class OpcaoQuestaoComplementar : EntidadeBase
     {
         public long OpcaoRespostaId { get; set; }

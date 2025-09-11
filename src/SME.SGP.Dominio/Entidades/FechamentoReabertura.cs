@@ -175,9 +175,8 @@ namespace SME.SGP.Dominio
 
         private void ConsistirFechamentoNoMesmoPeriodo(IEnumerable<FechamentoReabertura> fechamentosCadastrados)
         {
-            var fechamento = fechamentosCadastrados?.Where(f => EstaNoRangeDeDatas(f.Inicio, f.Fim));
-            if (fechamento?.Count() > 0)
-                throw new NegocioException($"Não é possível persistir pois já existe uma reabertura cadastrada que começa em {fechamento?.FirstOrDefault()?.Inicio:dd/MM/yyyy} e termina em {fechamento?.FirstOrDefault()?.Fim:dd/MM/yyyy}");
+            foreach (var fechamento in fechamentosCadastrados.Where(fechamento => EstaNoRangeDeDatas(fechamento.Inicio, fechamento.Fim)))
+                throw new NegocioException($"Não é possível persistir pois já existe uma reabertura cadastrada que começa em {fechamento.Inicio:dd/MM/yyyy} e termina em {fechamento.Fim:dd/MM/yyyy}");
         }
 
         private void VerificaFechamentosNoMesmoPeriodo(IEnumerable<FechamentoReabertura> fechamentosCadastrados)

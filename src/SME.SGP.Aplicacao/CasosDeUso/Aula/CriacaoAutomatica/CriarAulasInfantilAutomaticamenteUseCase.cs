@@ -86,7 +86,7 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaCriarAulasInfantilERegenciaAutomaticamente, chaveCache, Guid.NewGuid(), null));
             }
 
-            if (dadosCriacaoAulaInfantil != null && string.IsNullOrEmpty(dadosCriacaoAulaInfantil?.CodigoTurma))
+            if (dadosCriacaoAulaInfantil.NaoEhNulo() && string.IsNullOrEmpty(dadosCriacaoAulaInfantil.CodigoTurma))
             {
                 dadosCriacaoAulaInfantil.Pagina += 1;
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaSincronizarAulasInfantil, dadosCriacaoAulaInfantil, Guid.NewGuid(), null));
