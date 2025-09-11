@@ -24,13 +24,15 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = $@"with idep as (
                                     select
-                                          codigo_dre as codigoDre
-                                        , codigo_ue as codigoUe
-                                        , ano_letivo as anoLetivo
+                                          t3.dre_id as codigoDre
+                                        , t2.ue_id as codigoUe
+                                        , t1.ano_letivo as anoLetivo
                                         , 'IDEP' as indicador
-                                        , etapa as serie
-                                        , media_geral as valor
-                                    from painel_educacional_consolidacao_idep
+                                        , t1.serie_ano::text as serie
+                                        , t1.nota as valor
+                                    from idep t1
+                                    inner join ue t2 on (t2.ue_id = t1.codigo_eol_escola)
+                                    inner join dre t3 on (t3.id = t2.dre_id)
                                 ),
                                 frequenciaGlobal as (
                                     select 
