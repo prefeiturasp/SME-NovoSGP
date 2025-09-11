@@ -31,6 +31,8 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrWhiteSpace(codigoUe))
                 sql += " AND codigo_ue = @codigoUe";
 
+            sql += " ORDER BY modalidade";
+
             return await database.QueryAsync<PainelEducacionalRegistroFrequenciaAgrupamentoMensal>(sql, new { codigoDre, codigoUe });
         }
 
