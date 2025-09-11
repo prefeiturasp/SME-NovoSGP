@@ -24,27 +24,23 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = $@"with idep as (
                                     select
-                                          t3.dre_id as codigoDre
-                                        , t2.ue_id as codigoUe
-                                        , t1.ano_letivo as anoLetivo
+                                          codigo_dre as codigoDre
+                                        , codigo_ue as codigoUe
+                                        , ano_letivo as anoLetivo
                                         , 'IDEP' as indicador
-                                        , t1.serie_ano::text as serie
-                                        , t1.nota as valor
-                                    from idep t1
-                                    inner join ue t2 on t2.ue_id = t1.codigo_eol_escola 
-                                    inner join dre t3 on t3.id = t2.dre_id
+                                        , etapa as serie
+                                        , media_geral as valor
+                                    from painel_educacional_consolidacao_idep
                                 ),
                                 frequenciaGlobal as (
                                     select 
-                                        t3.dre_id as codigoDre
-                                      , t2.ue_id as codigoUe
-                                      , t1.ano_letivo as anoLetivo
+                                        codigo_dre as codigoDre
+                                      , codigo_ue as codigoUe
+                                      , ano_letivo as anoLetivo
                                       , 'Frequência global' as indicador
                                       , NULL as serie
-                                      , t1.percentual_frequencia as valor
-                                    from painel_educacional_registro_frequencia_agrupamento_mensal t1
-                                    inner join ue t2 on t2.ue_id = t1.codigo_ue
-                                    inner join dre t3 on t3.id = t2.dre_id
+                                      , percentual_frequencia as valor
+                                    from painel_educacional_registro_frequencia_agrupamento_mensal
                                 )
                                 select * from idep
                                 union all
