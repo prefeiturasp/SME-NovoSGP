@@ -11,6 +11,5 @@ namespace SME.SGP.Dominio.Entidades
         public decimal MediaGeral { get; set; }
         public DateTime UltimaAtualizacao { get; set; }
         public string CodigoDre { get; set; }
-        public string CodigoUe { get; set; }
     }
 }
