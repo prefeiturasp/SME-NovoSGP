@@ -24,25 +24,23 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = $@"with idep as (
                                     select
-                                          t3.dre_id  AS codigoDre
-                                        , t1.ano_letivo AS anoLetivo
-                                        , 'IDEP' AS indicador
-                                        , t1.serie_ano::text AS serie
-                                        , t1.nota AS valor
-                                    from idep t1
-                                    inner join ue t2 ON t2.ue_id = t1.codigo_eol_escola 
-                                    inner join dre t3 ON t3.id = t2.dre_id
+                                          codigo_dre as codigoDre
+                                        , codigo_ue as codigoUe
+                                        , ano_letivo as anoLetivo
+                                        , 'IDEP' as indicador
+                                        , etapa as serie
+                                        , media_geral as valor
+                                    from painel_educacional_consolidacao_idep
                                 ),
                                 frequenciaGlobal as (
                                     select 
-                                        t3.dre_id AS codigoDre
-                                      , t1.ano_letivo AS anoLetivo
-                                      , 'Frequência global' AS indicador
-                                      , NULL AS serie
-                                      , t1.percentual_frequencia AS valor
-                                    from painel_educacional_registro_frequencia_agrupamento_mensal t1
-                                    inner join ue t2 ON t2.ue_id = t1.codigo_ue
-                                    inner join dre t3 ON t3.id = t2.dre_id
+                                        codigo_dre as codigoDre
+                                      , codigo_ue as codigoUe
+                                      , ano_letivo as anoLetivo
+                                      , 'Frequência global' as indicador
+                                      , NULL as serie
+                                      , percentual_frequencia as valor
+                                    from painel_educacional_registro_frequencia_agrupamento_mensal
                                 )
                                 select * from idep
                                 union all
@@ -51,7 +49,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.QueryAsync<PainelEducacionalVisaoGeralDto>(sql);
         }
 
-        public async Task<IEnumerable<PainelEducacionalVisaoGeralDto>> ObterVisaoGeralConsolidada(int anoLetivo, string codigoDre = null)
+        public async Task<IEnumerable<PainelEducacionalVisaoGeralDto>> ObterVisaoGeralConsolidada(int anoLetivo, string codigoDre, string codigoUe)
         {
             var sql = $@"select 
       	                    indicador
@@ -63,7 +61,10 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(codigoDre))
                 sql += " and codigo_dre = @codigoDre";
 
-            return await database.QueryAsync<PainelEducacionalVisaoGeralDto>(sql, new { anoLetivo, codigoDre });
+            if (!string.IsNullOrEmpty(codigoUe))
+                sql += " and codigo_ue = @codigoUe";
+
+            return await database.QueryAsync<PainelEducacionalVisaoGeralDto>(sql, new { anoLetivo, codigoDre, codigoUe });
         }
 
         public async Task<bool> SalvarVisaoGeral(PainelEducacionalVisaoGeral entidade)
