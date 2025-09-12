@@ -27,10 +27,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"WITH base AS (
                           SELECT
                               t1.ano_letivo,
-                              CASE
-                                  WHEN t1.serie_ano BETWEEN 1 AND 5 THEN 1 -- anos_iniciais
-                                  WHEN t1.serie_ano BETWEEN 6 AND 9 THEN 2 -- anos_finais
-                              END AS etapa,
+                              t1.serie_ano AS etapa,
                               t1.nota,
                               CASE
                                   WHEN t1.nota >= 0  AND t1.nota < 1  THEN '0-1'
