@@ -33,10 +33,11 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                 {
                     return MapearAgrupamentoIdep(idepPorAnoEtapa, parametros.AnoLetivo, anoUtilizado, parametros.CodigoDre);
                 }
+
                 anoUtilizado--;
             }
 
-            return ObterIdepVazio(parametros.AnoLetivo, anoUtilizado, parametros.CodigoDre);
+            return ObterIdepVazio(parametros.AnoLetivo, anoLetivo, parametros.CodigoDre);
         }
 
         private static (int AnoLetivo, string Etapa, string CodigoDre) NormalizarParametros(int anoLetivo, string etapa, string codigoDre)
