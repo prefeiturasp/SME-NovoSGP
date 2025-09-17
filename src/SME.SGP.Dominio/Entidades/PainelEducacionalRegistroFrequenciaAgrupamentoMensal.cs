@@ -1,6 +1,8 @@
-﻿namespace SME.SGP.Dominio.Entidades
+﻿using System;
+
+namespace SME.SGP.Dominio.Entidades
 {
-    public class PainelEducacionalRegistroFrequenciaAgrupamentoMensal : EntidadeBase
+    public class PainelEducacionalRegistroFrequenciaAgrupamentoMensal
     {
         public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }
@@ -10,5 +12,6 @@
         public int TotalAulas { get; set; }
         public int TotalFaltas { get; set; }
         public decimal PercentualFrequencia { get; set; }
+        public DateTime CriadoEm { get; private set; } = DateTime.UtcNow;
     }
 }

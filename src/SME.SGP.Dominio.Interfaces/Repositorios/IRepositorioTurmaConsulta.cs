@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Dtos.PainelEducacional;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -59,5 +60,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<TurmaAlunoDto>> ObterPorAlunos(long[] codigoAlunos, int anoLetivo);
         Task<IEnumerable<TurmaDTO>> ObterTurmasAulasNormais(long ueId, int anoLetivo, int[] tiposTurma, int[] modalidades, int[] ignorarTiposCiclos);
         Task<IEnumerable<TurmaRetornoDto>> ObterTurmasSondagem(string codigoUe, int anoLetivo);
+        Task<IEnumerable<TurmaPainelEducacionalFrequenciaDto>> ObterTodasTurmasPainelEducacionalFrequenciaAsync();
     }
 }

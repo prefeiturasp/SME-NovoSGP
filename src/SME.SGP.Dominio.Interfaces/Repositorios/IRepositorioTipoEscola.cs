@@ -9,5 +9,6 @@ namespace SME.SGP.Dominio.Interfaces
         void Sincronizar(IEnumerable<TipoEscolaEol> tiposEscolas);
         Task<TipoEscolaEol> ObterPorCodigoAsync(long codigo);
         Task<IEnumerable<TipoEscolaDto>> ObterTipoEscolaPorDreEUe(string dreCodigo, string ueCodigo, int[] modalidades);
+        Task<IEnumerable<TipoEscolaEol>> ObterTodasAsync();
     }
 }

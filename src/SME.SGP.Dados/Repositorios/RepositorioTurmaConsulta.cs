@@ -5,6 +5,7 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Dtos.PainelEducacional;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -1140,6 +1141,19 @@ namespace SME.SGP.Dados.Repositorios
                     modalidade = (int)Modalidade.Fundamental,
                     tipoTurma = (int)TipoTurma.Regular
                 });
+        }
+
+        public async Task<IEnumerable<TurmaPainelEducacionalFrequenciaDto>> ObterTodasTurmasPainelEducacionalFrequenciaAsync()
+        {
+            var query = @"select id as TurmaId, 
+                                 ue_id as UeId,
+                                 nome as Nome, 
+                                 modalidade_codigo as ModalidadeCodigo,
+                                 ano_letivo as AnoLetivo,
+                                 ano
+                                 from turma";
+
+            return await contexto.Conexao.QueryAsync<TurmaPainelEducacionalFrequenciaDto>(query);
         }
     }
 }
