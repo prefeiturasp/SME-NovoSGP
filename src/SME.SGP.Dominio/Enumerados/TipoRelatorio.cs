@@ -170,5 +170,8 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "relatorios/produtividade-frequencia", ShortName = "RelatorioProdutividadeFrequencia", Description = "Relatório de Produtividade de Frequência")]
         ProdutividadeFrequencia = 56,
+
+        [Display(Name = "relatorios/frequencia-global-todos", ShortName = "RelatorioFrequenciaMensalTodosDreUe", Description = "Relatório de frequência mensal filtro todos dre ou ue")]
+        FrequenciaMensalTodosDreUe = 57,
     }
 }
