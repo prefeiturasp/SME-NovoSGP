@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Polly;
 using Polly.Registry;
 using SME.SGP.Dominio;
@@ -930,31 +931,22 @@ namespace SME.SGP.Dados.Repositorios
                                       and ue.ue_id = @ueCodigo
                                       and DATE_PART('day', rf.criado_em - a.data_aula) > 0;", new { ueCodigo, anoLetivo, bimestre });
 
-        public async Task<IEnumerable<RegistroFrequenciaPainelEducacionalDto>> ObterInformacoesFrequenciaPainelEducacional(int anoLetivo)
+        public async Task<IEnumerable<RegistroFrequenciaPainelEducacionalDto>> ObterInformacoesFrequenciaPainelEducacional(IEnumerable<long> turmaIds)
         {
             var query = $@"SELECT cfam.id,
-                                 cfam.aluno_codigo as CodigoAluno,
-                                 d.dre_id AS CodigoDre,
-                                 u.ue_id AS CodigoUe,
-                                 coalesce(te.descricao || ' ', '') || coalesce(u.nome, '') as Ue,
-                                 cfam.mes,
-                                 cfam.percentual,
-                                 cfam.quantidade_aulas as QuantidadeAulas,
-                                 cfam.quantidade_ausencias as QuantidadeAusencias,
-                                 cfam.quantidade_compensacoes as QuantidadeCompensacoes,
-                                 t.modalidade_codigo as ModalidadeCodigo,
-                                 t.ano_letivo AS AnoLetivo,
-                                 t.ano AS AnoTurma
+                                  cfam.turma_id as TurmaId,          
+                                  cfam.aluno_codigo as CodigoAluno,
+                                  cfam.mes,
+                                  cfam.percentual,
+                                  cfam.quantidade_aulas as QuantidadeAulas,
+                                  cfam.quantidade_ausencias as QuantidadeAusencias
                             FROM consolidacao_frequencia_aluno_mensal cfam
-                            INNER JOIN turma t ON t.id = cfam.turma_id
-                            INNER JOIN ue u ON u.id = t.ue_id
-                            INNER JOIN tipo_escola te ON te.cod_tipo_escola_eol = u.tipo_escola
-                            INNER JOIN dre d ON d.id = u.dre_id
-                            WHERE t.ano_letivo =  @anoLetivo";
+                            WHERE cfam.turma_id = any(@turmaIds)
+            ";
 
             var parametros = new
             {
-                anoLetivo
+                turmaIds
             };
 
             return await database.Conexao.QueryAsync<RegistroFrequenciaPainelEducacionalDto>(query, parametros);

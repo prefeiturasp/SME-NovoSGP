@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces.Repositorios
 {
-    public interface IRepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobal : IRepositorioBase<PainelEducacionalRegistroFrequenciaAgrupamentoGlobal>
+    public interface IRepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobal
     {
-        Task ExcluirFrequenciaGlobal();
-        Task<bool> SalvarFrequenciaGlobal(PainelEducacionalRegistroFrequenciaAgrupamentoGlobal entidade);
-        Task<IEnumerable<PainelEducacionalRegistroFrequenciaAgrupamentoGlobal>> ObterFrequenciaGlobal(string codigoDre, string codigoUe);
+        Task ExcluirFrequenciaGlobal(int anoLetivo);
+        Task<IEnumerable<PainelEducacionalRegistroFrequenciaAgrupamentoGlobal>> ObterFrequenciaGlobal(int anoLetivo, string codigoDre, string codigoUe);
+        Task BulkInsertAsync(IEnumerable<PainelEducacionalRegistroFrequenciaAgrupamentoGlobal> registros);
     }
 }
