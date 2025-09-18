@@ -6,9 +6,9 @@
         public TipoPap TipoPap { get; set; }
         public int QuantidadeTurmas { get; set; }
         public int QuantidadeEstudantes { get; set; }
-        public int QuantidadeEstudantesComMenosDe75PorcentoFrequencia { get; set; }
-        public int DificuldadeAprendizagem1 { get; set; }
-        public int DificuldadeAprendizagem2 { get; set; }
+        public int QuantidadeEstudantesComFrequenciaInferiorLimite { get; set; }
+        public int QuantidadeEstudantesDificuldadeTop1 { get; set; }
+        public int QuantidadeEstudantesDificuldadeTop2 { get; set; }
         public int Outras { get; set; }
     }
 }

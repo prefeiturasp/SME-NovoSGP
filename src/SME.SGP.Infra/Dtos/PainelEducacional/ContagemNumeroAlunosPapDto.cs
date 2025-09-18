@@ -43,9 +43,20 @@ namespace SME.SGP.Infra.Dtos.PainelEducacional
         [JsonProperty("QuantidadeEstudantes")]
         public int QuantidadeEstudantes { get; set; }
 
-        [JsonProperty("QuantidadeEstudantesComMenosDe75PorcentoFrequencia")]
-        public int QuantidadeEstudantesComMenosDe75PorcentoFrequencia { get; set; }
+        [JsonProperty("QuantidadeEstudantesComFrequenciaInferiorLimite")]
+        public int QuantidadeEstudantesComFrequenciaInferiorLimite { get; set; }
 
+        [JsonProperty("CodigoDre")]
+        public string CodigoDre { get; set; }
+
+        [JsonProperty("NomeDre")]
+        public string NomeDre { get; set; }
+
+        [JsonProperty("CodigoUe")]
+        public string CodigoUe { get; set; }
+
+        [JsonProperty("NomeUe")]
+        public string NomeUe { get; set; }
         private static TipoPap MapearStringParaTipoPap(string valor)
         {
             if (string.IsNullOrWhiteSpace(valor))

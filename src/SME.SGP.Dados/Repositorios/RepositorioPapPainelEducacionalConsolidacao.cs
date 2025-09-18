@@ -28,24 +28,30 @@ namespace SME.SGP.Dados.Repositorios
                 return false;
 
             var sql = @"INSERT INTO consolidacao_informacoes_pap 
-                        (tipo_pap, quantidade_turmas, quantidade_estudantes, 
-                         quantidade_estudantes_com_menos_75_por_cento_frequencia, 
-                         dificuldade_aprendizagem_1, dificuldade_aprendizagem_2, 
-                         outras_dificuldades_aprendizagem)
-                        VALUES (@TipoPapNome, @QuantidadeTurmas, @QuantidadeEstudantes, 
-                                @QuantidadeEstudantesComMenosDe75PorcentoFrequencia, 
-                                @DificuldadeAprendizagem1, @DificuldadeAprendizagem2, 
-                                @OutrasDificuldadesAprendizagem)";
+                        (tipo_pap, dre_codigo, ue_codigo, dre_nome, ue_nome, quantidade_turmas, quantidade_estudantes, 
+                         quantidade_estudantes_com_frequencia_inferior_limite, 
+                         quantidade_estudantes_dificuldade_top_1, quantidade_estudantes_dificuldade_top_2, 
+                         outras_dificuldades_aprendizagem, nome_dificuldade_top_1, nome_dificuldade_top_2)
+                        VALUES (@TipoPapNome, @DreCodigo, @UeCodigo, @DreNome, @UeNome, @QuantidadeTurmas, @QuantidadeEstudantes, 
+                                @QuantidadeEstudantesComFrequenciaInferiorLimite, 
+                                @QuantidadeEstudantesDificuldadeTop1, @QuantidadeEstudantesDificuldadeTop2, 
+                                @OutrasDificuldadesAprendizagem, @NomeDificuldadeTop1, @NomeDificuldadeTop2)";
 
             var parametros = indicadoresPap.Select(indicador => new
             {
                 TipoPapNome = indicador.TipoPap.ObterNome(),
+                indicador.DreCodigo,
+                indicador.UeCodigo,
+                indicador.DreNome,
+                indicador.UeNome,
                 indicador.QuantidadeTurmas,
                 indicador.QuantidadeEstudantes,
-                indicador.QuantidadeEstudantesComMenosDe75PorcentoFrequencia,
-                indicador.DificuldadeAprendizagem1,
-                indicador.DificuldadeAprendizagem2,
-                indicador.OutrasDificuldadesAprendizagem
+                indicador.QuantidadeEstudantesComFrequenciaInferiorLimite,
+                indicador.QuantidadeEstudantesDificuldadeTop1,
+                indicador.QuantidadeEstudantesDificuldadeTop2,
+                indicador.OutrasDificuldadesAprendizagem,
+                indicador.NomeDificuldadeTop1,
+                indicador.NomeDificuldadeTop2
             });
 
             var resultado = await database.ExecuteAsync(sql, parametros);
