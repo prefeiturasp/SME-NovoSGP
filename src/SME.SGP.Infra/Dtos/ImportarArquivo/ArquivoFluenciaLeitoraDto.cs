@@ -1,25 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SME.SGP.Infra.Dtos.ImportarArquivo
+﻿namespace SME.SGP.Infra.Dtos.ImportarArquivo
 {
     public class ArquivoFluenciaLeitoraDto : ArquivoImportacaoBaseDto
     {
-        public ArquivoFluenciaLeitoraDto(string codigoEOLTurma, string codigoEOLAluno, int anoLetivo, int fluencia, string periodo)
+        public ArquivoFluenciaLeitoraDto(string codigoEOLTurma, string codigoEOLAluno, int anoLetivo, int fluencia, int tipoAvaliacao)
         {
             CodigoEOLTurma = codigoEOLTurma;
             CodigoEOLAluno = codigoEOLAluno;
             AnoLetivo = anoLetivo;
             Fluencia = fluencia;
-            Periodo = periodo;
+            TipoAvaliacao = tipoAvaliacao;
         }
         public string CodigoEOLTurma { get; set; }
         public string CodigoEOLAluno{ get; set; }
         public int AnoLetivo { get; set; }
         public int Fluencia { get; set; }
-        public string Periodo { get; set; }
+        public int TipoAvaliacao { get; set; }
     }
 }

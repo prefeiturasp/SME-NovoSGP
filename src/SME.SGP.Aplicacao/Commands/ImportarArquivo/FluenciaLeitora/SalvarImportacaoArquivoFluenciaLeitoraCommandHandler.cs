@@ -27,10 +27,11 @@ namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.FluenciaLeitora
         private Dominio.FluenciaLeitora MapearParaEntidade(SalvarImportacaoArquivoFluenciaLeitoraCommand request)
         => new Dominio.FluenciaLeitora()
         {
+            AnoLetivo = request.ArquivoFluenciaLeitora.AnoLetivo,
             CodigoEOLTurma = request.ArquivoFluenciaLeitora.CodigoEOLTurma,
             CodigoEOLAluno = request.ArquivoFluenciaLeitora.CodigoEOLAluno,
             Fluencia = request.ArquivoFluenciaLeitora.Fluencia,
-            Periodo = request.ArquivoFluenciaLeitora.Periodo
+            TipoAvaliacao = request.ArquivoFluenciaLeitora.TipoAvaliacao
         };
     }
 }
