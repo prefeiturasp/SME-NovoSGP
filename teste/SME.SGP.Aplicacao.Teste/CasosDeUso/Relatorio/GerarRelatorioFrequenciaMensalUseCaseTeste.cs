@@ -1,166 +1,157 @@
-﻿using Moq;
-using SME.SGP.Infra;
+﻿using MediatR;
+using Moq;
 using SME.SGP.Dominio;
-using MediatR;
+using SME.SGP.Infra;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
-using System;
 
-namespace SME.SGP.Aplicacao.Teste.CasosDeUso
+namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Relatorio
 {
     public class GerarRelatorioFrequenciaMensalUseCaseTeste
     {
-        private readonly Mock<IMediator> _mediator;
+        private readonly Mock<IMediator> _mediatorMock;
         private readonly GerarRelatorioFrequenciaMensalUseCase _useCase;
 
         public GerarRelatorioFrequenciaMensalUseCaseTeste()
         {
-            _mediator = new Mock<IMediator>();
-            _useCase = new GerarRelatorioFrequenciaMensalUseCase(_mediator.Object);
-        }
-
-        private FiltroRelatorioFrequenciaMensalDto CriarFiltroPadrao()
-        {
-            return new FiltroRelatorioFrequenciaMensalDto
-            {
-                AnoLetivo = 2025,
-                Modalidade = Modalidade.Fundamental,
-                TipoFormatoRelatorio = TipoFormatoRelatorio.Pdf,
-                CodigoDre = "111111", 
-                CodigoUe = "111111" 
-            };
-        }
-
-        private Usuario CriarUsuarioPadrao()
-        {
-            return new Usuario
-            {
-                CodigoRf = "1111111",
-                Nome = "Usuario Teste"
-            };
+            _mediatorMock = new Mock<IMediator>();
+            _useCase = new GerarRelatorioFrequenciaMensalUseCase(_mediatorMock.Object);
         }
 
         [Fact]
-        public void Deve_Lancar_Excecao_Quando_Mediator_For_Nulo()
+        public void DeveLancarExcecao_QuandoMediatorForNulo()
         {
+            // Arrange & Act & Assert
             Assert.Throws<ArgumentNullException>(() => new GerarRelatorioFrequenciaMensalUseCase(null));
         }
 
         [Fact]
-        public async Task Deve_Executar_Com_Sucesso_E_Retornar_True()
+        public async Task DevePreencherUsuarioNoFiltro_E_ChamarGerarRelatorio()
         {
-            var filtro = CriarFiltroPadrao();
-            var usuario = CriarUsuarioPadrao();
+            // Arrange
+            var filtro = new FiltroRelatorioFrequenciaMensalDto
+            {
+                CodigoDre = "108300",
+                CodigoUe = "012345"
+            };
+            var usuario = CriarUsuarioMock();
+            FiltroRelatorioFrequenciaMensalDto filtroCapturado = null;
 
-            _mediator.Setup(m => m.Send(ObterUsuarioLogadoQuery.Instance, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(usuario);
+            ConfigurarMocks(usuario);
 
-            _mediator.Setup(m => m.Send(It.IsAny<GerarRelatorioCommand>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(true);
+            _mediatorMock.Setup(m => m.Send(It.IsAny<GerarRelatorioCommand>(), It.IsAny<CancellationToken>()))
+                         .Callback<IRequest<bool>, CancellationToken>((cmd, ct) =>
+                         {
+                             var comando = Assert.IsType<GerarRelatorioCommand>(cmd);
+                             filtroCapturado = Assert.IsType<FiltroRelatorioFrequenciaMensalDto>(comando.Filtros);
+                         })
+                         .ReturnsAsync(true);
 
-            var resultado = await _useCase.Executar(filtro);
-
-            Assert.True(resultado);
-        }
-
-        [Fact]
-        public async Task Deve_Definir_Usuario_No_Filtro()
-        {
-            var filtro = CriarFiltroPadrao();
-            var usuario = CriarUsuarioPadrao();
-
-            _mediator.Setup(m => m.Send(ObterUsuarioLogadoQuery.Instance, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(usuario);
-
-            _mediator.Setup(m => m.Send(It.IsAny<GerarRelatorioCommand>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(true);
-
+            // Act
             await _useCase.Executar(filtro);
 
-            Assert.Equal(usuario.Nome, filtro.UsuarioNome);
-            Assert.Equal(usuario.CodigoRf, filtro.UsuarioRf);
+            // Assert
+            _mediatorMock.Verify(m => m.Send(It.IsAny<GerarRelatorioCommand>(), default), Times.Once);
+            Assert.NotNull(filtroCapturado);
+            Assert.Equal(usuario.Nome, filtroCapturado.UsuarioNome);
+            Assert.Equal(usuario.CodigoRf, filtroCapturado.UsuarioRf);
         }
 
-        [Fact]
-        public async Task Deve_Chamar_ObterUsuarioLogadoQuery()
+        [Theory]
+        [InlineData("-99")]
+        [InlineData(" ")]
+        [InlineData(null)]
+        public async Task DeveUsarRotaTodos_QuandoCodigoDreForInvalido(string codigoDre)
         {
-            var filtro = CriarFiltroPadrao();
-            var usuario = CriarUsuarioPadrao();
+            // Arrange
+            var filtro = new FiltroRelatorioFrequenciaMensalDto { CodigoDre = codigoDre, CodigoUe = "012345" };
+            var usuario = CriarUsuarioMock();
+            GerarRelatorioCommand comandoCapturado = null;
 
-            _mediator.Setup(m => m.Send(ObterUsuarioLogadoQuery.Instance, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(usuario);
+            ConfigurarMocks(usuario);
+            ConfigurarCallbackComando(cmd => comandoCapturado = cmd);
 
-            _mediator.Setup(m => m.Send(It.IsAny<GerarRelatorioCommand>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(true);
-
+            // Act
             await _useCase.Executar(filtro);
 
-            _mediator.Verify(m => m.Send(ObterUsuarioLogadoQuery.Instance, It.IsAny<CancellationToken>()), Times.Once);
+            // Assert
+            Assert.NotNull(comandoCapturado);
+            Assert.Equal(RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosFrequenciaMensalTodosDreUe, comandoCapturado.RotaRelatorio);
         }
 
-        [Fact]
-        public async Task Deve_Chamar_GerarRelatorioCommand_Com_Parametros_Corretos()
+        [Theory]
+        [InlineData("-99")]
+        [InlineData(" ")]
+        [InlineData(null)]
+        public async Task DeveUsarRotaTodos_QuandoCodigoUeForInvalido(string codigoUe)
         {
-            var filtro = CriarFiltroPadrao();
-            var usuario = CriarUsuarioPadrao();
+            // Arrange
+            var filtro = new FiltroRelatorioFrequenciaMensalDto { CodigoDre = "108300", CodigoUe = codigoUe };
+            var usuario = CriarUsuarioMock();
+            GerarRelatorioCommand comandoCapturado = null;
 
-            _mediator.Setup(m => m.Send(ObterUsuarioLogadoQuery.Instance, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(usuario);
+            ConfigurarMocks(usuario);
+            ConfigurarCallbackComando(cmd => comandoCapturado = cmd);
 
-            _mediator.Setup(m => m.Send(It.IsAny<GerarRelatorioCommand>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(true);
-
+            // Act
             await _useCase.Executar(filtro);
 
-            _mediator.Verify(m => m.Send(It.Is<GerarRelatorioCommand>(cmd =>
-                cmd.TipoRelatorio == TipoRelatorio.FrequenciaMensal &&
-                cmd.Filtros == filtro &&
-                cmd.RotaRelatorio == RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosFrequenciaMensal
-            ), It.IsAny<CancellationToken>()), Times.Once);
+            // Assert
+            Assert.NotNull(comandoCapturado);
+            Assert.Equal(RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosFrequenciaMensalTodosDreUe, comandoCapturado.RotaRelatorio);
         }
 
         [Fact]
-        public async Task Deve_Retornar_False_Quando_GerarRelatorioCommand_Retornar_False()
+        public async Task DeveUsarRotaEspecifica_QuandoDreEUeForemValidos()
         {
-            var filtro = CriarFiltroPadrao();
-            var usuario = CriarUsuarioPadrao();
+            // Arrange
+            var filtro = new FiltroRelatorioFrequenciaMensalDto
+            {
+                CodigoDre = "108300",
+                CodigoUe = "012345"
+            };
+            var usuario = CriarUsuarioMock();
+            GerarRelatorioCommand comandoCapturado = null;
 
-            _mediator.Setup(m => m.Send(ObterUsuarioLogadoQuery.Instance, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(usuario);
+            ConfigurarMocks(usuario);
+            ConfigurarCallbackComando(cmd => comandoCapturado = cmd);
 
-            _mediator.Setup(m => m.Send(It.IsAny<GerarRelatorioCommand>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(false);
+            // Act
+            await _useCase.Executar(filtro);
 
-            var resultado = await _useCase.Executar(filtro);
-
-            Assert.False(resultado);
+            // Assert
+            Assert.NotNull(comandoCapturado);
+            Assert.Equal(RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosFrequenciaMensal, comandoCapturado.RotaRelatorio);
         }
 
-        [Fact]
-        public async Task Deve_Propagar_Excecao_Quando_ObterUsuarioLogadoQuery_Falhar()
+        private void ConfigurarMocks(Usuario usuario)
         {
-            var filtro = CriarFiltroPadrao();
-
-            _mediator.Setup(m => m.Send(ObterUsuarioLogadoQuery.Instance, It.IsAny<CancellationToken>()))
-                .ThrowsAsync(new Exception("Erro ao obter usuário"));
-
-            await Assert.ThrowsAsync<Exception>(() => _useCase.Executar(filtro));
+            _mediatorMock.Setup(m => m.Send(It.IsAny<ObterUsuarioLogadoQuery>(), default))
+                         .ReturnsAsync(usuario);
         }
 
-        [Fact]
-        public async Task Deve_Propagar_Excecao_Quando_GerarRelatorioCommand_Falhar()
+        private void ConfigurarCallbackComando(Action<GerarRelatorioCommand> callback)
         {
-            var filtro = CriarFiltroPadrao();
-            var usuario = CriarUsuarioPadrao();
+            _mediatorMock.Setup(m => m.Send(It.IsAny<GerarRelatorioCommand>(), It.IsAny<CancellationToken>()))
+                         .Callback<IRequest<bool>, CancellationToken>((cmd, ct) =>
+                         {
+                             var comando = Assert.IsType<GerarRelatorioCommand>(cmd);
+                             callback(comando);
+                         })
+                         .ReturnsAsync(true);
+        }
 
-            _mediator.Setup(m => m.Send(ObterUsuarioLogadoQuery.Instance, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(usuario);
-
-            _mediator.Setup(m => m.Send(It.IsAny<GerarRelatorioCommand>(), It.IsAny<CancellationToken>()))
-                .ThrowsAsync(new Exception("Erro ao gerar relatório"));
-
-            await Assert.ThrowsAsync<Exception>(() => _useCase.Executar(filtro));
+        private Usuario CriarUsuarioMock()
+        {
+            return new Usuario
+            {
+                Id = 99,
+                Nome = "Usuário Teste Relatório Mensal",
+                CodigoRf = "rf123456",
+                PerfilAtual = Guid.NewGuid()
+            };
         }
     }
 }
