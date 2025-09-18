@@ -24,8 +24,11 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNumeroEstudantesPap
         public async Task<IEnumerable<ContagemNumeroAlunosPapDto>> Handle(PainelEducacionalIndicadoresPapEolQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
-            
-            var resposta = await httpClient.GetAsync(ServicosEolConstants.URL_PAINEL_EDUCACIONAL_INFORMACOES_PAP, cancellationToken);
+
+            var url = string.Format(ServicosEolConstants.URL_PAINEL_EDUCACIONAL_INDICADORES_PAP, 
+                request.CodigoDre ?? "", request.CodigoUe ?? "");
+
+            var resposta = await httpClient.GetAsync(url);
 
             if (resposta.IsSuccessStatusCode)
             {

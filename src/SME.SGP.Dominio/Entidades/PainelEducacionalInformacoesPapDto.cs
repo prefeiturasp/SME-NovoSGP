@@ -1,10 +1,11 @@
-using SME.SGP.Dominio;
-
-namespace SME.SGP.Infra.Dtos.PainelEducacional
+﻿namespace SME.SGP.Dominio.Entidades
 {
-    public class ContagemDificuldadePorTipoDto
+    public class PainelEducacionalInformacoesPapDto
     {
-        public TipoPap TipoPap { get; set; }
+        public int Id { get; set; }
+        public TipoPap TipoPap { get; set; }   
+        public int QuantidadeTurmas { get; set; }
+        public int QuantidadeEstudantes { get; set; }
         public int QuantidadeEstudantesDificuldadeTop1 { get; set; }
         public int QuantidadeEstudantesDificuldadeTop2 { get; set; }
         public int OutrasDificuldadesAprendizagem { get; set; }
@@ -12,7 +13,5 @@ namespace SME.SGP.Infra.Dtos.PainelEducacional
         public string NomeDre { get; set; }
         public string CodigoUe { get; set; }
         public string NomeUe { get; set; }
-        public string NomeDificuldadeTop1 { get; set; }
-        public string NomeDificuldadeTop2 { get; set; }
     }
 }

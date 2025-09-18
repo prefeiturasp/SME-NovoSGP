@@ -14,21 +14,33 @@ namespace SME.SGP.Dominio
         public ConsolidacaoInformacoesPap(
             int id,
             TipoPap tipoPap,
+            string dreCodigo,
+            string ueCodigo,
+            string dreNome,
+            string ueNome,
             int quantidadeTurmas,
             int quantidadeEstudantes,
-            int quantidadeEstudantesComMenosDe75PorcentoFrequencia,
-            int dificuldadeAprendizagem1,
-            int dificuldadeAprendizagem2,
-            int outrasDificuldadesAprendizagem)
+            int quantidadeEstudantesComFrequenciaInferiorLimite,
+            int dificuldadeAprendizagemTop1,
+            int dificuldadeAprendizagemTop2,
+            int outrasDificuldadesAprendizagem,
+            string nomeDificuldadeTop1 = "",
+            string nomeDificuldadeTop2 = "")
         {
             Id = id;
             TipoPap = tipoPap;
+            DreCodigo = dreCodigo;
+            UeCodigo = ueCodigo;
+            DreNome = dreNome;
+            UeNome = ueNome;
             QuantidadeTurmas = quantidadeTurmas;
             QuantidadeEstudantes = quantidadeEstudantes;
-            QuantidadeEstudantesComMenosDe75PorcentoFrequencia = quantidadeEstudantesComMenosDe75PorcentoFrequencia;
-            DificuldadeAprendizagem1 = dificuldadeAprendizagem1;
-            DificuldadeAprendizagem2 = dificuldadeAprendizagem2;
+            QuantidadeEstudantesComFrequenciaInferiorLimite = quantidadeEstudantesComFrequenciaInferiorLimite;
+            QuantidadeEstudantesDificuldadeTop1 = dificuldadeAprendizagemTop1;
+            QuantidadeEstudantesDificuldadeTop2 = dificuldadeAprendizagemTop2;
             OutrasDificuldadesAprendizagem = outrasDificuldadesAprendizagem;
+            NomeDificuldadeTop1 = nomeDificuldadeTop1;
+            NomeDificuldadeTop2 = nomeDificuldadeTop2;
         }
 
         [Column("id")]
@@ -52,16 +64,34 @@ namespace SME.SGP.Dominio
         [Column("quantidade_estudantes")]
         public int QuantidadeEstudantes { get; set; }
 
-        [Column("quantidade_estudantes_com_menos_75_por_cento_frequencia")]
-        public int QuantidadeEstudantesComMenosDe75PorcentoFrequencia { get; set; }
+        [Column("quantidade_estudantes_com_frequencia_inferior_limite")]
+        public int QuantidadeEstudantesComFrequenciaInferiorLimite { get; set; }
 
-        [Column("dificuldade_aprendizagem_1")]
-        public int DificuldadeAprendizagem1 { get; set; }
+        [Column("dre_codigo")]
+        public string DreCodigo { get; set; }
 
-        [Column("dificuldade_aprendizagem_2")]
-        public int DificuldadeAprendizagem2 { get; set; }
+        [Column("dre_nome")]
+        public string DreNome { get; set; }
+
+        [Column("ue_codigo")]
+        public string UeCodigo { get; set; }
+
+        [Column("ue_nome")]
+        public string UeNome { get; set; }
+
+        [Column("quantidade_estudantes_dificuldade_top_1")]
+        public int QuantidadeEstudantesDificuldadeTop1 { get; set; }
+
+        [Column("quantidade_estudantes_dificuldade_top_2")]
+        public int QuantidadeEstudantesDificuldadeTop2 { get; set; }
 
         [Column("outras_dificuldades_aprendizagem")]
         public int OutrasDificuldadesAprendizagem { get; set; }
+
+        [Column("nome_dificuldade_top_1")]
+        public string NomeDificuldadeTop1 { get; set; }
+
+        [Column("nome_dificuldade_top_2")]
+        public string NomeDificuldadeTop2 { get; set; }
     }
 }

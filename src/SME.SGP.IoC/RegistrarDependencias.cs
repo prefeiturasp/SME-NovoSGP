@@ -234,6 +234,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioConsolidacaoMatriculaTurma, RepositorioConsolidacaoMatriculaTurma>();
             services.TryAddScoped<IRepositorioImportacaoLog, RepositorioImportacaoLog>();
             services.TryAddScoped<IConsultasVisaoGeralPainelEducacionalUseCase, ConsultasPainelEducacionalVisaoGeralUseCase>();
+            services.TryAddScoped<IConsultasInformacoesPapUseCase, ConsultasInformacoesPapUseCase>();
         }
 
         protected virtual void RegistrarContextos(IServiceCollection services)
