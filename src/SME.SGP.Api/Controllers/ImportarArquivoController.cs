@@ -35,9 +35,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(ImportacaoLogRetornoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 400)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ImportarArquivoFluenciaLeitora([FromForm] IFormFile arquivo, [FromForm] int anoLetivo, [FromForm] string periodo, [FromServices] IImportacaoArquivoFluenciaLeitoraUseCase useCase)
+        public async Task<IActionResult> ImportarArquivoFluenciaLeitora([FromForm] IFormFile arquivo, [FromForm] int anoLetivo, [FromForm] int tipoAvaliacao, [FromServices] IImportacaoArquivoFluenciaLeitoraUseCase useCase)
         {
-            return Ok(await useCase.Executar(arquivo, anoLetivo, periodo));
+            return Ok(await useCase.Executar(arquivo, anoLetivo, tipoAvaliacao));
         }
 
         [HttpGet]
