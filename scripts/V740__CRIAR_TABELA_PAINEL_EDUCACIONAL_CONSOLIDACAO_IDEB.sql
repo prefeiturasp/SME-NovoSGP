@@ -5,6 +5,7 @@ CREATE table if not exists public.painel_educacional_consolidacao_ideb (
   faixa           VARCHAR(10)  NOT NULL,
   quantidade      INT          NOT NULL,
   codigo_dre      VARCHAR(50)  NOT NULL,
+  codigo_ue       VARCHAR(50)  NULL,
   media_geral     NUMERIC(5,2) NOT NULL,
   criado_em       TIMESTAMP    NOT NULL DEFAULT NOW(),
   criado_por      VARCHAR(200) NULL,
