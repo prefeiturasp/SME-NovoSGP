@@ -651,6 +651,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioProficienciaIdeb, RepositorioProficienciaIdeb>();
 
             services.AddScoped<IRepositorioPainelEducacionalIdeb, RepositorioPainelEducacionalIdeb>();
+            services.AddScoped<IRepositorioPainelEducacionalIdeb, RepositorioPainelEducacionalIdeb>();
+
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)
