@@ -1,6 +1,7 @@
 using MediatR;
 using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNumeroEstudantesPap;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterIndicadoresPap
 {
-    public class ObterIndicadoresPapQueryHandler : IRequestHandler<ObterIndicadoresPapQuery, IEnumerable<ConsolidacaoInformacoesPap>>
+    public class ObterIndicadoresPapQueryHandler : IRequestHandler<ObterIndicadoresPapQuery, IEnumerable<PainelEducacionalInformacoesPapDto>>
     {
         private readonly IMediator mediator;
 
@@ -19,9 +20,9 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterIndicadoresPap
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<ConsolidacaoInformacoesPap>> Handle(ObterIndicadoresPapQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<PainelEducacionalInformacoesPapDto>> Handle(ObterIndicadoresPapQuery request, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(request.CodigoDre) && string.IsNullOrWhiteSpace(request.CodigoUe))
+            if ((string.IsNullOrWhiteSpace(request.CodigoDre) && string.IsNullOrWhiteSpace(request.CodigoUe)) || (request.CodigoDre == "-99" && request.CodigoUe == "-99"))
             {
                 return await ObterIndicadoresConsolidadosGerais(cancellationToken);
             }
@@ -29,17 +30,14 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterIndicadoresPap
             return await ObterIndicadoresComFiltros(request, cancellationToken);
         }
 
-        private async Task<IEnumerable<ConsolidacaoInformacoesPap>> ObterIndicadoresConsolidadosGerais(CancellationToken cancellationToken)
+        private async Task<IEnumerable<PainelEducacionalInformacoesPapDto>> ObterIndicadoresConsolidadosGerais(CancellationToken cancellationToken)
         {
-            var indicadoresCombinados = new List<ConsolidacaoInformacoesPap>();
+            var indicadoresCombinados = new List<PainelEducacionalInformacoesPapDto>();
 
-            // Buscar dificuldades consolidadas gerais
             var dificuldadesGerais = await mediator.Send(new ObterIndicadoresPapSgpConsolidadoQuery(), cancellationToken);
 
-            // Buscar números EOL gerais (sem filtros)
             var numerosEolGerais = await mediator.Send(new PainelEducacionalIndicadoresPapEolQuery("", ""), cancellationToken);
 
-            // Criar classe auxiliar para evitar reflection
             var numerosPorTipo = new Dictionary<TipoPap, NumerosPapDto>();
             
             if (numerosEolGerais?.Any() == true)
@@ -55,11 +53,9 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterIndicadoresPap
                 }
             }
 
-            // Agrupar dificuldades por tipo PAP
             var dificuldadesPorTipo = dificuldadesGerais?.ToDictionary(x => x.TipoPap, x => x)
                 ?? new Dictionary<TipoPap, ContagemDificuldadePorTipoDto>();
 
-            // Criar consolidação para cada tipo PAP
             foreach (var tipoPap in Enum.GetValues<TipoPap>())
             {
                 var numeros = numerosPorTipo.ContainsKey(tipoPap) ? numerosPorTipo[tipoPap] : null;
@@ -67,7 +63,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterIndicadoresPap
 
                 if (numeros != null || dificuldades != null)
                 {
-                    indicadoresCombinados.Add(new ConsolidacaoInformacoesPap(
+                    indicadoresCombinados.Add(new PainelEducacionalInformacoesPapDto(
                         id: 0,
                         tipoPap: tipoPap,
                         dreCodigo: "",
@@ -89,9 +85,9 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterIndicadoresPap
             return indicadoresCombinados.OrderBy(i => i.TipoPap);
         }
 
-        private async Task<IEnumerable<ConsolidacaoInformacoesPap>> ObterIndicadoresComFiltros(ObterIndicadoresPapQuery request, CancellationToken cancellationToken)
+        private async Task<IEnumerable<PainelEducacionalInformacoesPapDto>> ObterIndicadoresComFiltros(ObterIndicadoresPapQuery request, CancellationToken cancellationToken)
         {
-            var indicadoresCombinados = new List<ConsolidacaoInformacoesPap>();
+            var indicadoresCombinados = new List<PainelEducacionalInformacoesPapDto>();
 
             var numerosSgp = await mediator.Send(new ObterIndicadoresPapSgpQuery(request.CodigoDre, request.CodigoUe), cancellationToken);
 
@@ -156,7 +152,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterIndicadoresPap
 
                     if (numerosEol != null || dificuldades != null)
                     {
-                        indicadoresCombinados.Add(new ConsolidacaoInformacoesPap(
+                        indicadoresCombinados.Add(new PainelEducacionalInformacoesPapDto(
                             id: 0,
                             tipoPap: tipoPap,
                             dreCodigo: combinacao.CodigoDre,
@@ -187,7 +183,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterIndicadoresPap
 
                     if (numerosEol != null)
                     {
-                        indicadoresCombinados.Add(new ConsolidacaoInformacoesPap(
+                        indicadoresCombinados.Add(new PainelEducacionalInformacoesPapDto(
                             id: 0,
                             tipoPap: tipoPap,
                             dreCodigo: request.CodigoDre ?? "",
@@ -212,7 +208,6 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterIndicadoresPap
                                        .ThenBy(i => i.UeCodigo);
         }
 
-        // Classe auxiliar para evitar reflection
         private class NumerosPapDto
         {
             public int QuantidadeTurmas { get; set; }
