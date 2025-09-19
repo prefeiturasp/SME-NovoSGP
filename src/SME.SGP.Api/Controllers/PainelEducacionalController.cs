@@ -75,8 +75,8 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(PainelEducacionalInformacoesPapDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [AllowAnonymous]
-        public async Task<IActionResult> ObterIndicadoresPap([FromServices] IConsultasInformacoesPapUseCase consultasInformacoesPapUseCase, string codigoDre = null, string codigoUe = null)
-        => Ok(await consultasInformacoesPapUseCase.ObterInformacoesPap(codigoDre, codigoUe));
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterIndicadoresPap([FromServices] IConsultasInformacoesPapUseCase consultasInformacoesPapUseCase, [FromQuery] FiltroPainelEducacionalDreUe filtro)
+        => Ok(await consultasInformacoesPapUseCase.ObterInformacoesPap(filtro.CodigoDre, filtro.CodigoUe));
     }
 }
