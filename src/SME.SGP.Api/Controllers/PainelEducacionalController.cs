@@ -69,5 +69,13 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterVisaoGeral(int anoLetivo, string codigoDre, string codigoUe, [FromServices] IConsultasVisaoGeralPainelEducacionalUseCase consultasVisaoGeralPainelEducacionalUseCase)
           => Ok(await consultasVisaoGeralPainelEducacionalUseCase.ObterVisaoGeralConsolidada(anoLetivo, codigoDre, codigoUe));
+
+        [HttpGet("indicadores-pap")]
+        [ProducesResponseType(typeof(PainelEducacionalInformacoesPapDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterIndicadoresPap([FromServices] IConsultasInformacoesPapUseCase consultasInformacoesPapUseCase, [FromQuery] FiltroPainelEducacionalDreUe filtro)
+        => Ok(await consultasInformacoesPapUseCase.ObterInformacoesPap(filtro.CodigoDre, filtro.CodigoUe));
     }
 }
