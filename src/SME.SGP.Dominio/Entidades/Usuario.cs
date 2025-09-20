@@ -158,6 +158,11 @@ namespace SME.SGP.Dominio
                                 || p.CodigoPerfil == Dominio.Perfis.PERFIL_DIRETOR
                                 || p.CodigoPerfil == Dominio.Perfis.PERFIL_COORDENADOR_CELP);
 
+        public bool EhGestorCIEJA()
+            => PerfilAtual == Dominio.Perfis.PERFIL_COORDENADOR_PEDAGOGICO_CIEJA
+            || PerfilAtual == Dominio.Perfis.PERFIL_ASSISTENTE_COORDENADOR_GERAL_CIEJA
+            || PerfilAtual == Dominio.Perfis.PERFIL_COORDENADOR_GERAL_CIEJA;
+
         public bool EhCP()
             => PerfilAtual == Dominio.Perfis.PERFIL_CP;
 
