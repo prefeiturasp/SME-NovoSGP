@@ -29,11 +29,12 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<PainelEducacionalIdebDto>> ObterIdeb()
         {
             var query = @"SELECT 
-                          t1.ano_letivo,
+                          t1.ano_letivo As AnoLetivo,
                           t1.serie_ano AS etapa,
                           t1.nota,
                           t1.criado_em,
-                          t3.dre_id as codigo_dre
+                          t3.dre_id as CodigoDre,
+                          t2.ue_id as CodigoUe
                       FROM ideb t1
                       INNER JOIN ue t2 ON t2.ue_id = t1.codigo_eol_escola
                       INNER JOIN dre t3 ON t3.id = t2.dre_id
@@ -47,22 +48,21 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<bool> SalvarIdeb(IEnumerable<PainelEducacionalConsolidacaoIdeb> ideb)
         {
-            var comando = @"
-                INSERT INTO painel_educacional_consolidacao_ideb
-                (ano_letivo, etapa, faixa, quantidade, media_geral, codigo_dre, ultima_atualizacao, criado_em, criado_por, criado_rf)
-                VALUES
-                (@AnoLetivo, @Etapa, @Faixa, @Quantidade, @MediaGeral, @CodigoDre, @UltimaAtualizacao, NOW(), 'Sistema', '0')
-                ON CONFLICT (ano_letivo, etapa, faixa, codigo_dre)
-                DO UPDATE SET
-                    quantidade = EXCLUDED.quantidade,
-                    media_geral = EXCLUDED.media_geral,
-                    codigo_dre = EXCLUDED.codigo_dre,
-                    ultima_atualizacao = EXCLUDED.ultima_atualizacao,
-                    alterado_em = NOW(),
-                    alterado_por = 'Sistema',
-                    alterado_rf = '0'";
+            const string comando = @"
+        INSERT INTO painel_educacional_consolidacao_ideb
+            (ano_letivo, etapa, faixa, quantidade, media_geral, codigo_dre, codigo_ue, criado_em, criado_por, criado_rf)
+        VALUES
+            (@AnoLetivo, @Etapa, @Faixa, @Quantidade, @MediaGeral, @CodigoDre, @CodigoUe, NOW(), 'Sistema', '0')
+        ON CONFLICT (ano_letivo, etapa, faixa)
+        DO UPDATE SET
+            quantidade   = EXCLUDED.quantidade,
+            media_geral  = EXCLUDED.media_geral,
+            codigo_dre   = EXCLUDED.codigo_dre,
+            alterado_em  = NOW(),
+            alterado_por = 'Sistema',
+            alterado_rf  = '0';";
 
-            var parametros = ideb.Select(i => new 
+            var parametros = ideb.Select(i => new
             {
                 i.AnoLetivo,
                 Etapa = (int)i.Etapa,
@@ -70,11 +70,14 @@ namespace SME.SGP.Dados.Repositorios
                 i.Quantidade,
                 i.MediaGeral,
                 i.CodigoDre,
-                i.UltimaAtualizacao
+                i.CodigoUe
             }).ToArray();
 
-            var linhasAfetadas = await _policy.ExecuteAsync(() => database.Conexao.ExecuteAsync(comando, parametros));
+            var linhasAfetadas = await _policy.ExecuteAsync(() =>
+                database.Conexao.ExecuteAsync(comando, parametros));
+
             return linhasAfetadas > 0;
         }
+
     }
 }

@@ -23,6 +23,6 @@ namespace SME.SGP.Aplicacao
             await repositorioPainelEducacionalIdeb.SalvarIdeb(request.Ideb);
 
             return true;
-        }
+          }
     }
 }

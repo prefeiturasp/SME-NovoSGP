@@ -41,7 +41,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                 : PainelEducacionalIdepEtapa.AnosFinais.ToString(),
                 Nota = dto.Nota,
                 CriadoEm = dto.CriadoEm,
-                CodigoDre = dto.CodigoDre
+                CodigoDre = dto.CodigoDre,
+                CodigoUe = dto.CodigoUe
             });
         }
 
@@ -64,6 +65,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                 x.Nota,
                 x.CriadoEm,
                 x.CodigoDre,
+                x.CodigoUe,
                 Faixa = GetFaixa(x.Nota)
             }).ToList();
         }
@@ -71,12 +73,13 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
         private IEnumerable<dynamic> CalcularFaixas(IEnumerable<dynamic> baseQuery)
         {
             return baseQuery
-                .GroupBy(x => new { x.AnoLetivo, x.Etapa, x.CodigoDre, x.Faixa })
+                .GroupBy(x => new { x.AnoLetivo, x.Etapa, x.CodigoDre, x.CodigoUe, x.Faixa })
                 .Select(g => new
                 {
                     g.Key.AnoLetivo,
                     Etapa = ParseEtapa(g.Key.Etapa),
                     g.Key.CodigoDre,
+                    g.Key.CodigoUe,
                     g.Key.Faixa,
                     Quantidade = g.Count()
                 }).ToList();
@@ -85,24 +88,26 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
         private IEnumerable<dynamic> CalcularMedias(IEnumerable<dynamic> baseQuery)
         {
             return baseQuery
-                .GroupBy(x => new { x.AnoLetivo, x.Etapa, x.CodigoDre })
+                .GroupBy(x => new { x.AnoLetivo, x.Etapa, x.CodigoDre, x.CodigoUe })
                 .Select(g => new
                 {
                     g.Key.AnoLetivo,
                     Etapa = ParseEtapa(g.Key.Etapa),
                     g.Key.CodigoDre,
-                    MediaGeral = Math.Round(g.Average(y => y.Nota), 2)
+                    g.Key.CodigoUe,
+                    MediaGeral = Math.Round((decimal)g.Average(y => (double)y.Nota), 2)
                 }).ToList();
         }
 
         private IEnumerable<dynamic> CalcularUltimaData(IEnumerable<dynamic> baseQuery)
         {
             return baseQuery
-                .GroupBy(x => new { x.AnoLetivo, x.CodigoDre })
+                .GroupBy(x => new { x.AnoLetivo, x.CodigoDre, x.CodigoUe })
                 .Select(g => new
                 {
                     g.Key.AnoLetivo,
                     g.Key.CodigoDre,
+                    g.Key.CodigoUe,
                     UltimaAtualizacao = g.Max(y => y.CriadoEm)
                 }).ToList();
         }
@@ -111,17 +116,18 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
         {
             var resultado = from f in faixas
                             join m in medias
-                                on new { f.AnoLetivo, Etapa = f.Etapa, f.CodigoDre }
-                                equals new { m.AnoLetivo, Etapa = m.Etapa, m.CodigoDre }
+                                on new { f.AnoLetivo, Etapa = f.Etapa, f.CodigoDre, f.CodigoUe }
+                                equals new { m.AnoLetivo, Etapa = m.Etapa, m.CodigoDre, m.CodigoUe }
                             join u in ultimaData
-                                on new { f.AnoLetivo, f.CodigoDre }
-                                equals new { u.AnoLetivo, u.CodigoDre }
-                            orderby f.AnoLetivo, f.Etapa, f.CodigoDre, f.Faixa
+                                on new { f.AnoLetivo, f.CodigoDre, f.CodigoUe }
+                                equals new { u.AnoLetivo, u.CodigoDre, u.CodigoUe }
+                            orderby f.AnoLetivo, f.Etapa, f.CodigoDre, f.CodigoUe, f.Faixa
                             select new PainelEducacionalConsolidacaoIdeb
                             {
                                 AnoLetivo = f.AnoLetivo,
                                 Etapa = f.Etapa,
                                 CodigoDre = f.CodigoDre.ToString(),
+                                CodigoUe = f.CodigoUe.ToString(),
                                 Faixa = f.Faixa,
                                 Quantidade = f.Quantidade,
                                 MediaGeral = m.MediaGeral,
