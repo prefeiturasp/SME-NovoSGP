@@ -15,7 +15,9 @@ using SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Dashboard.ObterDadosDeLeituraDeCom
 using SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Dashboard.ObterDadosDeLeituraDeComunicadosPorModalidadeETurma;
 using SME.SGP.Aplicacao.CasosDeUso.HistoricoEscolar;
 using SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo;
-using SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo;
+using SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.FluenciaLeitora;
+using SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Ideb;
+using SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Idep;
 using SME.SGP.Aplicacao.CasosDeUso.Informes;
 using SME.SGP.Aplicacao.CasosDeUso.PainelEducacional;
 using SME.SGP.Aplicacao.CasosDeUso.Turma;
@@ -30,7 +32,9 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.ObterDadosDeLeituraDeCo
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.ObterDadosDeLeituraDeComunicadosPorModalidadeETurma;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.SolicitarReiniciarSenha;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.FluenciaLeitora;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Ideb;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Idep;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.MapeamentoEstudante;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.Turma;

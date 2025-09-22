@@ -3,8 +3,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Boletim;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.FluenciaLeitora;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Ideb;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Idep;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.ImportarArquivo;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -73,6 +78,37 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterImportacaoLogErros([FromQuery] FiltroPesquisaImportacaoDto filtro, [FromServices] IImportacaoLogErroUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
+        }
+
+        [HttpPost("boletim-idep")]
+        [ProducesResponseType(typeof(ImportacaoLogRetornoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 400)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.IE_I_P_I, Policy = "Bearer")]
+        public async Task<IActionResult> ImportarBoletins([FromQuery] int ano, [FromForm] IEnumerable<IFormFile> boletins, [FromServices] IBoletimIdepUseCase useCase)
+        {
+            return Ok(await useCase.Executar(ano, boletins));
+        }
+
+
+        [HttpPost("boletim-idep")]
+        [ProducesResponseType(typeof(ImportacaoLogRetornoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 400)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.IE_I_P_I, Policy = "Bearer")]
+        public async Task<IActionResult> ImportarBoletins([FromQuery] int ano, [FromForm] IEnumerable<IFormFile> boletins, [FromServices] IBoletimIdepUseCase useCase)
+        {
+            return Ok(await useCase.Executar(ano, boletins));
+        }
+
+
+        [HttpPost("proficiencia-idep")]
+        [ProducesResponseType(typeof(ImportacaoLogRetornoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 400)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ImportarProficienciaIdep([FromForm] IFormFile arquivo, [FromForm] int anoLetivo, [FromServices] IImportacaoProficienciaIdepUseCase useCase)
+        {
+            return Ok(await useCase.Executar(arquivo, anoLetivo));
         }
 
         [HttpPost("proficiencia-idep")]
