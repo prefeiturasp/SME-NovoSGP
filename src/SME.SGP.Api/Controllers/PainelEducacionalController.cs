@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
+using SME.SGP.Aplicacao.CasosDeUso.PainelEducacional;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
@@ -61,6 +62,15 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterIdepPorAnoEtapa(int anoLetivo, string etapa, string codigoDre, [FromServices] IConsultasIdepPainelEducacionalUseCase consultasIdepPainelEducacionalUseCase)
             => Ok(await consultasIdepPainelEducacionalUseCase.ObterIdepPorAnoEtapa(anoLetivo, etapa, codigoDre));
+
+        [HttpGet("ideb")]
+        [ProducesResponseType(typeof(PainelEducacionalIdebAgrupamentoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 400)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterIdeb([FromQuery] FiltroPainelEducacionalIdeb filtro, [FromServices] IConsultasIdebPainelEducacionalUseCase consultasIdebPainelEducacionalUseCase)
+       => Ok(await consultasIdebPainelEducacionalUseCase.ObterIdeb(filtro));
 
         [HttpGet("visao-geral")]
         [ProducesResponseType(typeof(PainelEducacionalVisaoGeralRetornoDto), 200)]
