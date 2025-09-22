@@ -1,12 +1,9 @@
 ﻿using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Drawing.Charts;
-using DocumentFormat.OpenXml.Spreadsheet;
-using Elasticsearch.Net;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using SME.SGP.Aplicacao.Commands.ImportarArquivo;
-using SME.SGP.Aplicacao.Commands.ImportarArquivo.FluenciaLeitora;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo;
+using SME.SGP.Aplicacao.Commands.ImportarArquivo.Idep;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Idep;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
@@ -23,25 +20,25 @@ using System.Linq;
 using System.Threading.Tasks;
 
 
-namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
+namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Idep
 {
-    public class ImportacaoArquivoFluenciaLeitoraUseCase : AbstractUseCase, IImportacaoArquivoFluenciaLeitoraUseCase
+    public class ImportacaoArquivoIdepUseCase : AbstractUseCase, IImportacaoArquivoIdepUseCase
     {
         private readonly IRepositorioImportacaoLog repositorioImportacaoLog;
-        private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
+        private readonly IRepositorioUeConsulta repositorioUeConsulta;
 
         private List<SalvarImportacaoLogErroDto> ProcessadosComFalha;
-        public ImportacaoArquivoFluenciaLeitoraUseCase(
+        public ImportacaoArquivoIdepUseCase(
             IMediator mediator,
             IRepositorioImportacaoLog repositorioImportacaoLog,
-            IRepositorioTurmaConsulta repositorioTurmaConsulta
+            IRepositorioUeConsulta repositorioUeConsulta
         ) : base(mediator)
         {
             this.repositorioImportacaoLog = repositorioImportacaoLog ?? throw new ArgumentNullException(nameof(repositorioImportacaoLog));
-            this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
+            this.repositorioUeConsulta = repositorioUeConsulta ?? throw new ArgumentNullException(nameof(repositorioUeConsulta));
         }
 
-        public async Task<ImportacaoLogRetornoDto> Executar(IFormFile arquivo, int anoLetivo, int tipoAvaliacao)
+        public async Task<ImportacaoLogRetornoDto> Executar(IFormFile arquivo, int anoLetivo)
         {
             if (anoLetivo == 0)
                 throw new NegocioException("Informe o ano letivo.");
@@ -52,19 +49,19 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
             if (arquivo.ContentType.NaoEhArquivoXlsx())
                 throw new NegocioException(MensagemNegocioComuns.SOMENTE_ARQUIVO_XLSX_SUPORTADO);
 
-            var tipoArquivo = TipoArquivoImportacao.FLUENCIA_LEITORA.GetAttribute<DisplayAttribute>().Name;
+            var tipoArquivo = TipoArquivoImportacao.IDEP.GetAttribute<DisplayAttribute>().Name;
             var importacaoLog = await SalvarImportacao(arquivo, tipoArquivo);
 
             if (importacaoLog != null)
             {
-                await ProcessarArquivoAsync(arquivo.OpenReadStream(), importacaoLog, anoLetivo, tipoAvaliacao);
+                await ProcessarArquivoAsync(arquivo.OpenReadStream(), importacaoLog, anoLetivo);
             }
             return ImportacaoLogRetornoDto.RetornarSucesso(MensagemNegocioComuns.ARQUIVO_IMPORTADO_COM_SUCESSO, importacaoLog.Id);
         }
 
-        private async Task<bool> ProcessarArquivoAsync(Stream arquivo, ImportacaoLog importacaoLog, int anoLetivo, int tipoAvaliacao)
+        private async Task<bool> ProcessarArquivoAsync(Stream arquivo, ImportacaoLog importacaoLog, int anoLetivo)
         {
-            var listaLote = new List<ArquivoFluenciaLeitoraDto>();
+            var listaLote = new List<ArquivoIdepDto>();
             ProcessadosComFalha = new List<SalvarImportacaoLogErroDto>();
             int totalRegistros = 0;
             var loteSalvar = new List<Task>();
@@ -90,17 +87,17 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
                 {
                     try
                     {
-                        var codigoEOLTurma = planilha.Cell(linha, 1).Value.ToString().Trim();
-                        var codigoEOLAluno = planilha.Cell(linha, 2).Value.ToString().Trim();
-                        int.TryParse(planilha.Cell(linha, 3).Value.ToString().Trim(), out int fluencia);
+                        int.TryParse(planilha.Cell(linha, 1).Value.ToString().Trim(), out int serieAno);
+                        var codigoEOLEscola = planilha.Cell(linha, 2).Value.ToString().Trim();
+                        decimal.TryParse(planilha.Cell(linha, 3).Value.ToString().Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out var nota);
 
-                        var dto = new ArquivoFluenciaLeitoraDto(codigoEOLTurma, codigoEOLAluno, anoLetivo, fluencia, tipoAvaliacao);
+                        var dto = new ArquivoIdepDto(serieAno, codigoEOLEscola, nota, anoLetivo);
                         dto.LinhaAtual = linha;
                         listaLote.Add(dto);
 
                         if (listaLote.Count == tamanhoLote)
                         {
-                            loteSalvar.AddRange(SalvarArquivoFluenciaLeitoraEmLote(listaLote, importacaoLog.Id));
+                            loteSalvar.AddRange(SalvarArquivoIdepEmLote(listaLote, importacaoLog.Id));
                             listaLote.Clear();
                         }
                     }
@@ -111,7 +108,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
                 }
                 // salva as linhas restantes (último lote incompleto)
                 if (listaLote.Any())
-                    loteSalvar.AddRange(SalvarArquivoFluenciaLeitoraEmLote(listaLote, importacaoLog.Id));
+                    loteSalvar.AddRange(SalvarArquivoIdepEmLote(listaLote, importacaoLog.Id));
 
                 // aguarda todas as tasks de persistência
                 await Task.WhenAll(loteSalvar);
@@ -145,71 +142,46 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
             }
         }
 
-        private IEnumerable<Task> SalvarArquivoFluenciaLeitoraEmLote(List<ArquivoFluenciaLeitoraDto> lista, long importacaoLogId)
+        private IEnumerable<Task> SalvarArquivoIdepEmLote(List<ArquivoIdepDto> lista, long importacaoLogId)
         {
-            var fluenciasLeitorasValidas = new int[] {
-                (int)FluenciaLeitoraEnum.Fluencia1,
-                (int)FluenciaLeitoraEnum.Fluencia2,
-                (int)FluenciaLeitoraEnum.Fluencia3,
-                (int)FluenciaLeitoraEnum.Fluencia4,
-                (int)FluenciaLeitoraEnum.Fluencia5,
-                (int)FluenciaLeitoraEnum.Fluencia6,
-            };
-
-            var fluenciaLeitoraPeriodoValidos = new int[] {
-                (int)FluenciaLeitoraTipoAvaliacaoEnum.AvaliacaoEntrada,
-                (int)FluenciaLeitoraTipoAvaliacaoEnum.AvaliacaoSaida
+            var serieAnosValidos = new int[] {
+                (int)SerieAnoIdepEnum.AnosIniciais,
+                (int)SerieAnoIdepEnum.AnosFinais
             };
 
             foreach (var dto in lista)
             {
                 try
                 {
-                    if (string.IsNullOrEmpty(dto.CodigoEOLTurma))
+                    if (dto.SerieAno == 0 || !serieAnosValidos.Contains(dto.SerieAno))
                     {
-                        SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Codigo EOL da Turma inválido");
+                        SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Série/Ano inválido");
                         continue;
                     }
 
-                    if (string.IsNullOrEmpty(dto.CodigoEOLAluno))
+                    if (dto.Nota == 0)
                     {
-                        SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Codigo EOL do Aluno inválido");
+                        SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Nota inválida");
                         continue;
                     }
 
-                    if (!string.IsNullOrEmpty(dto.CodigoEOLTurma))
+                    if (string.IsNullOrEmpty(dto.CodigoEOLEscola))
                     {
-                        var turma = repositorioTurmaConsulta.ObterPorCodigo(dto.CodigoEOLTurma);
-                        if (turma.EhNulo())
+                        SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Código EOL da UE inválido");
+                        continue;
+                    }
+
+                    if (!string.IsNullOrEmpty(dto.CodigoEOLEscola))
+                    {
+                        var ue = repositorioUeConsulta.ObterPorCodigo(dto.CodigoEOLEscola);
+                        if (ue.EhNulo())
                         {
-                            SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Turma não encontrada");
+                            SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Código EOL da UE não encontrado");
                             continue;
                         }
                     }
 
-                    if (!string.IsNullOrEmpty(dto.CodigoEOLTurma) && !string.IsNullOrEmpty(dto.CodigoEOLAluno))
-                    {
-                        var aluno = mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(dto.CodigoEOLTurma, dto.CodigoEOLAluno));
-                        if (aluno.EhNulo())
-                        {
-                            SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Aluno não encontrado");
-                            continue;
-                        }
-                    }
-
-                    if (dto.Fluencia == 0 || !fluenciasLeitorasValidas.Contains(dto.Fluencia))
-                    {
-                        SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Fluência inválida");
-                        continue;
-                    }
-
-                    if (dto.TipoAvaliacao == 0 || !fluenciaLeitoraPeriodoValidos.Contains(dto.TipoAvaliacao))
-                    {
-                        SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Período inválido");
-                        continue;
-                    }
-
-                    mediator.Send(new SalvarImportacaoArquivoFluenciaLeitoraCommand(dto)).GetAwaiter().GetResult();
+                    mediator.Send(new SalvarImportacaoArquivoIdepCommand(dto)).GetAwaiter().GetResult();
                 }
                 catch (Exception ex)
                 {
