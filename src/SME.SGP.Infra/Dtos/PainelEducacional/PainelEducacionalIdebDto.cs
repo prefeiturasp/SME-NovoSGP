@@ -9,5 +9,6 @@ namespace SME.SGP.Infra.Dtos.PainelEducacional
         public decimal Nota { get; set; }
         public DateTime CriadoEm { get; set; }
         public int CodigoDre { get; set; }
+        public int CodigoUe { get; set; }
     }
 }
