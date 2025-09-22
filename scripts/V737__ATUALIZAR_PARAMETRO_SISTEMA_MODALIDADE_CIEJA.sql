@@ -1,1 +1,0 @@
-update parametros_sistema set valor = '2,7,8,9' where ano >= 2025 and tipo = 56;
