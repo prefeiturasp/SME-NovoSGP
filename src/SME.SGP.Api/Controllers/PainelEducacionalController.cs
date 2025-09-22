@@ -77,5 +77,13 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterIndicadoresPap([FromServices] IConsultasInformacoesPapUseCase consultasInformacoesPapUseCase, [FromQuery] FiltroPainelEducacionalDreUe filtro)
         => Ok(await consultasInformacoesPapUseCase.ObterInformacoesPap(filtro.CodigoDre, filtro.CodigoUe));
+
+        [HttpGet("fluencia-leitora")]
+        [ProducesResponseType(typeof(PainelEducacionalFluenciaLeitoraDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterFluenciaLeitora([FromQuery] FiltroPainelEducacionalAnoLetivoPeriodo filtro, [FromServices] IConsultasPainelEducacionalFluenciaLeitoraUseCase consultasFluenciaLeitoraUseCase)
+        => Ok(await consultasFluenciaLeitoraUseCase.ObterFluenciaLeitora(filtro.Periodo.ToString(), filtro.AnoLetivo.ToString(), filtro.CodigoDre, filtro.CodigoUe));
     }
 }
