@@ -32,13 +32,13 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             return true;
         }
 
-        private IEnumerable<PainelEducacionalIdepAgrupamento> ConverterParaIdebRaw(IEnumerable<PainelEducacionalIdebDto> dtos)
+        private IEnumerable<PainelEducacionalIdebAgrupamento> ConverterParaIdebRaw(IEnumerable<PainelEducacionalIdebDto> dtos)
         {
-            return dtos.Select(dto => new PainelEducacionalIdepAgrupamento
+            return dtos.Select(dto => new PainelEducacionalIdebAgrupamento
             {
                 AnoLetivo = dto.AnoLetivo,
-                Etapa = dto.SerieAno >= 1 && dto.SerieAno <= 5 ? PainelEducacionalIdepEtapa.AnosIniciais.ToString()
-                : PainelEducacionalIdepEtapa.AnosFinais.ToString(),
+                Serie = dto.SerieAno >= 1 && dto.SerieAno <= 5 ? PainelEducacionalIdebSerie.AnosIniciais.ToString()
+                : PainelEducacionalIdebSerie.AnosFinais.ToString(),
                 Nota = dto.Nota,
                 CriadoEm = dto.CriadoEm,
                 CodigoDre = dto.CodigoDre,
@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             });
         }
 
-        public IEnumerable<PainelEducacionalConsolidacaoIdeb> ProcessarIdeb(IEnumerable<PainelEducacionalIdepAgrupamento> dados)
+        public IEnumerable<PainelEducacionalConsolidacaoIdeb> ProcessarIdeb(IEnumerable<PainelEducacionalIdebAgrupamento> dados)
         {
             var baseQuery = CriarBaseQuery(dados);
             var faixas = CalcularFaixas(baseQuery);
@@ -56,12 +56,12 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             return MontarResultado(faixas, medias, ultimaData);
         }
 
-        private IEnumerable<dynamic> CriarBaseQuery(IEnumerable<PainelEducacionalIdepAgrupamento> dados)
+        private IEnumerable<dynamic> CriarBaseQuery(IEnumerable<PainelEducacionalIdebAgrupamento> dados)
         {
             return dados.Select(x => new
             {
                 x.AnoLetivo,
-                x.Etapa,
+                x.Serie,
                 x.Nota,
                 x.CriadoEm,
                 x.CodigoDre,
@@ -73,11 +73,11 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
         private IEnumerable<dynamic> CalcularFaixas(IEnumerable<dynamic> baseQuery)
         {
             return baseQuery
-                .GroupBy(x => new { x.AnoLetivo, x.Etapa, x.CodigoDre, x.CodigoUe, x.Faixa })
+                .GroupBy(x => new { x.AnoLetivo, x.Serie, x.CodigoDre, x.CodigoUe, x.Faixa })
                 .Select(g => new
                 {
                     g.Key.AnoLetivo,
-                    Etapa = ParseEtapa(g.Key.Etapa),
+                    Etapa = ParseEtapa(g.Key.Serie),
                     g.Key.CodigoDre,
                     g.Key.CodigoUe,
                     g.Key.Faixa,
@@ -88,11 +88,11 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
         private IEnumerable<dynamic> CalcularMedias(IEnumerable<dynamic> baseQuery)
         {
             return baseQuery
-                .GroupBy(x => new { x.AnoLetivo, x.Etapa, x.CodigoDre, x.CodigoUe })
+                .GroupBy(x => new { x.AnoLetivo, x.Serie, x.CodigoDre, x.CodigoUe })
                 .Select(g => new
                 {
                     g.Key.AnoLetivo,
-                    Etapa = ParseEtapa(g.Key.Etapa),
+                    Etapa = ParseEtapa(g.Key.Serie),
                     g.Key.CodigoDre,
                     g.Key.CodigoUe,
                     MediaGeral = Math.Round((decimal)g.Average(y => (double)y.Nota), 2)
@@ -152,12 +152,13 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             return null;
         }
 
-        private static PainelEducacionalIdepEtapa ParseEtapa(string etapa)
+        private static PainelEducacionalIdebSerie ParseEtapa(string etapa)
         {
             return etapa switch
             {
-                "AnosIniciais" => PainelEducacionalIdepEtapa.AnosIniciais,
-                "AnosFinais" => PainelEducacionalIdepEtapa.AnosFinais,
+                "AnosIniciais" => PainelEducacionalIdebSerie.AnosIniciais,
+                "AnosFinais" => PainelEducacionalIdebSerie.AnosFinais,
+                "EnsinoMedio" => PainelEducacionalIdebSerie.EnsinoMedio,
                 _ => throw new ArgumentException($"Etapa inválida: {etapa}")
             };
         }
