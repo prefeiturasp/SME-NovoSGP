@@ -23,16 +23,16 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
         {
             var registrosIdebDto = await mediator.Send(new PainelEducacionalIdebQuery());
 
-            var registrosIdeb = ConverterParaIdepRaw(registrosIdebDto);
+            var registrosIdeb = ConverterParaIdebRaw(registrosIdebDto);
 
-            var ideb = ProcessarIdep(registrosIdeb);
+            var ideb = ProcessarIdeb(registrosIdeb);
 
             await mediator.Send(new PainelEducacionalSalvarConsolidacaoIdebCommand(ideb));
 
             return true;
         }
 
-        private IEnumerable<PainelEducacionalIdepAgrupamento> ConverterParaIdepRaw(IEnumerable<PainelEducacionalIdebDto> dtos)
+        private IEnumerable<PainelEducacionalIdepAgrupamento> ConverterParaIdebRaw(IEnumerable<PainelEducacionalIdebDto> dtos)
         {
             return dtos.Select(dto => new PainelEducacionalIdepAgrupamento
             {
@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             });
         }
 
-        public IEnumerable<PainelEducacionalConsolidacaoIdeb> ProcessarIdep(IEnumerable<PainelEducacionalIdepAgrupamento> dados)
+        public IEnumerable<PainelEducacionalConsolidacaoIdeb> ProcessarIdeb(IEnumerable<PainelEducacionalIdepAgrupamento> dados)
         {
             var baseQuery = CriarBaseQuery(dados);
             var faixas = CalcularFaixas(baseQuery);
