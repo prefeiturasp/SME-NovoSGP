@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using System;
 using System.Threading;
@@ -9,19 +8,26 @@ namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.Ideb
 {
     public class SalvarImportacaoArquivoIdebCommandHandler : IRequestHandler<SalvarImportacaoArquivoIdebCommand, Dominio.Ideb>
     {
-        private readonly IRepositorioIdeb repositorioArquivoIbep;
-        public SalvarImportacaoArquivoIdebCommandHandler(IRepositorioIdeb repositorioArquivoIbep)
+        private readonly IRepositorioIdeb repositorioIdeb;
+        public SalvarImportacaoArquivoIdebCommandHandler(IRepositorioIdeb repositorioIdeb)
         {
-            this.repositorioArquivoIbep = repositorioArquivoIbep ?? throw new ArgumentNullException(nameof(repositorioArquivoIbep));
+            this.repositorioIdeb = repositorioIdeb ?? throw new ArgumentNullException(nameof(repositorioIdeb));
         }
 
         public async Task<Dominio.Ideb> Handle(SalvarImportacaoArquivoIdebCommand request, CancellationToken cancellationToken)
         {
-            var arquivoIdeb = MapearParaEntidade(request);
+            var dto = MapearParaEntidade(request);
+            var registroAtual = await repositorioIdeb.ObterRegistroIdebAsync(dto.AnoLetivo, dto.SerieAno, dto.CodigoEOLEscola);
 
-            await repositorioArquivoIbep.SalvarAsync(arquivoIdeb);
+            if (registroAtual != null)
+            {
+                registroAtual.Nota = dto.Nota;
+                dto = registroAtual;
+            }
 
-            return arquivoIdeb;
+            await repositorioIdeb.SalvarAsync(dto);
+
+            return dto;
         }
 
         private Dominio.Ideb MapearParaEntidade(SalvarImportacaoArquivoIdebCommand request)
