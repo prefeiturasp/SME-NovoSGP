@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.ExcluirAgrupamentoGlobal
 
         public async Task<bool> Handle(PainelEducacionalExcluirAgrupamentoGlobalCommand request, CancellationToken cancellationToken)
         {
-            await repositorioFrequencia.ExcluirFrequenciaGlobal();
+            await repositorioFrequencia.ExcluirFrequenciaGlobal(request.AnoLetivo);
 
             return true;
         }

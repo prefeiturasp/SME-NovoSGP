@@ -15,9 +15,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             this.mediator = mediator;
         }
 
-        public async Task<PainelEducacionalRegistroFrequenciaRankingDto> ObterFrequencia(string codigoDre, string codigoUe)
+        public async Task<PainelEducacionalRegistroFrequenciaRankingDto> ObterFrequencia(int anoLetivo, string codigoDre, string codigoUe)
         {
-            return await mediator.Send(new PainelEducacionalRegistroFrequenciaRakingQuery(codigoDre, codigoUe));
+            return await mediator.Send(new PainelEducacionalRegistroFrequenciaRakingQuery(anoLetivo, codigoDre, codigoUe));
         }
     }
 }
