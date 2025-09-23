@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterFrequenciaMensal
 
         public async Task<IEnumerable<PainelEducacionalRegistroFrequenciaAgrupamentoMensalDto>> Handle(PainelEducacionalRegistroFrequenciaAgrupamentoMensalQuery request, CancellationToken cancellationToken)
         {
-            var registros = await repositorioPainelEducacionalRegistroFrequenciaAgrupamentoMensal.ObterFrequenciaMensal(request.CodigoDre, request.CodigoUe);
+            var registros = await repositorioPainelEducacionalRegistroFrequenciaAgrupamentoMensal.ObterFrequenciaMensal(request.AnoLetivo, request.CodigoDre, request.CodigoUe);
 
             return MapearParaDto(registros);
         }

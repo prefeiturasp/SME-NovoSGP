@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.ExcluirAgrupamentoMensal
         }
         public async Task<bool> Handle(PainelEducacionalExcluirAgrupamentoMensalCommand request, CancellationToken cancellationToken)
         {
-            await repositorioFrequencia.ExcluirFrequenciaMensal();
+            await repositorioFrequencia.ExcluirFrequenciaMensal(request.AnoLetivo);
 
             return true;
         }
