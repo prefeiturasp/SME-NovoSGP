@@ -12,5 +12,8 @@ namespace SME.SGP.Infra.Enumerados
 
         [Display(Name = "Fluência Leitora")]
         FLUENCIA_LEITORA = 3,
+
+        [Display(Name = "Proficiencia IDEP")]
+        PROFICIENCIA_IDEP = 4
     }
 }

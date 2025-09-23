@@ -58,5 +58,13 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(filtro));
         }
 
+        [HttpPost("proficiencia-idep")]
+        [ProducesResponseType(typeof(ImportacaoLogRetornoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 400)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ImportarProficienciaIdep([FromForm] IFormFile arquivo, [FromForm] int anoLetivo, [FromServices] IImportacaoProficienciaIdepUseCase useCase)
+        {
+            return Ok(await useCase.Executar(arquivo, anoLetivo));
+        }
     }
 }
