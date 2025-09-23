@@ -1500,6 +1500,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IImportacaoArquivoFluenciaLeitoraUseCase, ImportacaoArquivoFluenciaLeitoraUseCase>();
             services.TryAddScoped<IImportacaoProficienciaIdepUseCase, ImportacaoProficienciaIdepUseCase>();
             services.TryAddScoped<IImportacaoArquivoAlfabetizacaoUseCase, ImportacaoArquivoAlfabetizacaoUseCase>();
+            services.TryAddScoped<IImportacaoProficienciaIdepUseCase, ImportacaoProficienciaIdepUseCase>();
 
             RegistrarCasoDeUsoAEERabbitSgp(services);
             RegistrarCasoDeUsoAulaRabbitSgp(services);
