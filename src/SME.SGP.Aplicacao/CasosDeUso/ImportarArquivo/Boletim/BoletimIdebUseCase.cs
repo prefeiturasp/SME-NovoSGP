@@ -1,6 +1,8 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
 using SME.SGP.Aplicacao.Commands.ImportarArquivo;
+using SME.SGP.Aplicacao.Commands.ImportarArquivo.ProficienciaIdeb;
+using SME.SGP.Aplicacao.Commands.ImportarArquivo.ProficienciaIdep;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Boletim;
 using SME.SGP.Aplicacao.Queries.ProficienciaIdeb;
 using SME.SGP.Dominio;
@@ -72,7 +74,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Boletim
                             proficienciaDto.CodigoEOLEscola = proficiencia.CodigoEOLEscola;
                             proficienciaDto.AnoLetivo = proficiencia.AnoLetivo;
 
-                            //await mediator.Send(new SalvarImportacaoProficienciaIdepCommand(proficienciaDto));
+                            await mediator.Send(new SalvarImportacaoProficienciaIdebCommand(proficienciaDto));
                         }
                     }
                 }
