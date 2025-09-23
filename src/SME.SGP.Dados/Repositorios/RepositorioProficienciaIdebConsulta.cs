@@ -2,6 +2,7 @@
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -16,13 +17,13 @@ namespace SME.SGP.Dados.Repositorios
         }
 
 
-        public async Task<ProficienciaIdeb> ObterPorAnoLetivoCodigoUe(int anoLetivo, string codigoUe)
+        public async Task<IEnumerable<ProficienciaIdeb>> ObterPorAnoLetivoCodigoUe(int anoLetivo, List<string> codigoUe)
         {
             var sql = @"select * from proficienciaIdeb
                         where ano_letivo = @anoLetivo
-                        and codigo_eol_escola = @codigoUe";
+                        and codigo_eol_escola = any(@codigosUe)";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<ProficienciaIdeb>(sql, new { anoLetivo, codigoUe });
+            return await database.Conexao.QueryAsync<ProficienciaIdeb>(sql, new { anoLetivo, codigoUe });
         }
     }
 }
