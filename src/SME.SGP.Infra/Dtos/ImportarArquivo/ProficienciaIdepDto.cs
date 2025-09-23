@@ -11,6 +11,8 @@
             Proficiencia = proficiencia;
             Boletim = boletim;
         }
+
+        public long? Id { get; set; }
         public int SerieAno { get; set; }
         public int AnoLetivo { get; set; }
         public int ComponenteCurricular { get; set; }
