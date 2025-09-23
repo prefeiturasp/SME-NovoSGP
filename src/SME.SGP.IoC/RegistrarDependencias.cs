@@ -619,7 +619,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioIdeb, RepositorioIdeb>();
             services.TryAddScoped<IRepositorioIdep, RepositorioIdep>();
             services.TryAddScoped<IRepositorioFluenciaLeitora, RepositorioFluenciaLeitora>();
-            
+            services.TryAddScoped<IRepositorioProficienciaIdep, RepositorioProficienciaIdep>();
+
             services.TryAddScoped<IRepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobal, RepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobal>();
             services.TryAddScoped<IRepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobalEscola, RepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobalEscola>();
             services.TryAddScoped<IRepositorioPainelEducacionalRegistroFrequenciaAgrupamentoMensal, RepositorioPainelEducacionalRegistroFrequenciaAgrupamentoMensal>();
@@ -1488,6 +1489,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IImportacaoArquivoIdebUseCase, ImportacaoArquivoIdebUseCase>();
             services.TryAddScoped<IImportacaoArquivoIdepUseCase, ImportacaoArquivoIdepUseCase>();
             services.TryAddScoped<IImportacaoArquivoFluenciaLeitoraUseCase, ImportacaoArquivoFluenciaLeitoraUseCase>();
+            services.TryAddScoped<IImportacaoProficienciaIdepUseCase, ImportacaoProficienciaIdepUseCase>();
 
             RegistrarCasoDeUsoAEERabbitSgp(services);
             RegistrarCasoDeUsoAulaRabbitSgp(services);
