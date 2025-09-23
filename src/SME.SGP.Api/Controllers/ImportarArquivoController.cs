@@ -80,24 +80,33 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(filtro));
         }
 
+        [HttpPost("proficiencia-idep")]
+        [ProducesResponseType(typeof(ImportacaoLogRetornoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 400)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ImportarProficienciaIdep([FromForm] IFormFile arquivo, [FromForm] int anoLetivo, [FromServices] IImportacaoProficienciaIdepUseCase useCase)
+        {
+            return Ok(await useCase.Executar(arquivo, anoLetivo));
+        }
+
         [HttpPost("boletim-idep")]
         [ProducesResponseType(typeof(ImportacaoLogRetornoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 400)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.IE_I_P_I, Policy = "Bearer")]
-        public async Task<IActionResult> ImportarBoletins([FromQuery] int ano, [FromForm] IEnumerable<IFormFile> boletins, [FromServices] IBoletimIdepUseCase useCase)
+        public async Task<IActionResult> ImportarBoletinsIdep([FromQuery] int ano, [FromForm] IEnumerable<IFormFile> boletins, [FromServices] IBoletimIdepUseCase useCase)
         {
             return Ok(await useCase.Executar(ano, boletins));
         }
 
-        //[HttpPost("boletim-ideb")]
-        //[ProducesResponseType(typeof(ImportacaoLogRetornoDto), 200)]
-        //[ProducesResponseType(typeof(RetornoBaseDto), 400)]
-        //[ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.IE_I_P_I, Policy = "Bearer")]
-        //public async Task<IActionResult> ImportarBoletins([FromQuery] int ano, [FromForm] IEnumerable<IFormFile> boletins, [FromServices] IBoletimIdepUseCase useCase)
-        //{
-        //    return Ok(await useCase.Executar(ano, boletins));
-        //}
+        [HttpPost("boletim-ideb")]
+        [ProducesResponseType(typeof(ImportacaoLogRetornoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 400)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.IE_I_P_I, Policy = "Bearer")]
+        public async Task<IActionResult> ImportarBoletinsIdeb([FromQuery] int ano, [FromForm] IEnumerable<IFormFile> boletins, [FromServices] IBoletimIdepUseCase useCase)
+        {
+            return Ok(await useCase.Executar(ano, boletins));
+        }
     }
 }

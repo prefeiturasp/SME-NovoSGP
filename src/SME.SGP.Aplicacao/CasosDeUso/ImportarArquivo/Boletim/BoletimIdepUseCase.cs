@@ -1,11 +1,11 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao.Commands.ImportarArquivo;
+using SME.SGP.Aplicacao.Commands.ImportarArquivo.ProficienciaIdep;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Boletim;
+using SME.SGP.Aplicacao.Queries.ProficienciaIdep;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
-using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.ImportarArquivo;
 using SME.SGP.Infra.Enumerados;
@@ -17,34 +17,33 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Boletim
 {
-    public class BoletimIdepUseCase : AbstractUseCase, IBoletimIdepUseCase
+    public class BoletimIdepUseCase : ImportacaoArquivoBaseUseCase, IBoletimIdepUseCase
     {
-        private readonly IRepositorioImportacaoLog repositorioImportacaoLog;
-        private List<SalvarImportacaoLogErroDto> ProcessadosComFalha;
-        public BoletimIdepUseCase(IMediator mediator, IRepositorioImportacaoLog repositorioImportacaoLog) : base(mediator)
+
+        public BoletimIdepUseCase(IMediator mediator) : base(mediator)
         {
-            this.repositorioImportacaoLog = repositorioImportacaoLog;
         }
 
-        public async Task<ImportacaoLogRetornoDto> Executar(int ano, IEnumerable<IFormFile> boletins)
+        public async Task<ImportacaoLogRetornoDto> Executar(int anoLetivo, IEnumerable<IFormFile> boletins)
         {
-            if (ano == 0)
+            if (anoLetivo == 0)
                 throw new NegocioException("Informe o ano letivo.");
 
             if (boletins == null || boletins.Count() == 0)
                 throw new NegocioException("Informe o arquivo .pdf");
 
-       
-            var importacaoLog = await SalvarImportacao();
+
+            var importacaoLog = await SalvarImportacao(TipoArquivoImportacao.BOLETIM_IDEP.GetAttribute<DisplayAttribute>().Name);
 
             if (importacaoLog != null)
             {
-                await ProcessarArquivoAsync(boletins, importacaoLog);
+                var importacaoLogDto = MapearParaDto(importacaoLog);
+                await ProcessarArquivoAsync(boletins, importacaoLogDto, anoLetivo);
             }
             return ImportacaoLogRetornoDto.RetornarSucesso(MensagemNegocioComuns.ARQUIVO_IMPORTADO_COM_SUCESSO, importacaoLog.Id);
         }
 
-        private async Task<bool> ProcessarArquivoAsync(IEnumerable<IFormFile> boletins, ImportacaoLog importacaoLog)
+        private async Task<bool> ProcessarArquivoAsync(IEnumerable<IFormFile> boletins, ImportacaoLogDto importacaoLogDto, int anoLetivo)
         {
             var listaLote = new List<ArquivoFluenciaLeitoraDto>();
             ProcessadosComFalha = new List<SalvarImportacaoLogErroDto>();
@@ -53,48 +52,56 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Boletim
 
             try
             {
-                foreach (var boletim in boletins)
+                var proficienciaIdeps = await mediator.Send(new ObterProficienciaIdepPorAnoLetivoQuery(anoLetivo, boletins.Select(x => x.Name)?.ToList()));
+
+                if (proficienciaIdeps != null && proficienciaIdeps.Any())
                 {
-                    await mediator.Send(new ArmazenarArquivoFisicoCommand(boletim, boletim.Name, TipoArquivo.Importacao));
+                    foreach (var boletim in boletins)
+                    {
+                        var proficiencia = proficienciaIdeps?.Where(p => p.CodigoEOLEscola == boletim.Name)?.FirstOrDefault();
+                        if (proficiencia == null)
+                        {
+                            SalvarErroLinha(importacaoLogDto.Id, 0, $"Não existe proficiência cadastrada para o ano letivo {anoLetivo} com o nome do arquivo {boletim.Name}.");
+                            continue;
+                        }
+
+                        var enderecoArquivo = await mediator.Send(new ArmazenarArquivoFisicoCommand(boletim, boletim.Name, TipoArquivo.Importacao));
+
+                        if (string.IsNullOrEmpty(enderecoArquivo))
+                        {
+                            var proficienciaDto = new ProficienciaIdepDto(
+                                 proficiencia.SerieAno,
+                                 proficiencia.CodigoEOLEscola,
+                                 proficiencia.AnoLetivo,
+                                 proficiencia.ComponenteCurricular,
+                                 proficiencia.Proficiencia,
+                                 enderecoArquivo
+                             );
+
+                            proficienciaDto.Id = proficiencia.Id;
+
+                            await mediator.Send(new SalvarImportacaoProficienciaIdepCommand(proficienciaDto));
+                        }
+                    }
                 }
             }
             catch (Exception ex)
             {
-                SalvarErroLinha(importacaoLog.Id, 0, $"Erro geral na importação: {ex.Message}");
+                SalvarErroLinha(importacaoLogDto.Id, 0, $"Erro geral na importação: {ex.Message}");
             }
             finally
             {
-                importacaoLog.TotalRegistros = totalRegistros;
-                importacaoLog.RegistrosProcessados = totalRegistros - ProcessadosComFalha.Count;
-                importacaoLog.RegistrosComFalha = ProcessadosComFalha.Count;
-                importacaoLog.StatusImportacao = ProcessadosComFalha.Count > 0
+                importacaoLogDto.TotalRegistros = totalRegistros;
+                importacaoLogDto.RegistrosProcessados = totalRegistros - ProcessadosComFalha.Count;
+                importacaoLogDto.RegistrosComFalha = ProcessadosComFalha.Count;
+                importacaoLogDto.StatusImportacao = ProcessadosComFalha.Count > 0
                 ? SituacaoArquivoImportacao.ProcessadoComFalhas.GetAttribute<DisplayAttribute>().Name
                 : SituacaoArquivoImportacao.ProcessadoComSucesso.GetAttribute<DisplayAttribute>().Name;
-                importacaoLog.DataFimProcessamento = DateTime.Now;
-                await repositorioImportacaoLog.SalvarAsync(importacaoLog);
+                importacaoLogDto.DataFimProcessamento = DateTime.Now;
+
+                await mediator.Send(new SalvarImportacaoLogCommand(importacaoLogDto));
             }
             return true;
-        }
-
-        private void SalvarErroLinha(long importacaoLogId, int linha, string mensagem)
-        {
-            var erro = new SalvarImportacaoLogErroDto(importacaoLogId, linha, mensagem);
-
-            if (!ProcessadosComFalha.Any(e => e.LinhaArquivo == erro.LinhaArquivo && e.MotivoFalha == erro.MotivoFalha))
-            {
-                ProcessadosComFalha.Add(erro);
-                mediator.Send(new SalvarImportacaoLogErroCommand(erro)).GetAwaiter().GetResult();
-            }
-        }
-
-        private async Task<ImportacaoLog> SalvarImportacao()
-        {
-            var statusImportacao = SituacaoArquivoImportacao.CarregamentoInicial.GetAttribute<DisplayAttribute>().Name;
-            var tipoArquivo = TipoArquivoImportacao.BOLETIM_IDEP.GetAttribute<DisplayAttribute>().Name;
-
-            var importacaoLogDto = new SalvarImportacaoLogDto("Boletins IDEP", tipoArquivo, statusImportacao);
-
-            return await mediator.Send(new SalvarImportacaoLogCommand(importacaoLogDto));
         }
     }
 }

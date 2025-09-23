@@ -13,13 +13,13 @@ namespace SME.SGP.Infra.Enumerados
                 [Display(Name = "Fluência Leitora")]
                 FLUENCIA_LEITORA = 3,
 
+        [Display(Name = "Proficiencia IDEP")]
+        PROFICIENCIA_IDEP = 4,
+
         [Display(Name = "Boletim IDEP")]
-        BOLETIM_IDEP = 4,
+        BOLETIM_IDEP = 5,
 
-                [Display(Name = "Proficiencia IDEP")]
-                PROFICIENCIA_IDEP = 4,
-
-                [Display(Name = "Alfabetizacao")]
-                ALFABETIZACAO = 5,
-        }
+        [Display(Name = "Boletim IDEB")]
+        BOLETIM_IDEB = 5,
+    }
 }
