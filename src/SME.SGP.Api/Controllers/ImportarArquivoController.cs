@@ -93,7 +93,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 400)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.IE_I_P_I, Policy = "Bearer")]
-        public async Task<IActionResult> ImportarBoletinsIdeb([FromQuery] int ano, [FromForm] IEnumerable<IFormFile> boletins, [FromServices] IBoletimIdepUseCase useCase)
+        public async Task<IActionResult> ImportarBoletinsIdeb([FromQuery] int ano, [FromForm] IEnumerable<IFormFile> boletins, [FromServices] IBoletimIdebUseCase useCase)
         {
             return Ok(await useCase.Executar(ano, boletins));
         }
