@@ -39,15 +39,12 @@ namespace SME.SGP.Dados.Repositorios
 
             var query = @"SELECT 
                           peci.ano_letivo AS AnoLetivo,
-                          CAST(peci.etapa AS INTEGER) AS SerieAno,
+                          peci.etapa AS SerieAno,
                           peci.media_geral AS Nota,
                           peci.faixa AS Faixa,
                           peci.alterado_em AS CriadoEm,
-                          CAST(peci.codigo_dre AS INTEGER) AS CodigoDre,
-                          CASE 
-                              WHEN peci.codigo_ue IS NOT NULL THEN CAST(peci.codigo_ue AS INTEGER)
-                              ELSE 0 
-                          END AS CodigoUe,
+                          peci.codigo_dre AS CodigoDre,
+                          peci.codigo_ue AS CodigoUe,
                           peci.quantidade AS Quantidade
                       FROM painel_educacional_consolidacao_ideb peci
                       WHERE 
