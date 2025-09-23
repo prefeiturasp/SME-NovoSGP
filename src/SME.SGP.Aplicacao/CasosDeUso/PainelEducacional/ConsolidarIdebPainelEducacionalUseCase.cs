@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             return dtos.Select(dto => new PainelEducacionalIdebAgrupamento
             {
                 AnoLetivo = dto.AnoLetivo,
-                Serie = dto.SerieAno >= 1 && dto.SerieAno <= 5 ? PainelEducacionalIdebSerie.AnosIniciais.ToString()
+                Serie = Convert.ToInt32(dto.SerieAno) >= 1 && Convert.ToInt32(dto.SerieAno) <= 5 ? PainelEducacionalIdebSerie.AnosIniciais.ToString()
                 : PainelEducacionalIdebSerie.AnosFinais.ToString(),
                 Nota = dto.Nota,
                 CriadoEm = dto.CriadoEm,
