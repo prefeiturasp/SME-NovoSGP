@@ -2,11 +2,11 @@
 using MediatR;
 using System.Collections.Generic;
 
-namespace SME.SGP.Aplicacao.Queries.ProficienciaIdep
+namespace SME.SGP.Aplicacao.Queries.ProficienciaIdeb
 {
-    public class ObterProficienciaIdepPorAnoLetivoQuery : IRequest<IEnumerable<Dominio.ProficienciaIdep>>
+    public class ObterProficienciaIdebPorAnoLetivoQuery : IRequest<IEnumerable<Dominio.Entidades.ProficienciaIdeb>> 
     {
-        public ObterProficienciaIdepPorAnoLetivoQuery(int anoLetivo, List<string> codigoUe) 
+        public ObterProficienciaIdebPorAnoLetivoQuery(int anoLetivo, List<string> codigoUe)
         {
             AnoLetivo = anoLetivo;
             CodigoUe = codigoUe;
@@ -16,9 +16,9 @@ namespace SME.SGP.Aplicacao.Queries.ProficienciaIdep
         public List<string> CodigoUe { get; set; }
     }
 
-    public class ObterProficienciaIdepPorAnoLetivoQueryValidator : AbstractValidator<ObterProficienciaIdepPorAnoLetivoQuery>
+    public class ObterProficienciaIdebPorAnoLetivoQueryValidator : AbstractValidator<ObterProficienciaIdebPorAnoLetivoQuery>
     {
-        public ObterProficienciaIdepPorAnoLetivoQueryValidator()
+        public ObterProficienciaIdebPorAnoLetivoQueryValidator()
         {
             RuleFor(a => a.AnoLetivo)
                 .NotEmpty()
