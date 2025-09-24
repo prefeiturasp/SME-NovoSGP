@@ -8,9 +8,7 @@ using SME.SGP.Infra.Dtos.PainelEducacional;
 using SME.SGP.Infra.Enumerados;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
@@ -60,29 +58,32 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             int periodo)
         {
             var registrosFiltrados = registrosFluenciaLeitora.Where(r => r.AnoLetivo == anoLetivo && r.Periodo == periodo);
-            var totalAlunosGeral = registrosFiltrados.Count();
 
-            if (totalAlunosGeral == 0)
+            if (!registrosFiltrados.Any())
                 return new List<PainelEducacionalRegistroFluenciaLeitoraAgrupamentoFluenciaDto>();
 
-            var consolidacaoPorCodigoFluencia = registrosFiltrados
-                .GroupBy(f => f.CodigoFluencia)
-                .Select(g => new PainelEducacionalRegistroFluenciaLeitoraAgrupamentoFluenciaDto
+            var consolidacaoPorDreEFluencia = registrosFiltrados
+                .GroupBy(f => new { f.DreCodigo, f.DreNome, f.CodigoFluencia })
+                .Select(g => 
                 {
-                    Fluencia = ObterNomeFluencia(g.Key),
-                    DescricaoFluencia = ObterDescricaoFluencia(g.Key),
-                    QuantidadeAluno = g.Count(),
-                    Percentual = Math.Round((decimal)g.Count() / totalAlunosGeral * 100, 2),
-                    AnoLetivo = anoLetivo,
-                    Periodo = periodo, 
-                    DreCodigo = null,
-                    DreNome = null,
-                    UeCodigo = null,
-                    UeNome = null
+                    var totalAlunosPorDre = registrosFiltrados.Count(r => r.DreCodigo == g.Key.DreCodigo);
+                    return new PainelEducacionalRegistroFluenciaLeitoraAgrupamentoFluenciaDto
+                    {
+                        Fluencia = ObterNomeFluencia(g.Key.CodigoFluencia),
+                        DescricaoFluencia = ObterDescricaoFluencia(g.Key.CodigoFluencia),
+                        DreCodigo = g.Key.DreCodigo,
+                        DreNome = g.Key.DreNome,
+                        QuantidadeAluno = g.Count(),
+                        Percentual = totalAlunosPorDre > 0 ? Math.Round((decimal)g.Count() / totalAlunosPorDre * 100, 2) : 0,
+                        AnoLetivo = anoLetivo,
+                        Periodo = periodo, 
+                        UeCodigo = null,
+                        UeNome = null
+                    };
                 })
                 .ToList();
 
-            return consolidacaoPorCodigoFluencia;
+            return consolidacaoPorDreEFluencia;
         }
 
         private static string ObterNomeFluencia(int fluencia)

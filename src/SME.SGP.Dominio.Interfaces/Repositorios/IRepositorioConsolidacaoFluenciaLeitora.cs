@@ -8,7 +8,7 @@ namespace SME.SGP.Dominio.Interfaces.Repositorios
     public interface IRepositorioConsolidacaoFluenciaLeitora
     {
         Task ExcluirConsolidacaoFluenciaLeitora();
-        Task<IEnumerable<ConsolidacaoPainelEducacionalFluenciaLeitora>> ObterFluenciaLeitora(string codigoDre, string codigoUe);
+        Task<IEnumerable<ConsolidacaoPainelEducacionalFluenciaLeitora>> ObterFluenciaLeitora(string codigoDre);
         Task BulkInsertAsync(IEnumerable<PainelEducacionalRegistroFluenciaLeitoraAgrupamentoFluenciaDto> registros);
     }
 }

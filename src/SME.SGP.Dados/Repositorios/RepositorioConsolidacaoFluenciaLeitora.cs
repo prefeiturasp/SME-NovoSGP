@@ -29,27 +29,21 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.ExecuteAsync(sql);
         }
         
-        public async Task<IEnumerable<ConsolidacaoPainelEducacionalFluenciaLeitora>> ObterFluenciaLeitora(string codigoDre, string codigoUe)
+        public async Task<IEnumerable<ConsolidacaoPainelEducacionalFluenciaLeitora>> ObterFluenciaLeitora(string codigoDre)
         {
             var sql = @"
                 SELECT 
-                    id, fluencia, descricao_fluencia, percentual, quantidade_alunos, ano, periodo,
+                    id, fluencia, descricao_fluencia, dre_codigo, percentual, quantidade_alunos, ano, periodo,
                     criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf
                 FROM consolidacao_painel_educacional_fluencia_leitora 
                 WHERE 1=1";
 
             var parametros = new DynamicParameters();
 
-            if (!string.IsNullOrWhiteSpace(codigoDre))
+            if (!string.IsNullOrWhiteSpace(codigoDre) && codigoDre != "-99")
             {
                 sql += " AND dre_codigo = @codigoDre";
                 parametros.Add("@codigoDre", codigoDre);
-            }
-
-            if (!string.IsNullOrWhiteSpace(codigoUe))
-            {
-                sql += " AND ue_codigo = @codigoUe";
-                parametros.Add("@codigoUe", codigoUe);
             }
 
             return await database.Conexao.QueryAsync<ConsolidacaoPainelEducacionalFluenciaLeitora>(sql, parametros);
@@ -65,7 +59,7 @@ namespace SME.SGP.Dados.Repositorios
 
             await using var writer = conn.BeginBinaryImport(@"
                 COPY consolidacao_painel_educacional_fluencia_leitora
-                    (fluencia, descricao_fluencia, percentual, quantidade_alunos, ano, periodo, criado_em, criado_por, criado_rf)
+                    (fluencia, descricao_fluencia, dre_codigo, percentual, quantidade_alunos, ano, periodo, criado_em, criado_por, criado_rf)
                 FROM STDIN (FORMAT BINARY)
             ");
 
@@ -74,6 +68,7 @@ namespace SME.SGP.Dados.Repositorios
                 writer.StartRow();
                 writer.Write(registro.Fluencia ?? string.Empty, NpgsqlDbType.Varchar);
                 writer.Write(registro.DescricaoFluencia ?? string.Empty, NpgsqlDbType.Varchar);
+                writer.Write(registro.DreCodigo ?? string.Empty, NpgsqlDbType.Varchar);
                 writer.Write(registro.Percentual, NpgsqlDbType.Numeric);
                 writer.Write(registro.QuantidadeAluno, NpgsqlDbType.Integer);
                 writer.Write(registro.AnoLetivo, NpgsqlDbType.Integer);

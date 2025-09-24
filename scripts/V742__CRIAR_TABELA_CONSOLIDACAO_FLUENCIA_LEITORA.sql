@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS public.consolidacao_painel_educacional_fluencia_leito
     id               BIGSERIAL       PRIMARY KEY,
     fluencia         VARCHAR(50)     NOT NULL,
     descricao_fluencia         VARCHAR(100),
+    dre_codigo       VARCHAR(15)     NOT NULL,
     percentual       NUMERIC(11,2)   NOT NULL,
     quantidade_alunos INT             NOT NULL,
     ano              INT             NOT NULL,
