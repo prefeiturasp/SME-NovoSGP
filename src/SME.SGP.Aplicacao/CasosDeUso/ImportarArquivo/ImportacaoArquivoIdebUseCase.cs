@@ -54,7 +54,11 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
 
             if (importacaoLog != null)
             {
-                await ProcessarArquivoAsync(arquivo.OpenReadStream(), importacaoLog, anoLetivo);
+               bool processado = await ProcessarArquivoAsync(arquivo.OpenReadStream(), importacaoLog, anoLetivo);
+                if (processado)
+                {
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarPainelEdcacionalIdeb, importacaoLog.Id));
+                }
             }
             return ImportacaoLogRetornoDto.RetornarSucesso(MensagemNegocioComuns.ARQUIVO_IMPORTADO_COM_SUCESSO, importacaoLog.Id);
         }
