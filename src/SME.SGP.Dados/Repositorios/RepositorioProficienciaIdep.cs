@@ -9,13 +9,16 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioProficienciaIdep : RepositorioBase<ProficienciaIdep>, IRepositorioProficienciaIdep
     {
         public RepositorioProficienciaIdep(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
+        public RepositorioProficienciaIdep(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 
         public async Task<bool> ExcluirPorAnoEscolaSerie(int anoLetivo, string codigoEOLEscola, long serieAno)
+        public async Task<bool> ExcluirPorAnoEscolaSerie(int anoLetivo, string codigoEOLEscola, long serieAno)
         {
             var query = "delete from proficiencia_idep where ano_letivo = @anoLetivo and codigo_eol_escola = @CodigoEOLEscola and serie_ano = @SerieAno";
 
+            await database.Conexao.ExecuteAsync(query, new { anoLetivo, codigoEOLEscola, serieAno });
             await database.Conexao.ExecuteAsync(query, new { anoLetivo, codigoEOLEscola, serieAno });
 
             return true;
