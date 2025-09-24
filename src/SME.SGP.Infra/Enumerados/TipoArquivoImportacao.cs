@@ -14,6 +14,15 @@ namespace SME.SGP.Infra.Enumerados
         FLUENCIA_LEITORA = 3,
 
         [Display(Name = "Proficiencia IDEP")]
-        PROFICIENCIA_IDEP = 4
+        PROFICIENCIA_IDEP = 4,
+
+        [Display(Name = "Proficiencia IDEB")]
+        PROFICIENCIA_IDEB = 5,
+
+        [Display(Name = "Boletim IDEP")]
+        BOLETIM_IDEP = 6,
+
+        [Display(Name = "Boletim IDEB")]
+        BOLETIM_IDEB = 7,
     }
 }

@@ -9,6 +9,6 @@ namespace SME.SGP.Infra.Enumerados
         [Display(Name = "Anos finais")]
         AnosFinais = 2,
         [Display(Name = "Ensino Médio")]
-        EnsinoMedio = 3,
+        EnsinoMedio = 3
     }
 }

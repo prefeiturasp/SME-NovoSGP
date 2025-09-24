@@ -25,13 +25,15 @@ namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.ProficienciaIdep
         }
 
         private Dominio.ProficienciaIdep MapearParaEntidade(SalvarImportacaoProficienciaIdepCommand request)
-        => new Dominio.ProficienciaIdep()
-        {
-            AnoLetivo = request.ProficienciaIdep.AnoLetivo,
-            SerieAno = request.ProficienciaIdep.SerieAno,
-            CodigoEOLEscola = request.ProficienciaIdep.CodigoEOLEscola,
-            Proficiencia = request.ProficienciaIdep.Proficiencia,
-            ComponenteCurricular = request.ProficienciaIdep.ComponenteCurricular,
-        };
+            => new Dominio.ProficienciaIdep()
+            {
+                Id = request.ProficienciaIdep.Id != null ? request.ProficienciaIdep.Id.Value : 0,
+                Boletim = request.ProficienciaIdep.Boletim,
+                AnoLetivo = request.ProficienciaIdep.AnoLetivo,
+                SerieAno = request.ProficienciaIdep.SerieAno,
+                CodigoEOLEscola = request.ProficienciaIdep.CodigoEOLEscola,
+                Proficiencia = request.ProficienciaIdep.Proficiencia,
+                ComponenteCurricular = request.ProficienciaIdep.ComponenteCurricular,
+            };
     }
 }

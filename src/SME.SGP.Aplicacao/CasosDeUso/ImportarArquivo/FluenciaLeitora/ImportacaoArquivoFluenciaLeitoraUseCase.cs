@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using SME.SGP.Aplicacao.Commands.ImportarArquivo;
 using SME.SGP.Aplicacao.Commands.ImportarArquivo.FluenciaLeitora;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.FluenciaLeitora;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
@@ -19,7 +19,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 
-namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
+namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.FluenciaLeitora
 {
     public class ImportacaoArquivoFluenciaLeitoraUseCase : AbstractUseCase, IImportacaoArquivoFluenciaLeitoraUseCase
     {
@@ -226,7 +226,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
         {
             var statusImportacao = SituacaoArquivoImportacao.CarregamentoInicial.GetAttribute<DisplayAttribute>().Name;
 
-            var importacaoLogDto = new SalvarImportacaoLogDto(arquivo.FileName, tipoArquivo, statusImportacao);
+            var importacaoLogDto = new ImportacaoLogDto(arquivo.FileName, tipoArquivo, statusImportacao);
 
             return await mediator.Send(new SalvarImportacaoLogCommand(importacaoLogDto));
         }

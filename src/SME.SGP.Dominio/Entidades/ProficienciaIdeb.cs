@@ -1,6 +1,6 @@
-﻿namespace SME.SGP.Dominio
+﻿namespace SME.SGP.Dominio.Entidades
 {
-    public class ProficienciaIdep: EntidadeBase
+    public class ProficienciaIdeb : EntidadeBase
     {
         public string CodigoEOLEscola { get; set; }
         public int SerieAno { get; set; }
