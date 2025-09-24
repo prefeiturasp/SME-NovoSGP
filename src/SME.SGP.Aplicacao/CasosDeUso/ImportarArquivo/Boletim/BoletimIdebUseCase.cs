@@ -1,9 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
 using SME.SGP.Aplicacao.Commands.ImportarArquivo;
+using SME.SGP.Aplicacao.Commands.ImportarArquivo.ProficienciaIdeb;
 using SME.SGP.Aplicacao.Commands.ImportarArquivo.ProficienciaIdep;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Boletim;
-using SME.SGP.Aplicacao.Queries.ProficienciaIdep;
+using SME.SGP.Aplicacao.Queries.ProficienciaIdeb;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
@@ -17,10 +18,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Boletim
 {
-    public class BoletimIdepUseCase : ImportacaoArquivoBaseUseCase, IBoletimIdepUseCase
+    public class BoletimIdebUseCase : ImportacaoArquivoBaseUseCase, IBoletimIdebUseCase
     {
-
-        public BoletimIdepUseCase(IMediator mediator) : base(mediator)
+        public BoletimIdebUseCase(IMediator mediator) : base(mediator)
         {
         }
 
@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Boletim
             if (boletins == null || boletins.Count() == 0)
                 throw new NegocioException("Informe o arquivo .pdf");
 
-            var importacaoLog = await SalvarImportacao(TipoArquivoImportacao.BOLETIM_IDEP.GetAttribute<DisplayAttribute>().Name);
+            var importacaoLog = await SalvarImportacao(TipoArquivoImportacao.BOLETIM_IDEB.GetAttribute<DisplayAttribute>().Name);
 
             if (importacaoLog != null)
             {
@@ -51,13 +51,13 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Boletim
 
             try
             {
-                var proficienciaIdeps = await mediator.Send(new ObterProficienciaIdepPorAnoLetivoQuery(anoLetivo, boletins.Select(x => x.Name)?.ToList()));
+                var proficienciaIdebs = await mediator.Send(new ObterProficienciaIdebPorAnoLetivoQuery(anoLetivo, boletins.Select(x => x.Name)?.ToList()));
 
-                if (proficienciaIdeps != null && proficienciaIdeps.Any())
+                if (proficienciaIdebs != null && proficienciaIdebs.Any())
                 {
                     foreach (var boletim in boletins)
                     {
-                        var proficiencia = proficienciaIdeps?.Where(p => p.CodigoEOLEscola == boletim.Name)?.FirstOrDefault();
+                        var proficiencia = proficienciaIdebs?.Where(p => p.CodigoEOLEscola == boletim.Name)?.FirstOrDefault();
                         if (proficiencia == null)
                         {
                             SalvarErroLinha(importacaoLogDto.Id, 0, $"Não existe proficiência cadastrada para o ano letivo {anoLetivo} com o nome do arquivo {boletim.Name}.");
@@ -68,18 +68,13 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Boletim
 
                         if (string.IsNullOrEmpty(enderecoArquivo))
                         {
-                            var proficienciaDto = new ProficienciaIdepDto(
-                                 proficiencia.SerieAno,
-                                 proficiencia.CodigoEOLEscola,
-                                 proficiencia.AnoLetivo,
-                                 proficiencia.ComponenteCurricular,
-                                 proficiencia.Proficiencia,
-                                 enderecoArquivo
-                             );
-
+                            var proficienciaDto = new ProficienciaIdebDto();
+                                 
                             proficienciaDto.Id = proficiencia.Id;
+                            proficienciaDto.CodigoEOLEscola = proficiencia.CodigoEOLEscola;
+                            proficienciaDto.AnoLetivo = proficiencia.AnoLetivo;
 
-                            await mediator.Send(new SalvarImportacaoProficienciaIdepCommand(proficienciaDto));
+                            await mediator.Send(new SalvarImportacaoProficienciaIdebCommand(proficienciaDto));
                         }
                     }
                 }

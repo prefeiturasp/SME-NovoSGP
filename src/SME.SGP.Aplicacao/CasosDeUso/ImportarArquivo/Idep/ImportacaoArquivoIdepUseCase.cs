@@ -196,7 +196,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Idep
         {
             var statusImportacao = SituacaoArquivoImportacao.CarregamentoInicial.GetAttribute<DisplayAttribute>().Name;
 
-            var importacaoLogDto = new SalvarImportacaoLogDto(arquivo.FileName, tipoArquivo, statusImportacao);
+            var importacaoLogDto = new ImportacaoLogDto(arquivo.FileName, tipoArquivo, statusImportacao);
 
             return await mediator.Send(new SalvarImportacaoLogCommand(importacaoLogDto));
         }

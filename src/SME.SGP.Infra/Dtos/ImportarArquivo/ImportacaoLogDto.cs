@@ -1,8 +1,8 @@
 ﻿using System;
 
-public class SalvarImportacaoLogDto
+public class ImportacaoLogDto
 {
-    public SalvarImportacaoLogDto(string nomeArquivo, string tipoArquivoImportacao, string statusImportacao)
+    public ImportacaoLogDto(string nomeArquivo, string tipoArquivoImportacao, string statusImportacao)
     {
         NomeArquivo = nomeArquivo;
         TipoArquivoImportacao = tipoArquivoImportacao;
