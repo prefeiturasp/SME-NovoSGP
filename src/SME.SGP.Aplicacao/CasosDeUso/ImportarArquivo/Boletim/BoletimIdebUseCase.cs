@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Http;
 using SME.SGP.Aplicacao.Commands.ImportarArquivo;
 using SME.SGP.Aplicacao.Commands.ImportarArquivo.ProficienciaIdeb;
-using SME.SGP.Aplicacao.Commands.ImportarArquivo.ProficienciaIdep;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Boletim;
 using SME.SGP.Aplicacao.Queries.ProficienciaIdeb;
 using SME.SGP.Dominio;
@@ -13,6 +12,7 @@ using SME.SGP.Infra.Enumerados;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -51,28 +51,36 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Boletim
 
             try
             {
-                var proficienciaIdebs = await mediator.Send(new ObterProficienciaIdebPorAnoLetivoQuery(anoLetivo, boletins.Select(x => x.Name)?.ToList()));
+                var codigoUes = boletins
+                                        .Select(x => Path.GetFileNameWithoutExtension(x.FileName))
+                                        .ToList();
+                                        
+                var proficienciaIdebs = await mediator.Send(new ObterProficienciaIdebPorAnoLetivoQuery(anoLetivo, codigoUes));
 
                 if (proficienciaIdebs != null && proficienciaIdebs.Any())
                 {
                     foreach (var boletim in boletins)
                     {
-                        var proficiencia = proficienciaIdebs?.Where(p => p.CodigoEOLEscola == boletim.Name)?.FirstOrDefault();
+                        var nomeArquivo = Path.GetFileNameWithoutExtension(boletim.FileName);
+
+                        var proficiencia = proficienciaIdebs?.Where(p => p.CodigoEOLEscola == nomeArquivo)?.FirstOrDefault();
                         if (proficiencia == null)
                         {
                             SalvarErroLinha(importacaoLogDto.Id, 0, $"Não existe proficiência cadastrada para o ano letivo {anoLetivo} com o nome do arquivo {boletim.Name}.");
                             continue;
                         }
 
-                        var enderecoArquivo = await mediator.Send(new ArmazenarArquivoFisicoCommand(boletim, boletim.Name, TipoArquivo.Importacao));
+                        var nomeFisico = $"{Guid.NewGuid()}-{nomeArquivo}";
+                        var enderecoArquivo = await mediator.Send(new ArmazenarArquivoFisicoCommand(boletim, nomeFisico, TipoArquivo.Importacao));
 
-                        if (string.IsNullOrEmpty(enderecoArquivo))
+                        if (!string.IsNullOrEmpty(enderecoArquivo))
                         {
                             var proficienciaDto = new ProficienciaIdebDto();
                                  
                             proficienciaDto.Id = proficiencia.Id;
                             proficienciaDto.CodigoEOLEscola = proficiencia.CodigoEOLEscola;
                             proficienciaDto.AnoLetivo = proficiencia.AnoLetivo;
+                            proficienciaDto.Boletim = enderecoArquivo;
 
                             await mediator.Send(new SalvarImportacaoProficienciaIdebCommand(proficienciaDto));
                         }

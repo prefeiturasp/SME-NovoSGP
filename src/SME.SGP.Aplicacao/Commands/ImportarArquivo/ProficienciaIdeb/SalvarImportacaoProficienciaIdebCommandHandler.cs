@@ -20,8 +20,10 @@ namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.ProficienciaIdeb
         private Dominio.Entidades.ProficienciaIdeb MapearParaEntidade(SalvarImportacaoProficienciaIdebCommand request)
            => new Dominio.Entidades.ProficienciaIdeb()
            {
+               Id = request.ProficienciaIdeb.Id != null ? request.ProficienciaIdeb.Id.Value : 0,
                AnoLetivo = request.ProficienciaIdeb.AnoLetivo,
                CodigoEOLEscola = request.ProficienciaIdeb.CodigoEOLEscola,
+               Boletim = request.ProficienciaIdeb.Boletim
            };
     }
 }

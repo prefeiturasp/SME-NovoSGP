@@ -12,6 +12,7 @@ using SME.SGP.Infra.Enumerados;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -51,22 +52,29 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Boletim
 
             try
             {
-                var proficienciaIdeps = await mediator.Send(new ObterProficienciaIdepPorAnoLetivoQuery(anoLetivo, boletins.Select(x => x.Name)?.ToList()));
+                var codigoUes = boletins
+                                        .Select(x => Path.GetFileNameWithoutExtension(x.FileName))
+                                        .ToList();
+
+                var proficienciaIdeps = await mediator.Send(new ObterProficienciaIdepPorAnoLetivoQuery(anoLetivo, codigoUes));
 
                 if (proficienciaIdeps != null && proficienciaIdeps.Any())
                 {
                     foreach (var boletim in boletins)
                     {
-                        var proficiencia = proficienciaIdeps?.Where(p => p.CodigoEOLEscola == boletim.Name)?.FirstOrDefault();
+                        var nomeArquivo = Path.GetFileNameWithoutExtension(boletim.FileName);
+
+                        var proficiencia = proficienciaIdeps?.Where(p => p.CodigoEOLEscola == nomeArquivo)?.FirstOrDefault();
                         if (proficiencia == null)
                         {
                             SalvarErroLinha(importacaoLogDto.Id, 0, $"Não existe proficiência cadastrada para o ano letivo {anoLetivo} com o nome do arquivo {boletim.Name}.");
                             continue;
                         }
 
-                        var enderecoArquivo = await mediator.Send(new ArmazenarArquivoFisicoCommand(boletim, boletim.Name, TipoArquivo.Importacao));
+                        var nomeFisico = $"{Guid.NewGuid()}-{nomeArquivo}";
+                        var enderecoArquivo = await mediator.Send(new ArmazenarArquivoFisicoCommand(boletim, nomeFisico, TipoArquivo.Importacao));
 
-                        if (string.IsNullOrEmpty(enderecoArquivo))
+                        if (!string.IsNullOrEmpty(enderecoArquivo))
                         {
                             var proficienciaDto = new ProficienciaIdepDto(
                                  proficiencia.SerieAno,
