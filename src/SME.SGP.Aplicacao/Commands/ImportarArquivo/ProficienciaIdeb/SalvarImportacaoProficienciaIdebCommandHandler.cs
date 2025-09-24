@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.ProficienciaIdeb
                AnoLetivo = request.ProficienciaIdeb.AnoLetivo,
                SerieAno = request.ProficienciaIdeb.SerieAno,
                CodigoEOLEscola = request.ProficienciaIdeb.CodigoEOLEscola,
-               Boletim = request.ProficienciaIdeb.Boletim
+               Boletim = request.ProficienciaIdeb.Boletim,
                Proficiencia = request.ProficienciaIdeb.Proficiencia,
                ComponenteCurricular = request.ProficienciaIdeb.ComponenteCurricular,
            };
