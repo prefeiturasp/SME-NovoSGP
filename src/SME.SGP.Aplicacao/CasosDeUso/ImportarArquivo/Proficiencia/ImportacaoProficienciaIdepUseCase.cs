@@ -4,10 +4,9 @@ using Microsoft.AspNetCore.Http;
 using SME.SGP.Aplicacao.Commands.ImportarArquivo;
 using SME.SGP.Aplicacao.Commands.ImportarArquivo.ProficienciaIdep;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Proficiencia;
+using SME.SGP.Aplicacao.Queries.UE.ObterUePorCodigoEolEscola;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.ImportarArquivo;
 using SME.SGP.Infra.Enumerados;
@@ -21,20 +20,10 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Proficiencia
 {
-    public class ImportacaoProficienciaIdepUseCase : AbstractUseCase, IImportacaoProficienciaIdepUseCase
+    public class ImportacaoProficienciaIdepUseCase : ImportacaoArquivoBaseUseCase, IImportacaoProficienciaIdepUseCase
     {
-        private readonly IRepositorioImportacaoLog repositorioImportacaoLog;
-        private readonly IRepositorioUeConsulta repositorioUeConsulta;
-
-        private List<SalvarImportacaoLogErroDto> ProcessadosComFalha;
-        public ImportacaoProficienciaIdepUseCase(
-            IMediator mediator,
-            IRepositorioImportacaoLog repositorioImportacaoLog,
-            IRepositorioUeConsulta repositorioUeConsulta
-        ) : base(mediator)
+        public ImportacaoProficienciaIdepUseCase(IMediator mediator) : base(mediator)
         {
-            this.repositorioImportacaoLog = repositorioImportacaoLog ?? throw new ArgumentNullException(nameof(repositorioImportacaoLog));
-            this.repositorioUeConsulta = repositorioUeConsulta ?? throw new ArgumentNullException(nameof(repositorioUeConsulta));
         }
 
         public async Task<ImportacaoLogRetornoDto> Executar(IFormFile arquivo, int anoLetivo)
@@ -53,12 +42,13 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Proficiencia
 
             if (importacaoLog != null)
             {
-                await ProcessarArquivoAsync(arquivo.OpenReadStream(), importacaoLog, anoLetivo);
+                var importacaoLogDto = MapearParaDto(importacaoLog);
+                await ProcessarArquivoAsync(arquivo.OpenReadStream(), importacaoLogDto, anoLetivo);
             }
             return ImportacaoLogRetornoDto.RetornarSucesso(MensagemNegocioComuns.ARQUIVO_IMPORTADO_COM_SUCESSO, importacaoLog.Id);
         }
 
-        private async Task<bool> ProcessarArquivoAsync(Stream arquivo, ImportacaoLog importacaoLog, int anoLetivo)
+        private async Task<bool> ProcessarArquivoAsync(Stream arquivo, ImportacaoLogDto importacaoLogDto, int anoLetivo)
         {
             var listaLote = new List<ProficienciaIdepDto>();
             ProcessadosComFalha = new List<SalvarImportacaoLogErroDto>();
@@ -97,55 +87,46 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Proficiencia
 
                         if (listaLote.Count == tamanhoLote)
                         {
-                            loteSalvar.AddRange(SalvarArquivoProficienciaIdepEmLote(listaLote, importacaoLog.Id));
+                            loteSalvar.AddRange(await SalvarArquivoProficienciaIdepEmLote(listaLote, importacaoLogDto.Id));
                             listaLote.Clear();
                         }
                     }
                     catch (Exception ex)
                     {
-                        SalvarErroLinha(importacaoLog.Id, linha, ex.Message);
+                        SalvarErroLinha(importacaoLogDto.Id, linha, ex.Message);
                     }
                 }
 
                 if (listaLote.Any())
-                    loteSalvar.AddRange(SalvarArquivoProficienciaIdepEmLote(listaLote, importacaoLog.Id));
+                    loteSalvar.AddRange(await SalvarArquivoProficienciaIdepEmLote(listaLote, importacaoLogDto.Id));
 
                 await Task.WhenAll(loteSalvar);
             }
             catch (Exception ex)
             {
-                SalvarErroLinha(importacaoLog.Id, 0, $"Erro geral no arquivo: {ex.Message}");
+                SalvarErroLinha(importacaoLogDto.Id, 0, $"Erro geral no arquivo: {ex.Message}");
             }
             finally
             {
-                importacaoLog.TotalRegistros = totalRegistros;
-                importacaoLog.RegistrosProcessados = totalRegistros - ProcessadosComFalha.Count;
-                importacaoLog.RegistrosComFalha = ProcessadosComFalha.Count;
-                importacaoLog.StatusImportacao = ProcessadosComFalha.Count > 0
+                importacaoLogDto.TotalRegistros = totalRegistros;
+                importacaoLogDto.RegistrosProcessados = totalRegistros - ProcessadosComFalha.Count;
+                importacaoLogDto.RegistrosComFalha = ProcessadosComFalha.Count;
+                importacaoLogDto.StatusImportacao = ProcessadosComFalha.Count > 0
                 ? SituacaoArquivoImportacao.ProcessadoComFalhas.GetAttribute<DisplayAttribute>().Name
                 : SituacaoArquivoImportacao.ProcessadoComSucesso.GetAttribute<DisplayAttribute>().Name;
-                importacaoLog.DataFimProcessamento = DateTime.Now;
-                await repositorioImportacaoLog.SalvarAsync(importacaoLog);
+                importacaoLogDto.DataFimProcessamento = DateTime.Now;
+
+                await mediator.Send(new SalvarImportacaoLogCommand(importacaoLogDto));
             }
             return true;
         }
 
-        private void SalvarErroLinha(long importacaoLogId, int linha, string mensagem)
-        {
-            var erro = new SalvarImportacaoLogErroDto(importacaoLogId, linha, mensagem);
-
-            if (!ProcessadosComFalha.Any(e => e.LinhaArquivo == erro.LinhaArquivo && e.MotivoFalha == erro.MotivoFalha))
-            {
-                ProcessadosComFalha.Add(erro);
-                mediator.Send(new SalvarImportacaoLogErroCommand(erro)).GetAwaiter().GetResult();
-            }
-        }
-
-        private IEnumerable<Task> SalvarArquivoProficienciaIdepEmLote(List<ProficienciaIdepDto> lista, long importacaoLogId)
+        private async Task<IEnumerable<Task>> SalvarArquivoProficienciaIdepEmLote(List<ProficienciaIdepDto> lista, long importacaoLogId)
         {
             var serieAnosValidos = new int[] {
                 (int)SerieAnoIdepEnum.AnosIniciais,
-                (int)SerieAnoIdepEnum.AnosFinais
+                (int)SerieAnoIdepEnum.AnosFinais,
+                (int)SerieAnoIdebEnum.EnsinoMedio
             };
 
             foreach (var dto in lista)
@@ -172,7 +153,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Proficiencia
 
                     if (!string.IsNullOrEmpty(dto.CodigoEOLEscola))
                     {
-                        var ue = repositorioUeConsulta.ObterPorCodigo(dto.CodigoEOLEscola);
+                        var ue = await mediator.Send(new ObterUePorCodigoEolEscolaQuery(dto.CodigoEOLEscola));
+
                         if (ue.EhNulo())
                         {
                             SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Código EOL da UE não encontrado");
@@ -196,15 +178,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Proficiencia
             }
 
             return Enumerable.Empty<Task>();
-        }
-
-        private async Task<ImportacaoLog> SalvarImportacao(IFormFile arquivo, string tipoArquivo)
-        {
-            var statusImportacao = SituacaoArquivoImportacao.CarregamentoInicial.GetAttribute<DisplayAttribute>().Name;
-
-            var importacaoLogDto = new ImportacaoLogDto(arquivo.FileName, tipoArquivo, statusImportacao);
-
-            return await mediator.Send(new SalvarImportacaoLogCommand(importacaoLogDto));
         }
     }
 }

@@ -14,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<bool> ExcluirPorAnoEscolaSerie(int anoLetivo, string codigoEOLEscola, long serieAno)
         {
-            var query = "delete from proficiencia_idep where ano_letivo = @anoLetivo and codigo_eol_escola = @CodigoEOLEscola and serie_ano = @SerieAno";
+            var query = "delete from proficiencia_ideb where ano_letivo = @anoLetivo and codigo_eol_escola = @CodigoEOLEscola and serie_ano = @SerieAno";
 
             await database.Conexao.ExecuteAsync(query, new { anoLetivo, codigoEOLEscola, serieAno });
 

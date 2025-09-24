@@ -125,7 +125,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Proficiencia
         {
             var serieAnosValidos = new int[] {
                 (int)SerieAnoIdebEnum.AnosIniciais,
-                (int)SerieAnoIdebEnum.AnosFinais
+                (int)SerieAnoIdebEnum.AnosFinais,
+                (int)SerieAnoIdebEnum.EnsinoMedio
             };
 
             foreach (var dto in lista)
