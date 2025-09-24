@@ -655,10 +655,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioProficienciaIdeb, RepositorioProficienciaIdeb>();
 
             services.TryAddScoped<IRepositorioConsolidacaoFluenciaLeitora, RepositorioConsolidacaoFluenciaLeitora>();
-
-            // Serviços Externos
-            services.TryAddScoped<IRepositorioServicoExterno, RepositorioServicoExterno>();
-            services.TryAddScoped<IRepositorioServicoExternoConsulta, RepositorioServicoExternoConsulta>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)
