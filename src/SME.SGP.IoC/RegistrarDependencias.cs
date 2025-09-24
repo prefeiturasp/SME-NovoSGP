@@ -15,6 +15,10 @@ using SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Dashboard.ObterDadosDeLeituraDeCom
 using SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Dashboard.ObterDadosDeLeituraDeComunicadosPorModalidadeETurma;
 using SME.SGP.Aplicacao.CasosDeUso.HistoricoEscolar;
 using SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo;
+using SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Boletim;
+using SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.FluenciaLeitora;
+using SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Ideb;
+using SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Idep;
 using SME.SGP.Aplicacao.CasosDeUso.Informes;
 using SME.SGP.Aplicacao.CasosDeUso.PainelEducacional;
 using SME.SGP.Aplicacao.CasosDeUso.Turma;
@@ -29,6 +33,10 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.ObterDadosDeLeituraDeCo
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.ObterDadosDeLeituraDeComunicadosPorModalidadeETurma;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.SolicitarReiniciarSenha;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Boletim;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.FluenciaLeitora;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Ideb;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Idep;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.MapeamentoEstudante;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.Turma;
@@ -638,6 +646,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPapPainelEducacionalConsolidacao, RepositorioPapPainelEducacionalConsolidacao>();
             services.AddScoped<IRepositorioPainelEducacionalIdeb, RepositorioPainelEducacionalIdeb>();
             services.TryAddScoped<IRepositorioIdebPainelEducacionalConsulta, RepositorioIdebPainelEducacionalConsulta>();
+            services.TryAddScoped<IRepositorioProficienciaIdepConsulta, RepositorioProficienciaIdepConsulta>();
+            services.TryAddScoped<IRepositorioProficienciaIdebConsulta, RepositorioProficienciaIdebConsulta>();
+            services.TryAddScoped<IRepositorioProficienciaIdeb, RepositorioProficienciaIdeb>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)
@@ -1496,6 +1507,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IImportacaoArquivoIdepUseCase, ImportacaoArquivoIdepUseCase>();
             services.TryAddScoped<IImportacaoArquivoFluenciaLeitoraUseCase, ImportacaoArquivoFluenciaLeitoraUseCase>();
             services.TryAddScoped<IImportacaoProficienciaIdepUseCase, ImportacaoProficienciaIdepUseCase>();
+            services.TryAddScoped<IBoletimIdepUseCase, BoletimIdepUseCase>();
+            services.TryAddScoped<IBoletimIdebUseCase, BoletimIdebUseCase>();
 
             RegistrarCasoDeUsoAEERabbitSgp(services);
             RegistrarCasoDeUsoAulaRabbitSgp(services);

@@ -1,9 +1,12 @@
 ﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Spreadsheet;
+using Elasticsearch.Net;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using SME.SGP.Aplicacao.Commands.ImportarArquivo;
-using SME.SGP.Aplicacao.Commands.ImportarArquivo.Ideb;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo;
+using SME.SGP.Aplicacao.Commands.ImportarArquivo.FluenciaLeitora;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.FluenciaLeitora;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
@@ -20,27 +23,27 @@ using System.Linq;
 using System.Threading.Tasks;
 
 
-namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
+namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.FluenciaLeitora
 {
-    public class ImportacaoArquivoIdebUseCase : AbstractUseCase, IImportacaoArquivoIdebUseCase
+    public class ImportacaoArquivoFluenciaLeitoraUseCase : AbstractUseCase, IImportacaoArquivoFluenciaLeitoraUseCase
     {
         private readonly IRepositorioImportacaoLog repositorioImportacaoLog;
-        private readonly IRepositorioUeConsulta repositorioUeConsulta;
+        private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
 
         private List<SalvarImportacaoLogErroDto> ProcessadosComFalha;
-        public ImportacaoArquivoIdebUseCase(
+        public ImportacaoArquivoFluenciaLeitoraUseCase(
             IMediator mediator,
             IRepositorioImportacaoLog repositorioImportacaoLog,
-            IRepositorioUeConsulta repositorioUeConsulta
+            IRepositorioTurmaConsulta repositorioTurmaConsulta
         ) : base(mediator)
         {
             this.repositorioImportacaoLog = repositorioImportacaoLog ?? throw new ArgumentNullException(nameof(repositorioImportacaoLog));
-            this.repositorioUeConsulta = repositorioUeConsulta ?? throw new ArgumentNullException(nameof(repositorioUeConsulta));
+            this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
         }
 
-        public async Task<ImportacaoLogRetornoDto> Executar(IFormFile arquivo, int anoLetivo)
+        public async Task<ImportacaoLogRetornoDto> Executar(IFormFile arquivo, int anoLetivo, int tipoAvaliacao)
         {
-            if(anoLetivo == 0)
+            if (anoLetivo == 0)
                 throw new NegocioException("Informe o ano letivo.");
 
             if (arquivo == null || arquivo.Length == 0)
@@ -49,23 +52,19 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
             if (arquivo.ContentType.NaoEhArquivoXlsx())
                 throw new NegocioException(MensagemNegocioComuns.SOMENTE_ARQUIVO_XLSX_SUPORTADO);
 
-            var tipoArquivo = TipoArquivoImportacao.IDEB.GetAttribute<DisplayAttribute>().Name;
+            var tipoArquivo = TipoArquivoImportacao.FLUENCIA_LEITORA.GetAttribute<DisplayAttribute>().Name;
             var importacaoLog = await SalvarImportacao(arquivo, tipoArquivo);
 
             if (importacaoLog != null)
             {
-               bool processado = await ProcessarArquivoAsync(arquivo.OpenReadStream(), importacaoLog, anoLetivo);
-                if (processado)
-                {
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarPainelEdcacionalIdeb, importacaoLog.Id));
-                }
+                await ProcessarArquivoAsync(arquivo.OpenReadStream(), importacaoLog, anoLetivo, tipoAvaliacao);
             }
             return ImportacaoLogRetornoDto.RetornarSucesso(MensagemNegocioComuns.ARQUIVO_IMPORTADO_COM_SUCESSO, importacaoLog.Id);
         }
 
-        private async Task<bool> ProcessarArquivoAsync(Stream arquivo, ImportacaoLog importacaoLog, int anoLetivo)
+        private async Task<bool> ProcessarArquivoAsync(Stream arquivo, ImportacaoLog importacaoLog, int anoLetivo, int tipoAvaliacao)
         {
-            var listaLote = new List<ArquivoIdebDto>();
+            var listaLote = new List<ArquivoFluenciaLeitoraDto>();
             ProcessadosComFalha = new List<SalvarImportacaoLogErroDto>();
             int totalRegistros = 0;
             var loteSalvar = new List<Task>();
@@ -75,13 +74,12 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
                 using var package = new XLWorkbook(arquivo);
                 var planilha = package.Worksheets.FirstOrDefault();
                 if (planilha == null) return false;
-                // pega o número de colunas preenchidas na primeira linha (cabeçalho)
+
                 var totalColunas = planilha.Row(1).LastCellUsed().Address.ColumnNumber;
                 if (totalColunas < 3)
                     throw new NegocioException(MensagemNegocioComuns.ARQUIVO_NUMERO_COLUNAS_INVALIDO);
 
                 var totalLinhas = planilha.LastRowUsed().RowNumber();
-                // utilizar o - 1 para desconsiderar o cabeçalho
                 totalRegistros = totalLinhas - 1;
                 var tamanhoLote = 10;
 
@@ -92,17 +90,17 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
                 {
                     try
                     {
-                        int.TryParse(planilha.Cell(linha, 1).Value.ToString().Trim(), out int serieAno);
-                        var codigoEOLEscola = planilha.Cell(linha, 2).Value.ToString().Trim();
-                        decimal.TryParse(planilha.Cell(linha, 3).Value.ToString().Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out var nota);
+                        var codigoEOLTurma = planilha.Cell(linha, 1).Value.ToString().Trim();
+                        var codigoEOLAluno = planilha.Cell(linha, 2).Value.ToString().Trim();
+                        int.TryParse(planilha.Cell(linha, 3).Value.ToString().Trim(), out int fluencia);
 
-                        var dto = new ArquivoIdebDto(serieAno, codigoEOLEscola, nota, anoLetivo);
+                        var dto = new ArquivoFluenciaLeitoraDto(codigoEOLTurma, codigoEOLAluno, anoLetivo, fluencia, tipoAvaliacao);
                         dto.LinhaAtual = linha;
                         listaLote.Add(dto);
 
                         if (listaLote.Count == tamanhoLote)
                         {
-                            loteSalvar.AddRange(SalvarArquivoIdebEmLote(listaLote, importacaoLog.Id));
+                            loteSalvar.AddRange(SalvarArquivoFluenciaLeitoraEmLote(listaLote, importacaoLog.Id));
                             listaLote.Clear();
                         }
                     }
@@ -113,7 +111,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
                 }
                 // salva as linhas restantes (último lote incompleto)
                 if (listaLote.Any())
-                    loteSalvar.AddRange(SalvarArquivoIdebEmLote(listaLote, importacaoLog.Id));
+                    loteSalvar.AddRange(SalvarArquivoFluenciaLeitoraEmLote(listaLote, importacaoLog.Id));
 
                 // aguarda todas as tasks de persistência
                 await Task.WhenAll(loteSalvar);
@@ -147,47 +145,71 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
             }
         }
 
-        private IEnumerable<Task> SalvarArquivoIdebEmLote(List<ArquivoIdebDto> lista, long importacaoLogId)
+        private IEnumerable<Task> SalvarArquivoFluenciaLeitoraEmLote(List<ArquivoFluenciaLeitoraDto> lista, long importacaoLogId)
         {
-            var serieAnosValidos = new int[] {
-                (int)SerieAnoIdebEnum.AnosIniciais,
-                (int)SerieAnoIdebEnum.AnosFinais,
-                (int)SerieAnoIdebEnum.EnsinoMedio
+            var fluenciasLeitorasValidas = new int[] {
+                (int)FluenciaLeitoraEnum.Fluencia1,
+                (int)FluenciaLeitoraEnum.Fluencia2,
+                (int)FluenciaLeitoraEnum.Fluencia3,
+                (int)FluenciaLeitoraEnum.Fluencia4,
+                (int)FluenciaLeitoraEnum.Fluencia5,
+                (int)FluenciaLeitoraEnum.Fluencia6,
+            };
+
+            var fluenciaLeitoraPeriodoValidos = new int[] {
+                (int)FluenciaLeitoraTipoAvaliacaoEnum.AvaliacaoEntrada,
+                (int)FluenciaLeitoraTipoAvaliacaoEnum.AvaliacaoSaida
             };
 
             foreach (var dto in lista)
             {
                 try
                 {
-                    if (dto.SerieAno == 0 || !serieAnosValidos.Contains(dto.SerieAno))
+                    if (string.IsNullOrEmpty(dto.CodigoEOLTurma))
                     {
-                        SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Série/Ano inválido");
+                        SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Codigo EOL da Turma inválido");
                         continue;
                     }
 
-                    if (dto.Nota == 0)
+                    if (string.IsNullOrEmpty(dto.CodigoEOLAluno))
                     {
-                        SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Nota inválida");
+                        SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Codigo EOL do Aluno inválido");
                         continue;
                     }
 
-                    if (string.IsNullOrEmpty(dto.CodigoEOLEscola))
+                    if (!string.IsNullOrEmpty(dto.CodigoEOLTurma))
                     {
-                        SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Código EOL da UE inválido");
-                        continue;
-                    }
-
-                    if (!string.IsNullOrEmpty(dto.CodigoEOLEscola))
-                    {
-                        var ue = repositorioUeConsulta.ObterPorCodigo(dto.CodigoEOLEscola);
-                        if (ue.EhNulo())
+                        var turma = repositorioTurmaConsulta.ObterPorCodigo(dto.CodigoEOLTurma);
+                        if (turma.EhNulo())
                         {
-                            SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Código EOL da UE não encontrado");
+                            SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Turma não encontrada");
                             continue;
                         }
                     }
 
-                    mediator.Send(new SalvarImportacaoArquivoIdebCommand(dto)).GetAwaiter().GetResult();
+                    if (!string.IsNullOrEmpty(dto.CodigoEOLTurma) && !string.IsNullOrEmpty(dto.CodigoEOLAluno))
+                    {
+                        var aluno = mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(dto.CodigoEOLTurma, dto.CodigoEOLAluno));
+                        if (aluno.EhNulo())
+                        {
+                            SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Aluno não encontrado");
+                            continue;
+                        }
+                    }
+
+                    if (dto.Fluencia == 0 || !fluenciasLeitorasValidas.Contains(dto.Fluencia))
+                    {
+                        SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Fluência inválida");
+                        continue;
+                    }
+
+                    if (dto.TipoAvaliacao == 0 || !fluenciaLeitoraPeriodoValidos.Contains(dto.TipoAvaliacao))
+                    {
+                        SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Período inválido");
+                        continue;
+                    }
+
+                    mediator.Send(new SalvarImportacaoArquivoFluenciaLeitoraCommand(dto)).GetAwaiter().GetResult();
                 }
                 catch (Exception ex)
                 {
@@ -202,7 +224,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
         {
             var statusImportacao = SituacaoArquivoImportacao.CarregamentoInicial.GetAttribute<DisplayAttribute>().Name;
 
-            var importacaoLogDto = new SalvarImportacaoLogDto(arquivo.FileName, tipoArquivo, statusImportacao);
+            var importacaoLogDto = new ImportacaoLogDto(arquivo.FileName, tipoArquivo, statusImportacao);
 
             return await mediator.Send(new SalvarImportacaoLogCommand(importacaoLogDto));
         }
