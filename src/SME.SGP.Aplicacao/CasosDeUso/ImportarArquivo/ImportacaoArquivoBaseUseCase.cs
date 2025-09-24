@@ -4,10 +4,12 @@ using SME.SGP.Aplicacao.Commands.ImportarArquivo;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Enumerados;
+using SME.SGP.Infra.Dtos;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Dtos.ImportarArquivo;
 
 namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
 {
@@ -59,6 +61,10 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
             importacaoLogDto.TotalRegistros = log.TotalRegistros;
             importacaoLogDto.RegistrosProcessados = log.RegistrosProcessados;
             importacaoLogDto.RegistrosComFalha = log.RegistrosComFalha;
+            importacaoLogDto.CriadoPor = log.CriadoPor;
+            importacaoLogDto.CriadoRF = log.CriadoRF;
+            importacaoLogDto.AlteradoPor = log.AlteradoPor;
+            importacaoLogDto.AlteradoRF = log.AlteradoRF;
 
             return importacaoLogDto;
         }
