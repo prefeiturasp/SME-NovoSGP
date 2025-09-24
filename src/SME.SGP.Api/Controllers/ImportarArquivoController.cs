@@ -44,6 +44,17 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(arquivo, anoLetivo, tipoAvaliacao));
         }
 
+        [HttpPost("alfabetizacao")]
+        [ProducesResponseType(typeof(ImportacaoLogRetornoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 400)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.IE_I_P_I, Policy = "Bearer")]
+        public async Task<IActionResult> ImportarArquivoAlfabetizacao([FromForm] IFormFile arquivo, [FromForm] int anoLetivo, [FromServices] IImportacaoArquivoAlfabetizacaoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(arquivo, anoLetivo));
+        }
+
+
         [HttpGet]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<ImportacaoLogQueryRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 400)]
