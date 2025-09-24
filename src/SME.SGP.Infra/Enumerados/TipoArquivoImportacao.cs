@@ -16,10 +16,13 @@ namespace SME.SGP.Infra.Enumerados
         [Display(Name = "Proficiencia IDEP")]
         PROFICIENCIA_IDEP = 4,
 
+        [Display(Name = "Proficiencia IDEB")]
+        PROFICIENCIA_IDEB = 5,
+
         [Display(Name = "Boletim IDEP")]
-        BOLETIM_IDEP = 5,
+        BOLETIM_IDEP = 6,
 
         [Display(Name = "Boletim IDEB")]
-        BOLETIM_IDEB = 5,
+        BOLETIM_IDEB = 7,
     }
 }
