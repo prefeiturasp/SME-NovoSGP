@@ -20,24 +20,24 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterFrequenciaGlobal(string codigoDre, string codigoUe, [FromServices] IConsultasRegistroFrequenciaAgrupamentoGlobalUseCase consultasRegistroFrequenciaAgrupamentoGlobalUseCase)
-           => Ok(await consultasRegistroFrequenciaAgrupamentoGlobalUseCase.ObterFrequencia(codigoDre, codigoUe));
+        public async Task<IActionResult> ObterFrequenciaGlobal(int anoLetivo, string codigoDre, string codigoUe, [FromServices] IConsultasRegistroFrequenciaAgrupamentoGlobalUseCase consultasRegistroFrequenciaAgrupamentoGlobalUseCase)
+           => Ok(await consultasRegistroFrequenciaAgrupamentoGlobalUseCase.ObterFrequencia(anoLetivo, codigoDre, codigoUe));
 
         [HttpGet("frequencia-mensal")]
         [ProducesResponseType(typeof(PainelEducacionalRegistroFrequenciaAgrupamentoMensalDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterFrequenciaMensal(string codigoDre, string codigoUe, [FromServices] IConsultasRegistroFrequenciaAgrupamentoMensalUseCase consultasRegistroFrequenciaAgrupamentoMensalUseCase)
-          => Ok(await consultasRegistroFrequenciaAgrupamentoMensalUseCase.ObterFrequencia(codigoDre, codigoUe));
+        public async Task<IActionResult> ObterFrequenciaMensal(int anoLetivo, string codigoDre, string codigoUe, [FromServices] IConsultasRegistroFrequenciaAgrupamentoMensalUseCase consultasRegistroFrequenciaAgrupamentoMensalUseCase)
+          => Ok(await consultasRegistroFrequenciaAgrupamentoMensalUseCase.ObterFrequencia(anoLetivo, codigoDre, codigoUe));
 
         [HttpGet("frequencia-ranking")]
         [ProducesResponseType(typeof(PainelEducacionalRegistroFrequenciaRankingDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterFrequenciaRanking(string codigoDre, string codigoUe, [FromServices] IConsultasRegistroFrequenciaAgrupamentoRankingUseCase consultasRegistroFrequenciaAgrupamentoRankingUseCase)
-         => Ok(await consultasRegistroFrequenciaAgrupamentoRankingUseCase.ObterFrequencia(codigoDre, codigoUe));
+        public async Task<IActionResult> ObterFrequenciaRanking(int anoLetivo, string codigoDre, string codigoUe, [FromServices] IConsultasRegistroFrequenciaAgrupamentoRankingUseCase consultasRegistroFrequenciaAgrupamentoRankingUseCase)
+         => Ok(await consultasRegistroFrequenciaAgrupamentoRankingUseCase.ObterFrequencia(anoLetivo, codigoDre, codigoUe));
 
         [HttpGet("nivel-alfabetizacao")]
         [ProducesResponseType(typeof(PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoDto), 200)]
@@ -87,5 +87,13 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterIndicadoresPap([FromServices] IConsultasInformacoesPapUseCase consultasInformacoesPapUseCase, [FromQuery] FiltroPainelEducacionalDreUe filtro)
         => Ok(await consultasInformacoesPapUseCase.ObterInformacoesPap(filtro.CodigoDre, filtro.CodigoUe));
+
+        [HttpGet("fluencia-leitora")]
+        [ProducesResponseType(typeof(PainelEducacionalFluenciaLeitoraDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterFluenciaLeitora([FromQuery] FiltroPainelEducacionalAnoLetivoPeriodo filtro, [FromServices] IConsultasPainelEducacionalFluenciaLeitoraUseCase consultasFluenciaLeitoraUseCase)
+        => Ok(await consultasFluenciaLeitoraUseCase.ObterFluenciaLeitora(filtro.Periodo.ToString(), filtro.AnoLetivo.ToString(), filtro.CodigoDre, filtro.CodigoUe));
     }
 }

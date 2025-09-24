@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
             this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
         }
 
-        public async Task<ImportacaoLogRetornoDto> Executar(IFormFile arquivo, int anoLetivo, string periodo)
+        public async Task<ImportacaoLogRetornoDto> Executar(IFormFile arquivo, int anoLetivo, int tipoAvaliacao)
         {
             if (anoLetivo == 0)
                 throw new NegocioException("Informe o ano letivo.");
@@ -57,12 +57,12 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
 
             if (importacaoLog != null)
             {
-                await ProcessarArquivoAsync(arquivo.OpenReadStream(), importacaoLog, anoLetivo, periodo);
+                await ProcessarArquivoAsync(arquivo.OpenReadStream(), importacaoLog, anoLetivo, tipoAvaliacao);
             }
             return ImportacaoLogRetornoDto.RetornarSucesso(MensagemNegocioComuns.ARQUIVO_IMPORTADO_COM_SUCESSO, importacaoLog.Id);
         }
 
-        private async Task<bool> ProcessarArquivoAsync(Stream arquivo, ImportacaoLog importacaoLog, int anoLetivo, string periodo)
+        private async Task<bool> ProcessarArquivoAsync(Stream arquivo, ImportacaoLog importacaoLog, int anoLetivo, int tipoAvaliacao)
         {
             var listaLote = new List<ArquivoFluenciaLeitoraDto>();
             ProcessadosComFalha = new List<SalvarImportacaoLogErroDto>();
@@ -94,7 +94,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
                         var codigoEOLAluno = planilha.Cell(linha, 2).Value.ToString().Trim();
                         int.TryParse(planilha.Cell(linha, 3).Value.ToString().Trim(), out int fluencia);
 
-                        var dto = new ArquivoFluenciaLeitoraDto(codigoEOLTurma, codigoEOLAluno, anoLetivo, fluencia, periodo);
+                        var dto = new ArquivoFluenciaLeitoraDto(codigoEOLTurma, codigoEOLAluno, anoLetivo, fluencia, tipoAvaliacao);
                         dto.LinhaAtual = linha;
                         listaLote.Add(dto);
 
@@ -156,6 +156,11 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
                 (int)FluenciaLeitoraEnum.Fluencia6,
             };
 
+            var fluenciaLeitoraPeriodoValidos = new int[] {
+                (int)FluenciaLeitoraTipoAvaliacaoEnum.AvaliacaoEntrada,
+                (int)FluenciaLeitoraTipoAvaliacaoEnum.AvaliacaoSaida
+            };
+
             foreach (var dto in lista)
             {
                 try
@@ -198,7 +203,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
                         continue;
                     }
 
-                    if (string.IsNullOrEmpty(dto.Periodo))
+                    if (dto.TipoAvaliacao == 0 || !fluenciaLeitoraPeriodoValidos.Contains(dto.TipoAvaliacao))
                     {
                         SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Período inválido");
                         continue;

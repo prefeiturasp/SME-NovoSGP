@@ -5,6 +5,6 @@ namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional
 {
     public interface IConsultasRegistroFrequenciaAgrupamentoRankingUseCase
     {
-        Task<PainelEducacionalRegistroFrequenciaRankingDto> ObterFrequencia(string codigoDre, string codigoUe);
+        Task<PainelEducacionalRegistroFrequenciaRankingDto> ObterFrequencia(int anoLetivo, string codigoDre, string codigoUe);
     }
 }

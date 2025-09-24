@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using System;
 using System.Threading;
@@ -9,28 +8,41 @@ namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.FluenciaLeitora
 {
     public class SalvarImportacaoArquivoFluenciaLeitoraCommandHandler : IRequestHandler<SalvarImportacaoArquivoFluenciaLeitoraCommand, Dominio.FluenciaLeitora>
     {
-        private readonly IRepositorioFluenciaLeitora repositorioArquivoIbep;
-        public SalvarImportacaoArquivoFluenciaLeitoraCommandHandler(IRepositorioFluenciaLeitora repositorioArquivoIbep)
+        private readonly IRepositorioFluenciaLeitora repositorioFluenciaLeitora;
+        public SalvarImportacaoArquivoFluenciaLeitoraCommandHandler(IRepositorioFluenciaLeitora repositorioFluenciaLeitora)
         {
-            this.repositorioArquivoIbep = repositorioArquivoIbep ?? throw new ArgumentNullException(nameof(repositorioArquivoIbep));
+            this.repositorioFluenciaLeitora = repositorioFluenciaLeitora ?? throw new ArgumentNullException(nameof(repositorioFluenciaLeitora));
         }
 
         public async Task<Dominio.FluenciaLeitora> Handle(SalvarImportacaoArquivoFluenciaLeitoraCommand request, CancellationToken cancellationToken)
         {
-            var arquivoFluenciaLeitora = MapearParaEntidade(request);
+            var dto = MapearParaEntidade(request);
+            var registroAtual = await repositorioFluenciaLeitora.ObterRegistroFluenciaLeitoraAsync(
+                dto.AnoLetivo,
+                dto.CodigoEOLTurma,
+                dto.CodigoEOLAluno,
+                dto.TipoAvaliacao
+            );
 
-            await repositorioArquivoIbep.SalvarAsync(arquivoFluenciaLeitora);
+            if (registroAtual != null)
+            {
+                registroAtual.Fluencia = dto.Fluencia;
+                dto = registroAtual;
+            }
 
-            return arquivoFluenciaLeitora;
+            await repositorioFluenciaLeitora.SalvarAsync(dto);
+
+            return dto;
         }
 
         private Dominio.FluenciaLeitora MapearParaEntidade(SalvarImportacaoArquivoFluenciaLeitoraCommand request)
         => new Dominio.FluenciaLeitora()
         {
+            AnoLetivo = request.ArquivoFluenciaLeitora.AnoLetivo,
             CodigoEOLTurma = request.ArquivoFluenciaLeitora.CodigoEOLTurma,
             CodigoEOLAluno = request.ArquivoFluenciaLeitora.CodigoEOLAluno,
             Fluencia = request.ArquivoFluenciaLeitora.Fluencia,
-            Periodo = request.ArquivoFluenciaLeitora.Periodo
+            TipoAvaliacao = request.ArquivoFluenciaLeitora.TipoAvaliacao
         };
     }
 }

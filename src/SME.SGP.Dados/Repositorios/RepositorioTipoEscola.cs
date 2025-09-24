@@ -74,5 +74,12 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<TipoEscolaDto>(query.ToString(), new { dreCodigo, ueCodigo, modalidades });
         }
+
+        public async Task<IEnumerable<TipoEscolaEol>> ObterTodasAsync()
+        {
+            var query = "select tp.*  from tipo_escola tp";
+
+            return await database.Conexao.QueryAsync<TipoEscolaEol>(query);
+        }
     }
 }

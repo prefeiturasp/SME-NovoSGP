@@ -16,10 +16,7 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarAgrupamentoEscola
 
         public async Task<bool> Handle(PainelEducacionalSalvarAgrupamentoGlobalEscolaCommand request, CancellationToken cancellationToken)
         {
-            foreach (var registroFrequenciaAgrupamentoMensal in request.RegistroFrequencia)
-            {
-                await repositorioFrequencia.SalvarAsync(registroFrequenciaAgrupamentoMensal);
-            }
+            await repositorioFrequencia.BulkInsertAsync(request.RegistroFrequencia);
             return true;
         }
     }
