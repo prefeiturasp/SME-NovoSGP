@@ -270,6 +270,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ConsolidacaoAlfabetizacaoCriticaEscritaMap());
                config.AddMap(new ProficienciaIdepMap());
                config.AddMap(new ConsolidacaoInformacoesPapMap());
+               config.AddMap(new ConsolidacaoPainelEducacionalFluenciaLeitoraMap());
 
                config.ForDommel();
            });

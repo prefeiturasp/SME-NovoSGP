@@ -1,7 +1,4 @@
 ﻿using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Drawing.Charts;
-using DocumentFormat.OpenXml.Spreadsheet;
-using Elasticsearch.Net;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using SME.SGP.Aplicacao.Commands.ImportarArquivo;
@@ -17,7 +14,6 @@ using SME.SGP.Infra.Enumerados;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -115,6 +111,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
 
                 // aguarda todas as tasks de persistência
                 await Task.WhenAll(loteSalvar);
+
+
             }
             catch (Exception ex)
             {
@@ -130,6 +128,10 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
                 : SituacaoArquivoImportacao.ProcessadoComSucesso.GetAttribute<DisplayAttribute>().Name;
                 importacaoLog.DataFimProcessamento = DateTime.Now;
                 await repositorioImportacaoLog.SalvarAsync(importacaoLog);
+
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPainelEducacional.ConsolidarFluenciaLeitoraPainelEducacional,
+                    null, Guid.NewGuid()
+                ));
             }
             return true;
         }

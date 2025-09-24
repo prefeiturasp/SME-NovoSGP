@@ -235,6 +235,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasInformacoesPapUseCase, ConsultasInformacoesPapUseCase>();
             services.AddScoped<IConsultasIdepPainelEducacionalUseCase, ConsultasIdepPainelEducacionalUseCase>();
             services.TryAddScoped<IConsultasIdebPainelEducacionalUseCase, ConsultasIdebPainelEducacionalUseCase>();
+            services.TryAddScoped<IConsultasPainelEducacionalFluenciaLeitoraUseCase, ConsultasPainelEducacionalFluenciaLeitoraUseCase>();
         }
 
         protected virtual void RegistrarContextos(IServiceCollection services)
@@ -638,6 +639,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPapPainelEducacionalConsolidacao, RepositorioPapPainelEducacionalConsolidacao>();
             services.AddScoped<IRepositorioPainelEducacionalIdeb, RepositorioPainelEducacionalIdeb>();
             services.TryAddScoped<IRepositorioIdebPainelEducacionalConsulta, RepositorioIdebPainelEducacionalConsulta>();
+            services.TryAddScoped<IRepositorioConsolidacaoFluenciaLeitora, RepositorioConsolidacaoFluenciaLeitora>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)
@@ -803,6 +805,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IIniciaConsolidacaoTurmaGeralUseCase, IniciaConsolidacaoTurmaGeralUseCase>();
             services.TryAddScoped<IConsolidarInformacoesNivelEscritaAlfabetizacaoPainelEducacionalUseCase, ConsolidarInformacoesNivelEscritaAlfabetizacaoPainelEducacionalUseCase>();
             services.TryAddScoped<IConsolidarInformacoesPapPainelEducacionalUseCase, ConsolidarInformacoesPapPainelEducacionalUseCase>();
+            services.TryAddScoped<IConsolidarFluenciaLeitoraPainelEducacionalUseCase, ConsolidarFluenciaLeitoraPainelEducacionalUseCase>();
             services.TryAddScoped<IConsultasNumeroEstudantesAgrupamentoNivelAlfabetizacaoUseCase, ConsultasNumeroEstudantesAgrupamentoNivelAlfabetizacaoUseCase>();
             services.TryAddScoped<IConsolidarInformacoesAlfabetizacaoCriticaEscritaPainelEducacionalUseCase, ConsolidarInformacoesAlfabetizacaoCriticaEscritaPainelEducacionalUseCase>();            
             services.TryAddScoped<IConsultasAlfabetizacaoCriticaEscritaPainelEducacionalUseCase, ConsultasAlfabetizacaoCriticaEscritaPainelEducacionalUseCase>();

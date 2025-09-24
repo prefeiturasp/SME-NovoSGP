@@ -21,8 +21,13 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<PainelEducacionalFluenciaLeitoraDto>> ObterFluenciaLeitora(string periodo, string anoLetivo, string codigoDre, string codigoUe)
         {
             var query = new StringBuilder(@"
-                                           SELECT * 
-                                           FROM consolidacao_painel_educacional_fluencia-leitora");
+                                           SELECT fluencia as NomeFluencia,
+                                           descricao_fluencia as DescricaoFluencia,
+                                           percentual, 
+                                           quantidade_alunos as QuantidadeAlunos,
+                                           ano,
+                                           periodo
+                                           FROM consolidacao_painel_educacional_fluencia_leitora");
 
             var condicoes = new List<string>();
             var parametros = new DynamicParameters();
@@ -35,8 +40,8 @@ namespace SME.SGP.Dados.Repositorios
 
             if (!string.IsNullOrWhiteSpace(anoLetivo) && anoLetivo != "-99" && anoLetivo != "0")
             {
-                condicoes.Add("ano_letivo = @anoLetivo");
-                parametros.Add("anoLetivo", anoLetivo);
+                condicoes.Add("ano = @anoLetivo");
+                parametros.Add("ano", anoLetivo);
             }
 
             if (!string.IsNullOrWhiteSpace(codigoDre) && codigoDre != "-99" && codigoDre != "0")
