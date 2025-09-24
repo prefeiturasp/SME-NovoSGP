@@ -35,6 +35,7 @@ namespace SME.SGP.PainelEducacional.Worker
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarNivelEscritaAlfabetizacaoCritico, new ComandoRabbit("Sincronização e Consolidação dos Dados da Sondagem da Alfabetização Crítica Escrita", typeof(IConsolidarInformacoesAlfabetizacaoCriticaEscritaPainelEducacionalUseCase), false));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarInformacoesPapPainelEducacional, new ComandoRabbit("Sincronização e Consolidação dos Dados de PAP", typeof(IConsolidarInformacoesPapPainelEducacionalUseCase)));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarVisaoGeralPainelEducacional, new ComandoRabbit("Consolidar Visão Geral para o Painel Educacional", typeof(IConsolidarVisaoGeralPainelEducacionalUseCase)));
+            Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarFluenciaLeitoraPainelEducacional, new ComandoRabbit("Consolidar Fluência Leitora para o Painel Educacional", typeof(IConsolidarFluenciaLeitoraPainelEducacionalUseCase)));
         }
     }
 }
