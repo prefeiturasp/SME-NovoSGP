@@ -2,6 +2,7 @@
 using Moq;
 using SME.SGP.Api.Controllers;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
+using SME.SGP.Dominio;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ namespace SME.SGP.Api.Teste.Controllers
     {
         private readonly PainelEducacionalController _controller;
         private readonly Mock<IConsultasVisaoGeralPainelEducacionalUseCase> _consultasVisaoGeralPainelEducacionalUseCase = new();
+        private readonly Mock<IConsultasIdebPainelEducacionalUseCase> _consultasIdebPainelEducacionalUseCase = new();
 
         public PainelEducacionalControllerTeste()
         {
@@ -20,13 +22,11 @@ namespace SME.SGP.Api.Teste.Controllers
         }
 
         [Fact]
-        public async Task ObterVisaoGeral_DeveRetornarOkComDados()
+        public async Task Obter_Visao_Geral_Deve_Retornar_Ok_Com_Dados()
         {
-            // Arrange
             var codigoDre = "123";
-            var codigoUe= "456";
+            var codigoUe = "456";
             var anoLetivo = 2025;
-
             var retornoEsperado = new List<PainelEducacionalVisaoGeralRetornoDto>
             {
                 new PainelEducacionalVisaoGeralRetornoDto
@@ -47,18 +47,14 @@ namespace SME.SGP.Api.Teste.Controllers
                     }
                 }
             };
-
             _consultasVisaoGeralPainelEducacionalUseCase
                 .Setup(x => x.ObterVisaoGeralConsolidada(anoLetivo, codigoDre, codigoUe))
                 .Returns(Task.FromResult<IEnumerable<PainelEducacionalVisaoGeralRetornoDto>>(retornoEsperado));
 
-            // Act
             var result = await _controller.ObterVisaoGeral(anoLetivo, codigoDre, codigoUe, _consultasVisaoGeralPainelEducacionalUseCase.Object);
 
-            // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             var retorno = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalVisaoGeralRetornoDto>>(okResult.Value);
-
             Assert.Collection(retorno,
                 idep =>
                 {
@@ -85,6 +81,273 @@ namespace SME.SGP.Api.Teste.Controllers
                             Assert.Equal(72.94m, s.Valor);
                         });
                 });
+        }
+
+        [Fact]
+        public async Task Obter_Ideb_Deve_Retornar_Ok_Com_Dados()
+        {
+            var filtro = new FiltroPainelEducacionalIdeb
+            {
+                AnoLetivo = 2023,
+                Serie = PainelEducacionalIdebSerie.AnosIniciais,
+                CodigoDre = "123",
+                CodigoUe = "456"
+            };
+
+            var retornoEsperado = new PainelEducacionalIdebAgrupamentoDto
+            {
+                AnoSolicitado = 2023,
+                AnoUtilizado = 2023,
+                AnoSolicitadoSemDados = false,
+                Serie = "1",
+                MediaGeral = 5.5,
+                CodigoDre = "123",
+                CodigoUe = "456",
+                Distribuicao = new List<FaixaQuantidadeIdeb>
+                {
+                    new FaixaQuantidadeIdeb { Faixa = "5.0-6.0", Quantidade = 10 },
+                    new FaixaQuantidadeIdeb { Faixa = "4.0-5.0", Quantidade = 8 }
+                }
+            };
+
+            _consultasIdebPainelEducacionalUseCase
+                .Setup(x => x.ObterIdeb(It.IsAny<FiltroPainelEducacionalIdeb>()))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterIdeb(filtro, _consultasIdebPainelEducacionalUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsType<PainelEducacionalIdebAgrupamentoDto>(okResult.Value);
+
+            Assert.Equal(2023, retorno.AnoSolicitado);
+            Assert.Equal(2023, retorno.AnoUtilizado);
+            Assert.False(retorno.AnoSolicitadoSemDados);
+            Assert.Equal("1", retorno.Serie);
+            Assert.Equal(5.5, retorno.MediaGeral);
+            Assert.Equal("123", retorno.CodigoDre);
+            Assert.Equal("456", retorno.CodigoUe);
+            Assert.Equal(2, retorno.Distribuicao.Count);
+
+            Assert.Collection(retorno.Distribuicao,
+                item =>
+                {
+                    Assert.Equal("5.0-6.0", item.Faixa);
+                    Assert.Equal(10, item.Quantidade);
+                },
+                item =>
+                {
+                    Assert.Equal("4.0-5.0", item.Faixa);
+                    Assert.Equal(8, item.Quantidade);
+                });
+
+            _consultasIdebPainelEducacionalUseCase.Verify(x => x.ObterIdeb(It.Is<FiltroPainelEducacionalIdeb>(f =>
+                f.AnoLetivo == 2023 &&
+                f.Serie == PainelEducacionalIdebSerie.AnosIniciais &&
+                f.CodigoDre == "123" &&
+                f.CodigoUe == "456"
+            )), Times.Once);
+        }
+
+        [Fact]
+        public async Task Obter_Ideb_Com_Ano_Letivo_Null_Deve_Retornar_Ok_Com_Dados()
+        {
+            var filtro = new FiltroPainelEducacionalIdeb
+            {
+                AnoLetivo = null,
+                Serie = PainelEducacionalIdebSerie.AnosFinais,
+                CodigoDre = "789",
+                CodigoUe = "012"
+            };
+
+            var retornoEsperado = new PainelEducacionalIdebAgrupamentoDto
+            {
+                AnoSolicitado = -99,
+                AnoUtilizado = 2022,
+                AnoSolicitadoSemDados = true,
+                Serie = "2",
+                MediaGeral = 4.8,
+                CodigoDre = "789",
+                CodigoUe = "012",
+                Distribuicao = new List<FaixaQuantidadeIdeb>
+                {
+                    new FaixaQuantidadeIdeb { Faixa = "4.0-5.0", Quantidade = 15 }
+                }
+            };
+
+            _consultasIdebPainelEducacionalUseCase
+                .Setup(x => x.ObterIdeb(It.IsAny<FiltroPainelEducacionalIdeb>()))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterIdeb(filtro, _consultasIdebPainelEducacionalUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsType<PainelEducacionalIdebAgrupamentoDto>(okResult.Value);
+
+            Assert.Equal(-99, retorno.AnoSolicitado);
+            Assert.Equal(2022, retorno.AnoUtilizado);
+            Assert.True(retorno.AnoSolicitadoSemDados);
+            Assert.Equal("2", retorno.Serie);
+            Assert.Equal(4.8, retorno.MediaGeral);
+            Assert.Equal("789", retorno.CodigoDre);
+            Assert.Equal("012", retorno.CodigoUe);
+            Assert.Single(retorno.Distribuicao);
+            Assert.Equal("4.0-5.0", retorno.Distribuicao[0].Faixa);
+            Assert.Equal(15, retorno.Distribuicao[0].Quantidade);
+        }
+
+        [Fact]
+        public async Task Obter_Ideb_Com_Ensino_Medio_Deve_Retornar_Ok_Com_Dados()
+        {
+            var filtro = new FiltroPainelEducacionalIdeb
+            {
+                AnoLetivo = 2023,
+                Serie = PainelEducacionalIdebSerie.EnsinoMedio,
+                CodigoDre = "345",
+                CodigoUe = "678"
+            };
+
+            var retornoEsperado = new PainelEducacionalIdebAgrupamentoDto
+            {
+                AnoSolicitado = 2023,
+                AnoUtilizado = 2023,
+                AnoSolicitadoSemDados = false,
+                Serie = "3",
+                MediaGeral = 6.2,
+                CodigoDre = "345",
+                CodigoUe = "678",
+                Distribuicao = new List<FaixaQuantidadeIdeb>
+                {
+                    new FaixaQuantidadeIdeb { Faixa = "6.0-7.0", Quantidade = 20 },
+                    new FaixaQuantidadeIdeb { Faixa = "5.0-6.0", Quantidade = 12 },
+                    new FaixaQuantidadeIdeb { Faixa = "4.0-5.0", Quantidade = 5 }
+                }
+            };
+
+            _consultasIdebPainelEducacionalUseCase
+                .Setup(x => x.ObterIdeb(It.IsAny<FiltroPainelEducacionalIdeb>()))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterIdeb(filtro, _consultasIdebPainelEducacionalUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsType<PainelEducacionalIdebAgrupamentoDto>(okResult.Value);
+
+            Assert.Equal(PainelEducacionalIdebSerie.EnsinoMedio, filtro.Serie);
+            Assert.Equal(6.2, retorno.MediaGeral);
+            Assert.Equal(3, retorno.Distribuicao.Count);
+        }
+
+        [Fact]
+        public async Task Obter_Ideb_Sem_Dados_Deve_Retornar_Ok_Com_Dados_Vazios()
+        {
+            var filtro = new FiltroPainelEducacionalIdeb
+            {
+                AnoLetivo = 2020,
+                Serie = PainelEducacionalIdebSerie.AnosIniciais,
+                CodigoDre = "999",
+                CodigoUe = "000"
+            };
+
+            var retornoEsperado = new PainelEducacionalIdebAgrupamentoDto
+            {
+                AnoSolicitado = 2020,
+                AnoUtilizado = 2018,
+                AnoSolicitadoSemDados = true,
+                Serie = string.Empty,
+                MediaGeral = 0,
+                CodigoDre = "999",
+                CodigoUe = "000",
+                Distribuicao = new List<FaixaQuantidadeIdeb>()
+            };
+
+            _consultasIdebPainelEducacionalUseCase
+                .Setup(x => x.ObterIdeb(It.IsAny<FiltroPainelEducacionalIdeb>()))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterIdeb(filtro, _consultasIdebPainelEducacionalUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsType<PainelEducacionalIdebAgrupamentoDto>(okResult.Value);
+
+            Assert.Equal(2020, retorno.AnoSolicitado);
+            Assert.Equal(2018, retorno.AnoUtilizado);
+            Assert.True(retorno.AnoSolicitadoSemDados);
+            Assert.Equal(string.Empty, retorno.Serie);
+            Assert.Equal(0, retorno.MediaGeral);
+            Assert.Empty(retorno.Distribuicao);
+        }
+
+        [Fact]
+        public async Task Obter_Ideb_Com_Codigos_Nulos_Deve_Retornar_Ok_Com_Dados()
+        {
+            var filtro = new FiltroPainelEducacionalIdeb
+            {
+                AnoLetivo = 2023,
+                Serie = PainelEducacionalIdebSerie.AnosIniciais,
+                CodigoDre = null,
+                CodigoUe = null
+            };
+
+            var retornoEsperado = new PainelEducacionalIdebAgrupamentoDto
+            {
+                AnoSolicitado = 2023,
+                AnoUtilizado = 2023,
+                AnoSolicitadoSemDados = false,
+                Serie = "1",
+                MediaGeral = 3.8,
+                CodigoDre = null,
+                CodigoUe = null,
+                Distribuicao = new List<FaixaQuantidadeIdeb>
+                {
+                    new FaixaQuantidadeIdeb { Faixa = "3.0-4.0", Quantidade = 3 }
+                }
+            };
+
+            _consultasIdebPainelEducacionalUseCase
+                .Setup(x => x.ObterIdeb(It.IsAny<FiltroPainelEducacionalIdeb>()))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterIdeb(filtro, _consultasIdebPainelEducacionalUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsType<PainelEducacionalIdebAgrupamentoDto>(okResult.Value);
+
+            Assert.Null(retorno.CodigoDre);
+            Assert.Null(retorno.CodigoUe);
+        }
+
+        [Fact]
+        public async Task Obter_Ideb_Deve_Passar_Filtro_Correto_Para_Use_Case()
+        {
+            var filtro = new FiltroPainelEducacionalIdeb
+            {
+                AnoLetivo = 2024,
+                Serie = PainelEducacionalIdebSerie.AnosFinais,
+                CodigoDre = "111",
+                CodigoUe = "222"
+            };
+
+            var retornoEsperado = new PainelEducacionalIdebAgrupamentoDto
+            {
+                AnoSolicitado = 2024,
+                AnoUtilizado = 2024,
+                AnoSolicitadoSemDados = false,
+                Serie = "2",
+                MediaGeral = 5.0,
+                CodigoDre = "111",
+                CodigoUe = "222",
+                Distribuicao = new List<FaixaQuantidadeIdeb>()
+            };
+
+            _consultasIdebPainelEducacionalUseCase
+                .Setup(x => x.ObterIdeb(It.IsAny<FiltroPainelEducacionalIdeb>()))
+                .ReturnsAsync(retornoEsperado);
+
+            await _controller.ObterIdeb(filtro, _consultasIdebPainelEducacionalUseCase.Object);
+
+            _consultasIdebPainelEducacionalUseCase.Verify(x => x.ObterIdeb(It.Is<FiltroPainelEducacionalIdeb>(f =>
+                f == filtro
+            )), Times.Once);
         }
     }
 }

@@ -1,17 +1,18 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Infra.Dtos.ImportarArquivo;
 
 namespace SME.SGP.Aplicacao.Commands.ImportarArquivo
 {
     public class SalvarImportacaoLogCommand : IRequest<ImportacaoLog>
     {
-        public SalvarImportacaoLogCommand(SalvarImportacaoLogDto importacaoLog)
+        public SalvarImportacaoLogCommand(ImportacaoLogDto importacaoLog)
         {
             ImportacaoLog = importacaoLog;
         }
 
-        public SalvarImportacaoLogDto ImportacaoLog { get; }
+        public ImportacaoLogDto ImportacaoLog { get; }
     }
 
     public class SalvarImportacaoLogCommandValidator : AbstractValidator<SalvarImportacaoLogCommand>

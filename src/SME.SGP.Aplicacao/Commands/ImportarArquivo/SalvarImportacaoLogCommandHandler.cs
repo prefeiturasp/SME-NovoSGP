@@ -26,10 +26,19 @@ namespace SME.SGP.Aplicacao.Commands.ImportarArquivo
         private ImportacaoLog MapearParaEntidade(SalvarImportacaoLogCommand request)
             => new ImportacaoLog()
             {
+                Id = request.ImportacaoLog.Id,
                 NomeArquivo = request.ImportacaoLog.NomeArquivo,
                 TipoArquivoImportacao = request.ImportacaoLog.TipoArquivoImportacao,
                 StatusImportacao = request.ImportacaoLog.StatusImportacao,
                 DataInicioProcessamento = DateTime.Now,
+                DataFimProcessamento = request.ImportacaoLog.DataFimProcessamento,
+                TotalRegistros = request.ImportacaoLog.TotalRegistros,
+                RegistrosProcessados = request.ImportacaoLog.RegistrosProcessados,
+                RegistrosComFalha = request.ImportacaoLog.RegistrosComFalha,
+                CriadoPor = request.ImportacaoLog.CriadoPor,
+                CriadoRF = request.ImportacaoLog.CriadoRF,
+                AlteradoPor = request.ImportacaoLog.AlteradoPor,
+                AlteradoRF = request.ImportacaoLog.AlteradoRF
             };
     }
 }

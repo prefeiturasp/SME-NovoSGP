@@ -2,8 +2,8 @@
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using SME.SGP.Aplicacao.Commands.ImportarArquivo;
-using SME.SGP.Aplicacao.Commands.ImportarArquivo.Idep;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo;
+using SME.SGP.Aplicacao.Commands.ImportarArquivo.Ideb;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Ideb;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
@@ -20,15 +20,15 @@ using System.Linq;
 using System.Threading.Tasks;
 
 
-namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
+namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Ideb
 {
-    public class ImportacaoArquivoIdepUseCase : AbstractUseCase, IImportacaoArquivoIdepUseCase
+    public class ImportacaoArquivoIdebUseCase : AbstractUseCase, IImportacaoArquivoIdebUseCase
     {
         private readonly IRepositorioImportacaoLog repositorioImportacaoLog;
         private readonly IRepositorioUeConsulta repositorioUeConsulta;
 
         private List<SalvarImportacaoLogErroDto> ProcessadosComFalha;
-        public ImportacaoArquivoIdepUseCase(
+        public ImportacaoArquivoIdebUseCase(
             IMediator mediator,
             IRepositorioImportacaoLog repositorioImportacaoLog,
             IRepositorioUeConsulta repositorioUeConsulta
@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
 
         public async Task<ImportacaoLogRetornoDto> Executar(IFormFile arquivo, int anoLetivo)
         {
-            if (anoLetivo == 0)
+            if(anoLetivo == 0)
                 throw new NegocioException("Informe o ano letivo.");
 
             if (arquivo == null || arquivo.Length == 0)
@@ -49,19 +49,23 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
             if (arquivo.ContentType.NaoEhArquivoXlsx())
                 throw new NegocioException(MensagemNegocioComuns.SOMENTE_ARQUIVO_XLSX_SUPORTADO);
 
-            var tipoArquivo = TipoArquivoImportacao.IDEP.GetAttribute<DisplayAttribute>().Name;
+            var tipoArquivo = TipoArquivoImportacao.IDEB.GetAttribute<DisplayAttribute>().Name;
             var importacaoLog = await SalvarImportacao(arquivo, tipoArquivo);
 
             if (importacaoLog != null)
             {
-                await ProcessarArquivoAsync(arquivo.OpenReadStream(), importacaoLog, anoLetivo);
+               bool processado = await ProcessarArquivoAsync(arquivo.OpenReadStream(), importacaoLog, anoLetivo);
+                if (processado)
+                {
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarPainelEdcacionalIdeb, importacaoLog.Id));
+                }
             }
             return ImportacaoLogRetornoDto.RetornarSucesso(MensagemNegocioComuns.ARQUIVO_IMPORTADO_COM_SUCESSO, importacaoLog.Id);
         }
 
         private async Task<bool> ProcessarArquivoAsync(Stream arquivo, ImportacaoLog importacaoLog, int anoLetivo)
         {
-            var listaLote = new List<ArquivoIdepDto>();
+            var listaLote = new List<ArquivoIdebDto>();
             ProcessadosComFalha = new List<SalvarImportacaoLogErroDto>();
             int totalRegistros = 0;
             var loteSalvar = new List<Task>();
@@ -71,12 +75,13 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
                 using var package = new XLWorkbook(arquivo);
                 var planilha = package.Worksheets.FirstOrDefault();
                 if (planilha == null) return false;
-
+                // pega o número de colunas preenchidas na primeira linha (cabeçalho)
                 var totalColunas = planilha.Row(1).LastCellUsed().Address.ColumnNumber;
                 if (totalColunas < 3)
                     throw new NegocioException(MensagemNegocioComuns.ARQUIVO_NUMERO_COLUNAS_INVALIDO);
 
                 var totalLinhas = planilha.LastRowUsed().RowNumber();
+                // utilizar o - 1 para desconsiderar o cabeçalho
                 totalRegistros = totalLinhas - 1;
                 var tamanhoLote = 10;
 
@@ -91,13 +96,13 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
                         var codigoEOLEscola = planilha.Cell(linha, 2).Value.ToString().Trim();
                         decimal.TryParse(planilha.Cell(linha, 3).Value.ToString().Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out var nota);
 
-                        var dto = new ArquivoIdepDto(serieAno, codigoEOLEscola, nota, anoLetivo);
+                        var dto = new ArquivoIdebDto(serieAno, codigoEOLEscola, nota, anoLetivo);
                         dto.LinhaAtual = linha;
                         listaLote.Add(dto);
 
                         if (listaLote.Count == tamanhoLote)
                         {
-                            loteSalvar.AddRange(SalvarArquivoIdepEmLote(listaLote, importacaoLog.Id));
+                            loteSalvar.AddRange(SalvarArquivoIdebEmLote(listaLote, importacaoLog.Id));
                             listaLote.Clear();
                         }
                     }
@@ -108,7 +113,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
                 }
                 // salva as linhas restantes (último lote incompleto)
                 if (listaLote.Any())
-                    loteSalvar.AddRange(SalvarArquivoIdepEmLote(listaLote, importacaoLog.Id));
+                    loteSalvar.AddRange(SalvarArquivoIdebEmLote(listaLote, importacaoLog.Id));
 
                 // aguarda todas as tasks de persistência
                 await Task.WhenAll(loteSalvar);
@@ -142,11 +147,12 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
             }
         }
 
-        private IEnumerable<Task> SalvarArquivoIdepEmLote(List<ArquivoIdepDto> lista, long importacaoLogId)
+        private IEnumerable<Task> SalvarArquivoIdebEmLote(List<ArquivoIdebDto> lista, long importacaoLogId)
         {
             var serieAnosValidos = new int[] {
-                (int)SerieAnoIdepEnum.AnosIniciais,
-                (int)SerieAnoIdepEnum.AnosFinais
+                (int)SerieAnoIdebEnum.AnosIniciais,
+                (int)SerieAnoIdebEnum.AnosFinais,
+                (int)SerieAnoIdebEnum.EnsinoMedio
             };
 
             foreach (var dto in lista)
@@ -181,7 +187,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
                         }
                     }
 
-                    mediator.Send(new SalvarImportacaoArquivoIdepCommand(dto)).GetAwaiter().GetResult();
+                    mediator.Send(new SalvarImportacaoArquivoIdebCommand(dto)).GetAwaiter().GetResult();
                 }
                 catch (Exception ex)
                 {
@@ -189,14 +195,14 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
                 }
             }
 
-            return Enumerable.Empty<Task>(); // mantém assinatura
+            return Enumerable.Empty<Task>();
         }
 
         private async Task<ImportacaoLog> SalvarImportacao(IFormFile arquivo, string tipoArquivo)
         {
             var statusImportacao = SituacaoArquivoImportacao.CarregamentoInicial.GetAttribute<DisplayAttribute>().Name;
 
-            var importacaoLogDto = new SalvarImportacaoLogDto(arquivo.FileName, tipoArquivo, statusImportacao);
+            var importacaoLogDto = new ImportacaoLogDto(arquivo.FileName, tipoArquivo, statusImportacao);
 
             return await mediator.Send(new SalvarImportacaoLogCommand(importacaoLogDto));
         }
