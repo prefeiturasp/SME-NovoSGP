@@ -243,6 +243,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioImportacaoLog, RepositorioImportacaoLog>();
             services.TryAddScoped<IConsultasVisaoGeralPainelEducacionalUseCase, ConsultasPainelEducacionalVisaoGeralUseCase>();
             services.TryAddScoped<IConsultasInformacoesPapUseCase, ConsultasInformacoesPapUseCase>();
+            services.AddScoped<IConsultasIdepPainelEducacionalUseCase, ConsultasIdepPainelEducacionalUseCase>();
+            services.TryAddScoped<IConsultasIdebPainelEducacionalUseCase, ConsultasIdebPainelEducacionalUseCase>();
         }
 
         protected virtual void RegistrarContextos(IServiceCollection services)
@@ -644,6 +646,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPainelEducacionalVisaoGeral, RepositorioPainelEducacionalVisaoGeral>();
             services.TryAddScoped<IRepositorioPapConsulta, RepositorioPapConsulta>();
             services.TryAddScoped<IRepositorioPapPainelEducacionalConsolidacao, RepositorioPapPainelEducacionalConsolidacao>();
+            services.AddScoped<IRepositorioPainelEducacionalIdeb, RepositorioPainelEducacionalIdeb>();
+            services.TryAddScoped<IRepositorioIdebPainelEducacionalConsulta, RepositorioIdebPainelEducacionalConsulta>();
             services.TryAddScoped<IRepositorioProficienciaIdepConsulta, RepositorioProficienciaIdepConsulta>();
             services.TryAddScoped<IRepositorioProficienciaIdebConsulta, RepositorioProficienciaIdebConsulta>();
             services.TryAddScoped<IRepositorioProficienciaIdeb, RepositorioProficienciaIdeb>();
@@ -816,7 +820,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsolidarInformacoesAlfabetizacaoCriticaEscritaPainelEducacionalUseCase, ConsolidarInformacoesAlfabetizacaoCriticaEscritaPainelEducacionalUseCase>();            
             services.TryAddScoped<IConsultasAlfabetizacaoCriticaEscritaPainelEducacionalUseCase, ConsultasAlfabetizacaoCriticaEscritaPainelEducacionalUseCase>();
             services.AddScoped<IConsultasIdepPainelEducacionalUseCase, ConsultasIdepPainelEducacionalUseCase>();
+            services.TryAddScoped<IConsultasIdebPainelEducacionalUseCase, ConsultasIdebPainelEducacionalUseCase>();
             services.TryAddScoped<IConsultasPainelEducacionalFluenciaLeitoraUseCase, ConsultasPainelEducacionalFluenciaLeitoraUseCase>();
+
 
             services.TryAddScoped<IObterDashBoardUseCase, ObterDashBoardUseCase>();
             services.TryAddScoped<IInserirDevolutivaUseCase, InserirDevolutivaUseCase>();
