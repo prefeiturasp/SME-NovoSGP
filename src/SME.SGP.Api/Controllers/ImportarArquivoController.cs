@@ -9,14 +9,8 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.FluenciaLeitora;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Ideb;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Idep;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Proficiencia;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Boletim;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.FluenciaLeitora;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Ideb;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Idep;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Proficiencia;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.ImportarArquivo;
-using System.Collections.Generic;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -117,39 +111,19 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 400)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.IE_I_P_I, Policy = "Bearer")]
-        public async Task<IActionResult> ImportarBoletinsIdep([FromForm] IEnumerable<IFormFile> boletins, [FromForm] int anoLetivo, [FromServices] IBoletimIdepUseCase useCase)
-        {
-            return Ok(await useCase.Executar(anoLetivo, boletins));
-        }
-
-
-        [HttpPost("boletim-idep")]
-        [ProducesResponseType(typeof(ImportacaoLogRetornoDto), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 400)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.IE_I_P_I, Policy = "Bearer")]
-        public async Task<IActionResult> ImportarBoletins([FromQuery] int ano, [FromForm] IEnumerable<IFormFile> boletins, [FromServices] IBoletimIdepUseCase useCase)
+        public async Task<IActionResult> ImportarBoletinsIdep([FromQuery] int ano, [FromForm] IEnumerable<IFormFile> boletins, [FromServices] IBoletimIdepUseCase useCase)
         {
             return Ok(await useCase.Executar(ano, boletins));
         }
 
-
-        [HttpPost("proficiencia-idep")]
+        [HttpPost("boletim-ideb")]
         [ProducesResponseType(typeof(ImportacaoLogRetornoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 400)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ImportarProficienciaIdep([FromForm] IFormFile arquivo, [FromForm] int anoLetivo, [FromServices] IImportacaoProficienciaIdepUseCase useCase)
+        [Permissao(Permissao.IE_I_P_I, Policy = "Bearer")]
+        public async Task<IActionResult> ImportarBoletinsIdeb([FromQuery] int ano, [FromForm] IEnumerable<IFormFile> boletins, [FromServices] IBoletimIdebUseCase useCase)
         {
-            return Ok(await useCase.Executar(arquivo, anoLetivo));
-        }
-
-        [HttpPost("proficiencia-idep")]
-        [ProducesResponseType(typeof(ImportacaoLogRetornoDto), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 400)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ImportarProficienciaIdep([FromForm] IFormFile arquivo, [FromForm] int anoLetivo, [FromServices] IImportacaoProficienciaIdepUseCase useCase)
-        {
-            return Ok(await useCase.Executar(arquivo, anoLetivo));
+            return Ok(await useCase.Executar(ano, boletins));
         }
     }
 }

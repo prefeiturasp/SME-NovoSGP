@@ -5,6 +5,8 @@ using SME.SGP.Aplicacao.Commands.ImportarArquivo;
 using SME.SGP.Aplicacao.Commands.ImportarArquivo.ProficienciaIdep;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Proficiencia;
 using SME.SGP.Aplicacao.Queries.UE.ObterUePorCodigoEolEscola;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Proficiencia;
+using SME.SGP.Aplicacao.Queries.UE.ObterUePorCodigoEolEscola;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
@@ -42,6 +44,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Proficiencia
 
             if (importacaoLog != null)
             {
+                var importacaoLogDto = MapearParaDto(importacaoLog);
+                await ProcessarArquivoAsync(arquivo.OpenReadStream(), importacaoLogDto, anoLetivo);
                 var importacaoLogDto = MapearParaDto(importacaoLog);
                 await ProcessarArquivoAsync(arquivo.OpenReadStream(), importacaoLogDto, anoLetivo);
             }
