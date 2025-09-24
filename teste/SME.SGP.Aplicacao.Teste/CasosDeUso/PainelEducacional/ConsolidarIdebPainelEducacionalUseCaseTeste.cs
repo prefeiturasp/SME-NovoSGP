@@ -36,11 +36,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                 new PainelEducacionalIdebDto
                 {
                     AnoLetivo = 2025,
-                    SerieAno = 3,
+                    SerieAno = "3",
                     Nota = 6.5m,
                     CriadoEm = new DateTime(2025,1,1),
-                    CodigoDre = 1,
-                    CodigoUe = 10
+                    CodigoDre = "1",
+                    CodigoUe = "10"
                 }
             };
 
@@ -64,8 +64,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
         {
             var dtos = new List<PainelEducacionalIdebDto>
             {
-                new PainelEducacionalIdebDto { AnoLetivo = 2025, SerieAno = 2, Nota = 5, CriadoEm = DateTime.Now, CodigoDre = 1, CodigoUe = 2 },
-                new PainelEducacionalIdebDto { AnoLetivo = 2025, SerieAno = 9, Nota = 7, CriadoEm = DateTime.Now, CodigoDre = 3, CodigoUe = 4 },
+                new PainelEducacionalIdebDto { AnoLetivo = 2025, SerieAno = "2", Nota = 5, CriadoEm = DateTime.Now, CodigoDre = "1", CodigoUe = "2" },
+                new PainelEducacionalIdebDto { AnoLetivo = 2025, SerieAno = "9", Nota = 7, CriadoEm = DateTime.Now, CodigoDre = "3", CodigoUe = "4" },
             };
 
             var resultado = useCase
@@ -83,8 +83,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
         {
             var dados = new List<PainelEducacionalIdebAgrupamento>
             {
-                new PainelEducacionalIdebAgrupamento { AnoLetivo = 2025, Serie = "AnosIniciais", Nota = 6.5m, CriadoEm = new DateTime(2025,1,1), CodigoDre = 1, CodigoUe = 1 },
-                new PainelEducacionalIdebAgrupamento { AnoLetivo = 2025, Serie = "AnosIniciais", Nota = 7.5m, CriadoEm = new DateTime(2025,2,1), CodigoDre = 1, CodigoUe = 1 },
+                new PainelEducacionalIdebAgrupamento { AnoLetivo = 2025, Serie = "AnosIniciais", Nota = 6.5m, CriadoEm = new DateTime(2025,1,1), CodigoDre = "1", CodigoUe = "1" },
+                new PainelEducacionalIdebAgrupamento { AnoLetivo = 2025, Serie = "AnosIniciais", Nota = 7.5m, CriadoEm = new DateTime(2025,2,1), CodigoDre = "1", CodigoUe = "1" },
             };
 
             var resultado = useCase.ProcessarIdeb(dados).ToList();
@@ -193,12 +193,12 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             var dto = new PainelEducacionalIdebDto
             {
                 AnoLetivo = 2025,
-                SerieAno = 9,
+                SerieAno = "9",
                 Nota = 8.5m,
                 Faixa = "8-9",
                 CriadoEm = DateTime.Now,
-                CodigoDre = 1,
-                CodigoUe = 2,
+                CodigoDre = "1",
+                CodigoUe = "2",
                 Quantidade = 10
             };
             Assert.Equal("8-9", dto.Faixa);
