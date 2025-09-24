@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Http;
 using SME.SGP.Aplicacao.Commands.ImportarArquivo;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -25,6 +26,15 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
             var statusImportacao = SituacaoArquivoImportacao.CarregamentoInicial.GetAttribute<DisplayAttribute>().Name;
 
             var importacaoLogDto = new ImportacaoLogDto("Boletins IDEB", tipoArquivo, statusImportacao);
+
+            return await mediator.Send(new SalvarImportacaoLogCommand(importacaoLogDto));
+        }
+
+        protected async Task<ImportacaoLog> SalvarImportacao(IFormFile arquivo, string tipoArquivo)
+        {
+            var statusImportacao = SituacaoArquivoImportacao.CarregamentoInicial.GetAttribute<DisplayAttribute>().Name;
+
+            var importacaoLogDto = new ImportacaoLogDto(arquivo.FileName, tipoArquivo, statusImportacao);
 
             return await mediator.Send(new SalvarImportacaoLogCommand(importacaoLogDto));
         }

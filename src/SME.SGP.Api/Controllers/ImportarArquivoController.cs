@@ -7,6 +7,7 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Boletim;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.FluenciaLeitora;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Ideb;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Idep;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Proficiencia;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.ImportarArquivo;
 using System.Collections.Generic;
@@ -85,6 +86,15 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 400)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ImportarProficienciaIdep([FromForm] IFormFile arquivo, [FromForm] int anoLetivo, [FromServices] IImportacaoProficienciaIdepUseCase useCase)
+        {
+            return Ok(await useCase.Executar(arquivo, anoLetivo));
+        }
+
+        [HttpPost("proficiencia-ideb")]
+        [ProducesResponseType(typeof(ImportacaoLogRetornoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 400)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ImportarProficienciaIdeb([FromForm] IFormFile arquivo, [FromForm] int anoLetivo, [FromServices] IImportacaoProficienciaIdebUseCase useCase)
         {
             return Ok(await useCase.Executar(arquivo, anoLetivo));
         }
