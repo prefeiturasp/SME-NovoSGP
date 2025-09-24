@@ -111,6 +111,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.FluenciaLeitora
 
                 // aguarda todas as tasks de persistência
                 await Task.WhenAll(loteSalvar);
+
+
             }
             catch (Exception ex)
             {
@@ -126,6 +128,10 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.FluenciaLeitora
                 : SituacaoArquivoImportacao.ProcessadoComSucesso.GetAttribute<DisplayAttribute>().Name;
                 importacaoLog.DataFimProcessamento = DateTime.Now;
                 await repositorioImportacaoLog.SalvarAsync(importacaoLog);
+
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPainelEducacional.ConsolidarFluenciaLeitoraPainelEducacional,
+                    null, Guid.NewGuid()
+                ));
             }
             return true;
         }

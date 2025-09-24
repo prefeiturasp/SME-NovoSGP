@@ -90,7 +90,7 @@ namespace SME.SGP.Api.Controllers
         => Ok(await consultasInformacoesPapUseCase.ObterInformacoesPap(filtro.CodigoDre, filtro.CodigoUe));
 
         [HttpGet("fluencia-leitora")]
-        [ProducesResponseType(typeof(PainelEducacionalFluenciaLeitoraDto), 200)]
+        [ProducesResponseType(typeof(PainelEducacionalRegistroFluenciaLeitoraAgrupamentoFluenciaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
