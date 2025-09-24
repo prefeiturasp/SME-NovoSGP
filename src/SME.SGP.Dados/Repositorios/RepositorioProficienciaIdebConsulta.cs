@@ -19,9 +19,9 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<ProficienciaIdeb>> ObterPorAnoLetivoCodigoUe(int anoLetivo, List<string> codigoUe)
         {
-            var sql = @"select * from proficienciaIdeb
+            var sql = @"select * from proficiencia_ideb
                         where ano_letivo = @anoLetivo
-                        and codigo_eol_escola = any(@codigosUe)";
+                        and codigo_eol_escola = any(@codigoUe)";
 
             return await database.Conexao.QueryAsync<ProficienciaIdeb>(sql, new { anoLetivo, codigoUe });
         }
