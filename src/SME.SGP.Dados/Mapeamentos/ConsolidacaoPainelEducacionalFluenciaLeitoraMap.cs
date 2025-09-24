@@ -11,6 +11,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
             Map(c => c.Fluencia).ToColumn("fluencia");
             Map(c => c.DescricaoFluencia).ToColumn("descricao_fluencia");
+            Map(c => c.DreCodigo).ToColumn("dre_codigo");
             Map(c => c.Percentual).ToColumn("percentual");
             Map(c => c.Ano).ToColumn("ano");
             Map(c => c.Periodo).ToColumn("periodo");

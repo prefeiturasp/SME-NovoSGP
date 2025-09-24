@@ -6,17 +6,15 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterFluenciaLeitora
 {
     public class PainelEducacionalFluenciaLeitoraQuery : IRequest<IEnumerable<PainelEducacionalFluenciaLeitoraDto>>
     {
-        public PainelEducacionalFluenciaLeitoraQuery(string periodo, string anoLetivo, string codigoDre, string codigoUe)
+        public PainelEducacionalFluenciaLeitoraQuery(int periodo, int anoLetivo, string codigoDre)
         {
             Periodo = periodo;
             AnoLetivo = anoLetivo;
             CodigoDre = codigoDre;
-            CodigoUe = codigoUe;
         }
 
-        public string Periodo { get; set; }
-        public string AnoLetivo { get; set; }
+        public int Periodo { get; set; }
+        public int AnoLetivo { get; set; }
         public string CodigoDre { get; set; }
-        public string CodigoUe{ get; set; }
     }
 }

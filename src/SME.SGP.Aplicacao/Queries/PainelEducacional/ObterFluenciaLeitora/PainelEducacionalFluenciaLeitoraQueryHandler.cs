@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterFluenciaLeitora
 
         public async Task<IEnumerable<PainelEducacionalFluenciaLeitoraDto>> Handle(PainelEducacionalFluenciaLeitoraQuery request, CancellationToken cancellationToken)
         {
-            var registros = await repositorioPainelEducacionalFluenciaLeitoraConsulta.ObterFluenciaLeitora(request.Periodo, request.AnoLetivo, request.CodigoDre, request.CodigoUe);
+            var registros = await repositorioPainelEducacionalFluenciaLeitoraConsulta.ObterFluenciaLeitora(request.Periodo, request.AnoLetivo, request.CodigoDre);
 
             return registros;
         }
