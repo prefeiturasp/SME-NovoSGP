@@ -195,7 +195,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Ideb
                 }
             }
 
-            return Enumerable.Empty<Task>(); // mantém assinatura
+            return Enumerable.Empty<Task>();
         }
 
         private async Task<ImportacaoLog> SalvarImportacao(IFormFile arquivo, string tipoArquivo)
