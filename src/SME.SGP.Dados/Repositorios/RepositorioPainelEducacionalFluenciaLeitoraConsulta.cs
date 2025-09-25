@@ -2,6 +2,7 @@
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,24 +19,30 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database;
         }
 
-        public async Task<IEnumerable<PainelEducacionalFluenciaLeitoraDto>> ObterFluenciaLeitora(string periodo, string anoLetivo, string codigoDre, string codigoUe)
+        public async Task<IEnumerable<PainelEducacionalFluenciaLeitoraDto>> ObterFluenciaLeitora(int periodo, int anoLetivo, string codigoDre)
         {
             var query = new StringBuilder(@"
-                                           SELECT * 
-                                           FROM consolidacao_painel_educacional_fluencia-leitora");
+                                           SELECT fluencia as NomeFluencia,
+                                           descricao_fluencia as DescricaoFluencia,
+                                           dre_codigo as DreCodigo,
+                                           percentual, 
+                                           quantidade_alunos as QuantidadeAlunos,
+                                           ano,
+                                           periodo
+                                           FROM consolidacao_painel_educacional_fluencia_leitora");
 
             var condicoes = new List<string>();
             var parametros = new DynamicParameters();
 
-            if (!string.IsNullOrWhiteSpace(periodo) && periodo != "-99")
+            if (periodo != 0 && periodo != -99)
             {
                 condicoes.Add("periodo = @periodo");
                 parametros.Add("periodo", periodo);
             }
 
-            if (!string.IsNullOrWhiteSpace(anoLetivo) && anoLetivo != "-99" && anoLetivo != "0")
+            if (anoLetivo != 0 && anoLetivo != -99 && anoLetivo != 0)
             {
-                condicoes.Add("ano_letivo = @anoLetivo");
+                condicoes.Add("ano = @anoLetivo");
                 parametros.Add("anoLetivo", anoLetivo);
             }
 
@@ -43,12 +50,6 @@ namespace SME.SGP.Dados.Repositorios
             {
                 condicoes.Add("dre_codigo = @codigoDre");
                 parametros.Add("codigoDre", codigoDre);
-            }
-
-            if (!string.IsNullOrWhiteSpace(codigoUe) && codigoUe != "-99" && codigoUe != "0")
-            {
-                condicoes.Add("ue_codigo = @codigoUe");
-                parametros.Add("codigoUe", codigoUe);
             }
 
             if (condicoes.Any())
