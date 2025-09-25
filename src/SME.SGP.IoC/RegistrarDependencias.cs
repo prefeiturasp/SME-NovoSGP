@@ -1524,6 +1524,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IImportacaoProficienciaIdebUseCase, ImportacaoProficienciaIdebUseCase>();
             services.TryAddScoped<IBoletimIdepUseCase, BoletimIdepUseCase>();
             services.TryAddScoped<IBoletimIdebUseCase, BoletimIdebUseCase>();
+            services.TryAddScoped<IImportacaoArquivoAlfabetizacaoUseCase, ImportacaoArquivoAlfabetizacaoUseCase>();
 
             RegistrarCasoDeUsoAEERabbitSgp(services);
             RegistrarCasoDeUsoAulaRabbitSgp(services);

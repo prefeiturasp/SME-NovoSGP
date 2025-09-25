@@ -171,14 +171,5 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Ideb
 
             return Enumerable.Empty<Task>();
         }
-
-        private async Task<ImportacaoLog> SalvarImportacao(IFormFile arquivo, string tipoArquivo)
-        {
-            var statusImportacao = SituacaoArquivoImportacao.CarregamentoInicial.GetAttribute<DisplayAttribute>().Name;
-
-            var importacaoLogDto = new ImportacaoLogDto(arquivo.FileName, tipoArquivo, statusImportacao);
-
-            return await mediator.Send(new SalvarImportacaoLogCommand(importacaoLogDto));
-        }
     }
 }
