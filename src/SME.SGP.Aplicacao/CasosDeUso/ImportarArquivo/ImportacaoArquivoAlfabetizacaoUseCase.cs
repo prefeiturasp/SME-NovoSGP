@@ -5,6 +5,7 @@ using SME.SGP.Aplicacao.Commands.ImportarArquivo.Alfabetizacao;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.ImportarArquivo;
 using SME.SGP.Infra.Enumerados;
@@ -21,8 +22,10 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
 {
     public class ImportacaoArquivoAlfabetizacaoUseCase : ImportacaoArquivoBaseUseCase, IImportacaoArquivoAlfabetizacaoUseCase
     {
-        public ImportacaoArquivoAlfabetizacaoUseCase(IMediator mediator) : base(mediator)
+        private readonly IRepositorioUeConsulta repositorioUeConsulta;
+        public ImportacaoArquivoAlfabetizacaoUseCase(IMediator mediator, IRepositorioUeConsulta repositorioUeConsulta) : base(mediator)
         {
+            this.repositorioUeConsulta = repositorioUeConsulta ?? throw new ArgumentNullException(nameof(repositorioUeConsulta));
         }
 
         public async Task<ImportacaoLogRetornoDto> Executar(IFormFile arquivo, int anoLetivo)
@@ -128,12 +131,12 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
                         continue;
                     }
 
-                    //var ue = repositorioUeConsulta.ObterPorCodigo(dto.CodigoEOLEscola);
-                    //if (ue.EhNulo())
-                    //{
-                    //    SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Código EOL da UE não encontrado");
-                    //    continue;
-                    //}
+                    var ue = repositorioUeConsulta.ObterPorCodigo(dto.CodigoEOLEscola);
+                    if (ue.EhNulo())
+                    {
+                        SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Código EOL da UE não encontrado");
+                        continue;
+                    }
 
                     mediator.Send(new SalvarImportacaoArquivoAlfabetizacaoCommand(dto)).GetAwaiter().GetResult();
                 }
