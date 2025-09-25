@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
-using SME.SGP.Aplicacao.Commands.ImportarArquivo;
 using SME.SGP.Aplicacao.Commands.ImportarArquivo.ProficienciaIdep;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Boletim;
 using SME.SGP.Aplicacao.Queries.ProficienciaIdep;
@@ -33,7 +32,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Boletim
             if (boletins == null || boletins.Count() == 0)
                 throw new NegocioException("Informe o arquivo .pdf");
 
-            var importacaoLog = await SalvarImportacao(TipoArquivoImportacao.BOLETIM_IDEP.GetAttribute<DisplayAttribute>().Name);
+            var importacaoLog = await SalvarImportacao(TipoArquivoImportacao.BOLETIM_IDEP.GetAttribute<DisplayAttribute>().Description, 
+                                                       TipoArquivoImportacao.BOLETIM_IDEP.GetAttribute<DisplayAttribute>().Name);
 
             if (importacaoLog != null)
             {
@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Boletim
         private async Task<bool> ProcessarArquivoAsync(IEnumerable<IFormFile> boletins, ImportacaoLogDto importacaoLogDto, int anoLetivo)
         {
             var listaLote = new List<ArquivoFluenciaLeitoraDto>();
-            ProcessadosComFalha = new List<SalvarImportacaoLogErroDto>();
+            processadosComFalha = new List<SalvarImportacaoLogErroDto>();
             int totalRegistros = 0;
             var loteSalvar = new List<Task>();
 
@@ -98,15 +98,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Boletim
             }
             finally
             {
-                importacaoLogDto.TotalRegistros = totalRegistros;
-                importacaoLogDto.RegistrosProcessados = totalRegistros - ProcessadosComFalha.Count;
-                importacaoLogDto.RegistrosComFalha = ProcessadosComFalha.Count;
-                importacaoLogDto.StatusImportacao = ProcessadosComFalha.Count > 0
-                ? SituacaoArquivoImportacao.ProcessadoComFalhas.GetAttribute<DisplayAttribute>().Name
-                : SituacaoArquivoImportacao.ProcessadoComSucesso.GetAttribute<DisplayAttribute>().Name;
-                importacaoLogDto.DataFimProcessamento = DateTime.Now;
-
-                await mediator.Send(new SalvarImportacaoLogCommand(importacaoLogDto));
+                await SalvarImportacaoLog(importacaoLogDto, totalRegistros);
             }
             return true;
         }

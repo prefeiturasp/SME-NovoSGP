@@ -31,7 +31,6 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ImportarArquivo
 
             useCase = new ImportacaoArquivoIdebUseCase(
                 mediatorMock.Object,
-                repoImportacaoLogMock.Object,
                 repoUeMock.Object
             );
         }

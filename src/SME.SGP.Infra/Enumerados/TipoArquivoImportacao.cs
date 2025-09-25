@@ -24,5 +24,8 @@ namespace SME.SGP.Infra.Enumerados
 
         [Display(Name = "Boletim IDEB")]
         BOLETIM_IDEB = 7,
+
+        [Display(Name = "Alfabetizacao")]
+        ALFABETIZACAO = 8
     }
 }

@@ -272,6 +272,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ProficienciaIdebMap());
                config.AddMap(new ConsolidacaoInformacoesPapMap());
                config.AddMap(new ConsolidacaoPainelEducacionalFluenciaLeitoraMap());
+               config.AddMap(new TaxaAlfabetizacaoMap());
 
                config.ForDommel();
            });

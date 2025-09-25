@@ -1,12 +1,11 @@
 ﻿using ClosedXML.Excel;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-using SME.SGP.Aplicacao.Commands.ImportarArquivo;
-using SME.SGP.Aplicacao.Commands.ImportarArquivo.ProficienciaIdep;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Proficiencia;
-using SME.SGP.Aplicacao.Queries.UE.ObterUePorCodigoEolEscola;
+using SME.SGP.Aplicacao.Commands.ImportarArquivo.Alfabetizacao;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.ImportarArquivo;
 using SME.SGP.Infra.Enumerados;
@@ -18,12 +17,15 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Proficiencia
+
+namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
 {
-    public class ImportacaoProficienciaIdepUseCase : ImportacaoArquivoBaseUseCase, IImportacaoProficienciaIdepUseCase
+    public class ImportacaoArquivoAlfabetizacaoUseCase : ImportacaoArquivoBaseUseCase, IImportacaoArquivoAlfabetizacaoUseCase
     {
-        public ImportacaoProficienciaIdepUseCase(IMediator mediator) : base(mediator)
+        private readonly IRepositorioUeConsulta repositorioUeConsulta;
+        public ImportacaoArquivoAlfabetizacaoUseCase(IMediator mediator, IRepositorioUeConsulta repositorioUeConsulta) : base(mediator)
         {
+            this.repositorioUeConsulta = repositorioUeConsulta ?? throw new ArgumentNullException(nameof(repositorioUeConsulta));
         }
 
         public async Task<ImportacaoLogRetornoDto> Executar(IFormFile arquivo, int anoLetivo)
@@ -34,11 +36,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Proficiencia
             if (arquivo == null || arquivo.Length == 0)
                 throw new NegocioException(MensagemNegocioComuns.ARQUIVO_VAZIO);
 
-            if (arquivo.ContentType.NaoEhArquivoXlsx())
-                throw new NegocioException(MensagemNegocioComuns.SOMENTE_ARQUIVO_XLSX_SUPORTADO);
-
-            var tipoArquivo = TipoArquivoImportacao.PROFICIENCIA_IDEP.GetAttribute<DisplayAttribute>().Name;
-            var importacaoLog = await SalvarImportacao(arquivo, tipoArquivo);
+            var tipoArquivo = TipoArquivoImportacao.ALFABETIZACAO.GetAttribute<DisplayAttribute>().Name;
+            var importacaoLog = await SalvarImportacao(arquivo.Name, tipoArquivo);
 
             if (importacaoLog != null)
             {
@@ -50,7 +49,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Proficiencia
 
         private async Task<bool> ProcessarArquivoAsync(Stream arquivo, ImportacaoLogDto importacaoLogDto, int anoLetivo)
         {
-            var listaLote = new List<ProficienciaIdepDto>();
+            var listaLote = new List<ArquivoAlfabetizacaoDto>();
             processadosComFalha = new List<SalvarImportacaoLogErroDto>();
             int totalRegistros = 0;
             var loteSalvar = new List<Task>();
@@ -62,7 +61,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Proficiencia
                 if (planilha == null) return false;
 
                 var totalColunas = planilha.Row(1).LastCellUsed().Address.ColumnNumber;
-                if (totalColunas < 3)
+                if (totalColunas < 2)
                     throw new NegocioException(MensagemNegocioComuns.ARQUIVO_NUMERO_COLUNAS_INVALIDO);
 
                 var totalLinhas = planilha.LastRowUsed().RowNumber();
@@ -77,17 +76,18 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Proficiencia
                     try
                     {
                         var codigoEOLEscola = planilha.Cell(linha, 1).Value.ToString().Trim();
-                        int.TryParse(planilha.Cell(linha, 2).Value.ToString().Trim(), out int serieAno);
-                        int.TryParse(planilha.Cell(linha, 3).Value.ToString().Trim(), out int componenteCurricular);
-                        decimal.TryParse(planilha.Cell(linha, 4).Value.ToString().Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out var proficiencia);
+                        decimal.TryParse(planilha.Cell(linha, 2).Value.ToString().Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out var taxaAlfabetizacao);
 
-                        var dto = new ProficienciaIdepDto(serieAno, codigoEOLEscola, anoLetivo, componenteCurricular, proficiencia);
-                        dto.LinhaAtual = linha;
+                        var dto = new ArquivoAlfabetizacaoDto(codigoEOLEscola, taxaAlfabetizacao, anoLetivo)
+                        {
+                            LinhaAtual = linha
+                        };
+
                         listaLote.Add(dto);
 
                         if (listaLote.Count == tamanhoLote)
                         {
-                            loteSalvar.AddRange(await SalvarArquivoProficienciaIdepEmLote(listaLote, importacaoLogDto.Id));
+                            loteSalvar.AddRange(SalvarArquivoAlfabetizacaoEmLote(listaLote, importacaoLogDto.Id));
                             listaLote.Clear();
                         }
                     }
@@ -98,7 +98,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Proficiencia
                 }
 
                 if (listaLote.Any())
-                    loteSalvar.AddRange(await SalvarArquivoProficienciaIdepEmLote(listaLote, importacaoLogDto.Id));
+                    loteSalvar.AddRange(SalvarArquivoAlfabetizacaoEmLote(listaLote, importacaoLogDto.Id));
 
                 await Task.WhenAll(loteSalvar);
             }
@@ -113,55 +113,32 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Proficiencia
             return true;
         }
 
-        private async Task<IEnumerable<Task>> SalvarArquivoProficienciaIdepEmLote(List<ProficienciaIdepDto> lista, long importacaoLogId)
+        private IEnumerable<Task> SalvarArquivoAlfabetizacaoEmLote(List<ArquivoAlfabetizacaoDto> lista, long importacaoLogId)
         {
-            var serieAnosValidos = new int[] {
-                (int)SerieAnoIdepEnum.AnosIniciais,
-                (int)SerieAnoIdepEnum.AnosFinais,
-                (int)SerieAnoIdebEnum.EnsinoMedio
-            };
-
             foreach (var dto in lista)
             {
                 try
                 {
-                    if (dto.SerieAno <= 0 || !serieAnosValidos.Contains(dto.SerieAno))
-                    {
-                        SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Série/Ano inválido");
-                        continue;
-                    }
-
-                    if (dto.Proficiencia <= 0)
-                    {
-                        SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Proficiencia inválida");
-                        continue;
-                    }
-
                     if (string.IsNullOrEmpty(dto.CodigoEOLEscola))
                     {
                         SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Código EOL da UE inválido");
                         continue;
                     }
 
-                    if (!string.IsNullOrEmpty(dto.CodigoEOLEscola))
+                    if (dto.TaxaAlfabetizacao <= 0 || dto.TaxaAlfabetizacao > 100)
                     {
-                        var ue = await mediator.Send(new ObterUePorCodigoEolEscolaQuery(dto.CodigoEOLEscola));
-
-                        if (ue.EhNulo())
-                        {
-                            SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Código EOL da UE não encontrado");
-                            continue;
-                        }
-                    }
-
-                    if (dto.ComponenteCurricular <= 0)
-                    {
-                        SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Componente curricular inválido");
+                        SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Taxa de alfabetização inválida");
                         continue;
                     }
 
-                    mediator.Send(new ExcluirImportacaoProficienciaIdepPorAnoEscolaSerieCommand(dto.AnoLetivo, dto.CodigoEOLEscola, dto.SerieAno)).GetAwaiter().GetResult();
-                    mediator.Send(new SalvarImportacaoProficienciaIdepCommand(dto)).GetAwaiter().GetResult();
+                    var ue = repositorioUeConsulta.ObterPorCodigo(dto.CodigoEOLEscola);
+                    if (ue.EhNulo())
+                    {
+                        SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Código EOL da UE não encontrado");
+                        continue;
+                    }
+
+                    mediator.Send(new SalvarImportacaoArquivoAlfabetizacaoCommand(dto)).GetAwaiter().GetResult();
                 }
                 catch (Exception ex)
                 {
@@ -173,4 +150,3 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Proficiencia
         }
     }
 }
-
