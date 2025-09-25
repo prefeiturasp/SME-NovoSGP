@@ -104,9 +104,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 400)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.IE_I_P_I, Policy = "Bearer")]
-        public async Task<IActionResult> ImportarBoletinsIdep([FromQuery] int ano, [FromForm] IEnumerable<IFormFile> boletins, [FromServices] IBoletimIdepUseCase useCase)
+        public async Task<IActionResult> ImportarBoletinsIdep([FromForm] IEnumerable<IFormFile> boletins, [FromForm] int anoLetivo, [FromServices] IBoletimIdepUseCase useCase)
         {
-            return Ok(await useCase.Executar(ano, boletins));
+            return Ok(await useCase.Executar(anoLetivo, boletins));
         }
 
         [HttpPost("boletim-ideb")]
@@ -114,9 +114,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 400)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.IE_I_P_I, Policy = "Bearer")]
-        public async Task<IActionResult> ImportarBoletinsIdeb([FromQuery] int ano, [FromForm] IEnumerable<IFormFile> boletins, [FromServices] IBoletimIdebUseCase useCase)
+        public async Task<IActionResult> ImportarBoletinsIdeb([FromForm] IEnumerable<IFormFile> boletins, [FromForm] int anoLetivo, [FromServices] IBoletimIdebUseCase useCase)
         {
-            return Ok(await useCase.Executar(ano, boletins));
+            return Ok(await useCase.Executar(anoLetivo, boletins));
         }
     }
 }
