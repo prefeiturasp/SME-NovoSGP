@@ -38,7 +38,18 @@ namespace SME.SGP.Aplicacao
                 request.Modalidade, request.Tipos.NaoEhNulo() && request.Tipos.Any() ? request.Tipos : null, request.Periodo,
                 request.ConsideraHistorico, request.AnoLetivo, anosInfantilDesconsiderar);
 
-            return OrdernarTurmasItinerario(result);
+            var codigosTurmas = result?.Select(t => t.Codigo.ToString())?.ToList();
+            var listaTurmaEOL = await mediator.Send(new ObterTurmasApiEolQuery(codigosTurmas));
+
+            var codigosValidos = new HashSet<string>(
+                listaTurmaEOL.Select(x => x.Codigo.ToString())
+            );
+
+            var resultatualizado = result
+                .Where(x => !string.IsNullOrEmpty(x.Codigo) && codigosValidos.Contains(x.Codigo))
+                .ToList();
+
+            return OrdernarTurmasItinerario(resultatualizado);
         }  
  
         private IEnumerable<AbrangenciaTurmaRetorno> OrdernarTurmasItinerario(IEnumerable<AbrangenciaTurmaRetorno> result)
