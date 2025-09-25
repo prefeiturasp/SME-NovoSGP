@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Proficiencia
         private async Task<bool> ProcessarArquivoAsync(Stream arquivo, ImportacaoLogDto importacaoLogDto, int anoLetivo)
         {
             var listaLote = new List<ProficienciaIdepDto>();
-            ProcessadosComFalha = new List<SalvarImportacaoLogErroDto>();
+            processadosComFalha = new List<SalvarImportacaoLogErroDto>();
             int totalRegistros = 0;
             var loteSalvar = new List<Task>();
 
@@ -108,15 +108,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Proficiencia
             }
             finally
             {
-                importacaoLogDto.TotalRegistros = totalRegistros;
-                importacaoLogDto.RegistrosProcessados = totalRegistros - ProcessadosComFalha.Count;
-                importacaoLogDto.RegistrosComFalha = ProcessadosComFalha.Count;
-                importacaoLogDto.StatusImportacao = ProcessadosComFalha.Count > 0
-                ? SituacaoArquivoImportacao.ProcessadoComFalhas.GetAttribute<DisplayAttribute>().Name
-                : SituacaoArquivoImportacao.ProcessadoComSucesso.GetAttribute<DisplayAttribute>().Name;
-                importacaoLogDto.DataFimProcessamento = DateTime.Now;
-
-                await mediator.Send(new SalvarImportacaoLogCommand(importacaoLogDto));
+                await SalvarImportacaoLog(importacaoLogDto, totalRegistros);
             }
             return true;
         }

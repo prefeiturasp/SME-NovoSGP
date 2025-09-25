@@ -3,31 +3,31 @@ using Microsoft.AspNetCore.Http;
 using SME.SGP.Aplicacao.Commands.ImportarArquivo;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.ImportarArquivo;
 using SME.SGP.Infra.Enumerados;
-using SME.SGP.Infra.Dtos;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.Infra.Dtos.ImportarArquivo;
 
 namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
 {
     public abstract class ImportacaoArquivoBaseUseCase
     {
         protected readonly IMediator mediator;
-        protected List<SalvarImportacaoLogErroDto> ProcessadosComFalha;
+        protected List<SalvarImportacaoLogErroDto> processadosComFalha;
 
         protected ImportacaoArquivoBaseUseCase(IMediator mediator)
         {
             this.mediator = mediator;
         }
 
-        protected async Task<ImportacaoLog> SalvarImportacao(string tipoArquivo)
+        protected async Task<ImportacaoLog> SalvarImportacao(string nomeArquivo, string tipoArquivo)
         {
             var statusImportacao = SituacaoArquivoImportacao.CarregamentoInicial.GetAttribute<DisplayAttribute>().Name;
 
-            var importacaoLogDto = new ImportacaoLogDto("Boletins IDEB", tipoArquivo, statusImportacao);
+            var importacaoLogDto = new ImportacaoLogDto(nomeArquivo, tipoArquivo, statusImportacao);
 
             return await mediator.Send(new SalvarImportacaoLogCommand(importacaoLogDto));
         }
@@ -45,11 +45,24 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
         {
             var erro = new SalvarImportacaoLogErroDto(importacaoLogId, linha, mensagem);
 
-            if (!ProcessadosComFalha.Any(e => e.LinhaArquivo == erro.LinhaArquivo && e.MotivoFalha == erro.MotivoFalha))
+            if (!processadosComFalha.Any(e => e.LinhaArquivo == erro.LinhaArquivo && e.MotivoFalha == erro.MotivoFalha))
             {
-                ProcessadosComFalha.Add(erro);
+                processadosComFalha.Add(erro);
                 mediator.Send(new SalvarImportacaoLogErroCommand(erro)).GetAwaiter().GetResult();
             }
+        }
+
+        protected async Task SalvarImportacaoLog(ImportacaoLogDto importacaoLogDto, int totalRegistros)
+        {
+            importacaoLogDto.TotalRegistros = totalRegistros;
+            importacaoLogDto.RegistrosProcessados = totalRegistros - processadosComFalha.Count;
+            importacaoLogDto.RegistrosComFalha = processadosComFalha.Count;
+            importacaoLogDto.StatusImportacao = processadosComFalha.Count > 0
+            ? SituacaoArquivoImportacao.ProcessadoComFalhas.GetAttribute<DisplayAttribute>().Name
+            : SituacaoArquivoImportacao.ProcessadoComSucesso.GetAttribute<DisplayAttribute>().Name;
+            importacaoLogDto.DataFimProcessamento = DateTime.Now;
+
+            await mediator.Send(new SalvarImportacaoLogCommand(importacaoLogDto));
         }
 
         protected ImportacaoLogDto MapearParaDto(ImportacaoLog log)
