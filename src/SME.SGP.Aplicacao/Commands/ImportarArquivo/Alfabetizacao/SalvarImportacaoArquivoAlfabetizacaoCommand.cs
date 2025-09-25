@@ -5,7 +5,7 @@ using SME.SGP.Infra.Dtos.ImportarArquivo;
 
 namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.Alfabetizacao
 {
-    public class SalvarImportacaoArquivoAlfabetizacaoCommand : IRequest<Dominio.Alfabetizacao>
+    public class SalvarImportacaoArquivoAlfabetizacaoCommand : IRequest<Dominio.TaxaAlfabetizacao>
     {
         public SalvarImportacaoArquivoAlfabetizacaoCommand(ArquivoAlfabetizacaoDto arquivoAlfabetizacao)
         {

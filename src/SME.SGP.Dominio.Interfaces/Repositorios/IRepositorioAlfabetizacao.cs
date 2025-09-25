@@ -2,8 +2,8 @@
 
 namespace SME.SGP.Dominio.Interfaces.Repositorios
 {
-    public interface IRepositorioAlfabetizacao : IRepositorioBase<Alfabetizacao>
+    public interface IRepositorioAlfabetizacao : IRepositorioBase<TaxaAlfabetizacao>
     {
-        Task<Alfabetizacao> ObterRegistroAlfabetizacaoAsync(int anoLetivo, string codigoEOLEscola);
+        Task<TaxaAlfabetizacao> ObterRegistroAlfabetizacaoAsync(int anoLetivo, string codigoEOLEscola);
     }
 }
