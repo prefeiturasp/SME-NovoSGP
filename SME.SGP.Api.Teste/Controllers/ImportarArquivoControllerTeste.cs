@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using SME.SGP.Api.Controllers;
-using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
@@ -111,7 +110,10 @@ namespace SME.SGP.Api.Teste.Controllers
             var resultadoEsperado = new PaginacaoResultadoDto<ImportacaoLogQueryRetornoDto>();
 
             _importacaoLogUseCase
-                .Setup(u => u.Executar(filtro))
+                .Setup(u => u.Executar(
+                    It.IsAny<FiltroPesquisaImportacaoDto>(),
+                    It.IsAny<int>(),
+                    It.IsAny<int>()))
                 .ReturnsAsync(resultadoEsperado);
 
             // Act
@@ -119,7 +121,9 @@ namespace SME.SGP.Api.Teste.Controllers
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(resultado);
-            Assert.Equal(resultadoEsperado, okResult.Value);
+            var retorno = Assert.IsType<PaginacaoResultadoDto<ImportacaoLogQueryRetornoDto>>(okResult.Value);
+
+            Assert.Same(resultadoEsperado, retorno);
         }
         #endregion
 
