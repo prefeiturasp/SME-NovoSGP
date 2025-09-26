@@ -43,6 +43,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
             {
                 var importacaoLogDto = MapearParaDto(importacaoLog);
                 await ProcessarArquivoAsync(arquivo.OpenReadStream(), importacaoLogDto, anoLetivo);
+
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPainelEducacional.ConsolidarTaxaAlfabetizacaoPainelEducacional, Guid.NewGuid(), null));
             }
             return ImportacaoLogRetornoDto.RetornarSucesso(MensagemNegocioComuns.ARQUIVO_IMPORTADO_COM_SUCESSO, importacaoLog.Id);
         }
