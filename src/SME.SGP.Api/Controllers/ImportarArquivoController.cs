@@ -66,9 +66,10 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 400)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.IE_I_P_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterImportacaoLog([FromQuery] FiltroPesquisaImportacaoDto filtro, [FromServices] IImportacaoLogUseCase useCase)
+        public async Task<IActionResult> ObterImportacaoLog(
+            [FromQuery] FiltroPesquisaImportacaoDto filtro, [FromServices] IImportacaoLogUseCase useCase)
         {
-            return Ok(await useCase.Executar(filtro));
+            return Ok(await useCase.Executar(filtro, filtro.NumeroPagina, filtro.NumeroRegistros));
         }
 
         [HttpGet("falhas")]

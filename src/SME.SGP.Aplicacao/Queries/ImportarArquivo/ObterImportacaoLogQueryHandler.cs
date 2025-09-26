@@ -13,11 +13,11 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Queries.ImportarArquivo
 {
-    public class ObterImportacaoLogQueryHandler : ConsultasBase, IRequestHandler<ObterImportacaoLogQuery, PaginacaoResultadoDto<ImportacaoLogQueryRetornoDto>>
+    public class ObterImportacaoLogQueryHandler : IRequestHandler<ObterImportacaoLogQuery, PaginacaoResultadoDto<ImportacaoLogQueryRetornoDto>>
     {
         private readonly IRepositorioImportacaoLog repositorioImportacaoLog;
 
-        public ObterImportacaoLogQueryHandler(IContextoAplicacao contextoAplicacao, IRepositorioImportacaoLog repositorioImportacaoLog) : base(contextoAplicacao)
+        public ObterImportacaoLogQueryHandler(IRepositorioImportacaoLog repositorioImportacaoLog)
         {
             this.repositorioImportacaoLog = repositorioImportacaoLog ?? throw new ArgumentNullException(nameof(repositorioImportacaoLog));
         }
@@ -26,15 +26,16 @@ namespace SME.SGP.Aplicacao.Queries.ImportarArquivo
             ObterImportacaoLogQuery request,
             CancellationToken cancellationToken)
         {
-            var importacoesLog = await repositorioImportacaoLog.ObterImportacaoLogPaginada(Paginacao);
+            var paginacao = new Paginacao(request.NumeroPagina, request.NumeroRegistros);
+            var importacoesLog = await repositorioImportacaoLog.ObterImportacaoLogPaginada(paginacao);
 
             var arquivos = importacoesLog.Items.Select(arquivo => new ImportacaoLogQueryRetornoDto()
             {
                 Id = arquivo.Id,
                 NomeArquivo = arquivo.NomeArquivo,
                 StatusImportacao = arquivo.StatusImportacao,
-                RegistrosProcessados = arquivo.RegistrosProcessados.Value,
-                TotalRegistros = arquivo.TotalRegistros.Value
+                RegistrosProcessados = arquivo.RegistrosProcessados.HasValue ? arquivo.RegistrosProcessados.Value : 0,
+                TotalRegistros = arquivo.TotalRegistros.HasValue ? arquivo.TotalRegistros.Value : 0
             })
                 .ToList();
 
