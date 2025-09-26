@@ -152,8 +152,8 @@ namespace SME.SGP.Infra
             var hostAplicacao = configuracaoArmazenamentoOptions.EndPoint;
             var path = $"{hostAplicacao}/{bucketName}/{nomeArquivo}";
 
-            var arquivoExixte = VerificarArquivo(path);
-            if (!arquivoExixte)
+            var arquivoExiste = VerificarArquivo(path);
+            if (!arquivoExiste)
                 path = $"{hostAplicacao}/{configuracaoArmazenamentoOptions.BucketArquivosOld}/{nomeArquivo}";
 
             return path;

@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Boletim
             if (boletins == null || boletins.Count() == 0)
                 throw new NegocioException("Informe o arquivo .pdf");
 
-            var importacaoLog = await SalvarImportacao(TipoArquivoImportacao.BOLETIM_IDEP.GetAttribute<DisplayAttribute>().Description, 
+            var importacaoLog = await SalvarImportacao(TipoArquivoImportacao.BOLETIM_IDEP.GetAttribute<DisplayAttribute>().Name, 
                                                        TipoArquivoImportacao.BOLETIM_IDEP.GetAttribute<DisplayAttribute>().Name);
 
             if (importacaoLog != null)
@@ -56,7 +56,22 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Boletim
                                         .Select(x => Path.GetFileNameWithoutExtension(x.FileName))
                                         .ToList();
 
-                var proficienciaIdeps = await mediator.Send(new ObterProficienciaIdepPorAnoLetivoQuery(anoLetivo, codigoUes));
+                var uesEncontradas = await mediator.Send(new ObterUesComDrePorCodigoUesQuery(codigoUes.ToArray()));
+                var codigosUesValidos = uesEncontradas.Select(u => u.CodigoUe).ToList();
+                var codigosUesInvalidos = codigoUes.Where(codigo => !codigosUesValidos.Contains(codigo)).ToList();
+
+                foreach (var codigoInvalido in codigosUesInvalidos)
+                {
+                    totalRegistros++;
+                    SalvarErroLinha(importacaoLogDto.Id, processadosComFalha.Count + 1,
+                        $"Código de UE '{codigoInvalido}' não é válido ou não foi encontrado no sistema.");
+                }
+
+                IEnumerable<ProficienciaIdep> proficienciaIdeps = null;
+                if (codigosUesValidos.Any())
+                {
+                    proficienciaIdeps = await mediator.Send(new ObterProficienciaIdepPorAnoLetivoQuery(anoLetivo, codigosUesValidos));
+                }
 
                 if (proficienciaIdeps != null && proficienciaIdeps.Any())
                 {
@@ -64,10 +79,15 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Boletim
                     {
                         var nomeArquivo = Path.GetFileNameWithoutExtension(boletim.FileName);
 
+                        if (codigosUesInvalidos.Contains(nomeArquivo))
+                            continue;
+
+                        totalRegistros++;
+
                         var proficiencia = proficienciaIdeps?.Where(p => p.CodigoEOLEscola == nomeArquivo)?.FirstOrDefault();
                         if (proficiencia == null)
                         {
-                            SalvarErroLinha(importacaoLogDto.Id, 0, $"Não existe proficiência cadastrada para o ano letivo {anoLetivo} com o nome do arquivo {boletim.Name}.");
+                            SalvarErroLinha(importacaoLogDto.Id, processadosComFalha.Count + 1, $"Não existe proficiência cadastrada para o ano letivo {anoLetivo} com o nome do arquivo {boletim.Name}.");
                             continue;
                         }
 
@@ -94,7 +114,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Boletim
             }
             catch (Exception ex)
             {
-                SalvarErroLinha(importacaoLogDto.Id, 0, $"Erro geral na importação: {ex.Message}");
+                SalvarErroLinha(importacaoLogDto.Id, processadosComFalha.Count + 1, $"Erro geral na importação: {ex.Message}");
             }
             finally
             {
