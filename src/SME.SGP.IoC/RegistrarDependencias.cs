@@ -614,10 +614,12 @@ namespace SME.SGP.IoC
             //ImportacaoLog - Arquivos
             services.TryAddScoped<IRepositorioImportacaoLog, RepositorioImportacaoLog>();
             services.TryAddScoped<IRepositorioImportacaoLogErro, RepositorioImportacaoLogErro>();
-            services.TryAddScoped<IRepositorioArquivoIdeb, RepositorioArquivoIdeb>();
-            services.TryAddScoped<IRepositorioArquivoIdep, RepositorioArquivoIdep>();
-            services.TryAddScoped<IRepositorioArquivoFluenciaLeitora, RepositorioArquivoFluenciaLeitora>();
-            
+            services.TryAddScoped<IRepositorioIdeb, RepositorioIdeb>();
+            services.TryAddScoped<IRepositorioIdep, RepositorioIdep>();
+            services.TryAddScoped<IRepositorioFluenciaLeitora, RepositorioFluenciaLeitora>();
+            services.TryAddScoped<IRepositorioProficienciaIdep, RepositorioProficienciaIdep>();
+            services.TryAddScoped<IRepositorioTaxaAlfabetizacao, RepositorioTaxaAlfabetizacao>();
+
             services.TryAddScoped<IRepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobal, RepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobal>();
             services.TryAddScoped<IRepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobalEscola, RepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobalEscola>();
             services.TryAddScoped<IRepositorioPainelEducacionalRegistroFrequenciaAgrupamentoMensal, RepositorioPainelEducacionalRegistroFrequenciaAgrupamentoMensal>();
