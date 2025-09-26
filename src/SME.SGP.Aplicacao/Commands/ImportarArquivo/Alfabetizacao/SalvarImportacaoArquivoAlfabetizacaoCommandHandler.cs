@@ -8,8 +8,8 @@ namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.Alfabetizacao
 {
     public class SalvarImportacaoArquivoAlfabetizacaoCommandHandler : IRequestHandler<SalvarImportacaoArquivoAlfabetizacaoCommand, Dominio.TaxaAlfabetizacao>
     {
-        private readonly IRepositorioAlfabetizacao repositorioAlfabetizacao;
-        public SalvarImportacaoArquivoAlfabetizacaoCommandHandler(IRepositorioAlfabetizacao repositorioAlfabetizacao)
+        private readonly IRepositorioTaxaAlfabetizacao repositorioAlfabetizacao;
+        public SalvarImportacaoArquivoAlfabetizacaoCommandHandler(IRepositorioTaxaAlfabetizacao repositorioAlfabetizacao)
         {
             this.repositorioAlfabetizacao = repositorioAlfabetizacao ?? throw new ArgumentNullException(nameof(repositorioAlfabetizacao));
         }
