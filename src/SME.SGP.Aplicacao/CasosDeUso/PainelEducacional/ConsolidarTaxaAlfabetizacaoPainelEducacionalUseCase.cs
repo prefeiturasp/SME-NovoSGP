@@ -17,9 +17,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            var taxasAlfabetizacao = await mediator.Send(
-                                                            new ObterTaxaAlfabetizacaoPorAnoLetivoQuery(0, string.Empty, string.Empty)
-                                                        );
+            var taxasAlfabetizacao = await mediator.Send(new ObterTaxaAlfabetizacaoPorAnoLetivoQuery());
 
             if (taxasAlfabetizacao?.Any() != true)
                 return false;

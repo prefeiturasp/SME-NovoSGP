@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.TaxaAlfabetizacao.ObterTax
 
         public async Task<IEnumerable<TaxaAlfabetizacaoDto>> Handle(ObterTaxaAlfabetizacaoPorAnoLetivoQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioTaxaAlfabetizacao.ObterTaxaAlfabetizacaoAsync(request.AnoLetivo, request.CodigoDre, request.CodigoUe);
+            return await repositorioTaxaAlfabetizacao.ObterTaxaAlfabetizacaoAsync();
         }
     }
 }
