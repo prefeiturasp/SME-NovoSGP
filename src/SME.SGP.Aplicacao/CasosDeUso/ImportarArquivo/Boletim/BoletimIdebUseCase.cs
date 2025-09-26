@@ -59,13 +59,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Boletim
                 var codigosUesValidos = uesEncontradas.Select(u => u.CodigoUe).ToList();
                 var codigosUesInvalidos = codigoUes.Where(codigo => !codigosUesValidos.Contains(codigo)).ToList();
 
-                foreach (var codigoInvalido in codigosUesInvalidos)
-                {
-                    totalRegistros++;
-                    SalvarErroLinha(importacaoLogDto.Id, processadosComFalha.Count + 1, 
-                        $"Código de UE '{codigoInvalido}' não é válido ou não foi encontrado no sistema.");
-                }
-
                 IEnumerable<ProficienciaIdeb> proficienciaIdebs = null;
                 if (codigosUesValidos.Any())
                 {
@@ -76,12 +69,16 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Boletim
                 {
                     foreach (var boletim in boletins)
                     {
+                        totalRegistros++;
+
                         var nomeArquivo = Path.GetFileNameWithoutExtension(boletim.FileName);
 
                         if (codigosUesInvalidos.Contains(nomeArquivo))
+                        {
+                            SalvarErroLinha(importacaoLogDto.Id, processadosComFalha.Count + 1,
+                             $"Código de UE '{nomeArquivo}' não é válido ou não foi encontrado no sistema.");
                             continue;
-
-                        totalRegistros++;
+                        }
 
                         var proficiencia = proficienciaIdebs?.Where(p => p.CodigoEOLEscola == nomeArquivo)?.FirstOrDefault();
                         if (proficiencia == null)
@@ -96,7 +93,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Boletim
                         if (!string.IsNullOrEmpty(enderecoArquivo))
                         {
                             var proficienciaDto = new ProficienciaIdebDto();
-                                 
+
                             proficienciaDto.Id = proficiencia.Id;
                             proficienciaDto.CodigoEOLEscola = proficiencia.CodigoEOLEscola;
                             proficienciaDto.AnoLetivo = proficiencia.AnoLetivo;
