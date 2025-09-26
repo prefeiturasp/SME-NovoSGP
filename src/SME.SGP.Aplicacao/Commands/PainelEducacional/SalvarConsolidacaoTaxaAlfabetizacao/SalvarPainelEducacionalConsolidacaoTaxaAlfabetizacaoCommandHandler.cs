@@ -8,11 +8,11 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarConsolidacaoTaxaAlf
 {
     public class SalvarPainelEducacionalConsolidacaoTaxaAlfabetizacaoCommandHandler : IRequestHandler<SalvarPainelEducacionalConsolidacaoTaxaAlfabetizacaoCommand, bool>
     {
-        private readonly IRepositorioTaxaAlfabetizacao repositorioTaxaAlfabetizacao;
+        private readonly IRepositorioPainelEducacionalConsolidacaoTaxaAlfabetizacao repositorioPainelEducacionalConsolidacaoTaxaAlfabetizacao;
 
-        public SalvarPainelEducacionalConsolidacaoTaxaAlfabetizacaoCommandHandler(IRepositorioTaxaAlfabetizacao repositorioTaxaAlfabetizacao)
+        public SalvarPainelEducacionalConsolidacaoTaxaAlfabetizacaoCommandHandler(IRepositorioPainelEducacionalConsolidacaoTaxaAlfabetizacao repositorioPainelEducacionalConsolidacaoTaxaAlfabetizacao)
         {
-            this.repositorioTaxaAlfabetizacao = repositorioTaxaAlfabetizacao;
+            this.repositorioPainelEducacionalConsolidacaoTaxaAlfabetizacao = repositorioPainelEducacionalConsolidacaoTaxaAlfabetizacao;
         }
 
         public async Task<bool> Handle(SalvarPainelEducacionalConsolidacaoTaxaAlfabetizacaoCommand request, CancellationToken cancellationToken)
@@ -20,9 +20,9 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarConsolidacaoTaxaAlf
             if (request.Indicadores?.Any() != true)
                 return false;
 
-            await repositorioTaxaAlfabetizacao.LimparConsolidacao();
+            await repositorioPainelEducacionalConsolidacaoTaxaAlfabetizacao.LimparConsolidacao();
 
-            await repositorioTaxaAlfabetizacao.BulkInsertAsync(request.Indicadores);
+            await repositorioPainelEducacionalConsolidacaoTaxaAlfabetizacao.BulkInsertAsync(request.Indicadores);
 
             return true;
         }
