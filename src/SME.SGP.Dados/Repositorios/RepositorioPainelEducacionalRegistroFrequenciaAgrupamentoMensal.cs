@@ -42,7 +42,7 @@ namespace SME.SGP.Dados.Repositorios
 
             sql += " ORDER BY modalidade";
 
-            return await database.QueryAsync<PainelEducacionalRegistroFrequenciaAgrupamentoMensal>(sql, new { codigoDre, codigoUe });
+            return await database.QueryAsync<PainelEducacionalRegistroFrequenciaAgrupamentoMensal>(sql, new { anoLetivo, codigoDre, codigoUe });
         }
 
         public async Task<bool> SalvarFrequenciaMensal(IEnumerable<PainelEducacionalRegistroFrequenciaAgrupamentoMensal> consolidacoes)

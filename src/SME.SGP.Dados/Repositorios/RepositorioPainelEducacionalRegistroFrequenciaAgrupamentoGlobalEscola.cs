@@ -72,7 +72,7 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrWhiteSpace(codigoUe))
                 sql += " AND p.codigo_ue = @codigoUe";
 
-            return await database.QueryAsync<PainelEducacionalRegistroFrequenciaAgrupamentoEscola>(sql, new { codigoDre, codigoUe });
+            return await database.QueryAsync<PainelEducacionalRegistroFrequenciaAgrupamentoEscola>(sql, new {anoLetivo, codigoDre, codigoUe });
         }
 
         public async Task<bool> SalvarFrequenciaGlobal(IEnumerable<PainelEducacionalRegistroFrequenciaAgrupamentoEscola> consolidacoes)
