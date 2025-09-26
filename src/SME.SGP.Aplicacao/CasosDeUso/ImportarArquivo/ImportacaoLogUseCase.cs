@@ -8,16 +8,25 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
 {
-    public class ImportacaoLogUseCase : ConsultasBase, IImportacaoLogUseCase
+    public class ImportacaoLogUseCase : IImportacaoLogUseCase
     {
         private readonly IMediator mediator;
-        public ImportacaoLogUseCase(IContextoAplicacao contextoAplicacao, IMediator mediator) : base(contextoAplicacao)
+        
+        public ImportacaoLogUseCase(IMediator mediator)
         {
             this.mediator = mediator;
         }
+        
         public Task<PaginacaoResultadoDto<ImportacaoLogQueryRetornoDto>> Executar(FiltroPesquisaImportacaoDto filtro)
         {
-            return mediator.Send(new ObterImportacaoLogQuery(Paginacao, filtro));
+            var paginacao = new Paginacao(1, 10); 
+            return mediator.Send(new ObterImportacaoLogQuery(paginacao, filtro));
+        }
+
+        public Task<PaginacaoResultadoDto<ImportacaoLogQueryRetornoDto>> Executar(FiltroPesquisaImportacaoDto filtro, int numeroPagina, int numeroRegistros)
+        {
+            var paginacao = new Paginacao(numeroPagina, numeroRegistros);
+            return mediator.Send(new ObterImportacaoLogQuery(paginacao, filtro));
         }
     }
 }
