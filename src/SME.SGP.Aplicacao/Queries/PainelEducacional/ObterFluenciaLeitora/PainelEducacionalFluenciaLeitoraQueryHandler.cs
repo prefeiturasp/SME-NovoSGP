@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterFluenciaLeitora
     public class PainelEducacionalFluenciaLeitoraQueryHandler : IRequestHandler<PainelEducacionalFluenciaLeitoraQuery, IEnumerable<PainelEducacionalFluenciaLeitoraDto>>
     {
         private readonly IRepositorioPainelEducacionalFluenciaLeitoraConsulta repositorioPainelEducacionalFluenciaLeitoraConsulta;
-        
+
         public PainelEducacionalFluenciaLeitoraQueryHandler(IRepositorioPainelEducacionalFluenciaLeitoraConsulta repositorioPainelEducacionalFluenciaLeitoraConsulta)
         {
             this.repositorioPainelEducacionalFluenciaLeitoraConsulta = repositorioPainelEducacionalFluenciaLeitoraConsulta;
@@ -22,51 +22,20 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterFluenciaLeitora
         {
             var registros = await repositorioPainelEducacionalFluenciaLeitoraConsulta.ObterFluenciaLeitora(request.Periodo, request.AnoLetivo, request.CodigoDre);
 
-            var ehConsolidacaoSme = string.IsNullOrWhiteSpace(request.CodigoDre) || request.CodigoDre == "0";
-            
-            if (ehConsolidacaoSme)
-            {
-                return registros
-                    .GroupBy(r => new { r.NomeFluencia })
-                    .Select(g => new PainelEducacionalFluenciaLeitoraDto
-                    {
-                        NomeFluencia = g.Key.NomeFluencia,
-                        DescricaoFluencia = g.First().DescricaoFluencia,
-                        DreCodigo = g.First().DreCodigo ?? "",
-                        Percentual = CalcularPercentual(g),
-                        QuantidadeAlunos = g.Sum(x => x.QuantidadeAlunos),
-                        Ano = g.First().Ano,
-                        Periodo = g.First().Periodo
-                    })
-                    .OrderBy(r => r.NomeFluencia)
-                    .ThenBy(r => r.DreCodigo);
-            }
-            else
-            {
-                return registros
-                    .GroupBy(r => new { r.NomeFluencia, r.DreCodigo })
-                    .Select(g => new PainelEducacionalFluenciaLeitoraDto
-                    {
-                        NomeFluencia = g.Key.NomeFluencia,
-                        DescricaoFluencia = g.First().DescricaoFluencia,
-                        DreCodigo = g.Key.DreCodigo ?? "",
-                        Percentual = CalcularPercentual(g),
-                        QuantidadeAlunos = g.Sum(x => x.QuantidadeAlunos),
-                        Ano = g.First().Ano,
-                        Periodo = g.First().Periodo
-                    })
-                    .OrderBy(r => r.NomeFluencia)
-                    .ThenBy(r => r.DreCodigo);
-            }
-        }
-
-        private static decimal CalcularPercentual(IEnumerable<PainelEducacionalFluenciaLeitoraDto> grupo)
-        {
-            var totalAlunos = grupo.Sum(x => x.QuantidadeAlunos);
-            if (totalAlunos == 0) return 0;
-            
-            var somaPonderada = grupo.Sum(x => x.Percentual * x.QuantidadeAlunos);
-            return Math.Round(somaPonderada / totalAlunos, 2);
+            return registros
+                .GroupBy(r => new { r.NomeFluencia })
+                .Select(g => new PainelEducacionalFluenciaLeitoraDto
+                {
+                    NomeFluencia = g.Key.NomeFluencia,
+                    DescricaoFluencia = g.First().DescricaoFluencia,
+                    DreCodigo = g.First().DreCodigo ?? "",
+                    Percentual = Math.Round(g.Sum(p => p.Percentual * p.QuantidadeAlunos) / g.Sum(x => x.QuantidadeAlunos), 2),
+                    QuantidadeAlunos = g.Sum(x => x.QuantidadeAlunos),
+                    Ano = g.First().Ano,
+                    Periodo = g.First().Periodo
+                })
+                .OrderBy(r => r.NomeFluencia)
+                .ThenBy(r => r.DreCodigo);
         }
     }
 }
