@@ -10,5 +10,6 @@
         public int Posicao { get; set; }
         public long TotalAlunosNaoAlfabetizados { get; set; }
         public decimal PercentualTotalAlunos { get; set; }
+        public int AnoLetivo { get; set; }
     }
 }

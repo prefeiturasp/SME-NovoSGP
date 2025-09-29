@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterIndicadoresAlfabetizacaoCritica;
 using SME.SGP.Infra.Dtos.PainelEducacional;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -14,9 +15,10 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
         {
             this.mediator = mediator;
         }
-        public async Task<IEnumerable<PainelEducacionalIndicadorAlfabetizacaoCriticaDto>> ObterNumeroEstudantes(string codigoDre = null, string codigoUe = null)
+        public async Task<IEnumerable<PainelEducacionalIndicadorAlfabetizacaoCriticaDto>> ObterNumeroEstudantes(int anoLetivo, string codigoDre = null, string codigoUe = null)
         {
-            return await mediator.Send(new PainelEducacionalIndicadoresNivelAlfabetizacaoCriticaQuery(codigoDre, codigoUe));
+            if (anoLetivo == 0) anoLetivo = DateTime.Now.Year;
+            return await mediator.Send(new PainelEducacionalIndicadoresNivelAlfabetizacaoCriticaQuery(anoLetivo, codigoDre, codigoUe));
         }
     }
 }

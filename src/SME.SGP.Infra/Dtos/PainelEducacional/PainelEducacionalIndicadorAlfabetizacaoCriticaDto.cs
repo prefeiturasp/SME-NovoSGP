@@ -2,6 +2,7 @@
 {
     public class PainelEducacionalIndicadorAlfabetizacaoCriticaDto
     {
+        public int AnoLetivo { get; set; }
         public string Posicao { get; set; }
         public string Ue { get; set; }
         public string CodigoUe { get; set; }
