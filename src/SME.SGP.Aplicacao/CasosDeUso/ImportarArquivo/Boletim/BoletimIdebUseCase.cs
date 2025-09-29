@@ -37,17 +37,18 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Boletim
             if (importacaoLog != null)
             {
                 var importacaoLogDto = MapearParaDto(importacaoLog);
-                await ProcessarArquivoAsync(boletins, importacaoLogDto, anoLetivo);
+                var sucesso = await ProcessarArquivoAsync(boletins, importacaoLogDto, anoLetivo);
+                return sucesso
+                        ? ImportacaoLogRetornoDto.RetornarSucesso(MensagemNegocioComuns.ARQUIVO_IMPORTADO_COM_SUCESSO)
+                        : ImportacaoLogRetornoDto.RetornarFalha("Falha ao processar importação de boletins.");
             }
-            return ImportacaoLogRetornoDto.RetornarSucesso(MensagemNegocioComuns.ARQUIVO_IMPORTADO_COM_SUCESSO, importacaoLog.Id);
+
+            return ImportacaoLogRetornoDto.RetornarFalha("Falha ao iniciar importação de boletins.");
         }
 
         private async Task<bool> ProcessarArquivoAsync(IEnumerable<IFormFile> boletins, ImportacaoLogDto importacaoLogDto, int anoLetivo)
         {
-            var listaLote = new List<ArquivoFluenciaLeitoraDto>();
-            processadosComFalha = new List<SalvarImportacaoLogErroDto>();
             int totalRegistros = 0;
-            var loteSalvar = new List<Task>();
 
             try
             {
@@ -65,45 +66,42 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Boletim
                     proficienciaIdebs = await mediator.Send(new ObterProficienciaIdebPorAnoLetivoQuery(anoLetivo, codigosUesValidos));
                 }
 
-                if (proficienciaIdebs != null && proficienciaIdebs.Any())
+                foreach (var boletim in boletins)
                 {
-                    foreach (var boletim in boletins)
+                    totalRegistros++;
+
+                    var codigoUe = Path.GetFileNameWithoutExtension(boletim.FileName);
+
+                    if (codigosUesInvalidos.Contains(codigoUe))
                     {
-                        totalRegistros++;
+                        SalvarErroLinha(importacaoLogDto.Id, processadosComFalha.Count + 1,
+                         $"Código de UE '{codigoUe}' não é válido ou não foi encontrado no sistema.");
+                        continue;
+                    }
 
-                        var nomeArquivo = Path.GetFileNameWithoutExtension(boletim.FileName);
+                    var proficiencia = proficienciaIdebs?.Where(p => p.CodigoEOLEscola == codigoUe)?.FirstOrDefault();
+                    if (proficiencia == null)
+                    {
+                        SalvarErroLinha(importacaoLogDto.Id, processadosComFalha.Count + 1, $"Não existe proficiência cadastrada para o ano letivo {anoLetivo} com o nome do arquivo '{boletim.FileName}'.");
+                        continue;
+                    }
 
-                        if (codigosUesInvalidos.Contains(nomeArquivo))
-                        {
-                            SalvarErroLinha(importacaoLogDto.Id, processadosComFalha.Count + 1,
-                             $"Código de UE '{nomeArquivo}' não é válido ou não foi encontrado no sistema.");
-                            continue;
-                        }
+                    var nomeFisico = $"{Guid.NewGuid()}-{codigoUe}";
+                    var enderecoArquivo = await mediator.Send(new ArmazenarArquivoFisicoCommand(boletim, nomeFisico, TipoArquivo.Importacao));
 
-                        var proficiencia = proficienciaIdebs?.Where(p => p.CodigoEOLEscola == nomeArquivo)?.FirstOrDefault();
-                        if (proficiencia == null)
-                        {
-                            SalvarErroLinha(importacaoLogDto.Id, processadosComFalha.Count + 1, $"Não existe proficiência cadastrada para o ano letivo {anoLetivo} com o nome do arquivo {boletim.Name}.");
-                            continue;
-                        }
+                    if (!string.IsNullOrEmpty(enderecoArquivo))
+                    {
+                        var proficienciaDto = new ProficienciaIdebDto();
 
-                        var nomeFisico = $"{Guid.NewGuid()}-{nomeArquivo}";
-                        var enderecoArquivo = await mediator.Send(new ArmazenarArquivoFisicoCommand(boletim, nomeFisico, TipoArquivo.Importacao));
+                        proficienciaDto.Id = proficiencia.Id;
+                        proficienciaDto.CodigoEOLEscola = proficiencia.CodigoEOLEscola;
+                        proficienciaDto.AnoLetivo = proficiencia.AnoLetivo;
+                        proficienciaDto.Boletim = enderecoArquivo;
+                        proficienciaDto.SerieAno = proficiencia.SerieAno;
+                        proficienciaDto.ComponenteCurricular = proficiencia.ComponenteCurricular;
+                        proficienciaDto.Proficiencia = proficiencia.Proficiencia;
 
-                        if (!string.IsNullOrEmpty(enderecoArquivo))
-                        {
-                            var proficienciaDto = new ProficienciaIdebDto();
-
-                            proficienciaDto.Id = proficiencia.Id;
-                            proficienciaDto.CodigoEOLEscola = proficiencia.CodigoEOLEscola;
-                            proficienciaDto.AnoLetivo = proficiencia.AnoLetivo;
-                            proficienciaDto.Boletim = enderecoArquivo;
-                            proficienciaDto.SerieAno = proficiencia.SerieAno;
-                            proficienciaDto.ComponenteCurricular = proficiencia.ComponenteCurricular;
-                            proficienciaDto.Proficiencia = proficiencia.Proficiencia;
-
-                            await mediator.Send(new SalvarImportacaoProficienciaIdebCommand(proficienciaDto));
-                        }
+                        await mediator.Send(new SalvarImportacaoProficienciaIdebCommand(proficienciaDto));
                     }
                 }
             }
@@ -115,7 +113,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Boletim
             {
                 await SalvarImportacaoLog(importacaoLogDto, totalRegistros);
             }
-            return true;
+
+            return processadosComFalha.Count == 0;
         }
     }
 }

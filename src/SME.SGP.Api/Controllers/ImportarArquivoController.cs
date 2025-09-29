@@ -113,7 +113,10 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.IE_I_P_I, Policy = "Bearer")]
         public async Task<IActionResult> ImportarBoletinsIdep([FromForm] IEnumerable<IFormFile> boletins, [FromForm] int anoLetivo, [FromServices] IBoletimIdepUseCase useCase)
         {
-            return Ok(await useCase.Executar(anoLetivo, boletins));
+            var result = await useCase.Executar(anoLetivo, boletins);
+            return result.Sucesso
+                 ? Ok(result)
+                 : BadRequest(result);
         }
 
         [HttpPost("boletim-ideb")]
@@ -123,7 +126,11 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.IE_I_P_I, Policy = "Bearer")]
         public async Task<IActionResult> ImportarBoletinsIdeb([FromForm] IEnumerable<IFormFile> boletins, [FromForm] int anoLetivo, [FromServices] IBoletimIdebUseCase useCase)
         {
-            return Ok(await useCase.Executar(anoLetivo, boletins));
+            var result = await useCase.Executar(anoLetivo, boletins);
+
+            return result.Sucesso
+                ? Ok(result)
+                : BadRequest(result);
         }
     }
 }

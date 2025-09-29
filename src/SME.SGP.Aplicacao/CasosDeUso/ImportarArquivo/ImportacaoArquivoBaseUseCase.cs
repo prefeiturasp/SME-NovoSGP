@@ -20,26 +20,31 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
 
         protected ImportacaoArquivoBaseUseCase(IMediator mediator)
         {
-            this.mediator = mediator;
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            processadosComFalha = new List<SalvarImportacaoLogErroDto>();
         }
+
+        #region Métodos de Salvar Importação
 
         protected async Task<ImportacaoLog> SalvarImportacao(string nomeArquivo, string tipoArquivo)
         {
-            var statusImportacao = SituacaoArquivoImportacao.CarregamentoInicial.GetAttribute<DisplayAttribute>().Name;
-
-            var importacaoLogDto = new ImportacaoLogDto(nomeArquivo, tipoArquivo, statusImportacao);
+            var statusInicial = SituacaoArquivoImportacao.CarregamentoInicial.GetAttribute<DisplayAttribute>().Name;
+            var importacaoLogDto = new ImportacaoLogDto(nomeArquivo, tipoArquivo, statusInicial);
 
             return await mediator.Send(new SalvarImportacaoLogCommand(importacaoLogDto));
         }
 
         protected async Task<ImportacaoLog> SalvarImportacao(IFormFile arquivo, string tipoArquivo)
         {
-            var statusImportacao = SituacaoArquivoImportacao.CarregamentoInicial.GetAttribute<DisplayAttribute>().Name;
-
-            var importacaoLogDto = new ImportacaoLogDto(arquivo.FileName, tipoArquivo, statusImportacao);
+            var statusInicial = SituacaoArquivoImportacao.CarregamentoInicial.GetAttribute<DisplayAttribute>().Name;
+            var importacaoLogDto = new ImportacaoLogDto(arquivo.FileName, tipoArquivo, statusInicial);
 
             return await mediator.Send(new SalvarImportacaoLogCommand(importacaoLogDto));
         }
+
+        #endregion
+
+        #region Métodos de Log de Erros
 
         protected void SalvarErroLinha(long importacaoLogId, int linha, string mensagem)
         {
@@ -52,34 +57,53 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
             }
         }
 
+        #endregion
+
+        #region Finalização da Importação
+
         protected async Task SalvarImportacaoLog(ImportacaoLogDto importacaoLogDto, int totalRegistros)
         {
             importacaoLogDto.TotalRegistros = totalRegistros;
             importacaoLogDto.RegistrosProcessados = totalRegistros - processadosComFalha.Count;
             importacaoLogDto.RegistrosComFalha = processadosComFalha.Count;
-            importacaoLogDto.StatusImportacao = processadosComFalha.Count > 0
-            ? SituacaoArquivoImportacao.ProcessadoComFalhas.GetAttribute<DisplayAttribute>().Name
-            : SituacaoArquivoImportacao.ProcessadoComSucesso.GetAttribute<DisplayAttribute>().Name;
             importacaoLogDto.DataFimProcessamento = DateTime.Now;
+
+            importacaoLogDto.StatusImportacao = DefinirStatusImportacao(totalRegistros);
 
             await mediator.Send(new SalvarImportacaoLogCommand(importacaoLogDto));
         }
 
-        protected ImportacaoLogDto MapearParaDto(ImportacaoLog log)
+        private string DefinirStatusImportacao(int totalRegistros)
         {
-            var importacaoLogDto = new ImportacaoLogDto(log.NomeArquivo, log.TipoArquivoImportacao, log.StatusImportacao);
-            importacaoLogDto.Id = log.Id;
-            importacaoLogDto.DataInicioProcessamento = log.DataInicioProcessamento;
-            importacaoLogDto.DataFimProcessamento = log.DataFimProcessamento;
-            importacaoLogDto.TotalRegistros = log.TotalRegistros;
-            importacaoLogDto.RegistrosProcessados = log.RegistrosProcessados;
-            importacaoLogDto.RegistrosComFalha = log.RegistrosComFalha;
-            importacaoLogDto.CriadoPor = log.CriadoPor;
-            importacaoLogDto.CriadoRF = log.CriadoRF;
-            importacaoLogDto.AlteradoPor = log.AlteradoPor;
-            importacaoLogDto.AlteradoRF = log.AlteradoRF;
+            if (totalRegistros == 0 || processadosComFalha?.Count > 0)
+                return SituacaoArquivoImportacao.ProcessadoComFalhas.GetAttribute<DisplayAttribute>().Name;
 
-            return importacaoLogDto;
+            return SituacaoArquivoImportacao.ProcessadoComSucesso.GetAttribute<DisplayAttribute>().Name;
         }
+
+        #endregion
+
+        #region Utilidades
+
+        protected static ImportacaoLogDto MapearParaDto(ImportacaoLog log)
+        {
+            if (log == null) return null;
+
+            return new ImportacaoLogDto(log.NomeArquivo, log.TipoArquivoImportacao, log.StatusImportacao)
+            {
+                Id = log.Id,
+                DataInicioProcessamento = log.DataInicioProcessamento,
+                DataFimProcessamento = log.DataFimProcessamento,
+                TotalRegistros = log.TotalRegistros,
+                RegistrosProcessados = log.RegistrosProcessados,
+                RegistrosComFalha = log.RegistrosComFalha,
+                CriadoPor = log.CriadoPor,
+                CriadoRF = log.CriadoRF,
+                AlteradoPor = log.AlteradoPor,
+                AlteradoRF = log.AlteradoRF
+            };
+        }
+
+        #endregion
     }
 }
