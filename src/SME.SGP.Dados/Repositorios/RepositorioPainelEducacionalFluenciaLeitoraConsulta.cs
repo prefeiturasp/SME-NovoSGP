@@ -34,19 +34,19 @@ namespace SME.SGP.Dados.Repositorios
             var condicoes = new List<string>();
             var parametros = new DynamicParameters();
 
-            if (periodo != 0 && periodo != -99)
+            if (periodo != 0)
             {
                 condicoes.Add("periodo = @periodo");
                 parametros.Add("periodo", periodo);
             }
 
-            if (anoLetivo != 0 && anoLetivo != -99 && anoLetivo != 0)
+            if (anoLetivo != 0)
             {
                 condicoes.Add("ano = @anoLetivo");
                 parametros.Add("anoLetivo", anoLetivo);
             }
 
-            if (!string.IsNullOrWhiteSpace(codigoDre) && codigoDre != "-99" && codigoDre != "0")
+            if (!string.IsNullOrWhiteSpace(codigoDre) && codigoDre != "0")
             {
                 condicoes.Add("dre_codigo = @codigoDre");
                 parametros.Add("codigoDre", codigoDre);
