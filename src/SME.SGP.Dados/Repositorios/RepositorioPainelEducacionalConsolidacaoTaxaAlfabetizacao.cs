@@ -63,10 +63,10 @@ namespace SME.SGP.Dados.Repositorios
                             where tx.ano_letivo = @anoLetivo";
 
             if (!string.IsNullOrEmpty(codigoDre))
-                query += " and tx.dre_id = @codigoDre";
+                query += " and tx.codigo_dre = @codigoDre";
 
             if (!string.IsNullOrEmpty(codigoUe))
-                query += " and tx.ue_id = @codigoUe";
+                query += " and tx.codigo_ue = @codigoUe";
 
             return await database.Conexao.QueryAsync<PainelEducacionalConsolidacaoTaxaAlfabetizacao>(query, new
             {
