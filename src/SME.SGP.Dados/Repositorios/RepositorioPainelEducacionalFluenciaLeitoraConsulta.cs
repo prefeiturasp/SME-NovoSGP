@@ -40,7 +40,7 @@ namespace SME.SGP.Dados.Repositorios
                 parametros.Add("periodo", periodo);
             }
 
-            if (anoLetivo != 0 && anoLetivo != 0)
+            if (anoLetivo != 0)
             {
                 condicoes.Add("ano = @anoLetivo");
                 parametros.Add("anoLetivo", anoLetivo);
