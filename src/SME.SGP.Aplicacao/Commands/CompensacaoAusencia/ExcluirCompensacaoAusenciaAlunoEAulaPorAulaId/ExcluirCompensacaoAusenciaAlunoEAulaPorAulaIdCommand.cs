@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         public ExcluirCompensacaoAusenciaPorAulaIdCommandValidator()
         {
             RuleFor(c => c.AulaId)
-                .NotNull()
+                .GreaterThan(0)
                 .WithMessage("O id da aula deve ser informado para efetuar a exclusão de compensações.");
         }
     }

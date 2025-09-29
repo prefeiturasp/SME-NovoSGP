@@ -2,7 +2,6 @@
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.Relatorios;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -26,8 +25,18 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task<bool> GerarRelatorio(FiltroRelatorioFrequenciaMensalDto filtro, Usuario usuarioLogado)
-            => await _mediator.Send(new GerarRelatorioCommand(TipoRelatorio.FrequenciaMensal, filtro, usuarioLogado,
-                RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosFrequenciaMensal, filtro.TipoFormatoRelatorio));
+        {
+            var relatorioRota = RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosFrequenciaMensal;
+            var tipoRelatorio = TipoRelatorio.FrequenciaMensal;
+
+            if (filtro.CodigoDre == "-99" || string.IsNullOrWhiteSpace(filtro.CodigoDre) || filtro.CodigoUe == "-99" || string.IsNullOrWhiteSpace(filtro.CodigoUe))
+            {
+                relatorioRota = RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosFrequenciaMensalTodosDreUe;
+                tipoRelatorio = TipoRelatorio.FrequenciaMensalTodosDreUe;
+            }
+            return await _mediator.Send(new GerarRelatorioCommand(tipoRelatorio, filtro, usuarioLogado,
+                        relatorioRota, filtro.TipoFormatoRelatorio));
+        }
 
         private async Task<bool> GerarRelatorioPorDre(FiltroRelatorioFrequenciaMensalDto filtro, Usuario usuarioLogado)
         {

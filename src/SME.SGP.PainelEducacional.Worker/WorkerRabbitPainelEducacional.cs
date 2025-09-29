@@ -30,10 +30,13 @@ namespace SME.SGP.PainelEducacional.Worker
         protected override void RegistrarUseCases()
         {
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarIdepPainelEducacional, new ComandoRabbit("Consolidar idep para painel educacional", typeof(IConsolidarIdepPainelEducacionalUseCase)));
+            Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarIdebPainelEducacional, new ComandoRabbit("Consolidar Ideb para o Painel Educacional", typeof(IConsolidarIdebPainelEducacionalUseCase)));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarNivelEscritaAlfabetizacao, new ComandoRabbit("Sincronização e Consolidação dos Dados da Sondagem do Nível de Escrita", typeof(IConsolidarInformacoesNivelEscritaAlfabetizacaoPainelEducacionalUseCase), false));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarNivelEscritaAlfabetizacaoCritico, new ComandoRabbit("Sincronização e Consolidação dos Dados da Sondagem da Alfabetização Crítica Escrita", typeof(IConsolidarInformacoesAlfabetizacaoCriticaEscritaPainelEducacionalUseCase), false));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarInformacoesPapPainelEducacional, new ComandoRabbit("Sincronização e Consolidação dos Dados de PAP", typeof(IConsolidarInformacoesPapPainelEducacionalUseCase)));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarVisaoGeralPainelEducacional, new ComandoRabbit("Consolidar Visão Geral para o Painel Educacional", typeof(IConsolidarVisaoGeralPainelEducacionalUseCase)));
+            Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarFluenciaLeitoraPainelEducacional, new ComandoRabbit("Consolidar Fluência Leitora para o Painel Educacional", typeof(IConsolidarFluenciaLeitoraPainelEducacionalUseCase)));
+            Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarTaxaAlfabetizacaoPainelEducacional, new ComandoRabbit("Consolidar Taxa de Alfabetização para o Painel Educacional", typeof(IConsolidarTaxaAlfabetizacaoPainelEducacionalUseCase)));
         }
     }
 }

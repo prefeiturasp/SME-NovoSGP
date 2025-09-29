@@ -34,6 +34,18 @@ namespace SME.SGP.Dados.Repositorios
                                     inner join ue t2 on (t2.ue_id = t1.codigo_eol_escola)
                                     inner join dre t3 on (t3.id = t2.dre_id)
                                 ),
+                                ideb as (
+                                    select
+                                          t3.dre_id as codigoDre
+                                        , t2.ue_id as codigoUe
+                                        , t1.ano_letivo as anoLetivo
+                                        , 'IDEB' as indicador
+                                        , t1.serie_ano::text as serie
+                                        , t1.nota as valor
+                                    from ideb t1
+                                    inner join ue t2 on (t2.ue_id = t1.codigo_eol_escola)
+                                    inner join dre t3 on (t3.id = t2.dre_id)
+                                ),
                                 frequenciaGlobal as (
                                     select 
                                         codigo_dre as codigoDre
@@ -45,6 +57,8 @@ namespace SME.SGP.Dados.Repositorios
                                     from painel_educacional_registro_frequencia_agrupamento_mensal
                                 )
                                 select * from idep
+                                union all
+                                select * from ideb
                                 union all
                                 select * from frequenciaGlobal;";
 

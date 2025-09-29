@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.FluenciaLeitora
             RuleFor(x => x.ArquivoFluenciaLeitora.Fluencia)
                 .NotNull().WithMessage("Fluência inválida");
 
-            RuleFor(x => x.ArquivoFluenciaLeitora.Periodo)
+            RuleFor(x => x.ArquivoFluenciaLeitora.TipoAvaliacao)
                 .NotNull().WithMessage("Período inválido");
         }
     }

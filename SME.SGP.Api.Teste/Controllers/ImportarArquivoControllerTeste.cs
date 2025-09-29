@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using SME.SGP.Api.Controllers;
-using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.FluenciaLeitora;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Ideb;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Idep;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.ImportarArquivo;
@@ -86,15 +88,15 @@ namespace SME.SGP.Api.Teste.Controllers
             // Arrange
             var arquivoMock = new Mock<IFormFile>();
             var anoLetivo = DateTime.Now.Year;
-            var periodo = _faker.Random.AlphaNumeric(2);
+            var tipoAvaliacao = 1;
             var resultadoEsperado = new ImportacaoLogRetornoDto { Sucesso = true, Mensagem = MensagemNegocioComuns.ARQUIVO_IMPORTADO_COM_SUCESSO };
 
             _importacaoArquivoFluenciaLeitoraUseCase
-                .Setup(u => u.Executar(arquivoMock.Object, anoLetivo, periodo))
+                .Setup(u => u.Executar(arquivoMock.Object, anoLetivo, tipoAvaliacao))
                 .ReturnsAsync(resultadoEsperado);
 
             // Act
-            var resultado = await _controller.ImportarArquivoFluenciaLeitora(arquivoMock.Object, anoLetivo, periodo, _importacaoArquivoFluenciaLeitoraUseCase.Object);
+            var resultado = await _controller.ImportarArquivoFluenciaLeitora(arquivoMock.Object, anoLetivo, tipoAvaliacao, _importacaoArquivoFluenciaLeitoraUseCase.Object);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(resultado);
@@ -111,7 +113,10 @@ namespace SME.SGP.Api.Teste.Controllers
             var resultadoEsperado = new PaginacaoResultadoDto<ImportacaoLogQueryRetornoDto>();
 
             _importacaoLogUseCase
-                .Setup(u => u.Executar(filtro))
+                .Setup(u => u.Executar(
+                    It.IsAny<FiltroPesquisaImportacaoDto>(),
+                    It.IsAny<int>(),
+                    It.IsAny<int>()))
                 .ReturnsAsync(resultadoEsperado);
 
             // Act
@@ -119,7 +124,9 @@ namespace SME.SGP.Api.Teste.Controllers
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(resultado);
-            Assert.Equal(resultadoEsperado, okResult.Value);
+            var retorno = Assert.IsType<PaginacaoResultadoDto<ImportacaoLogQueryRetornoDto>>(okResult.Value);
+
+            Assert.Same(resultadoEsperado, retorno);
         }
         #endregion
 

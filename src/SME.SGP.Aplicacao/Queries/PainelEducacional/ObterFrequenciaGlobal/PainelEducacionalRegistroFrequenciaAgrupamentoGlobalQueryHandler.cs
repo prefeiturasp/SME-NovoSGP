@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterFrequenciaGlobal
 
         public async Task<IEnumerable<PainelEducacionalRegistroFrequenciaAgrupamentoGlobalDto>> Handle(PainelEducacionalRegistroFrequenciaAgrupamentoGlobalQuery request, CancellationToken cancellationToken)
         {
-            var registros = await repositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobal.ObterFrequenciaGlobal(request.CodigoDre, request.CodigoUe);
+            var registros = await repositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobal.ObterFrequenciaGlobal(request.AnoLetivo, request.CodigoDre, request.CodigoUe);
 
             return MapearParaDto(registros);
         }
@@ -35,8 +35,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterFrequenciaGlobal
                     PercentualFrequencia = item.PercentualFrequencia,
                     TotalAlunos = item.TotalAlunos,
                     TotalAulas = item.TotalAulas,
-                    TotalAusencias = item.TotalAusencias,
-                    TotalCompensacoes = item.TotalCompensacoes
+                    TotalAusencias = item.TotalAusencias
                 });
             }
 

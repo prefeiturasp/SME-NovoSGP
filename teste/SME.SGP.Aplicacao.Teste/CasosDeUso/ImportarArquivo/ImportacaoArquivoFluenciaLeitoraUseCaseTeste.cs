@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
-using SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo;
+using SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.FluenciaLeitora;
 using SME.SGP.Aplicacao.Commands.ImportarArquivo;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -76,7 +76,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ImportarArquivo
 
             // Act & Assert
             await Assert.ThrowsAsync<NegocioException>(() =>
-                useCase.Executar(arquivo, 0, "Entrada"));
+                useCase.Executar(arquivo, 0, 1));
         }
 
         [Fact]
@@ -84,7 +84,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ImportarArquivo
         {
             // Act & Assert
             await Assert.ThrowsAsync<NegocioException>(() =>
-                useCase.Executar(null, 2025, "Entrada"));
+                useCase.Executar(null, 2025, 1));
         }
 
         [Fact]
@@ -100,7 +100,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ImportarArquivo
 
             // Act & Assert
             await Assert.ThrowsAsync<NegocioException>(() =>
-                useCase.Executar(arquivo, 2025, "Entrada"));
+                useCase.Executar(arquivo, 2025, 1));
         }
 
         [Fact]
@@ -129,7 +129,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ImportarArquivo
                 .ReturnsAsync(99L);
 
             // Act
-            var resultado = await useCase.Executar(arquivo, 2025, "Entrada");
+            var resultado = await useCase.Executar(arquivo, 2025, 1);
 
             // Assert
             Assert.NotNull(resultado);
