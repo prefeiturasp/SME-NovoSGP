@@ -113,11 +113,7 @@ namespace SME.SGP.Api.Teste.Controllers
             var resultadoEsperado = new PaginacaoResultadoDto<ImportacaoLogQueryRetornoDto>();
 
             _importacaoLogUseCase
-                .Setup(u => u.Executar(
-                    It.IsAny<FiltroPesquisaImportacaoDto>(),
-                    It.IsAny<int>(),
-                    It.IsAny<int>()))
-                .ReturnsAsync(resultadoEsperado);
+                .Setup(u => u.Executar(It.IsAny<FiltroPesquisaImportacaoDto>())).ReturnsAsync(resultadoEsperado);
 
             // Act
             var resultado = await _controller.ObterImportacaoLog(filtro, _importacaoLogUseCase.Object);

@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
@@ -44,7 +43,9 @@ namespace SME.SGP.Dados.Repositorios
             {
                 retorno.Items = await multi.ReadAsync<ImportacaoLog>();
                 retorno.TotalRegistros = multi.ReadFirst<int>();
-                retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
+                retorno.TotalPaginas = paginacao.QuantidadeRegistros > 0
+                    ? (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros)
+                    : 0;
             }
             return retorno;
         }

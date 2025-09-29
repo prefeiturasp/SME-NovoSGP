@@ -1,12 +1,7 @@
 ﻿using MediatR;
-using SME.SGP.Dados.Repositorios;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.ImportarArquivo;
-using SME.SGP.Infra.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,7 +21,11 @@ namespace SME.SGP.Aplicacao.Queries.ImportarArquivo
             ObterImportacaoLogQuery request,
             CancellationToken cancellationToken)
         {
-            var paginacao = new Paginacao(request.NumeroPagina, request.NumeroRegistros);
+            var numeroPagina = request.NumeroPagina < 1 ? 1 : request.NumeroPagina;
+            var numeroRegistros = request.NumeroRegistros < 1 ? 10 : request.NumeroRegistros;
+
+            var paginacao = new Paginacao(numeroPagina, numeroRegistros);
+
             var importacoesLog = await repositorioImportacaoLog.ObterImportacaoLogPaginada(paginacao);
 
             var arquivos = importacoesLog.Items.Select(arquivo => new ImportacaoLogQueryRetornoDto()
@@ -34,10 +33,9 @@ namespace SME.SGP.Aplicacao.Queries.ImportarArquivo
                 Id = arquivo.Id,
                 NomeArquivo = arquivo.NomeArquivo,
                 StatusImportacao = arquivo.StatusImportacao,
-                RegistrosProcessados = arquivo.RegistrosProcessados.HasValue ? arquivo.RegistrosProcessados.Value : 0,
-                TotalRegistros = arquivo.TotalRegistros.HasValue ? arquivo.TotalRegistros.Value : 0
-            })
-                .ToList();
+                RegistrosProcessados = arquivo.RegistrosProcessados ?? 0,
+                TotalRegistros = arquivo.TotalRegistros ?? 0
+            }).ToList();
 
             return new PaginacaoResultadoDto<ImportacaoLogQueryRetornoDto>
             {

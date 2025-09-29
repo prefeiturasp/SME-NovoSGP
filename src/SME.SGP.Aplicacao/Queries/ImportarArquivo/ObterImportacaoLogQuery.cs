@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao.Queries.ImportarArquivo
     {
         public ObterImportacaoLogQuery(Paginacao paginacao, FiltroPesquisaImportacaoDto filtros) 
         {
-            NumeroPagina = paginacao.QuantidadeRegistrosIgnorados;
+            NumeroPagina = (paginacao.QuantidadeRegistrosIgnorados / paginacao.QuantidadeRegistros) + 1; 
             NumeroRegistros = paginacao.QuantidadeRegistros;
             Filtros = filtros;
         }
