@@ -3,8 +3,10 @@ using Moq;
 using SME.SGP.Api.Controllers;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -15,6 +17,7 @@ namespace SME.SGP.Api.Teste.Controllers
         private readonly PainelEducacionalController _controller;
         private readonly Mock<IConsultasVisaoGeralPainelEducacionalUseCase> _consultasVisaoGeralPainelEducacionalUseCase = new();
         private readonly Mock<IConsultasIdebPainelEducacionalUseCase> _consultasIdebPainelEducacionalUseCase = new();
+        private readonly Mock<IConsultasPainelEducacionalFluenciaLeitoraUseCase> _consultasFluenciaLeitoraUseCase = new();
 
         public PainelEducacionalControllerTeste()
         {
@@ -348,6 +351,159 @@ namespace SME.SGP.Api.Teste.Controllers
             _consultasIdebPainelEducacionalUseCase.Verify(x => x.ObterIdeb(It.Is<FiltroPainelEducacionalIdeb>(f =>
                 f == filtro
             )), Times.Once);
+        }
+
+        [Fact]
+        public async Task Obter_Fluencia_Leitora_Deve_Retornar_Ok_Com_Dados()
+        {
+            var filtro = new FiltroPainelEducacionalAnoLetivoPeriodo
+            {
+                AnoLetivo = 2023,
+                Periodo = 1,
+                CodigoDre = "123",
+                CodigoUe = "456"
+            };
+
+            var retornoEsperado = new List<PainelEducacionalFluenciaLeitoraDto>
+            {
+                new PainelEducacionalFluenciaLeitoraDto
+                {
+                    NomeFluencia = "Fluência 1",
+                    DescricaoFluencia = "Não leu",
+                    DreCodigo = "123",
+                    Percentual = 15.75m,
+                    QuantidadeAlunos = 50,
+                    Ano = 2023,
+                    Periodo = "1"
+                },
+                new PainelEducacionalFluenciaLeitoraDto
+                {
+                    NomeFluencia = "Fluência 2",
+                    DescricaoFluencia = "Soletrou",
+                    DreCodigo = "123",
+                    Percentual = 25.30m,
+                    QuantidadeAlunos = 80,
+                    Ano = 2023,
+                    Periodo = "1"
+                }
+            };
+
+            _consultasFluenciaLeitoraUseCase
+                .Setup(x => x.ObterFluenciaLeitora(filtro.Periodo, filtro.AnoLetivo, filtro.CodigoDre))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterFluenciaLeitora(filtro, _consultasFluenciaLeitoraUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalFluenciaLeitoraDto>>(okResult.Value);
+
+            Assert.Collection(retorno,
+                item =>
+                {
+                    Assert.Equal("Fluência 1", item.NomeFluencia);
+                    Assert.Equal("Não leu", item.DescricaoFluencia);
+                    Assert.Equal("123", item.DreCodigo);
+                    Assert.Equal(15.75m, item.Percentual);
+                    Assert.Equal(50, item.QuantidadeAlunos);
+                    Assert.Equal(2023, item.Ano);
+                    Assert.Equal("1", item.Periodo);
+                },
+                item =>
+                {
+                    Assert.Equal("Fluência 2", item.NomeFluencia);
+                    Assert.Equal("Soletrou", item.DescricaoFluencia);
+                    Assert.Equal("123", item.DreCodigo);
+                    Assert.Equal(25.30m, item.Percentual);
+                    Assert.Equal(80, item.QuantidadeAlunos);
+                    Assert.Equal(2023, item.Ano);
+                    Assert.Equal("1", item.Periodo);
+                });
+
+            _consultasFluenciaLeitoraUseCase.Verify(x => x.ObterFluenciaLeitora(
+                It.Is<int>(p => p == 1),
+                It.Is<int>(a => a == 2023),
+                It.Is<string>(d => d == "123")
+            ), Times.Once);
+        }
+
+        [Fact]
+        public async Task Obter_Fluencia_Leitora_Sem_Codigo_Dre_Deve_Retornar_Ok_Com_Dados()
+        {
+            var filtro = new FiltroPainelEducacionalAnoLetivoPeriodo
+            {
+                AnoLetivo = 2023,
+                Periodo = 2,
+                CodigoDre = null,
+                CodigoUe = null
+            };
+
+            var retornoEsperado = new List<PainelEducacionalFluenciaLeitoraDto>
+            {
+                new PainelEducacionalFluenciaLeitoraDto
+                {
+                    NomeFluencia = "Fluência 3",
+                    DescricaoFluencia = "Silabou",
+                    DreCodigo = "",
+                    Percentual = 35.80m,
+                    QuantidadeAlunos = 120,
+                    Ano = 2023,
+                    Periodo = "2"
+                }
+            };
+
+            _consultasFluenciaLeitoraUseCase
+                .Setup(x => x.ObterFluenciaLeitora(filtro.Periodo, filtro.AnoLetivo, filtro.CodigoDre))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterFluenciaLeitora(filtro, _consultasFluenciaLeitoraUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalFluenciaLeitoraDto>>(okResult.Value);
+
+            Assert.Single(retorno);
+            var item = retorno.First();
+            Assert.Equal("Fluência 3", item.NomeFluencia);
+            Assert.Equal("Silabou", item.DescricaoFluencia);
+            Assert.Equal("", item.DreCodigo);
+            Assert.Equal(35.80m, item.Percentual);
+            Assert.Equal(120, item.QuantidadeAlunos);
+
+            _consultasFluenciaLeitoraUseCase.Verify(x => x.ObterFluenciaLeitora(
+                It.Is<int>(p => p == 2),
+                It.Is<int>(a => a == 2023),
+                It.Is<string>(d => d == null)
+            ), Times.Once);
+        }
+
+        [Fact]
+        public async Task Obter_Fluencia_Leitora_Com_Lista_Vazia_Deve_Retornar_Ok()
+        {
+            var filtro = new FiltroPainelEducacionalAnoLetivoPeriodo
+            {
+                AnoLetivo = 2020,
+                Periodo = 3,
+                CodigoDre = "999",
+                CodigoUe = "000"
+            };
+
+            var retornoEsperado = new List<PainelEducacionalFluenciaLeitoraDto>();
+
+            _consultasFluenciaLeitoraUseCase
+                .Setup(x => x.ObterFluenciaLeitora(filtro.Periodo, filtro.AnoLetivo, filtro.CodigoDre))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterFluenciaLeitora(filtro, _consultasFluenciaLeitoraUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalFluenciaLeitoraDto>>(okResult.Value);
+
+            Assert.Empty(retorno);
+
+            _consultasFluenciaLeitoraUseCase.Verify(x => x.ObterFluenciaLeitora(
+                It.Is<int>(p => p == 3),
+                It.Is<int>(a => a == 2020),
+                It.Is<string>(d => d == "999")
+            ), Times.Once);
         }
     }
 }
