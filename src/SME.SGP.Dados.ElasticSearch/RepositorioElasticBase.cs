@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
@@ -108,6 +109,44 @@ namespace SME.SGP.Dados.ElasticSearch
             return listaDeRetorno;
         }
 
+        public async Task<IEnumerable<H>> ObterListaAsync<H>(string indice, Func<QueryContainerDescriptor<H>, QueryContainer> request, string nomeConsulta, object parametro = null)
+            where H : class
+        {
+            const string NOME_TELEMETRIA = "Elastic";
+            const string TEMPO_CURSOR = "10s";
+            var quantidadeDeRegistros = 10000;
+            var listaDeRetorno = new List<H>();
+
+            ISearchResponse<H> response = await servicoTelemetria.RegistrarComRetornoAsync<ISearchResponse<H>>(async () =>
+            {
+                var searchResponse = await _elasticClient.SearchAsync<H>(s =>
+                    s.Index(indice)
+                     .Query(request)
+                     .Scroll(TEMPO_CURSOR)
+                     .Size(quantidadeDeRegistros));
+                return searchResponse;
+            }, NOME_TELEMETRIA, nomeConsulta, indice, parametro?.ToString());
+
+            if (!response.IsValid)
+                throw new Exception(response.ServerError?.ToString(), response.OriginalException);
+
+            listaDeRetorno.AddRange(response.Documents);
+
+            while (response.Documents.Any() && response.Documents.Count == quantidadeDeRegistros)
+            {
+                response = await servicoTelemetria.RegistrarComRetornoAsync<ISearchResponse<H>>(async () =>
+                {
+                    var searchResponse = await _elasticClient.ScrollAsync<H>(TEMPO_CURSOR, response.ScrollId);
+                    return searchResponse;
+                }, NOME_TELEMETRIA, nomeConsulta + " scroll", indice, parametro?.ToString());
+                listaDeRetorno.AddRange(response.Documents);
+            }
+
+            this._elasticClient.ClearScroll(new ClearScrollRequest(response.ScrollId));
+
+            return listaDeRetorno;
+        }
+
         public async Task<IEnumerable<TEntidade>> ObterTodosAsync(string indice, string nomeConsulta, object parametro = null)
         {
             var search = new SearchDescriptor<TEntidade>(indice).MatchAll();
@@ -167,7 +206,7 @@ namespace SME.SGP.Dados.ElasticSearch
             if (string.IsNullOrEmpty(indice))
                 nomeIndice = string.IsNullOrEmpty(indicePadraoRepositorio) ?
                     elasticOptions.IndicePadrao : indicePadraoRepositorio;
-            
+
             return $"{elasticOptions.Prefixo}{nomeIndice}";
         }
 

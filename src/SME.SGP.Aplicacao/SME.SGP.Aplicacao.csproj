@@ -58,6 +58,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SME.SGP.Core\SME.SGP.Core.csproj" />
     <ProjectReference Include="..\SME.SGP.Dados.Cache\SME.SGP.Dados.Cache.csproj" />
+    <ProjectReference Include="..\SME.SGP.Dados.ElasticSearch\SME.SGP.Dados.ElasticSearch.csproj" />
     <ProjectReference Include="..\SME.SGP.Dados\SME.SGP.Dados.csproj" />
     <ProjectReference Include="..\SME.SGP.Dominio.Interfaces\SME.SGP.Dominio.Interfaces.csproj" />
     <ProjectReference Include="..\SME.SGP.Dominio\SME.SGP.Dominio.csproj" />

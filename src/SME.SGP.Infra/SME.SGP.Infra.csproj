@@ -15,6 +15,7 @@
     <PackageReference Include="FluentValidation.AspNetCore" Version="10.3.3" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
     <PackageReference Include="Minio" Version="4.0.5" />
+    <PackageReference Include="NEST" Version="7.17.4" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Polly" Version="7.2.2" />
     <PackageReference Include="RabbitMQ.Client" Version="6.2.2" />

@@ -25,6 +25,7 @@ namespace SME.SGP.PainelEducacional.Worker
         public void ConfigureServices(IServiceCollection services)
         {
             var registrarDependencias = new RegistrarDependencias();
+            registrarDependencias.RegistrarElasticSearch(services, Configuration);
             registrarDependencias.RegistrarParaWorkers(services, Configuration);
             registrarDependencias.RegistrarCasoDeUsoPainelEducacionalRabbitSgp(services);
         }

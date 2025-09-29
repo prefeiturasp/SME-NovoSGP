@@ -1,7 +1,9 @@
+using Elasticsearch.Net;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using Nest;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.CasosDeUso;
 using SME.SGP.Aplicacao.CasosDeUso.Abrangencia;
@@ -35,6 +37,7 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso.Turma;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados;
 using SME.SGP.Dados.Contexto;
+using SME.SGP.Dados.ElasticSearch;
 using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
@@ -46,6 +49,8 @@ using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
 using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC.Extensions.RegistrarCasoDeUsoRabbitSgp;
+using System;
+using System.Collections.Generic;
 
 namespace SME.SGP.IoC
 {
@@ -631,7 +636,39 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioConsolidacaoAlfabetizacaoCriticaEscrita, RepositorioConsolidacaoAlfabetizacaoCriticaEscrita>();
             services.TryAddScoped<IRepositorioPainelEducacionalVisaoGeral, RepositorioPainelEducacionalVisaoGeral>();
             services.TryAddScoped<IRepositorioPapConsulta, RepositorioPapConsulta>();
-            services.TryAddScoped<IRepositorioPapPainelEducacionalConsolidacao, RepositorioPapPainelEducacionalConsolidacao>();
+            services.TryAddScoped<IRepositorioPainelEducacionalPap, RepositorioPainelEducacionalPap>();
+        }
+        public virtual void RegistrarElasticSearch(IServiceCollection services, IConfiguration configuration)
+        {
+            var urls = configuration["ElasticSearch:Urls"];
+            var usuario = configuration["ElasticSearch:Usuario"];
+            var senha = configuration["ElasticSearch:Senha"];
+            var nodes = new List<Uri>();
+
+            if (string.IsNullOrEmpty(urls))
+                return;
+
+            if (urls.Contains(','))
+            {
+                string[] listaUrls = urls.Split(',');
+                foreach (string url in listaUrls)
+                    nodes.Add(new Uri(url));
+            }
+            else
+                nodes.Add(new Uri(urls));
+
+            var connectionPool = new StaticConnectionPool(nodes);
+            var settings = new ConnectionSettings(connectionPool)
+                .ServerCertificateValidationCallback((sender, cert, chain, errors) => true).DisableDirectStreaming();
+
+            if (!string.IsNullOrEmpty(usuario) && !string.IsNullOrEmpty(senha))
+                settings = settings.BasicAuthentication(usuario, senha);
+
+            var client = new ElasticClient(settings);
+
+            services.AddSingleton<IElasticClient>(client); 
+            
+            services.TryAddScoped<IRepositorioElasticTurma, RepositorioElasticTurma>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)

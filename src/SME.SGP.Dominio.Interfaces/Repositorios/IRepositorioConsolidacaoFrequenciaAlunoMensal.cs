@@ -12,5 +12,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task AlterarConsolidacaoAluno(long consolidacaoId, double percentual, int quantidadeAulas, int quantidadeAusencias, int quantidadeCompensacoes);
         Task RemoverConsolidacaoAluno(long consolidacaoId);
         Task<IEnumerable<ConsolidacaoFreqAlunoMensalInsuficienteDto>> ObterConsolidacoesFrequenciaAlunoMensalInsuficientes(long ueId, int anoLetivo, int mes);
+
+        Task<IEnumerable<ConsolidacaoFrequenciaAlunoMensalDto>> ObterFrequenciaPorLimitePercentualPorAnoDaTurma(int anoLetivo, double limitePercentual);
     }
 }
