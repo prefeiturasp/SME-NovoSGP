@@ -299,7 +299,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
 
             Assert.NotNull(result);
             Assert.Equal(2020, result.AnoSolicitado);
-            Assert.Equal(2018, result.AnoUtilizado);
+            Assert.Equal(2025, result.AnoUtilizado);
             Assert.True(result.AnoSolicitadoSemDados);
             Assert.Equal(string.Empty, result.Serie);
             Assert.Equal(0, result.MediaGeral);
