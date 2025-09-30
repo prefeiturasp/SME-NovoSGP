@@ -1,10 +1,19 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Commands.PainelEducacional.ExcluirAgrupamentoEscola;
+using SME.SGP.Aplicacao.Commands.PainelEducacional.ExcluirAgrupamentoGlobal;
+using SME.SGP.Aplicacao.Commands.PainelEducacional.ExcluirAgrupamentoMensal;
+using SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarAgrupamentoEscola;
+using SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarAgrupamentoGlobal;
+using SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarAgrupamentoMensal;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.PainelEducacional;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
