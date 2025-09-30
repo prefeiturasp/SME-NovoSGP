@@ -1,12 +1,7 @@
 ﻿using MediatR;
-using SME.SGP.Dados.Repositorios;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.ImportarArquivo;
-using SME.SGP.Infra.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
