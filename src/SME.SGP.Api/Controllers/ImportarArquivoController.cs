@@ -74,7 +74,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterImportacaoLog(
             [FromQuery] FiltroPesquisaImportacaoDto filtro, [FromServices] IImportacaoLogUseCase useCase)
         {
-            return Ok(await useCase.Executar(filtro, filtro.NumeroPagina, filtro.NumeroRegistros));
+            return Ok(await useCase.Executar(filtro));
         }
 
         [HttpGet("falhas")]
