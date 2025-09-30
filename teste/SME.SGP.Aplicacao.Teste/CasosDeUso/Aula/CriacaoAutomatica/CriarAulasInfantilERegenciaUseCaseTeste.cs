@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Aula.CriacaoAutomatica
                 Nome = "Turma 1A",
                 AnoLetivo = 2025,
                 ModalidadeCodigo = Modalidade.EducacaoInfantil,
-                Ue = new Ue { Id = 10, Nome = "EMEF Teste", TipoEscola = Dominio.TipoEscola.CCA, Dre = new SME.SGP.Dominio.Dre { Abreviacao = "DRLeste" } }
+                Ue = new Ue { Id = 10, Nome = "EMEF Teste", TipoEscola = TipoEscola.CCA, Dre = new SME.SGP.Dominio.Dre { Abreviacao = "DRLeste" } }
             };
 
             var diasLetivos = new List<DiaLetivoDto>

@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DiarioBordoPendenciaDevolutiva
                     {
                         Id = ueId,
                         Nome = "EMEF Teste",
-                        TipoEscola = Dominio.TipoEscola.EMEF,
+                        TipoEscola = TipoEscola.EMEF,
                         Dre = new SME.SGP.Dominio.Dre { Id = 1, Nome = "DRE Ipiranga", Abreviacao = "DRE-IP" }
                     }
                 });

@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DiarioBordoObservacaoNotificacao
 
         private SME.SGP.Dominio.DiarioBordo CriarDiarioBordo()
         {
-            return new SME.SGP.Dominio.DiarioBordo { Aula = new SME.SGP.Dominio.Aula { Turma = new Turma { Nome = "1A", CodigoTurma = "T1", Ue = new Ue { Nome = "Escola", TipoEscola = Dominio.TipoEscola.EMEF, Dre = new SME.SGP.Dominio.Dre { Abreviacao = "DRE-CL" } } } } };
+            return new SME.SGP.Dominio.DiarioBordo { Aula = new SME.SGP.Dominio.Aula { Turma = new Turma { Nome = "1A", CodigoTurma = "T1", Ue = new Ue { Nome = "Escola", TipoEscola = TipoEscola.EMEF, Dre = new SME.SGP.Dominio.Dre { Abreviacao = "DRE-CL" } } } } };
         }
 
         [Fact]

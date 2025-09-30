@@ -72,7 +72,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PlanoAEE
                 Ue = new Ue
                 {
                     Nome = "UE Teste",
-                    TipoEscola = Dominio.TipoEscola.EMEF,
+                    TipoEscola = TipoEscola.EMEF,
                     Dre = new SME.SGP.Dominio.Dre { CodigoDre = "1", Abreviacao = "DRE1" }
                 }
             };
@@ -122,7 +122,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PlanoAEE
                 Ue = new Ue
                 {
                     Nome = "UE Teste",
-                    TipoEscola = Dominio.TipoEscola.EMEI,
+                    TipoEscola = TipoEscola.EMEI,
                     Dre = new SME.SGP.Dominio.Dre { CodigoDre = "1", Abreviacao = "DRE1" }
                 }
             };
