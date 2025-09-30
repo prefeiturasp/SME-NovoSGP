@@ -114,7 +114,8 @@ namespace SME.SGP.Api.Teste.Controllers
             var resultadoEsperado = new PaginacaoResultadoDto<ImportacaoLogQueryRetornoDto>();
 
             _importacaoLogUseCase
-                .Setup(u => u.Executar(filtro))
+                .Setup(u => u.Executar(
+                    It.IsAny<FiltroPesquisaImportacaoDto>()))
                 .ReturnsAsync(resultadoEsperado);
 
             // Act
