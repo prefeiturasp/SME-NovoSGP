@@ -29,18 +29,18 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<PainelEducacionalIdebDto>> ObterIdeb()
         {
             var query = @"SELECT 
-                              i.ano_letivo As AnoLetivo,
-                              i.serie_ano AS SerieAno,
-                              i.nota,
-                              i.criado_em,
-                              d.dre_id as CodigoDre,
-                              u.ue_id as CodigoUe
-                          FROM ideb i
-                          INNER JOIN ue u ON u.ue_id = i.codigo_eol_escola
-                          INNER JOIN dre d ON d.id = u.dre_id
-                          WHERE i.nota IS NOT NULL
-                             AND i.nota BETWEEN 0 AND 10
-                             AND i.serie_ano IS NOT NULL;";
+                              t1.ano_letivo As AnoLetivo,
+                              t1.serie_ano AS SerieAno,
+                              t1.nota,
+                              t1.criado_em,
+                              t3.dre_id as CodigoDre,
+                              t2.ue_id as CodigoUe
+                          FROM ideb t1
+                          INNER JOIN ue t2 ON t2.ue_id = t1.codigo_eol_escola
+                          INNER JOIN dre t3 ON t3.id = t2.dre_id
+                          WHERE t1.nota IS NOT NULL
+                             AND t1.nota BETWEEN 0 AND 10
+                             AND t1.serie_ano IS NOT NULL;";
 
 
             return await database.Conexao.QueryAsync<PainelEducacionalIdebDto>(query);
