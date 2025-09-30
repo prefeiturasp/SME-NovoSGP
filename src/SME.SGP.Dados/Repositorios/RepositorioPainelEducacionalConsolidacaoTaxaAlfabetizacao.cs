@@ -3,8 +3,6 @@ using Npgsql;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.PainelEducacional.TaxaAlfabetizacao;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

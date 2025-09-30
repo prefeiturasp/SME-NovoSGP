@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.ExcluirIdeb
         }
         public async Task<bool> Handle(PainelEducacionalExcluirIdebCommand request, CancellationToken cancellationToken)
         {
-            await repositorioPainelEducacionalIdeb.ExcluirIdeb();
+            await repositorioPainelEducacionalIdeb.LimparConsolidacao();
             return true;
         }
     }

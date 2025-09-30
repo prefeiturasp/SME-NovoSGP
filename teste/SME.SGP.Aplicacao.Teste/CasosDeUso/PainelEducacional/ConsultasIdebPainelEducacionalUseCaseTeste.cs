@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                 new PainelEducacionalIdebDto
                 {
                     AnoLetivo = 2022,
-                    SerieAno = "1",
+                    SerieAno = 1,
                     Nota = 5.5m,
                     Faixa = "5.0-6.0",
                     Quantidade = 10
@@ -184,7 +184,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                 new PainelEducacionalIdebDto
                 {
                     AnoLetivo = 2021,
-                    SerieAno = "2",
+                    SerieAno = 2,
                     Nota = 4.8m,
                     Faixa = "4.0-5.0",
                     Quantidade = 15
@@ -223,7 +223,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                 new PainelEducacionalIdebDto
                 {
                     AnoLetivo = 2023,
-                    SerieAno = "3",
+                    SerieAno = 3,
                     Nota = 6.2m,
                     Faixa = "6.0-7.0",
                     Quantidade = 20
@@ -260,7 +260,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                 new PainelEducacionalIdebDto
                 {
                     AnoLetivo = 2022,
-                    SerieAno = "1",
+                    SerieAno = 1,
                     Nota = 5.0m,
                     Faixa = "5.0-6.0",
                     Quantidade = 12
@@ -322,7 +322,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                 new PainelEducacionalIdebDto
                 {
                     AnoLetivo = 2023,
-                    SerieAno = "1",
+                    SerieAno = 1,
                     Nota = 4.5m,
                     Faixa = "4.0-5.0",
                     Quantidade = 5
@@ -354,7 +354,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                 new PainelEducacionalIdebDto
                 {
                     AnoLetivo = 2023,
-                    SerieAno = "1",
+                    SerieAno = 1,
                     Nota = 3.8m,
                     Faixa = "3.0-4.0",
                     Quantidade = 3
@@ -386,7 +386,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                 new PainelEducacionalIdebDto
                 {
                     AnoLetivo = 2023,
-                    SerieAno = "2",
+                    SerieAno = 2,
                     Nota = 5.2m,
                     Faixa = "5.0-6.0",
                     Quantidade = 15
@@ -394,7 +394,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                 new PainelEducacionalIdebDto
                 {
                     AnoLetivo = 2023,
-                    SerieAno = "2",
+                    SerieAno = 2,
                     Nota = 5.2m,
                     Faixa = "4.0-5.0",
                     Quantidade = 10
@@ -402,7 +402,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                 new PainelEducacionalIdebDto
                 {
                     AnoLetivo = 2022,
-                    SerieAno = "2",
+                    SerieAno = 2,
                     Nota = 4.8m,
                     Faixa = "4.0-5.0",
                     Quantidade = 8
@@ -437,7 +437,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                 new PainelEducacionalIdebDto
                 {
                     AnoLetivo = 2023,
-                    SerieAno = "1",
+                    SerieAno = 1,
                     Nota = 0,
                     Faixa = "0.0-1.0",
                     Quantidade = 1
@@ -494,7 +494,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                 new PainelEducacionalIdebDto
                 {
                     AnoLetivo = ano,
-                    SerieAno = "1",
+                    SerieAno = 1,
                     Nota = 5.0m,
                     Faixa = "5.0-6.0",
                     Quantidade = 1
@@ -527,7 +527,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                 new PainelEducacionalIdebDto
                 {
                     AnoLetivo = proximoAno,
-                    SerieAno = "1",
+                    SerieAno = 1,
                     Nota = 4.5m,
                     Faixa = "4.0-5.0",
                     Quantidade = 2

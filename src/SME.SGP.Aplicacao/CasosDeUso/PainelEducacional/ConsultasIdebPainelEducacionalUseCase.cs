@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Entidades;
 
 namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
 {
@@ -29,14 +30,14 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             int anoUtilizado = parametros.AnoUtilizado;
             int anoMinimoConsulta = 2019;
 
-            if (filtro.AnoLetivo == -99 || !filtro.AnoLetivo.HasValue)
+            if (!filtro.AnoLetivo.HasValue)
             {
                 var anoMaisRecente = await mediator.Send(new ObterAnoMaisRecenteIdebQuery(parametros.Serie, parametros.CodigoDre, parametros.CodigoUe));
                 if (anoMaisRecente.HasValue)
                 {
                     anoUtilizado = anoMaisRecente.Value;
-                    idebPorAnoSerie = await mediator.Send(new ObterIdebPorAnoSerieQuery(anoUtilizado, parametros.Serie, parametros.CodigoDre, parametros.CodigoUe));
-                    
+                    idebPorAnoSerie = await mediator.Send(new ObterIdebPorAnoSerieQuery(anoUtilizado, int.Parse(parametros.Serie), parametros.CodigoDre, parametros.CodigoUe));
+
                     if (idebPorAnoSerie != null && idebPorAnoSerie.Any())
                     {
                         return MapearAgrupamentoIdeb(idebPorAnoSerie, parametros.AnoSolicitado, anoUtilizado, parametros.CodigoDre, parametros.CodigoUe);
@@ -47,7 +48,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             {
                 while (anoUtilizado >= anoMinimoConsulta)
                 {
-                    idebPorAnoSerie = await mediator.Send(new ObterIdebPorAnoSerieQuery(anoUtilizado, parametros.Serie, parametros.CodigoDre, parametros.CodigoUe));
+                    idebPorAnoSerie = await mediator.Send(new ObterIdebPorAnoSerieQuery(anoUtilizado, int.Parse(parametros.Serie), parametros.CodigoDre, parametros.CodigoUe));
                     if (idebPorAnoSerie != null && idebPorAnoSerie.Any())
                     {
                         return MapearAgrupamentoIdeb(idebPorAnoSerie, parametros.AnoSolicitado, anoUtilizado, parametros.CodigoDre, parametros.CodigoUe);
@@ -96,10 +97,26 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
 
         private static PainelEducacionalIdebAgrupamentoDto MapearAgrupamentoIdeb(IEnumerable<PainelEducacionalIdebDto> dados, int anoSolicitado, int anoUtilizado, string codigoDre, string codigoUe)
         {
-            var dadosAno = dados.Where(d => d.AnoLetivo == anoUtilizado).ToList();
+            var registroConsolidado = dados
+                  .GroupBy(r => new { r.CodigoDre })
+                  .Select(g => new PainelEducacionalIdebDto
+                  {
+                      AnoLetivo = g.Select(x => x.AnoLetivo).FirstOrDefault(),
+                      SerieAno = g.Select(x => x.SerieAno).FirstOrDefault(),
+                      Nota = g.Select(x => x.Nota).FirstOrDefault(),
+                      Faixa = g.Select(x => x.Faixa).FirstOrDefault(),
+                      Quantidade = g.Sum(x => x.Quantidade),
+                      CodigoDre = g.Key.CodigoDre,
+                      CriadoEm = g.Select(x => x.CriadoEm).FirstOrDefault(),
+                  })
+                  .OrderBy(x => x.CodigoDre)
+                  .ToList();
+
+            var dadosAno = registroConsolidado.Where(d => d.AnoLetivo == anoUtilizado).ToList();
             var primeiroItem = dadosAno.FirstOrDefault();
             var serie = primeiroItem?.SerieAno.ToString() ?? string.Empty;
             var mediaGeral = (double)(primeiroItem?.Nota ?? 0);
+
 
             return new PainelEducacionalIdebAgrupamentoDto
             {
