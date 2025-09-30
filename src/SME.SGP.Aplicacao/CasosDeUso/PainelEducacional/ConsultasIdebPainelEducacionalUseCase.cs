@@ -57,7 +57,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                 }
             }
 
-            return await ObterIdebVazio(parametros.AnoSolicitado, anoUtilizado, parametros.CodigoDre, parametros.CodigoUe);
+            int anoAtual = DateTime.Now.Year;
+            return await ObterIdebVazio(parametros.AnoSolicitado, anoAtual, parametros.CodigoDre, parametros.CodigoUe);
         }
 
         private static void ValidarParametros(FiltroPainelEducacionalIdeb filtro)
