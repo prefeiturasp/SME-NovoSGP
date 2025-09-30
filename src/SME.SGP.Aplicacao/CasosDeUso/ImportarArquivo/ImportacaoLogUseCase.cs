@@ -4,29 +4,23 @@ using SME.SGP.Aplicacao.Queries.ImportarArquivo;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.ImportarArquivo;
 using SME.SGP.Infra.Interfaces;
+using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
 {
-    public class ImportacaoLogUseCase : IImportacaoLogUseCase
+    public class ImportacaoLogUseCase : ConsultasBase, IImportacaoLogUseCase
     {
         private readonly IMediator mediator;
         
-        public ImportacaoLogUseCase(IMediator mediator)
+        public ImportacaoLogUseCase(IContextoAplicacao contextoAplicacao, IMediator mediator) : base(contextoAplicacao)
         {
-            this.mediator = mediator;
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         
         public Task<PaginacaoResultadoDto<ImportacaoLogQueryRetornoDto>> Executar(FiltroPesquisaImportacaoDto filtro)
         {
-            var paginacao = new Paginacao(1, 10); 
-            return mediator.Send(new ObterImportacaoLogQuery(paginacao, filtro));
-        }
-
-        public Task<PaginacaoResultadoDto<ImportacaoLogQueryRetornoDto>> Executar(FiltroPesquisaImportacaoDto filtro, int numeroPagina, int numeroRegistros)
-        {
-            var paginacao = new Paginacao(numeroPagina, numeroRegistros);
-            return mediator.Send(new ObterImportacaoLogQuery(paginacao, filtro));
+            return mediator.Send(new ObterImportacaoLogQuery(this.Paginacao, filtro));
         }
     }
 }
