@@ -26,8 +26,7 @@ namespace SME.SGP.Aplicacao.Queries.ImportarArquivo
             ObterImportacaoLogQuery request,
             CancellationToken cancellationToken)
         {
-            var paginacao = new Paginacao(request.NumeroPagina, request.NumeroRegistros);
-            var importacoesLog = await repositorioImportacaoLog.ObterImportacaoLogPaginada(paginacao);
+            var importacoesLog = await repositorioImportacaoLog.ObterImportacaoLogPaginada(request.Paginacao, request.Filtros);
 
             var arquivos = importacoesLog.Items.Select(arquivo => new ImportacaoLogQueryRetornoDto()
             {

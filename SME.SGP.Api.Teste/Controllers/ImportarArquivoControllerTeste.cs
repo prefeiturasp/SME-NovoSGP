@@ -111,9 +111,7 @@ namespace SME.SGP.Api.Teste.Controllers
 
             _importacaoLogUseCase
                 .Setup(u => u.Executar(
-                    It.IsAny<FiltroPesquisaImportacaoDto>(),
-                    It.IsAny<int>(),
-                    It.IsAny<int>()))
+                    It.IsAny<FiltroPesquisaImportacaoDto>()))
                 .ReturnsAsync(resultadoEsperado);
 
             // Act
