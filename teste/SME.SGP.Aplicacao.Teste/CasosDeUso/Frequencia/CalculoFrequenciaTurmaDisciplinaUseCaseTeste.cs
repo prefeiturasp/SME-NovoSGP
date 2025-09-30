@@ -91,7 +91,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Frequencia
                     {
                         Id = 1,
                         Nome = "Escola Teste",
-                        Dre = new Dre { Abreviacao = "DRE1" }
+                        Dre = new SME.SGP.Dominio.Dre { Abreviacao = "DRE1" }
                     }
                 });
 
@@ -187,7 +187,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Frequencia
                     {
                         Id = 1,
                         Nome = "Escola Teste",
-                        Dre = new Dre { Abreviacao = "DRE1" }
+                        Dre = new SME.SGP.Dominio.Dre { Abreviacao = "DRE1" }
                     }
                 });
 

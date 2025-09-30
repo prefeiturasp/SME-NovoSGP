@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Fechamento
         [Fact]
         public async Task Deve_Executar_Alterar_Periodos_Com_Sucesso()
         {
-            var dre = new Dre
+            var dre = new SME.SGP.Dominio.Dre
             {
                 Id = 1,
                 Nome = "DRE TESTE"

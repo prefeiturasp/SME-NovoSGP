@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.EscolaAqui.Comunicados.ObterComunic
                 Ue = new Ue
                 {
                     CodigoUe = "UE01",
-                    Dre = new Dre
+                    Dre = new SME.SGP.Dominio.Dre
                     {
                         CodigoDre = "DRE01"
                     }
@@ -131,7 +131,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.EscolaAqui.Comunicados.ObterComunic
                 Ue = new Ue
                 {
                     CodigoUe = "UE01",
-                    Dre = new Dre { CodigoDre = "DRE01" }
+                    Dre = new SME.SGP.Dominio.Dre { CodigoDre = "DRE01" }
                 }
             };
 
@@ -158,7 +158,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.EscolaAqui.Comunicados.ObterComunic
                 Ue = new Ue
                 {
                     CodigoUe = "UE01",
-                    Dre = new Dre { CodigoDre = "DRE01" }
+                    Dre = new SME.SGP.Dominio.Dre { CodigoDre = "DRE01" }
                 }
             };
 
@@ -190,7 +190,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.EscolaAqui.Comunicados.ObterComunic
                 Ue = new Ue
                 {
                     CodigoUe = "UE01",
-                    Dre = new Dre { CodigoDre = "DRE01" }
+                    Dre = new SME.SGP.Dominio.Dre { CodigoDre = "DRE01" }
                 }
             };
 

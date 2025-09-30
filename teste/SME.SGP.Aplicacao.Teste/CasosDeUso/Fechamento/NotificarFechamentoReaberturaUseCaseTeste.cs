@@ -62,9 +62,9 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Fechamento
 
             var retornoQuery = new List<Ue>
             {
-                new Ue { CodigoUe = "0001", Dre = new Dre { CodigoDre = "DRE1" } },
-                new Ue { CodigoUe = "0002", Dre = new Dre { CodigoDre = "DRE1" } },
-                new Ue { CodigoUe = "0003", Dre = new Dre { CodigoDre = "DRE2" } },
+                new Ue { CodigoUe = "0001", Dre = new SME.SGP.Dominio.Dre { CodigoDre = "DRE1" } },
+                new Ue { CodigoUe = "0002", Dre = new SME.SGP.Dominio.Dre { CodigoDre = "DRE1" } },
+                new Ue { CodigoUe = "0003", Dre = new SME.SGP.Dominio.Dre { CodigoDre = "DRE2" } },
             };
 
             _mediatorMock
