@@ -58,6 +58,80 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
         }
 
         [Fact]
+        public void Converter_Para_Ideb_Raw_Deve_Mapear_Corretamente()
+        {
+            var dtos = new List<PainelEducacionalIdebDto>
+            {
+                new PainelEducacionalIdebDto { AnoLetivo = 2025, SerieAno = 2, Nota = 5, CriadoEm = DateTime.Now, CodigoDre = "1", CodigoUe = "2" },
+                new PainelEducacionalIdebDto { AnoLetivo = 2025, SerieAno = 9, Nota = 7, CriadoEm = DateTime.Now, CodigoDre = "3", CodigoUe = "4" },
+            };
+
+            var resultado = useCase
+                .GetType()
+                .GetMethod("ConverterParaIdebRaw", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                .Invoke(useCase, new object[] { dtos }) as IEnumerable<PainelEducacionalIdebAgrupamento>;
+
+            Assert.Equal(2, resultado.Count());
+            Assert.Contains(resultado, r => r.Serie == "AnosIniciais");
+            Assert.Contains(resultado, r => r.Serie == "AnosFinais");
+        }
+
+        [Fact]
+        public void Processar_Ideb_Deve_Gerar_Resultados_Corretos()
+        {
+            var dados = new List<PainelEducacionalIdebAgrupamento>
+            {
+                new PainelEducacionalIdebAgrupamento { AnoLetivo = 2025, Serie = "AnosIniciais", Nota = 6.5m, CriadoEm = new DateTime(2025,1,1), CodigoDre = "1", CodigoUe = "1" },
+                new PainelEducacionalIdebAgrupamento { AnoLetivo = 2025, Serie = "AnosIniciais", Nota = 7.5m, CriadoEm = new DateTime(2025,2,1), CodigoDre = "1", CodigoUe = "1" },
+            };
+
+            var resultado = useCase.ProcessarIdeb(dados).ToList();
+
+            Assert.Contains(resultado, r => r != null);
+            Assert.Equal(2025, resultado[0].AnoLetivo);
+            Assert.Equal(PainelEducacionalIdebSerie.AnosIniciais, resultado[0].Etapa);
+            Assert.Equal("6-7", resultado[0].Faixa);
+            Assert.Equal(1, resultado[0].Quantidade);
+            Assert.Equal(7.00m, resultado[0].MediaGeral); 
+        }
+
+        [Fact]
+        public void Get_Faixa_Deve_Retornar_Corretamente()
+        {
+            var metodo = typeof(ConsolidarIdebPainelEducacionalUseCase).GetMethod("GetFaixa", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+
+            Assert.Equal("0-1", metodo.Invoke(null, new object[] { 0.5m }));
+            Assert.Equal("1-2", metodo.Invoke(null, new object[] { 1m }));
+            Assert.Equal("9-10", metodo.Invoke(null, new object[] { 10m }));
+            Assert.Null(metodo.Invoke(null, new object[] { -1m }));
+        }
+
+        [Fact]
+        public void Parse_Etapa_Deve_Retornar_Enum_Correto()
+        {
+            var metodo = typeof(ConsolidarIdebPainelEducacionalUseCase).GetMethod("ParseEtapa", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+
+            var iniciais = metodo.Invoke(null, new object[] { "AnosIniciais" });
+            var finais = metodo.Invoke(null, new object[] { "AnosFinais" });
+
+            Assert.Equal(PainelEducacionalIdebSerie.AnosIniciais, iniciais);
+            Assert.Equal(PainelEducacionalIdebSerie.AnosFinais, finais);
+        }
+
+        [Fact]
+        public void Parse_Etapa_Deve_Lancar_Excecao_Para_Valor_Invalido()
+        {
+            var metodo = typeof(ConsolidarIdebPainelEducacionalUseCase)
+                .GetMethod("ParseEtapa", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+
+            var ex = Assert.Throws<TargetInvocationException>(() =>
+                metodo.Invoke(null, new object[] { "Outro" }));
+
+            Assert.IsType<ArgumentException>(ex.InnerException);
+            Assert.Contains("Etapa inválida", ex.InnerException.Message);
+        }
+
+        [Fact]
         public void Mensagem_Rabbit_Deve_Serializar_Objeto()
         {
             var obj = new { Nome = "Teste", Valor = 123 };

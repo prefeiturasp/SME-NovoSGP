@@ -21,37 +21,79 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
         {
             var registrosIdebDto = await mediator.Send(new PainelEducacionalIdebQuery());
 
-            var indicadores = registrosIdebDto
-                 .GroupBy(x => new { x.AnoLetivo, x.CodigoDre, x.CodigoUe, x.SerieAno, Faixa = ObterFaixa(x.Nota) })
-                 .Select(g => new PainelEducacionalConsolidacaoIdeb
-                 {
-                     AnoLetivo = g.Key.AnoLetivo,
-                     Etapa = ObterEtapa(g.Key.SerieAno),
-                     CodigoDre = g.Key.CodigoDre,
-                     CodigoUe = g.Key.CodigoUe,
-                     Faixa = g.Key.Faixa,
-                     Quantidade = g.Count(),
-                     MediaGeral = Math.Round((decimal)g.Average(y => (double)y.Nota), 2)
-                 }).ToList();
+            var registrosIdeb = ConverterParaIdebRaw(registrosIdebDto);
+
+            var ideb = ProcessarIdeb(registrosIdeb);
+
+            await mediator.Send(new PainelEducacionalSalvarConsolidacaoIdebCommand(ideb));
+
+            return true;
+        }
+
+        private IEnumerable<PainelEducacionalIdebAgrupamento> ConverterParaIdebRaw(IEnumerable<PainelEducacionalIdebDto> dtos)
+        {
+            return dtos.Select(dto => new PainelEducacionalIdebAgrupamento
+            {
+                AnoLetivo = dto.AnoLetivo,
+                Serie = Enum.GetName(typeof(PainelEducacionalIdebSerie), dto.SerieAno),
+                Nota = dto.Nota,
+                CriadoEm = dto.CriadoEm,
+                CodigoDre = dto.CodigoDre,
+                CodigoUe = dto.CodigoUe
+            });
+        }
+
+        public IEnumerable<PainelEducacionalConsolidacaoIdeb> ProcessarIdeb(IEnumerable<PainelEducacionalIdebAgrupamento> dados)
+        {
+            var baseQuery = CriarBaseQuery(dados);
+            var faixas = CalcularFaixas(baseQuery);
+            var medias = CalcularMedias(baseQuery);
+            var ultimaData = CalcularUltimaData(baseQuery);
+
+            return MontarResultado(faixas, medias, ultimaData);
+        }
+
+        private IEnumerable<dynamic> CriarBaseQuery(IEnumerable<PainelEducacionalIdebAgrupamento> dados)
+        {
+            return dados.Select(x => new
+            {
+                x.AnoLetivo,
+                x.Serie,
+                x.Nota,
+                x.CriadoEm,
+                x.CodigoDre,
+                x.CodigoUe,
+                Faixa = GetFaixa(x.Nota)
+            }).ToList();
+        }
 
             await mediator.Send(new PainelEducacionalSalvarConsolidacaoIdebCommand(indicadores));
 
             return true;
         }
 
-        private static string ObterFaixa(decimal nota)
+        private IEnumerable<PainelEducacionalConsolidacaoIdeb> MontarResultado(IEnumerable<dynamic> faixas, IEnumerable<dynamic> medias, IEnumerable<dynamic> ultimaData)
         {
-            if (nota >= 0m && nota < 1m) return "0-1";
-            if (nota >= 1m && nota < 2m) return "1-2";
-            if (nota >= 2m && nota < 3m) return "2-3";
-            if (nota >= 3m && nota < 4m) return "3-4";
-            if (nota >= 4m && nota < 5m) return "4-5";
-            if (nota >= 5m && nota < 6m) return "5-6";
-            if (nota >= 6m && nota < 7m) return "6-7";
-            if (nota >= 7m && nota < 8m) return "7-8";
-            if (nota >= 8m && nota < 9m) return "8-9";
-            if (nota >= 9m && nota <= 10m) return "9-10";
-            return "Desconhecida";
+            var resultado = from f in faixas
+                            join m in medias
+                                on new { f.AnoLetivo, Etapa = f.Etapa, f.CodigoDre, f.CodigoUe }
+                                equals new { m.AnoLetivo, Etapa = m.Etapa, m.CodigoDre, m.CodigoUe }
+                            join u in ultimaData
+                                on new { f.AnoLetivo, f.CodigoDre, f.CodigoUe }
+                                equals new { u.AnoLetivo, u.CodigoDre, u.CodigoUe }
+                            orderby f.AnoLetivo, f.Etapa, f.CodigoDre, f.CodigoUe, f.Faixa
+                            select new PainelEducacionalConsolidacaoIdeb
+                            {
+                                AnoLetivo = f.AnoLetivo,
+                                Etapa = f.Etapa,
+                                CodigoDre = f.CodigoDre.ToString(),
+                                CodigoUe = f.CodigoUe.ToString(),
+                                Faixa = f.Faixa,
+                                Quantidade = f.Quantidade,
+                                MediaGeral = m.MediaGeral
+                            };
+
+            return resultado.ToList();
         }
 
         private static PainelEducacionalIdebSerie ObterEtapa(int serieAno)
