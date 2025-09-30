@@ -26,12 +26,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ImportarArquivo
         public ImportacaoArquivoFluenciaLeitoraUseCaseTeste()
         {
             mediatorMock = new Mock<IMediator>();
-            repoImportacaoLogMock = new Mock<IRepositorioImportacaoLog>();
             repoTurmaMock = new Mock<IRepositorioTurmaConsulta>();
 
             useCase = new ImportacaoArquivoFluenciaLeitoraUseCase(
                 mediatorMock.Object,
-                repoImportacaoLogMock.Object,
                 repoTurmaMock.Object
             );
         }
@@ -124,20 +122,14 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ImportarArquivo
                 .Setup(r => r.ObterPorCodigo(It.IsAny<string>()))
                 .ReturnsAsync(turma);
 
-            repoImportacaoLogMock
-                .Setup(r => r.SalvarAsync(It.IsAny<ImportacaoLog>()))
-                .ReturnsAsync(99L);
-
             // Act
             var resultado = await useCase.Executar(arquivo, 2025, "Entrada");
 
             // Assert
             Assert.NotNull(resultado);
             Assert.True(resultado.Sucesso);
-            Assert.Equal(importacaoLog.Id, resultado.Id);
 
             mediatorMock.Verify(m => m.Send(It.IsAny<SalvarImportacaoLogCommand>(), default), Times.AtLeastOnce);
-            repoImportacaoLogMock.Verify(r => r.SalvarAsync(It.IsAny<ImportacaoLog>()), Times.AtLeastOnce);
         }
     }
 

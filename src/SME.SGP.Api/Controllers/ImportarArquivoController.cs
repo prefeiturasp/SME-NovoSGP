@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Nest;
+using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.ImportarArquivo;
@@ -37,7 +39,10 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ImportarArquivoFluenciaLeitora([FromForm] IFormFile arquivo, [FromForm] int anoLetivo, [FromForm] string periodo, [FromServices] IImportacaoArquivoFluenciaLeitoraUseCase useCase)
         {
-            return Ok(await useCase.Executar(arquivo, anoLetivo, periodo));
+            var result = await useCase.Executar(arquivo, anoLetivo, tipoAvaliacao);
+            return result.Sucesso
+                ? Ok(result)
+                : BadRequest(result);
         }
 
         [HttpGet]
