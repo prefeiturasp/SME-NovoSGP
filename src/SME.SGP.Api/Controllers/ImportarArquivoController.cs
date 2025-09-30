@@ -57,6 +57,10 @@ namespace SME.SGP.Api.Controllers
             return result.Sucesso
                 ? Ok(result)
                 : BadRequest(result);
+            var result = await useCase.Executar(arquivo, anoLetivo, tipoAvaliacao);
+            return result.Sucesso
+                ? Ok(result)
+                : BadRequest(result);
         }
 
         [HttpPost("alfabetizacao")]
