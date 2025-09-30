@@ -87,24 +87,5 @@ namespace SME.SGP.Dados.Repositorios
 
             return database.Conexao.QueryAsync<ConsolidacaoFreqAlunoMensalInsuficienteDto>(query, new { ueId, anoLetivo, mes });
         }
-
-        public async Task<IEnumerable<ConsolidacaoFrequenciaAlunoMensalDto>> 
-            ObterFrequenciaPorLimitePercentualPorAnoDaTurma(int anoLetivo, double limitePercentual)
-        {
-            var query = @$"select  cfam.id as Id,
-                            cfam.turma_id as TurmaId, 
-                            cfam.aluno_codigo as AlunoCodigo,
-                            cfam.mes,
-                            cfam.percentual,
-                            cfam.quantidade_aulas as QuantidadeAulas,
-                            cfam.quantidade_ausencias as QuantidadeAusencias,
-                            cfam.quantidade_compensacoes as QuantidadeCompensacoes
-                      from  consolidacao_frequencia_aluno_mensal cfam
-                            inner join turma t on t.id = cfam.turma_id 
-                      where t.ano_letivo = @anoLetivo
-                        and cfam.percentual <= @limitePercentual";
-
-            return await database.Conexao.QueryAsync<ConsolidacaoFrequenciaAlunoMensalDto>(query, new { anoLetivo, limitePercentual });
-        }
     }
 }
