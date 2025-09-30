@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PlanoAEE
                 Ue = new Ue
                 {
                     Nome = "UE Teste",
-                    Dre = new Dre { Abreviacao = "DRE" },
+                    Dre = new SME.SGP.Dominio.Dre { Abreviacao = "DRE" },
                     TipoEscola = TipoEscola.EMEF
                 }
             };

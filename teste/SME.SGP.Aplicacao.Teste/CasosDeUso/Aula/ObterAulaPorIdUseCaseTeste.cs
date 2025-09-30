@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Aula
                 Ue = new Ue
                 {
                     CodigoUe = "UE1",
-                    Dre = new Dre { CodigoDre = "DRE1" }
+                    Dre = new SME.SGP.Dominio.Dre { CodigoDre = "DRE1" }
                 },
                 TipoTurma = TipoTurma.Regular
             };
@@ -91,7 +91,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Aula
                 .ReturnsAsync(turma);
 
             mediatorMock.Setup(m => m.Send(It.IsAny<ObterEventosCalendarioProfessorPorMesDiaQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<Evento>());
+                .ReturnsAsync(new List<SME.SGP.Dominio.Evento>());
 
             mediatorMock.Setup(m => m.Send(ObterUsuarioLogadoQuery.Instance, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(usuario);

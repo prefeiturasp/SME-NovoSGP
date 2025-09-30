@@ -377,7 +377,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.CompensacaoAusencia
                     CodigoUe = "U123",
                     Nome = "Escola Teste",
                     TipoEscola = TipoEscola.EMEF,
-                    Dre = new Dre
+                    Dre = new SME.SGP.Dominio.Dre
                     {
                         CodigoDre = "D123",
                         Nome = "DRE Teste"

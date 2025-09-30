@@ -73,7 +73,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PlanoAEE
                 {
                     Nome = "UE Teste",
                     TipoEscola = TipoEscola.EMEF,
-                    Dre = new Dre { CodigoDre = "1", Abreviacao = "DRE1" }
+                    Dre = new SME.SGP.Dominio.Dre { CodigoDre = "1", Abreviacao = "DRE1" }
                 }
             };
             var usuariosCEFAI = new List<long> { 101, 102 };
@@ -123,7 +123,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PlanoAEE
                 {
                     Nome = "UE Teste",
                     TipoEscola = TipoEscola.EMEI,
-                    Dre = new Dre { CodigoDre = "1", Abreviacao = "DRE1" }
+                    Dre = new SME.SGP.Dominio.Dre { CodigoDre = "1", Abreviacao = "DRE1" }
                 }
             };
 
