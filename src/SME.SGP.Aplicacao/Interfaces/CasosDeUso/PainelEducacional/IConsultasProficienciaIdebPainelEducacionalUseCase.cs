@@ -1,4 +1,4 @@
-﻿using SME.SGP.Infra.Dtos.PainelEducacional.ProficienciaIdeb;
+﻿using SME.SGP.Infra.Dtos.PainelEducacional;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional
 {
     public interface IConsultasProficienciaIdebPainelEducacionalUseCase
     {
-        Task<IEnumerable<PainelEducacionalProficienciaIdebDto>> ObterProficienciaIdeb(int anoLetivo, string codigoUe);
+        Task<IEnumerable<PainelEducacionalProficienciaIdepDto>> ObterProficienciaIdep(int anoLetivo, string codigoUe);
     }
 }

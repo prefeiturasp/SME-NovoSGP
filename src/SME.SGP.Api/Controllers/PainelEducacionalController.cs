@@ -128,96 +128,12 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterConsolidacaoTaxaAlfabetizacao(int anoLetivo, string codigoDre, string codigoUe, [FromServices] IConsultasPainelEducacionalTaxaAlfabetizacaoUseCase consultasFluenciaLeitoraUseCase)
        => Ok(await consultasFluenciaLeitoraUseCase.Executar(anoLetivo, codigoDre, codigoUe));
 
-        [HttpGet("abandono")]
-        [ProducesResponseType(typeof(PainelEducacionalAbandonoModalidadeDto), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterConsolidacaoAbandono(int anoLetivo, string codigoDre, [FromServices] IConsultasAbandonoPainelEducacionalUseCase consultasAbandonoPainelEducacionalUseCase)
-        => Ok(await consultasAbandonoPainelEducacionalUseCase.ObterAbandonoVisaoSmeDre(anoLetivo, codigoDre));
-
-        [HttpGet("abandono-ue")]
-        [ProducesResponseType(typeof(PainelEducacionalAbandonoModalidadeDto), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterConsolidacaoAbandonoUe(int anoLetivo, string codigoDre, string codigoUe, string modalidade, int numeroPagina, int numeroRegistros, [FromServices] IConsultasAbandonoPainelEducacionalUeUseCase consultasAbandonoPainelEducacionalUeUseCase)
-        => Ok(await consultasAbandonoPainelEducacionalUeUseCase.Executar(anoLetivo, codigoDre, codigoUe, modalidade, numeroPagina, numeroRegistros));
-
         [HttpGet("proficiencia-idep")]
         [ProducesResponseType(typeof(PainelEducacionalProficienciaIdepDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterProficienciaIdep(int anoLetivo, string codigoUe, [FromServices] IConsultasProficienciaIdepPainelEducacionalUseCase consultaProficienciaIdepPainelEducacionalUseCase)
-         => Ok(await consultaProficienciaIdepPainelEducacionalUseCase.ObterProficienciaIdep(anoLetivo, codigoUe));
-
-        [HttpGet("proficiencia-escolas-dados")]
-        [ProducesResponseType(typeof(PainelEducacionalProficienciaEscolaDadosDto), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterProficienciaEscolaDados(string codigoUe, [FromServices] IConsultasProficienciaEscolaDadosUseCase consultaProficienciaEscolaDadosPainelEducacionalUseCase)
-     => Ok(await consultaProficienciaEscolaDadosPainelEducacionalUseCase.ObterProficienciaEscolaDados(codigoUe));
-
-        [HttpGet("sondagem-escrita")]
-        [ProducesResponseType(typeof(PainelEducacionalSondagemEscritaDto), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterSondagemEscrita([FromQuery] FiltroPainelEducacionalAnoLetivoBimestre filtro, [FromServices] IConsultasSondagemEscritaUseCase consultasSondagemEscritaUseCase)
-    => Ok(await consultasSondagemEscritaUseCase.ObterSondagemEscrita(filtro.CodigoDre, filtro.CodigoUe, filtro.AnoLetivo, filtro.Bimestre, filtro.SerieAno));
-
-        [HttpGet("notas")]
-        [ProducesResponseType(typeof(PainelEducacionalNotasVisaoSmeDreDto), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterNotasVisaoSmeDre([FromQuery] FiltroPainelEducacionalNotasVisaoSmeDre filtro, [FromServices] IConsultasNotasVisaoSmeDreUseCase consultasNotasUseCase)
-     => Ok(await consultasNotasUseCase.ObterNotasVisaoSmeDre(filtro.CodigoDre, filtro.AnoLetivo, filtro.Bimestre, filtro.SerieAno));
-
-        [HttpGet("notas-ue")]
-        [ProducesResponseType(typeof(PaginacaoNotaResultadoDto<TurmaNotasVisaoUeDto>), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterNotasVisaoUe([FromQuery] FiltroPainelEducacionalNotasVisaoUe filtro, [FromServices] IConsultasNotasVisaoUeUseCase consultasNotasUseCase)
-            => Ok(await consultasNotasUseCase.ObterNotasVisaoUe(filtro.CodigoUe, filtro.AnoLetivo, filtro.Bimestre, filtro.Modalidade));
-
-        [HttpGet("notas-ue/modalidades")]
-        [ProducesResponseType(typeof(PaginacaoNotaResultadoDto<TurmaNotasVisaoUeDto>), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterModalidadesNotasVisaoUe([FromQuery] int anoLetivo, string codigoUe, int bimestre, [FromServices] IConsultasModalidadesNotasVisaoUeUseCase consultasNotasUseCase)
-          => Ok(await consultasNotasUseCase.ObterModalidadesNotasVisaoUe(anoLetivo, codigoUe, bimestre));
-
-        [HttpGet("reclassificacao")]
-        [ProducesResponseType(typeof(PainelEducacionalReclassificacaoDto), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterReclassificacao([FromQuery] FiltroPainelEducacionalReclassificacao filtro, [FromServices] IConsultasReclassificacaoPainelEducacionalUseCase consultasReclassificacaoUseCase)
-              => Ok(await consultasReclassificacaoUseCase.ObterReclassificacao(filtro.CodigoDre, filtro.CodigoUe, filtro.AnoLetivo, filtro.AnoTurma));
-
-        [HttpGet("frequencia-semanal-ue")]
-        [ProducesResponseType(typeof(PainelEducacionalFrequenciaSemanalUeDto), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterFrequenciaSemanalUe([FromQuery] FiltroFrequenciaSemanalUe filtro, [FromServices] IConsultasFrequenciaSemanalUeUseCase consultasFrequenciaSemanalUeCase)
-             => Ok(await consultasFrequenciaSemanalUeCase.ObterFrequenciaSemanalUe(filtro.CodigoUe, filtro.AnoLetivo));
-
-        [HttpGet("distorcao-serie-idade")]
-        [ProducesResponseType(typeof(PainelEducacionalDistorcaoIdadeDto), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterDistorcaoSerieIdade([FromQuery] FiltroPainelEducacionalDistorcaoIdade filtro, [FromServices] IConsultasDistorcaoIdadeUseCase consultasDistorcaoIdadeUseCase)
-        => Ok(await consultasDistorcaoIdadeUseCase.ObterDistorcaoIdade(filtro));
-
-        [HttpGet("proficiencia-ideb")]
-        [ProducesResponseType(typeof(PainelEducacionalProficienciaIdebDto), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterProficienciaIdeb(int anoLetivo, string codigoUe, [FromServices] IConsultasProficienciaIdebPainelEducacionalUseCase consultaProficienciaIdebPainelEducacionalUseCase)
-         => Ok(await consultaProficienciaIdebPainelEducacionalUseCase.ObterProficienciaIdeb(anoLetivo, codigoUe));
+        public async Task<IActionResult> ObterProficienciaIdep(int anoLetivo, string codigoUe, [FromServices] IConsultasProficienciaIdebPainelEducacionalUseCase consultaProficienciaIdebPainelEducacionalUseCase)
+         => Ok(await consultaProficienciaIdebPainelEducacionalUseCase.ObterProficienciaIdep(anoLetivo, codigoUe));
     }
 }
