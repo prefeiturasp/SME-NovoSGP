@@ -18,6 +18,7 @@ namespace SME.SGP.Api.Teste.Controllers
         private readonly Mock<IConsultasVisaoGeralPainelEducacionalUseCase> _consultasVisaoGeralPainelEducacionalUseCase = new();
         private readonly Mock<IConsultasIdebPainelEducacionalUseCase> _consultasIdebPainelEducacionalUseCase = new();
         private readonly Mock<IConsultasPainelEducacionalFluenciaLeitoraUseCase> _consultasFluenciaLeitoraUseCase = new();
+        private readonly Mock<IConsultasProficienciaIdebPainelEducacionalUseCase> _consultasProficienciaIdebUseCase = new();
 
         public PainelEducacionalControllerTeste()
         {
@@ -504,6 +505,60 @@ namespace SME.SGP.Api.Teste.Controllers
                 It.Is<int>(a => a == 2020),
                 It.Is<string>(d => d == "999")
             ), Times.Once);
+        }
+
+        [Fact]
+        public async Task Obter_Proficiencia_Ideb_Quando_Use_Case_Retorna_Dados_Deve_Retornar_Ok_Com_Conteudo_Correto()
+        {
+            var anoLetivo = 2025;
+            var codigoUe = "ue-123";
+            var dadosEsperados = new List<PainelEducacionalProficienciaIdepDto>
+            {
+                new PainelEducacionalProficienciaIdepDto
+                {
+                    AnoLetivo = anoLetivo,
+                    PercentualInicial = 75,
+                    PercentualFinal = 25,
+                    Proficiencia = new ProficienciaIdebResumidoDto
+                    {
+                        AnosIniciais = new List<ComponenteCurricularIdebResumidoDto> { new ComponenteCurricularIdebResumidoDto { ComponenteCurricular = 1 } },
+                        AnosFinais = new List<ComponenteCurricularIdebResumidoDto> { new ComponenteCurricularIdebResumidoDto { ComponenteCurricular = 2 } }
+                    }
+                }
+            };
+
+            _consultasProficienciaIdebUseCase.Setup(u => u.ObterProficienciaIdep(anoLetivo, codigoUe))
+                .ReturnsAsync(dadosEsperados);
+
+            var result = await _controller.ObterProficienciaIdep(anoLetivo, codigoUe, _consultasProficienciaIdebUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalProficienciaIdepDto>>(okResult.Value);
+            var primeiroItem = retorno.First();
+
+            Assert.NotNull(retorno);
+            Assert.Single(retorno);
+            Assert.Equal(anoLetivo, primeiroItem.AnoLetivo);
+            Assert.Equal(75, primeiroItem.PercentualInicial);
+            Assert.Equal(25, primeiroItem.PercentualFinal);
+        }
+
+        [Fact]
+        public async Task Obter_Proficiencia_Ideb_Quando_Use_Case_Retorna_Lista_Vazia_Deve_Retornar_Ok_Com_Lista_Vazia()
+        {
+            var anoLetivo = 2025;
+            var codigoUe = "ue-123";
+            var dadosEsperados = new List<PainelEducacionalProficienciaIdepDto>();
+
+            _consultasProficienciaIdebUseCase.Setup(u => u.ObterProficienciaIdep(anoLetivo, codigoUe))
+                .ReturnsAsync(dadosEsperados);
+
+            var result = await _controller.ObterProficienciaIdep(anoLetivo, codigoUe, _consultasProficienciaIdebUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalProficienciaIdepDto>>(okResult.Value);
+
+            Assert.Empty(retorno);
         }
     }
 }
