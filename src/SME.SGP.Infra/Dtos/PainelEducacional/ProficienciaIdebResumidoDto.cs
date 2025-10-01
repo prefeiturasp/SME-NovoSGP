@@ -10,7 +10,6 @@ namespace SME.SGP.Infra.Dtos.PainelEducacional
 
     public class ComponenteCurricularIdebResumidoDto
     {
-        public string ComponenteCurricular { get; set; }
-        public decimal Percentual { get; set; }
+        public int ComponenteCurricular { get; set; }
     }
 }
