@@ -37,7 +37,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                 anoUtilizado--;
             }
 
-            return ObterIdepVazio(parametros.AnoLetivo, anoLetivo, parametros.CodigoDre);
+            int anoAtual = DateTime.Now.Year;
+            return ObterIdepVazio(parametros.AnoLetivo, anoAtual, parametros.CodigoDre);
         }
 
         private static (int AnoLetivo, string Etapa, string CodigoDre) NormalizarParametros(int anoLetivo, string etapa, string codigoDre)

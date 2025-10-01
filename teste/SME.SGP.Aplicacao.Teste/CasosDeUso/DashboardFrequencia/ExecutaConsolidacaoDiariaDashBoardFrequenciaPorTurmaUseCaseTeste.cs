@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DashboardFrequencia
                     {
                         Id = 123,
                         DreId = 1,
-                        Dre = new Dre
+                        Dre = new SME.SGP.Dominio.Dre
                         {
                             CodigoDre = "DRE01",
                             Abreviacao = "DRE"

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Nest;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Boletim;
@@ -47,7 +48,10 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.IE_I_P_I, Policy = "Bearer")]
         public async Task<IActionResult> ImportarArquivoFluenciaLeitora([FromForm] IFormFile arquivo, [FromForm] int anoLetivo, [FromForm] int tipoAvaliacao, [FromServices] IImportacaoArquivoFluenciaLeitoraUseCase useCase)
         {
-            return Ok(await useCase.Executar(arquivo, anoLetivo, tipoAvaliacao));
+            var result = await useCase.Executar(arquivo, anoLetivo, tipoAvaliacao);
+            return result.Sucesso
+                ? Ok(result)
+                : BadRequest(result);
         }
 
         [HttpPost("alfabetizacao")]
@@ -69,7 +73,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterImportacaoLog(
             [FromQuery] FiltroPesquisaImportacaoDto filtro, [FromServices] IImportacaoLogUseCase useCase)
         {
-            return Ok(await useCase.Executar(filtro, filtro.NumeroPagina, filtro.NumeroRegistros));
+            return Ok(await useCase.Executar(filtro));
         }
 
         [HttpGet("falhas")]
@@ -107,7 +111,10 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.IE_I_P_I, Policy = "Bearer")]
         public async Task<IActionResult> ImportarBoletinsIdep([FromForm] IEnumerable<IFormFile> boletins, [FromForm] int anoLetivo, [FromServices] IBoletimIdepUseCase useCase)
         {
-            return Ok(await useCase.Executar(anoLetivo, boletins));
+            var result = await useCase.Executar(anoLetivo, boletins);
+            return result.Sucesso
+                 ? Ok(result)
+                 : BadRequest(result);
         }
 
         [HttpPost("boletim-ideb")]
@@ -117,7 +124,11 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.IE_I_P_I, Policy = "Bearer")]
         public async Task<IActionResult> ImportarBoletinsIdeb([FromForm] IEnumerable<IFormFile> boletins, [FromForm] int anoLetivo, [FromServices] IBoletimIdebUseCase useCase)
         {
-            return Ok(await useCase.Executar(anoLetivo, boletins));
+            var result = await useCase.Executar(anoLetivo, boletins);
+
+            return result.Sucesso
+                ? Ok(result)
+                : BadRequest(result);
         }
     }
 }

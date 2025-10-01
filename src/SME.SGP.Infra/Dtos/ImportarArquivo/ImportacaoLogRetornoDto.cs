@@ -16,6 +16,15 @@
             };
         }
 
+        public static ImportacaoLogRetornoDto RetornarFalha(string mensagem)
+        {
+            return new ImportacaoLogRetornoDto
+            {
+                Sucesso = false,
+                Mensagem = mensagem
+            };
+        }
+
         public static ImportacaoLogRetornoDto RetornarSucesso(string mensagem)
         {
             return new ImportacaoLogRetornoDto

@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Aula.Pendencia
                 Bimestre = 2
             };
 
-            var dre = new Dre
+            var dre = new SME.SGP.Dominio.Dre
             {
                 Id = 100,
                 Nome = "DRE Z",
