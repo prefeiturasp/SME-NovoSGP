@@ -560,5 +560,39 @@ namespace SME.SGP.Api.Teste.Controllers
 
             Assert.Empty(retorno);
         }
+
+        [Fact]
+        public async Task Obter_Proficiencia_Escola_Dados_Deve_Retornar_Ok_Com_Dados()
+        {
+            var codigoUe = "ue-456";
+            var retornoEsperado = new PainelEducacionalProficienciaEscolaDadosDto
+            {
+                NomeUe = "Escola Exemplo",
+                Diretor = "Diretor Exemplo",
+                Telefone = "(11) 1234-5678",
+                Email = "diretor@escolaexemplo.com",
+                CodigoEol = "123456",
+                CodigoInep = "654321"
+            };
+
+            var mockUseCase = new Mock<IConsultasProficienciaEscolaDadosUseCase>();
+            mockUseCase
+                .Setup(x => x.ObterProficienciaEscolaDados(codigoUe))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterProficienciaEscolaDados(codigoUe, mockUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsType<PainelEducacionalProficienciaEscolaDadosDto>(okResult.Value);
+
+            Assert.Equal("Escola Exemplo", retorno.NomeUe);
+            Assert.Equal("Diretor Exemplo", retorno.Diretor);
+            Assert.Equal("(11) 1234-5678", retorno.Telefone);
+            Assert.Equal("diretor@escolaexemplo.com", retorno.Email);
+            Assert.Equal("123456", retorno.CodigoEol);
+            Assert.Equal("654321", retorno.CodigoInep);
+
+            mockUseCase.Verify(x => x.ObterProficienciaEscolaDados(It.Is<string>(c => c == codigoUe)), Times.Once);
+        }
     }
 }
