@@ -254,13 +254,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasIdebPainelEducacionalUseCase, ConsultasIdebPainelEducacionalUseCase>();
             services.TryAddScoped<IConsultasPainelEducacionalFluenciaLeitoraUseCase, ConsultasPainelEducacionalFluenciaLeitoraUseCase>();
             services.TryAddScoped<IConsultasProficienciaEscolaDadosUseCase, ConsultasProficienciaEscolaDadosUseCase>();
-            services.TryAddScoped<IConsultasSondagemEscritaUseCase, ConsultasSondagemEscritaUseCase>();
-            services.TryAddScoped<IConsultasNotasVisaoSmeDreUseCase, ConsultasNotasVisaoSmeDreUseCase>();
-            services.TryAddScoped<IConsultasNotasVisaoUeUseCase, ConsultasNotasVisaoUeUseCase>();
-            services.TryAddScoped<IConsultasReclassificacaoPainelEducacionalUseCase, ConsultasReclassificacaoPainelEducacionalUseCase>();
-            services.TryAddScoped<IConsultasFrequenciaSemanalUeUseCase, ConsultasFrequenciaSemanalUeUseCase>();
-            services.TryAddScoped<IConsultasDistorcaoIdadeUseCase, ConsultasDistorcaoIdadeUseCase>();
-            services.TryAddScoped<IRepositorioPainelEducacionalProficienciaIdeb, RepositorioPainelEducacionalProficienciaIdeb>();
         }
 
         protected virtual void RegistrarContextos(IServiceCollection services)
