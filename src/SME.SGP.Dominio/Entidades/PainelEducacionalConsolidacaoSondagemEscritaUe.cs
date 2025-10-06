@@ -1,5 +1,3 @@
-﻿using System;
-
 namespace SME.SGP.Dominio.Entidades
 {
     public class PainelEducacionalConsolidacaoSondagemEscritaUe
@@ -16,6 +14,5 @@ namespace SME.SGP.Dominio.Entidades
         public int AnoLetivo { get; set; }
         public int QuantidadeAluno { get; set; }
         public int Bimestre { get; set; }
-        public DateTimeOffset CriadoEm { get; private set; } = DateTimeOffset.Now;
     }
 }
