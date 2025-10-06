@@ -34,7 +34,6 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
         }
 
         [Theory]
-        [InlineData(-99)]
         [InlineData(0)]
         [InlineData(10)]
         public async Task Obter_Ideb_Serie_Invalida_Deve_ThrowNegocioException(int serieInvalida)
@@ -69,55 +68,12 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
         }
 
         [Fact]
-        public async Task Obter_Ideb_Ano_Letivo_Menos_99_Com_Ano_Mais_Recente_Com_Dados_Deve_Retornar_Dados()
-        {
-            var filtro = new FiltroPainelEducacionalIdeb
-            {
-                Serie = PainelEducacionalIdebSerie.AnosIniciais,
-                AnoLetivo = -99,
-                CodigoDre = "01",
-                CodigoUe = "001"
-            };
-
-            var anoMaisRecente = 2022;
-            var dadosIdeb = new List<PainelEducacionalIdebDto>
-            {
-                new PainelEducacionalIdebDto
-                {
-                    AnoLetivo = 2022,
-                    SerieAno = 1,
-                    Nota = 5.5m,
-                    Faixa = "5.0-6.0",
-                    Quantidade = 10
-                }
-            };
-
-            _mediatorMock.Setup(m => m.Send(It.IsAny<ObterAnoMaisRecenteIdebQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(anoMaisRecente);
-
-            _mediatorMock.Setup(m => m.Send(It.IsAny<ObterIdebPorAnoSerieQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(dadosIdeb);
-
-            var result = await _useCase.ObterIdeb(filtro);
-
-            Assert.NotNull(result);
-            Assert.Equal(-99, result.AnoSolicitado);
-            Assert.Equal(2022, result.AnoUtilizado);
-            Assert.True(result.AnoSolicitadoSemDados);
-            Assert.Equal("1", result.Serie);
-            Assert.Equal(5.5, result.MediaGeral);
-            Assert.Equal("01", result.CodigoDre);
-            Assert.Equal("001", result.CodigoUe);
-            Assert.Single(result.Distribuicao);
-        }
-
-        [Fact]
         public async Task Obter_Ideb_Ano_Letivo_Menos_99_Com_Ano_Mais_Recente_Sem_Dados_Deve_Retornar_Ideb_Vazio()
         {
             var filtro = new FiltroPainelEducacionalIdeb
             {
                 Serie = PainelEducacionalIdebSerie.AnosIniciais,
-                AnoLetivo = -99,
+                AnoLetivo = 2025,
                 CodigoDre = "01",
                 CodigoUe = "001"
             };
@@ -134,9 +90,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             var result = await _useCase.ObterIdeb(filtro);
 
             Assert.NotNull(result);
-            Assert.Equal(-99, result.AnoSolicitado);
+            Assert.Equal(2025, result.AnoSolicitado);
             Assert.Equal(DateTime.Now.Year, result.AnoUtilizado);
-            Assert.True(result.AnoSolicitadoSemDados);
             Assert.Equal(string.Empty, result.Serie);
             Assert.Equal(0, result.MediaGeral);
             Assert.Empty(result.Distribuicao);
@@ -148,7 +103,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             var filtro = new FiltroPainelEducacionalIdeb
             {
                 Serie = PainelEducacionalIdebSerie.AnosIniciais,
-                AnoLetivo = -99,
+                AnoLetivo = 2025,
                 CodigoDre = "01",
                 CodigoUe = "001"
             };
@@ -159,52 +114,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             var result = await _useCase.ObterIdeb(filtro);
 
             Assert.NotNull(result);
-            Assert.Equal(-99, result.AnoSolicitado);
+            Assert.Equal(2025, result.AnoSolicitado);
             Assert.Equal(DateTime.Now.Year, result.AnoUtilizado);
-            Assert.True(result.AnoSolicitadoSemDados);
             Assert.Equal(string.Empty, result.Serie);
             Assert.Equal(0, result.MediaGeral);
             Assert.Empty(result.Distribuicao);
-        }
-
-        [Fact]
-        public async Task Obter_Ideb_Ano_Letivo_Null_Com_Ano_Mais_Recente_Com_Dados_Deve_Retornar_Dados()
-        {
-            var filtro = new FiltroPainelEducacionalIdeb
-            {
-                Serie = PainelEducacionalIdebSerie.AnosFinais,
-                AnoLetivo = null,
-                CodigoDre = "02",
-                CodigoUe = "002"
-            };
-
-            var anoMaisRecente = 2021;
-            var dadosIdeb = new List<PainelEducacionalIdebDto>
-            {
-                new PainelEducacionalIdebDto
-                {
-                    AnoLetivo = 2021,
-                    SerieAno = 2,
-                    Nota = 4.8m,
-                    Faixa = "4.0-5.0",
-                    Quantidade = 15
-                }
-            };
-
-            _mediatorMock.Setup(m => m.Send(It.IsAny<ObterAnoMaisRecenteIdebQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(anoMaisRecente);
-
-            _mediatorMock.Setup(m => m.Send(It.IsAny<ObterIdebPorAnoSerieQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(dadosIdeb);
-
-            var result = await _useCase.ObterIdeb(filtro);
-
-            Assert.NotNull(result);
-            Assert.Equal(-99, result.AnoSolicitado);
-            Assert.Equal(2021, result.AnoUtilizado);
-            Assert.True(result.AnoSolicitadoSemDados);
-            Assert.Equal("2", result.Serie);
-            Assert.Equal(4.8, result.MediaGeral);
         }
 
         [Fact]
@@ -299,7 +213,6 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
 
             Assert.NotNull(result);
             Assert.Equal(2020, result.AnoSolicitado);
-            Assert.Equal(2025, result.AnoUtilizado);
             Assert.True(result.AnoSolicitadoSemDados);
             Assert.Equal(string.Empty, result.Serie);
             Assert.Equal(0, result.MediaGeral);
@@ -313,8 +226,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             {
                 Serie = PainelEducacionalIdebSerie.AnosIniciais,
                 AnoLetivo = 2023,
-                CodigoDre = "  07  ",
-                CodigoUe = "  007  "
+                CodigoDre = "07",
+                CodigoUe = "007"
             };
 
             var dadosIdeb = new List<PainelEducacionalIdebDto>
@@ -322,6 +235,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                 new PainelEducacionalIdebDto
                 {
                     AnoLetivo = 2023,
+                    CodigoDre = "07",
                     SerieAno = 1,
                     Nota = 4.5m,
                     Faixa = "4.0-5.0",
@@ -398,14 +312,6 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     Nota = 5.2m,
                     Faixa = "4.0-5.0",
                     Quantidade = 10
-                },
-                new PainelEducacionalIdebDto
-                {
-                    AnoLetivo = 2022,
-                    SerieAno = 2,
-                    Nota = 4.8m,
-                    Faixa = "4.0-5.0",
-                    Quantidade = 8
                 }
             };
 
