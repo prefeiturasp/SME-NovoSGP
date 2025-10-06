@@ -1,0 +1,61 @@
+﻿using MediatR;
+using Moq;
+using SME.SGP.Aplicacao.CasosDeUso.PainelEducacional;
+using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterProficienciaIdep;
+using SME.SGP.Dominio;
+using SME.SGP.Infra.Dtos.PainelEducacional;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
+
+namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
+{
+    public class ConsultasProficienciaIdebPainelEducacionalUseCaseTeste
+    {
+        private readonly Mock<IMediator> mediatorMock;
+        private readonly ConsultasProficienciaIdebPainelEducacionalUseCase useCase;
+
+        public ConsultasProficienciaIdebPainelEducacionalUseCaseTeste()
+        {
+            mediatorMock = new Mock<IMediator>();
+            useCase = new ConsultasProficienciaIdebPainelEducacionalUseCase(mediatorMock.Object);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task Executar_Quando_Codigo_Ue_Invalido_Deve_Lancar_Negocio_Exception(string codigoUe)
+        {
+            var anoLetivo = 2025;
+
+            await Assert.ThrowsAsync<NegocioException>(() => useCase.ObterProficienciaIdep(anoLetivo, codigoUe));
+
+            mediatorMock.Verify(m => m.Send(It.IsAny<IRequest<IEnumerable<PainelEducacionalProficienciaIdepDto>>>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task Executar_Quando_Codigo_Ue_Valido_Deve_Retornar_Proficiencia()
+        {
+            var anoLetivo = 2025;
+            var codigoUe = "123456";
+            var mockRetorno = new List<PainelEducacionalProficienciaIdepDto>
+            {
+                new PainelEducacionalProficienciaIdepDto { AnoLetivo = anoLetivo }
+            };
+
+            mediatorMock.Setup(m => m.Send(It.Is<ObterProficienciaIdepQuery>(q => q.AnoLetivo == anoLetivo && q.CodigoUe == codigoUe),
+                                           It.IsAny<CancellationToken>()))
+                        .ReturnsAsync(mockRetorno);
+
+            var resultado = await useCase.ObterProficienciaIdep(anoLetivo, codigoUe);
+
+            Assert.NotNull(resultado);
+            Assert.Equal(mockRetorno, resultado);
+            mediatorMock.Verify(m => m.Send(It.Is<ObterProficienciaIdepQuery>(q => q.AnoLetivo == anoLetivo && q.CodigoUe == codigoUe),
+                                            It.IsAny<CancellationToken>()), Times.Once);
+        }
+    }
+}
+
