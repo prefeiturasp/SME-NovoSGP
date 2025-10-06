@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                 new PainelEducacionalIdebDto
                 {
                     AnoLetivo = 2025,
-                    SerieAno = "3",
+                    SerieAno = 3,
                     Nota = 6.5m,
                     CriadoEm = new DateTime(2025,1,1),
                     CodigoDre = "1",
@@ -64,8 +64,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
         {
             var dtos = new List<PainelEducacionalIdebDto>
             {
-                new PainelEducacionalIdebDto { AnoLetivo = 2025, SerieAno = "2", Nota = 5, CriadoEm = DateTime.Now, CodigoDre = "1", CodigoUe = "2" },
-                new PainelEducacionalIdebDto { AnoLetivo = 2025, SerieAno = "9", Nota = 7, CriadoEm = DateTime.Now, CodigoDre = "3", CodigoUe = "4" },
+                new PainelEducacionalIdebDto { AnoLetivo = 2025, SerieAno = 2, Nota = 5, CriadoEm = DateTime.Now, CodigoDre = "1", CodigoUe = "2" },
+                new PainelEducacionalIdebDto { AnoLetivo = 2025, SerieAno = 9, Nota = 7, CriadoEm = DateTime.Now, CodigoDre = "3", CodigoUe = "4" },
             };
 
             var resultado = useCase
@@ -76,26 +76,6 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             Assert.Equal(2, resultado.Count());
             Assert.Contains(resultado, r => r.Serie == "AnosIniciais");
             Assert.Contains(resultado, r => r.Serie == "AnosFinais");
-        }
-
-        [Fact]
-        public void Processar_Ideb_Deve_Gerar_Resultados_Corretos()
-        {
-            var dados = new List<PainelEducacionalIdebAgrupamento>
-            {
-                new PainelEducacionalIdebAgrupamento { AnoLetivo = 2025, Serie = "AnosIniciais", Nota = 6.5m, CriadoEm = new DateTime(2025,1,1), CodigoDre = "1", CodigoUe = "1" },
-                new PainelEducacionalIdebAgrupamento { AnoLetivo = 2025, Serie = "AnosIniciais", Nota = 7.5m, CriadoEm = new DateTime(2025,2,1), CodigoDre = "1", CodigoUe = "1" },
-            };
-
-            var resultado = useCase.ProcessarIdeb(dados).ToList();
-
-            Assert.Contains(resultado, r => r != null);
-            Assert.Equal(2025, resultado[0].AnoLetivo);
-            Assert.Equal(PainelEducacionalIdebSerie.AnosIniciais, resultado[0].Etapa);
-            Assert.Equal("6-7", resultado[0].Faixa);
-            Assert.Equal(1, resultado[0].Quantidade);
-            Assert.Equal(7.00m, resultado[0].MediaGeral); 
-            Assert.Equal(new DateTime(2025, 2, 1), resultado[0].UltimaAtualizacao);
         }
 
         [Fact]
@@ -193,7 +173,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             var dto = new PainelEducacionalIdebDto
             {
                 AnoLetivo = 2025,
-                SerieAno = "9",
+                SerieAno = 9,
                 Nota = 8.5m,
                 Faixa = "8-9",
                 CriadoEm = DateTime.Now,
@@ -214,7 +194,6 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                 Faixa = "5-6",
                 Quantidade = 2,
                 MediaGeral = 5.5m,
-                UltimaAtualizacao = DateTime.Now,
                 CodigoDre = "1",
                 CodigoUe = "2"
             };
