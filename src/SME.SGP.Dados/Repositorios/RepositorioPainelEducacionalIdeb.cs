@@ -1,29 +1,29 @@
-﻿using Polly;
-using Polly.Registry;
+﻿using Microsoft.Extensions.Configuration;
+using Npgsql;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
-using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioPainelEducacionalIdeb : RepositorioBase<PainelEducacionalConsolidacaoIdeb>, IRepositorioPainelEducacionalIdeb
+    public class RepositorioPainelEducacionalIdeb : IRepositorioPainelEducacionalIdeb
     {
-        private readonly IAsyncPolicy _policy;
-        public RepositorioPainelEducacionalIdeb(ISgpContext database, IReadOnlyPolicyRegistry<string> registry,
-            IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
+        private readonly IConfiguration configuration;
+        private readonly ISgpContext database;
+
+        public RepositorioPainelEducacionalIdeb(IConfiguration configuration, ISgpContext database)
         {
-            _policy = registry.Get<IAsyncPolicy>(PoliticaPolly.SGP);
+            this.configuration = configuration;
+            this.database = database;
         }
 
-        public async Task ExcluirIdeb()
+        public async Task LimparConsolidacao()
         {
-            const string comando = @"delete from public.painel_educacional_consolidacao_ideb";
-            await _policy.ExecuteAsync(() => database.Conexao.ExecuteAsync(comando));
+            var sql = "DELETE FROM public.painel_educacional_consolidacao_ideb";
+            await database.ExecuteAsync(sql);
         }
 
         public async Task<IEnumerable<PainelEducacionalIdebDto>> ObterIdeb()
@@ -43,40 +43,36 @@ namespace SME.SGP.Dados.Repositorios
                              AND i.serie_ano IS NOT NULL;";
 
 
-            return await _policy.ExecuteAsync(() => database.Conexao.QueryAsync<PainelEducacionalIdebDto>(query));
+            return await database.Conexao.QueryAsync<PainelEducacionalIdebDto>(query);
         }
 
-        public async Task<bool> SalvarIdeb(IEnumerable<PainelEducacionalConsolidacaoIdeb> ideb)
+        public async Task BulkInsertAsync(IEnumerable<PainelEducacionalConsolidacaoIdeb> indicadores)
         {
-            const string comando = @"
-        INSERT INTO painel_educacional_consolidacao_ideb
-            (ano_letivo, etapa, faixa, quantidade, media_geral, codigo_dre, codigo_ue, criado_em, criado_por, criado_rf)
-        VALUES
-            (@AnoLetivo, @Etapa, @Faixa, @Quantidade, @MediaGeral, @CodigoDre, @CodigoUe, NOW(), 'Sistema', '0')
-        ON CONFLICT (ano_letivo, etapa, faixa)
-        DO UPDATE SET
-            quantidade   = EXCLUDED.quantidade,
-            media_geral  = EXCLUDED.media_geral,
-            codigo_dre   = EXCLUDED.codigo_dre,
-            alterado_em  = NOW(),
-            alterado_por = 'Sistema',
-            alterado_rf  = '0';";
 
-            var parametros = ideb.Select(i => new
+            await using var conn = new NpgsqlConnection(configuration.GetConnectionString("SGP_Postgres"));
+            await conn.OpenAsync();
+
+            // Inicia o COPY em modo binário
+            await using var writer = conn.BeginBinaryImport(@"
+                COPY painel_educacional_consolidacao_ideb 
+                    (ano_letivo, etapa, faixa, quantidade, media_geral, codigo_dre, codigo_ue, criado_em) 
+                FROM STDIN (FORMAT BINARY)
+            ");
+
+            foreach (var item in indicadores)
             {
-                i.AnoLetivo,
-                Etapa = (int)i.Etapa,
-                i.Faixa,
-                i.Quantidade,
-                i.MediaGeral,
-                i.CodigoDre,
-                i.CodigoUe
-            }).ToArray();
+                await writer.StartRowAsync();
+                await writer.WriteAsync(item.AnoLetivo, NpgsqlTypes.NpgsqlDbType.Integer);
+                await writer.WriteAsync((int)item.Etapa, NpgsqlTypes.NpgsqlDbType.Integer);
+                await writer.WriteAsync(item.Faixa, NpgsqlTypes.NpgsqlDbType.Varchar);
+                await writer.WriteAsync(item.Quantidade, NpgsqlTypes.NpgsqlDbType.Integer);
+                await writer.WriteAsync(item.MediaGeral, NpgsqlTypes.NpgsqlDbType.Numeric);
+                await writer.WriteAsync(item.CodigoDre, NpgsqlTypes.NpgsqlDbType.Varchar);
+                await writer.WriteAsync(item.CodigoUe, NpgsqlTypes.NpgsqlDbType.Varchar);
+                await writer.WriteAsync(item.CriadoEm, NpgsqlTypes.NpgsqlDbType.TimestampTz);
+            }
 
-            var linhasAfetadas = await _policy.ExecuteAsync(() =>
-                database.Conexao.ExecuteAsync(comando, parametros));
-
-            return linhasAfetadas > 0;
+            await writer.CompleteAsync();
         }
 
     }

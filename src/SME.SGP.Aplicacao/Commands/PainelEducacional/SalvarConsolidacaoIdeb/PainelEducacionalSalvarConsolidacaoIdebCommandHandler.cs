@@ -20,7 +20,8 @@ namespace SME.SGP.Aplicacao
             if (request.Ideb == null || !request.Ideb.Any())
                 return false;
 
-            await repositorioPainelEducacionalIdeb.SalvarIdeb(request.Ideb);
+            await repositorioPainelEducacionalIdeb.LimparConsolidacao();
+            await repositorioPainelEducacionalIdeb.BulkInsertAsync(request.Ideb);
 
             return true;
           }

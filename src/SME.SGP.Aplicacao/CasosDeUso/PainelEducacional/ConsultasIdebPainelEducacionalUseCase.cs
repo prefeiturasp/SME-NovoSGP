@@ -92,6 +92,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             var serie = primeiroItem?.SerieAno.ToString() ?? string.Empty;
             var mediaGeral = (double)(primeiroItem?.Nota ?? 0);
 
+
             return new PainelEducacionalIdebAgrupamentoDto
             {
                 AnoSolicitado = anoSolicitado,
