@@ -4,7 +4,7 @@ namespace SME.SGP.Dominio.Enumerados
 {
     public enum ComponenteCurricular
     {
-        [Display(Name = "LP")]
+        [Display(Name = "PT")]
         Portugues = 1,
 
         [Display(Name = "MT")]

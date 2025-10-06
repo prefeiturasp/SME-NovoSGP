@@ -524,8 +524,8 @@ namespace SME.SGP.Api.Teste.Controllers
                     PercentualFinal = 25,
                     Proficiencia = new ProficienciaIdebResumidoDto
                     {
-                        AnosIniciais = new List<ComponenteCurricularIdebResumidoDto> { new ComponenteCurricularIdebResumidoDto { ComponenteCurricular = 1 } },
-                        AnosFinais = new List<ComponenteCurricularIdebResumidoDto> { new ComponenteCurricularIdebResumidoDto { ComponenteCurricular = 2 } }
+                        AnosIniciais = new List<ComponenteCurricularIdebResumidoDto> { new ComponenteCurricularIdebResumidoDto { ComponenteCurricular = Dominio.Enumerados.ComponenteCurricular.Portugues.GetDisplayName() } },
+                        AnosFinais = new List<ComponenteCurricularIdebResumidoDto> { new ComponenteCurricularIdebResumidoDto { ComponenteCurricular = Dominio.Enumerados.ComponenteCurricular.Matematica.GetDisplayName() } }
                     }
                 }
             };

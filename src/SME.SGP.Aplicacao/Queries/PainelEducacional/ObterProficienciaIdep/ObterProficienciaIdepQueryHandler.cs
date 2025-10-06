@@ -1,5 +1,7 @@
 ﻿using MediatR;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces.Repositorios;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using System;
 using System.Collections.Generic;
@@ -28,15 +30,11 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterProficienciaIdep
                     var anosFinais = group.Where(item => item.EtapaEnsino == 2);
 
                     var mediaProficienciaIniciais = anosIniciais.Any()
-                        ? (request.AnoLetivo > 0
-                            ? anosIniciais.Where(item => item.AnoLetivo == request.AnoLetivo).Average(item => item.ProficienciaMedia)
-                            : anosIniciais.Average(item => item.ProficienciaMedia))
+                        ? anosIniciais.Average(item => item.ProficienciaMedia)
                         : 0;
 
                     var mediaProficienciaFinais = anosFinais.Any()
-                        ? (request.AnoLetivo > 0
-                            ? anosFinais.Where(item => item.AnoLetivo == request.AnoLetivo).Average(item => item.ProficienciaMedia)
-                            : anosFinais.Average(item => item.ProficienciaMedia))
+                        ? anosFinais.Average(item => item.ProficienciaMedia)
                         : 0;
 
                     return new PainelEducacionalProficienciaIdepDto
@@ -47,10 +45,20 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterProficienciaIdep
                         Proficiencia = new ProficienciaIdebResumidoDto
                         {
                             AnosIniciais = anosIniciais
-                                .Select(item => new ComponenteCurricularIdebResumidoDto { ComponenteCurricular = item.ComponenteCurricular })
+                                .GroupBy(item => item.ComponenteCurricular)
+                                .Select(componente => new ComponenteCurricularIdebResumidoDto
+                                {
+                                    ComponenteCurricular = ((ComponenteCurricular)componente.Key).ObterDisplayName(),
+                                    Percentual = Math.Round(componente.Average(item => item.ProficienciaMedia), 2)
+                                })
                                 .ToList(),
                             AnosFinais = anosFinais
-                                .Select(item => new ComponenteCurricularIdebResumidoDto { ComponenteCurricular = item.ComponenteCurricular })
+                                .GroupBy(item => item.ComponenteCurricular)
+                                .Select(componente => new ComponenteCurricularIdebResumidoDto
+                                {
+                                    ComponenteCurricular = ((ComponenteCurricular)componente.Key).ObterDisplayName(),
+                                    Percentual = Math.Round(componente.Average(item => item.ProficienciaMedia), 2)
+                                })
                                 .ToList()
                         },
                         Boletim = group.FirstOrDefault(b => !string.IsNullOrEmpty(b.Boletim))?.Boletim
