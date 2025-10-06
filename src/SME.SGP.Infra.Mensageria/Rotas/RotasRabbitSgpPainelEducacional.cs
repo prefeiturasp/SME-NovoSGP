@@ -11,6 +11,7 @@
         public const string ConsolidarIdebPainelEducacional = "sgp.consolidacao.ideb.painel.educacional";
         public const string ConsolidarFluenciaLeitoraPainelEducacional = "sgp.consolidacao.painel.educacional.fluencia.leitora";
         public const string ConsolidarTaxaAlfabetizacaoPainelEducacional = "sgp.consolidacao.painel.educacional.taxa.alfabetizacao";
+        public const string ConsolidarSondagemEscritaUePainelEducacional = "sgp.consolidacao.painel.educacional.sondagem.escrita.ue";
     }
 }
 
