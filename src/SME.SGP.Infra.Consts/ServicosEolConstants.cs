@@ -141,6 +141,8 @@
 
         public const string URL_ESCOLAS_PROFESSORES = "/api/escolas/{0}/professores/{1}";
 
+        public const string URL_ESCOLAS_DADOS = "/api/escolas/dados/{0}";
+
         public const string URL_ESCOLAS_TIPOS_ESCOLAS = "escolas/tiposEscolas";
 
         public const string URL_ESCOLAS_SINCRONIZACOES_INSTITUCIONAIS = "escolas/{0}/sincronizacoes-institucionais";

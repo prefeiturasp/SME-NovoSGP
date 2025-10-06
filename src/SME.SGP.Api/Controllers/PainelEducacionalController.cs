@@ -103,5 +103,21 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterConsolidacaoTaxaAlfabetizacao(int anoLetivo, string codigoDre, string codigoUe, [FromServices] IConsultasPainelEducacionalTaxaAlfabetizacaoUseCase consultasFluenciaLeitoraUseCase)
        => Ok(await consultasFluenciaLeitoraUseCase.Executar(anoLetivo, codigoDre, codigoUe));
+
+        [HttpGet("proficiencia-idep")]
+        [ProducesResponseType(typeof(PainelEducacionalProficienciaIdepDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterProficienciaIdep(int anoLetivo, string codigoUe, [FromServices] IConsultasProficienciaIdebPainelEducacionalUseCase consultaProficienciaIdebPainelEducacionalUseCase)
+         => Ok(await consultaProficienciaIdebPainelEducacionalUseCase.ObterProficienciaIdep(anoLetivo, codigoUe));
+
+        [HttpGet("proficiencia-escolas-dados")]
+        [ProducesResponseType(typeof(PainelEducacionalProficienciaEscolaDadosDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterProficienciaEscolaDados(string codigoUe, [FromServices] IConsultasProficienciaEscolaDadosUseCase consultaProficienciaEscolaDadosPainelEducacionalUseCase)
+     => Ok(await consultaProficienciaEscolaDadosPainelEducacionalUseCase.ObterProficienciaEscolaDados(codigoUe));
     }
 }
