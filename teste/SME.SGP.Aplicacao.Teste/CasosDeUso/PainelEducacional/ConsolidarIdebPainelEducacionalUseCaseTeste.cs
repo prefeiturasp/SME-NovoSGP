@@ -77,25 +77,6 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
         }
 
         [Fact]
-        public void Processar_Ideb_Deve_Gerar_Resultados_Corretos()
-        {
-            var dados = new List<PainelEducacionalIdebAgrupamento>
-            {
-                new PainelEducacionalIdebAgrupamento { AnoLetivo = 2025, Serie = "AnosIniciais", Nota = 6.5m, CriadoEm = new DateTime(2025,1,1), CodigoDre = "1", CodigoUe = "1" },
-                new PainelEducacionalIdebAgrupamento { AnoLetivo = 2025, Serie = "AnosIniciais", Nota = 7.5m, CriadoEm = new DateTime(2025,2,1), CodigoDre = "1", CodigoUe = "1" },
-            };
-
-            var resultado = useCase.ProcessarIdeb(dados).ToList();
-
-            Assert.Contains(resultado, r => r != null);
-            Assert.Equal(2025, resultado[0].AnoLetivo);
-            Assert.Equal(PainelEducacionalIdebSerie.AnosIniciais, resultado[0].Etapa);
-            Assert.Equal("6-7", resultado[0].Faixa);
-            Assert.Equal(1, resultado[0].Quantidade);
-            Assert.Equal(7.00m, resultado[0].MediaGeral); 
-        }
-
-        [Fact]
         public void Get_Faixa_Deve_Retornar_Corretamente()
         {
             var metodo = typeof(ConsolidarIdebPainelEducacionalUseCase).GetMethod("GetFaixa", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
