@@ -641,12 +641,14 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioFluenciaLeitora, RepositorioFluenciaLeitora>();
             services.TryAddScoped<IRepositorioProficienciaIdep, RepositorioProficienciaIdep>();
             services.TryAddScoped<IRepositorioTaxaAlfabetizacao, RepositorioTaxaAlfabetizacao>();
+            services.TryAddScoped<IRepositorioSondagemEscritaUe, RepositorioSondagemEscritaUe>();
 
             services.TryAddScoped<IRepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobal, RepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobal>();
             services.TryAddScoped<IRepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobalEscola, RepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobalEscola>();
             services.TryAddScoped<IRepositorioPainelEducacionalRegistroFrequenciaAgrupamentoMensal, RepositorioPainelEducacionalRegistroFrequenciaAgrupamentoMensal>();
             services.TryAddScoped<IRepositorioPainelEducacionalFluenciaLeitoraConsulta, RepositorioPainelEducacionalFluenciaLeitoraConsulta>();
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoTaxaAlfabetizacao, RepositorioPainelEducacionalConsolidacaoTaxaAlfabetizacao>();
+            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoSondagemEscritaUe, RepositorioPainelEducacionalConsolidacaoSondagemEscritaUe>();
 
             //Painel Educacional
             services.AddTransient<IRepositorioIdepPainelEducacionalConsulta, RepositorioIdepPainelEducacionalConsulta>();
@@ -665,40 +667,7 @@ namespace SME.SGP.IoC
 
             services.TryAddScoped<IRepositorioConsolidacaoFluenciaLeitora, RepositorioConsolidacaoFluenciaLeitora>();
             services.TryAddScoped<IConsolidarTaxaAlfabetizacaoPainelEducacionalUseCase, ConsolidarTaxaAlfabetizacaoPainelEducacionalUseCase>();
-            services.TryAddScoped<IRepositorioPainelEducacionalPap, RepositorioPainelEducacionalPap>();
-        }
-        
-        public virtual void RegistrarElasticSearch(IServiceCollection services, IConfiguration configuration)
-        {
-            var urls = configuration["ElasticSearch:Urls"];
-            var usuario = configuration["ElasticSearch:Usuario"];
-            var senha = configuration["ElasticSearch:Senha"];
-            var nodes = new List<Uri>();
-
-            if (string.IsNullOrEmpty(urls))
-                return;
-
-            if (urls.Contains(','))
-            {
-                string[] listaUrls = urls.Split(',');
-                foreach (string url in listaUrls)
-                    nodes.Add(new Uri(url));
-            }
-            else
-                nodes.Add(new Uri(urls));
-
-            var connectionPool = new StaticConnectionPool(nodes);
-            var settings = new ConnectionSettings(connectionPool)
-                .ServerCertificateValidationCallback((sender, cert, chain, errors) => true).DisableDirectStreaming();
-
-            if (!string.IsNullOrEmpty(usuario) && !string.IsNullOrEmpty(senha))
-                settings = settings.BasicAuthentication(usuario, senha);
-
-            var client = new ElasticClient(settings);
-
-            services.AddSingleton<IElasticClient>(client);
-
-            services.TryAddScoped<IRepositorioElasticTurma, RepositorioElasticTurma>();
+            services.TryAddScoped<IConsolidarSondagemEscritaUePainelEducacionalUseCase, ConsolidarSondagemEscritaUePainelEducacionalUseCase>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)
