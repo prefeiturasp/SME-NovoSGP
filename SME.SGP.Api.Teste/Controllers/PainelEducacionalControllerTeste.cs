@@ -6,6 +6,7 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra.Dtos.PainelEducacional;
+using SME.SGP.Infra.Dtos.PainelEducacional.SondagemEscrita;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -594,6 +595,79 @@ namespace SME.SGP.Api.Teste.Controllers
             Assert.Equal("654321", retorno.CodigoInep);
 
             mockUseCase.Verify(x => x.ObterProficienciaEscolaDados(It.Is<string>(c => c == codigoUe)), Times.Once);
+        }
+
+        [Fact]
+        public async Task Obter_Sondagem_Escrita_Deve_Retornar_Ok_Com_Dados()
+        {
+            var filtro = new FiltroPainelEducacionalAnoLetivoBimestre
+            {
+                AnoLetivo = 2025,
+                Bimestre = 1,
+                CodigoDre = "123",
+                CodigoUe = "456",
+                SerieAno = 3
+            };
+
+            var retornoEsperado = new List<SondagemEscritaDto>
+            {
+                new SondagemEscritaDto
+                {
+                    CodigoDre = "123",
+                    CodigoUe = "456",
+                    AnoLetivo = 2025,
+                    Bimestre = 1,
+                    SerieAno = 3,
+                    QuantidadeAlunos = 30
+                },
+                new SondagemEscritaDto
+                {
+                    CodigoDre = "123",
+                    CodigoUe = "456",
+                    AnoLetivo = 2025,
+                    Bimestre = 1,
+                    SerieAno = 3,
+                    QuantidadeAlunos = 25
+                }
+            };
+
+            var mockUseCase = new Mock<IConsultasSondagemEscritaUseCase>();
+            mockUseCase
+                .Setup(x => x.ObterSondagemEscrita(filtro.CodigoDre, filtro.CodigoUe, filtro.AnoLetivo, filtro.Bimestre, filtro.SerieAno))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterSondagemEscrita(filtro, mockUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsAssignableFrom<IEnumerable<SondagemEscritaDto>>(okResult.Value);
+
+            Assert.Collection(retorno,
+                item =>
+                {
+                    Assert.Equal("123", item.CodigoDre);
+                    Assert.Equal("456", item.CodigoUe);
+                    Assert.Equal(2025, item.AnoLetivo);
+                    Assert.Equal(1, item.Bimestre);
+                    Assert.Equal(3, item.SerieAno);
+                    Assert.Equal(30, item.QuantidadeAlunos);
+                },
+                item =>
+                {
+                    Assert.Equal("123", item.CodigoDre);
+                    Assert.Equal("456", item.CodigoUe);
+                    Assert.Equal(2025, item.AnoLetivo);
+                    Assert.Equal(1, item.Bimestre);
+                    Assert.Equal(3, item.SerieAno);
+                    Assert.Equal(25, item.QuantidadeAlunos);
+                });
+
+            mockUseCase.Verify(x => x.ObterSondagemEscrita(
+                It.Is<string>(d => d == filtro.CodigoDre),
+                It.Is<string>(u => u == filtro.CodigoUe),
+                It.Is<int>(a => a == filtro.AnoLetivo),
+                It.Is<int>(p => p == filtro.Bimestre),
+                It.Is<int>(s => s == filtro.SerieAno)
+            ), Times.Once);
         }
     }
 }
