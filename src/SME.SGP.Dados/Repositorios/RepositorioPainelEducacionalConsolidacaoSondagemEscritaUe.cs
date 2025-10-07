@@ -46,7 +46,7 @@ namespace SME.SGP.Dados.Repositorios
                 await writer.WriteAsync(item.SerieAno, NpgsqlTypes.NpgsqlDbType.Integer);
                 await writer.WriteAsync(item.QuantidadeAluno, NpgsqlTypes.NpgsqlDbType.Integer);
                 await writer.WriteAsync(item.Bimestre, NpgsqlTypes.NpgsqlDbType.Integer);
-                await writer.WriteAsync(item.CriadoEm, NpgsqlTypes.NpgsqlDbType.Timestamp);
+                await writer.WriteAsync(item.CriadoEm, NpgsqlTypes.NpgsqlDbType.TimestampTz);
             }
 
             await writer.CompleteAsync();
