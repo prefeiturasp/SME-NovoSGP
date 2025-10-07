@@ -22,8 +22,6 @@ namespace SME.SGP.Dados.Repositorios
         {
             string anoMinimo = "2019";
 
-            try
-            {
                 string query = @"SELECT 
                                 pp.""schoolCodeEol"" AS CodigoUe,
                                 pp.""dreCodeEol"" AS CodigoDre,
@@ -56,12 +54,6 @@ namespace SME.SGP.Dados.Repositorios
                 using var connection = new NpgsqlConnection(sondagemConnectionString);
                 await connection.OpenAsync();
                 return await connection.QueryAsync<SondagemEscritaUeDto>(query, new { anoMinimo });
-            }
-            catch (Exception ex)
-            {
-
-            }
-            return null;
         }
     }
 }

@@ -11,5 +11,5 @@ CREATE TABLE IF NOT EXISTS public.painel_educacional_consolidacao_sondagem_escri
     serie_ano INT NOT NULL,
     quantidade_aluno INT NOT NULL,
     bimestre INT NOT NULL,
-    criado_em TIMESTAMPTZ NOT NULL
+    criado_em TIMESTAMP NOT NULL
 );
