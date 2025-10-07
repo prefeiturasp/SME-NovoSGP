@@ -601,10 +601,10 @@ namespace SME.SGP.Api.Teste.Controllers
         [Fact]
         public async Task Obter_Sondagem_Escrita_Deve_Retornar_Ok_Com_Dados()
         {
-            var filtro = new FiltroPainelEducacionalAnoLetivoPeriodo
+            var filtro = new FiltroPainelEducacionalAnoLetivoBimestre
             {
                 AnoLetivo = 2025,
-                Periodo = 1,
+                Bimestre = 1,
                 CodigoDre = "123",
                 CodigoUe = "456",
                 SerieAno = 3
@@ -634,7 +634,7 @@ namespace SME.SGP.Api.Teste.Controllers
 
             var mockUseCase = new Mock<IConsultasSondagemEscritaUseCase>();
             mockUseCase
-                .Setup(x => x.ObterSondagemEscrita(filtro.CodigoDre, filtro.CodigoUe, filtro.AnoLetivo, filtro.Periodo, filtro.SerieAno))
+                .Setup(x => x.ObterSondagemEscrita(filtro.CodigoDre, filtro.CodigoUe, filtro.AnoLetivo, filtro.Bimestre, filtro.SerieAno))
                 .ReturnsAsync(retornoEsperado);
 
             var result = await _controller.ObterSondagemEscrita(filtro, mockUseCase.Object);
@@ -666,7 +666,7 @@ namespace SME.SGP.Api.Teste.Controllers
                 It.Is<string>(d => d == filtro.CodigoDre),
                 It.Is<string>(u => u == filtro.CodigoUe),
                 It.Is<int>(a => a == filtro.AnoLetivo),
-                It.Is<int>(p => p == filtro.Periodo),
+                It.Is<int>(p => p == filtro.Bimestre),
                 It.Is<int>(s => s == filtro.SerieAno)
             ), Times.Once);
         }

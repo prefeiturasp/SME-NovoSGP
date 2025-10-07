@@ -18,9 +18,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
 
         public async Task<IEnumerable<SondagemEscritaDto>> ObterSondagemEscrita(string codigoDre, string codigoUe, int anoLetivo, int bimestre, int serieAno)
         {
-            var sondagemEscrita = await mediator.Send(new ObterSondagemEscritaQuery(codigoDre, codigoUe, anoLetivo, bimestre, serieAno));
-
-            return sondagemEscrita;
+            return await mediator.Send(new ObterSondagemEscritaQuery(codigoDre, codigoUe, anoLetivo, bimestre, serieAno));
         }
     }
 }
