@@ -6,6 +6,7 @@ using SME.SGP.Infra.Dtos.PainelEducacional;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
 {
@@ -24,6 +25,14 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                 throw new NegocioException("Informe a unidade escolar");
 
             var proficienciaIdeb = await mediator.Send(new ObterProficienciaIdepQuery(anoLetivo, codigoUe));
+
+            if (anoLetivo <= 0)
+            {
+                proficienciaIdeb = proficienciaIdeb
+                    .OrderByDescending(p => p.AnoLetivo) 
+                    .Take(5)
+                    .ToList();
+            }
 
             return proficienciaIdeb;
         }
