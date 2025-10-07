@@ -33,8 +33,6 @@ namespace SME.SGP.Dados.Repositorios
 
             foreach (var item in indicadores)
             {
-                item.CriadoEm = DateTime.Now;
-
                 await writer.StartRowAsync();
                 await writer.WriteAsync(item.CodigoDre, NpgsqlTypes.NpgsqlDbType.Varchar);
                 await writer.WriteAsync(item.CodigoUe, NpgsqlTypes.NpgsqlDbType.Varchar);
