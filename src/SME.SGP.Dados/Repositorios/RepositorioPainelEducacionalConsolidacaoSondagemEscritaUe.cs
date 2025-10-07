@@ -3,6 +3,7 @@ using Npgsql;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -26,12 +27,14 @@ namespace SME.SGP.Dados.Repositorios
 
             await using var writer = conn.BeginBinaryImport(@"
                 COPY painel_educacional_consolidacao_sondagem_escrita_ue 
-                    (codigo_dre, codigo_ue, pre_silabico, silabico_sem_valor, silabico_com_valor, silabico_alfabetico, alfabetico, sem_preenchimento, ano_letivo, serie_ano, quantidade_aluno, bimestre) 
+                    (codigo_dre, codigo_ue, pre_silabico, silabico_sem_valor, silabico_com_valor, silabico_alfabetico, alfabetico, sem_preenchimento, ano_letivo, serie_ano, quantidade_aluno, bimestre, criado_em) 
                 FROM STDIN (FORMAT BINARY)
             ");
 
             foreach (var item in indicadores)
             {
+                item.CriadoEm = DateTime.Now;
+
                 await writer.StartRowAsync();
                 await writer.WriteAsync(item.CodigoDre, NpgsqlTypes.NpgsqlDbType.Varchar);
                 await writer.WriteAsync(item.CodigoUe, NpgsqlTypes.NpgsqlDbType.Varchar);
@@ -45,6 +48,7 @@ namespace SME.SGP.Dados.Repositorios
                 await writer.WriteAsync(item.SerieAno, NpgsqlTypes.NpgsqlDbType.Integer);
                 await writer.WriteAsync(item.QuantidadeAluno, NpgsqlTypes.NpgsqlDbType.Integer);
                 await writer.WriteAsync(item.Bimestre, NpgsqlTypes.NpgsqlDbType.Integer);
+                await writer.WriteAsync(item.CriadoEm, NpgsqlTypes.NpgsqlDbType.Timestamp);
             }
 
             await writer.CompleteAsync();
