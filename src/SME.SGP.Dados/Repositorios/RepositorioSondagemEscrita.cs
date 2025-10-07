@@ -16,7 +16,19 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<SondagemEscritaDto>> ObterSondagemEscritaAsync(string codigoDre, string codigoUe, int anoLetivo, int bimestre, int serieAno)
         {
-            string query = @"select * from painel_educacional_consolidacao_sondagem_escrita_ue
+             string query = @"select codigo_dre,
+                                     codigo_ue,
+                                     pre_silabico,
+                                     silabico_sem_valor,
+                                     silabico_com_valor,
+                                     silabico_alfabetico,
+                                     alfabetico,
+                                     sem_preenchimento,
+                                     ano_letivo,
+                                     serie_ano,
+                                     quantidade_aluno AS QuantidadeAlunos,
+                                     bimestre
+                             from painel_educacional_consolidacao_sondagem_escrita_ue
                              where 1 = 1 ";
 
             if (!string.IsNullOrWhiteSpace(codigoDre))
