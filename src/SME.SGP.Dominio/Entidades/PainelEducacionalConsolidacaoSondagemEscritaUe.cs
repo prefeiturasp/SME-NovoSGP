@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Dominio.Entidades
+﻿using System;
+
+namespace SME.SGP.Dominio.Entidades
 {
     public class PainelEducacionalConsolidacaoSondagemEscritaUe
     {
@@ -14,5 +16,6 @@
         public int AnoLetivo { get; set; }
         public int QuantidadeAluno { get; set; }
         public int Bimestre { get; set; }
+        public DateTime CriadoEm { get; set; } 
     }
 }
