@@ -110,7 +110,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
                 .ReturnsAsync((FechamentoTurma)null);
 
             var exception = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(new FiltroInconsistenciasAlunoFamiliaDto(1, 1)));
-            Assert.Contains("Fechamento da turma não localizado", exception.Message);
+            Assert.Contains("Fechamento da turma não encontrado", exception.Message);
         }
 
         [Fact(DisplayName = "Executar_Quando_FechamentoTurmaNaoEncontrado_TurmaAnoAnterior_Deve_LancarNegocioException")]
@@ -152,7 +152,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
                 .ReturnsAsync((FechamentoTurma)null);
 
             var exception = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(new FiltroInconsistenciasAlunoFamiliaDto(1, 1)));
-            Assert.Equal("Fechamento da turma não localizado", exception.Message);
+            Assert.Equal("Fechamento da turma não encontrado", exception.Message);
         }
 
         [Fact(DisplayName = "Executar_Quando_NaoExisteConselhoClasseParaTurma_Deve_LancarNegocioException")]
@@ -197,7 +197,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
                 .ReturnsAsync(false);
 
             var exception = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(new FiltroInconsistenciasAlunoFamiliaDto(1, 1)));
-            Assert.Contains("Não foi encontrado registro de conselho de classe", exception.Message);
+            Assert.Contains("Não foi encontrado Conselho de Classe", exception.Message);
         }
 
         [Fact(DisplayName = "Executar_Quando_TurmaEnsinoMedio_SemTurmasAluno_Deve_LancarNegocioException")]
@@ -451,7 +451,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
         public async Task Executar_Quando_ComTurmasItinerarioEnsinoMedio_Deve_IncluirTurmasItinerario()
         {
             var anoAtual = DateTimeExtension.HorarioBrasilia().Year;
-
+            
             mediator.Setup(x => x.Send(It.IsAny<ObterTurmaPorIdQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new Turma { CodigoTurma = "1", ModalidadeCodigo = Modalidade.Medio, AnoLetivo = anoAtual, TipoTurma = TipoTurma.Regular, UeId = 1 });
 
@@ -475,9 +475,6 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
 
             mediator.Setup(x => x.Send(It.IsAny<ObterTurmaCodigosAlunoPorAnoLetivoUeTipoTurmaQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new string[] { "1", "2" });
-
-            mediator.Setup(x => x.Send(It.IsAny<ObterTurmasFechamentoConselhoPorAlunosQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<TurmaAlunoDto> { new() { TurmaCodigo = "1", TipoTurma = TipoTurma.Regular } });
 
             mediator.Setup(x => x.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new Usuario());
