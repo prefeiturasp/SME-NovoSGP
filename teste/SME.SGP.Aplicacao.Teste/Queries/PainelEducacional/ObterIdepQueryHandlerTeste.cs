@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.Aplicacao.Teste.Queries.Painel_Educacional
+namespace SME.SGP.Aplicacao.Teste.Queries.PainelEducacional
 {
     public class ObterIdepQueryHandlerTeste
     {
