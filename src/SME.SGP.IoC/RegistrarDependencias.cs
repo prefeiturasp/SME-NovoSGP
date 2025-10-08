@@ -673,7 +673,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPainelEducacionalAbandonoUe, RepositorioPainelEducacionalAbandonoUe>();
             services.TryAddScoped<IConsolidarSondagemEscritaUePainelEducacionalUseCase, ConsolidarSondagemEscritaUePainelEducacionalUseCase>();
             services.TryAddScoped<IConsolidarAbandonoPainelEducacionalUseCase, ConsolidarAbandonoPainelEducacionalUseCase>();
-
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)
