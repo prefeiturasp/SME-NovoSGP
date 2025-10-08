@@ -178,9 +178,9 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
             var resultado = await _useCase.Executar(_recomendacaoDto);
 
             Assert.NotNull(resultado);
-            Assert.Equal("Recomendação Aluno\r\n", resultado.TextoRecomendacaoAluno);
-            Assert.Equal("Recomendação Família\r\n", resultado.TextoRecomendacaoFamilia);
-            Assert.Equal("Anotação Pedagógica\r\n", resultado.AnotacoesPedagogicas);
+            Assert.Equal($"Recomendação Aluno{Environment.NewLine}", resultado.TextoRecomendacaoAluno);
+            Assert.Equal($"Recomendação Família{Environment.NewLine}", resultado.TextoRecomendacaoFamilia);
+            Assert.Equal($"Anotação Pedagógica{Environment.NewLine}", resultado.AnotacoesPedagogicas);
             Assert.NotNull(resultado.Auditoria);
             Assert.False(resultado.SomenteLeitura);
         }
