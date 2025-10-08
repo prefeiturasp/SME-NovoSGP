@@ -21,68 +21,54 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Funcionario
         }
 
         [Fact]
-        public async Task Executar_Quando_Limite_Zerado_Deve_Aplicar_Limite_Padrao_E_Retornar_Paginado()
+        public async Task Executar_Quando_Limite_Informado_E_Resultados_Maiores_Deve_Retornar_Paginado_Corretamente()
         {
-            var request = new FiltroPesquisaFuncionarioDto { Limite = 0 };
-            var funcionariosMock = new List<UsuarioEolRetornoDto>();
-            for (int i = 1; i <= 15; i++)
-            {
-                funcionariosMock.Add(new UsuarioEolRetornoDto { NomeServidor = $"Funcionario Z{15 - i}" });
-            }
+            var request = new FiltroPesquisaFuncionarioDto { Limite = 3 };
+            var funcionarios = new List<UsuarioEolRetornoDto>
+        {
+            new UsuarioEolRetornoDto { NomeServidor = "Zelia" },
+            new UsuarioEolRetornoDto { NomeServidor = "Ana" },
+            new UsuarioEolRetornoDto { NomeServidor = "Carlos" },
+            new UsuarioEolRetornoDto { NomeServidor = "Beatriz" },
+        };
 
             _mediatorMock.Setup(m => m.Send(It.IsAny<PesquisaFuncionariosPorDreUeQuery>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(funcionariosMock);
+                         .ReturnsAsync(funcionarios);
 
             var resultado = await _useCase.Executar(request);
 
             Assert.NotNull(resultado);
-            Assert.Equal(10, resultado.Items.Count());
-            Assert.Equal(10, resultado.TotalRegistros);
-            Assert.Equal("Funcionario Z0", resultado.Items.First().NomeServidor);
+            Assert.Equal(3, resultado.Items.Count());
+            Assert.Equal(3, resultado.TotalRegistros);
+            Assert.Equal(1, resultado.TotalPaginas);
+            Assert.Equal("Ana", resultado.Items.ElementAt(0).NomeServidor);
+            Assert.Equal("Beatriz", resultado.Items.ElementAt(1).NomeServidor);
+            Assert.Equal("Carlos", resultado.Items.ElementAt(2).NomeServidor);
         }
 
         [Fact]
-        public async Task Executar_Quando_Limite_Informado_Deve_Aplicar_Limite_Correto_E_Retornar_Paginado()
+        public async Task Executar_Quando_Limite_Nao_Informado_E_Resultados_Menores_Deve_Retornar_Paginado_Corretamente()
         {
-            var limiteInformado = 5;
-            var request = new FiltroPesquisaFuncionarioDto { Limite = limiteInformado };
-            var funcionariosMock = new List<UsuarioEolRetornoDto>();
-            for (int i = 1; i <= 8; i++)
+            var request = new FiltroPesquisaFuncionarioDto { Limite = 0 }; 
+            var funcionarios = new List<UsuarioEolRetornoDto>
             {
-                funcionariosMock.Add(new UsuarioEolRetornoDto { NomeServidor = $"Servidor B{8 - i}" });
-            }
-
-            _mediatorMock.Setup(m => m.Send(It.IsAny<PesquisaFuncionariosPorDreUeQuery>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(funcionariosMock);
-
-            var resultado = await _useCase.Executar(request);
-
-            Assert.NotNull(resultado);
-            Assert.Equal(limiteInformado, resultado.Items.Count());
-            Assert.Equal(limiteInformado, resultado.TotalRegistros);
-            Assert.Equal("Servidor B0", resultado.Items.First().NomeServidor);
-        }
-
-        [Fact]
-        public async Task Executar_Quando_Total_Funcionarios_Menor_Que_Limite_Deve_Retornar_Total_Correto()
-        {
-            var request = new FiltroPesquisaFuncionarioDto { Limite = 20 };
-            var funcionariosMock = new List<UsuarioEolRetornoDto>
-            {
-                new UsuarioEolRetornoDto { NomeServidor = "Maria" },
-                new UsuarioEolRetornoDto { NomeServidor = "Ana" },
-                new UsuarioEolRetornoDto { NomeServidor = "Zelia" }
+                new UsuarioEolRetornoDto { NomeServidor = "Marcos" },
+                new UsuarioEolRetornoDto { NomeServidor = "Fabio" },
+                new UsuarioEolRetornoDto { NomeServidor = "Julia" }
             };
 
             _mediatorMock.Setup(m => m.Send(It.IsAny<PesquisaFuncionariosPorDreUeQuery>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(funcionariosMock);
+                         .ReturnsAsync(funcionarios);
 
             var resultado = await _useCase.Executar(request);
 
             Assert.NotNull(resultado);
-            Assert.Equal(funcionariosMock.Count, resultado.Items.Count());
-            Assert.Equal(funcionariosMock.Count, resultado.TotalRegistros);
-            Assert.Equal("Ana", resultado.Items.First().NomeServidor);
+            Assert.Equal(3, resultado.Items.Count());
+            Assert.Equal(3, resultado.TotalRegistros);
+            Assert.Equal(1, resultado.TotalPaginas);
+            Assert.Equal("Fabio", resultado.Items.ElementAt(0).NomeServidor);
+            Assert.Equal("Julia", resultado.Items.ElementAt(1).NomeServidor);
+            Assert.Equal("Marcos", resultado.Items.ElementAt(2).NomeServidor);
         }
     }
 }

@@ -11,38 +11,45 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Grade
 {
     public class ObterGradeAulasPorTurmaEProfessorUseCaseTeste
     {
-        [Fact]
-        public async Task Executar_Quando_Valido_Deve_Chamar_Queries_E_Retornar_Grade()
+        private readonly Mock<IMediator> _mediatorMock;
+        private readonly ObterGradeAulasPorTurmaEProfessorUseCase _useCase;
+
+        public ObterGradeAulasPorTurmaEProfessorUseCaseTeste()
         {
-            var mediatorMock = new Mock<IMediator>();
-            var useCase = new ObterGradeAulasPorTurmaEProfessorUseCase();
+            _mediatorMock = new Mock<IMediator>();
+            _useCase = new ObterGradeAulasPorTurmaEProfessorUseCase();
+        }
 
-            var turmaCodigo = "TURMA-123";
-            var componenteCurricular = 50L;
-            var dataAula = DateTime.Now.Date;
-            var codigoRf = "RF-456";
+        [Fact]
+        public async Task Executar_QuandoChamado_DeveInvocarMediatorCorretamente()
+        {
+            var turmaCodigo = "123";
+            long componenteCurricularId = 456;
+            var dataAula = DateTime.Now;
+            var codigoRf = "789";
             var ehRegencia = true;
-            var gradeRetorno = new GradeComponenteTurmaAulasDto { PodeEditar = true, QuantidadeAulasGrade = 2 };
 
-            mediatorMock.Setup(m => m.Send(It.Is<AulaDeExperienciaPedagogicaQuery>(q => q.ComponenteCurricular == componenteCurricular), It.IsAny<CancellationToken>()))
-                        .ReturnsAsync(false);
+            var retornoEsperado = new GradeComponenteTurmaAulasDto { PodeEditar = true, QuantidadeAulasGrade = 2 };
 
-            mediatorMock.Setup(m => m.Send(
-                            It.Is<ObterGradeAulasPorTurmaEProfessorQuery>(q =>
-                                q.TurmaCodigo == turmaCodigo &&
-                                q.ComponentesCurriculares.Contains(componenteCurricular) &&
-                                q.DataAula == dataAula &&
-                                q.CodigoRf == codigoRf &&
-                                q.EhRegencia == ehRegencia), It.IsAny<CancellationToken>()))
-                        .ReturnsAsync(gradeRetorno);
+            _mediatorMock.Setup(m => m.Send(It.Is<AulaDeExperienciaPedagogicaQuery>(q => q.ComponenteCurricular == componenteCurricularId),
+                                           It.IsAny<CancellationToken>()))
+                         .ReturnsAsync(false);
 
-            var resultado = await useCase.Executar(mediatorMock.Object, turmaCodigo, componenteCurricular, dataAula, codigoRf, ehRegencia);
+            _mediatorMock.Setup(m => m.Send(It.Is<ObterGradeAulasPorTurmaEProfessorQuery>(q => q.TurmaCodigo == turmaCodigo &&
+                                                                                                q.ComponentesCurriculares.Contains(componenteCurricularId) &&
+                                                                                                q.DataAula == dataAula &&
+                                                                                                q.CodigoRf == codigoRf &&
+                                                                                                q.EhRegencia == ehRegencia), It.IsAny<CancellationToken>()))
+                         .ReturnsAsync(retornoEsperado);
+
+            var resultado = await _useCase.Executar(_mediatorMock.Object, turmaCodigo, componenteCurricularId, dataAula, codigoRf, ehRegencia);
 
             Assert.NotNull(resultado);
-            Assert.Equal(gradeRetorno, resultado);
+            Assert.Equal(retornoEsperado.PodeEditar, resultado.PodeEditar);
+            Assert.Equal(retornoEsperado.QuantidadeAulasGrade, resultado.QuantidadeAulasGrade);
 
-            mediatorMock.Verify(m => m.Send(It.Is<AulaDeExperienciaPedagogicaQuery>(q => q.ComponenteCurricular == componenteCurricular), It.IsAny<CancellationToken>()), Times.Once);
-            mediatorMock.Verify(m => m.Send(It.IsAny<ObterGradeAulasPorTurmaEProfessorQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+            _mediatorMock.Verify(m => m.Send(It.IsAny<AulaDeExperienciaPedagogicaQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+            _mediatorMock.Verify(m => m.Send(It.IsAny<ObterGradeAulasPorTurmaEProfessorQuery>(), It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }
