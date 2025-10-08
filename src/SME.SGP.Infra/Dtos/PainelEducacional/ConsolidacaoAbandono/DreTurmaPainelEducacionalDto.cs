@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SME.SGP.Infra.Dtos.PainelEducacional
+namespace SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoAbandono
 {
     public class DreTurmaPainelEducacionalDto
     {
