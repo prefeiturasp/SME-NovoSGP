@@ -4,4 +4,8 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SME.SGP.Dominio\SME.SGP.Dominio.csproj" />
+  </ItemGroup>
+
 </Project>
