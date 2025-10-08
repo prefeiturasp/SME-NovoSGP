@@ -123,28 +123,12 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterConsolidacaoTaxaAlfabetizacao(int anoLetivo, string codigoDre, string codigoUe, [FromServices] IConsultasPainelEducacionalTaxaAlfabetizacaoUseCase consultasFluenciaLeitoraUseCase)
        => Ok(await consultasFluenciaLeitoraUseCase.Executar(anoLetivo, codigoDre, codigoUe));
 
-        [HttpGet("proficiencia-idep")]
-        [ProducesResponseType(typeof(PainelEducacionalProficienciaIdepDto), 200)]
+        [HttpGet("abandono")]
+        [ProducesResponseType(typeof(PainelEducacionalAbandonoModalidadeDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterProficienciaIdep(int anoLetivo, string codigoUe, [FromServices] IConsultasProficienciaIdebPainelEducacionalUseCase consultaProficienciaIdebPainelEducacionalUseCase)
-         => Ok(await consultaProficienciaIdebPainelEducacionalUseCase.ObterProficienciaIdep(anoLetivo, codigoUe));
-
-        [HttpGet("proficiencia-escolas-dados")]
-        [ProducesResponseType(typeof(PainelEducacionalProficienciaEscolaDadosDto), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterProficienciaEscolaDados(string codigoUe, [FromServices] IConsultasProficienciaEscolaDadosUseCase consultaProficienciaEscolaDadosPainelEducacionalUseCase)
-     => Ok(await consultaProficienciaEscolaDadosPainelEducacionalUseCase.ObterProficienciaEscolaDados(codigoUe));
-
-        [HttpGet("sondagem-escrita")]
-        [ProducesResponseType(typeof(PainelEducacionalSondagemEscritaDto), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterSondagemEscrita([FromQuery] FiltroPainelEducacionalAnoLetivoBimestre filtro, [FromServices] IConsultasSondagemEscritaUseCase consultasSondagemEscritaUseCase)
-    => Ok(await consultasSondagemEscritaUseCase.ObterSondagemEscrita(filtro.CodigoDre, filtro.CodigoUe, filtro.AnoLetivo, filtro.Bimestre, filtro.SerieAno));
+        public async Task<IActionResult> ObterConsolidacaoAbandono(int anoLetivo, string codigoDre, string codigoUe, [FromServices] IConsultasAbandonoPainelEducacionalUseCase consultasAbandonoPainelEducacionalUseCase)
+        => Ok(await consultasAbandonoPainelEducacionalUseCase.ObterAbandonoVisaoSmeDre(anoLetivo, codigoDre, codigoUe));
     }
 }
