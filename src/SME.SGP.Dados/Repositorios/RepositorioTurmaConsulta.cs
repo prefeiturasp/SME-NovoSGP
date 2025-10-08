@@ -284,7 +284,7 @@ namespace SME.SGP.Dados.Repositorios
                     turmas.Add(turma);
 
                 return turma;
-            }, new { anoLetivo, modalidade, codigoTurma, tipoTurma, pagina = pagina - 1});
+            }, new { anoLetivo, modalidade, codigoTurma, tipoTurma, pagina = pagina - 1 });
 
             return turmas;
         }
@@ -514,7 +514,7 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine(@$" and t.modalidade_codigo = @modalidade
                                 and t.ano_letivo = @anoLetivo
-                                {(anoLetivo == DateTime.Today.Year ? " and not t.historica" : string.Empty) }
+                                {(anoLetivo == DateTime.Today.Year ? " and not t.historica" : string.Empty)}
                                 and t.tipo_turma not in(@tipoTurma)
                             order by coalesce(t.nome_filtro,t.nome)
                             OFFSET @quantidadeRegistrosIgnorados ROWS FETCH NEXT @quantidadeRegistros ROWS ONLY; ");
@@ -538,7 +538,7 @@ namespace SME.SGP.Dados.Repositorios
                                 and t.ano_letivo = @anoLetivo
                                 {(anoLetivo == DateTime.Today.Year ? "and not t.historica " : string.Empty)}
                                 and t.tipo_turma not in(@tipoTurma)");
-            
+
             var retorno = new PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>();
             var parametros = new
             {
@@ -1134,10 +1134,11 @@ namespace SME.SGP.Dados.Repositorios
                            and t.modalidade_codigo = @modalidade
                            and t.tipo_turma = @tipoTurma";
 
-            return await contexto.Conexao.QueryAsync<TurmaRetornoDto>(query, 
-                new { 
-                    codigoUe, 
-                    anoLetivo, 
+            return await contexto.Conexao.QueryAsync<TurmaRetornoDto>(query,
+                new
+                {
+                    codigoUe,
+                    anoLetivo,
                     modalidade = (int)Modalidade.Fundamental,
                     tipoTurma = (int)TipoTurma.Regular
                 });
@@ -1154,6 +1155,25 @@ namespace SME.SGP.Dados.Repositorios
                                  from turma";
 
             return await contexto.Conexao.QueryAsync<TurmaPainelEducacionalFrequenciaDto>(query);
+        }
+
+        public async Task<IEnumerable<TurmaPainelEducacionalDto>> ObterTurmasPainelEducacionalAsync(int anoLetivo)
+        {
+            var query = @"select t.turma_Id as TurmaId, 
+                                 t.ue_id as CodigoUe,
+                                 d.dre_id as CodigoDre,
+                                 t.nome as Nome, 
+                                 t.modalidade_codigo as ModalidadeCodigo,
+                                 t.ano_letivo as AnoLetivo,
+                                 t.ano
+                            from turma t
+                            inner join ue u on t.ue_id = u.id
+                            inner join dre d on
+                            u.dre_id = d.id
+                            where t.tipo_turma = 1 --Turma Regular
+                            and ano_letivo = @anoLetivo";
+
+            return await contexto.Conexao.QueryAsync<TurmaPainelEducacionalDto>(query, new { anoLetivo });
         }
     }
 }
