@@ -1,4 +1,4 @@
-﻿using SME.SGP.Infra.Dtos.PainelEducacional;
+using SME.SGP.Dominio.Entidades;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional
 {
     public interface IConsultasAbandonoPainelEducacionalUseCase
     {
-        Task<IEnumerable<PainelEducacionalAbandonoSmeDreDto>> ObterAbandonoVisaoSmeDre(int anoLetivo, string codigoDre);
+        Task<IEnumerable<PainelEducacionalAbandono>> ObterAbandonoVisaoSmeDre(int anoLetivo, string codigoDre, string codigoUe);
     }
 }
