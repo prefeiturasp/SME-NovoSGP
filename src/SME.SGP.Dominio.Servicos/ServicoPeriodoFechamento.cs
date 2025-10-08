@@ -194,7 +194,7 @@ namespace SME.SGP.Dominio.Servicos
         public async Task Salvar(FechamentoDto fechamentoDto)
         {
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
-            var fechamento = MapearParaDominio(fechamentoDto);
+            var fechamento = await MapearParaDominioAsync(fechamentoDto); 
 
             unitOfWork.IniciarTransacao();
             var id = repositorioPeriodoFechamento.Salvar(fechamento);
@@ -379,11 +379,28 @@ namespace SME.SGP.Dominio.Servicos
             return listaFechamentoBimestre;
         }
 
-        private PeriodoFechamento MapearParaDominio(FechamentoDto fechamentoDto)
+        private async Task<PeriodoFechamento> MapearParaDominioAsync(FechamentoDto fechamentoDto)
         {
             var fechamento = repositorioPeriodoFechamento.ObterPorFiltros(fechamentoDto.TipoCalendarioId.Value, null);
             if (fechamento.EhNulo())
                 fechamento = new PeriodoFechamento();
+
+            fechamento.Aplicacao = fechamentoDto.Aplicacao;
+            fechamento.Migrado = fechamentoDto.Migrado;
+
+            if (fechamentoDto.DreId != 0 && fechamentoDto.DreId > 0)
+            {
+                var dre = await repositorioDre.ObterPorIdAsync(Convert.ToInt32(fechamentoDto.DreId));
+                if (dre.NaoEhNulo())
+                    fechamento.AdicionarDre(dre);
+            }
+
+            if (fechamentoDto.UeId != 0 && fechamentoDto.UeId > 0)
+            {
+                var ue = repositorioUe.ObterPorId(Convert.ToInt32(fechamentoDto.UeId));
+                if (ue.NaoEhNulo())
+                    fechamento.AdicionarUe(ue);
+            }
 
             var tipoCalendario = repositorioTipoCalendario.ObterPorId(fechamentoDto.TipoCalendarioId.Value);
             if (tipoCalendario.EhNulo())
@@ -418,9 +435,9 @@ namespace SME.SGP.Dominio.Servicos
             return fechamento.EhNulo() ? null : new FechamentoDto
             {
                 Id = fechamento.Id,
-                DreId = fechamento.Dre?.CodigoDre,
+                DreId = fechamento.DreId,
                 TipoCalendarioId = fechamento.FechamentosBimestre.FirstOrDefault().PeriodoEscolar.TipoCalendarioId,
-                UeId = fechamento.Ue?.CodigoUe,
+                UeId = fechamento.UeId,
                 FechamentosBimestres = MapearFechamentoBimestreParaDto(fechamento).OrderBy(c => c.Bimestre),
                 AlteradoEm = fechamento.AlteradoEm,
                 AlteradoPor = fechamento.AlteradoPor,
@@ -428,7 +445,8 @@ namespace SME.SGP.Dominio.Servicos
                 CriadoEm = fechamento.CriadoEm,
                 CriadoPor = fechamento.CriadoPor,
                 CriadoRF = fechamento.CriadoRF,
-                Migrado = fechamento.Migrado
+                Migrado = fechamento.Migrado,
+                Aplicacao = fechamento.Aplicacao
             };
         }
     }

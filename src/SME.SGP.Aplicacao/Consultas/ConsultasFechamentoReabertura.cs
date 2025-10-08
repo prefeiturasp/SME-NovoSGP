@@ -53,7 +53,8 @@ namespace SME.SGP.Aplicacao
                 DataFim = item.Fim,
                 Descricao = item.Descricao,
                 Id = item.Id,
-                BimestresQuantidadeTotal = item.TipoCalendario.QuantidadeDeBimestres()
+                BimestresQuantidadeTotal = item.TipoCalendario.QuantidadeDeBimestres(),
+                Aplicacao = item.Aplicacao
             };
         }
 

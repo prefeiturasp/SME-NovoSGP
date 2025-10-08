@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Dominio;
+using System;
 
 namespace SME.SGP.Infra
 {
@@ -11,5 +12,6 @@ namespace SME.SGP.Infra
         public DateTime Inicio { get; set; }
         public long TipoCalendarioId { get; set; }
         public string UeCodigo { get; set; }
+        public AplicacaoSondagem Aplicacao { get; set; }
     }
 }
