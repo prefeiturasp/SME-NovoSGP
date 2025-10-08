@@ -29,6 +29,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(a => a.Migrado).ToColumn("migrado");
             Map(a => a.Status).ToColumn("status");
             Map(a => a.AprovadoEm).ToColumn("aprovado_em");
+            Map(a => a.Aplicacao).ToColumn("aplicacao"); 
         }
     }
 }

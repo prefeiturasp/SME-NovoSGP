@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SME.SGP.Dominio;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Infra
@@ -17,7 +18,7 @@ namespace SME.SGP.Infra
 
         [Required(ErrorMessage = "O tipo de calendário é obrigatório")]
         public long? TipoCalendarioId { get; set; }
-        public Dominio.Aplicacao Aplicacao { get; set; }
+        public AplicacaoSondagem Aplicacao { get; set; }
         public long? UeId { get; set; }
         public bool EhRegistroExistente { get; set; }
     }
