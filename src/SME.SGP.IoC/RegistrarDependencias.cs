@@ -64,7 +64,6 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PlanoAEE;
 
 namespace SME.SGP.IoC
 {
-    [ExcludeFromCodeCoverage]
     public class RegistrarDependencias
     {
         public virtual void Registrar(IServiceCollection services, IConfiguration configuration)
