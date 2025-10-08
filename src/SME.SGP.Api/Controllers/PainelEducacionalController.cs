@@ -7,6 +7,7 @@ using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
+using SME.SGP.Infra.Dtos.PainelEducacional.IndicadoresPap;
 using SME.SGP.Infra.Dtos.PainelEducacional.SondagemEscrita;
 using System.Threading.Tasks;
 
@@ -83,12 +84,12 @@ namespace SME.SGP.Api.Controllers
           => Ok(await consultasVisaoGeralPainelEducacionalUseCase.ObterVisaoGeralConsolidada(anoLetivo, codigoDre, codigoUe));
 
         [HttpGet("indicadores-pap")]
-        [ProducesResponseType(typeof(PainelEducacionalInformacoesPapDto), 200)]
+        [ProducesResponseType(typeof(IndicadoresPapDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterIndicadoresPap([FromServices] IConsultasInformacoesPapUseCase consultasInformacoesPapUseCase, [FromQuery] FiltroPainelEducacionalDreUe filtro)
-        => Ok(await consultasInformacoesPapUseCase.ObterInformacoesPap(filtro.CodigoDre, filtro.CodigoUe));
+        public async Task<IActionResult> ObterIndicadoresPap([FromServices] IConsultasInformacoesPapUseCase consultasInformacoesPapUseCase, [FromQuery] int anoLetivo, [FromQuery] string codigoDre, [FromQuery] string codigoUe)
+        => Ok(await consultasInformacoesPapUseCase.ObterInformacoesPap(anoLetivo, codigoDre, codigoUe));
 
         [HttpGet("fluencia-leitora")]
         [ProducesResponseType(typeof(PainelEducacionalRegistroFluenciaLeitoraAgrupamentoFluenciaDto), 200)]
