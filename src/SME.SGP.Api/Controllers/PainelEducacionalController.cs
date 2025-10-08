@@ -103,5 +103,13 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterConsolidacaoTaxaAlfabetizacao(int anoLetivo, string codigoDre, string codigoUe, [FromServices] IConsultasPainelEducacionalTaxaAlfabetizacaoUseCase consultasFluenciaLeitoraUseCase)
        => Ok(await consultasFluenciaLeitoraUseCase.Executar(anoLetivo, codigoDre, codigoUe));
+
+        [HttpGet("abandono")]
+        [ProducesResponseType(typeof(PainelEducacionalAbandonoModalidadeDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterConsolidacaoAbandono(int anoLetivo, string codigoDre, string codigoUe, [FromServices] IConsultasAbandonoPainelEducacionalUseCase consultasAbandonoPainelEducacionalUseCase)
+        => Ok(await consultasAbandonoPainelEducacionalUseCase.ObterAbandonoVisaoSmeDre(anoLetivo, codigoDre, codigoUe));
     }
 }
