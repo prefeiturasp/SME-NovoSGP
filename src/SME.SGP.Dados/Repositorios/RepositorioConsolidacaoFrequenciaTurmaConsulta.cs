@@ -201,12 +201,13 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<QuantitativoAlunosFrequenciaBaixaPorTurmaDto>> ObterQuantitativoAlunosFrequenciaBaixaPorTurma(int anoLetivo, TipoTurma tipoTurma)
         {
-            var query = @" select cfam.quantidade_abaixo_minimo_frequencia as quantidadeAbaixoMinimoFrequencia, 
-                                t.turma_id as codigoTurma
+            var query = @" select SUM(cfam.quantidade_abaixo_minimo_frequencia) as quantidadeAbaixoMinimoFrequencia, 
+                                  t.turma_id as codigoTurma
                            from consolidacao_frequencia_turma cfam
                                 inner join turma t on t.id = cfam.turma_id 
                           where t.ano_letivo = @anoLetivo
-                            and t.tipo_turma = @tipoTurma";
+                            and t.tipo_turma = @tipoTurma
+                          group by t.turma_id";
 
             return await database.Conexao.QueryAsync<QuantitativoAlunosFrequenciaBaixaPorTurmaDto>(query, new { anoLetivo, tipoTurma = (int)tipoTurma });
         }

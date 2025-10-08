@@ -67,7 +67,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await obterComunicadoEscolaAquiUseCase.Executar(id));
         }
 
-        [HttpGet("{codigoTurma}/alunos/{anoLetivo}")]
+        [HttpGet("{codigoTurma}/alunos/{AnoLetivo}")]
         [ProducesResponseType(typeof(IEnumerable<AlunoPorTurmaResposta>), 200)]
         [ProducesResponseType(typeof(IEnumerable<AlunoPorTurmaResposta>), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -125,7 +125,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(anoMinimo));
         }
 
-        [HttpGet("ues/{codigoUe}/anoletivo/{anoLetivo}/turmas")]
+        [HttpGet("ues/{codigoUe}/anoletivo/{AnoLetivo}/turmas")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(IEnumerable<DropdownTurmaRetornoDto>), 200)]
@@ -145,7 +145,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(consideraHistorico, modalidade, anoLetivo, ueCodigo));
         }
 
-        [HttpGet("filtro/anos-letivos/{anoLetivo}/dres/{dreCodigo}/ues/{ueCodigo}/quantidade-alunos")]
+        [HttpGet("filtro/anos-letivos/{AnoLetivo}/dres/{dreCodigo}/ues/{ueCodigo}/quantidade-alunos")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(QuantidadeCriancaDto), 200)]

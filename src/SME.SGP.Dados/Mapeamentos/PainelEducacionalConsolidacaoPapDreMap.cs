@@ -10,7 +10,7 @@ namespace SME.SGP.Dados.Mapeamentos
             ToTable("painel_educacional_consolidacao_pap_dre");
             Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
             Map(c => c.TipoPap).ToColumn("tipo_pap");
-            Map(c => c.CodigoDre).ToColumn("dre_codigo");
+            Map(c => c.CodigoDre).ToColumn("codigo_dre");
             Map(c => c.TotalTurmas).ToColumn("total_turmas");
             Map(c => c.TotalAlunos).ToColumn("total_alunos");
             Map(c => c.TotalAlunosComFrequenciaInferiorLimite).ToColumn("total_alunos_com_frequencia_inferior_limite");

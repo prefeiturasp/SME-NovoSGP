@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             using (var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO))
             {
                 var componentesCurriculares = String.Join("&componentesCurriculares=", request.ComponentesCurriculares);
-                var resposta = await httpClient.GetAsync(ServicosEolConstants.URL_COMPONENTES_CURRICULARES_DADOS_AULA_TURMA + $"?anoLetivo={request.AnoLetivo}&ueCodigo={request.UeCodigo}&componentesCurriculares={componentesCurriculares}&semestre={request.Semestre}", cancellationToken);
+                var resposta = await httpClient.GetAsync(ServicosEolConstants.URL_COMPONENTES_CURRICULARES_DADOS_AULA_TURMA + $"?AnoLetivo={request.AnoLetivo}&ueCodigo={request.UeCodigo}&componentesCurriculares={componentesCurriculares}&semestre={request.Semestre}", cancellationToken);
 
                 if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
                 {

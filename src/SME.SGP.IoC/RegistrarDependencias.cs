@@ -253,6 +253,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasIdebPainelEducacionalUseCase, ConsultasIdebPainelEducacionalUseCase>();
             services.TryAddScoped<IConsultasPainelEducacionalFluenciaLeitoraUseCase, ConsultasPainelEducacionalFluenciaLeitoraUseCase>();
             services.TryAddScoped<IConsultasProficienciaEscolaDadosUseCase, ConsultasProficienciaEscolaDadosUseCase>();
+            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoIndicadoresPap, RepositorioPainelEducacionalConsolidacaoIndicadoresPap>();
         }
 
         protected virtual void RegistrarContextos(IServiceCollection services)
@@ -656,7 +657,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioConsolidacaoAlfabetizacaoNivelEscrita, RepositorioConsolidacaoAlfabetizacaoNivelEscrita>();
             services.TryAddScoped<IRepositorioConsolidacaoAlfabetizacaoCriticaEscrita, RepositorioConsolidacaoAlfabetizacaoCriticaEscrita>();
             services.TryAddScoped<IRepositorioPainelEducacionalVisaoGeral, RepositorioPainelEducacionalVisaoGeral>();
-            services.TryAddScoped<IRepositorioPapConsulta, RepositorioPapConsulta>();
+            services.TryAddScoped<IRepositorioPainelEducacionalConsultaIndicadoresPap, RepositorioPainelEducacionalConsultaIndicadoresPap>();
             
             services.AddScoped<IRepositorioPainelEducacionalIdeb, RepositorioPainelEducacionalIdeb>();
             services.TryAddScoped<IRepositorioIdebPainelEducacionalConsulta, RepositorioIdebPainelEducacionalConsulta>();

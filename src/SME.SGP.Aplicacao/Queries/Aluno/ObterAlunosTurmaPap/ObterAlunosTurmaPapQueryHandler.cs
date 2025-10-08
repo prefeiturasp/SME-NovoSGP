@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using System;
@@ -23,18 +24,21 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosTurmaPap
         {
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
 
-            var url = request.AnoLetivo == null ?
-                      ServicosEolConstants.URL_ALUNOS_PAP_ANO_CORRENTE :
-                      string.Format(ServicosEolConstants.URL_ALUNOS_TURMAS_PAP_POR_ANO, request.AnoLetivo);
+            var url = request.AnoLetivo == DateTime.Now.Year ?
+                      ServicosEolConstants.URL_ALUNOS_TURMAS_PAP_ANO_CORRENTE :
+                      string.Format(ServicosEolConstants.URL_ALUNOS_TURMAS_PAP_ANO_LETIVO, request.AnoLetivo);
 
-            var response = await httpClient.GetAsync(url, cancellationToken);
+            using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            cts.CancelAfter(TimeSpan.FromSeconds(180));
+
+            var response = await httpClient.GetAsync(url, cts.Token);
 
             if (!response.IsSuccessStatusCode)
                 throw new Exception($"Não foi possível obter os alunos PAP. Erro: {response.StatusCode} - {response.ReasonPhrase}");
 
             var alunosPap = await response.Content.ReadAsStringAsync(cancellationToken);
             return !string.IsNullOrEmpty(alunosPap) ?
-                   System.Text.Json.JsonSerializer.Deserialize<IEnumerable<DadosMatriculaAlunoTipoPapDto>>(alunosPap) :
+                   JsonConvert.DeserializeObject<IEnumerable<DadosMatriculaAlunoTipoPapDto>>(alunosPap) :
                    Enumerable.Empty<DadosMatriculaAlunoTipoPapDto>();
         }
     }

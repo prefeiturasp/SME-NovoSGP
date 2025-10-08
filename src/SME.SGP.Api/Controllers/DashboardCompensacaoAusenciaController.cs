@@ -12,7 +12,7 @@ namespace SME.SGP.Api.Controllers
     [Route("api/v1/dashboard/compensacoes/ausencia")]
     public class DashboardCompensacaoAusenciaController : Controller
     {
-        [HttpGet("anos/{anoLetivo}/dres/{dreId}/ues/{ueId}/modalidades/{modalidade}/consolidado/anos-turmas")]
+        [HttpGet("anos/{AnoLetivo}/dres/{dreId}/ues/{ueId}/modalidades/{modalidade}/consolidado/anos-turmas")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(GraficoCompensacaoAusenciaDto), 200)]
@@ -22,7 +22,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(anoLetivo, dreId, ueId, modalidade, bimestre, semestre));
         }
 
-        [HttpGet("anos/{anoLetivo}/dres/{dreId}/ues/{ueId}/modalidades/{modalidade}/consolidado/compensacoes-consideradas")]
+        [HttpGet("anos/{AnoLetivo}/dres/{dreId}/ues/{ueId}/modalidades/{modalidade}/consolidado/compensacoes-consideradas")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(GraficoCompensacaoAusenciaDto), 200)]

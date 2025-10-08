@@ -8,14 +8,14 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.ExcluirConsolidacaoPap
 {
     public class ExcluirConsolidacaoPapCommandHandler : IRequestHandler<ExcluirConsolidacaoPapCommand, bool>
     {
-        private readonly IRepositorioPainelEducacionalPap repositorioPainelEducacionalPap;
-        public ExcluirConsolidacaoPapCommandHandler(IRepositorioPainelEducacionalPap repositorioPainelEducacionalPap)
+        private readonly IRepositorioPainelEducacionalConsolidacaoIndicadoresPap repositorioPainelEducacionalPap;
+        public ExcluirConsolidacaoPapCommandHandler(IRepositorioPainelEducacionalConsolidacaoIndicadoresPap repositorioPainelEducacionalPap)
         {
             this.repositorioPainelEducacionalPap = repositorioPainelEducacionalPap ?? throw new ArgumentNullException(nameof(repositorioPainelEducacionalPap));
         }
         public async Task<bool> Handle(ExcluirConsolidacaoPapCommand request, CancellationToken cancellationToken)
         {
-            await repositorioPainelEducacionalPap.ExcluirConsolidacaoApartirDoAno(request.AnoLetivo);
+            await repositorioPainelEducacionalPap.ExcluirConsolidacaoPorAno(request.AnoLetivo);
             return true;
         }
     }

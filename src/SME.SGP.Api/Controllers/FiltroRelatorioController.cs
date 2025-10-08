@@ -33,7 +33,7 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await obterFiltroRelatoriosModalidadesPorUeUseCase.Executar(codigoUe, anoLetivo, consideraHistorico, consideraNovasModalidades));
         }
-        [HttpGet("ues/{codigoUe}/{anoLetivo}/{consideraHistorico}/modalidades")]
+        [HttpGet("ues/{codigoUe}/{AnoLetivo}/{consideraHistorico}/modalidades")]
         public async Task<IActionResult> ObterModalidadesPorUeAnoLetivo(string codigoUe, int anoLetivo, bool consideraHistorico, [FromServices] IObterFiltroRelatoriosModalidadesPorUeUseCase obterFiltroRelatoriosModalidadesPorUeUseCase, bool consideraNovasModalidades = false)
         {
             return Ok(await obterFiltroRelatoriosModalidadesPorUeUseCase.Executar(codigoUe, anoLetivo, consideraHistorico, consideraNovasModalidades));
@@ -50,7 +50,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await obterFiltroRelatoriosAnosEscolaresPorModalidadeUeUseCase.Executar(codigoUe, modalidade));
         }
 
-        [HttpGet("ues/{codigoUe}/anoletivo/{anoLetivo}/turmas")]
+        [HttpGet("ues/{codigoUe}/anoletivo/{AnoLetivo}/turmas")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(IEnumerable<OpcaoDropdownDto>), 200)]
@@ -59,7 +59,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await obterTurmaPorAnoLetivoCodigoUeModalidadeSemestreUseCase.Executar(codigoUe, anoLetivo, modalidade, semestre, consideraNovosAnosInfantil));
         }
 
-        [HttpGet("turmas/ues/{codigoUe}/anoletivo/{anoLetivo}")]
+        [HttpGet("turmas/ues/{codigoUe}/anoletivo/{AnoLetivo}")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(IEnumerable<OpcaoDropdownDto>), 200)]
@@ -85,7 +85,7 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await obterFiltroRelatoriosAnosPorCicloModalidadeUseCase.Executar(cicloId, modalidade));
         }
-        [HttpGet("componentes-curriculares/anos-letivos/{anoLetivo}/ues/{codigoUe}/modalidades/{modalideId}")]
+        [HttpGet("componentes-curriculares/anos-letivos/{AnoLetivo}/ues/{codigoUe}/modalidades/{modalideId}")]
         [ProducesResponseType(typeof(IEnumerable<RetornoCicloDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]

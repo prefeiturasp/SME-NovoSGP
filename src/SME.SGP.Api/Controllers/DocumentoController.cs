@@ -15,7 +15,7 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class DocumentoController : ControllerBase
     {
-        [HttpGet("{documentoId}/tipo-documento/{tipoDocumentoId}/classificacao/{classificacaoId}/usuario/{usuarioId}/ue/{ueId}/anoLetivo/{anoLetivo}")]
+        [HttpGet("{documentoId}/tipo-documento/{tipoDocumentoId}/classificacao/{classificacaoId}/usuario/{usuarioId}/ue/{ueId}/AnoLetivo/{AnoLetivo}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [Permissao(Permissao.DPU_C, Policy = "Bearer")]

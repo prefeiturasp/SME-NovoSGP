@@ -15,7 +15,7 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class ComponentesCurricularesController : ControllerBase
     {
-        [HttpGet("ues/{codigoUe}/modalidades/{modalidade}/anos/{anoLetivo}/anos-escolares")]        
+        [HttpGet("ues/{codigoUe}/modalidades/{modalidade}/anos/{AnoLetivo}/anos-escolares")]        
         [ProducesResponseType(typeof(IEnumerable<ComponenteCurricularEol>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

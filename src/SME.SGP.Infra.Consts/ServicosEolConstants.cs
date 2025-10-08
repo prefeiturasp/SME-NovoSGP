@@ -255,7 +255,7 @@
 
         public const string URL_COMPONENTES_CURRICULARES_PROGRAMA_ALUNO = "alunos/{0}/turmas-programa/{1}/componentes-curriculares";
         public const string URL_TURMAS_TURMAS_PAP = "alunos/turmas-pap/{0}/ues/{1}";
-        public const string URL_ALUNOS_PAP_ANO_CORRENTE = "alunos/pap/ano-corrente";
-        public const string URL_ALUNOS_TURMAS_PAP_POR_ANO = "alunos/pap/anoLetivo/{0}";
+        public const string URL_ALUNOS_TURMAS_PAP_ANO_CORRENTE = "alunos/pap/ano-corrente";
+        public const string URL_ALUNOS_TURMAS_PAP_ANO_LETIVO = "alunos/pap/ano-letivo/{0}";
     }
 }

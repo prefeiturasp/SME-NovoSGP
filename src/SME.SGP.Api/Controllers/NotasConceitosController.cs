@@ -62,7 +62,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await consultasNotasConceitos.ObterValorArredondado(data, nota));
         }
 
-        [HttpGet("turmas/{turmaId}/anos-letivos/{anoLetivo}/tipos")]
+        [HttpGet("turmas/{turmaId}/anos-letivos/{AnoLetivo}/tipos")]
         [ProducesResponseType(typeof(TipoNota), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NC_C, Permissao.NC_I, Policy = "Bearer")]

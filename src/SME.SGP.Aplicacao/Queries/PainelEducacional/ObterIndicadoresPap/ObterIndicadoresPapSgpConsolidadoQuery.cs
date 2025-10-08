@@ -6,11 +6,11 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterIndicadoresPap
 {
     public class ObterIndicadoresPapSgpConsolidadoQuery : IRequest<IEnumerable<ContagemDificuldadeIndicadoresPapPorTipoDto>>
     {
-        public int AnoLetivo { get; set; }
+        public IEnumerable<DadosMatriculaAlunoTipoPapDto> DadosMatriculaAluno { get; set; }
 
-        public ObterIndicadoresPapSgpConsolidadoQuery(int anoLetivo)
+        public ObterIndicadoresPapSgpConsolidadoQuery(IEnumerable<DadosMatriculaAlunoTipoPapDto> dadosMatriculaAlunos)
         {
-            AnoLetivo = anoLetivo;
+            DadosMatriculaAluno = dadosMatriculaAlunos;
         }
     }
 }

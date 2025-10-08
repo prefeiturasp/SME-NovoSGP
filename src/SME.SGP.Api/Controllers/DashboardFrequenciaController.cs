@@ -83,7 +83,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(anoLetivo, dreId, ueId, modalidade, semestre));
         }
 
-        [HttpGet("anos/{anoLetivo}/dres/{dreId}/ues/{ueId}/modalidades/{modalidade}/anoTurma/{anoTurma}/consolidado-diario")]
+        [HttpGet("anos/{AnoLetivo}/dres/{dreId}/ues/{ueId}/modalidades/{modalidade}/anoTurma/{anoTurma}/consolidado-diario")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(GraficoFrequenciaAlunoDto), 200)]
@@ -105,7 +105,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(dto));
         }       
         
-        [HttpGet("anos/{anoLetivo}/dres/{dreId}/ues/{ueId}/modalidades/{modalidade}/anoTurma/{anoTurma}/consolidado-semanal-mensal")]
+        [HttpGet("anos/{AnoLetivo}/dres/{dreId}/ues/{ueId}/modalidades/{modalidade}/anoTurma/{anoTurma}/consolidado-semanal-mensal")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(GraficoFrequenciaAlunoDto), 200)]
@@ -126,7 +126,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(dto, dataInicio, datafim,mes, tipoConsolidadoFrequencia));
         }    
 
-        [HttpGet("filtro/anos/{anoLetivo}/semanas")]
+        [HttpGet("filtro/anos/{AnoLetivo}/semanas")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(IEnumerable<GraficoAusenciasComJustificativaResultadoDto>), 200)]

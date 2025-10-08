@@ -8,9 +8,9 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosTurmaPap
 {
     public class ObterAlunosTurmaPapQuery : IRequest<IEnumerable<DadosMatriculaAlunoTipoPapDto>>
     {
-        public int? AnoLetivo { get; set; }
+        public int AnoLetivo { get; set; }
 
-        public ObterAlunosTurmaPapQuery(int? anoLetivo = null)
+        public ObterAlunosTurmaPapQuery(int anoLetivo)
         {
             AnoLetivo = anoLetivo;
         }
@@ -22,7 +22,6 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosTurmaPap
         {
             RuleFor(c => c.AnoLetivo)
                 .GreaterThanOrEqualTo(PainelEducacionalConstants.ANO_LETIVO_MIM_LIMITE)
-                .When(c => c.AnoLetivo.HasValue)
                 .WithMessage($"Ano letivo deve ser maior ou igual a {PainelEducacionalConstants.ANO_LETIVO_MIM_LIMITE}.");
         }
     }

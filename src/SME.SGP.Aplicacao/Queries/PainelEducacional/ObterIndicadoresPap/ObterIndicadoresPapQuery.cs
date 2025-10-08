@@ -1,10 +1,9 @@
 using MediatR;
-using SME.SGP.Infra.Dtos.PainelEducacional;
-using System.Collections.Generic;
+using SME.SGP.Infra.Dtos.PainelEducacional.IndicadoresPap;
 
 namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterIndicadoresPap
 {
-    public class ObterIndicadoresPapQuery : IRequest<IEnumerable<PainelEducacionalInformacoesPapDto>>
+    public class ObterIndicadoresPapQuery : IRequest<IndicadoresPapDto>
     {
         public ObterIndicadoresPapQuery(int anoLetivo, string codigoDre, string codigoUe)
         {

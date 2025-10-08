@@ -222,7 +222,7 @@ namespace SME.SGP.Aplicacao.Servicos
             }
             catch (Exception e)
             {
-                var erro = $"Erro ao sincronizar abrangência histórica SGP - Chamada SincronizarAbrangenciaHistorica - anoLetivo: {anoLetivo}, professorRf {professorRf} - erro: {e.Message}";
+                var erro = $"Erro ao sincronizar abrangência histórica SGP - Chamada SincronizarAbrangenciaHistorica - AnoLetivo: {anoLetivo}, professorRf {professorRf} - erro: {e.Message}";
                 await mediator.Send(new SalvarLogViaRabbitCommand(erro, LogNivel.Negocio, LogContexto.Abrangencia, string.Empty));
 
                 throw new NegocioException($"Erro ao sincronizar abrangência histórica - Ano({anoLetivo}), RF({professorRf})");

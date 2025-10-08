@@ -14,7 +14,7 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class SinteseController : ControllerBase
     {
-        [HttpGet("{anoLetivo}")]
+        [HttpGet("{AnoLetivo}")]
         [ProducesResponseType(typeof(IEnumerable<SinteseDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ListarSintesesPorAnoLetivo([FromServices] IObterSintesePorAnoLetivoUseCase obterSintesePorAnoLetivoUseCase, int anoLetivo)

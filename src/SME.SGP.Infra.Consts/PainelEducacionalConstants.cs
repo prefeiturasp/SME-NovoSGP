@@ -6,6 +6,8 @@ namespace SME.SGP.Infra.Consts
 {
     public static class PainelEducacionalConstants
     {
+        public const string NOME_OUTRAS_DIFICULDADES_PAP = "OUTRAS";
+        public const int ID_OUTRAS_DIFICULDADES_PAP = 0;
         public const int ANO_LETIVO_MIM_LIMITE = 2019;
         public const double PERCENTUAL_MAX_FREQUENCIA_INDICADORES_PAP = 75;
         public const int QTD_INDICADORES_PAP = 2;

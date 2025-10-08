@@ -13,7 +13,7 @@ namespace SME.SGP.Api.Controllers
     [ChaveIntegracaoSgpApi]
     public class AtribuicaoCJIntegracaoController : ControllerBase
     {
-        [HttpGet("escola/{ueCodigo}/anoLetivo/{anoLetivo}")]
+        [HttpGet("escola/{ueCodigo}/AnoLetivo/{AnoLetivo}")]
         [ProducesResponseType(typeof(IEnumerable<AtribuicaoCJListaRetornoDto>), 200)]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

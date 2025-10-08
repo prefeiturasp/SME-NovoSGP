@@ -6,6 +6,7 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
+using SME.SGP.Infra.Dtos.PainelEducacional.IndicadoresPap;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -63,14 +64,14 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterIdepPorAnoEtapa(int anoLetivo, string etapa, string codigoDre, [FromServices] IConsultasIdepPainelEducacionalUseCase consultasIdepPainelEducacionalUseCase)
             => Ok(await consultasIdepPainelEducacionalUseCase.ObterIdepPorAnoEtapa(anoLetivo, etapa, codigoDre));
 
-        [HttpGet("ideb")]
-        [ProducesResponseType(typeof(PainelEducacionalIdebAgrupamentoDto), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 400)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterIdeb([FromQuery] FiltroPainelEducacionalIdeb filtro, [FromServices] IConsultasIdebPainelEducacionalUseCase consultasIdebPainelEducacionalUseCase)
-       => Ok(await consultasIdebPainelEducacionalUseCase.ObterIdeb(filtro));
+       // [HttpGet("ideb")]
+       // [ProducesResponseType(typeof(PainelEducacionalIdebAgrupamentoDto), 200)]
+       // [ProducesResponseType(typeof(RetornoBaseDto), 400)]
+       // [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+       // [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+       // [Permissao(Permissao.FB_C, Policy = "Bearer")]
+       // public async Task<IActionResult> ObterIdeb([FromQuery] FiltroPainelEducacionalIdeb filtro, [FromServices] IConsultasIdebPainelEducacionalUseCase consultasIdebPainelEducacionalUseCase)
+       //=> Ok(await consultasIdebPainelEducacionalUseCase.ObterIdeb(filtro));
 
         [HttpGet("visao-geral")]
         [ProducesResponseType(typeof(PainelEducacionalVisaoGeralRetornoDto), 200)]
@@ -81,7 +82,7 @@ namespace SME.SGP.Api.Controllers
           => Ok(await consultasVisaoGeralPainelEducacionalUseCase.ObterVisaoGeralConsolidada(anoLetivo, codigoDre, codigoUe));
 
         [HttpGet("indicadores-pap")]
-        [ProducesResponseType(typeof(PainelEducacionalInformacoesPapDto), 200)]
+        [ProducesResponseType(typeof(IndicadoresPapDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.FB_C, Policy = "Bearer")]

@@ -7,9 +7,9 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarConsolidacaoPap
 {
     public class SalvarConsolidacaoPapSmeCommandHandler : IRequestHandler<SalvarConsolidacaoPapSmeCommand, bool>
     {
-        private readonly IRepositorioPainelEducacionalPap repositorioPainelEducacionalPap;
+        private readonly IRepositorioPainelEducacionalConsolidacaoIndicadoresPap repositorioPainelEducacionalPap;
 
-        public SalvarConsolidacaoPapSmeCommandHandler(IRepositorioPainelEducacionalPap repositorioPainelEducacionalPap)
+        public SalvarConsolidacaoPapSmeCommandHandler(IRepositorioPainelEducacionalConsolidacaoIndicadoresPap repositorioPainelEducacionalPap)
         {
             this.repositorioPainelEducacionalPap = repositorioPainelEducacionalPap;
         }

@@ -8,9 +8,8 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterIndicadoresPap
 {
     public class ObterInformacoesPapUltimoAnoConsolidadoQueryHandler : IRequestHandler<ObterInformacoesPapUltimoAnoConsolidadoQuery, int>
     {
-        private readonly IRepositorioPainelEducacionalPap repositorioPainelEducacionalPap;
-        private const int AnoPadrao = PainelEducacionalConstants.ANO_LETIVO_MIM_LIMITE;
-        public ObterInformacoesPapUltimoAnoConsolidadoQueryHandler(IRepositorioPainelEducacionalPap repositorioPainelEducacionalPap)
+        private readonly IRepositorioPainelEducacionalConsolidacaoIndicadoresPap repositorioPainelEducacionalPap;
+        public ObterInformacoesPapUltimoAnoConsolidadoQueryHandler(IRepositorioPainelEducacionalConsolidacaoIndicadoresPap repositorioPainelEducacionalPap)
         {
             this.repositorioPainelEducacionalPap = repositorioPainelEducacionalPap ?? throw new System.ArgumentNullException(nameof(repositorioPainelEducacionalPap));
         }
@@ -19,7 +18,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterIndicadoresPap
             var ano = await repositorioPainelEducacionalPap.ObterUltimoAnoConsolidado();
             if (ano.HasValue)
                 return ano.Value;
-            return AnoPadrao;
+            return 0;
         }
     }
 }

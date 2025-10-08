@@ -80,7 +80,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(turmaId));
         }
 
-        [HttpGet("modalidades/{modalidade}/ano-letivo/{anoLetivo}/bimestres")]
+        [HttpGet("modalidades/{modalidade}/ano-letivo/{AnoLetivo}/bimestres")]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(IEnumerable<PeriodoEscolarDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

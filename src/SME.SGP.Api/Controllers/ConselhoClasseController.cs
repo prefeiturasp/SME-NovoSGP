@@ -195,7 +195,7 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
-        [HttpPost("turmas/anos-letivos/{anoLetivo}/parecer/reprocessar")]
+        [HttpPost("turmas/anos-letivos/{AnoLetivo}/parecer/reprocessar")]
         [Permissao(Permissao.CC_I, Policy = "Bearer")]
         public async Task<IActionResult> ReprocessarParecerConclusivo(int anoLetivo, [FromServices] IReprocessarParecerConclusivoPorAnoUseCase useCase)
         {
@@ -295,7 +295,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(codigoTurmaRegular, codigoAluno, bimestre));
         }
 
-        [HttpGet("anos-letivos/{anoLetivo}/modalidades/{modalidade}/pareceres-conclusivos")]
+        [HttpGet("anos-letivos/{AnoLetivo}/modalidades/{modalidade}/pareceres-conclusivos")]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(IEnumerable<ParecerConclusivoDto>), 200)]

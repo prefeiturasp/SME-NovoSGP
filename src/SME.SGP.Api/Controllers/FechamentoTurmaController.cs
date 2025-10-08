@@ -72,7 +72,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> SalvarAnotacao([FromBody] AnotacaoAlunoDto anotacaoAluno, [FromServices] ISalvarAnotacaoFechamentoAlunoUseCase useCase)
             => Ok(await useCase.Executar(anotacaoAluno));
 
-        [HttpGet("anotacoes/alunos/{codigoAluno}/fechamentos/{fechamentoId}/turmas/{codigoTurma}/anos/{anoLetivo}")]
+        [HttpGet("anotacoes/alunos/{codigoAluno}/fechamentos/{fechamentoId}/turmas/{codigoTurma}/anos/{AnoLetivo}")]
         [ProducesResponseType(typeof(FechamentoAlunoCompletoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
@@ -80,14 +80,14 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterAnotacaoAluno(string codigoAluno, long fechamentoId, string codigoTurma, int anoLetivo, [FromServices] IConsultasFechamentoAluno consultas)
            => Ok(await consultas.ObterAnotacaoAluno(codigoAluno, fechamentoId, codigoTurma, anoLetivo));
 
-        [HttpGet("{codigoTurma}/alunos/anos/{anoLetivo}/semestres/{semestre}")]
+        [HttpGet("{codigoTurma}/alunos/anos/{AnoLetivo}/semestres/{semestre}")]
         [ProducesResponseType(typeof(IEnumerable<AlunoDadosBasicosDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         public async Task<IActionResult> ObterAlunos(string codigoTurma, int anoLetivo, int semestre, [FromServices] IConsultasFechamentoTurmaDisciplina consultas)
            => Ok(await consultas.ObterDadosAlunos(codigoTurma, anoLetivo, semestre));
 
-        [HttpPost("processar-pendentes/{anoLetivo}")]
+        [HttpPost("processar-pendentes/{AnoLetivo}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]

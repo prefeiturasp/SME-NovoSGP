@@ -95,7 +95,7 @@ namespace SME.SGP.Api.Controllers
             return BadRequest();
         }
 
-        [HttpGet("turmas-pap/{anoLetivo}/ues/{codigoUe}")]
+        [HttpGet("turmas-pap/{AnoLetivo}/ues/{codigoUe}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

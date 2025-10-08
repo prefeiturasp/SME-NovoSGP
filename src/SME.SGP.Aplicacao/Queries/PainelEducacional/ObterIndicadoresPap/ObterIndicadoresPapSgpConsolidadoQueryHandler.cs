@@ -10,16 +10,16 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterIndicadoresPap
 {
     public class ObterIndicadoresPapSgpConsolidadoQueryHandler : IRequestHandler<ObterIndicadoresPapSgpConsolidadoQuery, IEnumerable<ContagemDificuldadeIndicadoresPapPorTipoDto>>
     {
-        private readonly IRepositorioPapConsulta repositorioPapConsulta;
+        private readonly IRepositorioPainelEducacionalConsolidacaoIndicadoresPap repositorioConsolidacaoIndicadoresPap;
 
-        public ObterIndicadoresPapSgpConsolidadoQueryHandler(IRepositorioPapConsulta repositorioPapConsulta)
+        public ObterIndicadoresPapSgpConsolidadoQueryHandler(IRepositorioPainelEducacionalConsolidacaoIndicadoresPap repositorioConsolidacaoIndicadoresPap)
         {
-            this.repositorioPapConsulta = repositorioPapConsulta ?? throw new ArgumentNullException(nameof(repositorioPapConsulta));
+            this.repositorioConsolidacaoIndicadoresPap = repositorioConsolidacaoIndicadoresPap ?? throw new ArgumentNullException(nameof(repositorioConsolidacaoIndicadoresPap));
         }
 
         public async Task<IEnumerable<ContagemDificuldadeIndicadoresPapPorTipoDto>> Handle(ObterIndicadoresPapSgpConsolidadoQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioPapConsulta.ObterContagemDificuldadesConsolidadaGeral(request.AnoLetivo);
+            return await repositorioConsolidacaoIndicadoresPap.ObterContagemDificuldadesConsolidadaGeral(request.DadosMatriculaAluno, cancellationToken);
         }
     }
 }

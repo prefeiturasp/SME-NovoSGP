@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
             var parametros = "";
 
             if (request.AnoLetivo > 0)
-                parametros += $"anoLetivo={request.AnoLetivo}";
+                parametros += $"AnoLetivo={request.AnoLetivo}";
 
             if (!string.IsNullOrEmpty(request.DreId) && !request.DreId.Contains("-99"))
                 parametros += $"&dreCodigo={request.DreId}";

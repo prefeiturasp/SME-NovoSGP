@@ -262,7 +262,7 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar());
         }
-        [HttpPost("/api/v1/abrangencias/sincronizar-abrangencia/{professorRf}/{anoLetivo}/turmas-historicas")]
+        [HttpPost("/api/v1/abrangencias/sincronizar-abrangencia/{professorRf}/{AnoLetivo}/turmas-historicas")]
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

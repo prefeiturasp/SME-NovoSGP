@@ -15,7 +15,7 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class TurmaController : ControllerBase
     {
-        [HttpGet("{turmaCodigo}/alunos/anos/{anoLetivo}")]
+        [HttpGet("{turmaCodigo}/alunos/anos/{AnoLetivo}")]
         [ProducesResponseType(typeof(IEnumerable<AlunoDadosBasicosDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]

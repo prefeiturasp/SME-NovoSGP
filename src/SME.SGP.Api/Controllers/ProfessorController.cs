@@ -30,7 +30,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await consultasProfessor.Listar(codigoRf));
         }
 
-        [HttpGet("{codigoRF}/escolas/{codigoEscola}/turmas/anos-letivos/{anoLetivo}")]
+        [HttpGet("{codigoRF}/escolas/{codigoEscola}/turmas/anos-letivos/{AnoLetivo}")]
         [ProducesResponseType(typeof(IEnumerable<DisciplinaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> Get(string codigoRF, string codigoEscola, int anoLetivo, [FromServices] IConsultasProfessor consultasProfessor)
@@ -80,7 +80,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(retorno);
         }
 
-        [HttpGet("{codigoRF}/resumo/{anoLetivo}")]
+        [HttpGet("{codigoRF}/resumo/{AnoLetivo}")]
         [ProducesResponseType(typeof(ProfessorResumoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> Resumo(string codigoRF, int anoLetivo, [FromQuery] string dreId, [FromQuery] string ueId, [FromQuery] bool buscarOutrosCargos = false, [FromQuery] bool buscarPorTodasDre = false)
@@ -90,7 +90,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(retorno);
         }
         
-        [HttpGet("rfs/{codigoRf}/anos-letivos/{anoLetivo}/buscar")]
+        [HttpGet("rfs/{codigoRf}/anos-letivos/{AnoLetivo}/buscar")]
         [ProducesResponseType(typeof(ProfessorResumoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ConsultarProfessorDreUe(int anoLetivo,string codigoRf,[FromQuery] string dreId, [FromQuery] string ueId)
@@ -98,7 +98,7 @@ namespace SME.SGP.Api.Controllers
             var retorno = await consultasProfessor.ObterResumoPorRFUeDreAnoLetivo(codigoRf, anoLetivo, dreId, ueId);
             return Ok(retorno);
         }
-        [HttpGet("{anoLetivo}/autocomplete/{dreId}")]
+        [HttpGet("{AnoLetivo}/autocomplete/{dreId}")]
         [ProducesResponseType(typeof(IEnumerable<ProfessorResumoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ResumoAutoComplete(int anoLetivo, string dreId, string ueId, string nomeProfessor)
