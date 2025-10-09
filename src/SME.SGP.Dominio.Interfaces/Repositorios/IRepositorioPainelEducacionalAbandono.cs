@@ -6,6 +6,6 @@ namespace SME.SGP.Dominio.Interfaces.Repositorios
 {
     public interface IRepositorioPainelEducacionalAbandono
     {
-        Task<IEnumerable<PainelEducacionalAbandono>> ObterAbandonoVisaoSmeDre(int anoLetivo, string codigoDre, string codigoUe);
+        Task<IEnumerable<PainelEducacionalAbandono>> ObterAbandonoVisaoSmeDre(int anoLetivo, string codigoDre);
     }
 }
