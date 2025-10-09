@@ -8,7 +8,7 @@ namespace SME.SGP.Dominio.Interfaces.Repositorios
     public interface IRepositorioPainelEducacionalIdeb
     {
         Task<IEnumerable<PainelEducacionalIdebDto>> ObterIdeb();
-        Task<bool> SalvarIdeb(IEnumerable<PainelEducacionalConsolidacaoIdeb> ideb);
-        Task ExcluirIdeb();
+        Task BulkInsertAsync(IEnumerable<PainelEducacionalConsolidacaoIdeb> ideb);
+        Task LimparConsolidacao();
     }
 }
