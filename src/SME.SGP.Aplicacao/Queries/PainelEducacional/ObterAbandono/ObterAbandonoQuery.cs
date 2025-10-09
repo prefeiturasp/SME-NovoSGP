@@ -8,12 +8,10 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAbandono
     {
         public int AnoLetivo { get; set; }
         public string CodigoDre { get; set; }
-        public string CodigoUe { get; set; }
-        public ObterAbandonoVisaoSmeDreQuery(int anoLetivo, string codigoDre, string codigoUe)
+        public ObterAbandonoVisaoSmeDreQuery(int anoLetivo, string codigoDre)
         {
             AnoLetivo = anoLetivo;
             CodigoDre = codigoDre;
-            CodigoUe = codigoUe;
         }
     }
 }

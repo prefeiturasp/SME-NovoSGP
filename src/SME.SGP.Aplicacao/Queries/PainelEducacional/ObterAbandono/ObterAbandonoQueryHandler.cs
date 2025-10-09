@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAbandono
         }
         public async Task<IEnumerable<PainelEducacionalAbandonoSmeDreDto>> Handle(ObterAbandonoVisaoSmeDreQuery request, CancellationToken cancellationToken)
         {
-            var registros = await repositorio.ObterAbandonoVisaoSmeDre(request.AnoLetivo, request.CodigoDre, request.CodigoUe);
+            var registros = await repositorio.ObterAbandonoVisaoSmeDre(request.AnoLetivo, request.CodigoDre);
             return MapearParaDto(registros);
         }
 
