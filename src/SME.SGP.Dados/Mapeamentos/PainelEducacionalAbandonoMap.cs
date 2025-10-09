@@ -8,11 +8,13 @@ namespace SME.SGP.Dados.Mapeamentos
         public PainelEducacionalAbandonoMap()
         {
             Map(p => p.Id).ToColumn("id");
-            Map(p => p.Dre).ToColumn("dre");
+            Map(p => p.AnoLetivo).ToColumn("ano_letivo");
+            Map(p => p.CodigoDre).ToColumn("codigo_dre");
+            Map(p => p.CodigoUe).ToColumn("codigo_ue");
             Map(p => p.Ano).ToColumn("ano");
-            Map(p => p.ModalidadeTurma).ToColumn("modalidade_turma");
+            Map(p => p.QuantidadeDesistencias).ToColumn("quantidade_desistencias");
+            Map(p => p.Modalidade).ToColumn("modalidade");
             Map(p => p.Turma).ToColumn("turma");
-            Map(p => p.QuantidadeAlunoDesistentes).ToColumn("quantidade_aluno_desistentes");
             Map(p => p.CriadoEm).ToColumn("criado_em");
         }
     }

@@ -1,10 +1,10 @@
 using MediatR;
-using SME.SGP.Dominio.Entidades;
+using SME.SGP.Infra.Dtos.PainelEducacional;
 using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAbandono
 {
-    public class ObterAbandonoVisaoSmeDreQuery : IRequest<IEnumerable<PainelEducacionalAbandono>>
+    public class ObterAbandonoVisaoSmeDreQuery : IRequest<IEnumerable<PainelEducacionalAbandonoSmeDreDto>>
     {
         public int AnoLetivo { get; set; }
         public string CodigoDre { get; set; }
