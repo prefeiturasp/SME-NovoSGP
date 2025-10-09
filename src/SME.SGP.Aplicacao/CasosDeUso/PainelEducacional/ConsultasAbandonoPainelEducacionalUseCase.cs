@@ -1,6 +1,7 @@
 using MediatR;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAbandono;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using System.Collections.Generic;
@@ -15,12 +16,12 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
         {
             this.mediator = mediator;
         }
-        public async Task<IEnumerable<PainelEducacionalAbandonoSmeDreDto>> ObterAbandonoVisaoSmeDre(int anoLetivo, string codigoDre)
+        public async Task<IEnumerable<PainelEducacionalAbandonoSmeDreDto>> ObterAbandonoVisaoSmeDre(int anoLetivo, string codigoDre, string codigoUe)
         {
             if (anoLetivo <= 0)
                 throw new NegocioException("Informe o ano letivo");
 
-            return await mediator.Send(new ObterAbandonoVisaoSmeDreQuery(anoLetivo, codigoDre));
+            return await mediator.Send(new ObterAbandonoVisaoSmeDreQuery(anoLetivo, codigoDre, codigoUe));
         }
     }
 }

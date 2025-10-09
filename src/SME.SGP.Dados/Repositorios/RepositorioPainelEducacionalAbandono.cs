@@ -19,8 +19,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<PainelEducacionalAbandono>> ObterAbandonoVisaoSmeDre(int anoLetivo, string codigoDre, string codigoUe)
         {
             var sql = @"SELECT * FROM painel_educacional_consolidacao_abandono WHERE ano_letivo = @anoLetivo
-                        AND (@codigoDre IS NULL OR codigo_dre = @codigoDre)
-                        AND (@codigoUe IS NULL OR codigo_ue = @codigoUe)";
+                        AND (@codigoDre IS NULL OR codigo_dre = @codigoDre)";
 
             return await database.Conexao.QueryAsync<PainelEducacionalAbandono>(sql, new { anoLetivo, codigoDre, codigoUe });
         }
