@@ -1,0 +1,16 @@
+CREATE TABLE public.painel_educacional_consolidacao_idep (
+	id serial4 NOT NULL,
+	ano_letivo int4 NOT NULL,
+	etapa varchar(20) NOT NULL,
+	codigo_dre varchar(20) NOT NULL,
+	faixa varchar(10) NOT NULL,
+	quantidade int4 NOT NULL,
+	media_geral numeric(5, 2) NOT NULL,
+	criado_em timestamp DEFAULT now() NOT NULL,
+	criado_por varchar(200) NULL,
+	criado_rf varchar(200) NULL,
+	alterado_em timestamp DEFAULT now() NOT NULL,
+	alterado_por varchar(200) NULL,
+	alterado_rf varchar(200) null,
+	CONSTRAINT painel_educacional_consolidacao_idep_pkey PRIMARY KEY (id),
+	CONSTRAINT uq_painel_idep_ano_etapa_faixa_dre UNIQUE (ano_letivo, etapa, faixa, codigo_dre))

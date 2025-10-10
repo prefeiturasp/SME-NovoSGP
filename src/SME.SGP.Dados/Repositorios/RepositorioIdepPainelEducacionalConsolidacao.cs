@@ -20,7 +20,7 @@ namespace SME.SGP.Dados.Repositorios
                  (ano_letivo, etapa, faixa, quantidade, media_geral, criado_por, criado_rf, alterado_em, alterado_por, alterado_rf, codigo_dre)
              VALUES
                  (@AnoLetivo, @Etapa, @Faixa, @Quantidade, @MediaGeral, @CriadoPor, @CriadoRF, @UltimaAtualizacao, @AlteradoPor, @AlteradoRF, @CodigoDre)
-             ON CONFLICT (ano_letivo, etapa, faixa)
+             ON CONFLICT (ano_letivo, etapa, faixa, codigo_dre)
              DO UPDATE SET
                  quantidade   = EXCLUDED.quantidade,
                  media_geral  = EXCLUDED.media_geral,
