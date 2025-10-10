@@ -57,17 +57,14 @@ namespace SME.SGP.Dados.Repositorios
             await using var conn = new NpgsqlConnection(configuration.GetConnectionString("SGP_Postgres"));
             await conn.OpenAsync();
 
-            var sql = @"
-                INSERT INTO painel_educacional_consolidacao_ideb 
-                    (ano_letivo, etapa, faixa, quantidade, media_geral, codigo_dre, codigo_ue, criado_em)
-                VALUES (@AnoLetivo, @Etapa, @Faixa, @Quantidade, @MediaGeral, @CodigoDre, @CodigoUe, @CriadoEm)
-                ON CONFLICT (ano_letivo, etapa, faixa, codigo_dre, codigo_ue)
-                DO UPDATE SET
-                    quantidade = EXCLUDED.quantidade,
-                    media_geral = EXCLUDED.media_geral,
-                    criado_em = EXCLUDED.criado_em";
+            // Inicia o COPY em modo binário
+            await using var writer = conn.BeginBinaryImport(@"
+                COPY painel_educacional_consolidacao_ideb 
+                    (ano_letivo, etapa, faixa, quantidade, media_geral, codigo_dre, codigo_ue, criado_em) 
+                FROM STDIN (FORMAT BINARY)
+            ");
 
-            await conn.ExecuteAsync(sql, indicadoresUnicos);
+            await writer.CompleteAsync();
         }
     }
 }
