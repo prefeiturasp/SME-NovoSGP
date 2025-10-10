@@ -3,7 +3,6 @@
     public class ConsolidacaoAbandonoDto
     {
         public string CodigoDre { get; set; }
-        public string CodigoUe { get; set; }
         public string Ano { get; set; }
         public string Modalidade { get; set; }
         public int QuantidadeDesistencias { get; set; }
