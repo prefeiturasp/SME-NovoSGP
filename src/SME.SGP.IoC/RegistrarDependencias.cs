@@ -50,6 +50,7 @@ using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dominio.Interfaces.Repositorios;
+using SME.SGP.Dominio.Interfaces.Servicos;
 using SME.SGP.Dominio.Servicos;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
@@ -59,7 +60,7 @@ using SME.SGP.IoC.Extensions.RegistrarCasoDeUsoRabbitSgp;
 
 namespace SME.SGP.IoC
 {
-    public class RegistrarDependencias //Raphael. Tirei o static para facilitar o teste
+    public class RegistrarDependencias
     {
         public virtual void Registrar(IServiceCollection services, IConfiguration configuration)
         {
@@ -653,8 +654,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioConsolidacaoAlfabetizacaoNivelEscrita, RepositorioConsolidacaoAlfabetizacaoNivelEscrita>();
             services.TryAddScoped<IRepositorioConsolidacaoAlfabetizacaoCriticaEscrita, RepositorioConsolidacaoAlfabetizacaoCriticaEscrita>();
             services.TryAddScoped<IRepositorioPainelEducacionalVisaoGeral, RepositorioPainelEducacionalVisaoGeral>();
-            services.TryAddScoped<IRepositorioPapConsulta, RepositorioPapConsulta>();
-            services.TryAddScoped<IRepositorioPapPainelEducacionalConsolidacao, RepositorioPapPainelEducacionalConsolidacao>();
+            services.TryAddScoped<IRepositorioPainelEducacionalConsultaIndicadoresPap, RepositorioPainelEducacionalConsultaIndicadoresPap>();
+            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoIndicadoresPap, RepositorioPainelEducacionalConsolidacaoIndicadoresPap>();
             services.AddScoped<IRepositorioPainelEducacionalIdeb, RepositorioPainelEducacionalIdeb>();
             services.TryAddScoped<IRepositorioIdebPainelEducacionalConsulta, RepositorioIdebPainelEducacionalConsulta>();
             services.TryAddScoped<IRepositorioConsolidacaoFluenciaLeitora, RepositorioConsolidacaoFluenciaLeitora>();
@@ -693,6 +694,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoPendenciaFechamento, ServicoPendenciaFechamento>();
             services.TryAddScoped<IServicoFechamentoFinal, ServicoFechamentoFinal>();
             services.TryAddScoped<IServicoObjetivosAprendizagem, ServicoObjetivosAprendizagem>();
+            services.TryAddScoped<IServicoPainelEducacionalConsolidacaoIndicadoresPap, ServicoPainelEducacionalConsolidacaoIndicadoresPap>();
         }
 
         public virtual void RegistrarCasoDeUsoAEERabbitSgp(IServiceCollection services)
