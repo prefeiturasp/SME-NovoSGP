@@ -11,6 +11,7 @@ namespace SME.SGP.Infra.Consts
         public const int ANO_LETIVO_MIM_LIMITE = 2019;
         public const double PERCENTUAL_MAX_FREQUENCIA_INDICADORES_PAP = 75;
         public const int QTD_INDICADORES_PAP = 2;
+        public static TipoPap[] TipoPaps = new TipoPap[] { TipoPap.PapColaborativo, TipoPap.RecuperacaoAprendizagens, TipoPap.Pap2Ano };
         public static readonly Dictionary<TipoPap, string> COD_COMPONENTES_CURRICULARES_PARA_INDICADORES_PAP
              = new Dictionary<TipoPap, string>
             {
