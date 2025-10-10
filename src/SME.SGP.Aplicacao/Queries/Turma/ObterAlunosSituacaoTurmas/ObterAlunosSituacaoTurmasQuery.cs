@@ -6,9 +6,8 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAlunosSituacaoTurmasQuery : IRequest<List<AlunosSituacaoTurmas>>
     {
-        public ObterAlunosSituacaoTurmasQuery(List<string> codigoTurmas, int anoLetivo, int situacaoMatricula)
+        public ObterAlunosSituacaoTurmasQuery(int anoLetivo, int situacaoMatricula, string codigoDre)
         {
-            CodigoTurmas = codigoTurmas;
             AnoLetivo = anoLetivo;
             SituacaoMatricula = situacaoMatricula;
             CodigoDre = codigoDre;
@@ -17,6 +16,5 @@ namespace SME.SGP.Aplicacao
         public int AnoLetivo { get; set; }
         public string CodigoDre { get; set; }
         public int SituacaoMatricula { get; set; }
-        public List<string> CodigoTurmas { get; set; }
     }
 }

@@ -20,12 +20,12 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarConsolidacaoAbandon
 
         public async Task<bool> Handle(SalvarPainelEducacionalConsolidacaoAbandonoCommand request, CancellationToken cancellationToken)
         {
-            if (request.IndicadoresDre?.Any() != true)
+            if (request.Indicadores?.Any() != true)
                 return false;
 
-            var menorAnoLetivo = request.IndicadoresDre.Min(c => c.AnoLetivo);
+            await repositorioPainelEducacionalConsolidacaoAbandono.LimparConsolidacao();
 
-            await repositorioPainelEducacionalConsolidacaoAbandono.LimparConsolidacao(menorAnoLetivo);
+            await repositorioPainelEducacionalConsolidacaoAbandono.BulkInsertAsync(MapearParaEntidade(request.Indicadores));
 
             await repositorioPainelEducacionalConsolidacaoAbandono.BulkInsertAsync(MapearParaEntidade(request.IndicadoresUe));
             await repositorioPainelEducacionalConsolidacaoAbandono.BulkInsertAsync(MapearParaEntidade(request.IndicadoresDre));

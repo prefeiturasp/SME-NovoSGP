@@ -30,8 +30,8 @@ namespace SME.SGP.Aplicacao
             var body = new
             {
                 request.AnoLetivo,
-                request.SituacaoMatricula,
-                request.CodigoTurmas
+                request.CodigoDre,
+                request.SituacaoMatricula
             };
 
             var jsonBody = JsonConvert.SerializeObject(body, new JsonSerializerSettings
@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
             var resposta = await httpClient.PostAsync(url, new StringContent(jsonBody, Encoding.UTF8, "application/json"));
 
             if (!resposta.IsSuccessStatusCode)
-                throw new NegocioException("Não foi possível consultar as matriculas dos alunos.");
+                throw new NegocioException($"Não foi possível consultar as matriculas dos alunos. {resposta.StatusCode}");
 
             if (resposta.IsSuccessStatusCode)
             {
