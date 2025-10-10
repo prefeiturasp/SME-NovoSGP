@@ -5,6 +5,7 @@ using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -48,32 +49,25 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task BulkInsertAsync(IEnumerable<PainelEducacionalConsolidacaoIdeb> indicadores)
         {
+            var indicadoresUnicos = indicadores
+                .GroupBy(i => new { i.AnoLetivo, i.Etapa, i.Faixa, i.CodigoDre, i.CodigoUe })
+                .Select(g => g.First())
+                .ToList();
 
             await using var conn = new NpgsqlConnection(configuration.GetConnectionString("SGP_Postgres"));
             await conn.OpenAsync();
 
-            // Inicia o COPY em modo binário
-            await using var writer = conn.BeginBinaryImport(@"
-                COPY painel_educacional_consolidacao_ideb 
-                    (ano_letivo, etapa, faixa, quantidade, media_geral, codigo_dre, codigo_ue, criado_em) 
-                FROM STDIN (FORMAT BINARY)
-            ");
+            var sql = @"
+                INSERT INTO painel_educacional_consolidacao_ideb 
+                    (ano_letivo, etapa, faixa, quantidade, media_geral, codigo_dre, codigo_ue, criado_em)
+                VALUES (@AnoLetivo, @Etapa, @Faixa, @Quantidade, @MediaGeral, @CodigoDre, @CodigoUe, @CriadoEm)
+                ON CONFLICT (ano_letivo, etapa, faixa, codigo_dre, codigo_ue)
+                DO UPDATE SET
+                    quantidade = EXCLUDED.quantidade,
+                    media_geral = EXCLUDED.media_geral,
+                    criado_em = EXCLUDED.criado_em";
 
-            foreach (var item in indicadores)
-            {
-                await writer.StartRowAsync();
-                await writer.WriteAsync(item.AnoLetivo, NpgsqlTypes.NpgsqlDbType.Integer);
-                await writer.WriteAsync((int)item.Etapa, NpgsqlTypes.NpgsqlDbType.Integer);
-                await writer.WriteAsync(item.Faixa, NpgsqlTypes.NpgsqlDbType.Varchar);
-                await writer.WriteAsync(item.Quantidade, NpgsqlTypes.NpgsqlDbType.Integer);
-                await writer.WriteAsync(item.MediaGeral, NpgsqlTypes.NpgsqlDbType.Numeric);
-                await writer.WriteAsync(item.CodigoDre, NpgsqlTypes.NpgsqlDbType.Varchar);
-                await writer.WriteAsync(item.CodigoUe, NpgsqlTypes.NpgsqlDbType.Varchar);
-                await writer.WriteAsync(item.CriadoEm, NpgsqlTypes.NpgsqlDbType.TimestampTz);
-            }
-
-            await writer.CompleteAsync();
+            await conn.ExecuteAsync(sql, indicadoresUnicos);
         }
-
     }
 }
