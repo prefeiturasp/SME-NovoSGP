@@ -652,6 +652,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPainelEducacionalFluenciaLeitoraConsulta, RepositorioPainelEducacionalFluenciaLeitoraConsulta>();
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoTaxaAlfabetizacao, RepositorioPainelEducacionalConsolidacaoTaxaAlfabetizacao>();
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoSondagemEscritaUe, RepositorioPainelEducacionalConsolidacaoSondagemEscritaUe>();
+            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoAbandono, RepositorioPainelEducacionalConsolidacaoAbandono>();
 
             //Painel Educacional
             services.AddTransient<IRepositorioIdepPainelEducacionalConsulta, RepositorioIdepPainelEducacionalConsulta>();
