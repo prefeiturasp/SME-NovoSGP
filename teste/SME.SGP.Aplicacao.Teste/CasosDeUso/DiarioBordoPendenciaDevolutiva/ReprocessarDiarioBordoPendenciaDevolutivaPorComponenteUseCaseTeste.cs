@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DiarioBordoPendenciaDevolutiva
 
             _repositorioPendenciaDevolutivaMock
                 .Setup(r => r.ObterPendenciasDevolutivaPorTurmaComponente(10, 99))
-                .ReturnsAsync(new List<PendenciaDevolutiva> { new PendenciaDevolutiva() });
+                .ReturnsAsync(new List<SME.SGP.Dominio.PendenciaDevolutiva> { new SME.SGP.Dominio.PendenciaDevolutiva() });
 
             var resultado = await _useCase.Executar(mensagem);
 
@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DiarioBordoPendenciaDevolutiva
 
             _repositorioPendenciaDevolutivaMock
                 .Setup(r => r.ObterPendenciasDevolutivaPorTurmaComponente(turmaId, componenteIdLong))
-                .ReturnsAsync(new List<PendenciaDevolutiva>()); // lista vazia
+                .ReturnsAsync(new List<SME.SGP.Dominio.PendenciaDevolutiva>()); 
 
             _mediatorMock
                 .Setup(m => m.Send(It.Is<ExistePendenciaDiarioBordoQuery>(q => q.TurmaId == turmaId && q.ComponenteCodigo == componente), It.IsAny<CancellationToken>()))
@@ -106,7 +106,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DiarioBordoPendenciaDevolutiva
 
             _mediatorMock.Verify(m => m.Send(It.IsAny<IRequest<long>>(), It.IsAny<CancellationToken>()), Times.AtLeastOnce());
 
-            _repositorioPendenciaDevolutivaMock.Verify(m => m.Salvar(It.Is<PendenciaDevolutiva>(p =>
+            _repositorioPendenciaDevolutivaMock.Verify(m => m.Salvar(It.Is<SME.SGP.Dominio.PendenciaDevolutiva>(p =>
                 p.ComponenteCurricularId == componenteIdLong &&
                 p.TurmaId == turmaId &&
                 p.PedenciaId == pendenciaGeradaId
@@ -125,7 +125,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DiarioBordoPendenciaDevolutiva
 
             _repositorioPendenciaDevolutivaMock
                 .Setup(r => r.ObterPendenciasDevolutivaPorTurmaComponente(10, 99))
-                .ReturnsAsync(new List<PendenciaDevolutiva>());
+                .ReturnsAsync(new List<SME.SGP.Dominio.PendenciaDevolutiva>());
 
             _mediatorMock
                 .Setup(m => m.Send(It.IsAny<ExistePendenciaDiarioBordoQuery>(), default))
@@ -135,7 +135,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DiarioBordoPendenciaDevolutiva
 
             Assert.True(resultado);
             _mediatorMock.Verify(m => m.Send(It.IsAny<SalvarPendenciaCommand>(), default), Times.Never);
-            _repositorioPendenciaDevolutivaMock.Verify(m => m.Salvar(It.IsAny<PendenciaDevolutiva>()), Times.Never);
+            _repositorioPendenciaDevolutivaMock.Verify(m => m.Salvar(It.IsAny<SME.SGP.Dominio.PendenciaDevolutiva>()), Times.Never);
         }
 
         [Fact]
