@@ -71,9 +71,9 @@ namespace SME.SGP.Aplicacao.Queries.PeriodoFechamento.ObterPeriodoFechamentoPorC
             return fechamento.EhNulo() ? null : new FechamentoDto
             {
                 Id = fechamento.Id,
-                DreId = fechamento.Dre?.CodigoDre,
+                DreId = fechamento.DreId,
                 TipoCalendarioId = fechamento.FechamentosBimestre.FirstOrDefault().PeriodoEscolar.TipoCalendarioId,
-                UeId = fechamento.Ue?.CodigoUe,
+                UeId = fechamento.UeId,
                 FechamentosBimestres = MapearFechamentoBimestreParaDto(fechamento).OrderBy(c => c.Bimestre),
                 AlteradoEm = fechamento.AlteradoEm,
                 AlteradoPor = fechamento.AlteradoPor,
@@ -81,7 +81,8 @@ namespace SME.SGP.Aplicacao.Queries.PeriodoFechamento.ObterPeriodoFechamentoPorC
                 CriadoEm = fechamento.CriadoEm,
                 CriadoPor = fechamento.CriadoPor,
                 CriadoRF = fechamento.CriadoRF,
-                Migrado = fechamento.Migrado
+                Migrado = fechamento.Migrado,
+                Aplicacao = fechamento.Aplicacao
             };
         }
 

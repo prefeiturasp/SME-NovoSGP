@@ -11,6 +11,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.DreId).ToColumn("dre_id");
             Map(c => c.Migrado).ToColumn("migrado");
             Map(c => c.UeId).ToColumn("ue_id");
+            Map(c => c.Aplicacao).ToColumn("aplicacao");
         }
     }
 }
