@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao.Teste.Commands.ImportarArquivo.ProficienciaIdep
         [Fact]
         public async Task Handle_DevePropagarExcecao_QuandoRepositorioLancarExcecao()
         {
-            var dto = new ProficienciaIdepDto(5, "123456", 2023, 123, 7.5m);
+            var dto = new ProficienciaIdepDto(5, "123456", 2023, "123", 7.5m);
             var command = new SalvarImportacaoProficienciaIdepCommand(dto);
             var exceptionMessage = "Erro no banco de dados";
 

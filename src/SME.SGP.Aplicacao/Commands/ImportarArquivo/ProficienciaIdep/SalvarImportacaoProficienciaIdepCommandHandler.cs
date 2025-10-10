@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.ProficienciaIdep
                 SerieAno = request.ProficienciaIdep.SerieAno,
                 CodigoEOLEscola = request.ProficienciaIdep.CodigoEOLEscola,
                 Proficiencia = request.ProficienciaIdep.Proficiencia,
-                ComponenteCurricular = request.ProficienciaIdep.ComponenteCurricular,
+                ComponenteCurricular = Convert.ToInt16(request.ProficienciaIdep.ComponenteCurricular),
             };
     }
 }

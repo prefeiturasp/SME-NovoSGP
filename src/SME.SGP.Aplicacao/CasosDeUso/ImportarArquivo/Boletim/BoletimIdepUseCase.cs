@@ -94,7 +94,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Boletim
                              proficiencia.SerieAno,
                              proficiencia.CodigoEOLEscola,
                              proficiencia.AnoLetivo,
-                             proficiencia.ComponenteCurricular,
+                             proficiencia.ComponenteCurricular.ToString(),
                              proficiencia.Proficiencia,
                              enderecoArquivo
                          );

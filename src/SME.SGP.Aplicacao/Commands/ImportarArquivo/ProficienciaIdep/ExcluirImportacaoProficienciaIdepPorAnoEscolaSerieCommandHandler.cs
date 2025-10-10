@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.ProficienciaIdep
 
         public async Task<bool> Handle(ExcluirImportacaoProficienciaIdepPorAnoEscolaSerieCommand request, CancellationToken cancellationToken)
         {
-            return await _repositorioProficienciaIdep.ExcluirPorAnoEscolaSerie(request.AnoLetivo, request.CodigoEolEscola, request.SerieAno);
+            return await _repositorioProficienciaIdep.ExcluirPorAnoEscolaSerieComponenteCurricular(request.AnoLetivo, request.CodigoEolEscola, request.SerieAno, request.ComponenteCurricular);
         }
     }
 }
