@@ -17,28 +17,24 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<PainelEducacionalAbandonoUeDto> Executar(int anoLetivo, string codigoDre, string codigoUe, string modalidade, int numeroPagina, int numeroRegistros)
-        {
-            ValidarParametros(anoLetivo, codigoUe, modalidade, numeroPagina, numeroRegistros);
-            return await mediator.Send(new ObterAbandonoUeQuery(anoLetivo, codigoDre, codigoUe, modalidade, numeroPagina, numeroRegistros));
-        }
-
-        private static void ValidarParametros(int anoLetivo, string codigoUe, string modalidade, int numeroPagina, int numeroRegistros)
+        public async Task<PainelEducacionalAbandonoUeDto> Executar(int anoLetivo, string codigoDre, string codigoUe, int modalidade, int numeroPagina, int numeroRegistros)
         {
             if (anoLetivo <= 0)
                 throw new NegocioException("O ano letivo deve ser informado.");
 
             if (string.IsNullOrEmpty(codigoUe))
-                throw new NegocioException("O código da UE deve ser informado.");
+                throw new NegocioException("O cï¿½digo da UE deve ser informado.");
 
-            if (string.IsNullOrEmpty(modalidade))
+            if (modalidade <= 0)
                 throw new NegocioException("A modalidade deve ser informada.");
 
             if (numeroPagina <= 0)
-                throw new NegocioException("O número da página deve ser informado.");
+                throw new NegocioException("O nï¿½mero da pï¿½gina deve ser informado.");
 
             if (numeroRegistros <= 0)
-                throw new NegocioException("O número de registros por página deve ser informado.");
+                throw new NegocioException("O nï¿½mero de registros por pï¿½gina deve ser informado.");
+
+            return await mediator.Send(new ObterAbandonoUeQuery(anoLetivo, codigoDre, codigoUe, modalidade, numeroPagina, numeroRegistros));
         }
     }
 }

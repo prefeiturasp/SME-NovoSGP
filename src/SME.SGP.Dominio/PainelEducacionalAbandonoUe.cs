@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SME.SGP.Dominio
 {
@@ -13,5 +14,11 @@ namespace SME.SGP.Dominio
         public string Modalidade { get; set; }
         public int QuantidadeDesistencias { get; set; }
         public DateTime CriadoEm { get; set; }
+
+        [NotMapped]
+        public int TotalPaginas { get; set; }
+
+        [NotMapped]
+        public int TotalRegistros { get; set; }
     }
 }

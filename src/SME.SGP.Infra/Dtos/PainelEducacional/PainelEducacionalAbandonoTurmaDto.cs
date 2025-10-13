@@ -1,3 +1,5 @@
+using System;
+
 namespace SME.SGP.Infra.Dtos.PainelEducacional
 {
     public class PainelEducacionalAbandonoTurmaDto : PainelEducacionalAbandonoBaseDto
