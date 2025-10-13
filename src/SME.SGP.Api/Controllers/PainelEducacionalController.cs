@@ -138,5 +138,13 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterSondagemEscrita([FromQuery] FiltroPainelEducacionalAnoLetivoBimestre filtro, [FromServices] IConsultasSondagemEscritaUseCase consultasSondagemEscritaUseCase)
     => Ok(await consultasSondagemEscritaUseCase.ObterSondagemEscrita(filtro.CodigoDre, filtro.CodigoUe, filtro.AnoLetivo, filtro.Bimestre, filtro.SerieAno));
+
+        [HttpGet("abandono-ue")]
+        [ProducesResponseType(typeof(PainelEducacionalAbandonoModalidadeDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterConsolidacaoAbandonoUe(int anoLetivo, string codigoDre, string codigoUe, int modalidade, int numeroPagina, int numeroRegistros, [FromServices] IConsultasAbandonoPainelEducacionalUeUseCase consultasAbandonoPainelEducacionalUeUseCase)
+        => Ok(await consultasAbandonoPainelEducacionalUeUseCase.Executar(anoLetivo, codigoDre, codigoUe, modalidade, numeroPagina, numeroRegistros));
     }
 }
