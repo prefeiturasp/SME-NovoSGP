@@ -7,7 +7,15 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarConsolidacaoAbandon
     public class SalvarPainelEducacionalConsolidacaoAbandonoCommand : IRequest<bool>
     {
 
-        public SalvarPainelEducacionalConsolidacaoAbandonoCommand(IEnumerable<ConsolidacaoAbandonoDto> indicadores) => Indicadores = indicadores;
-        public IEnumerable<ConsolidacaoAbandonoDto> Indicadores { get; set; }
+        public SalvarPainelEducacionalConsolidacaoAbandonoCommand(
+            IEnumerable<ConsolidacaoAbandonoDto> indicadoresDre,
+            IEnumerable<ConsolidacaoAbandonoUeDto> indicadoresUe)
+        {
+            IndicadoresDre = indicadoresDre;
+            IndicadoresUe = indicadoresUe;
+        }
+
+        public IEnumerable<ConsolidacaoAbandonoDto> IndicadoresDre { get; set; }
+        public IEnumerable<ConsolidacaoAbandonoUeDto> IndicadoresUe { get; set; }
     }
 }

@@ -6,8 +6,9 @@ namespace SME.SGP.Dominio.Interfaces.Repositorios
 {
     public interface IRepositorioPainelEducacionalConsolidacaoAbandono
     {
-        Task LimparConsolidacao();
+        Task<int?> ObterUltimoAnoConsolidadoAsync();
+        Task LimparConsolidacao(int ano);
         Task BulkInsertAsync(IEnumerable<PainelEducacionalConsolidacaoAbandono> indicadores);
-        Task<IEnumerable<PainelEducacionalConsolidacaoAbandono>> ObterConsolidacaoAsync(int anoLetivo, string codigoDre, string codigoUe);
+        Task BulkInsertAsync(IEnumerable<PainelEducacionalConsolidacaoAbandonoUe> indicadores);
     }
 }
