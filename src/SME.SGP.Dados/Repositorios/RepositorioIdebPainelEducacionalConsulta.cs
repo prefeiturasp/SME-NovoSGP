@@ -1,94 +1,60 @@
-﻿using Polly;
-using Polly.Registry;
-using SME.SGP.Dominio.Entidades;
-using SME.SGP.Dominio.Interfaces.Repositorios;
+﻿using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
-using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioIdebPainelEducacionalConsulta : RepositorioBase<PainelEducacionalIdeb>, IRepositorioIdebPainelEducacionalConsulta
+    public class RepositorioIdebPainelEducacionalConsulta : IRepositorioIdebPainelEducacionalConsulta
     {
-        private readonly IAsyncPolicy policy;
-
-        public RepositorioIdebPainelEducacionalConsulta(ISgpContext database,
-            IReadOnlyPolicyRegistry<string> registry,
-            IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
+        private readonly ISgpContext database;
+        public RepositorioIdebPainelEducacionalConsulta(ISgpContext database)
         {
-            policy = registry.Get<IAsyncPolicy>(PoliticaPolly.SGP);
+            this.database = database;
         }
-        public async Task<IEnumerable<PainelEducacionalIdebDto>> ObterIdebPorAnoSerie(int anoLetivo, string serie, string codigoDre, string codigoUe)
+
+        public async Task<IEnumerable<PainelEducacionalIdebDto>> ObterIdebPorAnoSerie(int anoLetivo, int serie, string codigoDre, string codigoUe)
         {
-            if (!string.IsNullOrWhiteSpace(serie) && serie == "-99")
-            {
-                serie = null;
-            }
+            string query = @"SELECT 
+                                  peci.ano_letivo AS AnoLetivo,
+                                  peci.etapa AS SerieAno,
+                                  peci.media_geral AS Nota,
+                                  peci.faixa AS Faixa,
+                                  peci.criado_Em AS CriadoEm,
+                                  peci.codigo_dre AS CodigoDre,
+                                  peci.codigo_ue AS CodigoUe,
+                                  peci.quantidade AS Quantidade
+                              FROM painel_educacional_consolidacao_ideb peci
+                                    where peci.ano_letivo = @anoLetivo
+                                    AND peci.etapa = @serie";
 
-            if (!string.IsNullOrWhiteSpace(codigoDre) && codigoDre == "-99")
-            {
-                codigoDre = null;
-            }
+            if (!string.IsNullOrEmpty(codigoDre))
+                query += " and peci.codigo_dre = @codigoDre";
 
-            if (!string.IsNullOrWhiteSpace(codigoUe) && codigoUe == "-99")
-            {
-                codigoUe = null;
-            }
+            if (!string.IsNullOrEmpty(codigoUe))
+                query += " and peci.codigo_ue = @codigoUe";
 
-            var query = @"SELECT 
-                          peci.ano_letivo AS AnoLetivo,
-                          peci.etapa AS SerieAno,
-                          peci.media_geral AS Nota,
-                          peci.faixa AS Faixa,
-                          peci.alterado_em AS CriadoEm,
-                          peci.codigo_dre AS CodigoDre,
-                          peci.codigo_ue AS CodigoUe,
-                          peci.quantidade AS Quantidade
-                      FROM painel_educacional_consolidacao_ideb peci
-                      WHERE 
-                          (@serie IS NULL OR peci.etapa = @serie)
-                          AND (@anoLetivo IS NULL OR @anoLetivo = -99 OR peci.ano_letivo = @anoLetivo)
-                          AND (@codigoDre IS NULL OR peci.codigo_dre = @codigoDre)
-                          AND (@codigoUe IS NULL OR peci.codigo_ue = @codigoUe)
-                      ORDER BY 
-                          peci.ano_letivo DESC,
-                          peci.codigo_dre,
-                          peci.codigo_ue,
-                          peci.faixa;";
-
-            return await policy.ExecuteAsync(() =>
-                database.Conexao.QueryAsync<PainelEducacionalIdebDto>(query, new { anoLetivo, serie, codigoDre, codigoUe })
+            return await database.Conexao.QueryAsync<PainelEducacionalIdebDto>(query, new { anoLetivo, serie, codigoDre, codigoUe }
             );
         }
-        public async Task<int?> ObterAnoMaisRecenteIdeb(string serie, string codigoDre, string codigoUe)
+
+        public async Task<int?> ObterAnoMaisRecenteIdeb(int serie, string codigoDre, string codigoUe)
         {
-            if (!string.IsNullOrWhiteSpace(serie) && serie == "-99")
-            {
-                serie = null;
-            }
-
-            if (!string.IsNullOrWhiteSpace(codigoDre) && codigoDre == "-99")
-            {
-                codigoDre = null;
-            }
-
-            if (!string.IsNullOrWhiteSpace(codigoUe) && codigoUe == "-99")
-            {
-                codigoUe = null;
-            }
-
             var query = @"SELECT MAX(peci.ano_letivo)
                       FROM painel_educacional_consolidacao_ideb peci
                       WHERE 
-                          (@serie IS NULL OR peci.etapa = @serie)
-                          AND (@codigoDre IS NULL OR peci.codigo_dre = @codigoDre)
-                          AND (@codigoUe IS NULL OR peci.codigo_ue = @codigoUe)";
+                          peci.etapa = @serie";
 
-            return await policy.ExecuteAsync(() =>
-                database.Conexao.QueryFirstOrDefaultAsync<int?>(query, new { serie, codigoDre, codigoUe })
-            );
+            if (!string.IsNullOrEmpty(codigoDre))
+                query += " and peci.codigo_dre = @codigoDre";
+
+            if (!string.IsNullOrEmpty(codigoUe))
+                query += " and peci.codigo_ue = @codigoUe";
+
+
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<int?>(query, new { serie, codigoDre, codigoUe });
         }
     }
 }
