@@ -1,7 +1,5 @@
-using Dapper;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces.Repositorios;
-using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.PainelEducacional;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -20,24 +18,26 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database ?? throw new ArgumentNullException(nameof(database));
         }
 
-        public async Task<(IEnumerable<PainelEducacionalAbandonoTurmaDto> Modalidades, int TotalPaginas, int TotalRegistros)>
-            ObterAbandonoUe(int anoLetivo, string codigoDre, string codigoUe, int modalidade, int numeroPagina, int numeroRegistros)
+        public async Task<IEnumerable<PainelEducacionalAbandonoUe>> ObterAbandonoUe(int anoLetivo, string codigoDre, string codigoUe, int modalidade, int numeroPagina, int numeroRegistros)
         {
             var offset = (numeroPagina - 1) * numeroRegistros;
             var query = MontarQuery(codigoDre);
 
-            var resultado = await database.Conexao.QueryAsync<PainelEducacionalAbandonoTurmaDto, int, (PainelEducacionalAbandonoTurmaDto, int)>(
+            var registros = await database.Conexao.QueryAsync<PainelEducacionalAbandonoUe>(
                 query,
-                (turmaDto, totalRegistros) => (turmaDto, totalRegistros),
-                new { anoLetivo, codigoUe, modalidade, codigoDre, offset, numeroRegistros },
-                splitOn: "TotalRegistros"
+                new { anoLetivo, codigoUe, modalidade, codigoDre, offset, numeroRegistros }
             );
 
-            var lista = resultado.Select(r => r.Item1).ToList();
-            var totalRegistros = resultado.FirstOrDefault().Item2;
+            var totalRegistros = registros.FirstOrDefault()?.TotalRegistros ?? 0;
             var totalPaginas = totalRegistros == 0 ? 0 : (int)Math.Ceiling((double)totalRegistros / numeroRegistros);
 
-            return (lista, totalPaginas, totalRegistros);
+            foreach (var item in registros)
+            {
+                item.TotalRegistros = totalRegistros;
+                item.TotalPaginas = totalPaginas;
+            }
+
+            return registros;
         }
 
         private static string MontarQuery(string codigoDre)
@@ -46,22 +46,26 @@ namespace SME.SGP.Dados.Repositorios
 
             sb.AppendLine(@"
                 SELECT 
-                    turma,
-                    quantidade_desistentes AS QuantidadeDesistentes,
+                    codigo_turma AS CodigoTurma,
+                    nome_turma AS NomeTurma,
+                    quantidade_desistencias AS QuantidadeDesistencias,
                     COUNT(*) OVER() AS TotalRegistros
                 FROM painel_educacional_consolidacao_abandono_ue
                 WHERE ano_letivo = @anoLetivo
                   AND codigo_ue = @codigoUe
                   AND modalidade = @modalidade");
 
-            if (!string.IsNullOrEmpty(codigoDre)) sb.AppendLine(" AND codigo_dre = @codigoDre");
-            sb.AppendLine(" ORDER BY turma");
+            if (!string.IsNullOrEmpty(codigoDre))
+                sb.AppendLine(" AND codigo_dre = @codigoDre");
+
+            sb.AppendLine(" ORDER BY nome_turma");
             sb.AppendLine(" OFFSET @offset ROWS FETCH NEXT @numeroRegistros ROWS ONLY");
 
             return sb.ToString();
         }
     }
 }
+
 
 
 
