@@ -3,6 +3,7 @@ using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -18,10 +19,25 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<PainelEducacionalAbandono>> ObterAbandonoVisaoSmeDre(int anoLetivo, string codigoDre)
         {
-            var sql = @"SELECT * FROM painel_educacional_consolidacao_abandono WHERE ano_letivo = @anoLetivo
-                        AND (@codigoDre IS NULL OR codigo_dre = @codigoDre)";
+            string query = MontarQuery(codigoDre);
 
-            return await database.Conexao.QueryAsync<PainelEducacionalAbandono>(sql, new { anoLetivo, codigoDre });
+            var parametros = new { anoLetivo, codigoDre };
+
+            return await database.Conexao.QueryAsync<PainelEducacionalAbandono>(query.ToString(), parametros);
+        }
+
+        private static string MontarQuery(string codigoDre)
+        {
+            var query = new StringBuilder();
+            query.AppendLine("SELECT *");
+            query.AppendLine("FROM painel_educacional_consolidacao_abandono peci");
+            query.AppendLine("WHERE peci.ano_letivo = @anoLetivo");
+
+            if (!string.IsNullOrEmpty(codigoDre))
+                query.AppendLine("AND peci.codigo_dre = @codigoDre");
+
+            return query.ToString();
         }
     }
 }
+
