@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS consolidacao_informacoes_pap;
