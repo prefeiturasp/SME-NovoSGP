@@ -21,7 +21,6 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAbandono
         public async Task<PainelEducacionalAbandonoUeDto> Handle(ObterAbandonoUeQuery request, CancellationToken cancellationToken)
         {
             var resultado = await repositorio.ObterAbandonoUe(request.AnoLetivo, request.CodigoDre, request.CodigoUe, request.Modalidade, request.NumeroPagina, request.NumeroRegistros);
-
             return MapearParaDto(resultado);
         }
 
@@ -31,16 +30,12 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAbandono
             {
                 Modalidades = resultado.Select(r => new PainelEducacionalAbandonoTurmaDto
                 {
-                    Modalidade = r.Modalidade,
-                    CodigoTurma = r.CodigoTurma,
                     Turma = r.NomeTurma,
-                    QuantidadeDesistencias = r.QuantidadeDesistencias
+                    QuantidadeDesistentes = r.QuantidadeDesistencias
                 }).ToList(),
-
-                TotalPaginas = resultado.First().TotalPaginas,
-                TotalRegistros = resultado.First().TotalRegistros
+                TotalPaginas = resultado.FirstOrDefault()?.TotalPaginas ?? 0,
+                TotalRegistros = resultado.FirstOrDefault()?.TotalRegistros ?? 0
             };
-
             return dto;
         }
     }
