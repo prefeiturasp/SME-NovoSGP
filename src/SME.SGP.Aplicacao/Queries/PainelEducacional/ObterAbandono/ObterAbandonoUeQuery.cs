@@ -5,7 +5,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAbandono
 {
     public class ObterAbandonoUeQuery : IRequest<PainelEducacionalAbandonoUeDto>
     {
-        public ObterAbandonoUeQuery(int anoLetivo, string codigoDre, string codigoUe, string modalidade, int numeroPagina, int numeroRegistros)
+        public ObterAbandonoUeQuery(int anoLetivo, string codigoDre, string codigoUe, int modalidade, int numeroPagina, int numeroRegistros)
         {
             AnoLetivo = anoLetivo;
             CodigoDre = codigoDre;
@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAbandono
         public int AnoLetivo { get; set; }
         public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }
-        public string Modalidade { get; set; }
+        public int Modalidade { get; set; }
         public int NumeroPagina { get; set; }
         public int NumeroRegistros { get; set; }
     }
