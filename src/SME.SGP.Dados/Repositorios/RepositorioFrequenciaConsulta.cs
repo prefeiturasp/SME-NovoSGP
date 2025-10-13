@@ -931,19 +931,19 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<RegistroFrequenciaPainelEducacionalDto>> ObterInformacoesFrequenciaPainelEducacional(int anoLetivo)
         {
-            var query = $@"SELECT cfam.id,
+            var query = @"SELECT cfam.id,
                                  cfam.aluno_codigo as CodigoAluno,
-                                 d.dre_id AS CodigoDre,
-                                 u.ue_id AS CodigoUe,
-                                 coalesce(te.descricao || ' ', '') || coalesce(u.nome, '') as Ue,
+                                 d.dre_id AS DreCodigo,
+                                 u.ue_id AS CodigoUe
                                  cfam.mes,
                                  cfam.percentual,
                                  cfam.quantidade_aulas as QuantidadeAulas,
                                  cfam.quantidade_ausencias as QuantidadeAusencias,
                                  cfam.quantidade_compensacoes as QuantidadeCompensacoes,
                                  t.modalidade_codigo as ModalidadeCodigo,
-                                 t.ano_letivo AS AnoLetivo
-                            FROM consolidacao_frequencia_aluno_mensal cfam
+                                 t.ano_letivo  
+                            FROM 
+                            consolidacao_frequencia_aluno_mensal cfam
                             INNER JOIN turma t ON t.id = cfam.turma_id
                             INNER JOIN ue u ON u.id = t.ue_id
                             INNER JOIN tipo_escola te ON te.cod_tipo_escola_eol = u.tipo_escola

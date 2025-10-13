@@ -5,7 +5,6 @@
         public long Id { get; set; }
         public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }
-        public string Ue { get; set; }
         public string CodigoAluno { get; set; }
         public int Mes { get; set; }
         public decimal Percentual { get; set; }
