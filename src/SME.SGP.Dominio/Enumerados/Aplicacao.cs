@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dominio
 {
-    public enum AplicacaoSondagem
+    public enum Aplicacao
     {
         [Display(Name = "SGP")]
         SGP = 1,
