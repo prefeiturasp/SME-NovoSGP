@@ -22,7 +22,7 @@ namespace SME.SGP.Dominio
         public bool Migrado { get; set; }
         public EntidadeStatus Status { get; set; }
         public TipoCalendario TipoCalendario { get; set; }
-        public AplicacaoSondagem Aplicacao { get; set; }
+        public Aplicacao Aplicacao { get; set; }
         public long TipoCalendarioId { get; set; }
         public Ue Ue { get; set; }
         public long? UeId { get; set; }

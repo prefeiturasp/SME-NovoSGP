@@ -446,7 +446,7 @@ namespace SME.SGP.Dominio.Servicos
                 CriadoPor = fechamento.CriadoPor,
                 CriadoRF = fechamento.CriadoRF,
                 Migrado = fechamento.Migrado,
-                Aplicacao = fechamento.Aplicacao
+                Aplicacao = fechamento.Aplicacao.EhUmDosValores() ? fechamento.Aplicacao : Dominio.Aplicacao.SGP,
             };
         }
     }
