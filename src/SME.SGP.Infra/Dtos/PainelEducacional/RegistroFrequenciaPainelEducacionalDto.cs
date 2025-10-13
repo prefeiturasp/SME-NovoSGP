@@ -6,11 +6,8 @@
         public long TurmaId { get; set; }
         public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }
-<<<<<<< HEAD
-=======
         public string Dre { get; set; }
         public string Ue { get; set; }
->>>>>>> ad57b879fe (Refatoração para atender consolidação por anos anteriores e melhorar a performance)
         public string CodigoAluno { get; set; }
         public int Mes { get; set; }
         public decimal Percentual { get; set; }
