@@ -1,12 +1,10 @@
-﻿using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
-using System.Collections.Generic;
+﻿using SME.SGP.Infra.Dtos.PainelEducacional.IndicadoresPap;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional
 {
     public interface IConsultasInformacoesPapUseCase
     {
-        Task<IEnumerable<PainelEducacionalInformacoesPapDto>> ObterInformacoesPap(string codigoDre, string codigoUe);
+        Task<IndicadoresPapDto> ObterInformacoesPap(int anoLetivo, string codigoDre, string codigoUe);
     }
 }

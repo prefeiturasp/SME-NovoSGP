@@ -1,0 +1,1 @@
+ALTER TABLE public.fechamento_reabertura ADD column IF NOT exists aplicacao int NULL;

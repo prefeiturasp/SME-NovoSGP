@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAnoMaisRecenteIdeb
 
         public async Task<int?> Handle(ObterAnoMaisRecenteIdebQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioIdebConsulta.ObterAnoMaisRecenteIdeb(request.Serie, request.CodigoDre, request.CodigoUe);
+            return await repositorioIdebConsulta.ObterAnoMaisRecenteIdeb(int.Parse(request.Serie), request.CodigoDre, request.CodigoUe);
         }
     }
 }

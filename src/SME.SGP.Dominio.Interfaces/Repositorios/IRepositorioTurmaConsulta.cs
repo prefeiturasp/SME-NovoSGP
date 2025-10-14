@@ -61,5 +61,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<TurmaDTO>> ObterTurmasAulasNormais(long ueId, int anoLetivo, int[] tiposTurma, int[] modalidades, int[] ignorarTiposCiclos);
         Task<IEnumerable<TurmaRetornoDto>> ObterTurmasSondagem(string codigoUe, int anoLetivo);
         Task<IEnumerable<TurmaPainelEducacionalFrequenciaDto>> ObterTodasTurmasPainelEducacionalFrequenciaAsync();
+        Task<IEnumerable<TurmaPainelEducacionalDto>> ObterTurmasPainelEducacionalAsync(int anoLetivo);
     }
 }

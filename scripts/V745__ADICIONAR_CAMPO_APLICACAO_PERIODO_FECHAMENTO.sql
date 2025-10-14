@@ -1,0 +1,1 @@
+ALTER TABLE public.periodo_fechamento ADD column IF NOT exists aplicacao int NULL;
