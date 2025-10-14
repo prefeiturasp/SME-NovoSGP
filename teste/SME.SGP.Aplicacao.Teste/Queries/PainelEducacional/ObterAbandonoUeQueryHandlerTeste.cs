@@ -2,6 +2,7 @@ using Moq;
 using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAbandono;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces.Repositorios;
+using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,19 +16,22 @@ namespace SME.SGP.Aplicacao.Teste.Queries.PainelEducacional
         public async Task DeveRetornarDtoCorretoAoConsultarRepositorio()
         {
             var mockRepo = new Mock<IRepositorioPainelEducacionalAbandonoUe>();
-            var resultadoRepo = new List<PainelEducacionalAbandonoUe>
+            var paginacaoResultado = new PaginacaoResultadoDto<PainelEducacionalAbandonoUe>
             {
-                new PainelEducacionalAbandonoUe {
-                    CodigoTurma = "T1",
-                    NomeTurma = "Turma 1",
-                    Modalidade = "CIEJA",
-                    QuantidadeDesistencias = 5,
-                    TotalPaginas = 1,
-                    TotalRegistros = 1
-                }
+                Items = new List<PainelEducacionalAbandonoUe>
+                {
+                    new PainelEducacionalAbandonoUe {
+                        CodigoTurma = "T1",
+                        NomeTurma = "Turma 1",
+                        Modalidade = "CIEJA",
+                        QuantidadeDesistencias = 5
+                    }
+                },
+                TotalPaginas = 1,
+                TotalRegistros = 1
             };
             mockRepo.Setup(r => r.ObterAbandonoUe(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
-                .ReturnsAsync(resultadoRepo);
+                .ReturnsAsync(paginacaoResultado);
 
             var handler = new ObterAbandonoUeQueryHandler(mockRepo.Object);
             var query = new ObterAbandonoUeQuery(2025, "dre", "ue", "CIEJA", 1, 10);
