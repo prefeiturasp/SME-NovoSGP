@@ -512,10 +512,11 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = $@"select count(*) from usuario u
                          inner join abrangencia a on a.usuario_id = u.id
-                         where u.login = @login and historico = false and turma_id is not null
-                              and { (cj ? string.Empty : "not") } a.perfil = ANY(@perfisCJ);";
+                         inner join turma t on a.turma_id = t.id
+                         where u.login = @login and historico = false and t.turma_id is not null
+                              and { (cj ? string.Empty : "not") } a.perfil = ANY(@perfisCJ) and t.ano_letivo = @anoLetivo;";
 
-            var parametros = new { login, perfisCJ = new Guid[] { Perfis.PERFIL_CJ, Perfis.PERFIL_CJ_INFANTIL } };
+            var parametros = new { login, perfisCJ = new Guid[] { Perfis.PERFIL_CJ, Perfis.PERFIL_CJ_INFANTIL }, anoLetivo = DateTime.Now.Year };
 
             return database.Conexao.QueryFirstOrDefault<int>(sql, parametros) > 0;
         }
@@ -524,10 +525,11 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = @"select count(*) from usuario u
                         inner join abrangencia a on a.usuario_id = u.id
-                        where u.login = @login and historico = false and turma_id is not null
-                              and a.perfil = @perfilINFANTIL ;";
+                        inner join turma t on a.turma_id = t.id
+                        where u.login = @login and historico = false and t.turma_id is not null
+                              and a.perfil = @perfilINFANTIL and t.ano_letivo = @anoLetivo;";
 
-            var parametros = new { login, perfilINFANTIL = cj ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_PROFESSOR_INFANTIL };
+            var parametros = new { login, perfilINFANTIL = cj ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_PROFESSOR_INFANTIL, anoLetivo = DateTime.Now.Year };
 
             return database.Conexao.QueryFirstOrDefault<int>(sql, parametros) > 0;
         }
