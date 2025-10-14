@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Proficiencia
                         string componenteCurricular = planilha.Cell(linha, 3).Value.ToString().Trim();
                         decimal.TryParse(planilha.Cell(linha, 4).Value.ToString().Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out var proficiencia);
 
-                        var dto = new ProficienciaIdepDto(serieAno, codigoEOLEscola, anoLetivo, componenteCurricular.ToString(), proficiencia);
+                        var dto = new ProficienciaIdepDto(serieAno, codigoEOLEscola, anoLetivo, componenteCurricular, proficiencia);
                         dto.LinhaAtual = linha;
                         listaLote.Add(dto);
 
