@@ -98,7 +98,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Boletim
                              (short)proficiencia.SerieAno,
                              proficiencia.CodigoUe,
                              proficiencia.AnoLetivo,
-                             proficiencia.ComponenteCurricular.ToString(),
+                             proficiencia.ComponenteCurricular,
                              proficiencia.Proficiencia,
                              enderecoArquivo
                          );
