@@ -26,7 +26,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 400)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.IE_I_P_I, Policy = "Bearer")]
-        [Permissao(Permissao.IE_I_P_I, Policy = "Bearer")]
         public async Task<IActionResult> ImportarArquivoIdeb([FromForm] IFormFile arquivo, [FromForm] int anoLetivo, [FromServices] IImportacaoArquivoIdebUseCase useCase)
         {
             return Ok(await useCase.Executar(arquivo, anoLetivo));
@@ -81,7 +80,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(PaginacaoResultadoDto<ImportacaoLogErroQueryRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 400)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.IE_I_P_C, Policy = "Bearer")]
         [Permissao(Permissao.IE_I_P_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterImportacaoLogErros([FromQuery] FiltroPesquisaImportacaoDto filtro, [FromServices] IImportacaoLogErroUseCase useCase)
         {

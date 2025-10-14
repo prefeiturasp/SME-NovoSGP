@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using SME.SGP.Dominio;
 using SME.SGP.Infra.Dtos.ImportarArquivo;
 using System.Threading.Tasks;
 
