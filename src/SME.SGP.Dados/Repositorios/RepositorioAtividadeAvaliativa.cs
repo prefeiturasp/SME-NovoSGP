@@ -4,14 +4,15 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
+    [ExcludeFromCodeCoverage]
     public class RepositorioAtividadeAvaliativa : RepositorioBase<AtividadeAvaliativa>, IRepositorioAtividadeAvaliativa
     {
         private readonly string fromCompleto = @"from atividade_avaliativa a
@@ -208,7 +209,8 @@ namespace SME.SGP.Dados.Repositorios
 
             var lookup = new Dictionary<long, AtividadeAvaliativa>();
 
-            await database.Conexao.QueryAsync<AtividadeAvaliativa, AtividadeAvaliativaDisciplina, AtividadeAvaliativa>(query, (atividadeAvaliativa, atividadeAvaliativaDisciplina) => {
+            await database.Conexao.QueryAsync<AtividadeAvaliativa, AtividadeAvaliativaDisciplina, AtividadeAvaliativa>(query, (atividadeAvaliativa, atividadeAvaliativaDisciplina) =>
+            {
 
                 var retorno = new AtividadeAvaliativa();
                 if (!lookup.TryGetValue(atividadeAvaliativa.Id, out retorno))
@@ -244,12 +246,13 @@ namespace SME.SGP.Dados.Repositorios
                         and aa.ue_id  = @ueCodigo 
                         and aa.data_avaliacao ::date = @dataReferencia
                         and aa.turma_id = @turmaCodigo    ";
-                        
+
 
 
             var lookup = new Dictionary<long, AtividadeAvaliativa>();
 
-            await database.Conexao.QueryAsync<AtividadeAvaliativa, AtividadeAvaliativaDisciplina, AtividadeAvaliativa>(query, (atividadeAvaliativa, atividadeAvaliativaDisciplina) => {
+            await database.Conexao.QueryAsync<AtividadeAvaliativa, AtividadeAvaliativaDisciplina, AtividadeAvaliativa>(query, (atividadeAvaliativa, atividadeAvaliativaDisciplina) =>
+            {
 
                 var retorno = new AtividadeAvaliativa();
                 if (!lookup.TryGetValue(atividadeAvaliativa.Id, out retorno))
@@ -271,7 +274,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return lookup.Values;
         }
-        
+
 
         public async Task<bool> VerificarSeExisteAvaliacao(DateTime dataAvaliacao, string ueId, string turmaId, string professorRf, string disciplinaId)
         {
@@ -619,7 +622,8 @@ namespace SME.SGP.Dados.Repositorios
 
             var lookup = new Dictionary<long, AtividadeAvaliativa>();
 
-            await database.Conexao.QueryAsync<AtividadeAvaliativa, AtividadeAvaliativaDisciplina, AtividadeAvaliativa>(sql.ToString(), (atividadeAvaliativa, atividadeAvaliativaDisciplina) => {
+            await database.Conexao.QueryAsync<AtividadeAvaliativa, AtividadeAvaliativaDisciplina, AtividadeAvaliativa>(sql.ToString(), (atividadeAvaliativa, atividadeAvaliativaDisciplina) =>
+            {
 
                 var retorno = new AtividadeAvaliativa();
                 if (!lookup.TryGetValue(atividadeAvaliativa.Id, out retorno))
@@ -663,7 +667,7 @@ namespace SME.SGP.Dados.Repositorios
             if (componenteCurricularCodigo.HasValue)
                 query += " and aad.disciplina_id = @componenteCurricularCodigo";
 
-            return (await database.Conexao.QueryAsync(query, new { turmaId, periodoEscolarId, componenteCurricularCodigo = componenteCurricularCodigo.ToString()  })).Any();
+            return (await database.Conexao.QueryAsync(query, new { turmaId, periodoEscolarId, componenteCurricularCodigo = componenteCurricularCodigo.ToString() })).Any();
         }
 
         public Task<IEnumerable<AvaliacaoNotaAlunoDto>> ObterAtividadesNotasAlunoPorTurmaPeriodo(long turmaId, long periodoEscolarId, string alunoCodigo, string componenteCurricular)
