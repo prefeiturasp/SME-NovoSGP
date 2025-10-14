@@ -33,7 +33,6 @@ namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.ProficienciaIdeb
                Boletim = request.ProficienciaIdeb.Boletim,
                Proficiencia = request.ProficienciaIdeb.Proficiencia,
                ComponenteCurricular = request.ProficienciaIdeb.ComponenteCurricular,
-               Boletim = request.ProficienciaIdeb.Boletim
            };
     }
 }

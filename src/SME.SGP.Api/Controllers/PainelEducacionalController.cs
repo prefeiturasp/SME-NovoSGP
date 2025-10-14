@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
-using SME.SGP.Aplicacao.CasosDeUso.PainelEducacional;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
-using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
@@ -112,8 +110,16 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterConsolidacaoAbandono(int anoLetivo, string codigoDre, string codigoUe, [FromServices] IConsultasAbandonoPainelEducacionalUseCase consultasAbandonoPainelEducacionalUseCase)
-        => Ok(await consultasAbandonoPainelEducacionalUseCase.ObterAbandonoVisaoSmeDre(anoLetivo, codigoDre, codigoUe));
+        public async Task<IActionResult> ObterConsolidacaoAbandono(int anoLetivo, string codigoDre, [FromServices] IConsultasAbandonoPainelEducacionalUseCase consultasAbandonoPainelEducacionalUseCase)
+        => Ok(await consultasAbandonoPainelEducacionalUseCase.ObterAbandonoVisaoSmeDre(anoLetivo, codigoDre));
+
+        [HttpGet("abandono-ue")]
+        [ProducesResponseType(typeof(PainelEducacionalAbandonoModalidadeDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterConsolidacaoAbandonoUe(int anoLetivo, string codigoDre, string codigoUe, string modalidade, int numeroPagina, int numeroRegistros, [FromServices] IConsultasAbandonoPainelEducacionalUeUseCase consultasAbandonoPainelEducacionalUeUseCase)
+        => Ok(await consultasAbandonoPainelEducacionalUeUseCase.Executar(anoLetivo, codigoDre, codigoUe, modalidade, numeroPagina, numeroRegistros));
 
         [HttpGet("proficiencia-idep")]
         [ProducesResponseType(typeof(PainelEducacionalProficienciaIdepDto), 200)]
@@ -139,12 +145,5 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterSondagemEscrita([FromQuery] FiltroPainelEducacionalAnoLetivoBimestre filtro, [FromServices] IConsultasSondagemEscritaUseCase consultasSondagemEscritaUseCase)
     => Ok(await consultasSondagemEscritaUseCase.ObterSondagemEscrita(filtro.CodigoDre, filtro.CodigoUe, filtro.AnoLetivo, filtro.Bimestre, filtro.SerieAno));
 
-        [HttpGet("abandono-ue")]
-        [ProducesResponseType(typeof(PainelEducacionalAbandonoModalidadeDto), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterConsolidacaoAbandonoUe(int anoLetivo, string codigoDre, string codigoUe, string modalidade, int numeroPagina, int numeroRegistros, [FromServices] IConsultasAbandonoPainelEducacionalUeUseCase consultasAbandonoPainelEducacionalUeUseCase)
-        => Ok(await consultasAbandonoPainelEducacionalUeUseCase.Executar(anoLetivo, codigoDre, codigoUe, modalidade, numeroPagina, numeroRegistros));
     }
 }
