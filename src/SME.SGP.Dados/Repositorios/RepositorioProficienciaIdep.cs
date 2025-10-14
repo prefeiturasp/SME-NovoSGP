@@ -1,7 +1,4 @@
 using SME.SGP.Dominio;
-=======
-﻿using SME.SGP.Dominio;
->>>>>>> e426bed35b (Merge branch 'release' of https://github.com/prefeiturasp/SME-NovoSGP into feat/132829-consolidacao-fluencia-leitora)
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
