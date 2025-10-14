@@ -2,7 +2,7 @@
 {
     public class ProficienciaIdepDto : ArquivoImportacaoBaseDto
     {
-        public ProficienciaIdepDto(int serieAno, string codigoEOLEscola, int anoLetivo, int componenteCurricular, decimal proficiencia, string boletim = "")
+        public ProficienciaIdepDto(int serieAno, string codigoEOLEscola, int anoLetivo, string componenteCurricular, decimal proficiencia, string boletim = "")
         {
             SerieAno = serieAno;
             AnoLetivo = anoLetivo;
@@ -15,7 +15,7 @@
         public long? Id { get; set; }
         public int SerieAno { get; set; }
         public int AnoLetivo { get; set; }
-        public int ComponenteCurricular { get; set; }
+        public string ComponenteCurricular { get; set; }
         public decimal Proficiencia { get; set; }
         public string Boletim { get; set; }
     }
