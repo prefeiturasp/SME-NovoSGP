@@ -25,7 +25,7 @@ namespace SME.SGP.Dominio
         public Ue Ue { get; set; }
         public long? UeId { get; set; }
         public List<PeriodoFechamentoBimestre> FechamentosBimestre { get; set; }
-
+        public Aplicacao Aplicacao { get; set; }
         public void AdicionarDre(Dre dre)
         {
             if (dre.NaoEhNulo())

@@ -33,10 +33,12 @@ namespace SME.SGP.PainelEducacional.Worker
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarIdebPainelEducacional, new ComandoRabbit("Consolidar Ideb para o Painel Educacional", typeof(IConsolidarIdebPainelEducacionalUseCase)));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarNivelEscritaAlfabetizacao, new ComandoRabbit("Sincronização e Consolidação dos Dados da Sondagem do Nível de Escrita", typeof(IConsolidarInformacoesNivelEscritaAlfabetizacaoPainelEducacionalUseCase), false));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarNivelEscritaAlfabetizacaoCritico, new ComandoRabbit("Sincronização e Consolidação dos Dados da Sondagem da Alfabetização Crítica Escrita", typeof(IConsolidarInformacoesAlfabetizacaoCriticaEscritaPainelEducacionalUseCase), false));
-            Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarInformacoesPapPainelEducacional, new ComandoRabbit("Sincronização e Consolidação dos Dados de PAP", typeof(IConsolidarInformacoesPapPainelEducacionalUseCase)));
+            Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarInformacoesPapPainelEducacional, new ComandoRabbit("Sincronização e Consolidação dos Dados dos IndicadoresDre PAP", typeof(IConsolidarInformacoesPapPainelEducacionalUseCase)));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarVisaoGeralPainelEducacional, new ComandoRabbit("Consolidar Visão Geral para o Painel Educacional", typeof(IConsolidarVisaoGeralPainelEducacionalUseCase)));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarFluenciaLeitoraPainelEducacional, new ComandoRabbit("Consolidar Fluência Leitora para o Painel Educacional", typeof(IConsolidarFluenciaLeitoraPainelEducacionalUseCase)));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarTaxaAlfabetizacaoPainelEducacional, new ComandoRabbit("Consolidar Taxa de Alfabetização para o Painel Educacional", typeof(IConsolidarTaxaAlfabetizacaoPainelEducacionalUseCase)));
+            Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarSondagemEscritaUePainelEducacional, new ComandoRabbit("Consolidar Sondagem Escrita Ue para o Painel Educacional", typeof(IConsolidarSondagemEscritaUePainelEducacionalUseCase)));
+            Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarAbandonoPainelEducacional, new ComandoRabbit("Consolidar Abandono para o Painel Educacional", typeof(IConsolidarAbandonoPainelEducacionalUseCase)));
         }
     }
 }
