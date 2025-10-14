@@ -21,7 +21,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<PainelEducacionalAbandonoUe>> ObterAbandonoUe(int anoLetivo, string codigoDre, string codigoUe, string modalidade, int numeroPagina, int numeroRegistros)
         {
             var offset = (numeroPagina - 1) * numeroRegistros;
-            var query = MontarQuery(codigoDre);
+            var query = MontarQuery(codigoDre, codigoUe, modalidade);
 
             var registros = await database.Conexao.QueryAsync<PainelEducacionalAbandonoUe>(query, new { anoLetivo, codigoUe, modalidade, codigoDre, offset, numeroRegistros });
             var totalRegistros = registros.FirstOrDefault()?.TotalRegistros ?? 0;
@@ -36,7 +36,7 @@ namespace SME.SGP.Dados.Repositorios
             return registros;
         }
 
-        private static string MontarQuery(string codigoDre)
+        private static string MontarQuery(string codigoDre, string codigoUe, string modalidade)
         {
             var sb = new StringBuilder();
 
@@ -48,12 +48,13 @@ namespace SME.SGP.Dados.Repositorios
                     modalidade AS Modalidade,
                     COUNT(*) OVER() AS TotalRegistros
                 FROM painel_educacional_consolidacao_abandono_ue
-                WHERE ano_letivo = @anoLetivo
-                  AND codigo_ue = @codigoUe
-                  AND modalidade = @modalidade");
+                WHERE ano_letivo = @anoLetivo");
 
-            if (!string.IsNullOrEmpty(codigoDre))
-                sb.AppendLine(" AND codigo_dre = @codigoDre");
+            if (!string.IsNullOrEmpty(codigoUe)) sb.AppendLine(" AND codigo_ue = @codigoUe");
+
+            if (!string.IsNullOrEmpty(codigoDre)) sb.AppendLine(" AND codigo_dre = @codigoDre");
+
+            if (!string.IsNullOrEmpty(modalidade)) sb.AppendLine(" AND modalidade = @modalidade");
 
             sb.AppendLine(" ORDER BY nome_turma");
             sb.AppendLine(" OFFSET @offset ROWS FETCH NEXT @numeroRegistros ROWS ONLY");

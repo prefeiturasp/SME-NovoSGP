@@ -1,12 +1,11 @@
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Moq;
-using Xunit;
 using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAbandono;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces.Repositorios;
-using SME.SGP.Infra.Dtos.PainelEducacional;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.Queries.PainelEducacional
 {
