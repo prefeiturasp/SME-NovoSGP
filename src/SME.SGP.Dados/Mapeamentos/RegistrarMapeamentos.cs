@@ -263,20 +263,8 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new IdebMap());
                config.AddMap(new IdepMap());
                config.AddMap(new FluenciaLeitoraMap());
-               config.AddMap(new PainelEducacionalVisaoGeralMap());
-               config.AddMap(new PainelEducacionalMap());
-               config.AddMap(new PainelEducacionalIdebMap());
                config.AddMap(new ConsolidacaoAlfabetizacaoNivelEscritaMap());
                config.AddMap(new ConsolidacaoAlfabetizacaoCriticaEscritaMap());
-               config.AddMap(new ProficienciaIdepMap());
-               config.AddMap(new ProficienciaIdebMap());
-               config.AddMap(new ConsolidacaoInformacoesPapMap());
-               config.AddMap(new ConsolidacaoPainelEducacionalFluenciaLeitoraMap());
-               config.AddMap(new TaxaAlfabetizacaoMap());
-               config.AddMap(new ProficienciaIdepMap());
-               config.AddMap(new ProficienciaIdebMap());
-               config.AddMap(new ConsolidacaoInformacoesPapMap());
-               config.AddMap(new ConsolidacaoPainelEducacionalFluenciaLeitoraMap());
 
                config.ForDommel();
            });
