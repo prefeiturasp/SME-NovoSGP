@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Proficiencia
                     {
                         var codigoEOLEscola = planilha.Cell(linha, 1).Value.ToString().Trim();
                         int.TryParse(planilha.Cell(linha, 2).Value.ToString().Trim(), out int serieAno);
-                        int.TryParse(planilha.Cell(linha, 3).Value.ToString().Trim(), out int componenteCurricular);
+                        string componenteCurricular = planilha.Cell(linha, 3).Value.ToString().Trim();
                         decimal.TryParse(planilha.Cell(linha, 4).Value.ToString().Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out var proficiencia);
 
                         var dto = new ProficienciaIdepDto(serieAno, codigoEOLEscola, anoLetivo, componenteCurricular, proficiencia);
@@ -154,13 +154,13 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Proficiencia
                         }
                     }
 
-                    if (dto.ComponenteCurricular <= 0)
+                    if (String.IsNullOrEmpty(dto.ComponenteCurricular))
                     {
                         SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Componente curricular inválido");
                         continue;
                     }
 
-                    mediator.Send(new ExcluirImportacaoProficienciaIdepPorAnoEscolaSerieCommand(dto.AnoLetivo, dto.CodigoEOLEscola, dto.SerieAno)).GetAwaiter().GetResult();
+                    mediator.Send(new ExcluirImportacaoProficienciaIdepPorAnoEscolaSerieCommand(dto.AnoLetivo, dto.CodigoEOLEscola, dto.SerieAno, dto.ComponenteCurricular)).GetAwaiter().GetResult();
                     mediator.Send(new SalvarImportacaoProficienciaIdepCommand(dto)).GetAwaiter().GetResult();
                 }
                 catch (Exception ex)

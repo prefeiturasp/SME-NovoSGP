@@ -6,12 +6,14 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
+    [ExcludeFromCodeCoverage]
     public class RepositorioPeriodoFechamento : RepositorioBase<PeriodoFechamento>, IRepositorioPeriodoFechamento
     {
         public RepositorioPeriodoFechamento(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
@@ -40,9 +42,6 @@ namespace SME.SGP.Dados.Repositorios
 
             if (tipoCalendarioId.HasValue)
                 query.AppendLine("and p.tipo_calendario_id = @tipoCalendarioId");
-
-            query.AppendLine("and f.dre_id is null");
-            query.AppendLine("and f.ue_id is null");
 
             if (turmaId.HasValue)
                 query.AppendLine("and tu.id = @turmaId");

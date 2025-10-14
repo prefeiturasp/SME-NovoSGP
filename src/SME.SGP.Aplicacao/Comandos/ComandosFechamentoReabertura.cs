@@ -107,6 +107,7 @@ namespace SME.SGP.Aplicacao
             fechamentoReabertura.Descricao = fechamentoReaberturaPersistenciaDto.Descricao;
             fechamentoReabertura.Fim = fechamentoReaberturaPersistenciaDto.Fim;
             fechamentoReabertura.Inicio = fechamentoReaberturaPersistenciaDto.Inicio;
+            fechamentoReabertura.Aplicacao = fechamentoReaberturaPersistenciaDto.Aplicacao;
 
             fechamentoReabertura.AtualizarDre(dre);
             fechamentoReabertura.AtualizarUe(ue);

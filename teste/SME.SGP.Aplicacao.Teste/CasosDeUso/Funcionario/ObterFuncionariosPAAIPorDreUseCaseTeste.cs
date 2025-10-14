@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Moq;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;

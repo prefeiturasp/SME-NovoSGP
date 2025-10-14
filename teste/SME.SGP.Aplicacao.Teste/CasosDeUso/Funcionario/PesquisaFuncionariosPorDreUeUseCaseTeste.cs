@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Moq;
 using SME.SGP.Infra;
 using System.Collections.Generic;
