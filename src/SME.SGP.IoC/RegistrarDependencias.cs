@@ -60,10 +60,10 @@ using SME.SGP.Infra.Interfaces;
 using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC.Extensions.RegistrarCasoDeUsoRabbitSgp;
 using System.Diagnostics.CodeAnalysis;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PlanoAEE;
 
 namespace SME.SGP.IoC
 {
+    [ExcludeFromCodeCoverage]
     public class RegistrarDependencias
     {
         public virtual void Registrar(IServiceCollection services, IConfiguration configuration)
