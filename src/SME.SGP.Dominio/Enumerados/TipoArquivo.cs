@@ -92,6 +92,9 @@ namespace SME.SGP.Dominio
         [Display(Name = "informativo")]
         Informativo = 29,
 
+        [Display(Name = "importacao")]
+        Importacao = 30,
+
         [Display(Name = "temp")]
         temp = 99
     }

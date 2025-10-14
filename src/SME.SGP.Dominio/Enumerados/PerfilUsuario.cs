@@ -116,6 +116,11 @@ namespace SME.SGP.Dominio
         ASSISTENTE_COORDENADOR_GERAL_CIEJA = 37,
 
         [Display(Name = "78e1e074-37d6-e911-abd6-f81654fe895d")]
-        COORDENADOR_GERAL_CIEJA = 38,
+        COORDENADOR_GERAL_CIEJA = 38,    
+        
+        [Display(Name = "89e1e074-37d6-e911-abd6-f81654fe895d")]
+        PERFIL_SECRETARIO_EDUCACAO = 39,
+
+
     }
 }

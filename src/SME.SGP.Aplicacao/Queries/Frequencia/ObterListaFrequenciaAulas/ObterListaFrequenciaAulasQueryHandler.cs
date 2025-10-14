@@ -26,6 +26,7 @@ namespace SME.SGP.Aplicacao
             registrosFrequencias.CarregarAulas(request.Aulas, request.RegistrosFrequenciaAlunos, usuarioLogado.EhSomenteProfessorCj(), usuarioLogado.EhGestorEscolar());
             registrosFrequencias.CarregarAuditoria(request.RegistrosFrequenciaAlunos);
             var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(request.AlunosDaTurma.Select(x => x.CodigoAluno).ToArray(), request.Turma.AnoLetivo);
+
             foreach (var aluno in request.AlunosDaTurma)
             {
                 var frequenciaPreDefinida = request.FrequenciasPreDefinidas
@@ -61,8 +62,36 @@ namespace SME.SGP.Aplicacao
                 // Indicativo de Frequencia (%)
                 registroFrequenciaAluno.IndicativoFrequencia = ObterIndicativoFrequencia(frequenciaAluno, request.PercentualAlerta, request.PercentualCritico);
 
+                TipoFrequencia? frequenciaSugerida = null;
+
                 if (request.Aulas.Any())
                 {
+                    foreach (var aula in request.Aulas)
+                    {
+                        var frequenciaRegistradaAula = await mediator.Send(new ObterRegistroFrequenciaPorAulaIdQuery(aula.Id));
+                        if (frequenciaRegistradaAula is null)
+                        {
+                            var primeiroRegistroFrequenciaDataTurma = await mediator.Send(
+                                new ObterPrimeiroRegistroFrequenciaPorDataETurmaQuery(request.Turma.CodigoTurma, aula.DataAula));
+
+                            if (primeiroRegistroFrequenciaDataTurma is not null && primeiroRegistroFrequenciaDataTurma.AulaId > 0)
+                            {
+                                var aulaAtual = registrosFrequencias.Aulas.FirstOrDefault(a => a.AulaId == aula.Id);
+                                aulaAtual.ComponenteCurricularSugerido = primeiroRegistroFrequenciaDataTurma.ComponenteCurricularSugerido;
+                                var frequenciaSugeridaAlunos = await mediator.Send(
+                                new ObterRegistrosFrequenciasAlunosSimplificadoPorAulaIdQuery(primeiroRegistroFrequenciaDataTurma.AulaId))
+                                ?? Enumerable.Empty<FrequenciaAlunoSimplificadoDto>();
+
+                                var numeroAulaSugerida = Math.Max(primeiroRegistroFrequenciaDataTurma.QuantidadeAulas, aula.Quantidade);
+
+                                frequenciaSugerida = frequenciaSugeridaAlunos.FirstOrDefault(
+                                    a => a.NumeroAula == numeroAulaSugerida
+                                    && a.CodigoAluno == aluno.CodigoAluno
+                                    && a.TipoFrequencia > 0)?.TipoFrequencia;
+                            }
+                        }
+                    }
+
                     var anotacoesAluno = request.AnotacoesTurma
                         .Where(a => a.AlunoCodigo == aluno.CodigoAluno);
 
@@ -75,7 +104,7 @@ namespace SME.SGP.Aplicacao
                             .Where(t => t.CodigoAluno == aluno.CodigoAluno);
 
                         registroFrequenciaAluno
-                            .CarregarAulas(request.Aulas, registrosFrequenciaAluno, compensacoesAusenciaAluno, aluno, anotacoesAluno, frequenciaPreDefinida);
+                            .CarregarAulas(request.Aulas, registrosFrequenciaAluno, compensacoesAusenciaAluno, aluno, anotacoesAluno, frequenciaPreDefinida, frequenciaSugerida);
                     }
                     else
                         registroFrequenciaAluno

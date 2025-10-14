@@ -9,12 +9,14 @@ using SME.SGP.Infra.Dtos.EscolaAqui.Dashboard;
 using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
+    [ExcludeFromCodeCoverage]
     public class RepositorioComunicado : RepositorioBase<Comunicado>, IRepositorioComunicado
     {
         public RepositorioComunicado(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)

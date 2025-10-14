@@ -1,5 +1,5 @@
 ﻿using Dapper;
-using Minio.DataModel;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Polly;
 using Polly.Registry;
 using SME.SGP.Dominio;
@@ -7,17 +7,20 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Dtos.Frequencia;
+using SME.SGP.Infra.Dtos.PainelEducacional;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
+    [ExcludeFromCodeCoverage]
     public class RepositorioFrequenciaConsulta : RepositorioBase<RegistroFrequencia>, IRepositorioFrequenciaConsulta
     {
         private readonly IAsyncPolicy policy;
@@ -929,5 +932,46 @@ namespace SME.SGP.Dados.Repositorios
                                       and a.data_aula between pe.periodo_inicio and periodo_fim
                                       and ue.ue_id = @ueCodigo
                                       and DATE_PART('day', rf.criado_em - a.data_aula) > 0;", new { ueCodigo, anoLetivo, bimestre });
+
+        public async Task<IEnumerable<RegistroFrequenciaPainelEducacionalDto>> ObterInformacoesFrequenciaPainelEducacional(IEnumerable<long> turmaIds)
+        {
+            var query = $@"SELECT cfam.id,
+                                  cfam.turma_id as TurmaId,          
+                                  cfam.aluno_codigo as CodigoAluno,
+                                  cfam.mes,
+                                  cfam.percentual,
+                                  cfam.quantidade_aulas as QuantidadeAulas,
+                                  cfam.quantidade_ausencias as QuantidadeAusencias
+                            FROM consolidacao_frequencia_aluno_mensal cfam
+                            WHERE cfam.turma_id = any(@turmaIds)
+            ";
+
+            var parametros = new
+            {
+                turmaIds
+            };
+
+            return await database.Conexao.QueryAsync<RegistroFrequenciaPainelEducacionalDto>(query, parametros);
+        }
+
+        public async Task<ComponenteCurricularSugeridoDto> ObterPrimeiroRegistroFrequenciaPorDataETurma(string turmaId, DateTime dataAula)
+        {
+            var query = $@"select 
+                                t1.aula_id
+                              , t2.quantidade as quantidadeAulas
+                              , t3.descricao_sgp as componenteCurricularSugerido
+                            from registro_frequencia t1
+                            inner join aula t2 on t2.id = t1.aula_id
+                            inner join componente_curricular t3 on (t3.id = CAST(t2.disciplina_id AS INT))
+                            where t2.turma_id = @turmaId and DATE(t2.data_aula) = @dataAula";
+
+            var parametros = new
+            {
+                turmaId,
+                dataAula
+            };
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<ComponenteCurricularSugeridoDto>(query, parametros);
+        }
     }
 }

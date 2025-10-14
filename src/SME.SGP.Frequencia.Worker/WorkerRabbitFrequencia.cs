@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 using SME.SGP.Aplicacao.Workers;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
@@ -89,6 +90,7 @@ namespace SME.SGP.Frequencia.Worker
             Comandos.Add(RotasRabbitSgpFrequencia.ConsolidarInformacoesProdutividadeFrequenciaDre, new ComandoRabbit("Consolidar informações produtividade de frequência (Dre)", typeof(IConsolidarInformacoesProdutividadeFrequenciaDreUseCase)));
             Comandos.Add(RotasRabbitSgpFrequencia.ConsolidarInformacoesProdutividadeFrequenciaUe, new ComandoRabbit("Consolidar informações produtividade de frequência (Ue)", typeof(IConsolidarInformacoesProdutividadeFrequenciaUeUseCase)));
             Comandos.Add(RotasRabbitSgpFrequencia.ConsolidarInformacoesProdutividadeFrequenciaBimestre, new ComandoRabbit("Consolidar informações produtividade de frequência (Bimestre)", typeof(IConsolidarInformacoesProdutividadeFrequenciaBimestreUseCase)));
+            Comandos.Add(RotasRabbitSgpFrequencia.ConsolidarInformacoesFrequenciaPainelEducacional, new ComandoRabbit("Consolidar informações de frequência para painel educacional", typeof(IConsolidarInformacoesFrequenciaPainelEducacionalUseCase)));
         }
     }
 }

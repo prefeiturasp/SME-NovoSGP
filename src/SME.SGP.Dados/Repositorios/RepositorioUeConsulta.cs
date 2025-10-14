@@ -6,12 +6,14 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
+    [ExcludeFromCodeCoverage]
     public class RepositorioUeConsulta : IRepositorioUeConsulta
     {
         private const string QuerySincronizacao = @"SELECT id, ue_id, dre_id, nome, tipo_escola, data_atualizacao FROM public.ue where ue_id in (#ids);";
@@ -67,6 +69,11 @@ namespace SME.SGP.Dados.Repositorios
         public Ue ObterPorCodigo(string ueId)
         {
             return contexto.QueryFirstOrDefault<Ue>("select * from ue where ue_id = @ueId", new { ueId });
+        }
+
+        public async Task<Ue> ObterPorCodigoAsync(string ueId)
+        {
+            return await contexto.QueryFirstOrDefaultAsync<Ue>("select * from ue where ue_id = @ueId", new { ueId });
         }
 
         public async Task<long> ObterIdPorCodigoUe(string codigoUe)

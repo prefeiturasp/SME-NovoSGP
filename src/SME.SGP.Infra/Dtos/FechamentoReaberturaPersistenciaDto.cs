@@ -11,5 +11,6 @@ namespace SME.SGP.Infra
         public DateTime Inicio { get; set; }
         public long TipoCalendarioId { get; set; }
         public string UeCodigo { get; set; }
+        public Dominio.Aplicacao Aplicacao { get; set; }
     }
 }
