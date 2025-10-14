@@ -20,7 +20,8 @@ namespace SME.SGP.Aplicacao
             if (request.DadosIdep == null)
                 return false;
 
-            await repositorioIdepConsolidacao.Inserir(request.DadosIdep);
+            await repositorioIdepConsolidacao.LimparConsolidacao();
+            await repositorioIdepConsolidacao.BulkInsertAsync(request.DadosIdep);
 
             return true;
         }
