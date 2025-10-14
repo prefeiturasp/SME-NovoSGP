@@ -14,5 +14,6 @@ namespace SME.SGP.Infra
         public string UeCodigo { get; set; }
         public string AprovadoPor { get; set; }
         public DateTime? AprovadoEm { get; set; }
+        public Dominio.Aplicacao Aplicacao { get; set; }
     }
 }
