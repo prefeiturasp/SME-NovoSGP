@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Dominio;
+using System;
 
 namespace SME.SGP.Infra
 {
@@ -10,5 +11,6 @@ namespace SME.SGP.Infra
         public DateTime DataInicio { get; set; }
         public string Descricao { get; set; }
         public long Id { get; set; }
+        public Dominio.Aplicacao Aplicacao { get; set; }
     }
 }
