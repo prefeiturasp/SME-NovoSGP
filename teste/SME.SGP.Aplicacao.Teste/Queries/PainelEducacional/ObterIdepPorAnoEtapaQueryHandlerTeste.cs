@@ -38,7 +38,16 @@ namespace SME.SGP.Aplicacao.Teste.Queries.PainelEducacional.ObterIdepPorAnoEtapa
         {
             var dados = new List<PainelEducacionalIdepDto>
             {
-                new PainelEducacionalIdepDto { AnoLetivo = 2023, Etapa = PainelEducacionalIdepEtapa.AnosIniciais }
+                new PainelEducacionalIdepDto
+                {
+                    AnoLetivo = 2023,
+                    Etapa = PainelEducacionalIdepEtapa.AnosIniciais,
+                    Faixa = "5.0-6.9",
+                    CodigoDre = "123456",
+                    Quantidade = 10,
+                    MediaGeral = 5.5m,
+                    UltimaAtualizacao = new DateTime(2023, 10, 1)
+                }
             };
 
             var query = new ObterIdepPorAnoEtapaQuery(2023, PainelEducacionalIdepEtapa.AnosIniciais.ToString(), "123456");
@@ -97,15 +106,53 @@ namespace SME.SGP.Aplicacao.Teste.Queries.PainelEducacional.ObterIdepPorAnoEtapa
                 }
             };
 
-            var query = new ObterIdepPorAnoEtapaQuery(2023, (int)PainelEducacionalIdepEtapa.AnosIniciais, "123456");
+            var query = new ObterIdepPorAnoEtapaQuery(2023, PainelEducacionalIdepEtapa.AnosIniciais.ToString(), "123456");
 
-            _repositorio.Setup(r => r.ObterIdepPorAnoEtapa(2023, (int)PainelEducacionalIdepEtapa.AnosIniciais, "123456"))
+            _repositorio.Setup(r => r.ObterIdepPorAnoEtapa(2023, PainelEducacionalIdepEtapa.AnosIniciais.ToString(), "123456"))
                        .ReturnsAsync(dadosRepositorio);
 
             var resultado = await _handler.Handle(query, CancellationToken.None);
             var resultadoLista = resultado.ToList();
 
-            Assert.Equal(dados, resultado);
+            Assert.Equal(2, resultadoLista.Count);
+
+            var primeiroGrupo = resultadoLista.First(x => x.Faixa == "0-4.9");
+            Assert.Equal(2023, primeiroGrupo.AnoLetivo);
+            Assert.Equal(PainelEducacionalIdepEtapa.AnosIniciais, primeiroGrupo.Etapa);
+            Assert.Equal("123456", primeiroGrupo.CodigoDre);
+            Assert.Equal(15, primeiroGrupo.Quantidade); 
+            Assert.Equal(4.0m, primeiroGrupo.MediaGeral); 
+            Assert.Equal(new DateTime(2023, 10, 15), primeiroGrupo.UltimaAtualizacao); 
+
+            var segundoGrupo = resultadoLista.First(x => x.Faixa == "5.0-6.9");
+            Assert.Equal(2023, segundoGrupo.AnoLetivo);
+            Assert.Equal(PainelEducacionalIdepEtapa.AnosIniciais, segundoGrupo.Etapa);
+            Assert.Equal("123456", segundoGrupo.CodigoDre);
+            Assert.Equal(8, segundoGrupo.Quantidade);
+            Assert.Equal(6.0m, segundoGrupo.MediaGeral);
+            Assert.Equal(new DateTime(2023, 10, 10), segundoGrupo.UltimaAtualizacao);
+
+            Assert.Equal("0-4.9", resultadoLista[0].Faixa);
+            Assert.Equal("5.0-6.9", resultadoLista[1].Faixa);
+        }
+
+        [Fact]
+        public async Task Deve_Retornar_Lista_Vazia_Quando_Repositorio_Nao_Retorna_Dados()
+        {
+            var query = new ObterIdepPorAnoEtapaQuery(2023, PainelEducacionalIdepEtapa.AnosIniciais.ToString(), "123456");
+
+            _repositorio.Setup(r => r.ObterIdepPorAnoEtapa(2023, PainelEducacionalIdepEtapa.AnosIniciais.ToString(), "123456"))
+                       .ReturnsAsync(new List<PainelEducacionalIdepDto>());
+
+            var resultado = await _handler.Handle(query, CancellationToken.None);
+
+            Assert.Empty(resultado);
+        }
+
+        [Fact]
+        public void Deve_Lancar_ArgumentNullException_Quando_Repositorio_For_Null()
+        {
+            Assert.Throws<ArgumentNullException>(() => new ObterIdepPorAnoEtapaQueryHandler(null));
         }
     }
 }
