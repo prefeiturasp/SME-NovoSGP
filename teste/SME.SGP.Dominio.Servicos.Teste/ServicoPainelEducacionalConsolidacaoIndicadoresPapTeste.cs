@@ -162,16 +162,16 @@ namespace SME.SGP.Dominio.Teste.Servicos
 
             return new List<ContagemDificuldadeIndicadoresPapPorTipoDto>
             {
-                // Indicadores para UE-11
+                // IndicadoresDre para UE-11
                 new ContagemDificuldadeIndicadoresPapPorTipoDto { AnoLetivo = ano, CodigoDre = "DRE-1", CodigoUe = "UE-11", TipoPap = tipoPap, RespostaId = 1, NomeDificuldade = "Leitura", Quantidade = 50 },
                 new ContagemDificuldadeIndicadoresPapPorTipoDto { AnoLetivo = ano, CodigoDre = "DRE-1", CodigoUe = "UE-11", TipoPap = tipoPap, RespostaId = 2, NomeDificuldade = "Escrita", Quantidade = 25 },
                 new ContagemDificuldadeIndicadoresPapPorTipoDto { AnoLetivo = ano, CodigoDre = "DRE-1", CodigoUe = "UE-11", TipoPap = tipoPap, RespostaId = PainelEducacionalConstants.ID_OUTRAS_DIFICULDADES_PAP, NomeDificuldade = PainelEducacionalConstants.NOME_OUTRAS_DIFICULDADES_PAP, Quantidade = 5 },
                 
-                // Indicadores apenas no nível DRE-1 (deve ser encontrado ao consolidar DRE-1)
+                // IndicadoresDre apenas no nível DRE-1 (deve ser encontrado ao consolidar DRE-1)
                 new ContagemDificuldadeIndicadoresPapPorTipoDto { AnoLetivo = ano, CodigoDre = "DRE-1", CodigoUe = null, TipoPap = tipoPap, RespostaId = 3, NomeDificuldade = "Cálculo", Quantidade = 100 },
                 new ContagemDificuldadeIndicadoresPapPorTipoDto { AnoLetivo = ano, CodigoDre = "DRE-1", CodigoUe = null, TipoPap = tipoPap, RespostaId = 4, NomeDificuldade = "Raciocínio Lógico", Quantidade = 80 },
 
-                // Indicadores apenas no nível SME (deve ser encontrado ao consolidar SME)
+                // IndicadoresDre apenas no nível SME (deve ser encontrado ao consolidar SME)
                 new ContagemDificuldadeIndicadoresPapPorTipoDto { AnoLetivo = ano, CodigoDre = null, CodigoUe = null, TipoPap = tipoPap, RespostaId = 5, NomeDificuldade = "Interpretação", Quantidade = 200 },
                 new ContagemDificuldadeIndicadoresPapPorTipoDto { AnoLetivo = ano, CodigoDre = null, CodigoUe = null, TipoPap = tipoPap, RespostaId = 6, NomeDificuldade = "Produção textual", Quantidade = 150 },
             };
