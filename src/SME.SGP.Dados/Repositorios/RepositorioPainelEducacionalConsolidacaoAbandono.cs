@@ -73,8 +73,8 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task LimparConsolidacao(int ano)
         {
-            var sql = @"DELETE FROM painel_educacional_consolidacao_abandono WHERE ano_letivo = @ano;
-                        DELETE FROM painel_educacional_consolidacao_abandono_ue WHERE ano_letivo = @ano;
+            var sql = @"DELETE FROM painel_educacional_consolidacao_abandono WHERE ano_letivo >= @ano;
+                        DELETE FROM painel_educacional_consolidacao_abandono_ue WHERE ano_letivo >= @ano;
                         -- sincronizar a sequence das tabelas
                         SELECT setval(
                             pg_get_serial_sequence('painel_educacional_consolidacao_abandono', 'id'),
