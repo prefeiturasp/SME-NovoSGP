@@ -1160,7 +1160,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<TurmaPainelEducacionalDto>> ObterTurmasPainelEducacionalAsync(int anoLetivo)
         {
             var query = @"select DISTINCT t.turma_Id as TurmaId, 
-                                 t.ue_id as CodigoUe,
+                                 u.ue_id as CodigoUe,
                                  d.dre_id as CodigoDre,
                                  t.nome as Nome, 
                                  t.modalidade_codigo as ModalidadeCodigo,
