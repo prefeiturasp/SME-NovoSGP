@@ -35,7 +35,7 @@ namespace SME.SGP.Dados.Repositorios
                 await writer.WriteAsync(item.AnoLetivo, NpgsqlTypes.NpgsqlDbType.Integer);
                 await writer.WriteAsync(item.CodigoDre, NpgsqlTypes.NpgsqlDbType.Varchar);
                 await writer.WriteAsync(item.CodigoUe, NpgsqlTypes.NpgsqlDbType.Varchar);
-                await writer.WriteAsync(item.Etapa.ToString(), NpgsqlTypes.NpgsqlDbType.Varchar);
+                await writer.WriteAsync((int)item.Etapa, NpgsqlTypes.NpgsqlDbType.Integer);
                 await writer.WriteAsync(item.Faixa, NpgsqlTypes.NpgsqlDbType.Varchar);
                 await writer.WriteAsync(item.Quantidade, NpgsqlTypes.NpgsqlDbType.Integer);
                 await writer.WriteAsync(item.MediaGeral, NpgsqlTypes.NpgsqlDbType.Numeric);
