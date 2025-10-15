@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Npgsql;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -48,7 +50,6 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task BulkInsertAsync(IEnumerable<PainelEducacionalConsolidacaoIdeb> indicadores)
         {
-
             await using var conn = new NpgsqlConnection(configuration.GetConnectionString("SGP_Postgres"));
             await conn.OpenAsync();
 
@@ -74,6 +75,5 @@ namespace SME.SGP.Dados.Repositorios
 
             await writer.CompleteAsync();
         }
-
     }
 }
