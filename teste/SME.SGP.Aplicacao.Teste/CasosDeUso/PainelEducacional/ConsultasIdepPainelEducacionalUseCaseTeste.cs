@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             _mediator.Setup(m => m.Send(It.IsAny<ObterIdepPorAnoEtapaQuery>(), It.IsAny<CancellationToken>()))
                     .ReturnsAsync(dados);
 
-            var resultado = await _useCase.ObterIdepPorAnoEtapa(2023, "1", "123456");
+            var resultado = await _useCase.ObterIdepPorAnoEtapa(2023, 1, "123456");
 
             Assert.Equal(2023, resultado.AnoSolicitado);
             Assert.Equal(2023, resultado.AnoUtilizado);
@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     .ReturnsAsync((IEnumerable<PainelEducacionalIdepDto>)null)
                     .ReturnsAsync(dados2022);
 
-            var resultado = await _useCase.ObterIdepPorAnoEtapa(2023, "1", "123456");
+            var resultado = await _useCase.ObterIdepPorAnoEtapa(2023, 1, "123456");
 
             Assert.Equal(2023, resultado.AnoSolicitado);
             Assert.Equal(2022, resultado.AnoUtilizado);
@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             _mediator.Setup(m => m.Send(It.IsAny<ObterIdepPorAnoEtapaQuery>(), It.IsAny<CancellationToken>()))
                     .ReturnsAsync((IEnumerable<PainelEducacionalIdepDto>)null);
 
-            var resultado = await _useCase.ObterIdepPorAnoEtapa(2023, "1", "123456");
+            var resultado = await _useCase.ObterIdepPorAnoEtapa(2023, 1, "123456");
 
             Assert.Equal(2023, resultado.AnoSolicitado);
             Assert.True(resultado.AnoSolicitadoSemDados);
@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             _mediator.Setup(m => m.Send(It.IsAny<ObterIdepPorAnoEtapaQuery>(), It.IsAny<CancellationToken>()))
                     .ReturnsAsync(dados);
 
-            var resultado = await _useCase.ObterIdepPorAnoEtapa(0, null, null);
+            var resultado = await _useCase.ObterIdepPorAnoEtapa(0, 0, null);
 
             Assert.Equal(DateTime.Now.Year, resultado.AnoSolicitado);
             Assert.Equal(PainelEducacionalIdepEtapa.AnosIniciais.ToString(), resultado.Etapa);
