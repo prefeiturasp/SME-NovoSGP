@@ -371,7 +371,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
 
         private Turma CriarTurmaFake()
         {
-            var ue = new Ue { Nome = "ESCOLA TESTE", TipoEscola = TipoEscola.EMEF, Dre = new SME.SGP.Dominio.Dre { Abreviacao = "DRE-TE" } };
+            var ue = new Ue { Nome = "ESCOLA TESTE", TipoEscola = Dominio.TipoEscola.EMEF, Dre = new SME.SGP.Dominio.Dre { Abreviacao = "DRE-TE" } };
             var turma = new Turma { CodigoTurma = "123", Nome = "1A", ModalidadeCodigo = Modalidade.Fundamental };
             turma.AdicionarUe(ue);
             return turma;

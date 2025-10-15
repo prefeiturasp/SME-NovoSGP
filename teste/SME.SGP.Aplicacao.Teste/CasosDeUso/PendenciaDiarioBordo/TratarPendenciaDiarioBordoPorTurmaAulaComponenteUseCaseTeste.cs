@@ -116,7 +116,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PendenciaDiarioBordo
             _mediatorMock.Setup(m => m.Send(It.IsAny<ObterTurmaComUeEDrePorCodigoQuery>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(turma);
             _mediatorMock.Setup(m => m.Send(It.IsAny<ObterTipoEscolaPorCodigoUEQuery>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(TipoEscola.EMEF);
+                         .ReturnsAsync(Dominio.TipoEscola.EMEF);
             _mediatorMock.Setup(m => m.Send(It.IsAny<ObterTipoUeIgnoraGeracaoPendenciasQuery>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(false);
         }
