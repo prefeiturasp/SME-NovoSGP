@@ -53,10 +53,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PendenciaRegistroIndividualJobs
         [Fact]
         public async Task Executar_Quando_Tipo_Escola_Ignorado_Deve_Pular_Geracao_E_Retornar_True()
         {
-            var turmas = new List<Turma> { CriarTurma(TipoEscola.EMEF) };
+            var turmas = new List<Turma> { CriarTurma(Dominio.TipoEscola.EMEF) };
             ConfigurarCaminhoFelizInicial(turmas);
 
-            _mediatorMock.Setup(m => m.Send(It.Is<ObterTipoUeIgnoraGeracaoPendenciasQuery>(q => q.TipoUe == TipoEscola.EMEF), It.IsAny<CancellationToken>()))
+            _mediatorMock.Setup(m => m.Send(It.Is<ObterTipoUeIgnoraGeracaoPendenciasQuery>(q => q.TipoUe == Dominio.TipoEscola.EMEF), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(true);
 
             var resultado = await _useCase.Executar(new MensagemRabbit());
@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PendenciaRegistroIndividualJobs
         [Fact]
         public async Task Executar_Quando_Geracao_Para_Turma_Retorna_Nulo_Deve_Logar_E_Continuar()
         {
-            var turmas = new List<Turma> { CriarTurma(TipoEscola.EMEF, 1) };
+            var turmas = new List<Turma> { CriarTurma(Dominio.TipoEscola.EMEF, 1) };
             ConfigurarCaminhoFelizInicial(turmas);
 
             _mediatorMock.Setup(m => m.Send(It.IsAny<GerarPendenciaAusenciaRegistroIndividualTurmaCommand>(), It.IsAny<CancellationToken>()))
@@ -83,7 +83,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PendenciaRegistroIndividualJobs
         [Fact]
         public async Task Executar_Quando_Geracao_Para_Turma_Retorna_Erro_Deve_Logar_E_Continuar()
         {
-            var turmas = new List<Turma> { CriarTurma(TipoEscola.EMEF, 1) };
+            var turmas = new List<Turma> { CriarTurma(Dominio.TipoEscola.EMEF, 1) };
             var retornoComErro = new RetornoBaseDto("Erro específico da turma.");
             ConfigurarCaminhoFelizInicial(turmas);
 
@@ -112,13 +112,13 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PendenciaRegistroIndividualJobs
         {
             var turmas = new List<Turma>
             {
-                CriarTurma(TipoEscola.EMEF, 1),
-                CriarTurma(TipoEscola.EMEF, 2),
-                CriarTurma(TipoEscola.CIEJA, 3)
+                CriarTurma(Dominio.TipoEscola.EMEF, 1),
+                CriarTurma(Dominio.TipoEscola.EMEF, 2),
+                CriarTurma(Dominio.TipoEscola.CIEJA, 3)
             };
             ConfigurarCaminhoFelizInicial(turmas);
 
-            _mediatorMock.Setup(m => m.Send(It.Is<GerarPendenciaAusenciaRegistroIndividualTurmaCommand>(c => c.Turma.Ue.TipoEscola == TipoEscola.CIEJA), It.IsAny<CancellationToken>()))
+            _mediatorMock.Setup(m => m.Send(It.Is<GerarPendenciaAusenciaRegistroIndividualTurmaCommand>(c => c.Turma.Ue.TipoEscola == Dominio.TipoEscola.CIEJA), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(new RetornoBaseDto("Erro para CIEJA"));
 
             var resultado = await _useCase.Executar(new MensagemRabbit());
@@ -134,13 +134,13 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PendenciaRegistroIndividualJobs
                          .ReturnsAsync("HABILITADO");
             _mediatorMock.Setup(m => m.Send(It.IsAny<ObterTurmasPorAnoModalidadeQuery>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(turmas);
-            _mediatorMock.Setup(m => m.Send(It.Is<ObterTipoUeIgnoraGeracaoPendenciasQuery>(q => q.TipoUe != TipoEscola.EMEF), It.IsAny<CancellationToken>()))
+            _mediatorMock.Setup(m => m.Send(It.Is<ObterTipoUeIgnoraGeracaoPendenciasQuery>(q => q.TipoUe != Dominio.TipoEscola.EMEF), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(false);
-            _mediatorMock.Setup(m => m.Send(It.Is<GerarPendenciaAusenciaRegistroIndividualTurmaCommand>(c => c.Turma.Ue.TipoEscola != TipoEscola.CIEJA), It.IsAny<CancellationToken>()))
+            _mediatorMock.Setup(m => m.Send(It.Is<GerarPendenciaAusenciaRegistroIndividualTurmaCommand>(c => c.Turma.Ue.TipoEscola != Dominio.TipoEscola.CIEJA), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(new RetornoBaseDto());
         }
 
-        private Turma CriarTurma(TipoEscola tipoEscola, long id = 1)
+        private Turma CriarTurma(Dominio.TipoEscola tipoEscola, long id = 1)
         {
             return new Turma
             {

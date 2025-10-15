@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PlanoAEE
         {
             UECodigo = "1",
             DREAbreviacao = "DRE1",
-            UETipo = TipoEscola.EMEF,
+            UETipo = Dominio.TipoEscola.EMEF,
             UENome = "Escola Teste",
             EstudanteNome = "Aluno Teste",
             EstudanteCodigo = "123",
@@ -156,7 +156,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PlanoAEE
         {
             UECodigo = "1",
             DREAbreviacao = "DRE1",
-            UETipo = TipoEscola.EMEF,
+            UETipo = Dominio.TipoEscola.EMEF,
             UENome = "Escola Teste",
             EstudanteNome = "Aluno Teste",
             EstudanteCodigo = "123",

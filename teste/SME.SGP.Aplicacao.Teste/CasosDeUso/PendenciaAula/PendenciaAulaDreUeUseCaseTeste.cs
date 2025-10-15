@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PendenciaAula
                 .RuleFor(u => u.Id, f => f.Random.Long(1, 10000))
                 .RuleFor(u => u.CodigoUe, f => f.Random.AlphaNumeric(6))
                 .RuleFor(u => u.DreId, f => f.Random.Long(1, 100))
-                .RuleFor(u => u.TipoEscola, f => f.PickRandom<TipoEscola>()); // Usa o enum real
+                .RuleFor(u => u.TipoEscola, f => f.PickRandom<Dominio.TipoEscola>()); // Usa o enum real
         }
 
         private void ConfigurarParametroSistema(TipoParametroSistema tipo, bool ativo)

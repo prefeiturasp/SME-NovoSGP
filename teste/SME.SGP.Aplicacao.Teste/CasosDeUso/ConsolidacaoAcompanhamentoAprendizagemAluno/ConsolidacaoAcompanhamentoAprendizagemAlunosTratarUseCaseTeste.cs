@@ -24,10 +24,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConsolidacaoAcompanhamentoAprendiza
         }
 
         [Theory]
-        [InlineData(TipoEscola.CEIDIRET)]
-        [InlineData(TipoEscola.CEIINDIR)]
-        [InlineData(TipoEscola.CEUCEI)]
-        public async Task Executar_DeveRetornarTrueParaTiposDeEscolaEspecificos(TipoEscola tipoEscola)
+        [InlineData(Dominio.TipoEscola.CEIDIRET)]
+        [InlineData(Dominio.TipoEscola.CEIINDIR)]
+        [InlineData(Dominio.TipoEscola.CEUCEI)]
+        public async Task Executar_DeveRetornarTrueParaTiposDeEscolaEspecificos(Dominio.TipoEscola tipoEscola)
         {
             var filtro = new FiltroAcompanhamentoAprendizagemAlunoTurmaDTO(1, 2024, 1, 30);
             var mensagem = new MensagemRabbit(JsonConvert.SerializeObject(filtro));
@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConsolidacaoAcompanhamentoAprendiza
             var filtro = new FiltroAcompanhamentoAprendizagemAlunoTurmaDTO(1, 2024, 1, 30);
             var mensagem = new MensagemRabbit(JsonConvert.SerializeObject(filtro));
 
-            var ueMock = new Ue { TipoEscola = TipoEscola.EMEBS };
+            var ueMock = new Ue { TipoEscola = Dominio.TipoEscola.EMEBS };
             var turmaMock = new Turma { Id = 1, CodigoTurma = "T001" };
             var alunosMock = new List<AlunoPorTurmaResposta>
             {
@@ -101,7 +101,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConsolidacaoAcompanhamentoAprendiza
             var filtro = new FiltroAcompanhamentoAprendizagemAlunoTurmaDTO(1, 2024, 1, 30);
             var mensagem = new MensagemRabbit(JsonConvert.SerializeObject(filtro));
 
-            var ueMock = new Ue { TipoEscola = TipoEscola.EMEBS };
+            var ueMock = new Ue { TipoEscola = Dominio.TipoEscola.EMEBS };
             var turmaMock = new Turma { Id = 1, CodigoTurma = "T001" };
             var alunosMock = new List<AlunoPorTurmaResposta>();
 
@@ -127,7 +127,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConsolidacaoAcompanhamentoAprendiza
             var filtro = new FiltroAcompanhamentoAprendizagemAlunoTurmaDTO(1, 2024, 1, 10); // Only 10 students in class
             var mensagem = new MensagemRabbit(JsonConvert.SerializeObject(filtro));
 
-            var ueMock = new Ue { TipoEscola = TipoEscola.EMEBS };
+            var ueMock = new Ue { TipoEscola = Dominio.TipoEscola.EMEBS };
             var turmaMock = new Turma { Id = 1, CodigoTurma = "T001" };
             var alunosMock = new List<AlunoPorTurmaResposta>
             {
@@ -161,7 +161,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConsolidacaoAcompanhamentoAprendiza
             var filtro = new FiltroAcompanhamentoAprendizagemAlunoTurmaDTO(1, 2024, 1, 5);
             var mensagem = new MensagemRabbit(JsonConvert.SerializeObject(filtro));
 
-            var ueMock = new Ue { TipoEscola = TipoEscola.EMEBS };
+            var ueMock = new Ue { TipoEscola = Dominio.TipoEscola.EMEBS };
             var turmaMock = new Turma { Id = 1, CodigoTurma = "T001" };
             var allStudents = new List<AlunoPorTurmaResposta>
             {

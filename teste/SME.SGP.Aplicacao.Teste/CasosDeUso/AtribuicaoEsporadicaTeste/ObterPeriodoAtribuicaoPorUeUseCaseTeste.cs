@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ExcluirAtribuicaoEsporadicaTeste
         {
             long ueId = 123;
             int anoLetivo = 2024;
-            var ueMock = new Ue { Id = ueId, TipoEscola = TipoEscola.EMEI };
+            var ueMock = new Ue { Id = ueId, TipoEscola = Dominio.TipoEscola.EMEI };
             long tipoCalendarioIdMock = 1;
             var periodosEscolaresMock = new List<PeriodoEscolar>
         {
@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ExcluirAtribuicaoEsporadicaTeste
         {
             long ueId = 456;
             int anoLetivo = 2024;
-            var ueMock = new Ue { Id = ueId, TipoEscola = TipoEscola.EMEF };
+            var ueMock = new Ue { Id = ueId, TipoEscola = Dominio.TipoEscola.EMEF };
             long tipoCalendarioIdMock = 2;
             var periodosEscolaresMock = new List<PeriodoEscolar>
         {
@@ -115,7 +115,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ExcluirAtribuicaoEsporadicaTeste
         {
             long ueId = 456;
             int anoLetivo = 2024;
-            var ueMock = new Ue { Id = ueId, TipoEscola = TipoEscola.EMEFM }; 
+            var ueMock = new Ue { Id = ueId, TipoEscola = Dominio.TipoEscola.EMEFM }; 
             long tipoCalendarioIdMock = 0;
 
             _mediatorMock.Setup(m => m.Send(It.Is<ObterUePorIdQuery>(q => q.Id == ueId), It.IsAny<CancellationToken>()))
