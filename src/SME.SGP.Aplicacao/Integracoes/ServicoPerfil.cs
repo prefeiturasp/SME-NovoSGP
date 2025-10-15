@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             {
                 lstTurmasAtribuidasInfantil = await repositorioAbrangencia.ObterAbrangenciaPorFiltro(String.Empty, login, Perfis.PERFIL_PROFESSOR_INFANTIL, false);
 
-                if (lstTurmasAtribuidasInfantil.NaoEhNulo() && lstTurmasAtribuidasInfantil.Any())
+                if (lstTurmasAtribuidasInfantil.NaoEhNulo() && lstTurmasAtribuidasInfantil.Any() && lstTurmasAtribuidasInfantil.Any(a => a.AnoLetivo == DateTime.Now.Year))
                     return Perfis.PERFIL_PROFESSOR_INFANTIL;
                 else 
                     return Perfis.PERFIL_CJ_INFANTIL;
@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             {
                 lstTurmasAtribuidasInfantil = await repositorioAbrangencia.ObterAbrangenciaPorFiltro(String.Empty, login, Perfis.PERFIL_PROFESSOR, false);
 
-                if (lstTurmasAtribuidasInfantil.NaoEhNulo() && lstTurmasAtribuidasInfantil.Any())
+                if (lstTurmasAtribuidasInfantil.NaoEhNulo() && lstTurmasAtribuidasInfantil.Any() && lstTurmasAtribuidasInfantil.Any(a => a.AnoLetivo == DateTime.Now.Year))
                     return Perfis.PERFIL_PROFESSOR;
                 else
                     return Perfis.PERFIL_CJ;
