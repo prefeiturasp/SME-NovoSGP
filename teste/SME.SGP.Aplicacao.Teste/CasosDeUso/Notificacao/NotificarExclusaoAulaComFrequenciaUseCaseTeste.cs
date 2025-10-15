@@ -136,7 +136,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Notificacao
                 Ue = new Ue
                 {
                     Nome = "Escola Municipal Teste",
-                    TipoEscola = TipoEscola.EMEF,
+                    TipoEscola = Dominio.TipoEscola.EMEF,
                     Dre = new SME.SGP.Dominio.Dre { Abreviacao = "DRE-TST" }
                 }
             };

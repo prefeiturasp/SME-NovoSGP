@@ -188,7 +188,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         [Fact]
         public async Task Executar_DeveRetornarMensagemWorkflowAprovacao_QuandoCategoriaWorkflow()
         {
-            var workflowAprovacao = new WorkflowAprovacao
+            var workflowAprovacao = new SME.SGP.Dominio.WorkflowAprovacao
             {
                 Id = 1,
                 Tipo = WorkflowAprovacaoTipo.Basica
@@ -221,7 +221,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         public async Task Executar_DeveRetornarMensagemWorkflowParecerConclusivo_QuandoTipoAlteracaoParecerConclusivo()
         {
             var mensagemEspecifica = "Mensagem de alteração de parecer conclusivo";
-            var workflowAprovacao = new WorkflowAprovacao
+            var workflowAprovacao = new SME.SGP.Dominio.WorkflowAprovacao
             {
                 Id = 1,
                 Tipo = WorkflowAprovacaoTipo.AlteracaoParecerConclusivo
@@ -256,7 +256,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         public async Task Executar_DeveRetornarMensagemWorkflowNotaFechamento_QuandoTipoAlteracaoNotaFechamento()
         {
             var mensagemEspecifica = "Mensagem de alteração de nota de fechamento";
-            var workflowAprovacao = new WorkflowAprovacao
+            var workflowAprovacao = new SME.SGP.Dominio.WorkflowAprovacao
             {
                 Id = 1,
                 Tipo = WorkflowAprovacaoTipo.AlteracaoNotaFechamento
@@ -291,7 +291,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         public async Task Executar_DeveRetornarMensagemWorkflowNotaConselho_QuandoTipoAlteracaoNotaConselho()
         {
             var mensagemEspecifica = "Mensagem de alteração de nota pós conselho";
-            var workflowAprovacao = new WorkflowAprovacao
+            var workflowAprovacao = new SME.SGP.Dominio.WorkflowAprovacao
             {
                 Id = 1,
                 Tipo = WorkflowAprovacaoTipo.AlteracaoNotaConselho
