@@ -232,7 +232,7 @@ namespace SME.SGP.Dados.Repositorios
                                      tc.semestre,
                                      fr.aplicacao 
                                 from tipo_calendario tc
-                                inner join fechamento_reabertura fr on tc.id = fr.tipo_calendario_id 
+                                left join fechamento_reabertura fr on tc.id = fr.tipo_calendario_id 
                                where UPPER(tc.ano_letivo ||' - '|| tc.nome) like UPPER('%{descricao}%')
                                  and not tc.excluido
                                  and not fr.excluido
