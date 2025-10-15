@@ -22,39 +22,37 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             var registrosIdebDto = await mediator.Send(new PainelEducacionalIdebQuery());
 
             var indicadores = registrosIdebDto
-                 .GroupBy(x => new { x.AnoLetivo, x.CodigoDre, x.CodigoUe, x.SerieAno, x.Nota })
+                 .GroupBy(x => new { x.AnoLetivo, x.CodigoDre, x.CodigoUe, x.SerieAno, Faixa = ObterFaixa(x.Nota) })
                  .Select(g => new PainelEducacionalConsolidacaoIdeb
                  {
                      AnoLetivo = g.Key.AnoLetivo,
                      Etapa = ObterEtapa(g.Key.SerieAno),
                      CodigoDre = g.Key.CodigoDre,
                      CodigoUe = g.Key.CodigoUe,
-                     Faixa = ObterFaixa(g.Key.Nota),
+                     Faixa = g.Key.Faixa,
                      Quantidade = g.Count(),
                      MediaGeral = Math.Round((decimal)g.Average(y => (double)y.Nota), 2)
-                 });
+                 }).ToList();
 
             await mediator.Send(new PainelEducacionalSalvarConsolidacaoIdebCommand(indicadores));
 
             return true;
         }
 
-        private static readonly (decimal Min, decimal Max, string Label)[] FaixasIdeb =
-        {
-            (0m, 0.99m, "0-1"),
-            (1m, 1.99m, "1-2"),
-            (2m, 2.99m, "2-3"),
-            (3m, 3.99m, "3-4"),
-            (4m, 4.99m, "4-5"),
-            (5m, 5.99m, "5-6"),
-            (6m, 6.99m, "6-7"),
-            (7m, 7.99m, "7-8"),
-            (8m, 8.99m, "8-9"),
-            (9m, 10m, "9-10")
-        };
-
         private static string ObterFaixa(decimal nota)
-            => FaixasIdeb.FirstOrDefault(f => nota >= f.Min && nota <= f.Max).Label ?? "Desconhecida";
+        {
+            if (nota >= 0m && nota < 1m) return "0-1";
+            if (nota >= 1m && nota < 2m) return "1-2";
+            if (nota >= 2m && nota < 3m) return "2-3";
+            if (nota >= 3m && nota < 4m) return "3-4";
+            if (nota >= 4m && nota < 5m) return "4-5";
+            if (nota >= 5m && nota < 6m) return "5-6";
+            if (nota >= 6m && nota < 7m) return "6-7";
+            if (nota >= 7m && nota < 8m) return "7-8";
+            if (nota >= 8m && nota < 9m) return "8-9";
+            if (nota >= 9m && nota <= 10m) return "9-10";
+            return "Desconhecida";
+        }
 
         private static PainelEducacionalIdebSerie ObterEtapa(int serieAno)
         {
