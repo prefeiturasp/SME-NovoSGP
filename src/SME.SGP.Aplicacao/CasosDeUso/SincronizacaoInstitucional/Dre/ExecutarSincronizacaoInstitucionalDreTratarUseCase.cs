@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            var dreCodigo = param.Mensagem.ToString();
+            var dreCodigo = param.Mensagem?.ToString();
 
             if (string.IsNullOrEmpty(dreCodigo))
                 throw new NegocioException("Não foi possível localizar o código da Dre.");
