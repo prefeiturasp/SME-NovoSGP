@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Responsavel
             var ueCompletaSimulada = new Ue
             {
                 Nome = "ESCOLA TESTE",
-                TipoEscola = TipoEscola.EMEF,
+                TipoEscola = Dominio.TipoEscola.EMEF,
                 Dre = dreSimulada // Inclui a DRE para a primeira validação
             };
 

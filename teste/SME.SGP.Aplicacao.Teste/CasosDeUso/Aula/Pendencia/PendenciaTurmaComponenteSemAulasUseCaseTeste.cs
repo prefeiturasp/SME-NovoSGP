@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Aula.Pendencia
             {
                 Id = 200,
                 Nome = "Escola X",
-                TipoEscola = TipoEscola.EMEBS, // ou o tipo correto que não seja Nenhum
+                TipoEscola = Dominio.TipoEscola.EMEBS, // ou o tipo correto que não seja Nenhum
                 Dre = dre,
                 DreId = dre.Id
             };

@@ -34,9 +34,9 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DiarioBordoPendenciaDevolutiva
             var mensagem = new MensagemRabbit(JsonConvert.SerializeObject(filtroDto));
             var ues = new List<Ue>
             {
-                new Ue { Id = 10, CodigoUe = "UE1", TipoEscola = TipoEscola.EMEF },
-                new Ue { Id = 20, CodigoUe = "UE2", TipoEscola = TipoEscola.EMEF },
-                new Ue { Id = 30, CodigoUe = "UE3", TipoEscola = TipoEscola.EMEI }
+                new Ue { Id = 10, CodigoUe = "UE1", TipoEscola = Dominio.TipoEscola.EMEF },
+                new Ue { Id = 20, CodigoUe = "UE2", TipoEscola = Dominio.TipoEscola.EMEF },
+                new Ue { Id = 30, CodigoUe = "UE3", TipoEscola = Dominio.TipoEscola.EMEI }
             };
 
             repositorioUeConsultaMock.Setup(r => r.ObterPorDre(filtroDto.DreId)).ReturnsAsync(ues);
@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DiarioBordoPendenciaDevolutiva
             var mensagem = new MensagemRabbit(JsonConvert.SerializeObject(filtroDto));
             var ues = new List<Ue>
             {
-                new Ue { Id = 10, CodigoUe = "UE1", TipoEscola = TipoEscola.EMEF },
+                new Ue { Id = 10, CodigoUe = "UE1", TipoEscola = Dominio.TipoEscola.EMEF },
             };
 
             repositorioUeConsultaMock.Setup(r => r.ObterPorDre(filtroDto.DreId)).ReturnsAsync(ues);

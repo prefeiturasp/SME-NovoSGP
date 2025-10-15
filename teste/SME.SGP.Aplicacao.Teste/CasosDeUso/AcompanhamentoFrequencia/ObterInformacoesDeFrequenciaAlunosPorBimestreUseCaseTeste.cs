@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.AcompanhamentoFrequencia
                 {
                     Id = 987,
                     Nome = "EMEF Monte Sião",
-                    TipoEscola = TipoEscola.CIEJA,
+                    TipoEscola = Dominio.TipoEscola.CIEJA,
                     Dre = new SME.SGP.Dominio.Dre { Abreviacao = "DRE-CE" }
                 }
             };

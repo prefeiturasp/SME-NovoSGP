@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Notificacao
                  };
 
             var periodoEscolar = new PeriodoEscolar { Id = 1, Bimestre = 1 };
-            var ue = new Ue { Id = 2, Nome = "Escola Teste", CodigoUe = "UE1", DreId = 10, TipoEscola = TipoEscola.EMEF };
+            var ue = new Ue { Id = 2, Nome = "Escola Teste", CodigoUe = "UE1", DreId = 10, TipoEscola = Dominio.TipoEscola.EMEF };
             var dre = new SME.SGP.Dominio.Dre { Id = 10, CodigoDre = "DRE1", Abreviacao = "DR1" };
             var turma1 = new Turma { Id = 1, Nome = "1A", ModalidadeCodigo = Modalidade.Fundamental, CodigoTurma = "T1" };
             var turma2 = new Turma { Id = 2, Nome = "2A", ModalidadeCodigo = Modalidade.Fundamental, CodigoTurma = "T2" };

@@ -65,8 +65,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             _repositorioUeConsultaaMock.Setup(r => r.ObterTodas())
                 .Returns(new List<Ue>
                 {
-                    new Ue { Id = 1, CodigoUe = "987654", Nome = "ESCOLA TESTE 1", DreId = 1, TipoEscola = TipoEscola.EMEF },
-                    new Ue { Id = 2, CodigoUe = "456789", Nome = "ESCOLA TESTE 2", DreId = 2, TipoEscola = TipoEscola.CIEJA }
+                    new Ue { Id = 1, CodigoUe = "987654", Nome = "ESCOLA TESTE 1", DreId = 1, TipoEscola = Dominio.TipoEscola.EMEF },
+                    new Ue { Id = 2, CodigoUe = "456789", Nome = "ESCOLA TESTE 2", DreId = 2, TipoEscola = Dominio.TipoEscola.CIEJA }
                 });
 
             _repositorioTurmaConsultaMock.Setup(r => r.ObterTodasTurmasPainelEducacionalFrequenciaAsync())
@@ -93,8 +93,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             _repositorioTipoEscolaMock.Setup(r => r.ObterTodasAsync())
                 .ReturnsAsync(new List<TipoEscolaEol>
                 {
-                    new TipoEscolaEol { CodEol = (int)TipoEscola.EMEF, Descricao = "EMEF" },
-                    new TipoEscolaEol { CodEol = (int)TipoEscola.CIEJA, Descricao = "CIEJA" }
+                    new TipoEscolaEol { CodEol = (int)Dominio.TipoEscola.EMEF, Descricao = "EMEF" },
+                    new TipoEscolaEol { CodEol = (int)Dominio.TipoEscola.CIEJA, Descricao = "CIEJA" }
                 });
 
             _useCase = new ConsolidarInformacoesFrequenciaPainelEducacionalUseCase(
