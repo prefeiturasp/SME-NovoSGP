@@ -28,13 +28,15 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAbandono
             var dto = new PainelEducacionalAbandonoSmeDreDto
             {
                 Modalidades = registros
-                    .OrderBy(r => r.Modalidade)
-                    .Select(r => new PainelEducacionalAbandonoModalidadeDto
-                    {
-                        Modalidade = r.Modalidade,
-                        Ano = r.Ano,
-                        QuantidadeDesistentes = r.QuantidadeDesistencias
-                    }).ToList()
+                               .GroupBy(r => new { r.Ano, r.Modalidade })
+                               .Select(r => new PainelEducacionalAbandonoModalidadeDto
+                               {
+                                   Modalidade = r.Key.Modalidade,
+                                   Ano = r.Key.Ano,
+                                   QuantidadeDesistentes = r.Sum(x => x.QuantidadeDesistencias)
+                               })
+                               .OrderBy(r => r.Ano)
+                               .ToList()
             };
 
             return new List<PainelEducacionalAbandonoSmeDreDto> { dto };
