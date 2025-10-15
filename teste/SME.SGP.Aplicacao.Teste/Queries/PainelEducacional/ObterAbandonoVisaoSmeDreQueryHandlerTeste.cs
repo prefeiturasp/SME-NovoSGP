@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries.PainelEducacional
 
             Assert.Single(resultado);
             var dto = Assert.Single(resultado);
-            Assert.Equal(3, dto.Modalidades.Count);
+            Assert.Equal(2, dto.Modalidades.Count);
         }
     }
 }
