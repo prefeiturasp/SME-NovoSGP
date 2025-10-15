@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao.Teste.Commands.PainelEducacional
             var resultado = await _handler.Handle(command, cancellationToken);
 
             Assert.False(resultado);
-            _repositorioIdepConsolidacao.Verify(x => x.Inserir(It.IsAny<IEnumerable<PainelEducacionalConsolidacaoIdep>>()), Times.Never);
+            _repositorioIdepConsolidacao.Verify(x => x.BulkInsertAsync(It.IsAny<IEnumerable<PainelEducacionalConsolidacaoIdep>>()), Times.Never);
         }
 
         [Fact]
@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao.Teste.Commands.PainelEducacional
             var resultado = await _handler.Handle(command, cancellationToken);
 
             Assert.True(resultado);
-            _repositorioIdepConsolidacao.Verify(x => x.Inserir(dadosIdep), Times.Once);
+            _repositorioIdepConsolidacao.Verify(x => x.BulkInsertAsync(dadosIdep), Times.Once);
         }
 
         [Fact]
@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao.Teste.Commands.PainelEducacional
             var resultado = await _handler.Handle(command, cancellationToken);
 
             Assert.True(resultado);
-            _repositorioIdepConsolidacao.Verify(x => x.Inserir(dadosIdep), Times.Once);
+            _repositorioIdepConsolidacao.Verify(x => x.BulkInsertAsync(dadosIdep), Times.Once);
         }
 
         [Fact]
@@ -72,7 +72,7 @@ namespace SME.SGP.Aplicacao.Teste.Commands.PainelEducacional
             var cancellationToken = CancellationToken.None;
 
             _repositorioIdepConsolidacao
-                .Setup(x => x.Inserir(It.IsAny<IEnumerable<PainelEducacionalConsolidacaoIdep>>()))
+                .Setup(x => x.BulkInsertAsync(It.IsAny<IEnumerable<PainelEducacionalConsolidacaoIdep>>()))
                 .ThrowsAsync(new Exception("Erro no repositório"));
 
             await Assert.ThrowsAsync<Exception>(() => _handler.Handle(command, cancellationToken));
@@ -88,7 +88,7 @@ namespace SME.SGP.Aplicacao.Teste.Commands.PainelEducacional
             var resultado = await _handler.Handle(command, cancellationToken);
 
             Assert.True(resultado);
-            _repositorioIdepConsolidacao.Verify(x => x.Inserir(dadosIdep), Times.Once);
+            _repositorioIdepConsolidacao.Verify(x => x.BulkInsertAsync(dadosIdep), Times.Once);
         }
     }
 }
