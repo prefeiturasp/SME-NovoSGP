@@ -221,18 +221,21 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<TipoCalendarioBuscaDto>> ObterTiposCalendarioPorDescricaoAsync(string descricao)
         {
-            var query = $@"select id, 
-                                     ano_letivo,
-                                     nome,
-                                     modalidade,
-                                     ano_letivo ||' - '|| nome as descricao,
-                                     migrado,
-                                     periodo,
-                                     situacao,
-                                     semestre
+            var query = $@"select tc.id, 
+                                     tc.ano_letivo,
+                                     tc.nome,
+                                     tc.modalidade,
+                                     tc.ano_letivo ||' - '|| tc.nome as descricao,
+                                     tc.migrado,
+                                     tc.periodo,
+                                     tc.situacao,
+                                     tc.semestre,
+                                     fr.aplicacao 
                                 from tipo_calendario tc
-                               where UPPER(ano_letivo ||' - '|| nome) like UPPER('%{descricao}%')
-                                 and not excluido
+                                inner join fechamento_reabertura fr on tc.id = fr.tipo_calendario_id 
+                               where UPPER(tc.ano_letivo ||' - '|| tc.nome) like UPPER('%{descricao}%')
+                                 and not tc.excluido
+                                 and not fr.excluido
                                order by descricao desc
                                limit 10";
 

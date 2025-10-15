@@ -26,5 +26,6 @@ namespace SME.SGP.Infra
 
         [Required(ErrorMessage = "O campo Situação é obrigatório")]
         public bool Situacao { get; set; }
+        public int? Aplicacao { get; set; }
     }
 }

@@ -13,5 +13,6 @@ namespace SME.SGP.Infra
         public Periodo Periodo { get; set; }
         public bool Situacao { get; set; }
         public int? Semestre { get; set; }
+        public int? Aplicacao { get; set; }
     }
 }
