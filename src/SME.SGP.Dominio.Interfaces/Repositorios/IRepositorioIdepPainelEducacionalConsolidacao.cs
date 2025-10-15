@@ -6,6 +6,7 @@ namespace SME.SGP.Dominio.Interfaces.Repositorios
 {
     public interface IRepositorioIdepPainelEducacionalConsolidacao
     {
-        Task<bool> Inserir(IEnumerable<PainelEducacionalConsolidacaoIdep> consolidacoes);
+        Task LimparConsolidacao();
+        Task BulkInsertAsync(IEnumerable<PainelEducacionalConsolidacaoIdep> indicadores);
     }
 }
