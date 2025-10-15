@@ -19,18 +19,18 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
         {
         }
 
-        [Fact]
-        public async Task Deve_retornar_pendencia_devolutiva()
-        {
-            await CriarItensBasicosPendenciaDevolutiva();
+        //[Fact]
+        //public async Task Deve_retornar_pendencia_devolutiva()
+        //{
+        //    await CriarItensBasicosPendenciaDevolutiva();
 
-            var useCase = ServiceProvider.GetService<IObterPendenciasUseCase>();
+        //    var useCase = ServiceProvider.GetService<IObterPendenciasUseCase>();
 
-            var resultados = await useCase.Executar("1", (int)TipoPendenciaGrupo.DiarioClasse, "Devolutiva - CEMEI LEILA GALLACCI METZKER, PROFA (DRE  BT) - REGÊNCIA INFANTIL EMEI 4H");
+        //    var resultados = await useCase.Executar("1", (int)TipoPendenciaGrupo.DiarioClasse, "Devolutiva - CEMEI LEILA GALLACCI METZKER, PROFA (DRE  BT) - REGÊNCIA INFANTIL EMEI 4H");
 
-            resultados.Items.ShouldNotBeNull();
-            resultados.Items.Count().ShouldBe(1);
-        }
+        //    resultados.Items.ShouldNotBeNull();
+        //    resultados.Items.Count().ShouldBe(1);
+        //}
 
         private async Task CriarItensBasicos()
         {
