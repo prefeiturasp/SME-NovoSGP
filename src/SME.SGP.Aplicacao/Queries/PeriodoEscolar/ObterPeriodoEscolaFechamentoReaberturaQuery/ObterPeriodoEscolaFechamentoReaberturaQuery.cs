@@ -5,18 +5,20 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao.Queries
 {
-    public class ObterPeriodoEscolaFechamentoReaberturaQuery : IRequest<(SME.SGP.Dominio.PeriodoEscolar periodoEscolar, PeriodoDto periodoFechamento)>
+    public class ObterPeriodoEscolaFechamentoReaberturaQuery : IRequest<(SME.SGP.Dominio.PeriodoEscolar periodoEscolar, PeriodoDto periodoFechamento, Dominio.Aplicacao)>
     {
-        public ObterPeriodoEscolaFechamentoReaberturaQuery(long tipoCalendarioId, Ue ue, int bimestre)
+        public ObterPeriodoEscolaFechamentoReaberturaQuery(long tipoCalendarioId, Ue ue, int bimestre, Dominio.Aplicacao aplicacao)
         {
             TipoCalendarioId = tipoCalendarioId;
             Ue = ue;
             Bimestre = bimestre;
+            Aplicacao = aplicacao;
         }
 
         public long TipoCalendarioId { get; set; }
         public Ue Ue { get; set; }
         public int Bimestre { get; set; }
+        public Dominio.Aplicacao Aplicacao { get; set; }
     }
     public class ObterPeriodoEscolaFechamentoReaberturaQueryValidator : AbstractValidator<ObterPeriodoEscolaFechamentoReaberturaQuery>
     {
