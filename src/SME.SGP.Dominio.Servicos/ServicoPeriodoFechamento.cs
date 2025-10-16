@@ -133,18 +133,18 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<FechamentoDto> ObterPorTipoCalendarioDreEUe(long tipoCalendarioId)
         {
-            return await ObterPorTipoCalendarioSme(tipoCalendarioId);
+            return await ObterPorTipoCalendarioSme(tipoCalendarioId, 0);
         }
 
-        public async Task<FechamentoDto> ObterPorTipoCalendarioSme(long tipoCalendarioId)
+        public async Task<FechamentoDto> ObterPorTipoCalendarioSme(long tipoCalendarioId, Aplicacao aplicacao)
         {
-            var fechamentoSME = repositorioPeriodoFechamento.ObterPorFiltros(tipoCalendarioId, null);
+            var fechamentoSME = repositorioPeriodoFechamento.ObterPorFiltros(tipoCalendarioId, null, aplicacao);
             DateTime periodoInicio, periodoFim;
 
             if (fechamentoSME.EhNulo())
             {
                 LimparCamposNaoUtilizadosRegistroPai(fechamentoSME);
-                fechamentoSME = new PeriodoFechamento();
+                fechamentoSME = new PeriodoFechamento();                
 
                 var tipoCalendario = await repositorioTipoCalendario.ObterPorIdAsync(tipoCalendarioId);
                 if (tipoCalendario.EhNulo())
@@ -381,7 +381,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<PeriodoFechamento> MapearParaDominioAsync(FechamentoDto fechamentoDto)
         {
-            var fechamento = repositorioPeriodoFechamento.ObterPorFiltros(fechamentoDto.TipoCalendarioId.Value, null);
+            var fechamento = repositorioPeriodoFechamento.ObterPorFiltros(fechamentoDto.TipoCalendarioId.Value, null, fechamentoDto.Aplicacao);
             if (fechamento.EhNulo())
                 fechamento = new PeriodoFechamento();
 

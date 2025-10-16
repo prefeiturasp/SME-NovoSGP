@@ -20,7 +20,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
          
-        public PeriodoFechamento ObterPorFiltros(long? tipoCalendarioId, long? turmaId)
+        public PeriodoFechamento ObterPorFiltros(long? tipoCalendarioId, long? turmaId, Dominio.Aplicacao aplicacao)
         {
             var query = new StringBuilder("select f.*,fb.*,p.*, t.*");
             query.AppendLine("from");
@@ -46,6 +46,9 @@ namespace SME.SGP.Dados.Repositorios
             if (turmaId.HasValue)
                 query.AppendLine("and tu.id = @turmaId");
 
+            if (aplicacao > 0)
+                query.AppendLine("and f.aplicacao = @aplicacao");
+
             var lookup = new Dictionary<long, PeriodoFechamento>();
 
             var lista = database.Conexao.Query<PeriodoFechamento, PeriodoFechamentoBimestre, PeriodoEscolar, TipoCalendario, PeriodoFechamento>(query.ToString(), (fechamento, fechamentoBimestre, periodoEscolar, tipoCalendario) =>
@@ -64,7 +67,8 @@ namespace SME.SGP.Dados.Repositorios
                }, new
                {
                    tipoCalendarioId,
-                   turmaId
+                   turmaId,
+                   aplicacao
                });
             return lookup.Values.FirstOrDefault();
         }
