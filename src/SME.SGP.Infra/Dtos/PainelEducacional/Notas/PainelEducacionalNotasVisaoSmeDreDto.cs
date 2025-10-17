@@ -5,7 +5,7 @@ namespace SME.SGP.Infra.Dtos.PainelEducacional.Notas
     public class PainelEducacionalNotasVisaoSmeDreDto
     {
         public int AnoLetivo {  get; set; }
-        public int AnoTurma {  get; set; }
+        public string AnoTurma {  get; set; }
         public int Bimestre {  get; set; }
         public Modalidade Modalidade {  get; set; }
         public long QuantidadeAbaixoMediaPortugues { get; set; }
