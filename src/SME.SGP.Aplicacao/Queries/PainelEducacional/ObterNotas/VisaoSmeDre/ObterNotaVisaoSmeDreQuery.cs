@@ -24,10 +24,6 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNotas.VisaoSmeDre
     {
         public ObterSondagemEscritaQueryValidator()
         {
-            RuleFor(c => c.CodigoDre)
-            .NotEmpty()
-            .WithMessage("O código da DRE deve ser informado.");
-
             RuleFor(c => c.AnoLetivo)
            .NotEmpty()
            .WithMessage("O ano letivo deve ser informado.");
