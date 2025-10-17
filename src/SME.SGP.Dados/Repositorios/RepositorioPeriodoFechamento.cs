@@ -46,8 +46,7 @@ namespace SME.SGP.Dados.Repositorios
             if (turmaId.HasValue)
                 query.AppendLine("and tu.id = @turmaId");
 
-            if (aplicacao > 0)
-                query.AppendLine("and f.aplicacao = @aplicacao");
+                query.AppendLine("AND COALESCE(f.aplicacao, 1) = @aplicacao");
 
             var lookup = new Dictionary<long, PeriodoFechamento>();
 

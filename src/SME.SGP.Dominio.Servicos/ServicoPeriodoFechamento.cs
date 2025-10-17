@@ -133,7 +133,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<FechamentoDto> ObterPorTipoCalendarioDreEUe(long tipoCalendarioId)
         {
-            return await ObterPorTipoCalendarioSme(tipoCalendarioId, 0);
+            return await ObterPorTipoCalendarioSme(tipoCalendarioId, Aplicacao.SGP);
         }
 
         public async Task<FechamentoDto> ObterPorTipoCalendarioSme(long tipoCalendarioId, Aplicacao aplicacao)
