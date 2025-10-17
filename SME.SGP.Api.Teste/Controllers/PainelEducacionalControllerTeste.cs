@@ -773,12 +773,11 @@ namespace SME.SGP.Api.Teste.Controllers
         [Fact]
         public async Task Obter_Notas_Visao_Sme_Dre_Deve_Retornar_Ok_Com_Dados()
         {
-            var filtro = new FiltroPainelEducacionalAnoLetivoBimestre
+            var filtro = new FiltroPainelEducacionalNotasVisaoSmeDre
             {
                 AnoLetivo = 2024,
                 Bimestre = 2,
                 CodigoDre = "DRE123",
-                CodigoUe = "UE456",
                 SerieAno = 5
             };
 
@@ -786,29 +785,29 @@ namespace SME.SGP.Api.Teste.Controllers
             {
                 new PainelEducacionalNotasVisaoSmeDreDto
                 {
-                    AnoLetivo = 2024,
-                    AnoTurma = 5,
-                    Bimestre = 2,
-                    Modalidade = Modalidade.Fundamental,
-                    QuantidadeAbaixoMediaPortugues = 15,
-                    QuantidadeAbaixoMediaMatematica = 20,
-                    QuantidadeAbaixoMediaCiencias = 12,
-                    QuantidadeAcimaMediaPortugues = 35,
-                    QuantidadeAcimaMediaMatematica = 30,
-                    QuantidadeAcimaMediaCiencias = 38
-                },
-                new PainelEducacionalNotasVisaoSmeDreDto
-                {
-                    AnoLetivo = 2024,
-                    AnoTurma = 5,
-                    Bimestre = 2,
-                    Modalidade = Modalidade.Fundamental,
-                    QuantidadeAbaixoMediaPortugues = 8,
-                    QuantidadeAbaixoMediaMatematica = 10,
-                    QuantidadeAbaixoMediaCiencias = 6,
-                    QuantidadeAcimaMediaPortugues = 42,
-                    QuantidadeAcimaMediaMatematica = 40,
-                    QuantidadeAcimaMediaCiencias = 44
+                    Modalidades = new List<ModalidadeNotasVisaoSmeDreDto>
+                    {
+                        new ModalidadeNotasVisaoSmeDreDto
+                        {
+                            Nome = "Fundamental",
+                            SerieAno = new List<SerieAnoNotasVisaoSmeDreDto>
+                            {
+                                new SerieAnoNotasVisaoSmeDreDto
+                                {
+                                    Nome = "5º",
+                                    ComponentesCurriculares = new List<ComponenteCurricularNotasVisaoSmeDreDto>
+                                    {
+                                        new ComponenteCurricularNotasVisaoSmeDreDto
+                                        {
+                                            Nome = "Português",
+                                            AbaixoDaMedia = 15,
+                                            AcimaDaMedia = 35
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             };
 
@@ -822,33 +821,15 @@ namespace SME.SGP.Api.Teste.Controllers
             var okResult = Assert.IsType<OkObjectResult>(result);
             var retorno = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalNotasVisaoSmeDreDto>>(okResult.Value);
 
-            Assert.Collection(retorno,
-                item =>
-                {
-                    Assert.Equal(2024, item.AnoLetivo);
-                    Assert.Equal(5, item.AnoTurma);
-                    Assert.Equal(2, item.Bimestre);
-                    Assert.Equal(Modalidade.Fundamental, item.Modalidade);
-                    Assert.Equal(15, item.QuantidadeAbaixoMediaPortugues);
-                    Assert.Equal(20, item.QuantidadeAbaixoMediaMatematica);
-                    Assert.Equal(12, item.QuantidadeAbaixoMediaCiencias);
-                    Assert.Equal(35, item.QuantidadeAcimaMediaPortugues);
-                    Assert.Equal(30, item.QuantidadeAcimaMediaMatematica);
-                    Assert.Equal(38, item.QuantidadeAcimaMediaCiencias);
-                },
-                item =>
-                {
-                    Assert.Equal(2024, item.AnoLetivo);
-                    Assert.Equal(5, item.AnoTurma);
-                    Assert.Equal(2, item.Bimestre);
-                    Assert.Equal(Modalidade.Fundamental, item.Modalidade);
-                    Assert.Equal(8, item.QuantidadeAbaixoMediaPortugues);
-                    Assert.Equal(10, item.QuantidadeAbaixoMediaMatematica);
-                    Assert.Equal(6, item.QuantidadeAbaixoMediaCiencias);
-                    Assert.Equal(42, item.QuantidadeAcimaMediaPortugues);
-                    Assert.Equal(40, item.QuantidadeAcimaMediaMatematica);
-                    Assert.Equal(44, item.QuantidadeAcimaMediaCiencias);
-                });
+            Assert.Single(retorno);
+            var item = retorno.First();
+            Assert.NotNull(item.Modalidades);
+            Assert.Single(item.Modalidades);
+            
+            var modalidade = item.Modalidades.First();
+            Assert.Equal("Fundamental", modalidade.Nome);
+            Assert.NotNull(modalidade.SerieAno);
+            Assert.Single(modalidade.SerieAno);
 
             mockUseCase.Verify(x => x.ObterNotasVisaoSmeDre(
                 It.Is<string>(d => d == filtro.CodigoDre),
@@ -861,12 +842,11 @@ namespace SME.SGP.Api.Teste.Controllers
         [Fact]
         public async Task Obter_Notas_Visao_Sme_Dre_Com_Lista_Vazia_Deve_Retornar_Ok()
         {
-            var filtro = new FiltroPainelEducacionalAnoLetivoBimestre
+            var filtro = new FiltroPainelEducacionalNotasVisaoSmeDre
             {
                 AnoLetivo = 2023,
                 Bimestre = 1,
                 CodigoDre = "DRE999",
-                CodigoUe = "UE999",
                 SerieAno = 3
             };
 
@@ -895,12 +875,11 @@ namespace SME.SGP.Api.Teste.Controllers
         [Fact]
         public async Task Obter_Notas_Visao_Sme_Dre_Com_Codigo_Dre_Nulo_Deve_Retornar_Ok_Com_Dados()
         {
-            var filtro = new FiltroPainelEducacionalAnoLetivoBimestre
+            var filtro = new FiltroPainelEducacionalNotasVisaoSmeDre
             {
                 AnoLetivo = 2024,
                 Bimestre = 3,
                 CodigoDre = null,
-                CodigoUe = null,
                 SerieAno = 7
             };
 
@@ -908,16 +887,29 @@ namespace SME.SGP.Api.Teste.Controllers
             {
                 new PainelEducacionalNotasVisaoSmeDreDto
                 {
-                    AnoLetivo = 2024,
-                    AnoTurma = 7,
-                    Bimestre = 3,
-                    Modalidade = Modalidade.Fundamental,
-                    QuantidadeAbaixoMediaPortugues = 25,
-                    QuantidadeAbaixoMediaMatematica = 28,
-                    QuantidadeAbaixoMediaCiencias = 22,
-                    QuantidadeAcimaMediaPortugues = 75,
-                    QuantidadeAcimaMediaMatematica = 72,
-                    QuantidadeAcimaMediaCiencias = 78
+                    Modalidades = new List<ModalidadeNotasVisaoSmeDreDto>
+                    {
+                        new ModalidadeNotasVisaoSmeDreDto
+                        {
+                            Nome = "Fundamental",
+                            SerieAno = new List<SerieAnoNotasVisaoSmeDreDto>
+                            {
+                                new SerieAnoNotasVisaoSmeDreDto
+                                {
+                                    Nome = "7º",
+                                    ComponentesCurriculares = new List<ComponenteCurricularNotasVisaoSmeDreDto>
+                                    {
+                                        new ComponenteCurricularNotasVisaoSmeDreDto
+                                        {
+                                            Nome = "Português",
+                                            AbaixoDaMedia = 25,
+                                            AcimaDaMedia = 75
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             };
 
@@ -933,16 +925,16 @@ namespace SME.SGP.Api.Teste.Controllers
 
             Assert.Single(retorno);
             var item = retorno.First();
-            Assert.Equal(2024, item.AnoLetivo);
-            Assert.Equal(7, item.AnoTurma);
-            Assert.Equal(3, item.Bimestre);
-            Assert.Equal(Modalidade.Fundamental, item.Modalidade);
-            Assert.Equal(25, item.QuantidadeAbaixoMediaPortugues);
-            Assert.Equal(28, item.QuantidadeAbaixoMediaMatematica);
-            Assert.Equal(22, item.QuantidadeAbaixoMediaCiencias);
-            Assert.Equal(75, item.QuantidadeAcimaMediaPortugues);
-            Assert.Equal(72, item.QuantidadeAcimaMediaMatematica);
-            Assert.Equal(78, item.QuantidadeAcimaMediaCiencias);
+            Assert.NotNull(item.Modalidades);
+            Assert.Single(item.Modalidades);
+            
+            var modalidade = item.Modalidades.First();
+            Assert.Equal("Fundamental", modalidade.Nome);
+            Assert.NotNull(modalidade.SerieAno);
+            Assert.Single(modalidade.SerieAno);
+            
+            var serieAno = modalidade.SerieAno.First();
+            Assert.Equal("7º", serieAno.Nome);
 
             mockUseCase.Verify(x => x.ObterNotasVisaoSmeDre(
                 It.Is<string>(d => d == null),

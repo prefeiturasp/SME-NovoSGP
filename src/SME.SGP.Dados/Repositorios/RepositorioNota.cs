@@ -14,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database;
         }
 
-        public async Task<IEnumerable<PainelEducacionalNotasVisaoSmeDreDto>> ObterNotasVisaoSmeDre(string codigoDre, int anoLetivo, int bimestre, int anoTurma)
+        public async Task<IEnumerable<PainelEducacionalNotasVisaoSmeDreRetornoSelectDto>> ObterNotasVisaoSmeDre(string codigoDre, int anoLetivo, int bimestre, int anoTurma)
         {
              string query = @"select ano_letivo as AnoLetivo,
                                      ano_turma as AnoTurma,
@@ -41,7 +41,7 @@ namespace SME.SGP.Dados.Repositorios
             if (anoTurma > 0)
                 query += " AND ano_turma = @anoTurma ";
 
-            return await database.Conexao.QueryAsync<PainelEducacionalNotasVisaoSmeDreDto>(query, new
+            return await database.Conexao.QueryAsync<PainelEducacionalNotasVisaoSmeDreRetornoSelectDto>(query, new
             {
                 codigoDre,
                 anoLetivo,
