@@ -6,7 +6,8 @@ using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using SME.SGP.Infra.Dtos.PainelEducacional.IndicadoresPap;
-using SME.SGP.Infra.Dtos.PainelEducacional.Notas;
+using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoSmeDre;
+using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoUe;
 using SME.SGP.Infra.Dtos.PainelEducacional.SondagemEscrita;
 using System.Threading.Tasks;
 
@@ -153,6 +154,13 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterNotasVisaoSmeDre([FromQuery] FiltroPainelEducacionalNotasVisaoSmeDre filtro, [FromServices] IConsultasNotasUseCase consultasNotasUseCase)
      => Ok(await consultasNotasUseCase.ObterNotasVisaoSmeDre(filtro.CodigoDre, filtro.AnoLetivo, filtro.Bimestre, filtro.SerieAno));
+
+        [HttpGet("notas-ue")]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterNotasVisaoUe([FromQuery] FiltroPainelEducacionalNotasVisaoUe filtro, [FromServices] IConsultasNotasUseCase consultasNotasUseCase)
+     => Ok(await consultasNotasUseCase.ObterNotasVisaoUe(filtro.CodigoDre, filtro.AnoLetivo, filtro.Bimestre, filtro.Modalidade));
 
     }
 }
