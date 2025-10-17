@@ -7,6 +7,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using SME.SGP.Infra.Dtos.PainelEducacional.IndicadoresPap;
+using SME.SGP.Infra.Dtos.PainelEducacional.Notas;
 using SME.SGP.Infra.Dtos.PainelEducacional.SondagemEscrita;
 using System.Collections.Generic;
 using System.Linq;
@@ -767,6 +768,188 @@ namespace SME.SGP.Api.Teste.Controllers
                     Assert.Equal(1, item.TotalAlunosDificuldadeTop2);
                     Assert.Equal(14, item.TotalTurmas);
                 });
+        }
+
+        [Fact]
+        public async Task Obter_Notas_Visao_Sme_Dre_Deve_Retornar_Ok_Com_Dados()
+        {
+            var filtro = new FiltroPainelEducacionalAnoLetivoBimestre
+            {
+                AnoLetivo = 2024,
+                Bimestre = 2,
+                CodigoDre = "DRE123",
+                CodigoUe = "UE456",
+                SerieAno = 5
+            };
+
+            var retornoEsperado = new List<PainelEducacionalNotasVisaoSmeDreDto>
+            {
+                new PainelEducacionalNotasVisaoSmeDreDto
+                {
+                    AnoLetivo = 2024,
+                    AnoTurma = 5,
+                    Bimestre = 2,
+                    Modalidade = Modalidade.Fundamental,
+                    QuantidadeAbaixoMediaPortugues = 15,
+                    QuantidadeAbaixoMediaMatematica = 20,
+                    QuantidadeAbaixoMediaCiencias = 12,
+                    QuantidadeAcimaMediaPortugues = 35,
+                    QuantidadeAcimaMediaMatematica = 30,
+                    QuantidadeAcimaMediaCiencias = 38
+                },
+                new PainelEducacionalNotasVisaoSmeDreDto
+                {
+                    AnoLetivo = 2024,
+                    AnoTurma = 5,
+                    Bimestre = 2,
+                    Modalidade = Modalidade.Fundamental,
+                    QuantidadeAbaixoMediaPortugues = 8,
+                    QuantidadeAbaixoMediaMatematica = 10,
+                    QuantidadeAbaixoMediaCiencias = 6,
+                    QuantidadeAcimaMediaPortugues = 42,
+                    QuantidadeAcimaMediaMatematica = 40,
+                    QuantidadeAcimaMediaCiencias = 44
+                }
+            };
+
+            var mockUseCase = new Mock<IConsultasNotasUseCase>();
+            mockUseCase
+                .Setup(x => x.ObterNotasVisaoSmeDre(filtro.CodigoDre, filtro.AnoLetivo, filtro.Bimestre, filtro.SerieAno))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterNotasVisaoSmeDre(filtro, mockUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalNotasVisaoSmeDreDto>>(okResult.Value);
+
+            Assert.Collection(retorno,
+                item =>
+                {
+                    Assert.Equal(2024, item.AnoLetivo);
+                    Assert.Equal(5, item.AnoTurma);
+                    Assert.Equal(2, item.Bimestre);
+                    Assert.Equal(Modalidade.Fundamental, item.Modalidade);
+                    Assert.Equal(15, item.QuantidadeAbaixoMediaPortugues);
+                    Assert.Equal(20, item.QuantidadeAbaixoMediaMatematica);
+                    Assert.Equal(12, item.QuantidadeAbaixoMediaCiencias);
+                    Assert.Equal(35, item.QuantidadeAcimaMediaPortugues);
+                    Assert.Equal(30, item.QuantidadeAcimaMediaMatematica);
+                    Assert.Equal(38, item.QuantidadeAcimaMediaCiencias);
+                },
+                item =>
+                {
+                    Assert.Equal(2024, item.AnoLetivo);
+                    Assert.Equal(5, item.AnoTurma);
+                    Assert.Equal(2, item.Bimestre);
+                    Assert.Equal(Modalidade.Fundamental, item.Modalidade);
+                    Assert.Equal(8, item.QuantidadeAbaixoMediaPortugues);
+                    Assert.Equal(10, item.QuantidadeAbaixoMediaMatematica);
+                    Assert.Equal(6, item.QuantidadeAbaixoMediaCiencias);
+                    Assert.Equal(42, item.QuantidadeAcimaMediaPortugues);
+                    Assert.Equal(40, item.QuantidadeAcimaMediaMatematica);
+                    Assert.Equal(44, item.QuantidadeAcimaMediaCiencias);
+                });
+
+            mockUseCase.Verify(x => x.ObterNotasVisaoSmeDre(
+                It.Is<string>(d => d == filtro.CodigoDre),
+                It.Is<int>(a => a == filtro.AnoLetivo),
+                It.Is<int>(b => b == filtro.Bimestre),
+                It.Is<int>(s => s == filtro.SerieAno)
+            ), Times.Once);
+        }
+
+        [Fact]
+        public async Task Obter_Notas_Visao_Sme_Dre_Com_Lista_Vazia_Deve_Retornar_Ok()
+        {
+            var filtro = new FiltroPainelEducacionalAnoLetivoBimestre
+            {
+                AnoLetivo = 2023,
+                Bimestre = 1,
+                CodigoDre = "DRE999",
+                CodigoUe = "UE999",
+                SerieAno = 3
+            };
+
+            var retornoEsperado = new List<PainelEducacionalNotasVisaoSmeDreDto>();
+
+            var mockUseCase = new Mock<IConsultasNotasUseCase>();
+            mockUseCase
+                .Setup(x => x.ObterNotasVisaoSmeDre(filtro.CodigoDre, filtro.AnoLetivo, filtro.Bimestre, filtro.SerieAno))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterNotasVisaoSmeDre(filtro, mockUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalNotasVisaoSmeDreDto>>(okResult.Value);
+
+            Assert.Empty(retorno);
+
+            mockUseCase.Verify(x => x.ObterNotasVisaoSmeDre(
+                It.Is<string>(d => d == filtro.CodigoDre),
+                It.Is<int>(a => a == filtro.AnoLetivo),
+                It.Is<int>(b => b == filtro.Bimestre),
+                It.Is<int>(s => s == filtro.SerieAno)
+            ), Times.Once);
+        }
+
+        [Fact]
+        public async Task Obter_Notas_Visao_Sme_Dre_Com_Codigo_Dre_Nulo_Deve_Retornar_Ok_Com_Dados()
+        {
+            var filtro = new FiltroPainelEducacionalAnoLetivoBimestre
+            {
+                AnoLetivo = 2024,
+                Bimestre = 3,
+                CodigoDre = null,
+                CodigoUe = null,
+                SerieAno = 7
+            };
+
+            var retornoEsperado = new List<PainelEducacionalNotasVisaoSmeDreDto>
+            {
+                new PainelEducacionalNotasVisaoSmeDreDto
+                {
+                    AnoLetivo = 2024,
+                    AnoTurma = 7,
+                    Bimestre = 3,
+                    Modalidade = Modalidade.Fundamental,
+                    QuantidadeAbaixoMediaPortugues = 25,
+                    QuantidadeAbaixoMediaMatematica = 28,
+                    QuantidadeAbaixoMediaCiencias = 22,
+                    QuantidadeAcimaMediaPortugues = 75,
+                    QuantidadeAcimaMediaMatematica = 72,
+                    QuantidadeAcimaMediaCiencias = 78
+                }
+            };
+
+            var mockUseCase = new Mock<IConsultasNotasUseCase>();
+            mockUseCase
+                .Setup(x => x.ObterNotasVisaoSmeDre(filtro.CodigoDre, filtro.AnoLetivo, filtro.Bimestre, filtro.SerieAno))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterNotasVisaoSmeDre(filtro, mockUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalNotasVisaoSmeDreDto>>(okResult.Value);
+
+            Assert.Single(retorno);
+            var item = retorno.First();
+            Assert.Equal(2024, item.AnoLetivo);
+            Assert.Equal(7, item.AnoTurma);
+            Assert.Equal(3, item.Bimestre);
+            Assert.Equal(Modalidade.Fundamental, item.Modalidade);
+            Assert.Equal(25, item.QuantidadeAbaixoMediaPortugues);
+            Assert.Equal(28, item.QuantidadeAbaixoMediaMatematica);
+            Assert.Equal(22, item.QuantidadeAbaixoMediaCiencias);
+            Assert.Equal(75, item.QuantidadeAcimaMediaPortugues);
+            Assert.Equal(72, item.QuantidadeAcimaMediaMatematica);
+            Assert.Equal(78, item.QuantidadeAcimaMediaCiencias);
+
+            mockUseCase.Verify(x => x.ObterNotasVisaoSmeDre(
+                It.Is<string>(d => d == null),
+                It.Is<int>(a => a == 2024),
+                It.Is<int>(b => b == 3),
+                It.Is<int>(s => s == 7)
+            ), Times.Once);
         }
     }
 }
