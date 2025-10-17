@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SME.SGP.Infra.Dtos.PainelEducacional.Notas
+namespace SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoSmeDre
 {
     public class PainelEducacionalNotasVisaoSmeDreDto
     {

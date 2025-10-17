@@ -1,4 +1,4 @@
-﻿namespace SME.SGP.Infra.Dtos.PainelEducacional
+﻿namespace SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoSmeDre
 {
     public class FiltroPainelEducacionalNotasVisaoSmeDre 
     {
