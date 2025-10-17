@@ -1,13 +1,13 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoSmeDre;
+using SME.SGP.Infra.Dtos.PainelEducacional.Notas;
 using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNotas.VisaoSmeDre
 {
-    public class ObterNotaVisaoSmeDreQuery : IRequest<IEnumerable<PainelEducacionalNotasVisaoSmeDreRetornoSelectDto>>
+    public class ObterNotaVisaoSmeDreQuery : IRequest<IEnumerable<PainelEducacionalNotasVisaoSmeDreDto>>
     {
-        public ObterNotaVisaoSmeDreQuery(string codigoDre, int anoLetivo, int bimestre, string anoTurma)
+        public ObterNotaVisaoSmeDreQuery(string codigoDre, int anoLetivo, int bimestre, int anoTurma)
         {
             CodigoDre = codigoDre;
             AnoLetivo = anoLetivo;
@@ -17,13 +17,17 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNotas.VisaoSmeDre
         public string CodigoDre { get; set; }
         public int AnoLetivo { get; set; }
         public int Bimestre { get; set; }
-        public string AnoTurma { get; set; }
+        public int AnoTurma { get; set; }
     }
 
-    public class ObterNotaVisaoSmeDreQueryValidator : AbstractValidator<ObterNotaVisaoSmeDreQuery>
+    public class ObterSondagemEscritaQueryValidator : AbstractValidator<ObterNotaVisaoSmeDreQuery>
     {
-        public ObterNotaVisaoSmeDreQueryValidator()
+        public ObterSondagemEscritaQueryValidator()
         {
+            RuleFor(c => c.CodigoDre)
+            .NotEmpty()
+            .WithMessage("O código da DRE deve ser informado.");
+
             RuleFor(c => c.AnoLetivo)
            .NotEmpty()
            .WithMessage("O ano letivo deve ser informado.");

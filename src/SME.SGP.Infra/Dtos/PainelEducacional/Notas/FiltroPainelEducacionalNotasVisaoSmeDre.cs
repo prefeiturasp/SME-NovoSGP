@@ -1,0 +1,10 @@
+﻿namespace SME.SGP.Infra.Dtos.PainelEducacional
+{
+    public class FiltroPainelEducacionalNotasVisaoSmeDre 
+    {
+        public string CodigoDre { get; set; }
+        public int AnoLetivo { get; set; } 
+        public int SerieAno { get; set; }
+        public int Bimestre { get; set; }
+    }
+}
