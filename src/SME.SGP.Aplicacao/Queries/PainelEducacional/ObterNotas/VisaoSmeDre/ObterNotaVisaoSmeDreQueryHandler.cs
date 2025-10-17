@@ -2,6 +2,7 @@
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas;
+using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoSmeDre;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +11,11 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNotas.VisaoSmeDre
 {
-    public class ObterNotaVisaoSmeDreQueryHandler : IRequestHandler<ObterNotaVisaoSmeDreQuery, IEnumerable<PainelEducacionalNotasVisaoSmeDreDto>>
+    public class ObterNotaVisaoUeQueryQueryHandler : IRequestHandler<ObterNotaVisaoSmeDreQuery, IEnumerable<PainelEducacionalNotasVisaoSmeDreDto>>
     {
         private readonly IRepositorioNota repositorio;
 
-        public ObterNotaVisaoSmeDreQueryHandler(
+        public ObterNotaVisaoUeQueryQueryHandler(
             IRepositorioNota repositorio)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
@@ -52,21 +53,21 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNotas.VisaoSmeDre
                         .Select(grupoSerie => new SerieAnoNotasVisaoSmeDreDto
                         {
                             Nome = grupoSerie.Key,
-                            ComponentesCurriculares = new List<ComponenteCurricularNotasVisaoSmeDreDto>
+                            ComponentesCurriculares = new List<ComponenteCurricularNotasDto>
                             {
-                                new ComponenteCurricularNotasVisaoSmeDreDto
+                                new ComponenteCurricularNotasDto
                                 {
                                     Nome = "Português",
                                     AbaixoDaMedia = (int)grupoSerie.Sum(s => s.QuantidadeAbaixoMediaPortugues),
                                     AcimaDaMedia = (int)grupoSerie.Sum(s => s.QuantidadeAcimaMediaPortugues)
                                 },
-                                new ComponenteCurricularNotasVisaoSmeDreDto
+                                new ComponenteCurricularNotasDto
                                 {
                                     Nome = "Matemática",
                                     AbaixoDaMedia = (int)grupoSerie.Sum(s => s.QuantidadeAbaixoMediaMatematica),
                                     AcimaDaMedia = (int)grupoSerie.Sum(s => s.QuantidadeAcimaMediaMatematica)
                                 },
-                                new ComponenteCurricularNotasVisaoSmeDreDto
+                                new ComponenteCurricularNotasDto
                                 {
                                     Nome = "Ciências",
                                     AbaixoDaMedia = (int)grupoSerie.Sum(s => s.QuantidadeAbaixoMediaCiencias),

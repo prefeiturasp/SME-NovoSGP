@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Infra.Dtos.PainelEducacional.Notas;
+using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoSmeDre;
 using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNotas.VisaoSmeDre
@@ -20,9 +20,9 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNotas.VisaoSmeDre
         public int AnoTurma { get; set; }
     }
 
-    public class ObterSondagemEscritaQueryValidator : AbstractValidator<ObterNotaVisaoSmeDreQuery>
+    public class ObterNotaVisaoSmeDreQueryValidator : AbstractValidator<ObterNotaVisaoSmeDreQuery>
     {
-        public ObterSondagemEscritaQueryValidator()
+        public ObterNotaVisaoSmeDreQueryValidator()
         {
             RuleFor(c => c.AnoLetivo)
            .NotEmpty()

@@ -1,6 +1,6 @@
 ﻿using SME.SGP.Dominio;
 
-namespace SME.SGP.Infra.Dtos.PainelEducacional.Notas
+namespace SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoSmeDre
 {
     public class PainelEducacionalNotasVisaoSmeDreRetornoSelectDto
     {
