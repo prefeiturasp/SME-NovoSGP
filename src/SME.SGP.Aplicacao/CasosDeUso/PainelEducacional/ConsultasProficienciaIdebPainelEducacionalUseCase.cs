@@ -1,11 +1,14 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
+using SME.SGP.Aplicacao.Queries.PainelEducacional;
 using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterProficienciaIdep;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
+using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
 {
@@ -24,16 +27,69 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                 throw new NegocioException("Informe a unidade escolar");
 
             var proficienciaIdeb = await mediator.Send(new ObterProficienciaIdepQuery(anoLetivo, codigoUe));
+            var ideps = await mediator.Send(new ObterIdepsQuery(anoLetivo, codigoUe));
+
+            var proficienciaIdebDto = MapearParaDto(proficienciaIdeb, ideps);
 
             if (anoLetivo <= 0)
             {
-                proficienciaIdeb = proficienciaIdeb
-                    .OrderByDescending(p => p.AnoLetivo) 
+                proficienciaIdebDto = proficienciaIdebDto
+                    .OrderByDescending(p => p.AnoLetivo)
                     .Take(5)
                     .ToList();
             }
 
-            return proficienciaIdeb;
+            return proficienciaIdebDto;
+        }
+
+        private static IEnumerable<PainelEducacionalProficienciaIdepDto> MapearParaDto(IEnumerable<ProficienciaIdepAgrupadaDto> proficiencia, IEnumerable<Idep> ideps)
+        {
+            var resultadoFinal = proficiencia
+                .GroupBy(d => d.AnoLetivo)
+                .Select(group =>
+                {
+                    var anosIniciais = group.Where(item => item.EtapaEnsino == 1);
+                    var anosFinais = group.Where(item => item.EtapaEnsino == 2);
+
+                    var mediaProficienciaIniciais = anosIniciais.Any()
+                        ? anosIniciais.Average(item => item.ProficienciaMedia)
+                        : 0;
+
+                    var mediaProficienciaFinais = anosFinais.Any()
+                        ? anosFinais.Average(item => item.ProficienciaMedia)
+                        : 0;
+
+                    return new PainelEducacionalProficienciaIdepDto
+                    {
+                        AnoLetivo = group.Key,
+                        PercentualInicial = Math.Round(mediaProficienciaIniciais, 2),
+                        PercentualFinal = Math.Round(mediaProficienciaFinais, 2),
+                        Proficiencia = new ProficienciaIdebResumidoDto
+                        {
+                            AnosIniciais = anosIniciais
+                                .GroupBy(item => item.ComponenteCurricular)
+                                .Select(componente => new ComponenteCurricularIdebResumidoDto
+                                {
+                                    ComponenteCurricular = ((SGP.Dominio.Enumerados.ComponenteCurricular)componente.Key).ObterDisplayName(),
+                                    Percentual = Math.Round(componente.Average(item => item.ProficienciaMedia), 2)
+                                })
+                                .ToList(),
+                            AnosFinais = anosFinais
+                                .GroupBy(item => item.ComponenteCurricular)
+                                .Select(componente => new ComponenteCurricularIdebResumidoDto
+                                {
+                                    ComponenteCurricular = ((SGP.Dominio.Enumerados.ComponenteCurricular)componente.Key).ObterDisplayName(),
+                                    Percentual = Math.Round(componente.Average(item => item.ProficienciaMedia), 2)
+                                })
+                                .ToList()
+                        },
+                        Boletim = group.FirstOrDefault(b => !string.IsNullOrEmpty(b.Boletim))?.Boletim
+                    };
+                })
+                .OrderByDescending(d => d.AnoLetivo)
+                .ToList();
+
+            return resultadoFinal;
         }
     }
 }
