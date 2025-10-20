@@ -30,10 +30,9 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterFrequenciaDiaria
                     {
                         Data = r.Data,
                         Turma = r.Turma,
-                        QuantidadeEstudantes = r.QuantidadeEstudantes,
-                        EstudantesPresentes = r.EstudantesPresentes,
+                        QuantidadeAlunos = r.QuantidadeAlunos,
                         PercentualFrequencia = r.PercentualFrequencia,
-                        NivelFrequencia = ObterNomeNivelFrequencia(int.Parse(r.NivelFrequencia))
+                        NivelFrequencia = r.NivelFrequencia
                     };
                 })
                 .OrderBy(r => r.Turma)
