@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNotas.VisaoSmeDre
 {
-    public class ObterNotaVisaoSmeDreQuery : IRequest<IEnumerable<PainelEducacionalNotasVisaoSmeDreDto>>
+    public class ObterNotaVisaoSmeDreQuery : IRequest<IEnumerable<PainelEducacionalNotasVisaoSmeDreRetornoSelectDto>>
     {
         public ObterNotaVisaoSmeDreQuery(string codigoDre, int anoLetivo, int bimestre, string anoTurma)
         {
