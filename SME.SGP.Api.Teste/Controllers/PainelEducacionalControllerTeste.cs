@@ -6,6 +6,7 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra.Dtos.PainelEducacional;
+using SME.SGP.Infra.Dtos.PainelEducacional.FrequenciaDiaria;
 using SME.SGP.Infra.Dtos.PainelEducacional.IndicadoresPap;
 using SME.SGP.Infra.Dtos.PainelEducacional.SondagemEscrita;
 using System.Collections.Generic;
@@ -22,6 +23,8 @@ namespace SME.SGP.Api.Teste.Controllers
         private readonly Mock<IConsultasIdebPainelEducacionalUseCase> _consultasIdebPainelEducacionalUseCase = new();
         private readonly Mock<IConsultasPainelEducacionalFluenciaLeitoraUseCase> _consultasFluenciaLeitoraUseCase = new();
         private readonly Mock<IConsultasProficienciaIdebPainelEducacionalUseCase> _consultasProficienciaIdebUseCase = new();
+        private readonly Mock<IConsultasRegistroFrequenciaDiariaDreUseCase> _consultasRegistroFrequenciaDiariaDreUseCase = new();
+        private readonly Mock<IConsultasRegistroFrequenciaDiariaUeUseCase> _consultasRegistroFrequenciaDiariaUeUseCase = new();
 
         public PainelEducacionalControllerTeste()
         {
@@ -767,6 +770,74 @@ namespace SME.SGP.Api.Teste.Controllers
                     Assert.Equal(1, item.TotalAlunosDificuldadeTop2);
                     Assert.Equal(14, item.TotalTurmas);
                 });
+        }
+
+        [Fact(DisplayName = "Deve retornar Ok com frequência diária para DRE")]
+        public async Task ObterFrequenciaDiariaDre_DeveRetornarOkComDados()
+        {
+            // Arrange
+            var filtro = new FiltroFrequenciaDiariaDreDto
+            {
+                AnoLetivo = 2025,
+                CodigoDre = "123456",
+                DataFrequencia = "2025-10-20"
+            };
+
+            var resultadoEsperado = new FrequenciaDiariaDreDto
+            {
+                Ues = new List<RegistroFrequenciaDiariaUeDto>(),
+                TotalPaginas = 1,
+                TotalRegistros = 10
+            };
+
+            _consultasRegistroFrequenciaDiariaDreUseCase
+                .Setup(x => x.ObterFrequenciaDiariaPorDre(filtro))
+                .ReturnsAsync(resultadoEsperado);
+
+            // Act
+            var result = await _controller.ObterFrequenciaDiariaDre(filtro, _consultasRegistroFrequenciaDiariaDreUseCase.Object);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var dto = Assert.IsType<FrequenciaDiariaDreDto>(okResult.Value);
+            Assert.Equal(1, dto.TotalPaginas);
+            Assert.Equal(10, dto.TotalRegistros);
+
+            _consultasRegistroFrequenciaDiariaDreUseCase.Verify(x => x.ObterFrequenciaDiariaPorDre(filtro), Times.Once);
+        }
+
+        [Fact(DisplayName = "Deve retornar Ok com frequência diária para UE")]
+        public async Task ObterFrequenciaDiariaUe_DeveRetornarOkComDados()
+        {
+            // Arrange
+            var filtro = new FiltroFrequenciaDiariaUeDto
+            {
+                AnoLetivo = 2025,
+                CodigoUe = "123456",
+                DataFrequencia = "2025-10-20"
+            };
+
+            var resultadoEsperado = new FrequenciaDiariaUeDto
+            {
+                Turmas = new List<RegistroFrequenciaDiariaTurmaDto>(),
+                TotalPaginas = 1,
+                TotalRegistros = 10
+            };
+
+            _consultasRegistroFrequenciaDiariaUeUseCase
+                .Setup(x => x.ObterFrequenciaDiariaPorUe(filtro))
+                .ReturnsAsync(resultadoEsperado);
+
+            // Act
+            var result = await _controller.ObterFrequenciaDiariaUe(filtro, _consultasRegistroFrequenciaDiariaUeUseCase.Object);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var dto = Assert.IsType<FrequenciaDiariaUeDto>(okResult.Value);
+            Assert.Equal(1, dto.TotalPaginas);
+            Assert.Equal(10, dto.TotalRegistros);
+
+            _consultasRegistroFrequenciaDiariaUeUseCase.Verify(x => x.ObterFrequenciaDiariaPorUe(filtro), Times.Once);
         }
     }
 }
