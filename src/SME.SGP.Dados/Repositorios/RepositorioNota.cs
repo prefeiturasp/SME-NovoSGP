@@ -65,10 +65,10 @@ namespace SME.SGP.Dados.Repositorios
         {
             try
             {
-                string query = @"select ano_letivo as AnoLetivo,
+                string query = @"select ano_letivo,
                                      bimestre,
-                                     ano_turma as AnoTurma,
-                                     modalidade_ensino as Modalidade,
+                                     ano_turma,
+                                     modalidade,
                                      quantidade_abaixo_media_portugues as QuantidadeAbaixoMediaPortugues,
                                      quantidade_abaixo_media_matematica as QuantidadeAbaixoMediaMatematica,
                                      quantidade_abaixo_media_ciencias as QuantidadeAbaixoMediaCiencias,
