@@ -7,7 +7,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNotas.VisaoSmeDre
 {
     public class ObterNotaVisaoSmeDreQuery : IRequest<IEnumerable<PainelEducacionalNotasVisaoSmeDreDto>>
     {
-        public ObterNotaVisaoSmeDreQuery(string codigoDre, int anoLetivo, int bimestre, int anoTurma)
+        public ObterNotaVisaoSmeDreQuery(string codigoDre, int anoLetivo, int bimestre, string anoTurma)
         {
             CodigoDre = codigoDre;
             AnoLetivo = anoLetivo;
@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNotas.VisaoSmeDre
         public string CodigoDre { get; set; }
         public int AnoLetivo { get; set; }
         public int Bimestre { get; set; }
-        public int AnoTurma { get; set; }
+        public string AnoTurma { get; set; }
     }
 
     public class ObterNotaVisaoSmeDreQueryValidator : AbstractValidator<ObterNotaVisaoSmeDreQuery>

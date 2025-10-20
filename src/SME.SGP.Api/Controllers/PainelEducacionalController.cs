@@ -144,7 +144,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterNotasVisaoUe([FromQuery] FiltroPainelEducacionalNotasVisaoUe filtro, [FromServices] IConsultasNotasUseCase consultasNotasUseCase)
-     => Ok(await consultasNotasUseCase.ObterNotasVisaoUe(filtro.CodigoDre, filtro.AnoLetivo, filtro.Bimestre, filtro.Modalidade));
+     => Ok(await consultasNotasUseCase.ObterNotasVisaoUe(filtro.CodigoUe, filtro.AnoLetivo, filtro.Bimestre, filtro.Modalidade));
 
     }
 }

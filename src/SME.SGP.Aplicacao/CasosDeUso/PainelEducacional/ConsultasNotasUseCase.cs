@@ -22,14 +22,14 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<PainelEducacionalNotasVisaoSmeDreDto>> ObterNotasVisaoSmeDre(string codigoDre, int anoLetivo, int bimestre, int anoTurma)
+        public async Task<IEnumerable<PainelEducacionalNotasVisaoSmeDreDto>> ObterNotasVisaoSmeDre(string codigoDre, int anoLetivo, int bimestre, string anoTurma)
         {
             return await mediator.Send(new ObterNotaVisaoSmeDreQuery(codigoDre, anoLetivo, bimestre, anoTurma));
         }
 
-        public async Task<PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>> ObterNotasVisaoUe(string codigoDre, int anoLetivo, int bimestre, Modalidade modalidade)
+        public async Task<PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>> ObterNotasVisaoUe(string codigoUe, int anoLetivo, int bimestre, Modalidade modalidade)
         {
-            return await mediator.Send(new ObterNotaVisaoUeQuery(this.Paginacao, codigoDre, anoLetivo, bimestre, modalidade));
+            return await mediator.Send(new ObterNotaVisaoUeQuery(this.Paginacao, codigoUe, anoLetivo, bimestre, modalidade));
         }
     }
 }
