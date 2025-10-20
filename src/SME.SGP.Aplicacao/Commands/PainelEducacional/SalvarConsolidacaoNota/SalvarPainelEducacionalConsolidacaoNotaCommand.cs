@@ -6,11 +6,11 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarConsolidacaoNota
 {
     public class SalvarPainelEducacionalConsolidacaoNotaCommand : IRequest<bool>
     {
-        public SalvarPainelEducacionalConsolidacaoNotaCommand(IEnumerable<PainelEducacionalConsolidacaoNota> notasConsolidadasDre)
+        public SalvarPainelEducacionalConsolidacaoNotaCommand(IList<PainelEducacionalConsolidacaoNota> notasConsolidadasDre)
         {
             NotasConsolidadasDre = notasConsolidadasDre;
             NotasConsolidadasUe = notasConsolidadasUe;
         }
-        public IEnumerable<PainelEducacionalConsolidacaoNota> NotasConsolidadasDre { get; set; }
+        public IList<PainelEducacionalConsolidacaoNota> NotasConsolidadasDre { get; set; }
     }
 }
