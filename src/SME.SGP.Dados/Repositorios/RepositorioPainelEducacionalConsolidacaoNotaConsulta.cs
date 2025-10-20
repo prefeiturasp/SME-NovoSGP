@@ -50,11 +50,6 @@ namespace SME.SGP.Dados.Repositorios
                    and turma.ano_letivo = @anoLetivo
                  order by dre.dre_id, ue.ue_id, cccNota.bimestre, turma.modalidade_codigo, turma.turma_id";
 
-            var parametros = new
-            {
-                anoLetivo,
-                componenteCurricularIds = PainelEducacionalConstants.ComponentesCurricularesConsolidacaoNotas
-            };
             return await database.QueryAsync<PainelEducacionalConsolidacaoNotaDadosBrutos>(query, new { anoLetivo }, commandTimeout: 600);
         }
 
