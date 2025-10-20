@@ -5,6 +5,7 @@ namespace SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoSmeDre
     public class PainelEducacionalNotasVisaoSmeDreRetornoSelectDto
     {
         public int AnoLetivo { get; set; }
+        public string CodigoDre { get; set; }
         public string AnoTurma { get; set; }
         public int Bimestre { get; set; }
         public Modalidade Modalidade { get; set; }

@@ -23,25 +23,49 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNotas.VisaoSmeDre
 
         public async Task<IEnumerable<PainelEducacionalNotasVisaoSmeDreDto>> Handle(ObterNotaVisaoSmeDreQuery request, CancellationToken cancellationToken)
         {
-            var dadosConsolidacao = await repositorio.ObterNotasVisaoSmeDre(request.CodigoDre, request.AnoLetivo, request.Bimestre, request.AnoTurma);
+            IEnumerable<PainelEducacionalNotasVisaoSmeDreRetornoSelectDto> dadosConsolidacao;
+
+            if (!string.IsNullOrEmpty(request.CodigoDre))
+            {
+                dadosConsolidacao = await repositorio.ObterNotasVisaoDre(request.CodigoDre, request.AnoLetivo, request.Bimestre, request.AnoTurma);
+            }
+            else
+            {
+                dadosConsolidacao = await repositorio.ObterNotasVisaoSme(request.AnoLetivo, request.Bimestre, request.AnoTurma);
+            }
 
             if (dadosConsolidacao == null || !dadosConsolidacao.Any())
                 return Enumerable.Empty<PainelEducacionalNotasVisaoSmeDreDto>();
 
-            var dadosAgrupados = dadosConsolidacao
-                .GroupBy(d => new { d.Modalidade, d.AnoTurma })
-                .Select(grupo => new
-                {
-                    Modalidade = grupo.Key.Modalidade.Name(),
-                    AnoTurma = grupo.Key.AnoTurma,
-                    QuantidadeAbaixoMediaPortugues = grupo.Sum(x => x.QuantidadeAbaixoMediaPortugues),
-                    QuantidadeAbaixoMediaMatematica = grupo.Sum(x => x.QuantidadeAbaixoMediaMatematica),
-                    QuantidadeAbaixoMediaCiencias = grupo.Sum(x => x.QuantidadeAbaixoMediaCiencias),
-                    QuantidadeAcimaMediaPortugues = grupo.Sum(x => x.QuantidadeAcimaMediaPortugues),
-                    QuantidadeAcimaMediaMatematica = grupo.Sum(x => x.QuantidadeAcimaMediaMatematica),
-                    QuantidadeAcimaMediaCiencias = grupo.Sum(x => x.QuantidadeAcimaMediaCiencias)
-                })
-                .ToList();
+            var dadosAgrupados = !string.IsNullOrEmpty(request.CodigoDre)
+                ? dadosConsolidacao
+                    .GroupBy(d => new { d.Modalidade, d.AnoTurma })
+                    .Select(grupo => new
+                    {
+                        Modalidade = grupo.Key.Modalidade.Name(),
+                        AnoTurma = grupo.Key.AnoTurma,
+                        QuantidadeAbaixoMediaPortugues = grupo.Sum(x => x.QuantidadeAbaixoMediaPortugues),
+                        QuantidadeAbaixoMediaMatematica = grupo.Sum(x => x.QuantidadeAbaixoMediaMatematica),
+                        QuantidadeAbaixoMediaCiencias = grupo.Sum(x => x.QuantidadeAbaixoMediaCiencias),
+                        QuantidadeAcimaMediaPortugues = grupo.Sum(x => x.QuantidadeAcimaMediaPortugues),
+                        QuantidadeAcimaMediaMatematica = grupo.Sum(x => x.QuantidadeAcimaMediaMatematica),
+                        QuantidadeAcimaMediaCiencias = grupo.Sum(x => x.QuantidadeAcimaMediaCiencias)
+                    })
+                    .ToList()
+                : dadosConsolidacao
+                    .GroupBy(d => new { d.CodigoDre, d.Modalidade, d.AnoTurma })
+                    .Select(grupo => new
+                    {
+                        Modalidade = grupo.Key.Modalidade.Name(),
+                        AnoTurma = grupo.Key.AnoTurma,
+                        QuantidadeAbaixoMediaPortugues = grupo.Sum(x => x.QuantidadeAbaixoMediaPortugues),
+                        QuantidadeAbaixoMediaMatematica = grupo.Sum(x => x.QuantidadeAbaixoMediaMatematica),
+                        QuantidadeAbaixoMediaCiencias = grupo.Sum(x => x.QuantidadeAbaixoMediaCiencias),
+                        QuantidadeAcimaMediaPortugues = grupo.Sum(x => x.QuantidadeAcimaMediaPortugues),
+                        QuantidadeAcimaMediaMatematica = grupo.Sum(x => x.QuantidadeAcimaMediaMatematica),
+                        QuantidadeAcimaMediaCiencias = grupo.Sum(x => x.QuantidadeAcimaMediaCiencias)
+                    })
+                    .ToList();
 
             var modalidades = dadosAgrupados
                 .GroupBy(d => d.Modalidade)
