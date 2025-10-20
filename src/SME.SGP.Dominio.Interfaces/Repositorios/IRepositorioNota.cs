@@ -7,8 +7,7 @@ namespace SME.SGP.Dominio.Interfaces.Repositorios
 {
     public interface IRepositorioNota
     {
-        Task<IEnumerable<PainelEducacionalNotasVisaoSmeDreRetornoSelectDto>> ObterNotasVisaoDre(string codigoDre, int anoLetivo, int bimestre, string anoTurma);
-        Task<IEnumerable<PainelEducacionalNotasVisaoSmeDreRetornoSelectDto>> ObterNotasVisaoSme(int anoLetivo, int bimestre, string anoTurma);
+        Task<IEnumerable<PainelEducacionalNotasVisaoSmeDreRetornoSelectDto>> ObterNotasVisaoSmeDre(string codigoDre, int anoLetivo, int bimestre, string anoTurma);
         Task<IEnumerable<PainelEducacionalNotasVisaoUeRetornoSelectDto>> ObterNotasVisaoUe(string codigoUe, int anoLetivo, int bimestre, Modalidade modalidade);
     }
 }

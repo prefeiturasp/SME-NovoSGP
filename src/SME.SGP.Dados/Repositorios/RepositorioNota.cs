@@ -16,51 +16,6 @@ namespace SME.SGP.Dados.Repositorios
         {
             this.database = database;
         }
-
-        public async Task<IEnumerable<PainelEducacionalNotasVisaoSmeDreRetornoSelectDto>> ObterNotasVisaoDre(string codigoDre, int anoLetivo, int bimestre, string anoTurma)
-        {
-            try
-            {
-                string query = @"select ano_letivo as AnoLetivo,
-                                     codigo_dre as CodigoDre,
-                                     bimestre,
-                                     ano_turma as AnoTurma,
-                                     modalidade_ensino as Modalidade,
-                                     quantidade_abaixo_media_portugues as QuantidadeAbaixoMediaPortugues,
-                                     quantidade_abaixo_media_matematica as QuantidadeAbaixoMediaMatematica,
-                                     quantidade_abaixo_media_ciencias as QuantidadeAbaixoMediaCiencias,
-                                     quantidade_acima_media_portugues as QuantidadeAcimaMediaPortugues,
-                                     quantidade_acima_media_matematica as QuantidadeAcimaMediaMatematica,
-                                     quantidade_acima_media_ciencias as QuantidadeAcimaMediaCiencias
-                             from painel_educacional_consolidacao_nota_dre
-                             where 1 = 1 ";
-
-                if (!string.IsNullOrWhiteSpace(codigoDre))
-                    query += " AND codigo_dre = @codigoDre ";
-
-                if (anoLetivo > 0)
-                    query += " AND ano_letivo = @anoLetivo ";
-
-                if (bimestre > 0)
-                    query += " AND bimestre = @bimestre ";
-
-                if (String.IsNullOrEmpty(anoTurma))
-                    query += " AND ano_turma = @anoTurma ";
-
-                return await database.Conexao.QueryAsync<PainelEducacionalNotasVisaoSmeDreRetornoSelectDto>(query, new
-                {
-                    codigoDre,
-                    anoLetivo,
-                    bimestre,
-                    anoTurma
-                });
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-        }
-
         public async Task<IEnumerable<PainelEducacionalNotasVisaoUeRetornoSelectDto>> ObterNotasVisaoUe(string codigoUe, int anoLetivo, int bimestre, Modalidade modalidade)
         {
             try
@@ -106,7 +61,7 @@ namespace SME.SGP.Dados.Repositorios
             }
         }
 
-        public async Task<IEnumerable<PainelEducacionalNotasVisaoSmeDreRetornoSelectDto>> ObterNotasVisaoSme(int anoLetivo, int bimestre, string anoTurma)
+        public async Task<IEnumerable<PainelEducacionalNotasVisaoSmeDreRetornoSelectDto>> ObterNotasVisaoSmeDre(string codigoDre, int anoLetivo, int bimestre, string anoTurma)
         {
             try
             {
@@ -120,8 +75,11 @@ namespace SME.SGP.Dados.Repositorios
                                      quantidade_acima_media_portugues as QuantidadeAcimaMediaPortugues,
                                      quantidade_acima_media_matematica as QuantidadeAcimaMediaMatematica,
                                      quantidade_acima_media_ciencias as QuantidadeAcimaMediaCiencias
-                             from painel_educacional_consolidacao_nota_sme
+                             from painel_educacional_consolidacao_nota
                              where 1 = 1 ";
+
+                if (!string.IsNullOrWhiteSpace(codigoDre))
+                    query += " AND codigo_dre = @codigoDre ";
 
                 if (anoLetivo > 0)
                     query += " AND ano_letivo = @anoLetivo ";
@@ -129,11 +87,12 @@ namespace SME.SGP.Dados.Repositorios
                 if (bimestre > 0)
                     query += " AND bimestre = @bimestre ";
 
-                if (String.IsNullOrEmpty(anoTurma))
+                if (!string.IsNullOrEmpty(anoTurma))
                     query += " AND ano_turma = @anoTurma ";
 
                 return await database.Conexao.QueryAsync<PainelEducacionalNotasVisaoSmeDreRetornoSelectDto>(query, new
                 {
+                    codigoDre,
                     anoLetivo,
                     bimestre,
                     anoTurma
