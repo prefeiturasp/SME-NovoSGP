@@ -26,5 +26,9 @@ namespace SME.SGP.Dominio.Constantes
         public const long CODIGO_RECUPERACAO_PARALELA_AUTORAL_CIENCIAS_HUMANAS = 1666;
         public const long CODIGO_RECUPERACAO_PARALELA_AUTORAL_GEOGRAFIA = 1764;
         public const long CODIGO_RECUPERACAO_PARALELA_AUTORAL_HISTORIA = 1765;
+
+        public const int CODIGO_PORTUGUES = 138;
+        public const int CODIGO_MATEMATICA = 2;
+        public const int CODIGO_CIENCIAS = 89;
     }
 }
