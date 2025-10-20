@@ -2,8 +2,9 @@
 {
     public class PainelEducacionalConsolidacaoNotaDadosBrutos
     {
+        public string TurmaCodigo { get; set; }
         public string TurmaNome { get; set; }
-        public char AnoTurma { get; set; }
+        public char TurmaAno { get; set; }
         public short AnoLetivo { get; set; }
         public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }

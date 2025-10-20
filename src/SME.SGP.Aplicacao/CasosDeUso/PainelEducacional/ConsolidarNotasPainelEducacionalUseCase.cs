@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             if (notasConsolidadasDre == null || !notasConsolidadasDre.Any())
                 return false;
 
-            await mediator.Send(new SalvarPainelEducacionalConsolidacaoNotaCommand(notasConsolidadasDre, notasConsolidadasUe));
+            await mediator.Send(new SalvarPainelEducacionalConsolidacaoNotaCommand(notasConsolidadasDre));
             return true;
         }
 
@@ -86,18 +86,30 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                    db.AnoLetivo,
                    db.Bimestre,
                    db.Modalidade,
-                   db.TurmaNome
+                   db.TurmaAno
                })
                .Select(notasAgrupadas =>
                {
-                   var consolidado = new PainelEducacionalConsolidacaoNotaUe
+                   var (qtdAbaixoMediaPortugues, qtdAcimaMediaPortugues) =
+                        CalcularQuantidadesPorComponente(notasAgrupadas, ComponentesCurricularesConstants.CODIGO_PORTUGUES);
+                   var (qtdAbaixoMediaMatematica, qtdAcimaMediaMatematica) =
+                        CalcularQuantidadesPorComponente(notasAgrupadas, ComponentesCurricularesConstants.CODIGO_MATEMATICA);
+                   var (qtdAbaixoMediaCiencias, qtdAcimaMediaCiencias) =
+                        CalcularQuantidadesPorComponente(notasAgrupadas, ComponentesCurricularesConstants.CODIGO_CIENCIAS);
+
+                   return new PainelEducacionalConsolidacaoNota
                    {
                        AnoLetivo = notasAgrupadas.Key.AnoLetivo,
                        Bimestre = notasAgrupadas.Key.Bimestre,
                        Modalidade = notasAgrupadas.Key.Modalidade,
-                       CodigoDre = notasAgrupadas.Key.CodigoDre,
-                       CodigoUe = notasAgrupadas.Key.CodigoUe,
-                       SerieTurma = notasAgrupadas.Key.TurmaNome
+                       QuantidadeAbaixoMediaPortugues = qtdAbaixoMediaPortugues,
+                       QuantidadeAcimaMediaPortugues = qtdAcimaMediaPortugues,
+                       QuantidadeAbaixoMediaMatematica = qtdAbaixoMediaMatematica,
+                       QuantidadeAcimaMediaMatematica = qtdAcimaMediaMatematica,
+                       QuantidadeAbaixoMediaCiencias = qtdAbaixoMediaCiencias,
+                       QuantidadeAcimaMediaCiencias = qtdAcimaMediaCiencias,
+                       AnoTurma = notasAgrupadas.Key.TurmaAno,
+                       CodigoDre = notasAgrupadas.Key.CodigoDre
                    };
 
                    var quantidades = CalcularQuantidadesPorComponente(notasAgrupadas);
@@ -121,22 +133,16 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             return ultimoAnoConsolidado + 1;
         }
 
-        private Dictionary<long, (int Abaixo, int Acima)> CalcularQuantidadesPorComponente(
-            IGrouping<dynamic, PainelEducacionalConsolidacaoNotaDadosBrutos> notasAgrupadas)
+        private (int quantidadeAbaixo, int quantidadeAcima) CalcularQuantidadesPorComponente(
+            IGrouping<dynamic, PainelEducacionalConsolidacaoNotaDadosBrutos> notasAgrupadas,
+            int componenteCurricularId)
         {
-            var quantidades = new Dictionary<long, (int Abaixo, int Acima)>();
+            var notasDoComponente = notasAgrupadas.Where(n => n.IdComponenteCurricular == componenteCurricularId);
 
-            foreach (var componenteCurricularId in PainelEducacionalConstants.ComponentesCurricularesConsolidacaoNotas)
-            {
-                var notasDoComponente = notasAgrupadas.Where(n => n.IdComponenteCurricular == componenteCurricularId);
+            var quantidadeAbaixo = notasDoComponente.Count(EstaAbaixoDaMedia);
+            var quantidadeAcima = notasDoComponente.Count(EstaAcimaOuNaMedia);
 
-                var quantidadeAbaixo = notasDoComponente.Count(EstaAbaixoDaMedia);
-                var quantidadeAcima = notasDoComponente.Count(EstaAcimaOuNaMedia);
-
-                quantidades[componenteCurricularId] = (quantidadeAbaixo, quantidadeAcima);
-            }
-
-            return quantidades;
+            return (quantidadeAbaixo, quantidadeAcima);
         }
 
         private bool EstaAbaixoDaMedia(PainelEducacionalConsolidacaoNotaDadosBrutos nota) =>

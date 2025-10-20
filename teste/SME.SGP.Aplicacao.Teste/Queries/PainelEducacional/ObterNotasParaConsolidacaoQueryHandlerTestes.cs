@@ -3,8 +3,10 @@ using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNotasParaConsolidacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -29,7 +31,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries.PainelEducacional
             var query = new ObterNotasParaConsolidacaoQuery(anoLetivo);
             var dadosBrutosEsperados = new List<PainelEducacionalConsolidacaoNotaDadosBrutos>
             {
-                new PainelEducacionalConsolidacaoNotaDadosBrutos
+                new PainelEducacionalConsolidacaoNotaDadosBrutos 
                 {
                     AnoLetivo = anoLetivo,
                     TurmaNome = "Turma A",
@@ -40,7 +42,8 @@ namespace SME.SGP.Aplicacao.Teste.Queries.PainelEducacional
                     IdComponenteCurricular = 101,
                     Modalidade = Modalidade.Fundamental,
                     Nota = 85,
-                    AnoTurma = '5',
+                    TurmaAno = '5',
+                    TurmaCodigo = "T001",
                     ValorConceito = "A",
                     ValorMedioNota = 50
                 }
