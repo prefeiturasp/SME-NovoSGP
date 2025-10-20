@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNotas.VisaoUe
 
         public async Task<PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>> Handle(ObterNotaVisaoUeQuery request, CancellationToken cancellationToken)
         {
-            var dadosConsolidacao = await repositorio.ObterNotasVisaoUe(request.CodigoDre, request.AnoLetivo, request.Bimestre, request.Modalidade);
+            var dadosConsolidacao = await repositorio.ObterNotasVisaoUe(request.CodigoUe, request.AnoLetivo, request.Bimestre, request.Modalidade);
 
             if (dadosConsolidacao == null || !dadosConsolidacao.Any())
             {
@@ -41,6 +41,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNotas.VisaoUe
                 {
                     Modalidade = grupo.Key.Modalidade.Name(),
                     AnoTurma = grupo.Key.AnoTurma,
+                    CodigoUe = grupo.FirstOrDefault().CodigoUe,
                     QuantidadeAbaixoMediaPortugues = grupo.Sum(x => x.QuantidadeAbaixoMediaPortugues),
                     QuantidadeAbaixoMediaMatematica = grupo.Sum(x => x.QuantidadeAbaixoMediaMatematica),
                     QuantidadeAbaixoMediaCiencias = grupo.Sum(x => x.QuantidadeAbaixoMediaCiencias),

@@ -1799,7 +1799,7 @@ namespace SME.SGP.Api.Teste.Controllers
                 AnoLetivo = 2024,
                 Bimestre = 2,
                 CodigoDre = "DRE123",
-                SerieAno = 5
+                SerieAno = "5"
             };
 
             var retornoEsperado = new List<PainelEducacionalNotasVisaoSmeDreDto>
@@ -1856,7 +1856,7 @@ namespace SME.SGP.Api.Teste.Controllers
                 It.Is<string>(d => d == filtro.CodigoDre),
                 It.Is<int>(a => a == filtro.AnoLetivo),
                 It.Is<int>(b => b == filtro.Bimestre),
-                It.Is<int>(s => s == filtro.SerieAno)
+                It.Is<string>(s => s == filtro.SerieAno)
             ), Times.Once);
         }
 
@@ -1868,7 +1868,7 @@ namespace SME.SGP.Api.Teste.Controllers
                 AnoLetivo = 2023,
                 Bimestre = 1,
                 CodigoDre = "DRE999",
-                SerieAno = 3
+                SerieAno = "3"
             };
 
             var retornoEsperado = new List<PainelEducacionalNotasVisaoSmeDreDto>();
@@ -1889,7 +1889,7 @@ namespace SME.SGP.Api.Teste.Controllers
                 It.Is<string>(d => d == filtro.CodigoDre),
                 It.Is<int>(a => a == filtro.AnoLetivo),
                 It.Is<int>(b => b == filtro.Bimestre),
-                It.Is<int>(s => s == filtro.SerieAno)
+                It.Is<string>(s => s == filtro.SerieAno)
             ), Times.Once);
         }
 
@@ -1901,7 +1901,7 @@ namespace SME.SGP.Api.Teste.Controllers
                 AnoLetivo = 2024,
                 Bimestre = 3,
                 CodigoDre = null,
-                SerieAno = 7
+                SerieAno = "7"
             };
 
             var retornoEsperado = new List<PainelEducacionalNotasVisaoSmeDreDto>
@@ -1961,7 +1961,7 @@ namespace SME.SGP.Api.Teste.Controllers
                 It.Is<string>(d => d == null),
                 It.Is<int>(a => a == 2024),
                 It.Is<int>(b => b == 3),
-                It.Is<int>(s => s == 7)
+                It.Is<string>(s => s == "7")
             ), Times.Once);
         }
 
@@ -1972,7 +1972,7 @@ namespace SME.SGP.Api.Teste.Controllers
             {
                 AnoLetivo = 2024,
                 Bimestre = 2,
-                CodigoDre = "DRE123",
+                CodigoUe = "UE123",
                 Modalidade = Modalidade.Fundamental
             };
 
@@ -2013,7 +2013,7 @@ namespace SME.SGP.Api.Teste.Controllers
 
             var mockUseCase = new Mock<IConsultasNotasUseCase>();
             mockUseCase
-                .Setup(x => x.ObterNotasVisaoUe(filtro.CodigoDre, filtro.AnoLetivo, filtro.Bimestre, filtro.Modalidade))
+                .Setup(x => x.ObterNotasVisaoUe(filtro.CodigoUe, filtro.AnoLetivo, filtro.Bimestre, filtro.Modalidade))
                 .ReturnsAsync(retornoEsperado);
 
             var result = await _controller.ObterNotasVisaoUe(filtro, mockUseCase.Object);
@@ -2037,7 +2037,7 @@ namespace SME.SGP.Api.Teste.Controllers
             {
                 AnoLetivo = 2024,
                 Bimestre = 1,
-                CodigoDre = "DRE456",
+                CodigoUe = "UE456",
                 Modalidade = Modalidade.Fundamental
             };
 
@@ -2122,7 +2122,7 @@ namespace SME.SGP.Api.Teste.Controllers
 
             var mockUseCase = new Mock<IConsultasNotasUseCase>();
             mockUseCase
-                .Setup(x => x.ObterNotasVisaoUe(filtro.CodigoDre, filtro.AnoLetivo, filtro.Bimestre, filtro.Modalidade))
+                .Setup(x => x.ObterNotasVisaoUe(filtro.CodigoUe, filtro.AnoLetivo, filtro.Bimestre, filtro.Modalidade))
                 .ReturnsAsync(retornoEsperado);
 
             var result = await _controller.ObterNotasVisaoUe(filtro, mockUseCase.Object);
@@ -2141,7 +2141,7 @@ namespace SME.SGP.Api.Teste.Controllers
             Assert.Equal("Ensino Médio", segundoItem.Modalidades.First().Nome);
 
             mockUseCase.Verify(x => x.ObterNotasVisaoUe(
-                It.Is<string>(d => d == "DRE456"),
+                It.Is<string>(d => d == "UE456"),
                 It.Is<int>(a => a == 2024),
                 It.Is<int>(b => b == 1),
                 It.Is<Modalidade>(m => m == Modalidade.Fundamental)
@@ -2155,7 +2155,7 @@ namespace SME.SGP.Api.Teste.Controllers
             {
                 AnoLetivo = 2023,
                 Bimestre = 4,
-                CodigoDre = "DRE999",
+                CodigoUe = "UE999",
                 Modalidade = Modalidade.EJA
             };
 
@@ -2168,7 +2168,7 @@ namespace SME.SGP.Api.Teste.Controllers
 
             var mockUseCase = new Mock<IConsultasNotasUseCase>();
             mockUseCase
-                .Setup(x => x.ObterNotasVisaoUe(filtro.CodigoDre, filtro.AnoLetivo, filtro.Bimestre, filtro.Modalidade))
+                .Setup(x => x.ObterNotasVisaoUe(filtro.CodigoUe, filtro.AnoLetivo, filtro.Bimestre, filtro.Modalidade))
                 .ReturnsAsync(retornoEsperado);
 
             var result = await _controller.ObterNotasVisaoUe(filtro, mockUseCase.Object);
@@ -2181,7 +2181,7 @@ namespace SME.SGP.Api.Teste.Controllers
             Assert.Empty(retorno.Items);
 
             mockUseCase.Verify(x => x.ObterNotasVisaoUe(
-                It.Is<string>(d => d == "DRE999"),
+                It.Is<string>(d => d == "UE999"),
                 It.Is<int>(a => a == 2023),
                 It.Is<int>(b => b == 4),
                 It.Is<Modalidade>(m => m == Modalidade.EJA)
@@ -2195,7 +2195,7 @@ namespace SME.SGP.Api.Teste.Controllers
             {
                 AnoLetivo = 2024,
                 Bimestre = 3,
-                CodigoDre = null,
+                CodigoUe = null,
                 Modalidade = Modalidade.Medio
             };
 
@@ -2248,7 +2248,7 @@ namespace SME.SGP.Api.Teste.Controllers
 
             var mockUseCase = new Mock<IConsultasNotasUseCase>();
             mockUseCase
-                .Setup(x => x.ObterNotasVisaoUe(filtro.CodigoDre, filtro.AnoLetivo, filtro.Bimestre, filtro.Modalidade))
+                .Setup(x => x.ObterNotasVisaoUe(filtro.CodigoUe, filtro.AnoLetivo, filtro.Bimestre, filtro.Modalidade))
                 .ReturnsAsync(retornoEsperado);
 
             var result = await _controller.ObterNotasVisaoUe(filtro, mockUseCase.Object);
@@ -2282,7 +2282,7 @@ namespace SME.SGP.Api.Teste.Controllers
             {
                 AnoLetivo = 2024,
                 Bimestre = 2,
-                CodigoDre = "DRE123",
+                CodigoUe = "UE123",
                 Modalidade = Modalidade.Fundamental
             };
 
@@ -2323,7 +2323,7 @@ namespace SME.SGP.Api.Teste.Controllers
 
             var mockUseCase = new Mock<IConsultasNotasUseCase>();
             mockUseCase
-                .Setup(x => x.ObterNotasVisaoUe(filtro.CodigoDre, filtro.AnoLetivo, filtro.Bimestre, filtro.Modalidade))
+                .Setup(x => x.ObterNotasVisaoUe(filtro.CodigoUe, filtro.AnoLetivo, filtro.Bimestre, filtro.Modalidade))
                 .ReturnsAsync(retornoEsperado);
 
             var result = await _controller.ObterNotasVisaoUe(filtro, mockUseCase.Object);
@@ -2336,7 +2336,7 @@ namespace SME.SGP.Api.Teste.Controllers
             Assert.Single(retorno.Items); 
 
             mockUseCase.Verify(x => x.ObterNotasVisaoUe(
-                It.Is<string>(d => d == filtro.CodigoDre),
+                It.Is<string>(d => d == filtro.CodigoUe),
                 It.Is<int>(a => a == filtro.AnoLetivo),
                 It.Is<int>(b => b == filtro.Bimestre),
                 It.Is<Modalidade>(m => m == filtro.Modalidade)
