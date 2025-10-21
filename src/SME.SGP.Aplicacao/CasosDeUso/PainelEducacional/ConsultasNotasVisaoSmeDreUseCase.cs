@@ -1,12 +1,9 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNotas.VisaoSmeDre;
-using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNotas.VisaoUe;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoSmeDre;
-using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoUe;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -15,11 +12,11 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
 {
-    public class ConsultasNotasUseCase : ConsultasBase, IConsultasNotasUseCase
+    public class ConsultasNotasVisaoSmeDreUseCase : ConsultasBase, IConsultasNotasVisaoSmeDreUseCase
     {
         private readonly IMediator mediator;
 
-        public ConsultasNotasUseCase(IContextoAplicacao contextoAplicacao, IMediator mediator) : base(contextoAplicacao)
+        public ConsultasNotasVisaoSmeDreUseCase(IContextoAplicacao contextoAplicacao, IMediator mediator) : base(contextoAplicacao)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
@@ -31,22 +28,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             if (dadosConsolidacao == null || !dadosConsolidacao.Any())
                 return Enumerable.Empty<PainelEducacionalNotasVisaoSmeDreDto>();
 
-            var dadosAgrupados = !string.IsNullOrEmpty(codigoDre)
-                ? dadosConsolidacao
-                    .GroupBy(d => new { d.CodigoDre, d.AnoLetivo, d.Modalidade, d.AnoTurma, d.Bimestre })
-                    .Select(grupo => new
-                    {
-                        Modalidade = grupo.Key.Modalidade.Name(),
-                        AnoTurma = grupo.Key.AnoTurma,
-                        QuantidadeAbaixoMediaPortugues = grupo.Sum(x => x.QuantidadeAbaixoMediaPortugues),
-                        QuantidadeAbaixoMediaMatematica = grupo.Sum(x => x.QuantidadeAbaixoMediaMatematica),
-                        QuantidadeAbaixoMediaCiencias = grupo.Sum(x => x.QuantidadeAbaixoMediaCiencias),
-                        QuantidadeAcimaMediaPortugues = grupo.Sum(x => x.QuantidadeAcimaMediaPortugues),
-                        QuantidadeAcimaMediaMatematica = grupo.Sum(x => x.QuantidadeAcimaMediaMatematica),
-                        QuantidadeAcimaMediaCiencias = grupo.Sum(x => x.QuantidadeAcimaMediaCiencias)
-                    })
-                    .ToList()
-                : dadosConsolidacao
+            var dadosAgrupados = dadosConsolidacao
                     .GroupBy(d => new { d.AnoLetivo, d.Modalidade, d.AnoTurma, d.Bimestre })
                     .Select(grupo => new
                     {
@@ -104,11 +86,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                     Modalidades = modalidades
                 }
             };
-        }
-
-        public async Task<PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>> ObterNotasVisaoUe(string codigoUe, int anoLetivo, int bimestre, Modalidade modalidade)
-        {
-            return await mediator.Send(new ObterNotaVisaoUeQuery(this.Paginacao, codigoUe, anoLetivo, bimestre, modalidade));
-        }
+        }       
     }
 }
