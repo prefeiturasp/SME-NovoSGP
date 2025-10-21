@@ -5,6 +5,7 @@ using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterProficienciaIdep;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
+using SME.SGP.Infra.Enumerados;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,22 +49,14 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                 .GroupBy(d => d.AnoLetivo)
                 .Select(group =>
                 {
-                    var anosIniciais = group.Where(item => item.EtapaEnsino == 1);
-                    var anosFinais = group.Where(item => item.EtapaEnsino == 2);
-
-                    var mediaProficienciaIniciais = anosIniciais.Any()
-                        ? anosIniciais.Average(item => item.ProficienciaMedia)
-                        : 0;
-
-                    var mediaProficienciaFinais = anosFinais.Any()
-                        ? anosFinais.Average(item => item.ProficienciaMedia)
-                        : 0;
+                    var anosIniciais = group.Where(item => item.EtapaEnsino == (int)SerieAnoIdepEnum.AnosIniciais);
+                    var anosFinais = group.Where(item => item.EtapaEnsino == (int)SerieAnoIdepEnum.AnosFinais);
 
                     return new PainelEducacionalProficienciaIdepDto
                     {
                         AnoLetivo = group.Key,
-                        PercentualInicial = Math.Round(mediaProficienciaIniciais, 2),
-                        PercentualFinal = Math.Round(mediaProficienciaFinais, 2),
+                        PercentualInicial = ObterPercentualIdep(ideps, group.Key, (int)SerieAnoIdepEnum.AnosIniciais),
+                        PercentualFinal = ObterPercentualIdep(ideps, group.Key, (int)SerieAnoIdepEnum.AnosFinais),
                         Proficiencia = new ProficienciaIdebResumidoDto
                         {
                             AnosIniciais = anosIniciais
@@ -90,6 +83,12 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                 .ToList();
 
             return resultadoFinal;
+        }
+
+        private static decimal ObterPercentualIdep(IEnumerable<Idep> ideps, int anoLetivo, int serieAno)
+        {
+            var idep = ideps.FirstOrDefault(i => i.AnoLetivo == anoLetivo && i.SerieAno == serieAno)?.Nota;
+            return idep.HasValue ? Math.Round(idep.Value, 2) : 0;
         }
     }
 }
