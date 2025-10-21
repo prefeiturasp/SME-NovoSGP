@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using Dapper;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoSmeDre;
@@ -16,92 +17,107 @@ namespace SME.SGP.Dados.Repositorios
         {
             this.database = database;
         }
-        public async Task<IEnumerable<PainelEducacionalNotasVisaoUeRetornoSelectDto>> ObterNotasVisaoUe(string codigoUe, int anoLetivo, int bimestre, Modalidade modalidade)
+
+        public async Task<PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>> ObterNotasVisaoUe(Paginacao paginacao, string codigoUe, int anoLetivo, int bimestre, Modalidade modalidade)
         {
-            try
+            string querySelect = @"select ano_letivo as AnoLetivo,
+                                             codigo_dre as CodigoDre,
+                                             codigo_ue as CodigoUe,
+                                             bimestre,
+                                             modalidade,
+                                             serie_turma as AnoTurma,
+                                             quantidade_abaixo_media_portugues as QuantidadeAbaixoMediaPortugues,
+                                             quantidade_abaixo_media_matematica as QuantidadeAbaixoMediaMatematica,
+                                             quantidade_abaixo_media_ciencias as QuantidadeAbaixoMediaCiencias,
+                                             quantidade_acima_media_portugues as QuantidadeAcimaMediaPortugues,
+                                             quantidade_acima_media_matematica as QuantidadeAcimaMediaMatematica,
+                                             quantidade_acima_media_ciencias as QuantidadeAcimaMediaCiencias
+                                     from painel_educacional_consolidacao_nota_ue
+                                     where 1 = 1 ";
+
+            string queryCount = @"select count(1)
+                                     from painel_educacional_consolidacao_nota_ue
+                                     where 1 = 1 ";
+
+            string whereClause = "";
+
+            if (!string.IsNullOrWhiteSpace(codigoUe))
+                whereClause += " AND codigo_ue = @codigoUe ";
+
+            if (anoLetivo > 0)
+                whereClause += " AND ano_letivo = @anoLetivo ";
+
+            if (bimestre > 0)
+                whereClause += " AND bimestre = @bimestre ";
+
+            if (modalidade > 0)
+                whereClause += " AND modalidade = @modalidade ";
+
+            querySelect += whereClause;
+            queryCount += whereClause;
+
+            if (paginacao.QuantidadeRegistros > 0)
+                querySelect += $" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ";
+
+            string queryCompleta = querySelect + "; " + queryCount;
+
+            var parametros = new
             {
-                string query = @"select ano_letivo as AnoLetivo,
-                                     codigo_dre as CodigoDre,
-                                     codigo_ue as CodigoUe,
-                                     bimestre,
-                                     modalidade_ensino as Modalidade,
-                                     serie_turma as AnoTurma,
-                                     quantidade_abaixo_media_portugues as QuantidadeAbaixoMediaPortugues,
-                                     quantidade_abaixo_media_matematica as QuantidadeAbaixoMediaMatematica,
-                                     quantidade_abaixo_media_ciencias as QuantidadeAbaixoMediaCiencias,
-                                     quantidade_acima_media_portugues as QuantidadeAcimaMediaPortugues,
-                                     quantidade_acima_media_matematica as QuantidadeAcimaMediaMatematica,
-                                     quantidade_acima_media_ciencias as QuantidadeAcimaMediaCiencias
-                             from painel_educacional_consolidacao_nota_ue
-                             where 1 = 1 ";
+                codigoUe,
+                anoLetivo,
+                bimestre,
+                modalidade
+            };
 
-                if (!string.IsNullOrWhiteSpace(codigoUe))
-                    query += " AND codigo_ue = @codigoUe ";
+            var retorno = new PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>();
 
-                if (anoLetivo > 0)
-                    query += " AND ano_letivo = @anoLetivo ";
-
-                if (bimestre > 0)
-                    query += " AND bimestre = @bimestre ";
-
-                if (modalidade > 0)
-                    query += " AND modalidade_ensino = @modalidade ";
-
-                return await database.Conexao.QueryAsync<PainelEducacionalNotasVisaoUeRetornoSelectDto>(query, new
-                {
-                    codigoUe,
-                    anoLetivo,
-                    bimestre,
-                    modalidade
-                });
-            }
-            catch (Exception ex)
+            using (var multi = await database.Conexao.QueryMultipleAsync(queryCompleta, parametros))
             {
-                return null;
+                retorno.Items = multi.Read<PainelEducacionalNotasVisaoUeDto>();
+                retorno.TotalRegistros = multi.ReadFirst<int>();
             }
+
+            retorno.TotalPaginas = paginacao.QuantidadeRegistros > 0
+            ? (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros)
+            : 1;
+
+            return retorno;
         }
 
         public async Task<IEnumerable<PainelEducacionalNotasVisaoSmeDreRetornoSelectDto>> ObterNotasVisaoSmeDre(string codigoDre, int anoLetivo, int bimestre, string anoTurma)
         {
-            try
+            string query = @"select ano_letivo,
+                                         bimestre,
+                                         ano_turma,
+                                         modalidade,
+                                         quantidade_abaixo_media_portugues as QuantidadeAbaixoMediaPortugues,
+                                         quantidade_abaixo_media_matematica as QuantidadeAbaixoMediaMatematica,
+                                         quantidade_abaixo_media_ciencias as QuantidadeAbaixoMediaCiencias,
+                                         quantidade_acima_media_portugues as QuantidadeAcimaMediaPortugues,
+                                         quantidade_acima_media_matematica as QuantidadeAcimaMediaMatematica,
+                                         quantidade_acima_media_ciencias as QuantidadeAcimaMediaCiencias
+                                 from painel_educacional_consolidacao_nota
+                                 where 1 = 1 ";
+
+            if (!string.IsNullOrWhiteSpace(codigoDre))
+                query += " AND codigo_dre = @codigoDre ";
+
+            if (anoLetivo > 0)
+                query += " AND ano_letivo = @anoLetivo ";
+
+            if (bimestre > 0)
+                query += " AND bimestre = @bimestre ";
+
+            if (!string.IsNullOrEmpty(anoTurma))
+                query += " AND ano_turma = @anoTurma ";
+
+            return await database.Conexao.QueryAsync<PainelEducacionalNotasVisaoSmeDreRetornoSelectDto>(query, new
             {
-                string query = @"select ano_letivo,
-                                     bimestre,
-                                     ano_turma,
-                                     modalidade,
-                                     quantidade_abaixo_media_portugues as QuantidadeAbaixoMediaPortugues,
-                                     quantidade_abaixo_media_matematica as QuantidadeAbaixoMediaMatematica,
-                                     quantidade_abaixo_media_ciencias as QuantidadeAbaixoMediaCiencias,
-                                     quantidade_acima_media_portugues as QuantidadeAcimaMediaPortugues,
-                                     quantidade_acima_media_matematica as QuantidadeAcimaMediaMatematica,
-                                     quantidade_acima_media_ciencias as QuantidadeAcimaMediaCiencias
-                             from painel_educacional_consolidacao_nota
-                             where 1 = 1 ";
-
-                if (!string.IsNullOrWhiteSpace(codigoDre))
-                    query += " AND codigo_dre = @codigoDre ";
-
-                if (anoLetivo > 0)
-                    query += " AND ano_letivo = @anoLetivo ";
-
-                if (bimestre > 0)
-                    query += " AND bimestre = @bimestre ";
-
-                if (!string.IsNullOrEmpty(anoTurma))
-                    query += " AND ano_turma = @anoTurma ";
-
-                return await database.Conexao.QueryAsync<PainelEducacionalNotasVisaoSmeDreRetornoSelectDto>(query, new
-                {
-                    codigoDre,
-                    anoLetivo,
-                    bimestre,
-                    anoTurma
-                });
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
+                codigoDre,
+                anoLetivo,
+                bimestre,
+                anoTurma
+            });
         }
     }
 }
