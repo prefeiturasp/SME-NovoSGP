@@ -73,16 +73,16 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                 })
                .GroupBy(item => new
                {
-                   DreNome = item.Turma.Ue.Dre.Nome,
-                   UeNome = item.Turma.Ue.Nome,
-                   Ano = anoLetivo,
+                   DreId = item.Turma.Ue.Dre.CodigoDre,
+                   UeId = item.Turma.Ue.CodigoUe,
+                   AnoLetivo = anoLetivo,
                    ModalidadeTurma = (Modalidade)item.Turma.ModalidadeCodigo
                })
                .Select(g => new PainelEducacionalReclassificacao
                {
-                   Dre = g.Key.DreNome,
-                   Ue = g.Key.UeNome,
-                   Ano = g.Key.Ano,
+                   CodigoDre = g.Key.DreId,
+                   CodigoUe = g.Key.UeId,
+                   AnoLetivo = g.Key.AnoLetivo,
                    ModalidadeTurma = g.Key.ModalidadeTurma,
                    QuantidadeAlunosReclassificados = g.Sum(x => x.Aluno.QuantidadeAlunos)
                })
@@ -97,16 +97,16 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                 return;
 
             var registroAnual = registrosReclassificacao
-                    .GroupBy(r => new { r.Dre, r.Ue, r.Ano, r.ModalidadeTurma })
+                    .GroupBy(r => new { r.CodigoDre, r.CodigoUe, r.AnoLetivo, r.ModalidadeTurma })
                     .Select(g => new PainelEducacionalReclassificacao
                     {
-                        Dre = g.Key.Dre,
-                        Ue = g.Key.Ue,
-                        Ano = g.Key.Ano,
+                        CodigoDre = g.Key.CodigoDre,
+                        CodigoUe = g.Key.CodigoUe,
+                        AnoLetivo = g.Key.AnoLetivo,
                         ModalidadeTurma = g.Key.ModalidadeTurma,
                         QuantidadeAlunosReclassificados = g.Sum(x => x.QuantidadeAlunosReclassificados)
                     })
-                    .OrderByDescending(x => x.Ano).ToList();
+                    .OrderByDescending(x => x.AnoLetivo).ToList();
 
             await mediator.Send(new PainelEducacionalExcluirReclassificacaoAnualCommand(anoUtilizado));
             await mediator.Send(new PainelEducacionalSalvarReclassificacaoAnualCommand(registroAnual));
