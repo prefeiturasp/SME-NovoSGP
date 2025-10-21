@@ -814,7 +814,7 @@ namespace SME.SGP.Api.Teste.Controllers
                 }
             };
 
-            var mockUseCase = new Mock<IConsultasNotasUseCase>();
+            var mockUseCase = new Mock<IConsultasNotasVisaoSmeDreUseCase>();
             mockUseCase
                 .Setup(x => x.ObterNotasVisaoSmeDre(filtro.CodigoDre, filtro.AnoLetivo, filtro.Bimestre, filtro.SerieAno))
                 .ReturnsAsync(retornoEsperado);
@@ -855,7 +855,7 @@ namespace SME.SGP.Api.Teste.Controllers
 
             var retornoEsperado = new List<PainelEducacionalNotasVisaoSmeDreDto>();
 
-            var mockUseCase = new Mock<IConsultasNotasUseCase>();
+            var mockUseCase = new Mock<IConsultasNotasVisaoSmeDreUseCase>();
             mockUseCase
                 .Setup(x => x.ObterNotasVisaoSmeDre(filtro.CodigoDre, filtro.AnoLetivo, filtro.Bimestre, filtro.SerieAno))
                 .ReturnsAsync(retornoEsperado);
@@ -916,7 +916,7 @@ namespace SME.SGP.Api.Teste.Controllers
                 }
             };
 
-            var mockUseCase = new Mock<IConsultasNotasUseCase>();
+            var mockUseCase = new Mock<IConsultasNotasVisaoSmeDreUseCase>();
             mockUseCase
                 .Setup(x => x.ObterNotasVisaoSmeDre(filtro.CodigoDre, filtro.AnoLetivo, filtro.Bimestre, filtro.SerieAno))
                 .ReturnsAsync(retornoEsperado);
@@ -993,7 +993,7 @@ namespace SME.SGP.Api.Teste.Controllers
                 TotalPaginas = 1
             };
 
-            var mockUseCase = new Mock<IConsultasNotasUseCase>();
+            var mockUseCase = new Mock<IConsultasNotasVisaoUeUseCase>();
             mockUseCase
                 .Setup(x => x.ObterNotasVisaoUe(filtro.CodigoUe, filtro.AnoLetivo, filtro.Bimestre, filtro.Modalidade))
                 .ReturnsAsync(retornoEsperado);
@@ -1009,7 +1009,14 @@ namespace SME.SGP.Api.Teste.Controllers
 
             var item = retorno.Items.First();
             Assert.NotNull(item.Modalidades);
-            Assert.Single(item.Modalidades); 
+            Assert.Single(item.Modalidades);
+
+            mockUseCase.Verify(x => x.ObterNotasVisaoUe(
+                It.Is<string>(c => c == filtro.CodigoUe),
+                It.Is<int>(a => a == filtro.AnoLetivo),
+                It.Is<int>(b => b == filtro.Bimestre),
+                It.Is<Modalidade>(m => m == filtro.Modalidade)
+            ), Times.Once);
         }
 
         [Fact]
@@ -1102,7 +1109,7 @@ namespace SME.SGP.Api.Teste.Controllers
                 TotalPaginas = 1
             };
 
-            var mockUseCase = new Mock<IConsultasNotasUseCase>();
+            var mockUseCase = new Mock<IConsultasNotasVisaoUeUseCase>();
             mockUseCase
                 .Setup(x => x.ObterNotasVisaoUe(filtro.CodigoUe, filtro.AnoLetivo, filtro.Bimestre, filtro.Modalidade))
                 .ReturnsAsync(retornoEsperado);
@@ -1123,7 +1130,7 @@ namespace SME.SGP.Api.Teste.Controllers
             Assert.Equal("Ensino Médio", segundoItem.Modalidades.First().Nome);
 
             mockUseCase.Verify(x => x.ObterNotasVisaoUe(
-                It.Is<string>(d => d == "UE456"),
+                It.Is<string>(c => c == "UE456"),
                 It.Is<int>(a => a == 2024),
                 It.Is<int>(b => b == 1),
                 It.Is<Modalidade>(m => m == Modalidade.Fundamental)
@@ -1148,7 +1155,7 @@ namespace SME.SGP.Api.Teste.Controllers
                 TotalPaginas = 0
             };
 
-            var mockUseCase = new Mock<IConsultasNotasUseCase>();
+            var mockUseCase = new Mock<IConsultasNotasVisaoUeUseCase>();
             mockUseCase
                 .Setup(x => x.ObterNotasVisaoUe(filtro.CodigoUe, filtro.AnoLetivo, filtro.Bimestre, filtro.Modalidade))
                 .ReturnsAsync(retornoEsperado);
@@ -1163,7 +1170,7 @@ namespace SME.SGP.Api.Teste.Controllers
             Assert.Empty(retorno.Items);
 
             mockUseCase.Verify(x => x.ObterNotasVisaoUe(
-                It.Is<string>(d => d == "UE999"),
+                It.Is<string>(c => c == "UE999"),
                 It.Is<int>(a => a == 2023),
                 It.Is<int>(b => b == 4),
                 It.Is<Modalidade>(m => m == Modalidade.EJA)
@@ -1171,7 +1178,7 @@ namespace SME.SGP.Api.Teste.Controllers
         }
 
         [Fact]
-        public async Task Obter_Notas_Visao_Ue_Com_Codigo_Dre_Nulo_Deve_Retornar_Ok_Com_Dados()
+        public async Task Obter_Notas_Visao_Ue_Com_Codigo_Ue_Nulo_Deve_Retornar_Ok_Com_Dados()
         {
             var filtro = new FiltroPainelEducacionalNotasVisaoUe
             {
@@ -1228,7 +1235,7 @@ namespace SME.SGP.Api.Teste.Controllers
                 TotalPaginas = 1
             };
 
-            var mockUseCase = new Mock<IConsultasNotasUseCase>();
+            var mockUseCase = new Mock<IConsultasNotasVisaoUeUseCase>();
             mockUseCase
                 .Setup(x => x.ObterNotasVisaoUe(filtro.CodigoUe, filtro.AnoLetivo, filtro.Bimestre, filtro.Modalidade))
                 .ReturnsAsync(retornoEsperado);
@@ -1250,7 +1257,7 @@ namespace SME.SGP.Api.Teste.Controllers
             Assert.Equal("3ª Série", turma.Nome);
 
             mockUseCase.Verify(x => x.ObterNotasVisaoUe(
-                It.Is<string>(d => d == null),
+                It.Is<string>(c => c == null),
                 It.Is<int>(a => a == 2024),
                 It.Is<int>(b => b == 3),
                 It.Is<Modalidade>(m => m == Modalidade.Medio)
@@ -1303,7 +1310,7 @@ namespace SME.SGP.Api.Teste.Controllers
                 TotalPaginas = 5    
             };
 
-            var mockUseCase = new Mock<IConsultasNotasUseCase>();
+            var mockUseCase = new Mock<IConsultasNotasVisaoUeUseCase>();
             mockUseCase
                 .Setup(x => x.ObterNotasVisaoUe(filtro.CodigoUe, filtro.AnoLetivo, filtro.Bimestre, filtro.Modalidade))
                 .ReturnsAsync(retornoEsperado);
@@ -1318,7 +1325,7 @@ namespace SME.SGP.Api.Teste.Controllers
             Assert.Single(retorno.Items); 
 
             mockUseCase.Verify(x => x.ObterNotasVisaoUe(
-                It.Is<string>(d => d == filtro.CodigoUe),
+                It.Is<string>(c => c == filtro.CodigoUe),
                 It.Is<int>(a => a == filtro.AnoLetivo),
                 It.Is<int>(b => b == filtro.Bimestre),
                 It.Is<Modalidade>(m => m == filtro.Modalidade)

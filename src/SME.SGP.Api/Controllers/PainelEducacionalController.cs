@@ -152,14 +152,14 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterNotasVisaoSmeDre([FromQuery] FiltroPainelEducacionalNotasVisaoSmeDre filtro, [FromServices] IConsultasNotasUseCase consultasNotasUseCase)
+        public async Task<IActionResult> ObterNotasVisaoSmeDre([FromQuery] FiltroPainelEducacionalNotasVisaoSmeDre filtro, [FromServices] IConsultasNotasVisaoSmeDreUseCase consultasNotasUseCase)
      => Ok(await consultasNotasUseCase.ObterNotasVisaoSmeDre(filtro.CodigoDre, filtro.AnoLetivo, filtro.Bimestre, filtro.SerieAno));
 
         [HttpGet("notas-ue")]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterNotasVisaoUe([FromQuery] FiltroPainelEducacionalNotasVisaoUe filtro, [FromServices] IConsultasNotasUseCase consultasNotasUseCase)
+        public async Task<IActionResult> ObterNotasVisaoUe([FromQuery] FiltroPainelEducacionalNotasVisaoUe filtro, [FromServices] IConsultasNotasVisaoUeUseCase consultasNotasUseCase)
      => Ok(await consultasNotasUseCase.ObterNotasVisaoUe(filtro.CodigoUe, filtro.AnoLetivo, filtro.Bimestre, filtro.Modalidade));
 
     }
