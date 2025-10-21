@@ -28,19 +28,19 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             var codigoDre = "108300";
             var codigoUe = "019402";
             var anoLetivo = 2023;
-            var anoTurma = 9;
+            var anoTurma = "9";
 
             var respostaEsperada = new List<PainelEducacionalReclassificacaoDto>
             {
                 new PainelEducacionalReclassificacaoDto
                 {
-                    Modalidade = "Ensino Fundamental",
-                    SerieAno = new List<SerieAnoReclassificacaoDto>
+                    Modalidade = new List<ModalidadeReclassificacaoDto>
                     {
-                        new SerieAnoReclassificacaoDto
+                        new ModalidadeReclassificacaoDto
                         {
-                            AnoTurma = 9,
-                            QuantidadeAlunos = 15
+                            Nome = "Ensino Fundamental",
+                            AnoTurma = "9",
+                            QuantidadeAlunos = 10
                         }
                     }
                 }

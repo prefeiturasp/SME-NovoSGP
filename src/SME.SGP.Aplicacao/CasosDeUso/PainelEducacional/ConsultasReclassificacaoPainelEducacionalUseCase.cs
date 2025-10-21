@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             this.mediator = mediator;
         }
 
-        public async Task<IEnumerable<PainelEducacionalReclassificacaoDto>> ObterReclassificacao(string codigoDre, string codigoUe, int anoLetivo, int anoTurma)
+        public async Task<IEnumerable<PainelEducacionalReclassificacaoDto>> ObterReclassificacao(string codigoDre, string codigoUe, int anoLetivo, string anoTurma)
         {
             return await mediator.Send(new ObterReclassificacaoQuery(codigoDre, codigoUe, anoLetivo, anoTurma));
         }
