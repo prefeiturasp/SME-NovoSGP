@@ -319,27 +319,21 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<Turma>> ObterTurmasPorAnoLetivo(int anoLetivo)
         {
             var query = @"select 
-                    t.turma_id,
-                    t.modalidade_codigo,
-                    t.ano,
-                    t.ue_id,
-                    u.id as UeId,
-                    u.ue_id,
-                    u.nome as UeNome,
-                    d.id as DreId,
-                    d.dre_id,
-                    d.nome as DreNome                     
-                from turma t 
-                inner join ue u on t.ue_id = u.id 
-                inner join dre d on d.id = u.dre_id
-                where t.ano_letivo = @anoLetivo";
+                            t.turma_id,
+                            t.modalidade_codigo,
+                            u.nome,
+                            d.nome
+                        from turma t 
+                        inner join ue u on t.ue_id = u.id 
+                        inner join dre d on d.id = u.dre_id
+                        where t.ano_letivo = @anoLetivo";
 
             return await contexto.Conexao.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
             {
                 ue.AdicionarDre(dre);
                 turma.AdicionarUe(ue);
                 return turma;
-            }, new { anoLetivo }, splitOn: "UeId,DreId");
+            }, new { anoLetivo }, splitOn: "nome");
         }
 
         public async Task<IEnumerable<Turma>> ObterTurmasPorAnoLetivoModalidade(int anoLetivo, Modalidade[] modalidades)

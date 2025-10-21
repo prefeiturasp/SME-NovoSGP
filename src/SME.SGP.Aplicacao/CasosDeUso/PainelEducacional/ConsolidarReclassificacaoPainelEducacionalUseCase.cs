@@ -45,6 +45,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
         private async Task<IEnumerable<PainelEducacionalReclassificacao>> ObterDadosReclassificacaoPorAno(int anoLetivo)
         {
             var alunosReclassificados = new List<AlunosSituacaoTurmas>();
+            var turmasPainelEducacional = await repositorioTurmaConsulta.ObterTurmasPorAnoLetivo(anoLetivo);
 
             var turmasPainelEducacional = (await repositorioTurmaConsulta.ObterTurmasPorAnoLetivo(anoLetivo))
                                           .Where(t => (t.ModalidadeCodigo == Modalidade.Fundamental || t.ModalidadeCodigo == Modalidade.Medio || t.ModalidadeCodigo == Modalidade.EJA)
@@ -55,7 +56,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                 return new List<PainelEducacionalReclassificacao>();
 
             var todasDres = await mediator.Send(new ObterTodasDresQuery());
-
+            
             if (!todasDres.Any())
                 return new List<PainelEducacionalReclassificacao>();
 
@@ -77,18 +78,16 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                 })
                .GroupBy(item => new
                {
-                   DreId = item.Turma.Ue.Dre.CodigoDre,
-                   UeId = item.Turma.Ue.CodigoUe,
-                   AnoLetivo = anoLetivo,
-                   AnoTurma = item.Turma.Ano,
+                   DreNome = item.Turma.Ue.Dre.Nome,
+                   UeNome = item.Turma.Ue.Nome,
+                   Ano = anoLetivo,
                    ModalidadeTurma = (Modalidade)item.Turma.ModalidadeCodigo
                })
                .Select(g => new PainelEducacionalReclassificacao
                {
-                   CodigoDre = g.Key.DreId,
-                   CodigoUe = g.Key.UeId,
-                   AnoLetivo = g.Key.AnoLetivo,
-                   AnoTurma = Convert.ToInt16(g.Key.AnoTurma),
+                   Dre = g.Key.DreNome,
+                   Ue = g.Key.UeNome,
+                   Ano = g.Key.Ano,
                    ModalidadeTurma = g.Key.ModalidadeTurma,
                    QuantidadeAlunosReclassificados = g.Sum(x => x.Aluno.QuantidadeAlunos)
                })
@@ -103,17 +102,17 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                 return;
 
             var registroAnual = registrosReclassificacao
-                    .GroupBy(r => new { r.CodigoDre, r.CodigoUe, r.AnoLetivo, r.AnoTurma, r.ModalidadeTurma })
+                    .GroupBy(r => new { r.Dre, r.Ue, r.Ano, r.ModalidadeTurma })
                     .Select(g => new PainelEducacionalReclassificacao
                     {
-                        CodigoDre = g.Key.CodigoDre,
-                        CodigoUe = g.Key.CodigoUe,
-                        AnoLetivo = g.Key.AnoLetivo,
+                        Dre = g.Key.Dre,
+                        Ue = g.Key.Ue,
+                        Ano = g.Key.Ano,
                         ModalidadeTurma = g.Key.ModalidadeTurma,
                         AnoTurma = g.Key.AnoTurma,
                         QuantidadeAlunosReclassificados = g.Sum(x => x.QuantidadeAlunosReclassificados)
                     })
-                    .OrderByDescending(x => x.AnoLetivo).ToList();
+                    .OrderByDescending(x => x.Ano).ToList();
 
             await mediator.Send(new PainelEducacionalExcluirReclassificacaoAnualCommand(anoUtilizado));
             await mediator.Send(new PainelEducacionalSalvarReclassificacaoAnualCommand(registroAnual));
