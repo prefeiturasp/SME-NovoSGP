@@ -103,7 +103,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(", t.turma_id as TurmaCodigo ");
                 sql.AppendLine(", t.nome as TurmaNome ");
                 sql.AppendLine(", t.modalidade_codigo as TurmaModalidade ");
-                sql.AppendLine(", t.ano_letivo as AnoTurma ");
+                sql.AppendLine(", t.ano_letivo as TurmaAno ");
                 sql.AppendLine(", CASE ");
                 sql.AppendLine("    WHEN ea.id = 0 THEN 0 ");
                 sql.AppendLine("    WHEN ea.id > 0  THEN 1 ");

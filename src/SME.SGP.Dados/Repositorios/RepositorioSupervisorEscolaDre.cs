@@ -261,7 +261,7 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("                 vact.ue_id UeId,");
             sqlQuery.AppendLine("                 vact.turma_semestre Semestre,");
             sqlQuery.AppendLine("                 vact.turma_codigo CodigoTurma,");
-            sqlQuery.AppendLine("                vact.turma_ano AnoTurma,");
+            sqlQuery.AppendLine("                vact.turma_ano TurmaAno,");
             sqlQuery.AppendLine("                vact.turma_ano_letivo TurmaAnoLetivo,");
             sqlQuery.AppendLine("                vact.turma_nome TurmaNome,");
             sqlQuery.AppendLine("                vact.qt_duracao_aula QuantidadeDuracaoAula,");
