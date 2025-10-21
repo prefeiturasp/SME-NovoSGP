@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Aplicacao.CasosDeUso.PainelEducacional;
+using SME.SGP.Aplicacao.CasosDeUso.PainelEducacional.Frequencia;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional.Frequencia;
 
 namespace SME.SGP.IoC.Extensions.RegistrarCasoDeUsoRabbitSgp
 {
@@ -21,6 +23,7 @@ namespace SME.SGP.IoC.Extensions.RegistrarCasoDeUsoRabbitSgp
                            ConsolidarInformacoesPapPainelEducacionalUseCase>()
                .AddScoped<IConsolidarFluenciaLeitoraPainelEducacionalUseCase,
                            ConsolidarFluenciaLeitoraPainelEducacionalUseCase>();
+            services.AddScoped<IConsolidarFrequenciaDiariaPainelEducacionalUseCase, ConsolidarFrequenciaDiariaPainelEducacionalUseCase>();
         }
     }
 }
