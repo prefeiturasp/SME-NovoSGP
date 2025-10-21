@@ -78,7 +78,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(", t.turma_id as TurmaCodigo ");
                 sql.AppendLine(", t.nome as TurmaNome ");
                 sql.AppendLine(", t.modalidade_codigo as TurmaModalidade ");
-                sql.AppendLine(", t.ano_letivo as AnoTurma ");
+                sql.AppendLine(", t.ano_letivo as TurmaAno ");
                 sql.AppendLine(", ea.situacao ");
                 sql.AppendLine(", u.nome as Responsavel ");
                 sql.AppendLine(", ue.nome UeNome ");
@@ -222,7 +222,7 @@ namespace SME.SGP.Dados.Repositorios
                             , t.turma_id as TurmaCodigo 
                             , t.nome as TurmaNome 
                             , t.modalidade_codigo as TurmaModalidade 
-                            , t.ano_letivo as AnoTurma 
+                            , t.ano_letivo as TurmaAno 
                             , ea.situacao 
                          from encaminhamento_aee ea 
                          inner join turma t on t.id = ea.turma_id
