@@ -585,11 +585,11 @@ namespace SME.SGP.Dados.Repositorios
             => possuiFiltroDeUe
                 ? @"select
                         t.turma_id,
-                        t.nome as TurmaAno,
+                        t.nome as AnoTurma,
                         count(*) filter (where db.devolutiva_id is null) as DiariosComDevolutivasPendentes,
                         count(*) filter (where db.devolutiva_id is not null) as DiariosComDevolutivas"
                 : @"select
-                        t.ano as TurmaAno,
+                        t.ano as AnoTurma,
                         count(*) filter (where db.devolutiva_id is null) as DiariosComDevolutivasPendentes,
                         count(*) filter (where db.devolutiva_id is not null) as DiariosComDevolutivas";
 

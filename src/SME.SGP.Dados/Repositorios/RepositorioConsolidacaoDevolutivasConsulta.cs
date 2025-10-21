@@ -49,7 +49,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and ue.id = @ueId");
 
             query.AppendLine(")");
-            query.AppendLine("select ano TurmaAno,");
+            query.AppendLine("select ano AnoTurma,");
 
             if (possuiFiltroUe)
             {

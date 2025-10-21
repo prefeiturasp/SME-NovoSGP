@@ -42,8 +42,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries.PainelEducacional
                     IdComponenteCurricular = 101,
                     Modalidade = Modalidade.Fundamental,
                     Nota = 85,
-                    TurmaAno = '5',
-                    TurmaCodigo = "T001",
+                    AnoTurma = '5',
                     ValorConceito = "A",
                     ValorMedioNota = 50
                 }
