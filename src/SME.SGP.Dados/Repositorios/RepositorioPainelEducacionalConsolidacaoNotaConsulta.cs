@@ -21,9 +21,8 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @$"
                 select turma.nome as turmaNome,
-                       turma.ano as turmaAno,
+                       turma.ano as anoTurma,
                        turma.modalidade_codigo as modalidade,
-                       turma.turma_id as turmaCodigo,
                        turma.ano_letivo as anoLetivo,
                        ue.ue_id as codigoUe,
                        dre.dre_id as codigoDre,
