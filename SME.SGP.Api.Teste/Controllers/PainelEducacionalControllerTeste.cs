@@ -11,6 +11,7 @@ using SME.SGP.Infra.Dtos.PainelEducacional.IndicadoresPap;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoSmeDre;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoUe;
+using SME.SGP.Infra.Dtos.PainelEducacional.Reclassificacao;
 using SME.SGP.Infra.Dtos.PainelEducacional.SondagemEscrita;
 using System.Collections.Generic;
 using System.Linq;
@@ -1329,6 +1330,343 @@ namespace SME.SGP.Api.Teste.Controllers
                 It.Is<int>(a => a == filtro.AnoLetivo),
                 It.Is<int>(b => b == filtro.Bimestre),
                 It.Is<Modalidade>(m => m == filtro.Modalidade)
+            ), Times.Once);
+        }
+
+        [Fact]
+        public async Task Obter_Reclassificacao_Deve_Retornar_Ok_Com_Dados()
+        {
+            var filtro = new FiltroPainelEducacionalReclassificacao
+            {
+                AnoLetivo = 2024,
+                CodigoDre = "DRE123",
+                CodigoUe = "UE456",
+                AnoTurma = "5"
+            };
+
+            var retornoEsperado = new List<PainelEducacionalReclassificacaoDto>
+            {
+                new PainelEducacionalReclassificacaoDto
+                {
+                    Modalidade = new List<ModalidadeReclassificacaoDto>
+                    {
+                        new ModalidadeReclassificacaoDto
+                        {
+                            Nome = "Ensino Fundamental",
+                            AnoTurma = "5º Ano",
+                            QuantidadeAlunos = 15
+                        },
+                        new ModalidadeReclassificacaoDto
+                        {
+                            Nome = "Ensino Fundamental",
+                            AnoTurma = "6º Ano", 
+                            QuantidadeAlunos = 8
+                        }
+                    }
+                }
+            };
+
+            var mockUseCase = new Mock<IConsultasReclassificacaoPainelEducacionalUseCase>();
+            mockUseCase
+                .Setup(x => x.ObterReclassificacao(filtro.CodigoDre, filtro.CodigoUe, filtro.AnoLetivo, filtro.AnoTurma))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterReclassificacao(filtro, mockUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalReclassificacaoDto>>(okResult.Value);
+
+            Assert.Single(retorno);
+            var item = retorno.First();
+            Assert.NotNull(item.Modalidade);
+            Assert.Equal(2, item.Modalidade.Count());
+
+            Assert.Collection(item.Modalidade,
+                modalidade =>
+                {
+                    Assert.Equal("Ensino Fundamental", modalidade.Nome);
+                    Assert.Equal("5º Ano", modalidade.AnoTurma);
+                    Assert.Equal(15, modalidade.QuantidadeAlunos);
+                },
+                modalidade =>
+                {
+                    Assert.Equal("Ensino Fundamental", modalidade.Nome);
+                    Assert.Equal("6º Ano", modalidade.AnoTurma);
+                    Assert.Equal(8, modalidade.QuantidadeAlunos);
+                });
+
+            mockUseCase.Verify(x => x.ObterReclassificacao(
+                It.Is<string>(d => d == filtro.CodigoDre),
+                It.Is<string>(u => u == filtro.CodigoUe),
+                It.Is<int>(a => a == filtro.AnoLetivo),
+                It.Is<string>(t => t == filtro.AnoTurma)
+            ), Times.Once);
+        }
+
+        [Fact]
+        public async Task Obter_Reclassificacao_Com_Lista_Vazia_Deve_Retornar_Ok()
+        {
+            var filtro = new FiltroPainelEducacionalReclassificacao
+            {
+                AnoLetivo = 2023,
+                CodigoDre = "DRE999",
+                CodigoUe = "UE000",
+                AnoTurma = "3"
+            };
+
+            var retornoEsperado = new List<PainelEducacionalReclassificacaoDto>();
+
+            var mockUseCase = new Mock<IConsultasReclassificacaoPainelEducacionalUseCase>();
+            mockUseCase
+                .Setup(x => x.ObterReclassificacao(filtro.CodigoDre, filtro.CodigoUe, filtro.AnoLetivo, filtro.AnoTurma))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterReclassificacao(filtro, mockUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalReclassificacaoDto>>(okResult.Value);
+
+            Assert.Empty(retorno);
+
+            mockUseCase.Verify(x => x.ObterReclassificacao(
+                It.Is<string>(d => d == filtro.CodigoDre),
+                It.Is<string>(u => u == filtro.CodigoUe),
+                It.Is<int>(a => a == filtro.AnoLetivo),
+                It.Is<string>(t => t == filtro.AnoTurma)
+            ), Times.Once);
+        }
+
+        [Fact]
+        public async Task Obter_Reclassificacao_Com_Codigos_Nulos_Deve_Retornar_Ok_Com_Dados()
+        {
+            var filtro = new FiltroPainelEducacionalReclassificacao
+            {
+                AnoLetivo = 2024,
+                CodigoDre = null,
+                CodigoUe = null,
+                AnoTurma = "7"
+            };
+
+            var retornoEsperado = new List<PainelEducacionalReclassificacaoDto>
+            {
+                new PainelEducacionalReclassificacaoDto
+                {
+                    Modalidade = new List<ModalidadeReclassificacaoDto>
+                    {
+                        new ModalidadeReclassificacaoDto
+                        {
+                            Nome = "Ensino Fundamental",
+                            AnoTurma = "7º Ano",
+                            QuantidadeAlunos = 25
+                        }
+                    }
+                }
+            };
+
+            var mockUseCase = new Mock<IConsultasReclassificacaoPainelEducacionalUseCase>();
+            mockUseCase
+                .Setup(x => x.ObterReclassificacao(filtro.CodigoDre, filtro.CodigoUe, filtro.AnoLetivo, filtro.AnoTurma))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterReclassificacao(filtro, mockUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalReclassificacaoDto>>(okResult.Value);
+
+            Assert.Single(retorno);
+            var item = retorno.First();
+            Assert.NotNull(item.Modalidade);
+            Assert.Single(item.Modalidade);
+
+            var modalidade = item.Modalidade.First();
+            Assert.Equal("Ensino Fundamental", modalidade.Nome);
+            Assert.Equal("7º Ano", modalidade.AnoTurma);
+            Assert.Equal(25, modalidade.QuantidadeAlunos);
+
+            mockUseCase.Verify(x => x.ObterReclassificacao(
+                It.Is<string>(d => d == null),
+                It.Is<string>(u => u == null),
+                It.Is<int>(a => a == 2024),
+                It.Is<string>(t => t == "7")
+            ), Times.Once);
+        }
+
+        [Fact]
+        public async Task Obter_Reclassificacao_Com_Multiplas_Modalidades_Deve_Retornar_Ok_Com_Dados()
+        {
+            var filtro = new FiltroPainelEducacionalReclassificacao
+            {
+                AnoLetivo = 2024,
+                CodigoDre = "DRE789",
+                CodigoUe = "UE321",
+                AnoTurma = "9"
+            };
+
+            var retornoEsperado = new List<PainelEducacionalReclassificacaoDto>
+            {
+                new PainelEducacionalReclassificacaoDto
+                {
+                    Modalidade = new List<ModalidadeReclassificacaoDto>
+                    {
+                        new ModalidadeReclassificacaoDto
+                        {
+                            Nome = "Ensino Fundamental",
+                            AnoTurma = "9º Ano",
+                            QuantidadeAlunos = 32
+                        },
+                        new ModalidadeReclassificacaoDto
+                        {
+                            Nome = "EJA",
+                            AnoTurma = "9º Ano",
+                            QuantidadeAlunos = 12
+                        },
+                        new ModalidadeReclassificacaoDto
+                        {
+                            Nome = "Ensino Médio",
+                            AnoTurma = "1ª Série",
+                            QuantidadeAlunos = 5
+                        }
+                    }
+                }
+            };
+
+            var mockUseCase = new Mock<IConsultasReclassificacaoPainelEducacionalUseCase>();
+            mockUseCase
+                .Setup(x => x.ObterReclassificacao(filtro.CodigoDre, filtro.CodigoUe, filtro.AnoLetivo, filtro.AnoTurma))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterReclassificacao(filtro, mockUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalReclassificacaoDto>>(okResult.Value);
+
+            Assert.Single(retorno);
+            var item = retorno.First();
+            Assert.NotNull(item.Modalidade);
+            Assert.Equal(3, item.Modalidade.Count());
+
+            Assert.Collection(item.Modalidade,
+                modalidade =>
+                {
+                    Assert.Equal("Ensino Fundamental", modalidade.Nome);
+                    Assert.Equal("9º Ano", modalidade.AnoTurma);
+                    Assert.Equal(32, modalidade.QuantidadeAlunos);
+                },
+                modalidade =>
+                {
+                    Assert.Equal("EJA", modalidade.Nome);
+                    Assert.Equal("9º Ano", modalidade.AnoTurma);
+                    Assert.Equal(12, modalidade.QuantidadeAlunos);
+                },
+                modalidade =>
+                {
+                    Assert.Equal("Ensino Médio", modalidade.Nome);
+                    Assert.Equal("1ª Série", modalidade.AnoTurma);
+                    Assert.Equal(5, modalidade.QuantidadeAlunos);
+                });
+
+            mockUseCase.Verify(x => x.ObterReclassificacao(
+                It.Is<string>(d => d == "DRE789"),
+                It.Is<string>(u => u == "UE321"),
+                It.Is<int>(a => a == 2024),
+                It.Is<string>(t => t == "9")
+            ), Times.Once);
+        }
+
+        [Fact]
+        public async Task Obter_Reclassificacao_Deve_Passar_Filtro_Correto_Para_Use_Case()
+        {
+            var filtro = new FiltroPainelEducacionalReclassificacao
+            {
+                AnoLetivo = 2025,
+                CodigoDre = "DRE456",
+                CodigoUe = "UE789",
+                AnoTurma = "1"
+            };
+
+            var retornoEsperado = new List<PainelEducacionalReclassificacaoDto>
+            {
+                new PainelEducacionalReclassificacaoDto
+                {
+                    Modalidade = new List<ModalidadeReclassificacaoDto>
+                    {
+                        new ModalidadeReclassificacaoDto
+                        {
+                            Nome = "Ensino Fundamental",
+                            AnoTurma = "1º Ano",
+                            QuantidadeAlunos = 28
+                        }
+                    }
+                }
+            };
+
+            var mockUseCase = new Mock<IConsultasReclassificacaoPainelEducacionalUseCase>();
+            mockUseCase
+                .Setup(x => x.ObterReclassificacao(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>()))
+                .ReturnsAsync(retornoEsperado);
+
+            await _controller.ObterReclassificacao(filtro, mockUseCase.Object);
+
+            mockUseCase.Verify(x => x.ObterReclassificacao(
+                It.Is<string>(d => d == filtro.CodigoDre),
+                It.Is<string>(u => u == filtro.CodigoUe),
+                It.Is<int>(a => a == filtro.AnoLetivo),
+                It.Is<string>(t => t == filtro.AnoTurma)
+            ), Times.Once);
+        }
+
+        [Fact]
+        public async Task Obter_Reclassificacao_Com_Ano_Turma_Nulo_Deve_Retornar_Ok_Com_Dados()
+        {
+            var filtro = new FiltroPainelEducacionalReclassificacao
+            {
+                AnoLetivo = 2024,
+                CodigoDre = "DRE111",
+                CodigoUe = "UE222",
+                AnoTurma = null
+            };
+
+            var retornoEsperado = new List<PainelEducacionalReclassificacaoDto>
+            {
+                new PainelEducacionalReclassificacaoDto
+                {
+                    Modalidade = new List<ModalidadeReclassificacaoDto>
+                    {
+                        new ModalidadeReclassificacaoDto
+                        {
+                            Nome = "Ensino Fundamental",
+                            AnoTurma = "Todos os anos",
+                            QuantidadeAlunos = 150
+                        }
+                    }
+                }
+            };
+
+            var mockUseCase = new Mock<IConsultasReclassificacaoPainelEducacionalUseCase>();
+            mockUseCase
+                .Setup(x => x.ObterReclassificacao(filtro.CodigoDre, filtro.CodigoUe, filtro.AnoLetivo, filtro.AnoTurma))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterReclassificacao(filtro, mockUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalReclassificacaoDto>>(okResult.Value);
+
+            Assert.Single(retorno);
+            var item = retorno.First();
+            Assert.NotNull(item.Modalidade);
+            Assert.Single(item.Modalidade);
+
+            var modalidade = item.Modalidade.First();
+            Assert.Equal("Ensino Fundamental", modalidade.Nome);
+            Assert.Equal("Todos os anos", modalidade.AnoTurma);
+            Assert.Equal(150, modalidade.QuantidadeAlunos);
+
+            mockUseCase.Verify(x => x.ObterReclassificacao(
+                It.Is<string>(d => d == "DRE111"),
+                It.Is<string>(u => u == "UE222"),
+                It.Is<int>(a => a == 2024),
+                It.Is<string>(t => t == null)
             ), Times.Once);
         }
     }
