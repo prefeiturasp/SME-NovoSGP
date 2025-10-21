@@ -45,13 +45,15 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
         private async Task<IEnumerable<PainelEducacionalReclassificacao>> ObterDadosReclassificacaoPorAno(int anoLetivo)
         {
             var alunosReclassificados = new List<AlunosSituacaoTurmas>();
-            var turmasPainelEducacional = await repositorioTurmaConsulta.ObterTurmasPorAnoLetivo(anoLetivo);
+            var turmasPainelEducacional = (await repositorioTurmaConsulta.ObterTurmasPorAnoLetivo(anoLetivo))
+                                          .Where(t => t.ModalidadeCodigo == Modalidade.Fundamental || t.ModalidadeCodigo == Modalidade.Medio || t.ModalidadeCodigo == Modalidade.EJA)
+                                          .ToList();
 
             if (!turmasPainelEducacional.Any())
                 return new List<PainelEducacionalReclassificacao>();
 
             var todasDres = await mediator.Send(new ObterTodasDresQuery());
-            
+
             if (!todasDres.Any())
                 return new List<PainelEducacionalReclassificacao>();
 
@@ -76,6 +78,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                    DreId = item.Turma.Ue.Dre.CodigoDre,
                    UeId = item.Turma.Ue.CodigoUe,
                    AnoLetivo = anoLetivo,
+                   AnoTurma = item.Turma.Ano,
                    ModalidadeTurma = (Modalidade)item.Turma.ModalidadeCodigo
                })
                .Select(g => new PainelEducacionalReclassificacao
@@ -83,6 +86,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                    CodigoDre = g.Key.DreId,
                    CodigoUe = g.Key.UeId,
                    AnoLetivo = g.Key.AnoLetivo,
+                   AnoTurma = g.Key.AnoTurma,
                    ModalidadeTurma = g.Key.ModalidadeTurma,
                    QuantidadeAlunosReclassificados = g.Sum(x => x.Aluno.QuantidadeAlunos)
                })
@@ -97,13 +101,14 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                 return;
 
             var registroAnual = registrosReclassificacao
-                    .GroupBy(r => new { r.CodigoDre, r.CodigoUe, r.AnoLetivo, r.ModalidadeTurma })
+                    .GroupBy(r => new { r.CodigoDre, r.CodigoUe, r.AnoLetivo, r.AnoTurma, r.ModalidadeTurma })
                     .Select(g => new PainelEducacionalReclassificacao
                     {
                         CodigoDre = g.Key.CodigoDre,
                         CodigoUe = g.Key.CodigoUe,
                         AnoLetivo = g.Key.AnoLetivo,
                         ModalidadeTurma = g.Key.ModalidadeTurma,
+                        AnoTurma = g.Key.AnoTurma,
                         QuantidadeAlunosReclassificados = g.Sum(x => x.QuantidadeAlunosReclassificados)
                     })
                     .OrderByDescending(x => x.AnoLetivo).ToList();

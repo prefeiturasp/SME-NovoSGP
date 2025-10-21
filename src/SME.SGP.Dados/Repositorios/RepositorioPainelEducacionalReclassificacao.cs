@@ -33,7 +33,7 @@ namespace SME.SGP.Dados.Repositorios
 
             await using var writer = conn.BeginBinaryImport(@"
                 COPY painel_educacional_consolidacao_reclassificacao
-                    (codigo_dre, codigo_ue, ano_letivo, modalidade_turma, quantidade_alunos_reclassificados, criado_em)
+                    (codigo_dre, codigo_ue, ano_letivo, modalidade_turma, ano_turma, quantidade_alunos_reclassificados, criado_em)
                 FROM STDIN (FORMAT BINARY)
             ");
 
@@ -44,6 +44,7 @@ namespace SME.SGP.Dados.Repositorios
                 writer.Write(r.CodigoUe, NpgsqlTypes.NpgsqlDbType.Varchar);
                 writer.Write(r.AnoLetivo, NpgsqlTypes.NpgsqlDbType.Integer);
                 writer.Write((int)r.ModalidadeTurma, NpgsqlTypes.NpgsqlDbType.Integer);
+                writer.Write(r.AnoTurma, NpgsqlTypes.NpgsqlDbType.Varchar);
                 writer.Write(r.QuantidadeAlunosReclassificados, NpgsqlTypes.NpgsqlDbType.Integer);
                 writer.Write(r.CriadoEm, NpgsqlTypes.NpgsqlDbType.Timestamp);
             }
