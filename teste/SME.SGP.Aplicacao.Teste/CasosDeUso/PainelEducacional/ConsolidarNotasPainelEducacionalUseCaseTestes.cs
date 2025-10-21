@@ -12,7 +12,6 @@ using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra.Consts;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -114,8 +113,6 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             // Assert
             resultado.Should().BeTrue();
             _mediatorMock.Verify(m => m.Send(It.IsAny<SalvarPainelEducacionalConsolidacaoNotaCommand>(), It.IsAny<CancellationToken>()), Times.Once);
-
-            // Compara as coleções por equivalência, ignorando a ordem dos elementos
             comandoCapturado.Should().NotBeNull();
             comandoCapturado.NotasConsolidadasDre.Should().BeEquivalentTo(consolidadoDreEsperado, options =>
             options.Excluding(info => info.Path.EndsWith("CriadoEm")));
@@ -165,12 +162,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     Bimestre = 1,
                     Modalidade = Modalidade.Fundamental,
                     CodigoDre = "DRE001",
-                    TurmaAno = '1',
+                    AnoTurma = '1',
                     CodigoUe = "UE001",
                     ConceitoDeAprovado = false,
                     IdComponenteCurricular = ComponentesCurricularesConstants.CODIGO_PORTUGUES,
                     Nota = 50,
-                    TurmaCodigo = "TURMA001",
                     TurmaNome = "Turma 001",
                     ValorConceito = null,
                     ValorMedioNota = 60
@@ -181,12 +177,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     Bimestre = 1,
                     Modalidade = Modalidade.Fundamental,
                     CodigoDre = "DRE001",
-                    TurmaAno = '1',
+                    AnoTurma = '1',
                     CodigoUe = "UE002",
                     ConceitoDeAprovado = false,
                     IdComponenteCurricular = ComponentesCurricularesConstants.CODIGO_PORTUGUES,
                     Nota = 59,
-                    TurmaCodigo = "TURMA001",
                     TurmaNome = "Turma 001",
                     ValorConceito = null,
                     ValorMedioNota = 60
@@ -197,12 +192,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     Bimestre = 1,
                     Modalidade = Modalidade.Fundamental,
                     CodigoDre = "DRE001",
-                    TurmaAno = '1',
+                    AnoTurma = '1',
                     CodigoUe = "UE002",
                     ConceitoDeAprovado = false,
                     IdComponenteCurricular = ComponentesCurricularesConstants.CODIGO_PORTUGUES,
                     Nota = 60,
-                    TurmaCodigo = "TURMA002",
                     TurmaNome = "Turma 002",
                     ValorConceito = null,
                     ValorMedioNota = 60
@@ -213,12 +207,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     Bimestre = 1,
                     Modalidade = Modalidade.Fundamental,
                     CodigoDre = "DRE001",
-                    TurmaAno = '1',
+                    AnoTurma = '1',
                     CodigoUe = "UE001",
                     ConceitoDeAprovado = true,
                     IdComponenteCurricular = ComponentesCurricularesConstants.CODIGO_MATEMATICA,
                     Nota = 70,
-                    TurmaCodigo = "TURMA001",
                     TurmaNome = "Turma 001",
                     ValorConceito = null,
                     ValorMedioNota = 65
@@ -229,12 +222,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     Bimestre = 1,
                     Modalidade = Modalidade.Fundamental,
                     CodigoDre = "DRE001",
-                    TurmaAno = '1',
+                    AnoTurma = '1',
                     CodigoUe = "UE001",
                     ConceitoDeAprovado = true,
                     IdComponenteCurricular = ComponentesCurricularesConstants.CODIGO_CIENCIAS,
                     Nota = 80,
-                    TurmaCodigo = "TURMA001",
                     TurmaNome = "Turma 001",
                     ValorConceito = null,
                     ValorMedioNota = 75
@@ -245,12 +237,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     Bimestre = 1,
                     Modalidade = Modalidade.Fundamental,
                     CodigoDre = "DRE001",
-                    TurmaAno = '1',
+                    AnoTurma = '1',
                     CodigoUe = "UE001",
                     ConceitoDeAprovado = false,
                     IdComponenteCurricular = ComponentesCurricularesConstants.CODIGO_CIENCIAS,
                     Nota = 60,
-                    TurmaCodigo = "TURMA001",
                     TurmaNome = "Turma 001",
                     ValorConceito = null,
                     ValorMedioNota = 75
@@ -261,12 +252,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     Bimestre = 1,
                     Modalidade = Modalidade.Fundamental,
                     CodigoDre = "DRE002",
-                    TurmaAno = '2',
+                    AnoTurma = '2',
                     CodigoUe = "UE002",
                     ConceitoDeAprovado = true,
                     IdComponenteCurricular = ComponentesCurricularesConstants.CODIGO_PORTUGUES,
                     Nota = 85,
-                    TurmaCodigo = "TURMA002",
                     TurmaNome = "Turma 002",
                     ValorConceito = null,
                     ValorMedioNota = 70
@@ -277,12 +267,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     Bimestre = 1,
                     Modalidade = Modalidade.Fundamental,
                     CodigoDre = "DRE002",
-                    TurmaAno = '2',
+                    AnoTurma = '2',
                     CodigoUe = "UE002",
                     ConceitoDeAprovado = true,
                     IdComponenteCurricular = ComponentesCurricularesConstants.CODIGO_MATEMATICA,
                     Nota = 90,
-                    TurmaCodigo = "TURMA002",
                     TurmaNome = "Turma 002",
                     ValorConceito = null,
                     ValorMedioNota = 75
@@ -293,12 +282,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     Bimestre = 1,
                     Modalidade = Modalidade.Fundamental,
                     CodigoDre = "DRE002",
-                    TurmaAno = '2',
+                    AnoTurma = '2',
                     CodigoUe = "UE002",
                     ConceitoDeAprovado = true,
                     IdComponenteCurricular = ComponentesCurricularesConstants.CODIGO_CIENCIAS,
                     Nota = 95,
-                    TurmaCodigo = "TURMA002",
                     TurmaNome = "Turma 002",
                     ValorConceito = null,
                     ValorMedioNota = 80
@@ -309,12 +297,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     Bimestre = 1,
                     Modalidade = Modalidade.Fundamental,
                     CodigoDre = "DRE002",
-                    TurmaAno = '2',
+                    AnoTurma = '2',
                     CodigoUe = "UE002",
                     ConceitoDeAprovado = false,
                     IdComponenteCurricular = ComponentesCurricularesConstants.CODIGO_CIENCIAS,
                     Nota = 70,
-                    TurmaCodigo = "TURMA002",
                     TurmaNome = "Turma 002",
                     ValorConceito = null,
                     ValorMedioNota = 80
@@ -325,12 +312,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     Bimestre = 1,
                     Modalidade = Modalidade.Fundamental,
                     CodigoDre = "DRE002",
-                    TurmaAno = '2',
+                    AnoTurma = '2',
                     CodigoUe = "UE002",
                     ConceitoDeAprovado = true,
                     IdComponenteCurricular = ComponentesCurricularesConstants.CODIGO_MATEMATICA,
                     Nota = null,
-                    TurmaCodigo = "TURMA002",
                     TurmaNome = "Turma 002",
                     ValorConceito = "A",
                     ValorMedioNota = 75
@@ -341,12 +327,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     Bimestre = 1,
                     Modalidade = Modalidade.Fundamental,
                     CodigoDre = "DRE002",
-                    TurmaAno = '2',
+                    AnoTurma = '2',
                     CodigoUe = "UE002",
                     ConceitoDeAprovado = false,
                     IdComponenteCurricular = ComponentesCurricularesConstants.CODIGO_PORTUGUES,
                     Nota = null,
-                    TurmaCodigo = "TURMA002",
                     TurmaNome = "Turma 002",
                     ValorConceito = "C",
                     ValorMedioNota = 70
@@ -357,12 +342,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     Bimestre = 1,
                     Modalidade = Modalidade.Fundamental,
                     CodigoDre = "DRE002",
-                    TurmaAno = '2',
+                    AnoTurma = '2',
                     CodigoUe = "UE002",
                     ConceitoDeAprovado = true,
                     IdComponenteCurricular = ComponentesCurricularesConstants.CODIGO_CIENCIAS,
                     Nota = null,
-                    TurmaCodigo = "TURMA002",
                     TurmaNome = "Turma 002",
                     ValorConceito = "B",
                     ValorMedioNota = 80
@@ -373,12 +357,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     Bimestre = 1,
                     Modalidade = Modalidade.Fundamental,
                     CodigoDre = "DRE002",
-                    TurmaAno = '2',
+                    AnoTurma = '2',
                     CodigoUe = "UE002",
                     ConceitoDeAprovado = false,
                     IdComponenteCurricular = ComponentesCurricularesConstants.CODIGO_CIENCIAS,
                     Nota = null,
-                    TurmaCodigo = "TURMA002",
                     TurmaNome = "Turma 002",
                     ValorConceito = "C",
                     ValorMedioNota = 80
@@ -389,12 +372,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     Bimestre = 1,
                     Modalidade = Modalidade.Fundamental,
                     CodigoDre = "DRE002",
-                    TurmaAno = '2',
+                    AnoTurma = '2',
                     CodigoUe = "UE002",
                     ConceitoDeAprovado = true,
                     IdComponenteCurricular = ComponentesCurricularesConstants.CODIGO_MATEMATICA,
                     Nota = 88,
-                    TurmaCodigo = "TURMA002",
                     TurmaNome = "Turma 002",
                     ValorConceito = null,
                     ValorMedioNota = 75
@@ -405,12 +387,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     Bimestre = 1,
                     Modalidade = Modalidade.Fundamental,
                     CodigoDre = "DRE002",
-                    TurmaAno = '2',
+                    AnoTurma = '2',
                     CodigoUe = "UE002",
                     ConceitoDeAprovado = true,
                     IdComponenteCurricular = ComponentesCurricularesConstants.CODIGO_PORTUGUES,
                     Nota = 78,
-                    TurmaCodigo = "TURMA002",
                     TurmaNome = "Turma 002",
                     ValorConceito = null,
                     ValorMedioNota = 70
@@ -421,12 +402,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     Bimestre = 1,
                     Modalidade = Modalidade.Medio,
                     CodigoDre = "DRE002",
-                    TurmaAno = '2',
+                    AnoTurma = '2',
                     CodigoUe = "UE002",
                     ConceitoDeAprovado = false,
                     IdComponenteCurricular = ComponentesCurricularesConstants.CODIGO_CIENCIAS,
                     Nota = 65,
-                    TurmaCodigo = "TURMA002",
                     TurmaNome = "Turma 002",
                     ValorConceito = null,
                     ValorMedioNota = 80
@@ -437,12 +417,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     Bimestre = 1,
                     Modalidade = Modalidade.Medio,
                     CodigoDre = "DRE002",
-                    TurmaAno = '2',
+                    AnoTurma = '2',
                     CodigoUe = "UE002",
                     ConceitoDeAprovado = true,
                     IdComponenteCurricular = ComponentesCurricularesConstants.CODIGO_CIENCIAS,
                     Nota = 85,
-                    TurmaCodigo = "TURMA002",
                     TurmaNome = "Turma 002",
                     ValorConceito = null,
                     ValorMedioNota = 80
@@ -453,12 +432,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     Bimestre = 2,
                     Modalidade = Modalidade.Medio,
                     CodigoDre = "DRE002",
-                    TurmaAno = '2',
+                    AnoTurma = '2',
                     CodigoUe = "UE002",
                     ConceitoDeAprovado = true,
                     IdComponenteCurricular = ComponentesCurricularesConstants.CODIGO_CIENCIAS,
                     Nota = 90,
-                    TurmaCodigo = "TURMA002",
                     TurmaNome = "Turma 002",
                     ValorConceito = null,
                     ValorMedioNota = 80
@@ -469,12 +447,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     Bimestre = 2,
                     Modalidade = Modalidade.Medio,
                     CodigoDre = "DRE002",
-                    TurmaAno = '2',
+                    AnoTurma = '2',
                     CodigoUe = "UE002",
                     ConceitoDeAprovado = false,
                     IdComponenteCurricular = ComponentesCurricularesConstants.CODIGO_CIENCIAS,
                     Nota = 70,
-                    TurmaCodigo = "TURMA002",
                     TurmaNome = "Turma 002",
                     ValorConceito = null,
                     ValorMedioNota = 80
@@ -485,12 +462,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     Bimestre = 2,
                     Modalidade = Modalidade.Medio,
                     CodigoDre = "DRE002",
-                    TurmaAno = '3',
+                    AnoTurma = '2',
                     CodigoUe = "UE002",
                     ConceitoDeAprovado = true,
                     IdComponenteCurricular = ComponentesCurricularesConstants.CODIGO_CIENCIAS,
                     Nota = 95,
-                    TurmaCodigo = "TURMA003",
                     TurmaNome = "Turma 003",
                     ValorConceito = null,
                     ValorMedioNota = 80
@@ -630,20 +606,6 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     QuantidadeAcimaMediaMatematica = 0,
                     QuantidadeAbaixoMediaCiencias = 1,
                     QuantidadeAcimaMediaCiencias = 2
-                },
-                new PainelEducacionalConsolidacaoNota
-                {
-                    AnoLetivo = anoLetivo,
-                    Bimestre = 2,
-                    Modalidade = Modalidade.Medio,
-                    CodigoDre = "DRE003",
-                    AnoTurma = '9',
-                    QuantidadeAbaixoMediaPortugues = 3,
-                    QuantidadeAcimaMediaPortugues = 0,
-                    QuantidadeAbaixoMediaMatematica = 0,
-                    QuantidadeAcimaMediaMatematica = 0,
-                    QuantidadeAbaixoMediaCiencias = 0,
-                    QuantidadeAcimaMediaCiencias = 0
                 }
             };
 
@@ -740,13 +702,14 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     QuantidadeAbaixoMediaCiencias = 1,
                     QuantidadeAcimaMediaCiencias = 1
                 },
-                new PainelEducacionalConsolidacaoNota
+                new PainelEducacionalConsolidacaoNotaUe
                 {
                     AnoLetivo = anoLetivo,
                     Bimestre = 2,
                     Modalidade = Modalidade.Medio,
                     CodigoDre = "DRE002",
-                    AnoTurma = '3',
+                    CodigoUe = "UE002",
+                    SerieTurma = "Turma 003",
                     QuantidadeAbaixoMediaPortugues = 0,
                     QuantidadeAcimaMediaPortugues = 0,
                     QuantidadeAbaixoMediaMatematica = 0,
