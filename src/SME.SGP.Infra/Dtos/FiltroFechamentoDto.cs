@@ -13,5 +13,6 @@ namespace SME.SGP.Infra
         public IEnumerable<FechamentoBimestreDto> FechamentosBimestres { get; set; }
         public long TipoCalendarioId { get; set; }
         public string UeId { get; set; }
+        public Dominio.Aplicacao Aplicacao { get; set; }
     }
 }

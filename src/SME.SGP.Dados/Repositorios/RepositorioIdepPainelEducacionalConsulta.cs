@@ -1,6 +1,4 @@
-﻿using Polly;
-using Polly.Registry;
-using SME.SGP.Dominio.Entidades;
+﻿using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
@@ -12,14 +10,10 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioIdepPainelEducacionalConsulta : RepositorioBase<PainelEducacionalIdep>, IRepositorioIdepPainelEducacionalConsulta
     {
-        private readonly IAsyncPolicy policy;
 
         public RepositorioIdepPainelEducacionalConsulta(ISgpContext database,
-            IReadOnlyPolicyRegistry<string> registry,
             IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
-        {
-            policy = registry.Get<IAsyncPolicy>(PoliticaPolly.SGP);
-        }
+        { }
 
         public async Task<IEnumerable<PainelEducacionalConsolidacaoIdep>> ObterTodosIdep()
         {
@@ -103,34 +97,32 @@ namespace SME.SGP.Dados.Repositorios
                                AND f.codigo_ue = u.codigo_ue
                             ORDER BY f.ano_letivo, f.etapa, f.codigo_dre, f.codigo_ue, f.faixa;";
 
-            return await policy.ExecuteAsync(() =>
-            database.Conexao.QueryAsync<PainelEducacionalConsolidacaoIdep>(query)
-            );
+            return await database.Conexao.QueryAsync<PainelEducacionalConsolidacaoIdep>(query);
         }
 
-        public async Task<IEnumerable<PainelEducacionalIdepDto>> ObterIdepPorAnoEtapa(int anoLetivo, string etapa, string codigoDre)
+        public async Task<IEnumerable<PainelEducacionalIdepDto>> ObterIdepPorAnoEtapa(int anoLetivo, int etapa, string codigoDre)
         {
-            var query = @"SELECT 
-                          peci.ano_letivo,
-                          peci.etapa,
-                          peci.codigo_dre,
-                          peci.faixa,
-                          peci.quantidade,
-                          peci.media_geral,
-                          peci.alterado_em AS ultima_atualizacao
-                      FROM painel_educacional_consolidacao_idep peci
-                      WHERE 
-                          peci.etapa = @etapa
-                          AND (@anoLetivo IS NULL OR peci.ano_letivo = @anoLetivo)
-                          AND (@codigoDre IS NULL OR peci.codigo_dre = @codigoDre)
-                      ORDER BY 
-                          peci.ano_letivo DESC,
-                          peci.codigo_dre,
-                          peci.faixa;";
+                var query = @"SELECT 
+                                  peci.ano_letivo,
+                                  peci.codigo_dre,
+                                  peci.etapa,
+                                  peci.faixa,
+                                  peci.quantidade,
+                                  peci.media_geral,
+                                  peci.criado_em AS ultima_atualizacao
+                              FROM painel_educacional_consolidacao_idep peci
+                              WHERE peci.ano_letivo = @anoLetivo
+                              AND peci.etapa = @etapa";
 
-            return await policy.ExecuteAsync(() =>
-                database.Conexao.QueryAsync<PainelEducacionalIdepDto>(query, new { anoLetivo, etapa, codigoDre })
-            );
+                if (!string.IsNullOrWhiteSpace(codigoDre))
+                    query += " AND peci.codigo_dre = @codigoDre ";
+
+                query += @" ORDER BY 
+                                  peci.ano_letivo DESC,
+                                  peci.codigo_dre,
+                                  peci.faixa;";
+
+                return await database.Conexao.QueryAsync<PainelEducacionalIdepDto>(query, new { anoLetivo, etapa, codigoDre });
         }
     }
 }

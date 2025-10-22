@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
-using SME.SGP.Aplicacao.CasosDeUso.PainelEducacional;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using SME.SGP.Infra.Dtos.PainelEducacional.IndicadoresPap;
+using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoSmeDre;
+using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoUe;
 using SME.SGP.Infra.Dtos.PainelEducacional.SondagemEscrita;
 using System.Threading.Tasks;
 
@@ -62,7 +63,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterIdepPorAnoEtapa(int anoLetivo, string etapa, string codigoDre, [FromServices] IConsultasIdepPainelEducacionalUseCase consultasIdepPainelEducacionalUseCase)
+        public async Task<IActionResult> ObterIdepPorAnoEtapa(int anoLetivo, int etapa, string codigoDre, [FromServices] IConsultasIdepPainelEducacionalUseCase consultasIdepPainelEducacionalUseCase)
             => Ok(await consultasIdepPainelEducacionalUseCase.ObterIdepPorAnoEtapa(anoLetivo, etapa, codigoDre));
 
         [HttpGet("ideb")]
@@ -145,6 +146,21 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterSondagemEscrita([FromQuery] FiltroPainelEducacionalAnoLetivoBimestre filtro, [FromServices] IConsultasSondagemEscritaUseCase consultasSondagemEscritaUseCase)
     => Ok(await consultasSondagemEscritaUseCase.ObterSondagemEscrita(filtro.CodigoDre, filtro.CodigoUe, filtro.AnoLetivo, filtro.Bimestre, filtro.SerieAno));
+
+        [HttpGet("notas")]
+        [ProducesResponseType(typeof(PainelEducacionalNotasVisaoSmeDreDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterNotasVisaoSmeDre([FromQuery] FiltroPainelEducacionalNotasVisaoSmeDre filtro, [FromServices] IConsultasNotasVisaoSmeDreUseCase consultasNotasUseCase)
+     => Ok(await consultasNotasUseCase.ObterNotasVisaoSmeDre(filtro.CodigoDre, filtro.AnoLetivo, filtro.Bimestre, filtro.SerieAno));
+
+        [HttpGet("notas-ue")]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterNotasVisaoUe([FromQuery] FiltroPainelEducacionalNotasVisaoUe filtro, [FromServices] IConsultasNotasVisaoUeUseCase consultasNotasUseCase)
+     => Ok(await consultasNotasUseCase.ObterNotasVisaoUe(filtro.CodigoUe, filtro.AnoLetivo, filtro.Bimestre, filtro.Modalidade));
 
     }
 }

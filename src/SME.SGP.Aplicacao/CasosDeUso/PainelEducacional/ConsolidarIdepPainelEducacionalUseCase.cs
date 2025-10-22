@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
         {
         }
 
-        public async Task<bool> Executar(MensagemRabbit param)
+        public async Task<bool> Executar(MensagemRabbit param) 
         {
             var registrosIdep = await mediator.Send(new ObterIdepQuery());
 

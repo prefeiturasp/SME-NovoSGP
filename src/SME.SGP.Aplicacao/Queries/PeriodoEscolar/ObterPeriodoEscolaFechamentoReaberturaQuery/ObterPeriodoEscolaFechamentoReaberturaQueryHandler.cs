@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Queries
 {
-    public class ObterPeriodoEscolaFechamentoReaberturaQueryHandler : IRequestHandler<ObterPeriodoEscolaFechamentoReaberturaQuery, (Dominio.PeriodoEscolar periodoEscolar, PeriodoDto periodoFechamento)>
+    public class ObterPeriodoEscolaFechamentoReaberturaQueryHandler : IRequestHandler<ObterPeriodoEscolaFechamentoReaberturaQuery, (Dominio.PeriodoEscolar periodoEscolar, PeriodoDto periodoFechamento, Dominio.Aplicacao aplicacao)>
     {
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
@@ -28,9 +28,9 @@ namespace SME.SGP.Aplicacao.Queries
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar;
         }
 
-        public async Task<(Dominio.PeriodoEscolar periodoEscolar, PeriodoDto periodoFechamento)> Handle(ObterPeriodoEscolaFechamentoReaberturaQuery request, CancellationToken cancellationToken)
+        public async Task<(Dominio.PeriodoEscolar periodoEscolar, PeriodoDto periodoFechamento, Dominio.Aplicacao aplicacao)> Handle(ObterPeriodoEscolaFechamentoReaberturaQuery request, CancellationToken cancellationToken)
         {
-            var periodoFechamento = await servicoPeriodoFechamento.ObterPorTipoCalendarioSme(request.TipoCalendarioId);
+            var periodoFechamento = await servicoPeriodoFechamento.ObterPorTipoCalendarioSme(request.TipoCalendarioId, request.Aplicacao);
             var periodoFechamentoBimestre = periodoFechamento?.FechamentosBimestres.FirstOrDefault(x => x.Bimestre == request.Bimestre);
 
             if (periodoFechamento.EhNulo() || periodoFechamentoBimestre.EhNulo())
@@ -45,14 +45,16 @@ namespace SME.SGP.Aplicacao.Queries
                         throw new NegocioException($"Não localizado período de fechamento em aberto para turma informada no {request.Bimestre}º Bimestre");
 
                     return ((await repositorioPeriodoEscolar.ObterPorTipoCalendario(request.TipoCalendarioId)).FirstOrDefault(a => a.Bimestre == request.Bimestre)
-                        , new PeriodoDto(fechamentoReabertura.Inicio, fechamentoReabertura.Fim));
+                        , new PeriodoDto(fechamentoReabertura.Inicio, fechamentoReabertura.Fim)
+                        , request.Aplicacao);
                 }
             }
 
             return (periodoFechamentoBimestre?.PeriodoEscolar
                 , periodoFechamentoBimestre is null ?
                     null :
-                    new PeriodoDto(periodoFechamentoBimestre.InicioDoFechamento.Value, periodoFechamentoBimestre.FinalDoFechamento.Value));
+                    new PeriodoDto(periodoFechamentoBimestre.InicioDoFechamento.Value, periodoFechamentoBimestre.FinalDoFechamento.Value)
+                , request.Aplicacao);
         }
 
         private EventoTipo ObterTipoEventoFechamentoBimestre()

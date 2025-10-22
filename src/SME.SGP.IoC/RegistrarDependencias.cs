@@ -246,6 +246,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioImportacaoLog, RepositorioImportacaoLog>();
             services.TryAddScoped<IRepositorioPainelEducacionalProficienciaIdep, RepositorioPainelEducacionalProficienciaIdep>();
             services.TryAddScoped<IRepositorioSondagemEscrita, RepositorioSondagemEscrita>();
+            services.TryAddScoped<IRepositorioNota, RepositorioNota>();
             services.TryAddScoped<IConsultasVisaoGeralPainelEducacionalUseCase, ConsultasPainelEducacionalVisaoGeralUseCase>();
             services.TryAddScoped<IConsultasInformacoesPapUseCase, ConsultasInformacoesPapUseCase>();
             services.AddScoped<IConsultasIdepPainelEducacionalUseCase, ConsultasIdepPainelEducacionalUseCase>();
@@ -253,6 +254,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasPainelEducacionalFluenciaLeitoraUseCase, ConsultasPainelEducacionalFluenciaLeitoraUseCase>();
             services.TryAddScoped<IConsultasProficienciaEscolaDadosUseCase, ConsultasProficienciaEscolaDadosUseCase>();
             services.TryAddScoped<IConsultasSondagemEscritaUseCase, ConsultasSondagemEscritaUseCase>();
+            services.TryAddScoped<IConsultasNotasVisaoSmeDreUseCase, ConsultasNotasVisaoSmeDreUseCase>();
+            services.TryAddScoped<IConsultasNotasVisaoUeUseCase, ConsultasNotasVisaoUeUseCase>();
         }
 
         protected virtual void RegistrarContextos(IServiceCollection services)
@@ -674,6 +677,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPainelEducacionalAbandonoUe, RepositorioPainelEducacionalAbandonoUe>();
             services.TryAddScoped<IConsolidarSondagemEscritaUePainelEducacionalUseCase, ConsolidarSondagemEscritaUePainelEducacionalUseCase>();
             services.TryAddScoped<IConsolidarAbandonoPainelEducacionalUseCase, ConsolidarAbandonoPainelEducacionalUseCase>();
+            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoNota, RepositorioPainelEducacionalConsolidacaoNota>();
+            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoNotaConsulta, RepositorioPainelEducacionalConsolidacaoNotaConsulta>();
+            services.TryAddScoped<IConsolidarNotasPainelEducacionalUseCase, ConsolidarNotasPainelEducacionalUseCase>();
 
         }
 
