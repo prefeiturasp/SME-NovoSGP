@@ -6,7 +6,7 @@ using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoUe;
 
 namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNotas.VisaoUe
 {
-    public class ObterNotaVisaoUeQuery : IRequest<PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>>
+    public class ObterNotaVisaoUeQuery : IRequest<PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeRetornoSelectDto>>
     {
         public ObterNotaVisaoUeQuery(Paginacao paginacao, string codigoUe, int anoLetivo, int bimestre, Modalidade modalidade)
         {
@@ -38,10 +38,6 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNotas.VisaoUe
             RuleFor(c => c.Bimestre)
            .NotEmpty()
            .WithMessage("O bimestre deve ser informado.");
-
-            RuleFor(c => c.Modalidade)
-           .NotEmpty()
-           .WithMessage("A modalidade deve ser informada.");
         }
     }
 }

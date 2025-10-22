@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNotas.VisaoUe
 {
-    public class ObterNotaVisaoUeQueryHandler : ConsultasBase, IRequestHandler<ObterNotaVisaoUeQuery, PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>>
+    public class ObterNotaVisaoUeQueryHandler : ConsultasBase, IRequestHandler<ObterNotaVisaoUeQuery, PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeRetornoSelectDto>>
     {
         private readonly IRepositorioNota repositorio;
 
@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNotas.VisaoUe
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
 
-        public async Task<PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>> Handle(ObterNotaVisaoUeQuery request, CancellationToken cancellationToken)
+        public async Task<PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeRetornoSelectDto>> Handle(ObterNotaVisaoUeQuery request, CancellationToken cancellationToken)
         {
             return await repositorio.ObterNotasVisaoUe(Paginacao, request.CodigoUe, request.AnoLetivo, request.Bimestre, request.Modalidade);
         }
