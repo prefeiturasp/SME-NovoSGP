@@ -9,6 +9,7 @@ using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoDistorcaoIdade;
 using SME.SGP.Infra.Dtos.PainelEducacional.IndicadoresPap;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoSmeDre;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoUe;
+using SME.SGP.Infra.Dtos.PainelEducacional.Reclassificacao;
 using SME.SGP.Infra.Dtos.PainelEducacional.SondagemEscrita;
 using System.Threading.Tasks;
 

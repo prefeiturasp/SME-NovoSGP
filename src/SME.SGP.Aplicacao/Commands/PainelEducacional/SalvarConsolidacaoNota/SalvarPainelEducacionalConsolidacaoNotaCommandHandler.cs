@@ -25,6 +25,7 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarConsolidacaoNota
             await _repositorioPainelEducacionalConsolidacaoNota.LimparConsolidacaoAsync(menorAnoLetivo);
 
             await  _repositorioPainelEducacionalConsolidacaoNota.SalvarConsolidacaoAsync(request.NotasConsolidadasDre.ToList());
+            await  _repositorioPainelEducacionalConsolidacaoNota.SalvarConsolidacaoUeAsync(request.NotasConsolidadasUe.ToList());
             return true;
         }
     }
