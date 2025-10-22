@@ -606,6 +606,20 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     QuantidadeAcimaMediaMatematica = 0,
                     QuantidadeAbaixoMediaCiencias = 1,
                     QuantidadeAcimaMediaCiencias = 2
+                },
+                new PainelEducacionalConsolidacaoNota
+                {
+                    AnoLetivo = anoLetivo,
+                    Bimestre = 2,
+                    Modalidade = Modalidade.Medio,
+                    CodigoDre = "DRE003",
+                    AnoTurma = '9',
+                    QuantidadeAbaixoMediaPortugues = 3,
+                    QuantidadeAcimaMediaPortugues = 0,
+                    QuantidadeAbaixoMediaMatematica = 0,
+                    QuantidadeAcimaMediaMatematica = 0,
+                    QuantidadeAbaixoMediaCiencias = 0,
+                    QuantidadeAcimaMediaCiencias = 0
                 }
             };
 
@@ -727,9 +741,9 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     SerieTurma = "SA",
                     QuantidadeAbaixoMediaPortugues = 0,
                     QuantidadeAcimaMediaPortugues = 0,
-                    QuantidadeAbaixoMediaMatematica = 1,
+                    QuantidadeAbaixoMediaMatematica = 0,
                     QuantidadeAcimaMediaMatematica = 1,
-                    QuantidadeAbaixoMediaCiencias = 1,
+                    QuantidadeAbaixoMediaCiencias = 0,
                     QuantidadeAcimaMediaCiencias = 1
                 },
                 new PainelEducacionalConsolidacaoNotaUe

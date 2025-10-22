@@ -50,38 +50,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                .GroupBy(db => new
                {
                    db.CodigoDre,
-                   db.AnoLetivo,
-                   db.Bimestre,
-                   db.Modalidade,
-                   db.AnoTurma
-               })
-               .Select(notasAgrupadas =>
-               {
-                   var consolidado = new PainelEducacionalConsolidacaoNota
-                   {
-                       AnoLetivo = notasAgrupadas.Key.AnoLetivo,
-                       Bimestre = notasAgrupadas.Key.Bimestre,
-                       Modalidade = notasAgrupadas.Key.Modalidade,
-                       CodigoDre = notasAgrupadas.Key.CodigoDre,
-                       AnoTurma = notasAgrupadas.Key.AnoTurma
-                   };
-
-                   var quantidades = CalcularQuantidadesPorComponente(notasAgrupadas);
-                   consolidado.QuantidadeAbaixoMediaPortugues = quantidades.GetValueOrDefault(ComponentesCurricularesConstants.CODIGO_PORTUGUES).Abaixo;
-                   consolidado.QuantidadeAcimaMediaPortugues = quantidades.GetValueOrDefault(ComponentesCurricularesConstants.CODIGO_PORTUGUES).Acima;
-                   consolidado.QuantidadeAbaixoMediaMatematica = quantidades.GetValueOrDefault(ComponentesCurricularesConstants.CODIGO_MATEMATICA).Abaixo;
-                   consolidado.QuantidadeAcimaMediaMatematica = quantidades.GetValueOrDefault(ComponentesCurricularesConstants.CODIGO_MATEMATICA).Acima;
-                   consolidado.QuantidadeAbaixoMediaCiencias = quantidades.GetValueOrDefault(ComponentesCurricularesConstants.CODIGO_CIENCIAS).Abaixo;
-                   consolidado.QuantidadeAcimaMediaCiencias = quantidades.GetValueOrDefault(ComponentesCurricularesConstants.CODIGO_CIENCIAS).Acima;
-
-                   return consolidado;
-               }).ToList();
-
-        private IList<PainelEducacionalConsolidacaoNotaUe> ConsolidarNotasPorUe(IEnumerable<PainelEducacionalConsolidacaoNotaDadosBrutos> dadosBrutos) =>
-            dadosBrutos
-               .GroupBy(db => new
-               {
-                   db.CodigoDre,
                    db.CodigoUe,
                    db.AnoLetivo,
                    db.Bimestre,
