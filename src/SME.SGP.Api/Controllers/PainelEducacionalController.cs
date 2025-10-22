@@ -5,7 +5,7 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
-using SME.SGP.Infra.Dtos.PainelEducacional.FrequenciaSemanalUe;
+using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoDistorcaoIdade;
 using SME.SGP.Infra.Dtos.PainelEducacional.IndicadoresPap;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoSmeDre;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoUe;
@@ -147,11 +147,14 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterNotasVisaoUe([FromQuery] FiltroPainelEducacionalNotasVisaoUe filtro, [FromServices] IConsultasNotasVisaoUeUseCase consultasNotasUseCase)
      => Ok(await consultasNotasUseCase.ObterNotasVisaoUe(filtro.CodigoUe, filtro.AnoLetivo, filtro.Bimestre, filtro.Modalidade));
 
-        [HttpGet("frequencia-semanal-ue")]
-        [ProducesResponseType(typeof(PainelEducacionalFrequenciaSemanalUeDto), 200)]
+
+        [HttpGet("distorcao-serie-idade")]
+        [ProducesResponseType(typeof(PainelEducacionalDistorcaoIdadeDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterFrequenciaSemanalUe([FromQuery] FiltroFrequenciaSemanalUe filtro, [FromServices] IConsultasFrequenciaSemanalUeUseCase consultasFrequenciaSemanalUeCase)
-     => Ok(await consultasFrequenciaSemanalUeCase.ObterFrequenciaSemanalUe(filtro.CodigoUe, filtro.AnoLetivo));
+        public async Task<IActionResult> ObterDistorcaoSerieIdade([FromQuery] FiltroPainelEducacionalDistorcaoIdade filtro, [FromServices] IConsultasDistorcaoIdadeUseCase consultasDistorcaoIdadeUseCase)
+        => Ok(await consultasDistorcaoIdadeUseCase.ObterDistorcaoIdade(filtro));
+
     }
 }
