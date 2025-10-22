@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
         }
 
         private IList<PainelEducacionalConsolidacaoNota> ConsolidarNotasPorDre(IEnumerable<PainelEducacionalConsolidacaoNotaDadosBrutos> dadosBrutos) =>
-            dadosBrutos
+            dadosBrutos.Where(db => char.IsDigit(db.AnoTurma))
                .GroupBy(db => new
                {
                    db.CodigoDre,
