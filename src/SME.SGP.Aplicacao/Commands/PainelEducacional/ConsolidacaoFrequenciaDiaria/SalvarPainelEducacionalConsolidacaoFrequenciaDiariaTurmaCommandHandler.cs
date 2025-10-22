@@ -23,14 +23,16 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.ConsolidacaoFrequenciaDia
             await repositorioPainelEducacionalConsolidacaoFrequenciaDiaria.LimparConsolidacao();
 
             await repositorioPainelEducacionalConsolidacaoFrequenciaDiaria.BulkInsertAsync(MapearParaEntidade(request.Indicadores));
+
             return true;
         }
 
-        private static List<PainelEducacionalConsolidacaoFrequenciaDiaria> MapearParaEntidade(IEnumerable<ConsolidacaoFrequenciaDiariaTurmaDto> consolidacaoFrequenciaDto)
+        private static IEnumerable<PainelEducacionalConsolidacaoFrequenciaDiaria> MapearParaEntidade(IEnumerable<ConsolidacaoFrequenciaDiariaTurmaDto> consolidacaoFrequenciaDto)
         {
             return consolidacaoFrequenciaDto
                 .Select(dto => new PainelEducacionalConsolidacaoFrequenciaDiaria
                 {
+                    CodigoUe = dto.CodigoUe,
                     TurmaId = dto.TurmaId,
                     NivelFrequencia = dto.NivelFrequencia,
                     Turma = dto.Turma,
@@ -39,8 +41,7 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.ConsolidacaoFrequenciaDia
                     TotalPresentes = dto.TotalPresentes,
                     PercentualFrequencia = dto.PercentualFrequencia,
                     DataAula = dto.DataAula,
-                })
-                .ToList();
+                });
         }
     }
 }

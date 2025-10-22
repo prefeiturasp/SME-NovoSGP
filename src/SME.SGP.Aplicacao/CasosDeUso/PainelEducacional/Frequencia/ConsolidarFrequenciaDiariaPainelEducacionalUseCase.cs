@@ -2,7 +2,8 @@
 using SME.SGP.Aplicacao.Commands.PainelEducacional.ConsolidacaoFrequenciaDiaria;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional.Frequencia;
 using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterFrequenciaDiaria;
-using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterTurmasPainelEducacional;
+using SME.SGP.Aplicacao.Queries.UE.ObterTodasUes;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional.Frequencia;
@@ -22,37 +23,26 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional.Frequencia
         public async Task<bool> Executar(MensagemRabbit param)
         {
 
-            var listagemFrequencia = await mediator.Send(new ObterFrequenciaDiariaQuery(2024));
+            var listagemFrequencia = await mediator.Send(new ObterFrequenciaDiariaQuery(DateTime.Now.Year));
+            var listagemUe = await mediator.Send(new ObterTodasUesQuery());
 
-            var indicadoresTurmas = AgruparConsolicacaoTurmas(listagemFrequencia);
+            var indicadoresTurmas = AgruparConsolicacaoTurmas(listagemFrequencia, listagemUe);
 
             await mediator.Send(new SalvarPainelEducacionalConsolidacaoFrequenciaDiariaTurmaCommand(indicadoresTurmas));
 
-            //var frequencia = new List<RegistroFrequenciaPorDisciplinaAlunoDto>();
-            //var listagemDre = await mediator.Send(new ObterTodasDresQuery());
-            //foreach (var dre in listagemDre)
-            //{
-            //    var listagemUe = await mediator.Send(new ObterUesCodigosPorDreQuery(dre.Id));
-            //    var listagemTurmas = await mediator.Send(new ObterTurmasPainelEducacionalQuery(DateTime.Now.Year));
-            //    foreach (var ue in listagemUe)
-            //    {
-            //        var turmasDaUe = listagemTurmas.Where(t => t.CodigoUe == ue).ToList();
 
-            //        var turmasFiltro = turmasDaUe.Select(x => x.TurmaId).ToList();
+            var indicadoresDre = AgruparConsolicacaoDre(listagemFrequencia, listagemUe);
 
-            //        turmasFiltro.Add("2853538");
-            //        //frequencia.AddRange(await mediator.Send(new ObterFrequenciaDiariaQuery(turmasFiltro)));
-            //    }
-
-            //}
+            await mediator.Send(new SalvarPainelEducacionalConsolidacaoFrequenciaDiariaCommand(indicadoresDre));
 
             return true;
         }
 
-        private static IEnumerable<ConsolidacaoFrequenciaDiariaTurmaDto> AgruparConsolicacaoTurmas(IEnumerable<DadosParaConsolidarFrequenciaDiariaAlunoDto> listagemFrequencia)
+        private static IEnumerable<ConsolidacaoFrequenciaDiariaDreDto> AgruparConsolicacaoDre(IEnumerable<DadosParaConsolidarFrequenciaDiariaAlunoDto> listagemFrequencia,
+                                                                                              IEnumerable<Ue> ues)
         {
             var indicadores = listagemFrequencia
-                    .GroupBy(x => new { x.TurmaId, x.DataAula })
+                    .GroupBy(x => new { x.UeId, x.DataAula })
                     .Select(g =>
                     {
                         var totalPresentes = g.Sum(x => x.TotalPresentes);
@@ -64,9 +54,47 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional.Frequencia
                             ? 0
                             : (decimal)totalPresentes / totalFrequencias * 100;
 
+                        var ue = ues.FirstOrDefault(u => u.Id == g.Key.UeId);
+
+                        return new ConsolidacaoFrequenciaDiariaDreDto
+                        {
+                            CodigoDre = g.First().CodigoDre,
+                            CodigoUe = ue.CodigoUe,
+                            Ue = $"{ue.TipoEscola.ObterNomeCurto()} {ue.Nome}",
+                            AnoLetivo = g.First().AnoLetivo,
+                            DataAula = g.Key.DataAula,
+                            TotalEstudantes = totalFrequencias,
+                            TotalPresentes = totalPresentes,
+                            PercentualFrequencia = percentualFrequencia,
+                            NivelFrequencia = ObterNivelFrequencia(percentualFrequencia)
+                        };
+                    }).OrderBy(x => x.Ue);
+
+            return indicadores;
+        }
+
+        private static IEnumerable<ConsolidacaoFrequenciaDiariaTurmaDto> AgruparConsolicacaoTurmas(IEnumerable<DadosParaConsolidarFrequenciaDiariaAlunoDto> listagemFrequencia,
+                                                                                                   IEnumerable<Ue> ues)
+        {
+            var indicadores = listagemFrequencia
+                    .GroupBy(x => new { x.UeId, x.NomeTurma, x.DataAula })
+                    .Select(g =>
+                    {
+                        var totalPresentes = g.Sum(x => x.TotalPresentes);
+                        var totalAusentes = g.Sum(x => x.TotalAusentes);
+                        var totalRemotos = g.Sum(x => x.TotalRemotos);
+
+                        var totalFrequencias = totalPresentes + totalAusentes + totalRemotos;
+                        var percentualFrequencia = totalFrequencias == 0
+                            ? 0
+                            : (decimal)totalPresentes / totalFrequencias * 100;
+
+                        var ue = ues.FirstOrDefault(u => u.Id == g.Key.UeId);
+
                         return new ConsolidacaoFrequenciaDiariaTurmaDto
                         {
-                            TurmaId = g.Key.TurmaId,
+                            CodigoUe = ue.CodigoUe,
+                            TurmaId = g.First().TurmaId,
                             Turma = g.First().NomeTurma,
                             AnoLetivo = g.First().AnoLetivo,
                             DataAula = g.Key.DataAula,
