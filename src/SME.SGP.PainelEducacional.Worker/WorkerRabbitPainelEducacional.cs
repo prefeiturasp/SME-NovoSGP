@@ -44,6 +44,7 @@ namespace SME.SGP.PainelEducacional.Worker
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarAbandonoPainelEducacional, new ComandoRabbit("Consolidar Abandono para o Painel Educacional", typeof(IConsolidarAbandonoPainelEducacionalUseCase)));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarNotasPainelEducacional, new ComandoRabbit("Consolidar Notas para o Painel Educacional", typeof(IConsolidarNotasPainelEducacionalUseCase)));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarReclassificacaoPainelEducacional, new ComandoRabbit("Consolidar Reclassificação para o Painel Educacional", typeof(IConsolidarReclassificacaoPainelEducacionalUseCase)));
+            Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarFrequenciaDiariaPainelEducacional, new ComandoRabbit("Consolidar frequência diária para o Painel Educacional", typeof(IConsolidarFrequenciaDiariaPainelEducacionalUseCase)));
         }
     }
 }

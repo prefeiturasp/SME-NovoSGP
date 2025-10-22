@@ -22,9 +22,10 @@ namespace SME.SGP.IoC.Extensions.RegistrarCasoDeUsoRabbitSgp
                 .AddScoped<IConsolidarInformacoesPapPainelEducacionalUseCase,
                            ConsolidarInformacoesPapPainelEducacionalUseCase>()
                .AddScoped<IConsolidarFluenciaLeitoraPainelEducacionalUseCase,
-                           ConsolidarFluenciaLeitoraPainelEducacionalUseCase>()
-               .AddScoped<IConsolidarReclassificacaoPainelEducacionalUseCase,
-                           ConsolidarReclassificacaoPainelEducacionalUseCase>();
+                           ConsolidarFluenciaLeitoraPainelEducacionalUseCase>();
+
+            services.AddScoped<IConsolidarFrequenciaDiariaPainelEducacionalUseCase, ConsolidarFrequenciaDiariaPainelEducacionalUseCase>();
+            services.AddScoped<IConsolidarReclassificacaoPainelEducacionalUseCase, ConsolidarReclassificacaoPainelEducacionalUseCase>();
         }
     }
 }
