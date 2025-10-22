@@ -8,6 +8,7 @@ using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Utilitarios;
 using System.Diagnostics.CodeAnalysis;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional.Frequencia;
 
 namespace SME.SGP.PainelEducacional.Worker
 {

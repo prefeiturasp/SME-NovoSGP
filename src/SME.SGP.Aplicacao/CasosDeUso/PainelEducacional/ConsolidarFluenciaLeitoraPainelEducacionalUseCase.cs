@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             
             foreach (var item in anosEPeriodos)
             {
-                var consolidacoesPorAnoEPeriodo = await ObterConsolidacoesPorAnoEPeriodo(registrosFluenciaLeitora, item.AnoLetivo, item.Periodo);
+                var consolidacoesPorAnoEPeriodo = ObterConsolidacoesPorAnoEPeriodo(registrosFluenciaLeitora, item.AnoLetivo, item.Periodo);
                 todasConsolidacoes.AddRange(consolidacoesPorAnoEPeriodo);
             }
 
@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             return true;
         }       
 
-        private async Task<List<PainelEducacionalRegistroFluenciaLeitoraAgrupamentoFluenciaDto>> ObterConsolidacoesPorAnoEPeriodo(
+        private static List<PainelEducacionalRegistroFluenciaLeitoraAgrupamentoFluenciaDto> ObterConsolidacoesPorAnoEPeriodo(
             IEnumerable<PainelEducacionalRegistroFluenciaLeitoraDto> registrosFluenciaLeitora, 
             int anoLetivo, 
             int periodo)

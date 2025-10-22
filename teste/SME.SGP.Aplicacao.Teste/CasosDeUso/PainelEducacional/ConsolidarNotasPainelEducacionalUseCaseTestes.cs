@@ -741,9 +741,9 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     SerieTurma = "SA",
                     QuantidadeAbaixoMediaPortugues = 0,
                     QuantidadeAcimaMediaPortugues = 0,
-                    QuantidadeAbaixoMediaMatematica = 0,
+                    QuantidadeAbaixoMediaMatematica = 1,
                     QuantidadeAcimaMediaMatematica = 1,
-                    QuantidadeAbaixoMediaCiencias = 0,
+                    QuantidadeAbaixoMediaCiencias = 1,
                     QuantidadeAcimaMediaCiencias = 1
                 },
                 new PainelEducacionalConsolidacaoNotaUe
