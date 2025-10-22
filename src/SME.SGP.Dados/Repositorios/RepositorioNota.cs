@@ -18,7 +18,7 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database;
         }
 
-        public async Task<PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>> ObterNotasVisaoUe(Paginacao paginacao, string codigoUe, int anoLetivo, int bimestre, Modalidade modalidade)
+        public async Task<PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeRetornoSelectDto>> ObterNotasVisaoUe(Paginacao paginacao, string codigoUe, int anoLetivo, int bimestre, Modalidade modalidade)
         {
             string querySelect = @"select ano_letivo as AnoLetivo,
                                              codigo_dre as CodigoDre,
@@ -66,14 +66,14 @@ namespace SME.SGP.Dados.Repositorios
                 codigoUe,
                 anoLetivo,
                 bimestre,
-                modalidade
+                modalidade = (int)modalidade
             };
 
-            var retorno = new PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>();
+            var retorno = new PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeRetornoSelectDto>();
 
             using (var multi = await database.Conexao.QueryMultipleAsync(queryCompleta, parametros))
             {
-                retorno.Items = multi.Read<PainelEducacionalNotasVisaoUeDto>();
+                retorno.Items = multi.Read<PainelEducacionalNotasVisaoUeRetornoSelectDto>();
                 retorno.TotalRegistros = multi.ReadFirst<int>();
             }
 
