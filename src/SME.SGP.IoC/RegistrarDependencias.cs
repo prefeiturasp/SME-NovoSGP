@@ -259,7 +259,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasSondagemEscritaUseCase, ConsultasSondagemEscritaUseCase>();
             services.TryAddScoped<IConsultasNotasVisaoSmeDreUseCase, ConsultasNotasVisaoSmeDreUseCase>();
             services.TryAddScoped<IConsultasNotasVisaoUeUseCase, ConsultasNotasVisaoUeUseCase>();
-            services.TryAddScoped<IConsultasFrequenciaSemanalUeUseCase, ConsultasFrequenciaSemanalUeUseCase>();
+            services.TryAddScoped<IConsultasDistorcaoIdadeUseCase, ConsultasDistorcaoIdadeUseCase>();
         }
 
         protected virtual void RegistrarContextos(IServiceCollection services)
@@ -674,9 +674,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioProficienciaIdepConsulta, RepositorioProficienciaIdepConsulta>();
             services.TryAddScoped<IRepositorioProficienciaIdebConsulta, RepositorioProficienciaIdebConsulta>();
             services.TryAddScoped<IRepositorioProficienciaIdeb, RepositorioProficienciaIdeb>();
-            services.TryAddScoped<IRepositorioPainelEducacionalRegistroFrequenciaDiariaConsulta, RepositorioPainelEducacionalRegistroFrequenciaDiariaConsulta>();
-            services.AddScoped<IRepositorioDistorcaoIdade, RepositorioDistorcaoIdade>();
-            services.AddScoped<IRepositorioPainelEducacionalReclassificacao, RepositorioPainelEducacionalReclassificacao>();
+            services.TryAddScoped<IRepositorioDistorcaoIdade, RepositorioDistorcaoIdade>();
 
             services.TryAddScoped<IRepositorioConsolidacaoFluenciaLeitora, RepositorioConsolidacaoFluenciaLeitora>();
             services.TryAddScoped<IConsolidarTaxaAlfabetizacaoPainelEducacionalUseCase, ConsolidarTaxaAlfabetizacaoPainelEducacionalUseCase>();
