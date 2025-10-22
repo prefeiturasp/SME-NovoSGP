@@ -16,7 +16,7 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database;
         }
 
-        public async Task<IEnumerable<PainelEducacionalReclassificacaoDto>> ObterReclassificacao(string codigoDre, string codigoUe, int anoLetivo, string anoTurma)
+        public async Task<IEnumerable<PainelEducacionalReclassificacaoDto>> ObterReclassificacao(string codigoDre, string codigoUe, int anoLetivo, int anoTurma)
         {
             string query = @"
                 select 
@@ -35,7 +35,7 @@ namespace SME.SGP.Dados.Repositorios
             if (anoLetivo > 0)
                 query += " AND ano_letivo = @anoLetivo ";
 
-            if (!string.IsNullOrWhiteSpace(anoTurma))
+            if (anoTurma > 0)
                 query += " AND ano_turma = @anoTurma ";
 
             var modalidades = await database.Conexao.QueryAsync<ModalidadeReclassificacaoDto>(query, new
