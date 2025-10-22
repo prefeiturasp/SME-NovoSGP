@@ -45,8 +45,10 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
         private async Task<IEnumerable<PainelEducacionalReclassificacao>> ObterDadosReclassificacaoPorAno(int anoLetivo)
         {
             var alunosReclassificados = new List<AlunosSituacaoTurmas>();
+
             var turmasPainelEducacional = (await repositorioTurmaConsulta.ObterTurmasPorAnoLetivo(anoLetivo))
-                                          .Where(t => t.ModalidadeCodigo == Modalidade.Fundamental || t.ModalidadeCodigo == Modalidade.Medio || t.ModalidadeCodigo == Modalidade.EJA)
+                                          .Where(t => (t.ModalidadeCodigo == Modalidade.Fundamental || t.ModalidadeCodigo == Modalidade.Medio || t.ModalidadeCodigo == Modalidade.EJA)
+                                                 && int.TryParse(t.Ano, out _))
                                           .ToList();
 
             if (!turmasPainelEducacional.Any())
@@ -86,7 +88,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                    CodigoDre = g.Key.DreId,
                    CodigoUe = g.Key.UeId,
                    AnoLetivo = g.Key.AnoLetivo,
-                   AnoTurma = g.Key.AnoTurma,
+                   AnoTurma = Convert.ToInt16(g.Key.AnoTurma),
                    ModalidadeTurma = g.Key.ModalidadeTurma,
                    QuantidadeAlunosReclassificados = g.Sum(x => x.Aluno.QuantidadeAlunos)
                })
