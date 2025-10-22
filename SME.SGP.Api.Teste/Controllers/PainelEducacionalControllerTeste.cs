@@ -1341,7 +1341,7 @@ namespace SME.SGP.Api.Teste.Controllers
                 AnoLetivo = 2024,
                 CodigoDre = "DRE123",
                 CodigoUe = "UE456",
-                AnoTurma = "5"
+                AnoTurma = 5
             };
 
             var retornoEsperado = new List<PainelEducacionalReclassificacaoDto>
@@ -1353,13 +1353,13 @@ namespace SME.SGP.Api.Teste.Controllers
                         new ModalidadeReclassificacaoDto
                         {
                             Nome = "Ensino Fundamental",
-                            AnoTurma = "5º Ano",
+                            AnoTurma = 5,
                             QuantidadeAlunos = 15
                         },
                         new ModalidadeReclassificacaoDto
                         {
                             Nome = "Ensino Fundamental",
-                            AnoTurma = "6º Ano", 
+                            AnoTurma = 6, 
                             QuantidadeAlunos = 8
                         }
                     }
@@ -1385,13 +1385,13 @@ namespace SME.SGP.Api.Teste.Controllers
                 modalidade =>
                 {
                     Assert.Equal("Ensino Fundamental", modalidade.Nome);
-                    Assert.Equal("5º Ano", modalidade.AnoTurma);
+                    Assert.Equal(5, modalidade.AnoTurma);
                     Assert.Equal(15, modalidade.QuantidadeAlunos);
                 },
                 modalidade =>
                 {
                     Assert.Equal("Ensino Fundamental", modalidade.Nome);
-                    Assert.Equal("6º Ano", modalidade.AnoTurma);
+                    Assert.Equal(6, modalidade.AnoTurma);
                     Assert.Equal(8, modalidade.QuantidadeAlunos);
                 });
 
@@ -1399,7 +1399,7 @@ namespace SME.SGP.Api.Teste.Controllers
                 It.Is<string>(d => d == filtro.CodigoDre),
                 It.Is<string>(u => u == filtro.CodigoUe),
                 It.Is<int>(a => a == filtro.AnoLetivo),
-                It.Is<string>(t => t == filtro.AnoTurma)
+                It.Is<int>(t => t == filtro.AnoTurma)
             ), Times.Once);
         }
 
@@ -1411,7 +1411,7 @@ namespace SME.SGP.Api.Teste.Controllers
                 AnoLetivo = 2023,
                 CodigoDre = "DRE999",
                 CodigoUe = "UE000",
-                AnoTurma = "3"
+                AnoTurma = 3
             };
 
             var retornoEsperado = new List<PainelEducacionalReclassificacaoDto>();
@@ -1432,7 +1432,7 @@ namespace SME.SGP.Api.Teste.Controllers
                 It.Is<string>(d => d == filtro.CodigoDre),
                 It.Is<string>(u => u == filtro.CodigoUe),
                 It.Is<int>(a => a == filtro.AnoLetivo),
-                It.Is<string>(t => t == filtro.AnoTurma)
+                It.Is<int>(t => t == filtro.AnoTurma)
             ), Times.Once);
         }
 
@@ -1444,7 +1444,7 @@ namespace SME.SGP.Api.Teste.Controllers
                 AnoLetivo = 2024,
                 CodigoDre = null,
                 CodigoUe = null,
-                AnoTurma = "7"
+                AnoTurma = 7
             };
 
             var retornoEsperado = new List<PainelEducacionalReclassificacaoDto>
@@ -1456,7 +1456,7 @@ namespace SME.SGP.Api.Teste.Controllers
                         new ModalidadeReclassificacaoDto
                         {
                             Nome = "Ensino Fundamental",
-                            AnoTurma = "7º Ano",
+                            AnoTurma = 7,
                             QuantidadeAlunos = 25
                         }
                     }
@@ -1480,14 +1480,14 @@ namespace SME.SGP.Api.Teste.Controllers
 
             var modalidade = item.Modalidade.First();
             Assert.Equal("Ensino Fundamental", modalidade.Nome);
-            Assert.Equal("7º Ano", modalidade.AnoTurma);
+            Assert.Equal(7, modalidade.AnoTurma);
             Assert.Equal(25, modalidade.QuantidadeAlunos);
 
             mockUseCase.Verify(x => x.ObterReclassificacao(
                 It.Is<string>(d => d == null),
                 It.Is<string>(u => u == null),
                 It.Is<int>(a => a == 2024),
-                It.Is<string>(t => t == "7")
+                It.Is<int>(t => t == 7)
             ), Times.Once);
         }
 
@@ -1499,7 +1499,7 @@ namespace SME.SGP.Api.Teste.Controllers
                 AnoLetivo = 2024,
                 CodigoDre = "DRE789",
                 CodigoUe = "UE321",
-                AnoTurma = "9"
+                AnoTurma = 9
             };
 
             var retornoEsperado = new List<PainelEducacionalReclassificacaoDto>
@@ -1511,19 +1511,19 @@ namespace SME.SGP.Api.Teste.Controllers
                         new ModalidadeReclassificacaoDto
                         {
                             Nome = "Ensino Fundamental",
-                            AnoTurma = "9º Ano",
+                            AnoTurma = 9,
                             QuantidadeAlunos = 32
                         },
                         new ModalidadeReclassificacaoDto
                         {
                             Nome = "EJA",
-                            AnoTurma = "9º Ano",
+                            AnoTurma = 9,
                             QuantidadeAlunos = 12
                         },
                         new ModalidadeReclassificacaoDto
                         {
                             Nome = "Ensino Médio",
-                            AnoTurma = "1ª Série",
+                            AnoTurma = 1,
                             QuantidadeAlunos = 5
                         }
                     }
@@ -1549,19 +1549,19 @@ namespace SME.SGP.Api.Teste.Controllers
                 modalidade =>
                 {
                     Assert.Equal("Ensino Fundamental", modalidade.Nome);
-                    Assert.Equal("9º Ano", modalidade.AnoTurma);
+                    Assert.Equal(9, modalidade.AnoTurma);
                     Assert.Equal(32, modalidade.QuantidadeAlunos);
                 },
                 modalidade =>
                 {
                     Assert.Equal("EJA", modalidade.Nome);
-                    Assert.Equal("9º Ano", modalidade.AnoTurma);
+                    Assert.Equal(9, modalidade.AnoTurma);
                     Assert.Equal(12, modalidade.QuantidadeAlunos);
                 },
                 modalidade =>
                 {
                     Assert.Equal("Ensino Médio", modalidade.Nome);
-                    Assert.Equal("1ª Série", modalidade.AnoTurma);
+                    Assert.Equal(1, modalidade.AnoTurma);
                     Assert.Equal(5, modalidade.QuantidadeAlunos);
                 });
 
@@ -1569,7 +1569,7 @@ namespace SME.SGP.Api.Teste.Controllers
                 It.Is<string>(d => d == "DRE789"),
                 It.Is<string>(u => u == "UE321"),
                 It.Is<int>(a => a == 2024),
-                It.Is<string>(t => t == "9")
+                It.Is<int>(t => t == 9)
             ), Times.Once);
         }
 
@@ -1581,7 +1581,7 @@ namespace SME.SGP.Api.Teste.Controllers
                 AnoLetivo = 2025,
                 CodigoDre = "DRE456",
                 CodigoUe = "UE789",
-                AnoTurma = "1"
+                AnoTurma = 1
             };
 
             var retornoEsperado = new List<PainelEducacionalReclassificacaoDto>
@@ -1593,7 +1593,7 @@ namespace SME.SGP.Api.Teste.Controllers
                         new ModalidadeReclassificacaoDto
                         {
                             Nome = "Ensino Fundamental",
-                            AnoTurma = "1º Ano",
+                            AnoTurma = 1,
                             QuantidadeAlunos = 28
                         }
                     }
@@ -1602,7 +1602,7 @@ namespace SME.SGP.Api.Teste.Controllers
 
             var mockUseCase = new Mock<IConsultasReclassificacaoPainelEducacionalUseCase>();
             mockUseCase
-                .Setup(x => x.ObterReclassificacao(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>()))
+                .Setup(x => x.ObterReclassificacao(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(retornoEsperado);
 
             await _controller.ObterReclassificacao(filtro, mockUseCase.Object);
@@ -1611,7 +1611,7 @@ namespace SME.SGP.Api.Teste.Controllers
                 It.Is<string>(d => d == filtro.CodigoDre),
                 It.Is<string>(u => u == filtro.CodigoUe),
                 It.Is<int>(a => a == filtro.AnoLetivo),
-                It.Is<string>(t => t == filtro.AnoTurma)
+                It.Is<int>(t => t == filtro.AnoTurma)
             ), Times.Once);
         }
 
@@ -1623,7 +1623,7 @@ namespace SME.SGP.Api.Teste.Controllers
                 AnoLetivo = 2024,
                 CodigoDre = "DRE111",
                 CodigoUe = "UE222",
-                AnoTurma = null
+                AnoTurma = 0
             };
 
             var retornoEsperado = new List<PainelEducacionalReclassificacaoDto>
@@ -1635,7 +1635,7 @@ namespace SME.SGP.Api.Teste.Controllers
                         new ModalidadeReclassificacaoDto
                         {
                             Nome = "Ensino Fundamental",
-                            AnoTurma = "Todos os anos",
+                            AnoTurma = 0,
                             QuantidadeAlunos = 150
                         }
                     }
@@ -1659,14 +1659,14 @@ namespace SME.SGP.Api.Teste.Controllers
 
             var modalidade = item.Modalidade.First();
             Assert.Equal("Ensino Fundamental", modalidade.Nome);
-            Assert.Equal("Todos os anos", modalidade.AnoTurma);
+            Assert.Equal(0, modalidade.AnoTurma);
             Assert.Equal(150, modalidade.QuantidadeAlunos);
 
             mockUseCase.Verify(x => x.ObterReclassificacao(
                 It.Is<string>(d => d == "DRE111"),
                 It.Is<string>(u => u == "UE222"),
                 It.Is<int>(a => a == 2024),
-                It.Is<string>(t => t == null)
+                It.Is<int>(t => t == 0)
             ), Times.Once);
         }
     }

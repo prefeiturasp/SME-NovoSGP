@@ -7,7 +7,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterReclassificacao
 {
     public class ObterReclassificacaoQuery : IRequest<IEnumerable<PainelEducacionalReclassificacaoDto>>
     {
-        public ObterReclassificacaoQuery(string codigoDre, string codigoUe, int anoLetivo, string anoTurma)
+        public ObterReclassificacaoQuery(string codigoDre, string codigoUe, int anoLetivo, int anoTurma)
         {
             CodigoDre = codigoDre;
             CodigoUe = codigoUe;
@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterReclassificacao
         public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }
         public int AnoLetivo { get; set; }
-        public string AnoTurma { get; set; }
+        public int AnoTurma { get; set; }
     }
 
     public class ObterReclassificacaoQueryValidator : AbstractValidator<ObterReclassificacaoQuery>
