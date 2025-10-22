@@ -7,6 +7,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
+using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoDistorcaoIdade;
 using SME.SGP.Infra.Dtos.PainelEducacional.IndicadoresPap;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoSmeDre;
@@ -26,6 +27,7 @@ namespace SME.SGP.Api.Teste.Controllers
         private readonly Mock<IConsultasIdebPainelEducacionalUseCase> _consultasIdebPainelEducacionalUseCase = new();
         private readonly Mock<IConsultasPainelEducacionalFluenciaLeitoraUseCase> _consultasFluenciaLeitoraUseCase = new();
         private readonly Mock<IConsultasProficienciaIdebPainelEducacionalUseCase> _consultasProficienciaIdebUseCase = new();
+        private readonly Mock<IConsultasDistorcaoIdadeUseCase> _consultasDistorcaoIdadeUseCase = new();
 
         public PainelEducacionalControllerTeste()
         {
@@ -828,7 +830,7 @@ namespace SME.SGP.Api.Teste.Controllers
             var item = retorno.First();
             Assert.NotNull(item.Modalidades);
             Assert.Single(item.Modalidades);
-            
+
             var modalidade = item.Modalidades.First();
             Assert.Equal("Fundamental", modalidade.Nome);
             Assert.NotNull(modalidade.SerieAno);
@@ -930,12 +932,12 @@ namespace SME.SGP.Api.Teste.Controllers
             var item = retorno.First();
             Assert.NotNull(item.Modalidades);
             Assert.Single(item.Modalidades);
-            
+
             var modalidade = item.Modalidades.First();
             Assert.Equal("Fundamental", modalidade.Nome);
             Assert.NotNull(modalidade.SerieAno);
             Assert.Single(modalidade.SerieAno);
-            
+
             var serieAno = modalidade.SerieAno.First();
             Assert.Equal("7º", serieAno.Nome);
 
@@ -989,7 +991,7 @@ namespace SME.SGP.Api.Teste.Controllers
                         }
                     }
                 },
-                TotalRegistros = 3, 
+                TotalRegistros = 3,
                 TotalPaginas = 1
             };
 
@@ -1005,7 +1007,7 @@ namespace SME.SGP.Api.Teste.Controllers
 
             Assert.Equal(3, retorno.TotalRegistros);
             Assert.Equal(1, retorno.TotalPaginas);
-            Assert.Single(retorno.Items); 
+            Assert.Single(retorno.Items);
 
             var item = retorno.Items.First();
             Assert.NotNull(item.Modalidades);
@@ -1248,11 +1250,11 @@ namespace SME.SGP.Api.Teste.Controllers
             Assert.Equal(1, retorno.TotalRegistros);
             Assert.Equal(1, retorno.TotalPaginas);
             Assert.Single(retorno.Items);
-            
+
             var item = retorno.Items.First();
             var modalidade = item.Modalidades.First();
             Assert.Equal("Ensino Médio", modalidade.Nome);
-            
+
             var turma = modalidade.Turmas.First();
             Assert.Equal("3ª Série", turma.Nome);
 
@@ -1306,8 +1308,8 @@ namespace SME.SGP.Api.Teste.Controllers
                         }
                     }
                 },
-                TotalRegistros = 15, 
-                TotalPaginas = 5    
+                TotalRegistros = 15,
+                TotalPaginas = 5
             };
 
             var mockUseCase = new Mock<IConsultasNotasVisaoUeUseCase>();
@@ -1322,7 +1324,7 @@ namespace SME.SGP.Api.Teste.Controllers
 
             Assert.Equal(15, retorno.TotalRegistros);
             Assert.Equal(5, retorno.TotalPaginas);
-            Assert.Single(retorno.Items); 
+            Assert.Single(retorno.Items);
 
             mockUseCase.Verify(x => x.ObterNotasVisaoUe(
                 It.Is<string>(c => c == filtro.CodigoUe),
@@ -1330,6 +1332,55 @@ namespace SME.SGP.Api.Teste.Controllers
                 It.Is<int>(b => b == filtro.Bimestre),
                 It.Is<Modalidade>(m => m == filtro.Modalidade)
             ), Times.Once);
+        }
+
+        [Fact(DisplayName = "Deve retornar 200 OK com os dados de distorção idade/série")]
+        public async Task ObterDistorcaoSerieIdade_DeveRetornarOkComDados()
+        {
+            // Arrange
+            var filtro = new FiltroPainelEducacionalDistorcaoIdade
+            {
+                AnoLetivo = 2025,
+                CodigoDre = "110000",
+                CodigoUe = "110001"
+            };
+
+            var retorno = new List<PainelEducacionalDistorcaoIdadeDto>
+            {
+                new PainelEducacionalDistorcaoIdadeDto
+                {
+                    Modalidade = "Ensino Fundamental",
+                    SerieAno = new List<SerieAnoDistorcaoIdadeDto>
+                    {
+                        new SerieAnoDistorcaoIdadeDto
+                        {
+                            Ano = "1º",
+                            QuantidadeAlunos = 5,
+                        },
+                        new SerieAnoDistorcaoIdadeDto
+                        {
+                            Ano = "2º",
+                            QuantidadeAlunos = 3,
+                        }
+                    }
+                }
+            };
+
+            _consultasDistorcaoIdadeUseCase
+                .Setup(x => x.ObterDistorcaoIdade(It.IsAny<FiltroPainelEducacionalDistorcaoIdade>()))
+                .Returns(Task.FromResult<IEnumerable<PainelEducacionalDistorcaoIdadeDto>>(retorno));
+
+            // Act
+            var resultado = await _controller.ObterDistorcaoSerieIdade(filtro, _consultasDistorcaoIdadeUseCase.Object);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(resultado);
+            var dto = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalDistorcaoIdadeDto>>(okResult.Value);
+
+            Assert.Single(dto);
+            Assert.Equal("Ensino Fundamental", dto.First().Modalidade);
+
+            _consultasDistorcaoIdadeUseCase.Verify(x => x.ObterDistorcaoIdade(It.IsAny<FiltroPainelEducacionalDistorcaoIdade>()), Times.Once);
         }
     }
 }
