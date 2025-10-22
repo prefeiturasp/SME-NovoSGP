@@ -44,7 +44,7 @@ namespace SME.SGP.Dados.Repositorios
                 writer.Write(r.CodigoUe, NpgsqlTypes.NpgsqlDbType.Varchar);
                 writer.Write(r.AnoLetivo, NpgsqlTypes.NpgsqlDbType.Integer);
                 writer.Write((int)r.ModalidadeTurma, NpgsqlTypes.NpgsqlDbType.Integer);
-                writer.Write(r.AnoTurma, NpgsqlTypes.NpgsqlDbType.Varchar);
+                writer.Write(r.AnoTurma, NpgsqlTypes.NpgsqlDbType.Integer);
                 writer.Write(r.QuantidadeAlunosReclassificados, NpgsqlTypes.NpgsqlDbType.Integer);
                 writer.Write(r.CriadoEm, NpgsqlTypes.NpgsqlDbType.Timestamp);
             }
