@@ -7,6 +7,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoUe;
 using SME.SGP.Infra.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -45,16 +46,40 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             mockContextoAplicacao.Setup(c => c.ObterVariavel<string>("NumeroRegistros")).Returns("20");
 
             var expectedResult = new PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>();
+            var mediatorResult = new PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeRetornoSelectDto>
+            {
+                Items = new List<PainelEducacionalNotasVisaoUeRetornoSelectDto>
+                {
+                    new PainelEducacionalNotasVisaoUeRetornoSelectDto
+                    {
+                        AnoLetivo = 2024,
+                        CodigoDre = "dre-123",
+                        CodigoUe = "ue-id",
+                        Bimestre = 1,
+                        AnoTurma = "5º",
+                        Modalidade = Modalidade.Fundamental,
+                        QuantidadeAbaixoMediaPortugues = 10,
+                        QuantidadeAcimaMediaPortugues = 15,
+                        QuantidadeAbaixoMediaMatematica = 8,
+                        QuantidadeAcimaMediaMatematica = 17,
+                        QuantidadeAbaixoMediaCiencias = 12,
+                        QuantidadeAcimaMediaCiencias = 13
+                    }
+                },
+                TotalRegistros = 1,
+                TotalPaginas = 1
+            };
             ObterNotaVisaoUeQuery queryCapturada = null;
 
             mockMediator
                 .Setup(m => m.Send(It.IsAny<ObterNotaVisaoUeQuery>(), It.IsAny<CancellationToken>()))
-                .Callback<IRequest<PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>>, CancellationToken>((query, token) => queryCapturada = query as ObterNotaVisaoUeQuery)
-                .ReturnsAsync(expectedResult);
+                .Callback<IRequest<PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeRetornoSelectDto>>, CancellationToken>((query, token) => queryCapturada = query as ObterNotaVisaoUeQuery)
+                .ReturnsAsync(mediatorResult);
 
             var result = await useCase.ObterNotasVisaoUe("ue-id", 2024, 1, Modalidade.Fundamental);
 
-            Assert.Same(expectedResult, result);
+            Assert.NotNull(result);
+            Assert.NotNull(result.Items);
             mockMediator.Verify(m => m.Send(It.IsAny<ObterNotaVisaoUeQuery>(), It.IsAny<CancellationToken>()), Times.Once);
 
             Assert.NotNull(queryCapturada);
@@ -72,17 +97,24 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             mockContextoAplicacao.Setup(c => c.ObterVariavel<string>("NumeroPagina")).Returns((string)null);
             mockContextoAplicacao.Setup(c => c.ObterVariavel<string>("NumeroRegistros")).Returns("10");
 
-            var expectedResult = new PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>();
+            var mediatorResult = new PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeRetornoSelectDto>
+            {
+                Items = new List<PainelEducacionalNotasVisaoUeRetornoSelectDto>(),
+                TotalRegistros = 0,
+                TotalPaginas = 0
+            };
             ObterNotaVisaoUeQuery queryCapturada = null;
 
             mockMediator
                 .Setup(m => m.Send(It.IsAny<ObterNotaVisaoUeQuery>(), It.IsAny<CancellationToken>()))
-                .Callback<IRequest<PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>>, CancellationToken>((query, token) => queryCapturada = query as ObterNotaVisaoUeQuery)
-                .ReturnsAsync(expectedResult);
+                .Callback<IRequest<PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeRetornoSelectDto>>, CancellationToken>((query, token) => queryCapturada = query as ObterNotaVisaoUeQuery)
+                .ReturnsAsync(mediatorResult);
 
             var result = await useCase.ObterNotasVisaoUe("ue-id-2", 2024, 2, Modalidade.EJA);
 
-            Assert.Same(expectedResult, result);
+            Assert.NotNull(result);
+            Assert.Equal(0, result.TotalRegistros);
+            Assert.Equal(0, result.TotalPaginas);
             mockMediator.Verify(m => m.Send(It.IsAny<ObterNotaVisaoUeQuery>(), It.IsAny<CancellationToken>()), Times.Once);
 
             Assert.NotNull(queryCapturada);
