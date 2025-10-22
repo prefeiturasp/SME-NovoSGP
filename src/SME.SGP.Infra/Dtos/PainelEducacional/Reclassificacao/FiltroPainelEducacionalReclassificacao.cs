@@ -3,6 +3,6 @@
     public class FiltroPainelEducacionalReclassificacao : FiltroPainelEducacionalDreUe
     {
         public int AnoLetivo { get; set; } 
-        public string AnoTurma { get; set; }
+        public int AnoTurma { get; set; }
     }
 }
