@@ -45,7 +45,6 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                         Dre = new Dominio.Dre { Nome = "DRE 1" }
                     },
                     Ano = "3"
-                    }
                 }
             };
 
@@ -114,7 +113,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     {
                         Nome = "UE 1",
                         Dre = new Dominio.Dre { Nome = "DRE 1" }
-                    }
+                    },
+                    Ano = "3"
                 }
             };
 
@@ -146,7 +146,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     {
                         Nome = "UE 1",
                         Dre = new Dominio.Dre { Nome = "DRE 1" }
-                    }
+                    },
+                    Ano = "3"
                 }
             };
 
