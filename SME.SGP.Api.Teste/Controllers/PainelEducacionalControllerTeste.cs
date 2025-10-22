@@ -5,9 +5,14 @@ using SME.SGP.Api.Controllers;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using SME.SGP.Infra.Dtos.PainelEducacional.FrequenciaDiaria;
 using SME.SGP.Infra.Dtos.PainelEducacional.IndicadoresPap;
+using SME.SGP.Infra.Dtos.PainelEducacional.Notas;
+using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoSmeDre;
+using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoUe;
+using SME.SGP.Infra.Dtos.PainelEducacional.Reclassificacao;
 using SME.SGP.Infra.Dtos.PainelEducacional.SondagemEscrita;
 using System.Collections.Generic;
 using System.Linq;
@@ -770,6 +775,902 @@ namespace SME.SGP.Api.Teste.Controllers
                     Assert.Equal(1, item.TotalAlunosDificuldadeTop2);
                     Assert.Equal(14, item.TotalTurmas);
                 });
+        }
+
+        [Fact]
+        public async Task Obter_Notas_Visao_Sme_Dre_Deve_Retornar_Ok_Com_Dados()
+        {
+            var filtro = new FiltroPainelEducacionalNotasVisaoSmeDre
+            {
+                AnoLetivo = 2024,
+                Bimestre = 2,
+                CodigoDre = "DRE123",
+                SerieAno = "5"
+            };
+
+            var retornoEsperado = new List<PainelEducacionalNotasVisaoSmeDreDto>
+            {
+                new PainelEducacionalNotasVisaoSmeDreDto
+                {
+                    Modalidades = new List<ModalidadeNotasVisaoSmeDreDto>
+                    {
+                        new ModalidadeNotasVisaoSmeDreDto
+                        {
+                            Nome = "Fundamental",
+                            SerieAno = new List<SerieAnoNotasVisaoSmeDreDto>
+                            {
+                                new SerieAnoNotasVisaoSmeDreDto
+                                {
+                                    Nome = "5º",
+                                    ComponentesCurriculares = new List<ComponenteCurricularNotasDto>
+                                    {
+                                        new ComponenteCurricularNotasDto
+                                        {
+                                            Nome = "Português",
+                                            AbaixoDaMedia = 15,
+                                            AcimaDaMedia = 35
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            var mockUseCase = new Mock<IConsultasNotasVisaoSmeDreUseCase>();
+            mockUseCase
+                .Setup(x => x.ObterNotasVisaoSmeDre(filtro.CodigoDre, filtro.AnoLetivo, filtro.Bimestre, filtro.SerieAno))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterNotasVisaoSmeDre(filtro, mockUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalNotasVisaoSmeDreDto>>(okResult.Value);
+
+            Assert.Single(retorno);
+            var item = retorno.First();
+            Assert.NotNull(item.Modalidades);
+            Assert.Single(item.Modalidades);
+            
+            var modalidade = item.Modalidades.First();
+            Assert.Equal("Fundamental", modalidade.Nome);
+            Assert.NotNull(modalidade.SerieAno);
+            Assert.Single(modalidade.SerieAno);
+
+            mockUseCase.Verify(x => x.ObterNotasVisaoSmeDre(
+                It.Is<string>(d => d == filtro.CodigoDre),
+                It.Is<int>(a => a == filtro.AnoLetivo),
+                It.Is<int>(b => b == filtro.Bimestre),
+                It.Is<string>(s => s == filtro.SerieAno)
+            ), Times.Once);
+        }
+
+        [Fact]
+        public async Task Obter_Notas_Visao_Sme_Dre_Com_Lista_Vazia_Deve_Retornar_Ok()
+        {
+            var filtro = new FiltroPainelEducacionalNotasVisaoSmeDre
+            {
+                AnoLetivo = 2023,
+                Bimestre = 1,
+                CodigoDre = "DRE999",
+                SerieAno = "3"
+            };
+
+            var retornoEsperado = new List<PainelEducacionalNotasVisaoSmeDreDto>();
+
+            var mockUseCase = new Mock<IConsultasNotasVisaoSmeDreUseCase>();
+            mockUseCase
+                .Setup(x => x.ObterNotasVisaoSmeDre(filtro.CodigoDre, filtro.AnoLetivo, filtro.Bimestre, filtro.SerieAno))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterNotasVisaoSmeDre(filtro, mockUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalNotasVisaoSmeDreDto>>(okResult.Value);
+
+            Assert.Empty(retorno);
+
+            mockUseCase.Verify(x => x.ObterNotasVisaoSmeDre(
+                It.Is<string>(d => d == filtro.CodigoDre),
+                It.Is<int>(a => a == filtro.AnoLetivo),
+                It.Is<int>(b => b == filtro.Bimestre),
+                It.Is<string>(s => s == filtro.SerieAno)
+            ), Times.Once);
+        }
+
+        [Fact]
+        public async Task Obter_Notas_Visao_Sme_Dre_Com_Codigo_Dre_Nulo_Deve_Retornar_Ok_Com_Dados()
+        {
+            var filtro = new FiltroPainelEducacionalNotasVisaoSmeDre
+            {
+                AnoLetivo = 2024,
+                Bimestre = 3,
+                CodigoDre = null,
+                SerieAno = "7"
+            };
+
+            var retornoEsperado = new List<PainelEducacionalNotasVisaoSmeDreDto>
+            {
+                new PainelEducacionalNotasVisaoSmeDreDto
+                {
+                    Modalidades = new List<ModalidadeNotasVisaoSmeDreDto>
+                    {
+                        new ModalidadeNotasVisaoSmeDreDto
+                        {
+                            Nome = "Fundamental",
+                            SerieAno = new List<SerieAnoNotasVisaoSmeDreDto>
+                            {
+                                new SerieAnoNotasVisaoSmeDreDto
+                                {
+                                    Nome = "7º",
+                                    ComponentesCurriculares = new List<ComponenteCurricularNotasDto>
+                                    {
+                                        new ComponenteCurricularNotasDto
+                                        {
+                                            Nome = "Português",
+                                            AbaixoDaMedia = 25,
+                                            AcimaDaMedia = 75
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            var mockUseCase = new Mock<IConsultasNotasVisaoSmeDreUseCase>();
+            mockUseCase
+                .Setup(x => x.ObterNotasVisaoSmeDre(filtro.CodigoDre, filtro.AnoLetivo, filtro.Bimestre, filtro.SerieAno))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterNotasVisaoSmeDre(filtro, mockUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalNotasVisaoSmeDreDto>>(okResult.Value);
+
+            Assert.Single(retorno);
+            var item = retorno.First();
+            Assert.NotNull(item.Modalidades);
+            Assert.Single(item.Modalidades);
+            
+            var modalidade = item.Modalidades.First();
+            Assert.Equal("Fundamental", modalidade.Nome);
+            Assert.NotNull(modalidade.SerieAno);
+            Assert.Single(modalidade.SerieAno);
+            
+            var serieAno = modalidade.SerieAno.First();
+            Assert.Equal("7º", serieAno.Nome);
+
+            mockUseCase.Verify(x => x.ObterNotasVisaoSmeDre(
+                It.Is<string>(d => d == null),
+                It.Is<int>(a => a == 2024),
+                It.Is<int>(b => b == 3),
+                It.Is<string>(s => s == "7")
+            ), Times.Once);
+        }
+
+        [Fact]
+        public async Task Obter_Notas_Visao_Ue_Deve_Retornar_Ok_Com_Dados_Paginados()
+        {
+            var filtro = new FiltroPainelEducacionalNotasVisaoUe
+            {
+                AnoLetivo = 2024,
+                Bimestre = 2,
+                CodigoUe = "UE123",
+                Modalidade = Modalidade.Fundamental
+            };
+
+            var retornoEsperado = new PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>
+            {
+                Items = new List<PainelEducacionalNotasVisaoUeDto>
+                {
+                    new PainelEducacionalNotasVisaoUeDto
+                    {
+                        Modalidades = new List<ModalidadeNotasVisaoUeDto>
+                        {
+                            new ModalidadeNotasVisaoUeDto
+                            {
+                                Nome = "Ensino Fundamental",
+                                Turmas = new List<TurmaNotasVisaoUeDto>
+                                {
+                                    new TurmaNotasVisaoUeDto
+                                    {
+                                        Nome = "5º Ano",
+                                        ComponentesCurriculares = new List<ComponenteCurricularNotasDto>
+                                        {
+                                            new ComponenteCurricularNotasDto
+                                            {
+                                                Nome = "Português",
+                                                AbaixoDaMedia = 25,
+                                                AcimaDaMedia = 75
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                TotalRegistros = 3, 
+                TotalPaginas = 1
+            };
+
+            var mockUseCase = new Mock<IConsultasNotasVisaoUeUseCase>();
+            mockUseCase
+                .Setup(x => x.ObterNotasVisaoUe(filtro.CodigoUe, filtro.AnoLetivo, filtro.Bimestre, filtro.Modalidade))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterNotasVisaoUe(filtro, mockUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsType<PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>>(okResult.Value);
+
+            Assert.Equal(3, retorno.TotalRegistros);
+            Assert.Equal(1, retorno.TotalPaginas);
+            Assert.Single(retorno.Items); 
+
+            var item = retorno.Items.First();
+            Assert.NotNull(item.Modalidades);
+            Assert.Single(item.Modalidades);
+
+            mockUseCase.Verify(x => x.ObterNotasVisaoUe(
+                It.Is<string>(c => c == filtro.CodigoUe),
+                It.Is<int>(a => a == filtro.AnoLetivo),
+                It.Is<int>(b => b == filtro.Bimestre),
+                It.Is<Modalidade>(m => m == filtro.Modalidade)
+            ), Times.Once);
+        }
+
+        [Fact]
+        public async Task Obter_Notas_Visao_Ue_Com_Multiplas_Modalidades_Deve_Retornar_Ok_Com_Paginacao()
+        {
+            var filtro = new FiltroPainelEducacionalNotasVisaoUe
+            {
+                AnoLetivo = 2024,
+                Bimestre = 1,
+                CodigoUe = "UE456",
+                Modalidade = Modalidade.Fundamental
+            };
+
+            var retornoEsperado = new PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>
+            {
+                Items = new List<PainelEducacionalNotasVisaoUeDto>
+                {
+                    new PainelEducacionalNotasVisaoUeDto
+                    {
+                        Modalidades = new List<ModalidadeNotasVisaoUeDto>
+                        {
+                            new ModalidadeNotasVisaoUeDto
+                            {
+                                Nome = "Ensino Fundamental",
+                                Turmas = new List<TurmaNotasVisaoUeDto>
+                                {
+                                    new TurmaNotasVisaoUeDto
+                                    {
+                                        Nome = "1º Ano",
+                                        ComponentesCurriculares = new List<ComponenteCurricularNotasDto>
+                                        {
+                                            new ComponenteCurricularNotasDto
+                                            {
+                                                Nome = "Português",
+                                                AbaixoDaMedia = 15,
+                                                AcimaDaMedia = 85
+                                            },
+                                            new ComponenteCurricularNotasDto
+                                            {
+                                                Nome = "Matemática",
+                                                AbaixoDaMedia = 18,
+                                                AcimaDaMedia = 82
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    new PainelEducacionalNotasVisaoUeDto
+                    {
+                        Modalidades = new List<ModalidadeNotasVisaoUeDto>
+                        {
+                            new ModalidadeNotasVisaoUeDto
+                            {
+                                Nome = "Ensino Médio",
+                                Turmas = new List<TurmaNotasVisaoUeDto>
+                                {
+                                    new TurmaNotasVisaoUeDto
+                                    {
+                                        Nome = "1ª Série",
+                                        ComponentesCurriculares = new List<ComponenteCurricularNotasDto>
+                                        {
+                                            new ComponenteCurricularNotasDto
+                                            {
+                                                Nome = "Português",
+                                                AbaixoDaMedia = 45,
+                                                AcimaDaMedia = 55
+                                            },
+                                            new ComponenteCurricularNotasDto
+                                            {
+                                                Nome = "Matemática",
+                                                AbaixoDaMedia = 50,
+                                                AcimaDaMedia = 50
+                                            },
+                                            new ComponenteCurricularNotasDto
+                                            {
+                                                Nome = "Ciências",
+                                                AbaixoDaMedia = 42,
+                                                AcimaDaMedia = 58
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                TotalRegistros = 2,
+                TotalPaginas = 1
+            };
+
+            var mockUseCase = new Mock<IConsultasNotasVisaoUeUseCase>();
+            mockUseCase
+                .Setup(x => x.ObterNotasVisaoUe(filtro.CodigoUe, filtro.AnoLetivo, filtro.Bimestre, filtro.Modalidade))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterNotasVisaoUe(filtro, mockUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsType<PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>>(okResult.Value);
+
+            Assert.Equal(2, retorno.TotalRegistros);
+            Assert.Equal(1, retorno.TotalPaginas);
+            Assert.Equal(2, retorno.Items.Count());
+
+            var primeiroItem = retorno.Items.First();
+            var segundoItem = retorno.Items.Last();
+
+            Assert.Equal("Ensino Fundamental", primeiroItem.Modalidades.First().Nome);
+            Assert.Equal("Ensino Médio", segundoItem.Modalidades.First().Nome);
+
+            mockUseCase.Verify(x => x.ObterNotasVisaoUe(
+                It.Is<string>(c => c == "UE456"),
+                It.Is<int>(a => a == 2024),
+                It.Is<int>(b => b == 1),
+                It.Is<Modalidade>(m => m == Modalidade.Fundamental)
+            ), Times.Once);
+        }
+
+        [Fact]
+        public async Task Obter_Notas_Visao_Ue_Com_Lista_Vazia_Deve_Retornar_Ok_Com_Paginacao_Vazia()
+        {
+            var filtro = new FiltroPainelEducacionalNotasVisaoUe
+            {
+                AnoLetivo = 2023,
+                Bimestre = 4,
+                CodigoUe = "UE999",
+                Modalidade = Modalidade.EJA
+            };
+
+            var retornoEsperado = new PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>
+            {
+                Items = new List<PainelEducacionalNotasVisaoUeDto>(),
+                TotalRegistros = 0,
+                TotalPaginas = 0
+            };
+
+            var mockUseCase = new Mock<IConsultasNotasVisaoUeUseCase>();
+            mockUseCase
+                .Setup(x => x.ObterNotasVisaoUe(filtro.CodigoUe, filtro.AnoLetivo, filtro.Bimestre, filtro.Modalidade))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterNotasVisaoUe(filtro, mockUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsType<PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>>(okResult.Value);
+
+            Assert.Equal(0, retorno.TotalRegistros);
+            Assert.Equal(0, retorno.TotalPaginas);
+            Assert.Empty(retorno.Items);
+
+            mockUseCase.Verify(x => x.ObterNotasVisaoUe(
+                It.Is<string>(c => c == "UE999"),
+                It.Is<int>(a => a == 2023),
+                It.Is<int>(b => b == 4),
+                It.Is<Modalidade>(m => m == Modalidade.EJA)
+            ), Times.Once);
+        }
+
+        [Fact]
+        public async Task Obter_Notas_Visao_Ue_Com_Codigo_Ue_Nulo_Deve_Retornar_Ok_Com_Dados()
+        {
+            var filtro = new FiltroPainelEducacionalNotasVisaoUe
+            {
+                AnoLetivo = 2024,
+                Bimestre = 3,
+                CodigoUe = null,
+                Modalidade = Modalidade.Medio
+            };
+
+            var retornoEsperado = new PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>
+            {
+                Items = new List<PainelEducacionalNotasVisaoUeDto>
+                {
+                    new PainelEducacionalNotasVisaoUeDto
+                    {
+                        Modalidades = new List<ModalidadeNotasVisaoUeDto>
+                        {
+                            new ModalidadeNotasVisaoUeDto
+                            {
+                                Nome = "Ensino Médio",
+                                Turmas = new List<TurmaNotasVisaoUeDto>
+                                {
+                                    new TurmaNotasVisaoUeDto
+                                    {
+                                        Nome = "3ª Série",
+                                        ComponentesCurriculares = new List<ComponenteCurricularNotasDto>
+                                        {
+                                            new ComponenteCurricularNotasDto
+                                            {
+                                                Nome = "Português",
+                                                AbaixoDaMedia = 60,
+                                                AcimaDaMedia = 40
+                                            },
+                                            new ComponenteCurricularNotasDto
+                                            {
+                                                Nome = "Matemática",
+                                                AbaixoDaMedia = 65,
+                                                AcimaDaMedia = 35
+                                            },
+                                            new ComponenteCurricularNotasDto
+                                            {
+                                                Nome = "Ciências",
+                                                AbaixoDaMedia = 55,
+                                                AcimaDaMedia = 45
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                TotalRegistros = 1,
+                TotalPaginas = 1
+            };
+
+            var mockUseCase = new Mock<IConsultasNotasVisaoUeUseCase>();
+            mockUseCase
+                .Setup(x => x.ObterNotasVisaoUe(filtro.CodigoUe, filtro.AnoLetivo, filtro.Bimestre, filtro.Modalidade))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterNotasVisaoUe(filtro, mockUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsType<PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>>(okResult.Value);
+
+            Assert.Equal(1, retorno.TotalRegistros);
+            Assert.Equal(1, retorno.TotalPaginas);
+            Assert.Single(retorno.Items);
+            
+            var item = retorno.Items.First();
+            var modalidade = item.Modalidades.First();
+            Assert.Equal("Ensino Médio", modalidade.Nome);
+            
+            var turma = modalidade.Turmas.First();
+            Assert.Equal("3ª Série", turma.Nome);
+
+            mockUseCase.Verify(x => x.ObterNotasVisaoUe(
+                It.Is<string>(c => c == null),
+                It.Is<int>(a => a == 2024),
+                It.Is<int>(b => b == 3),
+                It.Is<Modalidade>(m => m == Modalidade.Medio)
+            ), Times.Once);
+        }
+
+        [Fact]
+        public async Task Obter_Notas_Visao_Ue_Com_Paginacao_Multiplas_Paginas_Deve_Retornar_Ok()
+        {
+            var filtro = new FiltroPainelEducacionalNotasVisaoUe
+            {
+                AnoLetivo = 2024,
+                Bimestre = 2,
+                CodigoUe = "UE123",
+                Modalidade = Modalidade.Fundamental
+            };
+
+            var retornoEsperado = new PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>
+            {
+                Items = new List<PainelEducacionalNotasVisaoUeDto>
+                {
+                    new PainelEducacionalNotasVisaoUeDto
+                    {
+                        Modalidades = new List<ModalidadeNotasVisaoUeDto>
+                        {
+                            new ModalidadeNotasVisaoUeDto
+                            {
+                                Nome = "Ensino Fundamental",
+                                Turmas = new List<TurmaNotasVisaoUeDto>
+                                {
+                                    new TurmaNotasVisaoUeDto
+                                    {
+                                        Nome = "2º Ano",
+                                        ComponentesCurriculares = new List<ComponenteCurricularNotasDto>
+                                        {
+                                            new ComponenteCurricularNotasDto
+                                            {
+                                                Nome = "Português",
+                                                AbaixoDaMedia = 22,
+                                                AcimaDaMedia = 78
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                TotalRegistros = 15, 
+                TotalPaginas = 5    
+            };
+
+            var mockUseCase = new Mock<IConsultasNotasVisaoUeUseCase>();
+            mockUseCase
+                .Setup(x => x.ObterNotasVisaoUe(filtro.CodigoUe, filtro.AnoLetivo, filtro.Bimestre, filtro.Modalidade))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterNotasVisaoUe(filtro, mockUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsType<PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>>(okResult.Value);
+
+            Assert.Equal(15, retorno.TotalRegistros);
+            Assert.Equal(5, retorno.TotalPaginas);
+            Assert.Single(retorno.Items); 
+
+            mockUseCase.Verify(x => x.ObterNotasVisaoUe(
+                It.Is<string>(c => c == filtro.CodigoUe),
+                It.Is<int>(a => a == filtro.AnoLetivo),
+                It.Is<int>(b => b == filtro.Bimestre),
+                It.Is<Modalidade>(m => m == filtro.Modalidade)
+            ), Times.Once);
+        }
+
+        [Fact]
+        public async Task Obter_Reclassificacao_Deve_Retornar_Ok_Com_Dados()
+        {
+            var filtro = new FiltroPainelEducacionalReclassificacao
+            {
+                AnoLetivo = 2024,
+                CodigoDre = "DRE123",
+                CodigoUe = "UE456",
+                AnoTurma = 5
+            };
+
+            var retornoEsperado = new List<PainelEducacionalReclassificacaoDto>
+            {
+                new PainelEducacionalReclassificacaoDto
+                {
+                    Modalidade = new List<ModalidadeReclassificacaoDto>
+                    {
+                        new ModalidadeReclassificacaoDto
+                        {
+                            Nome = "Ensino Fundamental",
+                            AnoTurma = 5,
+                            QuantidadeAlunos = 15
+                        },
+                        new ModalidadeReclassificacaoDto
+                        {
+                            Nome = "Ensino Fundamental",
+                            AnoTurma = 6, 
+                            QuantidadeAlunos = 8
+                        }
+                    }
+                }
+            };
+
+            var mockUseCase = new Mock<IConsultasReclassificacaoPainelEducacionalUseCase>();
+            mockUseCase
+                .Setup(x => x.ObterReclassificacao(filtro.CodigoDre, filtro.CodigoUe, filtro.AnoLetivo, filtro.AnoTurma))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterReclassificacao(filtro, mockUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalReclassificacaoDto>>(okResult.Value);
+
+            Assert.Single(retorno);
+            var item = retorno.First();
+            Assert.NotNull(item.Modalidade);
+            Assert.Equal(2, item.Modalidade.Count());
+
+            Assert.Collection(item.Modalidade,
+                modalidade =>
+                {
+                    Assert.Equal("Ensino Fundamental", modalidade.Nome);
+                    Assert.Equal(5, modalidade.AnoTurma);
+                    Assert.Equal(15, modalidade.QuantidadeAlunos);
+                },
+                modalidade =>
+                {
+                    Assert.Equal("Ensino Fundamental", modalidade.Nome);
+                    Assert.Equal(6, modalidade.AnoTurma);
+                    Assert.Equal(8, modalidade.QuantidadeAlunos);
+                });
+
+            mockUseCase.Verify(x => x.ObterReclassificacao(
+                It.Is<string>(d => d == filtro.CodigoDre),
+                It.Is<string>(u => u == filtro.CodigoUe),
+                It.Is<int>(a => a == filtro.AnoLetivo),
+                It.Is<int>(t => t == filtro.AnoTurma)
+            ), Times.Once);
+        }
+
+        [Fact]
+        public async Task Obter_Reclassificacao_Com_Lista_Vazia_Deve_Retornar_Ok()
+        {
+            var filtro = new FiltroPainelEducacionalReclassificacao
+            {
+                AnoLetivo = 2023,
+                CodigoDre = "DRE999",
+                CodigoUe = "UE000",
+                AnoTurma = 3
+            };
+
+            var retornoEsperado = new List<PainelEducacionalReclassificacaoDto>();
+
+            var mockUseCase = new Mock<IConsultasReclassificacaoPainelEducacionalUseCase>();
+            mockUseCase
+                .Setup(x => x.ObterReclassificacao(filtro.CodigoDre, filtro.CodigoUe, filtro.AnoLetivo, filtro.AnoTurma))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterReclassificacao(filtro, mockUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalReclassificacaoDto>>(okResult.Value);
+
+            Assert.Empty(retorno);
+
+            mockUseCase.Verify(x => x.ObterReclassificacao(
+                It.Is<string>(d => d == filtro.CodigoDre),
+                It.Is<string>(u => u == filtro.CodigoUe),
+                It.Is<int>(a => a == filtro.AnoLetivo),
+                It.Is<int>(t => t == filtro.AnoTurma)
+            ), Times.Once);
+        }
+
+        [Fact]
+        public async Task Obter_Reclassificacao_Com_Codigos_Nulos_Deve_Retornar_Ok_Com_Dados()
+        {
+            var filtro = new FiltroPainelEducacionalReclassificacao
+            {
+                AnoLetivo = 2024,
+                CodigoDre = null,
+                CodigoUe = null,
+                AnoTurma = 7
+            };
+
+            var retornoEsperado = new List<PainelEducacionalReclassificacaoDto>
+            {
+                new PainelEducacionalReclassificacaoDto
+                {
+                    Modalidade = new List<ModalidadeReclassificacaoDto>
+                    {
+                        new ModalidadeReclassificacaoDto
+                        {
+                            Nome = "Ensino Fundamental",
+                            AnoTurma = 7,
+                            QuantidadeAlunos = 25
+                        }
+                    }
+                }
+            };
+
+            var mockUseCase = new Mock<IConsultasReclassificacaoPainelEducacionalUseCase>();
+            mockUseCase
+                .Setup(x => x.ObterReclassificacao(filtro.CodigoDre, filtro.CodigoUe, filtro.AnoLetivo, filtro.AnoTurma))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterReclassificacao(filtro, mockUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalReclassificacaoDto>>(okResult.Value);
+
+            Assert.Single(retorno);
+            var item = retorno.First();
+            Assert.NotNull(item.Modalidade);
+            Assert.Single(item.Modalidade);
+
+            var modalidade = item.Modalidade.First();
+            Assert.Equal("Ensino Fundamental", modalidade.Nome);
+            Assert.Equal(7, modalidade.AnoTurma);
+            Assert.Equal(25, modalidade.QuantidadeAlunos);
+
+            mockUseCase.Verify(x => x.ObterReclassificacao(
+                It.Is<string>(d => d == null),
+                It.Is<string>(u => u == null),
+                It.Is<int>(a => a == 2024),
+                It.Is<int>(t => t == 7)
+            ), Times.Once);
+        }
+
+        [Fact]
+        public async Task Obter_Reclassificacao_Com_Multiplas_Modalidades_Deve_Retornar_Ok_Com_Dados()
+        {
+            var filtro = new FiltroPainelEducacionalReclassificacao
+            {
+                AnoLetivo = 2024,
+                CodigoDre = "DRE789",
+                CodigoUe = "UE321",
+                AnoTurma = 9
+            };
+
+            var retornoEsperado = new List<PainelEducacionalReclassificacaoDto>
+            {
+                new PainelEducacionalReclassificacaoDto
+                {
+                    Modalidade = new List<ModalidadeReclassificacaoDto>
+                    {
+                        new ModalidadeReclassificacaoDto
+                        {
+                            Nome = "Ensino Fundamental",
+                            AnoTurma = 9,
+                            QuantidadeAlunos = 32
+                        },
+                        new ModalidadeReclassificacaoDto
+                        {
+                            Nome = "EJA",
+                            AnoTurma = 9,
+                            QuantidadeAlunos = 12
+                        },
+                        new ModalidadeReclassificacaoDto
+                        {
+                            Nome = "Ensino Médio",
+                            AnoTurma = 1,
+                            QuantidadeAlunos = 5
+                        }
+                    }
+                }
+            };
+
+            var mockUseCase = new Mock<IConsultasReclassificacaoPainelEducacionalUseCase>();
+            mockUseCase
+                .Setup(x => x.ObterReclassificacao(filtro.CodigoDre, filtro.CodigoUe, filtro.AnoLetivo, filtro.AnoTurma))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterReclassificacao(filtro, mockUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalReclassificacaoDto>>(okResult.Value);
+
+            Assert.Single(retorno);
+            var item = retorno.First();
+            Assert.NotNull(item.Modalidade);
+            Assert.Equal(3, item.Modalidade.Count());
+
+            Assert.Collection(item.Modalidade,
+                modalidade =>
+                {
+                    Assert.Equal("Ensino Fundamental", modalidade.Nome);
+                    Assert.Equal(9, modalidade.AnoTurma);
+                    Assert.Equal(32, modalidade.QuantidadeAlunos);
+                },
+                modalidade =>
+                {
+                    Assert.Equal("EJA", modalidade.Nome);
+                    Assert.Equal(9, modalidade.AnoTurma);
+                    Assert.Equal(12, modalidade.QuantidadeAlunos);
+                },
+                modalidade =>
+                {
+                    Assert.Equal("Ensino Médio", modalidade.Nome);
+                    Assert.Equal(1, modalidade.AnoTurma);
+                    Assert.Equal(5, modalidade.QuantidadeAlunos);
+                });
+
+            mockUseCase.Verify(x => x.ObterReclassificacao(
+                It.Is<string>(d => d == "DRE789"),
+                It.Is<string>(u => u == "UE321"),
+                It.Is<int>(a => a == 2024),
+                It.Is<int>(t => t == 9)
+            ), Times.Once);
+        }
+
+        [Fact]
+        public async Task Obter_Reclassificacao_Deve_Passar_Filtro_Correto_Para_Use_Case()
+        {
+            var filtro = new FiltroPainelEducacionalReclassificacao
+            {
+                AnoLetivo = 2025,
+                CodigoDre = "DRE456",
+                CodigoUe = "UE789",
+                AnoTurma = 1
+            };
+
+            var retornoEsperado = new List<PainelEducacionalReclassificacaoDto>
+            {
+                new PainelEducacionalReclassificacaoDto
+                {
+                    Modalidade = new List<ModalidadeReclassificacaoDto>
+                    {
+                        new ModalidadeReclassificacaoDto
+                        {
+                            Nome = "Ensino Fundamental",
+                            AnoTurma = 1,
+                            QuantidadeAlunos = 28
+                        }
+                    }
+                }
+            };
+
+            var mockUseCase = new Mock<IConsultasReclassificacaoPainelEducacionalUseCase>();
+            mockUseCase
+                .Setup(x => x.ObterReclassificacao(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(retornoEsperado);
+
+            await _controller.ObterReclassificacao(filtro, mockUseCase.Object);
+
+            mockUseCase.Verify(x => x.ObterReclassificacao(
+                It.Is<string>(d => d == filtro.CodigoDre),
+                It.Is<string>(u => u == filtro.CodigoUe),
+                It.Is<int>(a => a == filtro.AnoLetivo),
+                It.Is<int>(t => t == filtro.AnoTurma)
+            ), Times.Once);
+        }
+
+        [Fact]
+        public async Task Obter_Reclassificacao_Com_Ano_Turma_Nulo_Deve_Retornar_Ok_Com_Dados()
+        {
+            var filtro = new FiltroPainelEducacionalReclassificacao
+            {
+                AnoLetivo = 2024,
+                CodigoDre = "DRE111",
+                CodigoUe = "UE222",
+                AnoTurma = 0
+            };
+
+            var retornoEsperado = new List<PainelEducacionalReclassificacaoDto>
+            {
+                new PainelEducacionalReclassificacaoDto
+                {
+                    Modalidade = new List<ModalidadeReclassificacaoDto>
+                    {
+                        new ModalidadeReclassificacaoDto
+                        {
+                            Nome = "Ensino Fundamental",
+                            AnoTurma = 0,
+                            QuantidadeAlunos = 150
+                        }
+                    }
+                }
+            };
+
+            var mockUseCase = new Mock<IConsultasReclassificacaoPainelEducacionalUseCase>();
+            mockUseCase
+                .Setup(x => x.ObterReclassificacao(filtro.CodigoDre, filtro.CodigoUe, filtro.AnoLetivo, filtro.AnoTurma))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterReclassificacao(filtro, mockUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalReclassificacaoDto>>(okResult.Value);
+
+            Assert.Single(retorno);
+            var item = retorno.First();
+            Assert.NotNull(item.Modalidade);
+            Assert.Single(item.Modalidade);
+
+            var modalidade = item.Modalidade.First();
+            Assert.Equal("Ensino Fundamental", modalidade.Nome);
+            Assert.Equal(0, modalidade.AnoTurma);
+            Assert.Equal(150, modalidade.QuantidadeAlunos);
+
+            mockUseCase.Verify(x => x.ObterReclassificacao(
+                It.Is<string>(d => d == "DRE111"),
+                It.Is<string>(u => u == "UE222"),
+                It.Is<int>(a => a == 2024),
+                It.Is<int>(t => t == 0)
+            ), Times.Once);
         }
 
         [Fact(DisplayName = "Deve retornar Ok com frequência diária para DRE")]

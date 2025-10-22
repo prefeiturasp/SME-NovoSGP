@@ -20,5 +20,11 @@ namespace SME.SGP.Infra.Consts
                 { TipoPap.Pap2Ano, string.Join(',', new[] { ComponentesCurricularesConstants.CODIGO_PAP_2_ANO_ALFABETIZACAO,
                                          ComponentesCurricularesConstants.CODIGO_PAP_2_ANO_COLABORATIVO_ALFABETIZACAO }) }
             };
+        public static readonly int[] ComponentesCurricularesConsolidacaoNotas = new int[]
+        {
+            ComponentesCurricularesConstants.CODIGO_PORTUGUES,
+            ComponentesCurricularesConstants.CODIGO_MATEMATICA,
+            ComponentesCurricularesConstants.CODIGO_CIENCIAS
+        };
     }
 }
