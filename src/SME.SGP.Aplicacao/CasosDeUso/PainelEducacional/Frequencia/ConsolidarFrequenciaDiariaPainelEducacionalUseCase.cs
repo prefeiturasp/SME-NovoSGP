@@ -30,10 +30,11 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional.Frequencia
 
             await mediator.Send(new SalvarPainelEducacionalConsolidacaoFrequenciaDiariaTurmaCommand(indicadoresTurmas));
 
-
             var indicadoresDre = AgruparConsolicacaoDre(listagemFrequencia, listagemUe);
 
             await mediator.Send(new SalvarPainelEducacionalConsolidacaoFrequenciaDiariaCommand(indicadoresDre));
+
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPainelEducacional.ConsolidarFrequenciaSemanalPainelEducacional, Guid.NewGuid(), null));
 
             return true;
         }
@@ -93,6 +94,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional.Frequencia
 
                         return new ConsolidacaoFrequenciaDiariaTurmaDto
                         {
+                            CodigoDre = g.First().CodigoDre,
                             CodigoUe = ue.CodigoUe,
                             TurmaId = g.First().TurmaId,
                             Turma = g.First().NomeTurma,
