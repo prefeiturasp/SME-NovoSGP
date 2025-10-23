@@ -114,8 +114,8 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterProficienciaIdep(int anoLetivo, string codigoUe, [FromServices] IConsultasProficienciaIdebPainelEducacionalUseCase consultaProficienciaIdebPainelEducacionalUseCase)
-         => Ok(await consultaProficienciaIdebPainelEducacionalUseCase.ObterProficienciaIdep(anoLetivo, codigoUe));
+        public async Task<IActionResult> ObterProficienciaIdep(int anoLetivo, string codigoUe, [FromServices] IConsultasProficienciaIdepPainelEducacionalUseCase consultaProficienciaIdepPainelEducacionalUseCase)
+         => Ok(await consultaProficienciaIdepPainelEducacionalUseCase.ObterProficienciaIdep(anoLetivo, codigoUe));
 
         [HttpGet("proficiencia-escolas-dados")]
         [ProducesResponseType(typeof(PainelEducacionalProficienciaEscolaDadosDto), 200)]
