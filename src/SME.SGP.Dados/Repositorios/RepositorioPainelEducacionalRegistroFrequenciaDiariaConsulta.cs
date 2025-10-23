@@ -30,11 +30,11 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("SELECT");
             query.AppendLine("   data_aula AS Data");
             query.AppendLine(" , ue");
-            query.AppendLine(" , total_alunos AS QuantidadeAlunos");
-            query.AppendLine(" , total_presencas AS QuantidadeAlunosPresentes");
-            query.AppendLine(" , percentual AS PercentualFrequencia");
+            query.AppendLine(" , total_estudantes AS QuantidadeEstudantes");
+            query.AppendLine(" , total_presentes AS EstudantesPresentes");
+            query.AppendLine(" , percentual_frequencia AS PercentualFrequencia");
             query.AppendLine(" , nivel_frequencia AS NivelFrequencia");
-            query.AppendLine("FROM painel_educacional_consolidacao_frequencia_diaria_teste");
+            query.AppendLine("FROM painel_educacional_consolidacao_frequencia_diaria");
             query.AppendLine("WHERE codigo_dre = @codigoDre AND ano_letivo = @anoLetivo");
             
             if (!string.IsNullOrEmpty(filtro.DataFrequencia))
@@ -47,7 +47,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendFormat("OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", paginacao.QuantidadeRegistrosIgnorados, paginacao.QuantidadeRegistros);
             }
 
-            query.AppendLine("; SELECT COUNT(id) FROM painel_educacional_consolidacao_frequencia_diaria_teste WHERE 1=1");
+            query.AppendLine("; SELECT COUNT(id) FROM painel_educacional_consolidacao_frequencia_diaria WHERE 1=1");
             query.AppendLine(" AND codigo_dre = @codigoDre AND ano_letivo = @anoLetivo");
             
             if (!string.IsNullOrEmpty(filtro.DataFrequencia))
@@ -80,11 +80,11 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("SELECT");
             query.AppendLine("   data_aula AS Data");
             query.AppendLine(" , turma");
-            query.AppendLine(" , total_alunos AS QuantidadeAlunos");
-            query.AppendLine(" , total_presencas AS QuantidadeAlunosPresentes");
-            query.AppendLine(" , percentual AS PercentualFrequencia");
+            query.AppendLine(" , total_estudantes AS QuantidadeEstudantes");
+            query.AppendLine(" , total_presentes AS EstudantesPresentes");
+            query.AppendLine(" , percentual_frequencia AS PercentualFrequencia");
             query.AppendLine(" , nivel_frequencia AS NivelFrequencia");
-            query.AppendLine("FROM painel_educacional_consolidacao_frequencia_diaria_ue_teste");
+            query.AppendLine("FROM painel_educacional_consolidacao_frequencia_diaria_ue");
             query.AppendLine("WHERE codigo_ue = @codigoUe AND ano_letivo = @anoLetivo");
 
             if (!string.IsNullOrEmpty(filtro.DataFrequencia))
@@ -96,7 +96,7 @@ namespace SME.SGP.Dados.Repositorios
             {
                 query.AppendFormat("OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", paginacao.QuantidadeRegistrosIgnorados, paginacao.QuantidadeRegistros);
             }
-            query.AppendLine("; SELECT COUNT(id) FROM painel_educacional_consolidacao_frequencia_diaria_ue_teste WHERE 1=1");
+            query.AppendLine("; SELECT COUNT(id) FROM painel_educacional_consolidacao_frequencia_diaria_ue WHERE 1=1");
             query.AppendLine("  AND codigo_ue = @codigoUe AND ano_letivo = @anoLetivo");
 
             if (!string.IsNullOrEmpty(filtro.DataFrequencia))

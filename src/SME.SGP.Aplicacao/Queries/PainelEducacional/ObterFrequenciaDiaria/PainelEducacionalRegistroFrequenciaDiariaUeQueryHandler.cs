@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra.Dtos.PainelEducacional.FrequenciaDiaria;
 using System;
@@ -29,9 +30,10 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterFrequenciaDiaria
                     {
                         Data = r.Data,
                         Turma = r.Turma,
-                        QuantidadeAlunos = r.QuantidadeAlunos,
+                        QuantidadeEstudantes = r.QuantidadeEstudantes,
+                        EstudantesPresentes = r.EstudantesPresentes,
                         PercentualFrequencia = r.PercentualFrequencia,
-                        NivelFrequencia = r.NivelFrequencia
+                        NivelFrequencia = ObterNomeNivelFrequencia(int.Parse(r.NivelFrequencia))
                     };
                 })
                 .OrderBy(r => r.Turma)
@@ -41,6 +43,21 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterFrequenciaDiaria
                 TotalRegistros = resultado.TotalRegistros
             };
         }
+
+        private string ObterNomeNivelFrequencia(int nivelFrequencia)
+        {
+            var nomeNivelFrequencia = "";
+            if ((int)NivelFrequenciaEnum.Baixa == nivelFrequencia)
+                return NivelFrequenciaEnum.Baixa.GetEnumDisplayName();
+
+            if ((int)NivelFrequenciaEnum.Media == nivelFrequencia)
+                return NivelFrequenciaEnum.Media.GetEnumDisplayName();
+
+            if ((int)NivelFrequenciaEnum.Alta == nivelFrequencia)
+                return NivelFrequenciaEnum.Alta.GetEnumDisplayName();
+
+            return nomeNivelFrequencia;
+        }   
 
         public class PainelEducacionalRegistroFrequenciaDiariaUeQueryValidator : AbstractValidator<PainelEducacionalRegistroFrequenciaDiariaUeQuery>
         {
