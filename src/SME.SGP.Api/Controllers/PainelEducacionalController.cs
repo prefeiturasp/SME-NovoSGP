@@ -5,6 +5,7 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
+using SME.SGP.Infra.Dtos.PainelEducacional.FrequenciaDiaria;
 using SME.SGP.Infra.Dtos.PainelEducacional.IndicadoresPap;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoSmeDre;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoUe;
@@ -42,6 +43,22 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterFrequenciaRanking(int anoLetivo, string codigoDre, string codigoUe, [FromServices] IConsultasRegistroFrequenciaAgrupamentoRankingUseCase consultasRegistroFrequenciaAgrupamentoRankingUseCase)
          => Ok(await consultasRegistroFrequenciaAgrupamentoRankingUseCase.ObterFrequencia(anoLetivo, codigoDre, codigoUe));
+
+        [HttpGet("frequencia-diaria-dre")]
+        [ProducesResponseType(typeof(FrequenciaDiariaDreDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterFrequenciaDiariaDre([FromQuery] FiltroFrequenciaDiariaDreDto filtro, [FromServices] IConsultasRegistroFrequenciaDiariaDreUseCase consultasRegistroFrequenciaDiariaDreUseCase)
+        => Ok(await consultasRegistroFrequenciaDiariaDreUseCase.ObterFrequenciaDiariaPorDre(filtro));
+
+        [HttpGet("frequencia-diaria-ue")]
+        [ProducesResponseType(typeof(FrequenciaDiariaUeDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterFrequenciaDiariaUe([FromQuery] FiltroFrequenciaDiariaUeDto filtro, [FromServices] IConsultasRegistroFrequenciaDiariaUeUseCase consultasRegistroFrequenciaDiariaUeUseCase)
+        => Ok(await consultasRegistroFrequenciaDiariaUeUseCase.ObterFrequenciaDiariaPorUe(filtro));
 
         [HttpGet("nivel-alfabetizacao")]
         [ProducesResponseType(typeof(PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoDto), 200)]
