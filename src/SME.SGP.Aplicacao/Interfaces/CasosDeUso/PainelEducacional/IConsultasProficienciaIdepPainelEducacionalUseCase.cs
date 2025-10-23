@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional
 {
-    public interface IConsultasProficienciaIdebPainelEducacionalUseCase
+    public interface IConsultasProficienciaIdepPainelEducacionalUseCase
     {
         Task<IEnumerable<PainelEducacionalProficienciaIdepDto>> ObterProficienciaIdep(int anoLetivo, string codigoUe);
     }
