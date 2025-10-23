@@ -4,7 +4,6 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -25,7 +24,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         [Fact]
         public async Task Deve_Retornar_Lista_Com_Quatro_Bimestres()
         {
-            //Arrange
+            var planejamentoAnualId = 1L;
             var mockRetorno = new List<PlanejamentoAnualPeriodoEscolarResumoDto>
             {
                 new PlanejamentoAnualPeriodoEscolarResumoDto
@@ -51,13 +50,20 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                           .ReturnsAsync(mockRetorno);
 
 
-            //Act
-            var retorno = await useCase.Executar(1);
+            var retorno = await useCase.Executar(planejamentoAnualId);
 
-            //Asert
-            mediator.Verify(x => x.Send(It.IsAny<ObterPeriodosEscolaresPorPlanejamentoAnualIdQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+            mediator.Verify(x => x.Send(It.Is<ObterPeriodosEscolaresPorPlanejamentoAnualIdQuery>(q => q.PlanejamentoAnualId == planejamentoAnualId), It.IsAny<CancellationToken>()), Times.Once);
 
             Assert.True(retorno.Any());
+        }
+
+        [Fact]
+        public void Deve_Lancar_ArgumentNullException_Quando_Mediator_For_Nulo()
+        {
+            var exception = Assert.Throws<ArgumentNullException>(() =>
+                new ObterPeriodosEscolaresParaCopiaPorPlanejamentoAnualIdUseCase(null));
+
+            Assert.Equal("mediator", exception.ParamName);
         }
     }
 }
