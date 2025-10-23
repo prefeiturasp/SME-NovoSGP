@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterReclassificacao
             {
                 if (item.Modalidade?.Any() == true)
                 {
-                    var modalidadesAgrupadas = CodigoDreECodigoUeEhNulo(codigoDre, codigoUe)
+                    var modalidadesAgrupadas = CodigoDreOuCodigoUeEhNulo(codigoDre, codigoUe)
                         ? item.Modalidade
                            .GroupBy(m => m.AnoTurma)
                             .Select(g => new ModalidadeReclassificacaoDto
@@ -65,9 +65,9 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterReclassificacao
             return resultado.OrderBy(a => a.Modalidade.FirstOrDefault()?.AnoTurma);
         }
 
-        public bool CodigoDreECodigoUeEhNulo(string codigoDre, string codigoUe)
+        public bool CodigoDreOuCodigoUeEhNulo(string codigoDre, string codigoUe)
         {
-            return string.IsNullOrEmpty(codigoDre) && string.IsNullOrEmpty(codigoUe);
+            return string.IsNullOrEmpty(codigoDre) || string.IsNullOrEmpty(codigoUe);
         }
     }
 }
