@@ -55,12 +55,12 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                 CodigoRf = "1111111"
             });
 
-            mediator.Setup(a => a.Send(It.IsAny<ObterPlanoAulaPorAulaIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new PlanoAula()
+            mediator.Setup(a => a.Send(It.IsAny<ObterPlanoAulaPorAulaIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new Dominio.PlanoAula()
             {
                 Id = 1,
             });
 
-            mediator.Setup(a => a.Send(It.IsAny<ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new PlanejamentoAnual()
+            mediator.Setup(a => a.Send(It.IsAny<ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new Dominio.PlanejamentoAnual()
             {
                 Id = 1,
             });
