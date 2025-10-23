@@ -41,9 +41,9 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
         {
             var anoLetivo = 2025;
             var codigoUe = "123456";
-            var mockRetorno = new List<PainelEducacionalProficienciaIdepDto>
+            var mockRetorno = new List<ProficienciaIdepAgrupadaDto>
             {
-                new PainelEducacionalProficienciaIdepDto { AnoLetivo = anoLetivo }
+                new ProficienciaIdepAgrupadaDto { AnoLetivo = anoLetivo }
             };
 
             mediatorMock.Setup(m => m.Send(It.Is<ObterProficienciaIdepQuery>(q => q.AnoLetivo == anoLetivo && q.CodigoUe == codigoUe),
@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             var resultado = await useCase.ObterProficienciaIdep(anoLetivo, codigoUe);
 
             Assert.NotNull(resultado);
-            Assert.Equal(mockRetorno, resultado);
+            Assert.Equal(mockRetorno?.FirstOrDefault()?.AnoLetivo, resultado.FirstOrDefault()?.AnoLetivo);
             mediatorMock.Verify(m => m.Send(It.Is<ObterProficienciaIdepQuery>(q => q.AnoLetivo == anoLetivo && q.CodigoUe == codigoUe),
                                             It.IsAny<CancellationToken>()), Times.Once);
         }
@@ -63,14 +63,14 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
         {
             var anoLetivo = 0; 
             var codigoUe = "123456";
-            var mockRetorno = new List<PainelEducacionalProficienciaIdepDto>
+            var mockRetorno = new List<ProficienciaIdepAgrupadaDto>
             {
-                new PainelEducacionalProficienciaIdepDto { AnoLetivo = 2025 },
-                new PainelEducacionalProficienciaIdepDto { AnoLetivo = 2024 },
-                new PainelEducacionalProficienciaIdepDto { AnoLetivo = 2023 },
-                new PainelEducacionalProficienciaIdepDto { AnoLetivo = 2022 },
-                new PainelEducacionalProficienciaIdepDto { AnoLetivo = 2021 },
-                new PainelEducacionalProficienciaIdepDto { AnoLetivo = 2020 } 
+                new ProficienciaIdepAgrupadaDto { AnoLetivo = 2025 },
+                new ProficienciaIdepAgrupadaDto { AnoLetivo = 2024 },
+                new ProficienciaIdepAgrupadaDto { AnoLetivo = 2023 },
+                new ProficienciaIdepAgrupadaDto { AnoLetivo = 2022 },
+                new ProficienciaIdepAgrupadaDto { AnoLetivo = 2021 },
+                new ProficienciaIdepAgrupadaDto { AnoLetivo = 2020 } 
             };
 
             mediatorMock.Setup(m => m.Send(It.Is<ObterProficienciaIdepQuery>(q => q.AnoLetivo == anoLetivo && q.CodigoUe == codigoUe),

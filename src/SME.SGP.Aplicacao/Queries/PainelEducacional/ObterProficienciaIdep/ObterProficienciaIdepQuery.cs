@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterProficienciaIdep
 {
-    public class ObterProficienciaIdepQuery : IRequest<IEnumerable<PainelEducacionalProficienciaIdepDto>>
+    public class ObterProficienciaIdepQuery : IRequest<IEnumerable<ProficienciaIdepAgrupadaDto>>
     {
         public ObterProficienciaIdepQuery(int anoLetivo, string codigoUe)
         {
