@@ -29,6 +29,7 @@ namespace SME.SGP.Api.Teste.Controllers
         private readonly Mock<IConsultasPainelEducacionalFluenciaLeitoraUseCase> _consultasFluenciaLeitoraUseCase = new();
         private readonly Mock<IConsultasProficienciaIdebPainelEducacionalUseCase> _consultasProficienciaIdebUseCase = new();
         private readonly Mock<IConsultasDistorcaoIdadeUseCase> _consultasDistorcaoIdadeUseCase = new();
+        private readonly Mock<IConsultasProficienciaIdepPainelEducacionalUseCase> _consultasProficienciaIdebUseCase = new();
 
         public PainelEducacionalControllerTeste()
         {
@@ -529,10 +530,10 @@ namespace SME.SGP.Api.Teste.Controllers
                     AnoLetivo = anoLetivo,
                     PercentualInicial = 75,
                     PercentualFinal = 25,
-                    Proficiencia = new ProficienciaIdebResumidoDto
+                    Proficiencia = new ProficienciaIdepResumidoDto
                     {
-                        AnosIniciais = new List<ComponenteCurricularIdebResumidoDto> { new ComponenteCurricularIdebResumidoDto { ComponenteCurricular = Dominio.Enumerados.ComponenteCurricular.Portugues.GetDisplayName() } },
-                        AnosFinais = new List<ComponenteCurricularIdebResumidoDto> { new ComponenteCurricularIdebResumidoDto { ComponenteCurricular = Dominio.Enumerados.ComponenteCurricular.Matematica.GetDisplayName() } }
+                        AnosIniciais = new List<ComponenteCurricularIdepResumidoDto> { new ComponenteCurricularIdepResumidoDto { ComponenteCurricular = Dominio.Enumerados.ComponenteCurricular.Portugues.GetDisplayName() } },
+                        AnosFinais = new List<ComponenteCurricularIdepResumidoDto> { new ComponenteCurricularIdepResumidoDto { ComponenteCurricular = Dominio.Enumerados.ComponenteCurricular.Matematica.GetDisplayName() } }
                     }
                 }
             };

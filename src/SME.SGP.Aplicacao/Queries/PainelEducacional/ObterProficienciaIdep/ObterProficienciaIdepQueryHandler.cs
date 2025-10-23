@@ -13,14 +13,14 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterProficienciaIdep
 {
     public class ObterProficienciaIdepQueryHandler : IRequestHandler<ObterProficienciaIdepQuery, IEnumerable<PainelEducacionalProficienciaIdepDto>>
     {
-        private readonly IRepositorioPainelEducacionalProficienciaIdep repositorioProficienciaIdeb;
-        public ObterProficienciaIdepQueryHandler(IRepositorioPainelEducacionalProficienciaIdep repositorioIdebConsulta)
+        private readonly IRepositorioPainelEducacionalProficienciaIdep repositorioProficienciaIdep;
+        public ObterProficienciaIdepQueryHandler(IRepositorioPainelEducacionalProficienciaIdep repositorioIdepConsulta)
         {
-            this.repositorioProficienciaIdeb = repositorioIdebConsulta ?? throw new ArgumentNullException(nameof(repositorioIdebConsulta));
+            this.repositorioProficienciaIdep = repositorioIdepConsulta ?? throw new ArgumentNullException(nameof(repositorioIdepConsulta));
         }
         public async Task<IEnumerable<PainelEducacionalProficienciaIdepDto>> Handle(ObterProficienciaIdepQuery request, CancellationToken cancellationToken)
         {
-            var proficiencia = await repositorioProficienciaIdeb.ObterProficienciaIdep(request.AnoLetivo, request.CodigoUe);
+            var proficiencia = await repositorioProficienciaIdep.ObterProficienciaIdep(request.AnoLetivo, request.CodigoUe);
 
             var resultadoFinal = proficiencia
                 .GroupBy(d => d.AnoLetivo)
@@ -42,11 +42,11 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterProficienciaIdep
                         AnoLetivo = group.Key,
                         PercentualInicial = Math.Round(mediaProficienciaIniciais, 2),
                         PercentualFinal = Math.Round(mediaProficienciaFinais, 2),
-                        Proficiencia = new ProficienciaIdebResumidoDto
+                        Proficiencia = new ProficienciaIdepResumidoDto
                         {
                             AnosIniciais = anosIniciais
                                 .GroupBy(item => item.ComponenteCurricular)
-                                .Select(componente => new ComponenteCurricularIdebResumidoDto
+                                .Select(componente => new ComponenteCurricularIdepResumidoDto
                                 {
                                     ComponenteCurricular = ((ComponenteCurricular)componente.Key).ObterDisplayName(),
                                     Percentual = Math.Round(componente.Average(item => item.ProficienciaMedia), 2)
@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterProficienciaIdep
                                 .ToList(),
                             AnosFinais = anosFinais
                                 .GroupBy(item => item.ComponenteCurricular)
-                                .Select(componente => new ComponenteCurricularIdebResumidoDto
+                                .Select(componente => new ComponenteCurricularIdepResumidoDto
                                 {
                                     ComponenteCurricular = ((ComponenteCurricular)componente.Key).ObterDisplayName(),
                                     Percentual = Math.Round(componente.Average(item => item.ProficienciaMedia), 2)
