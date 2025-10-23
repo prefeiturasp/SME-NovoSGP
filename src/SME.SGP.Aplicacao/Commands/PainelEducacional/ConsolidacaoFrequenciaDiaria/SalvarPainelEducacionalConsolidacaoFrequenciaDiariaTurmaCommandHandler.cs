@@ -32,6 +32,7 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.ConsolidacaoFrequenciaDia
             return consolidacaoFrequenciaDto
                 .Select(dto => new PainelEducacionalConsolidacaoFrequenciaDiaria
                 {
+                    CodigoDre = dto.CodigoDre,
                     CodigoUe = dto.CodigoUe,
                     TurmaId = dto.TurmaId,
                     NivelFrequencia = dto.NivelFrequencia,

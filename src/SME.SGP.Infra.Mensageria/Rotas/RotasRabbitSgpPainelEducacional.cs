@@ -15,8 +15,8 @@
         public const string ConsolidarAbandonoPainelEducacional = "sgp.consolidacao.painel.educacional.abandono";
         public const string ConsolidarNotasPainelEducacional = "sgp.consolidacao.painel.educacional.notas";
         public const string ConsolidarReclassificacaoPainelEducacional = "sgp.consolidacao.painel.educacional.reclassificacao";
-        public const string ConsolidarFrequenciaSemanalPainelEducacional = "sgp.consolidacao.painel.educacional.frequencia.semanal";
         public const string ConsolidarFrequenciaDiariaPainelEducacional = "sgp.consolidacao.painel.educacional.frequencia.diaria";
+        public const string ConsolidarFrequenciaSemanalPainelEducacional = "sgp.consolidacao.painel.educacional.frequencia.semanal";
     }
 }
 
