@@ -13,11 +13,11 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
 {
-    public class ConsultasProficienciaIdebPainelEducacionalUseCase : IConsultasProficienciaIdebPainelEducacionalUseCase
+    public class ConsultasProficienciaIdepPainelEducacionalUseCase : IConsultasProficienciaIdepPainelEducacionalUseCase
     {
         private readonly IMediator mediator;
 
-        public ConsultasProficienciaIdebPainelEducacionalUseCase(IMediator mediator)
+        public ConsultasProficienciaIdepPainelEducacionalUseCase(IMediator mediator)
         {
             this.mediator = mediator;
         }
@@ -27,20 +27,20 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             if (string.IsNullOrWhiteSpace(codigoUe))
                 throw new NegocioException("Informe a unidade escolar");
 
-            var proficienciaIdeb = await mediator.Send(new ObterProficienciaIdepQuery(anoLetivo, codigoUe));
+            var proficienciaIdep = await mediator.Send(new ObterProficienciaIdepQuery(anoLetivo, codigoUe));
             var ideps = await mediator.Send(new ObterIdepsQuery(anoLetivo, codigoUe));
 
-            var proficienciaIdebDto = MapearParaDto(proficienciaIdeb, ideps);
+            var proficienciaIdepDto = MapearParaDto(proficienciaIdep, ideps);
 
             if (anoLetivo <= 0)
             {
-                proficienciaIdebDto = proficienciaIdebDto
+                proficienciaIdepDto = proficienciaIdepDto
                     .OrderByDescending(p => p.AnoLetivo)
                     .Take(5)
                     .ToList();
             }
 
-            return proficienciaIdebDto;
+            return proficienciaIdepDto;
         }
 
         private static IEnumerable<PainelEducacionalProficienciaIdepDto> MapearParaDto(IEnumerable<ProficienciaIdepAgrupadaDto> proficiencia, IEnumerable<Idep> ideps)
@@ -57,11 +57,11 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                         AnoLetivo = group.Key,
                         PercentualInicial = ObterPercentualIdep(ideps, group.Key, (int)SerieAnoIdepEnum.AnosIniciais),
                         PercentualFinal = ObterPercentualIdep(ideps, group.Key, (int)SerieAnoIdepEnum.AnosFinais),
-                        Proficiencia = new ProficienciaIdebResumidoDto
+                        Proficiencia = new ProficienciaIdepResumidoDto
                         {
                             AnosIniciais = anosIniciais
                                 .GroupBy(item => item.ComponenteCurricular)
-                                .Select(componente => new ComponenteCurricularIdebResumidoDto
+                                .Select(componente => new ComponenteCurricularIdepResumidoDto
                                 {
                                     ComponenteCurricular = ((SGP.Dominio.Enumerados.ComponenteCurricular)componente.Key).ObterDisplayName(),
                                     Percentual = Math.Round(componente.Average(item => item.ProficienciaMedia), 2)
@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                                 .ToList(),
                             AnosFinais = anosFinais
                                 .GroupBy(item => item.ComponenteCurricular)
-                                .Select(componente => new ComponenteCurricularIdebResumidoDto
+                                .Select(componente => new ComponenteCurricularIdepResumidoDto
                                 {
                                     ComponenteCurricular = ((SGP.Dominio.Enumerados.ComponenteCurricular)componente.Key).ObterDisplayName(),
                                     Percentual = Math.Round(componente.Average(item => item.ProficienciaMedia), 2)

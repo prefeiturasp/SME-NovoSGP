@@ -12,15 +12,15 @@ using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
 {
-    public class ConsultasProficienciaIdebPainelEducacionalUseCaseTeste
+    public class ConsultasProficienciaIdepPainelEducacionalUseCaseTeste
     {
         private readonly Mock<IMediator> mediatorMock;
-        private readonly ConsultasProficienciaIdebPainelEducacionalUseCase useCase;
+        private readonly ConsultasProficienciaIdepPainelEducacionalUseCase useCase;
 
-        public ConsultasProficienciaIdebPainelEducacionalUseCaseTeste()
+        public ConsultasProficienciaIdepPainelEducacionalUseCaseTeste()
         {
             mediatorMock = new Mock<IMediator>();
-            useCase = new ConsultasProficienciaIdebPainelEducacionalUseCase(mediatorMock.Object);
+            useCase = new ConsultasProficienciaIdepPainelEducacionalUseCase(mediatorMock.Object);
         }
 
         [Theory]
