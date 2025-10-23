@@ -867,6 +867,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasPainelEducacionalTaxaAlfabetizacaoUseCase, ConsultasPainelEducacionalTaxaAlfabetizacaoUseCase>();
             services.TryAddScoped<IConsultasAbandonoPainelEducacionalUseCase, ConsultasAbandonoPainelEducacionalUseCase>();
             services.TryAddScoped<IConsultasAbandonoPainelEducacionalUeUseCase, ConsultasAbandonoPainelEducacionalUeUseCase>();
+            services.TryAddScoped<IConsultasProficienciaIdepPainelEducacionalUseCase, ConsultasProficienciaIdepPainelEducacionalUseCase>();
 
 
             services.TryAddScoped<IObterDashBoardUseCase, ObterDashBoardUseCase>();
