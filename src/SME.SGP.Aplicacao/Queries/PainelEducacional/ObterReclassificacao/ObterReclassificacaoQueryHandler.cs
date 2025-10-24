@@ -22,11 +22,11 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterReclassificacao
         public async Task<IEnumerable<PainelEducacionalReclassificacaoDto>> Handle(ObterReclassificacaoQuery request, CancellationToken cancellationToken)
         {
             var dadosConsolidados = await repositorio.ObterReclassificacao(request.CodigoDre, request.CodigoUe, request.AnoLetivo, request.AnoTurma);
-            
-            return MapearParaDto(dadosConsolidados);
+
+            return MapearParaDto(dadosConsolidados, request.CodigoDre, request.CodigoUe);
         }
 
-        private IEnumerable<PainelEducacionalReclassificacaoDto> MapearParaDto(IEnumerable<PainelEducacionalReclassificacaoDto> dadosConsolidados)
+        private IEnumerable<PainelEducacionalReclassificacaoDto> MapearParaDto(IEnumerable<PainelEducacionalReclassificacaoDto> dadosConsolidados, string codigoDre, string codigoUe)
         {
             if (dadosConsolidados == null || !dadosConsolidados.Any())
                 return Enumerable.Empty<PainelEducacionalReclassificacaoDto>();
@@ -37,16 +37,23 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterReclassificacao
             {
                 if (item.Modalidade?.Any() == true)
                 {
-                    var modalidadesAgrupadas = item.Modalidade
-                        .SelectMany(m => new[]
-                        {
-                            new ModalidadeReclassificacaoDto
+                    var modalidadesAgrupadas = CodigoDreOuCodigoUeEhNulo(codigoDre, codigoUe)
+                        ? item.Modalidade
+                           .GroupBy(m => m.AnoTurma)
+                            .Select(g => new ModalidadeReclassificacaoDto
                             {
-                                Nome = m.Nome,
-                                AnoTurma = m.AnoTurma,
-                                QuantidadeAlunos = m.QuantidadeAlunos
-                            }
-                        });
+                                Nome = g.FirstOrDefault()?.Nome, 
+                                AnoTurma = g.Key, 
+                                QuantidadeAlunos = g.Sum(m => m.QuantidadeAlunos)
+                            })
+                            .OrderBy(m => m.AnoTurma)
+                        : item.Modalidade.Select(m => new ModalidadeReclassificacaoDto
+                        {
+                            Nome = m.Nome,
+                            AnoTurma = m.AnoTurma,
+                            QuantidadeAlunos = m.QuantidadeAlunos
+                        })
+                        .OrderBy(m => m.AnoTurma);
 
                     resultado.Add(new PainelEducacionalReclassificacaoDto
                     {
@@ -55,7 +62,12 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterReclassificacao
                 }
             }
 
-            return resultado.OrderBy(a => a.Modalidade.FirstOrDefault().AnoTurma);
+            return resultado.OrderBy(a => a.Modalidade.FirstOrDefault()?.AnoTurma);
+        }
+
+        public bool CodigoDreOuCodigoUeEhNulo(string codigoDre, string codigoUe)
+        {
+            return string.IsNullOrEmpty(codigoDre) || string.IsNullOrEmpty(codigoUe);
         }
     }
 }
