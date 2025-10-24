@@ -2,25 +2,24 @@
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoUe;
-using SME.SGP.Infra.Interfaces;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNotas.VisaoUe
 {
-    public class ObterNotaVisaoUeQueryHandler : ConsultasBase, IRequestHandler<ObterNotaVisaoUeQuery, PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeRetornoSelectDto>>
+    public class ObterNotaVisaoUeQueryHandler : IRequestHandler<ObterNotaVisaoUeQuery, PaginacaoNotaResultadoDto<PainelEducacionalNotasVisaoUeRetornoSelectDto>>
     {
-        private readonly IRepositorioNota repositorio;
+        private readonly IRepositorioNotaConsulta repositorio;
 
-        public ObterNotaVisaoUeQueryHandler(IContextoAplicacao contextoAplicacao, IRepositorioNota repositorio) : base(contextoAplicacao)
+        public ObterNotaVisaoUeQueryHandler(IRepositorioNotaConsulta repositorio) 
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
 
-        public async Task<PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeRetornoSelectDto>> Handle(ObterNotaVisaoUeQuery request, CancellationToken cancellationToken)
+        public async Task<PaginacaoNotaResultadoDto<PainelEducacionalNotasVisaoUeRetornoSelectDto>> Handle(ObterNotaVisaoUeQuery request, CancellationToken cancellationToken)
         {
-            return await repositorio.ObterNotasVisaoUe(Paginacao, request.CodigoUe, request.AnoLetivo, request.Bimestre, request.Modalidade);
+            return await repositorio.ObterNotasVisaoUe(request.Paginacao, request.CodigoUe, request.AnoLetivo, request.Bimestre, request.Modalidade);
         }
     }
 }

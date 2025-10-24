@@ -963,33 +963,21 @@ namespace SME.SGP.Api.Teste.Controllers
                 Modalidade = Modalidade.Fundamental
             };
 
-            var retornoEsperado = new PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>
+            var retornoEsperado = new PaginacaoNotaResultadoDto<TurmaNotasVisaoUeDto>
             {
-                Items = new List<PainelEducacionalNotasVisaoUeDto>
+                Items = new List<TurmaNotasVisaoUeDto>
                 {
-                    new PainelEducacionalNotasVisaoUeDto
+                    new TurmaNotasVisaoUeDto
                     {
-                        Modalidades = new List<ModalidadeNotasVisaoUeDto>
+                        Nome = "5º Ano",
+                        Modalidade = (int)Modalidade.Fundamental,
+                        ComponentesCurriculares = new List<ComponenteCurricularNotasDto>
                         {
-                            new ModalidadeNotasVisaoUeDto
+                            new ComponenteCurricularNotasDto
                             {
-                                Nome = "Ensino Fundamental",
-                                Turmas = new List<TurmaNotasVisaoUeDto>
-                                {
-                                    new TurmaNotasVisaoUeDto
-                                    {
-                                        Nome = "5º Ano",
-                                        ComponentesCurriculares = new List<ComponenteCurricularNotasDto>
-                                        {
-                                            new ComponenteCurricularNotasDto
-                                            {
-                                                Nome = "Português",
-                                                AbaixoDaMedia = 25,
-                                                AcimaDaMedia = 75
-                                            }
-                                        }
-                                    }
-                                }
+                                Nome = "Português",
+                                AbaixoDaMedia = 25,
+                                AcimaDaMedia = 75
                             }
                         }
                     }
@@ -1006,15 +994,17 @@ namespace SME.SGP.Api.Teste.Controllers
             var result = await _controller.ObterNotasVisaoUe(filtro, mockUseCase.Object);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var retorno = Assert.IsType<PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>>(okResult.Value);
+            var retorno = Assert.IsType<PaginacaoNotaResultadoDto<TurmaNotasVisaoUeDto>>(okResult.Value);
 
             Assert.Equal(3, retorno.TotalRegistros);
             Assert.Equal(1, retorno.TotalPaginas);
             Assert.Single(retorno.Items);
 
             var item = retorno.Items.First();
-            Assert.NotNull(item.Modalidades);
-            Assert.Single(item.Modalidades);
+            Assert.Equal("5º Ano", item.Nome);
+            Assert.Equal((int)Modalidade.Fundamental, item.Modalidade);
+            Assert.NotNull(item.ComponentesCurriculares);
+            Assert.Single(item.ComponentesCurriculares);
 
             mockUseCase.Verify(x => x.ObterNotasVisaoUe(
                 It.Is<string>(c => c == filtro.CodigoUe),
@@ -1035,77 +1025,53 @@ namespace SME.SGP.Api.Teste.Controllers
                 Modalidade = Modalidade.Fundamental
             };
 
-            var retornoEsperado = new PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>
+            var retornoEsperado = new PaginacaoNotaResultadoDto<TurmaNotasVisaoUeDto>
             {
-                Items = new List<PainelEducacionalNotasVisaoUeDto>
+                Items = new List<TurmaNotasVisaoUeDto>
                 {
-                    new PainelEducacionalNotasVisaoUeDto
+                    new TurmaNotasVisaoUeDto
                     {
-                        Modalidades = new List<ModalidadeNotasVisaoUeDto>
+                        Nome = "1º Ano",
+                        Modalidade = (int)Modalidade.Fundamental,
+                        ComponentesCurriculares = new List<ComponenteCurricularNotasDto>
                         {
-                            new ModalidadeNotasVisaoUeDto
+                            new ComponenteCurricularNotasDto
                             {
-                                Nome = "Ensino Fundamental",
-                                Turmas = new List<TurmaNotasVisaoUeDto>
-                                {
-                                    new TurmaNotasVisaoUeDto
-                                    {
-                                        Nome = "1º Ano",
-                                        ComponentesCurriculares = new List<ComponenteCurricularNotasDto>
-                                        {
-                                            new ComponenteCurricularNotasDto
-                                            {
-                                                Nome = "Português",
-                                                AbaixoDaMedia = 15,
-                                                AcimaDaMedia = 85
-                                            },
-                                            new ComponenteCurricularNotasDto
-                                            {
-                                                Nome = "Matemática",
-                                                AbaixoDaMedia = 18,
-                                                AcimaDaMedia = 82
-                                            }
-                                        }
-                                    }
-                                }
+                                Nome = "Português",
+                                AbaixoDaMedia = 15,
+                                AcimaDaMedia = 85
+                            },
+                            new ComponenteCurricularNotasDto
+                            {
+                                Nome = "Matemática",
+                                AbaixoDaMedia = 18,
+                                AcimaDaMedia = 82
                             }
                         }
                     },
-                    new PainelEducacionalNotasVisaoUeDto
+                    new TurmaNotasVisaoUeDto
                     {
-                        Modalidades = new List<ModalidadeNotasVisaoUeDto>
+                        Nome = "1ª Série",
+                        Modalidade = (int)Modalidade.Medio,
+                        ComponentesCurriculares = new List<ComponenteCurricularNotasDto>
                         {
-                            new ModalidadeNotasVisaoUeDto
+                            new ComponenteCurricularNotasDto
                             {
-                                Nome = "Ensino Médio",
-                                Turmas = new List<TurmaNotasVisaoUeDto>
-                                {
-                                    new TurmaNotasVisaoUeDto
-                                    {
-                                        Nome = "1ª Série",
-                                        ComponentesCurriculares = new List<ComponenteCurricularNotasDto>
-                                        {
-                                            new ComponenteCurricularNotasDto
-                                            {
-                                                Nome = "Português",
-                                                AbaixoDaMedia = 45,
-                                                AcimaDaMedia = 55
-                                            },
-                                            new ComponenteCurricularNotasDto
-                                            {
-                                                Nome = "Matemática",
-                                                AbaixoDaMedia = 50,
-                                                AcimaDaMedia = 50
-                                            },
-                                            new ComponenteCurricularNotasDto
-                                            {
-                                                Nome = "Ciências",
-                                                AbaixoDaMedia = 42,
-                                                AcimaDaMedia = 58
-                                            }
-                                        }
-                                    }
-                                }
+                                Nome = "Português",
+                                AbaixoDaMedia = 45,
+                                AcimaDaMedia = 55
+                            },
+                            new ComponenteCurricularNotasDto
+                            {
+                                Nome = "Matemática",
+                                AbaixoDaMedia = 50,
+                                AcimaDaMedia = 50
+                            },
+                            new ComponenteCurricularNotasDto
+                            {
+                                Nome = "Ciências",
+                                AbaixoDaMedia = 42,
+                                AcimaDaMedia = 58
                             }
                         }
                     }
@@ -1122,7 +1088,7 @@ namespace SME.SGP.Api.Teste.Controllers
             var result = await _controller.ObterNotasVisaoUe(filtro, mockUseCase.Object);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var retorno = Assert.IsType<PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>>(okResult.Value);
+            var retorno = Assert.IsType<PaginacaoNotaResultadoDto<TurmaNotasVisaoUeDto>>(okResult.Value);
 
             Assert.Equal(2, retorno.TotalRegistros);
             Assert.Equal(1, retorno.TotalPaginas);
@@ -1131,8 +1097,10 @@ namespace SME.SGP.Api.Teste.Controllers
             var primeiroItem = retorno.Items.First();
             var segundoItem = retorno.Items.Last();
 
-            Assert.Equal("Ensino Fundamental", primeiroItem.Modalidades.First().Nome);
-            Assert.Equal("Ensino Médio", segundoItem.Modalidades.First().Nome);
+            Assert.Equal("1º Ano", primeiroItem.Nome);
+            Assert.Equal((int)Modalidade.Fundamental, primeiroItem.Modalidade);
+            Assert.Equal("1ª Série", segundoItem.Nome);
+            Assert.Equal((int)Modalidade.Medio, segundoItem.Modalidade);
 
             mockUseCase.Verify(x => x.ObterNotasVisaoUe(
                 It.Is<string>(c => c == "UE456"),
@@ -1153,9 +1121,9 @@ namespace SME.SGP.Api.Teste.Controllers
                 Modalidade = Modalidade.EJA
             };
 
-            var retornoEsperado = new PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>
+            var retornoEsperado = new PaginacaoNotaResultadoDto<TurmaNotasVisaoUeDto>
             {
-                Items = new List<PainelEducacionalNotasVisaoUeDto>(),
+                Items = new List<TurmaNotasVisaoUeDto>(),
                 TotalRegistros = 0,
                 TotalPaginas = 0
             };
@@ -1168,7 +1136,7 @@ namespace SME.SGP.Api.Teste.Controllers
             var result = await _controller.ObterNotasVisaoUe(filtro, mockUseCase.Object);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var retorno = Assert.IsType<PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>>(okResult.Value);
+            var retorno = Assert.IsType<PaginacaoNotaResultadoDto<TurmaNotasVisaoUeDto>>(okResult.Value);
 
             Assert.Equal(0, retorno.TotalRegistros);
             Assert.Equal(0, retorno.TotalPaginas);
@@ -1193,45 +1161,33 @@ namespace SME.SGP.Api.Teste.Controllers
                 Modalidade = Modalidade.Medio
             };
 
-            var retornoEsperado = new PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>
+            var retornoEsperado = new PaginacaoNotaResultadoDto<TurmaNotasVisaoUeDto>
             {
-                Items = new List<PainelEducacionalNotasVisaoUeDto>
+                Items = new List<TurmaNotasVisaoUeDto>
                 {
-                    new PainelEducacionalNotasVisaoUeDto
+                    new TurmaNotasVisaoUeDto
                     {
-                        Modalidades = new List<ModalidadeNotasVisaoUeDto>
+                        Nome = "3ª Série",
+                        Modalidade = (int)Modalidade.Medio,
+                        ComponentesCurriculares = new List<ComponenteCurricularNotasDto>
                         {
-                            new ModalidadeNotasVisaoUeDto
+                            new ComponenteCurricularNotasDto
                             {
-                                Nome = "Ensino Médio",
-                                Turmas = new List<TurmaNotasVisaoUeDto>
-                                {
-                                    new TurmaNotasVisaoUeDto
-                                    {
-                                        Nome = "3ª Série",
-                                        ComponentesCurriculares = new List<ComponenteCurricularNotasDto>
-                                        {
-                                            new ComponenteCurricularNotasDto
-                                            {
-                                                Nome = "Português",
-                                                AbaixoDaMedia = 60,
-                                                AcimaDaMedia = 40
-                                            },
-                                            new ComponenteCurricularNotasDto
-                                            {
-                                                Nome = "Matemática",
-                                                AbaixoDaMedia = 65,
-                                                AcimaDaMedia = 35
-                                            },
-                                            new ComponenteCurricularNotasDto
-                                            {
-                                                Nome = "Ciências",
-                                                AbaixoDaMedia = 55,
-                                                AcimaDaMedia = 45
-                                            }
-                                        }
-                                    }
-                                }
+                                Nome = "Português",
+                                AbaixoDaMedia = 60,
+                                AcimaDaMedia = 40
+                            },
+                            new ComponenteCurricularNotasDto
+                            {
+                                Nome = "Matemática",
+                                AbaixoDaMedia = 65,
+                                AcimaDaMedia = 35
+                            },
+                            new ComponenteCurricularNotasDto
+                            {
+                                Nome = "Ciências",
+                                AbaixoDaMedia = 55,
+                                AcimaDaMedia = 45
                             }
                         }
                     }
@@ -1248,18 +1204,15 @@ namespace SME.SGP.Api.Teste.Controllers
             var result = await _controller.ObterNotasVisaoUe(filtro, mockUseCase.Object);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var retorno = Assert.IsType<PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>>(okResult.Value);
+            var retorno = Assert.IsType<PaginacaoNotaResultadoDto<TurmaNotasVisaoUeDto>>(okResult.Value);
 
             Assert.Equal(1, retorno.TotalRegistros);
             Assert.Equal(1, retorno.TotalPaginas);
             Assert.Single(retorno.Items);
 
             var item = retorno.Items.First();
-            var modalidade = item.Modalidades.First();
-            Assert.Equal("Ensino Médio", modalidade.Nome);
-
-            var turma = modalidade.Turmas.First();
-            Assert.Equal("3ª Série", turma.Nome);
+            Assert.Equal("3ª Série", item.Nome);
+            Assert.Equal((int)Modalidade.Medio, item.Modalidade);
 
             mockUseCase.Verify(x => x.ObterNotasVisaoUe(
                 It.Is<string>(c => c == null),
@@ -1280,33 +1233,21 @@ namespace SME.SGP.Api.Teste.Controllers
                 Modalidade = Modalidade.Fundamental
             };
 
-            var retornoEsperado = new PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>
+            var retornoEsperado = new PaginacaoNotaResultadoDto<TurmaNotasVisaoUeDto>
             {
-                Items = new List<PainelEducacionalNotasVisaoUeDto>
+                Items = new List<TurmaNotasVisaoUeDto>
                 {
-                    new PainelEducacionalNotasVisaoUeDto
+                    new TurmaNotasVisaoUeDto
                     {
-                        Modalidades = new List<ModalidadeNotasVisaoUeDto>
+                        Nome = "2º Ano",
+                        Modalidade = (int)Modalidade.Fundamental,
+                        ComponentesCurriculares = new List<ComponenteCurricularNotasDto>
                         {
-                            new ModalidadeNotasVisaoUeDto
+                            new ComponenteCurricularNotasDto
                             {
-                                Nome = "Ensino Fundamental",
-                                Turmas = new List<TurmaNotasVisaoUeDto>
-                                {
-                                    new TurmaNotasVisaoUeDto
-                                    {
-                                        Nome = "2º Ano",
-                                        ComponentesCurriculares = new List<ComponenteCurricularNotasDto>
-                                        {
-                                            new ComponenteCurricularNotasDto
-                                            {
-                                                Nome = "Português",
-                                                AbaixoDaMedia = 22,
-                                                AcimaDaMedia = 78
-                                            }
-                                        }
-                                    }
-                                }
+                                Nome = "Português",
+                                AbaixoDaMedia = 22,
+                                AcimaDaMedia = 78
                             }
                         }
                     }
@@ -1323,7 +1264,7 @@ namespace SME.SGP.Api.Teste.Controllers
             var result = await _controller.ObterNotasVisaoUe(filtro, mockUseCase.Object);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var retorno = Assert.IsType<PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>>(okResult.Value);
+            var retorno = Assert.IsType<PaginacaoNotaResultadoDto<TurmaNotasVisaoUeDto>>(okResult.Value);
 
             Assert.Equal(15, retorno.TotalRegistros);
             Assert.Equal(5, retorno.TotalPaginas);
