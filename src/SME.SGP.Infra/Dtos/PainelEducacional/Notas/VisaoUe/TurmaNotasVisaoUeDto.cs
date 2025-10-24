@@ -5,6 +5,7 @@ namespace SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoUe
     public class TurmaNotasVisaoUeDto
     {
         public string Nome { get; set; }
+        public int Modalidade { get; set; }
         public IEnumerable<ComponenteCurricularNotasDto> ComponentesCurriculares { get; set; }
     }
 }

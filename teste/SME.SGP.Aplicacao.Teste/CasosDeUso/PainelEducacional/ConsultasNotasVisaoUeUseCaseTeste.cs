@@ -45,8 +45,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             mockContextoAplicacao.Setup(c => c.ObterVariavel<string>("NumeroPagina")).Returns("2");
             mockContextoAplicacao.Setup(c => c.ObterVariavel<string>("NumeroRegistros")).Returns("20");
 
-            var expectedResult = new PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeDto>();
-            var mediatorResult = new PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeRetornoSelectDto>
+            var expectedResult = new PaginacaoNotaResultadoDto<PainelEducacionalNotasVisaoUeDto>();
+            var mediatorResult = new PaginacaoNotaResultadoDto<PainelEducacionalNotasVisaoUeRetornoSelectDto>
             {
                 Items = new List<PainelEducacionalNotasVisaoUeRetornoSelectDto>
                 {
@@ -73,7 +73,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
 
             mockMediator
                 .Setup(m => m.Send(It.IsAny<ObterNotaVisaoUeQuery>(), It.IsAny<CancellationToken>()))
-                .Callback<IRequest<PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeRetornoSelectDto>>, CancellationToken>((query, token) => queryCapturada = query as ObterNotaVisaoUeQuery)
+                .Callback<IRequest<PaginacaoNotaResultadoDto<PainelEducacionalNotasVisaoUeRetornoSelectDto>>, CancellationToken>((query, token) => queryCapturada = query as ObterNotaVisaoUeQuery)
                 .ReturnsAsync(mediatorResult);
 
             var result = await useCase.ObterNotasVisaoUe("ue-id", 2024, 1, Modalidade.Fundamental);
@@ -97,7 +97,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             mockContextoAplicacao.Setup(c => c.ObterVariavel<string>("NumeroPagina")).Returns((string)null);
             mockContextoAplicacao.Setup(c => c.ObterVariavel<string>("NumeroRegistros")).Returns("10");
 
-            var mediatorResult = new PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeRetornoSelectDto>
+            var mediatorResult = new PaginacaoNotaResultadoDto<PainelEducacionalNotasVisaoUeRetornoSelectDto>
             {
                 Items = new List<PainelEducacionalNotasVisaoUeRetornoSelectDto>(),
                 TotalRegistros = 0,
@@ -107,7 +107,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
 
             mockMediator
                 .Setup(m => m.Send(It.IsAny<ObterNotaVisaoUeQuery>(), It.IsAny<CancellationToken>()))
-                .Callback<IRequest<PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeRetornoSelectDto>>, CancellationToken>((query, token) => queryCapturada = query as ObterNotaVisaoUeQuery)
+                .Callback<IRequest<PaginacaoNotaResultadoDto<PainelEducacionalNotasVisaoUeRetornoSelectDto>>, CancellationToken>((query, token) => queryCapturada = query as ObterNotaVisaoUeQuery)
                 .ReturnsAsync(mediatorResult);
 
             var result = await useCase.ObterNotasVisaoUe("ue-id-2", 2024, 2, Modalidade.EJA);
