@@ -2,7 +2,7 @@
 {
     public class PainelEducacionalFrequenciaSemanalUeDto
     {
-        public string Data { get; set; }
+        public string DataAula { get; set; }
         public decimal PercentualFrequencia { get; set; }
     }
 }
