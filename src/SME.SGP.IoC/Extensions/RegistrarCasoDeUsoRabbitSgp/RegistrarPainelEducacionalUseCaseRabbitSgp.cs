@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Aplicacao.CasosDeUso.PainelEducacional;
+using SME.SGP.Aplicacao.CasosDeUso.PainelEducacional.Frequencia;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional.Frequencia;
 
 namespace SME.SGP.IoC.Extensions.RegistrarCasoDeUsoRabbitSgp
 {
@@ -13,7 +15,7 @@ namespace SME.SGP.IoC.Extensions.RegistrarCasoDeUsoRabbitSgp
             services.AddScoped<IConsolidarIdebPainelEducacionalUseCase, ConsolidarIdebPainelEducacionalUseCase>();
             services.AddScoped<Aplicacao.Interfaces.CasosDeUso.PainelEducacional.IConsolidarVisaoGeralPainelEducacionalUseCase, Aplicacao.CasosDeUso.PainelEducacional.ConsolidarVisaoGeralPainelEducacionalUseCase>();
             services
-                .AddScoped<IConsolidarInformacoesNivelEscritaAlfabetizacaoPainelEducacionalUseCase, 
+                .AddScoped<IConsolidarInformacoesNivelEscritaAlfabetizacaoPainelEducacionalUseCase,
                            ConsolidarInformacoesNivelEscritaAlfabetizacaoPainelEducacionalUseCase>()
                 .AddScoped<IConsolidarInformacoesAlfabetizacaoCriticaEscritaPainelEducacionalUseCase,
                            ConsolidarInformacoesAlfabetizacaoCriticaEscritaPainelEducacionalUseCase>()
@@ -21,6 +23,9 @@ namespace SME.SGP.IoC.Extensions.RegistrarCasoDeUsoRabbitSgp
                            ConsolidarInformacoesPapPainelEducacionalUseCase>()
                .AddScoped<IConsolidarFluenciaLeitoraPainelEducacionalUseCase,
                            ConsolidarFluenciaLeitoraPainelEducacionalUseCase>();
+
+            services.AddScoped<IConsolidarFrequenciaDiariaPainelEducacionalUseCase, ConsolidarFrequenciaDiariaPainelEducacionalUseCase>();
+            services.AddScoped<IConsolidarReclassificacaoPainelEducacionalUseCase, ConsolidarReclassificacaoPainelEducacionalUseCase>();
         }
     }
 }

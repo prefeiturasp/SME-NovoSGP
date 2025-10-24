@@ -9,11 +9,11 @@ using System.Linq;
 
 namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
 {
-    public class ConsultasProficienciaIdebPainelEducacionalUseCase : IConsultasProficienciaIdebPainelEducacionalUseCase
+    public class ConsultasProficienciaIdepPainelEducacionalUseCase : IConsultasProficienciaIdepPainelEducacionalUseCase
     {
         private readonly IMediator mediator;
 
-        public ConsultasProficienciaIdebPainelEducacionalUseCase(IMediator mediator)
+        public ConsultasProficienciaIdepPainelEducacionalUseCase(IMediator mediator)
         {
             this.mediator = mediator;
         }
@@ -23,17 +23,17 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             if (string.IsNullOrWhiteSpace(codigoUe))
                 throw new NegocioException("Informe a unidade escolar");
 
-            var proficienciaIdeb = await mediator.Send(new ObterProficienciaIdepQuery(anoLetivo, codigoUe));
+            var proficienciaIdep = await mediator.Send(new ObterProficienciaIdepQuery(anoLetivo, codigoUe));
 
             if (anoLetivo <= 0)
             {
-                proficienciaIdeb = proficienciaIdeb
+                proficienciaIdep = proficienciaIdep
                     .OrderByDescending(p => p.AnoLetivo) 
                     .Take(5)
                     .ToList();
             }
 
-            return proficienciaIdeb;
+            return proficienciaIdep;
         }
     }
 }

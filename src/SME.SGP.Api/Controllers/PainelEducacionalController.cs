@@ -6,9 +6,12 @@ using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using SME.SGP.Infra.Dtos.PainelEducacional.FrequenciaSemanalUe;
+using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoDistorcaoIdade;
+using SME.SGP.Infra.Dtos.PainelEducacional.FrequenciaDiaria;
 using SME.SGP.Infra.Dtos.PainelEducacional.IndicadoresPap;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoSmeDre;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoUe;
+using SME.SGP.Infra.Dtos.PainelEducacional.Reclassificacao;
 using SME.SGP.Infra.Dtos.PainelEducacional.SondagemEscrita;
 using System.Threading.Tasks;
 
@@ -42,6 +45,22 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterFrequenciaRanking(int anoLetivo, string codigoDre, string codigoUe, [FromServices] IConsultasRegistroFrequenciaAgrupamentoRankingUseCase consultasRegistroFrequenciaAgrupamentoRankingUseCase)
          => Ok(await consultasRegistroFrequenciaAgrupamentoRankingUseCase.ObterFrequencia(anoLetivo, codigoDre, codigoUe));
+
+        [HttpGet("frequencia-diaria-dre")]
+        [ProducesResponseType(typeof(FrequenciaDiariaDreDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterFrequenciaDiariaDre([FromQuery] FiltroFrequenciaDiariaDreDto filtro, [FromServices] IConsultasRegistroFrequenciaDiariaDreUseCase consultasRegistroFrequenciaDiariaDreUseCase)
+        => Ok(await consultasRegistroFrequenciaDiariaDreUseCase.ObterFrequenciaDiariaPorDre(filtro));
+
+        [HttpGet("frequencia-diaria-ue")]
+        [ProducesResponseType(typeof(FrequenciaDiariaUeDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterFrequenciaDiariaUe([FromQuery] FiltroFrequenciaDiariaUeDto filtro, [FromServices] IConsultasRegistroFrequenciaDiariaUeUseCase consultasRegistroFrequenciaDiariaUeUseCase)
+        => Ok(await consultasRegistroFrequenciaDiariaUeUseCase.ObterFrequenciaDiariaPorUe(filtro));
 
         [HttpGet("nivel-alfabetizacao")]
         [ProducesResponseType(typeof(PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoDto), 200)]
@@ -129,8 +148,8 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterProficienciaIdep(int anoLetivo, string codigoUe, [FromServices] IConsultasProficienciaIdebPainelEducacionalUseCase consultaProficienciaIdebPainelEducacionalUseCase)
-         => Ok(await consultaProficienciaIdebPainelEducacionalUseCase.ObterProficienciaIdep(anoLetivo, codigoUe));
+        public async Task<IActionResult> ObterProficienciaIdep(int anoLetivo, string codigoUe, [FromServices] IConsultasProficienciaIdepPainelEducacionalUseCase consultaProficienciaIdepPainelEducacionalUseCase)
+         => Ok(await consultaProficienciaIdepPainelEducacionalUseCase.ObterProficienciaIdep(anoLetivo, codigoUe));
 
         [HttpGet("proficiencia-escolas-dados")]
         [ProducesResponseType(typeof(PainelEducacionalProficienciaEscolaDadosDto), 200)]
@@ -169,5 +188,14 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterFrequenciaSemanalUe([FromQuery] FiltroFrequenciaSemanalUe filtro, [FromServices] IConsultasFrequenciaSemanalUeUseCase consultasFrequenciaSemanalUeCase)
      => Ok(await consultasFrequenciaSemanalUeCase.ObterFrequenciaSemanalUe(filtro.CodigoUe, filtro.AnoLetivo));
+
+        [HttpGet("distorcao-serie-idade")]
+        [ProducesResponseType(typeof(PainelEducacionalDistorcaoIdadeDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterDistorcaoSerieIdade([FromQuery] FiltroPainelEducacionalDistorcaoIdade filtro, [FromServices] IConsultasDistorcaoIdadeUseCase consultasDistorcaoIdadeUseCase)
+        => Ok(await consultasDistorcaoIdadeUseCase.ObterDistorcaoIdade(filtro));
+
     }
 }

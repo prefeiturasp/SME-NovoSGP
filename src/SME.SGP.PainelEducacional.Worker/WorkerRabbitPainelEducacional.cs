@@ -8,6 +8,7 @@ using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Utilitarios;
 using System.Diagnostics.CodeAnalysis;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional.Frequencia;
 
 namespace SME.SGP.PainelEducacional.Worker
 {
@@ -40,6 +41,7 @@ namespace SME.SGP.PainelEducacional.Worker
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarSondagemEscritaUePainelEducacional, new ComandoRabbit("Consolidar Sondagem Escrita Ue para o Painel Educacional", typeof(IConsolidarSondagemEscritaUePainelEducacionalUseCase)));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarAbandonoPainelEducacional, new ComandoRabbit("Consolidar Abandono para o Painel Educacional", typeof(IConsolidarAbandonoPainelEducacionalUseCase)));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarNotasPainelEducacional, new ComandoRabbit("Consolidar Notas para o Painel Educacional", typeof(IConsolidarNotasPainelEducacionalUseCase)));
+            Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarDistorcaoSerieIdadePainelEducacional, new ComandoRabbit("Consolidar Distorção Idade para o Painel Educacional", typeof(IConsolidarDistorcaoIdadePainelEducacionalUseCase)));
         }
     }
 }

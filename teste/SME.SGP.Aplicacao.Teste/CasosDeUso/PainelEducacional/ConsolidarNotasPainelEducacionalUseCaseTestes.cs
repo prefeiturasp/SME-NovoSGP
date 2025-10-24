@@ -470,6 +470,81 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     TurmaNome = "Turma 003",
                     ValorConceito = null,
                     ValorMedioNota = 80
+                },
+                new PainelEducacionalConsolidacaoNotaDadosBrutos
+                {
+                    AnoLetivo = anoLetivo,
+                    Bimestre = 2,
+                    Modalidade = Modalidade.Medio,
+                    CodigoDre = "DRE002",
+                    AnoTurma = 'S',
+                    CodigoUe = "UE002",
+                    ConceitoDeAprovado = false,
+                    IdComponenteCurricular = ComponentesCurricularesConstants.CODIGO_CIENCIAS,
+                    Nota = 95,
+                    TurmaNome = "SA",
+                    ValorConceito = "NS",
+                    ValorMedioNota = 80
+                },
+                new PainelEducacionalConsolidacaoNotaDadosBrutos
+                {
+                    AnoLetivo = anoLetivo,
+                    Bimestre = 2,
+                    Modalidade = Modalidade.Medio,
+                    CodigoDre = "DRE002",
+                    AnoTurma = 'S',
+                    CodigoUe = "UE002",
+                    ConceitoDeAprovado = true,
+                    IdComponenteCurricular = ComponentesCurricularesConstants.CODIGO_MATEMATICA,
+                    Nota = 60,
+                    TurmaNome = "SA",
+                    ValorConceito = "S",
+                    ValorMedioNota = 80
+                },
+                new PainelEducacionalConsolidacaoNotaDadosBrutos
+                {
+                    AnoLetivo = anoLetivo,
+                    Bimestre = 2,
+                    Modalidade = Modalidade.Medio,
+                    CodigoDre = "DRE003",
+                    AnoTurma = '9',
+                    CodigoUe = "UE003",
+                    ConceitoDeAprovado = false,
+                    IdComponenteCurricular = ComponentesCurricularesConstants.CODIGO_PORTUGUES,
+                    Nota = 60,
+                    TurmaNome = "SE",
+                    ValorConceito = "S",
+                    ValorMedioNota = 80
+                },
+                new PainelEducacionalConsolidacaoNotaDadosBrutos
+                {
+                    AnoLetivo = anoLetivo,
+                    Bimestre = 2,
+                    Modalidade = Modalidade.Medio,
+                    CodigoDre = "DRE003",
+                    AnoTurma = '9',
+                    CodigoUe = "UE003",
+                    ConceitoDeAprovado = false,
+                    IdComponenteCurricular = ComponentesCurricularesConstants.CODIGO_PORTUGUES,
+                    Nota = 60,
+                    TurmaNome = "SE",
+                    ValorConceito = null,
+                    ValorMedioNota = 80
+                },
+                new PainelEducacionalConsolidacaoNotaDadosBrutos
+                {
+                    AnoLetivo = anoLetivo,
+                    Bimestre = 2,
+                    Modalidade = Modalidade.Medio,
+                    CodigoDre = "DRE003",
+                    AnoTurma = '9',
+                    CodigoUe = "UE003",
+                    ConceitoDeAprovado = false,
+                    IdComponenteCurricular = ComponentesCurricularesConstants.CODIGO_PORTUGUES,
+                    Nota = null,
+                    TurmaNome = "SE",
+                    ValorConceito = "S",
+                    ValorMedioNota = 80
                 }
             };
 
@@ -531,6 +606,20 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     QuantidadeAcimaMediaMatematica = 0,
                     QuantidadeAbaixoMediaCiencias = 1,
                     QuantidadeAcimaMediaCiencias = 2
+                },
+                new PainelEducacionalConsolidacaoNota
+                {
+                    AnoLetivo = anoLetivo,
+                    Bimestre = 2,
+                    Modalidade = Modalidade.Medio,
+                    CodigoDre = "DRE003",
+                    AnoTurma = '9',
+                    QuantidadeAbaixoMediaPortugues = 3,
+                    QuantidadeAcimaMediaPortugues = 0,
+                    QuantidadeAbaixoMediaMatematica = 0,
+                    QuantidadeAcimaMediaMatematica = 0,
+                    QuantidadeAbaixoMediaCiencias = 0,
+                    QuantidadeAcimaMediaCiencias = 0
                 }
             };
 
@@ -641,6 +730,36 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     QuantidadeAcimaMediaMatematica = 0,
                     QuantidadeAbaixoMediaCiencias = 0,
                     QuantidadeAcimaMediaCiencias = 1
+                },
+                new PainelEducacionalConsolidacaoNotaUe
+                {
+                    AnoLetivo = anoLetivo,
+                    Bimestre = 2,
+                    Modalidade = Modalidade.Medio,
+                    CodigoDre = "DRE002",
+                    CodigoUe = "UE002",
+                    SerieTurma = "SA",
+                    QuantidadeAbaixoMediaPortugues = 0,
+                    QuantidadeAcimaMediaPortugues = 0,
+                    QuantidadeAbaixoMediaMatematica = 1,
+                    QuantidadeAcimaMediaMatematica = 1,
+                    QuantidadeAbaixoMediaCiencias = 1,
+                    QuantidadeAcimaMediaCiencias = 1
+                },
+                new PainelEducacionalConsolidacaoNotaUe
+                {
+                    AnoLetivo = anoLetivo,
+                    Bimestre = 2,
+                    Modalidade = Modalidade.Medio,
+                    CodigoDre = "DRE003",
+                    CodigoUe = "UE003",
+                    SerieTurma = "SE",
+                    QuantidadeAbaixoMediaPortugues = 3,
+                    QuantidadeAcimaMediaPortugues = 0,
+                    QuantidadeAbaixoMediaMatematica = 0,
+                    QuantidadeAcimaMediaMatematica = 0,
+                    QuantidadeAbaixoMediaCiencias = 0,
+                    QuantidadeAcimaMediaCiencias = 0
                 }
             };
     }

@@ -7,10 +7,13 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
+using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoDistorcaoIdade;
+using SME.SGP.Infra.Dtos.PainelEducacional.FrequenciaDiaria;
 using SME.SGP.Infra.Dtos.PainelEducacional.IndicadoresPap;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoSmeDre;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoUe;
+using SME.SGP.Infra.Dtos.PainelEducacional.Reclassificacao;
 using SME.SGP.Infra.Dtos.PainelEducacional.SondagemEscrita;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +28,10 @@ namespace SME.SGP.Api.Teste.Controllers
         private readonly Mock<IConsultasVisaoGeralPainelEducacionalUseCase> _consultasVisaoGeralPainelEducacionalUseCase = new();
         private readonly Mock<IConsultasIdebPainelEducacionalUseCase> _consultasIdebPainelEducacionalUseCase = new();
         private readonly Mock<IConsultasPainelEducacionalFluenciaLeitoraUseCase> _consultasFluenciaLeitoraUseCase = new();
-        private readonly Mock<IConsultasProficienciaIdebPainelEducacionalUseCase> _consultasProficienciaIdebUseCase = new();
+        private readonly Mock<IConsultasDistorcaoIdadeUseCase> _consultasDistorcaoIdadeUseCase = new();
+        private readonly Mock<IConsultasProficienciaIdepPainelEducacionalUseCase> _consultasProficienciaIdepUseCase = new();
+        private readonly Mock<IConsultasRegistroFrequenciaDiariaDreUseCase> _consultasRegistroFrequenciaDiariaDreUseCase = new();
+        private readonly Mock<IConsultasRegistroFrequenciaDiariaUeUseCase> _consultasRegistroFrequenciaDiariaUeUseCase = new();
 
         public PainelEducacionalControllerTeste()
         {
@@ -526,18 +532,18 @@ namespace SME.SGP.Api.Teste.Controllers
                     AnoLetivo = anoLetivo,
                     PercentualInicial = 75,
                     PercentualFinal = 25,
-                    Proficiencia = new ProficienciaIdebResumidoDto
+                    Proficiencia = new ProficienciaIdepResumidoDto
                     {
-                        AnosIniciais = new List<ComponenteCurricularIdebResumidoDto> { new ComponenteCurricularIdebResumidoDto { ComponenteCurricular = Dominio.Enumerados.ComponenteCurricular.Portugues.GetDisplayName() } },
-                        AnosFinais = new List<ComponenteCurricularIdebResumidoDto> { new ComponenteCurricularIdebResumidoDto { ComponenteCurricular = Dominio.Enumerados.ComponenteCurricular.Matematica.GetDisplayName() } }
+                        AnosIniciais = new List<ComponenteCurricularIdepResumidoDto> { new ComponenteCurricularIdepResumidoDto { ComponenteCurricular = Dominio.Enumerados.ComponenteCurricular.Portugues.GetDisplayName() } },
+                        AnosFinais = new List<ComponenteCurricularIdepResumidoDto> { new ComponenteCurricularIdepResumidoDto { ComponenteCurricular = Dominio.Enumerados.ComponenteCurricular.Matematica.GetDisplayName() } }
                     }
                 }
             };
 
-            _consultasProficienciaIdebUseCase.Setup(u => u.ObterProficienciaIdep(anoLetivo, codigoUe))
+            _consultasProficienciaIdepUseCase.Setup(u => u.ObterProficienciaIdep(anoLetivo, codigoUe))
                 .ReturnsAsync(dadosEsperados);
 
-            var result = await _controller.ObterProficienciaIdep(anoLetivo, codigoUe, _consultasProficienciaIdebUseCase.Object);
+            var result = await _controller.ObterProficienciaIdep(anoLetivo, codigoUe, _consultasProficienciaIdepUseCase.Object);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
             var retorno = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalProficienciaIdepDto>>(okResult.Value);
@@ -557,10 +563,10 @@ namespace SME.SGP.Api.Teste.Controllers
             var codigoUe = "ue-123";
             var dadosEsperados = new List<PainelEducacionalProficienciaIdepDto>();
 
-            _consultasProficienciaIdebUseCase.Setup(u => u.ObterProficienciaIdep(anoLetivo, codigoUe))
+            _consultasProficienciaIdepUseCase.Setup(u => u.ObterProficienciaIdep(anoLetivo, codigoUe))
                 .ReturnsAsync(dadosEsperados);
 
-            var result = await _controller.ObterProficienciaIdep(anoLetivo, codigoUe, _consultasProficienciaIdebUseCase.Object);
+            var result = await _controller.ObterProficienciaIdep(anoLetivo, codigoUe, _consultasProficienciaIdepUseCase.Object);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
             var retorno = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalProficienciaIdepDto>>(okResult.Value);
@@ -828,7 +834,7 @@ namespace SME.SGP.Api.Teste.Controllers
             var item = retorno.First();
             Assert.NotNull(item.Modalidades);
             Assert.Single(item.Modalidades);
-            
+
             var modalidade = item.Modalidades.First();
             Assert.Equal("Fundamental", modalidade.Nome);
             Assert.NotNull(modalidade.SerieAno);
@@ -930,12 +936,12 @@ namespace SME.SGP.Api.Teste.Controllers
             var item = retorno.First();
             Assert.NotNull(item.Modalidades);
             Assert.Single(item.Modalidades);
-            
+
             var modalidade = item.Modalidades.First();
             Assert.Equal("Fundamental", modalidade.Nome);
             Assert.NotNull(modalidade.SerieAno);
             Assert.Single(modalidade.SerieAno);
-            
+
             var serieAno = modalidade.SerieAno.First();
             Assert.Equal("7º", serieAno.Nome);
 
@@ -989,7 +995,7 @@ namespace SME.SGP.Api.Teste.Controllers
                         }
                     }
                 },
-                TotalRegistros = 3, 
+                TotalRegistros = 3,
                 TotalPaginas = 1
             };
 
@@ -1005,7 +1011,7 @@ namespace SME.SGP.Api.Teste.Controllers
 
             Assert.Equal(3, retorno.TotalRegistros);
             Assert.Equal(1, retorno.TotalPaginas);
-            Assert.Single(retorno.Items); 
+            Assert.Single(retorno.Items);
 
             var item = retorno.Items.First();
             Assert.NotNull(item.Modalidades);
@@ -1248,11 +1254,11 @@ namespace SME.SGP.Api.Teste.Controllers
             Assert.Equal(1, retorno.TotalRegistros);
             Assert.Equal(1, retorno.TotalPaginas);
             Assert.Single(retorno.Items);
-            
+
             var item = retorno.Items.First();
             var modalidade = item.Modalidades.First();
             Assert.Equal("Ensino Médio", modalidade.Nome);
-            
+
             var turma = modalidade.Turmas.First();
             Assert.Equal("3ª Série", turma.Nome);
 
@@ -1306,8 +1312,8 @@ namespace SME.SGP.Api.Teste.Controllers
                         }
                     }
                 },
-                TotalRegistros = 15, 
-                TotalPaginas = 5    
+                TotalRegistros = 15,
+                TotalPaginas = 5
             };
 
             var mockUseCase = new Mock<IConsultasNotasVisaoUeUseCase>();
@@ -1322,7 +1328,7 @@ namespace SME.SGP.Api.Teste.Controllers
 
             Assert.Equal(15, retorno.TotalRegistros);
             Assert.Equal(5, retorno.TotalPaginas);
-            Assert.Single(retorno.Items); 
+            Assert.Single(retorno.Items);
 
             mockUseCase.Verify(x => x.ObterNotasVisaoUe(
                 It.Is<string>(c => c == filtro.CodigoUe),
@@ -1330,6 +1336,123 @@ namespace SME.SGP.Api.Teste.Controllers
                 It.Is<int>(b => b == filtro.Bimestre),
                 It.Is<Modalidade>(m => m == filtro.Modalidade)
             ), Times.Once);
+        }
+
+        [Fact(DisplayName = "Deve retornar 200 OK com os dados de distorção idade/série")]
+        public async Task ObterDistorcaoSerieIdade_DeveRetornarOkComDados()
+        {
+            // Arrange
+            var filtro = new FiltroPainelEducacionalDistorcaoIdade
+            {
+                AnoLetivo = 2025,
+                CodigoDre = "110000",
+                CodigoUe = "110001"
+            };
+
+            var retorno = new List<PainelEducacionalDistorcaoIdadeDto>
+            {
+                new PainelEducacionalDistorcaoIdadeDto
+                {
+                    Modalidade = "Ensino Fundamental",
+                    SerieAno = new List<SerieAnoDistorcaoIdadeDto>
+                    {
+                        new SerieAnoDistorcaoIdadeDto
+                        {
+                            Ano = "1º",
+                            QuantidadeAlunos = 5,
+                        },
+                        new SerieAnoDistorcaoIdadeDto
+                        {
+                            Ano = "2º",
+                            QuantidadeAlunos = 3,
+                        }
+                    }
+                }
+            };
+
+            _consultasDistorcaoIdadeUseCase
+                .Setup(x => x.ObterDistorcaoIdade(It.IsAny<FiltroPainelEducacionalDistorcaoIdade>()))
+                .Returns(Task.FromResult<IEnumerable<PainelEducacionalDistorcaoIdadeDto>>(retorno));
+
+            // Act
+            var resultado = await _controller.ObterDistorcaoSerieIdade(filtro, _consultasDistorcaoIdadeUseCase.Object);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(resultado);
+            var dto = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalDistorcaoIdadeDto>>(okResult.Value);
+
+            Assert.Single(dto);
+            Assert.Equal("Ensino Fundamental", dto.First().Modalidade);
+
+            _consultasDistorcaoIdadeUseCase.Verify(x => x.ObterDistorcaoIdade(It.IsAny<FiltroPainelEducacionalDistorcaoIdade>()), Times.Once);
+        }
+
+        [Fact(DisplayName = "Deve retornar Ok com frequência diária para DRE")]
+        public async Task ObterFrequenciaDiariaDre_DeveRetornarOkComDados()
+        {
+            // Arrange
+            var filtro = new FiltroFrequenciaDiariaDreDto
+            {
+                AnoLetivo = 2025,
+                CodigoDre = "123456",
+                DataFrequencia = "2025-10-20"
+            };
+
+            var resultadoEsperado = new FrequenciaDiariaDreDto
+            {
+                Ues = new List<RegistroFrequenciaDiariaUeDto>(),
+                TotalPaginas = 1,
+                TotalRegistros = 10
+            };
+
+            _consultasRegistroFrequenciaDiariaDreUseCase
+                .Setup(x => x.ObterFrequenciaDiariaPorDre(filtro))
+                .ReturnsAsync(resultadoEsperado);
+
+            // Act
+            var result = await _controller.ObterFrequenciaDiariaDre(filtro, _consultasRegistroFrequenciaDiariaDreUseCase.Object);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var dto = Assert.IsType<FrequenciaDiariaDreDto>(okResult.Value);
+            Assert.Equal(1, dto.TotalPaginas);
+            Assert.Equal(10, dto.TotalRegistros);
+
+            _consultasRegistroFrequenciaDiariaDreUseCase.Verify(x => x.ObterFrequenciaDiariaPorDre(filtro), Times.Once);
+        }
+
+        [Fact(DisplayName = "Deve retornar Ok com frequência diária para UE")]
+        public async Task ObterFrequenciaDiariaUe_DeveRetornarOkComDados()
+        {
+            // Arrange
+            var filtro = new FiltroFrequenciaDiariaUeDto
+            {
+                AnoLetivo = 2025,
+                CodigoUe = "123456",
+                DataFrequencia = "2025-10-20"
+            };
+
+            var resultadoEsperado = new FrequenciaDiariaUeDto
+            {
+                Turmas = new List<RegistroFrequenciaDiariaTurmaDto>(),
+                TotalPaginas = 1,
+                TotalRegistros = 10
+            };
+
+            _consultasRegistroFrequenciaDiariaUeUseCase
+                .Setup(x => x.ObterFrequenciaDiariaPorUe(filtro))
+                .ReturnsAsync(resultadoEsperado);
+
+            // Act
+            var result = await _controller.ObterFrequenciaDiariaUe(filtro, _consultasRegistroFrequenciaDiariaUeUseCase.Object);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var dto = Assert.IsType<FrequenciaDiariaUeDto>(okResult.Value);
+            Assert.Equal(1, dto.TotalPaginas);
+            Assert.Equal(10, dto.TotalRegistros);
+
+            _consultasRegistroFrequenciaDiariaUeUseCase.Verify(x => x.ObterFrequenciaDiariaPorUe(filtro), Times.Once);
         }
     }
 }
