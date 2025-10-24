@@ -182,6 +182,11 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterNotasVisaoUe([FromQuery] FiltroPainelEducacionalNotasVisaoUe filtro, [FromServices] IConsultasNotasVisaoUeUseCase consultasNotasUseCase)
      => Ok(await consultasNotasUseCase.ObterNotasVisaoUe(filtro.CodigoUe, filtro.AnoLetivo, filtro.Bimestre, filtro.Modalidade));
 
+        [HttpGet("reclassificacao")]
+        [ProducesResponseType(typeof(PainelEducacionalReclassificacaoDto), 200)]
+        public async Task<IActionResult> ObterReclassificacao([FromQuery] FiltroPainelEducacionalReclassificacao filtro, [FromServices] IConsultasReclassificacaoPainelEducacionalUseCase consultasReclassificacaoUseCase)
+     => Ok(await consultasReclassificacaoUseCase.ObterReclassificacao(filtro.CodigoDre, filtro.CodigoUe, filtro.AnoLetivo, filtro.AnoTurma));
+
         [HttpGet("frequencia-semanal-ue")]
         [ProducesResponseType(typeof(PainelEducacionalFrequenciaSemanalUeDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
