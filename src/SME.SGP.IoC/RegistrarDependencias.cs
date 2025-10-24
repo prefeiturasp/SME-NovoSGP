@@ -247,6 +247,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPainelEducacionalProficienciaIdep, RepositorioPainelEducacionalProficienciaIdep>();
             services.TryAddScoped<IRepositorioSondagemEscrita, RepositorioSondagemEscrita>();
             services.TryAddScoped<IRepositorioNota, RepositorioNota>();
+            services.TryAddScoped<IRepositorioFrequenciaSemanalUe, RepositorioFrequenciaSemanalUe>();
             services.TryAddScoped<IRepositorioReclassificacao, RepositorioReclassificacao>();
             services.TryAddScoped<IConsultasVisaoGeralPainelEducacionalUseCase, ConsultasPainelEducacionalVisaoGeralUseCase>();
             services.TryAddScoped<IConsultasInformacoesPapUseCase, ConsultasInformacoesPapUseCase>();
@@ -257,6 +258,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasSondagemEscritaUseCase, ConsultasSondagemEscritaUseCase>();
             services.TryAddScoped<IConsultasNotasVisaoSmeDreUseCase, ConsultasNotasVisaoSmeDreUseCase>();
             services.TryAddScoped<IConsultasNotasVisaoUeUseCase, ConsultasNotasVisaoUeUseCase>();
+            services.TryAddScoped<IConsultasFrequenciaSemanalUeUseCase, ConsultasFrequenciaSemanalUeUseCase>();
             services.TryAddScoped<IConsultasDistorcaoIdadeUseCase, ConsultasDistorcaoIdadeUseCase>();
         }
 
