@@ -257,7 +257,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasSondagemEscritaUseCase, ConsultasSondagemEscritaUseCase>();
             services.TryAddScoped<IConsultasNotasVisaoSmeDreUseCase, ConsultasNotasVisaoSmeDreUseCase>();
             services.TryAddScoped<IConsultasNotasVisaoUeUseCase, ConsultasNotasVisaoUeUseCase>();
-            services.TryAddScoped<IConsultasReclassificacaoPainelEducacionalUseCase, ConsultasReclassificacaoPainelEducacionalUseCase>();
+            services.TryAddScoped<IConsultasDistorcaoIdadeUseCase, ConsultasDistorcaoIdadeUseCase>();
         }
 
         protected virtual void RegistrarContextos(IServiceCollection services)
@@ -655,8 +655,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoTaxaAlfabetizacao, RepositorioPainelEducacionalConsolidacaoTaxaAlfabetizacao>();
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoSondagemEscritaUe, RepositorioPainelEducacionalConsolidacaoSondagemEscritaUe>();
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoAbandono, RepositorioPainelEducacionalConsolidacaoAbandono>();
-            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoFrequenciaDiaria, RepositorioPainelEducacionalConsolidacaoFrequenciaDiaria>();
-            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoFrequenciaDiariaDre, RepositorioPainelEducacionalConsolidacaoFrequenciaDiariaDre>();
+            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoDistorcaoIdade, RepositorioPainelEducacionalConsolidacaoDistorcaoIdade>();
 
             //Painel Educacional
             services.AddTransient<IRepositorioIdepPainelEducacionalConsulta, RepositorioIdepPainelEducacionalConsulta>();
@@ -672,6 +671,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioProficienciaIdepConsulta, RepositorioProficienciaIdepConsulta>();
             services.TryAddScoped<IRepositorioProficienciaIdebConsulta, RepositorioProficienciaIdebConsulta>();
             services.TryAddScoped<IRepositorioProficienciaIdeb, RepositorioProficienciaIdeb>();
+            services.TryAddScoped<IRepositorioDistorcaoIdade, RepositorioDistorcaoIdade>();
             services.TryAddScoped<IRepositorioPainelEducacionalReclassificacao, RepositorioPainelEducacionalReclassificacao>();
             services.TryAddScoped<IRepositorioPainelEducacionalRegistroFrequenciaDiariaConsulta, RepositorioPainelEducacionalRegistroFrequenciaDiariaConsulta>();
 
@@ -684,7 +684,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoNota, RepositorioPainelEducacionalConsolidacaoNota>();
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoNotaConsulta, RepositorioPainelEducacionalConsolidacaoNotaConsulta>();
             services.TryAddScoped<IConsolidarNotasPainelEducacionalUseCase, ConsolidarNotasPainelEducacionalUseCase>();
-            services.TryAddScoped<IConsolidarReclassificacaoPainelEducacionalUseCase, ConsolidarReclassificacaoPainelEducacionalUseCase>();
+            services.TryAddScoped<IConsolidarDistorcaoIdadePainelEducacionalUseCase, ConsolidarDistorcaoIdadePainelEducacionalUseCase>();
 
         }
 

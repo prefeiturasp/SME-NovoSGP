@@ -5,6 +5,7 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
+using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoDistorcaoIdade;
 using SME.SGP.Infra.Dtos.PainelEducacional.FrequenciaDiaria;
 using SME.SGP.Infra.Dtos.PainelEducacional.IndicadoresPap;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoSmeDre;
@@ -180,13 +181,14 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterNotasVisaoUe([FromQuery] FiltroPainelEducacionalNotasVisaoUe filtro, [FromServices] IConsultasNotasVisaoUeUseCase consultasNotasUseCase)
      => Ok(await consultasNotasUseCase.ObterNotasVisaoUe(filtro.CodigoUe, filtro.AnoLetivo, filtro.Bimestre, filtro.Modalidade));
 
-        [HttpGet("reclassificacao")]
-        [ProducesResponseType(typeof(PainelEducacionalReclassificacaoDto), 200)]
+
+        [HttpGet("distorcao-serie-idade")]
+        [ProducesResponseType(typeof(PainelEducacionalDistorcaoIdadeDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterReclassificacao([FromQuery] FiltroPainelEducacionalReclassificacao filtro, [FromServices] IConsultasReclassificacaoPainelEducacionalUseCase consultasReclassificacaoUseCase)
-     => Ok(await consultasReclassificacaoUseCase.ObterReclassificacao(filtro.CodigoDre, filtro.CodigoUe, filtro.AnoLetivo, filtro.AnoTurma));
+        public async Task<IActionResult> ObterDistorcaoSerieIdade([FromQuery] FiltroPainelEducacionalDistorcaoIdade filtro, [FromServices] IConsultasDistorcaoIdadeUseCase consultasDistorcaoIdadeUseCase)
+        => Ok(await consultasDistorcaoIdadeUseCase.ObterDistorcaoIdade(filtro));
 
     }
 }
