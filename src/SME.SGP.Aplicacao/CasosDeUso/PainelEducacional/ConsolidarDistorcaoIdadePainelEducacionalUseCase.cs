@@ -76,13 +76,14 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
 
             foreach (var dreTurmas in turmasAgrupadasDre)
             {
-                await Task.Delay(1000);
 
                 var alunos = await mediator.Send(new ObterMatriculaTurmaEscolaAlunoQuery(
                     anoUtilizado,
                     dreTurmas.CodigoDre,
                     situacaoMatriculaAtiva,
                     dreTurmas.Turmas.Select(t => t.TurmaId).ToArray()));
+
+                await Task.Delay(1000);
 
                 if (alunos == null || !alunos.Any())
                     continue;

@@ -676,6 +676,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioProficienciaIdebConsulta, RepositorioProficienciaIdebConsulta>();
             services.TryAddScoped<IRepositorioProficienciaIdeb, RepositorioProficienciaIdeb>();
             services.TryAddScoped<IRepositorioPainelEducacionalRegistroFrequenciaDiariaConsulta, RepositorioPainelEducacionalRegistroFrequenciaDiariaConsulta>();
+            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoFrequenciaDiaria, RepositorioPainelEducacionalConsolidacaoFrequenciaDiaria>();
+            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoFrequenciaDiariaDre, RepositorioPainelEducacionalConsolidacaoFrequenciaDiariaDre>();
 
             services.TryAddScoped<IRepositorioConsolidacaoFluenciaLeitora, RepositorioConsolidacaoFluenciaLeitora>();
             services.TryAddScoped<IConsolidarTaxaAlfabetizacaoPainelEducacionalUseCase, ConsolidarTaxaAlfabetizacaoPainelEducacionalUseCase>();
