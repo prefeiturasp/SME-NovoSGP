@@ -30,9 +30,9 @@ namespace SME.SGP.Api.Teste.Controllers
         private readonly Mock<IConsultasPainelEducacionalFluenciaLeitoraUseCase> _consultasFluenciaLeitoraUseCase = new();
         private readonly Mock<IConsultasProficienciaIdebPainelEducacionalUseCase> _consultasProficienciaIdebUseCase = new();
         private readonly Mock<IConsultasDistorcaoIdadeUseCase> _consultasDistorcaoIdadeUseCase = new();
+        private readonly Mock<IConsultasProficienciaIdepPainelEducacionalUseCase> _consultasProficienciaIdepUseCase = new();
         private readonly Mock<IConsultasRegistroFrequenciaDiariaDreUseCase> _consultasRegistroFrequenciaDiariaDreUseCase = new();
         private readonly Mock<IConsultasRegistroFrequenciaDiariaUeUseCase> _consultasRegistroFrequenciaDiariaUeUseCase = new();
-        private readonly Mock<IConsultasProficienciaIdepPainelEducacionalUseCase> _consultasProficienciaIdebUseCase = new();
 
         public PainelEducacionalControllerTeste()
         {
@@ -541,10 +541,10 @@ namespace SME.SGP.Api.Teste.Controllers
                 }
             };
 
-            _consultasProficienciaIdebUseCase.Setup(u => u.ObterProficienciaIdep(anoLetivo, codigoUe))
+            _consultasProficienciaIdepUseCase.Setup(u => u.ObterProficienciaIdep(anoLetivo, codigoUe))
                 .ReturnsAsync(dadosEsperados);
 
-            var result = await _controller.ObterProficienciaIdep(anoLetivo, codigoUe, _consultasProficienciaIdebUseCase.Object);
+            var result = await _controller.ObterProficienciaIdep(anoLetivo, codigoUe, _consultasProficienciaIdepUseCase.Object);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
             var retorno = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalProficienciaIdepDto>>(okResult.Value);
@@ -564,10 +564,10 @@ namespace SME.SGP.Api.Teste.Controllers
             var codigoUe = "ue-123";
             var dadosEsperados = new List<PainelEducacionalProficienciaIdepDto>();
 
-            _consultasProficienciaIdebUseCase.Setup(u => u.ObterProficienciaIdep(anoLetivo, codigoUe))
+            _consultasProficienciaIdepUseCase.Setup(u => u.ObterProficienciaIdep(anoLetivo, codigoUe))
                 .ReturnsAsync(dadosEsperados);
 
-            var result = await _controller.ObterProficienciaIdep(anoLetivo, codigoUe, _consultasProficienciaIdebUseCase.Object);
+            var result = await _controller.ObterProficienciaIdep(anoLetivo, codigoUe, _consultasProficienciaIdepUseCase.Object);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
             var retorno = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalProficienciaIdepDto>>(okResult.Value);
