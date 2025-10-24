@@ -10,10 +10,10 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNotas.VisaoSmeDre
 {
     public class ObterNotaVisaoUeQueryQueryHandler : IRequestHandler<ObterNotaVisaoSmeDreQuery, IEnumerable<PainelEducacionalNotasVisaoSmeDreRetornoSelectDto>>
     {
-        private readonly IRepositorioNota repositorio;
+        private readonly IRepositorioNotaConsulta repositorio;
 
         public ObterNotaVisaoUeQueryQueryHandler(
-            IRepositorioNota repositorio)
+            IRepositorioNotaConsulta repositorio)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }

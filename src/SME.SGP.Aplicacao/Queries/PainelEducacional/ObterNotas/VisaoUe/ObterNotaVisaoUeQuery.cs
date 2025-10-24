@@ -6,7 +6,7 @@ using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoUe;
 
 namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNotas.VisaoUe
 {
-    public class ObterNotaVisaoUeQuery : IRequest<PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeRetornoSelectDto>>
+    public class ObterNotaVisaoUeQuery : IRequest<PaginacaoNotaResultadoDto<PainelEducacionalNotasVisaoUeRetornoSelectDto>>
     {
         public ObterNotaVisaoUeQuery(Paginacao paginacao, string codigoUe, int anoLetivo, int bimestre, Modalidade modalidade)
         {
