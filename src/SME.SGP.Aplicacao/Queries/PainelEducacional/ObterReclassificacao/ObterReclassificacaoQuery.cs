@@ -24,14 +24,6 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterReclassificacao
     {
         public ObterReclassificacaoQueryValidator()
         {
-            RuleFor(c => c.CodigoDre)
-            .NotEmpty()
-            .WithMessage("O código da DRE deve ser informado.");
-
-            RuleFor(c => c.CodigoUe)
-            .NotEmpty()
-            .WithMessage("O código da UE deve ser informado.");
-
             RuleFor(c => c.AnoLetivo)
            .NotEmpty()
            .WithMessage("O ano letivo deve ser informado.");
