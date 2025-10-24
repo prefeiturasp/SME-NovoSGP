@@ -27,6 +27,7 @@ namespace SME.SGP.Api.Teste.Controllers
         private readonly Mock<IConsultasVisaoGeralPainelEducacionalUseCase> _consultasVisaoGeralPainelEducacionalUseCase = new();
         private readonly Mock<IConsultasIdebPainelEducacionalUseCase> _consultasIdebPainelEducacionalUseCase = new();
         private readonly Mock<IConsultasPainelEducacionalFluenciaLeitoraUseCase> _consultasFluenciaLeitoraUseCase = new();
+        private readonly Mock<IConsultasDistorcaoIdadeUseCase> _consultasDistorcaoIdadeUseCase = new();
         private readonly Mock<IConsultasProficienciaIdepPainelEducacionalUseCase> _consultasProficienciaIdepUseCase = new();
         private readonly Mock<IConsultasRegistroFrequenciaDiariaDreUseCase> _consultasRegistroFrequenciaDiariaDreUseCase = new();
         private readonly Mock<IConsultasRegistroFrequenciaDiariaUeUseCase> _consultasRegistroFrequenciaDiariaUeUseCase = new();
