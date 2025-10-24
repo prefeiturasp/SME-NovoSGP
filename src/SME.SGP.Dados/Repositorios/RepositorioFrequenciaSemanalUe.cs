@@ -14,22 +14,22 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database;
         }
 
-        public Task<IEnumerable<PainelEducacionalFrequenciaSemanalUeDto>> ObterFrequenciaSemanalUe(string codigoDre, int anoLetivo)
+        public Task<IEnumerable<PainelEducacionalFrequenciaSemanalUeDto>> ObterFrequenciaSemanalUe(string codigoUe, int anoLetivo)
         {
-            string query = @"select data_semanal as Data,
-                                 percentual_frequencia as PercentualFrequencia,
-                                 from painel_educacional_consolidacao_frequencia_semanal_ue
+            string query = @"select data_aula as DataAula,
+                                 percentual_frequencia as PercentualFrequencia
+                                 from painel_educacional_consolidacao_frequencia_semanal
                                  where 1 = 1 ";
 
-            if (!string.IsNullOrWhiteSpace(codigoDre))
-                query += " AND codigo_dre = @codigoDre ";
+            if (!string.IsNullOrWhiteSpace(codigoUe))
+                query += " AND codigo_ue = @codigoUe ";
 
             if (anoLetivo > 0)
-                query += " AND ano_letivo = @anoLetivo ";          
+                query += " AND ano_letivo = @anoLetivo ";
 
             return database.Conexao.QueryAsync<PainelEducacionalFrequenciaSemanalUeDto>(query, new
             {
-                codigoDre,
+                codigoUe,
                 anoLetivo
             });
         }
