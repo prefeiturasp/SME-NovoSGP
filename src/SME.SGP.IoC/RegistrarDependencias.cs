@@ -260,6 +260,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasNotasVisaoSmeDreUseCase, ConsultasNotasVisaoSmeDreUseCase>();
             services.TryAddScoped<IConsultasNotasVisaoUeUseCase, ConsultasNotasVisaoUeUseCase>();
             services.TryAddScoped<IConsultasReclassificacaoPainelEducacionalUseCase, ConsultasReclassificacaoPainelEducacionalUseCase>();
+            services.TryAddScoped<IConsultasFrequenciaSemanalUeUseCase, ConsultasFrequenciaSemanalUeUseCase>();
+            services.TryAddScoped<IConsultasDistorcaoIdadeUseCase, ConsultasDistorcaoIdadeUseCase>();
         }
 
         protected virtual void RegistrarContextos(IServiceCollection services)
@@ -660,7 +662,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoAbandono, RepositorioPainelEducacionalConsolidacaoAbandono>();
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoFrequenciaDiaria, RepositorioPainelEducacionalConsolidacaoFrequenciaDiaria>();
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoFrequenciaDiariaDre, RepositorioPainelEducacionalConsolidacaoFrequenciaDiariaDre>();
-            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoFrequenciaSemanal, RepositorioPainelEducacionalConsolidacaoFrequenciaSemanal>();
+            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoFrequenciaDiaria, RepositorioPainelEducacionalConsolidacaoFrequenciaDiaria>();
+            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoFrequenciaDiariaDre, RepositorioPainelEducacionalConsolidacaoFrequenciaDiariaDre>();
+            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoDistorcaoIdade, RepositorioPainelEducacionalConsolidacaoDistorcaoIdade>();
 
             //Painel Educacional
             services.AddTransient<IRepositorioIdepPainelEducacionalConsulta, RepositorioIdepPainelEducacionalConsulta>();
@@ -690,7 +694,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoNotaConsulta, RepositorioPainelEducacionalConsolidacaoNotaConsulta>();
             services.TryAddScoped<IConsolidarNotasPainelEducacionalUseCase, ConsolidarNotasPainelEducacionalUseCase>();
             services.TryAddScoped<IConsolidarReclassificacaoPainelEducacionalUseCase, ConsolidarReclassificacaoPainelEducacionalUseCase>();
-            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoFrequenciaDiariaConsulta, RepositorioPainelEducacionalConsolidacaoFrequenciaDiariaConsulta>();
+            services.TryAddScoped<IConsolidarDistorcaoIdadePainelEducacionalUseCase, ConsolidarDistorcaoIdadePainelEducacionalUseCase>();
 
         }
 

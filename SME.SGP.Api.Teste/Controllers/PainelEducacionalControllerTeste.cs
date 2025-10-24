@@ -2367,26 +2367,26 @@ namespace SME.SGP.Api.Teste.Controllers
             };
 
             var retornoEsperado = new List<PainelEducacionalReclassificacaoDto>
-            {
-                new PainelEducacionalReclassificacaoDto
-                {
-                    Modalidade = new List<ModalidadeReclassificacaoDto>
-                    {
-                        new ModalidadeReclassificacaoDto
-                        {
-                            Nome = "Ensino Fundamental",
-                            AnoTurma = 5,
-                            QuantidadeAlunos = 15
-                        },
-                        new ModalidadeReclassificacaoDto
-                        {
-                            Nome = "Ensino Fundamental",
-                            AnoTurma = 6, 
-                            QuantidadeAlunos = 8
-                        }
-                    }
-                }
-            };
+     {
+         new PainelEducacionalReclassificacaoDto
+         {
+             Modalidade = new List<ModalidadeReclassificacaoDto>
+             {
+                 new ModalidadeReclassificacaoDto
+                 {
+                     Nome = "Ensino Fundamental",
+                     AnoTurma = 5,
+                     QuantidadeAlunos = 15
+                 },
+                 new ModalidadeReclassificacaoDto
+                 {
+                     Nome = "Ensino Fundamental",
+                     AnoTurma = 6,
+                     QuantidadeAlunos = 8
+                 }
+             }
+         }
+     };
 
             var mockUseCase = new Mock<IConsultasReclassificacaoPainelEducacionalUseCase>();
             mockUseCase
@@ -2470,20 +2470,20 @@ namespace SME.SGP.Api.Teste.Controllers
             };
 
             var retornoEsperado = new List<PainelEducacionalReclassificacaoDto>
-            {
-                new PainelEducacionalReclassificacaoDto
-                {
-                    Modalidade = new List<ModalidadeReclassificacaoDto>
-                    {
-                        new ModalidadeReclassificacaoDto
-                        {
-                            Nome = "Ensino Fundamental",
-                            AnoTurma = 7,
-                            QuantidadeAlunos = 25
-                        }
-                    }
-                }
-            };
+      {
+          new PainelEducacionalReclassificacaoDto
+          {
+              Modalidade = new List<ModalidadeReclassificacaoDto>
+              {
+                  new ModalidadeReclassificacaoDto
+                  {
+                      Nome = "Ensino Fundamental",
+                      AnoTurma = 7,
+                      QuantidadeAlunos = 25
+                  }
+              }
+          }
+      };
 
             var mockUseCase = new Mock<IConsultasReclassificacaoPainelEducacionalUseCase>();
             mockUseCase
@@ -2525,32 +2525,32 @@ namespace SME.SGP.Api.Teste.Controllers
             };
 
             var retornoEsperado = new List<PainelEducacionalReclassificacaoDto>
-            {
-                new PainelEducacionalReclassificacaoDto
-                {
-                    Modalidade = new List<ModalidadeReclassificacaoDto>
-                    {
-                        new ModalidadeReclassificacaoDto
-                        {
-                            Nome = "Ensino Fundamental",
-                            AnoTurma = 9,
-                            QuantidadeAlunos = 32
-                        },
-                        new ModalidadeReclassificacaoDto
-                        {
-                            Nome = "EJA",
-                            AnoTurma = 9,
-                            QuantidadeAlunos = 12
-                        },
-                        new ModalidadeReclassificacaoDto
-                        {
-                            Nome = "Ensino Médio",
-                            AnoTurma = 1,
-                            QuantidadeAlunos = 5
-                        }
-                    }
-                }
-            };
+      {
+          new PainelEducacionalReclassificacaoDto
+          {
+              Modalidade = new List<ModalidadeReclassificacaoDto>
+              {
+                  new ModalidadeReclassificacaoDto
+                  {
+                      Nome = "Ensino Fundamental",
+                      AnoTurma = 9,
+                      QuantidadeAlunos = 32
+                  },
+                  new ModalidadeReclassificacaoDto
+                  {
+                      Nome = "EJA",
+                      AnoTurma = 9,
+                      QuantidadeAlunos = 12
+                  },
+                  new ModalidadeReclassificacaoDto
+                  {
+                      Nome = "Ensino Médio",
+                      AnoTurma = 1,
+                      QuantidadeAlunos = 5
+                  }
+              }
+          }
+      };
 
             var mockUseCase = new Mock<IConsultasReclassificacaoPainelEducacionalUseCase>();
             mockUseCase
@@ -2597,6 +2597,104 @@ namespace SME.SGP.Api.Teste.Controllers
 
         [Fact]
         public async Task Obter_Reclassificacao_Deve_Passar_Filtro_Correto_Para_Use_Case()
+        {
+            var filtro = new FiltroPainelEducacionalReclassificacao
+            {
+                AnoLetivo = 2025,
+                CodigoDre = "DRE456",
+                CodigoUe = "UE789",
+                AnoTurma = 1
+            };
+
+            var retornoEsperado = new List<PainelEducacionalReclassificacaoDto>
+      {
+          new PainelEducacionalReclassificacaoDto
+          {
+              Modalidade = new List<ModalidadeReclassificacaoDto>
+              {
+                  new ModalidadeReclassificacaoDto
+                  {
+                      Nome = "Ensino Fundamental",
+                      AnoTurma = 1,
+                      QuantidadeAlunos = 28
+                  }
+              }
+          }
+      };
+
+            var mockUseCase = new Mock<IConsultasReclassificacaoPainelEducacionalUseCase>();
+            mockUseCase
+                .Setup(x => x.ObterReclassificacao(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(retornoEsperado);
+
+            await _controller.ObterReclassificacao(filtro, mockUseCase.Object);
+
+            mockUseCase.Verify(x => x.ObterReclassificacao(
+                It.Is<string>(d => d == filtro.CodigoDre),
+                It.Is<string>(u => u == filtro.CodigoUe),
+                It.Is<int>(a => a == filtro.AnoLetivo),
+                It.Is<int>(t => t == filtro.AnoTurma)
+            ), Times.Once);
+        }
+
+        [Fact]
+        public async Task Obter_Reclassificacao_Com_Ano_Turma_Nulo_Deve_Retornar_Ok_Com_Dados()
+        {
+            var filtro = new FiltroPainelEducacionalReclassificacao
+            {
+                AnoLetivo = 2024,
+                CodigoDre = "DRE111",
+                CodigoUe = "UE222",
+                AnoTurma = 0
+            };
+
+            var retornoEsperado = new List<PainelEducacionalReclassificacaoDto>
+      {
+          new PainelEducacionalReclassificacaoDto
+          {
+              Modalidade = new List<ModalidadeReclassificacaoDto>
+              {
+                  new ModalidadeReclassificacaoDto
+                  {
+                      Nome = "Ensino Fundamental",
+                      AnoTurma = 0,
+                      QuantidadeAlunos = 150
+                  }
+              }
+          }
+      };
+
+            var mockUseCase = new Mock<IConsultasReclassificacaoPainelEducacionalUseCase>();
+            mockUseCase
+                .Setup(x => x.ObterReclassificacao(filtro.CodigoDre, filtro.CodigoUe, filtro.AnoLetivo, filtro.AnoTurma))
+                .ReturnsAsync(retornoEsperado);
+
+            var result = await _controller.ObterReclassificacao(filtro, mockUseCase.Object);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var retorno = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalReclassificacaoDto>>(okResult.Value);
+
+            Assert.Single(retorno);
+            var item = retorno.First();
+            Assert.NotNull(item.Modalidade);
+            Assert.Single(item.Modalidade);
+
+            var modalidade = item.Modalidade.First();
+            Assert.Equal("Ensino Fundamental", modalidade.Nome);
+            Assert.Equal(0, modalidade.AnoTurma);
+            Assert.Equal(150, modalidade.QuantidadeAlunos);
+
+            mockUseCase.Verify(x => x.ObterReclassificacao(
+                It.Is<string>(d => d == "DRE111"),
+                It.Is<string>(u => u == "UE222"),
+                It.Is<int>(a => a == 2024),
+                It.Is<int>(t => t == 0)
+            ), Times.Once);
+        }
+
+
+        [Fact(DisplayName = "Deve retornar 200 OK com os dados de distorção idade/série")]
+        public async Task ObterDistorcaoSerieIdade_DeveRetornarOkComDados()
         {
             var filtro = new FiltroPainelEducacionalReclassificacao
             {
