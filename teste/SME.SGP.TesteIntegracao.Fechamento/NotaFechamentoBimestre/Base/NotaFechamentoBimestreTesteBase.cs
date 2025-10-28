@@ -792,6 +792,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 Migrado = false,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
+                Aplicacao = Dominio.Aplicacao.SGP,
                 CriadoRF = SISTEMA_CODIGO_RF
             };
 
