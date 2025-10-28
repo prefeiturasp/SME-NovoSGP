@@ -2,11 +2,11 @@
 {
     public class ArquivoIdebDto : ArquivoImportacaoBaseDto
     {
-        public ArquivoIdebDto(int serieAno, string codigoEOLEscola, decimal nota, int anoLetivo)
+        public ArquivoIdebDto(int serieAno, string codigoUe, decimal nota, int anoLetivo)
         {
             SerieAno = serieAno;
-            AnoLetivo = anoLetivo;   
-            CodigoEOLEscola = codigoEOLEscola;
+            AnoLetivo = anoLetivo;
+            CodigoEOLEscola = codigoUe;
             Nota = nota;
         }
         public int SerieAno { get; set; }

@@ -1,10 +1,13 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
 using SME.SGP.Aplicacao.Commands.ImportarArquivo.ProficienciaIdep;
+using SME.SGP.Aplicacao.Commands.PainelEducacional.SolicitarConsolidacaoProficienciaIdeb;
+using SME.SGP.Aplicacao.Commands.PainelEducacional.SolicitarConsolidacaoProficienciaIdep;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Boletim;
 using SME.SGP.Aplicacao.Queries.ProficienciaIdep;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.ImportarArquivo;
 using SME.SGP.Infra.Enumerados;
@@ -39,6 +42,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Boletim
             {
                 var importacaoLogDto = MapearParaDto(importacaoLog);
                 var sucesso = await ProcessarArquivoAsync(boletins, importacaoLogDto, anoLetivo);
+                await mediator.Send(new SolicitarConsolidacaoProficienciaIdepCommand(anoLetivo));
                 return sucesso
                         ? ImportacaoLogRetornoDto.RetornarSucesso(MensagemNegocioComuns.ARQUIVO_IMPORTADO_COM_SUCESSO)
                         : ImportacaoLogRetornoDto.RetornarFalha("Falha ao processar importação de boletins.");
@@ -78,7 +82,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Boletim
                         continue;
                     }
 
-                    var proficiencia = proficienciaIdeps?.Where(p => p.CodigoEOLEscola == codigoUe)?.FirstOrDefault();
+                    var proficiencia = proficienciaIdeps?.Where(p => p.CodigoUe == codigoUe)?.FirstOrDefault();
                     if (proficiencia == null)
                     {
                         SalvarErroLinha(importacaoLogDto.Id, processadosComFalha.Count + 1, $"Não existe proficiência cadastrada para o ano letivo {anoLetivo} com o nome do arquivo '{boletim.FileName}'.");
@@ -91,8 +95,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Boletim
                     if (!string.IsNullOrEmpty(enderecoArquivo))
                     {
                         var proficienciaDto = new ProficienciaIdepDto(
-                             proficiencia.SerieAno,
-                             proficiencia.CodigoEOLEscola,
+                             (short)proficiencia.SerieAno,
+                             proficiencia.CodigoUe,
                              proficiencia.AnoLetivo,
                              proficiencia.ComponenteCurricular,
                              proficiencia.Proficiencia,

@@ -11,18 +11,18 @@ namespace SME.SGP.Aplicacao.Teste.Commands.ImportarArquivo.ProficienciaIdep
     public class ExcluirImportacaoProficienciaIdepPorAnoEscolaSerieCommandHandlerTeste
     {
         private readonly Mock<IRepositorioProficienciaIdep> _repositorioProficienciaIdepMock;
-        private readonly ExcluirImportacaoProficienciaIdepPorAnoEscolaSerieCommandHandler _handler;
+        private readonly ExcluirImportacaoProficienciaIdepCommandHandler _handler;
 
         public ExcluirImportacaoProficienciaIdepPorAnoEscolaSerieCommandHandlerTeste()
         {
             _repositorioProficienciaIdepMock = new Mock<IRepositorioProficienciaIdep>();
-            _handler = new ExcluirImportacaoProficienciaIdepPorAnoEscolaSerieCommandHandler(_repositorioProficienciaIdepMock.Object);
+            _handler = new ExcluirImportacaoProficienciaIdepCommandHandler(_repositorioProficienciaIdepMock.Object);
         }
 
         [Fact]
         public void Construtor_DeveInstanciarCorretamente_QuandoRepositorioEhValido()
         {
-            var handler = new ExcluirImportacaoProficienciaIdepPorAnoEscolaSerieCommandHandler(_repositorioProficienciaIdepMock.Object);
+            var handler = new ExcluirImportacaoProficienciaIdepCommandHandler(_repositorioProficienciaIdepMock.Object);
             Assert.NotNull(handler);
         }
 
@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao.Teste.Commands.ImportarArquivo.ProficienciaIdep
         public void Construtor_DeveLancarArgumentNullException_QuandoRepositorioEhNulo()
         {
             var exception = Assert.Throws<ArgumentNullException>(
-                () => new ExcluirImportacaoProficienciaIdepPorAnoEscolaSerieCommandHandler(null));
+                () => new ExcluirImportacaoProficienciaIdepCommandHandler(null));
             Assert.Equal("repositorioProficienciaIdep", exception.ParamName);
         }
 
@@ -44,13 +44,13 @@ namespace SME.SGP.Aplicacao.Teste.Commands.ImportarArquivo.ProficienciaIdep
             var command = new ExcluirImportacaoProficienciaIdepPorAnoEscolaSerieCommand(anoLetivo, codigoEolEscola, serieAno, componenteCurricular);
 
             _repositorioProficienciaIdepMock
-                .Setup(x => x.ExcluirPorAnoEscolaSerieComponenteCurricular(anoLetivo, codigoEolEscola, serieAno, componenteCurricular))
+                .Setup(x => x.ExcluirProficienciaAsync(anoLetivo, codigoEolEscola, serieAno, componenteCurricular))
                 .ReturnsAsync(true);
 
             var resultado = await _handler.Handle(command, CancellationToken.None);
 
             _repositorioProficienciaIdepMock.Verify(
-                x => x.ExcluirPorAnoEscolaSerieComponenteCurricular(anoLetivo, codigoEolEscola, serieAno, componenteCurricular),
+                x => x.ExcluirProficienciaAsync(anoLetivo, codigoEolEscola, serieAno, componenteCurricular),
                 Times.Once);
 
             Assert.True(resultado);
@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao.Teste.Commands.ImportarArquivo.ProficienciaIdep
             var command = new ExcluirImportacaoProficienciaIdepPorAnoEscolaSerieCommand(2023, "123456", 5, "3");
 
             _repositorioProficienciaIdepMock
-                .Setup(x => x.ExcluirPorAnoEscolaSerieComponenteCurricular(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>()))
+                .Setup(x => x.ExcluirProficienciaAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>()))
                 .ReturnsAsync(false);
 
             var resultado = await _handler.Handle(command, CancellationToken.None);
@@ -78,13 +78,13 @@ namespace SME.SGP.Aplicacao.Teste.Commands.ImportarArquivo.ProficienciaIdep
             var command = new ExcluirImportacaoProficienciaIdepPorAnoEscolaSerieCommand(anoLetivo, codigoEolEscola, serieAno, componenteCurricular);
 
             _repositorioProficienciaIdepMock
-                .Setup(x => x.ExcluirPorAnoEscolaSerieComponenteCurricular(anoLetivo, codigoEolEscola, serieAno, componenteCurricular))
+                .Setup(x => x.ExcluirProficienciaAsync(anoLetivo, codigoEolEscola, serieAno, componenteCurricular))
                 .ReturnsAsync(true);
 
             var resultado = await _handler.Handle(command, CancellationToken.None);
 
             _repositorioProficienciaIdepMock.Verify(
-                x => x.ExcluirPorAnoEscolaSerieComponenteCurricular(anoLetivo, codigoEolEscola, serieAno, componenteCurricular),
+                x => x.ExcluirProficienciaAsync(anoLetivo, codigoEolEscola, serieAno, componenteCurricular),
                 Times.Once);
 
             Assert.True(resultado);

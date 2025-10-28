@@ -3,9 +3,11 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using SME.SGP.Aplicacao.Commands.ImportarArquivo;
 using SME.SGP.Aplicacao.Commands.ImportarArquivo.Idep;
+using SME.SGP.Aplicacao.Commands.PainelEducacional.SolicitarConsolidacaoProficienciaIdep;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Idep;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
@@ -55,6 +57,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Idep
             if (importacaoLog != null)
             {
                 await ProcessarArquivoAsync(arquivo.OpenReadStream(), importacaoLog, anoLetivo);
+
+                await mediator.Send(new SolicitarConsolidacaoProficienciaIdepCommand(anoLetivo));
             }
             return ImportacaoLogRetornoDto.RetornarSucesso(MensagemNegocioComuns.ARQUIVO_IMPORTADO_COM_SUCESSO, importacaoLog.Id);
         }
@@ -145,8 +149,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Idep
         private IEnumerable<Task> SalvarArquivoIdepEmLote(List<ArquivoIdepDto> lista, long importacaoLogId)
         {
             var serieAnosValidos = new int[] {
-                (int)SerieAnoIdepEnum.AnosIniciais,
-                (int)SerieAnoIdepEnum.AnosFinais
+                (int)SerieAnoIndiceDesenvolvimentoEnum.AnosIniciais,
+                (int)SerieAnoIndiceDesenvolvimentoEnum.AnosFinais
             };
 
             foreach (var dto in lista)
@@ -189,7 +193,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Idep
                 }
             }
 
-            return Enumerable.Empty<Task>(); // mantém assinatura
+            return Enumerable.Empty<Task>();
         }
 
         private async Task<ImportacaoLog> SalvarImportacao(IFormFile arquivo, string tipoArquivo)

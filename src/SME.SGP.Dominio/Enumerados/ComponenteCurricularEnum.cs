@@ -2,15 +2,15 @@
 
 namespace SME.SGP.Dominio.Enumerados
 {
-    public enum ComponenteCurricular
+    public enum ComponenteCurricularEnum : short
     {
         [Display(Name = "LP")]
-        Portugues = 1,
+        Portugues = 139,
 
         [Display(Name = "MT")]
         Matematica = 2,
             
         [Display(Name = "CN")]
-        CienciasNatureza = 3
+        CienciasNatureza = 89
     }
 }

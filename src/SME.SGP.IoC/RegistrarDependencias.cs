@@ -261,6 +261,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasReclassificacaoPainelEducacionalUseCase, ConsultasReclassificacaoPainelEducacionalUseCase>();
             services.TryAddScoped<IConsultasFrequenciaSemanalUeUseCase, ConsultasFrequenciaSemanalUeUseCase>();
             services.TryAddScoped<IConsultasDistorcaoIdadeUseCase, ConsultasDistorcaoIdadeUseCase>();
+            services.TryAddScoped<IRepositorioPainelEducacionalProficienciaIdeb, RepositorioPainelEducacionalProficienciaIdeb>();
         }
 
         protected virtual void RegistrarContextos(IServiceCollection services)
@@ -694,6 +695,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsolidarReclassificacaoPainelEducacionalUseCase, ConsolidarReclassificacaoPainelEducacionalUseCase>();
             services.TryAddScoped<IConsolidarDistorcaoIdadePainelEducacionalUseCase, ConsolidarDistorcaoIdadePainelEducacionalUseCase>();
 
+            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoProficienciaIdep, RepositorioPainelEducacionalConsolidacaoProficienciaIdep>();
+            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoProficienciaIdeb, RepositorioPainelEducacionalConsolidacaoProficienciaIdeb>();
+            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoProficienciaIdepConsultas, RepositorioPainelEducacionalConsolidacaoProficienciaIdepConsultas>();
+            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoProficienciaIdebConsultas, RepositorioPainelEducacionalConsolidacaoProficienciaIdebConsultas>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)
@@ -874,6 +879,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasRegistroFrequenciaDiariaDreUseCase, ConsultasRegistroFrequenciaDiariaDreUseCase>();
             services.TryAddScoped<IConsultasRegistroFrequenciaDiariaUeUseCase, ConsultasRegistroFrequenciaDiariaUeUseCase>();
             services.TryAddScoped<IConsultasProficienciaIdepPainelEducacionalUseCase, ConsultasProficienciaIdepPainelEducacionalUseCase>();
+            services.TryAddScoped<IConsolidarProficienciaIdebPainelEducacionalUseCase, ConsolidarProficienciaIdebPainelEducacionalUseCase>();
+            services.TryAddScoped<IConsolidarProficienciaIdepPainelEducacionalUseCase, ConsolidarProficienciaIdepPainelEducacionalUseCase>();
 
 
             services.TryAddScoped<IObterDashBoardUseCase, ObterDashBoardUseCase>();
