@@ -139,9 +139,7 @@ namespace SME.SGP.Aplicacao
                        .Where(d =>
                            !d.TerritorioSaber &&
                            (d.Regencia ||
-                            d.Codigo == MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_LIBRAS)));
-                    else
-                        disciplinasRegencia = MapearParaDto(disciplinasRegenciaEol.Where(d => !d.TerritorioSaber && d.Regencia && d.Codigo != MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_LIBRAS));                    
+                            d.Codigo == MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_LIBRAS)));          
                 }
             }
 
