@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoSmeDre;
@@ -124,6 +125,29 @@ namespace SME.SGP.Dados.Repositorios
                 anoLetivo,
                 bimestre,
                 anoTurma
+            });
+        }
+
+        public async Task<IEnumerable<IdentificacaoInfo>> ObterModalidadesNotasVisaoUe(int anoLetivo, string codigoUe, int bimestre)
+        {
+            string query = @"select Distinct(modalidade) as Id
+                                 from painel_educacional_consolidacao_nota_ue
+                                 where 1 = 1 ";
+
+            if (anoLetivo > 0)
+                query += " AND ano_letivo = @anoLetivo ";
+
+            if (!string.IsNullOrEmpty(codigoUe))
+                query += " AND codigo_ue = @codigoUe ";
+
+            if (bimestre > 0)
+                query += " AND bimestre = @bimestre ";
+
+            return await database.Conexao.QueryAsync<IdentificacaoInfo>(query, new
+            {
+                anoLetivo,
+                codigoUe,
+                bimestre
             });
         }
     }
