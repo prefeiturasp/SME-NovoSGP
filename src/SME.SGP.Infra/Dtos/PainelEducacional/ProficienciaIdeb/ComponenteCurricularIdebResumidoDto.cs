@@ -1,8 +1,10 @@
-﻿namespace SME.SGP.Infra.Dtos.PainelEducacional.ProficienciaIdeb
+﻿using SME.SGP.Dominio.Enumerados;
+
+namespace SME.SGP.Infra.Dtos.PainelEducacional.ProficienciaIdeb
 {
     public class ComponenteCurricularIdebResumidoDto
     {
-        public string ComponenteCurricular { get; set; }
+        public ComponenteCurricularEnum? ComponenteCurricular { get; set; }
         public decimal? Percentual { get; set; }
     }
 }

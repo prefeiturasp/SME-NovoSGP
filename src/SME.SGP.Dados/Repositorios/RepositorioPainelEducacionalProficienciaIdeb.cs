@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
@@ -23,15 +24,15 @@ namespace SME.SGP.Dados.Repositorios
                        serie_ano as SerieAno,
                        codigo_ue as CodigoUe,
                        nota,
-                         AS ComponenteCurricularId,
+                       componente_curricular_id as ComponenteCurricular,
                        proficiencia,
                        boletim
                   FROM painel_educacional_consolidacao_proficiencia_ideb_ue
                  WHERE ano_letivo >= @limiteAnoLetivo 
                    and codigo_ue = @codigoUe
-                   and (@anoLetivo = 0 OR ano_letivo = @anoLetivo)
+                   and ((@anoLetivo = 0 AND ano_letivo < @anoAtual) OR ano_letivo = @anoLetivo)
                  ORDER BY serie_ano, componente_curricular_id;";
-            return await database.QueryAsync<PainelEducacionalConsolidacaoProficienciaIdebUe>(query, new { limiteAnoLetivo, codigoUe, anoLetivo });
+            return await database.QueryAsync<PainelEducacionalConsolidacaoProficienciaIdebUe>(query, new { limiteAnoLetivo, codigoUe, anoLetivo, anoAtual = DateTime.Now.Year });
         }
     }
 }
