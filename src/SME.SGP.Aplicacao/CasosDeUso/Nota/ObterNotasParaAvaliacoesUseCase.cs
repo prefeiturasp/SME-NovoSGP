@@ -131,6 +131,17 @@ namespace SME.SGP.Aplicacao
                     // Excessão de disciplina ED. Fisica para modalidade EJA
                     if (turmaCompleta.EhEJA())
                         disciplinasRegencia = MapearParaDto(disciplinasRegenciaEol.Where(d => !d.TerritorioSaber && d.Regencia && d.Codigo != MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_ED_FISICA));
+
+                    else if (turmaCompleta.Ue.TipoEscola == TipoEscola.EMEBS && (TipoTurnoEOL)turmaCompleta.TipoTurno == TipoTurnoEOL.Integral)
+                        disciplinasRegencia = MapearParaDto(disciplinasRegenciaEol
+                       .Where(d =>
+                           !d.TerritorioSaber &&
+                           (d.Regencia ||
+                            d.Codigo == MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_LIBRAS)));
+
+                    else if (turmaCompleta.Ue.TipoEscola != TipoEscola.EMEBS && (TipoTurnoEOL)turmaCompleta.TipoTurno != TipoTurnoEOL.Integral)
+                        disciplinasRegencia = MapearParaDto(disciplinasRegenciaEol.Where(d => !d.TerritorioSaber && d.Regencia && d.Codigo != MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_LIBRAS));
+                    
                     else
                         disciplinasRegencia = MapearParaDto(disciplinasRegenciaEol.Where(d => !d.TerritorioSaber && d.Regencia));
 

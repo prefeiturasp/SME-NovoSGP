@@ -71,9 +71,7 @@ namespace SME.SGP.Aplicacao
                     disciplinasRegencia = disciplinasRegencia.Where(n => n.CodigoComponenteCurricular != MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_ED_FISICA);
 
                 if (disciplinasRegencia.NaoEhNulo() && turma.Ue.TipoEscola == TipoEscola.EMEBS && (TipoTurnoEOL)turma.TipoTurno == TipoTurnoEOL.Integral)
-                {
                     disciplinasRegencia = disciplinasRegencia.Append(new DisciplinaDto() { Nome = "Libras", CodigoComponenteCurricular = MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_LIBRAS });
-                }
 
                 disciplinas.AddRange(disciplinasRegencia);
             }
