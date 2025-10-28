@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SME.SGP.Dominio.Enumerados;
+using System.Collections.Generic;
 
 namespace SME.SGP.Infra.Dtos.PainelEducacional
 {
@@ -10,7 +11,7 @@ namespace SME.SGP.Infra.Dtos.PainelEducacional
 
     public class ComponenteCurricularIdepResumidoDto
     {
-        public string ComponenteCurricular { get; set; }
-        public decimal Percentual { get; set; }
+        public ComponenteCurricularEnum? ComponenteCurricular { get; set; }
+        public decimal? Percentual { get; set; }
     }
 }

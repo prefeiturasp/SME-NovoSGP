@@ -12,6 +12,7 @@ using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoUe;
 using SME.SGP.Infra.Dtos.PainelEducacional.SondagemEscrita;
 using System.Threading.Tasks;
 using SME.SGP.Infra.Dtos.PainelEducacional.Reclassificacao;
+using SME.SGP.Infra.Dtos.PainelEducacional.ProficienciaIdeb;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -193,5 +194,12 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterReclassificacao([FromQuery] FiltroPainelEducacionalReclassificacao filtro, [FromServices] IConsultasReclassificacaoPainelEducacionalUseCase consultasReclassificacaoUseCase)
      => Ok(await consultasReclassificacaoUseCase.ObterReclassificacao(filtro.CodigoDre, filtro.CodigoUe, filtro.AnoLetivo, filtro.AnoTurma));
 
+        [HttpGet("proficiencia-ideb")]
+        [ProducesResponseType(typeof(PainelEducacionalProficienciaIdebDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterProficienciaIdeb(int anoLetivo, string codigoUe, [FromServices] IConsultasProficienciaIdebPainelEducacionalUseCase consultaProficienciaIdebPainelEducacionalUseCase)
+         => Ok(await consultaProficienciaIdebPainelEducacionalUseCase.ObterProficienciaIdeb(anoLetivo, codigoUe));
     }
 }
