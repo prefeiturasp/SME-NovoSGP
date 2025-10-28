@@ -248,7 +248,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioSondagemEscrita, RepositorioSondagemEscrita>();
             services.TryAddScoped<IRepositorioNotaConsulta, RepositorioNotaConsulta>();
             services.TryAddScoped<IRepositorioFrequenciaSemanalUe, RepositorioFrequenciaSemanalUe>();
-            services.TryAddScoped<IRepositorioReclassificacao, RepositorioReclassificacao>();
+            services.TryAddScoped<IRepositorioReclassificacaoConsulta, RepositorioReclassificacaoConsulta>();
             services.TryAddScoped<IConsultasVisaoGeralPainelEducacionalUseCase, ConsultasPainelEducacionalVisaoGeralUseCase>();
             services.TryAddScoped<IConsultasInformacoesPapUseCase, ConsultasInformacoesPapUseCase>();
             services.AddScoped<IConsultasIdepPainelEducacionalUseCase, ConsultasIdepPainelEducacionalUseCase>();
