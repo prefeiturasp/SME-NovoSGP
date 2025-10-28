@@ -78,31 +78,24 @@ namespace SME.SGP.Infra
 
         public async Task RegistrarAsync(Func<Task> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
         {
-            try
+            if (telemetriaOptions.Apm)
             {
+                var transactionElk = Agent.Tracer.CurrentTransaction;
 
-                if (telemetriaOptions.Apm)
+                if (transactionElk != null)
                 {
-                    var transactionElk = Agent.Tracer.CurrentTransaction;
-
-                    if (transactionElk != null)
+                    await transactionElk.CaptureSpan(telemetriaNome, acaoNome, async (span) =>
                     {
-                        await transactionElk.CaptureSpan(telemetriaNome, acaoNome, async (span) =>
-                        {
-                            span.SetLabel(telemetriaNome, telemetriaValor);
-                            span.SetLabel("Parametros", parametros);
-                            await acao();
-                        });
-                    }
-                    else
+                        span.SetLabel(telemetriaNome, telemetriaValor);
+                        span.SetLabel("Parametros", parametros);
                         await acao();
+                    });
                 }
                 else
                     await acao();
             }
-            catch (Exception e)
-            {
-            }
+            else
+                await acao();
         }
 
         public ITransaction Iniciar(string nome, string tipo)
