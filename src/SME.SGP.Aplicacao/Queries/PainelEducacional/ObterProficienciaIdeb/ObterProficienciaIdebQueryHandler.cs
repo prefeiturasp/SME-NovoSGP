@@ -22,72 +22,53 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterProficienciaIdeb
 
         public async Task<IEnumerable<PainelEducacionalProficienciaIdebDto>> Handle(ObterProficienciaIdebQuery request, CancellationToken cancellationToken)
         {
-            var proficiencias = await ObterProficienciaConsolidadaAsync(request.AnoLetivo, request.CodigoUe);
-
-            if (proficiencias == null || !proficiencias.Any())
-                return Array.Empty<PainelEducacionalProficienciaIdebDto>();
-
-            var resultadoFinal = proficiencias
-                .GroupBy(g => g.AnoLetivo)
-                .Select(g =>
+            var proficiencia = await _repositorioProficienciaIdeb.ObterConsolidacaoPorAnoVisaoUeAsync(PainelEducacionalConstants.ANO_LETIVO_MIM_LIMITE, request.AnoLetivo, request.CodigoUe);
+            var resultadoFinal = proficiencia
+                .GroupBy(d => new { d.AnoLetivo, d.CodigoUe })
+                .Select(group =>
                 {
-                    var anosIniciais = g.Where(p => p.SerieAno == SerieAnoIndiceDesenvolvimentoEnum.AnosIniciais);
-                    var anosFinais = g.Where(p => p.SerieAno == SerieAnoIndiceDesenvolvimentoEnum.AnosFinais);
-                    var ensinoMedio = g.Where(p => p.SerieAno == SerieAnoIndiceDesenvolvimentoEnum.EnsinoMedio);
+                    var anosIniciais = group.Where(item => item.SerieAno == SerieAnoIndiceDesenvolvimentoEnum.AnosIniciais);
+                    var anosFinais = group.Where(item => item.SerieAno == SerieAnoIndiceDesenvolvimentoEnum.AnosFinais);
+                    var ensinoMedio = group.Where(item => item.SerieAno == SerieAnoIndiceDesenvolvimentoEnum.EnsinoMedio);
                     return new PainelEducacionalProficienciaIdebDto
                     {
-                        AnoLetivo = g.Key,
-                        NotaInicial = anosIniciais.FirstOrDefault()?.Nota,
-                        NotaFinal = anosFinais.FirstOrDefault()?.Nota,
-                        NotaEnsinoMedio = ensinoMedio.FirstOrDefault()?.Nota,
-                        Boletim = g.FirstOrDefault(f => !string.IsNullOrWhiteSpace(f.Boletim))?.Boletim,
+                        AnoLetivo = group.Key.AnoLetivo,
                         Proficiencia = new ProficienciaIdebResumidoDto
                         {
-                            AnosIniciais = DefinirProficienciaPorComponenteCurricular(anosIniciais),
-                            AnosFinais = DefinirProficienciaPorComponenteCurricular(anosFinais),
-                            EnsinoMedio = DefinirProficienciaPorComponenteCurricular(ensinoMedio)
+                            AnosIniciais = group
+                                .Where(item => item.SerieAno == SerieAnoIndiceDesenvolvimentoEnum.AnosIniciais)
+                                .GroupBy(item => item.ComponenteCurricular)
+                                .Select(componente => new ComponenteCurricularIdebResumidoDto
+                                {
+                                    ComponenteCurricular = componente.Key.ToString(),
+                                    Percentual = componente.Average(item => item.Proficiencia)
+                                })
+                                .ToList(),
+                            AnosFinais = group
+                                .Where(item => item.SerieAno == SerieAnoIndiceDesenvolvimentoEnum.AnosFinais)
+                                .GroupBy(item => item.ComponenteCurricular)
+                                .Select(componente => new ComponenteCurricularIdebResumidoDto
+                                {
+                                    ComponenteCurricular = componente.Key.ToString(),
+                                    Percentual = componente.Average(item => item.Proficiencia)
+                                })
+                                .ToList(),
+                            EnsinoMedio = group
+                                .Where(item => item.SerieAno == SerieAnoIndiceDesenvolvimentoEnum.EnsinoMedio)
+                                .GroupBy(item => item.ComponenteCurricular)
+                                .Select(componente => new ComponenteCurricularIdebResumidoDto
+                                {
+                                    ComponenteCurricular = componente.Key.ToString(),
+                                    Percentual = componente.Average(item => item.Proficiencia)
+                                })
+                                .ToList()
                         }
                     };
-                });
+                })
+                .OrderByDescending(d => d.AnoLetivo)
+                .ToList();
 
-            return resultadoFinal.OrderByDescending(r => r.AnoLetivo);
+            return resultadoFinal;
         }
-
-        private async Task<IEnumerable<PainelEducacionalConsolidacaoProficienciaIdebUe>> ObterProficienciaConsolidadaAsync(int anoLetivo, string codigoUe)
-        {
-            if (anoLetivo <= 0)
-                return await _repositorioProficienciaIdeb.ObterConsolidacaoPorAnoVisaoUeAsync(PainelEducacionalConstants.ANO_LETIVO_MIM_LIMITE, anoLetivo, codigoUe);
-
-            for (int anoUtilizado = anoLetivo; anoUtilizado >= PainelEducacionalConstants.ANO_LETIVO_MIM_LIMITE; anoUtilizado--)
-            {
-                var proficiencias = await _repositorioProficienciaIdeb.ObterConsolidacaoPorAnoVisaoUeAsync(PainelEducacionalConstants.ANO_LETIVO_MIM_LIMITE, anoUtilizado, codigoUe);
-
-                if (proficiencias != null && proficiencias.Any())
-                    return proficiencias;
-            }
-            return Array.Empty<PainelEducacionalConsolidacaoProficienciaIdebUe>();
-        }
-
-        private List<ComponenteCurricularIdebResumidoDto> DefinirProficienciaPorComponenteCurricular(IEnumerable<PainelEducacionalConsolidacaoProficienciaIdebUe> proficiencias) =>
-            new List<ComponenteCurricularIdebResumidoDto>
-            {
-                new ComponenteCurricularIdebResumidoDto
-                {
-                    ComponenteCurricular = ComponenteCurricularEnum.Portugues,
-                    Percentual = proficiencias.FirstOrDefault(p => p.ComponenteCurricular == ComponenteCurricularEnum.Portugues)?.Proficiencia
-                },
-
-                new ComponenteCurricularIdebResumidoDto
-                {
-                    ComponenteCurricular = ComponenteCurricularEnum.Matematica,
-                    Percentual = proficiencias.FirstOrDefault(p => p.ComponenteCurricular == ComponenteCurricularEnum.Matematica)?.Proficiencia
-                },
-
-                new ComponenteCurricularIdebResumidoDto
-                {
-                    ComponenteCurricular = ComponenteCurricularEnum.CienciasNatureza,
-                    Percentual = proficiencias.FirstOrDefault(p => p.ComponenteCurricular == ComponenteCurricularEnum.CienciasNatureza)?.Proficiencia
-                }
-            };
     }
 }

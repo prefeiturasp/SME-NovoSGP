@@ -4,7 +4,7 @@ namespace SME.SGP.Infra.Dtos.ImportarArquivo
 {
     public class ProficienciaIdepDto : ArquivoImportacaoBaseDto
     {
-        public ProficienciaIdepDto(int serieAno, string codigoEOLEscola, int anoLetivo, string componenteCurricular, decimal proficiencia, string boletim = "")
+        public ProficienciaIdepDto(short serieAno, string codigoEOLEscola, int anoLetivo, string componenteCurricular, decimal proficiencia, string boletim = "")
         {
             SerieAno = (SerieAnoIndiceDesenvolvimentoEnum)serieAno;
             AnoLetivo = anoLetivo;
