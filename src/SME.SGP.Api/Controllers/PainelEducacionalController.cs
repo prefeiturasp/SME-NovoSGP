@@ -13,6 +13,7 @@ using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoSmeDre;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoUe;
 using SME.SGP.Infra.Dtos.PainelEducacional.SondagemEscrita;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Dtos.PainelEducacional.Reclassificacao;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -183,6 +184,8 @@ namespace SME.SGP.Api.Controllers
 
         [HttpGet("reclassificacao")]
         [ProducesResponseType(typeof(PainelEducacionalReclassificacaoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterReclassificacao([FromQuery] FiltroPainelEducacionalReclassificacao filtro, [FromServices] IConsultasReclassificacaoPainelEducacionalUseCase consultasReclassificacaoUseCase)
      => Ok(await consultasReclassificacaoUseCase.ObterReclassificacao(filtro.CodigoDre, filtro.CodigoUe, filtro.AnoLetivo, filtro.AnoTurma));
 

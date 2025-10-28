@@ -1291,26 +1291,32 @@ namespace SME.SGP.Api.Teste.Controllers
             };
 
             var retornoEsperado = new List<PainelEducacionalReclassificacaoDto>
-     {
-         new PainelEducacionalReclassificacaoDto
-         {
-             Modalidade = new List<ModalidadeReclassificacaoDto>
-             {
-                 new ModalidadeReclassificacaoDto
-                 {
-                     Nome = "Ensino Fundamental",
-                     AnoTurma = 5,
-                     QuantidadeAlunos = 15
-                 },
-                 new ModalidadeReclassificacaoDto
-                 {
-                     Nome = "Ensino Fundamental",
-                     AnoTurma = 6,
-                     QuantidadeAlunos = 8
-                 }
-             }
-         }
-     };
+            {
+                new PainelEducacionalReclassificacaoDto
+                {
+                    Modalidades = new List<ModalidadeReclassificacaoDto>
+                    {
+                        new ModalidadeReclassificacaoDto
+                        {
+                            Modalidade = new ModalidadeReclassificacaoArrayDto
+                            {
+                                NomeModalidade = "Ensino Fundamental",
+                                AnoTurma = 5,
+                                QuantidadeAlunos = 15
+                            }
+                        },
+                        new ModalidadeReclassificacaoDto
+                        {
+                            Modalidade = new ModalidadeReclassificacaoArrayDto
+                            {
+                                NomeModalidade = "Ensino Fundamental",
+                                AnoTurma = 6,
+                                QuantidadeAlunos = 8
+                            }
+                        }
+                    }
+                }
+            };
 
             var mockUseCase = new Mock<IConsultasReclassificacaoPainelEducacionalUseCase>();
             mockUseCase
@@ -1324,21 +1330,21 @@ namespace SME.SGP.Api.Teste.Controllers
 
             Assert.Single(retorno);
             var item = retorno.First();
-            Assert.NotNull(item.Modalidade);
-            Assert.Equal(2, item.Modalidade.Count());
+            Assert.NotNull(item.Modalidades);
+            Assert.Equal(2, item.Modalidades.Count());
 
-            Assert.Collection(item.Modalidade,
+            Assert.Collection(item.Modalidades,
                 modalidade =>
                 {
-                    Assert.Equal("Ensino Fundamental", modalidade.Nome);
-                    Assert.Equal(5, modalidade.AnoTurma);
-                    Assert.Equal(15, modalidade.QuantidadeAlunos);
+                    Assert.Equal("Ensino Fundamental", modalidade.Modalidade.NomeModalidade);
+                    Assert.Equal(5, modalidade.Modalidade.AnoTurma);
+                    Assert.Equal(15, modalidade.Modalidade.QuantidadeAlunos);
                 },
                 modalidade =>
                 {
-                    Assert.Equal("Ensino Fundamental", modalidade.Nome);
-                    Assert.Equal(6, modalidade.AnoTurma);
-                    Assert.Equal(8, modalidade.QuantidadeAlunos);
+                    Assert.Equal("Ensino Fundamental", modalidade.Modalidade.NomeModalidade);
+                    Assert.Equal(6, modalidade.Modalidade.AnoTurma);
+                    Assert.Equal(8, modalidade.Modalidade.QuantidadeAlunos);
                 });
 
             mockUseCase.Verify(x => x.ObterReclassificacao(
@@ -1394,20 +1400,23 @@ namespace SME.SGP.Api.Teste.Controllers
             };
 
             var retornoEsperado = new List<PainelEducacionalReclassificacaoDto>
-      {
-          new PainelEducacionalReclassificacaoDto
-          {
-              Modalidade = new List<ModalidadeReclassificacaoDto>
-              {
-                  new ModalidadeReclassificacaoDto
-                  {
-                      Nome = "Ensino Fundamental",
-                      AnoTurma = 7,
-                      QuantidadeAlunos = 25
-                  }
-              }
-          }
-      };
+            {
+                new PainelEducacionalReclassificacaoDto
+                {
+                    Modalidades = new List<ModalidadeReclassificacaoDto>
+                    {
+                        new ModalidadeReclassificacaoDto
+                        {
+                            Modalidade = new ModalidadeReclassificacaoArrayDto
+                            {
+                                NomeModalidade = "Ensino Fundamental",
+                                AnoTurma = 7,
+                                QuantidadeAlunos = 25
+                            }
+                        }
+                    }
+                }
+            };
 
             var mockUseCase = new Mock<IConsultasReclassificacaoPainelEducacionalUseCase>();
             mockUseCase
@@ -1421,13 +1430,13 @@ namespace SME.SGP.Api.Teste.Controllers
 
             Assert.Single(retorno);
             var item = retorno.First();
-            Assert.NotNull(item.Modalidade);
-            Assert.Single(item.Modalidade);
+            Assert.NotNull(item.Modalidades);
+            Assert.Single(item.Modalidades);
 
-            var modalidade = item.Modalidade.First();
-            Assert.Equal("Ensino Fundamental", modalidade.Nome);
-            Assert.Equal(7, modalidade.AnoTurma);
-            Assert.Equal(25, modalidade.QuantidadeAlunos);
+            var modalidade = item.Modalidades.First();
+            Assert.Equal("Ensino Fundamental", modalidade.Modalidade.NomeModalidade);
+            Assert.Equal(7, modalidade.Modalidade.AnoTurma);
+            Assert.Equal(25, modalidade.Modalidade.QuantidadeAlunos);
 
             mockUseCase.Verify(x => x.ObterReclassificacao(
                 It.Is<string>(d => d == null),
@@ -1449,32 +1458,41 @@ namespace SME.SGP.Api.Teste.Controllers
             };
 
             var retornoEsperado = new List<PainelEducacionalReclassificacaoDto>
-      {
-          new PainelEducacionalReclassificacaoDto
-          {
-              Modalidade = new List<ModalidadeReclassificacaoDto>
-              {
-                  new ModalidadeReclassificacaoDto
-                  {
-                      Nome = "Ensino Fundamental",
-                      AnoTurma = 9,
-                      QuantidadeAlunos = 32
-                  },
-                  new ModalidadeReclassificacaoDto
-                  {
-                      Nome = "EJA",
-                      AnoTurma = 9,
-                      QuantidadeAlunos = 12
-                  },
-                  new ModalidadeReclassificacaoDto
-                  {
-                      Nome = "Ensino Médio",
-                      AnoTurma = 1,
-                      QuantidadeAlunos = 5
-                  }
-              }
-          }
-      };
+            {
+                new PainelEducacionalReclassificacaoDto
+                {
+                    Modalidades = new List<ModalidadeReclassificacaoDto>
+                    {
+                        new ModalidadeReclassificacaoDto
+                        {
+                            Modalidade = new ModalidadeReclassificacaoArrayDto
+                            {
+                                NomeModalidade = "Ensino Fundamental",
+                                AnoTurma = 9,
+                                QuantidadeAlunos = 32
+                            }
+                        },
+                        new ModalidadeReclassificacaoDto
+                        {
+                            Modalidade = new ModalidadeReclassificacaoArrayDto
+                            {
+                                NomeModalidade = "EJA",
+                                AnoTurma = 9,
+                                QuantidadeAlunos = 12
+                            }
+                        },
+                        new ModalidadeReclassificacaoDto
+                        {
+                            Modalidade = new ModalidadeReclassificacaoArrayDto
+                            {
+                                NomeModalidade = "Ensino Médio",
+                                AnoTurma = 1,
+                                QuantidadeAlunos = 5
+                            }
+                        }
+                    }
+                }
+            };
 
             var mockUseCase = new Mock<IConsultasReclassificacaoPainelEducacionalUseCase>();
             mockUseCase
@@ -1488,27 +1506,27 @@ namespace SME.SGP.Api.Teste.Controllers
 
             Assert.Single(retorno);
             var item = retorno.First();
-            Assert.NotNull(item.Modalidade);
-            Assert.Equal(3, item.Modalidade.Count());
+            Assert.NotNull(item.Modalidades);
+            Assert.Equal(3, item.Modalidades.Count());
 
-            Assert.Collection(item.Modalidade,
+            Assert.Collection(item.Modalidades,
                 modalidade =>
                 {
-                    Assert.Equal("Ensino Fundamental", modalidade.Nome);
-                    Assert.Equal(9, modalidade.AnoTurma);
-                    Assert.Equal(32, modalidade.QuantidadeAlunos);
+                    Assert.Equal("Ensino Fundamental", modalidade.Modalidade.NomeModalidade);
+                    Assert.Equal(9, modalidade.Modalidade.AnoTurma);
+                    Assert.Equal(32, modalidade.Modalidade.QuantidadeAlunos);
                 },
                 modalidade =>
                 {
-                    Assert.Equal("EJA", modalidade.Nome);
-                    Assert.Equal(9, modalidade.AnoTurma);
-                    Assert.Equal(12, modalidade.QuantidadeAlunos);
+                    Assert.Equal("EJA", modalidade.Modalidade.NomeModalidade);
+                    Assert.Equal(9, modalidade.Modalidade.AnoTurma);
+                    Assert.Equal(12, modalidade.Modalidade.QuantidadeAlunos);
                 },
                 modalidade =>
                 {
-                    Assert.Equal("Ensino Médio", modalidade.Nome);
-                    Assert.Equal(1, modalidade.AnoTurma);
-                    Assert.Equal(5, modalidade.QuantidadeAlunos);
+                    Assert.Equal("Ensino Médio", modalidade.Modalidade.NomeModalidade);
+                    Assert.Equal(1, modalidade.Modalidade.AnoTurma);
+                    Assert.Equal(5, modalidade.Modalidade.QuantidadeAlunos);
                 });
 
             mockUseCase.Verify(x => x.ObterReclassificacao(
@@ -1531,20 +1549,23 @@ namespace SME.SGP.Api.Teste.Controllers
             };
 
             var retornoEsperado = new List<PainelEducacionalReclassificacaoDto>
-      {
-          new PainelEducacionalReclassificacaoDto
-          {
-              Modalidade = new List<ModalidadeReclassificacaoDto>
-              {
-                  new ModalidadeReclassificacaoDto
-                  {
-                      Nome = "Ensino Fundamental",
-                      AnoTurma = 1,
-                      QuantidadeAlunos = 28
-                  }
-              }
-          }
-      };
+            {
+                new PainelEducacionalReclassificacaoDto
+                {
+                    Modalidades = new List<ModalidadeReclassificacaoDto>
+                    {
+                        new ModalidadeReclassificacaoDto
+                        {
+                            Modalidade = new ModalidadeReclassificacaoArrayDto
+                            {
+                                NomeModalidade = "Ensino Fundamental",
+                                AnoTurma = 1,
+                                QuantidadeAlunos = 28
+                            }
+                        }
+                    }
+                }
+            };
 
             var mockUseCase = new Mock<IConsultasReclassificacaoPainelEducacionalUseCase>();
             mockUseCase
@@ -1573,20 +1594,23 @@ namespace SME.SGP.Api.Teste.Controllers
             };
 
             var retornoEsperado = new List<PainelEducacionalReclassificacaoDto>
-      {
-          new PainelEducacionalReclassificacaoDto
-          {
-              Modalidade = new List<ModalidadeReclassificacaoDto>
-              {
-                  new ModalidadeReclassificacaoDto
-                  {
-                      Nome = "Ensino Fundamental",
-                      AnoTurma = 0,
-                      QuantidadeAlunos = 150
-                  }
-              }
-          }
-      };
+            {
+                new PainelEducacionalReclassificacaoDto
+                {
+                    Modalidades = new List<ModalidadeReclassificacaoDto>
+                    {
+                        new ModalidadeReclassificacaoDto
+                        {
+                            Modalidade = new ModalidadeReclassificacaoArrayDto
+                            {
+                                NomeModalidade = "Ensino Fundamental",
+                                AnoTurma = 0,
+                                QuantidadeAlunos = 150
+                            }
+                        }
+                    }
+                }
+            };
 
             var mockUseCase = new Mock<IConsultasReclassificacaoPainelEducacionalUseCase>();
             mockUseCase
@@ -1600,13 +1624,13 @@ namespace SME.SGP.Api.Teste.Controllers
 
             Assert.Single(retorno);
             var item = retorno.First();
-            Assert.NotNull(item.Modalidade);
-            Assert.Single(item.Modalidade);
+            Assert.NotNull(item.Modalidades);
+            Assert.Single(item.Modalidades);
 
-            var modalidade = item.Modalidade.First();
-            Assert.Equal("Ensino Fundamental", modalidade.Nome);
-            Assert.Equal(0, modalidade.AnoTurma);
-            Assert.Equal(150, modalidade.QuantidadeAlunos);
+            var modalidade = item.Modalidades.First();
+            Assert.Equal("Ensino Fundamental", modalidade.Modalidade.NomeModalidade);
+            Assert.Equal(0, modalidade.Modalidade.AnoTurma);
+            Assert.Equal(150, modalidade.Modalidade.QuantidadeAlunos);
 
             mockUseCase.Verify(x => x.ObterReclassificacao(
                 It.Is<string>(d => d == "DRE111"),
@@ -1615,7 +1639,6 @@ namespace SME.SGP.Api.Teste.Controllers
                 It.Is<int>(t => t == 0)
             ), Times.Once);
         }
-
 
         [Fact(DisplayName = "Deve retornar 200 OK com os dados de distorção idade/série")]
         public async Task ObterDistorcaoSerieIdade_DeveRetornarOkComDados()
