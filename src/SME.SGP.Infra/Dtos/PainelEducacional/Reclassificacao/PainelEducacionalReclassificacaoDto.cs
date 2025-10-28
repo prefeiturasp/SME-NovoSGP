@@ -4,6 +4,6 @@ namespace SME.SGP.Infra.Dtos.PainelEducacional.Reclassificacao
 {
     public class PainelEducacionalReclassificacaoDto
     {
-        public IEnumerable<ModalidadeReclassificacaoDto> Modalidade { get; set; }
+        public IEnumerable<ModalidadeReclassificacaoDto> Modalidades { get; set; }
     }
 }
