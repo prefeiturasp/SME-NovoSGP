@@ -51,6 +51,8 @@ namespace SME.SGP.Aplicacao
                 await BuscaPendenciaESalva(turmasDreUe.FirstOrDefault(), professoresEComponentes);
             }
 
+            await BuscaPendenciaParaExcluirEPublica(turmaId);
+
             return true;
         }
 
@@ -101,6 +103,17 @@ namespace SME.SGP.Aplicacao
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand("Gerar pendências de diário de bordo por turma", LogNivel.Critico, LogContexto.Pendencia, ex.Message));
             }
-        } 
+        }
+
+        private async Task BuscaPendenciaParaExcluirEPublica(string turmaId)
+        {
+            var pendenciasDiarioDeBordoParaExcluir = await mediator.Send(new ObterAulasComPendenciaDiarioBordoResolvidaPorTurmaCommand(turmaId));
+
+            if (pendenciasDiarioDeBordoParaExcluir.Any())
+            {
+                var filtro = new FiltroListaAulaIdComponenteCurricularIdDto(pendenciasDiarioDeBordoParaExcluir);
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaExcluirPendenciasDiarioBordo, filtro));
+            }
+        }
     }
 }
