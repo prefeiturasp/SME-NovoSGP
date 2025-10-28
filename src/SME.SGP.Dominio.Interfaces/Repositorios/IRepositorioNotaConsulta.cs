@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces.Repositorios
 {
-    public interface IRepositorioNota 
+    public interface IRepositorioNotaConsulta 
     {
         Task<IEnumerable<PainelEducacionalNotasVisaoSmeDreRetornoSelectDto>> ObterNotasVisaoSmeDre(string codigoDre, int anoLetivo, int bimestre, string anoTurma);
-        Task<PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeRetornoSelectDto>> ObterNotasVisaoUe(Paginacao paginacao, string codigoUe, int anoLetivo, int bimestre, Modalidade modalidade);
+        Task<PaginacaoNotaResultadoDto<PainelEducacionalNotasVisaoUeRetornoSelectDto>> ObterNotasVisaoUe(Paginacao paginacao, string codigoUe, int anoLetivo, int bimestre, Modalidade modalidade);
     }
 }

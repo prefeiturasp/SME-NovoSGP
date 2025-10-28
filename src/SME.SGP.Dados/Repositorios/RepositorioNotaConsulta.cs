@@ -4,21 +4,22 @@ using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoSmeDre;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoUe;
+using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioNota : IRepositorioNota
+    public class RepositorioNotaConsulta : IRepositorioNotaConsulta
     {
-        private readonly ISgpContext database;
-        public RepositorioNota(ISgpContext database)
+        private readonly ISgpContextConsultas database;
+        public RepositorioNotaConsulta(ISgpContextConsultas database)
         {
             this.database = database;
         }
 
-        public async Task<PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeRetornoSelectDto>> ObterNotasVisaoUe(Paginacao paginacao, string codigoUe, int anoLetivo, int bimestre, Modalidade modalidade)
+        public async Task<PaginacaoNotaResultadoDto<PainelEducacionalNotasVisaoUeRetornoSelectDto>> ObterNotasVisaoUe(Paginacao paginacao, string codigoUe, int anoLetivo, int bimestre, Modalidade modalidade)
         {
             string querySelect = @"select ano_letivo as AnoLetivo,
                                              codigo_dre as CodigoDre,
@@ -69,7 +70,7 @@ namespace SME.SGP.Dados.Repositorios
                 modalidade = (int)modalidade
             };
 
-            var retorno = new PaginacaoResultadoDto<PainelEducacionalNotasVisaoUeRetornoSelectDto>();
+            var retorno = new PaginacaoNotaResultadoDto<PainelEducacionalNotasVisaoUeRetornoSelectDto>();
 
             using (var multi = await database.Conexao.QueryMultipleAsync(queryCompleta, parametros))
             {
@@ -80,6 +81,12 @@ namespace SME.SGP.Dados.Repositorios
             retorno.TotalPaginas = paginacao.QuantidadeRegistros > 0
             ? (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros)
             : 1;
+
+            retorno.PaginaAtual = paginacao.QuantidadeRegistros > 0 
+                ? (paginacao.QuantidadeRegistrosIgnorados / paginacao.QuantidadeRegistros) + 1 
+                : 1;
+
+            retorno.RegistrosPorPagina = paginacao.QuantidadeRegistros;
 
             return retorno;
         }
