@@ -2,10 +2,12 @@
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using SME.SGP.Aplicacao.Commands.ImportarArquivo.ProficienciaIdep;
+using SME.SGP.Aplicacao.Commands.PainelEducacional.SolicitarConsolidacaoProficienciaIdep;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Proficiencia;
 using SME.SGP.Aplicacao.Queries.UE.ObterUePorCodigoEolEscola;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.ImportarArquivo;
 using SME.SGP.Infra.Enumerados;
@@ -43,6 +45,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Proficiencia
             {
                 var importacaoLogDto = MapearParaDto(importacaoLog);
                 await ProcessarArquivoAsync(arquivo.OpenReadStream(), importacaoLogDto, anoLetivo);
+                await mediator.Send(new SolicitarConsolidacaoProficienciaIdepCommand(anoLetivo));
             }
             return ImportacaoLogRetornoDto.RetornarSucesso(MensagemNegocioComuns.ARQUIVO_IMPORTADO_COM_SUCESSO, importacaoLog.Id);
         }
@@ -76,8 +79,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Proficiencia
                     try
                     {
                         var codigoEOLEscola = planilha.Cell(linha, 1).Value.ToString().Trim();
-                        int.TryParse(planilha.Cell(linha, 2).Value.ToString().Trim(), out int serieAno);
-                        string componenteCurricular = planilha.Cell(linha, 3).Value.ToString().Trim();
+                        short.TryParse(planilha.Cell(linha, 2).Value.ToString().Trim(), out var serieAno);
+                        var componenteCurricular = planilha.Cell(linha, 3).Value.ToString().Trim();
                         decimal.TryParse(planilha.Cell(linha, 4).Value.ToString().Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out var proficiencia);
 
                         var dto = new ProficienciaIdepDto(serieAno, codigoEOLEscola, anoLetivo, componenteCurricular, proficiencia);
@@ -114,10 +117,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Proficiencia
 
         private async Task<IEnumerable<Task>> SalvarArquivoProficienciaIdepEmLote(List<ProficienciaIdepDto> lista, long importacaoLogId)
         {
-            var serieAnosValidos = new int[] {
-                (int)SerieAnoIdepEnum.AnosIniciais,
-                (int)SerieAnoIdepEnum.AnosFinais,
-                (int)SerieAnoIdebEnum.EnsinoMedio
+            var serieAnosValidos = new SerieAnoIndiceDesenvolvimentoEnum[] {
+                SerieAnoIndiceDesenvolvimentoEnum.AnosIniciais,
+                SerieAnoIndiceDesenvolvimentoEnum.AnosFinais
             };
 
             foreach (var dto in lista)
@@ -153,13 +155,19 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Proficiencia
                         }
                     }
 
-                    if (String.IsNullOrEmpty(dto.ComponenteCurricular))
+                    if (string.IsNullOrWhiteSpace(dto.ComponenteCurricular) || !short.TryParse(dto.ComponenteCurricular, out var compId))
                     {
                         SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Componente curricular inválido");
                         continue;
                     }
 
-                    mediator.Send(new ExcluirImportacaoProficienciaIdepPorAnoEscolaSerieCommand(dto.AnoLetivo, dto.CodigoEOLEscola, dto.SerieAno, dto.ComponenteCurricular)).GetAwaiter().GetResult();
+                    if (!Enum.IsDefined(typeof(ComponenteCurricularEnum), compId))
+                    {
+                        SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Componente curricular inválido");
+                        continue;
+                    }
+
+                    mediator.Send(new ExcluirImportacaoProficienciaIdepCommand(dto.AnoLetivo, dto.CodigoEOLEscola, dto.SerieAno, (ComponenteCurricularEnum)compId)).GetAwaiter().GetResult();
                     mediator.Send(new SalvarImportacaoProficienciaIdepCommand(dto)).GetAwaiter().GetResult();
                 }
                 catch (Exception ex)

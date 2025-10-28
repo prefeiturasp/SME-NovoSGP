@@ -1,12 +1,11 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using SME.SGP.Dominio.Enumerados;
 
-namespace SME.SGP.Dominio
+namespace SME.SGP.Dominio.Entidades
 {
-    [ExcludeFromCodeCoverage]
     public class Ideb : EntidadeBase
     {
         public int AnoLetivo { get; set; }
-        public int SerieAno { get; set; }
+        public SerieAnoIndiceDesenvolvimentoEnum SerieAno { get; set; }
         public string CodigoEOLEscola { get; set; }
         public decimal Nota { get; set; }
     }

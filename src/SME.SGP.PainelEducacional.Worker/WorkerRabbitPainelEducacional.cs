@@ -46,6 +46,8 @@ namespace SME.SGP.PainelEducacional.Worker
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarReclassificacaoPainelEducacional, new ComandoRabbit("Consolidar Reclassificação para o Painel Educacional", typeof(IConsolidarReclassificacaoPainelEducacionalUseCase)));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarFrequenciaDiariaPainelEducacional, new ComandoRabbit("Consolidar frequência diária para o Painel Educacional", typeof(IConsolidarFrequenciaDiariaPainelEducacionalUseCase)));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarDistorcaoSerieIdadePainelEducacional, new ComandoRabbit("Consolidar Distorção Idade para o Painel Educacional", typeof(IConsolidarDistorcaoIdadePainelEducacionalUseCase)));
+            Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarProficienciaIdebPainelEducacional, new ComandoRabbit("Consolidar Proficiência Ideb para o Painel Educacional", typeof(IConsolidarProficienciaIdebPainelEducacionalUseCase)));
+            Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarProficienciaIdepPainelEducacional, new ComandoRabbit("Consolidar Proficiência Idep para o Painel Educacional", typeof(IConsolidarProficienciaIdepPainelEducacionalUseCase)));
         }
     }
 }

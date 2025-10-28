@@ -1,40 +1,37 @@
-﻿using SME.SGP.Dominio.Interfaces.Repositorios;
-using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.PainelEducacional;
+﻿using SME.SGP.Dominio.Entidades;
+using SME.SGP.Dominio.Interfaces.Repositorios;
+using SME.SGP.Infra.Interfaces;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
+    [ExcludeFromCodeCoverage]
     public class RepositorioPainelEducacionalProficienciaIdep : IRepositorioPainelEducacionalProficienciaIdep
     {
-        private readonly ISgpContext database;
-        public RepositorioPainelEducacionalProficienciaIdep(ISgpContext database)
+        private readonly ISgpContextConsultas database;
+        public RepositorioPainelEducacionalProficienciaIdep(ISgpContextConsultas database)
         {
             this.database = database;
         }
 
-        public async Task<IEnumerable<ProficienciaIdepAgrupadaDto>> ObterProficienciaIdep(int anoLetivo, string codigoUe)
+        public async Task<IEnumerable<PainelEducacionalConsolidacaoProficienciaIdepUe>> ObterConsolidacaoPorAnoVisaoUeAsync(int limiteAnoLetivo, int anoLetivo, string codigoUe)
         {
-            int anoMinimo = 2019;
-
-            var sql = $@"SELECT ano_letivo AS AnoLetivo,
-                           componente_curricular AS ComponenteCurricular,
-                           boletim AS Boletim,
-                           serie_ano AS EtapaEnsino,
-                           AVG(proficiencia) AS ProficienciaMedia
-                           FROM proficiencia_idep
-                           WHERE ano_letivo >= @anoMinimo";
-
-            if (anoLetivo > 0)
-                sql += " AND ano_letivo = @anoLetivo ";
-
-            if (!string.IsNullOrWhiteSpace(codigoUe))
-                sql += " AND codigo_eol_escola = @codigoUe ";
-
-            sql += $@"GROUP BY ano_letivo, componente_curricular, boletim, serie_ano";
-
-            return await database.QueryAsync<ProficienciaIdepAgrupadaDto>(sql, new { anoMinimo, anoLetivo, codigoUe });
+            const string query = @"
+                SELECT ano_letivo as AnoLetivo,
+                       serie_ano as SerieAno,
+                       codigo_ue as CodigoUe,
+                       nota,
+                         AS ComponenteCurricularId,
+                       proficiencia,
+                       boletim
+                  FROM painel_educacional_consolidacao_proficiencia_idep_ue
+                 WHERE ano_letivo >= @limiteAnoLetivo 
+                   and codigo_ue = @codigoUe
+                   and (@anoLetivo = 0 OR ano_letivo = @anoLetivo)
+                 ORDER BY serie_ano, componente_curricular_id;";
+            return await database.QueryAsync<PainelEducacionalConsolidacaoProficienciaIdepUe>(query, new { limiteAnoLetivo, codigoUe, anoLetivo });
         }
     }
 }
