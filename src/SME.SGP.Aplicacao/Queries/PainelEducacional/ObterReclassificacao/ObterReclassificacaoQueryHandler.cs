@@ -35,35 +35,30 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterReclassificacao
             if (dadosRaw == null || !dadosRaw.Any())
                 return Enumerable.Empty<PainelEducacionalReclassificacaoDto>();
 
-            var modalidadesAgrupadas = dadosRaw
+            return dadosRaw
                 .GroupBy(x => x.CodigoModalidade)
-                .Select(grupo => new ModalidadeReclassificacaoDto
+                .Select(modalidadeGrupo => new PainelEducacionalReclassificacaoDto
                 {
-                    Modalidade = new ModalidadeReclassificacaoArrayDto
-                    {
-                        NomeModalidade = ObterNomeModalidade(grupo.Key, grupo.First().Nome),
-                        AnoTurma = grupo.First().AnoTurma,
-                        QuantidadeAlunos = grupo.Sum(x => x.QuantidadeAlunos)
-                    }
+                    Modalidade = ObterNomeModalidade(modalidadeGrupo.Key, modalidadeGrupo.First().Nome),
+                    SerieAno = modalidadeGrupo
+                        .GroupBy(x => x.AnoTurma)
+                        .Select(anoGrupo => new SerieAnoReclassificacaoDto
+                        {
+                            AnoTurma = anoGrupo.Key,
+                            QuantidadeAlunos = anoGrupo.Sum(x => x.QuantidadeAlunos)
+                        })
+                        .OrderBy(x => x.AnoTurma)
+                        .ToList()
                 })
-                .OrderBy(x => x.Modalidade.AnoTurma);
-
-            return new[]
-            {
-                new PainelEducacionalReclassificacaoDto
-                {
-                    Modalidades = modalidadesAgrupadas
-                }
-            };
+                .OrderBy(x => x.Modalidade)
+                .ToList();
         }
 
         private static string ObterNomeModalidade(string codigoModalidade, string nomeFromDatabase)
         {
-            // Se o nome já vem do banco de dados, usa ele
             if (!string.IsNullOrWhiteSpace(nomeFromDatabase))
                 return nomeFromDatabase;
 
-            // Fallback: tenta converter o código da modalidade para o nome do enum
             if (int.TryParse(codigoModalidade, out var modalidadeCodigo))
             {
                 if (Enum.IsDefined(typeof(Modalidade), modalidadeCodigo))
