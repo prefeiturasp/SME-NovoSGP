@@ -1293,25 +1293,18 @@ namespace SME.SGP.Api.Teste.Controllers
             {
                 new PainelEducacionalReclassificacaoDto
                 {
-                    Modalidades = new List<ModalidadeReclassificacaoDto>
+                    Modalidade = "Ensino Fundamental",
+                    SerieAno = new List<SerieAnoReclassificacaoDto>
                     {
-                        new ModalidadeReclassificacaoDto
+                        new SerieAnoReclassificacaoDto
                         {
-                            Modalidade = new ModalidadeReclassificacaoArrayDto
-                            {
-                                NomeModalidade = "Ensino Fundamental",
-                                AnoTurma = 5,
-                                QuantidadeAlunos = 15
-                            }
+                            AnoTurma = 5,
+                            QuantidadeAlunos = 15
                         },
-                        new ModalidadeReclassificacaoDto
+                        new SerieAnoReclassificacaoDto
                         {
-                            Modalidade = new ModalidadeReclassificacaoArrayDto
-                            {
-                                NomeModalidade = "Ensino Fundamental",
-                                AnoTurma = 6,
-                                QuantidadeAlunos = 8
-                            }
+                            AnoTurma = 6,
+                            QuantidadeAlunos = 8
                         }
                     }
                 }
@@ -1329,21 +1322,20 @@ namespace SME.SGP.Api.Teste.Controllers
 
             Assert.Single(retorno);
             var item = retorno.First();
-            Assert.NotNull(item.Modalidades);
-            Assert.Equal(2, item.Modalidades.Count());
+            Assert.Equal("Ensino Fundamental", item.Modalidade);
+            Assert.NotNull(item.SerieAno);
+            Assert.Equal(2, item.SerieAno.Count());
 
-            Assert.Collection(item.Modalidades,
-                modalidade =>
+            Assert.Collection(item.SerieAno,
+                serieAno =>
                 {
-                    Assert.Equal("Ensino Fundamental", modalidade.Modalidade.NomeModalidade);
-                    Assert.Equal(5, modalidade.Modalidade.AnoTurma);
-                    Assert.Equal(15, modalidade.Modalidade.QuantidadeAlunos);
+                    Assert.Equal(5, serieAno.AnoTurma);
+                    Assert.Equal(15, serieAno.QuantidadeAlunos);
                 },
-                modalidade =>
+                serieAno =>
                 {
-                    Assert.Equal("Ensino Fundamental", modalidade.Modalidade.NomeModalidade);
-                    Assert.Equal(6, modalidade.Modalidade.AnoTurma);
-                    Assert.Equal(8, modalidade.Modalidade.QuantidadeAlunos);
+                    Assert.Equal(6, serieAno.AnoTurma);
+                    Assert.Equal(8, serieAno.QuantidadeAlunos);
                 });
 
             mockUseCase.Verify(x => x.ObterReclassificacao(
@@ -1402,16 +1394,13 @@ namespace SME.SGP.Api.Teste.Controllers
             {
                 new PainelEducacionalReclassificacaoDto
                 {
-                    Modalidades = new List<ModalidadeReclassificacaoDto>
+                    Modalidade = "Ensino Fundamental",
+                    SerieAno = new List<SerieAnoReclassificacaoDto>
                     {
-                        new ModalidadeReclassificacaoDto
+                        new SerieAnoReclassificacaoDto
                         {
-                            Modalidade = new ModalidadeReclassificacaoArrayDto
-                            {
-                                NomeModalidade = "Ensino Fundamental",
-                                AnoTurma = 7,
-                                QuantidadeAlunos = 25
-                            }
+                            AnoTurma = 7,
+                            QuantidadeAlunos = 25
                         }
                     }
                 }
@@ -1429,13 +1418,13 @@ namespace SME.SGP.Api.Teste.Controllers
 
             Assert.Single(retorno);
             var item = retorno.First();
-            Assert.NotNull(item.Modalidades);
-            Assert.Single(item.Modalidades);
+            Assert.Equal("Ensino Fundamental", item.Modalidade);
+            Assert.NotNull(item.SerieAno);
+            Assert.Single(item.SerieAno);
 
-            var modalidade = item.Modalidades.First();
-            Assert.Equal("Ensino Fundamental", modalidade.Modalidade.NomeModalidade);
-            Assert.Equal(7, modalidade.Modalidade.AnoTurma);
-            Assert.Equal(25, modalidade.Modalidade.QuantidadeAlunos);
+            var serieAno = item.SerieAno.First();
+            Assert.Equal(7, serieAno.AnoTurma);
+            Assert.Equal(25, serieAno.QuantidadeAlunos);
 
             mockUseCase.Verify(x => x.ObterReclassificacao(
                 It.Is<string>(d => d == null),
@@ -1460,34 +1449,37 @@ namespace SME.SGP.Api.Teste.Controllers
             {
                 new PainelEducacionalReclassificacaoDto
                 {
-                    Modalidades = new List<ModalidadeReclassificacaoDto>
+                    Modalidade = "Ensino Fundamental",
+                    SerieAno = new List<SerieAnoReclassificacaoDto>
                     {
-                        new ModalidadeReclassificacaoDto
+                        new SerieAnoReclassificacaoDto
                         {
-                            Modalidade = new ModalidadeReclassificacaoArrayDto
-                            {
-                                NomeModalidade = "Ensino Fundamental",
-                                AnoTurma = 9,
-                                QuantidadeAlunos = 32
-                            }
-                        },
-                        new ModalidadeReclassificacaoDto
+                            AnoTurma = 9,
+                            QuantidadeAlunos = 32
+                        }
+                    }
+                },
+                new PainelEducacionalReclassificacaoDto
+                {
+                    Modalidade = "EJA",
+                    SerieAno = new List<SerieAnoReclassificacaoDto>
+                    {
+                        new SerieAnoReclassificacaoDto
                         {
-                            Modalidade = new ModalidadeReclassificacaoArrayDto
-                            {
-                                NomeModalidade = "EJA",
-                                AnoTurma = 9,
-                                QuantidadeAlunos = 12
-                            }
-                        },
-                        new ModalidadeReclassificacaoDto
+                            AnoTurma = 9,
+                            QuantidadeAlunos = 12
+                        }
+                    }
+                },
+                new PainelEducacionalReclassificacaoDto
+                {
+                    Modalidade = "Ensino Médio",
+                    SerieAno = new List<SerieAnoReclassificacaoDto>
+                    {
+                        new SerieAnoReclassificacaoDto
                         {
-                            Modalidade = new ModalidadeReclassificacaoArrayDto
-                            {
-                                NomeModalidade = "Ensino Médio",
-                                AnoTurma = 1,
-                                QuantidadeAlunos = 5
-                            }
+                            AnoTurma = 1,
+                            QuantidadeAlunos = 5
                         }
                     }
                 }
@@ -1503,29 +1495,32 @@ namespace SME.SGP.Api.Teste.Controllers
             var okResult = Assert.IsType<OkObjectResult>(result);
             var retorno = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalReclassificacaoDto>>(okResult.Value);
 
-            Assert.Single(retorno);
-            var item = retorno.First();
-            Assert.NotNull(item.Modalidades);
-            Assert.Equal(3, item.Modalidades.Count());
+            Assert.Equal(3, retorno.Count());
 
-            Assert.Collection(item.Modalidades,
+            Assert.Collection(retorno,
                 modalidade =>
                 {
-                    Assert.Equal("Ensino Fundamental", modalidade.Modalidade.NomeModalidade);
-                    Assert.Equal(9, modalidade.Modalidade.AnoTurma);
-                    Assert.Equal(32, modalidade.Modalidade.QuantidadeAlunos);
+                    Assert.Equal("Ensino Fundamental", modalidade.Modalidade);
+                    Assert.Single(modalidade.SerieAno);
+                    var serieAno = modalidade.SerieAno.First();
+                    Assert.Equal(9, serieAno.AnoTurma);
+                    Assert.Equal(32, serieAno.QuantidadeAlunos);
                 },
                 modalidade =>
                 {
-                    Assert.Equal("EJA", modalidade.Modalidade.NomeModalidade);
-                    Assert.Equal(9, modalidade.Modalidade.AnoTurma);
-                    Assert.Equal(12, modalidade.Modalidade.QuantidadeAlunos);
+                    Assert.Equal("EJA", modalidade.Modalidade);
+                    Assert.Single(modalidade.SerieAno);
+                    var serieAno = modalidade.SerieAno.First();
+                    Assert.Equal(9, serieAno.AnoTurma);
+                    Assert.Equal(12, serieAno.QuantidadeAlunos);
                 },
                 modalidade =>
                 {
-                    Assert.Equal("Ensino Médio", modalidade.Modalidade.NomeModalidade);
-                    Assert.Equal(1, modalidade.Modalidade.AnoTurma);
-                    Assert.Equal(5, modalidade.Modalidade.QuantidadeAlunos);
+                    Assert.Equal("Ensino Médio", modalidade.Modalidade);
+                    Assert.Single(modalidade.SerieAno);
+                    var serieAno = modalidade.SerieAno.First();
+                    Assert.Equal(1, serieAno.AnoTurma);
+                    Assert.Equal(5, serieAno.QuantidadeAlunos);
                 });
 
             mockUseCase.Verify(x => x.ObterReclassificacao(
@@ -1551,16 +1546,13 @@ namespace SME.SGP.Api.Teste.Controllers
             {
                 new PainelEducacionalReclassificacaoDto
                 {
-                    Modalidades = new List<ModalidadeReclassificacaoDto>
+                    Modalidade = "Ensino Fundamental",
+                    SerieAno = new List<SerieAnoReclassificacaoDto>
                     {
-                        new ModalidadeReclassificacaoDto
+                        new SerieAnoReclassificacaoDto
                         {
-                            Modalidade = new ModalidadeReclassificacaoArrayDto
-                            {
-                                NomeModalidade = "Ensino Fundamental",
-                                AnoTurma = 1,
-                                QuantidadeAlunos = 28
-                            }
+                            AnoTurma = 1,
+                            QuantidadeAlunos = 28
                         }
                     }
                 }
@@ -1596,16 +1588,13 @@ namespace SME.SGP.Api.Teste.Controllers
             {
                 new PainelEducacionalReclassificacaoDto
                 {
-                    Modalidades = new List<ModalidadeReclassificacaoDto>
+                    Modalidade = "Ensino Fundamental",
+                    SerieAno = new List<SerieAnoReclassificacaoDto>
                     {
-                        new ModalidadeReclassificacaoDto
+                        new SerieAnoReclassificacaoDto
                         {
-                            Modalidade = new ModalidadeReclassificacaoArrayDto
-                            {
-                                NomeModalidade = "Ensino Fundamental",
-                                AnoTurma = 0,
-                                QuantidadeAlunos = 150
-                            }
+                            AnoTurma = 0,
+                            QuantidadeAlunos = 150
                         }
                     }
                 }
@@ -1623,13 +1612,13 @@ namespace SME.SGP.Api.Teste.Controllers
 
             Assert.Single(retorno);
             var item = retorno.First();
-            Assert.NotNull(item.Modalidades);
-            Assert.Single(item.Modalidades);
+            Assert.Equal("Ensino Fundamental", item.Modalidade);
+            Assert.NotNull(item.SerieAno);
+            Assert.Single(item.SerieAno);
 
-            var modalidade = item.Modalidades.First();
-            Assert.Equal("Ensino Fundamental", modalidade.Modalidade.NomeModalidade);
-            Assert.Equal(0, modalidade.Modalidade.AnoTurma);
-            Assert.Equal(150, modalidade.Modalidade.QuantidadeAlunos);
+            var serieAno = item.SerieAno.First();
+            Assert.Equal(0, serieAno.AnoTurma);
+            Assert.Equal(150, serieAno.QuantidadeAlunos);
 
             mockUseCase.Verify(x => x.ObterReclassificacao(
                 It.Is<string>(d => d == "DRE111"),
