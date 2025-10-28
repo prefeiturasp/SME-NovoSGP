@@ -181,21 +181,28 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterNotasVisaoUe([FromQuery] FiltroPainelEducacionalNotasVisaoUe filtro, [FromServices] IConsultasNotasVisaoUeUseCase consultasNotasUseCase)
-     => Ok(await consultasNotasUseCase.ObterNotasVisaoUe(filtro.CodigoUe, filtro.AnoLetivo, filtro.Bimestre, filtro.Modalidade));
+            => Ok(await consultasNotasUseCase.ObterNotasVisaoUe(filtro.CodigoUe, filtro.AnoLetivo, filtro.Bimestre, filtro.Modalidade));
+
+        [HttpGet("notas-ue/modalidades")]
+        [ProducesResponseType(typeof(PaginacaoNotaResultadoDto<TurmaNotasVisaoUeDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterModalidadesNotasVisaoUe([FromQuery] int anoLetivo, string codigoUe, int bimestre, [FromServices] IConsultasModalidadesNotasVisaoUeUseCase consultasNotasUseCase)
+          => Ok(await consultasNotasUseCase.ObterModalidadesNotasVisaoUe(anoLetivo, codigoUe, bimestre));
 
         [HttpGet("reclassificacao")]
         [ProducesResponseType(typeof(PainelEducacionalReclassificacaoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterReclassificacao([FromQuery] FiltroPainelEducacionalReclassificacao filtro, [FromServices] IConsultasReclassificacaoPainelEducacionalUseCase consultasReclassificacaoUseCase)
-     => Ok(await consultasReclassificacaoUseCase.ObterReclassificacao(filtro.CodigoDre, filtro.CodigoUe, filtro.AnoLetivo, filtro.AnoTurma));
+              => Ok(await consultasReclassificacaoUseCase.ObterReclassificacao(filtro.CodigoDre, filtro.CodigoUe, filtro.AnoLetivo, filtro.AnoTurma));
 
         [HttpGet("frequencia-semanal-ue")]
         [ProducesResponseType(typeof(PainelEducacionalFrequenciaSemanalUeDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterFrequenciaSemanalUe([FromQuery] FiltroFrequenciaSemanalUe filtro, [FromServices] IConsultasFrequenciaSemanalUeUseCase consultasFrequenciaSemanalUeCase)
-     => Ok(await consultasFrequenciaSemanalUeCase.ObterFrequenciaSemanalUe(filtro.CodigoUe, filtro.AnoLetivo));
+             => Ok(await consultasFrequenciaSemanalUeCase.ObterFrequenciaSemanalUe(filtro.CodigoUe, filtro.AnoLetivo));
 
         [HttpGet("distorcao-serie-idade")]
         [ProducesResponseType(typeof(PainelEducacionalDistorcaoIdadeDto), 200)]
