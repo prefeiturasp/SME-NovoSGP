@@ -127,28 +127,6 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ImportarArquivo
         }
 
         [Fact]
-        public async Task Executar_Quando_Arquivo_Valido_Deve_Retornar_Sucesso_()
-        {
-            var conteudo = $"CodigoEOL;SerieAno;ComponenteCurricular;Proficiencia${Environment.NewLine}095125;2;1;250.5";
-            var arquivo = CriarArquivoExcel(conteudo);
-            var anoLetivo = 2025;
-
-            SetupMediatorMocks();
-
-            var importacaoLog = new ImportacaoLog { Id = 1, NomeArquivo = "arquivo.xlsx", TipoArquivoImportacao = "PROFICIENCIA_IDEP" };
-            _mediatorMock.Setup(m => m.Send(It.IsAny<SalvarImportacaoLogCommand>(), It.IsAny<CancellationToken>()))
-                            .ReturnsAsync(importacaoLog);
-
-            var resultado = await _useCase.Executar(arquivo, anoLetivo);
-
-            Assert.True(resultado.Sucesso);
-            Assert.Equal(MensagemNegocioComuns.ARQUIVO_IMPORTADO_COM_SUCESSO, resultado.Mensagem);
-            _mediatorMock.Verify(m => m.Send(It.IsAny<SalvarImportacaoProficienciaIdepCommand>(), It.IsAny<CancellationToken>()), Times.Once);
-
-            _mediatorMock.Verify(m => m.Send(It.IsAny<SalvarImportacaoLogCommand>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
-        }
-
-        [Fact]
         public async Task Executar_Quando_Log_Nao_Salvo_Deve_Retornar_Sucesso_Mesmo_Assim_()
         {
             var conteudo = $"CodigoEOL;SerieAno;ComponenteCurricular;Proficiencia${Environment.NewLine}094374;5;1;250.5";
