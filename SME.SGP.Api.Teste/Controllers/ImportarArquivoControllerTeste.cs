@@ -7,6 +7,7 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.FluenciaLeitora;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Ideb;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Idep;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Proficiencia;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.ImportarArquivo;
@@ -149,5 +150,44 @@ namespace SME.SGP.Api.Teste.Controllers
         }
         #endregion
 
+        #region ImportarProficienciaIdep
+        [Fact]
+        public async Task ImportarProficienciaIdep_DeveRetornarOk_ComResultadoEsperado()
+        {
+            // Arrange
+            var arquivoMock = new Mock<IFormFile>();
+            var anoLetivo = DateTime.Now.Year;
+            var resultadoEsperado = new ImportacaoLogRetornoDto { Sucesso = true, Mensagem = MensagemNegocioComuns.ARQUIVO_IMPORTADO_COM_SUCESSO };
+            var importacaoProficienciaIdepUseCaseMock = new Mock<IImportacaoProficienciaIdepUseCase>();
+            importacaoProficienciaIdepUseCaseMock
+                .Setup(u => u.Executar(arquivoMock.Object, anoLetivo))
+                .ReturnsAsync(resultadoEsperado);
+            // Act
+            var resultado = await _controller.ImportarProficienciaIdep(arquivoMock.Object, anoLetivo, importacaoProficienciaIdepUseCaseMock.Object);
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(resultado);
+            Assert.Equal(resultadoEsperado, okResult.Value);
+        }
+        #endregion ImportarProficienciaIdep
+
+        #region ImportarProficienciaIdeb
+        [Fact]
+        public async Task ImportarProficienciaIdeb_DeveRetornarOk_ComResultadoEsperado()
+        {
+            // Arrange
+            var arquivoMock = new Mock<IFormFile>();
+            var anoLetivo = DateTime.Now.Year;
+            var resultadoEsperado = new ImportacaoLogRetornoDto { Sucesso = true, Mensagem = MensagemNegocioComuns.ARQUIVO_IMPORTADO_COM_SUCESSO };
+            var importacaoProficienciaIdebUseCaseMock = new Mock<IImportacaoProficienciaIdebUseCase>();
+            importacaoProficienciaIdebUseCaseMock
+                .Setup(u => u.Executar(arquivoMock.Object, anoLetivo))
+                .ReturnsAsync(resultadoEsperado);
+            // Act
+            var resultado = await _controller.ImportarProficienciaIdeb(arquivoMock.Object, anoLetivo, importacaoProficienciaIdebUseCaseMock.Object);
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(resultado);
+            Assert.Equal(resultadoEsperado, okResult.Value);
+        }
+        #endregion ImportarProficienciaIdeb
     }
 }
