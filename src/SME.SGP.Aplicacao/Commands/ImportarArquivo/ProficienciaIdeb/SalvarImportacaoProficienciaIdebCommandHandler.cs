@@ -23,13 +23,13 @@ namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.ProficienciaIdeb
             return proficienciaIdeb.Id > 0;
         }
 
-        private Dominio.Entidades.ProficienciaIdeb MapearParaEntidade(SalvarImportacaoProficienciaIdebCommand request)
+        private static Dominio.Entidades.ProficienciaIdeb MapearParaEntidade(SalvarImportacaoProficienciaIdebCommand request)
            => new Dominio.Entidades.ProficienciaIdeb()
            {
                Id = request.ProficienciaIdeb.Id != null ? request.ProficienciaIdeb.Id.Value : 0,
                AnoLetivo = request.ProficienciaIdeb.AnoLetivo,
                SerieAno = request.ProficienciaIdeb.SerieAno,
-               CodigoEOLEscola = request.ProficienciaIdeb.CodigoEOLEscola,
+               CodigoUe = request.ProficienciaIdeb.CodigoEOLEscola,
                Boletim = request.ProficienciaIdeb.Boletim,
                Proficiencia = request.ProficienciaIdeb.Proficiencia,
                ComponenteCurricular = request.ProficienciaIdeb.ComponenteCurricular,

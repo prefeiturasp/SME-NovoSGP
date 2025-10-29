@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ImportarArquivo
                              .ReturnsAsync((Ue)null);
             }
 
-            _mediatorMock.Setup(m => m.Send(It.IsAny<ExcluirImportacaoProficienciaIdepPorAnoEscolaSerieCommand>(), It.IsAny<CancellationToken>()))
+            _mediatorMock.Setup(m => m.Send(It.IsAny<ExcluirImportacaoProficienciaIdepCommand>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(true);
 
             _mediatorMock.Setup(m => m.Send(It.IsAny<SalvarImportacaoProficienciaIdepCommand>(), It.IsAny<CancellationToken>()))

@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao.Teste.Commands.ImportarArquivo.ProficienciaIdep
             var exceptionMessage = "Erro no banco de dados";
 
             _repositorioProficienciaIdepMock
-                .Setup(x => x.SalvarAsync(It.IsAny<Dominio.ProficienciaIdep>()))
+                .Setup(x => x.SalvarAsync(It.IsAny<Dominio.Entidades.ProficienciaIdep>()))
                 .ThrowsAsync(new Exception(exceptionMessage));
 
             var exception = await Assert.ThrowsAsync<Exception>(

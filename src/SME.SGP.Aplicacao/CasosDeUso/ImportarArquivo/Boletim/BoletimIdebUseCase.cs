@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
 using SME.SGP.Aplicacao.Commands.ImportarArquivo.ProficienciaIdeb;
+using SME.SGP.Aplicacao.Commands.PainelEducacional.SolicitarConsolidacaoProficienciaIdeb;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Boletim;
 using SME.SGP.Aplicacao.Queries.ProficienciaIdeb;
 using SME.SGP.Dominio;
@@ -8,6 +9,7 @@ using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.ImportarArquivo;
+using SME.SGP.Infra.Dtos.PainelEducacional.ProficienciaIdeb;
 using SME.SGP.Infra.Enumerados;
 using System;
 using System.Collections.Generic;
@@ -38,6 +40,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Boletim
             {
                 var importacaoLogDto = MapearParaDto(importacaoLog);
                 var sucesso = await ProcessarArquivoAsync(boletins, importacaoLogDto, anoLetivo);
+                await mediator.Send(new SolicitarConsolidacaoProficienciaIdebCommand(anoLetivo));
                 return sucesso
                         ? ImportacaoLogRetornoDto.RetornarSucesso(MensagemNegocioComuns.ARQUIVO_IMPORTADO_COM_SUCESSO)
                         : ImportacaoLogRetornoDto.RetornarFalha("Falha ao processar importação de boletins.");
@@ -79,7 +82,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Boletim
                         continue;
                     }
 
-                    var proficiencia = proficienciaIdebs?.Where(p => p.CodigoEOLEscola == codigoUe)?.FirstOrDefault();
+                    var proficiencia = proficienciaIdebs?.Where(p => p.CodigoUe == codigoUe)?.FirstOrDefault();
                     if (proficiencia == null)
                     {
                         SalvarErroLinha(importacaoLogDto.Id, processadosComFalha.Count + 1, $"Não existe proficiência cadastrada para o ano letivo {anoLetivo} com o nome do arquivo '{boletim.FileName}'.");
@@ -94,7 +97,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Boletim
                         var proficienciaDto = new ProficienciaIdebDto();
 
                         proficienciaDto.Id = proficiencia.Id;
-                        proficienciaDto.CodigoEOLEscola = proficiencia.CodigoEOLEscola;
+                        proficienciaDto.CodigoEOLEscola = proficiencia.CodigoUe;
                         proficienciaDto.AnoLetivo = proficiencia.AnoLetivo;
                         proficienciaDto.Boletim = enderecoArquivo;
                         proficienciaDto.SerieAno = proficiencia.SerieAno;

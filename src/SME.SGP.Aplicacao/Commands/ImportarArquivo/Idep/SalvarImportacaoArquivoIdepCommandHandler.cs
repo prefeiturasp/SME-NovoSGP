@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Commands.ImportarArquivo.Idep;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using System;
 using System.Threading;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.Ideb
 {
-    public class SalvarImportacaoArquivoIdepCommandHandler : IRequestHandler<SalvarImportacaoArquivoIdepCommand, Dominio.Idep>
+    public class SalvarImportacaoArquivoIdepCommandHandler : IRequestHandler<SalvarImportacaoArquivoIdepCommand, Dominio.Entidades.Idep>
     {
         private readonly IRepositorioIdep repositorioIdep;
         public SalvarImportacaoArquivoIdepCommandHandler(IRepositorioIdep repositorioIdep)
@@ -15,10 +16,10 @@ namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.Ideb
             this.repositorioIdep = repositorioIdep ?? throw new ArgumentNullException(nameof(repositorioIdep));
         }
 
-        public async Task<Dominio.Idep> Handle(SalvarImportacaoArquivoIdepCommand request, CancellationToken cancellationToken)
+        public async Task<Dominio.Entidades.Idep> Handle(SalvarImportacaoArquivoIdepCommand request, CancellationToken cancellationToken)
         {
             var dto = MapearParaEntidade(request);
-            var registroAtual = await repositorioIdep.ObterRegistroIdepAsync(dto.AnoLetivo, dto.SerieAno, dto.CodigoEOLEscola);
+            var registroAtual = await repositorioIdep.ObterRegistroIdepAsync(dto.AnoLetivo, (short)dto.SerieAno, dto.CodigoEOLEscola);
 
             if (registroAtual != null)
             {
@@ -31,11 +32,11 @@ namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.Ideb
             return dto;
         }
 
-        private Dominio.Idep MapearParaEntidade(SalvarImportacaoArquivoIdepCommand request)
-        => new Dominio.Idep()
+        private Dominio.Entidades.Idep MapearParaEntidade(SalvarImportacaoArquivoIdepCommand request)
+        => new Dominio.Entidades.Idep()
         {
             AnoLetivo = request.ArquivoIdep.AnoLetivo,
-            SerieAno = request.ArquivoIdep.SerieAno,
+            SerieAno = (SerieAnoIndiceDesenvolvimentoEnum)request.ArquivoIdep.SerieAno,
             CodigoEOLEscola = request.ArquivoIdep.CodigoEOLEscola,
             Nota = request.ArquivoIdep.Nota,
         };

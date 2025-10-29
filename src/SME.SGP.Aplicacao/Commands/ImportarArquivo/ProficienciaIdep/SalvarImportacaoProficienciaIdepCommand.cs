@@ -24,9 +24,6 @@ namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.ProficienciaIdep
                     .NotEmpty().WithMessage("Código EOL da UE inválido")
                     .Must(x => !string.IsNullOrWhiteSpace(x)).WithMessage("Código EOL da UE inválido");
 
-                RuleFor(x => x.ProficienciaIdep.SerieAno)
-                    .GreaterThan(0).WithMessage("Serie/Ano inválido");
-
                 RuleFor(x => x.ProficienciaIdep.Proficiencia)
                     .GreaterThan(0).WithMessage("Proficiencia inválido");
             }
