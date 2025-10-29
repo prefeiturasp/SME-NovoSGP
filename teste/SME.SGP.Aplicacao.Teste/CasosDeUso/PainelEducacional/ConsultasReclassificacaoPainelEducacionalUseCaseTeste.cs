@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                         new SerieAnoReclassificacaoDto
                         {
                             AnoTurma = 9,
-                            QuantidadeAlunos = 15
+                            QuantidadeAlunos = 10
                         }
                     }
                 }

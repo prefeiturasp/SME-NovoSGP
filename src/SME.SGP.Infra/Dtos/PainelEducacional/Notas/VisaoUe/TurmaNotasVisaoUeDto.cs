@@ -6,6 +6,7 @@ namespace SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoUe
     {
         public string Nome { get; set; }
         public int Modalidade { get; set; }
+        public string ModalidadeDescricao { get; set; }
         public IEnumerable<ComponenteCurricularNotasDto> ComponentesCurriculares { get; set; }
     }
 }
