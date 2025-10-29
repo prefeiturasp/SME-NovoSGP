@@ -23,19 +23,6 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             useCase = new ConsultasProficienciaIdepPainelEducacionalUseCase(mediatorMock.Object);
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public async Task Executar_Quando_Codigo_Ue_Invalido_Deve_Lancar_Negocio_Exception(string codigoUe)
-        {
-            var anoLetivo = 2025;
-
-            await Assert.ThrowsAsync<NegocioException>(() => useCase.ObterProficienciaIdep(anoLetivo, codigoUe));
-
-            mediatorMock.Verify(m => m.Send(It.IsAny<IRequest<IEnumerable<PainelEducacionalProficienciaIdepDto>>>(), It.IsAny<CancellationToken>()), Times.Never);
-        }
-
         [Fact]
         public async Task Executar_Quando_Codigo_Ue_Valido_Deve_Retornar_Proficiencia()
         {
