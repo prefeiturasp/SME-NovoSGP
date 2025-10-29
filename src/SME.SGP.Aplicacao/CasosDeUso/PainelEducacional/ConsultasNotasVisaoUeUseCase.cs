@@ -61,6 +61,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                 {
                     Nome = turmaGrupo.Key.AnoTurma,
                     Modalidade = (int)turmaGrupo.Key.Modalidade,
+                    ModalidadeDescricao = turmaGrupo.Key.Modalidade.ObterNome(),
                     ComponentesCurriculares = new List<ComponenteCurricularNotasDto>
                     {
                         new ComponenteCurricularNotasDto

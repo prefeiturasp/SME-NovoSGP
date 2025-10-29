@@ -38,6 +38,10 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNotas.VisaoUe
             RuleFor(c => c.Bimestre)
            .NotEmpty()
            .WithMessage("O bimestre deve ser informado.");
+
+            RuleFor(c => c.Modalidade)
+           .NotEmpty()
+           .WithMessage("Modalidade deve ser informada.");
         }
     }
 }
