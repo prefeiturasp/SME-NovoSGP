@@ -5,7 +5,7 @@ namespace SME.SGP.Dominio.Enumerados
     public enum ComponenteCurricularEnum : short
     {
         [Display(Name = "LP")]
-        Portugues = 139,
+        Portugues = 138,
 
         [Display(Name = "MT")]
         Matematica = 2,
