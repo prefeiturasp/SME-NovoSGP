@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterFrequenciaSemanalUe
                 .Select(grupo => new PainelEducacionalFrequenciaSemanalUeDto
                 {
                     DataAula = grupo.Key,
-                    PercentualFrequencia = grupo.Sum(x => x.PercentualFrequencia)
+                    PercentualFrequencia = grupo.FirstOrDefault().PercentualFrequencia
                 })
                 .OrderBy(x => DateTime.TryParse(x.DataAula, out DateTime data) ? data : DateTime.MinValue);
 
