@@ -70,5 +70,24 @@ namespace SME.SGP.Dados.Repositorios
                 codigoUE
             });
         }
+
+        public async Task<IEnumerable<PendenciaDiarioBordoParaExcluirDto>> ListarPendenciaDiarioBordoParaExcluirPorIdTurma(string turmaId)
+        {
+            const string sql = @" select 
+                                      distinct db.aula_id as aulaId, 
+                                      db.componente_curricular_id as componenteCurricularId
+                                    from 
+                                      pendencia_diario_bordo pdb 
+                                      inner join pendencia p on p.id = pdb.pendencia_id 
+                                      inner join diario_bordo db on db.componente_curricular_id = pdb.componente_curricular_id 
+                                      and db.aula_id = pdb.aula_id 
+                                      inner join turma t on t.id = db.turma_id
+                                    where 
+                                      not p.excluido 
+                                      and not db.excluido 
+                                      and t.turma_id = @turmaId";
+
+            return await database.Conexao.QueryAsync<PendenciaDiarioBordoParaExcluirDto>(sql, new { turmaId });
+        }
     }
 }

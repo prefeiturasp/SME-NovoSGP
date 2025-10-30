@@ -28,8 +28,8 @@ namespace SME.SGP.Aplicacao
 
             if (excluirDto.RecorrenciaAula == RecorrenciaAula.AulaUnica)
             {
-                return await mediator.Send(new ExcluirAulaUnicaCommand(usuarioLogado,
-                                                                       excluirDto.AulaId));
+                return await mediator.Send(new ExcluirAulaUnicaCommand(usuarioLogado, aula));
+
             }
             else
             {

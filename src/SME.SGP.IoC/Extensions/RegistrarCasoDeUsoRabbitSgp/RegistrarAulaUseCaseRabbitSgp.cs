@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.CasosDeUso;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PendenciaDiarioBordo;
 
 namespace SME.SGP.IoC
 {
@@ -45,6 +46,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IPendenciaTurmaComponenteSemAulasPorUeUseCase, PendenciaTurmaComponenteSemAulasPorUeUseCase>();
             services.TryAddScoped<IPendenciaTurmaComponenteSemAulasUseCase, PendenciaTurmaComponenteSemAulasUseCase>();
             services.TryAddScoped<IExcluirAulasRecorrentesTerritorioSaberUseCase, ExcluirAulasRecorrentesTerritorioSaberUseCase>();
+            services.TryAddScoped<IPendenciaDiarioBordoParaExcluirUseCase, PendenciaDiarioBordoParaExcluirUseCase>();
         }
     }
 }

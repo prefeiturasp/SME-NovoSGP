@@ -1,48 +1,108 @@
-﻿using MediatR;
+﻿using Bogus;
+using MediatR;
 using Moq;
-using SME.SGP.Dominio;
+using Newtonsoft.Json;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.Aplicacao.Teste.CasosDeUso
+namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PendenciaDiarioBordo
 {
     public class PendenciaAulaDiarioBordoUseCaseTeste
     {
-        private readonly PendenciaAulaDiarioBordoUseCase pendenciaAulaDiarioBordoUseCase;
-        private readonly Mock<IMediator> mediator;
+        private readonly Mock<IMediator> _mediatorMock;
+        private readonly PendenciaAulaDiarioBordoUseCase _useCase;
+        private readonly Faker _faker;
 
         public PendenciaAulaDiarioBordoUseCaseTeste()
         {
-
-            mediator = new Mock<IMediator>();
-            pendenciaAulaDiarioBordoUseCase = new PendenciaAulaDiarioBordoUseCase(mediator.Object);
+            _mediatorMock = new Mock<IMediator>();
+            _useCase = new PendenciaAulaDiarioBordoUseCase(_mediatorMock.Object);
+            _faker = new Faker("pt_BR");
         }
 
-        [Fact]
-        public async Task Deve_Publicar_Fila_Por_Turma()
+        [Fact(DisplayName = "Deve publicar na fila para cada turma encontrada")]
+        public async Task Executar_DevePublicarNaFilaParaCadaTurmaEncontrada()
         {
+            // Organização
+            var filtro = new DreUeDto(
+                dreId: _faker.Random.Long(1, 10),
+                codigoUe: _faker.Random.AlphaNumeric(10));
+
             var turmas = new List<TurmaDTO>
             {
-                new TurmaDTO()
-                {
-                    TurmaCodigo = "123123",
-                    TurmaId = 111
-                }
+                new TurmaDTO { TurmaId = _faker.Random.Long(1, 1000), TurmaCodigo = _faker.Random.AlphaNumeric(10) },
+                new TurmaDTO { TurmaId = _faker.Random.Long(1, 1000), TurmaCodigo = _faker.Random.AlphaNumeric(10) }
             };
 
-            mediator.Setup(a => a.Send(It.IsAny<ObterTurmasInfantilPorUEQuery>(), It.IsAny<CancellationToken>()))
-              .ReturnsAsync(turmas);
+            var mensagemRabbit = new MensagemRabbit(JsonConvert.SerializeObject(filtro));
+            var anoLetivoCorrente = DateTime.Now.Year;
 
-            mediator.Setup(a => a.Send(It.IsAny<PublicarFilaSgpCommand>(), It.IsAny<CancellationToken>()))
-              .ReturnsAsync(true);
-            // act
-            var anotacao = await pendenciaAulaDiarioBordoUseCase.Executar(new MensagemRabbit("{ 'mensagem': { 'dreId': 4, 'ueId': 101,'CodigoUe':'1'} }"));
+            _mediatorMock.Setup(m => m.Send(It.Is<ObterTurmasInfantilPorUEQuery>(q =>
+                                         q.UeCodigo == filtro.CodigoUe && q.AnoLetivo == anoLetivoCorrente),
+                                         It.IsAny<CancellationToken>()))
+                         .ReturnsAsync(turmas);
 
-        // assert
-        Assert.True(anotacao, "Mensagem publicada na fila corretamente");
+            _mediatorMock.Setup(m => m.Send(It.IsAny<PublicarFilaSgpCommand>(), It.IsAny<CancellationToken>()))
+                         .ReturnsAsync(true);
+
+            // Ação
+            var resultado = await _useCase.Executar(mensagemRabbit);
+
+            // Verificação
+            Assert.True(resultado);
+
+            _mediatorMock.Verify(m => m.Send(It.IsAny<ObterTurmasInfantilPorUEQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+
+            foreach (var turma in turmas)
+            {
+                _mediatorMock.Verify(m => m.Send(
+                    It.Is<PublicarFilaSgpCommand>(c =>
+                        c.Rota == RotasRabbitSgpAula.RotaExecutaPendenciasAulaDiarioBordoTurma),
+                    It.IsAny<CancellationToken>()),
+                    Times.AtLeastOnce);
+            }
+        }
+
+        [Fact(DisplayName = "Não deve publicar na fila quando nenhuma turma for encontrada")]
+        public async Task Executar_NaoDevePublicarNaFilaQuandoNenhumaTurmaForEncontrada()
+        {
+            // Organização
+            var filtro = new DreUeDto(
+                dreId: _faker.Random.Long(1, 10),
+                codigoUe: _faker.Random.AlphaNumeric(10));
+
+            var mensagemRabbit = new MensagemRabbit(JsonConvert.SerializeObject(filtro));
+
+            _mediatorMock.Setup(m => m.Send(It.IsAny<ObterTurmasInfantilPorUEQuery>(), It.IsAny<CancellationToken>()))
+                         .ReturnsAsync(new List<TurmaDTO>()); // Retorna lista vazia
+
+            // Ação
+            var resultado = await _useCase.Executar(mensagemRabbit);
+
+            // Verificação
+            Assert.True(resultado);
+            _mediatorMock.Verify(m => m.Send(It.IsAny<ObterTurmasInfantilPorUEQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+            _mediatorMock.Verify(m => m.Send(It.IsAny<PublicarFilaSgpCommand>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact(DisplayName = "Não deve processar quando a mensagem for inválida ou o filtro for nulo")]
+        public async Task Executar_NaoDeveProcessarQuandoMensagemForInvalida()
+        {
+            // Organização
+            // Uma mensagem com "null" como conteúdo resultará em um filtro nulo após a desserialização.
+            var mensagemRabbit = new MensagemRabbit("null");
+
+            // Ação
+            var resultado = await _useCase.Executar(mensagemRabbit);
+
+            // Verificação
+            Assert.True(resultado);
+            _mediatorMock.Verify(m => m.Send(It.IsAny<IRequest<IEnumerable<TurmaDTO>>>(), It.IsAny<CancellationToken>()), Times.Never);
+            _mediatorMock.Verify(m => m.Send(It.IsAny<IRequest<bool>>(), It.IsAny<CancellationToken>()), Times.Never);
         }
     }
 }
