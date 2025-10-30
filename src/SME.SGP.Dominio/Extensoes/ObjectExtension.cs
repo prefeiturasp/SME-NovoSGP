@@ -1,3 +1,8 @@
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using System.Globalization;
+using System.Linq;
+using System.Text;
+
 namespace SME.SGP.Dominio
 {
     public static class ObjectExtension
