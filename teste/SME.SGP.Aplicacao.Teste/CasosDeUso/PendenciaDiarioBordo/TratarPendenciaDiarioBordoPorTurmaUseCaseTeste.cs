@@ -1,30 +1,37 @@
-﻿using MediatR;
+﻿using Bogus;
+using FluentAssertions;
+using MediatR;
 using Moq;
+using Newtonsoft.Json;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.Aplicacao.Teste.CasosDeUso
+namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PendenciaDiarioBordo
 {
     public class TratarPendenciaDiarioBordoPorTurmaUseCaseTeste
     {
-        private readonly TratarPendenciaDiarioBordoPorTurmaUseCase tratarPendenciaDiarioBordoPorTurmaUseCase;
-        private readonly Mock<IMediator> mediator;
+        private readonly Mock<IMediator> _mediatorMock;
+        private readonly TratarPendenciaDiarioBordoPorTurmaUseCase _useCase;
+        private readonly Faker _faker;
 
         public TratarPendenciaDiarioBordoPorTurmaUseCaseTeste()
         {
-            mediator = new Mock<IMediator>();
-            tratarPendenciaDiarioBordoPorTurmaUseCase = new TratarPendenciaDiarioBordoPorTurmaUseCase(mediator.Object);
+            _mediatorMock = new Mock<IMediator>();
+            _useCase = new TratarPendenciaDiarioBordoPorTurmaUseCase(_mediatorMock.Object);
+            _faker = new Faker("pt_BR");
         }
 
-        [Fact]
-        public async Task Deve_Publicar_Fila_Por_Turma()
+        #region Cenários de Teste do Método Executar
+
+        [Fact(DisplayName = "Não deve gerar novas pendências quando a turma não possuir professores")]
+        public async Task Executar_QuandoNaoEncontrarProfessores_NaoDeveProcessarNovasPendencias()
         {
             var turmaId = _faker.Random.Guid().ToString();
             var mensagem = new MensagemRabbit(JsonConvert.SerializeObject(turmaId));
@@ -220,11 +227,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         public async Task BuscaPendenciaESalva_QuandoAulaNaoTemComponente_DeveGerarPendenciaParaTodos()
         {
             var turma = CriarTurmaFake();
-            var professoresEComponentes = CriarProfessoresEComponentesFake(); 
+            var professoresEComponentes = CriarProfessoresEComponentesFake();
 
             var aulasPendentes = new List<AulaComComponenteDto>
             {
-                new AulaComComponenteDto { Id = 999, ComponenteId = 0 } 
+                new AulaComComponenteDto { Id = 999, ComponenteId = 0 }
             };
 
             _mediatorMock.Setup(m => m.Send(It.IsAny<ObterPendenciasDiarioBordoQuery>(), It.IsAny<CancellationToken>()))
@@ -246,11 +253,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         public async Task BuscaPendenciaESalva_QuandoAulaTemComponente_DeveGerarPendenciaParaComponentesFaltantes()
         {
             var turma = CriarTurmaFake();
-            var professoresEComponentes = CriarProfessoresEComponentesFake(); 
+            var professoresEComponentes = CriarProfessoresEComponentesFake();
 
             var aulasPendentes = new List<AulaComComponenteDto>
             {
-                new AulaComComponenteDto { Id = 999, ComponenteId = 1 } 
+                new AulaComComponenteDto { Id = 999, ComponenteId = 1 }
             };
 
             _mediatorMock.Setup(m => m.Send(It.IsAny<ObterPendenciasDiarioBordoQuery>(), It.IsAny<CancellationToken>()))
