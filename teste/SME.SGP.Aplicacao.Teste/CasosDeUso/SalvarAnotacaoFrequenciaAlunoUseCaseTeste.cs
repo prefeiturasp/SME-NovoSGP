@@ -4,8 +4,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -39,7 +37,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             };
             var hoje = DateTime.Today;
             mediator.Setup(a => a.Send(It.IsAny<ObterAulaPorIdQuery>(), It.IsAny<CancellationToken>()))
-               .ReturnsAsync(new Aula() { DataAula = new DateTime(hoje.Year, hoje.Month, hoje.Day), TurmaId = "1" });
+               .ReturnsAsync(new SME.SGP.Dominio.Aula() { DataAula = new DateTime(hoje.Year, hoje.Month, hoje.Day), TurmaId = "1" });
 
             mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()))
                .ReturnsAsync(new Usuario());
@@ -57,9 +55,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
 
             mediator.Setup(a => a.Send(It.IsAny<SalvarAnotacaoFrequenciaAlunoCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new AuditoriaDto() { Id = 1 });
-           
+
             mediator.Setup(a => a.Send(It.IsAny<ObterTurmaPorCodigoQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new Turma() {
+                .ReturnsAsync(new Turma()
+                {
                     UeId = 1,
                     CodigoTurma = "1",
                     Historica = false,

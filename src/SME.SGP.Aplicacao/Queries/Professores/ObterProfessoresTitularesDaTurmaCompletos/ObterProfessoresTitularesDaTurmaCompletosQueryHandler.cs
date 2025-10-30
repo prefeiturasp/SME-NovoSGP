@@ -25,15 +25,18 @@ namespace SME.SGP.Aplicacao
             var professores = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(request.CodigoTurma, realizaAgrupamento: request.RealizarAgrupamento));
             if (!professores?.Any() ?? true) return retorno;
 
-            foreach (var professor in professores)
+            if (professores != null)
             {
-                if (!professor.ProfessorRf.Contains(","))
+                foreach (var professor in professores)
                 {
-                    retorno.Add(professor);
-                    continue;
-                }
+                    if (!professor.ProfessorRf.Contains(","))
+                    {
+                        retorno.Add(professor);
+                        continue;
+                    }
 
-                AdicionarProfessoresConcatenados(professor, retorno);
+                    AdicionarProfessoresConcatenados(professor, retorno);
+                }
             }
 
             return retorno;

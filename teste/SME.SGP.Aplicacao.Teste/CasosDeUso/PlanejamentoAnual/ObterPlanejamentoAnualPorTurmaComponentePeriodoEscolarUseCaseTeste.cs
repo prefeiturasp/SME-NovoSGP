@@ -3,8 +3,6 @@ using Moq;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -25,7 +23,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         [Fact]
         public async Task Deve_Retornar_o_Planejamento_Sem_Componentes()
         {
-            //Arrange
+            var turmaId = 1L;
+            var componenteCurricularId = 1L;
+            var periodoEscolarId = 1L;
+
             var mockRetorno = new PlanejamentoAnualPeriodoEscolarDto
             {
                 Componentes = null,
@@ -36,11 +37,12 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             mediator.Setup(a => a.Send(It.IsAny<ObterPlanejamentoAnualPorTurmaComponentePeriodoEscolarQuery>(), It.IsAny<CancellationToken>()))
                           .ReturnsAsync(mockRetorno);
 
-            //Act
-            var retorno = await useCase.Executar(1, 1, 1);
+            var retorno = await useCase.Executar(turmaId, componenteCurricularId, periodoEscolarId);
 
-            //Asert
-            mediator.Verify(x => x.Send(It.IsAny<ObterPlanejamentoAnualPorTurmaComponentePeriodoEscolarQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+            mediator.Verify(x => x.Send(It.Is<ObterPlanejamentoAnualPorTurmaComponentePeriodoEscolarQuery>(q =>
+                q.TurmaId == turmaId &&
+                q.ComponenteCurricularId == componenteCurricularId &&
+                q.PeriodoEscolarId == periodoEscolarId), It.IsAny<CancellationToken>()), Times.Once);
 
             Assert.NotNull(retorno);
             Assert.Null(retorno.Componentes);
@@ -49,7 +51,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         [Fact]
         public async Task Deve_Retornar_o_Planejamento_Com_Componentes()
         {
-            //Arrange
+            var turmaId = 1L;
+            var componenteCurricularId = 2L;
+            var periodoEscolarId = 1L;
+
             var mockRetorno = new PlanejamentoAnualPeriodoEscolarDto
             {
                 Componentes = new List<PlanejamentoAnualComponenteDto>() {
@@ -67,14 +72,24 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             mediator.Setup(a => a.Send(It.IsAny<ObterPlanejamentoAnualPorTurmaComponentePeriodoEscolarQuery>(), It.IsAny<CancellationToken>()))
                           .ReturnsAsync(mockRetorno);
 
-            //Act
-            var retorno = await useCase.Executar(1, 2, 1);
+            var retorno = await useCase.Executar(turmaId, componenteCurricularId, periodoEscolarId);
 
-            //Asert
-            mediator.Verify(x => x.Send(It.IsAny<ObterPlanejamentoAnualPorTurmaComponentePeriodoEscolarQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+            mediator.Verify(x => x.Send(It.Is<ObterPlanejamentoAnualPorTurmaComponentePeriodoEscolarQuery>(q =>
+                q.TurmaId == turmaId &&
+                q.ComponenteCurricularId == componenteCurricularId &&
+                q.PeriodoEscolarId == periodoEscolarId), It.IsAny<CancellationToken>()), Times.Once);
 
             Assert.NotNull(retorno);
             Assert.NotNull(retorno.Componentes);
+        }
+
+        [Fact]
+        public void Deve_Lancar_ArgumentNullException_Quando_Mediator_For_Nulo()
+        {
+            var exception = Assert.Throws<ArgumentNullException>(() =>
+                new ObterPlanejamentoAnualPorTurmaComponentePeriodoEscolarUseCase(null));
+
+            Assert.Equal("mediator", exception.ParamName);
         }
     }
 }

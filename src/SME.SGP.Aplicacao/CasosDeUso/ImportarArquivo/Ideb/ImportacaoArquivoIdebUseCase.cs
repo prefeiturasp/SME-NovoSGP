@@ -2,9 +2,11 @@
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using SME.SGP.Aplicacao.Commands.ImportarArquivo.Ideb;
+using SME.SGP.Aplicacao.Commands.PainelEducacional.SolicitarConsolidacaoProficienciaIdeb;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Ideb;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.ImportarArquivo;
@@ -50,6 +52,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Ideb
                 if (processado)
                 {
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarPainelEdcacionalIdeb, importacaoLog.Id));
+                    await mediator.Send(new SolicitarConsolidacaoProficienciaIdebCommand(anoLetivo));
                 }
             }
             return ImportacaoLogRetornoDto.RetornarSucesso(MensagemNegocioComuns.ARQUIVO_IMPORTADO_COM_SUCESSO, importacaoLog.Id);
@@ -84,11 +87,11 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Ideb
                 {
                     try
                     {
-                        int.TryParse(planilha.Cell(linha, 1).Value.ToString().Trim(), out int serieAno);
-                        var codigoEOLEscola = planilha.Cell(linha, 2).Value.ToString().Trim();
+                        short.TryParse(planilha.Cell(linha, 1).Value.ToString().Trim(), out var serieAno);
+                        var codigoUe = planilha.Cell(linha, 2).Value.ToString().Trim();
                         decimal.TryParse(planilha.Cell(linha, 3).Value.ToString().Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out var nota);
 
-                        var dto = new ArquivoIdebDto(serieAno, codigoEOLEscola, nota, anoLetivo);
+                        var dto = new ArquivoIdebDto(serieAno, codigoUe, nota, anoLetivo);
                         dto.LinhaAtual = linha;
                         listaLote.Add(dto);
 
@@ -124,9 +127,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Ideb
         private IEnumerable<Task> SalvarArquivoIdebEmLote(List<ArquivoIdebDto> lista, long importacaoLogId)
         {
             var serieAnosValidos = new int[] {
-                (int)SerieAnoIdebEnum.AnosIniciais,
-                (int)SerieAnoIdebEnum.AnosFinais,
-                (int)SerieAnoIdebEnum.EnsinoMedio
+                (int)SerieAnoIndiceDesenvolvimentoEnum.AnosIniciais,
+                (int)SerieAnoIndiceDesenvolvimentoEnum.AnosFinais,
+                (int)SerieAnoIndiceDesenvolvimentoEnum.EnsinoMedio
             };
 
             foreach (var dto in lista)

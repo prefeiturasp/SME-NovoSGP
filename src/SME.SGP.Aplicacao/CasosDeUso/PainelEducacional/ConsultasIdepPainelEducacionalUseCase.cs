@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             this.mediator = mediator;
         }
 
-        public async Task<PainelEducacionalIdepAgrupamentoDto> ObterIdepPorAnoEtapa(int anoLetivo, string etapa, string codigoDre)
+        public async Task<PainelEducacionalIdepAgrupamentoDto> ObterIdepPorAnoEtapa(int anoLetivo, int etapa, string codigoDre)
         {
             IEnumerable<PainelEducacionalIdepDto> idepPorAnoEtapa = null;
             var parametros = NormalizarParametros(anoLetivo, etapa, codigoDre);
@@ -41,11 +41,11 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             return ObterIdepVazio(parametros.AnoLetivo, anoAtual, parametros.CodigoDre);
         }
 
-        private static (int AnoLetivo, string Etapa, string CodigoDre) NormalizarParametros(int anoLetivo, string etapa, string codigoDre)
+        private static (int AnoLetivo, int Etapa, string CodigoDre) NormalizarParametros(int anoLetivo, int etapa, string codigoDre)
         {
             return (
                 AnoLetivo: anoLetivo == 0 ? DateTime.Now.Year : anoLetivo,
-                Etapa: string.IsNullOrEmpty(etapa) ? ((int)PainelEducacionalIdepEtapa.AnosIniciais).ToString() : etapa,
+                Etapa: etapa == 0 ? ((int)PainelEducacionalIdepEtapa.AnosIniciais) : etapa,
                 CodigoDre: codigoDre?.Trim()
             );
         }

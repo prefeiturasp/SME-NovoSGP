@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             dto.AulaId = 1;
             dto.Descricao = "Descrição do plano de aula";
 
-            mediator.Setup(a => a.Send(It.IsAny<ObterAulaPorIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new Aula()
+            mediator.Setup(a => a.Send(It.IsAny<ObterAulaPorIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new SME.SGP.Dominio.Aula()
             {
                 Id = 1,
                 TurmaId = "1"
@@ -55,12 +55,12 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                 CodigoRf = "1111111"
             });
 
-            mediator.Setup(a => a.Send(It.IsAny<ObterPlanoAulaPorAulaIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new PlanoAula()
+            mediator.Setup(a => a.Send(It.IsAny<ObterPlanoAulaPorAulaIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new Dominio.PlanoAula()
             {
                 Id = 1,
             });
 
-            mediator.Setup(a => a.Send(It.IsAny<ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new PlanejamentoAnual()
+            mediator.Setup(a => a.Send(It.IsAny<ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new Dominio.PlanejamentoAnual()
             {
                 Id = 1,
             });

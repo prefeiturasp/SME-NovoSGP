@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -115,7 +114,7 @@ namespace SME.SGP.Aplicacao
             foreach (var diarioDeBordo in diariosDeBordos)
             {
                 if((diarioDeBordo?.Planejamento).NaoEhNulo())
-                    await ExcluirArquivo(diarioDeBordo.Planejamento,TipoArquivo.DiarioBordo);
+                    await ExcluirArquivo(diarioDeBordo?.Planejamento,TipoArquivo.DiarioBordo);
             }
         }
         

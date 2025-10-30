@@ -1,11 +1,10 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Infra.Dtos.ImportarArquivo;
 
 namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.Ideb
 {
-    public class SalvarImportacaoArquivoIdebCommand : IRequest<Dominio.Ideb>
+    public class SalvarImportacaoArquivoIdebCommand : IRequest<Dominio.Entidades.Ideb>
     {
         public SalvarImportacaoArquivoIdebCommand(ArquivoIdebDto arquivoIdeb)
         {

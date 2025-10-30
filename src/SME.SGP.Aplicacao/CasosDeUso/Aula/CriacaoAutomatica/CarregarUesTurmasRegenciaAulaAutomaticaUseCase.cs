@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao
                     && modalidadeTurma != Modalidade.EJA))
                     return new Modalidade[] {};
                 else
-                    return new Modalidade[] { turma.ModalidadeCodigo };
+                    return new Modalidade[] { turma?.ModalidadeCodigo ?? 0 };
             }
             else
                 return new Modalidade[] { Modalidade.Fundamental, Modalidade.EJA };

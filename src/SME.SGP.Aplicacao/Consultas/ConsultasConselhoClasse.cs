@@ -185,7 +185,7 @@ namespace SME.SGP.Aplicacao
 
             var conselhoClasse = fechamentoTurma.NaoEhNulo() ? await repositorioConselhoClasseConsulta.ObterPorFechamentoId(fechamentoTurma.Id) : null;
 
-            var conselhoClasseAluno = conselhoClasse.NaoEhNulo() ? await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasse.Id, alunoCodigo) : null;
+            var conselhoClasseAluno = conselhoClasse != null ? await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasse.Id, alunoCodigo) : null;
 
             var ultimoBimestre = (await ObterPeriodoUltimoBimestre(turma));
 

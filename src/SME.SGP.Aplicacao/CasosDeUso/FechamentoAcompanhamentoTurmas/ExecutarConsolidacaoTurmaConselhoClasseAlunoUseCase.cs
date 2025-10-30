@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
                         componenteEdFisicaEJANecessitaConversaoNotaConceito = await TipoNotaEhConceito(turmaRegular, (filtro.Bimestre ?? 0));
 
                     turma = turmaRegular;
-                    filtro.TurmaId = turma.Id;
+                    filtro.TurmaId = turma?.Id ?? 0;
 
                 }
                 else if (turma.EhTurmaRegular() && turma.EhEJA())
@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
             };
 
             var componentesComNotaFechamentoOuConselho = (await mediator
-                                .Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma.AnoLetivo, turmasCodigos.ToArray(), filtro.Bimestre, filtro.AlunoCodigo))).ToList();
+                                .Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma?.AnoLetivo ?? 0, turmasCodigos.ToArray(), filtro.Bimestre, filtro.AlunoCodigo))).ToList();
 
             if (PodeAdicionarNota(filtro, componentesComNotaFechamentoOuConselho))
             {

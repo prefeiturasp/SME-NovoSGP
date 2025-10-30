@@ -24,14 +24,14 @@ namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.ProficienciaIdep
             return proficienciaIdep.Id > 0;
         }
 
-        private Dominio.ProficienciaIdep MapearParaEntidade(SalvarImportacaoProficienciaIdepCommand request)
-            => new Dominio.ProficienciaIdep()
+        private static Dominio.Entidades.ProficienciaIdep MapearParaEntidade(SalvarImportacaoProficienciaIdepCommand request)
+            => new Dominio.Entidades.ProficienciaIdep()
             {
                 Id = request.ProficienciaIdep.Id != null ? request.ProficienciaIdep.Id.Value : 0,
                 Boletim = request.ProficienciaIdep.Boletim,
                 AnoLetivo = request.ProficienciaIdep.AnoLetivo,
                 SerieAno = request.ProficienciaIdep.SerieAno,
-                CodigoEOLEscola = request.ProficienciaIdep.CodigoEOLEscola,
+                CodigoUe = request.ProficienciaIdep.CodigoEOLEscola,
                 Proficiencia = request.ProficienciaIdep.Proficiencia,
                 ComponenteCurricular = request.ProficienciaIdep.ComponenteCurricular,
             };

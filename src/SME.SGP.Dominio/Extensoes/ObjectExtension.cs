@@ -1,4 +1,3 @@
-using Newtonsoft.Json;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using System.Globalization;
 using System.Linq;

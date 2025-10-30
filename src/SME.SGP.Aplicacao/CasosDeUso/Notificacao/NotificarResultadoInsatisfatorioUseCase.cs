@@ -30,6 +30,9 @@ namespace SME.SGP.Aplicacao
 
         private async Task NotificarResultadoInsatisfatorio(IEnumerable<ParametrosSistema> parametro, ModalidadeTipoCalendario modalidadeTipoCalendario)
         {
+            if (parametro == null)
+                return;
+
             var parametroPendenciaAusencia = parametro.FirstOrDefault(c => c.Ativo && c.Nome == "DiasNotificacaoResultadoInsatisfatorio");
             if (parametroPendenciaAusencia.NaoEhNulo())
             {

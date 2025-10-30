@@ -1,40 +1,54 @@
-﻿using SME.SGP.Dominio.Entidades;
+﻿using Microsoft.Extensions.Configuration;
+using Npgsql;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Interface;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioIdepPainelEducacionalConsolidacao : RepositorioBase<PainelEducacionalConsolidacaoIdep>, IRepositorioIdepPainelEducacionalConsolidacao
+    public class RepositorioIdepPainelEducacionalConsolidacao : PainelEducacionalConsolidacaoIdep, IRepositorioIdepPainelEducacionalConsolidacao
     {
-        public RepositorioIdepPainelEducacionalConsolidacao(ISgpContext database,
-            IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria) { }
-
-        public async Task<bool> Inserir(IEnumerable<PainelEducacionalConsolidacaoIdep> consolidacoes)
+        private readonly IConfiguration configuration;
+        private readonly ISgpContext database;
+        public RepositorioIdepPainelEducacionalConsolidacao(ISgpContext database, IConfiguration configuration)
         {
-            var sql = @"
-             INSERT INTO painel_educacional_consolidacao_idep
-                 (ano_letivo, etapa, faixa, quantidade, media_geral, criado_por, criado_rf, alterado_em, alterado_por, alterado_rf, codigo_dre)
-             VALUES
-                 (@AnoLetivo, @Etapa, @Faixa, @Quantidade, @MediaGeral, @CriadoPor, @CriadoRF, @UltimaAtualizacao, @AlteradoPor, @AlteradoRF, @CodigoDre)
-             ON CONFLICT (ano_letivo, etapa, faixa)
-             DO UPDATE SET
-                 quantidade   = EXCLUDED.quantidade,
-                 media_geral  = EXCLUDED.media_geral,
-                 alterado_em  = EXCLUDED.alterado_em,
-                 alterado_por = EXCLUDED.alterado_por,
-                 alterado_rf  = EXCLUDED.alterado_rf,
-                 codigo_dre   = EXCLUDED.codigo_dre
-             WHERE painel_educacional_consolidacao_idep.alterado_em < EXCLUDED.alterado_em;";
+            this.database = database;
+            this.configuration = configuration;
+        }
 
-            using var conn = database.Conexao;
+        public async Task BulkInsertAsync(IEnumerable<PainelEducacionalConsolidacaoIdep> indicadores)
+        {
+            await using var conn = new NpgsqlConnection(configuration.GetConnectionString("SGP_Postgres"));
+            await conn.OpenAsync();
 
-            int rowsAffected = await conn.ExecuteAsync(sql, consolidacoes);
+            await using var writer = conn.BeginBinaryImport(@"
+                COPY painel_educacional_consolidacao_idep 
+                    (ano_letivo, codigo_dre, codigo_ue, etapa, faixa, quantidade, media_geral, criado_em) 
+                FROM STDIN (FORMAT BINARY)
+            ");
 
-            return rowsAffected > 0;
+            foreach (var item in indicadores)
+            {
+                await writer.StartRowAsync();
+                await writer.WriteAsync(item.AnoLetivo, NpgsqlTypes.NpgsqlDbType.Integer);
+                await writer.WriteAsync(item.CodigoDre, NpgsqlTypes.NpgsqlDbType.Varchar);
+                await writer.WriteAsync(item.CodigoUe, NpgsqlTypes.NpgsqlDbType.Varchar);
+                await writer.WriteAsync((int)item.Etapa, NpgsqlTypes.NpgsqlDbType.Integer);
+                await writer.WriteAsync(item.Faixa, NpgsqlTypes.NpgsqlDbType.Varchar);
+                await writer.WriteAsync(item.Quantidade, NpgsqlTypes.NpgsqlDbType.Integer);
+                await writer.WriteAsync(item.MediaGeral, NpgsqlTypes.NpgsqlDbType.Numeric);
+                await writer.WriteAsync(item.CriadoEm, NpgsqlTypes.NpgsqlDbType.TimestampTz);
+            }
+
+            await writer.CompleteAsync();
+        }
+
+        public async Task LimparConsolidacao()
+        {
+            var sql = "DELETE FROM painel_educacional_consolidacao_idep";
+            await database.ExecuteAsync(sql);
         }
     }
 }

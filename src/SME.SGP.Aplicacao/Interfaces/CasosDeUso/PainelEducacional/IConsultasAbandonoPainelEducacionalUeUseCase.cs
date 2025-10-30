@@ -1,3 +1,4 @@
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using System.Threading.Tasks;
 

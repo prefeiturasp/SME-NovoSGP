@@ -5,6 +5,6 @@ namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional
 {
     public interface IConsultasIdepPainelEducacionalUseCase
     {
-        Task<PainelEducacionalIdepAgrupamentoDto> ObterIdepPorAnoEtapa(int anoLetivo, string etapa, string codigoDre);
+        Task<PainelEducacionalIdepAgrupamentoDto> ObterIdepPorAnoEtapa(int anoLetivo, int etapa, string codigoDre);
     }
 }

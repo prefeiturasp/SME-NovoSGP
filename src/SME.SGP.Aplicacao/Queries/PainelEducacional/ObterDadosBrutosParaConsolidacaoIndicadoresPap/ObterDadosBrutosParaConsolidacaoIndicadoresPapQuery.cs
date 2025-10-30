@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using SME.SGP.Infra.Dtos.Aluno;
 using SME.SGP.Infra.Dtos.ConsolidacaoFrequenciaTurma;
 using SME.SGP.Infra.Dtos.PainelEducacional.IndicadoresPap;

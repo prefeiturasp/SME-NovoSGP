@@ -1,10 +1,12 @@
-﻿namespace SME.SGP.Infra.Dtos.ImportarArquivo
+﻿using SME.SGP.Dominio.Enumerados;
+
+namespace SME.SGP.Infra.Dtos.ImportarArquivo
 {
     public class ProficienciaIdepDto : ArquivoImportacaoBaseDto
     {
-        public ProficienciaIdepDto(int serieAno, string codigoEOLEscola, int anoLetivo, string componenteCurricular, decimal proficiencia, string boletim = "")
+        public ProficienciaIdepDto(short serieAno, string codigoEOLEscola, int anoLetivo, string componenteCurricular, decimal proficiencia, string boletim = "")
         {
-            SerieAno = serieAno;
+            SerieAno = (SerieAnoIndiceDesenvolvimentoEnum)serieAno;
             AnoLetivo = anoLetivo;
             CodigoEOLEscola = codigoEOLEscola;
             ComponenteCurricular = componenteCurricular;
@@ -13,7 +15,7 @@
         }
 
         public long? Id { get; set; }
-        public int SerieAno { get; set; }
+        public SerieAnoIndiceDesenvolvimentoEnum SerieAno { get; set; }
         public int AnoLetivo { get; set; }
         public string ComponenteCurricular { get; set; }
         public decimal Proficiencia { get; set; }

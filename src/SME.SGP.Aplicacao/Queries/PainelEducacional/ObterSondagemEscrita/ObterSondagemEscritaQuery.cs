@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using MediatR;
 using SME.SGP.Infra.Dtos.PainelEducacional.SondagemEscrita;
 using System.Collections.Generic;

@@ -22,11 +22,11 @@ namespace SME.SGP.Aplicacao
                             : mensagemRabbit.ObterObjetoMensagem<FiltroIdAnoLetivoDto>();
 
             var dres = await mediator.Send(ObterIdsDresQuery.Instance);
-            foreach (long dreId in dres.Where(dreId => filtro.Id.Equals(0) 
-                                                       || dreId.Equals(filtro.Id)).ToList())
+            foreach (long dreId in dres.Where(dreId => filtro.Id.Equals(0)
+                            || dreId.Equals(filtro.Id)).ToList())
             {
-                filtro.Id = dreId;
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.ConsolidarInformacoesProdutividadeFrequenciaDre, filtro, Guid.NewGuid()));
+                var filtroDre = new FiltroIdAnoLetivoDto(dreId, filtro.Data);
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.ConsolidarInformacoesProdutividadeFrequenciaDre, filtroDre, Guid.NewGuid()));
             }
             return true;
         }
