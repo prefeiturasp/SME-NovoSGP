@@ -1,11 +1,10 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
-using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterProficienciaIdep;
-using SME.SGP.Dominio;
-using SME.SGP.Infra.Dtos.PainelEducacional;
+using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterProficienciaIdeb;
+using SME.SGP.Infra.Dtos.PainelEducacional.ProficienciaIdeb;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
 {
@@ -18,17 +17,14 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             this.mediator = mediator;
         }
 
-        public async Task<IEnumerable<PainelEducacionalProficienciaIdepDto>> ObterProficienciaIdep(int anoLetivo, string codigoUe)
+        public async Task<IEnumerable<PainelEducacionalProficienciaIdebDto>> ObterProficienciaIdeb(int anoLetivo, string codigoUe)
         {
-            if (string.IsNullOrWhiteSpace(codigoUe))
-                throw new NegocioException("Informe a unidade escolar");
-
-            var proficienciaIdeb = await mediator.Send(new ObterProficienciaIdepQuery(anoLetivo, codigoUe));
+            var proficienciaIdeb = await mediator.Send(new ObterProficienciaIdebQuery(anoLetivo, codigoUe));
 
             if (anoLetivo <= 0)
             {
                 proficienciaIdeb = proficienciaIdeb
-                    .OrderByDescending(p => p.AnoLetivo) 
+                    .OrderByDescending(p => p.AnoLetivo)
                     .Take(5)
                     .ToList();
             }

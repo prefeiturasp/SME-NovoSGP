@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using System;
 using System.Threading;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.Ideb
 {
-    public class SalvarImportacaoArquivoIdebCommandHandler : IRequestHandler<SalvarImportacaoArquivoIdebCommand, Dominio.Ideb>
+    public class SalvarImportacaoArquivoIdebCommandHandler : IRequestHandler<SalvarImportacaoArquivoIdebCommand, Dominio.Entidades.Ideb>
     {
         private readonly IRepositorioIdeb repositorioIdeb;
         public SalvarImportacaoArquivoIdebCommandHandler(IRepositorioIdeb repositorioIdeb)
@@ -14,10 +15,10 @@ namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.Ideb
             this.repositorioIdeb = repositorioIdeb ?? throw new ArgumentNullException(nameof(repositorioIdeb));
         }
 
-        public async Task<Dominio.Ideb> Handle(SalvarImportacaoArquivoIdebCommand request, CancellationToken cancellationToken)
+        public async Task<Dominio.Entidades.Ideb> Handle(SalvarImportacaoArquivoIdebCommand request, CancellationToken cancellationToken)
         {
             var dto = MapearParaEntidade(request);
-            var registroAtual = await repositorioIdeb.ObterRegistroIdebAsync(dto.AnoLetivo, dto.SerieAno, dto.CodigoEOLEscola);
+            var registroAtual = await repositorioIdeb.ObterRegistroIdebAsync(dto.AnoLetivo, (short)dto.SerieAno, dto.CodigoEOLEscola);
 
             if (registroAtual != null)
             {
@@ -30,11 +31,11 @@ namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.Ideb
             return dto;
         }
 
-        private Dominio.Ideb MapearParaEntidade(SalvarImportacaoArquivoIdebCommand request)
-        => new Dominio.Ideb()
+        private Dominio.Entidades.Ideb MapearParaEntidade(SalvarImportacaoArquivoIdebCommand request)
+        => new Dominio.Entidades.Ideb()
         {
             AnoLetivo = request.ArquivoIdeb.AnoLetivo,
-            SerieAno = request.ArquivoIdeb.SerieAno,
+            SerieAno = (SerieAnoIndiceDesenvolvimentoEnum)request.ArquivoIdeb.SerieAno,
             CodigoEOLEscola = request.ArquivoIdeb.CodigoEOLEscola,
             Nota = request.ArquivoIdeb.Nota,
         };

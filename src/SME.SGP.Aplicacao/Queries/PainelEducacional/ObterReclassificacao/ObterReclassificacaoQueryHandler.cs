@@ -1,8 +1,12 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Dtos;
 using SME.SGP.Dominio.Interfaces.Repositorios;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional.Reclassificacao;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,10 +15,10 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterReclassificacao
 {
     public class ObterReclassificacaoQueryHandler : IRequestHandler<ObterReclassificacaoQuery, IEnumerable<PainelEducacionalReclassificacaoDto>>
     {
-        private readonly IRepositorioReclassificacao repositorio;
+        private readonly IRepositorioReclassificacaoConsulta repositorio;
 
         public ObterReclassificacaoQueryHandler(
-            IRepositorioReclassificacao repositorio)
+            IRepositorioReclassificacaoConsulta repositorio)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
@@ -26,36 +30,46 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterReclassificacao
             return MapearParaDto(dadosConsolidados);
         }
 
-        private IEnumerable<PainelEducacionalReclassificacaoDto> MapearParaDto(IEnumerable<PainelEducacionalReclassificacaoDto> dadosConsolidados)
+        private IEnumerable<PainelEducacionalReclassificacaoDto> MapearParaDto(IEnumerable<ReclassificacaoRawDto> dadosRaw)
         {
-            if (dadosConsolidados == null || !dadosConsolidados.Any())
+            if (dadosRaw == null || !dadosRaw.Any())
                 return Enumerable.Empty<PainelEducacionalReclassificacaoDto>();
 
-            var resultado = new List<PainelEducacionalReclassificacaoDto>();
-
-            foreach (var item in dadosConsolidados)
-            {
-                if (item.Modalidade?.Any() == true)
+            return dadosRaw
+                .GroupBy(x => x.CodigoModalidade)
+                .Select(modalidadeGrupo => new PainelEducacionalReclassificacaoDto
                 {
-                    var modalidadesAgrupadas = item.Modalidade
-                        .SelectMany(m => new[]
+                    Modalidade = ObterNomeModalidade(modalidadeGrupo.Key, modalidadeGrupo.First().Nome),
+                    SerieAno = modalidadeGrupo
+                        .GroupBy(x => x.AnoTurma)
+                        .Select(anoGrupo => new SerieAnoReclassificacaoDto
                         {
-                            new ModalidadeReclassificacaoDto
-                            {
-                                Nome = m.Nome,
-                                AnoTurma = m.AnoTurma,
-                                QuantidadeAlunos = m.QuantidadeAlunos
-                            }
-                        });
+                            AnoTurma = anoGrupo.Key,
+                            QuantidadeAlunos = anoGrupo.Sum(x => x.QuantidadeAlunos)
+                        })
+                        .OrderBy(x => x.AnoTurma)
+                        .ToList()
+                })
+                .OrderBy(x => x.Modalidade)
+                .ToList();
+        }
 
-                    resultado.Add(new PainelEducacionalReclassificacaoDto
-                    {
-                        Modalidade = modalidadesAgrupadas
-                    });
+        private static string ObterNomeModalidade(string codigoModalidade, string nomeFromDatabase)
+        {
+            if (!string.IsNullOrWhiteSpace(nomeFromDatabase))
+                return nomeFromDatabase;
+
+            if (int.TryParse(codigoModalidade, out var modalidadeCodigo))
+            {
+                if (Enum.IsDefined(typeof(Modalidade), modalidadeCodigo))
+                {
+                    var modalidade = (Modalidade)modalidadeCodigo;
+                    var displayAttribute = modalidade.GetAttribute<DisplayAttribute>();
+                    return displayAttribute?.Name ?? modalidade.ToString();
                 }
             }
-
-            return resultado.OrderBy(a => a.Modalidade.FirstOrDefault().AnoTurma);
+            
+            return codigoModalidade;
         }
     }
 }

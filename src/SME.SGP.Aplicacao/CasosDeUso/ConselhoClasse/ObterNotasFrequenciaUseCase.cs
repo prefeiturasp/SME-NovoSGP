@@ -335,6 +335,11 @@ namespace SME.SGP.Aplicacao
                 if (conselhoClasseAlunoNotas.ComponenteRegencia.NaoEhNulo())
                     conselhoClasseAlunoNotas.ComponenteRegencia.ComponentesCurriculares = conselhoClasseAlunoNotas.ComponenteRegencia.ComponentesCurriculares.OrderBy(c => c.Nome).ToList();
 
+                if (conselhoClasseAlunoNotas.ComponenteRegencia.NaoEhNulo() && turma.Ue.TipoEscola != TipoEscola.EMEBS && (TipoTurnoEOL)turma.TipoTurno != TipoTurnoEOL.Integral)
+                {
+                    conselhoClasseAlunoNotas.ComponenteRegencia.ComponentesCurriculares = conselhoClasseAlunoNotas.ComponenteRegencia.ComponentesCurriculares.Where(d => d.CodigoComponenteCurricular != MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_LIBRAS).ToList();
+                }
+
                 gruposMatrizesNotas.Add(conselhoClasseAlunoNotas);
             }
 

@@ -11,9 +11,9 @@ namespace SME.SGP.IoC.Extensions.RegistrarCasoDeUsoRabbitSgp
     {
         internal static void RegistrarPainelEducacionalUseCaseRabbitSgp(this IServiceCollection services)
         {
-            services.AddScoped<Aplicacao.Interfaces.CasosDeUso.PainelEducacional.IConsolidarIdepPainelEducacionalUseCase, Aplicacao.CasosDeUso.PainelEducacional.ConsolidarIdepPainelEducacionalUseCase>();
+            services.AddScoped<IConsolidarIdepPainelEducacionalUseCase, ConsolidarIdepPainelEducacionalUseCase>();
             services.AddScoped<IConsolidarIdebPainelEducacionalUseCase, ConsolidarIdebPainelEducacionalUseCase>();
-            services.AddScoped<Aplicacao.Interfaces.CasosDeUso.PainelEducacional.IConsolidarVisaoGeralPainelEducacionalUseCase, Aplicacao.CasosDeUso.PainelEducacional.ConsolidarVisaoGeralPainelEducacionalUseCase>();
+            services.AddScoped<IConsolidarVisaoGeralPainelEducacionalUseCase, ConsolidarVisaoGeralPainelEducacionalUseCase>();
             services
                 .AddScoped<IConsolidarInformacoesNivelEscritaAlfabetizacaoPainelEducacionalUseCase,
                            ConsolidarInformacoesNivelEscritaAlfabetizacaoPainelEducacionalUseCase>()
@@ -27,6 +27,8 @@ namespace SME.SGP.IoC.Extensions.RegistrarCasoDeUsoRabbitSgp
             services.AddScoped<IConsolidarFrequenciaDiariaPainelEducacionalUseCase, ConsolidarFrequenciaDiariaPainelEducacionalUseCase>();
             services.AddScoped<IConsolidarReclassificacaoPainelEducacionalUseCase, ConsolidarReclassificacaoPainelEducacionalUseCase>();
             services.AddScoped<IConsolidarFrequenciaSemanalPainelEducacionalUseCase, ConsolidarFrequenciaSemanalPainelEducacionalUseCase>();
+            services.AddScoped<IConsolidarProficienciaIdebPainelEducacionalUseCase, ConsolidarProficienciaIdebPainelEducacionalUseCase>();
+            services.AddScoped<IConsolidarProficienciaIdepPainelEducacionalUseCase, ConsolidarProficienciaIdepPainelEducacionalUseCase>();
         }
     }
 }

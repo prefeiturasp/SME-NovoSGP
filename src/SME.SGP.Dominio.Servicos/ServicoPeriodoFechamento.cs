@@ -65,7 +65,8 @@ namespace SME.SGP.Dominio.Servicos
                 AlterarBimestresPeriodosComHierarquiaInferior(fechamento).Wait();
 
                 unitOfWork.PersistirTransacao();
-            } catch
+            }
+            catch
             {
                 unitOfWork.Rollback();
                 throw;
@@ -94,7 +95,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             // Carrega lista de Periodos a alterar
             var listaPeriodosAlteracao = await ObterBimestresParaAlteracaoHierarquica(fechamento.DreId, fechamento.FechamentosBimestre);
-           
+
             // Agrupa a lista em PeriodoEscolar (por UE)
             foreach (var periodosFechamentoBimestreUE in listaPeriodosAlteracao.GroupBy(a => a.PeriodoFechamentoId))
             {
@@ -144,7 +145,7 @@ namespace SME.SGP.Dominio.Servicos
             if (fechamentoSME.EhNulo())
             {
                 LimparCamposNaoUtilizadosRegistroPai(fechamentoSME);
-                fechamentoSME = new PeriodoFechamento();                
+                fechamentoSME = new PeriodoFechamento();
 
                 var tipoCalendario = await repositorioTipoCalendario.ObterPorIdAsync(tipoCalendarioId);
                 if (tipoCalendario.EhNulo())
@@ -194,7 +195,7 @@ namespace SME.SGP.Dominio.Servicos
         public async Task Salvar(FechamentoDto fechamentoDto)
         {
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
-            var fechamento = await MapearParaDominioAsync(fechamentoDto); 
+            var fechamento = await MapearParaDominioAsync(fechamentoDto);
 
             unitOfWork.IniciarTransacao();
             var id = repositorioPeriodoFechamento.Salvar(fechamento);
@@ -268,7 +269,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task CriarEventoFechamento(PeriodoFechamento fechamento)
         {
             var tipoEvento = repositorioTipoEvento.ObterTipoEventoPorTipo(TipoEvento.FechamentoBimestre);
-        
+
             if (tipoEvento.EhNulo())
                 throw new NegocioException("Tipo de evento de fechamento de bimestre não encontrado na base de dados.");
 
@@ -362,7 +363,7 @@ namespace SME.SGP.Dominio.Servicos
         private IEnumerable<FechamentoBimestreDto> MapearFechamentoBimestreParaDto(PeriodoFechamento fechamento)
         {
             var listaFechamentoBimestre = new List<FechamentoBimestreDto>();
-            foreach (var fechamentoBimestre in fechamento.FechamentosBimestre)
+            foreach (var fechamentoBimestre in fechamento?.FechamentosBimestre)
             {
                 listaFechamentoBimestre.Add(new FechamentoBimestreDto
                 {
@@ -435,18 +436,18 @@ namespace SME.SGP.Dominio.Servicos
             return fechamento.EhNulo() ? null : new FechamentoDto
             {
                 Id = fechamento.Id,
-                DreId = fechamento.DreId,
-                TipoCalendarioId = fechamento.FechamentosBimestre.FirstOrDefault().PeriodoEscolar.TipoCalendarioId,
+                DreId = fechamento?.DreId,
+                TipoCalendarioId = fechamento.FechamentosBimestre.FirstOrDefault()?.PeriodoEscolar.TipoCalendarioId,
                 UeId = fechamento.UeId,
-                FechamentosBimestres = MapearFechamentoBimestreParaDto(fechamento).OrderBy(c => c.Bimestre),
-                AlteradoEm = fechamento.AlteradoEm,
-                AlteradoPor = fechamento.AlteradoPor,
-                AlteradoRF = fechamento.AlteradoRF,
+                FechamentosBimestres = MapearFechamentoBimestreParaDto(fechamento)?.OrderBy(c => c.Bimestre),
+                AlteradoEm = fechamento?.AlteradoEm,
+                AlteradoPor = fechamento?.AlteradoPor,
+                AlteradoRF = fechamento?.AlteradoRF,
                 CriadoEm = fechamento.CriadoEm,
-                CriadoPor = fechamento.CriadoPor,
-                CriadoRF = fechamento.CriadoRF,
+                CriadoPor = fechamento?.CriadoPor,
+                CriadoRF = fechamento?.CriadoRF,
                 Migrado = fechamento.Migrado,
-                Aplicacao = fechamento.Aplicacao != 0 && fechamento.Aplicacao > 0 ? fechamento.Aplicacao : Dominio.Aplicacao.SGP,
+                Aplicacao = fechamento.Aplicacao,
             };
         }
     }
