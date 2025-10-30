@@ -19,8 +19,6 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.ConsolidacaoFrequenciaDia
         }
         public async Task<bool> Handle(SalvarPainelEducacionalConsolidacaoFrequenciaDiariaCommand request, CancellationToken cancellationToken)
         {
-            await repositorioPainelEducacionalConsolidacaoFrequenciaDiariaDre.LimparConsolidacao();
-
             await repositorioPainelEducacionalConsolidacaoFrequenciaDiariaDre.BulkInsertAsync(MapearParaEntidade(request.Indicadores));
 
             return true;

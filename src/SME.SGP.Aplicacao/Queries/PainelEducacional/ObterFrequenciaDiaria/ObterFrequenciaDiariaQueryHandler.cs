@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterFrequenciaDiaria
 
         public async Task<IEnumerable<DadosParaConsolidarFrequenciaDiariaAlunoDto>> Handle(ObterFrequenciaDiariaQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioDashBoardFrequencia.ObterDadosParaConsolidacaoPainelEducacional(request.AnoLetivo);
+            return await repositorioDashBoardFrequencia.ObterDadosParaConsolidacaoPainelEducacional(request.AnoLetivo, request.DreId);
         }
     }
 }

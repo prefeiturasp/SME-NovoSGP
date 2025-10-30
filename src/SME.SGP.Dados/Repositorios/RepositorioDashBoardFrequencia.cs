@@ -174,7 +174,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<DadosParaConsolidacaoDashBoardFrequenciaDto>(query.ToString(), parametros);
         }
 
-        public async Task<IEnumerable<DadosParaConsolidarFrequenciaDiariaAlunoDto>> ObterDadosParaConsolidacaoPainelEducacional(int anoLetivo)
+        public async Task<IEnumerable<DadosParaConsolidarFrequenciaDiariaAlunoDto>> ObterDadosParaConsolidacaoPainelEducacional(int anoLetivo, long dreId)
         {
             var query = @"Select 
                                dre_codigo as CodigoDre,
@@ -183,22 +183,17 @@ namespace SME.SGP.Dados.Repositorios
                                turma_nome as NomeTurma,
                                ano_letivo as AnoLetivo,
                                data_aula as DataAula,
-                               sum(quantidade_presencas) as TotalPresentes,
+                               quantidade_presencas as TotalPresentes,
                                total_frequencias as TotalFrequencias, 
-                               sum(quantidade_remotos) as TotalRemotos,
-                               sum(quantidade_ausencias) as TotalAusentes
+                               quantidade_remotos as TotalRemotos,
+                               quantidade_ausencias as TotalAusentes
                           from consolidado_dashboard_frequencia cdf
                           where ano_letivo = @anoLetivo
-                          group by dre_codigo,
-                          	   ano_letivo,
-                               turma_id,
-                               ue_id,
-                               turma_nome,
-                               total_frequencias,
-                               data_aula";
+                                and dre_id = @dreId";
 
             var parametros = new
             {
+                dreId,
                 anoLetivo
             };
 
