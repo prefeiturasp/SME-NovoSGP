@@ -5,12 +5,14 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
+    [ExcludeFromCodeCoverage]
     public class RepositorioRegistroAcaoBuscaAtiva : RepositorioBase<RegistroAcaoBuscaAtiva>, IRepositorioRegistroAcaoBuscaAtiva
     {
         public const string QUESTAO_DATA_REGISTRO_NOME_COMPONENTE = "'DATA_REGISTRO_ACAO'";
@@ -19,9 +21,10 @@ namespace SME.SGP.Dados.Repositorios
         public const int SECAO_ETAPA_1 = 1;
         public const int SECAO_ORDEM_1 = 1;
         public const int FILTRO_TODOS = -99;
+        public const string QUESTAO_JUSTIFICATIVA_MOTIVO_FALTA_NOME_COMPONENTE = "'JUSTIFICATIVA_MOTIVO_FALTA'";
 
         public RepositorioRegistroAcaoBuscaAtiva(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
-        {}
+        { }
 
         public async Task<PaginacaoResultadoDto<RegistroAcaoBuscaAtivaCriancaEstudanteAusenteDto>> ListarPaginadoCriancasEstudantesAusentes(string codigoAluno, long turmaId, Paginacao paginacao)
         {
@@ -52,7 +55,7 @@ namespace SME.SGP.Dados.Repositorios
                                           FiltroRespostaRegistrosAcaoDto filtroRespostas)
         {
             var sql = new StringBuilder();
-            MontaQueryConsulta(paginacao, sql, contador: false, 
+            MontaQueryConsulta(paginacao, sql, contador: false,
                                filtroTurma,
                                filtroRespostas);
             sql.AppendLine(";");
@@ -82,7 +85,12 @@ namespace SME.SGP.Dados.Repositorios
             ObterFiltro(sql, filtroTurma, filtroRespostas);
 
             if (!contador)
-                sql.AppendLine(" order by te.descricao  || ' ' || u.nome, to_date(qdata.DataRegistro,'yyyy-mm-dd') desc ");
+            {
+                sql.AppendLine(" group by raba.id, to_date(qdata.DataRegistro, 'yyyy-mm-dd'), t.nome, t.modalidade_codigo, raba.aluno_nome, raba.aluno_codigo,  ");
+                sql.AppendLine(" qdata.DataRegistro, raba.criado_por, raba.criado_rf, raba.criado_em, qProcedRealizado.ProcedimentoRealizado,  ");
+                sql.AppendLine(" qContatoEfetuadoComResponsavel.ContatoRealizado, u.nome, u.tipo_escola,te.descricao || ' ' || u.nome ");
+                sql.AppendLine(" order by to_date(qdata.DataRegistro,'yyyy-mm-dd') desc ");
+            }
 
             if (paginacao.QuantidadeRegistros > 0 && !contador)
                 sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
@@ -121,85 +129,107 @@ namespace SME.SGP.Dados.Repositorios
         private static void ObterCabecalhoRegistrosAcao(StringBuilder sql, bool contador)
         {
             var sqlSelect = $@"with vw_resposta_data as (
-                                select rabas.registro_acao_busca_ativa_id, 
-                                       rabar.texto DataRegistro
-                                from registro_acao_busca_ativa_secao rabas    
-                                join registro_acao_busca_ativa_questao rabaq on rabas.id = rabaq.registro_acao_busca_ativa_secao_id  
-                                join questao q on rabaq.questao_id = q.id 
-                                join registro_acao_busca_ativa_resposta rabar on rabar.questao_registro_acao_id = rabaq.id 
-                                join secao_registro_acao_busca_ativa sraba on sraba.id = rabas.secao_registro_acao_id
-                                where q.nome_componente = {QUESTAO_DATA_REGISTRO_NOME_COMPONENTE} 
-                                      and sraba.etapa = {SECAO_ETAPA_1} 
-                                      and sraba.ordem = {SECAO_ORDEM_1} 
-                                      and not rabar.excluido
-                                      and not rabaq.excluido
-                                )
-                              , vw_resposta_procedimento_realizado as (
-                                select rabas.registro_acao_busca_ativa_id, 
-                                       opr.nome as ProcedimentoRealizado,
-                                       rabar.resposta_id  as ProcedimentoRealizadoId,
-                                       opr.ordem as ProcedimentoRealizadoOrdem
-                                from registro_acao_busca_ativa_secao rabas    
-                                join registro_acao_busca_ativa_questao rabaq on rabas.id = rabaq.registro_acao_busca_ativa_secao_id  
-                                join questao q on rabaq.questao_id = q.id 
-                                join registro_acao_busca_ativa_resposta rabar on rabar.questao_registro_acao_id = rabaq.id 
-                                join secao_registro_acao_busca_ativa sraba on sraba.id = rabas.secao_registro_acao_id
-                                left join opcao_resposta opr on opr.id = rabar.resposta_id
-                                where q.nome_componente = {QUESTAO_PROCEDIMENTO_REALIZADO_NOME_COMPONENTE}
-                                      and sraba.etapa = {SECAO_ETAPA_1} 
-                                      and sraba.ordem = {SECAO_ORDEM_1}
-                                      and not rabar.excluido 
-                                      and not rabaq.excluido
-                                ), vw_resposta_conseguiu_contato_com_responsavel as (
-                                select rabas.registro_acao_busca_ativa_id, 
-                                       opr.nome as ContatoRealizado,
-                                       rabar.resposta_id  as ContatoRealizadoId
-                                from registro_acao_busca_ativa_secao rabas    
-                                join registro_acao_busca_ativa_questao rabaq on rabas.id = rabaq.registro_acao_busca_ativa_secao_id  
-                                join questao q on rabaq.questao_id = q.id 
-                                join registro_acao_busca_ativa_resposta rabar on rabar.questao_registro_acao_id = rabaq.id 
-                                join secao_registro_acao_busca_ativa sraba on sraba.id = rabas.secao_registro_acao_id
-                                left join opcao_resposta opr on opr.id = rabar.resposta_id
-                                where q.nome_componente = {QUESTAO_CONSEGUIU_CONTATO_COM_RESPONSAVEL_NOME_COMPONENTE}
-                                      and sraba.etapa = {SECAO_ETAPA_1} 
-                                      and sraba.ordem = {SECAO_ORDEM_1}
-                                      and not rabar.excluido 
-                                      and not rabaq.excluido
-                                )
-                                select ";
+                 select rabas.registro_acao_busca_ativa_id, 
+                        rabar.texto DataRegistro
+                 from registro_acao_busca_ativa_secao rabas    
+                 join registro_acao_busca_ativa_questao rabaq on rabas.id = rabaq.registro_acao_busca_ativa_secao_id  
+                 join questao q on rabaq.questao_id = q.id 
+                 join registro_acao_busca_ativa_resposta rabar on rabar.questao_registro_acao_id = rabaq.id 
+                 join secao_registro_acao_busca_ativa sraba on sraba.id = rabas.secao_registro_acao_id
+                 where q.nome_componente = {QUESTAO_DATA_REGISTRO_NOME_COMPONENTE} 
+                       and sraba.etapa = {SECAO_ETAPA_1} 
+                       and sraba.ordem = {SECAO_ORDEM_1} 
+                       and not rabar.excluido
+                       and not rabaq.excluido
+                 )
+               , vw_resposta_procedimento_realizado as (
+                 select rabas.registro_acao_busca_ativa_id, 
+                        opr.nome as ProcedimentoRealizado,
+                        rabar.resposta_id  as ProcedimentoRealizadoId,
+                        opr.ordem as ProcedimentoRealizadoOrdem
+                 from registro_acao_busca_ativa_secao rabas    
+                 join registro_acao_busca_ativa_questao rabaq on rabas.id = rabaq.registro_acao_busca_ativa_secao_id  
+                 join questao q on rabaq.questao_id = q.id 
+                 join registro_acao_busca_ativa_resposta rabar on rabar.questao_registro_acao_id = rabaq.id 
+                 join secao_registro_acao_busca_ativa sraba on sraba.id = rabas.secao_registro_acao_id
+                 left join opcao_resposta opr on opr.id = rabar.resposta_id
+                 where q.nome_componente = {QUESTAO_PROCEDIMENTO_REALIZADO_NOME_COMPONENTE}
+                       and sraba.etapa = {SECAO_ETAPA_1} 
+                       and sraba.ordem = {SECAO_ORDEM_1}
+                       and not rabar.excluido 
+                       and not rabaq.excluido
+                 ), vw_resposta_conseguiu_contato_com_responsavel as (
+                 select rabas.registro_acao_busca_ativa_id, 
+                        opr.nome as ContatoRealizado,
+                        rabar.resposta_id  as ContatoRealizadoId
+                 from registro_acao_busca_ativa_secao rabas    
+                 join registro_acao_busca_ativa_questao rabaq on rabas.id = rabaq.registro_acao_busca_ativa_secao_id  
+                 join questao q on rabaq.questao_id = q.id 
+                 join registro_acao_busca_ativa_resposta rabar on rabar.questao_registro_acao_id = rabaq.id 
+                 join secao_registro_acao_busca_ativa sraba on sraba.id = rabas.secao_registro_acao_id
+                 left join opcao_resposta opr on opr.id = rabar.resposta_id
+                 where q.nome_componente = {QUESTAO_CONSEGUIU_CONTATO_COM_RESPONSAVEL_NOME_COMPONENTE}
+                       and sraba.etapa = {SECAO_ETAPA_1} 
+                       and sraba.ordem = {SECAO_ORDEM_1}
+                       and not rabar.excluido 
+                       and not rabaq.excluido
+                 )
+                 , vw_todas_resposta_contato_com_responsavel as (
+                      SELECT rabas.registro_acao_busca_ativa_id,           
+                            opr.nome as DescMotivoAusencia
+                     FROM registro_acao_busca_ativa_secao rabas    
+                     LEFT JOIN registro_acao_busca_ativa_questao rabaq
+                         ON rabas.id = rabaq.registro_acao_busca_ativa_secao_id
+                         AND NOT rabaq.excluido
+                     LEFT JOIN questao q
+                         ON rabaq.questao_id = q.id
+                     LEFT JOIN registro_acao_busca_ativa_resposta rabar
+                         ON rabar.questao_registro_acao_id = rabaq.id
+                         AND NOT rabar.excluido
+                     INNER JOIN secao_registro_acao_busca_ativa sraba
+                         ON sraba.id = rabas.secao_registro_acao_id
+                         and sraba.etapa = {SECAO_ETAPA_1} 
+                        and sraba.ordem = {SECAO_ORDEM_1}
+                     LEFT JOIN opcao_resposta opr
+                         ON opr.id = rabar.resposta_id
+                         AND opr.nome IS NOT NULL
+                     WHERE NOT rabas.excluido and q.nome_componente = {QUESTAO_JUSTIFICATIVA_MOTIVO_FALTA_NOME_COMPONENTE}
+                 )
+                 select ";
             sql.AppendLine(sqlSelect);
             if (contador)
                 sql.AppendLine("count(raba.id) ");
             else
             {
-                sql.AppendLine(@"raba.id,
-                                t.nome as NomeTurma,
-                                t.modalidade_codigo as Modalidade,
-                                raba.aluno_nome as NomeAluno,
-                                raba.aluno_codigo CodigoAluno
-                                ,case when length(qdata.DataRegistro) > 0 then to_date(qdata.DataRegistro,'yyyy-mm-dd') else null end DataRegistro
-                                ,raba.criado_por as NomeUsuarioCriador
-                                ,raba.criado_rf as RfUsuarioCriador
-                                ,raba.criado_em as DataCriacao
-                                ,qProcedRealizado.ProcedimentoRealizado
-                                ,qContatoEfetuadoComResponsavel.ContatoRealizado as ConseguiuContatoResponsavel
-                                ,motivo_ausencia.descricao as DescMotivoAusencia
-                                ,u.nome UeNome 
-                                ,u.tipo_escola TipoEscola
-                                ,te.descricao  || ' ' || u.nome as Ue
-                ");
+                sql.AppendLine(@"
+                 raba.id
+                 ,to_date(qdata.DataRegistro,'yyyy-mm-dd') as DataRegistro
+                 ,t.nome as NomeTurma
+                 ,t.modalidade_codigo as Modalidade
+                 ,raba.aluno_nome as NomeAluno
+                 ,raba.aluno_codigo as CodigoAluno
+                 ,case when length(qdata.DataRegistro) > 0 then to_date(qdata.DataRegistro,'yyyy-mm-dd') else null end  DataRegistro
+                 ,raba.criado_por as NomeUsuarioCriador
+                 ,raba.criado_rf as RfUsuarioCriador
+                 ,raba.criado_em as DataCriacao
+                 ,qProcedRealizado.ProcedimentoRealizado
+                 ,qContatoEfetuadoComResponsavel.ContatoRealizado as ConseguiuContatoResponsavel
+                 ,u.nome UeNome 
+					,u.tipo_escola TipoEscola
+					,te.descricao  || ' ' || u.nome as Ue
+                 ,STRING_AGG(qTodasRespostasComResponsavel.DescMotivoAusencia, ' | ') as DescMotivoAusencia ");
             }
-            sql.AppendLine(@" from registro_acao_busca_ativa raba 
-                              inner join turma t on t.id = raba.turma_id 
-                              inner join ue u on u.id = t.ue_id 
-                              inner join dre d on d.id = u.dre_id 
-                              inner join tipo_escola te on u.tipo_escola = te.cod_tipo_escola_eol
-                              left join vw_resposta_data qdata on qdata.registro_acao_busca_ativa_id = raba.id
-                              left join vw_resposta_procedimento_realizado qProcedRealizado on qProcedRealizado.registro_acao_busca_ativa_id = raba.id
-                              left join vw_resposta_conseguiu_contato_com_responsavel qContatoEfetuadoComResponsavel on qContatoEfetuadoComResponsavel.registro_acao_busca_ativa_id = raba.id
-                              left join anotacao_frequencia_aluno on raba.aluno_codigo = anotacao_frequencia_aluno.codigo_aluno
-							  left join motivo_ausencia on anotacao_frequencia_aluno.motivo_ausencia_id = motivo_ausencia.id ");
+            sql.AppendLine(@" from registro_acao_busca_ativa raba
+             inner join turma t on t.id = raba.turma_id
+             inner join ue u on u.id = t.ue_id
+             inner join dre d on d.id = u.dre_id
+             inner join tipo_escola te on u.tipo_escola = te.cod_tipo_escola_eol
+             left join vw_resposta_data qdata on qdata.registro_acao_busca_ativa_id = raba.id
+             left join vw_resposta_procedimento_realizado qProcedRealizado on qProcedRealizado.registro_acao_busca_ativa_id = raba.id
+             left join vw_resposta_conseguiu_contato_com_responsavel qContatoEfetuadoComResponsavel on qContatoEfetuadoComResponsavel.registro_acao_busca_ativa_id = raba.id
+             left join vw_todas_resposta_contato_com_responsavel qTodasRespostasComResponsavel on qTodasRespostasComResponsavel.registro_acao_busca_ativa_id = raba.id ");
         }
+
 
         private void ObterFiltro(StringBuilder sql, string codigoAluno, long? turmaId)
         {
@@ -505,7 +535,12 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(" and raba.aluno_codigo = @codigoAluno ");
 
             if (!contador)
+            {
+                sql.AppendLine(" group by raba.id, to_date(qdata.DataRegistro, 'yyyy-mm-dd'), t.nome, t.modalidade_codigo, raba.aluno_nome, raba.aluno_codigo,  ");
+                sql.AppendLine(" qdata.DataRegistro, raba.criado_por, raba.criado_rf, raba.criado_em, qProcedRealizado.ProcedimentoRealizado,  ");
+                sql.AppendLine(" qContatoEfetuadoComResponsavel.ContatoRealizado, u.nome, u.tipo_escola,te.descricao || ' ' || u.nome ");
                 sql.AppendLine(" order by to_date(qdata.DataRegistro,'yyyy-mm-dd') desc ");
+            }
 
             if (paginacao.QuantidadeRegistros > 0 && !contador)
                 sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
