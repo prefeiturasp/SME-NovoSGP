@@ -37,9 +37,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
         {
             string codigoUe = "094438";
             int anoLetivo = 2024;
+            var dataString = "2024-10-21";
             var retornoEsperado = new List<PainelEducacionalFrequenciaSemanalUeDto>
             {
-                new PainelEducacionalFrequenciaSemanalUeDto { DataAula = "2024-10-21", PercentualFrequencia = 98.5m }
+                new PainelEducacionalFrequenciaSemanalUeDto { DataAula = DateTime.Parse(dataString), PercentualFrequencia = 98.5m }
             };
 
             _mediatorMock.Setup(m => m.Send(
