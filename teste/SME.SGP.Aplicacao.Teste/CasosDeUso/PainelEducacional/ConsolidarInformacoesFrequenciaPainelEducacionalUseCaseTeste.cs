@@ -42,9 +42,9 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             _repositorioTipoEscolaMock = new Mock<IRepositorioTipoEscola>();
 
             _repositorioDreConsultaMock.Setup(r => r.ObterTodas())
-                .ReturnsAsync(new List<Dre>
+                .ReturnsAsync(new List<SME.SGP.Dominio.Dre>
                 {
-                    new Dre
+                    new SME.SGP.Dominio.Dre
                     {
                         Id = 1,
                         CodigoDre = "123456",
@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                         Abreviacao = "IP",
                         DataAtualizacao = DateTime.Now
                     },
-                    new Dre
+                    new SME.SGP.Dominio.Dre
                     {
                         Id = 2,
                         CodigoDre = "654321",
