@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao.Teste.Commands.Aulas
 
             // Ação e Verificação
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => _commandHandler.Handle(comando, default));
-            excecao.Message.Should().Be("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");
+            excecao.Message.Should().BeEquivalentTo("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");
         }
 
         [Fact(DisplayName = "Deve lançar exceção quando a validação de componentes do professor falhar")]
@@ -112,7 +112,7 @@ namespace SME.SGP.Aplicacao.Teste.Commands.Aulas
 
             // Verificação
             retorno.Should().NotBeNull();
-            retorno.Mensagens.Should().Contain("Aula excluída com sucesso.");
+            retorno.Mensagens.Should().BeEquivalentTo("Aula excluída com sucesso.");
 
             // Verifica se a aula foi marcada como excluída
             aulaCapturada.Should().NotBeNull();
@@ -133,7 +133,6 @@ namespace SME.SGP.Aplicacao.Teste.Commands.Aulas
         [Fact(DisplayName = "Não deve remover arquivos quando eles não existirem")]
         public async Task Handle_QuandoNaoHouverArquivos_NaoDeveTentarRemover()
         {
-            // Organização
             var comando = CriarComandoFake(true);
 
             // Simula repositórios retornando nulo ou lista vazia
