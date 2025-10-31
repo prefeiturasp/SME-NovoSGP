@@ -60,8 +60,8 @@ namespace SME.SGP.Aplicacao.Teste.Queries
 
             // Assert
             Assert.NotNull(retornoConsulta);
-            //Assert.True(retornoConsulta.Count() == 1);
-            //Assert.True(retornoConsulta.FirstOrDefault() == "1");
+            Assert.Single(retornoConsulta);
+            Assert.Equal("1", retornoConsulta.First());
         }
 
         [Fact(DisplayName = "ObterTurmasComMatriculasValidasQueryHandler -  Obter Turmas com matrículas válidas dentro do periodo de fechamento")]
@@ -98,8 +98,19 @@ namespace SME.SGP.Aplicacao.Teste.Queries
 
             // Assert
             Assert.NotNull(retornoConsulta);
-            //Assert.True(retornoConsulta.Count() == 1);
-            //Assert.True(retornoConsulta.FirstOrDefault() == "1");
+            Assert.Single(retornoConsulta);
+            Assert.Equal("1", retornoConsulta.First());
+        }
+
+        private void ConfigurarMocks(IEnumerable<AlunoPorTurmaResposta> matriculas, IEnumerable<Turma> turmas)
+        {
+            mediator.Setup(m => m.Send(It.IsAny<ObterTodosAlunosNaTurmaQuery>(), It.IsAny<CancellationToken>()))
+                    .ReturnsAsync((ObterTodosAlunosNaTurmaQuery query, CancellationToken token) =>
+                        matriculas.Where(t => t.CodigoTurma.ToString() == query.CodigoTurma.ToString()));
+
+            mediator.Setup(m => m.Send(It.IsAny<ObterTurmaPorCodigoQuery>(), It.IsAny<CancellationToken>()))
+                    .ReturnsAsync((ObterTurmaPorCodigoQuery query, CancellationToken token) =>
+                        turmas.FirstOrDefault(t => t.CodigoTurma == query.TurmaCodigo));
         }
     }
 }
