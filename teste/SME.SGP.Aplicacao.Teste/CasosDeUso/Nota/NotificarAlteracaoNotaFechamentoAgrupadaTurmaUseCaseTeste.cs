@@ -122,8 +122,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Nota
                 {
                     CodigoUe = "UE1",
                     Nome = "Escola Teste",
-                    Dre = new Dre { CodigoDre = "DRE1", Abreviacao = "DRE" },
-                    TipoEscola = new TipoEscola {  }
+                    Dre = new SME.SGP.Dominio.Dre { CodigoDre = "DRE1", Abreviacao = "DRE" },
+                    TipoEscola = new Dominio.TipoEscola { }
                 }
             };
         }
