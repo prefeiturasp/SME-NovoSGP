@@ -1,209 +1,219 @@
-﻿using MediatR;
-using Moq;
-using SME.SGP.Aplicacao.Commands.PainelEducacional.ConsolidacaoFrequenciaDiaria;
+﻿using Moq;
 using SME.SGP.Aplicacao.CasosDeUso.PainelEducacional.Frequencia;
+using SME.SGP.Aplicacao.Commands.PainelEducacional.ConsolidacaoFrequenciaDiaria;
+using SME.SGP.Aplicacao.Commands.PainelEducacional.ConsolidacaoFrequenciaDiaria.LimparConsolidacao;
 using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterFrequenciaDiaria;
 using SME.SGP.Aplicacao.Queries.UE.ObterTodasUes;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional.Frequencia;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
-using System.Threading;
+using MediatR;
+using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Aplicacao.Testes.CasosDeUso.PainelEducacional.Frequencia
 {
-    public class ConsolidarFrequenciaDiariaPainelEducacionalUseCaseTests
+    public class ConsolidarFrequenciaDiariaPainelEducacionalUseCaseTeste
     {
         private readonly Mock<IMediator> _mediatorMock;
         private readonly ConsolidarFrequenciaDiariaPainelEducacionalUseCase _useCase;
 
-        public ConsolidarFrequenciaDiariaPainelEducacionalUseCaseTests()
+        public ConsolidarFrequenciaDiariaPainelEducacionalUseCaseTeste()
         {
             _mediatorMock = new Mock<IMediator>();
             _useCase = new ConsolidarFrequenciaDiariaPainelEducacionalUseCase(_mediatorMock.Object);
         }
 
-        private static IEnumerable<DadosParaConsolidarFrequenciaDiariaAlunoDto> ObterListaFrequenciaMock()
+        private List<Dre> ObterDresFicticias()
         {
-            var dataAula = new DateTime(2025, 10, 22);
-            return new List<DadosParaConsolidarFrequenciaDiariaAlunoDto>
+            return new List<Dre>
             {
-                new DadosParaConsolidarFrequenciaDiariaAlunoDto { CodigoDre = "DRE-A", UeId = 1, TurmaId = 101, NomeTurma = "T1A", AnoLetivo = 2025, DataAula = dataAula, TotalPresentes = 95, TotalRemotos = 0, TotalAusentes = 5 }, // 95%
-                new DadosParaConsolidarFrequenciaDiariaAlunoDto { CodigoDre = "DRE-A", UeId = 1, TurmaId = 101, NomeTurma = "T1A", AnoLetivo = 2025, DataAula = dataAula, TotalPresentes = 95, TotalRemotos = 0, TotalAusentes = 5 }, // 95%
-
-                new DadosParaConsolidarFrequenciaDiariaAlunoDto { CodigoDre = "DRE-A", UeId = 1, TurmaId = 102, NomeTurma = "T2B", AnoLetivo = 2025, DataAula = dataAula, TotalPresentes = 88, TotalRemotos = 0, TotalAusentes = 12 }, // 88%
-
-                new DadosParaConsolidarFrequenciaDiariaAlunoDto { CodigoDre = "DRE-B", UeId = 2, TurmaId = 201, NomeTurma = "T3C", AnoLetivo = 2025, DataAula = dataAula, TotalPresentes = 80, TotalRemotos = 0, TotalAusentes = 20 }, // 80%
+                new Dre { Id = 1, Nome = "DRE Leste", CodigoDre = "10000" },
+                new Dre { Id = 2, Nome = "DRE Oeste", CodigoDre = "20000" }
             };
         }
 
-        private static IEnumerable<Ue> ObterListaUeMock()
+        private List<Ue> ObterUesFicticias()
         {
             return new List<Ue>
             {
-                new Ue { Id = 1, CodigoUe = "000001", Nome = "Escola A", TipoEscola = TipoEscola.EMEBS } ,
-                new Ue { Id = 2, CodigoUe = "000002", Nome = "Escola B", TipoEscola = TipoEscola.EMEI }
+                new Ue { Id = 101, CodigoUe = "UE001", Nome = "Escola A", DreId = 1, TipoEscola = TipoEscola.EMEF },
+                new Ue { Id = 102, CodigoUe = "UE002", Nome = "Escola B", DreId = 1, TipoEscola = TipoEscola.EMEF },
+                new Ue { Id = 201, CodigoUe = "UE003", Nome = "Escola C", DreId = 2, TipoEscola = TipoEscola.EMEF }
             };
         }
 
-
-        [Fact]
-        public async Task Executar_DeveRetornarTrue_EChamarComandosCorretamente()
+        private List<DadosParaConsolidarFrequenciaDiariaAlunoDto> ObterDadosFrequencia(long dreId)
         {
-            var listaFrequencia = ObterListaFrequenciaMock();
-            var listaUe = ObterListaUeMock();
-            var param = new MensagemRabbit();
+            if (dreId == 1)
+            {
+                return new List<DadosParaConsolidarFrequenciaDiariaAlunoDto>
+                {
+                    new DadosParaConsolidarFrequenciaDiariaAlunoDto { CodigoDre = "10000", UeId = 101, TurmaId = 1, NomeTurma = "T1", AnoLetivo = 2025, TotalPresentes = 20, TotalAusentes = 2, TotalRemotos = 3, DataAula = new DateTime(2025, 10, 1) },
+                    new DadosParaConsolidarFrequenciaDiariaAlunoDto { CodigoDre = "10000", UeId = 101, TurmaId = 1, NomeTurma = "T1", AnoLetivo = 2025, TotalPresentes = 10, TotalAusentes = 1, TotalRemotos = 1, DataAula = new DateTime(2025, 10, 1) }, // Duplicata para teste de soma
 
-            _mediatorMock.Setup(m => m.Send(
-                It.IsAny<ObterFrequenciaDiariaQuery>(), default))
-                .ReturnsAsync(listaFrequencia);
+                    new DadosParaConsolidarFrequenciaDiariaAlunoDto { CodigoDre = "10000", UeId = 101, TurmaId = 2, NomeTurma = "T2", AnoLetivo = 2025, TotalPresentes = 15, TotalAusentes = 5, TotalRemotos = 0, DataAula = new DateTime(2025, 10, 1) },
 
-            _mediatorMock.Setup(m => m.Send(
-                It.IsAny<ObterTodasUesQuery>(), default))
-                .ReturnsAsync(listaUe);
+                    new DadosParaConsolidarFrequenciaDiariaAlunoDto { CodigoDre = "10000", UeId = 102, TurmaId = 3, NomeTurma = "T3", AnoLetivo = 2025, TotalPresentes = 25, TotalAusentes = 0, TotalRemotos = 5, DataAula = new DateTime(2025, 10, 1) },
 
-            var resultado = await _useCase.Executar(param);
-
-            Assert.True(resultado);
-
-            _mediatorMock.Verify(m => m.Send(
-                It.Is<SalvarPainelEducacionalConsolidacaoFrequenciaDiariaTurmaCommand>(
-                    c => c.Indicadores.Count() == 3),
-                default),
-                Times.Once);
-
-            _mediatorMock.Verify(m => m.Send(
-               It.Is<SalvarPainelEducacionalConsolidacaoFrequenciaDiariaCommand>(
-                   c => c.Indicadores.Count() == 2),
-               default),
-               Times.Once);
+                    new DadosParaConsolidarFrequenciaDiariaAlunoDto { CodigoDre = "10000", UeId = 101, TurmaId = 1, NomeTurma = "T1", AnoLetivo = 2025, TotalPresentes = 22, TotalAusentes = 0, TotalRemotos = 3, DataAula = new DateTime(2025, 10, 2) },
+                };
+            }
+            if (dreId == 2)
+            {
+                return new List<DadosParaConsolidarFrequenciaDiariaAlunoDto>
+                {
+                    new DadosParaConsolidarFrequenciaDiariaAlunoDto { CodigoDre = "20000", UeId = 201, TurmaId = 4, NomeTurma = "T4", AnoLetivo = 2025, TotalPresentes = 30, TotalAusentes = 1, TotalRemotos = 0, DataAula = new DateTime(2025, 10, 1) },
+                };
+            }
+            return new List<DadosParaConsolidarFrequenciaDiariaAlunoDto>();
         }
 
         [Fact]
-        public async Task Executar_ComFrequenciaVazia_DeveChamarComandosComListaVazia()
-        {
-            var listaFrequenciaVazia = new List<DadosParaConsolidarFrequenciaDiariaAlunoDto>();
-            var listaUe = ObterListaUeMock();
-            var param = new MensagemRabbit();
-
-            _mediatorMock.Setup(m => m.Send(It.IsAny<ObterFrequenciaDiariaQuery>(), default))
-                .ReturnsAsync(listaFrequenciaVazia);
-
-            _mediatorMock.Setup(m => m.Send(It.IsAny<ObterTodasUesQuery>(), default))
-                .ReturnsAsync(listaUe);
-
-            var resultado = await _useCase.Executar(param);
-
-            Assert.True(resultado);
-
-            _mediatorMock.Verify(m => m.Send(
-                It.Is<SalvarPainelEducacionalConsolidacaoFrequenciaDiariaTurmaCommand>(
-                    c => !c.Indicadores.Any()),
-                default),
-                Times.Once);
-
-            _mediatorMock.Verify(m => m.Send(
-                It.Is<SalvarPainelEducacionalConsolidacaoFrequenciaDiariaCommand>(
-                    c => !c.Indicadores.Any()),
-                default),
-                Times.Once);
-        }
-
-        [Theory]
-        [InlineData(84.99, NivelFrequenciaEnum.Baixa)]
-        [InlineData(0, NivelFrequenciaEnum.Baixa)]
-        [InlineData(85.00, NivelFrequenciaEnum.Media)]
-        [InlineData(89.99, NivelFrequenciaEnum.Media)]
-        [InlineData(90.00, NivelFrequenciaEnum.Alta)]
-        [InlineData(100.00, NivelFrequenciaEnum.Alta)]
-        public void ObterNivelFrequencia_DeveRetornarNivelCorreto(decimal percentual, NivelFrequenciaEnum esperado)
-        {
-            var resultado = ConsolidarFrequenciaDiariaPainelEducacionalUseCase.ObterNivelFrequencia(percentual);
-
-            Assert.Equal(esperado, resultado);
-        }
-
-        [Fact]
-        public async Task Executar_DeveCalcularCorretamenteConsolidacaoTurma()
+        public async Task Executar_DeveProcessarTodasDresEsalvarConsolidacoes()
         {
             // Arrange
-            var listaFrequencia = ObterListaFrequenciaMock();
-            var listaUe = ObterListaUeMock();
-            var param = new MensagemRabbit();
+            var dres = ObterDresFicticias();
+            var ues = ObterUesFicticias();
+            var anoAtual = DateTime.Now.Year;
 
-            _mediatorMock.Setup(m => m.Send(It.IsAny<ObterFrequenciaDiariaQuery>(), default))
-                .ReturnsAsync(listaFrequencia);
+            _mediatorMock.Setup(m => m.Send(It.IsAny<ObterTodasDresQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(dres);
+            _mediatorMock.Setup(m => m.Send(It.IsAny<ObterTodasUesQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(ues);
+            _mediatorMock.Setup(m => m.Send(It.Is<ObterFrequenciaDiariaQuery>(q => q.DreId == 1 && q.AnoLetivo == anoAtual), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(ObterDadosFrequencia(1));
+            _mediatorMock.Setup(m => m.Send(It.Is<ObterFrequenciaDiariaQuery>(q => q.DreId == 2 && q.AnoLetivo == anoAtual), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(ObterDadosFrequencia(2));
+            _mediatorMock.Setup(m => m.Send(It.IsAny<LimparPainelEducacionalConsolidacaoFrequenciaDiariaCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+            _mediatorMock.Setup(m => m.Send(It.IsAny<LimparPainelEducacionalConsolidacaoFrequenciaDiariaTurmaCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+            _mediatorMock.Setup(m => m.Send(It.IsAny<SalvarPainelEducacionalConsolidacaoFrequenciaDiariaTurmaCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+            _mediatorMock.Setup(m => m.Send(It.IsAny<SalvarPainelEducacionalConsolidacaoFrequenciaDiariaCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+            _mediatorMock.Setup(m => m.Send(It.IsAny<PublicarFilaSgpCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
-            _mediatorMock.Setup(m => m.Send(It.IsAny<ObterTodasUesQuery>(), default))
-                .ReturnsAsync(listaUe);
 
-            SalvarPainelEducacionalConsolidacaoFrequenciaDiariaTurmaCommand commandTurmaCapturado = null;
-            _mediatorMock.Setup(m => m.Send(
-                It.IsAny<SalvarPainelEducacionalConsolidacaoFrequenciaDiariaTurmaCommand>(), default))
-                .Callback<IRequest<bool>, CancellationToken>((req, token) =>
+            // Act
+            var resultado = await _useCase.Executar(new MensagemRabbit());
+
+            // Assert
+            Assert.True(resultado);
+
+            _mediatorMock.Verify(m => m.Send(It.IsAny<LimparPainelEducacionalConsolidacaoFrequenciaDiariaCommand>(), It.IsAny<CancellationToken>()), Times.Once);
+            _mediatorMock.Verify(m => m.Send(It.IsAny<LimparPainelEducacionalConsolidacaoFrequenciaDiariaTurmaCommand>(), It.IsAny<CancellationToken>()), Times.Once);
+
+            _mediatorMock.Verify(m => m.Send(It.Is<ObterFrequenciaDiariaQuery>(q => q.DreId == 1 && q.AnoLetivo == anoAtual), It.IsAny<CancellationToken>()), Times.Once);
+            _mediatorMock.Verify(m => m.Send(It.Is<ObterFrequenciaDiariaQuery>(q => q.DreId == 2 && q.AnoLetivo == anoAtual), It.IsAny<CancellationToken>()), Times.Once);
+
+            _mediatorMock.Verify(m => m.Send(It.Is<SalvarPainelEducacionalConsolidacaoFrequenciaDiariaTurmaCommand>(c => c.Indicadores.Count() > 0), It.IsAny<CancellationToken>()), Times.Exactly(2));
+            _mediatorMock.Verify(m => m.Send(It.Is<SalvarPainelEducacionalConsolidacaoFrequenciaDiariaCommand>(c => c.Indicadores.Count() > 0), It.IsAny<CancellationToken>()), Times.Exactly(2));
+
+            _mediatorMock.Verify(m => m.Send(It.Is<PublicarFilaSgpCommand>(c => c.Rota == RotasRabbitSgpPainelEducacional.ConsolidarFrequenciaSemanalPainelEducacional), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public void ObterNivelFrequencia_DeveRetornarNivelCorreto()
+        {
+            // Act & Assert
+            Assert.Equal(NivelFrequenciaEnum.Baixa, ConsolidarFrequenciaDiariaPainelEducacionalUseCase.ObterNivelFrequencia(84.9m));
+            Assert.Equal(NivelFrequenciaEnum.Media, ConsolidarFrequenciaDiariaPainelEducacionalUseCase.ObterNivelFrequencia(85.0m));
+            Assert.Equal(NivelFrequenciaEnum.Media, ConsolidarFrequenciaDiariaPainelEducacionalUseCase.ObterNivelFrequencia(89.9m));
+            Assert.Equal(NivelFrequenciaEnum.Alta, ConsolidarFrequenciaDiariaPainelEducacionalUseCase.ObterNivelFrequencia(90.0m));
+            Assert.Equal(NivelFrequenciaEnum.Alta, ConsolidarFrequenciaDiariaPainelEducacionalUseCase.ObterNivelFrequencia(100m));
+            Assert.Equal(NivelFrequenciaEnum.Baixa, ConsolidarFrequenciaDiariaPainelEducacionalUseCase.ObterNivelFrequencia(0m));
+        }
+
+        [Fact]
+        public async Task Executar_ConsolidacaoPorTurma_ValoresCorretos()
+        {
+            // Arrange
+            var dres = ObterDresFicticias().Take(1).ToList(); // Apenas DRE 1
+            var ues = ObterUesFicticias().Where(u => u.DreId == 1).ToList();
+            var dadosDre1 = ObterDadosFrequencia(1);
+            var anoAtual = DateTime.Now.Year;
+
+            _mediatorMock.Setup(m => m.Send(It.IsAny<ObterTodasDresQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(dres);
+            _mediatorMock.Setup(m => m.Send(It.IsAny<ObterTodasUesQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(ues);
+            _mediatorMock.Setup(m => m.Send(It.Is<ObterFrequenciaDiariaQuery>(q => q.DreId == 1 && q.AnoLetivo == anoAtual), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(dadosDre1);
+
+            List<ConsolidacaoFrequenciaDiariaTurmaDto> indicadoresTurmasSalvos = null;
+            _mediatorMock.Setup(m => m.Send(It.IsAny<SalvarPainelEducacionalConsolidacaoFrequenciaDiariaTurmaCommand>(), It.IsAny<CancellationToken>()))
+                .Callback<IRequest<bool>, CancellationToken>((cmd, token) =>
                 {
-                    commandTurmaCapturado = (SalvarPainelEducacionalConsolidacaoFrequenciaDiariaTurmaCommand)req;
+                    indicadoresTurmasSalvos = ((SalvarPainelEducacionalConsolidacaoFrequenciaDiariaTurmaCommand)cmd).Indicadores.ToList();
+                })
+                .ReturnsAsync(true);
+
+
+            // Act
+            await _useCase.Executar(new MensagemRabbit());
+
+            Assert.NotNull(indicadoresTurmasSalvos);
+            Assert.Equal(4, indicadoresTurmasSalvos.Count);
+
+            var turma1Dia1 = indicadoresTurmasSalvos.First(x => x.Turma == "T1" && x.DataAula == new DateTime(2025, 10, 1));
+            Assert.Equal("UE001", turma1Dia1.CodigoUe);
+            Assert.Equal(37, turma1Dia1.TotalEstudantes);
+            Assert.Equal(30, turma1Dia1.TotalPresentes);
+            Assert.Equal(Math.Round(30m / 37m * 100m, 2), Math.Round(turma1Dia1.PercentualFrequencia, 2));
+            Assert.Equal(NivelFrequenciaEnum.Baixa, turma1Dia1.NivelFrequencia);
+
+            var turma2Dia1 = indicadoresTurmasSalvos.First(x => x.Turma == "T2" && x.DataAula == new DateTime(2025, 10, 1));
+            Assert.Equal(20, turma2Dia1.TotalEstudantes);
+            Assert.Equal(15, turma2Dia1.TotalPresentes);
+            Assert.Equal(75.0m, turma2Dia1.PercentualFrequencia);
+            Assert.Equal(NivelFrequenciaEnum.Baixa, turma2Dia1.NivelFrequencia);
+        }
+
+        [Fact]
+        public async Task Executar_ConsolidacaoPorDre_ValoresCorretos()
+        {
+            // Arrange
+            var dres = ObterDresFicticias().Take(1).ToList();
+            var ues = ObterUesFicticias().Where(u => u.DreId == 1).ToList();
+            var dadosDre1 = ObterDadosFrequencia(1);
+            var anoAtual = DateTime.Now.Year;
+
+            _mediatorMock.Setup(m => m.Send(It.IsAny<ObterTodasDresQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(dres);
+            _mediatorMock.Setup(m => m.Send(It.IsAny<ObterTodasUesQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(ues);
+            _mediatorMock.Setup(m => m.Send(It.Is<ObterFrequenciaDiariaQuery>(q => q.DreId == 1 && q.AnoLetivo == anoAtual), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(dadosDre1);
+
+            List<ConsolidacaoFrequenciaDiariaDreDto> indicadoresDreSalvos = null;
+            _mediatorMock.Setup(m => m.Send(It.IsAny<SalvarPainelEducacionalConsolidacaoFrequenciaDiariaCommand>(), It.IsAny<CancellationToken>()))
+                .Callback<IRequest<bool>, CancellationToken>((cmd, token) =>
+                {
+                    indicadoresDreSalvos = ((SalvarPainelEducacionalConsolidacaoFrequenciaDiariaCommand)cmd).Indicadores.ToList();
                 })
                 .ReturnsAsync(true);
 
             // Act
-            await _useCase.Executar(param);
+            await _useCase.Executar(new MensagemRabbit());
 
-            // Assert
-            var consolidacaoT1A = commandTurmaCapturado.Indicadores.First(x => x.Turma == "T1A");
+            Assert.NotNull(indicadoresDreSalvos);
+            Assert.Equal(3, indicadoresDreSalvos.Count);
 
-            Assert.Equal(1, listaUe.First(u => u.CodigoUe == consolidacaoT1A.CodigoUe).Id);
-            Assert.Equal(200, consolidacaoT1A.TotalEstudantes);
-            Assert.Equal(190, consolidacaoT1A.TotalPresentes);
-            Assert.Equal(95m, consolidacaoT1A.PercentualFrequencia); 
-            Assert.Equal(NivelFrequenciaEnum.Alta, consolidacaoT1A.NivelFrequencia);
-            Assert.Equal("T1A", consolidacaoT1A.Turma);
-        }
+            var ue1Dia1 = indicadoresDreSalvos.First(x => x.CodigoUe == "UE001" && x.DataAula == new DateTime(2025, 10, 1));
+            Assert.Equal(NivelFrequenciaEnum.Baixa, ue1Dia1.NivelFrequencia);
+            Assert.Equal(57, ue1Dia1.TotalEstudantes);
+            Assert.Equal(45, ue1Dia1.TotalPresentes);
+            Assert.Equal(Math.Round(45m / 57m * 100m, 2), Math.Round(ue1Dia1.PercentualFrequencia, 2));
+            Assert.Equal(NivelFrequenciaEnum.Baixa, ue1Dia1.NivelFrequencia);
 
-        [Fact]
-        public async Task Executar_DeveCalcularCorretamenteConsolidacaoDre()
-        {
-            var listaFrequencia = ObterListaFrequenciaMock();
-            var listaUe = ObterListaUeMock();
-            var param = new MensagemRabbit();
-
-            _mediatorMock.Setup(m => m.Send(It.IsAny<ObterFrequenciaDiariaQuery>(), default))
-                .ReturnsAsync(listaFrequencia);
-
-            _mediatorMock.Setup(m => m.Send(It.IsAny<ObterTodasUesQuery>(), default))
-                .ReturnsAsync(listaUe);
-
-            SalvarPainelEducacionalConsolidacaoFrequenciaDiariaCommand commandDreCapturado = null;
-            _mediatorMock.Setup(m => m.Send(
-                It.IsAny<SalvarPainelEducacionalConsolidacaoFrequenciaDiariaCommand>(), default))
-                .Callback<IRequest<bool>, CancellationToken>((req, token) =>
-                {
-                    commandDreCapturado = (SalvarPainelEducacionalConsolidacaoFrequenciaDiariaCommand)req;
-                })
-                .ReturnsAsync(true);
-
-            await _useCase.Executar(param);
-
-            var consolidacaoUE1 = commandDreCapturado.Indicadores.First(x => x.CodigoUe == "000001");
-
-            Assert.Equal("DRE-A", consolidacaoUE1.CodigoDre);
-            Assert.Equal(300, consolidacaoUE1.TotalEstudantes);
-            Assert.Equal(278, consolidacaoUE1.TotalPresentes);
-            Assert.Equal(92.66666666666666666666666667m, consolidacaoUE1.PercentualFrequencia);
-            Assert.Equal(NivelFrequenciaEnum.Alta, consolidacaoUE1.NivelFrequencia);
-
-            var consolidacaoUE2 = commandDreCapturado.Indicadores.First(x => x.CodigoUe == "000002");
-
-            Assert.Equal("DRE-B", consolidacaoUE2.CodigoDre);
-            Assert.Equal(100, consolidacaoUE2.TotalEstudantes);
-            Assert.Equal(80, consolidacaoUE2.TotalPresentes);
-            Assert.Equal(80m, consolidacaoUE2.PercentualFrequencia);
-            Assert.Equal(NivelFrequenciaEnum.Baixa, consolidacaoUE2.NivelFrequencia);
+            var ue2Dia1 = indicadoresDreSalvos.First(x => x.CodigoUe == "UE002" && x.DataAula == new DateTime(2025, 10, 1));
+            Assert.Equal(30, ue2Dia1.TotalEstudantes);
+            Assert.Equal(25, ue2Dia1.TotalPresentes);
+            Assert.Equal(Math.Round(25m / 30m * 100m, 2), Math.Round(ue2Dia1.PercentualFrequencia, 2));
+            Assert.Equal(NivelFrequenciaEnum.Baixa, ue2Dia1.NivelFrequencia);
         }
     }
 }
