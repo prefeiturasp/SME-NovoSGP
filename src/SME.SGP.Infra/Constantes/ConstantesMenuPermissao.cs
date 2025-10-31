@@ -257,8 +257,8 @@
         public const int ORDEM_MENU_PENDENCIAS_DO_FECHAMENTO = 4;
         public const int ORDEM_MENU_RAA = 5;
 
-        public const int ORDEM_MENU_DEVOLUTIVAS_EI = 1;
-        public const int ORDEM_MENU_INFORMACOES_EDUCACIONAIS = 2;
+        public const int ORDEM_MENU_INFORMACOES_EDUCACIONAIS = 1;
+        public const int ORDEM_MENU_DEVOLUTIVAS_EI = 2;
         public const int ORDEM_MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS = 3;
         public const int ORDEM_MENU_CALENDARIO_ESCOLAR = 4;
         public const int ORDEM_MENU_DOCUMENTOS_E_PLANOS_DE_TRABALHO = 5;
