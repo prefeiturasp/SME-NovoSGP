@@ -1,5 +1,6 @@
 ﻿using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoPlanoAEE;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
