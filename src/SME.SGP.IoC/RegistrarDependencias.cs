@@ -683,8 +683,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioProficienciaIdebConsulta, RepositorioProficienciaIdebConsulta>();
             services.TryAddScoped<IRepositorioProficienciaIdeb, RepositorioProficienciaIdeb>();
             services.TryAddScoped<IRepositorioPainelEducacionalRegistroFrequenciaDiariaConsulta, RepositorioPainelEducacionalRegistroFrequenciaDiariaConsulta>();
-            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoFluenciaLeitoraUe, RepositorioPainelEducacionalConsolidacaoFluenciaLeitoraUe>();            
-            services.TryAddScoped<IRepositorioConsultaFluenciaLeitoraUe, RepositorioConsultaFluenciaLeitoraUe>();            
+            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoPlanoAEE, RepositorioPainelEducacionalConsolidacaoPlanoAEE>();
 
             services.TryAddScoped<IRepositorioConsolidacaoFluenciaLeitora, RepositorioConsolidacaoFluenciaLeitora>();
             services.TryAddScoped<IConsolidarTaxaAlfabetizacaoPainelEducacionalUseCase, ConsolidarTaxaAlfabetizacaoPainelEducacionalUseCase>();
@@ -697,7 +696,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsolidarNotasPainelEducacionalUseCase, ConsolidarNotasPainelEducacionalUseCase>();
             services.TryAddScoped<IConsolidarReclassificacaoPainelEducacionalUseCase, ConsolidarReclassificacaoPainelEducacionalUseCase>();
             services.TryAddScoped<IConsolidarDistorcaoIdadePainelEducacionalUseCase, ConsolidarDistorcaoIdadePainelEducacionalUseCase>();
-            services.TryAddScoped<IConsolidarFluenciaLeitoraUePainelEducacionalUseCase, ConsolidarFluenciaLeitoraUePainelEducacionalUseCase>();
+            services.TryAddScoped<IConsolidarPlanoAEEPainelEducacionalUseCase, ConsolidarPlanoAEEPainelEducacionalUseCase>();
 
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoProficienciaIdep, RepositorioPainelEducacionalConsolidacaoProficienciaIdep>();
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoProficienciaIdeb, RepositorioPainelEducacionalConsolidacaoProficienciaIdeb>();
