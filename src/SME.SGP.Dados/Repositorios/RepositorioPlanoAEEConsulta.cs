@@ -5,6 +5,7 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoPlanoAEE;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System;
@@ -570,6 +571,22 @@ namespace SME.SGP.Dados.Repositorios
             sql.Append(";");
 
             return sql.ToString();
+        }
+
+        public async Task<IEnumerable<ConsolidacaoPlanoAEEDto>> ObterPlanosConsolidarPainelEducacional()
+        {
+            var query = $@"select 
+	                        t4.dre_id codigoDre
+                          , t3.ue_id codigoUe  
+                          , t2.ano_letivo anoLetivo
+                          , t1.situacao situacaoPlano  
+                        from plano_aee t1 
+                        inner join turma t2 on (t2.id = t1.turma_id)
+                        inner join ue t3 on (t3.id = t2.ue_id)
+                        inner join dre t4 on (t4.id = t3.dre_id)
+                        where t1.excluido = false and t2.ano_letivo = @anoLetivo;";
+
+            return await database.Conexao.QueryAsync<ConsolidacaoPlanoAEEDto>(query, new { anoLetivo = DateTime.Now.Year });
         }
     }
 }
