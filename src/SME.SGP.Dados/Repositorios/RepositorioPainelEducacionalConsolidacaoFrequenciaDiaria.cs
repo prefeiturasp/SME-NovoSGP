@@ -5,6 +5,7 @@ using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -25,13 +26,14 @@ namespace SME.SGP.Dados.Repositorios
 
             await using var writer = conn.BeginBinaryImport(@"
                 COPY painel_educacional_consolidacao_frequencia_diaria_ue 
-                    (codigo_ue, turma_id, nivel_frequencia, turma, ano_letivo, total_estudantes, total_presentes, percentual_frequencia, data_aula, criado_em)
+                    (codigo_dre, codigo_ue, turma_id, nivel_frequencia, turma, ano_letivo, total_estudantes, total_presentes, percentual_frequencia, data_aula, criado_em)
                 FROM STDIN (FORMAT BINARY)
             ");
 
             foreach (var item in indicadores)
             {
                 await writer.StartRowAsync();
+                await writer.WriteAsync(item.CodigoDre, NpgsqlDbType.Varchar);
                 await writer.WriteAsync(item.CodigoUe, NpgsqlDbType.Varchar);
                 await writer.WriteAsync(item.TurmaId, NpgsqlDbType.Bigint);
                 await writer.WriteAsync((int)item.NivelFrequencia, NpgsqlDbType.Integer);

@@ -4,7 +4,7 @@ using SME.SGP.Infra.Dtos.ImportarArquivo;
 
 namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.Idep
 {
-    public class SalvarImportacaoArquivoIdepCommand : IRequest<Dominio.Idep>
+    public class SalvarImportacaoArquivoIdepCommand : IRequest<Dominio.Entidades.Idep>
     {
         public SalvarImportacaoArquivoIdepCommand(ArquivoIdepDto arquivoIdep)
         {

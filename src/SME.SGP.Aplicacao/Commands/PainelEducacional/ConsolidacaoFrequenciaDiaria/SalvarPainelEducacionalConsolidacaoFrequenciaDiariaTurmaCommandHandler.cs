@@ -20,8 +20,6 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.ConsolidacaoFrequenciaDia
 
         public async Task<bool> Handle(SalvarPainelEducacionalConsolidacaoFrequenciaDiariaTurmaCommand request, CancellationToken cancellationToken)
         {
-            await repositorioPainelEducacionalConsolidacaoFrequenciaDiaria.LimparConsolidacao();
-
             await repositorioPainelEducacionalConsolidacaoFrequenciaDiaria.BulkInsertAsync(MapearParaEntidade(request.Indicadores));
 
             return true;
@@ -32,6 +30,7 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.ConsolidacaoFrequenciaDia
             return consolidacaoFrequenciaDto
                 .Select(dto => new PainelEducacionalConsolidacaoFrequenciaDiaria
                 {
+                    CodigoDre = dto.CodigoDre,
                     CodigoUe = dto.CodigoUe,
                     TurmaId = dto.TurmaId,
                     NivelFrequencia = dto.NivelFrequencia,

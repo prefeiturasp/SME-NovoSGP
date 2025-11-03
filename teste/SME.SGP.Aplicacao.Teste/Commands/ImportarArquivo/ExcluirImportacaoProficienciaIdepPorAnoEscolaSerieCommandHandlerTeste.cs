@@ -11,18 +11,18 @@ namespace SME.SGP.Aplicacao.Teste.Commands.ImportarArquivo.ProficienciaIdep
     public class ExcluirImportacaoProficienciaIdepPorAnoEscolaSerieCommandHandlerTeste
     {
         private readonly Mock<IRepositorioProficienciaIdep> _repositorioProficienciaIdepMock;
-        private readonly ExcluirImportacaoProficienciaIdepPorAnoEscolaSerieCommandHandler _handler;
+        private readonly ExcluirImportacaoProficienciaIdepCommandHandler _handler;
 
         public ExcluirImportacaoProficienciaIdepPorAnoEscolaSerieCommandHandlerTeste()
         {
             _repositorioProficienciaIdepMock = new Mock<IRepositorioProficienciaIdep>();
-            _handler = new ExcluirImportacaoProficienciaIdepPorAnoEscolaSerieCommandHandler(_repositorioProficienciaIdepMock.Object);
+            _handler = new ExcluirImportacaoProficienciaIdepCommandHandler(_repositorioProficienciaIdepMock.Object);
         }
 
         [Fact]
         public void Construtor_DeveInstanciarCorretamente_QuandoRepositorioEhValido()
         {
-            var handler = new ExcluirImportacaoProficienciaIdepPorAnoEscolaSerieCommandHandler(_repositorioProficienciaIdepMock.Object);
+            var handler = new ExcluirImportacaoProficienciaIdepCommandHandler(_repositorioProficienciaIdepMock.Object);
             Assert.NotNull(handler);
         }
 
@@ -30,64 +30,8 @@ namespace SME.SGP.Aplicacao.Teste.Commands.ImportarArquivo.ProficienciaIdep
         public void Construtor_DeveLancarArgumentNullException_QuandoRepositorioEhNulo()
         {
             var exception = Assert.Throws<ArgumentNullException>(
-                () => new ExcluirImportacaoProficienciaIdepPorAnoEscolaSerieCommandHandler(null));
+                () => new ExcluirImportacaoProficienciaIdepCommandHandler(null));
             Assert.Equal("repositorioProficienciaIdep", exception.ParamName);
-        }
-
-        [Fact]
-        public async Task Handle_DeveChamarRepositorioComParametrosCorretos()
-        {
-            var anoLetivo = 2023;
-            var codigoEolEscola = "123456";
-            var serieAno = 5;
-            var componenteCurricular = "3";
-            var command = new ExcluirImportacaoProficienciaIdepPorAnoEscolaSerieCommand(anoLetivo, codigoEolEscola, serieAno, componenteCurricular);
-
-            _repositorioProficienciaIdepMock
-                .Setup(x => x.ExcluirPorAnoEscolaSerieComponenteCurricular(anoLetivo, codigoEolEscola, serieAno, componenteCurricular))
-                .ReturnsAsync(true);
-
-            var resultado = await _handler.Handle(command, CancellationToken.None);
-
-            _repositorioProficienciaIdepMock.Verify(
-                x => x.ExcluirPorAnoEscolaSerieComponenteCurricular(anoLetivo, codigoEolEscola, serieAno, componenteCurricular),
-                Times.Once);
-
-            Assert.True(resultado);
-        }
-
-        [Fact]
-        public async Task Handle_DeveRetornarFalse_QuandoExclusaoFalhar()
-        {
-            var command = new ExcluirImportacaoProficienciaIdepPorAnoEscolaSerieCommand(2023, "123456", 5, "3");
-
-            _repositorioProficienciaIdepMock
-                .Setup(x => x.ExcluirPorAnoEscolaSerieComponenteCurricular(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>()))
-                .ReturnsAsync(false);
-
-            var resultado = await _handler.Handle(command, CancellationToken.None);
-            Assert.False(resultado);
-        }
-
-        [Theory]
-        [InlineData(2023, "123456", 5, "1")]
-        [InlineData(2024, "789012", 9, "2")]
-        [InlineData(2022, "345678", 3, "3")]
-        public async Task Handle_DeveFuncionarComDiferentesParametros(int anoLetivo, string codigoEolEscola, int serieAno, string componenteCurricular)
-        {
-            var command = new ExcluirImportacaoProficienciaIdepPorAnoEscolaSerieCommand(anoLetivo, codigoEolEscola, serieAno, componenteCurricular);
-
-            _repositorioProficienciaIdepMock
-                .Setup(x => x.ExcluirPorAnoEscolaSerieComponenteCurricular(anoLetivo, codigoEolEscola, serieAno, componenteCurricular))
-                .ReturnsAsync(true);
-
-            var resultado = await _handler.Handle(command, CancellationToken.None);
-
-            _repositorioProficienciaIdepMock.Verify(
-                x => x.ExcluirPorAnoEscolaSerieComponenteCurricular(anoLetivo, codigoEolEscola, serieAno, componenteCurricular),
-                Times.Once);
-
-            Assert.True(resultado);
         }
     }
 }

@@ -3,7 +3,6 @@ using Elastic.Apm.Api;
 using Microsoft.Extensions.Options;
 using SME.SGP.Infra.Utilitarios;
 using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Infra
@@ -74,7 +73,7 @@ namespace SME.SGP.Infra
             else
             {
                 acao();
-            }         
+            }
         }
 
         public async Task RegistrarAsync(Func<Task> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
@@ -93,7 +92,7 @@ namespace SME.SGP.Infra
                     });
                 }
                 else
-                    await acao();                
+                    await acao();
             }
             else
                 await acao();
@@ -101,7 +100,7 @@ namespace SME.SGP.Infra
 
         public ITransaction Iniciar(string nome, string tipo)
         {
-            return  telemetriaOptions.Apm ?
+            return telemetriaOptions.Apm ?
                 Agent.Tracer.StartTransaction(nome, tipo) :
                 null;
         }

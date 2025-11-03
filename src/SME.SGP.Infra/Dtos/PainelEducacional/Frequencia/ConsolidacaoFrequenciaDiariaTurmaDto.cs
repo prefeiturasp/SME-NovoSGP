@@ -5,6 +5,7 @@ namespace SME.SGP.Infra.Dtos.PainelEducacional.Frequencia
 {
     public class ConsolidacaoFrequenciaDiariaTurmaDto
     {
+        public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }
         public long TurmaId { get; set; }
         public NivelFrequenciaEnum NivelFrequencia { get; set; }

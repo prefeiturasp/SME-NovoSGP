@@ -34,11 +34,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             {
                 new PainelEducacionalReclassificacaoDto
                 {
-                    Modalidade = new List<ModalidadeReclassificacaoDto>
+                    Modalidade = "Ensino Fundamental",
+                    SerieAno = new List<SerieAnoReclassificacaoDto>
                     {
-                        new ModalidadeReclassificacaoDto
+                        new SerieAnoReclassificacaoDto
                         {
-                            Nome = "Ensino Fundamental",
                             AnoTurma = 9,
                             QuantidadeAlunos = 10
                         }

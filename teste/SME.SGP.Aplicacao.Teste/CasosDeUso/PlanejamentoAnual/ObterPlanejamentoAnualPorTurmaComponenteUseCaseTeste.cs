@@ -1,10 +1,6 @@
 ﻿using MediatR;
 using Moq;
-using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -25,19 +21,25 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         [Fact]
         public async Task Deve_Retornar_Planejamento_Id()
         {
-            //Arrange
             var mockRetorno = 1000;
 
             mediator.Setup(a => a.Send(It.IsAny<ObterPlanejamentoAnualPorTurmaComponenteQuery>(), It.IsAny<CancellationToken>()))
                           .ReturnsAsync(mockRetorno);
 
-//Act
             var retorno = await useCase.Executar(1,1);
 
-            //Asert
             mediator.Verify(x => x.Send(It.IsAny<ObterPlanejamentoAnualPorTurmaComponenteQuery>(), It.IsAny<CancellationToken>()), Times.Once);
 
             Assert.True(retorno == 1000);
+        }
+
+        [Fact]
+        public void Deve_Lancar_ArgumentNullException_Quando_Mediator_For_Nulo()
+        {
+            var exception = Assert.Throws<ArgumentNullException>(() => 
+                new ObterPlanejamentoAnualPorTurmaComponenteUseCase(null));
+            
+            Assert.Equal("mediator", exception.ParamName);
         }
     }
 }
