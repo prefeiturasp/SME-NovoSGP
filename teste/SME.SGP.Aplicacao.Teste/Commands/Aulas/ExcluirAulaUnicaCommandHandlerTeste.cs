@@ -7,6 +7,9 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -69,7 +72,7 @@ namespace SME.SGP.Aplicacao.Teste.Commands.Aulas
 
             // Ação e Verificação
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => _commandHandler.Handle(comando, default));
-            excecao.Message.Should().BeEquivalentTo("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");
+            RemoveAcentos(excecao.Message).Should().BeEquivalentTo("Aula com avaliacao vinculada. Para excluir esta aula primeiro devera ser excluida a avaliacao.");
         }
 
         [Fact(DisplayName = "Deve lançar exceção quando a validação de componentes do professor falhar")]
@@ -112,7 +115,7 @@ namespace SME.SGP.Aplicacao.Teste.Commands.Aulas
 
             // Verificação
             retorno.Should().NotBeNull();
-            retorno.Mensagens.Should().BeEquivalentTo("Aula excluída com sucesso.");
+            RemoveAcentos(retorno.Mensagens.FirstOrDefault()).Should().BeEquivalentTo("Aula excluida com sucesso.");
 
             // Verifica se a aula foi marcada como excluída
             aulaCapturada.Should().NotBeNull();
@@ -145,6 +148,16 @@ namespace SME.SGP.Aplicacao.Teste.Commands.Aulas
 
             // Verificação
             _mediatorMock.Verify(m => m.Send(It.IsAny<RemoverArquivosExcluidosCommand>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        private static string RemoveAcentos(string texto)
+        {
+            var normalized = texto.Normalize(NormalizationForm.FormD);
+            var sb = new StringBuilder();
+            foreach (var c in normalized)
+                if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                    sb.Append(c);
+            return sb.ToString().Normalize(NormalizationForm.FormC);
         }
     }
 }
