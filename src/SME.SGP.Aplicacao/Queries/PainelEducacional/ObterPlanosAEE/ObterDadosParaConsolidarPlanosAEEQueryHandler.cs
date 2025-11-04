@@ -8,16 +8,16 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterConsolidacaoPlanosAEE
 {
-    public class ObterConsolidacaoPlanoAEEQueryHandler : IRequestHandler<ObterConsolidacaoPlanoAEEQuery, IEnumerable<ConsolidacaoPlanoAEEDto>>
+    public class ObterDadosParaConsolidarPlanosAEEQueryHandler : IRequestHandler<ObterDadosParaConsolidarPlanosAEEQuery, IEnumerable<DadosParaConsolidarPlanosAEEDto>>
     {
         private readonly IRepositorioPlanoAEEConsulta repositorio;
 
-        public ObterConsolidacaoPlanoAEEQueryHandler(IRepositorioPlanoAEEConsulta repositorio)
+        public ObterDadosParaConsolidarPlanosAEEQueryHandler(IRepositorioPlanoAEEConsulta repositorio)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
 
-        public async Task<IEnumerable<ConsolidacaoPlanoAEEDto>> Handle(ObterConsolidacaoPlanoAEEQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<DadosParaConsolidarPlanosAEEDto>> Handle(ObterDadosParaConsolidarPlanosAEEQuery request, CancellationToken cancellationToken)
         {
             var registros = await repositorio.ObterPlanosConsolidarPainelEducacional();
             return registros;

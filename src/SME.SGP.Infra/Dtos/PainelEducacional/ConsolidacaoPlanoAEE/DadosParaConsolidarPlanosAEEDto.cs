@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoPlanoAEE
 {
-    public class ConsolidacaoPlanoAEEDto
+    public class DadosParaConsolidarPlanosAEEDto
     {
         public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }

@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
-using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoPlanoAEE;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +30,7 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarConsolidacaoPlanoAE
             return true;
         }
 
-        private static List<PainelEducacionalConsolidacaoPlanoAEE> MapearParaEntidade(IEnumerable<ConsolidacaoPlanoAEEDto> consolidacaoPlanoAEEDto)
+        private static List<PainelEducacionalConsolidacaoPlanoAEE> MapearParaEntidade(IEnumerable<DadosParaConsolidarPlanosAEEDto> consolidacaoPlanoAEEDto)
         {
             return consolidacaoPlanoAEEDto
                 .Select(dto => new PainelEducacionalConsolidacaoPlanoAEE
@@ -39,7 +38,7 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarConsolidacaoPlanoAE
                     AnoLetivo = dto.AnoLetivo,
                     CodigoDre = dto.CodigoDre,
                     CodigoUe = dto.CodigoUe,
-                    SituacaoPlano = dto.SituacaoPlano.ObterDisplayName(),                    
+                    SituacaoPlano = dto.SituacaoPlano,                    
                     QuantidadeSituacaoPlano = dto.QuantidadeSituacaoPlano,
                 })
                 .ToList();

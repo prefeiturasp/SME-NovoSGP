@@ -39,7 +39,7 @@ namespace SME.SGP.Dados.Repositorios
                 await writer.WriteAsync(item.AnoLetivo, NpgsqlDbType.Integer);
                 await writer.WriteAsync(item.CodigoDre, NpgsqlDbType.Varchar);
                 await writer.WriteAsync(item.CodigoUe, NpgsqlDbType.Varchar);
-                await writer.WriteAsync(item.SituacaoPlano, NpgsqlDbType.Varchar);                
+                await writer.WriteAsync((int)item.SituacaoPlano, NpgsqlDbType.Integer);                
                 await writer.WriteAsync(item.QuantidadeSituacaoPlano, NpgsqlDbType.Integer);
                 await writer.WriteAsync(item.CriadoEm, NpgsqlDbType.TimestampTz);
             }

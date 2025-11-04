@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Dominio.Enumerados;
+using System;
 
 namespace SME.SGP.Dominio.Entidades
 {
@@ -7,7 +8,7 @@ namespace SME.SGP.Dominio.Entidades
         public int AnoLetivo { get; set; }
         public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }
-        public string SituacaoPlano { get; set; }
+        public SituacaoPlanoAEE SituacaoPlano { get; set; }
         public int QuantidadeSituacaoPlano { get; set; }
         public DateTime CriadoEm { get; private set; } = DateTime.UtcNow;
     }
