@@ -1,5 +1,7 @@
-﻿using SME.SGP.Infra;
+﻿using SME.SGP.Dominio.Entidades;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoDistorcaoIdade;
 using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoPlanoAEE;
 using System;
 using System.Collections.Generic;
@@ -28,6 +30,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<Pendencia> ObterUltimaPendenciaPlano(long planoId);
         Task<IEnumerable<UsuarioEolRetornoDto>> ObterResponsaveis(long dreId, long[] ueId, long turmaId, string alunoCodigo, int? situacao, bool exibirEncerrados);
         Task<IEnumerable<PlanoAEETurmaDto>> ObterPlanosComSituacaoDiferenteDeEncerrado(long? anoLetivo);
-        Task<IEnumerable<ConsolidacaoPlanoAEEDto>> ObterPlanosConsolidarPainelEducacional();
+        Task<IEnumerable<DadosParaConsolidarPlanosAEEDto>> ObterPlanosConsolidarPainelEducacional();
+        Task<IEnumerable<PainelEducacionalConsolidacaoPlanoAEE>> ObterConsolidacaoPlanosPainelEducacional(FiltroPainelEducacionalPlanosAEE filtro);
     }
 }

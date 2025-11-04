@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            var indicadores = new List<ConsolidacaoPlanoAEEDto>();
+            var indicadores = new List<DadosParaConsolidarPlanosAEEDto>();
 
            var indicadoresTemp = await ObterConsolidacaoPlanosAEE();
            indicadores.AddRange(indicadoresTemp);
@@ -31,17 +31,17 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             return true;
         }
 
-        private async Task<IEnumerable<ConsolidacaoPlanoAEEDto>> ObterConsolidacaoPlanosAEE()
+        private async Task<IEnumerable<DadosParaConsolidarPlanosAEEDto>> ObterConsolidacaoPlanosAEE()
         {
-            var planos = await mediator.Send(new ObterConsolidacaoPlanoAEEQuery());
+            var planos = await mediator.Send(new ObterDadosParaConsolidarPlanosAEEQuery());
 
             var retorno = planos
-                .GroupBy(p => new { p.CodigoDre, p.CodigoUe, p.SituacaoPlano })
-                .Select(g => new ConsolidacaoPlanoAEEDto
+                .GroupBy(p => new { p.CodigoDre, p.CodigoUe, p.AnoLetivo, p.SituacaoPlano })
+                .Select(g => new DadosParaConsolidarPlanosAEEDto
                 {
                     CodigoDre = g.Key.CodigoDre,
                     CodigoUe = g.Key.CodigoUe,
-                    AnoLetivo = g.First().AnoLetivo,
+                    AnoLetivo = g.Key.AnoLetivo,
                     SituacaoPlano = g.Key.SituacaoPlano, 
                     QuantidadeSituacaoPlano = g.Count(),
                 })
