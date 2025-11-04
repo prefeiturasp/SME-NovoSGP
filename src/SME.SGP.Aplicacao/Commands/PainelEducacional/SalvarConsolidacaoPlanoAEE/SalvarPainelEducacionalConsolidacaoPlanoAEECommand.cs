@@ -8,10 +8,10 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarConsolidacaoPlanoAE
     {
 
         public SalvarPainelEducacionalConsolidacaoPlanoAEECommand(
-            IEnumerable<ConsolidacaoPlanoAEEDto> indicadores)
+            IEnumerable<DadosParaConsolidarPlanosAEEDto> indicadores)
         {
             Indicadores = indicadores;
         }
-        public IEnumerable<ConsolidacaoPlanoAEEDto> Indicadores { get; set; }
+        public IEnumerable<DadosParaConsolidarPlanosAEEDto> Indicadores { get; set; }
     }
 }
