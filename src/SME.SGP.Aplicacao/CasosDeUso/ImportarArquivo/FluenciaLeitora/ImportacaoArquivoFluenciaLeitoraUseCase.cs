@@ -8,6 +8,7 @@ using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.ImportarArquivo;
+using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoFluenciaLeitoraUe;
 using SME.SGP.Infra.Enumerados;
 using System;
 using System.Collections.Generic;
@@ -57,7 +58,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.FluenciaLeitora
 
                 if (sucesso)
                 {
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPainelEducacional.ConsolidarFluenciaLeitoraPainelEducacional, Guid.NewGuid(), null));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPainelEducacional.ConsolidarFluenciaLeitoraPainelEducacional, Guid.NewGuid(), null));                    
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPainelEducacional.ConsolidarFluenciaLeitoraUePainelEducacional, new MensagemConsolidacaoFluenciaLeitoraUeDto(anoLetivo), Guid.NewGuid(), null));
 
                     return ImportacaoLogRetornoDto.RetornarSucesso(MensagemNegocioComuns.ARQUIVO_IMPORTADO_COM_SUCESSO);
                 }

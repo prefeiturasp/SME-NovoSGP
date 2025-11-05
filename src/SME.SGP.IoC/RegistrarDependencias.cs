@@ -683,8 +683,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioProficienciaIdebConsulta, RepositorioProficienciaIdebConsulta>();
             services.TryAddScoped<IRepositorioProficienciaIdeb, RepositorioProficienciaIdeb>();
             services.TryAddScoped<IRepositorioPainelEducacionalRegistroFrequenciaDiariaConsulta, RepositorioPainelEducacionalRegistroFrequenciaDiariaConsulta>();
-            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoFrequenciaDiaria, RepositorioPainelEducacionalConsolidacaoFrequenciaDiaria>();
-            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoFrequenciaDiariaDre, RepositorioPainelEducacionalConsolidacaoFrequenciaDiariaDre>();
+            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoFluenciaLeitoraUe, RepositorioPainelEducacionalConsolidacaoFluenciaLeitoraUe>();            
 
             services.TryAddScoped<IRepositorioConsolidacaoFluenciaLeitora, RepositorioConsolidacaoFluenciaLeitora>();
             services.TryAddScoped<IConsolidarTaxaAlfabetizacaoPainelEducacionalUseCase, ConsolidarTaxaAlfabetizacaoPainelEducacionalUseCase>();
@@ -697,7 +696,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsolidarNotasPainelEducacionalUseCase, ConsolidarNotasPainelEducacionalUseCase>();
             services.TryAddScoped<IConsolidarReclassificacaoPainelEducacionalUseCase, ConsolidarReclassificacaoPainelEducacionalUseCase>();
             services.TryAddScoped<IConsolidarDistorcaoIdadePainelEducacionalUseCase, ConsolidarDistorcaoIdadePainelEducacionalUseCase>();
-            services.TryAddScoped<IConsolidarAprovacaoPainelEducacionalUseCase, ConsolidarAprovacaoPainelEducacionalUseCase>();
+            services.TryAddScoped<IConsolidarFluenciaLeitoraUePainelEducacionalUseCase, ConsolidarFluenciaLeitoraUePainelEducacionalUseCase>();
 
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoProficienciaIdep, RepositorioPainelEducacionalConsolidacaoProficienciaIdep>();
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoProficienciaIdeb, RepositorioPainelEducacionalConsolidacaoProficienciaIdeb>();
