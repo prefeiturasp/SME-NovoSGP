@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
 
             var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turma.CodigoTurma));
 
-            if (alunos.EhNulo() && !alunos.Any())
+            if (alunos.EhNulo() || !alunos.Any())
                 throw new NegocioException("Alunos da turma não encontrado");
 
             var aluno = alunos.FirstOrDefault(a => a.CodigoAluno.Equals(anotacao.CodigoAluno));
