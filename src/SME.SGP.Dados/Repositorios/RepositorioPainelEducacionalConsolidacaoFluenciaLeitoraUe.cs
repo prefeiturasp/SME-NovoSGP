@@ -58,7 +58,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task LimparConsolidacao(int ano)
         {
-            var sql = @"DELETE FROM painel_educacional_consolidacao_fluencia_leitora_ue WHERE ano_letivo >= @ano;
+            var sql = @"DELETE FROM painel_educacional_consolidacao_fluencia_leitora_ue WHERE ano_letivo = @ano;
                         SELECT setval(
                             pg_get_serial_sequence('painel_educacional_consolidacao_fluencia_leitora_ue', 'id'),
                             (SELECT MAX(id) FROM painel_educacional_consolidacao_fluencia_leitora_ue)

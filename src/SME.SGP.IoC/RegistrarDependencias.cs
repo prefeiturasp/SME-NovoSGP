@@ -687,6 +687,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoFrequenciaDiaria, RepositorioPainelEducacionalConsolidacaoFrequenciaDiaria>();
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoFrequenciaDiariaDre, RepositorioPainelEducacionalConsolidacaoFrequenciaDiariaDre>();
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoFluenciaLeitoraUe, RepositorioPainelEducacionalConsolidacaoFluenciaLeitoraUe>();            
+            services.TryAddScoped<IRepositorioConsultaFluenciaLeitoraUe, RepositorioConsultaFluenciaLeitoraUe>();            
 
             services.TryAddScoped<IRepositorioConsolidacaoFluenciaLeitora, RepositorioConsolidacaoFluenciaLeitora>();
             services.TryAddScoped<IConsolidarTaxaAlfabetizacaoPainelEducacionalUseCase, ConsolidarTaxaAlfabetizacaoPainelEducacionalUseCase>();
@@ -889,6 +890,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsolidarProficienciaIdebPainelEducacionalUseCase, ConsolidarProficienciaIdebPainelEducacionalUseCase>();
             services.TryAddScoped<IConsolidarProficienciaIdepPainelEducacionalUseCase, ConsolidarProficienciaIdepPainelEducacionalUseCase>();
             services.TryAddScoped<IConsultasProficienciaIdebPainelEducacionalUseCase, ConsultasProficienciaIdebPainelEducacionalUseCase>();
+            services.TryAddScoped<IConsultasFluenciaLeitoraUeUseCase, ConsultasFluenciaLeitoraUeUseCase>();
 
 
             services.TryAddScoped<IObterDashBoardUseCase, ObterDashBoardUseCase>();
