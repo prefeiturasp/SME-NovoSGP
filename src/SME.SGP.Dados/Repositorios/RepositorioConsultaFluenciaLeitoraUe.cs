@@ -26,8 +26,7 @@ namespace SME.SGP.Dados.Repositorios
                                   , quantidade_aluno_fluencia AS quantidadeAlunoFluencia
                                   , percentual_fluencia AS percentualFluencia
                            FROM painel_educacional_consolidacao_fluencia_leitora_ue
-                           WHERE 1 = 1 
-                           AND ano_letivo = @anoLetivo AND codigo_ue = @codigoUe AND tipo_avaliacao = @tipoAvaliacao";
+                           WHERE ano_letivo = @anoLetivo AND codigo_ue = @codigoUe AND tipo_avaliacao = @tipoAvaliacao";
 
             return await database.Conexao.QueryAsync<ConsolidacaoFluenciaLeitoraUeDto>(query, new
             {
