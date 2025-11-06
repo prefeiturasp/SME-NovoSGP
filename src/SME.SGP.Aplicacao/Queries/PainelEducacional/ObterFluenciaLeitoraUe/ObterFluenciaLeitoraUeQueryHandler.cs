@@ -1,7 +1,5 @@
 ﻿using MediatR;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces.Repositorios;
-using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,13 +28,13 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterFluenciaLeitoraUe
                     AlunosPrevistos = g.Key.AlunosPrevistos,
                     AlunosAvaliados = g.Key.AlunosAvaliados,
                     TotalPreLeitor = g.Key.PreLeitorTotal,
-                    Niveis = g
+                    Indicadores = g
                         .GroupBy(f => new { f.Fluencia, f.QuantidadeAlunoFluencia, f.PercentualFluencia })
                         .Select(a => new IndicadorPreLeitorDto
                         {
                             Fluencia = (int)a.Key.Fluencia,
-                            Quantidade = a.Sum(z => z.QuantidadeAlunoFluencia),
-                            Percentual = a.Sum(z => z.PercentualFluencia),
+                            QuantidadeAlunos = a.Sum(z => z.QuantidadeAlunoFluencia),
+                            PercentualFluencia = a.Sum(z => z.PercentualFluencia),
                         })
                         .OrderBy(x => x.Fluencia)
                         .ToList()
