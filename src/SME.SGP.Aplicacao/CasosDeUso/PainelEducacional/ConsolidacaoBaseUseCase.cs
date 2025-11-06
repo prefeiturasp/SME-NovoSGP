@@ -9,12 +9,23 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
         /// <summary>
         /// Tipos de escola válidos para consolidação no painel educacional
         /// </summary>
-        private static readonly List<TipoEscola> tiposEscolasValidos =
+        protected static readonly List<TipoEscola> TiposEscolasValidos =
         [
             TipoEscola.EMEF,
             TipoEscola.EMEFM,
             TipoEscola.CIEJA
         ];
+
+        /// <summary>
+        /// Modalidade de turmas válidos para consolidação no painel educacional
+        /// </summary>
+        protected static readonly List<Modalidade> ModalidadesTurmas =
+        [
+            Modalidade.Fundamental,
+            Modalidade.Medio,
+            Modalidade.EJA
+        ];
+
 
         protected ConsolidacaoBaseUseCase(IMediator mediator) : base(mediator)
         {
@@ -23,7 +34,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
         protected static List<Ue> FiltrarUesValidasParaConsolidacao(long dreId, List<Ue> listagemUes)
         {
             return listagemUes
-                .FindAll(u => u.DreId == dreId && tiposEscolasValidos.Contains(u.TipoEscola));
+                .FindAll(u => u.DreId == dreId && TiposEscolasValidos.Contains(u.TipoEscola));
         }
     }
 }

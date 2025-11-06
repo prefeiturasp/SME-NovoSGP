@@ -1,11 +1,8 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarConsolidacaoProficienciaIdep;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
-using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterProficienciaIdepParaConsolidacao;
-using SME.SGP.Aplicacao.Queries.Turma.ObterTurmasComModalidadePorModalidadeAno;
+using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAprovacaoParaConsolidacao;
 using SME.SGP.Aplicacao.Queries.UE.ObterTodasUes;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.PainelEducacional.ProficienciaIdeb;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,22 +27,29 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                 var uesDaDre = FiltrarUesValidasParaConsolidacao(dre.Id, listagemUe);
 
                 // obter turmas da modalidade Ensino médio e ensino fundamental
-                var turmasEnsinoMedioEFundamental = await mediator.Send(new ObterTurmasComModalidadePorModalidadeAnoQuery(DateTime.Now.Year, uesDaDre));
+                var listagemTurmas = await mediator.Send(
+                    new ObterTurmasComModalidadePorModalidadeAnoQuery(
+                        DateTime.Now.Year,
+                        uesDaDre.Select(u => u.Id)?.ToList(),
+                        ModalidadesTurmas.Select(m => (int)m)
+                    )
+                );
+                
+                // obter indicadores das turmas para consolidar
+                var dadosConsolidados = await mediator.Send(new ObterAprovacaoParaConsolidacaoQuery(listagemTurmas.Select(t => t.TurmaId).ToArray()));
             }
 
-
-         
-            // obter indicadores das turmas para consolidar
+           
             // agrupar por ano da turma
             // agrupar por turma
             // salvar a consolidação por ano turma
             // salvaar consolidação por turma
 
-            var filtro = param.ObterObjetoMensagem<FiltroConsolidacaoProficienciaIdepDto>();
+            //var filtro = param.ObterObjetoMensagem<FiltroConsolidacaoProficienciaIdepDto>();
 
-            var dadosConsolidados = await mediator.Send(new ObterProficienciaIdepParaConsolidacaoQuery(filtro.AnoLetivo));
+            //var dadosConsolidados = await mediator.Send(new ObterProficienciaIdepParaConsolidacaoQuery(filtro.AnoLetivo));
 
-            await mediator.Send(new SalvarConsolidacaoProficienciaIdepCommand(dadosConsolidados.ToList()));
+            //await mediator.Send(new SalvarConsolidacaoProficienciaIdepCommand(dadosConsolidados.ToList()));
             return true;
         }
     }

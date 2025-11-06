@@ -3,12 +3,13 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Queries.Turma.ObterTurmasComModalidadePorModalidadeAno
+namespace SME.SGP.Aplicacao
 {
-    public class ObterTurmasComModalidadePorModalidadeAnoQueryHandler : IRequestHandler<ObterTurmasComModalidadePorModalidadeAnoQuery, IEnumerable<TurmaModalidadeDto>>
+    public class ObterTurmasComModalidadePorModalidadeAnoQueryHandler : IRequestHandler<ObterTurmasComModalidadePorModalidadeAnoQuery, IEnumerable<TurmaModalidadeSerieAnoDto>>
     {
         private readonly IRepositorioTurmaConsulta repositorio;
 
@@ -17,9 +18,9 @@ namespace SME.SGP.Aplicacao.Queries.Turma.ObterTurmasComModalidadePorModalidadeA
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
 
-        public async Task<IEnumerable<TurmaModalidadeDto>> Handle(ObterTurmasComModalidadePorModalidadeAnoQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<TurmaModalidadeSerieAnoDto>> Handle(ObterTurmasComModalidadePorModalidadeAnoQuery request, CancellationToken cancellationToken)
         {
-            return await repositorio.ObterTurmasComModalidadePorModalidadeAnoUe(request.Ano, request.UeId, request.Modalidades);
+            return await repositorio.ObterTurmasComModalidadePorModalidadeAnoUe(request.Ano, [.. request.UeId], [.. request.Modalidades]);
         }
     }
 }

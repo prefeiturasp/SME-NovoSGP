@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using Npgsql;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -1204,18 +1203,20 @@ namespace SME.SGP.Dados.Repositorios
             return await contexto.Conexao.QueryAsync<TurmaPainelEducacionalDto>(query, new { anoLetivo });
         }
 
-        public async Task<IEnumerable<TurmaModalidadeDto>> ObterTurmasComModalidadePorModalidadeAnoUe(int ano, long ueId, IEnumerable<int> modalidades)
+        public async Task<IEnumerable<TurmaModalidadeSerieAnoDto>> ObterTurmasComModalidadePorModalidadeAnoUe(int ano, long[] ueId, int[] modalidades)
         {
             var query = @"select 
                                     id as TurmaId, 
                                     turma_id as TurmaCodigo, 
-                                    modalidade_codigo as Modalidade 
+                                    modalidade_codigo as Modalidade,
+                                    ano as SerieAno,  
+                                    ano_letivo as AnoLetivo
                            from turma 
                            where ano_letivo = @ano 
-                           and ue_id = @ueId
-                           and modalidade_codigo = any(@modalidades)";
+                           and modalidade_codigo = any(@modalidades)
+                           and ue_id = any(@ueId)";
 
-            return await contexto.Conexao.QueryAsync<TurmaModalidadeDto>(query, new { ano, ueId, modalidades });
+            return await contexto.Conexao.QueryAsync<TurmaModalidadeSerieAnoDto>(query, new { ano, ueId, modalidades });
         }
     }
 }
