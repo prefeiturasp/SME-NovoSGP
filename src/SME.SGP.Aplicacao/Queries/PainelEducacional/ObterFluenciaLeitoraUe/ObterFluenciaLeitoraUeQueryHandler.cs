@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using System;
 using System.Collections.Generic;
@@ -41,12 +42,12 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterFluenciaLeitoraUe
                         AlunosPrevistos = alunosPrevistos,
                         AlunosAvaliados = IndicadorQuantidadePercentual(alunosAvaliados, alunosPrevistos),
                         TotalPreLeitor = IndicadorQuantidadePercentual(preLeitorTotal, alunosAvaliados),
-                        PreLeitor1 = IndicadorQuantidadePercentual(fluencias[1], alunosAvaliados),
-                        PreLeitor2 = IndicadorQuantidadePercentual(fluencias[2], alunosAvaliados),
-                        PreLeitor3 = IndicadorQuantidadePercentual(fluencias[3], alunosAvaliados),
-                        PreLeitor4 = IndicadorQuantidadePercentual(fluencias[4], alunosAvaliados),
-                        LeitorIniciante = IndicadorQuantidadePercentual(fluencias[5], alunosAvaliados),
-                        LeitorFluente = IndicadorQuantidadePercentual(fluencias[6], alunosAvaliados)
+                        PreLeitor1 = IndicadorQuantidadePercentual(fluencias[(int)NivelFluenciaLeitoraEnum.Fluencia1], alunosAvaliados),
+                        PreLeitor2 = IndicadorQuantidadePercentual(fluencias[(int)NivelFluenciaLeitoraEnum.Fluencia2], alunosAvaliados),
+                        PreLeitor3 = IndicadorQuantidadePercentual(fluencias[(int)NivelFluenciaLeitoraEnum.Fluencia3], alunosAvaliados),
+                        PreLeitor4 = IndicadorQuantidadePercentual(fluencias[(int)NivelFluenciaLeitoraEnum.Fluencia4], alunosAvaliados),
+                        LeitorIniciante = IndicadorQuantidadePercentual(fluencias[(int)NivelFluenciaLeitoraEnum.Fluencia5], alunosAvaliados),
+                        LeitorFluente = IndicadorQuantidadePercentual(fluencias[(int)NivelFluenciaLeitoraEnum.Fluencia6], alunosAvaliados)
                     };
                 })
                 .OrderBy(x => x.Turma)
