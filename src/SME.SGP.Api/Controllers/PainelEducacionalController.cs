@@ -221,6 +221,14 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterProficienciaIdeb(int anoLetivo, string codigoUe, [FromServices] IConsultasProficienciaIdebPainelEducacionalUseCase consultaProficienciaIdebPainelEducacionalUseCase)
          => Ok(await consultaProficienciaIdebPainelEducacionalUseCase.ObterProficienciaIdeb(anoLetivo, codigoUe));
 
+        [HttpGet("fluencia-leitora-ue")]
+        [ProducesResponseType(typeof(PainelEducacionalFluenciaLeitoraUeDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterFluenciaLeitoraUe([FromQuery] FiltroPainelEducacionalFluenciaLeitoraUe filtro, [FromServices] IConsultasFluenciaLeitoraUeUseCase consultasFluenciaLeitoraUeUseCase)
+        => Ok(await consultasFluenciaLeitoraUeUseCase.ObterFluenciaLeitoraUe(filtro));
+
         [HttpGet("plano-aee")]
         [ProducesResponseType(typeof(PainelEducacionalPlanoAEEDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
