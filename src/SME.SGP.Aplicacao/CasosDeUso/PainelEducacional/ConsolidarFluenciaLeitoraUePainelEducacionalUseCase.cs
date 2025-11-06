@@ -9,6 +9,7 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoFluenciaLeitoraUe;
+using SME.SGP.Infra.Enumerados;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -129,10 +130,15 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                 var codigoTurma = g.Key.TurmaId;
                 var alunosPrevistos = g.Count();
 
-                var tiposAvaliacao = dadosFluencia.Where(f => f.CodigoTurma == codigoTurma).Select(f => f.TipoAvaliacao)
-                                                  .Concat([1, 2])
-                                                  .Distinct()
-                                                  .ToList();
+                var tiposAvaliacao = dadosFluencia
+                    .Where(f => f.CodigoTurma == codigoTurma)
+                    .Select(f => f.TipoAvaliacao)
+                    .Union(new[] { 
+                        (int)FluenciaLeitoraTipoAvaliacaoEnum.AvaliacaoEntrada, 
+                        (int)FluenciaLeitoraTipoAvaliacaoEnum.AvaliacaoSaida 
+                    })
+                    .Distinct()
+                    .ToList();
 
                 foreach (var tipoAvaliacao in tiposAvaliacao)
                 {
@@ -181,7 +187,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                 }
 
             }
-                return indicadores;
+            return indicadores;
         }
 
     }
