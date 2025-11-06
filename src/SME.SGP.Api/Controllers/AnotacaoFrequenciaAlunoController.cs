@@ -41,6 +41,21 @@ namespace SME.SGP.Api.Controllers
             return Ok(anotacao);
         }
 
+        [HttpGet("{codigoAluno}/data")]
+        [ProducesResponseType(typeof(AnotacaoAlunoAulaPorPeriodoDto), 200)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CCEA_NAAPA_C, Permissao.RABA_NAAPA_C, Permissao.PDA_C, Permissao.PDA_I, Permissao.PDA_A, Permissao.PDA_E, Policy = "Bearer")]
+        public async Task<IActionResult> ObterPorAlunoPorPeriodo(string codigoAluno, DateTime dataInicio, DateTime dataFim, [FromServices] IObterAnotacaoFrequenciaAlunoPorPeriodoUseCase useCase)
+        {
+            var anotacao = await useCase.Executar(new FiltroAnotacaoFrequenciaAlunoPorPeriodoDto(codigoAluno, dataInicio, dataFim));
+
+            if (anotacao.EhNulo())
+                return NoContent();
+
+            return Ok(anotacao);
+        }
+
         [HttpPost]
         [ProducesResponseType(typeof(AuditoriaDto), 200)]
         [ProducesResponseType(204)]
