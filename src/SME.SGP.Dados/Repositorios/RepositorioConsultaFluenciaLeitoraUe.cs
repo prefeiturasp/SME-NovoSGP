@@ -21,7 +21,7 @@ namespace SME.SGP.Dados.Repositorios
                                     turma
                                   , alunos_previstos as alunosPrevistos
                                   , alunos_avaliados as alunosAvaliados                                  
-                                  , pre_leitor_total AS totalPreLeitor
+                                  , pre_leitor_total AS preLeitorTotal
                                   , fluencia
                                   , quantidade_aluno_fluencia AS quantidadeAlunoFluencia
                                   , percentual_fluencia AS percentualFluencia

@@ -22,25 +22,42 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterFluenciaLeitoraUe
             var registros = await repositorio.ObterFluenciaLeitoraUe(request.Filtro);
             return registros
                 .GroupBy(r => new { r.Turma, r.AlunosPrevistos, r.AlunosAvaliados, r.PreLeitorTotal })
-                .Select(g => new PainelEducacionalFluenciaLeitoraUeDto
+                .Select(g =>
                 {
-                    Turma = g.Key.Turma,
-                    AlunosPrevistos = g.Key.AlunosPrevistos,
-                    AlunosAvaliados = g.Key.AlunosAvaliados,
-                    TotalPreLeitor = g.Key.PreLeitorTotal,
-                    Indicadores = g
-                        .GroupBy(f => new { f.Fluencia, f.QuantidadeAlunoFluencia, f.PercentualFluencia })
-                        .Select(a => new IndicadorPreLeitorDto
-                        {
-                            Fluencia = (int)a.Key.Fluencia,
-                            QuantidadeAlunos = a.Sum(z => z.QuantidadeAlunoFluencia),
-                            PercentualFluencia = a.Sum(z => z.PercentualFluencia),
-                        })
-                        .OrderBy(x => x.Fluencia)
-                        .ToList()
+                    int alunosPrevistos = g.FirstOrDefault().AlunosPrevistos;
+                    int alunosAvaliados = g.FirstOrDefault().AlunosAvaliados;
+                    int preLeitorTotal = g.FirstOrDefault().PreLeitorTotal;
+
+                    var fluencias = g
+                        .GroupBy(x => (int)x.Fluencia)
+                        .ToDictionary(
+                            f => f.Key,
+                            f => f.FirstOrDefault().QuantidadeAlunoFluencia
+                        );
+
+                    return new PainelEducacionalFluenciaLeitoraUeDto
+                    {
+                        Turma = g.Key.Turma,
+                        AlunosPrevistos = alunosPrevistos,
+                        AlunosAvaliados = IndicadorQuantidadePercentual(alunosAvaliados, alunosPrevistos),
+                        TotalPreLeitor = IndicadorQuantidadePercentual(preLeitorTotal, alunosAvaliados),
+                        PreLeitor1 = IndicadorQuantidadePercentual(fluencias[1], alunosAvaliados),
+                        PreLeitor2 = IndicadorQuantidadePercentual(fluencias[2], alunosAvaliados),
+                        PreLeitor3 = IndicadorQuantidadePercentual(fluencias[3], alunosAvaliados),
+                        PreLeitor4 = IndicadorQuantidadePercentual(fluencias[4], alunosAvaliados),
+                        LeitorIniciante = IndicadorQuantidadePercentual(fluencias[5], alunosAvaliados),
+                        LeitorFluente = IndicadorQuantidadePercentual(fluencias[6], alunosAvaliados)
+                    };
                 })
                 .OrderBy(x => x.Turma)
                 .ToList();
+        }
+
+        string IndicadorQuantidadePercentual(int qtd, int total)
+        {
+            if (qtd == 0 || total == 0) return "0";
+            var pct = Math.Round((decimal)qtd / total * 100, 2);
+            return $"{qtd} ({pct}%)";
         }
     }
 }
