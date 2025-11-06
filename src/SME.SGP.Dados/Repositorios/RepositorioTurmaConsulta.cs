@@ -1203,5 +1203,19 @@ namespace SME.SGP.Dados.Repositorios
 
             return await contexto.Conexao.QueryAsync<TurmaPainelEducacionalDto>(query, new { anoLetivo });
         }
+
+        public async Task<IEnumerable<TurmaModalidadeDto>> ObterTurmasComModalidadePorModalidadeAnoUe(int ano, long ueId, IEnumerable<int> modalidades)
+        {
+            var query = @"select 
+                                    id as TurmaId, 
+                                    turma_id as TurmaCodigo, 
+                                    modalidade_codigo as Modalidade 
+                           from turma 
+                           where ano_letivo = @ano 
+                           and ue_id = @ueId
+                           and modalidade_codigo = any(@modalidades)";
+
+            return await contexto.Conexao.QueryAsync<TurmaModalidadeDto>(query, new { ano, ueId, modalidades });
+        }
     }
 }

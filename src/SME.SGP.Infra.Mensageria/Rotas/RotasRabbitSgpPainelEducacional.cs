@@ -20,6 +20,7 @@
         public const string ConsolidarDistorcaoSerieIdadePainelEducacional = "sgp.consolidacao.painel.educacional.distorcao-serie-idade";
         public const string ConsolidarProficienciaIdebPainelEducacional = "sgp.consolidacao.painel.educacional.proficiencia.ideb";
         public const string ConsolidarProficienciaIdepPainelEducacional = "sgp.consolidacao.painel.educacional.proficiencia.idep";
+        public const string ConsolidarAprovacaoPainelEducacional = "sgp.consolidacao.painel.educacional.aprovacao";
     }
 }
 
