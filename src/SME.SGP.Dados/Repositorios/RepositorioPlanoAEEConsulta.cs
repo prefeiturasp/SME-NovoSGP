@@ -575,7 +575,7 @@ namespace SME.SGP.Dados.Repositorios
             return sql.ToString();
         }
 
-        public async Task<IEnumerable<DadosParaConsolidarPlanosAEEDto>> ObterPlanosConsolidarPainelEducacional()
+        public async Task<IEnumerable<DadosParaConsolidarPlanosAEEDto>> ObterPlanosConsolidarPainelEducacional(int anoLetivo)
         {
             var query = $@"SELECT 
 	                        t4.dre_id AS codigoDre
@@ -588,7 +588,7 @@ namespace SME.SGP.Dados.Repositorios
                         INNER JOIN dre t4 ON (t4.id = t3.dre_id)
                         WHERE t1.excluido = false AND t2.ano_letivo = @anoLetivo;";
 
-            return await database.Conexao.QueryAsync<DadosParaConsolidarPlanosAEEDto>(query, new { anoLetivo = DateTime.Now.Year });
+            return await database.Conexao.QueryAsync<DadosParaConsolidarPlanosAEEDto>(query, new { anoLetivo });
         }
 
         public async Task<IEnumerable<PainelEducacionalConsolidacaoPlanoAEE>> ObterConsolidacaoPlanosPainelEducacional(FiltroPainelEducacionalPlanosAEE filtro)
