@@ -4,6 +4,7 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterConsolidacaoPlanosAEE;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoPlanoAEE;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -33,7 +34,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
 
         private async Task<IEnumerable<DadosParaConsolidarPlanosAEEDto>> ObterConsolidacaoPlanosAEE()
         {
-            var planos = await mediator.Send(new ObterDadosParaConsolidarPlanosAEEQuery());
+            var anoLetivo = DateTime.Now.Year;
+
+            var planos = await mediator.Send(new ObterDadosParaConsolidarPlanosAEEQuery(anoLetivo));
 
             var retorno = planos
                 .GroupBy(p => new { p.CodigoDre, p.CodigoUe, p.AnoLetivo, p.SituacaoPlano })

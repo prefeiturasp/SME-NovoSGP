@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterConsolidacaoPlanosAEE
 
         public async Task<IEnumerable<DadosParaConsolidarPlanosAEEDto>> Handle(ObterDadosParaConsolidarPlanosAEEQuery request, CancellationToken cancellationToken)
         {
-            var registros = await repositorio.ObterPlanosConsolidarPainelEducacional();
+            var registros = await repositorio.ObterPlanosConsolidarPainelEducacional(request.AnoLetivo);
             return registros;
         }
     }

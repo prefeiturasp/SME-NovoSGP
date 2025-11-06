@@ -6,5 +6,10 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterConsolidacaoPlanosAEE
 {
     public class ObterDadosParaConsolidarPlanosAEEQuery : IRequest<IEnumerable<DadosParaConsolidarPlanosAEEDto>>
     {
+        public ObterDadosParaConsolidarPlanosAEEQuery(int anoLetivo)
+        {
+            AnoLetivo = anoLetivo;
+        }
+        public int AnoLetivo { get; set; }  
     }
 }
