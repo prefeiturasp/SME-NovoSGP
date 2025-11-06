@@ -3,11 +3,11 @@ using MediatR;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 
-namespace SME.SGP.Aplicacao.Queries.Turma.ObterTurmasComModalidadePorModalidadeAno
+namespace SME.SGP.Aplicacao
 {
-    public class ObterTurmasComModalidadePorModalidadeAnoQuery : IRequest<IEnumerable<TurmaModalidadeDto>>
+    public class ObterTurmasComModalidadePorModalidadeAnoQuery : IRequest<IEnumerable<TurmaModalidadeSerieAnoDto>>
     {
-        public ObterTurmasComModalidadePorModalidadeAnoQuery(int ano, long ueId, IEnumerable<int> modalidades)
+        public ObterTurmasComModalidadePorModalidadeAnoQuery(int ano, List<long> ueId, IEnumerable<int> modalidades)
         {
             Ano = ano;
             UeId = ueId;
@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao.Queries.Turma.ObterTurmasComModalidadePorModalidadeA
         }
 
         public int Ano { get; }
-        public long UeId { get; }
+        public List<long> UeId { get; }
         public IEnumerable<int> Modalidades { get; set; }
     }
 
