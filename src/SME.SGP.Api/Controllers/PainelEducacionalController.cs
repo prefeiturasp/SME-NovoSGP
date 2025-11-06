@@ -5,16 +5,17 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
-using SME.SGP.Infra.Dtos.PainelEducacional.FrequenciaSemanalUe;
 using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoDistorcaoIdade;
+using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoPlanoAEE;
 using SME.SGP.Infra.Dtos.PainelEducacional.FrequenciaDiaria;
+using SME.SGP.Infra.Dtos.PainelEducacional.FrequenciaSemanalUe;
 using SME.SGP.Infra.Dtos.PainelEducacional.IndicadoresPap;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoSmeDre;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoUe;
+using SME.SGP.Infra.Dtos.PainelEducacional.ProficienciaIdeb;
+using SME.SGP.Infra.Dtos.PainelEducacional.Reclassificacao;
 using SME.SGP.Infra.Dtos.PainelEducacional.SondagemEscrita;
 using System.Threading.Tasks;
-using SME.SGP.Infra.Dtos.PainelEducacional.Reclassificacao;
-using SME.SGP.Infra.Dtos.PainelEducacional.ProficienciaIdeb;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -227,5 +228,13 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterFluenciaLeitoraUe([FromQuery] FiltroPainelEducacionalFluenciaLeitoraUe filtro, [FromServices] IConsultasFluenciaLeitoraUeUseCase consultasFluenciaLeitoraUeUseCase)
         => Ok(await consultasFluenciaLeitoraUeUseCase.ObterFluenciaLeitoraUe(filtro));
+
+        [HttpGet("plano-aee")]
+        [ProducesResponseType(typeof(PainelEducacionalPlanoAEEDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterPlanosAEE([FromQuery] FiltroPainelEducacionalPlanosAEE filtro, [FromServices] IConsultasPlanosAEEPainelEducacionalUseCase consultasPlanosAEEPainelEducacionalUseCase)
+         => Ok(await consultasPlanosAEEPainelEducacionalUseCase.ObterPlanosAEE(filtro));
     }
 }
