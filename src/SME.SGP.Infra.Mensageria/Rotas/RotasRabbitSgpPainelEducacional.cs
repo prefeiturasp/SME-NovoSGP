@@ -21,6 +21,8 @@
         public const string ConsolidarProficienciaIdebPainelEducacional = "sgp.consolidacao.painel.educacional.proficiencia.ideb";
         public const string ConsolidarProficienciaIdepPainelEducacional = "sgp.consolidacao.painel.educacional.proficiencia.idep";
         public const string ConsolidarAprovacaoPainelEducacional = "sgp.consolidacao.painel.educacional.aprovacao";
+        public const string ConsolidarFluenciaLeitoraUePainelEducacional = "sgp.consolidacao.painel.educacional.fluencia-leitora-ue";
+        public const string ConsolidarPlanosAEEPainelEducacional = "sgp.consolidacao.painel.educacional.plano-aee";
     }
 }
 

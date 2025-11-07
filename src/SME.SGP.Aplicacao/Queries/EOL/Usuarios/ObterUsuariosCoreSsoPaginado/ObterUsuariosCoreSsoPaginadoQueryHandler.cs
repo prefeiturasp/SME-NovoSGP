@@ -1,0 +1,30 @@
+﻿using MediatR;
+using SME.SGP.Infra;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace SME.SGP.Aplicacao.Queries.EOL.Usuarios.ObterUsuariosCoreSsoPaginado
+{
+    public class ObterUsuariosCoreSsoPaginadoQueryHandler : IRequestHandler<ObterUsuariosCoreSsoPaginadoQuery, PaginacaoResultadoDto<UsuarioCoreSsoDto>>
+    {
+        private readonly IHttpClientFactory _httpClientFactory;
+        public ObterUsuariosCoreSsoPaginadoQueryHandler(IHttpClientFactory httpClientFactory)
+        {
+            _httpClientFactory = httpClientFactory;
+        }
+
+        public async Task<PaginacaoResultadoDto<UsuarioCoreSsoDto>> Handle(ObterUsuariosCoreSsoPaginadoQuery request, CancellationToken cancellationToken)
+        {
+            var httpClient = _httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var resposta = await httpClient
+                .GetAsync(string.Format(ServicosEolConstants.URL_USUARIOS_CORESSO_PAGINADO, request.Pagina, request.RegistrosPorPagina), cancellationToken);
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync(cancellationToken);
+                return Newtonsoft.Json.JsonConvert.DeserializeObject<PaginacaoResultadoDto<UsuarioCoreSsoDto>>(json);
+            }
+            return null;
+        }
+    }
+}

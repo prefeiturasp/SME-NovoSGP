@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.Usuarios;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -85,6 +86,31 @@ namespace SME.SGP.Api.Controllers
         public IActionResult ModificarImagem([FromBody] ImagemPerfilDto imagemPerfilDto)
         {
             return Ok("https://telegramic.org/media/avatars/stickers/52cae315e8a464eb80a3.png");
-        }       
+        }
+
+        [Route("sme")]
+        [HttpGet]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<UsuarioCoreSsoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.AS_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterUsuariosSme([FromServices] IObterUsuariosCoreSsoUseCase obterUsuariosCoreSsoUseCase,
+                                                          [FromQuery] int pagina = 1,
+                                                          [FromQuery] int registrosPorPagina = 10 )
+        {
+            var resultado = await obterUsuariosCoreSsoUseCase.Executar(pagina, registrosPorPagina);
+            return Ok(resultado);
+        }
+
+        [Route("sme/codigoRf/{codigoRf}")]
+        [HttpGet]
+        [ProducesResponseType(typeof(UsuarioCoreSsoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.AS_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterUsuarioSmePorCodigoRf(string codigoRf, 
+                                                                   [FromServices] IObterUsuariosCoreSsoPorRfUseCase obterUsuariosCoreSsoPorRfUseCase)
+        {
+            var resultado = await obterUsuariosCoreSsoPorRfUseCase.Executar(codigoRf);
+            return Ok(resultado);
+        }
     }
 }
