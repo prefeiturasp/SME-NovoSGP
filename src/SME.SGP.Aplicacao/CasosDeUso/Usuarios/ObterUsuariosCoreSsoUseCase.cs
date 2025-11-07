@@ -14,9 +14,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso.Usuarios
         {
             _mediator = mediator;
         }
-        public async Task<PaginacaoResultadoDto<UsuarioCoreSsoDto>> Executar(string rf, string nome, int pagina, int registrosPorPagina)
+        public async Task<PaginacaoResultadoDto<UsuarioCoreSsoDto>> Executar(int pagina, int registrosPorPagina)
         {
-            return await _mediator.Send(new ObterUsuariosCoreSsoPaginadoQuery(pagina, registrosPorPagina, rf, nome));
+            return await _mediator.Send(new ObterUsuariosCoreSsoPaginadoQuery(pagina, registrosPorPagina));
         }
     }
 }

@@ -5,6 +5,6 @@ namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso.Usuarios
 {
     public interface IObterUsuariosCoreSsoUseCase
     {
-        Task<PaginacaoResultadoDto<UsuarioCoreSsoDto>> Executar(string rf, string nome, int pagina, int registrosPorPagina);
+        Task<PaginacaoResultadoDto<UsuarioCoreSsoDto>> Executar(int pagina, int registrosPorPagina);
     }
 }

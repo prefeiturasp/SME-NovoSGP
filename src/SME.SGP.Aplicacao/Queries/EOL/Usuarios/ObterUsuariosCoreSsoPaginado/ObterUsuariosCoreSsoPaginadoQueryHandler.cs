@@ -17,15 +17,8 @@ namespace SME.SGP.Aplicacao.Queries.EOL.Usuarios.ObterUsuariosCoreSsoPaginado
         public async Task<PaginacaoResultadoDto<UsuarioCoreSsoDto>> Handle(ObterUsuariosCoreSsoPaginadoQuery request, CancellationToken cancellationToken)
         {
             var httpClient = _httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
-            var url = string.Format(ServicosEolConstants.URL_USUARIOS_CORESSO_PAGINADO, request.Pagina, request.RegistrosPorPagina);
-            if (!string.IsNullOrEmpty(request.Rf))
-                url += $"&rf={request.Rf}";
-            if (!string.IsNullOrEmpty(request.Nome))
-                url += $"&nome={request.Nome}";
-
             var resposta = await httpClient
-                .GetAsync(url, cancellationToken);
-
+                .GetAsync(string.Format(ServicosEolConstants.URL_USUARIOS_CORESSO_PAGINADO, request.Pagina, request.RegistrosPorPagina), cancellationToken);
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync(cancellationToken);
