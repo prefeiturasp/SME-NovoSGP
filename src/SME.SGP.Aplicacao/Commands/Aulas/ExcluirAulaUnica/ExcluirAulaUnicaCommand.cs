@@ -21,13 +21,7 @@ namespace SME.SGP.Aplicacao
     {
         public ExcluirAulaUnicaCommandValidator()
         {
-            RuleFor(a => a.AulaId)
-                .NotNull()
-                .WithMessage("O Usuário deve ser informado para a exclusão de aula.");
-
-            RuleFor(a => a.AulaId)
-                .NotEmpty()
-                .WithMessage("AulaId deve ser informado para a exclusão de aula.");
+          
         }
     }
 }
