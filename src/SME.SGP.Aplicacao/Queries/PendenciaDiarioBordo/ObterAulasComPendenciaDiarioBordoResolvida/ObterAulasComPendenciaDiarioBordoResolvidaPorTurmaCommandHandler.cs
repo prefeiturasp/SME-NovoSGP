@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterAulasComPendenciaDiarioBordoResolvidaPorTurmaCommandHandler : 
-        IRequestHandler<ObterAulasComPendenciaDiarioBordoResolvidaPorTurmaCommand, 
+    public class ObterAulasComPendenciaDiarioBordoResolvidaPorTurmaCommandHandler : IRequestHandler<ObterAulasComPendenciaDiarioBordoResolvidaPorTurmaCommand,
             IEnumerable<PendenciaDiarioBordoParaExcluirDto>>
     {
         private readonly IRepositorioPendenciaDiarioBordoConsulta _repositorioPendenciaDiarioBordoConsulta;
@@ -17,8 +16,8 @@ namespace SME.SGP.Aplicacao
         {
             _repositorioPendenciaDiarioBordoConsulta = repositorioPendenciaDiarioBordoConsulta;
         }
-        public async Task<IEnumerable<PendenciaDiarioBordoParaExcluirDto>> Handle(
-            ObterAulasComPendenciaDiarioBordoResolvidaPorTurmaCommand request, 
+
+        public async Task<IEnumerable<PendenciaDiarioBordoParaExcluirDto>> Handle(ObterAulasComPendenciaDiarioBordoResolvidaPorTurmaCommand request,
             CancellationToken cancellationToken)
         {
             return await _repositorioPendenciaDiarioBordoConsulta

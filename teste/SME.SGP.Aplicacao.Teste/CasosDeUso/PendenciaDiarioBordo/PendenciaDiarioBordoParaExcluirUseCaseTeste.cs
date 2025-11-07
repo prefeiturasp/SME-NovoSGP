@@ -24,12 +24,12 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PendenciaDiarioBordo
             _faker = new Faker("pt_BR");
         }
 
-        [Theory(DisplayName = "Deve enviar o comando para excluir pendências e retornar o resultado")]
+        [Theory(DisplayName = "Deve enviar o comando para excluir pend�ncias e retornar o resultado")]
         [InlineData(true)]
         [InlineData(false)]
         public async Task Executar_DeveEnviarComandoParaExcluir_E_RetornarResultado(bool resultadoEsperado)
         {
-            // Organização
+            // Organiza��o
             var listaPendencias = new List<PendenciaDiarioBordoParaExcluirDto>
             {
                 new PendenciaDiarioBordoParaExcluirDto { AulaId = _faker.Random.Long(1, 100), ComponenteCurricularId = _faker.Random.Long(1, 1000) },
@@ -46,10 +46,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PendenciaDiarioBordo
                          .Callback<IRequest<bool>, CancellationToken>((cmd, _) => comandoCapturado = cmd as PendenciaDiarioBordoParaExcluirCommand)
                          .ReturnsAsync(resultadoEsperado);
 
-            // Ação
+            // A��o
             var resultado = await _useCase.Executar(mensagemRabbit);
 
-            // Verificação
+            // Verifica��o
             Assert.Equal(resultadoEsperado, resultado);
 
             _mediatorMock.Verify(m => m.Send(It.IsAny<PendenciaDiarioBordoParaExcluirCommand>(), It.IsAny<CancellationToken>()), Times.Once);

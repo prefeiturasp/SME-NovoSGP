@@ -516,7 +516,7 @@ namespace SME.SGP.Dados.Repositorios
                          inner join abrangencia a on a.usuario_id = u.id
                          inner join turma t on a.turma_id = t.id
                          where u.login = @login and historico = false and t.turma_id is not null
-                              and {(cj ? string.Empty : "not")} a.perfil = ANY(@perfisCJ) and t.ano_letivo = @anoLetivo;";
+                              and { (cj ? string.Empty : "not") } a.perfil = ANY(@perfisCJ) and t.ano_letivo = @anoLetivo;";
 
             var parametros = new { login, perfisCJ = new Guid[] { Perfis.PERFIL_CJ, Perfis.PERFIL_CJ_INFANTIL }, anoLetivo = DateTime.Now.Year };
 

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PendenciaDiarioBordo;
 using SME.SGP.Aplicacao.Workers;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
