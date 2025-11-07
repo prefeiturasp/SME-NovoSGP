@@ -36,5 +36,6 @@
         ComprimirArquivos = 32,
         ApiSondagem = 33,
         ApiSERAp = 34,
+        WorkerPainelEducacional = 35
     }
 }
