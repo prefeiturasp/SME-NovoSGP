@@ -2,10 +2,13 @@
 {
     public class ConsolidacaoAprovacaoDto
     {
-        public int TurmaId { get; set; }
-        public int CodigoAluno { get; set; }
+        public string CodigoDre { get; set; }
+        public string CodigoUe { get; set; }
+        public long TurmaId { get; set; }
+        public string SerieAno { get; set; }
+        public string Modalidade { get; set; }
         public int ParecerConclusivoId { get; set; }
-        public int ParecerDescricao { get; set; }
-        public int SerieAno { get; set; }
+        public string ParecerDescricao { get; set; }
+        public int AnoLetivo { get; set; }
     }
 }

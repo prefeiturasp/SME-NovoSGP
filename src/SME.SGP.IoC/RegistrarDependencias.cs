@@ -703,6 +703,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoProficienciaIdeb, RepositorioPainelEducacionalConsolidacaoProficienciaIdeb>();
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoProficienciaIdepConsultas, RepositorioPainelEducacionalConsolidacaoProficienciaIdepConsultas>();
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoProficienciaIdebConsultas, RepositorioPainelEducacionalConsolidacaoProficienciaIdebConsultas>();
+            services.TryAddScoped<IRepositorioPainelEducacionalAprovacao, RepositorioPainelEducacionalAprovacao>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)

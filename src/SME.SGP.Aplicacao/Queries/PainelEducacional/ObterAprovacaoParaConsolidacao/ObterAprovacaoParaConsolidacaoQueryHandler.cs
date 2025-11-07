@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAprovacaoParaConsolidacao
 {
-    public class ObterAprovacaoParaConsolidacaoQueryHandler : IRequestHandler<ObterAprovacaoParaConsolidacaoQuery, IEnumerable<ConsolidacaoAprovacaoDto>>
+    public class ObterAprovacaoParaConsolidacaoQueryHandler : IRequestHandler<ObterAprovacaoParaConsolidacaoQuery, IEnumerable<DadosParaConsolidarAprovacao>>
     {
         private readonly IRepositorioPainelEducacionalAprovacao repositorio;
 
@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAprovacaoParaConsolid
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
 
-        public async Task<IEnumerable<ConsolidacaoAprovacaoDto>> Handle(ObterAprovacaoParaConsolidacaoQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<DadosParaConsolidarAprovacao>> Handle(ObterAprovacaoParaConsolidacaoQuery request, CancellationToken cancellationToken)
         {
             return await repositorio.ObterIndicadores(request.TurmaId);
         }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAprovacaoParaConsolidacao
 {
-    public class ObterAprovacaoParaConsolidacaoQuery : IRequest<IEnumerable<ConsolidacaoAprovacaoDto>>
+    public class ObterAprovacaoParaConsolidacaoQuery : IRequest<IEnumerable<DadosParaConsolidarAprovacao>>
     {
         public ObterAprovacaoParaConsolidacaoQuery(long[] turmaId)
         {
