@@ -2,7 +2,6 @@
 {
     public class ConsolidacaoPainelEducacionalFluenciaLeitora : EntidadeBase
     {
-        public long Id { get; set; }
         public string Fluencia { get; set; }
         public string DescricaoFluencia { get; set; }
         public string DreCodigo { get; set; }
