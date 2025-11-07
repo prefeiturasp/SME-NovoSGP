@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             {
                 var uesDaDre = FiltrarUesValidasParaConsolidacao(dre.Id, ues);
 
-                // obter turmas da modalidade Ensino médio e ensino fundamental
+                // obter turmas da modalidade Ensino médio, ensino fundamental e EJA
                 var listagemTurmas = await mediator.Send(
                     new ObterTurmasComModalidadePorModalidadeAnoQuery(
                         anoLetivo,
