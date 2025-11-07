@@ -657,6 +657,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioTaxaAlfabetizacao, RepositorioTaxaAlfabetizacao>();
             services.TryAddScoped<IRepositorioSondagemEscritaUe, RepositorioSondagemEscritaUe>();
 
+            services.TryAddScoped<IRepositorioPainelEducacionalAprovacao, RepositorioPainelEducacionalAprovacao>();
             services.TryAddScoped<IRepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobal, RepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobal>();
             services.TryAddScoped<IRepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobalEscola, RepositorioPainelEducacionalRegistroFrequenciaAgrupamentoGlobalEscola>();
             services.TryAddScoped<IRepositorioPainelEducacionalRegistroFrequenciaAgrupamentoMensal, RepositorioPainelEducacionalRegistroFrequenciaAgrupamentoMensal>();
@@ -1568,6 +1569,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterAlunosSinalizadosPrioridadeMapeamentoEstudanteUseCase, ObterAlunosSinalizadosPrioridadeMapeamentoEstudanteUseCase>();
             services.TryAddScoped<IObterFiltrosOpcoesRespostaRelatorioMapeamentoUseCase, ObterFiltrosOpcoesRespostaRelatorioMapeamentoUseCase>();
             services.TryAddScoped<IRelatorioMapeamentoEstudantesUseCase, RelatorioMapeamentoEstudantesUseCase>();
+            services.TryAddScoped<IConsultasAprovacaoUseCase, ConsultasAprovacaoUseCase>();
             services.TryAddScoped<IConsultasRegistroFrequenciaAgrupamentoGlobalUseCase, ConsultasRegistroFrequenciaAgrupamentoGlobalUseCase>();
             services.TryAddScoped<IConsultasRegistroFrequenciaAgrupamentoMensalUseCase, ConsultasRegistroFrequenciaAgrupamentoMensalUseCase>();
             services.TryAddScoped<IConsultasRegistroFrequenciaAgrupamentoRankingUseCase, ConsultasRegistroFrequenciaAgrupamentoRankingUseCase>();
