@@ -1206,15 +1206,19 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<TurmaModalidadeSerieAnoDto>> ObterTurmasComModalidadePorModalidadeAnoUe(int ano, long[] ueId, int[] modalidades)
         {
             var query = @"select 
-                                    id as TurmaId, 
-                                    turma_id as TurmaCodigo, 
-                                    modalidade_codigo as Modalidade,
-                                    ano as SerieAno,  
-                                    ano_letivo as AnoLetivo
-                           from turma 
-                           where ano_letivo = @ano 
-                           and modalidade_codigo = any(@modalidades)
-                           and ue_id = any(@ueId)";
+                                    t.id as TurmaId, 
+                                    t.turma_id as TurmaCodigo,
+                                    u.ue_id as CodigoUe,
+                                    d.dre_id as CodigoDre,
+                                    t.modalidade_codigo as Modalidade,
+                                    t.ano as SerieAno,  
+                                    t.ano_letivo as AnoLetivo
+                           from turma t
+                           inner join ue u on t.ue_id = u.id
+                           inner join dre d on u.dre_id = d.id
+                           where t.ano_letivo = @ano 
+                           and t.modalidade_codigo = any(@modalidades)
+                           and t.ue_id = any(@ueId)";
 
             return await contexto.Conexao.QueryAsync<TurmaModalidadeSerieAnoDto>(query, new { ano, ueId, modalidades });
         }
