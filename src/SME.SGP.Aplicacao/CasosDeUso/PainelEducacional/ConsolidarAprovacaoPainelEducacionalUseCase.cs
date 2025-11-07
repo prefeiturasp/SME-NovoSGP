@@ -75,7 +75,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                     )
                 );
 
-                var resultadosConselho = await mediator.Send(new ObterAprovacaoParaConsolidacaoQuery([.. listagemTurmas.Select(t => t.TurmaId)]));
+                var resultadosConselho = await mediator.Send(new ObterAprovacaoParaConsolidacaoQuery(listagemTurmas.Select(t => t.TurmaId).ToArray()));
 
                 var dadosParaConsolidadar = MesclarConselhosTurmas(resultadosConselho, listagemTurmas);
 
