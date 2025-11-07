@@ -24,6 +24,14 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class PainelEducacionalController : ControllerBase
     {
+        [HttpGet("aprovacao")]
+        [ProducesResponseType(typeof(PainelEducacionalAprovacaoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterFrequenciaGlobal(int anoLetivo, string codigoDre, string codigoUe, [FromServices] IConsultasAprovacaoUseCase consultasRegistroFrequenciaAgrupamentoGlobalUseCase)
+           => Ok(await consultasRegistroFrequenciaAgrupamentoGlobalUseCase.ObterAprovacao(anoLetivo, codigoDre, codigoUe));
+
         [HttpGet("frequencia-global")]
         [ProducesResponseType(typeof(PainelEducacionalRegistroFrequenciaAgrupamentoGlobalDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
