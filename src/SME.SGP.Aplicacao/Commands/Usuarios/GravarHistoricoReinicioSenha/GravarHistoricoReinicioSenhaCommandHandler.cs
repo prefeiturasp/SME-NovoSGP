@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             await repositorioHistoricoReinicioSenha.SalvarAsync(new Dominio.HistoricoReinicioSenha()
             {
                 UsuarioRf = request.UsuarioRf,
-                DreCodigo = request.DreCodigo,
+                DreCodigo = request.DreCodigo ?? "sme",
                 UeCodigo = request.UeCodigo ?? ""
             });
 

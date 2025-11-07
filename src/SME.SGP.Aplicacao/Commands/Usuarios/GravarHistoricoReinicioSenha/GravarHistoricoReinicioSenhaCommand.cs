@@ -27,10 +27,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(a => a.UsuarioRf)
                 .NotEmpty()
                 .WithMessage("RF do usuario alterado deve ser informado!");
-
-            RuleFor(a => a.DreCodigo)
-                .NotEmpty()
-                .WithMessage("Código da DRE deve ser informado!");
         }
     }
 }

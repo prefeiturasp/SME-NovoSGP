@@ -25,10 +25,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.CodigoRf)
                 .NotEmpty()
                 .WithMessage("O código Rf é obrigatório.");
-
-            RuleFor(c => c.DreCodigo)
-                .NotEmpty()
-                .WithMessage("O código da DRE é obrigatório.");
         }
     }
 }
