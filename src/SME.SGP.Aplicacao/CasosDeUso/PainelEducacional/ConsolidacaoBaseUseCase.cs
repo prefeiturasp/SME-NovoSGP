@@ -9,22 +9,22 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
         /// <summary>
         /// Tipos de escola válidos para consolidação no painel educacional
         /// </summary>
-        protected static readonly List<TipoEscola> TiposEscolasValidos =
-        [
+        protected static readonly List<TipoEscola> TiposEscolasValidos = new()
+        {
             TipoEscola.EMEF,
             TipoEscola.EMEFM,
             TipoEscola.CIEJA
-        ];
+        };
 
         /// <summary>
         /// Modalidade de turmas válidos para consolidação no painel educacional
         /// </summary>
-        protected static readonly List<Modalidade> ModalidadesTurmas =
-        [
+        protected static readonly List<Modalidade> ModalidadesTurmas = new()
+        {
             Modalidade.Fundamental,
             Modalidade.Medio,
             Modalidade.EJA
-        ];
+        };
 
         protected static readonly HashSet<string> PareceresPromocao = new HashSet<string>
         {
