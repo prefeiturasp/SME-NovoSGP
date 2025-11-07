@@ -3,6 +3,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<TurmaModalidadeSerieAnoDto>> Handle(ObterTurmasComModalidadePorModalidadeAnoQuery request, CancellationToken cancellationToken)
         {
-            return await repositorio.ObterTurmasComModalidadePorModalidadeAnoUe(request.Ano, [.. request.UeId], [.. request.Modalidades]);
+            return await repositorio.ObterTurmasComModalidadePorModalidadeAnoUe(request.Ano, request.UeId.ToArray(), request.Modalidades.ToArray());
         }
     }
 }
