@@ -1,13 +1,12 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Commands.PainelEducacional.LimparConsolidacaoAprovacao;
 using SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarConsolidacaoAprovacao;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAprovacaoParaConsolidacao;
 using SME.SGP.Aplicacao.Queries.UE.ObterTodasUes;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoAprovacao;
-using SME.SGP.Infra.Enumerados;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,10 +21,11 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            // obter Dres
             var listagensDres = await mediator.Send(new ObterTodasDresQuery());
-            // obter ues
             var listagemUe = (await mediator.Send(new ObterTodasUesQuery()))?.ToList();
+
+            await mediator.Send(new LimparConsolidacaoAprovacaoCommand());
+            await mediator.Send(new LimparConsolidacaoAprovacaoUeCommand());
 
             foreach (var dre in listagensDres)
             {
@@ -40,22 +40,15 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                     )
                 );
 
-                // obter indicadores das turmas para consolidar
                 var resultadosConselho = await mediator.Send(new ObterAprovacaoParaConsolidacaoQuery([.. listagemTurmas.Select(t => t.TurmaId)]));
 
                 var dadosParaConsolidadar = MesclarConselhosTurmas(resultadosConselho, listagemTurmas);
 
                 var dadosAgrupadosDre = AgruparConsolicacaoDre(dadosParaConsolidadar);
-                await mediator.Send(new SalvarConsolidacaoAprovacaoCommand(dadosAgrupadosDre));
-
-                // agrupar por ano da turma
-
-                // PainelEducacionalConsolidacaoAprovacao
-                // agrupar por turma
-                // salvar a consolidação por ano turma
-                //var dadosAgrupados = AgruparConsolicacaoDre(dadosParaConsolidadar, listagemTurmas);
-                //await mediator.Send(new SalvarConsolidacaoAprovacaoCommand(dadosAgrupados));
-                // salvaar consolidação por turma
+                await mediator.Send(new SalvarConsolidacaoAprovacaoCommand(dadosAgrupadosDre));    
+                
+                var dadosAgrupadosUe = AgruparConsolicacaoUe(dadosParaConsolidadar);
+                await mediator.Send(new SalvarConsolidacaoAprovacaoUeCommand(dadosAgrupadosUe));
             }
 
             return true;
@@ -74,6 +67,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                             CodigoDre = turma.CodigoDre,
                             CodigoUe = turma.CodigoUe,
                             TurmaId = g.TurmaId,
+                            Turma = turma.Turma,
                             SerieAno = turma.SerieAno,
                             Modalidade = turma.Modalidade.Name(),
                             AnoLetivo = turma.AnoLetivo,
@@ -85,18 +79,26 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             return indicadores.ToList();
         }
 
+        private static IEnumerable<PainelEducacionalConsolidacaoAprovacaoUe> AgruparConsolicacaoUe(IEnumerable<ConsolidacaoAprovacaoDto> dadosParaConsolidadar)
+        {
+            var consolidacaoAgrupada = dadosParaConsolidadar
+                .GroupBy(dado => new { dado.CodigoDre, dado.Turma, dado.Modalidade, dado.AnoLetivo })
+                .Select(grupo => new PainelEducacionalConsolidacaoAprovacaoUe
+                {
+                    CodigoDre = grupo.Key.CodigoDre,
+                    Turma = grupo.Key.Turma,
+                    AnoLetivo = grupo.Key.AnoLetivo,
+                    Modalidade = grupo.Key.Modalidade,
+                    TotalPromocoes = grupo.Count(d => PareceresPromocao.Contains(d.ParecerDescricao)),
+                    TotalRetencoesNotas = grupo.Count(d => d.ParecerDescricao == ParecerRetencaoNota),
+                    TotalRetencoesAusencias = grupo.Count(d => d.ParecerDescricao == ParecerRetencaoFrequencia),
+                });
+
+            return consolidacaoAgrupada;
+        }
+
         private static IEnumerable<PainelEducacionalConsolidacaoAprovacao> AgruparConsolicacaoDre(IEnumerable<ConsolidacaoAprovacaoDto> dadosParaConsolidadar)
         {
-            var pareceresPromocao = new HashSet<string>
-                {
-                    "Continuidade dos estudos",
-                    "Promovido",
-                    "Promovido pelo conselho"
-                };
-
-            var parecerRetencaoNota = "Retido";
-            var parecerRetencaoFrequencia = "Retido por frequência";
-
             var consolidacaoAgrupada = dadosParaConsolidadar
                 .GroupBy(dado => new { dado.CodigoDre, dado.SerieAno, dado.Modalidade, dado.AnoLetivo })
                 .Select(grupo => new PainelEducacionalConsolidacaoAprovacao
@@ -105,13 +107,12 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                     SerieAno = grupo.Key.SerieAno,
                     AnoLetivo = grupo.Key.AnoLetivo,
                     Modalidade = grupo.Key.Modalidade,
-                    TotalPromocoes = grupo.Count(d => pareceresPromocao.Contains(d.ParecerDescricao)),
-                    TotalRetencoesNotas = grupo.Count(d => d.ParecerDescricao == parecerRetencaoNota),
-                    TotalRetencoesAusencias = grupo.Count(d => d.ParecerDescricao == parecerRetencaoFrequencia),
+                    TotalPromocoes = grupo.Count(d => PareceresPromocao.Contains(d.ParecerDescricao)),
+                    TotalRetencoesNotas = grupo.Count(d => d.ParecerDescricao == ParecerRetencaoNota),
+                    TotalRetencoesAusencias = grupo.Count(d => d.ParecerDescricao == ParecerRetencaoFrequencia),
                 });
 
             return consolidacaoAgrupada;
         }
-
     }
 }

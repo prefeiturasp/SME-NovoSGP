@@ -5,6 +5,7 @@
         public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }
         public long TurmaId { get; set; }
+        public string Turma { get; set; }
         public string SerieAno { get; set; }
         public string Modalidade { get; set; }
         public int ParecerConclusivoId { get; set; }

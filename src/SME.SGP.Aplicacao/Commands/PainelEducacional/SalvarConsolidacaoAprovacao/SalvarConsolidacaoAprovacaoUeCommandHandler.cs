@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarConsolidacaoAprovacao
 {
-    public class SalvarConsolidacaoAprovacaoCommandHandler : IRequestHandler<SalvarConsolidacaoAprovacaoCommand, bool>
+    public class SalvarConsolidacaoAprovacaoUeCommandHandler : IRequestHandler<SalvarConsolidacaoAprovacaoUeCommand, bool>
     {
-        private readonly IRepositorioPainelEducacionalAprovacao repositorio;
+        private readonly IRepositorioPainelEducacionalAprovacaoUe repositorio;
 
-        public SalvarConsolidacaoAprovacaoCommandHandler(IRepositorioPainelEducacionalAprovacao repositorio)
+        public SalvarConsolidacaoAprovacaoUeCommandHandler(IRepositorioPainelEducacionalAprovacaoUe repositorio)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
 
-        public async Task<bool> Handle(SalvarConsolidacaoAprovacaoCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(SalvarConsolidacaoAprovacaoUeCommand request, CancellationToken cancellationToken)
         {
             await repositorio.BulkInsertAsync(request.Indicadores);
 

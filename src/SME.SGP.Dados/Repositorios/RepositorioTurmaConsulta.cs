@@ -1208,6 +1208,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select 
                                     t.id as TurmaId, 
                                     t.turma_id as TurmaCodigo,
+                                    t.nome as Turma,
                                     u.ue_id as CodigoUe,
                                     d.dre_id as CodigoDre,
                                     t.modalidade_codigo as Modalidade,

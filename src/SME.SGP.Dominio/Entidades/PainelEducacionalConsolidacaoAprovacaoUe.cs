@@ -2,10 +2,10 @@
 
 namespace SME.SGP.Dominio.Entidades
 {
-    public class PainelEducacionalConsolidacaoAprovacao
+    public class PainelEducacionalConsolidacaoAprovacaoUe
     {
         public string CodigoDre { get; set; }
-        public string SerieAno { get; set; }
+        public string Turma { get; set; }
         public string Modalidade { get; set; }
         public int TotalPromocoes { get; set; }
         public int TotalRetencoesAusencias { get; set; }
