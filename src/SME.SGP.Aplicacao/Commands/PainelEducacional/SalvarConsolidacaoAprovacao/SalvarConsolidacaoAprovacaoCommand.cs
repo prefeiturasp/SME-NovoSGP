@@ -8,9 +8,9 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarConsolidacaoAprovac
     {
         public SalvarConsolidacaoAprovacaoCommand(IEnumerable<PainelEducacionalConsolidacaoAprovacao> indicadores)
         {
-            this.indicadores = indicadores;
+            Indicadores = indicadores;
         }
 
-        public IEnumerable<PainelEducacionalConsolidacaoAprovacao> indicadores { get; set; }
+        public IEnumerable<PainelEducacionalConsolidacaoAprovacao> Indicadores { get; set; }
     }
 }

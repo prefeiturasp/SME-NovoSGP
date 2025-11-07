@@ -26,6 +26,15 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             Modalidade.EJA
         ];
 
+        protected static readonly HashSet<string> PareceresPromocao = new HashSet<string>
+        {
+            "Continuidade dos estudos",
+            "Promovido",
+            "Promovido pelo conselho"
+        };
+
+        protected const string ParecerRetencaoNota = "Retido";
+        protected const string ParecerRetencaoFrequencia = "Retido por frequência";
 
         protected ConsolidacaoBaseUseCase(IMediator mediator) : base(mediator)
         {
