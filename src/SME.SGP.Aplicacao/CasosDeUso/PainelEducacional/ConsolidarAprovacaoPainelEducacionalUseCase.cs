@@ -115,10 +115,11 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
         private static IEnumerable<PainelEducacionalConsolidacaoAprovacaoUe> AgruparConsolicacaoUe(IEnumerable<ConsolidacaoAprovacaoDto> dadosParaConsolidadar)
         {
             var consolidacaoAgrupada = dadosParaConsolidadar
-                .GroupBy(dado => new { dado.CodigoDre, dado.Turma, dado.Modalidade, dado.AnoLetivo })
+                .GroupBy(dado => new { dado.CodigoUe, dado.Turma, dado.Modalidade, dado.AnoLetivo })
                 .Select(grupo => new PainelEducacionalConsolidacaoAprovacaoUe
                 {
-                    CodigoDre = grupo.Key.CodigoDre,
+                    CodigoDre = grupo.First().CodigoDre,
+                    CodigoUe = grupo.Key.CodigoUe,
                     Turma = grupo.Key.Turma,
                     AnoLetivo = grupo.Key.AnoLetivo,
                     Modalidade = grupo.Key.Modalidade,

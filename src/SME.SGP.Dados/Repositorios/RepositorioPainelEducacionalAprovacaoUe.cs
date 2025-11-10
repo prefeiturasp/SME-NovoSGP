@@ -27,7 +27,7 @@ namespace SME.SGP.Dados.Repositorios
 
             await using var writer = conn.BeginBinaryImport(@"
                 COPY painel_educacional_consolidacao_aprovacao_ue 
-                    (codigo_dre, turma, modalidade, total_promocoes, total_retencoes_ausencias, total_retencoes_notas, ano_letivo, criado_em)
+                    (codigo_dre, codigo_ue, turma, modalidade, total_promocoes, total_retencoes_ausencias, total_retencoes_notas, ano_letivo, criado_em)
                 FROM STDIN (FORMAT BINARY)
             ");
 
@@ -35,6 +35,7 @@ namespace SME.SGP.Dados.Repositorios
             {
                 await writer.StartRowAsync();
                 await writer.WriteAsync(item.CodigoDre, NpgsqlDbType.Varchar);
+                await writer.WriteAsync(item.CodigoUe, NpgsqlDbType.Varchar);
                 await writer.WriteAsync(item.Turma, NpgsqlDbType.Varchar);
                 await writer.WriteAsync(item.Modalidade, NpgsqlDbType.Varchar);
                 await writer.WriteAsync(item.TotalPromocoes, NpgsqlDbType.Integer);
