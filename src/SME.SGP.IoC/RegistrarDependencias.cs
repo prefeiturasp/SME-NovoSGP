@@ -266,6 +266,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPainelEducacionalProficienciaIdeb, RepositorioPainelEducacionalProficienciaIdeb>();
             services.TryAddScoped<IConsultasModalidadesNotasVisaoUeUseCase, ConsultasModalidadesNotasVisaoUeUseCase>();
             services.TryAddScoped<IConsultasPlanosAEEPainelEducacionalUseCase, ConsultasPlanosAEEPainelEducacionalUseCase>();
+            services.TryAddScoped<IConsultasEducacaoIntegralPainelEducacionalUseCase, ConsultasEducacaoIntegralPainelEducacionalUseCase>();
         }
 
         protected virtual void RegistrarContextos(IServiceCollection services)
@@ -688,8 +689,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoPlanoAEE, RepositorioPainelEducacionalConsolidacaoPlanoAEE>();
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoFrequenciaDiaria, RepositorioPainelEducacionalConsolidacaoFrequenciaDiaria>();
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoFrequenciaDiariaDre, RepositorioPainelEducacionalConsolidacaoFrequenciaDiariaDre>();
-            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoFluenciaLeitoraUe, RepositorioPainelEducacionalConsolidacaoFluenciaLeitoraUe>();
-            services.TryAddScoped<IRepositorioConsultaFluenciaLeitoraUe, RepositorioConsultaFluenciaLeitoraUe>();
+            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoFluenciaLeitoraUe, RepositorioPainelEducacionalConsolidacaoFluenciaLeitoraUe>();            
+            services.TryAddScoped<IRepositorioConsultaFluenciaLeitoraUe, RepositorioConsultaFluenciaLeitoraUe>();            
+            services.TryAddScoped<IRepositorioEducacaoIntegralConsulta, RepositorioEducacaoIntegralConsulta>();
 
             services.TryAddScoped<IRepositorioConsolidacaoFluenciaLeitora, RepositorioConsolidacaoFluenciaLeitora>();
             services.TryAddScoped<IConsolidarTaxaAlfabetizacaoPainelEducacionalUseCase, ConsolidarTaxaAlfabetizacaoPainelEducacionalUseCase>();
