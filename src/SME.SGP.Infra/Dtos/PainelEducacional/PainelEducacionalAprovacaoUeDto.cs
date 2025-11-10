@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SME.SGP.Infra.Dtos.PainelEducacional
+﻿namespace SME.SGP.Infra.Dtos.PainelEducacional
 {
     public class PainelEducacionalAprovacaoUeDto
     {

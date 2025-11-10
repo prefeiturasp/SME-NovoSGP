@@ -1,48 +1,46 @@
 ﻿using MediatR;
-using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra.Dtos.PainelEducacional;
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAprovacaoUe
 {
-    public class PainelEducacionalAprovacaoUeQueryHandler : IRequestHandler<PainelEducacionalAprovacaoUeQuery, IEnumerable<PainelEducacionalAprovacaoUeDto>>
+    public class ObterAprovacaoUeQueryHandler : IRequestHandler<PainelEducacionalAprovacaoUeQuery, PainelEducacionalAprovacaoUeResultadoDto>
     {
-        private readonly IRepositorioPainelEducacionalAprovacaoUe repositorioPainelEducacionalAprovacaoUe;
+        private readonly IRepositorioPainelEducacionalAprovacaoUe repositorio;
 
-        public PainelEducacionalAprovacaoUeQueryHandler(IRepositorioPainelEducacionalAprovacaoUe repositorioPainelEducacionalAprovacaoUe)
+        public ObterAprovacaoUeQueryHandler(IRepositorioPainelEducacionalAprovacaoUe repositorio)
         {
-            this.repositorioPainelEducacionalAprovacaoUe = repositorioPainelEducacionalAprovacaoUe;
+            this.repositorio = repositorio;
         }
 
-        public async Task<IEnumerable<PainelEducacionalAprovacaoUeDto>> Handle(PainelEducacionalAprovacaoUeQuery request, CancellationToken cancellationToken)
+        public async Task<PainelEducacionalAprovacaoUeResultadoDto> Handle(PainelEducacionalAprovacaoUeQuery request, CancellationToken cancellationToken)
         {
-            var registros = await repositorioPainelEducacionalAprovacaoUe.ObterAprovacao(request.AnoLetivo, request.CodigoUe);
+            var resultado = await repositorio.ObterAprovacao(
+                request.AnoLetivo,
+                request.CodigoUe,
+                request.NumeroPagina,
+                request.NumeroRegistros);
 
-            return MapearParaDto(registros);
-        }
-
-        private IEnumerable<PainelEducacionalAprovacaoUeDto> MapearParaDto(IEnumerable<PainelEducacionalConsolidacaoAprovacaoUe> registros)
-        {
-            var lista = new List<PainelEducacionalAprovacaoUeDto>();
-
-            foreach (var item in registros)
+            return new PainelEducacionalAprovacaoUeResultadoDto
             {
-                lista.Add(new PainelEducacionalAprovacaoUeDto
+                Turmas = resultado.Items.Select(r => new PainelEducacionalAprovacaoUeDto
                 {
-                    CodigoDre = item.CodigoDre,
-                    Turma = item.Turma,
-                    Modalidade = item.Modalidade,
-                    TotalPromocoes = item.TotalPromocoes,
-                    TotalRetencoesAusencias = item.TotalRetencoesAusencias,
-                    TotalRetencoesNotas = item.TotalRetencoesNotas,
-                    AnoLetivo = item.AnoLetivo,
-                });
-            }
+                    CodigoDre = r.CodigoDre,
+                    CodigoUe = r.CodigoUe,
+                    Turma = r.Turma,
+                    Modalidade = r.Modalidade,
+                    TotalPromocoes = r.TotalPromocoes,
+                    TotalRetencoesAusencias = r.TotalRetencoesAusencias,
+                    TotalRetencoesNotas = r.TotalRetencoesNotas,
+                    AnoLetivo = r.AnoLetivo
+                }).ToList(),
 
-            return lista;
+                TotalPaginas = resultado.TotalPaginas,
+                TotalRegistros = resultado.TotalRegistros
+            };
         }
     }
 }
