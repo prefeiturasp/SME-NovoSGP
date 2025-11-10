@@ -6,6 +6,8 @@ using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System;
+using System.Text;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -54,15 +56,88 @@ namespace SME.SGP.Dados.Repositorios
 
             await database.ExecuteAsync(sql);
         }
-        public async Task<IEnumerable<PainelEducacionalConsolidacaoAprovacaoUe>> ObterAprovacao(int anoLetivo, string codigoUe)
+        public async Task<PaginacaoResultadoDto<PainelEducacionalConsolidacaoAprovacaoUe>> ObterAprovacao(
+           int anoLetivo,
+           string codigoUe,
+           int numeroPagina,
+           int numeroRegistros)
         {
-            var sql = @"SELECT * FROM painel_educacional_consolidacao_aprovacao_ue
-                WHERE ano_letivo = @anoLetivo";
+            var query = MontarQueryConsulta(codigoUe);
+            var queryPaginacao = MontarQueryConsulta(codigoUe, true);
 
-            if (!string.IsNullOrWhiteSpace(codigoUe))
-                sql += " AND codigo_ue = @codigoUe";
+            var paginacao = new Paginacao(numeroPagina, numeroRegistros);
 
-            return await database.QueryAsync<PainelEducacionalConsolidacaoAprovacaoUe>(sql, new { anoLetivo, codigoUe });
+            var parametrosTotalPaginas = MontarParametros(anoLetivo, codigoUe, null);
+            var parametrosQuery = MontarParametros(anoLetivo, codigoUe, paginacao);
+
+            var totalRegistros = await database.Conexao.QueryFirstOrDefaultAsync<int>(queryPaginacao, parametrosTotalPaginas);
+            var totalPaginas = totalRegistros == 0
+                ? 0
+                : (int)Math.Ceiling((double)totalRegistros / paginacao.QuantidadeRegistros);
+
+            var registros = await database.Conexao.QueryAsync<PainelEducacionalConsolidacaoAprovacaoUe>(query, parametrosQuery);
+
+            return ObterResultado(registros, totalPaginas, totalRegistros);
+        }
+
+        private static string MontarQueryConsulta(string codigoUe, bool ehContador = false)
+        {
+            var sb = new StringBuilder();
+
+            if (ehContador)
+            {
+                sb.AppendLine("SELECT COUNT(*) FROM painel_educacional_consolidacao_aprovacao_ue WHERE ano_letivo = @anoLetivo");
+                if (!string.IsNullOrEmpty(codigoUe)) sb.AppendLine(" AND codigo_ue = @codigoUe");
+            }
+            else
+            {
+                sb.AppendLine(@"SELECT 
+                                    codigo_dre AS CodigoDre,
+                                    codigo_ue AS CodigoUe,
+                                    turma AS Turma,
+                                    modalidade AS Modalidade,
+                                    total_promocoes AS TotalPromocoes,
+                                    total_retencoes_ausencias AS TotalRetencoesAusencias,
+                                    total_retencoes_notas AS TotalRetencoesNotas,
+                                    ano_letivo AS AnoLetivo,
+                                    criado_em AS CriadoEm
+                                FROM painel_educacional_consolidacao_aprovacao_ue
+                                WHERE ano_letivo = @anoLetivo");
+
+                if (!string.IsNullOrEmpty(codigoUe))
+                    sb.AppendLine(" AND codigo_ue = @codigoUe");
+
+                sb.AppendLine(" ORDER BY turma");
+                sb.AppendLine(" OFFSET @offset ROWS FETCH NEXT @numeroRegistros ROWS ONLY");
+            }
+
+            return sb.ToString();
+        }
+
+        private static object MontarParametros(int anoLetivo, string codigoUe, Paginacao paginacao)
+        {
+            return paginacao != null
+                ? new
+                {
+                    anoLetivo,
+                    codigoUe,
+                    offset = paginacao.QuantidadeRegistrosIgnorados,
+                    numeroRegistros = paginacao.QuantidadeRegistros
+                }
+                : new { anoLetivo, codigoUe };
+        }
+
+        private static PaginacaoResultadoDto<PainelEducacionalConsolidacaoAprovacaoUe> ObterResultado(
+            IEnumerable<PainelEducacionalConsolidacaoAprovacaoUe> registros,
+            int totalPaginas,
+            int totalRegistros)
+        {
+            return new PaginacaoResultadoDto<PainelEducacionalConsolidacaoAprovacaoUe>
+            {
+                Items = registros,
+                TotalPaginas = totalPaginas,
+                TotalRegistros = totalRegistros
+            };
         }
     }
 }
