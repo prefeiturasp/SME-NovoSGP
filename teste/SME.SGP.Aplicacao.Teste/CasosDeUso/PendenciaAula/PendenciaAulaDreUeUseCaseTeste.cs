@@ -1,4 +1,4 @@
-using Bogus;
+ï»¿using Bogus;
 using MediatR;
 using Moq;
 using Newtonsoft.Json;
@@ -21,19 +21,19 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PendenciaAula
             _mediatorMock = new Mock<IMediator>();
             _useCase = new PendenciaAulaDreUeUseCase(_mediatorMock.Object);
 
-            // Configuração do Bogus para gerar um objeto Ue válido usando os tipos de domínio reais
+            // Configuraï¿½ï¿½o do Bogus para gerar um objeto Ue vï¿½lido usando os tipos de domï¿½nio reais
             _ueFaker = new Faker<Ue>("pt_BR")
                 .RuleFor(u => u.Id, f => f.Random.Long(1, 10000))
                 .RuleFor(u => u.CodigoUe, f => f.Random.AlphaNumeric(6))
                 .RuleFor(u => u.DreId, f => f.Random.Long(1, 100))
-                .RuleFor(u => u.TipoEscola, f => f.PickRandom<TipoEscola>()); // Usa o enum real
+                .RuleFor(u => u.TipoEscola, f => f.PickRandom<Dominio.TipoEscola>()); // Usa o enum real
         }
 
         private void ConfigurarParametroSistema(TipoParametroSistema tipo, bool ativo)
         {
             var parametro = new ParametrosSistema { Ativo = ativo };
 
-            // O UseCase pode receber um nulo se o parâmetro não existir, então simulamos isso também.
+            // O UseCase pode receber um nulo se o parï¿½metro nï¿½o existir, entï¿½o simulamos isso tambï¿½m.
             ParametrosSistema retorno = ativo ? parametro : null;
 
             _mediatorMock.Setup(m => m.Send(It.Is<ObterParametroSistemaPorTipoEAnoQuery>(q => q.TipoParametroSistema == tipo), It.IsAny<CancellationToken>()))
@@ -53,24 +53,24 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PendenciaAula
             _mediatorMock.Verify(m => m.Send(It.Is<PublicarFilaSgpCommand>(c => c.Rota == rota), It.IsAny<CancellationToken>()), vezes);
         }
 
-        [Fact(DisplayName = "Deve retornar false e não processar quando a mensagem for inválida")]
+        [Fact(DisplayName = "Deve retornar false e nï¿½o processar quando a mensagem for invï¿½lida")]
         public async Task Executar_QuandoMensagemInvalida_DeveRetornarFalseENaoProcessar()
         {
-            // Organização
+            // Organizaï¿½ï¿½o
             var mensagemInvalida = new MensagemRabbit("null");
 
-            // Ação
+            // Aï¿½ï¿½o
             var resultado = await _useCase.Executar(mensagemInvalida);
 
-            // Verificação
+            // Verificaï¿½ï¿½o
             Assert.False(resultado);
             _mediatorMock.Verify(m => m.Send(It.IsAny<IRequest<bool>>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
-        [Fact(DisplayName = "Deve disparar todas as filas quando a UE não ignora pendências e os parâmetros estão ativos")]
+        [Fact(DisplayName = "Deve disparar todas as filas quando a UE nï¿½o ignora pendï¿½ncias e os parï¿½metros estï¿½o ativos")]
         public async Task Executar_QuandoUeNaoIgnoraPendenciasEParametrosAtivos_DeveDispararTodasAsFilas()
         {
-            // Organização
+            // Organizaï¿½ï¿½o
             var ue = _ueFaker.Generate();
             var mensagem = new MensagemRabbit(JsonConvert.SerializeObject(ue));
 
@@ -78,10 +78,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PendenciaAula
             _mediatorMock.Setup(m => m.Send(PodeExecutarPendenciaComponenteSemAulaQuery.Instance, It.IsAny<CancellationToken>())).ReturnsAsync(true);
             ConfigurarTodosParametros(true);
 
-            // Ação
+            // Aï¿½ï¿½o
             var resultado = await _useCase.Executar(mensagem);
 
-            // Verificação
+            // Verificaï¿½ï¿½o
             Assert.True(resultado);
             VerificarPublicacaoFila(RotasRabbitSgpAula.RotaExecutaPendenciasAulaDiarioBordo, Times.Once());
             VerificarPublicacaoFila(RotasRabbitSgpAula.RotaExecutaPendenciasAulaFrequencia, Times.Once());
@@ -91,10 +91,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PendenciaAula
             VerificarPublicacaoFila(RotasRabbitSgpAula.RotaExecutaPendenciasTurmasComponenteSemAulaUe, Times.Once());
         }
 
-        [Fact(DisplayName = "Deve disparar apenas filas obrigatórias quando a UE ignora pendências")]
+        [Fact(DisplayName = "Deve disparar apenas filas obrigatï¿½rias quando a UE ignora pendï¿½ncias")]
         public async Task Executar_QuandoUeIgnoraPendencias_DeveDispararApenasFilasObrigatorias()
         {
-            // Organização
+            // Organizaï¿½ï¿½o
             var ue = _ueFaker.Generate();
             var mensagem = new MensagemRabbit(JsonConvert.SerializeObject(ue));
 
@@ -102,10 +102,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PendenciaAula
             _mediatorMock.Setup(m => m.Send(PodeExecutarPendenciaComponenteSemAulaQuery.Instance, It.IsAny<CancellationToken>())).ReturnsAsync(true);
             ConfigurarTodosParametros(true);
 
-            // Ação
+            // Aï¿½ï¿½o
             var resultado = await _useCase.Executar(mensagem);
 
-            // Verificação
+            // Verificaï¿½ï¿½o
             Assert.True(resultado);
             VerificarPublicacaoFila(RotasRabbitSgpAula.RotaExecutaPendenciasAulaDiarioBordo, Times.Never());
             VerificarPublicacaoFila(RotasRabbitSgpAula.RotaExecutaPendenciasAulaFrequencia, Times.Never());
@@ -115,21 +115,21 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PendenciaAula
             VerificarPublicacaoFila(RotasRabbitSgpAula.RotaExecutaPendenciasTurmasComponenteSemAulaUe, Times.Once());
         }
 
-        [Fact(DisplayName = "Deve disparar apenas filas não parametrizadas quando parâmetros estão inativos")]
+        [Fact(DisplayName = "Deve disparar apenas filas nï¿½o parametrizadas quando parï¿½metros estï¿½o inativos")]
         public async Task Executar_QuandoParametrosInativos_DeveDispararApenasFilasNaoParametrizadas()
         {
-            // Organização
+            // Organizaï¿½ï¿½o
             var ue = _ueFaker.Generate();
             var mensagem = new MensagemRabbit(JsonConvert.SerializeObject(ue));
 
             _mediatorMock.Setup(m => m.Send(It.IsAny<ObterTipoUeIgnoraGeracaoPendenciasQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(false);
             _mediatorMock.Setup(m => m.Send(PodeExecutarPendenciaComponenteSemAulaQuery.Instance, It.IsAny<CancellationToken>())).ReturnsAsync(false);
-            ConfigurarTodosParametros(false); // Parâmetros inativos/nulos
+            ConfigurarTodosParametros(false); // Parï¿½metros inativos/nulos
 
-            // Ação
+            // Aï¿½ï¿½o
             var resultado = await _useCase.Executar(mensagem);
 
-            // Verificação
+            // Verificaï¿½ï¿½o
             Assert.True(resultado);
             VerificarPublicacaoFila(RotasRabbitSgpAula.RotaExecutaPendenciasAulaDiarioBordo, Times.Never());
             VerificarPublicacaoFila(RotasRabbitSgpAula.RotaExecutaPendenciasAulaFrequencia, Times.Never());

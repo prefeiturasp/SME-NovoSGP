@@ -6,14 +6,15 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Collections;
 
 namespace SME.SGP.Dados.Repositorios
 {
+    [ExcludeFromCodeCoverage]
     public class RepositorioEvento : RepositorioBase<Evento>, IRepositorioEvento
     {
         public RepositorioEvento(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
@@ -715,7 +716,7 @@ namespace SME.SGP.Dados.Repositorios
 
             retornoPaginado.TotalRegistros = totalRegistrosDaQuery;
             retornoPaginado.TotalPaginas =
-                (int) Math.Ceiling((double) retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
+                (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
 
             return retornoPaginado;
         }
@@ -1135,7 +1136,7 @@ namespace SME.SGP.Dados.Repositorios
                                     left join dre d 
                                         on d.id = u.dre_id");
 
-             query.AppendLine(@" where
+            query.AppendLine(@" where
                                     e.tipo_calendario_id = @tipoCalendarioId
                                 and extract(year from e.data_inicio) = tc.ano_letivo     
                                 and e.letivo = any(@tiposLetivos)                         
@@ -1145,7 +1146,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine($@" and (e.ue_id = @ueCodigo 
                                             or (e.ue_id is null and e.dre_id is null)
                                             or (e.ue_id is null and e.dre_id = d.dre_id))");
-            
+
             return await database.Conexao.QueryAsync<Evento>(query.ToString(),
                 new
                 {

@@ -1,10 +1,11 @@
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterAulasComPendenciaDiarioBordoResolvidaPorTurmaCommand : IRequest<IEnumerable<PendenciaDiarioBordoParaExcluirDto>>
+    public class ObterAulasComPendenciaDiarioBordoResolvidaPorTurmaCommand : 
+        IRequest<IEnumerable<PendenciaDiarioBordoParaExcluirDto>>
     {
         public string TurmaId { get; set; }
 

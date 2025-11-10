@@ -39,11 +39,11 @@ namespace SME.SGP.Aplicacao
                         {
                             professoresEComponentes.AddRange(professorDaTurma.DisciplinasId()
                                 .Select(disciplinaId => new ProfessorEComponenteInfantilDto()
-                            {
-                                CodigoRf = codigoRfProfessor,
-                                DisciplinaId = disciplinaId,
-                                DescricaoComponenteCurricular = componentesSgp.FirstOrDefault(f => f.Codigo.Equals(disciplinaId.ToString()))?.Descricao,
-                            }));
+                                {
+                                    CodigoRf = codigoRfProfessor,
+                                    DisciplinaId = disciplinaId,
+                                    DescricaoComponenteCurricular = componentesSgp.FirstOrDefault(f => f.Codigo.Equals(disciplinaId.ToString()))?.Descricao,
+                                }));
                         }
                     }
                 }
@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao
 
                     if (professoresParaGerarPendencia.Any())
                     {
-                        filtroPendenciaDiarioBordoTurmaAula.AulasProfessoresComponentesCurriculares.AddRange(professoresParaGerarPendencia.Select(s=> new AulaProfessorComponenteDto()
+                        filtroPendenciaDiarioBordoTurmaAula.AulasProfessoresComponentesCurriculares.AddRange(professoresParaGerarPendencia.Select(s => new AulaProfessorComponenteDto()
                         {
                             AulaId = aula.Id,
                             PeriodoEscolarId = aula.PeriodoEscolarId,

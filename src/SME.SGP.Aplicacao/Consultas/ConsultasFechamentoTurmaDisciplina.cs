@@ -310,6 +310,9 @@ namespace SME.SGP.Aplicacao
                             if (turma.EhEJA() && notasConceitoBimestre.NaoEhNulo() && !turma.EhTurmaEdFisica())
                                 notasConceitoBimestre = notasConceitoBimestre.Where(n => n.DisciplinaId != MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_ED_FISICA);
 
+                            if(turma.Ue.TipoEscola != TipoEscola.EMEBS && (TipoTurnoEOL)turma.TipoTurno != TipoTurnoEOL.Integral)
+                                notasConceitoBimestre = notasConceitoBimestre.Where(n => n.DisciplinaId != MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_LIBRAS);
+
                             if (fechamentoBimestre.EhSintese)
                             {
                                 var notaConceitoBimestre = notasConceitoBimestre.FirstOrDefault();

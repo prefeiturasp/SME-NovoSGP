@@ -48,10 +48,15 @@ namespace SME.SGP.Aplicacao
             var atividadesAvaliativaEBimestres = await mediator
                 .Send(new ObterAtividadesAvaliativasPorCCTurmaPeriodoQuery(componentesCurriculares.Select(a => a.ToString()).ToArray(), filtro.TurmaCodigo, periodoInicio, periodoFim));
 
-            var alunos = (await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turmaCompleta.CodigoTurma))))
-                .Where(a => a.CodigoSituacaoMatricula != SituacaoMatriculaAluno.VinculoIndevido);
+            var respostaAlunos = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turmaCompleta.CodigoTurma)));
 
-            if (alunos.EhNulo() || !alunos.Any())
+            if (respostaAlunos == null || !respostaAlunos.Any())
+                throw new NegocioException("Não foi encontrado alunos para a turma informada");
+
+            var alunos = respostaAlunos
+               .Where(a => a.CodigoSituacaoMatricula != SituacaoMatriculaAluno.VinculoIndevido);
+
+            if (alunos == null || !alunos.Any())
                 throw new NegocioException("Não foi encontrado alunos para a turma informada");
 
             var componentesCurricularesCompletos = await mediator.Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(new long[] { filtro.DisciplinaCodigo }, codigoTurma: turmaCompleta.CodigoTurma));
@@ -134,10 +139,14 @@ namespace SME.SGP.Aplicacao
                     else
                         disciplinasRegencia = MapearParaDto(disciplinasRegenciaEol.Where(d => !d.TerritorioSaber && d.Regencia));
 
-                    if(turmaCompleta.Ue.TipoEscola != TipoEscola.EMEBS &&  (TipoTurnoEOL)turmaCompleta.TipoTurno != TipoTurnoEOL.Integral)
-                    {
+                    if (turmaCompleta.Ue.TipoEscola == TipoEscola.EMEBS && (TipoTurnoEOL)turmaCompleta.TipoTurno == TipoTurnoEOL.Integral)
+                        disciplinasRegencia = MapearParaDto(disciplinasRegenciaEol
+                       .Where(d =>
+                           !d.TerritorioSaber &&
+                           (d.Regencia ||
+                            d.Codigo == MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_LIBRAS)));
+                    else
                         disciplinasRegencia = MapearParaDto(disciplinasRegenciaEol.Where(d => !d.TerritorioSaber && d.Regencia && d.Codigo != MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_LIBRAS));
-                    }
                 }
             }
 

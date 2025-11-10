@@ -22,15 +22,27 @@ namespace SME.SGP.Aplicacao
             try
             {
                 var codigoDre = param.ObterObjetoMensagem<string>();
-
-                var reponsaveisPAAI = await mediator.Send(new ObterSupervisoresPorDreAsyncQuery(codigoDre, TipoResponsavelAtribuicao.PAAI));
-
-                if (reponsaveisPAAI.Any())
+                if (string.IsNullOrEmpty(codigoDre))
                 {
-                    var responsaveisEOL = await mediator.Send(new ObterFuncionariosPorPerfilDreQuery(Perfis.PERFIL_PAAI, codigoDre));
-
-                    return await RemoverPAAISemAtribuicao(reponsaveisPAAI, responsaveisEOL);
+                    await mediator.Send(new SalvarLogViaRabbitCommand("Não foi possível obter o código da DRE da mensagem.", LogNivel.Critico, LogContexto.AtribuicaoReponsavel));
+                    return false;
                 }
+
+                // ETAPA 1: Obter dados de ambas as fontes.
+                var atribuicoesSgp = await ObterAtribuicoesAtuaisSgp(codigoDre);
+                if (!atribuicoesSgp.Any())
+                    return true;
+
+                var responsaveisAtivosEol = await ObterResponsaveisAtivosEol(codigoDre);
+
+                // ETAPA 2: Identificar quais atribuições devem ser removidas.
+                var atribuicoesIdsParaRemover = FiltrarAtribuicoesParaRemocao(atribuicoesSgp, responsaveisAtivosEol);
+                if (!atribuicoesIdsParaRemover.Any())
+                    return true; // Processo concluído com sucesso, sem divergências.
+
+                // ETAPA 3: Executar a remoção em lote.
+                await RemoverAtribuicoesEmLote(atribuicoesIdsParaRemover);
+
                 return true;
             }
             catch (Exception ex)
@@ -40,36 +52,40 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<bool> RemoverPAAISemAtribuicao(IEnumerable<SupervisorEscolasDreDto> reponsaveisPAAI, IEnumerable<UsuarioEolRetornoDto> responsaveisEOL)
+        private Task<IEnumerable<SupervisorEscolasDreDto>> ObterAtribuicoesAtuaisSgp(string codigoDre)
         {
-
-            if (responsaveisEOL.NaoEhNulo())
-                reponsaveisPAAI = reponsaveisPAAI.Where(s => s.TipoAtribuicao == (int)TipoResponsavelAtribuicao.PAAI && !responsaveisEOL.Select(e => e.CodigoRf).Contains(s.SupervisorId));
-
-            foreach (var supervisor in reponsaveisPAAI)
-            {
-                var supervisorEntidadeExclusao = MapearDtoParaEntidade(supervisor);
-                await mediator.Send(new RemoverAtribuicaoSupervisorCommand(supervisorEntidadeExclusao));
-            }
-            return true;
+            return mediator.Send(new ObterSupervisoresPorDreAsyncQuery(codigoDre, TipoResponsavelAtribuicao.PAAI));
         }
-        private static SupervisorEscolaDre MapearDtoParaEntidade(SupervisorEscolasDreDto dto)
+
+        private Task<IEnumerable<UsuarioEolRetornoDto>> ObterResponsaveisAtivosEol(string codigoDre)
         {
-            return new SupervisorEscolaDre()
+            return mediator.Send(new ObterFuncionariosPorPerfilDreQuery(Perfis.PERFIL_PAAI, codigoDre));
+        }
+
+        private IEnumerable<long> FiltrarAtribuicoesParaRemocao(
+            IEnumerable<SupervisorEscolasDreDto> atribuicoesSgp,
+            IEnumerable<UsuarioEolRetornoDto> responsaveisAtivosEol)
+        {
+            // Se a lista de responsáveis do EOL for nula ou vazia, é mais seguro não remover ninguém
+            // e registrar um log, pois pode indicar uma falha na consulta de origem.
+            if (responsaveisAtivosEol == null || !responsaveisAtivosEol.Any())
             {
-                DreId = dto.DreId,
-                SupervisorId = dto.SupervisorId,
-                EscolaId = dto.EscolaId,
-                Id = dto.AtribuicaoSupervisorId,
-                Excluido = dto.AtribuicaoExcluida,
-                AlteradoEm = dto.AlteradoEm,
-                AlteradoPor = dto.AlteradoPor,
-                AlteradoRF = dto.AlteradoRF,
-                CriadoEm = dto.CriadoEm,
-                CriadoPor = dto.CriadoPor,
-                CriadoRF = dto.CriadoRF,
-                Tipo = dto.TipoAtribuicao
-            };
+
+                throw new Exception("A consulta de responsáveis PAAI no EOL retornou vazia.");
+            }
+
+            var rfResponsaveisAtivos = responsaveisAtivosEol.Select(e => e.CodigoRf).ToHashSet();
+
+            return atribuicoesSgp
+                .Where(atribuicao => !rfResponsaveisAtivos.Contains(atribuicao.SupervisorId))
+                .Select(atribuicao => atribuicao.AtribuicaoSupervisorId);
+        }
+
+        private Task RemoverAtribuicoesEmLote(IEnumerable<long> atribuicoesIdsParaRemover)
+        {
+            // Isso é muito mais performático do que enviar um comando por item.
+            var command = new RemoverAtribuicoesResponsaveisCommand(atribuicoesIdsParaRemover);
+            return mediator.Send(command);
         }
     }
 }

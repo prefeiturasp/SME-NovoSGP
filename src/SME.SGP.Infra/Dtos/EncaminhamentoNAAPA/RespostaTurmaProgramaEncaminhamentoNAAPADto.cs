@@ -1,9 +1,4 @@
-﻿using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Infra
+﻿namespace SME.SGP.Infra
 {
     public class RespostaTurmaProgramaEncaminhamentoNAAPADto
     {
@@ -11,7 +6,7 @@ namespace SME.SGP.Infra
         public string turma { get; set; }
         public string componenteCurricular { get; set; }
         
-        public override bool Equals(object o)
+        public bool EhIgual(object o)
         {
             if (!(o is RespostaTurmaProgramaEncaminhamentoNAAPADto)) return false;
 

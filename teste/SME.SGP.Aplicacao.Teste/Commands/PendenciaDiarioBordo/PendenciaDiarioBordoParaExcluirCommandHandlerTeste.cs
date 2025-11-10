@@ -1,4 +1,4 @@
-using Bogus;
+ï»¿using Bogus;
 using FluentAssertions;
 using MediatR;
 using Moq;
@@ -6,6 +6,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -25,37 +26,37 @@ namespace SME.SGP.Aplicacao.Teste.Commands.PendenciaDiarioBordo
             _faker = new Faker("pt_BR");
         }
 
-        [Fact(DisplayName = "Deve retornar true quando a lista de pendências para excluir for vazia")]
+        [Fact(DisplayName = "Deve retornar true quando a lista de pendï¿½ncias para excluir for vazia")]
         public async Task Handle_QuandoListaVazia_DeveRetornarTrue()
         {
-            // Organização
+            // Organizaï¿½ï¿½o
             var comando = new PendenciaDiarioBordoParaExcluirCommand(new List<PendenciaDiarioBordoParaExcluirDto>());
 
-            // Ação
+            // Aï¿½ï¿½o
             var resultado = await _commandHandler.Handle(comando, default);
 
-            // Verificação
+            // Verificaï¿½ï¿½o
             resultado.Should().BeTrue();
             _mediatorMock.Verify(m => m.Send(It.IsAny<IRequest<bool>>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
         public static IEnumerable<object[]> CasosDeTeste()
         {
-            // Cenário 1: Todas as exclusões com sucesso
+            // Cenï¿½rio 1: Todas as exclusï¿½es com sucesso
             yield return new object[] { new[] { true, true, true }, true };
 
-            // Cenário 2: Uma das exclusões falha
+            // Cenï¿½rio 2: Uma das exclusï¿½es falha
             yield return new object[] { new[] { true, false, true }, false };
 
-            // Cenário 3: Todas as exclusões falham
+            // Cenï¿½rio 3: Todas as exclusï¿½es falham
             yield return new object[] { new[] { false, false, false }, false };
         }
 
-        [Theory(DisplayName = "Deve retornar o resultado agregado da exclusão das pendências")]
+        [Theory(DisplayName = "Deve retornar o resultado agregado da exclusï¿½o das pendï¿½ncias")]
         [MemberData(nameof(CasosDeTeste))]
         public async Task Handle_QuandoProcessarLista_DeveRetornarResultadoAgregado(bool[] resultadosDosComandos, bool resultadoFinalEsperado)
         {
-            // Organização
+            // Organizaï¿½ï¿½o
             var listaDePendencias = new List<PendenciaDiarioBordoParaExcluirDto>();
             for (int i = 0; i < resultadosDosComandos.Length; i++)
             {
@@ -68,17 +69,17 @@ namespace SME.SGP.Aplicacao.Teste.Commands.PendenciaDiarioBordo
 
             var comando = new PendenciaDiarioBordoParaExcluirCommand(listaDePendencias);
 
-            // Configura a sequência de retornos do mediator
+            // Configura a sequï¿½ncia de retornos do mediator
             var setupSequencia = _mediatorMock.SetupSequence(m => m.Send(It.IsAny<ExcluirPendenciaDiarioBordoPorIdEComponenteIdCommand>(), default));
             foreach (var item in resultadosDosComandos)
             {
                 setupSequencia.ReturnsAsync(item);
             }
 
-            // Ação
+            // Aï¿½ï¿½o
             var resultado = await _commandHandler.Handle(comando, default);
 
-            // Verificação
+            // Verificaï¿½ï¿½o
             resultado.Should().Be(resultadoFinalEsperado);
             _mediatorMock.Verify(m => m.Send(It.IsAny<ExcluirPendenciaDiarioBordoPorIdEComponenteIdCommand>(), It.IsAny<CancellationToken>()), Times.Exactly(resultadosDosComandos.Length));
         }

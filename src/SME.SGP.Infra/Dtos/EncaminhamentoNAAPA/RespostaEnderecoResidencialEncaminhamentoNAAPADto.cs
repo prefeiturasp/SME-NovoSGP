@@ -1,9 +1,4 @@
-﻿using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Infra
+﻿namespace SME.SGP.Infra
 {
     public class RespostaEnderecoResidencialEncaminhamentoNAAPADto
     {
@@ -13,7 +8,7 @@ namespace SME.SGP.Infra
         public string tipoLogradouro { get; set; }
         public string logradouro { get; set; }
 
-        public override bool Equals(object o)
+        public bool EhIgual(object o)
         {
             if (!(o is RespostaEnderecoResidencialEncaminhamentoNAAPADto)) return false;
 

@@ -42,12 +42,9 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PendenciaDiarioBordo
             var anoLetivoCorrente = DateTime.Now.Year;
 
             _mediatorMock.Setup(m => m.Send(It.Is<ObterTurmasInfantilPorUEQuery>(q =>
-                                         q.UeCodigo == filtro.CodigoUe && q.AnoLetivo == anoLetivoCorrente),
-                                         It.IsAny<CancellationToken>()))
+                                     q.UeCodigo == filtro.CodigoUe && q.AnoLetivo == anoLetivoCorrente),
+                                     It.IsAny<CancellationToken>()))
                          .ReturnsAsync(turmas);
-
-            _mediatorMock.Setup(m => m.Send(It.IsAny<PublicarFilaSgpCommand>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(true);
 
             // Ação
             var resultado = await _useCase.Executar(mensagemRabbit);
@@ -61,9 +58,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PendenciaDiarioBordo
             {
                 _mediatorMock.Verify(m => m.Send(
                     It.Is<PublicarFilaSgpCommand>(c =>
-                        c.Rota == RotasRabbitSgpAula.RotaExecutaPendenciasAulaDiarioBordoTurma),
+                        c.Rota == RotasRabbitSgpAula.RotaExecutaPendenciasAulaDiarioBordoTurma &&
+                        c.Filtros.ToString() == turma.TurmaCodigo),
                     It.IsAny<CancellationToken>()),
-                    Times.AtLeastOnce);
+                    Times.Once);
             }
         }
 

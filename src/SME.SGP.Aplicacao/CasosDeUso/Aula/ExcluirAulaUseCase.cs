@@ -24,7 +24,6 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var componenteCurricularId = long.Parse(aula.DisciplinaId);
             var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(componenteCurricularId));
-            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(aula.TurmaId));
 
             if (excluirDto.RecorrenciaAula == RecorrenciaAula.AulaUnica)
             {
@@ -35,7 +34,6 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    // TODO alterar para fila do RabbitMQ
                     await mediator.Send(new IncluirFilaExclusaoAulaRecorrenteCommand(excluirDto.AulaId,
                                                                                      excluirDto.RecorrenciaAula,
                                                                                      componenteCurricular.Nome,

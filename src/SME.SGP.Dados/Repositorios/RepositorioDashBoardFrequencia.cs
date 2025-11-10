@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.PainelEducacional.Frequencia;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -169,6 +170,37 @@ namespace SME.SGP.Dados.Repositorios
             };
 
             return await database.Conexao.QueryAsync<DadosParaConsolidacaoDashBoardFrequenciaDto>(query.ToString(), parametros);
+        }
+
+        public async Task<IEnumerable<DadosParaConsolidarFrequenciaDiariaAlunoDto>> ObterDadosParaConsolidacaoPainelEducacional(int anoLetivo)
+        {
+            var query = @"Select 
+                               dre_codigo as CodigoDre,
+                               ue_id as UeId,
+                               turma_id as TurmaId,
+                               turma_nome as NomeTurma,
+                               ano_letivo as AnoLetivo,
+                               data_aula as DataAula,
+                               sum(quantidade_presencas) as TotalPresentes,
+                               total_frequencias as TotalFrequencias, 
+                               sum(quantidade_remotos) as TotalRemotos,
+                               sum(quantidade_ausencias) as TotalAusentes
+                          from consolidado_dashboard_frequencia cdf
+                          where ano_letivo = @anoLetivo
+                          group by dre_codigo,
+                          	   ano_letivo,
+                               turma_id,
+                               ue_id,
+                               turma_nome,
+                               total_frequencias,
+                               data_aula";
+
+            var parametros = new
+            {
+                anoLetivo
+            };
+
+            return await database.Conexao.QueryAsync<DadosParaConsolidarFrequenciaDiariaAlunoDto>(query.ToString(), parametros);
         }
     }
 }

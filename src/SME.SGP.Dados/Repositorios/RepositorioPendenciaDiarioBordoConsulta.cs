@@ -1,11 +1,7 @@
-﻿using Dapper;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -29,7 +25,7 @@ namespace SME.SGP.Dados.Repositorios
                                 from pendencia_diario_bordo pdb
                                 inner join usuario u on u.rf_codigo = pdb.professor_rf
                                 where pdb.aula_id = @aulaId";
-            return await database.Conexao.QueryAsync<PendenciaUsuarioDto>(sql, new { aulaId}, commandTimeout: 60);
+            return await database.Conexao.QueryAsync<PendenciaUsuarioDto>(sql, new { aulaId }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<PendenciaDiarioBordoDescricaoDto>> ObterPendenciasDiarioPorPendencia(long pendenciaId, string codigoRf)

@@ -5,11 +5,13 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
+    [ExcludeFromCodeCoverage]
     public class RepositorioRegistroAusenciaAlunoConsulta : IRepositorioRegistroAusenciaAlunoConsulta
     {
         private readonly ISgpContextConsultas database;

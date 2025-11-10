@@ -134,7 +134,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task ConsisteDisciplina(long disciplinaId, IEnumerable<string> disciplinasRegenciaIds, bool registroMigrado)
         {
-            var disciplina = await mediator.Send(new ObterComponenteCurricularPorIdQuery(disciplinaId)); 
+            var disciplina = await mediator.Send(new ObterComponenteCurricularPorIdQuery(disciplinaId));
 
             if (disciplina.EhNulo())
                 throw new NegocioException("Componente curricular não encontrado no EOL.");
@@ -231,7 +231,7 @@ namespace SME.SGP.Dominio.Servicos
             var listaPersistencia = new List<CompensacaoAusenciaAluno>();
             IEnumerable<CompensacaoAusenciaAluno> alunos = new List<CompensacaoAusenciaAluno>();
 
-            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));            
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
 
             if (alteracao)
                 alunos = await mediator.Send(new ObterCompensacaoAusenciaAlunoPorCompensacaoQuery(compensacaoId));
@@ -255,31 +255,35 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     var alunosCodigos = alunosAlterarFaltasCompensada?.Select(x => x.CodigoAluno);
                     var consultaAlunosAlterarFaltasCompensada = obterFrequenciaPorListaDeAlunosDisciplinaData.Where(o => alunosCodigos.Contains(o.CodigoAluno) && disciplinasId.Contains(o.DisciplinaId) && o.PeriodoFim == periodo.PeriodoFim && o.TurmaId == turmaId);
-                    foreach (var aluno in alunosAlterarFaltasCompensada)
+
+                    if (alunosAlterarFaltasCompensada != null)
                     {
-                        var frequenciaAluno = consultaAlunosAlterarFaltasCompensada
-                            .FirstOrDefault(x => x.CodigoAluno == aluno.CodigoAluno && disciplinasId.Contains(x.DisciplinaId) && x.PeriodoFim == periodo.PeriodoFim && x.TurmaId == turmaId);
-
-                        if (frequenciaAluno.EhNulo())
+                        foreach (var aluno in alunosAlterarFaltasCompensada)
                         {
-                            mensagensExcessao.Append($"O aluno(a) [{aluno.CodigoAluno}] não possui ausência para compensar. ");
-                            continue;
+                            var frequenciaAluno = consultaAlunosAlterarFaltasCompensada
+                                .FirstOrDefault(x => x.CodigoAluno == aluno.CodigoAluno && disciplinasId.Contains(x.DisciplinaId) && x.PeriodoFim == periodo.PeriodoFim && x.TurmaId == turmaId);
+
+                            if (frequenciaAluno.EhNulo())
+                            {
+                                mensagensExcessao.Append($"O aluno(a) [{aluno.CodigoAluno}] não possui ausência para compensar. ");
+                                continue;
+                            }
+
+                            var faltasNaoCompensadas = frequenciaAluno.NumeroFaltasNaoCompensadas > 0
+                                ? frequenciaAluno.NumeroFaltasNaoCompensadas + aluno.QuantidadeFaltasCompensadas
+                                : aluno.QuantidadeFaltasCompensadas;
+
+                            var alunoDto = alunosDto.FirstOrDefault(a => a.Id == aluno.CodigoAluno);
+                            if (alunoDto.QtdFaltasCompensadas > faltasNaoCompensadas)
+                            {
+                                mensagensExcessao.Append(
+                                    $"O aluno(a) [{alunoDto.Id}] possui apenas {frequenciaAluno.NumeroFaltasNaoCompensadas} faltas não compensadas. ");
+                                continue;
+                            }
+
+                            aluno.QuantidadeFaltasCompensadas = alunoDto.QtdFaltasCompensadas;
+                            listaPersistencia.Add(aluno);
                         }
-
-                        var faltasNaoCompensadas = frequenciaAluno.NumeroFaltasNaoCompensadas > 0
-                            ? frequenciaAluno.NumeroFaltasNaoCompensadas + aluno.QuantidadeFaltasCompensadas
-                            : aluno.QuantidadeFaltasCompensadas;
-
-                        var alunoDto = alunosDto.FirstOrDefault(a => a.Id == aluno.CodigoAluno);
-                        if (alunoDto.QtdFaltasCompensadas > faltasNaoCompensadas)
-                        {
-                            mensagensExcessao.Append(
-                                $"O aluno(a) [{alunoDto.Id}] possui apenas {frequenciaAluno.NumeroFaltasNaoCompensadas} faltas não compensadas. ");
-                            continue;
-                        }
-
-                        aluno.QuantidadeFaltasCompensadas = alunoDto.QtdFaltasCompensadas;
-                        listaPersistencia.Add(aluno);
                     }
                 }
 
@@ -289,24 +293,28 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     var listaIdsAluno = listaAlunosDto.Select(x => x.Id);
                     var consultaAlunosFrequencia = obterFrequenciaPorListaDeAlunosDisciplinaData.Where(c => listaIdsAluno.Contains(c.CodigoAluno) && disciplinasId.Contains(c.DisciplinaId) && c.PeriodoFim == periodo.PeriodoFim && c.TurmaId == turmaId);
-                    foreach (var alunoDto in listaAlunosDto)
+                    
+                    if (listaAlunosDto != null)
                     {
-                        var frequenciaAluno = consultaAlunosFrequencia?.FirstOrDefault(x => x.CodigoAluno == alunoDto.Id && disciplinasId.Contains(x.DisciplinaId) && x.TurmaId == turmaId);
-                        if (frequenciaAluno.EhNulo())
+                        foreach (var alunoDto in listaAlunosDto)
                         {
-                            mensagensExcessao.Append($"O aluno(a) [{alunoDto.Id}] não possui ausência para compensar. ");
-                            continue;
+                            var frequenciaAluno = consultaAlunosFrequencia?.FirstOrDefault(x => x.CodigoAluno == alunoDto.Id && disciplinasId.Contains(x.DisciplinaId) && x.TurmaId == turmaId);
+                            if (frequenciaAluno.EhNulo())
+                            {
+                                mensagensExcessao.Append($"O aluno(a) [{alunoDto.Id}] não possui ausência para compensar. ");
+                                continue;
+                            }
+
+                            if (alunoDto.QtdFaltasCompensadas > frequenciaAluno?.NumeroFaltasNaoCompensadas && frequenciaAluno?.NumeroFaltasNaoCompensadas > 0)
+                            {
+                                mensagensExcessao.Append(
+                                    $"O aluno(a) [{alunoDto.Id}] possui apenas {frequenciaAluno.NumeroFaltasNaoCompensadas} faltas não compensadas. ");
+
+                                continue;
+                            }
+
+                            listaPersistencia.Add(MapearCompensacaoAlunoEntidade(compensacaoId, alunoDto));
                         }
-
-                        if (alunoDto.QtdFaltasCompensadas > frequenciaAluno.NumeroFaltasNaoCompensadas && frequenciaAluno.NumeroFaltasNaoCompensadas > 0)
-                        {
-                            mensagensExcessao.Append(
-                                $"O aluno(a) [{alunoDto.Id}] possui apenas {frequenciaAluno.NumeroFaltasNaoCompensadas} faltas não compensadas. ");
-
-                            continue;
-                        }
-
-                        listaPersistencia.Add(MapearCompensacaoAlunoEntidade(compensacaoId, alunoDto));
                     }
                 }
 

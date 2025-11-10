@@ -49,29 +49,32 @@ namespace SME.SGP.Aplicacao
             var tiposEscolasValidos = ObterTiposDeEscolasValidos();
             ues = ues?.Where(ue => tiposEscolasValidos.Contains(ue.TipoEscola)).ToList();
 
-            foreach (var ue in ues)
+            if (ues != null)
             {
-                try
+                foreach (var ue in ues)
                 {
-                    var pendenciaCalendarioUe = await ObterPendenciaCalendarioUe(tipoCalendarioId, ue.Id);
-                    var pendenciasParametroEventoUe = await ObterPendenciasParametroEventoPorPendenciaId(pendenciaCalendarioUe?.PendenciaId);
-
-                    var listaValidacoesEvento = new List<(bool gerarPedencia, long parametroSistemaId, int quantidadeEventos)>();
-                    listaValidacoesEvento.Add(await ValidarQuantidadeEventosPorTipo(tipoCalendarioId, ue, anoAtual, pendenciasParametroEventoUe, TipoEvento.ConselhoDeClasse));
-                    listaValidacoesEvento.Add(await ValidarQuantidadeEventosPorTipo(tipoCalendarioId, ue, anoAtual, pendenciasParametroEventoUe, TipoEvento.ReuniaoAPM));
-                    listaValidacoesEvento.Add(await ValidarQuantidadeEventosPorTipo(tipoCalendarioId, ue, anoAtual, pendenciasParametroEventoUe, TipoEvento.ReuniaoConselhoEscola));
-                    listaValidacoesEvento.Add(await ValidarQuantidadeEventosPorTipo(tipoCalendarioId, ue, anoAtual, pendenciasParametroEventoUe, TipoEvento.ReuniaoPedagogica));
-
-                    if (listaValidacoesEvento.Any(a => a.gerarPedencia))
+                    try
                     {
-                        var pendenciaCalendarioUeId = pendenciaCalendarioUe.EhNulo() ? await GerarPendenciaCalendarioUe(tipoCalendarioId, ue) : pendenciaCalendarioUe.Id;
+                        var pendenciaCalendarioUe = await ObterPendenciaCalendarioUe(tipoCalendarioId, ue.Id);
+                        var pendenciasParametroEventoUe = await ObterPendenciasParametroEventoPorPendenciaId(pendenciaCalendarioUe?.PendenciaId);
 
-                        await GerarPendenciaParametroEvento(pendenciaCalendarioUeId, listaValidacoesEvento.Where(a => a.gerarPedencia));
+                        var listaValidacoesEvento = new List<(bool gerarPedencia, long parametroSistemaId, int quantidadeEventos)>();
+                        listaValidacoesEvento.Add(await ValidarQuantidadeEventosPorTipo(tipoCalendarioId, ue, anoAtual, pendenciasParametroEventoUe, TipoEvento.ConselhoDeClasse));
+                        listaValidacoesEvento.Add(await ValidarQuantidadeEventosPorTipo(tipoCalendarioId, ue, anoAtual, pendenciasParametroEventoUe, TipoEvento.ReuniaoAPM));
+                        listaValidacoesEvento.Add(await ValidarQuantidadeEventosPorTipo(tipoCalendarioId, ue, anoAtual, pendenciasParametroEventoUe, TipoEvento.ReuniaoConselhoEscola));
+                        listaValidacoesEvento.Add(await ValidarQuantidadeEventosPorTipo(tipoCalendarioId, ue, anoAtual, pendenciasParametroEventoUe, TipoEvento.ReuniaoPedagogica));
+
+                        if (listaValidacoesEvento.Any(a => a.gerarPedencia))
+                        {
+                            var pendenciaCalendarioUeId = pendenciaCalendarioUe.EhNulo() ? await GerarPendenciaCalendarioUe(tipoCalendarioId, ue) : pendenciaCalendarioUe?.Id ?? 0;
+
+                            await GerarPendenciaParametroEvento(pendenciaCalendarioUeId, listaValidacoesEvento.Where(a => a.gerarPedencia));
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    await mediator.Send(new SalvarLogViaRabbitCommand($"Erro na verificação da pendência do calendário da UE.", LogNivel.Negocio, LogContexto.Evento, ex.Message));
+                    catch (Exception ex)
+                    {
+                        await mediator.Send(new SalvarLogViaRabbitCommand($"Erro na verificação da pendência do calendário da UE.", LogNivel.Negocio, LogContexto.Evento, ex.Message));
+                    }
                 }
             }
         }

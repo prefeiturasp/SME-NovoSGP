@@ -9,5 +9,20 @@ namespace SME.SGP.Dominio
         public DateTime DataAtualizacao { get; set; }
         public long Id { get; set; }
         public string Nome { get; set; }
+
+        public string PrefixoDoNomeAbreviado
+        {
+            get
+            {
+                if(string.IsNullOrWhiteSpace(Nome))
+                    return Nome;
+
+                string novaSigla = "DRE";
+                string textoParaSubstituir = "DIRETORIA REGIONAL DE EDUCACAO";
+                var nomeFormatado = Nome.ToUpper().Replace(textoParaSubstituir, novaSigla).Trim();
+                return nomeFormatado;
+            }
+            private set { }
+        }
     }
 }

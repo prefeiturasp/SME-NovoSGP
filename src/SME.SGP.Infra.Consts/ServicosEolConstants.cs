@@ -141,6 +141,8 @@
 
         public const string URL_ESCOLAS_PROFESSORES = "/api/escolas/{0}/professores/{1}";
 
+        public const string URL_ESCOLAS_DADOS = "/api/escolas/dados/{0}";
+
         public const string URL_ESCOLAS_TIPOS_ESCOLAS = "escolas/tiposEscolas";
 
         public const string URL_ESCOLAS_SINCRONIZACOES_INSTITUCIONAIS = "escolas/{0}/sincronizacoes-institucionais";
@@ -148,6 +150,8 @@
         public const string URL_ESCOLAS_FUNCIONARIOS_FUNCOES_EXTERNAS = "/api/escolas/{0}/funcionarios/funcoes-externas/{1}";
 
         public const string URL_ESCOLAS_FUNCIONARIOS_FUNCOES_ATIVIDADES = "/api/escolas/{0}/funcionarios/funcoes-atividades/{1}";
+
+        public const string URL_PAINEL_EDUCACIONAL_INDICADORES_PAP = "/api/painel-educacional/indicadores-pap?codigoDre={0}&codigoUe={1}";
 
         public const string URL_PROFESSORES_TITULARES_TURMA = "professores/{0}/titulares/realizaAgrupamentoComponente/{1}";
 
@@ -251,5 +255,9 @@
 
         public const string URL_COMPONENTES_CURRICULARES_PROGRAMA_ALUNO = "alunos/{0}/turmas-programa/{1}/componentes-curriculares";
         public const string URL_TURMAS_TURMAS_PAP = "alunos/turmas-pap/{0}/ues/{1}";
+        public const string URL_ALUNOS_TURMAS_PAP_ANO_CORRENTE = "alunos/pap/ano-corrente";
+        public const string URL_ALUNOS_TURMAS_PAP_ANO_LETIVO = "alunos/pap/ano-letivo/{0}";
+        public const string URL_MATRICULA_TURMA_ESCOLA = "turmas/matricula-turma-escola";
+        public const string URL_MATRICULA_TURMA_ESCOLA_ALUNO = "turmas/matricula-turma-escola-aluno";
     }
 }

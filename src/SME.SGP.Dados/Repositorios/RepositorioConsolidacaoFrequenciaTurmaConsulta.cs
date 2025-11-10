@@ -3,16 +3,18 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Dtos.ConsolidacaoFrequenciaTurma;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
+    [ExcludeFromCodeCoverage]
     public class RepositorioConsolidacaoFrequenciaTurmaConsulta : IRepositorioConsolidacaoFrequenciaTurmaConsulta
     {
         private readonly ISgpContextConsultas database;
@@ -102,7 +104,7 @@ namespace SME.SGP.Dados.Repositorios
                          where t.ano_letivo = @ano";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { ano });
-        } 
+        }
 
         private string ObterWhereAusenciasComJustificativaASync(long dreId, long ueId, Modalidade? modalidade, int semestre)
         {
@@ -143,7 +145,7 @@ namespace SME.SGP.Dados.Repositorios
                 .QueryAsync<GraficoAusenciasComJustificativaDto>(sql, new { modalidade, dreId, ueId, anoLetivo, semestre });
         }
 
-        public async Task<IEnumerable<FrequenciaGlobalMensalSemanalDto>> ObterFrequenciasConsolidadasPorTurmaMensalSemestral(int anoLetivo, long dreId, long ueId, int modalidade,string anoTurma, DateTime dataInicio, DateTime datafim, int tipoConsolidadoFrequencia, int semestre, bool visaoDre = false)
+        public async Task<IEnumerable<FrequenciaGlobalMensalSemanalDto>> ObterFrequenciasConsolidadasPorTurmaMensalSemestral(int anoLetivo, long dreId, long ueId, int modalidade, string anoTurma, DateTime dataInicio, DateTime datafim, int tipoConsolidadoFrequencia, int semestre, bool visaoDre = false)
         {
             var selectSQL = string.Empty;
 
@@ -175,7 +177,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (ueId != -99)
                 selectSQL += "and ue.id = @ueId ";
-            
+
             if (semestre > 0)
                 selectSQL += "and t.semestre = @semestre ";
 
@@ -195,6 +197,19 @@ namespace SME.SGP.Dados.Repositorios
             });
 
             return frequencias.OrderBy(f => f.Descricao).ThenBy(f => f.DreCodigo).ToList();
+        }
+
+        public async Task<IEnumerable<QuantitativoAlunosFrequenciaBaixaPorTurmaDto>> ObterQuantitativoAlunosFrequenciaBaixaPorTurma(int anoLetivo, TipoTurma tipoTurma)
+        {
+            var query = @" select SUM(cfam.quantidade_abaixo_minimo_frequencia) as quantidadeAbaixoMinimoFrequencia, 
+                                  t.turma_id as codigoTurma
+                           from consolidacao_frequencia_turma cfam
+                                inner join turma t on t.id = cfam.turma_id 
+                          where t.ano_letivo = @anoLetivo
+                            and t.tipo_turma = @tipoTurma
+                          group by t.turma_id";
+
+            return await database.Conexao.QueryAsync<QuantitativoAlunosFrequenciaBaixaPorTurmaDto>(query, new { anoLetivo, tipoTurma = (int)tipoTurma });
         }
     }
 }

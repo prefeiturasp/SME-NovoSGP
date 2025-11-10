@@ -1,16 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+	<PropertyGroup>
+		<TargetFramework>net5.0</TargetFramework>
 
-    <IsPackable>false</IsPackable>
-  </PropertyGroup>
+		<IsPackable>false</IsPackable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="CasosDeUso\ConselhodeClasse\**" />
-    <EmbeddedResource Remove="CasosDeUso\ConselhodeClasse\**" />
-    <None Remove="CasosDeUso\ConselhodeClasse\**" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Remove="CasosDeUso\ConselhodeClasse\**" />
+		<EmbeddedResource Remove="CasosDeUso\ConselhodeClasse\**" />
+		<None Remove="CasosDeUso\ConselhodeClasse\**" />
+	</ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Bogus" Version="34.0.2" />
@@ -35,25 +35,25 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\SME.SGP.Aplicacao\SME.SGP.Aplicacao.csproj" />
-    <ProjectReference Include="..\..\src\SME.SGP.Dominio.Interfaces\SME.SGP.Dominio.Interfaces.csproj" />
-    <ProjectReference Include="..\..\src\SME.SGP.Dominio.Servicos\SME.SGP.Dominio.Servicos.csproj" />
-    <ProjectReference Include="..\..\src\SME.SGP.Dominio\SME.SGP.Dominio.csproj" />
-    <ProjectReference Include="..\..\src\SME.SGP.Infra.Mensageria\SME.SGP.Infra.Mensageria.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\SME.SGP.Aplicacao\SME.SGP.Aplicacao.csproj" />
+		<ProjectReference Include="..\..\src\SME.SGP.Dominio.Interfaces\SME.SGP.Dominio.Interfaces.csproj" />
+		<ProjectReference Include="..\..\src\SME.SGP.Dominio.Servicos\SME.SGP.Dominio.Servicos.csproj" />
+		<ProjectReference Include="..\..\src\SME.SGP.Dominio\SME.SGP.Dominio.csproj" />
+		<ProjectReference Include="..\..\src\SME.SGP.Infra.Mensageria\SME.SGP.Infra.Mensageria.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ArquivosTestes\" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="ArquivosTestes\" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Update="ArquivosTestes\arquivo_teste.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="ArquivosTestes\plano_de_aula.pdf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<None Update="ArquivosTestes\arquivo_teste.txt">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="ArquivosTestes\plano_de_aula.pdf">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
 </Project>
