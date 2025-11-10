@@ -94,22 +94,12 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.AS_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterUsuariosSme([FromServices] IObterUsuariosCoreSsoUseCase obterUsuariosCoreSsoUseCase,
+                                                          [FromQuery] string rf = null,
+                                                          [FromQuery] string nome = null,
                                                           [FromQuery] int pagina = 1,
                                                           [FromQuery] int registrosPorPagina = 10 )
         {
-            var resultado = await obterUsuariosCoreSsoUseCase.Executar(pagina, registrosPorPagina);
-            return Ok(resultado);
-        }
-
-        [Route("sme/codigoRf/{codigoRf}")]
-        [HttpGet]
-        [ProducesResponseType(typeof(UsuarioCoreSsoDto), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.AS_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterUsuarioSmePorCodigoRf(string codigoRf, 
-                                                                   [FromServices] IObterUsuariosCoreSsoPorRfUseCase obterUsuariosCoreSsoPorRfUseCase)
-        {
-            var resultado = await obterUsuariosCoreSsoPorRfUseCase.Executar(codigoRf);
+            var resultado = await obterUsuariosCoreSsoUseCase.Executar(rf, nome, pagina, registrosPorPagina);
             return Ok(resultado);
         }
     }
