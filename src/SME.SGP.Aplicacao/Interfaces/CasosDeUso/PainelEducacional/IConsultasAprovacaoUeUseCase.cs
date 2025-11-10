@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional
 {
-    public interface IConsultasAprovacaoUseCase
+    public interface IConsultasAprovacaoUeUseCase
     {
-        Task<IEnumerable<PainelEducacionalAprovacaoDto>> ObterAprovacao(int anoLetivo, string codigoDre);
+        Task<IEnumerable<PainelEducacionalAprovacaoUeDto>> ObterAprovacao(int anoLetivo, string codigoUe);
     }
 }

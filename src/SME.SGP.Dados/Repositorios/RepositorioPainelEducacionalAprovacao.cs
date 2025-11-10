@@ -55,18 +55,15 @@ namespace SME.SGP.Dados.Repositorios
             await database.ExecuteAsync(sql);
         }
 
-        public async Task<IEnumerable<PainelEducacionalAprovacao>> ObterAprovacao(int anoLetivo, string codigoDre, string codigoUe)
+        public async Task<IEnumerable<PainelEducacionalConsolidacaoAprovacao>> ObterAprovacao(int anoLetivo, string codigoDre)
         {
-            var sql = $@"SELECT * FROM painel_educacional_registro_frequencia_agrupamento_global
+            var sql = $@"SELECT * FROM painel_educacional_consolidacao_aprovacao
                         WHERE ano_letivo = @anoLetivo";
 
             if (!string.IsNullOrWhiteSpace(codigoDre))
                 sql += " AND codigo_dre = @codigoDre";
 
-            if (!string.IsNullOrWhiteSpace(codigoUe))
-                sql += " AND codigo_ue = @codigoUe";
-
-            return await database.QueryAsync<PainelEducacionalAprovacao>(sql, new { anoLetivo, codigoDre, codigoUe });
+            return await database.QueryAsync<PainelEducacionalConsolidacaoAprovacao>(sql, new { anoLetivo, codigoDre });
         }
 
         public async Task<IEnumerable<DadosParaConsolidarAprovacao>> ObterIndicadores(long[] turmasIds)

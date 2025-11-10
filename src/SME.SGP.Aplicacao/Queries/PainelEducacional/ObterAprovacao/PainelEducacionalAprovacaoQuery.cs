@@ -6,15 +6,13 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAprovacao
 {
     public class PainelEducacionalAprovacaoQuery : IRequest<IEnumerable<PainelEducacionalAprovacaoDto>>
     {
-        public PainelEducacionalAprovacaoQuery(int anoLetivo, string codigoDre, string codigoUe)
+        public PainelEducacionalAprovacaoQuery(int anoLetivo, string codigoDre)
         {
             AnoLetivo = anoLetivo;
             CodigoDre = codigoDre;
-            CodigoUe = codigoUe;
         }
 
-        public int AnoLetivo { get; set; } 
+        public int AnoLetivo { get; set; }
         public string CodigoDre { get; set; }
-        public string CodigoUe { get; set; }
     }
 }

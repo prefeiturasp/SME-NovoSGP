@@ -19,27 +19,30 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAprovacao
 
         public async Task<IEnumerable<PainelEducacionalAprovacaoDto>> Handle(PainelEducacionalAprovacaoQuery request, CancellationToken cancellationToken)
         {
-            var registros = await repositorioPainelEducacionalAprovacao.ObterAprovacao(request.AnoLetivo, request.CodigoDre, request.CodigoUe);
+            var registros = await repositorioPainelEducacionalAprovacao.ObterAprovacao(request.AnoLetivo, request.CodigoDre);
 
             return MapearParaDto(registros);
         }
 
-        private IEnumerable<PainelEducacionalAprovacaoDto> MapearParaDto(IEnumerable<PainelEducacionalAprovacao> registros)
+        private IEnumerable<PainelEducacionalAprovacaoDto> MapearParaDto(IEnumerable<PainelEducacionalConsolidacaoAprovacao> registros)
         {
-            var aprovacao = new List<PainelEducacionalAprovacaoDto>();
+            var lista = new List<PainelEducacionalAprovacaoDto>();
+
             foreach (var item in registros)
             {
-                aprovacao.Add(new PainelEducacionalAprovacaoDto()
+                lista.Add(new PainelEducacionalAprovacaoDto
                 {
+                    CodigoDre = item.CodigoDre,
+                    SerieAno = item.SerieAno,
                     Modalidade = item.Modalidade,
-                    PercentualFrequencia = item.PercentualFrequencia,
-                    TotalAlunos = item.TotalAlunos,
-                    TotalAulas = item.TotalAulas,
-                    TotalAusencias = item.TotalAusencias
+                    TotalPromocoes = item.TotalPromocoes,
+                    TotalRetencoesAusencias = item.TotalRetencoesAusencias,
+                    TotalRetencoesNotas = item.TotalRetencoesNotas,
+                    AnoLetivo = item.AnoLetivo,
                 });
             }
 
-            return aprovacao;
+            return lista;
         }
     }
 }
