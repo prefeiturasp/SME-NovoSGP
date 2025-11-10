@@ -30,15 +30,15 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterAprovacao(int anoLetivo, string codigoDre, [FromServices] IConsultasAprovacaoUseCase consultasAprovacaoUseCase)
-           => Ok(await consultasAprovacaoUseCase.ObterAprovacao(anoLetivo, codigoDre));
+       => Ok(await consultasAprovacaoUseCase.ObterAprovacao(anoLetivo, codigoDre));
 
         [HttpGet("aprovacao-ue")]
         [ProducesResponseType(typeof(PainelEducacionalAprovacaoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterAprovacaoUe(int anoLetivo, string codigoUe, int numeroPagina, int numeroRegistros, [FromServices] IConsultasAprovacaoUeUseCase consultasAprovacaoUeUseCase)
-           => Ok(await consultasAprovacaoUeUseCase.ObterAprovacao(anoLetivo, codigoUe, numeroPagina, numeroRegistros));
+        public async Task<IActionResult> ObterAprovacaoUe(int anoLetivo, string codigoUe, [FromServices] IConsultasAprovacaoUeUseCase consultasAprovacaoUeUseCase)
+        => Ok(await consultasAprovacaoUeUseCase.ObterAprovacao(anoLetivo, codigoUe));
 
         [HttpGet("frequencia-global")]
         [ProducesResponseType(typeof(PainelEducacionalRegistroFrequenciaAgrupamentoGlobalDto), 200)]
