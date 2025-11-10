@@ -690,8 +690,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoPlanoAEE, RepositorioPainelEducacionalConsolidacaoPlanoAEE>();
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoFrequenciaDiaria, RepositorioPainelEducacionalConsolidacaoFrequenciaDiaria>();
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoFrequenciaDiariaDre, RepositorioPainelEducacionalConsolidacaoFrequenciaDiariaDre>();
-            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoFluenciaLeitoraUe, RepositorioPainelEducacionalConsolidacaoFluenciaLeitoraUe>();            
-            services.TryAddScoped<IRepositorioConsultaFluenciaLeitoraUe, RepositorioConsultaFluenciaLeitoraUe>();            
+            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoFluenciaLeitoraUe, RepositorioPainelEducacionalConsolidacaoFluenciaLeitoraUe>();
+            services.TryAddScoped<IRepositorioConsultaFluenciaLeitoraUe, RepositorioConsultaFluenciaLeitoraUe>();
 
             services.TryAddScoped<IRepositorioConsolidacaoFluenciaLeitora, RepositorioConsolidacaoFluenciaLeitora>();
             services.TryAddScoped<IConsolidarTaxaAlfabetizacaoPainelEducacionalUseCase, ConsolidarTaxaAlfabetizacaoPainelEducacionalUseCase>();
@@ -1577,6 +1577,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterFiltrosOpcoesRespostaRelatorioMapeamentoUseCase, ObterFiltrosOpcoesRespostaRelatorioMapeamentoUseCase>();
             services.TryAddScoped<IRelatorioMapeamentoEstudantesUseCase, RelatorioMapeamentoEstudantesUseCase>();
             services.TryAddScoped<IConsultasAprovacaoUseCase, ConsultasAprovacaoUseCase>();
+            services.TryAddScoped<IConsultasAprovacaoUeUseCase, ConsultasAprovacaoUeUseCase>();
             services.TryAddScoped<IConsultasRegistroFrequenciaAgrupamentoGlobalUseCase, ConsultasRegistroFrequenciaAgrupamentoGlobalUseCase>();
             services.TryAddScoped<IConsultasRegistroFrequenciaAgrupamentoMensalUseCase, ConsultasRegistroFrequenciaAgrupamentoMensalUseCase>();
             services.TryAddScoped<IConsultasRegistroFrequenciaAgrupamentoRankingUseCase, ConsultasRegistroFrequenciaAgrupamentoRankingUseCase>();
