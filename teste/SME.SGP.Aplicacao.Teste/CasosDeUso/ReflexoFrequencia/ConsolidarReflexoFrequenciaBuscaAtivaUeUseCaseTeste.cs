@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ReflexoFrequencia
                 .Setup(m => m.Send(It.IsAny<ObterCodigoUEDREPorIdQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new DreUeCodigoDto { UeCodigo = ueCodigo });
 
-            var dataAtual = new DateTime(2025, 7, 16);           
+            var dataAtual = new DateTime(2025, 7, 16);
 
             var registrosBuscaAtiva = new List<long> { 1001, 1002 };
             repositorioMock
@@ -59,11 +59,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ReflexoFrequencia
             Assert.True(resultado);
 
             mediatorMock.Verify(m => m.Send(
-                It.Is<ExcluirConsolidacoesReflexoFrequenciaBuscaAtivaUeMesCommand>(cmd => cmd.UeCodigo == ueCodigo && cmd.Mes == filtro.Data.Month && cmd.AnoLetivo == filtro.Data.Year),
-                It.IsAny<CancellationToken>()), Times.Once);
-
-            mediatorMock.Verify(m => m.Send(
-                It.Is<ExcluirConsolidacoesReflexoFrequenciaBuscaAtivaUeMesCommand>(cmd => cmd.UeCodigo == ueCodigo && cmd.Mes == 0 && cmd.AnoLetivo == filtro.Data.Year),
+                It.Is<ExcluirConsolidacoesReflexoFrequenciaBuscaAtivaUeMesCommand>(
+                    cmd => cmd.UeCodigo == ueCodigo
+                        && cmd.Mes == filtro.Data.Month
+                        && cmd.AnoLetivo == filtro.Data.Year),
                 It.IsAny<CancellationToken>()), Times.Once);
 
             mediatorMock.Verify(m => m.Send(
