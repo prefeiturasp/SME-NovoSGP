@@ -81,10 +81,12 @@ namespace SME.SGP.Dados.Repositorios
             using (var multi = await database.QueryMultipleAsync(query, parametros))
             {
                 retorno.Items = multi.Read<PainelEducacionalAprovacaoUeDto>();
-                retorno.TotalRegistros = multi.ReadFirst<int>();
+                retorno.TotalRegistros = paginacao.QuantidadeRegistros <= 1 ? 1 : multi.ReadFirst<int>();
             }
 
-            retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
+            retorno.TotalPaginas = paginacao.QuantidadeRegistros > 0
+               ? (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros)
+               : 1;
 
             return retorno;
         }
@@ -120,10 +122,7 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             sql.AppendLine(" FROM painel_educacional_consolidacao_aprovacao_ue ");
-            sql.AppendLine(" WHERE ano_letivo = @anoLetivo ");
-            sql.AppendLine(" AND modalidade_codigo = @modalidadeId ");
-
-            sql.AppendLine(" AND (@codigoUe IS NULL OR codigo_ue = @codigoUe) ");
+            sql.AppendLine(" WHERE ano_letivo = @anoLetivo AND modalidade_codigo = @modalidadeId AND codigo_ue = @codigoUe ");
 
             if (!contador)
             {

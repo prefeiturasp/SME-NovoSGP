@@ -1,4 +1,6 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
+using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAprovacaoUe;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra.Dtos.PainelEducacional;
@@ -43,6 +45,20 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAprovacao
             }
 
             return lista;
+        }
+        public class PainelEducacionalAprovacaoUeQueryValidator : AbstractValidator<PainelEducacionalAprovacaoUeQuery>
+        {
+            public PainelEducacionalAprovacaoUeQueryValidator()
+            {
+                RuleFor(x => x.AnoLetivo)
+                    .NotEmpty().WithMessage("Informe o ano letivo");
+
+                RuleFor(x => x.CodigoUe)
+                    .NotEmpty().WithMessage("Informe o código da Ue");
+
+                RuleFor(x => x.ModalidadeId)
+                    .NotEmpty().WithMessage("Informe o código modalidade");
+            }
         }
     }
 }
