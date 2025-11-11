@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Infra.Dtos.PainelEducacional
+﻿using SME.SGP.Dominio;
+
+namespace SME.SGP.Infra.Dtos.PainelEducacional
 {
     public class TurmaPainelEducacionalDto
     {
@@ -9,5 +11,6 @@
         public int ModalidadeCodigo { get; set; }
         public int AnoLetivo { get; set; }
         public string Ano { get; set; }
+        public TipoTurnoEOL TipoTurno { get; set; }
     }
 }
