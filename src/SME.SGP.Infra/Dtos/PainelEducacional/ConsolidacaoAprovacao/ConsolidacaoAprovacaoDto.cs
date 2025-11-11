@@ -7,6 +7,7 @@
         public long TurmaId { get; set; }
         public string Turma { get; set; }
         public string SerieAno { get; set; }
+        public int CodigoModalidade { get; set; }
         public string Modalidade { get; set; }
         public int ParecerConclusivoId { get; set; }
         public string ParecerDescricao { get; set; }
