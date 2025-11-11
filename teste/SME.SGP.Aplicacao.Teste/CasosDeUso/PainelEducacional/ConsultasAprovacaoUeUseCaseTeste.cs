@@ -23,14 +23,12 @@ namespace SME.SGP.Tests.Aplicacao.CasosDeUso.PainelEducacional
             useCase = new ConsultasAprovacaoUeUseCase(mediatorMock.Object);
         }
 
-        [Fact(DisplayName = "Deve retornar os dados de aprovação corretamente")]
-        public async Task ObterAprovacao_DeveRetornarDadosCorretos()
+        [Fact(DisplayName = "Deve retornar os dados de aprovação corretamente com paginação")]
+        public async Task ObterAprovacao_DeveRetornarDadosCorretosComPaginacao()
         {
             int anoLetivo = 2025;
             string codigoUe = "123456";
             int modalidadeId = 1;
-            int numeroPagina = 1;
-            int numeroRegistros = 10;
 
             var registrosEsperados = new PaginacaoResultadoDto<PainelEducacionalAprovacaoUeDto>
             {
@@ -56,7 +54,7 @@ namespace SME.SGP.Tests.Aplicacao.CasosDeUso.PainelEducacional
                 .Setup(m => m.Send(It.IsAny<PainelEducacionalAprovacaoUeQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(registrosEsperados);
 
-            var resultado = await useCase.ObterAprovacao(anoLetivo, codigoUe, modalidadeId, numeroPagina, numeroRegistros);
+            var resultado = await useCase.ObterAprovacao(anoLetivo, codigoUe, modalidadeId);
 
             Assert.NotNull(resultado);
             Assert.Single(resultado.Items);
@@ -68,9 +66,8 @@ namespace SME.SGP.Tests.Aplicacao.CasosDeUso.PainelEducacional
                 m.Send(It.Is<PainelEducacionalAprovacaoUeQuery>(q =>
                     q.AnoLetivo == anoLetivo &&
                     q.CodigoUe == codigoUe &&
-                    q.ModalidadeId == modalidadeId &&
-                    q.NumeroPagina == numeroPagina &&
-                    q.NumeroRegistros == numeroRegistros),
+                    q.ModalidadeId == modalidadeId
+                    ),
                 It.IsAny<CancellationToken>()), Times.Once);
         }
     }
