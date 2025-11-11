@@ -29,9 +29,9 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterEducacaoIntegral
                 .GroupBy(r => r.ModalidadeTurma)
                 .Select(g => new PainelEducacionalEducacaoIntegralDto
                 {
-                    Modalidade = ((Modalidade)int.Parse(g.Key)).ObterDisplayName(),
+                    Modalidade = ((Modalidade)g.Key).ObterDisplayName(),
                     Indicadores = g
-                        .GroupBy(x => ObterEtapaAnoSerie(int.Parse(g.Key), x.Ano))
+                        .GroupBy(x => ObterEtapaAnoSerie(g.Key, x.Ano))
                         .Select(a => new IndicadorEducacaoIntegralDto
                         {
                             AnoSerieEtapa = a.Key,

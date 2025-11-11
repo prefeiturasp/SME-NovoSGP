@@ -14,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database;
         }
 
-        public async Task<IEnumerable<ConsolidacaoEducacaoIntegralDto>> ObterEducacaoIntegral(FiltroPainelEducacionalEducacaoIntegral filtro)
+        public async Task<IEnumerable<DadosParaConsolidarEducacaoIntegralDto>> ObterEducacaoIntegral(FiltroPainelEducacionalEducacaoIntegral filtro)
         {
             string query = @"SELECT 
                                     modalidade_turma AS modalidadeTurma
@@ -22,8 +22,7 @@ namespace SME.SGP.Dados.Repositorios
                                   , quantidade_alunos_integral AS QuantidadeAlunosIntegral
                                   , quantidade_alunos_parcial AS QuantidadeAlunosParcial
                            FROM painel_educacional_consolidacao_educacao_integral
-                           WHERE 1 = 1 
-                           AND ano_letivo = @anoLetivo";
+                           WHERE ano_letivo = @anoLetivo";
 
             if (!string.IsNullOrEmpty(filtro.CodigoDre))
                 query += " AND codigo_dre = @codigoDre ";
@@ -31,7 +30,7 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(filtro.CodigoUe))
                 query += " AND codigo_ue = @codigoUe ";
 
-            return await database.Conexao.QueryAsync<ConsolidacaoEducacaoIntegralDto>(query, new
+            return await database.Conexao.QueryAsync<DadosParaConsolidarEducacaoIntegralDto>(query, new
             {
                 anoLetivo = filtro.AnoLetivo,
                 codigoDre = filtro.CodigoDre,

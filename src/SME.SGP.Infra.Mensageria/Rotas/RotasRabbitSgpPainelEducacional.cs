@@ -23,6 +23,7 @@
         public const string ConsolidarAprovacaoPainelEducacional = "sgp.consolidacao.painel.educacional.aprovacao";
         public const string ConsolidarFluenciaLeitoraUePainelEducacional = "sgp.consolidacao.painel.educacional.fluencia-leitora-ue";
         public const string ConsolidarPlanosAEEPainelEducacional = "sgp.consolidacao.painel.educacional.plano-aee";
+        public const string ConsolidarEducacaoIntegralPainelEducacional = "sgp.consolidacao.painel.educacional.educacao-integral";
     }
 }
 

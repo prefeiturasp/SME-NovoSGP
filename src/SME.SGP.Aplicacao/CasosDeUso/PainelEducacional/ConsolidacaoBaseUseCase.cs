@@ -26,6 +26,16 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             Modalidade.EJA
         };
 
+        /// <summary>
+        /// Modalidade de turmas válidos para consolidação no painel educacional educacao integral
+        /// </summary>
+        protected static readonly List<Modalidade> ModalidadesTurmasEducacaoIntegral = new()
+        {
+            Modalidade.EducacaoInfantil,
+            Modalidade.Fundamental,
+            Modalidade.Medio,
+        };
+
         protected static readonly HashSet<string> PareceresPromocao = new HashSet<string>
         {
             "Continuidade dos estudos",

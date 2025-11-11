@@ -6,6 +6,6 @@ namespace SME.SGP.Dominio.Interfaces.Repositorios
 {
     public interface IRepositorioEducacaoIntegralConsulta
     {
-        Task<IEnumerable<ConsolidacaoEducacaoIntegralDto>> ObterEducacaoIntegral(FiltroPainelEducacionalEducacaoIntegral filtro);
+        Task<IEnumerable<DadosParaConsolidarEducacaoIntegralDto>> ObterEducacaoIntegral(FiltroPainelEducacionalEducacaoIntegral filtro);
     }
 }
