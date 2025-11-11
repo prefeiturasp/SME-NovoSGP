@@ -7,6 +7,7 @@ namespace SME.SGP.Dominio.Entidades
         public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }
         public string Turma { get; set; }
+        public int CodigoModalidade { get; set; }
         public string Modalidade { get; set; }
         public int TotalPromocoes { get; set; }
         public int TotalRetencoesAusencias { get; set; }
