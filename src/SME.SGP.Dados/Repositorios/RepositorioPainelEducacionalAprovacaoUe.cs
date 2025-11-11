@@ -3,11 +3,15 @@ using Npgsql;
 using NpgsqlTypes;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
+using SME.SGP.Infra.Dtos.PainelEducacional;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using System;
+using Dapper;
+using System.Text;
+
 
 
 namespace SME.SGP.Dados.Repositorios
@@ -57,37 +61,78 @@ namespace SME.SGP.Dados.Repositorios
 
             await database.ExecuteAsync(sql);
         }
-        public async Task<(IEnumerable<PainelEducacionalConsolidacaoAprovacaoUe> Itens, int TotalRegistros)>
-     ObterAprovacao(
-         int anoLetivo,
-         string codigoUe,
-         int modalidadeId,
-         int numeroPagina,
-         int numeroRegistros)
+        public async Task<PaginacaoResultadoDto<PainelEducacionalAprovacaoUeDto>> ObterAprovacao(
+      int anoLetivo,
+      string codigoUe,
+      int modalidadeId,
+      Paginacao paginacao)
         {
-            var sqlBase = @"FROM painel_educacional_consolidacao_aprovacao_ue
-                    WHERE ano_letivo = @anoLetivo";
+            var query = MontarQueryCompleta(paginacao);
 
-            if (!string.IsNullOrWhiteSpace(codigoUe))
-                sqlBase += " AND codigo_ue = @codigoUe";
+            var parametros = new
+            {
+                anoLetivo,
+                codigoUe,
+                modalidadeId
+            };
 
-            sqlBase += " AND modalidade_codigo = @modalidadeId";
+            var retorno = new PaginacaoResultadoDto<PainelEducacionalAprovacaoUeDto>();
 
-            var totalRegistrosList = await database.QueryAsync<int>($"SELECT COUNT(*) {sqlBase}",
-                new { anoLetivo, codigoUe, modalidadeId });
-            var totalRegistros = totalRegistrosList.FirstOrDefault();
+            using (var multi = await database.QueryMultipleAsync(query, parametros))
+            {
+                retorno.Items = multi.Read<PainelEducacionalAprovacaoUeDto>();
+                retorno.TotalRegistros = multi.ReadFirst<int>();
+            }
 
-            var offset = (numeroPagina - 1) * numeroRegistros;
+            retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
 
-            var sql = $@"SELECT * {sqlBase}
-                 ORDER BY codigo_ue
-                 OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY";
-
-            var itens = await database.QueryAsync<PainelEducacionalConsolidacaoAprovacaoUe>(
-                sql,
-                new { anoLetivo, codigoUe, modalidadeId, offset, limit = numeroRegistros });
-
-            return (itens, totalRegistros);
+            return retorno;
         }
+
+        private static string MontarQueryCompleta(Paginacao paginacao)
+        {
+            var sql = new StringBuilder();
+
+            MontarQueryConsulta(sql, paginacao, contador: false);
+            sql.AppendLine(";");
+            MontarQueryConsulta(sql, paginacao, contador: true);
+
+            return sql.ToString();
+        }
+
+        private static void MontarQueryConsulta(StringBuilder sql, Paginacao paginacao, bool contador)
+        {
+            if (contador)
+            {
+                sql.AppendLine("SELECT COUNT(*) ");
+            }
+            else
+            {
+                sql.AppendLine(@"SELECT 
+                            codigo_dre AS CodigoDre,
+                            codigo_ue AS CodigoUe,
+                            turma AS Turma,
+                            modalidade AS Modalidade,
+                            total_promocoes AS TotalPromocoes,
+                            total_retencoes_ausencias AS TotalRetencoesAusencias,
+                            total_retencoes_notas AS TotalRetencoesNotas,
+                            ano_letivo AS AnoLetivo");
+            }
+
+            sql.AppendLine(" FROM painel_educacional_consolidacao_aprovacao_ue ");
+            sql.AppendLine(" WHERE ano_letivo = @anoLetivo ");
+            sql.AppendLine(" AND modalidade_codigo = @modalidadeId ");
+
+            sql.AppendLine(" AND (@codigoUe IS NULL OR codigo_ue = @codigoUe) ");
+
+            if (!contador)
+            {
+                sql.AppendLine(" ORDER BY codigo_ue ");
+
+                if (paginacao.QuantidadeRegistros > 0)
+                    sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
+            }
+        }
+
     }
 }
