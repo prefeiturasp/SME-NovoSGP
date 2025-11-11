@@ -1192,7 +1192,8 @@ namespace SME.SGP.Dados.Repositorios
                                  t.nome as Nome, 
                                  t.modalidade_codigo as ModalidadeCodigo,
                                  t.ano_letivo as AnoLetivo,
-                                 t.ano
+                                 t.ano,
+                                 t.tipo_turno as TipoTurno
                             from turma t
                             inner join ue u on t.ue_id = u.id
                             inner join dre d on
