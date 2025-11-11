@@ -37,8 +37,8 @@ namespace SME.SGP.Api.Controllers
     [ProducesResponseType(typeof(RetornoBaseDto), 500)]
     [ProducesResponseType(typeof(RetornoBaseDto), 601)]
     [Permissao(Permissao.FB_C, Policy = "Bearer")]
-    public async Task<IActionResult> ObterAprovacaoUe(int anoLetivo, string codigoUe, string modalidade, int numeroPagina, int numeroRegistros, [FromServices] IConsultasAprovacaoUeUseCase consultasAprovacaoUeUseCase)
-    => Ok(await consultasAprovacaoUeUseCase.ObterAprovacao(anoLetivo, codigoUe, modalidade, numeroPagina, numeroRegistros));
+    public async Task<IActionResult> ObterAprovacaoUe(int anoLetivo, string codigoUe, int modalidadeId, int numeroPagina, int numeroRegistros, [FromServices] IConsultasAprovacaoUeUseCase consultasAprovacaoUeUseCase)
+    => Ok(await consultasAprovacaoUeUseCase.ObterAprovacao(anoLetivo, codigoUe, modalidadeId, numeroPagina, numeroRegistros));
 
     [HttpGet("frequencia-global")]
     [ProducesResponseType(typeof(PainelEducacionalRegistroFrequenciaAgrupamentoGlobalDto), 200)]

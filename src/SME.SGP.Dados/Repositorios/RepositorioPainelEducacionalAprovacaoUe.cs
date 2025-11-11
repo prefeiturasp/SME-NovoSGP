@@ -6,6 +6,9 @@ using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
+using System;
+
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -54,40 +57,37 @@ namespace SME.SGP.Dados.Repositorios
 
             await database.ExecuteAsync(sql);
         }
-        public async Task<IEnumerable<PainelEducacionalConsolidacaoAprovacaoUe>> ObterAprovacao(
-     int anoLetivo,
-     string codigoUe,
-     string modalidade,
-     int numeroPagina,
-     int numeroRegistros)
+        public async Task<(IEnumerable<PainelEducacionalConsolidacaoAprovacaoUe> Itens, int TotalRegistros)>
+     ObterAprovacao(
+         int anoLetivo,
+         string codigoUe,
+         int modalidadeId,
+         int numeroPagina,
+         int numeroRegistros)
         {
-            var sql = @"SELECT *
-                FROM painel_educacional_consolidacao_aprovacao_ue
-                WHERE ano_letivo = @anoLetivo";
+            var sqlBase = @"FROM painel_educacional_consolidacao_aprovacao_ue
+                    WHERE ano_letivo = @anoLetivo";
 
             if (!string.IsNullOrWhiteSpace(codigoUe))
-                sql += " AND codigo_ue = @codigoUe";
+                sqlBase += " AND codigo_ue = @codigoUe";
 
-            if (!string.IsNullOrWhiteSpace(modalidade))
-                sql += " AND LOWER(modalidade) = LOWER(@modalidade)";
+            sqlBase += " AND modalidade_codigo = @modalidadeId";
 
-            sql += @" ORDER BY codigo_ue
-              OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY";
+            var totalRegistrosList = await database.QueryAsync<int>($"SELECT COUNT(*) {sqlBase}",
+                new { anoLetivo, codigoUe, modalidadeId });
+            var totalRegistros = totalRegistrosList.FirstOrDefault();
 
             var offset = (numeroPagina - 1) * numeroRegistros;
-            var limit = numeroRegistros;
 
-            return await database.QueryAsync<PainelEducacionalConsolidacaoAprovacaoUe>(
+            var sql = $@"SELECT * {sqlBase}
+                 ORDER BY codigo_ue
+                 OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY";
+
+            var itens = await database.QueryAsync<PainelEducacionalConsolidacaoAprovacaoUe>(
                 sql,
-                new
-                {
-                    anoLetivo,
-                    codigoUe,
-                    modalidade,
-                    offset,
-                    limit
-                });
-        }
+                new { anoLetivo, codigoUe, modalidadeId, offset, limit = numeroRegistros });
 
+            return (itens, totalRegistros);
+        }
     }
 }
