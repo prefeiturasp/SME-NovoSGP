@@ -8,6 +8,6 @@ namespace SME.SGP.Dominio.Interfaces.Repositorios
     {
         Task LimparConsolidacao();
         Task BulkInsertAsync(IEnumerable<PainelEducacionalConsolidacaoAprovacaoUe> indicadores);
-        Task<IEnumerable<PainelEducacionalConsolidacaoAprovacaoUe>> ObterAprovacao(int anoLetivo, string codigoUe);
+        Task<IEnumerable<PainelEducacionalConsolidacaoAprovacaoUe>> ObterAprovacao(int anoLetivo, string codigoUe, string modalidade, int numeroPagina, int numeroRegistros);
     }
 }

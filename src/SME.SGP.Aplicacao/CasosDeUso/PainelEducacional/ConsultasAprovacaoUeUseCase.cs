@@ -1,8 +1,8 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAprovacaoUe;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
@@ -16,9 +16,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             this.mediator = mediator;
         }
 
-        public async Task<IEnumerable<PainelEducacionalAprovacaoUeDto>> ObterAprovacao(int anoLetivo, string codigoUe)
+        public async Task<PaginacaoResultadoDto<PainelEducacionalAprovacaoUeDto>> ObterAprovacao(int anoLetivo, string codigoUe, string modalidade, int numeroPagina, int numeroRegistros)
         {
-            return await mediator.Send(new PainelEducacionalAprovacaoUeQuery(anoLetivo, codigoUe));
+            return await mediator.Send(new PainelEducacionalAprovacaoUeQuery(anoLetivo, codigoUe, modalidade, numeroPagina, numeroRegistros));
         }
     }
 }
