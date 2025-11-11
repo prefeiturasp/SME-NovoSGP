@@ -10,6 +10,8 @@
         RelatorioPAP = 6,
         RelatorioDinamicoEncaminhamentoNAAPA = 7,
         RegistroAcaoBuscaAtiva = 8,
-        MapeamentoEstudante = 9
+        MapeamentoEstudante = 9,
+        SondagemDigitacao = 10,
+        SondagemLeitura = 11
     }
 }
