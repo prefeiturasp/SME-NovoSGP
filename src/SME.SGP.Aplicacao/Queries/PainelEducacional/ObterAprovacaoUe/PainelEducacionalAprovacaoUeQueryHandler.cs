@@ -19,13 +19,19 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAprovacaoUe
         {
             this.repositorioPainelEducacionalAprovacaoUe = repositorioPainelEducacionalAprovacaoUe;
         }
-
-        public async Task<PaginacaoResultadoDto<PainelEducacionalAprovacaoUeDto>> Handle(PainelEducacionalAprovacaoUeQuery request, CancellationToken cancellationToken)
+        public async Task<PaginacaoResultadoDto<PainelEducacionalAprovacaoUeDto>> Handle(
+            PainelEducacionalAprovacaoUeQuery request,
+            CancellationToken cancellationToken)
         {
-            var registros = await repositorioPainelEducacionalAprovacaoUe.ObterAprovacao(request.AnoLetivo, request.CodigoUe, request.Modalidade, request.NumeroPagina, request.NumeroRegistros);
+            var (registros, totalRegistros) = await repositorioPainelEducacionalAprovacaoUe.ObterAprovacao(
+                request.AnoLetivo,
+                request.CodigoUe,
+                request.ModalidadeId,
+                request.NumeroPagina,
+                request.NumeroRegistros);
 
-            if (!string.IsNullOrEmpty(request.Modalidade))
-                registros = registros.Where(r => r.Modalidade?.Equals(request.Modalidade, System.StringComparison.OrdinalIgnoreCase) == true);
+            var registrosPorPagina = request.NumeroRegistros <= 0 ? 10 : request.NumeroRegistros;
+            var totalPaginas = (int)System.Math.Ceiling(totalRegistros / (double)registrosPorPagina);
 
             var listaDto = registros.Select(item => new PainelEducacionalAprovacaoUeDto
             {
@@ -39,21 +45,9 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAprovacaoUe
                 AnoLetivo = item.AnoLetivo
             }).ToList();
 
-            var totalRegistros = listaDto.Count;
-
-            var pagina = request.NumeroPagina <= 0 ? 1 : request.NumeroPagina;
-            var registrosPorPagina = request.NumeroRegistros <= 0 ? 10 : request.NumeroRegistros;
-
-            var itensPaginados = listaDto
-                .Skip((pagina - 1) * registrosPorPagina)
-                .Take(registrosPorPagina)
-                .ToList();
-
-            var totalPaginas = (int)System.Math.Ceiling((double)totalRegistros / registrosPorPagina);
-
             return new PaginacaoResultadoDto<PainelEducacionalAprovacaoUeDto>
             {
-                Items = itensPaginados,
+                Items = listaDto,
                 TotalRegistros = totalRegistros,
                 TotalPaginas = totalPaginas
             };

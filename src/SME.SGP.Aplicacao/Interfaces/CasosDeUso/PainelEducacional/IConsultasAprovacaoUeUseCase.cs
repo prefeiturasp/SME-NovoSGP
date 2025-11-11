@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional
 {
     public interface IConsultasAprovacaoUeUseCase
     {
-        Task<PaginacaoResultadoDto<PainelEducacionalAprovacaoUeDto>> ObterAprovacao(int anoLetivo, string codigoUe, string modalidade, int numeroPagina, int numeroRegistros);
+        Task<PaginacaoResultadoDto<PainelEducacionalAprovacaoUeDto>> ObterAprovacao(int anoLetivo, string codigoUe, int modalidadeId, int numeroPagina, int numeroRegistros);
     }
 }
