@@ -6,6 +6,7 @@ using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoDistorcaoIdade;
+using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoEducacaoIntegral;
 using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoPlanoAEE;
 using SME.SGP.Infra.Dtos.PainelEducacional.FrequenciaDiaria;
 using SME.SGP.Infra.Dtos.PainelEducacional.FrequenciaSemanalUe;
@@ -245,12 +246,20 @@ namespace SME.SGP.Api.Controllers
     public async Task<IActionResult> ObterFluenciaLeitoraUe([FromQuery] FiltroPainelEducacionalFluenciaLeitoraUe filtro, [FromServices] IConsultasFluenciaLeitoraUeUseCase consultasFluenciaLeitoraUeUseCase)
     => Ok(await consultasFluenciaLeitoraUeUseCase.ObterFluenciaLeitoraUe(filtro));
 
-    [HttpGet("plano-aee")]
-    [ProducesResponseType(typeof(PainelEducacionalPlanoAEEDto), 200)]
-    [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-    [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-    [Permissao(Permissao.FB_C, Policy = "Bearer")]
-    public async Task<IActionResult> ObterPlanosAEE([FromQuery] FiltroPainelEducacionalPlanosAEE filtro, [FromServices] IConsultasPlanosAEEPainelEducacionalUseCase consultasPlanosAEEPainelEducacionalUseCase)
-     => Ok(await consultasPlanosAEEPainelEducacionalUseCase.ObterPlanosAEE(filtro));
-  }
+        [HttpGet("plano-aee")]
+        [ProducesResponseType(typeof(PainelEducacionalPlanoAEEDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterPlanosAEE([FromQuery] FiltroPainelEducacionalPlanosAEE filtro, [FromServices] IConsultasPlanosAEEPainelEducacionalUseCase consultasPlanosAEEPainelEducacionalUseCase)
+         => Ok(await consultasPlanosAEEPainelEducacionalUseCase.ObterPlanosAEE(filtro));
+
+        [HttpGet("educacao-integral")]
+        [ProducesResponseType(typeof(PainelEducacionalEducacaoIntegralDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterEducacaoIntegral([FromQuery] FiltroPainelEducacionalEducacaoIntegral filtro, [FromServices] IConsultasEducacaoIntegralPainelEducacionalUseCase consultasEducacaoIntegralPainelEducacionalUseCase)
+        => Ok(await consultasEducacaoIntegralPainelEducacionalUseCase.ObterEducacaoIntegral(filtro));
+    }
 }
