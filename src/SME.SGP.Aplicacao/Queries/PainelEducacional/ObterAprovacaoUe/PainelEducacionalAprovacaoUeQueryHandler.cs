@@ -1,18 +1,17 @@
-﻿using MediatR;
-using SME.SGP.Dominio;
+﻿using FluentValidation;
+using MediatR;
 using SME.SGP.Dominio.Interfaces.Repositorios;
-using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using SME.SGP.Infra.Interfaces;
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAprovacaoUe
 {
     public class PainelEducacionalAprovacaoUeQueryHandler
-        : ConsultasBase, IRequestHandler<PainelEducacionalAprovacaoUeQuery, PaginacaoResultadoDto<PainelEducacionalAprovacaoUeDto>>
+        : ConsultasBase, IRequestHandler<PainelEducacionalAprovacaoUeQuery, PainelEducacionalAprovacaoUeRetorno>
     {
         private readonly IRepositorioPainelEducacionalAprovacaoUe repositorioPainelEducacionalAprovacaoUe;
 
@@ -24,57 +23,50 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAprovacaoUe
                 ?? throw new ArgumentNullException(nameof(repositorioPainelEducacionalAprovacaoUe));
         }
 
-        public async Task<PaginacaoResultadoDto<PainelEducacionalAprovacaoUeDto>> Handle(
+        public async Task<PainelEducacionalAprovacaoUeRetorno> Handle(
             PainelEducacionalAprovacaoUeQuery request,
             CancellationToken cancellationToken)
         {
-            var resultado = await repositorioPainelEducacionalAprovacaoUe.ObterAprovacao(
-                request.AnoLetivo,
-                request.CodigoUe,
-                request.ModalidadeId,
-                Paginacao);
+            var resultado = await repositorioPainelEducacionalAprovacaoUe.ObterAprovacao(request.Filtro);
+            var modalidades = resultado.Items
+                .GroupBy(r => r.Modalidade)
+                .Select(g => new PainelEducacionalAprovacaoUeDto
+                {
+                    Modalidade = g.Key,
+                    Turmas = g.Select(t => new PainelEducacionalAprovacaoUeTurmaDto
+                    {
+                        Turma = t.Turma,
+                        TotalPromocoes = t.TotalPromocoes,
+                        TotalRetencoesAusencias = t.TotalRetencoesAusencias,
+                        TotalRetencoesNotas = t.TotalRetencoesNotas
+                    })
+                    .OrderBy(t => t.Turma)
+                    .ToList()
+                })
+                .OrderBy(m => m.Modalidade)
+                .ToList();
 
-            return MapearParaDto(resultado);
-        }
-
-        private PaginacaoResultadoDto<PainelEducacionalAprovacaoUeDto> MapearParaDto(
-            PaginacaoResultadoDto<PainelEducacionalAprovacaoUeDto> resultadoDto)
-        {
-            return new PaginacaoResultadoDto<PainelEducacionalAprovacaoUeDto>()
+            return new PainelEducacionalAprovacaoUeRetorno
             {
-                TotalPaginas = resultadoDto.TotalPaginas,
-                TotalRegistros = resultadoDto.TotalRegistros,
-                Items = MapearParaDto(resultadoDto.Items)
+                Modalidades = modalidades,
+                TotalPaginas = resultado.TotalPaginas,
+                TotalRegistros = resultado.TotalRegistros
             };
         }
 
-        private IEnumerable<PainelEducacionalAprovacaoUeDto> MapearParaDto(
-            IEnumerable<PainelEducacionalAprovacaoUeDto> registros)
+        public class PainelEducacionalAprovacaoUeQueryValidator : AbstractValidator<PainelEducacionalAprovacaoUeQuery>
         {
-            var listaDto = new List<PainelEducacionalAprovacaoUeDto>();
-            foreach (var item in registros)
+            public PainelEducacionalAprovacaoUeQueryValidator()
             {
-                try
-                {
-                    listaDto.Add(new PainelEducacionalAprovacaoUeDto()
-                    {
-                        CodigoDre = item.CodigoDre,
-                        CodigoUe = item.CodigoUe,
-                        Turma = item.Turma,
-                        Modalidade = item.Modalidade,
-                        TotalPromocoes = item.TotalPromocoes,
-                        TotalRetencoesAusencias = item.TotalRetencoesAusencias,
-                        TotalRetencoesNotas = item.TotalRetencoesNotas,
-                        AnoLetivo = item.AnoLetivo
-                    });
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-            }
+                RuleFor(x => x.Filtro.AnoLetivo)
+                    .NotEmpty().WithMessage("Informe o ano letivo");
 
-            return listaDto;
+                RuleFor(x => x.Filtro.CodigoUe)
+                    .NotEmpty().WithMessage("Informe o código da Ue");
+
+                RuleFor(x => x.Filtro.ModalidadeId)
+                    .NotEmpty().WithMessage("Informe o código modalidade");
+            }
         }
     }
 }

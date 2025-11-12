@@ -16,9 +16,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             this.mediator = mediator;
         }
 
-        public async Task<PaginacaoResultadoDto<PainelEducacionalAprovacaoUeDto>> ObterAprovacao(int anoLetivo, string codigoUe, int modalidadeId)
+        public async Task<PainelEducacionalAprovacaoUeRetorno> ObterAprovacao(FiltroAprovacaoUeDto filtro)
         {
-            return await mediator.Send(new PainelEducacionalAprovacaoUeQuery(anoLetivo, codigoUe, modalidadeId));
+            return await mediator.Send(new PainelEducacionalAprovacaoUeQuery(filtro));
         }
     }
 }

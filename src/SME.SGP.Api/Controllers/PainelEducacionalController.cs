@@ -38,8 +38,8 @@ namespace SME.SGP.Api.Controllers
     [ProducesResponseType(typeof(RetornoBaseDto), 500)]
     [ProducesResponseType(typeof(RetornoBaseDto), 601)]
     [Permissao(Permissao.FB_C, Policy = "Bearer")]
-    public async Task<IActionResult> ObterAprovacaoUe(int anoLetivo, string codigoUe, int modalidadeId, [FromServices] IConsultasAprovacaoUeUseCase consultasAprovacaoUeUseCase)
-    => Ok(await consultasAprovacaoUeUseCase.ObterAprovacao(anoLetivo, codigoUe, modalidadeId));
+    public async Task<IActionResult> ObterAprovacaoUe([FromQuery] FiltroAprovacaoUeDto filtro, [FromServices] IConsultasAprovacaoUeUseCase consultasAprovacaoUeUseCase)
+    => Ok(await consultasAprovacaoUeUseCase.ObterAprovacao(filtro));
 
     [HttpGet("frequencia-global")]
     [ProducesResponseType(typeof(PainelEducacionalRegistroFrequenciaAgrupamentoGlobalDto), 200)]
