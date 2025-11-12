@@ -5,6 +5,7 @@ using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,36 +29,31 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAprovacao
 
         private IEnumerable<PainelEducacionalAprovacaoDto> MapearParaDto(IEnumerable<PainelEducacionalConsolidacaoAprovacao> registros)
         {
-            var lista = new List<PainelEducacionalAprovacaoDto>();
-
-            foreach (var item in registros)
-            {
-                lista.Add(new PainelEducacionalAprovacaoDto
+            return registros
+                .GroupBy(r => r.Modalidade)
+                .Select(g => new PainelEducacionalAprovacaoDto
                 {
-                    CodigoDre = item.CodigoDre,
-                    SerieAno = item.SerieAno,
-                    Modalidade = item.Modalidade,
-                    TotalPromocoes = item.TotalPromocoes,
-                    TotalRetencoesAusencias = item.TotalRetencoesAusencias,
-                    TotalRetencoesNotas = item.TotalRetencoesNotas,
-                    AnoLetivo = item.AnoLetivo,
-                });
-            }
-
-            return lista;
+                    Modalidade = g.Key,
+                    Indicadores = g
+                        .GroupBy(x => x.SerieAno)
+                        .Select(a => new IndicadorAprovacaoDto
+                        {
+                            SerieAno = a.Key,
+                            TotalPromocoes = a.Sum(z => z.TotalPromocoes),
+                            TotalRetencoesAusencias = a.Sum(z => z.TotalRetencoesAusencias),
+                            TotalRetencoesNotas = a.Sum(z => z.TotalRetencoesNotas),
+                        })
+                        .OrderBy(x => x.SerieAno)
+                        .ToList()
+                })
+                .ToList();
         }
-        public class PainelEducacionalAprovacaoUeQueryValidator : AbstractValidator<PainelEducacionalAprovacaoUeQuery>
+        public class PainelEducacionalAprovacaoQueryValidator : AbstractValidator<PainelEducacionalAprovacaoQuery>
         {
-            public PainelEducacionalAprovacaoUeQueryValidator()
+            public PainelEducacionalAprovacaoQueryValidator()
             {
                 RuleFor(x => x.AnoLetivo)
-                    .NotEmpty().WithMessage("Informe o ano letivo");
-
-                RuleFor(x => x.CodigoUe)
-                    .NotEmpty().WithMessage("Informe o código da Ue");
-
-                RuleFor(x => x.ModalidadeId)
-                    .NotEmpty().WithMessage("Informe o código modalidade");
+                    .NotEmpty().WithMessage("Informe o ano letivo.");
             }
         }
     }

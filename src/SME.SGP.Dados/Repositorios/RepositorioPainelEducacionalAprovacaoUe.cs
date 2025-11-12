@@ -1,16 +1,17 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Dapper;
+using Microsoft.Extensions.Configuration;
 using Npgsql;
 using NpgsqlTypes;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
-using SME.SGP.Infra.Dtos.PainelEducacional;
 using SME.SGP.Infra;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
+using SME.SGP.Infra.Dtos.PainelEducacional;
 using System;
-using Dapper;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
+using static SME.SGP.Infra.Dtos.PainelEducacional.PainelEducacionalAprovacaoUeDto;
 
 
 
@@ -62,32 +63,29 @@ namespace SME.SGP.Dados.Repositorios
 
             await database.ExecuteAsync(sql);
         }
-        public async Task<PaginacaoResultadoDto<PainelEducacionalAprovacaoUeDto>> ObterAprovacao(
-      int anoLetivo,
-      string codigoUe,
-      int modalidadeId,
-      Paginacao paginacao)
+        public async Task<PaginacaoResultadoDto<PainelEducacionalAprovacaoUeItemDto>> ObterAprovacao(FiltroAprovacaoUeDto filtro)
         {
+            var paginacao = filtro.ObterPaginacao();
             var query = MontarQueryCompleta(paginacao);
 
             var parametros = new
             {
-                anoLetivo,
-                codigoUe,
-                modalidadeId
+                anoLetivo = filtro.AnoLetivo,
+                codigoUe = filtro.CodigoUe,
+                modalidadeId = filtro.ModalidadeId
             };
 
-            var retorno = new PaginacaoResultadoDto<PainelEducacionalAprovacaoUeDto>();
+            var retorno = new PaginacaoResultadoDto<PainelEducacionalAprovacaoUeItemDto>();
 
             using (var multi = await database.QueryMultipleAsync(query, parametros))
             {
-                retorno.Items = multi.Read<PainelEducacionalAprovacaoUeDto>();
+                retorno.Items = multi.Read<PainelEducacionalAprovacaoUeItemDto>();
                 retorno.TotalRegistros = paginacao.QuantidadeRegistros <= 1 ? 1 : multi.ReadFirst<int>();
             }
 
             retorno.TotalPaginas = paginacao.QuantidadeRegistros > 0
-               ? (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros)
-               : 1;
+                ? (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros)
+                : 1;
 
             return retorno;
         }

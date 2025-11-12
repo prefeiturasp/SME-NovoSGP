@@ -1,20 +1,15 @@
 ﻿using MediatR;
 using SME.SGP.Infra.Dtos.PainelEducacional;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAprovacaoUe
 {
-    public class PainelEducacionalAprovacaoUeQuery : IRequest<PaginacaoResultadoDto<PainelEducacionalAprovacaoUeDto>>
+    public class PainelEducacionalAprovacaoUeQuery : IRequest<PainelEducacionalAprovacaoUeRetorno>
     {
-        public PainelEducacionalAprovacaoUeQuery(int anoLetivo, string codigoUe, int modalidadeId)
+        public PainelEducacionalAprovacaoUeQuery(FiltroAprovacaoUeDto filtro)
         {
-            AnoLetivo = anoLetivo;
-            CodigoUe = codigoUe;
-            ModalidadeId = modalidadeId;
+            Filtro = filtro;
         }
 
-        public int AnoLetivo { get; set; }
-        public string CodigoUe { get; set; }
-        public int ModalidadeId { get; set; }
+        public FiltroAprovacaoUeDto Filtro { get; set; }
     }
 }
