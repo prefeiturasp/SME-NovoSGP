@@ -1,18 +1,17 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces.Repositorios;
-using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAprovacaoUe
 {
     public class PainelEducacionalAprovacaoUeQueryHandler
-        : ConsultasBase, IRequestHandler<PainelEducacionalAprovacaoUeQuery, PaginacaoResultadoDto<PainelEducacionalAprovacaoUeDto>>
+        : ConsultasBase, IRequestHandler<PainelEducacionalAprovacaoUeQuery, PainelEducacionalAprovacaoUeRetorno>
     {
         private readonly IRepositorioPainelEducacionalAprovacaoUe repositorioPainelEducacionalAprovacaoUe;
 
@@ -24,57 +23,35 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAprovacaoUe
                 ?? throw new ArgumentNullException(nameof(repositorioPainelEducacionalAprovacaoUe));
         }
 
-        public async Task<PaginacaoResultadoDto<PainelEducacionalAprovacaoUeDto>> Handle(
+        public async Task<PainelEducacionalAprovacaoUeRetorno> Handle(
             PainelEducacionalAprovacaoUeQuery request,
             CancellationToken cancellationToken)
         {
-            var resultado = await repositorioPainelEducacionalAprovacaoUe.ObterAprovacao(
-                request.AnoLetivo,
-                request.CodigoUe,
-                request.ModalidadeId,
-                Paginacao);
-
-            return MapearParaDto(resultado);
-        }
-
-        private PaginacaoResultadoDto<PainelEducacionalAprovacaoUeDto> MapearParaDto(
-            PaginacaoResultadoDto<PainelEducacionalAprovacaoUeDto> resultadoDto)
-        {
-            return new PaginacaoResultadoDto<PainelEducacionalAprovacaoUeDto>()
-            {
-                TotalPaginas = resultadoDto.TotalPaginas,
-                TotalRegistros = resultadoDto.TotalRegistros,
-                Items = MapearParaDto(resultadoDto.Items)
-            };
-        }
-
-        private IEnumerable<PainelEducacionalAprovacaoUeDto> MapearParaDto(
-            IEnumerable<PainelEducacionalAprovacaoUeDto> registros)
-        {
-            var listaDto = new List<PainelEducacionalAprovacaoUeDto>();
-            foreach (var item in registros)
-            {
-                try
+            var resultado = await repositorioPainelEducacionalAprovacaoUe.ObterAprovacao(request.Filtro);
+            var modalidades = resultado.Items
+                .GroupBy(r => r.Modalidade)
+                .Select(g => new PainelEducacionalAprovacaoUeDto
                 {
-                    listaDto.Add(new PainelEducacionalAprovacaoUeDto()
+                    Modalidade = g.Key,
+                    Turmas = g.Select(t => new PainelEducacionalAprovacaoUeTurmaDto
                     {
-                        CodigoDre = item.CodigoDre,
-                        CodigoUe = item.CodigoUe,
-                        Turma = item.Turma,
-                        Modalidade = item.Modalidade,
-                        TotalPromocoes = item.TotalPromocoes,
-                        TotalRetencoesAusencias = item.TotalRetencoesAusencias,
-                        TotalRetencoesNotas = item.TotalRetencoesNotas,
-                        AnoLetivo = item.AnoLetivo
-                    });
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-            }
+                        Turma = t.Turma,
+                        TotalPromocoes = t.TotalPromocoes,
+                        TotalRetencoesAusencias = t.TotalRetencoesAusencias,
+                        TotalRetencoesNotas = t.TotalRetencoesNotas
+                    })
+                    .OrderBy(t => t.Turma)
+                    .ToList()
+                })
+                .OrderBy(m => m.Modalidade)
+                .ToList();
 
-            return listaDto;
+            return new PainelEducacionalAprovacaoUeRetorno
+            {
+                Modalidades = modalidades,
+                TotalPaginas = resultado.TotalPaginas,
+                TotalRegistros = resultado.TotalRegistros
+            };
         }
     }
 }
