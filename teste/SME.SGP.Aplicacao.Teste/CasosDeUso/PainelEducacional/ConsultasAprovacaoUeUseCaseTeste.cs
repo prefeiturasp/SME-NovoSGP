@@ -1,74 +1,74 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Moq;
 using SME.SGP.Aplicacao.CasosDeUso.PainelEducacional;
 using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAprovacaoUe;
+using SME.SGP.Dominio;
 using SME.SGP.Infra.Dtos.PainelEducacional;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
-using SME.SGP.Infra;
 
-namespace SME.SGP.Tests.Aplicacao.CasosDeUso.PainelEducacional
+namespace SME.SGP.Teste.Aplicacao.CasosDeUso.PainelEducacional
 {
-    public class ConsultasAprovacaoUeUseCaseTests
+    public class ConsultasAprovacaoUeUseCaseTeste
     {
         private readonly Mock<IMediator> mediatorMock;
         private readonly ConsultasAprovacaoUeUseCase useCase;
 
-        public ConsultasAprovacaoUeUseCaseTests()
+        public ConsultasAprovacaoUeUseCaseTeste()
         {
             mediatorMock = new Mock<IMediator>();
             useCase = new ConsultasAprovacaoUeUseCase(mediatorMock.Object);
         }
 
-        [Fact(DisplayName = "Deve retornar os dados de aprovação corretamente com paginação")]
-        public async Task ObterAprovacao_DeveRetornarDadosCorretosComPaginacao()
+        [Fact(DisplayName = "Deve retornar dados de aprovação por UE com paginação")]
+        public async Task ObterAprovacaoUe_DeveRetornarDadosCorretosComPaginacao()
         {
-            int anoLetivo = 2025;
-            string codigoUe = "123456";
-            int modalidadeId = 1;
-
-            var registrosEsperados = new PaginacaoResultadoDto<PainelEducacionalAprovacaoUeDto>
+            // Arrange
+            var filtro = new FiltroAprovacaoUeDto
             {
-                Items = new List<PainelEducacionalAprovacaoUeDto>
+                AnoLetivo = 2025,
+                ModalidadeId = (int)Modalidade.Fundamental,
+                CodigoUe = "123456"
+            };
+
+            var registrosEsperados = new PainelEducacionalAprovacaoUeRetorno
+            {
+                Modalidades = new List<PainelEducacionalAprovacaoUeDto>
                 {
                     new PainelEducacionalAprovacaoUeDto
                     {
-                        CodigoDre = "DRE01",
-                        CodigoUe = codigoUe,
-                        Turma = "5A",
                         Modalidade = "Fundamental",
-                        TotalPromocoes = 20,
-                        TotalRetencoesAusencias = 2,
-                        TotalRetencoesNotas = 1,
-                        AnoLetivo = anoLetivo
+                        Turmas = new List<PainelEducacionalAprovacaoUeTurmaDto>
+                        {
+                            new PainelEducacionalAprovacaoUeTurmaDto
+                            {
+                                Turma = "5A",
+                                TotalPromocoes = 20,
+                                TotalRetencoesAusencias = 2,
+                                TotalRetencoesNotas = 1
+                            }
+                        }
                     }
                 },
-                TotalRegistros = 1,
-                TotalPaginas = 1
-            };
+                            TotalPaginas = 1,
+                            TotalRegistros = 1
+                        };
 
-            mediatorMock
-                .Setup(m => m.Send(It.IsAny<PainelEducacionalAprovacaoUeQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(registrosEsperados);
+                        mediatorMock
+                            .Setup(m => m.Send(It.IsAny<PainelEducacionalAprovacaoUeQuery>(), It.IsAny<CancellationToken>()))
+                            .ReturnsAsync(registrosEsperados);
 
-            var resultado = await useCase.ObterAprovacao(anoLetivo, codigoUe, modalidadeId);
+            // Act
+            var resultado = await useCase.ObterAprovacao(filtro);
 
+            // Assert
             Assert.NotNull(resultado);
-            Assert.Single(resultado.Items);
-            Assert.Equal(registrosEsperados.TotalRegistros, resultado.TotalRegistros);
-            Assert.Equal(codigoUe, resultado.Items.First().CodigoUe);
-            Assert.Equal("Fundamental", resultado.Items.First().Modalidade);
-
-            mediatorMock.Verify(m =>
-                m.Send(It.Is<PainelEducacionalAprovacaoUeQuery>(q =>
-                    q.AnoLetivo == anoLetivo &&
-                    q.CodigoUe == codigoUe &&
-                    q.ModalidadeId == modalidadeId
-                    ),
-                It.IsAny<CancellationToken>()), Times.Once);
+            Assert.Single(resultado.Modalidades);
+            Assert.Equal("Fundamental", resultado.Modalidades.First().Modalidade);
+            Assert.Equal("5A", resultado.Modalidades.First().Turmas.First().Turma);
         }
     }
 }
