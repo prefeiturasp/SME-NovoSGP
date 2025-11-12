@@ -1,9 +1,9 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using SME.SGP.Infra.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -52,6 +52,21 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAprovacaoUe
                 TotalPaginas = resultado.TotalPaginas,
                 TotalRegistros = resultado.TotalRegistros
             };
+        }
+
+        public class PainelEducacionalAprovacaoUeQueryValidator : AbstractValidator<PainelEducacionalAprovacaoUeQuery>
+        {
+            public PainelEducacionalAprovacaoUeQueryValidator()
+            {
+                RuleFor(x => x.Filtro.AnoLetivo)
+                    .NotEmpty().WithMessage("Informe o ano letivo");
+
+                RuleFor(x => x.Filtro.CodigoUe)
+                    .NotEmpty().WithMessage("Informe o código da Ue");
+
+                RuleFor(x => x.Filtro.ModalidadeId)
+                    .NotEmpty().WithMessage("Informe o código modalidade");
+            }
         }
     }
 }

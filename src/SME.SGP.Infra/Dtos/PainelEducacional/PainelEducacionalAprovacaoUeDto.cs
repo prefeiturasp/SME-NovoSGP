@@ -15,7 +15,7 @@ namespace SME.SGP.Infra.Dtos.PainelEducacional
         public int TotalRetencoesNotas { get; set; }
     }
 
-    public class PainelEducacionalAprovacaoUeItemDto : PainelEducacionalAprovacaoUeTurmaDto
+    public class PainelEducacionalAprovacaoUeRegistroDto : PainelEducacionalAprovacaoUeTurmaDto
     {
         public string Modalidade { get; set; }
     }
