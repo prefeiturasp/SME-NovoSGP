@@ -63,7 +63,7 @@ namespace SME.SGP.Dados.Repositorios
 
             await database.ExecuteAsync(sql);
         }
-        public async Task<PaginacaoResultadoDto<PainelEducacionalAprovacaoUeItemDto>> ObterAprovacao(FiltroAprovacaoUeDto filtro)
+        public async Task<PaginacaoResultadoDto<PainelEducacionalAprovacaoUeRegistroDto>> ObterAprovacao(FiltroAprovacaoUeDto filtro)
         {
             var paginacao = filtro.ObterPaginacao();
             var query = MontarQueryCompleta(paginacao);
@@ -75,11 +75,11 @@ namespace SME.SGP.Dados.Repositorios
                 modalidadeId = filtro.ModalidadeId
             };
 
-            var retorno = new PaginacaoResultadoDto<PainelEducacionalAprovacaoUeItemDto>();
+            var retorno = new PaginacaoResultadoDto<PainelEducacionalAprovacaoUeRegistroDto>();
 
             using (var multi = await database.QueryMultipleAsync(query, parametros))
             {
-                retorno.Items = multi.Read<PainelEducacionalAprovacaoUeItemDto>();
+                retorno.Items = multi.Read<PainelEducacionalAprovacaoUeRegistroDto>();
                 retorno.TotalRegistros = paginacao.QuantidadeRegistros <= 1 ? 1 : multi.ReadFirst<int>();
             }
 

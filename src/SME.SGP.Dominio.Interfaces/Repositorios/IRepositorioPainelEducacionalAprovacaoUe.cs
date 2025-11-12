@@ -13,6 +13,6 @@ namespace SME.SGP.Dominio.Interfaces.Repositorios
     {
         Task LimparConsolidacao();
         Task BulkInsertAsync(IEnumerable<PainelEducacionalConsolidacaoAprovacaoUe> indicadores);
-        Task<PaginacaoResultadoDto<PainelEducacionalAprovacaoUeItemDto>> ObterAprovacao(FiltroAprovacaoUeDto filtro);
+        Task<PaginacaoResultadoDto<PainelEducacionalAprovacaoUeRegistroDto>> ObterAprovacao(FiltroAprovacaoUeDto filtro);
     }
 }
