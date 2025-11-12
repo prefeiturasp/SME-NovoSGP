@@ -10,5 +10,6 @@ namespace SME.SGP.Dominio.Interfaces.Repositorios
         Task<IEnumerable<DadosParaConsolidarAprovacao>> ObterIndicadores(long[] turmasIds);
         Task LimparConsolidacao();
         Task BulkInsertAsync(IEnumerable<PainelEducacionalConsolidacaoAprovacao> indicadores);
+        Task<IEnumerable<PainelEducacionalConsolidacaoAprovacao>> ObterAprovacao(int anoLetivo, string codigoDre);
     }
 }

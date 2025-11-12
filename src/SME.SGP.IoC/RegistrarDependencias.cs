@@ -1580,6 +1580,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterAlunosSinalizadosPrioridadeMapeamentoEstudanteUseCase, ObterAlunosSinalizadosPrioridadeMapeamentoEstudanteUseCase>();
             services.TryAddScoped<IObterFiltrosOpcoesRespostaRelatorioMapeamentoUseCase, ObterFiltrosOpcoesRespostaRelatorioMapeamentoUseCase>();
             services.TryAddScoped<IRelatorioMapeamentoEstudantesUseCase, RelatorioMapeamentoEstudantesUseCase>();
+            services.TryAddScoped<IConsultasAprovacaoUseCase, ConsultasAprovacaoUseCase>();
+            services.TryAddScoped<IConsultasAprovacaoUeUseCase, ConsultasAprovacaoUeUseCase>();
             services.TryAddScoped<IConsultasRegistroFrequenciaAgrupamentoGlobalUseCase, ConsultasRegistroFrequenciaAgrupamentoGlobalUseCase>();
             services.TryAddScoped<IConsultasRegistroFrequenciaAgrupamentoMensalUseCase, ConsultasRegistroFrequenciaAgrupamentoMensalUseCase>();
             services.TryAddScoped<IConsultasRegistroFrequenciaAgrupamentoRankingUseCase, ConsultasRegistroFrequenciaAgrupamentoRankingUseCase>();

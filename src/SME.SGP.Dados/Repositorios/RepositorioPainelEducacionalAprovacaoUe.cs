@@ -3,9 +3,16 @@ using Npgsql;
 using NpgsqlTypes;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
+using SME.SGP.Infra.Dtos.PainelEducacional;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
+using System;
+using Dapper;
+using System.Text;
+
+
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -55,5 +62,77 @@ namespace SME.SGP.Dados.Repositorios
 
             await database.ExecuteAsync(sql);
         }
+        public async Task<PaginacaoResultadoDto<PainelEducacionalAprovacaoUeDto>> ObterAprovacao(
+      int anoLetivo,
+      string codigoUe,
+      int modalidadeId,
+      Paginacao paginacao)
+        {
+            var query = MontarQueryCompleta(paginacao);
+
+            var parametros = new
+            {
+                anoLetivo,
+                codigoUe,
+                modalidadeId
+            };
+
+            var retorno = new PaginacaoResultadoDto<PainelEducacionalAprovacaoUeDto>();
+
+            using (var multi = await database.QueryMultipleAsync(query, parametros))
+            {
+                retorno.Items = multi.Read<PainelEducacionalAprovacaoUeDto>();
+                retorno.TotalRegistros = paginacao.QuantidadeRegistros <= 1 ? 1 : multi.ReadFirst<int>();
+            }
+
+            retorno.TotalPaginas = paginacao.QuantidadeRegistros > 0
+               ? (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros)
+               : 1;
+
+            return retorno;
+        }
+
+        private static string MontarQueryCompleta(Paginacao paginacao)
+        {
+            var sql = new StringBuilder();
+
+            MontarQueryConsulta(sql, paginacao, contador: false);
+            sql.AppendLine(";");
+            MontarQueryConsulta(sql, paginacao, contador: true);
+
+            return sql.ToString();
+        }
+
+        private static void MontarQueryConsulta(StringBuilder sql, Paginacao paginacao, bool contador)
+        {
+            if (contador)
+            {
+                sql.AppendLine("SELECT COUNT(*) ");
+            }
+            else
+            {
+                sql.AppendLine(@"SELECT 
+                            codigo_dre AS CodigoDre,
+                            codigo_ue AS CodigoUe,
+                            turma AS Turma,
+                            modalidade AS Modalidade,
+                            total_promocoes AS TotalPromocoes,
+                            total_retencoes_ausencias AS TotalRetencoesAusencias,
+                            total_retencoes_notas AS TotalRetencoesNotas,
+                            ano_letivo AS AnoLetivo");
+            }
+
+            sql.AppendLine(" FROM painel_educacional_consolidacao_aprovacao_ue ");
+            sql.AppendLine(" WHERE ano_letivo = @anoLetivo AND modalidade_codigo = @modalidadeId AND codigo_ue = @codigoUe ");
+
+            if (!contador)
+            {
+                sql.AppendLine(" ORDER BY codigo_ue ");
+
+                if (paginacao.QuantidadeRegistros > 0)
+                    sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
+            }
+        }
+
     }
 }
