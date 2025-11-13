@@ -61,8 +61,10 @@
         public const string MENU_ATRIBUICOES =  "Atribuições";
         public const string MENU_USUARIOS =  "Usuários";
         public const string MENU_NOTIFICACOES =  "Notificações";
-        public const string MENU_AEE =  "AEE";
-        public const string MENU_RELATORIOS_ANALITICOS =  "Relatórios Analíticos";
+        public const string MENU_AEE = "AEE";
+        public const string MENU_RELATORIOS_ANALITICOS = "Relatórios Analíticos";
+        public const string MENU_RELATORIOS_SONDAGEM_CONSOLIDADO = "Consolidado";
+        public const string MENU_RELATORIOS_SONDAGEM_POR_TURMA= "Por turma";
         public const string MENU_BOLETIM =  "Boletim";
         public const string MENU_ATA_BIMESTRAL =  "Ata Bimestral";
         public const string MENU_ATA_FINAL_DE_RESULTADOS =  "Ata Final de Resultados";
@@ -175,6 +177,8 @@
         public const string ROTA_RELATORIOS_NAAPA_ENCMAINHAMENTO = "/relatorios/naapa/encaminhamento";
         public const string ROTA_RELATORIOS_NAAPA_BUSCA_ATIVA = "/relatorios/naapa/busca-ativa";
         public const string ROTA_RELATORIOS_SONDAGEM_ANALITICOS = "/relatorios/sondagem/analitico";
+        public const string ROTA_RELATORIOS_SONDAGEM_POR_TURMA = "/relatorios/sondagem/por-turma";
+        public const string ROTA_RELATORIOS_SONDAGEM_CONSOLIDADO = "/relatorios/sondagem/consolidado";
         public const string ROTA_RELATORIOS_DIARIO_CLASSE_BOLETIM_SIMPLES = "/relatorios/diario-classe/boletim-simples";
         public const string ROTA_RELATORIOS_ATAS_ATA_BIMESTRAL = "/relatorios/atas/ata-bimestral";
         public const string ROTA_RELATORIOS_ATAS_ATA_FINAL_RESULTADOS = "/relatorios/atas/ata-final-resultados";
@@ -344,10 +348,12 @@
         public const int ORDEM_SUB_MENU_RELATORIO_ENCAMINHAMENTO_NAAPA = 1;
         public const int ORDEM_SUB_MENU_RELATORIO_BUSCA_ATIVA = 2;
 
-        public const int ORDEM_SUB_MENU_RELATORIO_RELATORIOS_ANALITICOS = 1;
-        public const int ORDEM_SUB_MENU_RELATORIO_RELATORIO_ADESAO = 2;
-        public const int ORDEM_SUB_MENU_RELATORIO_RELATORIO_LEITURA = 3;
-
+        public const int ORDEM_SUB_MENU_RELATORIO_RELATORIOS_POR_TURMA = 1;
+        public const int ORDEM_SUB_MENU_RELATORIO_RELATORIOS_CONSOLIDADO = 2;
+        public const int ORDEM_SUB_MENU_RELATORIO_RELATORIOS_ANALITICOS = 3;
+        public const int ORDEM_SUB_MENU_RELATORIO_RELATORIO_ADESAO = 4;
+        public const int ORDEM_SUB_MENU_RELATORIO_RELATORIO_LEITURA = 5;
+        
         public const int ORDEM_SUB_MENU_BUSCA_ATIVA_CONS_CRIANCAS_ESTUD_AUSENTES = 1;
         public const int ORDEM_SUB_MENU_BUSCA_ATIVA_REGISTRO_ACOES = 2;
 
