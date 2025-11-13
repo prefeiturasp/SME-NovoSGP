@@ -125,7 +125,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (!contador)
             {
-                sql.AppendLine(" ORDER BY codigo_ue ");
+                sql.AppendLine(" ORDER BY turma ");
 
                 if (paginacao.QuantidadeRegistros > 0)
                     sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
