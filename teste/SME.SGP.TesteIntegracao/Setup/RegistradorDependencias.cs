@@ -47,6 +47,35 @@ namespace SME.SGP.TesteIntegracao.Setup
             base.RegistrarPolicies(services);
         }
 
+        public override void RegistrarHttpClients(IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddHttpClient();
+
+            services.AddHttpClient(name: ServicosEolConstants.SERVICO, c =>
+            {
+                c.BaseAddress = new Uri(configuration.GetSection("UrlApiEOL").Value);
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+                // Adicione outros headers se o handler real os utilizar
+            })
+                .ConfigurePrimaryHttpMessageHandler(() => HttpHandlerFake);
+
+            services.AddHttpClient(name: ServicoSondagemConstants.Servico, c =>
+            {
+                c.BaseAddress = new Uri(configuration.GetSection("UrlApiSondagem").Value);
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+            })
+                .ConfigurePrimaryHttpMessageHandler(() => HttpHandlerFake);
+
+            services.AddHttpClient(name: ServicoConectaFormacaoConstants.Servico, configureClient =>
+            {
+                configureClient.BaseAddress = new Uri(configuration.GetSection("UrlApiConectaFormacao").Value);
+                configureClient.DefaultRequestHeaders.Add("Accept", "application/json");
+            })
+                .ConfigurePrimaryHttpMessageHandler(() => HttpHandlerFake);
+
+            // Adicione aqui os outros clients que desejar "mockar", seguindo o mesmo padrão.
+        }
+
         protected override void RegistrarServicos(IServiceCollection services)
         {
             services.TryAddScoped<IServicoJurema, ServicoJuremaFake>();
