@@ -75,6 +75,13 @@ namespace SME.SGP.TesteIntegracao.Setup
             })
                 .ConfigurePrimaryHttpMessageHandler(() => HttpHandlerFake);
 
+            services.AddHttpClient(name: ServicoConectaFormacaoConstants.Servico, configureClient =>
+            {
+                configureClient.BaseAddress = new Uri(configuration.GetSection("UrlApiConectaFormacao").Value);
+                configureClient.DefaultRequestHeaders.Add("Accept", "application/json");
+            })
+                .ConfigurePrimaryHttpMessageHandler(() => HttpHandlerFake);
+
             // Adicione aqui os outros clients que desejar "mockar", seguindo o mesmo padrão.
         }
 
