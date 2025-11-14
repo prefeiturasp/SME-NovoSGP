@@ -1959,7 +1959,7 @@ namespace SME.SGP.Infra
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhAlteracao = false,
             EhConsulta = true)]
-        RESON_P_T = 288,
+        RESON_P_T = 290,
 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_RELATORIOS,
             Menu = ConstantesMenuPermissao.MENU_ESCOLA_AQUI,
