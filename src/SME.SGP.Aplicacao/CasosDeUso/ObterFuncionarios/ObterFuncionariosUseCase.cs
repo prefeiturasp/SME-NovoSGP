@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Queries.Funcionario;
+using SME.SGP.Aplicacao.Queries.Usuario.ObterUsuariosDoConectaPorCodigoUe;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -38,6 +39,16 @@ namespace SME.SGP.Aplicacao
                     CodigoRf = acesso.Cpf.SomenteNumeros(),
                     NomeServidor = acesso.Nome
                 });
+
+            var usuarioConecta = await mediator.Send(new ObterUsuariosDoConectaPorCodigoUeQuery(
+                                                                                filtroFuncionariosDto.CodigoUE,
+                                                                                filtroFuncionariosDto.CodigoRF,
+                                                                                filtroFuncionariosDto.NomeServidor));
+            funcionarios.AddRange(usuarioConecta.Select(u => new UsuarioEolRetornoDto()
+            {
+                CodigoRf = u.Login.SomenteNumeros(),
+                NomeServidor = u.Nome
+            }));
 
             return funcionarios;
         }
