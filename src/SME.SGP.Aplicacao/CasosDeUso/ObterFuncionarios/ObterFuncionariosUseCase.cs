@@ -33,17 +33,21 @@ namespace SME.SGP.Aplicacao
                                                                                 filtroFuncionariosDto.CodigoDRE,
                                                                                 filtroFuncionariosDto.CodigoUE,
                                                                                 filtroFuncionariosDto.NomeServidor));
-            foreach(var acesso in acessosABAE)
+            foreach (var acesso in acessosABAE)
                 funcionarios.Add(new UsuarioEolRetornoDto()
                 {
                     CodigoRf = acesso.Cpf.SomenteNumeros(),
                     NomeServidor = acesso.Nome
                 });
 
+            if (string.IsNullOrEmpty(filtroFuncionariosDto.CodigoUE))
+                return funcionarios;
+
             var usuarioConecta = await mediator.Send(new ObterUsuariosDoConectaPorCodigoUeQuery(
                                                                                 filtroFuncionariosDto.CodigoUE,
                                                                                 filtroFuncionariosDto.CodigoRF,
                                                                                 filtroFuncionariosDto.NomeServidor));
+
             funcionarios.AddRange(usuarioConecta.Select(u => new UsuarioEolRetornoDto()
             {
                 CodigoRf = u.Login.SomenteNumeros(),
