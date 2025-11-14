@@ -54,7 +54,6 @@ namespace SME.SGP.Aplicacao
                 Descricao = item.Descricao,
                 Id = item.Id,
                 BimestresQuantidadeTotal = item.TipoCalendario.QuantidadeDeBimestres(),
-                Aplicacao = item.Aplicacao.EhUmDosValores() ? item.Aplicacao : Dominio.Aplicacao.SGP
             };
         }
 
@@ -85,7 +84,6 @@ namespace SME.SGP.Aplicacao
         {
             var fechamentoReaberturaRetornoDto = new FechamentoReaberturaRetornoDto()
             {
-                Aplicacao = fechamentoReabertura.Aplicacao.EhUmDosValores() ? fechamentoReabertura.Aplicacao : Dominio.Aplicacao.SGP,
                 Bimestres = fechamentoReabertura.ObterBimestresSelecionados(),
                 DataInicio = fechamentoReabertura.Inicio,
                 DataFim = fechamentoReabertura.Fim,
