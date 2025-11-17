@@ -31,10 +31,8 @@ namespace SME.SGP.Aplicacao.Servicos
                 throw new NegocioException(alteracaoSenha.Mensagem);
         }
 
-        public async Task<(UsuarioAutenticacaoRetornoDto UsuarioAutenticacaoRetornoDto, string CodigoRf, IEnumerable<Guid> Perfis, bool PossuiCargoCJ, bool PossuiPerfilCJ)> AutenticarNoEol(string login, string senha)
+        public async Task<(UsuarioAutenticacaoRetornoDto UsuarioAutenticacaoRetornoDto, string CodigoRf, IEnumerable<Guid> Perfis, bool PossuiCargoCJ, bool PossuiPerfilCJ)> AutenticarNoEol(AutenticacaoApiEolDto retornoServicoEol)
         {
-            var retornoServicoEol = await mediator.Send(new AutenticarQuery(login, senha));
-
             return await ObterAutenticacao(retornoServicoEol);
         }
 
