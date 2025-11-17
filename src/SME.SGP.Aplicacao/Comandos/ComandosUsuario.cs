@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes;
@@ -88,9 +89,25 @@ namespace SME.SGP.Aplicacao
         public async Task<UsuarioAutenticacaoRetornoDto> Autenticar(string login, string senha)
         {
             login = login.Trim().ToLower();
-            var retornoAutenticacaoEol = await servicoAutenticacao.AutenticarNoEol(login, senha);
 
-            return await ObterAutenticacao(retornoAutenticacaoEol, login);
+            var usuarioAutenticacao = await mediator.Send(new AutenticarQuery(login, senha));
+
+            if (usuarioAutenticacao == null)
+                return new UsuarioAutenticacaoRetornoDto();
+
+            var chaveCache = string.Format(NomeChaveCache.LOGIN, login);
+            var cacheLogin = repositorioCache.Obter(chaveCache);
+
+            if (cacheLogin.NaoEhNulo())
+            {
+                return JsonConvert.DeserializeObject<UsuarioAutenticacaoRetornoDto>(cacheLogin);
+            }
+
+            var retornoAutenticacaoEol = await servicoAutenticacao.AutenticarNoEol(usuarioAutenticacao);
+
+            var autenticacao = await ObterAutenticacao(retornoAutenticacaoEol, login);
+            await repositorioCache.SalvarAsync(chaveCache, autenticacao, 2880);
+            return autenticacao;
         }
 
         public async Task<UsuarioAutenticacaoRetornoDto> ObterAutenticacao((UsuarioAutenticacaoRetornoDto UsuarioAutenticacaoRetornoDto, string CodigoRf, IEnumerable<Guid> Perfis, 

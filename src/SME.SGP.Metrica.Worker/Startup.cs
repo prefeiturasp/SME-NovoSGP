@@ -111,6 +111,7 @@ namespace SME.SGP.Metrica.Worker
         {
             services.TryAddScoped<IContextoAplicacao, ContextoHttp>();
             services.TryAddScoped<ISgpContext, SgpContext>();
+            services.TryAddScoped<ISgpContextConsultas, SgpContextConsultas>();
             // Postgres
             services.TryAddScoped<IRepositorioSGP, RepositorioSGP>();
             services.TryAddScoped<IRepositorioSGPConsulta, RepositorioSGPConsulta>();
