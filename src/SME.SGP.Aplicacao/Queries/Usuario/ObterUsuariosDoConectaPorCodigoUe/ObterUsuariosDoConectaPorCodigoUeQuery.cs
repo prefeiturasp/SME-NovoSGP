@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Infra.Dtos;
-using System;
 using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao.Queries.Usuario.ObterUsuariosDoConectaPorCodigoUe
@@ -13,7 +12,7 @@ namespace SME.SGP.Aplicacao.Queries.Usuario.ObterUsuariosDoConectaPorCodigoUe
 
         public ObterUsuariosDoConectaPorCodigoUeQuery(string codigoUe, string login = null, string nome = null)
         {
-            CodigoUe = codigoUe ?? throw new ArgumentNullException(nameof(codigoUe));
+            CodigoUe = codigoUe;
             Login = login;
             Nome = nome;
         }
