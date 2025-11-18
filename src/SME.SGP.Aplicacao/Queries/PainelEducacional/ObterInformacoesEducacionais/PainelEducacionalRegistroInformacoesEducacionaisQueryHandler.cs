@@ -1,10 +1,7 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio.Interfaces.Repositorios;
-using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.PainelEducacional.FrequenciaDiaria;
 using SME.SGP.Infra.Dtos.PainelEducacional.InformacoesEducacionais;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
