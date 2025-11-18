@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes;
@@ -8,6 +9,8 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -101,7 +104,8 @@ namespace SME.SGP.Aplicacao
             if (cacheLogin.NaoEhNulo())
             {
                 var usuarioAutenticacaoRetornoDto = JsonConvert.DeserializeObject<UsuarioAutenticacaoRetornoDto>(cacheLogin);
-                if (usuarioAutenticacaoRetornoDto.DataHoraExpiracao > DateTime.Now)
+                var token = ObterToken(usuarioAutenticacaoRetornoDto?.Token);
+                if (token > DateTime.Now)
                     return usuarioAutenticacaoRetornoDto;
             }
 
@@ -110,6 +114,50 @@ namespace SME.SGP.Aplicacao
             var autenticacao = await ObterAutenticacao(retornoAutenticacaoEol, login);
             await repositorioCache.SalvarAsync(chaveCache, autenticacao, 2880);
             return autenticacao;
+        }
+
+        private static DateTime ObterToken(string token)
+        {
+            try
+            {
+                var parts = token.Split('.');
+
+                if (parts.Length < 2)
+                    throw new ArgumentException("Token inválido");
+
+                string payload = parts[1];
+
+                // Ajustar Base64URL → Base64
+                payload = payload.Replace('-', '+').Replace('_', '/');
+
+                switch (payload.Length % 4)
+                {
+                    case 2: payload += "=="; break;
+                    case 3: payload += "="; break;
+                }
+
+                // Decodificar Base64
+                var bytes = Convert.FromBase64String(payload);
+                var json = Encoding.UTF8.GetString(bytes);
+
+                // Ler o JSON e pegar o exp
+                using var doc = JsonDocument.Parse(json);
+
+                long exp = doc.RootElement.GetProperty("exp").GetInt64();
+
+                // Converter Unix → DateTime (em UTC)
+                DateTime utcDate = DateTimeOffset.FromUnixTimeSeconds(exp).UtcDateTime;
+
+                // Converter para Horário de Brasília (UTC-3)
+                TimeZoneInfo brasiliaTZ = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
+                DateTime brasiliaDate = TimeZoneInfo.ConvertTimeFromUtc(utcDate, brasiliaTZ);
+
+                return brasiliaDate;
+            }
+            catch (Exception)
+            {
+                return DateTime.MinValue;
+            }
         }
 
         public async Task<UsuarioAutenticacaoRetornoDto> ObterAutenticacao((UsuarioAutenticacaoRetornoDto UsuarioAutenticacaoRetornoDto, string CodigoRf, IEnumerable<Guid> Perfis,
