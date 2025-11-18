@@ -50,6 +50,7 @@ namespace SME.SGP.PainelEducacional.Worker
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarProficienciaIdepPainelEducacional, new ComandoRabbit("Consolidar Proficiência Idep para o Painel Educacional", typeof(IConsolidarProficienciaIdepPainelEducacionalUseCase)));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarPlanosAEEPainelEducacional, new ComandoRabbit("Consolidar PlanosAEE para o Painel Educacional", typeof(IConsolidarPlanoAEEPainelEducacionalUseCase)));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarEducacaoIntegralPainelEducacional, new ComandoRabbit("Consolidar Educacão Integral para o Painel Educacional", typeof(IConsolidarEducacaoIntegralPainelEducacionalUseCase)));
+            Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarInformacoesEducacionaisPainelEducacional, new ComandoRabbit("Consolidar Informações Educacionais para o Painel Educacional", typeof(IConsolidarInformacoesEducacionaisPainelEducacionalUseCase)));
         }
     }
 }

@@ -36,6 +36,14 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             Modalidade.Medio,
         };
 
+        /// <summary>
+        /// Modalidade de turmas válidos para consolidação no painel educacional informacoes educacionais
+        /// </summary>
+        protected static readonly List<Modalidade> ModalidadesTurmasInformacoesEducacionais = new()
+        {
+            Modalidade.Fundamental
+        };
+
         protected static readonly HashSet<string> PareceresPromocao = new HashSet<string>
         {
             "Continuidade dos estudos",
