@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
         {
             var login = servicoUsuario.ObterLoginAtual();
             var usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(null, login);
-            
+
             if (usuario.EhNulo())
                 throw new NegocioException("Usuário não encontrado.");
 
@@ -100,7 +100,9 @@ namespace SME.SGP.Aplicacao
 
             if (cacheLogin.NaoEhNulo())
             {
-                return JsonConvert.DeserializeObject<UsuarioAutenticacaoRetornoDto>(cacheLogin);
+                var usuarioAutenticacaoRetornoDto = JsonConvert.DeserializeObject<UsuarioAutenticacaoRetornoDto>(cacheLogin);
+                if (usuarioAutenticacaoRetornoDto.DataHoraExpiracao > DateTime.Now)
+                    return usuarioAutenticacaoRetornoDto;
             }
 
             var retornoAutenticacaoEol = await servicoAutenticacao.AutenticarNoEol(usuarioAutenticacao);
@@ -110,7 +112,7 @@ namespace SME.SGP.Aplicacao
             return autenticacao;
         }
 
-        public async Task<UsuarioAutenticacaoRetornoDto> ObterAutenticacao((UsuarioAutenticacaoRetornoDto UsuarioAutenticacaoRetornoDto, string CodigoRf, IEnumerable<Guid> Perfis, 
+        public async Task<UsuarioAutenticacaoRetornoDto> ObterAutenticacao((UsuarioAutenticacaoRetornoDto UsuarioAutenticacaoRetornoDto, string CodigoRf, IEnumerable<Guid> Perfis,
                                                                             bool PossuiCargoCJ, bool PossuiPerfilCJ) retornoAutenticacaoEol, string login, SuporteUsuario suporte = null)
         {
             if (!retornoAutenticacaoEol.UsuarioAutenticacaoRetornoDto.Autenticado)
@@ -165,8 +167,8 @@ namespace SME.SGP.Aplicacao
             {
                 return new AdministradorSuporteDto
                 {
-                   Login = suporte.Administrador.Login,
-                   Nome = suporte.Administrador.Nome
+                    Login = suporte.Administrador.Login,
+                    Nome = suporte.Administrador.Nome
                 };
             }
 
@@ -192,7 +194,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi possível obter os permissionamentos do perfil selecionado");
 
             await servicoAbrangencia.Salvar(loginAtual, perfil, false);
-            
+
             var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             usuario.DefinirPerfilAtual(perfil);
@@ -250,7 +252,7 @@ namespace SME.SGP.Aplicacao
             // Busca lista de permissões do EOL
             var dadosAcesso = await mediator.Send(new CarregarDadosAcessoPorLoginPerfilQuery(login, guidPerfil));
             var permissionamentos = dadosAcesso.Permissoes.ToList();
-            
+
             if (!permissionamentos.Any())
                 return null;
 
