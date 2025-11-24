@@ -1445,13 +1445,49 @@ namespace SME.SGP.Infra
         RI_A = 209,
 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NAAPA,
+            Menu = ConstantesMenuPermissao.MENU_ATENDIMENTO,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_NAAPA,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ATENDIMENTO_NAAPA,
+            Url = ConstantesMenuPermissao.ROTA_NAAPA_ATENDIMENTO,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhConsulta = true)]
+        NAAPA_C = 235,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NAAPA,
+            Menu = ConstantesMenuPermissao.MENU_ATENDIMENTO,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_NAAPA,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ATENDIMENTO_NAAPA,
+            Url = ConstantesMenuPermissao.ROTA_NAAPA_ATENDIMENTO,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhInclusao = true)]
+        NAAPA_I = 236,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NAAPA,
+            Menu = ConstantesMenuPermissao.MENU_ATENDIMENTO,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_NAAPA,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ATENDIMENTO_NAAPA,
+            Url = ConstantesMenuPermissao.ROTA_NAAPA_ATENDIMENTO,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhExclusao = true)]
+        NAAPA_E = 237,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NAAPA,
+            Menu = ConstantesMenuPermissao.MENU_ATENDIMENTO,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_NAAPA,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ATENDIMENTO_NAAPA,
+            Url = ConstantesMenuPermissao.ROTA_NAAPA_ATENDIMENTO,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhAlteracao = true)]
+        NAAPA_A = 238,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NAAPA,
             Menu = ConstantesMenuPermissao.MENU_ENCAMINHAMENTO,
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_NAAPA,
             OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ENCAMINHAMENTO_NAAPA,
             Url = ConstantesMenuPermissao.ROTA_NAAPA_ENCAMINHAMENTO,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhConsulta = true)]
-        NAAPA_C = 235,
+        ENC_NAAPA_C = 294,
 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NAAPA,
             Menu = ConstantesMenuPermissao.MENU_ENCAMINHAMENTO,
@@ -1460,7 +1496,7 @@ namespace SME.SGP.Infra
             Url = ConstantesMenuPermissao.ROTA_NAAPA_ENCAMINHAMENTO,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhInclusao = true)]
-        NAAPA_I = 236,
+        ENC_NAAPA_I = 295,
 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NAAPA,
             Menu = ConstantesMenuPermissao.MENU_ENCAMINHAMENTO,
@@ -1469,7 +1505,7 @@ namespace SME.SGP.Infra
             Url = ConstantesMenuPermissao.ROTA_NAAPA_ENCAMINHAMENTO,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhExclusao = true)]
-        NAAPA_E = 237,
+        ENC_NAAPA_E = 296,
 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NAAPA,
             Menu = ConstantesMenuPermissao.MENU_ENCAMINHAMENTO,
@@ -1478,7 +1514,7 @@ namespace SME.SGP.Infra
             Url = ConstantesMenuPermissao.ROTA_NAAPA_ENCAMINHAMENTO,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhAlteracao = true)]
-        NAAPA_A = 238,
+        ENC_NAAPA_A = 297,
 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NAAPA,
             Menu = ConstantesMenuPermissao.MENU_RELATORIO_DINAMICO_NAAPA,
