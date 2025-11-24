@@ -9,6 +9,7 @@
         public int IdebAnosFinais { get; set; }
         public int IdebEnsinoMedio { get; set; }
         public decimal PercentualFrequenciaGlobal { get; set; }
+        public int QuantidadeAlunosPap { get; set; }
         public int QuantidadeTurmasPap { get; set; }
         public decimal PercentualFrequenciaAlunosPap { get; set; }
         public int QuantidadeAlunosDesistentesAbandono { get; set; }
