@@ -33,6 +33,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine(" , ideb_anos_finais AS idebAnosFinais");
             query.AppendLine(" , ideb_ensino_medio AS idebEnsinoMedio");
             query.AppendLine(" , percentual_frequencia_global AS percentualFrequenciaGlobal");
+            query.AppendLine(" , quantidade_alunos_pap AS quantidadeAlunosPap");
             query.AppendLine(" , quantidade_turmas_pap AS quantidadeTurmasPap");
             query.AppendLine(" , percentual_frequencia_alunos_pap AS percentualFrequenciaAlunosPap");
             query.AppendLine(" , quantidade_alunos_desistentes_abandono AS quantidadeAlunosDesistentesAbandono");
@@ -41,7 +42,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine(" , quantidade_retencoes_nota AS quantidadeRetencoesNota");
             query.AppendLine(" , quantidade_notas_abaixo_media AS quantidadeNotasAbaixoMedia");
             query.AppendLine("FROM painel_educacional_consolidacao_informacoes_educacionais");
-            query.AppendLine("WHERE codigo_dre = @codigoDre AND ano_letivo = @anoLetivo");
+            query.AppendLine("WHERE codigo_dre = @codigoDre AND ano_letivo = @anoLetivo ORDER BY ue");
 
             if (paginacao.QuantidadeRegistros > 0)
             {

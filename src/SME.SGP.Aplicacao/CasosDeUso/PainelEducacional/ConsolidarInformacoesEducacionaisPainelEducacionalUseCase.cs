@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Commands.PainelEducacional.LimparConsolidacaoInformacoesEducacionais;
 using SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarConsolidacaoInformacoesEducacionais;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 using SME.SGP.Aplicacao.Queries.UE.ObterTodasUes;
@@ -7,7 +8,6 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Consts;
 using SME.SGP.Infra.Dtos.PainelEducacional.InformacoesEducacionais;
 using System;
 using System.Collections.Generic;
@@ -41,6 +41,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                 var listagensDres = await mediator.Send(new ObterTodasDresQuery());
                 var listagemUe = (await mediator.Send(new ObterTodasUesQuery()))?.ToList();
                 var tipoEscolas = await repositorioTipoEscola.ObterTodasAsync();
+
+                await (mediator.Send(new LimparConsolidacaoInformacoesEducacionaisCommand()));
 
                 return await ExecutarConsolidacao(listagensDres, listagemUe, tipoEscolas);
             }
@@ -92,6 +94,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                         IdebAnosFinais = r.IdebAnosFinais,
                         IdebEnsinoMedio = r.IdebEnsinoMedio,                        
                         PercentualFrequenciaGlobal = r.PercentualFrequenciaGlobal,
+                        QuantidadeAlunosPap = r.QuantidadeAlunosPap,
                         QuantidadeTurmasPap = r.QuantidadeTurmasPap,
                         PercentualFrequenciaAlunosPap = r.PercentualFrequenciaAlunosPap,                        
                         QuantidadeAlunosDesistentesAbandono = r.QuantidadeAlunosDesistentesAbandono,
@@ -137,6 +140,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                     // Frequência Global
                     PercentualFrequenciaGlobal = g.Sum(x => x.PercentualFrequenciaGlobal),
                     // PAP
+                    QuantidadeAlunosPap = g.Sum(x => x.QuantidadeAlunosPap),
                     QuantidadeTurmasPap = g.Sum(x => x.QuantidadeTurmasPap),
                     PercentualFrequenciaAlunosPap = g.Sum(x => x.PercentualFrequenciaAlunosPap),
                     // Abandono

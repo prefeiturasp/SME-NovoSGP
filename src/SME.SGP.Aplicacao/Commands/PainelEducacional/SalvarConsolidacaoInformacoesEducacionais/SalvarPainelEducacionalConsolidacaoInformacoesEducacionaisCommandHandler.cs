@@ -22,8 +22,6 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarConsolidacaoInforma
         {
             if (request.Indicadores?.Any() != true)
                 return false;
-            
-            await repositorio.LimparConsolidacao();
 
             await repositorio.BulkInsertAsync(MapearParaEntidade(request.Indicadores));
 
@@ -45,6 +43,7 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarConsolidacaoInforma
                     IdebAnosFinais = dto.IdebAnosFinais,
                     IdebEnsinoMedio = dto.IdebEnsinoMedio,
                     PercentualFrequenciaGlobal = dto.PercentualFrequenciaGlobal,
+                    QuantidadeAlunosPap = dto.QuantidadeAlunosPap,
                     QuantidadeTurmasPap = dto.QuantidadeTurmasPap,
                     PercentualFrequenciaAlunosPap = dto.PercentualFrequenciaAlunosPap,
                     QuantidadeAlunosDesistentesAbandono = dto.QuantidadeAlunosDesistentesAbandono,
