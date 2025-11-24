@@ -146,6 +146,25 @@ namespace SME.SGP.Dominio.Servicos
             {
                 LimparCamposNaoUtilizadosRegistroPai(fechamentoSME);
                 fechamentoSME = new PeriodoFechamento();
+                fechamentoSME.Aplicacao = aplicacao;
+
+                if (EhAplicacaoSondagem(aplicacao))
+                {
+                    for (int ciclo = 1; ciclo <= 5; ciclo++)
+                    {
+                        var periodo = new PeriodoEscolar
+                        {
+                            Bimestre = ciclo,
+                            PeriodoInicio = new DateTime(DateTime.Now.Year, 01, 01),
+                            PeriodoFim = new DateTime(DateTime.Now.Year, 12, 31),
+                            TipoCalendarioId = tipoCalendarioId,
+                        };
+
+                        fechamentoSME.AdicionarFechamentoBimestre(new PeriodoFechamentoBimestre(fechamentoSME.Id, periodo, null, null));
+                    }
+
+                    return MapearParaDto(fechamentoSME);
+                }
 
                 var tipoCalendario = await repositorioTipoCalendario.ObterPorIdAsync(tipoCalendarioId);
                 if (tipoCalendario.EhNulo())
@@ -199,9 +218,14 @@ namespace SME.SGP.Dominio.Servicos
 
             unitOfWork.IniciarTransacao();
             var id = repositorioPeriodoFechamento.Salvar(fechamento);
-            repositorioPeriodoFechamento.SalvarBimestres(fechamento.FechamentosBimestre, id);
+            if (fechamentoDto.EhAplicacaoSondagem)
+                repositorioPeriodoFechamento.SalvarCiclosSondagem(fechamento.FechamentosCicloSondagem, id);
+            else
+                repositorioPeriodoFechamento.SalvarBimestres(fechamento.FechamentosBimestre, id);
             unitOfWork.PersistirTransacao();
-            await CriarEventoFechamento(fechamento);
+
+            if (!fechamentoDto.EhAplicacaoSondagem)
+                await CriarEventoFechamento(fechamento);
         }
 
         private static Notificacao MontaNotificacao(string nomeEntidade, string tipoEntidade, IEnumerable<PeriodoFechamentoBimestre> fechamentosBimestre, string codigoUe, string codigoDre)
@@ -365,17 +389,23 @@ namespace SME.SGP.Dominio.Servicos
             var listaFechamentoBimestre = new List<FechamentoBimestreDto>();
             foreach (var fechamentoBimestre in fechamento?.FechamentosBimestre)
             {
-                listaFechamentoBimestre.Add(new FechamentoBimestreDto
+                var dto = new FechamentoBimestreDto
                 {
+                    Id = fechamentoBimestre.Id,
+                    Bimestre = fechamentoBimestre.PeriodoEscolar.Bimestre,
                     InicioDoFechamento = fechamentoBimestre.InicioDoFechamento != DateTime.MinValue ? fechamentoBimestre.InicioDoFechamento : (DateTime?)null,
                     FinalDoFechamento = fechamentoBimestre.FinalDoFechamento != DateTime.MinValue ? fechamentoBimestre.FinalDoFechamento : (DateTime?)null,
-                    Bimestre = fechamentoBimestre.PeriodoEscolar.Bimestre,
-                    Id = fechamentoBimestre.Id,
-                    PeriodoEscolarId = fechamentoBimestre.PeriodoEscolarId,
                     PeriodoEscolar = fechamentoBimestre.PeriodoEscolar,
                     InicioMinimo = new DateTime(fechamentoBimestre.PeriodoEscolar.PeriodoInicio.Year, 01, 01),
-                    FinalMaximo = new DateTime(fechamentoBimestre.PeriodoEscolar.PeriodoInicio.Year, 12, 31)
-                });
+                    FinalMaximo = new DateTime(fechamentoBimestre.PeriodoEscolar.PeriodoInicio.Year, 12, 31),
+                };
+
+                if (!EhAplicacaoSondagem(fechamento.Aplicacao))
+                {
+                    dto.PeriodoEscolarId = fechamentoBimestre.PeriodoEscolarId;
+                }
+
+                listaFechamentoBimestre.Add(dto);
             }
             return listaFechamentoBimestre;
         }
@@ -383,6 +413,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task<PeriodoFechamento> MapearParaDominioAsync(FechamentoDto fechamentoDto)
         {
             var fechamento = repositorioPeriodoFechamento.ObterPorFiltros(fechamentoDto.TipoCalendarioId.Value, null, fechamentoDto.Aplicacao);
+
             if (fechamento.EhNulo())
                 fechamento = new PeriodoFechamento();
 
@@ -409,7 +440,35 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException("Tipo calendário não encontrado.");
             }
 
-            if (fechamentoDto.FechamentosBimestres.NaoEhNulo() && fechamentoDto.FechamentosBimestres.Any())
+            if (fechamentoDto.EhAplicacaoSondagem && fechamentoDto.FechamentosBimestres.NaoEhNulo() && fechamentoDto.FechamentosBimestres.Any())
+            {
+                foreach (var bimestre in fechamentoDto.FechamentosBimestres)
+                {
+                    var ciclo = new PeriodoFechamentoCicloSondagem
+                    {
+                        Id = bimestre.Id,
+                        PeriodoFechamentoId = fechamento.Id,
+                        Ciclo = bimestre.Bimestre,
+                        InicioDoFechamento = (DateTime)bimestre.InicioDoFechamento,
+                        FinalDoFechamento = (DateTime)bimestre.FinalDoFechamento
+                    };
+
+                    var cicloExistente = fechamento.ObterFechamentoCicloSondagem(ciclo);
+
+                    if (cicloExistente.NaoEhNulo())
+                    {
+                        fechamento.ValidarPeriodoCicloSondagemInicioFim(ciclo);
+                        fechamento.ValidarPeriodoCicloSondagemConcomitante(ciclo);
+                        cicloExistente.AtualizarDatas(ciclo.InicioDoFechamento, ciclo.FinalDoFechamento);
+                    }
+                    else
+                    {
+                        fechamento.AdicionarFechamentoCicloSondagem(ciclo);
+                    }
+                }
+            }
+
+            if (!fechamentoDto.EhAplicacaoSondagem && fechamentoDto.FechamentosBimestres.NaoEhNulo() && fechamentoDto.FechamentosBimestres.Any())
             {
                 foreach (var bimestre in fechamentoDto.FechamentosBimestres)
                 {
@@ -449,6 +508,11 @@ namespace SME.SGP.Dominio.Servicos
                 Migrado = fechamento.Migrado,
                 Aplicacao = fechamento.Aplicacao,
             };
+        }
+
+        private bool EhAplicacaoSondagem(Aplicacao aplicacao)
+        {
+            return aplicacao == Aplicacao.SondagemAplicacao || aplicacao == Aplicacao.SondagemDigitacao;
         }
     }
 }

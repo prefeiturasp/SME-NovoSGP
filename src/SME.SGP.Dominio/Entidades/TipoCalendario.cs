@@ -11,11 +11,14 @@
         public bool Situacao { get; set; }
         public int? Semestre { get; set; }
 
-        public int QuantidadeDeBimestres()
+        public int QuantidadeDeBimestres(Aplicacao? aplicacao = null)
         {
             if (Modalidade.EhEjaOuCelp() && AnoLetivo > 2021)
                 return 2;
- 
+
+            if (aplicacao == Aplicacao.SondagemAplicacao || aplicacao == Aplicacao.SondagemDigitacao)
+                return 5;
+
             return 4;
         }
     }

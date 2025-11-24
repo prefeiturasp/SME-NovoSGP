@@ -12,11 +12,13 @@ namespace SME.SGP.Dominio
             AdicionarUe(ue);
 
             FechamentosBimestre = new List<PeriodoFechamentoBimestre>();
+            FechamentosCicloSondagem = new List<PeriodoFechamentoCicloSondagem>();
         }
 
         public PeriodoFechamento()
         {
             FechamentosBimestre = new List<PeriodoFechamentoBimestre>();
+            FechamentosCicloSondagem = new List<PeriodoFechamentoCicloSondagem>();
         }
 
         public Dre Dre { get; set; }
@@ -25,6 +27,7 @@ namespace SME.SGP.Dominio
         public Ue Ue { get; set; }
         public long? UeId { get; set; }
         public List<PeriodoFechamentoBimestre> FechamentosBimestre { get; set; }
+        public List<PeriodoFechamentoCicloSondagem> FechamentosCicloSondagem { get; set; }
         public Aplicacao Aplicacao { get; set; }
         public void AdicionarDre(Dre dre)
         {
@@ -35,9 +38,29 @@ namespace SME.SGP.Dominio
             }
         }
 
+        public PeriodoFechamentoBimestre AdaptarCicloSondagemParaBimestre(PeriodoFechamentoCicloSondagem ciclo, long? tipoCalendarioId)
+        {
+            var ano = ciclo.InicioDoFechamento.Year;
+            return new PeriodoFechamentoBimestre
+            {
+                Id = ciclo.Id,
+                PeriodoFechamentoId = ciclo.PeriodoFechamentoId,
+                InicioDoFechamento = ciclo.InicioDoFechamento,
+                FinalDoFechamento = ciclo.FinalDoFechamento,
+                PeriodoFechamento = ciclo.PeriodoFechamento,
+                PeriodoEscolar = new PeriodoEscolar
+                {
+                    Bimestre = ciclo.Ciclo,
+                    TipoCalendarioId = tipoCalendarioId ?? 0,
+                    PeriodoInicio = new DateTime(ano, 1, 1),
+                    PeriodoFim = new DateTime(ano, 12, 31),
+                },
+            };
+        }
+
         public void AdicionarFechamentoBimestre(PeriodoFechamentoBimestre fechamentoBimestre)
         {
-            if (FechamentosBimestre.Any(c => c.PeriodoEscolar.Bimestre == fechamentoBimestre.PeriodoEscolar.Bimestre))
+            if (FechamentosBimestre.Any(c => c.PeriodoEscolarId > 0 && c.PeriodoEscolar.Bimestre == fechamentoBimestre.PeriodoEscolar.Bimestre))
             {
                 throw new NegocioException("Esse período escolar já foi adicionado.");
             }
@@ -53,6 +76,36 @@ namespace SME.SGP.Dominio
             if (fechamentoBimestre.InicioDoFechamento > fechamentoBimestre.FinalDoFechamento)
             {
                 throw new NegocioException($"A data de início do fechamento do {fechamentoBimestre.PeriodoEscolar.Bimestre}º Bimestre deve ser menor que a data final.");
+            }
+        }
+
+        public void AdicionarFechamentoCicloSondagem(PeriodoFechamentoCicloSondagem ciclo)
+        {
+            if (ciclo.Id == 0 && ciclo.PeriodoFechamentoId > 0 || FechamentosCicloSondagem.Any(c => c.Ciclo == ciclo.Ciclo))
+            {
+                throw new NegocioException("Os ciclos dessa aplicação já foram adicionados.");
+            }
+
+            ValidarPeriodoCicloSondagemInicioFim(ciclo);
+            ValidarPeriodoCicloSondagemConcomitante(ciclo);
+
+            FechamentosCicloSondagem.Add(ciclo);
+        }
+
+        public void ValidarPeriodoCicloSondagemInicioFim(PeriodoFechamentoCicloSondagem  fechamentoCiclo)
+        {
+            if (fechamentoCiclo.InicioDoFechamento > fechamentoCiclo.FinalDoFechamento)
+            {
+                throw new NegocioException($"A data de início do fechamento do {fechamentoCiclo.Ciclo}º Ciclo deve ser menor que a data final.");
+            }
+        }
+
+        public void ValidarPeriodoCicloSondagemConcomitante(PeriodoFechamentoCicloSondagem fechamentoCiclo)
+        {
+            var periodoComDataInvalida = FechamentosCicloSondagem.FirstOrDefault(c => c.Ciclo < fechamentoCiclo.Ciclo && c.FinalDoFechamento > fechamentoCiclo.InicioDoFechamento);
+            if (periodoComDataInvalida.NaoEhNulo())
+            {
+                throw new NegocioException($"A data de início do fechamento do {fechamentoCiclo.Ciclo}º Ciclo deve ser maior que a data final do {periodoComDataInvalida.Ciclo}º Ciclo.");
             }
         }
 
@@ -77,6 +130,11 @@ namespace SME.SGP.Dominio
         public PeriodoFechamentoBimestre ObterFechamentoBimestre(long periodoEscolarId)
         {
             return FechamentosBimestre.FirstOrDefault(c => c.PeriodoEscolarId == periodoEscolarId);
+        }
+
+        public PeriodoFechamentoCicloSondagem ObterFechamentoCicloSondagem(PeriodoFechamentoCicloSondagem ciclo)
+        {
+            return FechamentosCicloSondagem.FirstOrDefault(c => c.Ciclo == ciclo.Ciclo && c.PeriodoFechamentoId == ciclo.PeriodoFechamentoId);
         }
 
         public bool ExisteFechamentoEmAberto(DateTime hoje)
