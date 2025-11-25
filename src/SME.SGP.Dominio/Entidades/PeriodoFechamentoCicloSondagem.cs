@@ -23,6 +23,8 @@ namespace SME.SGP.Dominio
         public int Ciclo { get; set; }
         public PeriodoFechamento PeriodoFechamento { get; set; }
         public long PeriodoFechamentoId { get; set; }
+        public TipoCalendario TipoCalendario { get; set; }
+        public long TipoCalendarioId { get; set; }
         public DateTime InicioDoFechamento { get; set; }
         public DateTime FinalDoFechamento { get; set; }
 

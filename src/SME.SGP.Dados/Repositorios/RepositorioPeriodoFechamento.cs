@@ -25,12 +25,13 @@ namespace SME.SGP.Dados.Repositorios
             bool ehAplicacaoSondagem = aplicacao == Dominio.Aplicacao.SondagemAplicacao
                                     || aplicacao == Dominio.Aplicacao.SondagemDigitacao;
 
-            var query = new StringBuilder($"select {(ehAplicacaoSondagem ? "f.*, pfcs.*, pfcs.ciclo as bimestre" : "f.*,fb.*,p.*, t.*")}");
+            var query = new StringBuilder($"select {(ehAplicacaoSondagem ? "f.*, pfcs.*, pfcs.ciclo as bimestre, tc.* " : "f.*,fb.*,p.*, t.*")}");
             query.AppendLine(" from periodo_fechamento f");
             if (ehAplicacaoSondagem)
             {
                 query.AppendLine("inner join periodo_fechamento_ciclo_sondagem pfcs on f.id = pfcs.periodo_fechamento_id ");
-                query.AppendLine("where 1=1 ");
+                query.AppendLine("inner join tipo_calendario tc on pfcs.tipo_calendario_id = tc.id ");
+                query.AppendLine("where 1=1 and pfcs.tipo_calendario_id = @tipoCalendarioId");
             }
             else
             {
@@ -63,7 +64,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (ehAplicacaoSondagem)
             {
-                var lista = database.Conexao.Query<PeriodoFechamento, PeriodoFechamentoCicloSondagem, PeriodoFechamento>(query.ToString(), (fechamento, ciclo) =>
+                var lista = database.Conexao.Query<PeriodoFechamento, PeriodoFechamentoCicloSondagem, TipoCalendario, PeriodoFechamento>(query.ToString(), (fechamento, ciclo, tipoCalendario) =>
                 {
                     if (!lookup.TryGetValue(fechamento.Id, out periodoFechamento))
                     {
@@ -75,7 +76,7 @@ namespace SME.SGP.Dados.Repositorios
                     periodoFechamento.AdicionarFechamentoBimestre(cicloBimestre);
                     return periodoFechamento;
                 },
-                    new { aplicacao },
+                    new { tipoCalendarioId, aplicacao },
                     splitOn: "Id"
                 );
 

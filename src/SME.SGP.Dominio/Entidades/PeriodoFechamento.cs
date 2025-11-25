@@ -83,7 +83,7 @@ namespace SME.SGP.Dominio
         {
             if (ciclo.Id == 0 && ciclo.PeriodoFechamentoId > 0 || FechamentosCicloSondagem.Any(c => c.Ciclo == ciclo.Ciclo))
             {
-                throw new NegocioException("Os ciclos dessa aplicação já foram adicionados.");
+                throw new NegocioException("Esse ciclo dessa aplicação já foi adicionados.");
             }
 
             ValidarPeriodoCicloSondagemInicioFim(ciclo);

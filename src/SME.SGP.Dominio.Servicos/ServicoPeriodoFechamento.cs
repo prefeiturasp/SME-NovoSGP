@@ -448,6 +448,7 @@ namespace SME.SGP.Dominio.Servicos
                     {
                         Id = bimestre.Id,
                         PeriodoFechamentoId = fechamento.Id,
+                        TipoCalendarioId = bimestre.PeriodoEscolar.TipoCalendarioId,
                         Ciclo = bimestre.Bimestre,
                         InicioDoFechamento = (DateTime)bimestre.InicioDoFechamento,
                         FinalDoFechamento = (DateTime)bimestre.FinalDoFechamento
