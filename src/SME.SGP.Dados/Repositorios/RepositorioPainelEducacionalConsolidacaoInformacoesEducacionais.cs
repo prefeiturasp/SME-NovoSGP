@@ -58,6 +58,7 @@ namespace SME.SGP.Dados.Repositorios
                                 t1.ano_letivo,
                                 t1.codigo_dre,
                                 t1.codigo_ue,
+                                t1.total_alunos AS quantidade_alunos_pap,
                                 t1.total_turmas AS quantidade_turmas_pap,
                                 t1.total_alunos_com_frequencia_inferior_limite AS percentual_frequencia_alunos_pap
                             FROM painel_educacional_consolidacao_pap_ue t1
@@ -115,6 +116,7 @@ namespace SME.SGP.Dados.Repositorios
                             COALESCE(freq.percentual_frequencia_global, 0) AS percentualFrequenciaGlobal,
 
                             -- PAP
+                            COALESCE(pap.quantidade_alunos_pap, 0) AS quantidadeAlunosPap,
                             COALESCE(pap.quantidade_turmas_pap, 0) AS quantidadeTurmasPap,
                             COALESCE(pap.percentual_frequencia_alunos_pap, 0) AS percentualFrequenciaAlunosPap,
 
@@ -175,6 +177,7 @@ namespace SME.SGP.Dados.Repositorios
                          ideb_anos_finais,
                          ideb_ensino_medio,
                          percentual_frequencia_global,
+                         quantidade_alunos_pap,
                          quantidade_turmas_pap,
                          percentual_frequencia_alunos_pap,
                          quantidade_alunos_desistentes_abandono,
@@ -200,6 +203,7 @@ namespace SME.SGP.Dados.Repositorios
                     await writer.WriteAsync(item.IdebAnosFinais, NpgsqlDbType.Integer);
                     await writer.WriteAsync(item.IdebEnsinoMedio, NpgsqlDbType.Integer);
                     await writer.WriteAsync(item.PercentualFrequenciaGlobal, NpgsqlDbType.Numeric);
+                    await writer.WriteAsync(item.QuantidadeAlunosPap, NpgsqlDbType.Integer);
                     await writer.WriteAsync(item.QuantidadeTurmasPap, NpgsqlDbType.Integer);
                     await writer.WriteAsync(item.PercentualFrequenciaAlunosPap, NpgsqlDbType.Numeric);
                     await writer.WriteAsync(item.QuantidadeAlunosDesistentesAbandono, NpgsqlDbType.Integer);
