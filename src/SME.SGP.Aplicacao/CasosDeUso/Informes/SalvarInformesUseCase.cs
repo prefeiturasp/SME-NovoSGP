@@ -36,6 +36,14 @@ namespace SME.SGP.Aplicacao
 
                 var correlacao = new InformeCorrelacao(informes.Id, usuarioLogado.Id);
                 repositorioCorrelacaoInforme.Salvar(correlacao);
+
+                var correlacaoExistente = await repositorioCorrelacaoInforme.ObterPorCodigoCorrelacaoAsync(correlacao.Codigo);
+               
+                if (correlacaoExistente.EhNulo())
+                {
+                    throw new NegocioException($"Erro ao obter correlação do informe: {correlacao.Codigo}");
+                }
+
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoInformativo, informes.Id.ToString(), correlacao.Codigo, usuarioLogado, false));
 
                 unitOfWork.PersistirTransacao();
