@@ -42,6 +42,7 @@ namespace SME.SGP.Infra
         public string CodigoEscola { get; set; }
         public int CodigoTipoTurma { get; set; }
         public DateTime DataAtualizacaoTabela { get; set; }
+        public string DocumentoCpf { get; set; } = null;
 
         public bool Inativo
         {

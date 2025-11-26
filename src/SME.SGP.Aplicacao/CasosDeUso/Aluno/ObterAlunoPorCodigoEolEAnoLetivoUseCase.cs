@@ -33,6 +33,8 @@ namespace SME.SGP.Aplicacao
                 Nome = !string.IsNullOrEmpty(alunoPorTurmaResposta.NomeAluno) ? alunoPorTurmaResposta.NomeAluno : alunoPorTurmaResposta.NomeSocialAluno,
                 NumeroAlunoChamada = alunoPorTurmaResposta.ObterNumeroAlunoChamada(),
                 DataNascimento = alunoPorTurmaResposta.DataNascimento,
+                Idade = alunoPorTurmaResposta.Idade,
+                DocumentoCpf = alunoPorTurmaResposta.DocumentoCpf,
                 DataSituacao = alunoPorTurmaResposta.DataSituacao,
                 CodigoAluno = alunoPorTurmaResposta.CodigoAluno,
                 Situacao = alunoPorTurmaResposta.SituacaoMatricula,
