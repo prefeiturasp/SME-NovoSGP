@@ -48,12 +48,12 @@ namespace SME.SGP.Aplicacao
         {
             return new FechamentoReaberturaListagemDto()
             {
-                Bimestres = item.ObterBimestresSelecionados(),
+                Bimestres = item.ObterBimestresSelecionados(item.Aplicacao),
                 DataInicio = item.Inicio,
                 DataFim = item.Fim,
                 Descricao = item.Descricao,
                 Id = item.Id,
-                BimestresQuantidadeTotal = item.TipoCalendario.QuantidadeDeBimestres(),
+                BimestresQuantidadeTotal = item.TipoCalendario.QuantidadeDeBimestres(item.Aplicacao),
                 Aplicacao = item.Aplicacao != 0 && item.Aplicacao > 0 ? item.Aplicacao : Dominio.Aplicacao.SGP
             };
         }
@@ -86,12 +86,12 @@ namespace SME.SGP.Aplicacao
             var fechamentoReaberturaRetornoDto = new FechamentoReaberturaRetornoDto()
             {
                 Aplicacao = fechamentoReabertura.Aplicacao != 0 && fechamentoReabertura.Aplicacao > 0 ? fechamentoReabertura.Aplicacao : Dominio.Aplicacao.SGP,
-                Bimestres = fechamentoReabertura.ObterBimestresSelecionados(),
+                Bimestres = fechamentoReabertura.ObterBimestresSelecionados(fechamentoReabertura.Aplicacao),
                 DataInicio = fechamentoReabertura.Inicio,
                 DataFim = fechamentoReabertura.Fim,
                 Descricao = fechamentoReabertura.Descricao,
                 Id = fechamentoReabertura.Id,
-                BimestresQuantidadeTotal = fechamentoReabertura.TipoCalendario.QuantidadeDeBimestres(),
+                BimestresQuantidadeTotal = fechamentoReabertura.TipoCalendario.QuantidadeDeBimestres(fechamentoReabertura.Aplicacao),
                 DreCodigo = fechamentoReabertura.Dre?.CodigoDre,
                 UeCodigo = fechamentoReabertura.Ue?.CodigoUe,
                 TipoCalendarioId = fechamentoReabertura.TipoCalendarioId,

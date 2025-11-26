@@ -134,11 +134,11 @@ namespace SME.SGP.Dominio
             return string.Join(",", bimestresOrdenados.Select(a => $"{a.Bimestre.ToString()}º").ToArray());
         }
 
-        public bool[] ObterBimestresSelecionados()
+        public bool[] ObterBimestresSelecionados(Aplicacao? aplicacao = null)
         {
-            var bimestresArray = new bool[TipoCalendario.QuantidadeDeBimestres()];
+            var bimestresArray = new bool[TipoCalendario.QuantidadeDeBimestres(aplicacao)];
 
-            for (int numero = 0; numero < TipoCalendario.QuantidadeDeBimestres(); numero++)
+            for (int numero = 0; numero < TipoCalendario.QuantidadeDeBimestres(aplicacao); numero++)
                 bimestresArray[numero] = Bimestres.Any(a => a.Bimestre == numero + 1);
 
             return bimestresArray;
