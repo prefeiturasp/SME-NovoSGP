@@ -1,5 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SME.SGP.Api.Filtros;
+using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EncaminhamentoNAAPA;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +17,34 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class NovoEncaminhamentoNAAPAController : ControllerBase
     {
+        [HttpGet("secoes")]
+        [ProducesResponseType(typeof(IEnumerable<SecaoQuestionarioDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterSecoesDeEncaminhamento([FromQuery] long? ecaminhamentoNaapaId,
+           [FromServices] IObterSecoesEncaminhamentoIndividualNAAPAUseCase obterSecoesDeEncaminhamentoNAAPAUseCase)
+        {
+            return Ok(await obterSecoesDeEncaminhamentoNAAPAUseCase.Executar(ecaminhamentoNaapaId));
+        }
+
+
+        [HttpGet("questionario")]
+        [ProducesResponseType(typeof(IEnumerable<QuestaoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterQuestionario([FromQuery] long questionarioId, [FromQuery] long? encaminhamentoId, [FromQuery] string codigoAluno, [FromQuery] string codigoTurma, [FromServices] IObterQuestionarioEncaminhamentoNAAPAUseCase useCase)
+        {
+            return Ok(await useCase.Executar(questionarioId, encaminhamentoId, codigoAluno, codigoTurma));
+        }
+
+        [HttpGet("aluno/{codigoAluno}/existe-encaminhamento-ativo")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ExisteEncaminhamentoAtivoParaAluno(string codigoAluno, [FromServices] IExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(codigoAluno));
+        }
 
     }
 }
