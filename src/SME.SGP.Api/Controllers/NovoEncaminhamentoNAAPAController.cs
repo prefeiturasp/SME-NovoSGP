@@ -4,7 +4,9 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EncaminhamentoNAAPA;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.NovoEncaminhamentoNAAPA;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.NovoEncaminhamentoNAAPA;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +16,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/novo-encaminhamento-naapa")]
-    [Authorize("Bearer")]
+    //[Authorize("Bearer")]
     public class NovoEncaminhamentoNAAPAController : ControllerBase
     {
         [HttpGet("secoes")]
@@ -26,7 +28,6 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await obterSecoesDeEncaminhamentoNAAPAUseCase.Executar(ecaminhamentoNaapaId));
         }
-
 
         [HttpGet("questionario")]
         [ProducesResponseType(typeof(IEnumerable<QuestaoDto>), 200)]
@@ -46,5 +47,14 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(codigoAluno));
         }
 
+        [HttpGet("obterEncaminhamentoPorTipo")]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<NovoEncaminhamentoNAAPAResumoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        //[Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterEncaminhamentosPaginados([FromQuery] FiltroNovoEncaminhamentoNAAPADto filtro,
+            [FromServices] IObterNovosEncaminhamentosNAAPAPorTipoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
     }
 }
