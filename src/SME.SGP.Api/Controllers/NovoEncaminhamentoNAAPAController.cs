@@ -5,7 +5,9 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EncaminhamentoNAAPA;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.NovoEncaminhamentoNAAPA;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.NovoEncaminhamentoNAAPA;
 using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
@@ -80,6 +82,15 @@ namespace SME.SGP.Api.Controllers
             return BadRequest();
         }
 
+        [HttpGet("obterEncaminhamentoPorTipo")]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<NovoEncaminhamentoNAAPAResumoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterEncaminhamentosPaginados([FromQuery] FiltroNovoEncaminhamentoNAAPADto filtro,
+            [FromServices] IObterNovosEncaminhamentosNAAPAPorTipoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
 
         [HttpDelete("arquivo")]
         [ProducesResponseType(200)]
