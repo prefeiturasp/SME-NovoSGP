@@ -1,13 +1,25 @@
-﻿using System;
+﻿using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.NovoEncaminhamentoNAAPA;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces.Repositorios
 {
     public interface IRepositorioNovoEncaminhamentoNAAPA : IRepositorioBase<EncaminhamentoNAAPA>
     {
-
+        Task<PaginacaoResultadoDto<NovoEncaminhamentoNAAPAResumoDto>> ListarPaginado(
+            int anoLetivo,
+            long dreId,
+            string codigoUe,
+            string codigoNomeAluno,
+            DateTime? dataAberturaQueixaInicio,
+            DateTime? dataAberturaQueixaFim,
+            int situacao,
+            long prioridade,
+            long[] turmasIds,
+            Paginacao paginacao,
+            bool exibirEncerrados,
+            OrdenacaoListagemPaginadaEncaminhamentoNAAPA[] ordenacao);
     }
 }
