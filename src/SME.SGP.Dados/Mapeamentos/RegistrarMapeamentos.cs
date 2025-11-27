@@ -73,6 +73,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ProcessoExecutandoMap());
                config.AddMap(new PeriodoFechamentoMap());
                config.AddMap(new PeriodoFechamentoBimestreMap());
+               config.AddMap(new PeriodoFechamentoCicloSondagemMap());
                config.AddMap(new NotificacaoCompensacaoAusenciaMap());
                config.AddMap(new EventoFechamentoMap());
                config.AddMap(new FechamentoTurmaDisciplinaMap());
@@ -271,6 +272,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ConsolidacaoInformacoesPapMap());
                config.AddMap(new ConsolidacaoPainelEducacionalFluenciaLeitoraMap());
                config.AddMap(new TaxaAlfabetizacaoMap());
+               config.AddMap(new InformeCorrelacaoMap());
 
                config.ForDommel();
            });
