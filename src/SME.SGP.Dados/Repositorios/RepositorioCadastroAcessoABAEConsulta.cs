@@ -17,19 +17,19 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioCadastroAcessoABAEConsulta : RepositorioBase<CadastroAcessoABAE>, IRepositorioCadastroAcessoABAEConsulta
     {
         public RepositorioCadastroAcessoABAEConsulta(ISgpContextConsultas conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
-        {}
+        { }
 
         public Task<bool> ExisteCadastroAcessoABAEPorCpf(string cpf, long ueId)
         {
-            return database.Conexao.QueryFirstOrDefaultAsync<bool>("select 1 from cadastro_acesso_abae where cpf = @cpf and not excluido and ue_id = @ueId", new {cpf, ueId });
+            return database.Conexao.QueryFirstOrDefaultAsync<bool>("select 1 from cadastro_acesso_abae where cpf = @cpf and not excluido and ue_id = @ueId", new { cpf, ueId });
         }
 
         public async Task<PaginacaoResultadoDto<DreUeNomeSituacaoTipoEscolaDataABAEDto>> ObterPaginado(FiltroDreIdUeIdNomeSituacaoABAEDto filtro, Paginacao paginacao)
         {
             var query = MontaQueryCompleta(paginacao, filtro);
 
-            var parametros = new {dreId = filtro.DreId, ueId = filtro.UeId, nome = filtro.Nome, situacao = filtro.Situacao};
-            
+            var parametros = new { dreId = filtro.DreId, ueId = filtro.UeId, nome = filtro.Nome, situacao = filtro.Situacao };
+
             var retorno = new PaginacaoResultadoDto<DreUeNomeSituacaoTipoEscolaDataABAEDto>();
 
             using (var multi = await database.Conexao.QueryMultipleAsync(query, parametros))
@@ -38,7 +38,7 @@ namespace SME.SGP.Dados.Repositorios
                 retorno.TotalRegistros = multi.ReadFirst<int>();
             }
 
-            retorno.TotalPaginas = (int) Math.Ceiling((double) retorno.TotalRegistros / paginacao.QuantidadeRegistros);
+            retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
 
             return retorno;
         }
@@ -80,21 +80,21 @@ namespace SME.SGP.Dados.Repositorios
 
         private static void ObterCabecalho(StringBuilder sql, bool EhContador)
         {
-            var query = EhContador 
-                            ? "select distinct count(a.id) " 
+            var query = EhContador
+                            ? "select distinct count(a.id) "
                             : @"select a.id, dre.nome as dre,
                               ue.tipo_escola tipoEscola,
                               ue.nome as Ue,
                               a.nome,
                               a.situacao,
                               coalesce(a.alterado_em, a.criado_em) as Data ";
-                
+
             sql.AppendLine(query);
 
             query = @"from cadastro_acesso_abae a
                         join ue on ue.id = a.ue_id
                         join dre on dre.id = ue.dre_id ";
-            
+
             sql.AppendLine(query);
         }
 
@@ -134,9 +134,30 @@ namespace SME.SGP.Dados.Repositorios
             else if (!string.IsNullOrEmpty(nome))
                 sql.AppendLine(" AND lower(a.nome) LIKE @nome ");
 
-            return await database.Conexao.QueryAsync<NomeCpfABAEDto>(sql.ToString(), new { cpf, codigoDre, codigoUe, 
-                                                                                           nome = string.IsNullOrEmpty(nome) ? string.Empty
-                                                                                           : string.Format("%{0}%", nome.ToLower()) });
+            return await database.Conexao.QueryAsync<NomeCpfABAEDto>(sql.ToString(), new
+            {
+                cpf,
+                codigoDre,
+                codigoUe,
+                nome = string.IsNullOrEmpty(nome) ? string.Empty
+                                                                                           : string.Format("%{0}%", nome.ToLower())
+            });
+        }
+
+        public async Task<CadastroAcessoABAE> ObterCadastroABAEPorCpf(string cpf)
+        {
+            var sql = new StringBuilder();
+            cpf = cpf.FormatarCPF();
+
+            sql.AppendLine(" SELECT * ");
+            sql.AppendLine(" FROM cadastro_acesso_abae a ");
+            sql.AppendLine(" WHERE not a.excluido ");
+            sql.AppendLine(" AND a.cpf = @cpf ");
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<CadastroAcessoABAE>(sql.ToString(), new
+            {
+                cpf
+            });
         }
     }
 }

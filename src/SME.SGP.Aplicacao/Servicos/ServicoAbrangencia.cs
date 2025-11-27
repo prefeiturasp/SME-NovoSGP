@@ -183,7 +183,7 @@ namespace SME.SGP.Aplicacao.Servicos
                         abrangencia.UeId = turmaSGP.Ue.Id;
                         abrangencia.UsuarioId = usuario.Id;
                         abrangencia.TurmaId = turmaSGP.Id;
-                        abrangencia.Perfil = ((Modalidade) int.Parse(turma.CodigoModalidade) == Modalidade.EducacaoInfantil) ? Perfis.PERFIL_PROFESSOR_INFANTIL : Perfis.PERFIL_PROFESSOR;
+                        abrangencia.Perfil = ((Modalidade)int.Parse(turma.CodigoModalidade) == Modalidade.EducacaoInfantil) ? Perfis.PERFIL_PROFESSOR_INFANTIL : Perfis.PERFIL_PROFESSOR;
 
                         abrangenciaTurmasHistoricasEOL.Add(abrangencia);
                     }
@@ -247,6 +247,7 @@ namespace SME.SGP.Aplicacao.Servicos
 
             var ehSupervisor = perfil == Perfis.PERFIL_SUPERVISOR;
             var ehProfessorCJ = perfil == Perfis.PERFIL_CJ || perfil == Perfis.PERFIL_CJ_INFANTIL;
+            var ehABAE = perfil == Perfis.PERFIL_ABAE;
 
             if (ehSupervisor)
             {
@@ -262,6 +263,32 @@ namespace SME.SGP.Aplicacao.Servicos
             }
             else if (ehProfessorCJ)
                 return;
+            else if (ehABAE)
+            {
+                var usuario = await repositorioUsuario.ObterPorCodigoRfLogin(null, login);
+
+                if (usuario.NaoEhNulo())
+                {
+                    //se for usuário ABAE, o CPF e o login serão os mesmos
+                    var cadastroABAE = await mediator.Send(new ObterCadastroAcessoABAEPorCpfQuery(login));
+
+                    if (cadastroABAE.NaoEhNulo() && cadastroABAE.UeId.NaoEhNulo())
+                    {
+                        // Obter informações da UE e DRE baseadas no cadastro ABAE
+                        var ue = await mediator.Send(new ObterUePorIdQuery(cadastroABAE.UeId));
+
+                        if (ue.NaoEhNulo() && ue.Dre.NaoEhNulo())
+                        {
+                            abrangenciaEol = new AbrangenciaCompactaVigenteRetornoEOLDTO()
+                            {
+                                Abrangencia = new AbrangenciaCargoRetornoEolDTO { Abrangencia = Infra.Enumerados.Abrangencia.UE },
+                                IdDres = new[] { ue.Dre.CodigoDre },
+                                IdUes = new[] { ue.CodigoUe }
+                            };
+                        }
+                    }
+                }
+            }
             else
                 consultaEol = await mediator.Send(new ObterAbrangenciaCompactaVigenteEolPorLoginEPerfilQuery(login, perfil));
 
@@ -278,7 +305,7 @@ namespace SME.SGP.Aplicacao.Servicos
                 {
                     // sincronizamos as dres, ues e turmas
                     var estrutura = await MaterializarEstruturaInstitucional(abrangenciaEol);
-                    
+
                     // sincronizamos a abrangencia do login + perfil
                     await SincronizarAbrangencia(abrangenciaSintetica, abrangenciaEol?.Abrangencia?.Abrangencia, ehSupervisor, estrutura, login, perfil);
                 }
@@ -333,7 +360,7 @@ namespace SME.SGP.Aplicacao.Servicos
 
             if (listaEscolasDresSupervior.Any())
                 return listaEscolasDresSupervior.Select(escola => escola.UeId).ToArray();
-           
+
             return Array.Empty<string>();
         }
 
@@ -343,7 +370,7 @@ namespace SME.SGP.Aplicacao.Servicos
             var retorno = new List<AbrangenciaSinteticaDto>();
             var abrangencia = abrangenciaSintetica.GroupBy(x => x.CodigoTurma).Select(y => y.OrderBy(a => a.CodigoTurma));
             foreach (var item in abrangencia)
-            { 
+            {
                 retorno.Add(item.FirstOrDefault());
             }
 
@@ -358,13 +385,13 @@ namespace SME.SGP.Aplicacao.Servicos
             var idsParaAtualizar = new List<long>();
 
             if (ehPerfilProfessorInfantil)
-                 turmas = VerificaSeExisteTurmaNaoInfantilEmPerfilProfessorInfantil(turmas);
+                turmas = VerificaSeExisteTurmaNaoInfantilEmPerfilProfessorInfantil(turmas);
 
             if (!turmas.Any() && abrangenciaSintetica.Any())
             {
                 idsParaAtualizar = abrangenciaSintetica.Select(x => x.Id).ToList();
 
-                if (ehPerfilProfessorInfantil && abrangenciaSintetica.Any(a=> a.Perfil == perfil))
+                if (ehPerfilProfessorInfantil && abrangenciaSintetica.Any(a => a.Perfil == perfil))
                 {
                     var idsTurmas = abrangenciaSintetica.Where(a => a.Perfil == perfil).Select(a => a.TurmaId).ToList();
 
@@ -380,7 +407,7 @@ namespace SME.SGP.Aplicacao.Servicos
                     }
 
                 }
-            }  
+            }
 
             var novas = turmas.Where(x => !abrangenciaSintetica.Select(y => y.TurmaId).Contains(x.Id));
 
@@ -392,23 +419,23 @@ namespace SME.SGP.Aplicacao.Servicos
             listaAbrangenciaSintetica.AddRange(abrangenciaSintetica.ToList());
             listaParaAtualizar.AddRange(paraAtualizar.ToList());
             var registrosDuplicados = listaAbrangenciaSintetica.Except(listaParaAtualizar);
-            
-            if(registrosDuplicados.Any())
+
+            if (registrosDuplicados.Any())
                 idsParaAtualizar = registrosDuplicados.Select(x => x.Id).ToList();
 
-            if(abrangenciaSintetica.Any() && 
+            if (abrangenciaSintetica.Any() &&
                 turmas.Any() &&
                 abrangenciaSintetica.Count() != turmas.Count())
                 idsParaAtualizar.AddRange(VerificaTurmasAbrangenciaAtualParaHistorica(abrangenciaSintetica, turmas));
 
-            await repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() {Perfil = perfil, TurmaId = x.Id}), login);
+            await repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() { Perfil = perfil, TurmaId = x.Id }), login);
 
             await repositorioAbrangencia.AtualizaAbrangenciaHistorica(idsParaAtualizar);
         }
 
         private IEnumerable<Turma> VerificaSeExisteTurmaNaoInfantilEmPerfilProfessorInfantil(IEnumerable<Turma> turmasAbrangenciaEol)
-           => (turmasAbrangenciaEol.NaoEhNulo() && turmasAbrangenciaEol.Any()) 
-            ? turmasAbrangenciaEol.Where(t => t.ModalidadeCodigo == Modalidade.EducacaoInfantil)?.ToList() 
+           => (turmasAbrangenciaEol.NaoEhNulo() && turmasAbrangenciaEol.Any())
+            ? turmasAbrangenciaEol.Where(t => t.ModalidadeCodigo == Modalidade.EducacaoInfantil)?.ToList()
             : turmasAbrangenciaEol;
 
         public IEnumerable<long> VerificaTurmasAbrangenciaAtualParaHistorica(IEnumerable<AbrangenciaSinteticaDto> abrangenciaAtual, IEnumerable<Turma> turmasAbrangenciaEol)
@@ -419,7 +446,7 @@ namespace SME.SGP.Aplicacao.Servicos
                                                         from tI in turmasIguais.DefaultIfEmpty()
                                                         select tI;
 
-            return abrangenciaAtual.Except(turmasNaAbrangenciaAtualExistentesEol).Select(t=> t.Id);
+            return abrangenciaAtual.Except(turmasNaAbrangenciaAtualExistentesEol).Select(t => t.Id);
         }
 
         private async Task SincronizarAbrangencia(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, Infra.Enumerados.Abrangencia? abrangencia, bool ehSupervisor, (IEnumerable<Dre> Dres, IEnumerable<Ue> Ues, IEnumerable<Turma> Turmas) estrutura, string login, Guid perfil)
@@ -443,7 +470,7 @@ namespace SME.SGP.Aplicacao.Servicos
                         case Infra.Enumerados.Abrangencia.UE:
                             if (perfil.EhPerfilPOA())
                                 await SincronizarAbragenciaPorTurmas(abrangenciaSintetica, estrutura.Turmas, login, perfil);
-                            else    
+                            else
                                 await SincronizarAbrangenciaPorUes(abrangenciaSintetica, estrutura.Ues, login, perfil);
                             break;
 
@@ -465,7 +492,7 @@ namespace SME.SGP.Aplicacao.Servicos
         {
             var novas = ues.Where(x => !abrangenciaSintetica.Select(y => y.UeId).Contains(x.Id));
 
-            await repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() {Perfil = perfil, UeId = x.Id}), login);
+            await repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() { Perfil = perfil, UeId = x.Id }), login);
 
             var paraAtualizar = abrangenciaSintetica.Where(x => !ues.Select(y => y.Id).Contains(x.UeId));
 
@@ -482,7 +509,7 @@ namespace SME.SGP.Aplicacao.Servicos
         {
             var novas = dres.Where(x => !abrangenciaSintetica.Select(y => y.DreId).Contains(x.Id));
 
-            await repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() {Perfil = perfil, DreId = x.Id}), login);
+            await repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() { Perfil = perfil, DreId = x.Id }), login);
 
             var paraAtualizar = abrangenciaSintetica.Where(x => !dres.Select(y => y.Id).Contains(x.DreId));
 
@@ -512,8 +539,8 @@ namespace SME.SGP.Aplicacao.Servicos
 
         private async Task SincronizarEstruturaInstitucional(EstruturaInstitucionalRetornoEolDTO estrutura)
         {
-            var dres = estrutura.Dres.Select(x => new Dre() {Abreviacao = x.Abreviacao, CodigoDre = x.Codigo, Nome = x.Nome});
-            var ues = estrutura.Dres.SelectMany(x => x.Ues.Select(y => new Ue {CodigoUe = y.Codigo, TipoEscola = y.CodTipoEscola, Nome = y.Nome, Dre = new Dre() {CodigoDre = x.Codigo}}));
+            var dres = estrutura.Dres.Select(x => new Dre() { Abreviacao = x.Abreviacao, CodigoDre = x.Codigo, Nome = x.Nome });
+            var ues = estrutura.Dres.SelectMany(x => x.Ues.Select(y => new Ue { CodigoUe = y.Codigo, TipoEscola = y.CodTipoEscola, Nome = y.Nome, Dre = new Dre() { CodigoDre = x.Codigo } }));
             var turmas = estrutura.Dres.SelectMany(x => x.Ues.SelectMany(y => y.Turmas.Select(z =>
                 new Turma
                 {
@@ -521,12 +548,12 @@ namespace SME.SGP.Aplicacao.Servicos
                     AnoLetivo = z.AnoLetivo,
                     CodigoTurma = z.Codigo,
                     //Para turma do tipo 7 (Itinerarios 2A Ano) a modalidade é definida como Médio
-                    ModalidadeCodigo = z.TipoTurma == Dominio.Enumerados.TipoTurma.Itinerarios2AAno ? Modalidade.Medio : (Modalidade) Convert.ToInt32(z.CodigoModalidade),
+                    ModalidadeCodigo = z.TipoTurma == Dominio.Enumerados.TipoTurma.Itinerarios2AAno ? Modalidade.Medio : (Modalidade)Convert.ToInt32(z.CodigoModalidade),
                     QuantidadeDuracaoAula = z.DuracaoTurno,
                     Nome = z.NomeTurma,
                     Semestre = z.Semestre,
                     TipoTurno = z.TipoTurno,
-                    Ue = new Ue() {CodigoUe = y.Codigo},
+                    Ue = new Ue() { CodigoUe = y.Codigo },
                     EnsinoEspecial = z.EnsinoEspecial,
                     EtapaEJA = z.EtapaEJA,
                     DataInicio = z.DataInicioTurma,
