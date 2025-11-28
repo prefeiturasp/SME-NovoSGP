@@ -31,14 +31,14 @@ namespace SME.SGP.Api.Controllers
             return Ok(await obterSecoesDeEncaminhamentoNAAPAUseCase.Executar(ecaminhamentoNaapaId));
         }
 
-        [HttpPost("salvar")]
-        [ProducesResponseType(typeof(IEnumerable<ResultadoEncaminhamentoNAAPADto>), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.NAAPA_I, Policy = "Bearer")]
-        public async Task<IActionResult> RegistrarEncaminhamento([FromBody] EncaminhamentoNAAPADto encaminhamentoNAAPADto, [FromServices] IRegistrarEncaminhamentoNAAPAUseCase registrarEncaminhamentoNAAPAUseCase)
-        {
-            return Ok(await registrarEncaminhamentoNAAPAUseCase.Executar(encaminhamentoNAAPADto));
-        }
+        //[HttpPost("salvar")]
+        //[ProducesResponseType(typeof(IEnumerable<ResultadoEncaminhamentoNAAPADto>), 200)]
+        //[ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        //[Permissao(Permissao.NAAPA_I, Policy = "Bearer")]
+        //public async Task<IActionResult> RegistrarEncaminhamento([FromBody] EncaminhamentoNAAPADto encaminhamentoNAAPADto, [FromServices] IRegistrarEncaminhamentoNAAPAUseCase registrarEncaminhamentoNAAPAUseCase)
+        //{
+        //    return Ok(await registrarEncaminhamentoNAAPAUseCase.Executar(encaminhamentoNAAPADto));
+        //}
 
 
         [HttpGet("questionario")]
@@ -102,6 +102,13 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(arquivoCodigo));
         }
 
-
+        [HttpPost("salvar")]
+        [ProducesResponseType(typeof(IEnumerable<ResultadoNovoEncaminhamentoNAAPADto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_I, Policy = "Bearer")]
+        public async Task<IActionResult> RegistrarNovoEncaminhamento([FromBody] NovoEncaminhamentoNAAPADto encaminhamentoNAAPADto, [FromServices] IRegistrarNovoEncaminhamentoNAAPAUseCase registrarNovoEncaminhamentoNAAPAUseCase)
+        {
+            return Ok(await registrarNovoEncaminhamentoNAAPAUseCase.Executar(encaminhamentoNAAPADto));
+        }
     }
 }

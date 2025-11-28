@@ -12,7 +12,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Queries.NovoEncaminhamentoNAAPA
+namespace SME.SGP.Aplicacao.Queries.NovoEncaminhamentoNAAPA.ObterNovosEncaminhamentosNAAPAPorTipo
 {
     public class ObterNovosEncaminhamentosNAAPAPorTipoQueryHandler : ConsultasBase,
         IRequestHandler<ObterNovosEncaminhamentosNAAPAPorTipoQuery, PaginacaoResultadoDto<NovoEncaminhamentoNAAPAResumoDto>>

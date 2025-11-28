@@ -600,6 +600,11 @@ namespace SME.SGP.IoC
             // Novo Encaminhamento NAAPA
             services.TryAddScoped<IRepositorioNovoEncaminhamentoNAAPA, RepositorioNovoEncaminhamentoNAAPA>();
 
+            services.TryAddScoped<IRepositorioRespostaNovoEncaminhamentoNAAPA, RepositorioRespostaNovoEncaminhamentoNAAPA>();
+            services.TryAddScoped<IRepositorioQuestaoNovoEncaminhamentoNAAPA, RepositorioQuestaoNovoEncaminhamentoNAAPA>();
+            services.TryAddScoped<IRepositorioNovoEncaminhamentoNAAPASecao, RepositorioNovoEncaminhamentoNAAPASecao>();
+            services.TryAddScoped<IRepositorioNovoEncaminhamentoNAAPAHistoricoAlteracoes, RepositorioNovoEncaminhamentoNAAPAHistoricoAlteracoes>();
+
             //Relatório PAP
             services.TryAddScoped<IRepositorioConfiguracaoRelatorioPAP, RepositorioConfiguracaoRelatorioPAP>();
             services.TryAddScoped<IRepositorioPeriodoRelatorioPAP, RepositorioPeriodoRelatorioPAP>();
@@ -1508,6 +1513,8 @@ namespace SME.SGP.IoC
 
             // Novo Encaminhamento NAAPA
             services.TryAddScoped<IObterNovosEncaminhamentosNAAPAPorTipoUseCase, ObterNovosEncaminhamentosNAAPAPorTipoUseCase>();
+
+            services.TryAddScoped<IRegistrarNovoEncaminhamentoNAAPAUseCase, RegistrarNovoEncaminhamentoNAAPAUseCase>();
 
 
 

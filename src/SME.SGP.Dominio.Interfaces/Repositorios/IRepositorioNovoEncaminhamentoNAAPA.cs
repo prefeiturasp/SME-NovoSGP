@@ -21,5 +21,7 @@ namespace SME.SGP.Dominio.Interfaces.Repositorios
             Paginacao paginacao,
             bool exibirEncerrados,
             OrdenacaoListagemPaginadaEncaminhamentoNAAPA[] ordenacao);
+
+        Task<EncaminhamentoNAAPA> ObterEncaminhamentoPorId(long id);
     }
 }
