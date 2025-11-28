@@ -1,8 +1,8 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
-using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -10,14 +10,17 @@ namespace SME.SGP.Aplicacao
     public class SalvarInformesUseCase : AbstractUseCase, ISalvarInformesUseCase
     {
         private readonly IUnitOfWork unitOfWork;
-
-        public SalvarInformesUseCase(IMediator mediator, IUnitOfWork unitOfWork) : base(mediator)
+        private readonly IRepositorioCorrelacaoInforme repositorioCorrelacaoInforme;
+        public SalvarInformesUseCase(IMediator mediator, IUnitOfWork unitOfWork, IRepositorioCorrelacaoInforme _repositorioCorrelacaoInforme) : base(mediator)
         {
             this.unitOfWork = unitOfWork;
+            repositorioCorrelacaoInforme = _repositorioCorrelacaoInforme;
         }
 
         public async Task<AuditoriaDto> Executar(InformesDto informesDto)
         {
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
+
             unitOfWork.IniciarTransacao();
             try
             {
@@ -30,8 +33,19 @@ namespace SME.SGP.Aplicacao
 
                 if (informesDto.Arquivos.PossuiRegistros())
                     await mediator.Send(new SalvarInformesAnexosCommand(informes.Id, informesDto.Arquivos));
-                
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoInformativo, informes.Id, Guid.NewGuid()));
+
+                var correlacao = new InformeCorrelacao(informes.Id, usuarioLogado.Id);
+                repositorioCorrelacaoInforme.Salvar(correlacao);
+
+                var correlacaoExistente = await repositorioCorrelacaoInforme.ObterPorCodigoCorrelacaoAsync(correlacao.Codigo);
+               
+                if (correlacaoExistente.EhNulo())
+                {
+                    throw new NegocioException($"Erro ao obter correlação do informe: {correlacao.Codigo}");
+                }
+
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoInformativo, informes.Id.ToString(), correlacao.Codigo, usuarioLogado, false));
+
                 unitOfWork.PersistirTransacao();
 
                 return ObterAuditoria(informes);

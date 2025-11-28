@@ -19,57 +19,89 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioPeriodoFechamento(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
-         
+
         public PeriodoFechamento ObterPorFiltros(long? tipoCalendarioId, long? turmaId, Dominio.Aplicacao aplicacao)
         {
-            var query = new StringBuilder("select f.*,fb.*,p.*, t.*");
-            query.AppendLine("from");
-            query.AppendLine("periodo_fechamento f");
-            query.AppendLine("inner join periodo_fechamento_bimestre fb on");
-            query.AppendLine("f.id = fb.periodo_fechamento_id");
-            query.AppendLine("inner join periodo_escolar p on");
-            query.AppendLine("fb.periodo_escolar_id = p.id");
-            query.AppendLine("inner join tipo_calendario t on");
-            query.AppendLine("p.tipo_calendario_id = t.id");
-            if (turmaId.HasValue)
-                query.AppendLine(@"join turma tu on t.modalidade = (case when tu.modalidade_codigo = 5 then 1
+            bool ehAplicacaoSondagem = aplicacao == Dominio.Aplicacao.SondagemAplicacao
+                                    || aplicacao == Dominio.Aplicacao.SondagemDigitacao;
+
+            var query = new StringBuilder($"select {(ehAplicacaoSondagem ? "f.*, pfcs.*, pfcs.ciclo as bimestre, tc.* " : "f.*,fb.*,p.*, t.*")}");
+            query.AppendLine(" from periodo_fechamento f");
+            if (ehAplicacaoSondagem)
+            {
+                query.AppendLine("inner join periodo_fechamento_ciclo_sondagem pfcs on f.id = pfcs.periodo_fechamento_id ");
+                query.AppendLine("inner join tipo_calendario tc on pfcs.tipo_calendario_id = tc.id ");
+                query.AppendLine("where 1=1 and pfcs.tipo_calendario_id = @tipoCalendarioId");
+            }
+            else
+            {
+                query.AppendLine("inner join periodo_fechamento_bimestre fb on");
+                query.AppendLine("f.id = fb.periodo_fechamento_id");
+                query.AppendLine("inner join periodo_escolar p on");
+                query.AppendLine("fb.periodo_escolar_id = p.id");
+                query.AppendLine("inner join tipo_calendario t on");
+                query.AppendLine("p.tipo_calendario_id = t.id");
+
+                if (turmaId.HasValue)
+                    query.AppendLine(@"join turma tu on t.modalidade = (case when tu.modalidade_codigo = 5 then 1
                                                                          when tu.modalidade_codigo = 6 then 1
                                                                          when tu.modalidade_codigo = 3 then 2
                                                                          when tu.modalidade_codigo = 1 then 3
                                                                     end)");
-           
-            query.AppendLine("where 1=1");
 
-            if (tipoCalendarioId.HasValue)
-                query.AppendLine("and p.tipo_calendario_id = @tipoCalendarioId");
+                query.AppendLine("where 1=1");
 
-            if (turmaId.HasValue)
-                query.AppendLine("and tu.id = @turmaId");
+                if (tipoCalendarioId.HasValue)
+                    query.AppendLine("and p.tipo_calendario_id = @tipoCalendarioId");
 
-                query.AppendLine("AND COALESCE(f.aplicacao, 1) = @aplicacao");
+                if (turmaId.HasValue)
+                    query.AppendLine("and tu.id = @turmaId");
+            }
+            query.AppendLine("AND COALESCE(f.aplicacao, 1) = @aplicacao");
 
             var lookup = new Dictionary<long, PeriodoFechamento>();
+            PeriodoFechamento periodoFechamento;
 
-            var lista = database.Conexao.Query<PeriodoFechamento, PeriodoFechamentoBimestre, PeriodoEscolar, TipoCalendario, PeriodoFechamento>(query.ToString(), (fechamento, fechamentoBimestre, periodoEscolar, tipoCalendario) =>
-               {
-                   PeriodoFechamento periodoFechamento;
-                   if (!lookup.TryGetValue(fechamento.Id, out periodoFechamento))
-                   {
-                       periodoFechamento = fechamento;
-                       lookup.Add(fechamento.Id, periodoFechamento);
-                   }
+            if (ehAplicacaoSondagem)
+            {
+                var lista = database.Conexao.Query<PeriodoFechamento, PeriodoFechamentoCicloSondagem, TipoCalendario, PeriodoFechamento>(query.ToString(), (fechamento, ciclo, tipoCalendario) =>
+                {
+                    if (!lookup.TryGetValue(fechamento.Id, out periodoFechamento))
+                    {
+                        periodoFechamento = fechamento;
+                        lookup.Add(fechamento.Id, periodoFechamento);
+                    }
 
-                   periodoEscolar.AdicionarTipoCalendario(tipoCalendario);
-                   fechamentoBimestre.AdicionarPeriodoEscolar(periodoEscolar);
-                   periodoFechamento.AdicionarFechamentoBimestre(fechamentoBimestre);
-                   return periodoFechamento;
-               }, new
-               {
-                   tipoCalendarioId,
-                   turmaId,
-                   aplicacao
-               });
-            return lookup.Values.FirstOrDefault();
+                    var cicloBimestre = periodoFechamento.AdaptarCicloSondagemParaBimestre(ciclo, tipoCalendarioId);
+                    periodoFechamento.AdicionarFechamentoBimestre(cicloBimestre);
+                    return periodoFechamento;
+                },
+                    new { tipoCalendarioId, aplicacao },
+                    splitOn: "Id"
+                );
+
+            } else
+            {
+                var lista = database.Conexao.Query<PeriodoFechamento, PeriodoFechamentoBimestre, PeriodoEscolar, TipoCalendario, PeriodoFechamento>(query.ToString(), (fechamento, fechamentoBimestre, periodoEscolar, tipoCalendario) =>
+                {                    
+                    if (!lookup.TryGetValue(fechamento.Id, out periodoFechamento))
+                    {
+                        periodoFechamento = fechamento;
+                        lookup.Add(fechamento.Id, periodoFechamento);
+                    }
+
+                    periodoEscolar.AdicionarTipoCalendario(tipoCalendario);
+                    fechamentoBimestre.AdicionarPeriodoEscolar(periodoEscolar);
+                    periodoFechamento.AdicionarFechamentoBimestre(fechamentoBimestre);
+                    return periodoFechamento;
+                }, new
+                {
+                    tipoCalendarioId,
+                    turmaId,
+                    aplicacao
+                });
+            }
+                return lookup.Values.FirstOrDefault();
         }
 
         public async Task<PeriodoFechamento> ObterPorFiltrosAsync(long? tipoCalendarioId, long? turmaId)
@@ -137,6 +169,22 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             foreach (var bimestre in fechamentosBimestre)
+            {
+                bimestre.PeriodoFechamentoId = fechamentoId;
+                if (bimestre.Id > 0)
+                    database.Conexao.Update(bimestre);
+                else bimestre.Id = (long)database.Conexao.Insert(bimestre);
+            }
+        }
+
+        public void SalvarCiclosSondagem(IEnumerable<PeriodoFechamentoCicloSondagem> fechamentosCiclos, long fechamentoId)
+        {
+            if (fechamentosCiclos.EhNulo() || !fechamentosCiclos.Any())
+            {
+                throw new NegocioException("A lista de cilos é obrigatória.");
+            }
+
+            foreach (var bimestre in fechamentosCiclos)
             {
                 bimestre.PeriodoFechamentoId = fechamentoId;
                 if (bimestre.Id > 0)
@@ -219,7 +267,7 @@ namespace SME.SGP.Dados.Repositorios
                            and tc.modalidade = @modalidade";
 
             return await database.Conexao.QueryAsync<PeriodoFechamento, PeriodoFechamentoBimestre, PeriodoEscolar, PeriodoFechamentoBimestre>(query,
-                (periodoFechamento,periodoFechamentoBimestre, periodoEscolar) =>
+                (periodoFechamento, periodoFechamentoBimestre, periodoEscolar) =>
                 {
                     periodoFechamentoBimestre.PeriodoFechamento = periodoFechamento;
                     periodoFechamentoBimestre.PeriodoEscolar = periodoEscolar;

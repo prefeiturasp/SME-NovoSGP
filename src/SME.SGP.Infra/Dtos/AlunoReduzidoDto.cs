@@ -10,6 +10,8 @@ namespace SME.SGP.Infra.Dtos
         public string Nome { get; set; }        
         public int NumeroAlunoChamada { get; set; }
         public DateTime DataNascimento { get; set; }
+        public int Idade { get; set; }
+        public string DocumentoCpf { get; set; } = null;
         public DateTime DataSituacao { get; set; }
         public SituacaoMatriculaAluno CodigoSituacaoMatricula { get; set; }
         public string Situacao { get; set; }

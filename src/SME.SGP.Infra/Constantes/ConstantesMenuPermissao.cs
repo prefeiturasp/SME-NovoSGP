@@ -40,6 +40,7 @@
         public const string MENU_COMUNICADOS = "Comunicados (Escola aqui)";
         public const string MENU_OCORRENCIAS = "Ocorrências";
         public const string MENU_ENCAMINHAMENTO = "Encaminhamento";
+        public const string MENU_ATENDIMENTO = "Atendimento";
         public const string MENU_PLANO = "Plano";
         public const string MENU_REGISTRO_DE_ITINERANCIA = "Registro de itinerância";
         public const string MENU_NAAPA = "NAAPA";
@@ -149,6 +150,7 @@
         public const string ROTA_AEE_PLANO = "/aee/plano";
         public const string ROTA_AEE_REGISTRO_ITINERANCIA = "/aee/registro-itinerancia";
         public const string ROTA_NAAPA_ENCAMINHAMENTO = "/naapa/encaminhamento";
+        public const string ROTA_NAAPA_ATENDIMENTO = "/naapa/atendimento";
         public const string ROTA_NAAPA_BUSCA_ATIVA_CONS_CRIAN_ESTUD_AUSENTES = "/busca-ativa/criancas-estudantes/ausentes";
         public const string ROTA_NAAPA_BUSCA_ATIVA_REGISTRO_ACOES = "/busca-ativa/registro-acoes";
         public const string ROTA_RELATORIO_DINAMICO_NAAPA = "/naapa/relatorio-dinamico";
@@ -287,6 +289,7 @@
         public const int ORDEM_MENU_RELATORIO_DINAMICO_NAAPA = 5;
         public const int ORDEM_MENU_BUSCA_ATIVA_NAAPA = 6;
         public const int ORDEM_MENU_REGISTRO_COLETIVO_NAAPA = 7;
+        public const int ORDEM_MENU_ATENDIMENTO_NAAPA = 8;
 
         public const int ORDEM_MENU_RELATORIO_FREQUENCIA = 1;
         public const int ORDEM_MENU_RELATORIO_DIARIO_DE_CLASSE = 2;
