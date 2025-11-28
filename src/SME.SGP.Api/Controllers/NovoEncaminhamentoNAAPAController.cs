@@ -16,7 +16,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/novo-encaminhamento-naapa")]
-    //[Authorize("Bearer")]
+    [Authorize("Bearer")]
     public class NovoEncaminhamentoNAAPAController : ControllerBase
     {
         [HttpGet("secoes")]
@@ -50,7 +50,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("obterEncaminhamentoPorTipo")]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<NovoEncaminhamentoNAAPAResumoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterEncaminhamentosPaginados([FromQuery] FiltroNovoEncaminhamentoNAAPADto filtro,
             [FromServices] IObterNovosEncaminhamentosNAAPAPorTipoUseCase useCase)
         {

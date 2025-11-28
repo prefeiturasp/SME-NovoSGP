@@ -86,13 +86,13 @@ namespace SME.SGP.Aplicacao.Queries.NovoEncaminhamentoNAAPA
                 listaEncaminhamentos.Add(new NovoEncaminhamentoNAAPAResumoDto()
                 {
                     Id = encaminhamento.Id,
-                    TipoQuestionario = encaminhamento.TipoQuestionario,
+                    TipoQuestionario = ((TipoQuestionario)int.Parse(encaminhamento.TipoQuestionario)).Name(),
                     UeNome = encaminhamento.UeNome,
                     NomeAluno = encaminhamento.NomeAluno,
                     TurmaNome = encaminhamento.TurmaNome,
                     DataAberturaQueixaInicio = encaminhamento.DataAberturaQueixaInicio,
                     DataUltimoAtendimento = encaminhamento.DataUltimoAtendimento,
-                    Situacao = encaminhamento.Situacao,
+                    Situacao = ((SituacaoNAAPA)int.Parse(encaminhamento.Situacao)).Name(),
                     SuspeitaViolencia = encaminhamento.SuspeitaViolencia
                 });
             }
