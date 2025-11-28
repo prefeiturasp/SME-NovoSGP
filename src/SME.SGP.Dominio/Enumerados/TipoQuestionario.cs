@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Dominio
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace SME.SGP.Dominio
 {
     public enum TipoQuestionario
     {
@@ -10,6 +12,10 @@
         RelatorioPAP = 6,
         RelatorioDinamicoEncaminhamentoNAAPA = 7,
         RegistroAcaoBuscaAtiva = 8,
-        MapeamentoEstudante = 9
+        MapeamentoEstudante = 9,
+        [Display(Name="Individual")]
+        EncaminhamentoNAAPAIndividual = 11,
+        [Display(Name= "Institucional")]
+        EncaminhamentoNAAPAInstitucional = 12
     }
 }
