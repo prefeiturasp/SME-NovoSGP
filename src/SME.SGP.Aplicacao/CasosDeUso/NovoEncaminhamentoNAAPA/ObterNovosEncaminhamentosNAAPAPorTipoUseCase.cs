@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.NovoEncaminhamentoNAAPA;
 using SME.SGP.Aplicacao.Queries.NovoEncaminhamentoNAAPA;
+using SME.SGP.Aplicacao.Queries.NovoEncaminhamentoNAAPA.ObterNovosEncaminhamentosNAAPAPorTipo;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.NovoEncaminhamentoNAAPA;
 using System;

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
@@ -7,6 +8,7 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EncaminhamentoNAAPA;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.NovoEncaminhamentoNAAPA;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.NovoEncaminhamentoNAAPA;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +24,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("secoes")]
         [ProducesResponseType(typeof(IEnumerable<SecaoQuestionarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        [Permissao(Permissao.ENC_NAAPA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterSecoesDeEncaminhamento([FromQuery] long? ecaminhamentoNaapaId,
            [FromServices] IObterSecoesEncaminhamentoIndividualNAAPAUseCase obterSecoesDeEncaminhamentoNAAPAUseCase)
         {
@@ -32,7 +34,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("questionario")]
         [ProducesResponseType(typeof(IEnumerable<QuestaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        [Permissao(Permissao.ENC_NAAPA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterQuestionario([FromQuery] long questionarioId, [FromQuery] long? encaminhamentoId, [FromQuery] string codigoAluno, [FromQuery] string codigoTurma, [FromServices] IObterQuestionarioEncaminhamentoNAAPAUseCase useCase)
         {
             return Ok(await useCase.Executar(questionarioId, encaminhamentoId, codigoAluno, codigoTurma));
@@ -41,20 +43,62 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("aluno/{codigoAluno}/existe-encaminhamento-ativo")]
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        [Permissao(Permissao.ENC_NAAPA_C, Policy = "Bearer")]
         public async Task<IActionResult> ExisteEncaminhamentoAtivoParaAluno(string codigoAluno, [FromServices] IExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase useCase)
         {
             return Ok(await useCase.Executar(codigoAluno));
         }
 
+
+        [HttpGet("{encaminhamentoId}")]
+        [ProducesResponseType(typeof(EncaminhamentoNAAPARespostaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.ENC_NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterEncaminhamento(long encaminhamentoId, [FromServices] IObterEncaminhamentoNAAPAPorIdUseCase useCase)
+        {
+            return Ok(await useCase.Executar(encaminhamentoId));
+        }
+
+        [HttpPost("upload")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.ENC_NAAPA_I, Policy = "Bearer")]
+        public async Task<IActionResult> Upload([FromForm] IFormFile file, [FromServices] IUploadDeArquivoUseCase useCase)
+        {
+            if (file.Length > 0)
+                return Ok(await useCase.Executar(file, Dominio.TipoArquivo.EncaminhamentoNAAPA));
+
+            return BadRequest();
+        }
+
         [HttpGet("obterEncaminhamentoPorTipo")]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<NovoEncaminhamentoNAAPAResumoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        [Permissao(Permissao.ENC_NAAPA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterEncaminhamentosPaginados([FromQuery] FiltroNovoEncaminhamentoNAAPADto filtro,
             [FromServices] IObterNovosEncaminhamentosNAAPAPorTipoUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
+        }
+
+        [HttpDelete("arquivo")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.ENC_NAAPA_E, Policy = "Bearer")]
+        public async Task<IActionResult> ExcluirArquivo([FromQuery] Guid arquivoCodigo, [FromServices] IExcluirArquivoNAAPAUseCase useCase)
+        {
+            return Ok(await useCase.Executar(arquivoCodigo));
+        }
+
+        [HttpPost("salvar")]
+        [ProducesResponseType(typeof(IEnumerable<ResultadoNovoEncaminhamentoNAAPADto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.ENC_NAAPA_I, Permissao.ENC_NAAPA_A, Policy = "Bearer")]
+        public async Task<IActionResult> RegistrarNovoEncaminhamento([FromBody] NovoEncaminhamentoNAAPADto encaminhamentoNAAPADto, [FromServices] IRegistrarNovoEncaminhamentoNAAPAUseCase registrarNovoEncaminhamentoNAAPAUseCase)
+        {
+            return Ok(await registrarNovoEncaminhamentoNAAPAUseCase.Executar(encaminhamentoNAAPADto));
         }
     }
 }

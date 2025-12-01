@@ -257,6 +257,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(@"np.id
                                 ,ctq.tipo as TipoQuestionario
                                 ,ue.nome as UeNome 
+                                ,ue.tipo_escola as TipoEscola 
                                 ,np.aluno_nome as NomeAluno 
                                 ,t.nome as TurmaNome
                                 ,case when length(qdata.DataAberturaQueixaInicio) > 0 then to_date(qdata.DataAberturaQueixaInicio,'yyyy-mm-dd') else null end DataAberturaQueixaInicio
@@ -327,6 +328,69 @@ namespace SME.SGP.Dados.Repositorios
                 if (dataAberturaQueixaFim.HasValue)
                     sql.AppendLine(" and to_date(qdata.DataAberturaQueixaInicio,'yyyy-mm-dd') <= @dataAberturaQueixaFim");
             }
+        }
+
+        public async Task<EncaminhamentoNAAPA> ObterEncaminhamentoPorId(long id)
+        {
+            const string query = @"select ea.*, eas.*, qea.*, rea.*, sea.*, q.*, op.*
+                                    from encaminhamento_naapa ea
+                                    inner join encaminhamento_naapa_secao eas on eas.encaminhamento_naapa_id = ea.id
+                                        and not eas.excluido
+                                    inner join secao_encaminhamento_naapa sea on sea.id = eas.secao_encaminhamento_id
+                                        and not sea.excluido
+                                    inner join encaminhamento_naapa_questao qea on qea.encaminhamento_naapa_secao_id = eas.id
+                                        and not qea.excluido
+                                    inner join questao q on q.id = qea.questao_id
+                                        and not q.excluido
+                                    inner join encaminhamento_naapa_resposta rea on rea.questao_encaminhamento_id = qea.id
+                                        and not rea.excluido
+                                    left join opcao_resposta op on op.id = rea.resposta_id
+                                        and not op.excluido
+                                    where ea.id = @id
+                                    and not ea.excluido";
+
+            var encaminhamento = new EncaminhamentoNAAPA();
+
+            await database.Conexao
+                .QueryAsync<EncaminhamentoNAAPA, EncaminhamentoNAAPASecao, QuestaoEncaminhamentoNAAPA,
+                    RespostaEncaminhamentoNAAPA, SecaoEncaminhamentoNAAPA, Questao, OpcaoResposta, EncaminhamentoNAAPA>(
+                    query, (encaminhamentoNAAPA, encaminhamentoSecao, questaoEncaminhamentoNAAPA, respostaEncaminhamento,
+                        secaoEncaminhamento, questao, opcaoResposta) =>
+                    {
+                        if (encaminhamento.Id == 0)
+                            encaminhamento = encaminhamentoNAAPA;
+
+                        var secao = encaminhamento.Secoes.FirstOrDefault(c => c.Id == encaminhamentoSecao.Id);
+
+                        if (secao.EhNulo())
+                        {
+                            encaminhamentoSecao.SecaoEncaminhamentoNAAPA = secaoEncaminhamento;
+                            secao = encaminhamentoSecao;
+                            encaminhamento.Secoes.Add(secao);
+                        }
+
+                        var questaoEncaminhamento = secao.Questoes.FirstOrDefault(c => c.Id == questaoEncaminhamentoNAAPA.Id);
+
+                        if (questaoEncaminhamento.EhNulo())
+                        {
+                            questaoEncaminhamento = questaoEncaminhamentoNAAPA;
+                            questaoEncaminhamento.Questao = questao;
+                            secao.Questoes.Add(questaoEncaminhamento);
+                        }
+
+                        var resposta = questaoEncaminhamento.Respostas.FirstOrDefault(c => c.Id == respostaEncaminhamento.Id);
+
+                        if (resposta.EhNulo())
+                        {
+                            resposta = respostaEncaminhamento;
+                            resposta.Resposta = opcaoResposta;
+                            questaoEncaminhamento.Respostas.Add(resposta);
+                        }
+
+                        return encaminhamento;
+                    }, new { id });
+
+            return encaminhamento;
         }
     }
 }

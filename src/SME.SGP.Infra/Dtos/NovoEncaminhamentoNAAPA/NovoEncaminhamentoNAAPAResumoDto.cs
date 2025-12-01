@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Dominio;
+using System;
 
 namespace SME.SGP.Infra.Dtos.NovoEncaminhamentoNAAPA
 {
@@ -6,6 +7,7 @@ namespace SME.SGP.Infra.Dtos.NovoEncaminhamentoNAAPA
     {
         public long Id { get; set; }
         public string TipoQuestionario { get; set; }
+        public TipoEscola TipoEscola { get; set; }
         public string UeNome { get; set; }
         public string NomeAluno { get; set; }
         public string TurmaNome { get; set; }

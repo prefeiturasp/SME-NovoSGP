@@ -12,7 +12,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Queries.NovoEncaminhamentoNAAPA
+namespace SME.SGP.Aplicacao.Queries.NovoEncaminhamentoNAAPA.ObterNovosEncaminhamentosNAAPAPorTipo
 {
     public class ObterNovosEncaminhamentosNAAPAPorTipoQueryHandler : ConsultasBase,
         IRequestHandler<ObterNovosEncaminhamentosNAAPAPorTipoQuery, PaginacaoResultadoDto<NovoEncaminhamentoNAAPAResumoDto>>
@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao.Queries.NovoEncaminhamentoNAAPA
                 {
                     Id = encaminhamento.Id,
                     TipoQuestionario = ((TipoQuestionario)int.Parse(encaminhamento.TipoQuestionario)).Name(),
-                    UeNome = encaminhamento.UeNome,
+                    UeNome = $"{encaminhamento.TipoEscola.ShortName()} {encaminhamento.UeNome}",
                     NomeAluno = encaminhamento.NomeAluno,
                     TurmaNome = encaminhamento.TurmaNome,
                     DataAberturaQueixaInicio = encaminhamento.DataAberturaQueixaInicio,

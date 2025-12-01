@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
         }
         private async Task<AlunoTurmaReduzidoDto> ObterAlunoPorCodigoETurma(string alunoCodigo, string turmaCodigo,int anoLetivo)
         {
-            var aluno = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(turmaCodigo, alunoCodigo, true));
+            var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(alunoCodigo, anoLetivo, false, true, turmaCodigo));
             if (aluno.EhNulo()) throw new NegocioException(MensagemNegocioEOL.NAO_LOCALIZADO_INFORMACOES_ALUNO_TURMA_EOL);           
 
             var frequencia = await mediator.Send(new ObterConsultaFrequenciaGeralAlunoQuery(alunoCodigo, turmaCodigo));
@@ -75,6 +75,8 @@ namespace SME.SGP.Aplicacao
                 NumeroAlunoChamada = aluno.ObterNumeroAlunoChamada(),
                 DataNascimento = aluno.DataNascimento,
                 DataSituacao = aluno.DataSituacao,
+                Idade = aluno.Idade,
+                DocumentoCpf = aluno.DocumentoCpf,
                 CodigoAluno = aluno.CodigoAluno,
                 CodigoSituacaoMatricula = aluno.CodigoSituacaoMatricula,
                 Situacao = aluno.SituacaoMatricula,
