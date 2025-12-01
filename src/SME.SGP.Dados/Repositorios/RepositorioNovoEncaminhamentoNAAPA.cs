@@ -257,6 +257,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(@"np.id
                                 ,ctq.tipo as TipoQuestionario
                                 ,ue.nome as UeNome 
+                                ,ue.tipo_escola as TipoEscola 
                                 ,np.aluno_nome as NomeAluno 
                                 ,t.nome as TurmaNome
                                 ,case when length(qdata.DataAberturaQueixaInicio) > 0 then to_date(qdata.DataAberturaQueixaInicio,'yyyy-mm-dd') else null end DataAberturaQueixaInicio

@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao.Queries.NovoEncaminhamentoNAAPA.ObterNovosEncaminham
                 {
                     Id = encaminhamento.Id,
                     TipoQuestionario = ((TipoQuestionario)int.Parse(encaminhamento.TipoQuestionario)).Name(),
-                    UeNome = encaminhamento.UeNome,
+                    UeNome = $"{encaminhamento.TipoEscola.ShortName()} {encaminhamento.UeNome}",
                     NomeAluno = encaminhamento.NomeAluno,
                     TurmaNome = encaminhamento.TurmaNome,
                     DataAberturaQueixaInicio = encaminhamento.DataAberturaQueixaInicio,

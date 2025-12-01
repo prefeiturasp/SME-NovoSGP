@@ -312,9 +312,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso.NovoEncaminhamentoNAAPA
         private async Task<List<QuestaoObrigatoriaNaoRespondidaDto>> ObterQuestoesObrigatoriasNaoPreechidas(NovoEncaminhamentoNAAPADto encaminhamentoNAAPADto, int codigoModalidade)
 
         {
-            List<QuestaoObrigatoriaNaoRespondidaDto> questoesObrigatoriasAConsistir = new List<QuestaoObrigatoriaNaoRespondidaDto>();
-            var secoesEtapa = await mediator.Send(new ObterSecoesQuestionarioEncaminhamentoNAAPADtoQuery(codigoModalidade));
-            //var secoesEtapa = await mediator.Send(new ObterSecaoEncaminhamentoIndividualQuery(null));
+            List<QuestaoObrigatoriaNaoRespondidaDto> questoesObrigatoriasAConsistir = new List<QuestaoObrigatoriaNaoRespondidaDto>();            
+            var secoesEtapa = await mediator.Send(new ObterSecaoEncaminhamentoIndividualQuery(null));
             IEnumerable<RespostaQuestaoObrigatoriaDto> respostasPersistidas = null;
 
             foreach (var secao in secoesEtapa)
