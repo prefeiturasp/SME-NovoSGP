@@ -6,7 +6,7 @@ using SME.SGP.Infra.Dtos.NovoEncaminhamentoNAAPA;
 using System;
 using System.Linq;
 
-namespace SME.SGP.Aplicacao.Queries.NovoEncaminhamentoNAAPA
+namespace SME.SGP.Aplicacao.Queries.NovoEncaminhamentoNAAPA.ObterNovosEncaminhamentosNAAPAPorTipo
 {
     public class ObterNovosEncaminhamentosNAAPAPorTipoQuery : IRequest<PaginacaoResultadoDto<NovoEncaminhamentoNAAPAResumoDto>>
     {
