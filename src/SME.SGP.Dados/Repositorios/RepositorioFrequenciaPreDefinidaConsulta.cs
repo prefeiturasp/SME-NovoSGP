@@ -15,10 +15,12 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioFrequenciaPreDefinidaConsulta : IRepositorioFrequenciaPreDefinidaConsulta
     {
         private readonly ISgpContextConsultas sgpContextConsultas;
+        private readonly ISgpContext sgpContext;
 
-        public RepositorioFrequenciaPreDefinidaConsulta(ISgpContextConsultas dataBase)
+        public RepositorioFrequenciaPreDefinidaConsulta(ISgpContextConsultas dataBase, ISgpContext sgpContext)
         {
             this.sgpContextConsultas = dataBase ?? throw new System.ArgumentNullException(nameof(dataBase));
+            this.sgpContext = sgpContext;
         }
 
         public async Task<IEnumerable<FrequenciaPreDefinidaDto>> Listar(long turmaId, long componenteCurricularId, string codigoAluno)
@@ -59,7 +61,7 @@ namespace SME.SGP.Dados.Repositorios
                 alunoCodigo
             };
 
-            return await sgpContextConsultas.Conexao.QueryFirstOrDefaultAsync<FrequenciaPreDefinidaDto>(query.ToString(), parametros);
+            return await sgpContext.Conexao.QueryFirstOrDefaultAsync<FrequenciaPreDefinidaDto>(query.ToString(), parametros);
         }
 
         public async Task<IEnumerable<FrequenciaPreDefinidaDto>> ObterPorTurmaEComponente(long turmaId, long componenteCurricularId)
