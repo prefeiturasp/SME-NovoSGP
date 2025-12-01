@@ -1,8 +1,10 @@
-﻿using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -54,6 +56,8 @@ namespace SME.SGP.Aplicacao
                 cadastroAcessoABAE.UeId = cadastroAcessoABAEDto.UeId;
                 cadastroAcessoABAE.Cpf = cadastroAcessoABAEDto.Cpf;
             }
+
+            await mediator.Send(new ObterUsuarioCoreSSOQuery(Regex.Replace(cadastroAcessoABAEDto.Cpf, @"\D", "")));
 
             cadastroAcessoABAEDto.Id = await mediator.Send(new SalvarCadastroAcessoABAECommand(cadastroAcessoABAE));
 

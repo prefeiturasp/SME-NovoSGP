@@ -20,5 +20,7 @@ namespace SME.SGP.Infra
         public Dominio.Aplicacao Aplicacao { get; set; }
         public long? UeId { get; set; }
         public bool EhRegistroExistente { get; set; }
+        public bool EhAplicacaoSondagem => Aplicacao == Dominio.Aplicacao.SondagemAplicacao
+                                || Aplicacao == Dominio.Aplicacao.SondagemDigitacao;
     }
 }

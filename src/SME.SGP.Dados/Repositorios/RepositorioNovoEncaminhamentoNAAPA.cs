@@ -190,7 +190,7 @@ namespace SME.SGP.Dados.Repositorios
                                         where q.ordem = {QUESTAO_DATA_QUEIXA_ORDEM} 
                                               and secao.etapa = {SECAO_ETAPA_1} 
                                               and secao.ordem = {SECAO_INFORMACOES_ALUNO_ORDEM}
-                                              and not ens.excluido and not enq.excluido and not enr.excluido 
+                                              and not ens.excluido and not enq.excluido and not enr.excluido  
                                     ),
                                     vw_resposta_prioridade as (
                                         select ens.encaminhamento_naapa_id, 
@@ -205,7 +205,7 @@ namespace SME.SGP.Dados.Repositorios
                                         where q.ordem = {QUESTAO_PRIORIDADE_ORDEM} 
                                               and secao.etapa = {SECAO_ETAPA_1} 
                                               and secao.ordem = {SECAO_INFORMACOES_ALUNO_ORDEM}
-                                              and not ens.excluido and not enq.excluido and not enr.excluido 
+                                              and not ens.excluido and not enq.excluido and not enr.excluido  
                                     ),
                                     vw_resposta_data_ultimo_atendimento as (
                                         select ens.encaminhamento_naapa_id, 
@@ -219,7 +219,7 @@ namespace SME.SGP.Dados.Repositorios
                                         where length(enr.texto) > 0 
                                               and not ens.excluido and not enq.excluido and not enr.excluido  
                                               and (secao.nome_componente = 'QUESTOES_ITINERACIA' or secao.nome_componente = 'QUESTOES_ITINERANCIA')
-                                              and q2.tipo = {(int)TipoQuestionario.EncaminhamentoNAAPAIndividual} 
+                                              and q2.tipo in ({string.Join(",", TipoQuestionarioNaapa())}) 
                                               and q.nome_componente = '{QUESTAO_DATA_DO_ATENDIMENTO}'
                                         group by ens.encaminhamento_naapa_id 
                                     ),
@@ -266,7 +266,7 @@ namespace SME.SGP.Dados.Repositorios
                 ");
             }
 
-            sql.AppendLine(@" from encaminhamento_naapa np              
+            sql.AppendLine(@$" from encaminhamento_naapa np              
                                 join turma t on t.id = np.turma_id
                                 join ue on t.ue_id = ue.id
                                 left join cte_tipo_questionario ctq on ctq.encaminhamento_naapa_id = np.id
@@ -275,6 +275,14 @@ namespace SME.SGP.Dados.Repositorios
                                 left join vw_resposta_data_ultimo_atendimento qdataultimoatendimento on qdataultimoatendimento.encaminhamento_naapa_id = np.id 
                                 left join vw_suspeita_violencia vsv on vsv.encaminhamento_naapa_id = np.id
             ");
+        }
+
+        private static int[] TipoQuestionarioNaapa()
+        {
+            int[] tipoQuestionario = { (int)TipoQuestionario.EncaminhamentoNAAPAIndividual,
+                                       (int)TipoQuestionario.EncaminhamentoNAAPAInstitucional };
+
+            return tipoQuestionario;
         }
 
         private void ObterFiltro(
@@ -288,9 +296,10 @@ namespace SME.SGP.Dados.Repositorios
             string codigoUe,
             bool exibirEncerrados)
         {
-            sql.AppendLine(@" where not np.excluido 
+            sql.AppendLine($@" where not np.excluido 
                                     and t.ano_letivo = @anoLetivo
-                                    and ue.dre_Id = @dreId");
+                                    and ue.dre_Id = @dreId
+                                    and ctq.tipo in ({string.Join(",", TipoQuestionarioNaapa())})");
 
             if (!string.IsNullOrEmpty(codigoUe))
                 sql.AppendLine(@" and ue.ue_id = @codigoUe ");
