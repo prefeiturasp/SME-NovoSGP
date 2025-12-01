@@ -11,7 +11,7 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioRegistroFrequenciaAluno : RepositorioBase<RegistroFrequenciaAluno>, IRepositorioRegistroFrequenciaAluno
     {
         public RepositorioRegistroFrequenciaAluno(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
-        {}
+        { }
 
         public async Task RemoverPorRegistroFrequenciaId(long registroFrequenciaId, string[] alunosComFrequenciaRegistrada)
         {
@@ -25,9 +25,9 @@ namespace SME.SGP.Dados.Repositorios
                 new { registroFrequenciaId, numeroAula, codigoAluno });
         }
 
-        public Task<bool> InserirVarios(IEnumerable<RegistroFrequenciaAluno> registros)
+        public async Task<bool> InserirVarios(IEnumerable<RegistroFrequenciaAluno> registros)
         {
-            return Task.FromResult(InserirVariosComLog(registros, false));
+            return await InserirVariosComLog(registros, false);
         }
 
         public async Task ExcluirVarios(List<long> idsParaExcluir)
@@ -38,9 +38,9 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.ExecuteAsync(query, new { idsParaExcluir });
         }
 
-        public Task<bool> InserirVariosComLog(IEnumerable<RegistroFrequenciaAluno> registros)
+        public async Task<bool> InserirVariosComLog(IEnumerable<RegistroFrequenciaAluno> registros)
         {
-            return Task.FromResult(InserirVariosComLog(registros, true));
+            return await InserirVariosComLog(registros, true);
         }
 
         public async Task AlterarRegistroAdicionandoAula(long registroFrequenciaId, long aulaId)
@@ -50,7 +50,7 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.ExecuteAsync(query, new { aulaId, registroFrequenciaId });
         }
 
-        private bool InserirVariosComLog(IEnumerable<RegistroFrequenciaAluno> registros, bool log)
+        private async Task<bool> InserirVariosComLog(IEnumerable<RegistroFrequenciaAluno> registros, bool log)
         {
             var sql = @"copy registro_frequencia_aluno (                                         
                                         valor, 
@@ -64,21 +64,25 @@ namespace SME.SGP.Dados.Repositorios
                             from
                             stdin (FORMAT binary)";
 
-            using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
+            await using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
             {
                 foreach (var frequencia in registros)
                 {
-                    writer.StartRow();
-                    writer.Write(frequencia.Valor, NpgsqlDbType.Bigint);
-                    writer.Write(frequencia.CodigoAluno);
-                    writer.Write(frequencia.NumeroAula);
-                    writer.Write(frequencia.RegistroFrequenciaId);
-                    writer.Write(frequencia.CriadoEm);
-                    writer.Write(log ? database.UsuarioLogadoNomeCompleto : frequencia.CriadoPor);
-                    writer.Write(log ? database.UsuarioLogadoRF : frequencia.CriadoRF);
-                    writer.Write(frequencia.AulaId);
+                    await writer.StartRowAsync();
+
+                    await writer.WriteAsync(frequencia.Valor, NpgsqlDbType.Bigint);
+                    await writer.WriteAsync(frequencia.CodigoAluno);
+                    await writer.WriteAsync(frequencia.NumeroAula);
+                    await writer.WriteAsync(frequencia.RegistroFrequenciaId);
+                    await writer.WriteAsync(frequencia.CriadoEm);
+
+                    await writer.WriteAsync(log ? database.UsuarioLogadoNomeCompleto : frequencia.CriadoPor);
+                    await writer.WriteAsync(log ? database.UsuarioLogadoRF : frequencia.CriadoRF);
+
+                    await writer.WriteAsync(frequencia.AulaId);
                 }
-                writer.Complete();
+
+                await writer.CompleteAsync();
             }
 
             return true;
