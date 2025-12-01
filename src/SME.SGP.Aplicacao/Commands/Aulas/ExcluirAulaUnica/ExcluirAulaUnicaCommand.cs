@@ -21,6 +21,7 @@ namespace SME.SGP.Aplicacao
     {
         public ExcluirAulaUnicaCommandValidator()
         {
+          
         }
     }
 }

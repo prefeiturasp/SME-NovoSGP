@@ -902,6 +902,7 @@ namespace SME.SGP.Dados.Repositorios
                                 left join plano_aula pa
                                     on a.id = pa.aula_id
                           where a.tipo_calendario_id = @tipoCalendarioId and
+                                a.excluido = false and
                                 a.turma_id = @turmaId";
 
             var criadoRf = new string[] { criadoPor?.ToUpper() };

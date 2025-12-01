@@ -1,4 +1,6 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes;
@@ -7,6 +9,8 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -59,7 +63,7 @@ namespace SME.SGP.Aplicacao
         {
             var login = servicoUsuario.ObterLoginAtual();
             var usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(null, login);
-            
+
             if (usuario.EhNulo())
                 throw new NegocioException("Usuário não encontrado.");
 
@@ -88,12 +92,75 @@ namespace SME.SGP.Aplicacao
         public async Task<UsuarioAutenticacaoRetornoDto> Autenticar(string login, string senha)
         {
             login = login.Trim().ToLower();
-            var retornoAutenticacaoEol = await servicoAutenticacao.AutenticarNoEol(login, senha);
 
-            return await ObterAutenticacao(retornoAutenticacaoEol, login);
+            var usuarioAutenticacao = await mediator.Send(new AutenticarQuery(login, senha));
+
+            if (usuarioAutenticacao == null)
+                return new UsuarioAutenticacaoRetornoDto();
+
+            var chaveCache = string.Format(NomeChaveCache.LOGIN, login);
+            var cacheLogin = repositorioCache.Obter(chaveCache);
+
+            if (cacheLogin.NaoEhNulo())
+            {
+                var usuarioAutenticacaoRetornoDto = JsonConvert.DeserializeObject<UsuarioAutenticacaoRetornoDto>(cacheLogin);
+                var token = ObterToken(usuarioAutenticacaoRetornoDto?.Token);
+                if (token > DateTime.Now)
+                    return usuarioAutenticacaoRetornoDto;
+            }
+
+            var retornoAutenticacaoEol = await servicoAutenticacao.AutenticarNoEol(usuarioAutenticacao);
+
+            var autenticacao = await ObterAutenticacao(retornoAutenticacaoEol, login);
+            await repositorioCache.SalvarAsync(chaveCache, autenticacao, 2880);
+            return autenticacao;
         }
 
-        public async Task<UsuarioAutenticacaoRetornoDto> ObterAutenticacao((UsuarioAutenticacaoRetornoDto UsuarioAutenticacaoRetornoDto, string CodigoRf, IEnumerable<Guid> Perfis, 
+        private static DateTime ObterToken(string token)
+        {
+            try
+            {
+                var parts = token.Split('.');
+
+                if (parts.Length < 2)
+                    throw new ArgumentException("Token inválido");
+
+                string payload = parts[1];
+
+                // Ajustar Base64URL → Base64
+                payload = payload.Replace('-', '+').Replace('_', '/');
+
+                switch (payload.Length % 4)
+                {
+                    case 2: payload += "=="; break;
+                    case 3: payload += "="; break;
+                }
+
+                // Decodificar Base64
+                var bytes = Convert.FromBase64String(payload);
+                var json = Encoding.UTF8.GetString(bytes);
+
+                // Ler o JSON e pegar o exp
+                using var doc = JsonDocument.Parse(json);
+
+                long exp = doc.RootElement.GetProperty("exp").GetInt64();
+
+                // Converter Unix → DateTime (em UTC)
+                DateTime utcDate = DateTimeOffset.FromUnixTimeSeconds(exp).UtcDateTime;
+
+                // Converter para Horário de Brasília (UTC-3)
+                TimeZoneInfo brasiliaTZ = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
+                DateTime brasiliaDate = TimeZoneInfo.ConvertTimeFromUtc(utcDate, brasiliaTZ);
+
+                return brasiliaDate;
+            }
+            catch (Exception)
+            {
+                return DateTime.MinValue;
+            }
+        }
+
+        public async Task<UsuarioAutenticacaoRetornoDto> ObterAutenticacao((UsuarioAutenticacaoRetornoDto UsuarioAutenticacaoRetornoDto, string CodigoRf, IEnumerable<Guid> Perfis,
                                                                             bool PossuiCargoCJ, bool PossuiPerfilCJ) retornoAutenticacaoEol, string login, SuporteUsuario suporte = null)
         {
             if (!retornoAutenticacaoEol.UsuarioAutenticacaoRetornoDto.Autenticado)
@@ -130,7 +197,7 @@ namespace SME.SGP.Aplicacao
             await SalvarCacheUsuario(usuario);
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.AtualizaUltimoLoginUsuario, usuario, usuarioLogado: usuario));
 
-            await mediator.Send(new CarregarAbrangenciaUsuarioCommand(login, perfilSelecionado));
+            //await mediator.Send(new CarregarAbrangenciaUsuarioCommand(login, perfilSelecionado));
 
             retornoAutenticacaoEol.UsuarioAutenticacaoRetornoDto.UsuarioLogin = usuario.Login;
             retornoAutenticacaoEol.UsuarioAutenticacaoRetornoDto.UsuarioRf = usuario.CodigoRf;
@@ -148,8 +215,8 @@ namespace SME.SGP.Aplicacao
             {
                 return new AdministradorSuporteDto
                 {
-                   Login = suporte.Administrador.Login,
-                   Nome = suporte.Administrador.Nome
+                    Login = suporte.Administrador.Login,
+                    Nome = suporte.Administrador.Nome
                 };
             }
 
@@ -175,7 +242,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi possível obter os permissionamentos do perfil selecionado");
 
             await servicoAbrangencia.Salvar(loginAtual, perfil, false);
-            
+
             var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             usuario.DefinirPerfilAtual(perfil);
@@ -233,7 +300,7 @@ namespace SME.SGP.Aplicacao
             // Busca lista de permissões do EOL
             var dadosAcesso = await mediator.Send(new CarregarDadosAcessoPorLoginPerfilQuery(login, guidPerfil));
             var permissionamentos = dadosAcesso.Permissoes.ToList();
-            
+
             if (!permissionamentos.Any())
                 return null;
 

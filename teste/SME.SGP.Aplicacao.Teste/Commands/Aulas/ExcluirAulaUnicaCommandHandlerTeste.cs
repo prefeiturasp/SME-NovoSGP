@@ -7,6 +7,9 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -44,7 +47,7 @@ namespace SME.SGP.Aplicacao.Teste.Commands.Aulas
         private ExcluirAulaUnicaCommand CriarComandoFake(bool ehGestor)
         {
             var usuario = new Usuario { CodigoRf = "123456", Nome = "Teste" };
-            // A lógica de EhGestorEscolar depende do PerfilAtual
+            // A l�gica de EhGestorEscolar depende do PerfilAtual
             usuario.DefinirPerfilAtual(ehGestor ? Perfis.PERFIL_DIRETOR : Perfis.PERFIL_PROFESSOR);
 
             var aula = new Aula
@@ -59,42 +62,42 @@ namespace SME.SGP.Aplicacao.Teste.Commands.Aulas
             return new ExcluirAulaUnicaCommand(usuario, aula);
         }
 
-        [Fact(DisplayName = "Deve lançar exceção quando a aula possuir avaliação")]
+        [Fact(DisplayName = "Deve lan�ar exce��o quando a aula possuir avalia��o")]
         public async Task Handle_QuandoAulaPossuiAvaliacao_DeveLancarNegocioException()
         {
-            // Organização
+            // Organiza��o
             var comando = CriarComandoFake(true);
             _mediatorMock.Setup(m => m.Send(It.IsAny<AulaPossuiAvaliacaoQuery>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(true);
 
-            // Ação e Verificação
+            // A��o e Verifica��o
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => _commandHandler.Handle(comando, default));
-            excecao.Message.Should().Be("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");
+            RemoveAcentos(excecao.Message).Should().BeEquivalentTo("Aula com avaliacao vinculada. Para excluir esta aula primeiro devera ser excluida a avaliacao.");
         }
 
-        [Fact(DisplayName = "Deve lançar exceção quando a validação de componentes do professor falhar")]
+        [Fact(DisplayName = "Deve lan�ar exce��o quando a valida��o de componentes do professor falhar")]
         public async Task Handle_QuandoValidacaoProfessorFalhar_DeveLancarNegocioException()
         {
-            // Organização
-            var comando = CriarComandoFake(false); // Usuário não é gestor
+            // Organiza��o
+            var comando = CriarComandoFake(false); // Usu�rio n�o � gestor
             _mediatorMock.Setup(m => m.Send(It.IsAny<AulaPossuiAvaliacaoQuery>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(false);
             _mediatorMock.Setup(m => m.Send(It.IsAny<ValidarComponentesDoProfessorCommand>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync((false, "Professor não pode excluir a aula."));
+                         .ReturnsAsync((false, "Professor n�o pode excluir a aula."));
 
-            // Ação e Verificação
+            // A��o e Verifica��o
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => _commandHandler.Handle(comando, default));
-            excecao.Message.Should().Be("Professor não pode excluir a aula.");
+            excecao.Message.Should().Be("Professor n�o pode excluir a aula.");
         }
 
-        [Fact(DisplayName = "Deve executar todas as operações de exclusão em caso de sucesso")]
+        [Fact(DisplayName = "Deve executar todas as opera��es de exclus�o em caso de sucesso")]
         public async Task Handle_QuandoValido_DeveExecutarTodasAsOperacoesDeExclusao()
         {
-            // Organização
+            // Organiza��o
             var comando = CriarComandoFake(true);
             Aula aulaCapturada = null;
 
-            // Prepara retornos dos repositórios para simular arquivos existentes
+            // Prepara retornos dos reposit�rios para simular arquivos existentes
             _repositorioPlanoAulaMock.Setup(r => r.ObterPlanoAulaPorAulaRegistroExcluido(comando.Aula.Id))
                 .ReturnsAsync(new PlanoAula { Descricao = "arquivo1", RecuperacaoAula = "arquivo2", LicaoCasa = "arquivo3" });
 
@@ -107,18 +110,18 @@ namespace SME.SGP.Aplicacao.Teste.Commands.Aulas
             _repositorioAulaMock.Setup(r => r.SalvarAsync(It.IsAny<Aula>()))
                                 .Callback<Aula>(aula => aulaCapturada = aula);
 
-            // Ação
+            // A��o
             var retorno = await _commandHandler.Handle(comando, default);
 
-            // Verificação
+            // Verifica��o
             retorno.Should().NotBeNull();
-            retorno.Mensagens.Should().Contain("Aula excluída com sucesso.");
+            RemoveAcentos(retorno.Mensagens.FirstOrDefault()).Should().BeEquivalentTo("Aula excluida com sucesso.");
 
-            // Verifica se a aula foi marcada como excluída
+            // Verifica se a aula foi marcada como exclu�da
             aulaCapturada.Should().NotBeNull();
             aulaCapturada.Excluido.Should().BeTrue();
 
-            // Verifica publicações em fila
+            // Verifica publica��es em fila
             _mediatorMock.Verify(m => m.Send(It.Is<PublicarFilaSgpCommand>(c => c.Rota == RotasRabbitSgp.WorkflowAprovacaoExcluir), It.IsAny<CancellationToken>()), Times.Once);
             _mediatorMock.Verify(m => m.Send(It.IsAny<PublicarFilaEmLoteSgpCommand>(), It.IsAny<CancellationToken>()), Times.Once);
 
@@ -126,26 +129,36 @@ namespace SME.SGP.Aplicacao.Teste.Commands.Aulas
             _mediatorMock.Verify(m => m.Send(It.IsAny<ExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdCommand>(), It.IsAny<CancellationToken>()), Times.Once);
             _mediatorMock.Verify(m => m.Send(It.IsAny<RecalcularFrequenciaPorTurmaCommand>(), It.IsAny<CancellationToken>()), Times.Once);
 
-            // Verifica remoção de arquivos (5 arquivos no total)
+            // Verifica remo��o de arquivos (5 arquivos no total)
             _mediatorMock.Verify(m => m.Send(It.IsAny<RemoverArquivosExcluidosCommand>(), It.IsAny<CancellationToken>()), Times.Exactly(5));
         }
 
-        [Fact(DisplayName = "Não deve remover arquivos quando eles não existirem")]
+        [Fact(DisplayName = "N�o deve remover arquivos quando eles n�o existirem")]
         public async Task Handle_QuandoNaoHouverArquivos_NaoDeveTentarRemover()
         {
-            // Organização
+            // Organiza��o
             var comando = CriarComandoFake(true);
 
-            // Simula repositórios retornando nulo ou lista vazia
+            // Simula reposit�rios retornando nulo ou lista vazia
             _repositorioPlanoAulaMock.Setup(r => r.ObterPlanoAulaPorAulaRegistroExcluido(comando.Aula.Id)).ReturnsAsync((PlanoAula)null);
             _repositorioDiarioBordoMock.Setup(r => r.ObterPorAulaId(comando.Aula.Id)).ReturnsAsync(new List<DiarioBordo>());
             _repositorioAnotacaoFrequenciaAlunoMock.Setup(r => r.ObterPorAulaIdRegistroExcluido(comando.Aula.Id)).ReturnsAsync(new List<AnotacaoFrequenciaAluno>());
 
-            // Ação
+            // A��o
             await _commandHandler.Handle(comando, default);
 
-            // Verificação
+            // Verifica��o
             _mediatorMock.Verify(m => m.Send(It.IsAny<RemoverArquivosExcluidosCommand>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        private static string RemoveAcentos(string texto)
+        {
+            var normalized = texto.Normalize(NormalizationForm.FormD);
+            var sb = new StringBuilder();
+            foreach (var c in normalized)
+                if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                    sb.Append(c);
+            return sb.ToString().Normalize(NormalizationForm.FormC);
         }
     }
 }

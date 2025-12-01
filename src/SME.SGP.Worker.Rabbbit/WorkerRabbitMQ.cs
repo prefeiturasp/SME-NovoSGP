@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.AbrangenciaSync;
 using SME.SGP.Aplicacao.Workers;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
@@ -121,6 +122,7 @@ namespace SME.SGP.Worker.RabbitMQ
             Comandos.Add(RotasRabbitSgp.RotaExecutarExclusaoDaNotificacao, new ComandoRabbit("Executar exclusão notificação", typeof(IExecutarExclusaoNotificacaoUseCase), true));
             Comandos.Add(RotasRabbitSgp.ExecutarAtualizacaoMapeamentoEstudantes, new ComandoRabbit("Executar atualização do mapeamento dos estudantes", typeof(IAtualizarMapeamentoDosEstudantesUseCase), true));
             Comandos.Add(RotasRabbitSgp.ExecutarAtualizacaoMapeamentoEstudantesBimestre, new ComandoRabbit("Executar atualização do mapeamento do estudante do bimestre", typeof(IAtualizarMapeamentoDoEstudanteDoBimestreUseCase), true));
+            Comandos.Add(RotasRabbitSgp.SincronizarAbrangencia, new ComandoRabbit("Inicia o processo de sincronização", typeof(IAbrangenciaSyncUseCase)));
         }
     }
 }

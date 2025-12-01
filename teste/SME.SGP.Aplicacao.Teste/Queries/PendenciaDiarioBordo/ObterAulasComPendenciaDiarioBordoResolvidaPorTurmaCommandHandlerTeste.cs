@@ -22,10 +22,10 @@ namespace SME.SGP.Aplicacao.Teste.Queries.PendenciaDiarioBordo
             _faker = new Faker("pt_BR");
         }
 
-        [Fact(DisplayName = "Deve chamar o repositório e retornar as pendências encontradas")]
+        [Fact(DisplayName = "Deve chamar o reposit�rio e retornar as pend�ncias encontradas")]
         public async Task Handle_DeveChamarRepositorio_E_RetornarAsPendencias()
         {
-            // Organização
+            // Organiza��o
             var turmaId = _faker.Random.AlphaNumeric(10);
             var comando = new ObterAulasComPendenciaDiarioBordoResolvidaPorTurmaCommand(turmaId);
 
@@ -37,18 +37,18 @@ namespace SME.SGP.Aplicacao.Teste.Queries.PendenciaDiarioBordo
             _repositorioMock.Setup(r => r.ListarPendenciaDiarioBordoParaExcluirPorIdTurma(turmaId))
                             .ReturnsAsync(pendenciasEsperadas);
 
-            // Ação
+            // A��o
             var resultado = await _commandHandler.Handle(comando, default);
 
-            // Verificação
+            // Verifica��o
             resultado.Should().BeEquivalentTo(pendenciasEsperadas);
             _repositorioMock.Verify(r => r.ListarPendenciaDiarioBordoParaExcluirPorIdTurma(turmaId), Times.Once);
         }
 
-        [Fact(DisplayName = "Deve retornar uma lista vazia quando o repositório não encontrar pendências")]
+        [Fact(DisplayName = "Deve retornar uma lista vazia quando o reposit�rio n�o encontrar pend�ncias")]
         public async Task Handle_QuandoNaoHouverPendencias_DeveRetornarListaVazia()
         {
-            // Organização
+            // Organiza��o
             var turmaId = _faker.Random.AlphaNumeric(10);
             var comando = new ObterAulasComPendenciaDiarioBordoResolvidaPorTurmaCommand(turmaId);
 
@@ -57,10 +57,10 @@ namespace SME.SGP.Aplicacao.Teste.Queries.PendenciaDiarioBordo
             _repositorioMock.Setup(r => r.ListarPendenciaDiarioBordoParaExcluirPorIdTurma(turmaId))
                             .ReturnsAsync(listaVazia);
 
-            // Ação
+            // A��o
             var resultado = await _commandHandler.Handle(comando, default);
 
-            // Verificação
+            // Verifica��o
             resultado.Should().NotBeNull();
             resultado.Should().BeEmpty();
             _repositorioMock.Verify(r => r.ListarPendenciaDiarioBordoParaExcluirPorIdTurma(turmaId), Times.Once);

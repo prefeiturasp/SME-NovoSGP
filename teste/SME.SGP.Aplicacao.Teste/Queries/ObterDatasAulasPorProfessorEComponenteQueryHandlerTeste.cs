@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries
     {
         private readonly ObterDatasAulasPorProfessorEComponenteQueryHandler query;
         private readonly Mock<IMediator> mediator;
-        private readonly Mock<IRepositorioAulaConsulta> repositorioAulaConsulta;      
+        private readonly Mock<IRepositorioAulaConsulta> repositorioAulaConsulta;
 
         public ObterDatasAulasPorProfessorEComponenteQueryHandlerTeste()
         {
@@ -28,15 +28,14 @@ namespace SME.SGP.Aplicacao.Teste.Queries
         [Fact]
         public async Task Deve_Obter_Datas_Aulas()
         {
-            //Arrange
             mediator.Setup(a => a.Send(It.IsAny<ObterTurmaPorCodigoQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new Turma() {AnoLetivo = 2020, CodigoTurma = "123"});
+                .ReturnsAsync(new Turma() { AnoLetivo = 2020, CodigoTurma = "123" });
 
-            var aula1 = new Aula() {DataAula = new DateTime(2020, 08, 05), Id = 1};
-            var aula2 = new Aula() {DataAula = new DateTime(2020, 08, 05), Id = 2};
-            var aula3 = new Aula() {DataAula = new DateTime(2020, 08, 06), Id = 3};
+            var aula1 = new SME.SGP.Dominio.Aula() { DataAula = new DateTime(2020, 08, 05, 0, 0, 0, DateTimeKind.Local), Id = 1 };
+            var aula2 = new SME.SGP.Dominio.Aula() { DataAula = new DateTime(2020, 08, 05, 0, 0, 0, DateTimeKind.Local), Id = 2 };
+            var aula3 = new SME.SGP.Dominio.Aula() { DataAula = new DateTime(2020, 08, 06, 0, 0, 0, DateTimeKind.Local), Id = 3 };
 
-            var listaAulas = new List<Aula>()
+            var listaAulas = new List<SME.SGP.Dominio.Aula>()
             {
                 aula1, aula2, aula3
             };
@@ -82,7 +81,6 @@ namespace SME.SGP.Aplicacao.Teste.Queries
             repositorioAulaConsulta.Setup(x => x.ObterDatasDeAulasPorAnoTurmaEDisciplinaVerificandoSePossuiFrequenciaAulaRegistrada(It.IsAny<IEnumerable<long>>(), It.IsAny<int>(),
                 It.IsAny<string>(), It.IsAny<string[]>(), It.IsAny<string>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<bool>())).ReturnsAsync(aulaPossuiFrequenciaAulaRegistradaDto);
 
-
             mediator.Setup(x => x.Send(It.IsAny<ObterAulasPorIdsQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(listaAulas);
 
@@ -90,7 +88,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries
                 .ReturnsAsync(1);
 
             mediator.Setup(x => x.Send(It.IsAny<ObterPeriodosEscolaresPorTipoCalendarioQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<PeriodoEscolar>() {new PeriodoEscolar() {Id = 1, Bimestre = 1}});
+                .ReturnsAsync(new List<PeriodoEscolar>() { new PeriodoEscolar() { Id = 1, Bimestre = 1 } });
 
             var usuario = new Usuario();
             usuario.DefinirPerfis(new List<PrioridadePerfil>());
@@ -98,12 +96,9 @@ namespace SME.SGP.Aplicacao.Teste.Queries
             mediator.Setup(x => x.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(usuario);
 
-            // Act
             var datasAulas = await query.Handle(new ObterDatasAulasPorProfessorEComponenteQuery("123", "1105"), new CancellationToken());
 
-            //// Assert
             Assert.NotNull(datasAulas);
-
             Assert.True(datasAulas.Count() == 2, "O retorno deve conter duas datas");
             Assert.True(datasAulas.First().Aulas.Count() == 2, "O primeiro dia deve conter duas aulas");
         }

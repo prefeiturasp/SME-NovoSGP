@@ -44,14 +44,14 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             mediator.Setup(a => a.Send(It.IsAny<RemoverArquivosExcluidosCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
 
-            repositorioDiarioBordo.Setup(a => a.SalvarAsync(It.IsAny<DiarioBordo>()))
+            repositorioDiarioBordo.Setup(a => a.SalvarAsync(It.IsAny<Dominio.DiarioBordo>()))
                 .ReturnsAsync(1);
 
             // Act
             var auditoriaDto = inserirDiarioBordoCommandHandler.Handle(new InserirDiarioBordoCommand(1, "teste de inclusão de diário de bordo... teste de inclusão de diário de bordo... teste de inclusão de diário de bordo... teste de inclusão de diário de bordo... teste de inclusão de diário de bordo.....", 1), new System.Threading.CancellationToken());
 
             // Assert
-            repositorioDiarioBordo.Verify(x => x.SalvarAsync(It.IsAny<DiarioBordo>()), Times.Once);
+            repositorioDiarioBordo.Verify(x => x.SalvarAsync(It.IsAny<Dominio.DiarioBordo>()), Times.Once);
             Assert.True(auditoriaDto.Id > 0);
 
             return Task.CompletedTask;

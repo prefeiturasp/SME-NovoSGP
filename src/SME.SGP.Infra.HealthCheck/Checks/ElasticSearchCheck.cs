@@ -37,7 +37,7 @@ namespace SME.SGP.Infra
             {
                 "green" => HealthCheckResult.Healthy($"O serviço ElasticSearch está respondendo normalmente - {healthColor.ToUpper()}."),
                 "yellow" => HealthCheckResult.Healthy($"O serviço ElasticSearch está respondendo normalmente - {healthColor.ToUpper()} (é normal para clusters de nó único)."),
-                _ => HealthCheckResult.Unhealthy($"O serviço Redis apresenta problemas - {healthColor.ToUpper()}")
+                _ => HealthCheckResult.Unhealthy($"O serviço ElasticSearch apresenta problemas - {healthColor.ToUpper()}")
             };            
         }
     }

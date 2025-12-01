@@ -26,37 +26,37 @@ namespace SME.SGP.Aplicacao.Teste.Commands.PendenciaDiarioBordo
             _faker = new Faker("pt_BR");
         }
 
-        [Fact(DisplayName = "Deve retornar true quando a lista de pendências para excluir for vazia")]
+        [Fact(DisplayName = "Deve retornar true quando a lista de pend�ncias para excluir for vazia")]
         public async Task Handle_QuandoListaVazia_DeveRetornarTrue()
         {
-            // Organização
+            // Organiza��o
             var comando = new PendenciaDiarioBordoParaExcluirCommand(new List<PendenciaDiarioBordoParaExcluirDto>());
 
-            // Ação
+            // A��o
             var resultado = await _commandHandler.Handle(comando, default);
 
-            // Verificação
+            // Verifica��o
             resultado.Should().BeTrue();
             _mediatorMock.Verify(m => m.Send(It.IsAny<IRequest<bool>>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
         public static IEnumerable<object[]> CasosDeTeste()
         {
-            // Cenário 1: Todas as exclusões com sucesso
+            // Cen�rio 1: Todas as exclus�es com sucesso
             yield return new object[] { new[] { true, true, true }, true };
 
-            // Cenário 2: Uma das exclusões falha
+            // Cen�rio 2: Uma das exclus�es falha
             yield return new object[] { new[] { true, false, true }, false };
 
-            // Cenário 3: Todas as exclusões falham
+            // Cen�rio 3: Todas as exclus�es falham
             yield return new object[] { new[] { false, false, false }, false };
         }
 
-        [Theory(DisplayName = "Deve retornar o resultado agregado da exclusão das pendências")]
+        [Theory(DisplayName = "Deve retornar o resultado agregado da exclus�o das pend�ncias")]
         [MemberData(nameof(CasosDeTeste))]
         public async Task Handle_QuandoProcessarLista_DeveRetornarResultadoAgregado(bool[] resultadosDosComandos, bool resultadoFinalEsperado)
         {
-            // Organização
+            // Organiza��o
             var listaDePendencias = new List<PendenciaDiarioBordoParaExcluirDto>();
             for (int i = 0; i < resultadosDosComandos.Length; i++)
             {
@@ -69,17 +69,17 @@ namespace SME.SGP.Aplicacao.Teste.Commands.PendenciaDiarioBordo
 
             var comando = new PendenciaDiarioBordoParaExcluirCommand(listaDePendencias);
 
-            // Configura a sequência de retornos do mediator
+            // Configura a sequ�ncia de retornos do mediator
             var setupSequencia = _mediatorMock.SetupSequence(m => m.Send(It.IsAny<ExcluirPendenciaDiarioBordoPorIdEComponenteIdCommand>(), default));
             foreach (var item in resultadosDosComandos)
             {
                 setupSequencia.ReturnsAsync(item);
             }
 
-            // Ação
+            // A��o
             var resultado = await _commandHandler.Handle(comando, default);
 
-            // Verificação
+            // Verifica��o
             resultado.Should().Be(resultadoFinalEsperado);
             _mediatorMock.Verify(m => m.Send(It.IsAny<ExcluirPendenciaDiarioBordoPorIdEComponenteIdCommand>(), It.IsAny<CancellationToken>()), Times.Exactly(resultadosDosComandos.Length));
         }

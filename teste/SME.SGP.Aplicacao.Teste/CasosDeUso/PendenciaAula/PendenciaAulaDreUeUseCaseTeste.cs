@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PendenciaAula
             _mediatorMock = new Mock<IMediator>();
             _useCase = new PendenciaAulaDreUeUseCase(_mediatorMock.Object);
 
-            // Configuração do Bogus para gerar um objeto Ue válido usando os tipos de domínio reais
+            // Configura��o do Bogus para gerar um objeto Ue v�lido usando os tipos de dom�nio reais
             _ueFaker = new Faker<Ue>("pt_BR")
                 .RuleFor(u => u.Id, f => f.Random.Long(1, 10000))
                 .RuleFor(u => u.CodigoUe, f => f.Random.AlphaNumeric(6))
@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PendenciaAula
         {
             var parametro = new ParametrosSistema { Ativo = ativo };
 
-            // O UseCase pode receber um nulo se o parâmetro não existir, então simulamos isso também.
+            // O UseCase pode receber um nulo se o par�metro n�o existir, ent�o simulamos isso tamb�m.
             ParametrosSistema retorno = ativo ? parametro : null;
 
             _mediatorMock.Setup(m => m.Send(It.Is<ObterParametroSistemaPorTipoEAnoQuery>(q => q.TipoParametroSistema == tipo), It.IsAny<CancellationToken>()))
@@ -53,24 +53,24 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PendenciaAula
             _mediatorMock.Verify(m => m.Send(It.Is<PublicarFilaSgpCommand>(c => c.Rota == rota), It.IsAny<CancellationToken>()), vezes);
         }
 
-        [Fact(DisplayName = "Deve retornar false e não processar quando a mensagem for inválida")]
+        [Fact(DisplayName = "Deve retornar false e n�o processar quando a mensagem for inv�lida")]
         public async Task Executar_QuandoMensagemInvalida_DeveRetornarFalseENaoProcessar()
         {
-            // Organização
+            // Organiza��o
             var mensagemInvalida = new MensagemRabbit("null");
 
-            // Ação
+            // A��o
             var resultado = await _useCase.Executar(mensagemInvalida);
 
-            // Verificação
+            // Verifica��o
             Assert.False(resultado);
             _mediatorMock.Verify(m => m.Send(It.IsAny<IRequest<bool>>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
-        [Fact(DisplayName = "Deve disparar todas as filas quando a UE não ignora pendências e os parâmetros estão ativos")]
+        [Fact(DisplayName = "Deve disparar todas as filas quando a UE n�o ignora pend�ncias e os par�metros est�o ativos")]
         public async Task Executar_QuandoUeNaoIgnoraPendenciasEParametrosAtivos_DeveDispararTodasAsFilas()
         {
-            // Organização
+            // Organiza��o
             var ue = _ueFaker.Generate();
             var mensagem = new MensagemRabbit(JsonConvert.SerializeObject(ue));
 
@@ -78,10 +78,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PendenciaAula
             _mediatorMock.Setup(m => m.Send(PodeExecutarPendenciaComponenteSemAulaQuery.Instance, It.IsAny<CancellationToken>())).ReturnsAsync(true);
             ConfigurarTodosParametros(true);
 
-            // Ação
+            // A��o
             var resultado = await _useCase.Executar(mensagem);
 
-            // Verificação
+            // Verifica��o
             Assert.True(resultado);
             VerificarPublicacaoFila(RotasRabbitSgpAula.RotaExecutaPendenciasAulaDiarioBordo, Times.Once());
             VerificarPublicacaoFila(RotasRabbitSgpAula.RotaExecutaPendenciasAulaFrequencia, Times.Once());
@@ -91,10 +91,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PendenciaAula
             VerificarPublicacaoFila(RotasRabbitSgpAula.RotaExecutaPendenciasTurmasComponenteSemAulaUe, Times.Once());
         }
 
-        [Fact(DisplayName = "Deve disparar apenas filas obrigatórias quando a UE ignora pendências")]
+        [Fact(DisplayName = "Deve disparar apenas filas obrigat�rias quando a UE ignora pend�ncias")]
         public async Task Executar_QuandoUeIgnoraPendencias_DeveDispararApenasFilasObrigatorias()
         {
-            // Organização
+            // Organiza��o
             var ue = _ueFaker.Generate();
             var mensagem = new MensagemRabbit(JsonConvert.SerializeObject(ue));
 
@@ -102,10 +102,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PendenciaAula
             _mediatorMock.Setup(m => m.Send(PodeExecutarPendenciaComponenteSemAulaQuery.Instance, It.IsAny<CancellationToken>())).ReturnsAsync(true);
             ConfigurarTodosParametros(true);
 
-            // Ação
+            // A��o
             var resultado = await _useCase.Executar(mensagem);
 
-            // Verificação
+            // Verifica��o
             Assert.True(resultado);
             VerificarPublicacaoFila(RotasRabbitSgpAula.RotaExecutaPendenciasAulaDiarioBordo, Times.Never());
             VerificarPublicacaoFila(RotasRabbitSgpAula.RotaExecutaPendenciasAulaFrequencia, Times.Never());
@@ -115,21 +115,21 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PendenciaAula
             VerificarPublicacaoFila(RotasRabbitSgpAula.RotaExecutaPendenciasTurmasComponenteSemAulaUe, Times.Once());
         }
 
-        [Fact(DisplayName = "Deve disparar apenas filas não parametrizadas quando parâmetros estão inativos")]
+        [Fact(DisplayName = "Deve disparar apenas filas n�o parametrizadas quando par�metros est�o inativos")]
         public async Task Executar_QuandoParametrosInativos_DeveDispararApenasFilasNaoParametrizadas()
         {
-            // Organização
+            // Organiza��o
             var ue = _ueFaker.Generate();
             var mensagem = new MensagemRabbit(JsonConvert.SerializeObject(ue));
 
             _mediatorMock.Setup(m => m.Send(It.IsAny<ObterTipoUeIgnoraGeracaoPendenciasQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(false);
             _mediatorMock.Setup(m => m.Send(PodeExecutarPendenciaComponenteSemAulaQuery.Instance, It.IsAny<CancellationToken>())).ReturnsAsync(false);
-            ConfigurarTodosParametros(false); // Parâmetros inativos/nulos
+            ConfigurarTodosParametros(false); // Par�metros inativos/nulos
 
-            // Ação
+            // A��o
             var resultado = await _useCase.Executar(mensagem);
 
-            // Verificação
+            // Verifica��o
             Assert.True(resultado);
             VerificarPublicacaoFila(RotasRabbitSgpAula.RotaExecutaPendenciasAulaDiarioBordo, Times.Never());
             VerificarPublicacaoFila(RotasRabbitSgpAula.RotaExecutaPendenciasAulaFrequencia, Times.Never());
