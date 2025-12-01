@@ -10,7 +10,13 @@ using System.Threading.Tasks;
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioAulaPrevistaBimestreConsulta : RepositorioBase<AulaPrevistaBimestre>, IRepositorioAulaPrevistaBimestreConsulta
-    {        
+    {
+        private readonly ISgpContext contexto;
+        public RepositorioAulaPrevistaBimestreConsulta(ISgpContextConsultas conexao, ISgpContext _contexto, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
+        {
+            this.contexto = _contexto;
+        }
+
         const string Select = @"
                         select
                                 apb.id, 
@@ -46,11 +52,6 @@ namespace SME.SGP.Dados.Repositorios
         const string GroupOrderBy = @" group by p.bimestre, p.periodo_inicio, p.periodo_fim, apb.aulas_previstas, apb.Id,
                                 ap.criado_em, ap.criado_por, ap.alterado_em , ap.alterado_por,
                                ap.alterado_rf, ap.criado_rf, coalesce(cc.permite_registro_frequencia, true), ap.disciplina_id; ";
-
-        public RepositorioAulaPrevistaBimestreConsulta(ISgpContextConsultas conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
-        {            
-        }
-
         public async Task<IEnumerable<AulaPrevistaBimestre>> ObterAulasPrevistasPorTurmaTipoCalendarioDisciplina(long tipoCalendarioId, string turmaId, string[] disciplinasId, int? bimestre)
         {
 
@@ -104,7 +105,7 @@ namespace SME.SGP.Dados.Repositorios
                         ap.id = @aulaPrevistaId ");
             query.Append(GroupOrderBy);
 
-            return (await database.Conexao.QueryAsync<AulaPrevistaBimestreQuantidade>(query.ToString(), new { aulaPrevistaId, disciplinaIdEquivalenteConsiderada, professor }));
+            return (await contexto.QueryAsync<AulaPrevistaBimestreQuantidade>(query.ToString(), new { aulaPrevistaId, disciplinaIdEquivalenteConsiderada, professor }));
         }
         public async Task<IEnumerable<AulaPrevistaTurmaComponenteDto>> ObterBimestresAulasTurmasComponentesCumpridasAsync(string[] turmasCodigos, string[] componentesCurricularesId, long tipoCalendarioId, int[] bimestres)
         {
