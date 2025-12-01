@@ -18,7 +18,7 @@ namespace SME.SGP.Dados.Repositorios
         public const int QUESTAO_PRIORIDADE_ORDEM = 1;
         public const int SECAO_ETAPA_1 = 1;
         public const int SECAO_INFORMACOES_ALUNO_ORDEM = 1;
-        public const string QUESTAO_DATA_DO_ATENDIMENTO = "DATA_DO_ATENDIMENTO";
+        public const string QUESTAO_DATA_ENTRADA_QUEIXA = "DATA_ENTRADA_QUEIXA";
         public const string QUESTAO_SUSPEITA_VIOLENCIA = "SUSPEITA_VIOLENCIA";
 
         public RepositorioNovoEncaminhamentoNAAPA(ISgpContext database, IServicoAuditoria servicoAuditoria)
@@ -218,9 +218,9 @@ namespace SME.SGP.Dados.Repositorios
                                         join questionario q2 on q2.id = secao.questionario_id 
                                         where length(enr.texto) > 0 
                                               and not ens.excluido and not enq.excluido and not enr.excluido  
-                                              and (secao.nome_componente = 'QUESTOES_ITINERACIA' or secao.nome_componente = 'QUESTOES_ITINERANCIA')
+                                              and (secao.nome_componente = 'QUESTOES_FLUXO_ENC_INDIVIDUAL')
                                               and q2.tipo in ({string.Join(",", TipoQuestionarioNaapa())}) 
-                                              and q.nome_componente = '{QUESTAO_DATA_DO_ATENDIMENTO}'
+                                              and q.nome_componente = '{QUESTAO_DATA_ENTRADA_QUEIXA}'
                                         group by ens.encaminhamento_naapa_id 
                                     ),
                                     cte_opcao_sim_violencia as (
