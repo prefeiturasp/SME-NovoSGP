@@ -3,12 +3,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EncaminhamentoNAAPA;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.NovoEncaminhamentoNAAPA;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.NovoEncaminhamentoNAAPA;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Dtos.NovoEncaminhamentoNAAPA;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -99,6 +100,15 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> RegistrarNovoEncaminhamento([FromBody] NovoEncaminhamentoNAAPADto encaminhamentoNAAPADto, [FromServices] IRegistrarNovoEncaminhamentoNAAPAUseCase registrarNovoEncaminhamentoNAAPAUseCase)
         {
             return Ok(await registrarNovoEncaminhamentoNAAPAUseCase.Executar(encaminhamentoNAAPADto));
+        }
+
+        [HttpDelete("{encaminhamentoNAAPAId}")]
+        [ProducesResponseType(typeof(EncaminhamentoNAAPADto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.ENC_NAAPA_E, Policy = "Bearer")]
+        public async Task<IActionResult> ExcluirEncaminhamento(long encaminhamentoNAAPAId, [FromServices] IExcluirEncaminhamentoNAAPAUseCase useCase)
+        {
+            return Ok(await useCase.Executar(encaminhamentoNAAPAId));
         }
     }
 }
