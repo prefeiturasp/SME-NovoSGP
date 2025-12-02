@@ -19,6 +19,7 @@ namespace SME.SGP.Dados.Repositorios
         public const int SECAO_ETAPA_1 = 1;
         public const int SECAO_INFORMACOES_ALUNO_ORDEM = 1;
         public const string QUESTAO_DATA_ENTRADA_QUEIXA = "DATA_ENTRADA_QUEIXA";
+        public const string QUESTAO_DATA_DO_ATENDIMENTO = "DATA_DO_ATENDIMENTO";
         public const string QUESTAO_SUSPEITA_VIOLENCIA = "SUSPEITA_VIOLENCIA";
 
         public RepositorioNovoEncaminhamentoNAAPA(ISgpContext database, IServicoAuditoria servicoAuditoria)
@@ -187,9 +188,7 @@ namespace SME.SGP.Dados.Repositorios
                                         join questao q on enq.questao_id = q.id 
                                         join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id 
                                         join secao_encaminhamento_naapa secao on secao.id = ens.secao_encaminhamento_id
-                                        where q.ordem = {QUESTAO_DATA_QUEIXA_ORDEM} 
-                                              and secao.etapa = {SECAO_ETAPA_1} 
-                                              and secao.ordem = {SECAO_INFORMACOES_ALUNO_ORDEM}
+                                        where q.nome_componente = '{QUESTAO_DATA_ENTRADA_QUEIXA}'
                                               and not ens.excluido and not enq.excluido and not enr.excluido  
                                     ),
                                     vw_resposta_prioridade as (
@@ -218,9 +217,9 @@ namespace SME.SGP.Dados.Repositorios
                                         join questionario q2 on q2.id = secao.questionario_id 
                                         where length(enr.texto) > 0 
                                               and not ens.excluido and not enq.excluido and not enr.excluido  
-                                              and (secao.nome_componente = 'QUESTOES_FLUXO_ENC_INDIVIDUAL')
+                                              and (secao.nome_componente = 'QUESTOES_ITINERACIA' or secao.nome_componente = 'QUESTOES_ITINERANCIA')
                                               and q2.tipo in ({string.Join(",", TipoQuestionarioNaapa())}) 
-                                              and q.nome_componente = '{QUESTAO_DATA_ENTRADA_QUEIXA}'
+                                              and q.nome_componente = '{QUESTAO_DATA_DO_ATENDIMENTO}'
                                         group by ens.encaminhamento_naapa_id 
                                     ),
                                     cte_opcao_sim_violencia as (
