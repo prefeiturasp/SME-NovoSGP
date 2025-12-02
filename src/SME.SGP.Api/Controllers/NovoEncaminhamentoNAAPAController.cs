@@ -7,6 +7,7 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EncaminhamentoNAAPA;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.NovoEncaminhamentoNAAPA;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Dtos.NovoEncaminhamentoNAAPA;
@@ -109,6 +110,17 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ExcluirEncaminhamento(long encaminhamentoNAAPAId, [FromServices] IExcluirEncaminhamentoNAAPAUseCase useCase)
         {
             return Ok(await useCase.Executar(encaminhamentoNAAPAId));
+        }
+
+        [HttpGet("situacoes")]
+        [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public IActionResult ObterSituacoes()
+        {
+            var lista = EnumExtensao.ListarDto<SituacaoNovoEncaminhamentoNAAPA>().OrderBy(situacao => situacao.Descricao);
+
+            return Ok(lista);
         }
     }
 }
