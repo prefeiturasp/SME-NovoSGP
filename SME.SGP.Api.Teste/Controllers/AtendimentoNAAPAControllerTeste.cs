@@ -116,13 +116,13 @@ namespace SME.SGP.Api.Testes.Controllers
             var arquivoMock = new Mock<IFormFile>();
             arquivoMock.Setup(a => a.Length).Returns(stream.Length);
 
-            useCaseMock.Setup(u => u.Executar(arquivoMock.Object, Dominio.TipoArquivo.EncaminhamentoNAAPA)).ReturnsAsync(retornoGuid);
+            useCaseMock.Setup(u => u.Executar(arquivoMock.Object, Dominio.TipoArquivo.AtendimentoNAAPA)).ReturnsAsync(retornoGuid);
 
             // Act
             var resultado = await _controller.Upload(arquivoMock.Object, useCaseMock.Object);
 
             // Assert
-            useCaseMock.Verify(u => u.Executar(arquivoMock.Object, Dominio.TipoArquivo.EncaminhamentoNAAPA), Times.Once);
+            useCaseMock.Verify(u => u.Executar(arquivoMock.Object, Dominio.TipoArquivo.AtendimentoNAAPA), Times.Once);
             var okResult = Assert.IsType<OkObjectResult>(resultado);
             Assert.Equal(retornoGuid, okResult.Value);
         }
@@ -526,13 +526,13 @@ namespace SME.SGP.Api.Testes.Controllers
             var arquivoMock = new Mock<IFormFile>();
             arquivoMock.Setup(a => a.Length).Returns(100);
 
-            useCaseMock.Setup(u => u.Executar(arquivoMock.Object, Dominio.TipoArquivo.ItineranciaEncaminhamentoNAAPA)).ReturnsAsync(retornoGuid);
+            useCaseMock.Setup(u => u.Executar(arquivoMock.Object, Dominio.TipoArquivo.ItineranciaAtendimentoNAAPA)).ReturnsAsync(retornoGuid);
 
             // Act
             var resultado = await _controller.UploadItinerancia(arquivoMock.Object, useCaseMock.Object);
 
             // Assert
-            useCaseMock.Verify(u => u.Executar(arquivoMock.Object, Dominio.TipoArquivo.ItineranciaEncaminhamentoNAAPA), Times.Once);
+            useCaseMock.Verify(u => u.Executar(arquivoMock.Object, Dominio.TipoArquivo.ItineranciaAtendimentoNAAPA), Times.Once);
             var okResult = Assert.IsType<OkObjectResult>(resultado);
             Assert.Equal(retornoGuid, okResult.Value);
         }

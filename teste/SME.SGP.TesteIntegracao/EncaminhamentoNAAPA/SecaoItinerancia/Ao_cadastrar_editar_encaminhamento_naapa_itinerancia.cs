@@ -505,7 +505,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 TipoConteudo = "application/pdf",
-                Tipo = TipoArquivo.ItineranciaEncaminhamentoNAAPA
+                Tipo = TipoArquivo.ItineranciaAtendimentoNAAPA
             });
             await InserirNaBase(new Arquivo()
             {
@@ -515,7 +515,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 TipoConteudo = "application/pdf",
-                Tipo = TipoArquivo.ItineranciaEncaminhamentoNAAPA
+                Tipo = TipoArquivo.ItineranciaAtendimentoNAAPA
             });
 
             await InserirNaBase(new RespostaEncaminhamentoNAAPA()

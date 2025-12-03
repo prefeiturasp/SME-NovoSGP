@@ -107,7 +107,7 @@ namespace SME.SGP.Api.Teste.Controllers
             var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(content));
             var file = new FormFile(stream, 0, stream.Length, "file", "arquivo.pdf");
 
-            _uploadUseCase.Setup(s => s.Executar(file, Dominio.TipoArquivo.EncaminhamentoNAAPA))
+            _uploadUseCase.Setup(s => s.Executar(file, Dominio.TipoArquivo.AtendimentoNAAPA))
                           .ReturnsAsync(Guid.NewGuid());
 
             var result = await _controller.Upload(file, _uploadUseCase.Object);

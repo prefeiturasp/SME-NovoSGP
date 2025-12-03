@@ -91,7 +91,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
             fileMock.Setup(_ => _.ContentType).Returns("application/pdf");
             fileMock.Setup(_ => _.Length).Returns(100);
             fileMock.Setup(_ => _.ContentDisposition).Returns(string.Format("inline; filename={0}", "Arquivo 1"));
-            await useCase.Executar(fileMock.Object, TipoArquivo.ItineranciaEncaminhamentoNAAPA);
+            await useCase.Executar(fileMock.Object, TipoArquivo.ItineranciaAtendimentoNAAPA);
 
             var arquivos = ObterTodos<Arquivo>();
             arquivos.Count().ShouldBe(1);
@@ -121,7 +121,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 TipoConteudo = "application/pdf",
-                Tipo = TipoArquivo.ItineranciaEncaminhamentoNAAPA
+                Tipo = TipoArquivo.ItineranciaAtendimentoNAAPA
             });
             await InserirNaBase(new Arquivo()
             {
@@ -131,7 +131,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 TipoConteudo = "application/pdf",
-                Tipo = TipoArquivo.ItineranciaEncaminhamentoNAAPA
+                Tipo = TipoArquivo.ItineranciaAtendimentoNAAPA
             });
 
             await InserirNaBase(new RespostaEncaminhamentoNAAPA()

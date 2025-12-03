@@ -106,7 +106,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Upload([FromForm] IFormFile file, [FromServices] IUploadDeArquivoUseCase useCase)
         {
             if (file.Length > 0)
-                return Ok(await useCase.Executar(file, Dominio.TipoArquivo.EncaminhamentoNAAPA));
+                return Ok(await useCase.Executar(file, Dominio.TipoArquivo.AtendimentoNAAPA));
 
             return BadRequest();
         }
@@ -267,7 +267,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> UploadItinerancia([FromForm] IFormFile file, [FromServices] IUploadDeArquivoUseCase useCase)
         {
             if (file.Length > 0)
-                return Ok(await useCase.Executar(file, Dominio.TipoArquivo.ItineranciaEncaminhamentoNAAPA));
+                return Ok(await useCase.Executar(file, Dominio.TipoArquivo.ItineranciaAtendimentoNAAPA));
 
             return BadRequest();
         }
