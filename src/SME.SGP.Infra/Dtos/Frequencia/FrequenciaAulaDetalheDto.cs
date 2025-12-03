@@ -13,7 +13,7 @@ namespace SME.SGP.Infra
                                         IEnumerable<CompensacaoAusenciaAlunoAulaSimplificadoDto> compensacaoAusenciaAlunos,
                                         IEnumerable<AnotacaoAlunoAulaDto> anotacoesTurma,
                                         FrequenciaPreDefinidaDto frequenciaPreDefinida,
-                                        TipoFrequencia? frequenciaSugerida = null)
+                                        Dictionary<DateTime, TipoFrequencia?> frequenciaSugeridaPorData = null)
         {
             DetalheFrequencia = new List<FrequenciaDetalheAulaDto>();
 
@@ -21,10 +21,14 @@ namespace SME.SGP.Infra
             Desabilitado = !aluno.EstaAtivo(aula.DataAula) || aula.EhDataSelecionadaFutura;
             PossuiAnotacao = anotacoesTurma.Any(a => a.AulaId == AulaId);
             EhReposicao = TipoAula.Reposicao == aula.TipoAula ? true : false;
+
+            var frequenciaSugerida = ObterFrequenciaSugeridaDataAula(aula, frequenciaSugeridaPorData);
             TipoFrequenciaSugerida = frequenciaSugerida?.ShortName();
 
             var registrosFrequenciaAula = registrosFrequenciaAlunos.Where(a => a.AulaId == AulaId);
-            CarregarDetalheFrequencia(aula, registrosFrequenciaAula, compensacaoAusenciaAlunos, frequenciaPreDefinida, frequenciaSugerida);
+            if (registrosFrequenciaAula?.Any() ?? false)
+                CarregarDetalheFrequencia(aula, registrosFrequenciaAula, compensacaoAusenciaAlunos, frequenciaPreDefinida, frequenciaSugerida);
+
             Tipo = ObterTipoFrequenciaDaAula();
         }
 
@@ -36,6 +40,12 @@ namespace SME.SGP.Infra
         public string TipoFrequenciaSugerida  { get; set; }
         public IList<FrequenciaDetalheAulaDto> DetalheFrequencia { get; set; }
         public bool EhReposicao { get; set; }
+
+        private static TipoFrequencia? ObterFrequenciaSugeridaDataAula(Aula aula, Dictionary<DateTime, TipoFrequencia?> frequenciaSugeridaPorData)
+        {
+            return frequenciaSugeridaPorData != null && frequenciaSugeridaPorData.TryGetValue(aula.DataAula, out var tipoFrequencia) ?
+                                             tipoFrequencia : null;
+        }
 
         private void CarregarDetalheFrequencia(
             Aula aula, 

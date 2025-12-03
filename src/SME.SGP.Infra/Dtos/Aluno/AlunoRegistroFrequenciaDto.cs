@@ -38,11 +38,11 @@ namespace SME.SGP.Infra
             AlunoPorTurmaResposta aluno, 
             IEnumerable<AnotacaoAlunoAulaDto> anotacoesTurma, 
             FrequenciaPreDefinidaDto frequenciaPreDefinida,
-            TipoFrequencia? frequenciaSugerida)
+            Dictionary<DateTime, TipoFrequencia?> frequenciaSugeridaPorData)
         {
             foreach (var aula in aulas.OrderBy(a => a.DataAula))
             {
-                Aulas.Add(new FrequenciaAulaDetalheDto(aula, aluno, registrosFrequenciaAlunos, compensacaoAusenciaAlunoAula, anotacoesTurma, frequenciaPreDefinida, frequenciaSugerida));
+                Aulas.Add(new FrequenciaAulaDetalheDto(aula, aluno, registrosFrequenciaAlunos, compensacaoAusenciaAlunoAula, anotacoesTurma, frequenciaPreDefinida, frequenciaSugeridaPorData));
             }
         }
 
