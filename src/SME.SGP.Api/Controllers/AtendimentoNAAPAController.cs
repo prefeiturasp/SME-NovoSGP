@@ -49,23 +49,23 @@ namespace SME.SGP.Api.Controllers
             return Ok(await obterSecoesDeAtendimentoNAAPAUseCase.Executar(filtro));
         }
 
-        [HttpGet("{encaminhamentoNAAPAId}/secoes-itinerancia")]
+        [HttpGet("{atendimentoNAAPAId}/secoes-itinerancia")]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<SecaoQuestionarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterSecoesItineranciaDeAtendimentoNAAPA(long encaminhamentoNAAPAId,
+        public async Task<IActionResult> ObterSecoesItineranciaDeAtendimentoNAAPA(long atendimentoNAAPAId,
             [FromServices] IObterSecoesItineranciaDeAtendimentoNAAPAUseCase obterSecoesItineranciaDeAtendimentoNAAPAUseCase)
         {
-            return Ok(await obterSecoesItineranciaDeAtendimentoNAAPAUseCase.Executar(encaminhamentoNAAPAId));
+            return Ok(await obterSecoesItineranciaDeAtendimentoNAAPAUseCase.Executar(atendimentoNAAPAId));
         }
 
         [HttpGet("questionario")]
         [ProducesResponseType(typeof(IEnumerable<QuestaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterQuestionario([FromQuery] long questionarioId, [FromQuery] long? encaminhamentoId, [FromQuery] string codigoAluno, [FromQuery] string codigoTurma, [FromServices] IObterQuestionarioAtendimentoNAAPAUseCase useCase)
+        public async Task<IActionResult> ObterQuestionario([FromQuery] long questionarioId, [FromQuery] long? atendimentoId, [FromQuery] string codigoAluno, [FromQuery] string codigoTurma, [FromServices] IObterQuestionarioAtendimentoNAAPAUseCase useCase)
         {
-            return Ok(await useCase.Executar(questionarioId, encaminhamentoId, codigoAluno, codigoTurma));
+            return Ok(await useCase.Executar(questionarioId, atendimentoId, codigoAluno, codigoTurma));
         }
 
         [HttpGet("situacoes")]
@@ -111,40 +111,40 @@ namespace SME.SGP.Api.Controllers
             return BadRequest();
         }
 
-        [HttpDelete("{encaminhamentoNAAPAId}")]
+        [HttpDelete("{atendimentoNAAPAId}")]
         [ProducesResponseType(typeof(AtendimentoNAAPADto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_E, Policy = "Bearer")]
-        public async Task<IActionResult> ExcluirAtendimento(long encaminhamentoNAAPAId, [FromServices] IExcluirAtendimentoNAAPAUseCase useCase)
+        public async Task<IActionResult> ExcluirAtendimento(long atendimentoNAAPAId, [FromServices] IExcluirAtendimentoNAAPAUseCase useCase)
         {
-            return Ok(await useCase.Executar(encaminhamentoNAAPAId));
+            return Ok(await useCase.Executar(atendimentoNAAPAId));
         }
 
-        [HttpGet("{encaminhamentoId}")]
+        [HttpGet("{atendimentoId}")]
         [ProducesResponseType(typeof(AtendimentoNAAPARespostaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterAtendimento(long encaminhamentoId, [FromServices] IObterAtendimentoNAAPAPorIdUseCase useCase)
+        public async Task<IActionResult> ObterAtendimento(long atendimentoId, [FromServices] IObterAtendimentoNAAPAPorIdUseCase useCase)
         {
-            return Ok(await useCase.Executar(encaminhamentoId));
+            return Ok(await useCase.Executar(atendimentoId));
         }
 
         [HttpGet("questionarioItinerario")]
         [ProducesResponseType(typeof(IEnumerable<QuestaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterQuestionarioItinerario([FromQuery] long questionarioId, [FromQuery] long? encaminhamentoSecaoId, [FromServices] IObterQuestionarioItinerarioAtendimentoNAAPAUseCase useCase)
+        public async Task<IActionResult> ObterQuestionarioItinerario([FromQuery] long questionarioId, [FromQuery] long? atendimentoSecaoId, [FromServices] IObterQuestionarioItinerarioAtendimentoNAAPAUseCase useCase)
         {
-            return Ok(await useCase.Executar(questionarioId, encaminhamentoSecaoId));
+            return Ok(await useCase.Executar(questionarioId, atendimentoSecaoId));
         }
 
-        [HttpDelete("{encaminhamentoNAAPAId}/secoes-itinerancia/{secaoItineranciaId}")]
+        [HttpDelete("{atendimentoNAAPAId}/secoes-itinerancia/{secaoItineranciaId}")]
         [ProducesResponseType(typeof(AtendimentoNAAPADto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_E, Policy = "Bearer")]
-        public async Task<IActionResult> ExcluirSecaoItinerancia(long encaminhamentoNAAPAId, long secaoItineranciaId, [FromServices] IExcluirSecaoItineranciaAtendimentoNAAPAUseCase useCase)
+        public async Task<IActionResult> ExcluirSecaoItinerancia(long atendimentoNAAPAId, long secaoItineranciaId, [FromServices] IExcluirSecaoItineranciaAtendimentoNAAPAUseCase useCase)
         {
-            return Ok(await useCase.Executar(encaminhamentoNAAPAId, secaoItineranciaId));
+            return Ok(await useCase.Executar(atendimentoNAAPAId, secaoItineranciaId));
         }
 
         [HttpPost("salvarItinerario")]
@@ -156,13 +156,13 @@ namespace SME.SGP.Api.Controllers
             return Ok(await registrarAtendimentoItinerarioNAAPAUseCase.Executar(atendimentoNAAPAItineranciaDto));
         }
 
-        [HttpGet("{encaminhamentoNAAPAId}/situacao")]
+        [HttpGet("{atendimentoNAAPAId}/situacao")]
         [ProducesResponseType(typeof(SituacaoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterSituacao(long encaminhamentoNAAPAId, [FromServices] IObterSituacaoAtendimentoNAAPAUseCase useCase)
+        public async Task<IActionResult> ObterSituacao(long atendimentoNAAPAId, [FromServices] IObterSituacaoAtendimentoNAAPAUseCase useCase)
         {
-            return Ok(await useCase.Executar(encaminhamentoNAAPAId));
+            return Ok(await useCase.Executar(atendimentoNAAPAId));
         }
 
         [HttpPost("encerrar")]
@@ -174,13 +174,13 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(parametros.EncaminhamentoId, parametros.MotivoEncerramento));
         }
 
-        [HttpPost("reabrir/{encaminhamentoNAAPAId}")]
+        [HttpPost("reabrir/{atendimentoNAAPAId}")]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_A, Policy = "Bearer")]
-        public async Task<IActionResult> ReabrirAtendimento(long encaminhamentoNAAPAId, [FromServices] IReabrirAtendimentoNAAPAUseCase useCase)
+        public async Task<IActionResult> ReabrirAtendimento(long atendimentoNAAPAId, [FromServices] IReabrirAtendimentoNAAPAUseCase useCase)
         {
-            return Ok(await useCase.Executar(encaminhamentoNAAPAId));
+            return Ok(await useCase.Executar(atendimentoNAAPAId));
         }
 
         [HttpGet("fluxos-alerta")]
@@ -204,14 +204,14 @@ namespace SME.SGP.Api.Controllers
             return Ok(await detalhadoUseCase.Executar(filtro));
         }
 
-        [HttpGet("{encaminhamentoNAAPAId}/observacoes")]
+        [HttpGet("{atendimentoNAAPAId}/observacoes")]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<AtendimentoNAAPAObservacoesDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterObservacoes(long encaminhamentoNAAPAId,
+        public async Task<IActionResult> ObterObservacoes(long atendimentoNAAPAId,
             [FromServices] IObterObservacoesDeAtendimentoNAAPAUseCase obterObservacoesDeAtendimentoNAAPAUseCase)
         {
-            return Ok(await obterObservacoesDeAtendimentoNAAPAUseCase.Executar(encaminhamentoNAAPAId));
+            return Ok(await obterObservacoesDeAtendimentoNAAPAUseCase.Executar(atendimentoNAAPAId));
         }
 
         [HttpPost("salvar-observacao")]
@@ -230,17 +230,17 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(observacaoId));
         }
 
-        [HttpGet("{encaminhamentoNAAPAId}/historico-alteracoes")]
+        [HttpGet("{atendimentoNAAPAId}/historico-alteracoes")]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<AtendimentoNAAPAObservacoesDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterHistoricoDeAlteracoes(long encaminhamentoNAAPAId,
+        public async Task<IActionResult> ObterHistoricoDeAlteracoes(long atendimentoNAAPAId,
             [FromServices] IObterHistoricosDeAlteracoesApresentacaoAtendimentoNAAPAUseCase useCase)
         {
-            return Ok(await useCase.Executar(encaminhamentoNAAPAId));
+            return Ok(await useCase.Executar(atendimentoNAAPAId));
         }
 
-        [HttpGet("aluno/{codigoAluno}/existe-encaminhamento-ativo")]
+        [HttpGet("aluno/{codigoAluno}/existe-atendimento-ativo")]
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
@@ -281,13 +281,13 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(codigoAluno));
         }
 
-        [HttpGet("{encaminhamentoId}/anexos/tipos-impressao")]
+        [HttpGet("{atendimentoId}/anexos/tipos-impressao")]
         [ProducesResponseType(typeof(IEnumerable<ImprimirAnexoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterTiposDeImprimirAnexos(long encaminhamentoId, [FromServices] IObterTiposDeImprimirAnexosNAAPAUseCase useCase)
+        public async Task<IActionResult> ObterTiposDeImprimirAnexos(long atendimentoId, [FromServices] IObterTiposDeImprimirAnexosNAAPAUseCase useCase)
         {
-            return Ok(await useCase.Executar(encaminhamentoId));
+            return Ok(await useCase.Executar(atendimentoId));
         }
 
         [HttpGet("secoes-itinerancia/profissionais-envolvidos")]
