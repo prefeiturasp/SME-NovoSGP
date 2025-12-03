@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao
                 // Indicativo de Frequencia (%)
                 registroFrequenciaAluno.IndicativoFrequencia = ObterIndicativoFrequencia(frequenciaAluno, request.PercentualAlerta, request.PercentualCritico);
 
-                TipoFrequencia? frequenciaSugerida = null;
+                var frequenciaSugeridaPorData = new Dictionary<DateTime, TipoFrequencia?>();
 
                 if (request.Aulas.Any())
                 {
@@ -84,10 +84,12 @@ namespace SME.SGP.Aplicacao
 
                                 var numeroAulaSugerida = Math.Max(primeiroRegistroFrequenciaDataTurma.QuantidadeAulas, aula.Quantidade);
 
-                                frequenciaSugerida = frequenciaSugeridaAlunos.FirstOrDefault(
+                                var frequenciaSugerida = frequenciaSugeridaAlunos.FirstOrDefault(
                                     a => a.NumeroAula == numeroAulaSugerida
                                     && a.CodigoAluno == aluno.CodigoAluno
                                     && a.TipoFrequencia > 0)?.TipoFrequencia;
+
+                                SalvarFrequenciaSugeridaPorData(frequenciaSugeridaPorData, aula, frequenciaSugerida);
                             }
                         }
                     }
@@ -104,7 +106,7 @@ namespace SME.SGP.Aplicacao
                             .Where(t => t.CodigoAluno == aluno.CodigoAluno);
 
                         registroFrequenciaAluno
-                            .CarregarAulas(request.Aulas, registrosFrequenciaAluno, compensacoesAusenciaAluno, aluno, anotacoesAluno, frequenciaPreDefinida, frequenciaSugerida);
+                            .CarregarAulas(request.Aulas, registrosFrequenciaAluno, compensacoesAusenciaAluno, aluno, anotacoesAluno, frequenciaPreDefinida, frequenciaSugeridaPorData);
                     }
                     else
                         registroFrequenciaAluno
@@ -115,6 +117,19 @@ namespace SME.SGP.Aplicacao
             }
 
             return registrosFrequencias.Aulas.Any() ? registrosFrequencias : null;
+        }
+
+        private static void SalvarFrequenciaSugeridaPorData(Dictionary<DateTime, TipoFrequencia?> frequenciaSugeridaPorData, Aula aula, TipoFrequencia? frequenciaSugerida)
+        {
+            if (frequenciaSugeridaPorData.TryGetValue(aula.DataAula, out var tipoFrequencia))
+            {
+                if (tipoFrequencia is null)
+                    frequenciaSugeridaPorData[aula.DataAula] = frequenciaSugerida;
+            }
+            else
+            {
+                frequenciaSugeridaPorData.Add(aula.DataAula, frequenciaSugerida);
+            }
         }
 
         private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, int anoLetivo)
