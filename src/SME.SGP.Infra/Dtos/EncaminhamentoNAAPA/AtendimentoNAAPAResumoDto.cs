@@ -3,7 +3,7 @@ using SME.SGP.Dominio;
 
 namespace SME.SGP.Infra
 {
-    public class EncaminhamentoNAAPAResumoDto
+    public class AtendimentoNAAPAResumoDto
     {
         public long Id { get; set; }
         public string Ue { get; set; }

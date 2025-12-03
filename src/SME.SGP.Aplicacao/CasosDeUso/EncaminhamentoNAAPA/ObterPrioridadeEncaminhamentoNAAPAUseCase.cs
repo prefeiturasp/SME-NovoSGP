@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<PrioridadeEncaminhamentoNAAPADto>> Executar()
+        public async Task<IEnumerable<PrioridadeAtendimentoNAAPADto>> Executar()
         {
             return await mediator.Send(ObterPrioridadeEncaminhamentoNAAPAQuery.Instance);
         }

@@ -26,7 +26,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>> ListarPaginado(int anoLetivo, long dreId, 
+        public async Task<PaginacaoResultadoDto<AtendimentoNAAPAResumoDto>> ListarPaginado(int anoLetivo, long dreId, 
             string codigoUe, string codigoNomeAluno, DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, 
             int situacao, long prioridade, long[] turmasIds, Paginacao paginacao, bool exibirEncerrados, OrdenacaoListagemPaginadaEncaminhamentoNAAPA[] ordenacao)
         {
@@ -41,11 +41,11 @@ namespace SME.SGP.Dados.Repositorios
                 turmasIds, situacao, prioridade, dataAberturaQueixaInicio, 
                 dataAberturaQueixaFim, situacoesEncerrado };
 
-            var retorno = new PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>();
+            var retorno = new PaginacaoResultadoDto<AtendimentoNAAPAResumoDto>();
             
             using (var encaminhamentosNAAPA = await database.Conexao.QueryMultipleAsync(query, parametros))
             {
-                retorno.Items = encaminhamentosNAAPA.Read<EncaminhamentoNAAPAResumoDto>();
+                retorno.Items = encaminhamentosNAAPA.Read<AtendimentoNAAPAResumoDto>();
                 retorno.TotalRegistros = encaminhamentosNAAPA.ReadFirst<int>();
             }
 
@@ -458,7 +458,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { situacao = (int)SituacaoNAAPA.AguardandoAtendimento, encaminhamentoId, secaoNome = EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA });
         }
 
-        public async Task<IEnumerable<EncaminhamentoNAAPADto>> ObterEncaminhamentosComSituacaoDiferenteDeEncerrado()
+        public async Task<IEnumerable<AtendimentoNAAPADto>> ObterEncaminhamentosComSituacaoDiferenteDeEncerrado()
         {
             var query = @" select 
                         id,
@@ -470,7 +470,7 @@ namespace SME.SGP.Dados.Repositorios
                         from encaminhamento_naapa 
                         where situacao <> @situacao and not excluido";
 
-            return await database.Conexao.QueryAsync<EncaminhamentoNAAPADto>(query, new { situacao = (int)SituacaoNAAPA.Encerrado });
+            return await database.Conexao.QueryAsync<AtendimentoNAAPADto>(query, new { situacao = (int)SituacaoNAAPA.Encerrado });
         }
 
         public Task<EncaminhamentoNAAPA> ObterCabecalhoEncaminhamentoPorId(long id)

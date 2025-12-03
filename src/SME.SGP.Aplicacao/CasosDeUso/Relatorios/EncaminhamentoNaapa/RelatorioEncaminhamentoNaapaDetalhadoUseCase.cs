@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<bool> Executar(FiltroRelatorioEncaminhamentoNaapaDetalhadoDto param)
+        public async Task<bool> Executar(FiltroRelatorioAtendimentoNaapaDetalhadoDto param)
         {
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             param.UsuarioNome = usuarioLogado.Nome;

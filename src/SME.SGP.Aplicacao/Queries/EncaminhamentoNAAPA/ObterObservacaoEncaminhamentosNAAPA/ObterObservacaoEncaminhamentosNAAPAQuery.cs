@@ -4,7 +4,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterObservacaoEncaminhamentosNAAPAQuery: IRequest<PaginacaoResultadoDto<EncaminhamentoNAAPAObservacoesDto>>
+    public class ObterObservacaoEncaminhamentosNAAPAQuery: IRequest<PaginacaoResultadoDto<AtendimentoNAAPAObservacoesDto>>
     {
         public ObterObservacaoEncaminhamentosNAAPAQuery(long encaminhamentoNAAPId,string usuarioLogadoRf)
         {

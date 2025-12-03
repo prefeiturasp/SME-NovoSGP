@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<bool> Executar(EncaminhamentoNAAPAItineranciaDto encaminhamentoNAAPAItineranciaDto)
+        public async Task<bool> Executar(AtendimentoNAAPAItineranciaDto encaminhamentoNAAPAItineranciaDto)
         {
             Dominio.EncaminhamentoNAAPA encaminhamentoNaapa;
 
@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
             return await Salvar(encaminhamentoNaapa, encaminhamentoNAAPAItineranciaDto);
         }
 
-        private async Task<bool> Alterar(Dominio.EncaminhamentoNAAPA encaminhamentoNAAPA, EncaminhamentoNAAPAItineranciaDto encaminhamentoNAAPAItineranciaDto)
+        private async Task<bool> Alterar(Dominio.EncaminhamentoNAAPA encaminhamentoNAAPA, AtendimentoNAAPAItineranciaDto encaminhamentoNAAPAItineranciaDto)
         {
             var secaoDto = encaminhamentoNAAPAItineranciaDto.EncaminhamentoNAAPASecao;
             var secaoExistente = encaminhamentoNAAPA.Secoes.FirstOrDefault(secao => secao.Id == encaminhamentoNAAPAItineranciaDto.EncaminhamentoNAAPASecaoId);
@@ -83,7 +83,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
             }
         }
 
-        private async Task<bool> Salvar(Dominio.EncaminhamentoNAAPA encaminhamentoNAAPA, EncaminhamentoNAAPAItineranciaDto encaminhamentoNAAPAItineranciaDto)
+        private async Task<bool> Salvar(Dominio.EncaminhamentoNAAPA encaminhamentoNAAPA, AtendimentoNAAPAItineranciaDto encaminhamentoNAAPAItineranciaDto)
         {
             var secaoDto = encaminhamentoNAAPAItineranciaDto.EncaminhamentoNAAPASecao;
 

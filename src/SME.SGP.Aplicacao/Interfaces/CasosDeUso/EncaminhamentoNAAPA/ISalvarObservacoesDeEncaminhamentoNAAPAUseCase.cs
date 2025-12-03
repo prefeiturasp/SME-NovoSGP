@@ -5,6 +5,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface ISalvarObservacoesDeEncaminhamentoNAAPAUseCase
     {
-        Task<bool> Executar(EncaminhamentoNAAPAObservacaoSalvarDto filtro);
+        Task<bool> Executar(AtendimentoNAAPAObservacaoSalvarDto filtro);
     }
 }

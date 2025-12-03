@@ -5,6 +5,6 @@ namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso
 {
     public interface IRegistrarEncaminhamentoNAAPAUseCase
     {
-        Task<ResultadoEncaminhamentoNAAPADto> Executar(EncaminhamentoNAAPADto encaminhamentoNAAPADto);
+        Task<ResultadoAtendimentoNAAPADto> Executar(AtendimentoNAAPADto encaminhamentoNAAPADto);
     }
 }

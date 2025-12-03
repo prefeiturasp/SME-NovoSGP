@@ -66,9 +66,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         }
 
 
-        private EncaminhamentoNAAPADto ObterEncaminhamentoDto(string alunoCodigo, string nomeAluno)
+        private AtendimentoNAAPADto ObterEncaminhamentoDto(string alunoCodigo, string nomeAluno)
         {
-            return new EncaminhamentoNAAPADto()
+            return new AtendimentoNAAPADto()
             {
                 Id = 1,
                 AlunoCodigo = alunoCodigo,

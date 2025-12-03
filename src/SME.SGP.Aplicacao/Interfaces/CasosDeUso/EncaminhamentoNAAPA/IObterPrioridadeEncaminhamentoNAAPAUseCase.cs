@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso
 {
     public interface IObterPrioridadeEncaminhamentoNAAPAUseCase
     {
-        Task<IEnumerable<PrioridadeEncaminhamentoNAAPADto>> Executar();
+        Task<IEnumerable<PrioridadeAtendimentoNAAPADto>> Executar();
     }
 }

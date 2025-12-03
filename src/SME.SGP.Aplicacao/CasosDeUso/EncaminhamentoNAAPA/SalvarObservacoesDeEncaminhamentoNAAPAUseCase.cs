@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<bool> Executar(EncaminhamentoNAAPAObservacaoSalvarDto filtro)
+        public async Task<bool> Executar(AtendimentoNAAPAObservacaoSalvarDto filtro)
         {
             return await mediator.Send(new SalvarObservacaoNAAPACommand(filtro));
         }

@@ -13,7 +13,7 @@ using SME.SGP.Dto;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterEncaminhamentosNAAPAQueryHandler : ConsultasBase, IRequestHandler<ObterEncaminhamentosNAAPAQuery, PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>>
+    public class ObterEncaminhamentosNAAPAQueryHandler : ConsultasBase, IRequestHandler<ObterEncaminhamentosNAAPAQuery, PaginacaoResultadoDto<AtendimentoNAAPAResumoDto>>
     {
         public IMediator mediator { get; }
         public IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA { get; }
@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioEncaminhamentoNAAPA = repositorioEncaminhamentoNAAPA ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoNAAPA));
         }
 
-        public async Task<PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>> Handle(ObterEncaminhamentosNAAPAQuery request, CancellationToken cancellationToken)
+        public async Task<PaginacaoResultadoDto<AtendimentoNAAPAResumoDto>> Handle(ObterEncaminhamentosNAAPAQuery request, CancellationToken cancellationToken)
         {
             var turmas = Enumerable.Empty<AbrangenciaTurmaRetorno>();
 
@@ -45,9 +45,9 @@ namespace SME.SGP.Aplicacao
                 request.Prioridade, turmasIds.ToArray(), Paginacao, request.ExibirEncerrados, request.Ordenacao),request.AnoLetivo);
         }
 
-        private async Task<PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>> MapearParaDto(PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto> resultadoDto,int anoLetivo)
+        private async Task<PaginacaoResultadoDto<AtendimentoNAAPAResumoDto>> MapearParaDto(PaginacaoResultadoDto<AtendimentoNAAPAResumoDto> resultadoDto,int anoLetivo)
         {
-            return new PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>()
+            return new PaginacaoResultadoDto<AtendimentoNAAPAResumoDto>()
             {
                 TotalPaginas = resultadoDto.TotalPaginas,
                 TotalRegistros = resultadoDto.TotalRegistros,
@@ -58,9 +58,9 @@ namespace SME.SGP.Aplicacao
         {
             return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
         }
-        private async Task<IEnumerable<EncaminhamentoNAAPAResumoDto>> MapearParaDto(IEnumerable<EncaminhamentoNAAPAResumoDto> encaminhamentos, int anoLetivo)
+        private async Task<IEnumerable<AtendimentoNAAPAResumoDto>> MapearParaDto(IEnumerable<AtendimentoNAAPAResumoDto> encaminhamentos, int anoLetivo)
         {
-            var listaEncaminhamentos = new List<EncaminhamentoNAAPAResumoDto>();
+            var listaEncaminhamentos = new List<AtendimentoNAAPAResumoDto>();
             IEnumerable<AlunosTurmaProgramaPapDto> matriculadosTurmaPAP = Enumerable.Empty<AlunosTurmaProgramaPapDto>();
             
             if(encaminhamentos.Any())
@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
             
             foreach (var encaminhamento in encaminhamentos)
             {
-                listaEncaminhamentos.Add(new EncaminhamentoNAAPAResumoDto()
+                listaEncaminhamentos.Add(new AtendimentoNAAPAResumoDto()
                 {
                     Id = encaminhamento.Id,
                     Ue = $"{encaminhamento.TipoEscola.ShortName()} {encaminhamento.UeNome}",

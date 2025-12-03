@@ -90,14 +90,14 @@ namespace SME.SGP.Api.Teste.Controllers
         [Fact(DisplayName = "ObterEncaminhamento deve retornar Ok com DTO")]
         public async Task ObterEncaminhamento_DeveRetornarOk()
         {
-            var dto = new EncaminhamentoNAAPARespostaDto();
+            var dto = new AtendimentoNAAPARespostaDto();
 
             _obterPorIdUseCase.Setup(s => s.Executar(10)).ReturnsAsync(dto);
 
             var result = await _controller.ObterEncaminhamento(10, _obterPorIdUseCase.Object);
 
             var ok = Assert.IsType<OkObjectResult>(result);
-            Assert.IsType<EncaminhamentoNAAPARespostaDto>(ok.Value);
+            Assert.IsType<AtendimentoNAAPARespostaDto>(ok.Value);
         }
 
         [Fact(DisplayName = "Upload deve retornar Ok quando arquivo possui conteúdo")]

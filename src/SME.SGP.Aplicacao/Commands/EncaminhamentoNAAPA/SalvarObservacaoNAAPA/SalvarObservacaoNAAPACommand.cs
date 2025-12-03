@@ -6,12 +6,12 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarObservacaoNAAPACommand : IRequest<bool>
     {
-        public SalvarObservacaoNAAPACommand(EncaminhamentoNAAPAObservacaoSalvarDto filtro)
+        public SalvarObservacaoNAAPACommand(AtendimentoNAAPAObservacaoSalvarDto filtro)
         {
             encaminhamentoNAAPAObservacaoSalvarDto = filtro;
         }
 
-        public EncaminhamentoNAAPAObservacaoSalvarDto encaminhamentoNAAPAObservacaoSalvarDto { get; set; }
+        public AtendimentoNAAPAObservacaoSalvarDto encaminhamentoNAAPAObservacaoSalvarDto { get; set; }
     }
     public class SalvarObservacaoNAAPACommandValidator : AbstractValidator<SalvarObservacaoNAAPACommand>
     {

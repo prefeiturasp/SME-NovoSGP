@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IObterEncaminhamentoNAAPAPorIdUseCase : IUseCase<long, EncaminhamentoNAAPARespostaDto>
+    public interface IObterEncaminhamentoNAAPAPorIdUseCase : IUseCase<long, AtendimentoNAAPARespostaDto>
     {
     }
 }

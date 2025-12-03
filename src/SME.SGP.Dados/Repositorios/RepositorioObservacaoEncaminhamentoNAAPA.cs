@@ -16,9 +16,9 @@ namespace SME.SGP.Dados.Repositorios
 
         }
 
-        public async Task<PaginacaoResultadoDto<EncaminhamentoNAAPAObservacoesDto>> ListarPaginadoPorEncaminhamentoNAAPAId(long encaminhamentoNAAPAId, string usuarioLogadoRf, Paginacao paginacao)
+        public async Task<PaginacaoResultadoDto<AtendimentoNAAPAObservacoesDto>> ListarPaginadoPorEncaminhamentoNAAPAId(long encaminhamentoNAAPAId, string usuarioLogadoRf, Paginacao paginacao)
         {
-            var retorno = new PaginacaoResultadoDto<EncaminhamentoNAAPAObservacoesDto>();
+            var retorno = new PaginacaoResultadoDto<AtendimentoNAAPAObservacoesDto>();
             var sql = @$"select 
                              id as IdObservacao,
                              observacao as Observacao,
@@ -42,7 +42,7 @@ namespace SME.SGP.Dados.Repositorios
                 paginacao = new Paginacao(1, 10);
 
 
-            var retornoPaginado = new PaginacaoResultadoDto<EncaminhamentoNAAPAObservacoesDto>
+            var retornoPaginado = new PaginacaoResultadoDto<AtendimentoNAAPAObservacoesDto>
             {
                 TotalRegistros = observacoes.Any() ? observacoes.Count : 0
             };
@@ -57,12 +57,12 @@ namespace SME.SGP.Dados.Repositorios
             return retornoPaginado;
         }
 
-        private List<EncaminhamentoNAAPAObservacoesDto> MapearAuditoria(IEnumerable<EncaminhamentoNAAPAObservacoesConsultaDto> observacoes)
+        private List<AtendimentoNAAPAObservacoesDto> MapearAuditoria(IEnumerable<EncaminhamentoNAAPAObservacoesConsultaDto> observacoes)
         {
-            var lista = new List<EncaminhamentoNAAPAObservacoesDto>(); 
+            var lista = new List<AtendimentoNAAPAObservacoesDto>(); 
             foreach (var item in observacoes)
             {
-                var obs = new EncaminhamentoNAAPAObservacoesDto 
+                var obs = new AtendimentoNAAPAObservacoesDto 
                 {
                     Id = item.IdObservacao,
                     Observacao = item.Observacao,

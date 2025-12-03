@@ -67,7 +67,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var respostaEncaminhamentoNAAPA = respostasEncaminhamentoNAAPA.FirstOrDefault();
             respostaEncaminhamentoNAAPA.Texto.ShouldBe(ENDERECO_RESIDENCIAL_ALUNO_NAAPA_DIFERENTE);
 
-            var encaminhamentoNAAPADto = new EncaminhamentoNAAPADto { Id = 1, AlunoCodigo = ALUNO_CODIGO_1 };
+            var encaminhamentoNAAPADto = new AtendimentoNAAPADto { Id = 1, AlunoCodigo = ALUNO_CODIGO_1 };
             var mensagem = new MensagemRabbit { Mensagem = JsonConvert.SerializeObject(encaminhamentoNAAPADto) };
             var retorno = await atualizarEnderecoDoEncaminhamentoNAAPAUseCase.Executar(mensagem);
 
@@ -107,7 +107,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var respostasEncaminhamentoNAAPA = ObterTodos<Dominio.RespostaEncaminhamentoNAAPA>().Where(resposta => resposta.QuestaoEncaminhamentoId == questoesEncaminhamentoNAAPA.FirstOrDefault().Id);
             respostasEncaminhamentoNAAPA.ShouldBeEmpty();
 
-            var encaminhamentoNAAPADto = new EncaminhamentoNAAPADto { Id = 1, AlunoCodigo = ALUNO_CODIGO_1 };
+            var encaminhamentoNAAPADto = new AtendimentoNAAPADto { Id = 1, AlunoCodigo = ALUNO_CODIGO_1 };
             var mensagem = new MensagemRabbit { Mensagem = JsonConvert.SerializeObject(encaminhamentoNAAPADto) };
             var retorno = await atualizarEnderecoDoEncaminhamentoNAAPAUseCase.Executar(mensagem);
 
@@ -149,7 +149,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var respostaEncaminhamentoNAAPA = respostasEncaminhamentoNAAPA.FirstOrDefault();
             respostaEncaminhamentoNAAPA.Texto.ShouldBe("");
 
-            var encaminhamentoNAAPADto = new EncaminhamentoNAAPADto { Id = 1, AlunoCodigo = ALUNO_CODIGO_1 };
+            var encaminhamentoNAAPADto = new AtendimentoNAAPADto { Id = 1, AlunoCodigo = ALUNO_CODIGO_1 };
             var mensagem = new MensagemRabbit { Mensagem = JsonConvert.SerializeObject(encaminhamentoNAAPADto) };
             var retorno = await atualizarEnderecoDoEncaminhamentoNAAPAUseCase.Executar(mensagem);
 
@@ -191,7 +191,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var respostaEncaminhamentoNAAPA = respostasEncaminhamentoNAAPA.FirstOrDefault();
             respostaEncaminhamentoNAAPA.Texto.ShouldBe(ENDERECO_RESIDENCIAL_ALUNO_NAAPA_IGUAL);
 
-            var encaminhamentoNAAPADto = new EncaminhamentoNAAPADto { Id = 1, AlunoCodigo = ALUNO_CODIGO_1 };
+            var encaminhamentoNAAPADto = new AtendimentoNAAPADto { Id = 1, AlunoCodigo = ALUNO_CODIGO_1 };
             var mensagem = new MensagemRabbit { Mensagem = JsonConvert.SerializeObject(encaminhamentoNAAPADto) };
             var retorno = await atualizarEnderecoDoEncaminhamentoNAAPAUseCase.Executar(mensagem);
 

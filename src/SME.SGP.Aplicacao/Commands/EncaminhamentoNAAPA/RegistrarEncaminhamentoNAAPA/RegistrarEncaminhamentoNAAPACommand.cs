@@ -5,7 +5,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class RegistrarEncaminhamentoNAAPACommand : IRequest<ResultadoEncaminhamentoNAAPADto>
+    public class RegistrarEncaminhamentoNAAPACommand : IRequest<ResultadoAtendimentoNAAPADto>
     {
         public long TurmaId { get; set; }
         public SituacaoNAAPA Situacao { get; set; }

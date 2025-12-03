@@ -93,9 +93,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             encaminhamentoNAAPA.TurmaId.ShouldBe(TURMA_ID_2);
         }
 
-        private EncaminhamentoNAAPADto ObterEncaminhamentoDto(string alunoCodigo)
+        private AtendimentoNAAPADto ObterEncaminhamentoDto(string alunoCodigo)
         {
-            return new EncaminhamentoNAAPADto()
+            return new AtendimentoNAAPADto()
             {
                 Id = 1,
                 AlunoCodigo = alunoCodigo,

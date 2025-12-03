@@ -16,7 +16,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<PrioridadeEncaminhamentoNAAPADto>> ObterPrioridadeEncaminhamento()
+        public async Task<IEnumerable<PrioridadeAtendimentoNAAPADto>> ObterPrioridadeEncaminhamento()
         {
             var query = @"select opre.id, opre.nome
                             from secao_encaminhamento_naapa sen
@@ -26,7 +26,7 @@ namespace SME.SGP.Dados.Repositorios
                             where sen.etapa = @etapa and qta.nome = @questaoPrioridade and qti.tipo = @tipoQuestionario
                             order by opre.ordem";
 
-            return await database.Conexao.QueryAsync<PrioridadeEncaminhamentoNAAPADto>(query, new { etapa = ETAPA_1, questaoPrioridade = QUESTAO_PRIORIDADE, tipoQuestionario = (int)TipoQuestionario.EncaminhamentoNAAPA });
+            return await database.Conexao.QueryAsync<PrioridadeAtendimentoNAAPADto>(query, new { etapa = ETAPA_1, questaoPrioridade = QUESTAO_PRIORIDADE, tipoQuestionario = (int)TipoQuestionario.EncaminhamentoNAAPA });
         }
 
         public async Task<QuestaoEncaminhamentoNAAPA> ObterQuestaoEnderecoResidencialPorEncaminhamentoId(long encaminhamentoNAAPAId)

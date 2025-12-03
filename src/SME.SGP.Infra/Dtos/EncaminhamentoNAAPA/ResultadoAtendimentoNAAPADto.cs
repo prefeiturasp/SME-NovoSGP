@@ -1,10 +1,10 @@
 ﻿namespace SME.SGP.Infra
 {
-    public class ResultadoEncaminhamentoNAAPADto
+    public class ResultadoAtendimentoNAAPADto
     {
-        public ResultadoEncaminhamentoNAAPADto() {}
+        public ResultadoAtendimentoNAAPADto() {}
 
-        public ResultadoEncaminhamentoNAAPADto(long id)
+        public ResultadoAtendimentoNAAPADto(long id)
         {
             Id = id;
         }

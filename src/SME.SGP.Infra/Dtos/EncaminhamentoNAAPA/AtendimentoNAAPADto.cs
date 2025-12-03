@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Infra
 {
-    public class EncaminhamentoNAAPADto
+    public class AtendimentoNAAPADto
     {
-        public EncaminhamentoNAAPADto()
+        public AtendimentoNAAPADto()
         {
             Secoes = new List<EncaminhamentoNAAPASecaoDto>();
         }

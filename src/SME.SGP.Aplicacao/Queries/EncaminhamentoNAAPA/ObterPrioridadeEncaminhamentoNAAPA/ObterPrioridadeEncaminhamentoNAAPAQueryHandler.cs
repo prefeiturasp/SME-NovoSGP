@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPrioridadeEncaminhamentoNAAPAQueryHandler : IRequestHandler<ObterPrioridadeEncaminhamentoNAAPAQuery, IEnumerable<PrioridadeEncaminhamentoNAAPADto>>
+    public class ObterPrioridadeEncaminhamentoNAAPAQueryHandler : IRequestHandler<ObterPrioridadeEncaminhamentoNAAPAQuery, IEnumerable<PrioridadeAtendimentoNAAPADto>>
     {
         private readonly IRepositorioQuestaoEncaminhamentoNAAPA repositorio;
 
@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
 
-        public async Task<IEnumerable<PrioridadeEncaminhamentoNAAPADto>> Handle(ObterPrioridadeEncaminhamentoNAAPAQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<PrioridadeAtendimentoNAAPADto>> Handle(ObterPrioridadeEncaminhamentoNAAPAQuery request, CancellationToken cancellationToken)
         {
             return await this.repositorio.ObterPrioridadeEncaminhamento();
         }

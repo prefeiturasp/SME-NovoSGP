@@ -58,7 +58,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var dataQueixa = DateTimeExtension.HorarioBrasilia().Date;
             
-            var encaminhamentosNaapaDto = new EncaminhamentoNAAPADto()
+            var encaminhamentosNaapaDto = new AtendimentoNAAPADto()
             {
                 TurmaId = TURMA_ID_1,
                 Situacao = SituacaoNAAPA.Rascunho,
@@ -147,7 +147,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var dataQueixa = DateTimeExtension.HorarioBrasilia().Date;
             
-            var encaminhamentosNaapaDto = new EncaminhamentoNAAPADto()
+            var encaminhamentosNaapaDto = new AtendimentoNAAPADto()
             {
                 TurmaId = TURMA_ID_1,
                 Situacao = SituacaoNAAPA.Rascunho,
@@ -238,7 +238,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             dataQueixa.AddDays(4);
             
-            var encaminhamentosNaapaDto = new EncaminhamentoNAAPADto()
+            var encaminhamentosNaapaDto = new AtendimentoNAAPADto()
             {
                 Id = 1,
                 TurmaId = TURMA_ID_1,
@@ -327,7 +327,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             
             dataQueixa.AddDays(4);
 
-            var encaminhamentosNaapaDto = new EncaminhamentoNAAPADto()
+            var encaminhamentosNaapaDto = new AtendimentoNAAPADto()
             {
                 Id = 1,
                 TurmaId = TURMA_ID_1,
@@ -420,7 +420,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var dataQueixa = DateTimeExtension.HorarioBrasilia().Date;
 
-            var encaminhamentosNaapaDto = new EncaminhamentoNAAPADto()
+            var encaminhamentosNaapaDto = new AtendimentoNAAPADto()
             {
                 TurmaId = TURMA_ID_1,
                 Situacao = SituacaoNAAPA.Rascunho,
@@ -476,7 +476,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             respostaEncaminhamentoNAAPA.Count.ShouldBe(3);
             respostaEncaminhamentoNAAPA.Any(a => a.Texto == RESPOSTA_TURMAS_PROGRAMA_ALUNO_EOL_INCLUSAO).ShouldBeTrue();
 
-            encaminhamentosNaapaDto = new EncaminhamentoNAAPADto()
+            encaminhamentosNaapaDto = new AtendimentoNAAPADto()
             {
                 Id = 1,
                 TurmaId = TURMA_ID_1,

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class RegistrarEncaminhamentoNAAPACommandHandler : IRequestHandler<RegistrarEncaminhamentoNAAPACommand, ResultadoEncaminhamentoNAAPADto>
+    public class RegistrarEncaminhamentoNAAPACommandHandler : IRequestHandler<RegistrarEncaminhamentoNAAPACommand, ResultadoAtendimentoNAAPADto>
     {
         private readonly IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA;
         private readonly IMediator mediator;
@@ -19,14 +19,14 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<ResultadoEncaminhamentoNAAPADto> Handle(RegistrarEncaminhamentoNAAPACommand request, CancellationToken cancellationToken)
+        public async Task<ResultadoAtendimentoNAAPADto> Handle(RegistrarEncaminhamentoNAAPACommand request, CancellationToken cancellationToken)
         {
             var turmaCodigo = await mediator.Send(new ObterTurmaCodigoPorIdQuery(request.TurmaId));
             var aluno = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(turmaCodigo, request.AlunoCodigo, true));
 
             var encaminhamento = MapearParaEntidade(request, aluno?.CodigoSituacaoMatricula);
             var id = await repositorioEncaminhamentoNAAPA.SalvarAsync(encaminhamento);
-            var resultado = new ResultadoEncaminhamentoNAAPADto(id);
+            var resultado = new ResultadoAtendimentoNAAPADto(id);
             resultado.Auditoria = (AuditoriaDto)encaminhamento;
             return resultado;
         }

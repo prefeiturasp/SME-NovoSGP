@@ -41,12 +41,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var useCaseSalvar = SalvarObservacoesDeEncaminhamentoNAAPA();
             var useCaseExcluir = ExcluirObservacoesDeEncaminhamentoNAAPA();
 
-            var primeiraObservacao = new EncaminhamentoNAAPAObservacaoSalvarDto
+            var primeiraObservacao = new AtendimentoNAAPAObservacaoSalvarDto
             {
                 EncaminhamentoNAAPAId = encaminhamentoExistente.Id,
                 Observacao = "Primeira Observacao"
             };
-            var segundaObservacao = new EncaminhamentoNAAPAObservacaoSalvarDto
+            var segundaObservacao = new AtendimentoNAAPAObservacaoSalvarDto
             {
                 EncaminhamentoNAAPAId = encaminhamentoExistente.Id,
                 Observacao = "Segunda Observacao"
@@ -62,7 +62,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var obterObservacaoParaAtualizar = listaObservacoes.Items.FirstOrDefault(x => x.Observacao == primeiraObservacao.Observacao);
 
-            var observacaoAtualizar = new EncaminhamentoNAAPAObservacaoSalvarDto
+            var observacaoAtualizar = new AtendimentoNAAPAObservacaoSalvarDto
             {
                 Observacao = "Primeira Observacao Atualizada",
                 Id = obterObservacaoParaAtualizar.Id,
@@ -86,7 +86,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
         }
 
-        private async Task<ResultadoEncaminhamentoNAAPADto> CriarEncaminhamentoNAAPA()
+        private async Task<ResultadoAtendimentoNAAPADto> CriarEncaminhamentoNAAPA()
         {
 
             var filtroNAAPA = new FiltroNAAPADto()
@@ -108,7 +108,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var dataQueixa = DateTimeExtension.HorarioBrasilia().Date;
 
-            var encaminhamentosNaapaDto = new EncaminhamentoNAAPADto()
+            var encaminhamentosNaapaDto = new AtendimentoNAAPADto()
             {
                 TurmaId = TURMA_ID_1,
                 Situacao = SituacaoNAAPA.Rascunho,

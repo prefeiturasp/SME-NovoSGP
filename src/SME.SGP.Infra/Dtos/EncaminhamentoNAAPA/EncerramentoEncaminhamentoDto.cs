@@ -1,6 +1,6 @@
 ﻿namespace SME.SGP.Infra.Dtos
 {
-    public class EncerramentoEncaminhamentoNAAPADto
+    public class EncerramentoAtendimentoNAAPADto
     {
         public long EncaminhamentoId { get; set; }
         public string MotivoEncerramento { get; set; }

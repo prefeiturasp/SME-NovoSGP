@@ -3,7 +3,7 @@ using System;
 
 namespace SME.SGP.Infra
 {
-    public class FiltroEncaminhamentoNAAPADto
+    public class FiltroAtendimentoNAAPADto
     {
         public bool ExibirHistorico { get; set; }
         public int AnoLetivo { get; set; }

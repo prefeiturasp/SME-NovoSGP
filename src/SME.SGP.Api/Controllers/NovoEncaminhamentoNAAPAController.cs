@@ -53,7 +53,7 @@ namespace SME.SGP.Api.Controllers
 
 
         [HttpGet("{encaminhamentoId}")]
-        [ProducesResponseType(typeof(EncaminhamentoNAAPARespostaDto), 200)]
+        [ProducesResponseType(typeof(AtendimentoNAAPARespostaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ENC_NAAPA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterEncaminhamento(long encaminhamentoId, [FromServices] IObterEncaminhamentoNAAPAPorIdUseCase useCase)
@@ -104,7 +104,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpDelete("{encaminhamentoNAAPAId}")]
-        [ProducesResponseType(typeof(EncaminhamentoNAAPADto), 200)]
+        [ProducesResponseType(typeof(AtendimentoNAAPADto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ENC_NAAPA_E, Policy = "Bearer")]
         public async Task<IActionResult> ExcluirEncaminhamento(long encaminhamentoNAAPAId, [FromServices] IExcluirEncaminhamentoNAAPAUseCase useCase)

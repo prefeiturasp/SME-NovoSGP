@@ -50,7 +50,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var obterEncaminhamentosNAAPAUseCase = ObterServicoListagemComFiltros();
 
-            var filtroEncaminhamentosNAAPADto = new FiltroEncaminhamentoNAAPADto()
+            var filtroEncaminhamentosNAAPADto = new FiltroAtendimentoNAAPADto()
             {
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 ExibirHistorico = true,
@@ -91,7 +91,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var obterEncaminhamentosNAAPAUseCase = ObterServicoListagemComFiltros();
 
-            var filtroEncaminhamentosNAAPADto = new FiltroEncaminhamentoNAAPADto()
+            var filtroEncaminhamentosNAAPADto = new FiltroAtendimentoNAAPADto()
             {
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 ExibirHistorico = true,
@@ -131,7 +131,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var obterEncaminhamentosNAAPAUseCase = ObterServicoListagemComFiltros();
 
-            var filtroEncaminhamentosNAAPADto = new FiltroEncaminhamentoNAAPADto()
+            var filtroEncaminhamentosNAAPADto = new FiltroAtendimentoNAAPADto()
             {
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 ExibirHistorico = true,
@@ -168,7 +168,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var obterEncaminhamentosNAAPAUseCase = ObterServicoListagemComFiltros();
 
-            var filtroEncaminhamentosNAAPADto = new FiltroEncaminhamentoNAAPADto()
+            var filtroEncaminhamentosNAAPADto = new FiltroAtendimentoNAAPADto()
             {
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 ExibirHistorico = true,
@@ -184,7 +184,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             retorno.Items.Count().ShouldBe(10);
             retorno.Items.Any(a=> !a.Situacao.Equals(SituacaoNAAPA.Rascunho.ToString())).ShouldBeFalse();
 
-            filtroEncaminhamentosNAAPADto = new FiltroEncaminhamentoNAAPADto()
+            filtroEncaminhamentosNAAPADto = new FiltroAtendimentoNAAPADto()
             {
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 ExibirHistorico = true,
@@ -222,7 +222,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var obterEncaminhamentosNAAPAUseCase = ObterServicoListagemComFiltros();
 
-            var filtroEncaminhamentosNAAPADto = new FiltroEncaminhamentoNAAPADto()
+            var filtroEncaminhamentosNAAPADto = new FiltroAtendimentoNAAPADto()
             {
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 ExibirHistorico = true,
@@ -259,7 +259,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var obterEncaminhamentosNAAPAUseCase = ObterServicoListagemComFiltros();
 
-            var filtroEncaminhamentosNAAPADto = new FiltroEncaminhamentoNAAPADto()
+            var filtroEncaminhamentosNAAPADto = new FiltroAtendimentoNAAPADto()
             {
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 ExibirHistorico = true,
@@ -310,7 +310,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var obterEncaminhamentosNAAPAUseCase = ObterServicoListagemComFiltros();
 
-            var filtroEncaminhamentosNAAPADto = new FiltroEncaminhamentoNAAPADto()
+            var filtroEncaminhamentosNAAPADto = new FiltroAtendimentoNAAPADto()
             {
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 ExibirHistorico = true,
@@ -349,7 +349,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var obterEncaminhamentosNAAPAUseCase = ObterServicoListagemComFiltros();
 
-            var filtroEncaminhamentosNAAPADto = new FiltroEncaminhamentoNAAPADto()
+            var filtroEncaminhamentosNAAPADto = new FiltroAtendimentoNAAPADto()
             {
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 ExibirHistorico = true,
@@ -390,7 +390,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var obterEncaminhamentosNAAPAUseCase = ObterServicoListagemComFiltros();
 
-            var filtroEncaminhamentosNAAPADto = new FiltroEncaminhamentoNAAPADto()
+            var filtroEncaminhamentosNAAPADto = new FiltroAtendimentoNAAPADto()
             {
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 ExibirHistorico = true,
@@ -425,7 +425,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var obterEncaminhamentosNAAPAUseCase = ObterServicoListagemComFiltros();
 
-            var filtroEncaminhamentosNAAPADto = new FiltroEncaminhamentoNAAPADto()
+            var filtroEncaminhamentosNAAPADto = new FiltroAtendimentoNAAPADto()
             {
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 ExibirHistorico = true,
@@ -471,7 +471,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var obterEncaminhamentosNAAPAUseCase = ObterServicoListagemComFiltros();
 
-            var filtroEncaminhamentosNAAPADto = new FiltroEncaminhamentoNAAPADto()
+            var filtroEncaminhamentosNAAPADto = new FiltroAtendimentoNAAPADto()
             {
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 ExibirHistorico = true,
@@ -507,7 +507,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             quartoRegistro.Ue.ShouldBe("EMEF UE 2");
             quartoRegistro.NomeAluno.ShouldBe("ALUNO B");
 
-            filtroEncaminhamentosNAAPADto = new FiltroEncaminhamentoNAAPADto()
+            filtroEncaminhamentosNAAPADto = new FiltroAtendimentoNAAPADto()
             {
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 ExibirHistorico = true,

@@ -1,7 +1,7 @@
 ﻿
 namespace SME.SGP.Infra.Dtos
 {
-    public class EncaminhamentoNAAPARespostaDto
+    public class AtendimentoNAAPARespostaDto
     {
         public long DreId { get; set; }
         public string DreNome { get; set; }

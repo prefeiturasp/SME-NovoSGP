@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<EncaminhamentoNAAPARespostaDto> Executar(long id)
+        public async Task<AtendimentoNAAPARespostaDto> Executar(long id)
         {
             var encaminhamentoNAAPA = await mediator.Send(new ObterEncaminhamentoNAAPAComTurmaPorIdQuery(id));
 
@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
             if(encaminhamentoNAAPA.Situacao == Dominio.Enumerados.SituacaoNAAPA.AguardandoAtendimento)
                 await VerificaSeEstaEmAguardandoAtendimentoIndevidamente(encaminhamentoNAAPA);
 
-            return new EncaminhamentoNAAPARespostaDto()
+            return new AtendimentoNAAPARespostaDto()
             {
                 Aluno = aluno,
                 

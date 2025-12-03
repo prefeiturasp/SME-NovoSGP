@@ -59,7 +59,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
 
             dataQueixa.AddDays(4);
 
-            var dto = new EncaminhamentoNAAPAItineranciaDto()
+            var dto = new AtendimentoNAAPAItineranciaDto()
             {
                 EncaminhamentoId = 1,
                 EncaminhamentoNAAPASecao = new EncaminhamentoNAAPASecaoDto()
@@ -124,7 +124,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
 
             dataQueixa.AddDays(4);
 
-            var dto = new EncaminhamentoNAAPAItineranciaDto()
+            var dto = new AtendimentoNAAPAItineranciaDto()
             {
                 EncaminhamentoId = 1,
                 EncaminhamentoNAAPASecao = new EncaminhamentoNAAPASecaoDto()
@@ -235,7 +235,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
 
             dataQueixa.AddDays(4);
 
-            var dto = new EncaminhamentoNAAPAItineranciaDto()
+            var dto = new AtendimentoNAAPAItineranciaDto()
             {
                 EncaminhamentoId = 1,
                 EncaminhamentoNAAPASecaoId = 2,
@@ -303,7 +303,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
 
             dataQueixa.AddDays(4);
 
-            var dto = new EncaminhamentoNAAPAItineranciaDto()
+            var dto = new AtendimentoNAAPAItineranciaDto()
             {
                 EncaminhamentoId = 1,
                 EncaminhamentoNAAPASecaoId = 2,
@@ -421,7 +421,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
             dataQueixa.AddDays(4);
 
             //Com DTO abaixo, ao Editar a Itinerancia, excluirá as 2 respostas da questão anexo: 1 por conta de estar sendo enviada no DTO sem resposta e 1 por nem estar sendo enviada no DTO
-            var dto = new EncaminhamentoNAAPAItineranciaDto()
+            var dto = new AtendimentoNAAPAItineranciaDto()
             {
                 EncaminhamentoId = 1,
                 EncaminhamentoNAAPASecaoId = 2,
@@ -759,7 +759,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
 
             dataQueixa.AddDays(4);
 
-            var dto = new EncaminhamentoNAAPAItineranciaDto()
+            var dto = new AtendimentoNAAPAItineranciaDto()
             {
                 EncaminhamentoId = 1,
                 EncaminhamentoNAAPASecao = new EncaminhamentoNAAPASecaoDto()

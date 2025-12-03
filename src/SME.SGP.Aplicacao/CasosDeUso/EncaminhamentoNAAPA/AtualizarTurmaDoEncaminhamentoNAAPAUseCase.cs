@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit param)
         {
             var situacaoMatriculaAtiva = SituacaoMatriculaAluno.Ativo;
-            var encaminhamento = param.ObterObjetoMensagem<EncaminhamentoNAAPADto>();
+            var encaminhamento = param.ObterObjetoMensagem<AtendimentoNAAPADto>();
             var alunosEol = await mediator.Send(new ObterAlunosEolPorCodigosQuery(long.Parse(encaminhamento.AlunoCodigo), true));
             var alunoTurma = alunosEol?.FirstOrDefault(turma => turma.CodigoTipoTurma == (int)TipoTurma.Regular 
                                                       && turma.AnoLetivo <= DateTimeExtension.HorarioBrasilia().Year
@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
-        private async Task AtualizarTurmaDoEncaminhamento(EncaminhamentoNAAPADto encaminhamento, TurmasDoAlunoDto alunoTurma)
+        private async Task AtualizarTurmaDoEncaminhamento(AtendimentoNAAPADto encaminhamento, TurmasDoAlunoDto alunoTurma)
         {
             var turmaId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(alunoTurma.CodigoTurma.ToString()));
 

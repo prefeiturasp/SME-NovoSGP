@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<ResultadoEncaminhamentoNAAPADto> Executar(EncaminhamentoNAAPADto encaminhamentoNAAPADto)
+        public async Task<ResultadoAtendimentoNAAPADto> Executar(AtendimentoNAAPADto encaminhamentoNAAPADto)
         {
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(encaminhamentoNAAPADto.TurmaId));
             if (turma.EhNulo())
@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
                     await AlterarEncaminhamento(encaminhamentoNAAPADto, encaminhamentoNAAPA);
                     await RemoverArquivosNaoUtilizados(encaminhamentoNAAPADto.Secoes);
 
-                    return new ResultadoEncaminhamentoNAAPADto
+                    return new ResultadoAtendimentoNAAPADto
                         { Id = encaminhamentoNAAPA.Id, Auditoria = (AuditoriaDto)encaminhamentoNAAPA };
                 }
             }
@@ -102,7 +102,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
         }
-        public async Task AlterarEncaminhamento(EncaminhamentoNAAPADto encaminhamentoNAAPADto, EncaminhamentoNAAPA encaminhamentoNAAPA)
+        public async Task AlterarEncaminhamento(AtendimentoNAAPADto encaminhamentoNAAPADto, EncaminhamentoNAAPA encaminhamentoNAAPA)
         {
             if(encaminhamentoNAAPADto.Situacao != encaminhamentoNAAPA.Situacao)
                 await mediator.Send(new AlterarSituacaoNAAPACommand(encaminhamentoNAAPA, encaminhamentoNAAPADto.Situacao));
@@ -202,7 +202,7 @@ namespace SME.SGP.Aplicacao
         private IEnumerable<RespostaEncaminhamentoNAAPA> ObterRespostasAAlterar(QuestaoEncaminhamentoNAAPA questaoExistente, IGrouping<long, EncaminhamentoNAAPASecaoQuestaoDto> respostasEncaminhamento)
             => questaoExistente.Respostas.Where(s => respostasEncaminhamento.Any(c => c.RespostaEncaminhamentoId == s.Id));
 
-        public async Task SalvarEncaminhamento(EncaminhamentoNAAPADto encaminhamentoNAAPADto, ResultadoEncaminhamentoNAAPADto resultadoEncaminhamento)
+        public async Task SalvarEncaminhamento(AtendimentoNAAPADto encaminhamentoNAAPADto, ResultadoAtendimentoNAAPADto resultadoEncaminhamento)
         {
             foreach (var secao in encaminhamentoNAAPADto.Secoes)
             {
@@ -291,7 +291,7 @@ namespace SME.SGP.Aplicacao
                 })
                 : Enumerable.Empty<RespostaQuestaoObrigatoriaDto>();
         }
-            private async Task<List<QuestaoObrigatoriaNaoRespondidaDto>> ObterQuestoesObrigatoriasNaoPreechidas(EncaminhamentoNAAPADto encaminhamentoNAAPADto, int codigoModalidade)
+            private async Task<List<QuestaoObrigatoriaNaoRespondidaDto>> ObterQuestoesObrigatoriasNaoPreechidas(AtendimentoNAAPADto encaminhamentoNAAPADto, int codigoModalidade)
 
         {
             List<QuestaoObrigatoriaNaoRespondidaDto> questoesObrigatoriasAConsistir = new List<QuestaoObrigatoriaNaoRespondidaDto>();

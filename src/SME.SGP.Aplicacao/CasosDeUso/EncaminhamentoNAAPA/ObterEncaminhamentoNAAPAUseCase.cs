@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>> Executar(FiltroEncaminhamentoNAAPADto filtro)
+        public async Task<PaginacaoResultadoDto<AtendimentoNAAPAResumoDto>> Executar(FiltroAtendimentoNAAPADto filtro)
         {
             if (!string.IsNullOrEmpty(filtro.CodigoUe) && filtro.CodigoUe.Equals("-99"))
                 filtro.CodigoUe = string.Empty;

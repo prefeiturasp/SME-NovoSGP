@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            var encaminhamentoNAAPADto = param.ObterObjetoMensagem<EncaminhamentoNAAPADto>();
+            var encaminhamentoNAAPADto = param.ObterObjetoMensagem<AtendimentoNAAPADto>();
 
             var alunoEol = (await mediator.Send(new ObterAlunoEnderecoEolQuery(encaminhamentoNAAPADto.AlunoCodigo)));
             if (alunoEol.EhNulo()) return false;

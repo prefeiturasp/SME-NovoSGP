@@ -1,6 +1,6 @@
 ﻿namespace SME.SGP.Infra
 {
-    public class EncaminhamentoNAAPAObservacaoSalvarDto
+    public class AtendimentoNAAPAObservacaoSalvarDto
     {
         public long Id { get; set; }
         public string Observacao { get; set; }

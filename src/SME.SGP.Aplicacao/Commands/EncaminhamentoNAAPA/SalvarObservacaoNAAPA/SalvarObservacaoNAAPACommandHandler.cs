@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
-        private async Task SalvarObservacao(EncaminhamentoNAAPAObservacaoSalvarDto encaminhamentoNAAPAObservacaoSalvarDto)
+        private async Task SalvarObservacao(AtendimentoNAAPAObservacaoSalvarDto encaminhamentoNAAPAObservacaoSalvarDto)
         {
             await repositorioObs.SalvarAsync(new EncaminhamentoNAAPAObservacao
             {
@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
                 Id = encaminhamentoNAAPAObservacaoSalvarDto.Id
             });
         }
-        private async Task AtualizacaoObservacao(EncaminhamentoNAAPAObservacaoSalvarDto encaminhamentoNAAPAObservacaoSalvarDto)
+        private async Task AtualizacaoObservacao(AtendimentoNAAPAObservacaoSalvarDto encaminhamentoNAAPAObservacaoSalvarDto)
         {
             var observacaoExistente = await repositorioObs.ObterPorIdAsync(encaminhamentoNAAPAObservacaoSalvarDto.Id);
             observacaoExistente.Observacao = encaminhamentoNAAPAObservacaoSalvarDto.Observacao;

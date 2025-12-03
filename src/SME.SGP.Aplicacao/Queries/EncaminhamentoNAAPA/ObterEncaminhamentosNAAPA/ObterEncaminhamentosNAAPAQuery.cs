@@ -7,9 +7,9 @@ using System.Linq;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterEncaminhamentosNAAPAQuery : IRequest<PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>>
+    public class ObterEncaminhamentosNAAPAQuery : IRequest<PaginacaoResultadoDto<AtendimentoNAAPAResumoDto>>
     {
-        public ObterEncaminhamentosNAAPAQuery(FiltroEncaminhamentoNAAPADto filtro)
+        public ObterEncaminhamentosNAAPAQuery(FiltroAtendimentoNAAPADto filtro)
         {
             ExibirHistorico = filtro.ExibirHistorico;
             DreId = filtro.DreId;

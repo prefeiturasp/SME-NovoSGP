@@ -61,7 +61,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             dataQueixa.AddDays(4);
             
-            var encaminhamentosNaapaDto = new EncaminhamentoNAAPADto()
+            var encaminhamentosNaapaDto = new AtendimentoNAAPADto()
             {
                 Id = 1,
                 TurmaId = TURMA_ID_1,
@@ -140,7 +140,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             dataQueixa.AddDays(4);
 
-            var encaminhamentosNaapaDto = new EncaminhamentoNAAPADto()
+            var encaminhamentosNaapaDto = new AtendimentoNAAPADto()
             {
                 Id = 1,
                 TurmaId = TURMA_ID_1,
@@ -232,7 +232,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             dataQueixa.AddDays(4);
 
-            var encaminhamentosNaapaDto = new EncaminhamentoNAAPADto()
+            var encaminhamentosNaapaDto = new AtendimentoNAAPADto()
             {
                 Id = 1,
                 TurmaId = TURMA_ID_1,
@@ -317,7 +317,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             dataQueixa.AddDays(4);
 
-            var encaminhamentosNaapaDto = new EncaminhamentoNAAPADto()
+            var encaminhamentosNaapaDto = new AtendimentoNAAPADto()
             {
                 Id = 1,
                 TurmaId = TURMA_ID_1,
@@ -423,7 +423,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             dataQueixa.AddDays(4);
 
-            var encaminhamentosNaapaDto = new EncaminhamentoNAAPADto()
+            var encaminhamentosNaapaDto = new AtendimentoNAAPADto()
             {
                 Id = 1,
                 TurmaId = TURMA_ID_1,

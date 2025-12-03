@@ -70,7 +70,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var respostaEncaminhamentoNAAPA = respostasEncaminhamentoNAAPA.FirstOrDefault();
             respostaEncaminhamentoNAAPA.Texto.ShouldBe(TURMA_PROGRAMA_ALUNO_NAAPA_DIFERENTE);
 
-            var encaminhamentoNAAPADto = new EncaminhamentoNAAPADto { Id = 1, AlunoCodigo = ALUNO_CODIGO_1, TurmaId = TURMA_ID_1, AlunoNome = "Nome do aluno 1"};
+            var encaminhamentoNAAPADto = new AtendimentoNAAPADto { Id = 1, AlunoCodigo = ALUNO_CODIGO_1, TurmaId = TURMA_ID_1, AlunoNome = "Nome do aluno 1"};
             var mensagem = new MensagemRabbit { Mensagem = JsonConvert.SerializeObject(encaminhamentoNAAPADto) };
             var retorno = await usecase.Executar(mensagem);
 
@@ -110,7 +110,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var respostasEncaminhamentoNAAPA = ObterTodos<Dominio.RespostaEncaminhamentoNAAPA>().Where(resposta => resposta.QuestaoEncaminhamentoId == questoesEncaminhamentoNAAPA.FirstOrDefault().Id);
             respostasEncaminhamentoNAAPA.ShouldBeEmpty();
 
-            var encaminhamentoNAAPADto = new EncaminhamentoNAAPADto { Id = 1, AlunoCodigo = ALUNO_CODIGO_1, TurmaId = TURMA_ID_1, AlunoNome = "Nome do aluno 1" };
+            var encaminhamentoNAAPADto = new AtendimentoNAAPADto { Id = 1, AlunoCodigo = ALUNO_CODIGO_1, TurmaId = TURMA_ID_1, AlunoNome = "Nome do aluno 1" };
             var mensagem = new MensagemRabbit { Mensagem = JsonConvert.SerializeObject(encaminhamentoNAAPADto) };
             var retorno = await usecase.Executar(mensagem);
 
@@ -152,7 +152,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var respostaEncaminhamentoNAAPA = respostasEncaminhamentoNAAPA.FirstOrDefault();
             respostaEncaminhamentoNAAPA.Texto.ShouldBe("");
 
-            var encaminhamentoNAAPADto = new EncaminhamentoNAAPADto { Id = 1, AlunoCodigo = ALUNO_CODIGO_1, TurmaId = TURMA_ID_1, AlunoNome = "Nome do aluno 1" };
+            var encaminhamentoNAAPADto = new AtendimentoNAAPADto { Id = 1, AlunoCodigo = ALUNO_CODIGO_1, TurmaId = TURMA_ID_1, AlunoNome = "Nome do aluno 1" };
             var mensagem = new MensagemRabbit { Mensagem = JsonConvert.SerializeObject(encaminhamentoNAAPADto) };
             var retorno = await useCase.Executar(mensagem);
 
@@ -194,7 +194,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var respostaEncaminhamentoNAAPA = respostasEncaminhamentoNAAPA.FirstOrDefault();
             respostaEncaminhamentoNAAPA.Texto.ShouldBe(TURMA_PROGRAMA_ALUNO_NAAPA_IGUAL);
 
-            var encaminhamentoNAAPADto = new EncaminhamentoNAAPADto { Id = 1, AlunoCodigo = ALUNO_CODIGO_1, TurmaId = TURMA_ID_1, AlunoNome = "Nome do aluno 1" };
+            var encaminhamentoNAAPADto = new AtendimentoNAAPADto { Id = 1, AlunoCodigo = ALUNO_CODIGO_1, TurmaId = TURMA_ID_1, AlunoNome = "Nome do aluno 1" };
             var mensagem = new MensagemRabbit { Mensagem = JsonConvert.SerializeObject(encaminhamentoNAAPADto) };
             var retorno = await useCase.Executar(mensagem);
 

@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IObterObservacoesDeEncaminhamentoNAAPAUseCase : IUseCase<long, PaginacaoResultadoDto<EncaminhamentoNAAPAObservacoesDto>>
+    public interface IObterObservacoesDeEncaminhamentoNAAPAUseCase : IUseCase<long, PaginacaoResultadoDto<AtendimentoNAAPAObservacoesDto>>
     {
     }
 }
