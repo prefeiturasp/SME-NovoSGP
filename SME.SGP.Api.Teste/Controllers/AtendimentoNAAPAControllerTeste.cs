@@ -19,14 +19,14 @@ using Xunit;
 
 namespace SME.SGP.Api.Testes.Controllers
 {
-    public class EncaminhamentoNAAPAControllerTeste
+    public class AtendimentoNAAPAControllerTeste
     {
-        private readonly EncaminhamentoNAAPAController _controller;
+        private readonly AtendimentoNAAPAController _controller;
         private readonly Faker _faker;
 
-        public EncaminhamentoNAAPAControllerTeste()
+        public AtendimentoNAAPAControllerTeste()
         {
-            _controller = new EncaminhamentoNAAPAController();
+            _controller = new AtendimentoNAAPAController();
             _faker = new Faker("pt_BR");
         }
 

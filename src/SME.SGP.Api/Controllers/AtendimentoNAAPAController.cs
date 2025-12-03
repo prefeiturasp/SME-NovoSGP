@@ -16,9 +16,9 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/encaminhamento-naapa")]
+    [Route("api/v1/atendimento-naapa")]
     [Authorize("Bearer")]
-    public class EncaminhamentoNAAPAController : ControllerBase
+    public class AtendimentoNAAPAController : ControllerBase
     {
         [HttpPost("salvar")]
         [ProducesResponseType(typeof(IEnumerable<ResultadoEncaminhamentoNAAPADto>), 200)]
