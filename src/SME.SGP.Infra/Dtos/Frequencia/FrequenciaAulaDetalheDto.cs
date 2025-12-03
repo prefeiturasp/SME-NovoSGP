@@ -32,12 +32,6 @@ namespace SME.SGP.Infra
             Tipo = ObterTipoFrequenciaDaAula();
         }
 
-        private static TipoFrequencia? ObterFrequenciaSugeridaDataAula(Aula aula, Dictionary<DateTime, TipoFrequencia?> frequenciaSugeridaPorData)
-        {
-            return frequenciaSugeridaPorData != null && frequenciaSugeridaPorData.TryGetValue(aula.DataAula, out var tipoFrequencia) ?
-                                             tipoFrequencia : null;
-        }
-
         public long AulaId { get; set; }
         public bool Desabilitado { get; set; }
         public bool PossuiAnotacao { get; set; }
@@ -46,6 +40,12 @@ namespace SME.SGP.Infra
         public string TipoFrequenciaSugerida  { get; set; }
         public IList<FrequenciaDetalheAulaDto> DetalheFrequencia { get; set; }
         public bool EhReposicao { get; set; }
+
+        private static TipoFrequencia? ObterFrequenciaSugeridaDataAula(Aula aula, Dictionary<DateTime, TipoFrequencia?> frequenciaSugeridaPorData)
+        {
+            return frequenciaSugeridaPorData != null && frequenciaSugeridaPorData.TryGetValue(aula.DataAula, out var tipoFrequencia) ?
+                                             tipoFrequencia : null;
+        }
 
         private void CarregarDetalheFrequencia(
             Aula aula, 
