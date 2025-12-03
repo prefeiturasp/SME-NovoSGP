@@ -9,19 +9,19 @@ namespace SME.SGP.IoC
     {
         internal static void RegistrarNAAPAUseCaseRabbitSgp(this IServiceCollection services)
         {
-            services.TryAddScoped<IAtualizarInformacoesDoAtendimentoNAAPAUseCase, AtualizarInformacoesDoEncaminhamentoNAAPAUseCase>();
-            services.TryAddScoped<IAtualizarTurmaDoAtendimentoNAAPAUseCase, AtualizarTurmaDoEncaminhamentoNAAPAUseCase>();
-            services.TryAddScoped<IAtualizarEnderecoDoAtendimentoNAAPAUseCase, AtualizarEnderecoDoEncaminhamentoNAAPAUseCase>();
-            services.TryAddScoped<INotificarSobreInativacaoAlunoTurmaDoAtendimentoNAAPAUseCase, NotificarSobreInativacaoAlunoTurmaDoEncaminhamentoNAAPAUseCase>();
-            services.TryAddScoped<INotificarSobreTransferenciaUeDreAlunoTurmaDoAtendimentoNAAPAUseCase, NotificarSobreTransferenciaUeDreAlunoTurmaDoEncaminhamentoNAAPAUseCase>();
-            services.TryAddScoped<IAtualizarTurmasProgramaDoAtendimentoNAAPAUseCase, AtualizarTurmasProgramaDoEncaminhamentoNAAPAUseCase>();
-            services.TryAddScoped<IExecutarCargaConsolidadoAtendimentoNAAPAUseCase, ExecutarCargaConsolidadoEncaminhamentoNAAPAUseCase>();
-            services.TryAddScoped<IExecutarBuscarUesConsolidadoAtendimentoNAAPAUseCase, ExecutarBuscarUesConsolidadoEncaminhamentoNAAPAUseCase>();
-            services.TryAddScoped<IExecutarInserirConsolidadoAtendimentoNAAPAUseCase, ExecutarInserirConsolidadoEncaminhamentoNAAPAUseCase>();
-            services.TryAddScoped<IExecutarBuscarConsolidadoAtendimentosProfissionalAtendimentoNAAPAUseCase, ExecutarBuscarConsolidadoAtendimentosProfissionalEncaminhamentoNAAPAUseCase>();
-            services.TryAddScoped<IExecutarInserirConsolidadoAtendimentoProfissionalAtendimentoNAAPAUseCase, ExecutarInserirConsolidadoAtendimentoProfissionalEncaminhamentoNAAPAUseCase>();
-            services.TryAddScoped<IExecutarExcluirConsolidadoAtendimentoNAAPAUseCase, ExecutarExcluirConsolidadoEncaminhamentoNAAPAUseCase>();
-            services.TryAddScoped<IExecutarExcluirConsolidadoAtendimentoProfissionalAtendimentoNAAPAUseCase, ExecutarExcluirConsolidadoAtendimentoProfissionalEncaminhamentoNAAPAUseCase>();
+            services.TryAddScoped<IAtualizarInformacoesDoAtendimentoNAAPAUseCase, AtualizarInformacoesDoAtendimentoNAAPAUseCase>();
+            services.TryAddScoped<IAtualizarTurmaDoAtendimentoNAAPAUseCase, AtualizarTurmaDoAtendimentoNAAPAUseCase>();
+            services.TryAddScoped<IAtualizarEnderecoDoAtendimentoNAAPAUseCase, AtualizarEnderecoDoAtendimentoNAAPAUseCase>();
+            services.TryAddScoped<INotificarSobreInativacaoAlunoTurmaDoAtendimentoNAAPAUseCase, NotificarSobreInativacaoAlunoTurmaDoAtendimentoNAAPAUseCase>();
+            services.TryAddScoped<INotificarSobreTransferenciaUeDreAlunoTurmaDoAtendimentoNAAPAUseCase, NotificarSobreTransferenciaUeDreAlunoTurmaDoAtendimentoNAAPAUseCase>();
+            services.TryAddScoped<IAtualizarTurmasProgramaDoAtendimentoNAAPAUseCase, AtualizarTurmasProgramaDoAtendimentoNAAPAUseCase>();
+            services.TryAddScoped<IExecutarCargaConsolidadoAtendimentoNAAPAUseCase, ExecutarCargaConsolidadoAtendimentoNAAPAUseCase>();
+            services.TryAddScoped<IExecutarBuscarUesConsolidadoAtendimentoNAAPAUseCase, ExecutarBuscarUesConsolidadoAtendimentoNAAPAUseCase>();
+            services.TryAddScoped<IExecutarInserirConsolidadoAtendimentoNAAPAUseCase, ExecutarInserirConsolidadoAtendimentoNAAPAUseCase>();
+            services.TryAddScoped<IExecutarBuscarConsolidadoAtendimentosProfissionalAtendimentoNAAPAUseCase, ExecutarBuscarConsolidadoAtendimentosProfissionalAtendimentoNAAPAUseCase>();
+            services.TryAddScoped<IExecutarInserirConsolidadoAtendimentoProfissionalAtendimentoNAAPAUseCase, ExecutarInserirConsolidadoAtendimentoProfissionalAtendimentoNAAPAUseCase>();
+            services.TryAddScoped<IExecutarExcluirConsolidadoAtendimentoNAAPAUseCase, ExecutarExcluirConsolidadoAtendimentoNAAPAUseCase>();
+            services.TryAddScoped<IExecutarExcluirConsolidadoAtendimentoProfissionalAtendimentoNAAPAUseCase, ExecutarExcluirConsolidadoAtendimentoProfissionalAtendimentoNAAPAUseCase>();
             services.TryAddScoped<INotificarInatividadeDoAtendimentoNAAPAUseCase, NotificarInatividadeDoAtendimentoNAAPAUseCase>();
             services.TryAddScoped<INotificarInatividadeDoAtendimentoNAAPAPorUeUseCase, NotificarInatividadeDoAtendimentoNAAPAPorUeUseCase>();
             services.TryAddScoped<INotificarInatividadeDoAtendimentoNAAPAInformacaoUseCase, NotificarInatividadeDoAtendimentoNAAPAInformacaoUseCase>();
