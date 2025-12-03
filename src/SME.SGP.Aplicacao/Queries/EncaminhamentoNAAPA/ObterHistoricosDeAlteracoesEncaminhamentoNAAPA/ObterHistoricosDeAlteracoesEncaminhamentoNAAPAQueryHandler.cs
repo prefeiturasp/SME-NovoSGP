@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private EncaminhamentoNAAPAHistoricoAlteracoes ObterHistoricoAlteracaoSecao(
-                                                        EncaminhamentoNAAPASecaoDto encaminhamentoNAAPAAlterado, 
+                                                        AtendimentoNAAPASecaoDto encaminhamentoNAAPAAlterado, 
                                                         EncaminhamentoNAAPASecao encaminhamentoSecaoExistente,
                                                         TipoHistoricoAlteracoesEncaminhamentoNAAPA tipoHistoricoAlteracoes)
         {
@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
             return null;
         }
 
-        private string ObterDataDoAtendimento(EncaminhamentoNAAPASecaoDto encaminhamentoNAAPAAlterado, EncaminhamentoNAAPASecao encaminhamentoSecaoExistente)
+        private string ObterDataDoAtendimento(AtendimentoNAAPASecaoDto encaminhamentoNAAPAAlterado, EncaminhamentoNAAPASecao encaminhamentoSecaoExistente)
         {
             if (SecaoEhItinerancia(encaminhamentoSecaoExistente))
             {
@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task ExecuteValidacaoAlteracaoCamposDaSecao(
-                                EncaminhamentoNAAPASecaoDto encaminhamentoNAAPASecaoAlterado, 
+                                AtendimentoNAAPASecaoDto encaminhamentoNAAPASecaoAlterado, 
                                 EncaminhamentoNAAPASecao encaminhamentoSecaoExistente,
                                 TipoHistoricoAlteracoesEncaminhamentoNAAPA tipoHistoricoAlteracoes)
         {
@@ -104,7 +104,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task AdicionarCamposInseridos(
                             QuestaoEncaminhamentoNAAPA questaoExistente, 
-                            IGrouping<long, EncaminhamentoNAAPASecaoQuestaoDto> respostas,
+                            IGrouping<long, AtendimentoNAAPASecaoQuestaoDto> respostas,
                             TipoHistoricoAlteracoesEncaminhamentoNAAPA tipoHistoricoAlteracoes)
         {
             var novasRespostas = respostas.ToList().Find(c => c.RespostaEncaminhamentoId == 0);
@@ -123,7 +123,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private bool CampoPodeSerInserido(EncaminhamentoNAAPASecaoQuestaoDto respostasEncaminhamento)
+        private bool CampoPodeSerInserido(AtendimentoNAAPASecaoQuestaoDto respostasEncaminhamento)
         {
             if (respostasEncaminhamento.TipoQuestao == TipoQuestao.TurmasPrograma
                 || respostasEncaminhamento.TipoQuestao == TipoQuestao.ProfissionaisEnvolvidos)
@@ -135,7 +135,7 @@ namespace SME.SGP.Aplicacao
             return !string.IsNullOrEmpty(respostasEncaminhamento.Resposta);
         }
 
-        private async Task CarreguarQuestoesAInserir(EncaminhamentoNAAPASecaoDto encaminhamentoNAAPASecaoAlterado)
+        private async Task CarreguarQuestoesAInserir(AtendimentoNAAPASecaoDto encaminhamentoNAAPASecaoAlterado)
         {
             var questoesIds = encaminhamentoNAAPASecaoAlterado.Questoes.Where(questao => questao.RespostaEncaminhamentoId == 0)
                                                                        .Select(questao => questao.QuestaoId).Distinct();
@@ -146,7 +146,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private void AdicionarCamposExcluidos(EncaminhamentoNAAPASecao secaoExistente, EncaminhamentoNAAPASecaoDto encaminhamentoNAAPASecaoAlterado)
+        private void AdicionarCamposExcluidos(EncaminhamentoNAAPASecao secaoExistente, AtendimentoNAAPASecaoDto encaminhamentoNAAPASecaoAlterado)
         {
             var idsQuestaoExistente = secaoExistente?.Questoes?.Select(questao => questao.QuestaoId);
             var idsQuestaoAlterado = encaminhamentoNAAPASecaoAlterado.Questoes.Select(questao => questao.QuestaoId);
@@ -163,7 +163,7 @@ namespace SME.SGP.Aplicacao
 
         private bool CampoPodeSerAlterado(
                             QuestaoEncaminhamentoNAAPA questaoExistente,
-                            EncaminhamentoNAAPASecaoQuestaoDto respostasEncaminhamento)
+                            AtendimentoNAAPASecaoQuestaoDto respostasEncaminhamento)
         {
             if (EhCampoLista(respostasEncaminhamento))
                 return ((questaoExistente.EhNulo() && respostasEncaminhamento.Resposta != "[]") ||
@@ -175,7 +175,7 @@ namespace SME.SGP.Aplicacao
             return false;
         }
 
-        private async Task AdicionarCamposAlterados(QuestaoEncaminhamentoNAAPA questaoExistente, IGrouping<long, EncaminhamentoNAAPASecaoQuestaoDto> respostasEncaminhamento)
+        private async Task AdicionarCamposAlterados(QuestaoEncaminhamentoNAAPA questaoExistente, IGrouping<long, AtendimentoNAAPASecaoQuestaoDto> respostasEncaminhamento)
         {
             if (EnumExtension.EhUmDosValores(questaoExistente?.Questao.Tipo, new Enum[] { TipoQuestao.ComboMultiplaEscolha, TipoQuestao.Upload }))
             {
@@ -199,7 +199,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<long[]> ObterArquivosIdRespostas(IGrouping<long, EncaminhamentoNAAPASecaoQuestaoDto> respostasEncaminhamento)
+        private async Task<long[]> ObterArquivosIdRespostas(IGrouping<long, AtendimentoNAAPASecaoQuestaoDto> respostasEncaminhamento)
         {
             var arquivosId = new List<long>();
             foreach (var item in respostasEncaminhamento.Where(resposta => !string.IsNullOrEmpty(resposta.Resposta)))
@@ -210,7 +210,7 @@ namespace SME.SGP.Aplicacao
             return arquivosId.ToArray();
         }
 
-        private async Task<bool> RespostaFoiRemovida(QuestaoEncaminhamentoNAAPA questaoExistente, IGrouping<long, EncaminhamentoNAAPASecaoQuestaoDto> respostasEncaminhamento)
+        private async Task<bool> RespostaFoiRemovida(QuestaoEncaminhamentoNAAPA questaoExistente, IGrouping<long, AtendimentoNAAPASecaoQuestaoDto> respostasEncaminhamento)
         {
             if (EnumExtension.EhUmDosValores(questaoExistente.Questao.Tipo, new Enum[] { TipoQuestao.ComboMultiplaEscolha }))
                 return questaoExistente.Respostas.Any(resposta => !respostasEncaminhamento.Any(respostaEncaminhamento => respostaEncaminhamento.Resposta.Equals(resposta.RespostaId.ToString())));
@@ -224,9 +224,9 @@ namespace SME.SGP.Aplicacao
 
         }
 
-        private bool CampoFoiAlterado(RespostaEncaminhamentoNAAPA RespostaAtual, EncaminhamentoNAAPASecaoQuestaoDto respostaAlteracao)
+        private bool CampoFoiAlterado(RespostaEncaminhamentoNAAPA RespostaAtual, AtendimentoNAAPASecaoQuestaoDto respostaAlteracao)
         {
-            var funcoes = new List<Func<RespostaEncaminhamentoNAAPA, EncaminhamentoNAAPASecaoQuestaoDto, bool?>> { CampoPorTextoFoiAlterado, CampoPorRespostaIdFoiAlterado, CampoPorJsonFoiAlterado };
+            var funcoes = new List<Func<RespostaEncaminhamentoNAAPA, AtendimentoNAAPASecaoQuestaoDto, bool?>> { CampoPorTextoFoiAlterado, CampoPorRespostaIdFoiAlterado, CampoPorJsonFoiAlterado };
 
             foreach(var funcao in funcoes)
             {
@@ -238,7 +238,7 @@ namespace SME.SGP.Aplicacao
             return false;
         }
 
-        private bool? CampoPorTextoFoiAlterado(RespostaEncaminhamentoNAAPA RespostaAtual, EncaminhamentoNAAPASecaoQuestaoDto respostaAlteracao)
+        private bool? CampoPorTextoFoiAlterado(RespostaEncaminhamentoNAAPA RespostaAtual, AtendimentoNAAPASecaoQuestaoDto respostaAlteracao)
         {
             if (EnumExtension.EhUmDosValores(respostaAlteracao.TipoQuestao, new Enum[] { TipoQuestao.Frase, TipoQuestao.Texto, TipoQuestao.EditorTexto,
                                                                                          TipoQuestao.Data, TipoQuestao.Numerico }))
@@ -247,7 +247,7 @@ namespace SME.SGP.Aplicacao
             return null;
         }
 
-        private bool? CampoPorJsonFoiAlterado(RespostaEncaminhamentoNAAPA RespostaAtual, EncaminhamentoNAAPASecaoQuestaoDto respostaAlteracao)
+        private bool? CampoPorJsonFoiAlterado(RespostaEncaminhamentoNAAPA RespostaAtual, AtendimentoNAAPASecaoQuestaoDto respostaAlteracao)
         {
             if (EhCampoLista(respostaAlteracao))
                 return UtilRegex.ObterJsonSemAtributoId(RespostaAtual.Texto) != UtilRegex.ObterJsonSemAtributoId(respostaAlteracao.Resposta);
@@ -255,7 +255,7 @@ namespace SME.SGP.Aplicacao
             return null;
         }
 
-        private bool? CampoPorRespostaIdFoiAlterado(RespostaEncaminhamentoNAAPA RespostaAtual, EncaminhamentoNAAPASecaoQuestaoDto respostaAlteracao)
+        private bool? CampoPorRespostaIdFoiAlterado(RespostaEncaminhamentoNAAPA RespostaAtual, AtendimentoNAAPASecaoQuestaoDto respostaAlteracao)
         {
             if (EnumExtension.EhUmDosValores(respostaAlteracao.TipoQuestao, new Enum[] { TipoQuestao.Radio, TipoQuestao.Combo, TipoQuestao.Checkbox, TipoQuestao.ComboMultiplaEscolha }))
                 return RespostaAtual.RespostaId != (!string.IsNullOrEmpty(respostaAlteracao.Resposta) ? long.Parse(respostaAlteracao.Resposta) : null);
@@ -263,7 +263,7 @@ namespace SME.SGP.Aplicacao
             return null;
         }
 
-        private bool EhCampoLista(EncaminhamentoNAAPASecaoQuestaoDto respostaAlteracao)
+        private bool EhCampoLista(AtendimentoNAAPASecaoQuestaoDto respostaAlteracao)
         {
             return EnumExtension.EhUmDosValores(respostaAlteracao.TipoQuestao, new Enum[] { TipoQuestao.Endereco, TipoQuestao.ContatoResponsaveis,
                                                                                             TipoQuestao.AtividadesContraturno, TipoQuestao.TurmasPrograma,

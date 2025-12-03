@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterEncaminhamentosNAAPAComInatividadeDeAtendimentoQuery : IRequest<IEnumerable<EncaminhamentoNAAPAInformacoesNotificacaoInatividadeAtendimentoDto>>
+    public class ObterEncaminhamentosNAAPAComInatividadeDeAtendimentoQuery : IRequest<IEnumerable<AtendimentoNAAPAInformacoesNotificacaoInatividadeAtendimentoDto>>
     {
         public ObterEncaminhamentosNAAPAComInatividadeDeAtendimentoQuery(long ueId)
         {

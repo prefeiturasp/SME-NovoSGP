@@ -35,7 +35,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         public async Task Deve_retornar_true_ao_executar_rotina()
         {
             await CriarDadosBasicos();
-            var useCase = ServiceProvider.GetService<IExecutarCargaConsolidadoEncaminhamentoNAAPAUseCase>();
+            var useCase = ServiceProvider.GetService<IExecutarCargaConsolidadoAtendimentoNAAPAUseCase>();
             var retorno = await useCase.Executar(new MensagemRabbit(""));
             retorno.ShouldBeTrue();
         }
@@ -43,7 +43,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         [Fact(DisplayName = "Deve Retornar True ao Executar Rotina de Consolidação informando o ano")]
         public async Task Deve_retornar_true_ao_executar_rotina_com_ano()
         {
-            var useCase = ServiceProvider.GetService<IExecutarCargaConsolidadoEncaminhamentoNAAPAUseCase>();
+            var useCase = ServiceProvider.GetService<IExecutarCargaConsolidadoAtendimentoNAAPAUseCase>();
             await CriarDadosBasicos();
             var retornoUseCase = await useCase.Executar(new MensagemRabbit(ANO_ATUAL.ToString()));
             retornoUseCase.ShouldBeTrue();
@@ -52,18 +52,18 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         [Fact(DisplayName = "Deve Retornar True ao Executar Rotina de Consolidação para Obter as UEs")]
         public async Task Deve_retornar_true_ao_obter_ues()
         {
-            var useCase = ServiceProvider.GetService<IExecutarBuscarUesConsolidadoEncaminhamentoNAAPAUseCase>();
+            var useCase = ServiceProvider.GetService<IExecutarBuscarUesConsolidadoAtendimentoNAAPAUseCase>();
             await CriarDadosBasicos();
             var ueId = 1;
             var anoLetivo = ANO_ATUAL;
-            var retornoUseCase = await useCase.Executar(new MensagemRabbit(JsonConvert.SerializeObject(new FiltroBuscarUesConsolidadoEncaminhamentoNAAPADto(ueId, anoLetivo))));
+            var retornoUseCase = await useCase.Executar(new MensagemRabbit(JsonConvert.SerializeObject(new FiltroBuscarUesConsolidadoAtendimentoNAAPADto(ueId, anoLetivo))));
             retornoUseCase.ShouldBeTrue();
         }
 
         [Fact(DisplayName = "Deve Inserir um novo registo de Consolidação")]
         public async Task Deve_inserir_um_novo_registro_consolidado()
         {
-            var useCase = ServiceProvider.GetService<IExecutarInserirConsolidadoEncaminhamentoNAAPAUseCase>();
+            var useCase = ServiceProvider.GetService<IExecutarInserirConsolidadoAtendimentoNAAPAUseCase>();
             await CriarDadosBasicos();
 
             var obterTodos = ObterTodos<ConsolidadoEncaminhamentoNAAPA>();
@@ -90,7 +90,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         public async Task Deve_atualizar_um_registro_consolidado_sem_inserir_um_novo()
         {
             await CriarDadosBasicos();
-            var useCase = ServiceProvider.GetService<IExecutarInserirConsolidadoEncaminhamentoNAAPAUseCase>();
+            var useCase = ServiceProvider.GetService<IExecutarInserirConsolidadoAtendimentoNAAPAUseCase>();
             var obterTodos = ObterTodos<ConsolidadoEncaminhamentoNAAPA>();
             obterTodos.Count.ShouldBeEquivalentTo(1);
             obterTodos.FirstOrDefault().Quantidade.ShouldBe<long>(10);

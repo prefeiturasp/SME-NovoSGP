@@ -32,7 +32,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.RDNAAPA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterQuestoesPorModalidadesParaRelatorioDinamico(
                                             [FromQuery] int[] modalidadesId,
-                                            [FromServices] IObterQuestoesRelatorioDinamicoEncaminhamentoNAAPAPorModalidadesUseCase useCase)
+                                            [FromServices] IObterQuestoesRelatorioDinamicoAtendimentoNAAPAPorModalidadesUseCase useCase)
         {
             return Ok(await useCase.Executar(modalidadesId));
         }

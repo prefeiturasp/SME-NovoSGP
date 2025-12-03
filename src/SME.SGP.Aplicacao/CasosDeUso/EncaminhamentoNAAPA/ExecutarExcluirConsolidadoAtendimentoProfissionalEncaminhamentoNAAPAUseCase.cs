@@ -7,7 +7,7 @@ using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExecutarExcluirConsolidadoAtendimentoProfissionalEncaminhamentoNAAPAUseCase : AbstractUseCase, IExecutarExcluirConsolidadoAtendimentoProfissionalEncaminhamentoNAAPAUseCase
+    public class ExecutarExcluirConsolidadoAtendimentoProfissionalEncaminhamentoNAAPAUseCase : AbstractUseCase, IExecutarExcluirConsolidadoAtendimentoProfissionalAtendimentoNAAPAUseCase
 
     {
         public ExecutarExcluirConsolidadoAtendimentoProfissionalEncaminhamentoNAAPAUseCase(IMediator mediator) : base(mediator)
@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            var filtroExclusao = param.ObterObjetoMensagem<FiltroExcluirAtendimentosProfissionalConsolidadoEncaminhamentoNAAPADto>();
+            var filtroExclusao = param.ObterObjetoMensagem<FiltroExcluirAtendimentosProfissionalConsolidadoAtendimentoNAAPADto>();
             var idsExclusao = await mediator.Send(new ObterProfissionaisAtendimentoEncaminhamentosNAAPAIdConsolidadoExclusaoQuery(filtroExclusao.UeId, filtroExclusao.Mes, filtroExclusao.AnoLetivo, filtroExclusao.RfsProfissionaisIgnorados));
             if (idsExclusao.NaoEhNulo() && idsExclusao.Any())
                 foreach (var id in idsExclusao)

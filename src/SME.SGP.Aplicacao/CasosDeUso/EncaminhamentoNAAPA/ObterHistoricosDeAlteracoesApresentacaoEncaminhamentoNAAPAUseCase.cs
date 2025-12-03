@@ -4,13 +4,13 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAUseCase : AbstractUseCase,  IObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAUseCase
+    public class ObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAUseCase : AbstractUseCase,  IObterHistoricosDeAlteracoesApresentacaoAtendimentoNAAPAUseCase
     {
         public ObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAUseCase(IMediator mediator) : base(mediator)
         { 
         }
 
-        public async Task<PaginacaoResultadoDto<EncaminhamentoNAAPAHistoricoDeAlteracaoDto>> Executar(long param)
+        public async Task<PaginacaoResultadoDto<AtendimentoNAAPAHistoricoDeAlteracaoDto>> Executar(long param)
         {
             return await mediator.Send(new ObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAQuery(param));
         }

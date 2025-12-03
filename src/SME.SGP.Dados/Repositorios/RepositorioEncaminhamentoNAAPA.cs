@@ -354,7 +354,7 @@ namespace SME.SGP.Dados.Repositorios
             return encaminhamento;
         }
 
-        public async Task<IEnumerable<EncaminhamentoNAAPACodigoArquivoDto>> ObterCodigoArquivoPorEncaminhamentoNAAPAId(long encaminhamentoId)
+        public async Task<IEnumerable<AtendimentoNAAPACodigoArquivoDto>> ObterCodigoArquivoPorEncaminhamentoNAAPAId(long encaminhamentoId)
         {
             var sql = @"select
                             a.codigo
@@ -371,7 +371,7 @@ namespace SME.SGP.Dados.Repositorios
                         where
                             ea.id = @encaminhamentoId";
 
-            return await database.Conexao.QueryAsync<EncaminhamentoNAAPACodigoArquivoDto>(sql.ToString(), new { encaminhamentoId });
+            return await database.Conexao.QueryAsync<AtendimentoNAAPACodigoArquivoDto>(sql.ToString(), new { encaminhamentoId });
         }   
         
         public async Task<EncaminhamentoNAAPA> ObterEncaminhamentoComTurmaPorId(long encaminhamentoId)
@@ -405,7 +405,7 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { id = encaminhamentoId, secaoNome = EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA }));           
         }
 
-        public async Task<IEnumerable<EncaminhamentosNAAPAConsolidadoDto>> ObterQuantidadeSituacaoEncaminhamentosPorUeAnoLetivo(long ueId, int anoLetivo)
+        public async Task<IEnumerable<AtendimentosNAAPAConsolidadoDto>> ObterQuantidadeSituacaoEncaminhamentosPorUeAnoLetivo(long ueId, int anoLetivo)
         {
            var query = @"select 
                             t.ue_id UeId,
@@ -420,7 +420,7 @@ namespace SME.SGP.Dados.Repositorios
                         and t.ano_letivo = @anoLetivo
                         group by t.ue_id,t.ano_letivo ,en.situacao, t.modalidade_codigo ";
            
-           return await database.Conexao.QueryAsync<EncaminhamentosNAAPAConsolidadoDto>(query, new {ueId, anoLetivo});
+           return await database.Conexao.QueryAsync<AtendimentosNAAPAConsolidadoDto>(query, new {ueId, anoLetivo});
         }
 
         public async Task<SituacaoDto> ObterSituacao(long id)
@@ -493,7 +493,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { codigoAluno, situacao = (int)SituacaoNAAPA.Encerrado });
         }
 
-        public async Task<IEnumerable<EncaminhamentoNAAPAInformacoesNotificacaoInatividadeAtendimentoDto>> ObterInformacoesDeNotificacaoDeInatividadeDeAtendimento(long ueId)
+        public async Task<IEnumerable<AtendimentoNAAPAInformacoesNotificacaoInatividadeAtendimentoDto>> ObterInformacoesDeNotificacaoDeInatividadeDeAtendimento(long ueId)
         {
             var situacoes = new int[] { (int)SituacaoNAAPA.AguardandoAtendimento, (int)SituacaoNAAPA.EmAtendimento };
             var query = new StringBuilder();
@@ -539,7 +539,7 @@ namespace SME.SGP.Dados.Repositorios
                 inner join dre on dre.id = ue.dre_id
                 where ue.id = @ueId");
 
-            return await database.Conexao.QueryAsync<EncaminhamentoNAAPAInformacoesNotificacaoInatividadeAtendimentoDto>(query.ToString(), new { ueId, situacoes });
+            return await database.Conexao.QueryAsync<AtendimentoNAAPAInformacoesNotificacaoInatividadeAtendimentoDto>(query.ToString(), new { ueId, situacoes });
         }
     }
 }

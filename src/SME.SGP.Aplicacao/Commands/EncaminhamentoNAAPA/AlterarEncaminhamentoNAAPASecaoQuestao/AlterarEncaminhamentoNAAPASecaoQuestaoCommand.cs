@@ -7,13 +7,13 @@ namespace SME.SGP.Aplicacao
 {
     public class AlterarEncaminhamentoNAAPASecaoQuestaoCommand : IRequest<bool>
     {
-        public AlterarEncaminhamentoNAAPASecaoQuestaoCommand(EncaminhamentoNAAPASecaoDto encaminhamentoNAAPASecaoDto, EncaminhamentoNAAPASecao encaminhamentoNAAPASecaoObj)
+        public AlterarEncaminhamentoNAAPASecaoQuestaoCommand(AtendimentoNAAPASecaoDto encaminhamentoNAAPASecaoDto, EncaminhamentoNAAPASecao encaminhamentoNAAPASecaoObj)
         {
             EncaminhamentoNAAPASecaoDto = encaminhamentoNAAPASecaoDto;
             EncaminhamentoNAAPASecaoObj = encaminhamentoNAAPASecaoObj;
         }
 
-        public EncaminhamentoNAAPASecaoDto EncaminhamentoNAAPASecaoDto { get; set; }
+        public AtendimentoNAAPASecaoDto EncaminhamentoNAAPASecaoDto { get; set; }
 
         public EncaminhamentoNAAPASecao EncaminhamentoNAAPASecaoObj { get; set; }
     }

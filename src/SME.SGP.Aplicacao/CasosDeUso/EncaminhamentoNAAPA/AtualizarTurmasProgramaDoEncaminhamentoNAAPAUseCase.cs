@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AtualizarTurmasProgramaDoEncaminhamentoNAAPAUseCase : AbstractUseCase, IAtualizarTurmasProgramaDoEncaminhamentoNAAPAUseCase
+    public class AtualizarTurmasProgramaDoEncaminhamentoNAAPAUseCase : AbstractUseCase, IAtualizarTurmasProgramaDoAtendimentoNAAPAUseCase
     {
         public AtualizarTurmasProgramaDoEncaminhamentoNAAPAUseCase(IMediator mediator) : base(mediator)
         {}
@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
             var respostaTurmasProgramaNAAPA = questaoTurmasProgramaNAAPA.Respostas?.FirstOrDefault();
             if (respostaTurmasProgramaNAAPA.NaoEhNulo())
             {
-                var turmasProgramaNaapa = JsonConvert.DeserializeObject<List<RespostaTurmaProgramaEncaminhamentoNAAPADto>>(respostaTurmasProgramaNAAPA?.Texto);
+                var turmasProgramaNaapa = JsonConvert.DeserializeObject<List<RespostaTurmaProgramaAtendimentoNAAPADto>>(respostaTurmasProgramaNAAPA?.Texto);
                 if (turmasProgramaAluno.Count == turmasProgramaNaapa?.Count &&
                     turmasProgramaAluno.All(turmaProgramaAluno => turmasProgramaNaapa.NaoEhNulo() && turmasProgramaNaapa.Any(x => x.EhIgual(turmaProgramaAluno)))) 
                     return false;
@@ -42,9 +42,9 @@ namespace SME.SGP.Aplicacao
                                                                                                       questaoTurmasProgramaNAAPA.QuestaoId, TipoQuestao.TurmasPrograma))) != 0;  
         }
 
-        private RespostaTurmaProgramaEncaminhamentoNAAPADto MapearDTO(AlunoTurmaProgramaDto? turmaPrograma)
+        private RespostaTurmaProgramaAtendimentoNAAPADto MapearDTO(AlunoTurmaProgramaDto? turmaPrograma)
         {
-            return new RespostaTurmaProgramaEncaminhamentoNAAPADto
+            return new RespostaTurmaProgramaAtendimentoNAAPADto
             {
                 dreUe = turmaPrograma?.DreUe,
                 turma = turmaPrograma?.Turma,
@@ -52,9 +52,9 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private EncaminhamentoNAAPASecaoQuestaoDto MapearDTO(long questaoId, long respostaId, List<RespostaTurmaProgramaEncaminhamentoNAAPADto> novasTurmasPrograma)
+        private AtendimentoNAAPASecaoQuestaoDto MapearDTO(long questaoId, long respostaId, List<RespostaTurmaProgramaAtendimentoNAAPADto> novasTurmasPrograma)
         {
-            return new EncaminhamentoNAAPASecaoQuestaoDto()
+            return new AtendimentoNAAPASecaoQuestaoDto()
             {
                 QuestaoId = questaoId,
                 Resposta = JsonConvert.SerializeObject(novasTurmasPrograma),

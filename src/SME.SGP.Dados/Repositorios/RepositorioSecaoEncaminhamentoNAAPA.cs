@@ -76,7 +76,7 @@ namespace SME.SGP.Dados.Repositorios
 
        
 
-        public async Task<IEnumerable<EncaminhamentoNAAPASecaoItineranciaDto>> ObterSecoesItineranciaDto(long encaminhamentoNAAPAId)
+        public async Task<IEnumerable<AtendimentoNAAPASecaoItineranciaDto>> ObterSecoesItineranciaDto(long encaminhamentoNAAPAId)
         {
             var query = new StringBuilder(@"with vw_resposta_data as (
                                             select ens.id encaminhamento_naapa_secao_id, 
@@ -121,7 +121,7 @@ namespace SME.SGP.Dados.Repositorios
                                             where en.id = @encaminhamentoNAAPAId and not ens.excluido ");
 
             return await database.Conexao
-                .QueryAsync<EncaminhamentoNAAPASecaoItineranciaDto, AuditoriaDto, EncaminhamentoNAAPASecaoItineranciaDto>(
+                .QueryAsync<AtendimentoNAAPASecaoItineranciaDto, AuditoriaDto, AtendimentoNAAPASecaoItineranciaDto>(
                     query.ToString(), (encaminhamentoSecao, auditoria) =>
                     {
                         encaminhamentoSecao.Auditoria = auditoria;
@@ -143,15 +143,15 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<SecaoQuestionarioDto>(query, new { secaoId });
         }
 
-        public async Task<PaginacaoResultadoDto<EncaminhamentoNAAPASecaoItineranciaDto>> ObterSecoesItineranciaDtoPaginado(long encaminhamentoNAAPAId, Paginacao paginacao)
+        public async Task<PaginacaoResultadoDto<AtendimentoNAAPASecaoItineranciaDto>> ObterSecoesItineranciaDtoPaginado(long encaminhamentoNAAPAId, Paginacao paginacao)
         {
             var sql = new StringBuilder();
             MontaQueryConsulta(paginacao, sql, contador: false);
             
-            var retorno = new PaginacaoResultadoDto<EncaminhamentoNAAPASecaoItineranciaDto>();
+            var retorno = new PaginacaoResultadoDto<AtendimentoNAAPASecaoItineranciaDto>();
 
             var secoes = (await database.Conexao
-                                    .QueryAsync<EncaminhamentoNAAPASecaoItineranciaDto, AuditoriaDto, EncaminhamentoNAAPASecaoItineranciaDto>(
+                                    .QueryAsync<AtendimentoNAAPASecaoItineranciaDto, AuditoriaDto, AtendimentoNAAPASecaoItineranciaDto>(
                                         sql.ToString(), (encaminhamentoSecao, auditoria) =>
                                         {
                                             encaminhamentoSecao.Auditoria = auditoria;
@@ -170,7 +170,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.Clear();
                 MontaQueryConsultaArquivos(sql);
                 var arquivosSecoes = await database.Conexao
-                                        .QueryAsync<AnexoSecaoItineranciaEncaminhamentoNAAPADto>(
+                                        .QueryAsync<AnexoSecaoItineranciaAtendimentoNAAPADto>(
                                             sql.ToString(), new { encaminhamentoNAAPAId });
                 if (arquivosSecoes.PossuiRegistros())
                     secoes.ForEach(secao =>
@@ -272,7 +272,7 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine("order by ens.id");
         }
 
-        public async Task<EncaminhamentoNAAPAItineranciaAtendimentoDto> ObterAtendimentoSecaoItinerancia(long secaoId)
+        public async Task<AtendimentoNAAPAItineranciaAtendimentoDto> ObterAtendimentoSecaoItinerancia(long secaoId)
         {
             var query = @"select ens.encaminhamento_naapa_id EncaminhamentoId, 
                                 ens.secao_encaminhamento_id SecaoEncaminhamentoNAAPAId, 
@@ -283,10 +283,10 @@ namespace SME.SGP.Dados.Repositorios
                         join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id 
                         where q.nome_componente = 'DATA_DO_ATENDIMENTO' and ens.id = @secaoId";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<EncaminhamentoNAAPAItineranciaAtendimentoDto>(query, new { secaoId });
+            return await database.Conexao.QueryFirstOrDefaultAsync<AtendimentoNAAPAItineranciaAtendimentoDto>(query, new { secaoId });
         }
 
-        public async Task<IEnumerable<AtendimentosProfissionalEncaminhamentoNAAPAConsolidadoDto>> ObterQuantidadeAtendimentosProfissionalPorUeAnoLetivoMes(long ueId, int mes, int anoLetivo)
+        public async Task<IEnumerable<AtendimentosProfissionalAtendimentoNAAPAConsolidadoDto>> ObterQuantidadeAtendimentosProfissionalPorUeAnoLetivoMes(long ueId, int mes, int anoLetivo)
         {
             var query = @$"select ens.criado_por as Nome, ens.criado_rf as Rf, 
                                   count(ens.id) as Quantidade, t.modalidade_codigo as Modalidade
@@ -308,11 +308,11 @@ namespace SME.SGP.Dados.Repositorios
                         and t.ue_id = @ueId
                         group by ens.criado_por, ens.criado_rf, t.modalidade_codigo; ";
 
-            var retorno = await database.Conexao.QueryAsync<AtendimentosPorProfissionalEncaminhamentoNAAPADto>(query, new { ueId, mes, anoLetivo });
+            var retorno = await database.Conexao.QueryAsync<AtendimentosPorProfissionalAtendimentoNAAPADto>(query, new { ueId, mes, anoLetivo });
             if (retorno.Any())
-                return retorno.Select(atendimento => new AtendimentosProfissionalEncaminhamentoNAAPAConsolidadoDto(ueId, anoLetivo, mes, atendimento.Nome, atendimento.Rf, atendimento.Quantidade, atendimento.Modalidade));
+                return retorno.Select(atendimento => new AtendimentosProfissionalAtendimentoNAAPAConsolidadoDto(ueId, anoLetivo, mes, atendimento.Nome, atendimento.Rf, atendimento.Quantidade, atendimento.Modalidade));
 
-            return Enumerable.Empty<AtendimentosProfissionalEncaminhamentoNAAPAConsolidadoDto>();
+            return Enumerable.Empty<AtendimentosProfissionalAtendimentoNAAPAConsolidadoDto>();
 
         }
 

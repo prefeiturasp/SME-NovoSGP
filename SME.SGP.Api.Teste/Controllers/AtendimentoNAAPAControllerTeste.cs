@@ -34,7 +34,7 @@ namespace SME.SGP.Api.Testes.Controllers
         public async Task DeveChamarUseCase_ParaRegistrarEncaminhamento()
         {
             // Arrange
-            var useCaseMock = new Mock<IRegistrarEncaminhamentoNAAPAUseCase>();
+            var useCaseMock = new Mock<IRegistrarAtendimentoNAAPAUseCase>();
             var encaminhamentoDto = new AtendimentoNAAPADto { AlunoCodigo = "123" };
             var retornoDto = new ResultadoAtendimentoNAAPADto { Id = 1 };
 
@@ -53,7 +53,7 @@ namespace SME.SGP.Api.Testes.Controllers
         public async Task DeveChamarUseCase_ParaObterEncaminhamentosPaginados()
         {
             // Arrange
-            var useCaseMock = new Mock<IObterEncaminhamentoNAAPAUseCase>();
+            var useCaseMock = new Mock<IObterAtendimentoNAAPAUseCase>();
             var filtro = new FiltroAtendimentoNAAPADto { AnoLetivo = DateTime.Now.Year };
             var retornoPaginado = new PaginacaoResultadoDto<AtendimentoNAAPAResumoDto>();
 
@@ -72,7 +72,7 @@ namespace SME.SGP.Api.Testes.Controllers
         public async Task DeveChamarUseCase_ParaObterQuestionario()
         {
             // Arrange
-            var useCaseMock = new Mock<IObterQuestionarioEncaminhamentoNAAPAUseCase>();
+            var useCaseMock = new Mock<IObterQuestionarioAtendimentoNAAPAUseCase>();
             var questionarioId = _faker.Random.Long(1);
             var encaminhamentoId = _faker.Random.Long(1);
             var alunoCodigo = _faker.Random.AlphaNumeric(8);
@@ -147,7 +147,7 @@ namespace SME.SGP.Api.Testes.Controllers
         public async Task DeveChamarUseCase_ParaExcluirEncaminhamento()
         {
             // Arrange
-            var useCaseMock = new Mock<IExcluirEncaminhamentoNAAPAUseCase>();
+            var useCaseMock = new Mock<IExcluirAtendimentoNAAPAUseCase>();
             var encaminhamentoId = _faker.Random.Long(1);
 
             useCaseMock.Setup(u => u.Executar(encaminhamentoId)).ReturnsAsync(true);
@@ -165,7 +165,7 @@ namespace SME.SGP.Api.Testes.Controllers
         public async Task DeveChamarUseCase_ParaObterEncaminhamentoPorId()
         {
             // Arrange
-            var useCaseMock = new Mock<IObterEncaminhamentoNAAPAPorIdUseCase>();
+            var useCaseMock = new Mock<IObterAtendimentoNAAPAPorIdUseCase>();
             var encaminhamentoId = _faker.Random.Long(1);
             var retornoDto = new AtendimentoNAAPARespostaDto { AnoLetivo = DateTime.Now.Year };
 
@@ -184,7 +184,7 @@ namespace SME.SGP.Api.Testes.Controllers
         public async Task DeveChamarUseCase_ParaObterSecoesDeEncaminhamento()
         {
             // Arrange
-            var useCaseMock = new Mock<IObterSecoesEncaminhamentosSecaoNAAPAUseCase>();
+            var useCaseMock = new Mock<IObterSecoesAtendimentoSecaoNAAPAUseCase>();
             var filtro = new FiltroSecoesAtendimentoNAAPA { Modalidade = (int)Dominio.Modalidade.Fundamental };
             var retorno = new List<SecaoQuestionarioDto>();
 
@@ -202,9 +202,9 @@ namespace SME.SGP.Api.Testes.Controllers
         public async Task DeveChamarUseCase_ParaObterSecoesItinerancia()
         {
             // Arrange
-            var useCaseMock = new Mock<IObterSecoesItineranciaDeEncaminhamentoNAAPAUseCase>();
+            var useCaseMock = new Mock<IObterSecoesItineranciaDeAtendimentoNAAPAUseCase>();
             var encaminhamentoId = _faker.Random.Long(1);
-            var retorno = new PaginacaoResultadoDto<EncaminhamentoNAAPASecaoItineranciaDto>();
+            var retorno = new PaginacaoResultadoDto<AtendimentoNAAPASecaoItineranciaDto>();
 
             useCaseMock.Setup(u => u.Executar(encaminhamentoId)).ReturnsAsync(retorno);
 
@@ -220,7 +220,7 @@ namespace SME.SGP.Api.Testes.Controllers
         public async Task DeveChamarUseCase_ParaObterPrioridades()
         {
             // Arrange
-            var useCaseMock = new Mock<IObterPrioridadeEncaminhamentoNAAPAUseCase>();
+            var useCaseMock = new Mock<IObterPrioridadeAtendimentoNAAPAUseCase>();
             var retorno = new List<PrioridadeAtendimentoNAAPADto>();
 
             useCaseMock.Setup(u => u.Executar()).ReturnsAsync(retorno);
@@ -254,10 +254,10 @@ namespace SME.SGP.Api.Testes.Controllers
         public async Task DeveChamarUseCase_ParaObterQuestionarioItinerario()
         {
             // Arrange
-            var useCaseMock = new Mock<IObterQuestionarioItinerarioEncaminhamentoNAAPAUseCase>();
+            var useCaseMock = new Mock<IObterQuestionarioItinerarioAtendimentoNAAPAUseCase>();
             var questionarioId = _faker.Random.Long(1);
             var secaoId = _faker.Random.Long(1);
-            var retorno = new EncaminhamentoNAAPASecaoItineranciaQuestoesDto();
+            var retorno = new AtendimentoNAAPASecaoItineranciaQuestoesDto();
 
             useCaseMock.Setup(u => u.Executar(questionarioId, secaoId)).ReturnsAsync(retorno);
 
@@ -273,7 +273,7 @@ namespace SME.SGP.Api.Testes.Controllers
         public async Task DeveChamarUseCase_ParaExcluirSecaoItinerancia()
         {
             // Arrange
-            var useCaseMock = new Mock<IExcluirSecaoItineranciaEncaminhamentoNAAPAUseCase>();
+            var useCaseMock = new Mock<IExcluirSecaoItineranciaAtendimentoNAAPAUseCase>();
             var encaminhamentoId = _faker.Random.Long(1);
             var secaoId = _faker.Random.Long(1);
 
@@ -291,7 +291,7 @@ namespace SME.SGP.Api.Testes.Controllers
         public async Task DeveChamarUseCase_ParaRegistrarItinerario()
         {
             // Arrange
-            var useCaseMock = new Mock<IRegistrarEncaminhamentoItinerarioNAAPAUseCase>();
+            var useCaseMock = new Mock<IRegistrarAtendimentoItinerarioNAAPAUseCase>();
             var itinerarioDto = new AtendimentoNAAPAItineranciaDto();
 
             useCaseMock.Setup(u => u.Executar(itinerarioDto)).ReturnsAsync(true);
@@ -308,7 +308,7 @@ namespace SME.SGP.Api.Testes.Controllers
         public async Task DeveChamarUseCase_ParaObterSituacao()
         {
             // Arrange
-            var useCaseMock = new Mock<IObterSituacaoEncaminhamentoNAAPAUseCase>();
+            var useCaseMock = new Mock<IObterSituacaoAtendimentoNAAPAUseCase>();
             var encaminhamentoId = _faker.Random.Long(1);
             var retorno = new SituacaoDto();
 
@@ -326,8 +326,8 @@ namespace SME.SGP.Api.Testes.Controllers
         public async Task DeveChamarUseCase_ParaEncerrarEncaminhamento()
         {
             // Arrange
-            var useCaseMock = new Mock<IEncerrarEncaminhamentoNAAPAUseCase>();
-            var parametros = new EncerramentoAtendimentoNAAPADto
+            var useCaseMock = new Mock<IEncerrarAtendimentoNAAPAUseCase>();
+            var parametros = new EncerramentoAtendimentoDto
             {
                 EncaminhamentoId = _faker.Random.Long(1),
                 MotivoEncerramento = _faker.Lorem.Sentence()
@@ -347,7 +347,7 @@ namespace SME.SGP.Api.Testes.Controllers
         public async Task DeveChamarUseCase_ParaReabrirEncaminhamento()
         {
             // Arrange
-            var useCaseMock = new Mock<IReabrirEncaminhamentoNAAPAUseCase>();
+            var useCaseMock = new Mock<IReabrirAtendimentoNAAPAUseCase>();
             var encaminhamentoId = _faker.Random.Long(1);
             var retorno = new SituacaoDto();
 
@@ -365,7 +365,7 @@ namespace SME.SGP.Api.Testes.Controllers
         public async Task DeveChamarUseCase_ParaObterFluxosAlerta()
         {
             // Arrange
-            var useCaseMock = new Mock<IObterOpcoesRespostaFluxoAlertaEncaminhamentosNAAPAUseCase>();
+            var useCaseMock = new Mock<IObterOpcoesRespostaFluxoAlertaAtendimentosNAAPAUseCase>();
             var retorno = new List<OpcaoRespostaSimplesDto>();
 
             useCaseMock.Setup(u => u.Executar()).ReturnsAsync(retorno);
@@ -382,7 +382,7 @@ namespace SME.SGP.Api.Testes.Controllers
         public async Task DeveChamarUseCase_ParaObterPortasEntrada()
         {
             // Arrange
-            var useCaseMock = new Mock<IObterOpcoesRespostaPortaEntradaEncaminhamentosNAAPAUseCase>();
+            var useCaseMock = new Mock<IObterOpcoesRespostaPortaEntradaAtendimentosNAAPAUseCase>();
             var retorno = new List<OpcaoRespostaSimplesDto>();
 
             useCaseMock.Setup(u => u.Executar()).ReturnsAsync(retorno);
@@ -399,7 +399,7 @@ namespace SME.SGP.Api.Testes.Controllers
         public async Task DeveChamarUseCase_ParaImprimirDetalhado()
         {
             // Arrange
-            var useCaseMock = new Mock<IRelatorioEncaminhamentoNaapaDetalhadoUseCase>();
+            var useCaseMock = new Mock<IRelatorioAtendimentoNaapaDetalhadoUseCase>();
             var filtro = new FiltroRelatorioAtendimentoNaapaDetalhadoDto();
 
             useCaseMock.Setup(u => u.Executar(filtro)).ReturnsAsync(true);
@@ -416,7 +416,7 @@ namespace SME.SGP.Api.Testes.Controllers
         public async Task DeveChamarUseCase_ParaObterObservacoes()
         {
             // Arrange
-            var useCaseMock = new Mock<IObterObservacoesDeEncaminhamentoNAAPAUseCase>();
+            var useCaseMock = new Mock<IObterObservacoesDeAtendimentoNAAPAUseCase>();
             var encaminhamentoId = _faker.Random.Long(1);
             var retorno = new PaginacaoResultadoDto<AtendimentoNAAPAObservacoesDto>();
 
@@ -434,7 +434,7 @@ namespace SME.SGP.Api.Testes.Controllers
         public async Task DeveChamarUseCase_ParaSalvarObservacao()
         {
             // Arrange
-            var useCaseMock = new Mock<ISalvarObservacoesDeEncaminhamentoNAAPAUseCase>();
+            var useCaseMock = new Mock<ISalvarObservacoesDeAtendimentoNAAPAUseCase>();
             var filtro = new AtendimentoNAAPAObservacaoSalvarDto();
 
             useCaseMock.Setup(u => u.Executar(filtro)).ReturnsAsync(true);
@@ -451,7 +451,7 @@ namespace SME.SGP.Api.Testes.Controllers
         public async Task DeveChamarUseCase_ParaExcluirObservacao()
         {
             // Arrange
-            var useCaseMock = new Mock<IExcluirObservacoesDeEncaminhamentoNAAPAUseCase>();
+            var useCaseMock = new Mock<IExcluirObservacoesDeAtendimentoNAAPAUseCase>();
             var observacaoId = _faker.Random.Long(1);
 
             useCaseMock.Setup(u => u.Executar(observacaoId)).ReturnsAsync(true);
@@ -468,9 +468,9 @@ namespace SME.SGP.Api.Testes.Controllers
         public async Task DeveChamarUseCase_ParaObterHistoricoDeAlteracoes()
         {
             // Arrange
-            var useCaseMock = new Mock<IObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAUseCase>();
+            var useCaseMock = new Mock<IObterHistoricosDeAlteracoesApresentacaoAtendimentoNAAPAUseCase>();
             var encaminhamentoId = _faker.Random.Long(1);
-            var retorno = new PaginacaoResultadoDto<EncaminhamentoNAAPAHistoricoDeAlteracaoDto>();
+            var retorno = new PaginacaoResultadoDto<AtendimentoNAAPAHistoricoDeAlteracaoDto>();
 
             useCaseMock.Setup(u => u.Executar(encaminhamentoId)).ReturnsAsync(retorno);
 
@@ -486,7 +486,7 @@ namespace SME.SGP.Api.Testes.Controllers
         public async Task DeveChamarUseCase_ParaVerificarEncaminhamentoAtivo()
         {
             // Arrange
-            var useCaseMock = new Mock<IExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase>();
+            var useCaseMock = new Mock<IExisteAtendimentoNAAPAAtivoParaAlunoUseCase>();
             var alunoCodigo = _faker.Random.AlphaNumeric(8);
 
             useCaseMock.Setup(u => u.Executar(alunoCodigo)).ReturnsAsync(true);

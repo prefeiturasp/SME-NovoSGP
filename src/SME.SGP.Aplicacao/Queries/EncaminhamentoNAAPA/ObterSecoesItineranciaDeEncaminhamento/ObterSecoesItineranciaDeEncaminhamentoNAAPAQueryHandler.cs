@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepcional
 {
-    public class ObterSecoesItineranciaDeEncaminhamentoNAAPAQueryHandler : ConsultasBase, IRequestHandler<ObterSecoesItineranciaDeEncaminhamentoNAAPAQuery, PaginacaoResultadoDto<EncaminhamentoNAAPASecaoItineranciaDto>>
+    public class ObterSecoesItineranciaDeEncaminhamentoNAAPAQueryHandler : ConsultasBase, IRequestHandler<ObterSecoesItineranciaDeEncaminhamentoNAAPAQuery, PaginacaoResultadoDto<AtendimentoNAAPASecaoItineranciaDto>>
     {
         private readonly IRepositorioSecaoEncaminhamentoNAAPA repositorioSecaoEncaminhamentoNAPPA;
 
@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepci
             this.repositorioSecaoEncaminhamentoNAPPA = repositorioSecaoEncaminhamentoNAPPA ?? throw new System.ArgumentNullException(nameof(repositorioSecaoEncaminhamentoNAPPA));
         }
 
-        public async Task<PaginacaoResultadoDto<EncaminhamentoNAAPASecaoItineranciaDto>> Handle(ObterSecoesItineranciaDeEncaminhamentoNAAPAQuery request, CancellationToken cancellationToken)
+        public async Task<PaginacaoResultadoDto<AtendimentoNAAPASecaoItineranciaDto>> Handle(ObterSecoesItineranciaDeEncaminhamentoNAAPAQuery request, CancellationToken cancellationToken)
         {
             return await repositorioSecaoEncaminhamentoNAPPA.ObterSecoesItineranciaDtoPaginado(request.EncaminhamentoNAAPAId, Paginacao);
         }     

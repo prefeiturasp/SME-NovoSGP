@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAQueryHandler : ConsultasBase, IRequestHandler<ObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAQuery, PaginacaoResultadoDto<EncaminhamentoNAAPAHistoricoDeAlteracaoDto>>
+    public class ObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAQueryHandler : ConsultasBase, IRequestHandler<ObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAQuery, PaginacaoResultadoDto<AtendimentoNAAPAHistoricoDeAlteracaoDto>>
     {
         private readonly IRepositorioEncaminhamentoNAAPAHistoricoAlteracoes repositorio;
         public ObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAQueryHandler(
@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
             this.repositorio = repositorio ?? throw new System.ArgumentNullException(nameof(repositorio));
         }
 
-        public async Task<PaginacaoResultadoDto<EncaminhamentoNAAPAHistoricoDeAlteracaoDto>> Handle(ObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAQuery request, CancellationToken cancellationToken)
+        public async Task<PaginacaoResultadoDto<AtendimentoNAAPAHistoricoDeAlteracaoDto>> Handle(ObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAQuery request, CancellationToken cancellationToken)
         {
             return await this.repositorio.ListarPaginadoPorEncaminhamentoNAAPAId(request.EncaminhamentoNAAPId, Paginacao);
         }

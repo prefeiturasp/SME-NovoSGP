@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
 {
-    public class ObterSecoesItineranciaDeEncaminhamentoNAAPAUseCase : IObterSecoesItineranciaDeEncaminhamentoNAAPAUseCase
+    public class ObterSecoesItineranciaDeEncaminhamentoNAAPAUseCase : IObterSecoesItineranciaDeAtendimentoNAAPAUseCase
     {
         private readonly IMediator mediator;
 
@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<PaginacaoResultadoDto<EncaminhamentoNAAPASecaoItineranciaDto>> Executar(long encaminhamentoNAAPAId)
+        public async Task<PaginacaoResultadoDto<AtendimentoNAAPASecaoItineranciaDto>> Executar(long encaminhamentoNAAPAId)
         {
             return await mediator.Send(new ObterSecoesItineranciaDeEncaminhamentoNAAPAQuery(encaminhamentoNAAPAId));
         }

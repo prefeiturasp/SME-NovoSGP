@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
 {
     public class NotificarInatividadeDoAtendimentoNAAPAInformacaoUseCase : AbstractUseCase, INotificarInatividadeDoAtendimentoNAAPAInformacaoUseCase
     {
-        private EncaminhamentoNAAPAInformacoesNotificacaoInatividadeAtendimentoDto informacaoNotificacao;
+        private AtendimentoNAAPAInformacoesNotificacaoInatividadeAtendimentoDto informacaoNotificacao;
         private readonly IConfiguration configuration;
         private readonly IUnitOfWork unitOfWork;
 
@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            informacaoNotificacao = param.ObterObjetoMensagem<EncaminhamentoNAAPAInformacoesNotificacaoInatividadeAtendimentoDto>();
+            informacaoNotificacao = param.ObterObjetoMensagem<AtendimentoNAAPAInformacoesNotificacaoInatividadeAtendimentoDto>();
             var reponsaveisNoticar = await mediator.Send(new ObterResponsaveisPorDreUeNAAPAQuery(informacaoNotificacao.DreCodigo, informacaoNotificacao.UeCodigo));
 
             unitOfWork.IniciarTransacao();

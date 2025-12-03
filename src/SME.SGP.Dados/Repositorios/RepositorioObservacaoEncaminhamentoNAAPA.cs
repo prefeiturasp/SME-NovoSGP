@@ -35,7 +35,7 @@ namespace SME.SGP.Dados.Repositorios
                             from encaminhamento_naapa_observacao 
                         where not excluido  and encaminhamento_naapa_id = @encaminhamentoNAAPAId ";
             
-            var observacoesConsulta = await database.Conexao.QueryAsync<EncaminhamentoNAAPAObservacoesConsultaDto>(sql,new { encaminhamentoNAAPAId, usuarioId = usuarioLogadoRf },commandTimeout: 300);
+            var observacoesConsulta = await database.Conexao.QueryAsync<AtendimentoNAAPAObservacoesConsultaDto>(sql,new { encaminhamentoNAAPAId, usuarioId = usuarioLogadoRf },commandTimeout: 300);
             var observacoes = MapearAuditoria(observacoesConsulta);
 
             if (paginacao.EhNulo() || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
@@ -57,7 +57,7 @@ namespace SME.SGP.Dados.Repositorios
             return retornoPaginado;
         }
 
-        private List<AtendimentoNAAPAObservacoesDto> MapearAuditoria(IEnumerable<EncaminhamentoNAAPAObservacoesConsultaDto> observacoes)
+        private List<AtendimentoNAAPAObservacoesDto> MapearAuditoria(IEnumerable<AtendimentoNAAPAObservacoesConsultaDto> observacoes)
         {
             var lista = new List<AtendimentoNAAPAObservacoesDto>(); 
             foreach (var item in observacoes)

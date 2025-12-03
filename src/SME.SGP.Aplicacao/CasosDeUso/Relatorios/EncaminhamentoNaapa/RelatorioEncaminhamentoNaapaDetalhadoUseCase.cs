@@ -9,7 +9,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class RelatorioEncaminhamentoNaapaDetalhadoUseCase : IRelatorioEncaminhamentoNaapaDetalhadoUseCase
+    public class RelatorioEncaminhamentoNaapaDetalhadoUseCase : IRelatorioAtendimentoNaapaDetalhadoUseCase
     {
         private readonly IMediator mediator;
 

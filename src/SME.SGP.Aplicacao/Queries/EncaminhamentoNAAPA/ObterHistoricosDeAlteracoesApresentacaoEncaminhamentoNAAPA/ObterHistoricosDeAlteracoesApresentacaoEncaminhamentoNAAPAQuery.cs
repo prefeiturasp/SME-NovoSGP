@@ -4,7 +4,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAQuery : IRequest<PaginacaoResultadoDto<EncaminhamentoNAAPAHistoricoDeAlteracaoDto>>
+    public class ObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAQuery : IRequest<PaginacaoResultadoDto<AtendimentoNAAPAHistoricoDeAlteracaoDto>>
     {
         public ObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAQuery(long encaminhamentoNAAPId)
         {

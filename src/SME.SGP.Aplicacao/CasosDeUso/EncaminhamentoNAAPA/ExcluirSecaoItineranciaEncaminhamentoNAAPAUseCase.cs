@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirSecaoItineranciaEncaminhamentoNAAPAUseCase : AbstractUseCase, IExcluirSecaoItineranciaEncaminhamentoNAAPAUseCase
+    public class ExcluirSecaoItineranciaEncaminhamentoNAAPAUseCase : AbstractUseCase, IExcluirSecaoItineranciaAtendimentoNAAPAUseCase
     {
         public ExcluirSecaoItineranciaEncaminhamentoNAAPAUseCase(IMediator mediator) : base(mediator)
         {}

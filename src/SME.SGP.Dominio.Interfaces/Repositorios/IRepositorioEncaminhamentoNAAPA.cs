@@ -16,15 +16,15 @@ namespace SME.SGP.Dominio.Interfaces
         Task<EncaminhamentoNAAPA> ObterEncaminhamentoPorIdESecao(long id, long secaoId);
         Task<EncaminhamentoNAAPA> ObterEncaminhamentoComTurmaPorId(long requestEncaminhamentoId);
 
-        Task<IEnumerable<EncaminhamentoNAAPACodigoArquivoDto>> ObterCodigoArquivoPorEncaminhamentoNAAPAId(long encaminhamentoId);
+        Task<IEnumerable<AtendimentoNAAPACodigoArquivoDto>> ObterCodigoArquivoPorEncaminhamentoNAAPAId(long encaminhamentoId);
 
         Task<SituacaoDto> ObterSituacao(long id);
         Task<IEnumerable<AtendimentoNAAPADto>> ObterEncaminhamentosComSituacaoDiferenteDeEncerrado();
 
         Task<bool> VerificaSituacaoEncaminhamentoNAAPASeEstaAguardandoAtendimentoIndevidamente(long encaminhamentoId);
         Task<bool> EncaminhamentoContemAtendimentosItinerancia(long encaminhamentoId);
-        Task<IEnumerable<EncaminhamentosNAAPAConsolidadoDto>> ObterQuantidadeSituacaoEncaminhamentosPorUeAnoLetivo(long ueId, int anoLetivo);
+        Task<IEnumerable<AtendimentosNAAPAConsolidadoDto>> ObterQuantidadeSituacaoEncaminhamentosPorUeAnoLetivo(long ueId, int anoLetivo);
         Task<bool> ExisteEncaminhamentoNAAPAAtivoParaAluno(string codigoAluno);
-        Task<IEnumerable<EncaminhamentoNAAPAInformacoesNotificacaoInatividadeAtendimentoDto>> ObterInformacoesDeNotificacaoDeInatividadeDeAtendimento(long ueId);
+        Task<IEnumerable<AtendimentoNAAPAInformacoesNotificacaoInatividadeAtendimentoDto>> ObterInformacoesDeNotificacaoDeInatividadeDeAtendimento(long ueId);
     }
 }

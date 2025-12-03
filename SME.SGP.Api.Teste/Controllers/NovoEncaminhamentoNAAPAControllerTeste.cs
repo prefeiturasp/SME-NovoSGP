@@ -21,27 +21,27 @@ namespace SME.SGP.Api.Teste.Controllers
     public class NovoEncaminhamentoNAAPAControllerTeste
     {
         private readonly NovoEncaminhamentoNAAPAController _controller;
-        private readonly Mock<IObterSecoesEncaminhamentoIndividualNAAPAUseCase> _secoesUseCase;
-        private readonly Mock<IObterQuestionarioEncaminhamentoNAAPAUseCase> _questionarioUseCase;
-        private readonly Mock<IExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase> _existeAtivoUseCase;
-        private readonly Mock<IObterEncaminhamentoNAAPAPorIdUseCase> _obterPorIdUseCase;
+        private readonly Mock<IObterSecoesAtendimentoIndividualNAAPAUseCase> _secoesUseCase;
+        private readonly Mock<IObterQuestionarioAtendimentoNAAPAUseCase> _questionarioUseCase;
+        private readonly Mock<IExisteAtendimentoNAAPAAtivoParaAlunoUseCase> _existeAtivoUseCase;
+        private readonly Mock<IObterAtendimentoNAAPAPorIdUseCase> _obterPorIdUseCase;
         private readonly Mock<IUploadDeArquivoUseCase> _uploadUseCase;
         private readonly Mock<IObterNovosEncaminhamentosNAAPAPorTipoUseCase> _paginadoUseCase;
         private readonly Mock<IExcluirArquivoNAAPAUseCase> _excluirArquivoUseCase;
         private readonly Mock<IRegistrarNovoEncaminhamentoNAAPAUseCase> _registrarUseCase;
-        private readonly Mock<IExcluirEncaminhamentoNAAPAUseCase> _excluirEncaminhamentoUseCase;
+        private readonly Mock<IExcluirAtendimentoNAAPAUseCase> _excluirEncaminhamentoUseCase;
 
         public NovoEncaminhamentoNAAPAControllerTeste()
         {
-            _secoesUseCase = new Mock<IObterSecoesEncaminhamentoIndividualNAAPAUseCase>();
-            _questionarioUseCase = new Mock<IObterQuestionarioEncaminhamentoNAAPAUseCase>();
-            _existeAtivoUseCase = new Mock<IExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase>();
-            _obterPorIdUseCase = new Mock<IObterEncaminhamentoNAAPAPorIdUseCase>();
+            _secoesUseCase = new Mock<IObterSecoesAtendimentoIndividualNAAPAUseCase>();
+            _questionarioUseCase = new Mock<IObterQuestionarioAtendimentoNAAPAUseCase>();
+            _existeAtivoUseCase = new Mock<IExisteAtendimentoNAAPAAtivoParaAlunoUseCase>();
+            _obterPorIdUseCase = new Mock<IObterAtendimentoNAAPAPorIdUseCase>();
             _uploadUseCase = new Mock<IUploadDeArquivoUseCase>();
             _paginadoUseCase = new Mock<IObterNovosEncaminhamentosNAAPAPorTipoUseCase>();
             _excluirArquivoUseCase = new Mock<IExcluirArquivoNAAPAUseCase>();
             _registrarUseCase = new Mock<IRegistrarNovoEncaminhamentoNAAPAUseCase>();
-            _excluirEncaminhamentoUseCase = new Mock<IExcluirEncaminhamentoNAAPAUseCase>();
+            _excluirEncaminhamentoUseCase = new Mock<IExcluirAtendimentoNAAPAUseCase>();
 
             _controller = new NovoEncaminhamentoNAAPAController();
         }

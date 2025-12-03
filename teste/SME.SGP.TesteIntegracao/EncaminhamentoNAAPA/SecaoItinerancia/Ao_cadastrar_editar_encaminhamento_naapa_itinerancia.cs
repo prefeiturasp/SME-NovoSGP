@@ -62,10 +62,10 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
             var dto = new AtendimentoNAAPAItineranciaDto()
             {
                 EncaminhamentoId = 1,
-                EncaminhamentoNAAPASecao = new EncaminhamentoNAAPASecaoDto()
+                EncaminhamentoNAAPASecao = new AtendimentoNAAPASecaoDto()
                 {
                     SecaoId = 3,
-                    Questoes = new List<EncaminhamentoNAAPASecaoQuestaoDto>()
+                    Questoes = new List<AtendimentoNAAPASecaoQuestaoDto>()
                     {
                         new ()
                         {
@@ -127,10 +127,10 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
             var dto = new AtendimentoNAAPAItineranciaDto()
             {
                 EncaminhamentoId = 1,
-                EncaminhamentoNAAPASecao = new EncaminhamentoNAAPASecaoDto()
+                EncaminhamentoNAAPASecao = new AtendimentoNAAPASecaoDto()
                 {
                     SecaoId = 3,
-                    Questoes = new List<EncaminhamentoNAAPASecaoQuestaoDto>()
+                    Questoes = new List<AtendimentoNAAPASecaoQuestaoDto>()
                     {
                         new ()
                         {
@@ -239,10 +239,10 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
             {
                 EncaminhamentoId = 1,
                 EncaminhamentoNAAPASecaoId = 2,
-                EncaminhamentoNAAPASecao = new EncaminhamentoNAAPASecaoDto()
+                EncaminhamentoNAAPASecao = new AtendimentoNAAPASecaoDto()
                 {
                     SecaoId = 3,
-                    Questoes = new List<EncaminhamentoNAAPASecaoQuestaoDto>()
+                    Questoes = new List<AtendimentoNAAPASecaoQuestaoDto>()
                     {
                         new ()
                         {
@@ -307,10 +307,10 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
             {
                 EncaminhamentoId = 1,
                 EncaminhamentoNAAPASecaoId = 2,
-                EncaminhamentoNAAPASecao = new EncaminhamentoNAAPASecaoDto()
+                EncaminhamentoNAAPASecao = new AtendimentoNAAPASecaoDto()
                 {
                     SecaoId = 3,
-                    Questoes = new List<EncaminhamentoNAAPASecaoQuestaoDto>()
+                    Questoes = new List<AtendimentoNAAPASecaoQuestaoDto>()
                     {
                         new ()
                         {
@@ -425,10 +425,10 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
             {
                 EncaminhamentoId = 1,
                 EncaminhamentoNAAPASecaoId = 2,
-                EncaminhamentoNAAPASecao = new EncaminhamentoNAAPASecaoDto()
+                EncaminhamentoNAAPASecao = new AtendimentoNAAPASecaoDto()
                 {
                     SecaoId = 3,
-                    Questoes = new List<EncaminhamentoNAAPASecaoQuestaoDto>()
+                    Questoes = new List<AtendimentoNAAPASecaoQuestaoDto>()
                     {
                         new ()
                         {
@@ -762,10 +762,10 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
             var dto = new AtendimentoNAAPAItineranciaDto()
             {
                 EncaminhamentoId = 1,
-                EncaminhamentoNAAPASecao = new EncaminhamentoNAAPASecaoDto()
+                EncaminhamentoNAAPASecao = new AtendimentoNAAPASecaoDto()
                 {
                     SecaoId = 3,
-                    Questoes = new List<EncaminhamentoNAAPASecaoQuestaoDto>()
+                    Questoes = new List<AtendimentoNAAPASecaoQuestaoDto>()
                     {
                         new ()
                         {

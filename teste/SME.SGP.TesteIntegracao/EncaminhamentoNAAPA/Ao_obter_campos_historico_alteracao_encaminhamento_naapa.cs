@@ -122,33 +122,33 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            var secaoDto = new EncaminhamentoNAAPASecaoDto()
+            var secaoDto = new AtendimentoNAAPASecaoDto()
             {
                 SecaoId = 1,
                 Concluido = false,
-                Questoes = new List<EncaminhamentoNAAPASecaoQuestaoDto>()
+                Questoes = new List<AtendimentoNAAPASecaoQuestaoDto>()
                 {
-                    new EncaminhamentoNAAPASecaoQuestaoDto()
+                    new AtendimentoNAAPASecaoQuestaoDto()
                     {
                         QuestaoId= 1,
                         RespostaEncaminhamentoId=1,
                         Resposta = dataQueixa.AddDays(10).ToString("dd/MM/yyyy"),
                         TipoQuestao = TipoQuestao.Data
                     },
-                     new EncaminhamentoNAAPASecaoQuestaoDto()
+                     new AtendimentoNAAPASecaoQuestaoDto()
                     {
                         QuestaoId= 14,
                         Resposta = "123456",
                         TipoQuestao = TipoQuestao.Numerico
                     },
-                    new EncaminhamentoNAAPASecaoQuestaoDto()
+                    new AtendimentoNAAPASecaoQuestaoDto()
                     {
                         QuestaoId= 15,
                         RespostaEncaminhamentoId=2,
                         Resposta = "UBS de referência",
                         TipoQuestao = TipoQuestao.Texto
                     },
-                    new EncaminhamentoNAAPASecaoQuestaoDto()
+                    new AtendimentoNAAPASecaoQuestaoDto()
                     {
                         QuestaoId= 16,
                         RespostaEncaminhamentoId=3,
@@ -279,40 +279,40 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             secao.SecaoEncaminhamentoNAAPA.EncaminhamentoNAAPASecao = secao;
 
-            var secaoDto = new EncaminhamentoNAAPASecaoDto()
+            var secaoDto = new AtendimentoNAAPASecaoDto()
             {
                 SecaoId = 1,
                 Concluido = false,
-                Questoes = new List<EncaminhamentoNAAPASecaoQuestaoDto>()
+                Questoes = new List<AtendimentoNAAPASecaoQuestaoDto>()
                 {
-                    new EncaminhamentoNAAPASecaoQuestaoDto()
+                    new AtendimentoNAAPASecaoQuestaoDto()
                     {
                         QuestaoId= 2,
                         RespostaEncaminhamentoId=1,
                         Resposta = "2",
                         TipoQuestao = TipoQuestao.Combo
                     },
-                    new EncaminhamentoNAAPASecaoQuestaoDto()
+                    new AtendimentoNAAPASecaoQuestaoDto()
                     {
                         QuestaoId= 3,
                         RespostaEncaminhamentoId=2,
                         Resposta = "3",
                         TipoQuestao = TipoQuestao.ComboMultiplaEscolha
                     },
-                    new EncaminhamentoNAAPASecaoQuestaoDto()
+                    new AtendimentoNAAPASecaoQuestaoDto()
                     {
                         QuestaoId= 3,
                         RespostaEncaminhamentoId=3,
                         Resposta = "4",
                         TipoQuestao = TipoQuestao.ComboMultiplaEscolha
                     },
-                    new EncaminhamentoNAAPASecaoQuestaoDto()
+                    new AtendimentoNAAPASecaoQuestaoDto()
                     {
                         QuestaoId= 3,
                         Resposta = "5",
                         TipoQuestao = TipoQuestao.ComboMultiplaEscolha
                     },
-                    new EncaminhamentoNAAPASecaoQuestaoDto()
+                    new AtendimentoNAAPASecaoQuestaoDto()
                     {
                         QuestaoId= 4,
                         Resposta = "6",

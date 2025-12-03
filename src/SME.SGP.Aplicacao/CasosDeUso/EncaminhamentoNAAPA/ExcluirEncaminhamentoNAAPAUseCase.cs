@@ -8,7 +8,7 @@ using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirEncaminhamentoNAAPAUseCase : AbstractUseCase, IExcluirEncaminhamentoNAAPAUseCase
+    public class ExcluirEncaminhamentoNAAPAUseCase : AbstractUseCase, IExcluirAtendimentoNAAPAUseCase
     {
         public ExcluirEncaminhamentoNAAPAUseCase(IMediator mediator) : base(mediator)
         {

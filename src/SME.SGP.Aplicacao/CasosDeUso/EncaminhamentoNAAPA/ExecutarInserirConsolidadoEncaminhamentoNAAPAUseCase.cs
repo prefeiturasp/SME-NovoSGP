@@ -5,7 +5,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExecutarInserirConsolidadoEncaminhamentoNAAPAUseCase : AbstractUseCase,IExecutarInserirConsolidadoEncaminhamentoNAAPAUseCase
+    public class ExecutarInserirConsolidadoEncaminhamentoNAAPAUseCase : AbstractUseCase,IExecutarInserirConsolidadoAtendimentoNAAPAUseCase
 
     {
         public ExecutarInserirConsolidadoEncaminhamentoNAAPAUseCase(IMediator mediator) : base(mediator)

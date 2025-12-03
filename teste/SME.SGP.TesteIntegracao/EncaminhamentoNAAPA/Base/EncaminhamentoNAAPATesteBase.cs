@@ -371,37 +371,37 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4, TIPO_CALENDARIO_1, considerarAnoAnterior);
         }
 
-        protected IObterEncaminhamentoNAAPAUseCase ObterServicoListagemComFiltros()
+        protected IObterAtendimentoNAAPAUseCase ObterServicoListagemComFiltros()
         {
-            return ServiceProvider.GetService<IObterEncaminhamentoNAAPAUseCase>();
+            return ServiceProvider.GetService<IObterAtendimentoNAAPAUseCase>();
         }
 
-        protected IObterObservacoesDeEncaminhamentoNAAPAUseCase ObterObservacoesDeEncaminhamentoNAAPA()
+        protected IObterObservacoesDeAtendimentoNAAPAUseCase ObterObservacoesDeEncaminhamentoNAAPA()
         {
-            return ServiceProvider.GetService<IObterObservacoesDeEncaminhamentoNAAPAUseCase>();
+            return ServiceProvider.GetService<IObterObservacoesDeAtendimentoNAAPAUseCase>();
         }
-        protected IExcluirObservacoesDeEncaminhamentoNAAPAUseCase ExcluirObservacoesDeEncaminhamentoNAAPA()
+        protected IExcluirObservacoesDeAtendimentoNAAPAUseCase ExcluirObservacoesDeEncaminhamentoNAAPA()
         {
-            return ServiceProvider.GetService<IExcluirObservacoesDeEncaminhamentoNAAPAUseCase>();
+            return ServiceProvider.GetService<IExcluirObservacoesDeAtendimentoNAAPAUseCase>();
         }
-        protected ISalvarObservacoesDeEncaminhamentoNAAPAUseCase SalvarObservacoesDeEncaminhamentoNAAPA()
+        protected ISalvarObservacoesDeAtendimentoNAAPAUseCase SalvarObservacoesDeEncaminhamentoNAAPA()
         {
-            return ServiceProvider.GetService<ISalvarObservacoesDeEncaminhamentoNAAPAUseCase>();
-        }
-
-        protected INotificarSobreTransferenciaUeDreAlunoTurmaDoEncaminhamentoNAAPAUseCase ObterServicoNotificacaoTransfAlunoDreUeDoEncaminhamentoNAAPA()
-        {
-            return ServiceProvider.GetService<INotificarSobreTransferenciaUeDreAlunoTurmaDoEncaminhamentoNAAPAUseCase>();
+            return ServiceProvider.GetService<ISalvarObservacoesDeAtendimentoNAAPAUseCase>();
         }
 
-        protected IRegistrarEncaminhamentoNAAPAUseCase ObterServicoRegistrarEncaminhamento()
+        protected INotificarSobreTransferenciaUeDreAlunoTurmaDoAtendimentoNAAPAUseCase ObterServicoNotificacaoTransfAlunoDreUeDoEncaminhamentoNAAPA()
         {
-            return ServiceProvider.GetService<IRegistrarEncaminhamentoNAAPAUseCase>();
+            return ServiceProvider.GetService<INotificarSobreTransferenciaUeDreAlunoTurmaDoAtendimentoNAAPAUseCase>();
         }
 
-        protected IRegistrarEncaminhamentoItinerarioNAAPAUseCase ObterServicoRegistrarEncaminhamentoItinerario()
+        protected IRegistrarAtendimentoNAAPAUseCase ObterServicoRegistrarEncaminhamento()
         {
-            return ServiceProvider.GetService<IRegistrarEncaminhamentoItinerarioNAAPAUseCase>();
+            return ServiceProvider.GetService<IRegistrarAtendimentoNAAPAUseCase>();
+        }
+
+        protected IRegistrarAtendimentoItinerarioNAAPAUseCase ObterServicoRegistrarEncaminhamentoItinerario()
+        {
+            return ServiceProvider.GetService<IRegistrarAtendimentoItinerarioNAAPAUseCase>();
         }
 
         protected IExcluirArquivoItineranciaNAAPAUseCase ObterServicoExcluirArquivoItineranciaNAAPAUseCase()
@@ -414,34 +414,34 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             return ServiceProvider.GetService<IUploadDeArquivoUseCase>();
         }
 
-        protected IObterSecoesItineranciaDeEncaminhamentoNAAPAUseCase ObterServicoListagemSecoesItineranciaEncaminhamentoNaapa()
+        protected IObterSecoesItineranciaDeAtendimentoNAAPAUseCase ObterServicoListagemSecoesItineranciaEncaminhamentoNaapa()
         {
-            return ServiceProvider.GetService<IObterSecoesItineranciaDeEncaminhamentoNAAPAUseCase>();
+            return ServiceProvider.GetService<IObterSecoesItineranciaDeAtendimentoNAAPAUseCase>();
         }
 
-        protected IExcluirSecaoItineranciaEncaminhamentoNAAPAUseCase ObterServicoExcluirSecaoItineranciaEncaminhamentoNAAPA()
+        protected IExcluirSecaoItineranciaAtendimentoNAAPAUseCase ObterServicoExcluirSecaoItineranciaEncaminhamentoNAAPA()
         {
-            return ServiceProvider.GetService<IExcluirSecaoItineranciaEncaminhamentoNAAPAUseCase>();
+            return ServiceProvider.GetService<IExcluirSecaoItineranciaAtendimentoNAAPAUseCase>();
         }
 
-        protected IExcluirEncaminhamentoNAAPAUseCase ObterServicoExcluirEncaminhamento()
+        protected IExcluirAtendimentoNAAPAUseCase ObterServicoExcluirEncaminhamento()
         {
-            return ServiceProvider.GetService<IExcluirEncaminhamentoNAAPAUseCase>();
+            return ServiceProvider.GetService<IExcluirAtendimentoNAAPAUseCase>();
         }
 
-        protected IEncerrarEncaminhamentoNAAPAUseCase ObterServicoEncerrarEncaminhamento()
+        protected IEncerrarAtendimentoNAAPAUseCase ObterServicoEncerrarEncaminhamento()
         {
-            return ServiceProvider.GetService<IEncerrarEncaminhamentoNAAPAUseCase>();
+            return ServiceProvider.GetService<IEncerrarAtendimentoNAAPAUseCase>();
         }
 
-        protected IReabrirEncaminhamentoNAAPAUseCase ObterServicoReaberturaEncaminhamento()
+        protected IReabrirAtendimentoNAAPAUseCase ObterServicoReaberturaEncaminhamento()
         {
-            return ServiceProvider.GetService<IReabrirEncaminhamentoNAAPAUseCase>();
+            return ServiceProvider.GetService<IReabrirAtendimentoNAAPAUseCase>();
         }
 
-        protected IObterEncaminhamentoNAAPAPorIdUseCase ObterServicoObterEncaminhamentoNAAPAPorId()
+        protected IObterAtendimentoNAAPAPorIdUseCase ObterServicoObterEncaminhamentoNAAPAPorId()
         {
-            return ServiceProvider.GetService<IObterEncaminhamentoNAAPAPorIdUseCase>();
+            return ServiceProvider.GetService<IObterAtendimentoNAAPAPorIdUseCase>();
         }
 
         protected IObterProfissionaisEnvolvidosAtendimentoNAAPANAAPAUseCase ObterServicoObtencaoProfissionaisEnvolvidosAtendimentoNAAPANAAPAUseCase()
@@ -449,29 +449,29 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             return ServiceProvider.GetService<IObterProfissionaisEnvolvidosAtendimentoNAAPANAAPAUseCase>();
         }
 
-        protected IObterQuestionarioItinerarioEncaminhamentoNAAPAUseCase ObterServicoObterQuestionarioItinerarioEncaminhamentoNAAPA()
+        protected IObterQuestionarioItinerarioAtendimentoNAAPAUseCase ObterServicoObterQuestionarioItinerarioEncaminhamentoNAAPA()
         {
-            return ServiceProvider.GetService<IObterQuestionarioItinerarioEncaminhamentoNAAPAUseCase>();
+            return ServiceProvider.GetService<IObterQuestionarioItinerarioAtendimentoNAAPAUseCase>();
         }
 
-        protected IAtualizarEnderecoDoEncaminhamentoNAAPAUseCase ObterServicoAtualizarEnderecoDoEncaminhamentoNAAPA()
+        protected IAtualizarEnderecoDoAtendimentoNAAPAUseCase ObterServicoAtualizarEnderecoDoEncaminhamentoNAAPA()
         {
-            return ServiceProvider.GetService<IAtualizarEnderecoDoEncaminhamentoNAAPAUseCase>();
+            return ServiceProvider.GetService<IAtualizarEnderecoDoAtendimentoNAAPAUseCase>();
         }
 
-        protected IAtualizarTurmasProgramaDoEncaminhamentoNAAPAUseCase ObterServicoAtualizarTurmasProgramaDoEncaminhamentoNAAPA()
+        protected IAtualizarTurmasProgramaDoAtendimentoNAAPAUseCase ObterServicoAtualizarTurmasProgramaDoEncaminhamentoNAAPA()
         {
-            return ServiceProvider.GetService<IAtualizarTurmasProgramaDoEncaminhamentoNAAPAUseCase>();
+            return ServiceProvider.GetService<IAtualizarTurmasProgramaDoAtendimentoNAAPAUseCase>();
         }
 
-        protected IAtualizarTurmaDoEncaminhamentoNAAPAUseCase ObterServicoAtualizarTurmaDoEncaminhamentoNAAPA()
+        protected IAtualizarTurmaDoAtendimentoNAAPAUseCase ObterServicoAtualizarTurmaDoEncaminhamentoNAAPA()
         {
-            return ServiceProvider.GetService<IAtualizarTurmaDoEncaminhamentoNAAPAUseCase>();
+            return ServiceProvider.GetService<IAtualizarTurmaDoAtendimentoNAAPAUseCase>();
         }
 
-        protected INotificarSobreInativacaoAlunoTurmaDoEncaminhamentoNAAPAUseCase ObterServicoNotificacaoAtualizacaoMatriculaAlunoDoEncaminhamentoNAAPA()
+        protected INotificarSobreInativacaoAlunoTurmaDoAtendimentoNAAPAUseCase ObterServicoNotificacaoAtualizacaoMatriculaAlunoDoEncaminhamentoNAAPA()
         {
-            return ServiceProvider.GetService<INotificarSobreInativacaoAlunoTurmaDoEncaminhamentoNAAPAUseCase>();
+            return ServiceProvider.GetService<INotificarSobreInativacaoAlunoTurmaDoAtendimentoNAAPAUseCase>();
         }
 
         protected INotificarInatividadeDoAtendimentoNAAPAInformacaoUseCase ObterServicoNotificarInatividadeDoAtendimentoNAAPAInformacaoUseCase()
@@ -479,9 +479,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             return ServiceProvider.GetService<INotificarInatividadeDoAtendimentoNAAPAInformacaoUseCase>();
         }
 
-        protected IExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase ObterServicoExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase()
+        protected IExisteAtendimentoNAAPAAtivoParaAlunoUseCase ObterServicoExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase()
         {
-            return ServiceProvider.GetService<IExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase>();
+            return ServiceProvider.GetService<IExisteAtendimentoNAAPAAtivoParaAlunoUseCase>();
         }
 
         private async Task CriarRespostasComplementares()

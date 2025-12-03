@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class NotificarSobreTransferenciaUeDreAlunoTurmaDoEncaminhamentoNAAPAUseCase : AbstractUseCase, INotificarSobreTransferenciaUeDreAlunoTurmaDoEncaminhamentoNAAPAUseCase
+    public class NotificarSobreTransferenciaUeDreAlunoTurmaDoEncaminhamentoNAAPAUseCase : AbstractUseCase, INotificarSobreTransferenciaUeDreAlunoTurmaDoAtendimentoNAAPAUseCase
     {
         public NotificarSobreTransferenciaUeDreAlunoTurmaDoEncaminhamentoNAAPAUseCase(IMediator mediator) : base(mediator)
         {

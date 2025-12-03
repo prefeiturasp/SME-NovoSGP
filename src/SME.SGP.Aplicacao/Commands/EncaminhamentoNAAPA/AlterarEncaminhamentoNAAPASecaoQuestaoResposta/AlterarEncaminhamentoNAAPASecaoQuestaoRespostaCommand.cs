@@ -10,14 +10,14 @@ namespace SME.SGP.Aplicacao
 {
     public class AlterarEncaminhamentoNAAPASecaoQuestaoRespostaCommand : IRequest<bool>
     {
-        public AlterarEncaminhamentoNAAPASecaoQuestaoRespostaCommand(RespostaEncaminhamentoNAAPA respostaAlterar, EncaminhamentoNAAPASecaoQuestaoDto encaminhamentoNAAPASecaoQuestaoDto)
+        public AlterarEncaminhamentoNAAPASecaoQuestaoRespostaCommand(RespostaEncaminhamentoNAAPA respostaAlterar, AtendimentoNAAPASecaoQuestaoDto encaminhamentoNAAPASecaoQuestaoDto)
         {
             RespostaEncaminhamento = respostaAlterar;
             RespostaQuestaoDto = encaminhamentoNAAPASecaoQuestaoDto;
         }
 
         public RespostaEncaminhamentoNAAPA RespostaEncaminhamento { get; set; }
-        public EncaminhamentoNAAPASecaoQuestaoDto RespostaQuestaoDto { get; set; }
+        public AtendimentoNAAPASecaoQuestaoDto RespostaQuestaoDto { get; set; }
     }
 
     public class AlterarEncaminhamentoNAAPASecaoQuestaoRespostaCommandValidator : AbstractValidator<AlterarEncaminhamentoNAAPASecaoQuestaoRespostaCommand>

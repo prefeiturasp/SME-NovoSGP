@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterQuestoesRelatorioDinamicoEncaminhamentoNaapaPorModalidadesUseCase : IObterQuestoesRelatorioDinamicoEncaminhamentoNAAPAPorModalidadesUseCase
+    public class ObterQuestoesRelatorioDinamicoEncaminhamentoNaapaPorModalidadesUseCase : IObterQuestoesRelatorioDinamicoAtendimentoNAAPAPorModalidadesUseCase
     {
         private readonly IMediator mediator;
         public ObterQuestoesRelatorioDinamicoEncaminhamentoNaapaPorModalidadesUseCase(IMediator mediator)

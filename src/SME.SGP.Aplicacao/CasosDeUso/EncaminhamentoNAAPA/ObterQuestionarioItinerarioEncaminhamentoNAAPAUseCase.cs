@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
 {
-    public class ObterQuestionarioItinerarioEncaminhamentoNAAPAUseCase : IObterQuestionarioItinerarioEncaminhamentoNAAPAUseCase
+    public class ObterQuestionarioItinerarioEncaminhamentoNAAPAUseCase : IObterQuestionarioItinerarioAtendimentoNAAPAUseCase
     {
         private readonly IMediator mediator;
 
@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<EncaminhamentoNAAPASecaoItineranciaQuestoesDto> Executar(long questionarioId, long? encaminhamentoSecaoId)
+        public async Task<AtendimentoNAAPASecaoItineranciaQuestoesDto> Executar(long questionarioId, long? encaminhamentoSecaoId)
         {
             return await mediator
                         .Send(new ObterQuestionarioItinerarioEncaminhamentoNAAPAQuery(questionarioId, encaminhamentoSecaoId));

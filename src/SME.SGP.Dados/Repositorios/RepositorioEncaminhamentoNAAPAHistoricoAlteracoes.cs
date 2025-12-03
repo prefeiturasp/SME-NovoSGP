@@ -23,9 +23,9 @@ namespace SME.SGP.Dados.Repositorios
             return (long)(await database.Conexao.InsertAsync(entidade));
         }
 
-        public async Task<PaginacaoResultadoDto<EncaminhamentoNAAPAHistoricoDeAlteracaoDto>> ListarPaginadoPorEncaminhamentoNAAPAId(long encaminhamentoNAAPAId, Paginacao paginacao)
+        public async Task<PaginacaoResultadoDto<AtendimentoNAAPAHistoricoDeAlteracaoDto>> ListarPaginadoPorEncaminhamentoNAAPAId(long encaminhamentoNAAPAId, Paginacao paginacao)
         {
-            var retorno = new PaginacaoResultadoDto<EncaminhamentoNAAPAHistoricoDeAlteracaoDto>();
+            var retorno = new PaginacaoResultadoDto<AtendimentoNAAPAHistoricoDeAlteracaoDto>();
 
             var sql = @$"select ha.Id, u.login as UsuarioLogin, u.nome as UsuarioNome, tipo_historico as TipoHistoricoAlteracoes, 
                                 sen.nome as Secao, campos_inseridos as CamposInseridos, campos_alterados as CamposAlterados, 
@@ -44,7 +44,7 @@ namespace SME.SGP.Dados.Repositorios
 
             using (var historicoAlteracoes = await database.Conexao.QueryMultipleAsync(sql, new { encaminhamentoNAAPAId }))
             {
-                retorno.Items = historicoAlteracoes.Read<EncaminhamentoNAAPAHistoricoDeAlteracaoDto>();
+                retorno.Items = historicoAlteracoes.Read<AtendimentoNAAPAHistoricoDeAlteracaoDto>();
                 retorno.TotalRegistros = historicoAlteracoes.ReadFirst<int>();
             }
 

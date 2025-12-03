@@ -10,7 +10,7 @@ using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExecutarBuscarUesConsolidadoEncaminhamentoNAAPAUseCase: AbstractUseCase,IExecutarBuscarUesConsolidadoEncaminhamentoNAAPAUseCase
+    public class ExecutarBuscarUesConsolidadoEncaminhamentoNAAPAUseCase: AbstractUseCase,IExecutarBuscarUesConsolidadoAtendimentoNAAPAUseCase
     {
         public ExecutarBuscarUesConsolidadoEncaminhamentoNAAPAUseCase(IMediator mediator) : base(mediator)
         {
@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            var filtro = param.ObterObjetoMensagem<FiltroBuscarUesConsolidadoEncaminhamentoNAAPADto>();
+            var filtro = param.ObterObjetoMensagem<FiltroBuscarUesConsolidadoAtendimentoNAAPADto>();
             var encaminhamentos = await mediator.Send(new ObterEncaminhamentosNAAPAConsolidadoCargaQuery(filtro.UeId,filtro.AnoLetivo));
             foreach (var encaminhamento in encaminhamentos)
             {
@@ -36,13 +36,13 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
-        private async Task PublicarExclusaoConsolidacao(long ueId, int anoLetivo, IEnumerable<EncaminhamentosNAAPAConsolidadoDto> encaminhamentosConsolidacao)
+        private async Task PublicarExclusaoConsolidacao(long ueId, int anoLetivo, IEnumerable<AtendimentosNAAPAConsolidadoDto> encaminhamentosConsolidacao)
         {
             var situacoesEncaminhamentosConsolidacao = encaminhamentosConsolidacao.Select(e => e.Situacao).Distinct();
             var situacoesNAAPA = EnumExtensao.ListarDto<SituacaoNAAPA>().Select(s => s.Id);
             if (situacoesNAAPA.Except(situacoesEncaminhamentosConsolidacao.Select(s => (int)s)).Any())
             {
-                var param = new FiltroExcluirUesConsolidadoEncaminhamentoNAAPADto(ueId, anoLetivo, situacoesEncaminhamentosConsolidacao.ToArray());
+                var param = new FiltroExcluirUesConsolidadoAtendimentoNAAPADto(ueId, anoLetivo, situacoesEncaminhamentosConsolidacao.ToArray());
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpNAAPA.ExecutarExcluirConsolidadoEncaminhamentoNAAPA, param, Guid.NewGuid()));
             }
         }

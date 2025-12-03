@@ -64,12 +64,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Situacao = SituacaoNAAPA.Rascunho,
                 AlunoCodigo = ALUNO_CODIGO_1,
                 AlunoNome = "Nome do aluno do naapa",
-                Secoes = new List<EncaminhamentoNAAPASecaoDto>()
+                Secoes = new List<AtendimentoNAAPASecaoDto>()
                 {
                     new ()
                     {
                         SecaoId = 1,
-                        Questoes = new List<EncaminhamentoNAAPASecaoQuestaoDto>()
+                        Questoes = new List<AtendimentoNAAPASecaoQuestaoDto>()
                         {
                             new ()
                             {
@@ -153,12 +153,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Situacao = SituacaoNAAPA.Rascunho,
                 AlunoCodigo = ALUNO_CODIGO_1,
                 AlunoNome = "Nome do aluno do naapa",
-                Secoes = new List<EncaminhamentoNAAPASecaoDto>()
+                Secoes = new List<AtendimentoNAAPASecaoDto>()
                 {
                     new ()
                     {
                         SecaoId = 1,
-                        Questoes = new List<EncaminhamentoNAAPASecaoQuestaoDto>()
+                        Questoes = new List<AtendimentoNAAPASecaoQuestaoDto>()
                         {
                             new ()
                             {
@@ -245,12 +245,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Situacao = SituacaoNAAPA.Rascunho,
                 AlunoCodigo = ALUNO_CODIGO_1,
                 AlunoNome = "Nome do aluno do naapa",
-                Secoes = new List<EncaminhamentoNAAPASecaoDto>()
+                Secoes = new List<AtendimentoNAAPASecaoDto>()
                 {
                     new ()
                     {
                         SecaoId = 1,
-                        Questoes = new List<EncaminhamentoNAAPASecaoQuestaoDto>()
+                        Questoes = new List<AtendimentoNAAPASecaoQuestaoDto>()
                         {
                             new ()
                             {
@@ -334,12 +334,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Situacao = SituacaoNAAPA.Rascunho,
                 AlunoCodigo = ALUNO_CODIGO_1,
                 AlunoNome = "Nome do aluno do naapa",
-                Secoes = new List<EncaminhamentoNAAPASecaoDto>()
+                Secoes = new List<AtendimentoNAAPASecaoDto>()
                 {
                     new ()
                     {
                         SecaoId = 2,
-                        Questoes = new List<EncaminhamentoNAAPASecaoQuestaoDto>()
+                        Questoes = new List<AtendimentoNAAPASecaoQuestaoDto>()
                         {
                             new ()
                             {
@@ -426,12 +426,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Situacao = SituacaoNAAPA.Rascunho,
                 AlunoCodigo = ALUNO_CODIGO_1,
                 AlunoNome = "Nome do aluno do naapa",
-                Secoes = new List<EncaminhamentoNAAPASecaoDto>()
+                Secoes = new List<AtendimentoNAAPASecaoDto>()
                 {
                     new ()
                     {
                         SecaoId = 1,
-                        Questoes = new List<EncaminhamentoNAAPASecaoQuestaoDto>()
+                        Questoes = new List<AtendimentoNAAPASecaoQuestaoDto>()
                         {
                             new ()
                             {
@@ -483,12 +483,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Situacao = SituacaoNAAPA.Rascunho,
                 AlunoCodigo = ALUNO_CODIGO_1,
                 AlunoNome = "Nome do aluno do naapa",
-                Secoes = new List<EncaminhamentoNAAPASecaoDto>()
+                Secoes = new List<AtendimentoNAAPASecaoDto>()
                 {
                     new ()
                     {
                         SecaoId = 1,
-                        Questoes = new List<EncaminhamentoNAAPASecaoQuestaoDto>()
+                        Questoes = new List<AtendimentoNAAPASecaoQuestaoDto>()
                         {
                             new ()
                             {

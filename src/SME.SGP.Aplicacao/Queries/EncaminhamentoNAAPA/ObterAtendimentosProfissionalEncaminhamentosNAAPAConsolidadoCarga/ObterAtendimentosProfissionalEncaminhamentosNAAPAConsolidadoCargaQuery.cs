@@ -5,7 +5,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterAtendimentosProfissionalEncaminhamentosNAAPAConsolidadoCargaQuery : IRequest<IEnumerable<AtendimentosProfissionalEncaminhamentoNAAPAConsolidadoDto>>
+    public class ObterAtendimentosProfissionalEncaminhamentosNAAPAConsolidadoCargaQuery : IRequest<IEnumerable<AtendimentosProfissionalAtendimentoNAAPAConsolidadoDto>>
     {
         public ObterAtendimentosProfissionalEncaminhamentosNAAPAConsolidadoCargaQuery(long ueId, int mes, int anoLetivo)
         {

@@ -9,7 +9,7 @@ using SME.SGP.Infra.Interfaces;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterEncaminhamentosNAAPAConsolidadoCargaQueryHandler : ConsultasBase, IRequestHandler<ObterEncaminhamentosNAAPAConsolidadoCargaQuery,IEnumerable<EncaminhamentosNAAPAConsolidadoDto>>
+    public class ObterEncaminhamentosNAAPAConsolidadoCargaQueryHandler : ConsultasBase, IRequestHandler<ObterEncaminhamentosNAAPAConsolidadoCargaQuery,IEnumerable<AtendimentosNAAPAConsolidadoDto>>
     {
         public readonly IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA;
         public ObterEncaminhamentosNAAPAConsolidadoCargaQueryHandler(IContextoAplicacao contextoAplicacao,IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA) : base(contextoAplicacao)
@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioEncaminhamentoNAAPA = repositorioEncaminhamentoNAAPA ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoNAAPA));
         }
 
-        public async Task<IEnumerable<EncaminhamentosNAAPAConsolidadoDto>> Handle(ObterEncaminhamentosNAAPAConsolidadoCargaQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<AtendimentosNAAPAConsolidadoDto>> Handle(ObterEncaminhamentosNAAPAConsolidadoCargaQuery request, CancellationToken cancellationToken)
         {
             return await repositorioEncaminhamentoNAAPA.ObterQuantidadeSituacaoEncaminhamentosPorUeAnoLetivo(request.UeId,request.AnoLetivo);
         }

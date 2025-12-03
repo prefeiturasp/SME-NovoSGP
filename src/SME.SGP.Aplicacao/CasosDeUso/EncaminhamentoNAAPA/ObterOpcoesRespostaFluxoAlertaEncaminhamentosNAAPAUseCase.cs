@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
 {
-    public class ObterOpcoesRespostaFluxoAlertaEncaminhamentosNAAPAUseCase : IObterOpcoesRespostaFluxoAlertaEncaminhamentosNAAPAUseCase
+    public class ObterOpcoesRespostaFluxoAlertaEncaminhamentosNAAPAUseCase : IObterOpcoesRespostaFluxoAlertaAtendimentosNAAPAUseCase
     {
         private readonly IMediator mediator;
         private const string NOME_COMPONENTE_QUESTAO_FLUXO_ALERTA = "FLUXO_ALERTA";

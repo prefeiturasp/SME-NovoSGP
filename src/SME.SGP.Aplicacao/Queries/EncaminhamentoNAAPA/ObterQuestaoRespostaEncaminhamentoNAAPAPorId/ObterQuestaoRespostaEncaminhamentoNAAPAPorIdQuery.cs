@@ -9,7 +9,7 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterQuestaoRespostaEncaminhamentoNAAPAPorIdQuery : IRequest<IEnumerable<RespostaQuestaoEncaminhamentoNAAPADto>>
+    public class ObterQuestaoRespostaEncaminhamentoNAAPAPorIdQuery : IRequest<IEnumerable<RespostaQuestaoAtendimentoNAAPADto>>
     {
         public ObterQuestaoRespostaEncaminhamentoNAAPAPorIdQuery(long id)
         {

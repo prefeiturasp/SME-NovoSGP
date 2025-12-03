@@ -89,17 +89,17 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<long>(query, new { encaminhamentoNAAPASecaoId });
         }
 
-        public async Task<IEnumerable<RespostaQuestaoEncaminhamentoNAAPADto>> ObterRespostasEncaminhamento(long encaminhamentoId)
+        public async Task<IEnumerable<RespostaQuestaoAtendimentoNAAPADto>> ObterRespostasEncaminhamento(long encaminhamentoId)
         {
             return await ObterRespostasEncaminhamento(encaminhamentoId, "ens.encaminhamento_naapa_id = @encaminhamentoId");
         }
 
-        public async Task<IEnumerable<RespostaQuestaoEncaminhamentoNAAPADto>> ObterRespostasItinerarioEncaminhamento(long encaminhamentoSecaoId)
+        public async Task<IEnumerable<RespostaQuestaoAtendimentoNAAPADto>> ObterRespostasItinerarioEncaminhamento(long encaminhamentoSecaoId)
         {
             return await ObterRespostasEncaminhamento(encaminhamentoSecaoId, "ens.id = @encaminhamentoId");
         }
 
-        private async Task<IEnumerable<RespostaQuestaoEncaminhamentoNAAPADto>> ObterRespostasEncaminhamento(long encaminhamentoId, string condicao)
+        private async Task<IEnumerable<RespostaQuestaoAtendimentoNAAPADto>> ObterRespostasEncaminhamento(long encaminhamentoId, string condicao)
         {
             var query = @$"select ren.Id
                             , qen.questao_id as QuestaoId
@@ -115,7 +115,7 @@ namespace SME.SGP.Dados.Repositorios
                            and not ren.excluido 
                            and {condicao}";
 
-            return await database.Conexao.QueryAsync<RespostaQuestaoEncaminhamentoNAAPADto, Arquivo, RespostaQuestaoEncaminhamentoNAAPADto>(query,
+            return await database.Conexao.QueryAsync<RespostaQuestaoAtendimentoNAAPADto, Arquivo, RespostaQuestaoAtendimentoNAAPADto>(query,
                 (resposta, arquivo) =>
                 {
                     resposta.Arquivo = arquivo;

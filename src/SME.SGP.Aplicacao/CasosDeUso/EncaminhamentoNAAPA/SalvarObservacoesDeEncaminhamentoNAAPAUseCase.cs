@@ -5,7 +5,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarObservacoesDeEncaminhamentoNAAPAUseCase : ISalvarObservacoesDeEncaminhamentoNAAPAUseCase
+    public class SalvarObservacoesDeEncaminhamentoNAAPAUseCase : ISalvarObservacoesDeAtendimentoNAAPAUseCase
     {
         public readonly IMediator mediator;
 

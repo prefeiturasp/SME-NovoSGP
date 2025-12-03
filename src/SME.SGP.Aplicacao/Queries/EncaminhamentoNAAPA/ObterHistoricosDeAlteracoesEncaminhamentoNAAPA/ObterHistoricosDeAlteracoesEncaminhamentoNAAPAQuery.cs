@@ -7,12 +7,12 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterHistoricosDeAlteracoesEncaminhamentoNAAPAQuery : IRequest<EncaminhamentoNAAPAHistoricoAlteracoes>
     {
-        public EncaminhamentoNAAPASecaoDto EncaminhamentoNAAPASecaoAlterado { get; set; }
+        public AtendimentoNAAPASecaoDto EncaminhamentoNAAPASecaoAlterado { get; set; }
         public EncaminhamentoNAAPASecao EncaminhamentoNAAPASecaoExistente { get; set; }
         public TipoHistoricoAlteracoesEncaminhamentoNAAPA TipoHistoricoAlteracoes { get; set; }
 
         public ObterHistoricosDeAlteracoesEncaminhamentoNAAPAQuery(
-                                    EncaminhamentoNAAPASecaoDto encaminhamentoNAAPASecaoAlterado, 
+                                    AtendimentoNAAPASecaoDto encaminhamentoNAAPASecaoAlterado, 
                                     EncaminhamentoNAAPASecao encaminhamentoNAAPASecaoExistente,
                                     TipoHistoricoAlteracoesEncaminhamentoNAAPA tipoHistoricoAlteracoes)
         {

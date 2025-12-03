@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
 {
-    public class RegistrarEncaminhamentoItinerarioNAAPAUseCase : IRegistrarEncaminhamentoItinerarioNAAPAUseCase
+    public class RegistrarEncaminhamentoItinerarioNAAPAUseCase : IRegistrarAtendimentoItinerarioNAAPAUseCase
     {
         private readonly IMediator mediator;
 
@@ -62,9 +62,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
             return true;
         }
 
-        private async Task RemoverArquivosNaoUtilizados(EncaminhamentoNAAPASecaoDto secao)
+        private async Task RemoverArquivosNaoUtilizados(AtendimentoNAAPASecaoDto secao)
         {
-            var resposta = new List<EncaminhamentoNAAPASecaoQuestaoDto>();
+            var resposta = new List<AtendimentoNAAPASecaoQuestaoDto>();
 
             foreach (var q in secao.Questoes)
             {
@@ -104,7 +104,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
             return true;
         }
 
-        private async Task RegistrarRespostaEncaminhamento(IEnumerable<EncaminhamentoNAAPASecaoQuestaoDto> questoes, long questaoEncaminhamentoId)
+        private async Task RegistrarRespostaEncaminhamento(IEnumerable<AtendimentoNAAPASecaoQuestaoDto> questoes, long questaoEncaminhamentoId)
         {
             foreach (var questao in questoes)
                 await mediator.Send(new RegistrarEncaminhamentoNAAPASecaoQuestaoRespostaCommand(questao.Resposta, questaoEncaminhamentoId, questao.TipoQuestao));
@@ -115,7 +115,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
             await mediator.Send(new AlterarSituacaoNAAPACommand(encaminhamentoNAAPA, SituacaoNAAPA.EmAtendimento));
         }
 
-        private void ValidarAlteracao(EncaminhamentoNAAPASecao secaoExistente, EncaminhamentoNAAPASecaoDto secaoDto)
+        private void ValidarAlteracao(EncaminhamentoNAAPASecao secaoExistente, AtendimentoNAAPASecaoDto secaoDto)
         {
             if (secaoExistente.EhNulo())
                 throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.SECAO_NAO_ENCONTRADA);
@@ -123,13 +123,13 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
             ValidarQuestao(secaoDto);
         }
 
-        private void ValidarQuestao(EncaminhamentoNAAPASecaoDto secao)
+        private void ValidarQuestao(AtendimentoNAAPASecaoDto secao)
         {
             if (!secao.Questoes.Any())
                 throw new NegocioException(string.Format(MensagemNegocioComuns.NENHUMA_QUESTAO_FOI_ENCONTRADA_NA_SECAO_X, secao.SecaoId));
         }
 
-        private async Task Validar(Dominio.EncaminhamentoNAAPA encaminhamentoNAAPA, EncaminhamentoNAAPASecaoDto encaminhamentoNAAPASecaoDto)
+        private async Task Validar(Dominio.EncaminhamentoNAAPA encaminhamentoNAAPA, AtendimentoNAAPASecaoDto encaminhamentoNAAPASecaoDto)
         {
             ValidarEncaminhamento(encaminhamentoNAAPA);
             await ValidarCamposObrigatorios(encaminhamentoNAAPASecaoDto);
@@ -150,7 +150,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
                 throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.SECAO_NAO_VALIDA_ITINERANCIA);
         }
 
-        private async Task ValidarCamposObrigatorios(EncaminhamentoNAAPASecaoDto encaminhamentoNAAPASecaoDto)
+        private async Task ValidarCamposObrigatorios(AtendimentoNAAPASecaoDto encaminhamentoNAAPASecaoDto)
         {
             var secao = await mediator.Send(new ObterSecaoQuestionarioEncaminhamentoNAAPAPorIdQuery(encaminhamentoNAAPASecaoDto.SecaoId));
             ValidarSecaoItinerancia(secao);

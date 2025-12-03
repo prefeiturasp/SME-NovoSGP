@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterEncaminhamentosNAAPAComInatividadeDeAtendimentoQueryHandler : IRequestHandler<ObterEncaminhamentosNAAPAComInatividadeDeAtendimentoQuery, IEnumerable<EncaminhamentoNAAPAInformacoesNotificacaoInatividadeAtendimentoDto>>
+    public class ObterEncaminhamentosNAAPAComInatividadeDeAtendimentoQueryHandler : IRequestHandler<ObterEncaminhamentosNAAPAComInatividadeDeAtendimentoQuery, IEnumerable<AtendimentoNAAPAInformacoesNotificacaoInatividadeAtendimentoDto>>
     {
         private readonly IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA;
         public ObterEncaminhamentosNAAPAComInatividadeDeAtendimentoQueryHandler(IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA)
@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioEncaminhamentoNAAPA = repositorioEncaminhamentoNAAPA ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoNAAPA));
         }
 
-        public Task<IEnumerable<EncaminhamentoNAAPAInformacoesNotificacaoInatividadeAtendimentoDto>> Handle(ObterEncaminhamentosNAAPAComInatividadeDeAtendimentoQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<AtendimentoNAAPAInformacoesNotificacaoInatividadeAtendimentoDto>> Handle(ObterEncaminhamentosNAAPAComInatividadeDeAtendimentoQuery request, CancellationToken cancellationToken)
         {
             return this.repositorioEncaminhamentoNAAPA.ObterInformacoesDeNotificacaoDeInatividadeDeAtendimento(request.UeId);
         }

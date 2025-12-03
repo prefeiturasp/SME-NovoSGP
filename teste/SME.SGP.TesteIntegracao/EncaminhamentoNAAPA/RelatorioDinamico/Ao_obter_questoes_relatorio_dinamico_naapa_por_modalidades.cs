@@ -33,7 +33,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
             };
             await CriarDadosBase(filtroNAAPA);
 
-            var useCase = ServiceProvider.GetService<IObterQuestoesRelatorioDinamicoEncaminhamentoNAAPAPorModalidadesUseCase>();
+            var useCase = ServiceProvider.GetService<IObterQuestoesRelatorioDinamicoAtendimentoNAAPAPorModalidadesUseCase>();
             var retorno = await useCase.Executar(new int[] { (int)Modalidade.Fundamental });
             retorno.PossuiRegistros().ShouldBeTrue();
             retorno.Count().ShouldBe(3); //Seção Questionário Geral e específico modalidade (todos exceto infantil)
@@ -61,7 +61,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
             };
             await CriarDadosBase(filtroNAAPA);
 
-            var useCase = ServiceProvider.GetService<IObterQuestoesRelatorioDinamicoEncaminhamentoNAAPAPorModalidadesUseCase>();
+            var useCase = ServiceProvider.GetService<IObterQuestoesRelatorioDinamicoAtendimentoNAAPAPorModalidadesUseCase>();
             var retorno = await useCase.Executar(null);
             retorno.PossuiRegistros().ShouldBeTrue();
             retorno.Count().ShouldBe(4); //Seção Questionário Geral e específicos modalidades (somenter infantil e todos exceto infantil)

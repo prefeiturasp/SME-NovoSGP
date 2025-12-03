@@ -53,7 +53,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 UsuarioId= 1
             });
 
-            var useCase = ServiceProvider.GetService<IObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAUseCase>();
+            var useCase = ServiceProvider.GetService<IObterHistoricosDeAlteracoesApresentacaoAtendimentoNAAPAUseCase>();
             var historicos = await useCase.Executar(1);
 
             historicos.ShouldNotBeNull();
@@ -96,7 +96,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 UsuarioId = 1
             });
 
-            var useCase = ServiceProvider.GetService<IObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAUseCase>();
+            var useCase = ServiceProvider.GetService<IObterHistoricosDeAlteracoesApresentacaoAtendimentoNAAPAUseCase>();
             var historicos = await useCase.Executar(1);
 
             historicos.ShouldNotBeNull();
@@ -136,7 +136,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 UsuarioId = 1
             });
 
-            var useCase = ServiceProvider.GetService<IObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAUseCase>();
+            var useCase = ServiceProvider.GetService<IObterHistoricosDeAlteracoesApresentacaoAtendimentoNAAPAUseCase>();
             var historicos = await useCase.Executar(1);
 
             historicos.ShouldNotBeNull();
@@ -180,7 +180,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 UsuarioId = 1
             });
 
-            var useCase = ServiceProvider.GetService<IObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAUseCase>();
+            var useCase = ServiceProvider.GetService<IObterHistoricosDeAlteracoesApresentacaoAtendimentoNAAPAUseCase>();
             var historicos = await useCase.Executar(1);
 
             historicos.ShouldNotBeNull();

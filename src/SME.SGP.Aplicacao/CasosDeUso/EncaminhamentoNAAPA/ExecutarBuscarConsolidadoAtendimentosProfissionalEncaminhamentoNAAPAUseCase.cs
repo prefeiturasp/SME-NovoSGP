@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExecutarBuscarConsolidadoAtendimentosProfissionalEncaminhamentoNAAPAUseCase : AbstractUseCase, IExecutarBuscarConsolidadoAtendimentosProfissionalEncaminhamentoNAAPAUseCase
+    public class ExecutarBuscarConsolidadoAtendimentosProfissionalEncaminhamentoNAAPAUseCase : AbstractUseCase, IExecutarBuscarConsolidadoAtendimentosProfissionalAtendimentoNAAPAUseCase
     {
         public ExecutarBuscarConsolidadoAtendimentosProfissionalEncaminhamentoNAAPAUseCase(IMediator mediator) : base(mediator)
         {
@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            var filtro = param.ObterObjetoMensagem<FiltroBuscarAtendimentosProfissionalConsolidadoEncaminhamentoNAAPADto>();
+            var filtro = param.ObterObjetoMensagem<FiltroBuscarAtendimentosProfissionalConsolidadoAtendimentoNAAPADto>();
             var atendimentosProfissional = await mediator.Send(new ObterAtendimentosProfissionalEncaminhamentosNAAPAConsolidadoCargaQuery(filtro.UeId, filtro.Mes, filtro.AnoLetivo));
             foreach (var profissional in atendimentosProfissional)
             {
@@ -37,10 +37,10 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
-        private async Task PublicarExclusaoConsolidacao(long ueId, int mes, int anoLetivo, IEnumerable<AtendimentosProfissionalEncaminhamentoNAAPAConsolidadoDto> atendimentosProfissionalConsolidacao)
+        private async Task PublicarExclusaoConsolidacao(long ueId, int mes, int anoLetivo, IEnumerable<AtendimentosProfissionalAtendimentoNAAPAConsolidadoDto> atendimentosProfissionalConsolidacao)
         {
             var profissionaisConsolidacao = atendimentosProfissionalConsolidacao.Select(p => p.RfProfissional).Distinct();
-            var param = new FiltroExcluirAtendimentosProfissionalConsolidadoEncaminhamentoNAAPADto(ueId, mes, anoLetivo, profissionaisConsolidacao.ToArray());
+            var param = new FiltroExcluirAtendimentosProfissionalConsolidadoAtendimentoNAAPADto(ueId, mes, anoLetivo, profissionaisConsolidacao.ToArray());
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpNAAPA.ExecutarExcluirConsolidadoAtendimentoProfissionalEncaminhamentoNAAPA, param, Guid.NewGuid()));
         }
     }

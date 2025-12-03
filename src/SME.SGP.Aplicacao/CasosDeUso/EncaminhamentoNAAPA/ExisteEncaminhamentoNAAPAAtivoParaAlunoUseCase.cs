@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase : AbstractUseCase, IExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase
+    public class ExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase : AbstractUseCase, IExisteAtendimentoNAAPAAtivoParaAlunoUseCase
     {
         public ExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase(IMediator mediator) : base(mediator)
         {

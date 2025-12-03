@@ -58,7 +58,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
             await GerarDadosEncaminhamentoNAAPA();
 
             var useCase = ObterServicoNotificarInatividadeDoAtendimentoNAAPAInformacaoUseCase();
-            var dto = new EncaminhamentoNAAPAInformacoesNotificacaoInatividadeAtendimentoDto()
+            var dto = new AtendimentoNAAPAInformacoesNotificacaoInatividadeAtendimentoDto()
             {
                 AlunoNome = ALUNO_NOME_1,
                 AlunoCodigo = ALUNO_CODIGO_1,

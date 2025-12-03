@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
         {
             var respostasEncaminhamento = request.EncaminhamentoId.HasValue ?
                 await repositorioQuestaoEncaminhamento.ObterRespostasEncaminhamento(request.EncaminhamentoId.Value) :
-                Enumerable.Empty<RespostaQuestaoEncaminhamentoNAAPADto>();
+                Enumerable.Empty<RespostaQuestaoAtendimentoNAAPADto>();
 
             var questoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(request.QuestionarioId , questaoId =>
                 respostasEncaminhamento.Where(c => c.QuestaoId == questaoId)
@@ -90,7 +90,7 @@ namespace SME.SGP.Aplicacao
                 TipoParametroSistema.PercentualFrequenciaCritico;
         }
 
-        QuestaoDto ObterQuestao(long questaoId, IEnumerable<Questao> dadosQuestionario, IEnumerable<RespostaQuestaoEncaminhamentoNAAPADto> respostasEncaminhamento)
+        QuestaoDto ObterQuestao(long questaoId, IEnumerable<Questao> dadosQuestionario, IEnumerable<RespostaQuestaoAtendimentoNAAPADto> respostasEncaminhamento)
         {
             var questao = dadosQuestionario.FirstOrDefault(c => c.Id == questaoId);
 
@@ -130,7 +130,7 @@ namespace SME.SGP.Aplicacao
 
         }
 
-        private IEnumerable<QuestaoDto> ObterQuestoes(List<OpcaoQuestaoComplementar> questoesComplementares, IEnumerable<Questao> dadosQuestionario, IEnumerable<RespostaQuestaoEncaminhamentoNAAPADto> respostasEncaminhamento)
+        private IEnumerable<QuestaoDto> ObterQuestoes(List<OpcaoQuestaoComplementar> questoesComplementares, IEnumerable<Questao> dadosQuestionario, IEnumerable<RespostaQuestaoAtendimentoNAAPADto> respostasEncaminhamento)
         {
             foreach (var questaoComplementar in questoesComplementares)
                 yield return ObterQuestao(questaoComplementar.QuestaoComplementarId, dadosQuestionario, respostasEncaminhamento);

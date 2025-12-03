@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterEncaminhamentoNAAPAUseCase : IObterEncaminhamentoNAAPAUseCase
+    public class ObterEncaminhamentoNAAPAUseCase : IObterAtendimentoNAAPAUseCase
     {
         private readonly IMediator mediator;
 

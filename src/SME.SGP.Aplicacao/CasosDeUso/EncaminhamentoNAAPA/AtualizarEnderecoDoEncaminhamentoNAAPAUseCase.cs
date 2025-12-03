@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AtualizarEnderecoDoEncaminhamentoNAAPAUseCase : AbstractUseCase, IAtualizarEnderecoDoEncaminhamentoNAAPAUseCase
+    public class AtualizarEnderecoDoEncaminhamentoNAAPAUseCase : AbstractUseCase, IAtualizarEnderecoDoAtendimentoNAAPAUseCase
     {
         public AtualizarEnderecoDoEncaminhamentoNAAPAUseCase(IMediator mediator) : base(mediator)
         {
@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
             var respostaEnderecoResidencialNAAPA = questaoEnderecoResidencialNAAPA.Respostas?.FirstOrDefault();
             if (respostaEnderecoResidencialNAAPA.NaoEhNulo())
             {
-                var enderecoResidencialNAAPA = JsonConvert.DeserializeObject<List<RespostaEnderecoResidencialEncaminhamentoNAAPADto>>(respostaEnderecoResidencialNAAPA?.Texto);
+                var enderecoResidencialNAAPA = JsonConvert.DeserializeObject<List<RespostaEnderecoResidencialAtendimentoNAAPADto>>(respostaEnderecoResidencialNAAPA?.Texto);
                 if (enderecoResidencialAluno.EhIgual(enderecoResidencialNAAPA?.FirstOrDefault())) return false;
 
                 var respostaEnderecoAtualizado = MapearDTO(questaoEnderecoResidencialNAAPA.QuestaoId, respostaEnderecoResidencialNAAPA?.Id ?? 0, enderecoResidencialAluno);
@@ -41,9 +41,9 @@ namespace SME.SGP.Aplicacao
                                                                                                       questaoEnderecoResidencialNAAPA.QuestaoId, TipoQuestao.Endereco))) != 0;  
         }
 
-        private RespostaEnderecoResidencialEncaminhamentoNAAPADto MapearDTO(EnderecoRespostaDto? endereco)
+        private RespostaEnderecoResidencialAtendimentoNAAPADto MapearDTO(EnderecoRespostaDto? endereco)
         {
-            return new RespostaEnderecoResidencialEncaminhamentoNAAPADto
+            return new RespostaEnderecoResidencialAtendimentoNAAPADto
             {
                 bairro = endereco?.Bairro,
                 complemento = endereco?.Complemento,
@@ -53,9 +53,9 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private EncaminhamentoNAAPASecaoQuestaoDto MapearDTO(long questaoId, long respostaId, RespostaEnderecoResidencialEncaminhamentoNAAPADto novoEnderecoResidencialAluno)
+        private AtendimentoNAAPASecaoQuestaoDto MapearDTO(long questaoId, long respostaId, RespostaEnderecoResidencialAtendimentoNAAPADto novoEnderecoResidencialAluno)
         {
-            return new EncaminhamentoNAAPASecaoQuestaoDto()
+            return new AtendimentoNAAPASecaoQuestaoDto()
             {
                 QuestaoId = questaoId,
                 Resposta = JsonConvert.SerializeObject(new[] { novoEnderecoResidencialAluno }),

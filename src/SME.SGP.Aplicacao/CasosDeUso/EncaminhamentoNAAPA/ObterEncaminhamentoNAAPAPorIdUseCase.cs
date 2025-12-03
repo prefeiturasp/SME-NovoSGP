@@ -12,7 +12,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterEncaminhamentoNAAPAPorIdUseCase : IObterEncaminhamentoNAAPAPorIdUseCase
+    public class ObterEncaminhamentoNAAPAPorIdUseCase : IObterAtendimentoNAAPAPorIdUseCase
     {
         private readonly IMediator mediator;
 

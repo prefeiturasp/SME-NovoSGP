@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
 {
-    public class ObterOpcoesRespostaPortaEntradaEncaminhamentosNAAPAUseCase : IObterOpcoesRespostaPortaEntradaEncaminhamentosNAAPAUseCase
+    public class ObterOpcoesRespostaPortaEntradaEncaminhamentosNAAPAUseCase : IObterOpcoesRespostaPortaEntradaAtendimentosNAAPAUseCase
     {
         private readonly IMediator mediator;
         private const string NOME_COMPONENTE_QUESTAO_PORTA_ENTRADA = "PORTA_ENTRADA";

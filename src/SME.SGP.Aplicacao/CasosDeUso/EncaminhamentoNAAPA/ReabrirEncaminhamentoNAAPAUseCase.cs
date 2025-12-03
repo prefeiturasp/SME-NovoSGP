@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ReabrirEncaminhamentoNAAPAUseCase : IReabrirEncaminhamentoNAAPAUseCase
+    public class ReabrirEncaminhamentoNAAPAUseCase : IReabrirAtendimentoNAAPAUseCase
     {
         private readonly IMediator mediator;
 

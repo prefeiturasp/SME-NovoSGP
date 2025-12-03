@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterObservacoesDeEncaminhamentoNAAPAUseCase : AbstractUseCase, IObterObservacoesDeEncaminhamentoNAAPAUseCase
+    public class ObterObservacoesDeEncaminhamentoNAAPAUseCase : AbstractUseCase, IObterObservacoesDeAtendimentoNAAPAUseCase
     {
 
         public ObterObservacoesDeEncaminhamentoNAAPAUseCase(IMediator mediator) : base(mediator)

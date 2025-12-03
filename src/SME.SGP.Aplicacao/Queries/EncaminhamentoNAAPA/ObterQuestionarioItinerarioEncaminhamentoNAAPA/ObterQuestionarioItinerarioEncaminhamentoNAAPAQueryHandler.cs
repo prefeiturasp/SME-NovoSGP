@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterQuestionarioItinerarioEncaminhamentoNAAPAQueryHandler : IRequestHandler<ObterQuestionarioItinerarioEncaminhamentoNAAPAQuery, EncaminhamentoNAAPASecaoItineranciaQuestoesDto>
+    public class ObterQuestionarioItinerarioEncaminhamentoNAAPAQueryHandler : IRequestHandler<ObterQuestionarioItinerarioEncaminhamentoNAAPAQuery, AtendimentoNAAPASecaoItineranciaQuestoesDto>
     {
         private readonly IMediator mediator;
         private readonly IRepositorioQuestaoEncaminhamentoNAAPA repositorioQuestaoEncaminhamento;
@@ -26,12 +26,12 @@ namespace SME.SGP.Aplicacao
             this.repositorioEncaminhamentoNAAPASecao = repositorioEncaminhamentoNAAPASecao ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoNAAPASecao));
         }
 
-        public async Task<EncaminhamentoNAAPASecaoItineranciaQuestoesDto> Handle(ObterQuestionarioItinerarioEncaminhamentoNAAPAQuery request, CancellationToken cancellationToken)
+        public async Task<AtendimentoNAAPASecaoItineranciaQuestoesDto> Handle(ObterQuestionarioItinerarioEncaminhamentoNAAPAQuery request, CancellationToken cancellationToken)
         {
-            var encaminhamento = new EncaminhamentoNAAPASecaoItineranciaQuestoesDto();
+            var encaminhamento = new AtendimentoNAAPASecaoItineranciaQuestoesDto();
             var respostasEncaminhamento = request.EncaminhamentoSecaoId.HasValue ?
                                         await repositorioQuestaoEncaminhamento.ObterRespostasItinerarioEncaminhamento(request.EncaminhamentoSecaoId.Value) :
-                                        Enumerable.Empty<RespostaQuestaoEncaminhamentoNAAPADto>();
+                                        Enumerable.Empty<RespostaQuestaoAtendimentoNAAPADto>();
 
             if (respostasEncaminhamento.Any())
                 encaminhamento.Auditoria = await repositorioEncaminhamentoNAAPASecao.ObterAuditoriaEncaminhamentoNaapaSecao(request.EncaminhamentoSecaoId.Value);

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AtualizarInformacoesDoEncaminhamentoNAAPAUseCase : AbstractUseCase, IAtualizarInformacoesDoEncaminhamentoNAAPAUseCase
+    public class AtualizarInformacoesDoEncaminhamentoNAAPAUseCase : AbstractUseCase, IAtualizarInformacoesDoAtendimentoNAAPAUseCase
     {
         public AtualizarInformacoesDoEncaminhamentoNAAPAUseCase(IMediator mediator) : base(mediator)
         {

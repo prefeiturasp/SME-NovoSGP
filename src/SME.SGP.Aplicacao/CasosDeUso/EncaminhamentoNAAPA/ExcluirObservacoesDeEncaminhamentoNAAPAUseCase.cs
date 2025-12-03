@@ -4,7 +4,7 @@ using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirObservacoesDeEncaminhamentoNAAPAUseCase : IExcluirObservacoesDeEncaminhamentoNAAPAUseCase
+    public class ExcluirObservacoesDeEncaminhamentoNAAPAUseCase : IExcluirObservacoesDeAtendimentoNAAPAUseCase
     {
         private readonly IMediator mediator;
 

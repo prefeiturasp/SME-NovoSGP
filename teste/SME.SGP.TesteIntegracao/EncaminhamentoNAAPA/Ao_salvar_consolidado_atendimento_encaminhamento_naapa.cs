@@ -57,8 +57,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             await CriarRespostasItineranciaEncaminhamentoNAAPA(DateTimeExtension.HorarioBrasilia().Date, 9);
 
 
-            var useCase = ServiceProvider.GetService<IExecutarBuscarConsolidadoAtendimentosProfissionalEncaminhamentoNAAPAUseCase>();
-            var filtro = new FiltroBuscarAtendimentosProfissionalConsolidadoEncaminhamentoNAAPADto(1, DateTimeExtension.HorarioBrasilia().Month, DateTimeExtension.HorarioBrasilia().Year);
+            var useCase = ServiceProvider.GetService<IExecutarBuscarConsolidadoAtendimentosProfissionalAtendimentoNAAPAUseCase>();
+            var filtro = new FiltroBuscarAtendimentosProfissionalConsolidadoAtendimentoNAAPADto(1, DateTimeExtension.HorarioBrasilia().Month, DateTimeExtension.HorarioBrasilia().Year);
             var mensagem = new MensagemRabbit(JsonConvert.SerializeObject(filtro, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
             var retorno = await useCase.Executar(mensagem);
             retorno.ShouldBeTrue();

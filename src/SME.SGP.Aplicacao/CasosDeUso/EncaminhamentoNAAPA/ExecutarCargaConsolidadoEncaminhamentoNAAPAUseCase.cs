@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExecutarCargaConsolidadoEncaminhamentoNAAPAUseCase : AbstractUseCase, IExecutarCargaConsolidadoEncaminhamentoNAAPAUseCase
+    public class ExecutarCargaConsolidadoEncaminhamentoNAAPAUseCase : AbstractUseCase, IExecutarCargaConsolidadoAtendimentoNAAPAUseCase
     {
         public ExecutarCargaConsolidadoEncaminhamentoNAAPAUseCase(IMediator mediator) : base(mediator)
         {
@@ -27,9 +27,9 @@ namespace SME.SGP.Aplicacao
             foreach (var ueId in listaUes)
             {
                 if (ConsolidarEncaminhamento?.Ativo == true)
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpNAAPA.ExecutarBuscarUesConsolidadoEncaminhamentoNAAPA, new FiltroBuscarUesConsolidadoEncaminhamentoNAAPADto(ueId, anoLetivo), Guid.NewGuid()));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpNAAPA.ExecutarBuscarUesConsolidadoEncaminhamentoNAAPA, new FiltroBuscarUesConsolidadoAtendimentoNAAPADto(ueId, anoLetivo), Guid.NewGuid()));
                 if (ConsolidarAtendimento?.Ativo == true)
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpNAAPA.ExecutarBuscarAtendimentosProfissionalConsolidadoEncaminhamentoNAAPA, new FiltroBuscarAtendimentosProfissionalConsolidadoEncaminhamentoNAAPADto(ueId, DateTimeExtension.HorarioBrasilia().Month, DateTimeExtension.HorarioBrasilia().Year), Guid.NewGuid()));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpNAAPA.ExecutarBuscarAtendimentosProfissionalConsolidadoEncaminhamentoNAAPA, new FiltroBuscarAtendimentosProfissionalConsolidadoAtendimentoNAAPADto(ueId, DateTimeExtension.HorarioBrasilia().Month, DateTimeExtension.HorarioBrasilia().Year), Guid.NewGuid()));
             }
 
             await AtualizarDataExecucao(ConsolidarEncaminhamento);

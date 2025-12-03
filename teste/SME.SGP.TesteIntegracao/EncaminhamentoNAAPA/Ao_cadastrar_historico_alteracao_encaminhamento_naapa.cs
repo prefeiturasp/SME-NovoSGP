@@ -43,20 +43,20 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             
             await GerarDadosEncaminhamentoNAAPA(dataQueixa);
 
-            var secaoDto = new EncaminhamentoNAAPASecaoDto()
+            var secaoDto = new AtendimentoNAAPASecaoDto()
             {
                 SecaoId = 1,
                 Concluido = false,
-                Questoes = new List<EncaminhamentoNAAPASecaoQuestaoDto>()
+                Questoes = new List<AtendimentoNAAPASecaoQuestaoDto>()
                 {
-                    new EncaminhamentoNAAPASecaoQuestaoDto()
+                    new AtendimentoNAAPASecaoQuestaoDto()
                     {
                         QuestaoId= 1,
                         RespostaEncaminhamentoId=1,
                         Resposta = dataQueixa.AddDays(10).ToString("dd/MM/yyyy"),
                         TipoQuestao = TipoQuestao.Data
                     },
-                    new EncaminhamentoNAAPASecaoQuestaoDto()
+                    new AtendimentoNAAPASecaoQuestaoDto()
                     {
                         QuestaoId = 2,
                         RespostaEncaminhamentoId= 2,
