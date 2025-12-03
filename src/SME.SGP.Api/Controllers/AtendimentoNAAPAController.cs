@@ -24,7 +24,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<ResultadoAtendimentoNAAPADto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_I, Policy = "Bearer")]
-        public async Task<IActionResult> RegistrarEncaminhamento([FromBody] AtendimentoNAAPADto atendimentoNAAPADto, [FromServices] IRegistrarAtendimentoNAAPAUseCase registrarAtendimentoNAAPAUseCase)
+        public async Task<IActionResult> RegistrarAtendimento([FromBody] AtendimentoNAAPADto atendimentoNAAPADto, [FromServices] IRegistrarAtendimentoNAAPAUseCase registrarAtendimentoNAAPAUseCase)
         {
             return Ok(await registrarAtendimentoNAAPAUseCase.Executar(atendimentoNAAPADto));
         }
@@ -33,7 +33,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(PaginacaoResultadoDto<AtendimentoNAAPAResumoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterEncaminhamentosNAAPA([FromQuery] FiltroAtendimentoNAAPADto filtro,
+        public async Task<IActionResult> ObterAtendimentosNAAPA([FromQuery] FiltroAtendimentoNAAPADto filtro,
             [FromServices] IObterAtendimentoNAAPAUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
@@ -43,7 +43,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<SecaoQuestionarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterSecoesDeEncaminhamentoNAAPA([FromQuery] FiltroSecoesAtendimentoNAAPA filtro,
+        public async Task<IActionResult> ObterSecoesDeAtendimentoNAAPA([FromQuery] FiltroSecoesAtendimentoNAAPA filtro,
             [FromServices] IObterSecoesAtendimentoSecaoNAAPAUseCase obterSecoesDeAtendimentoNAAPAUseCase)
         {
             return Ok(await obterSecoesDeAtendimentoNAAPAUseCase.Executar(filtro));
@@ -53,7 +53,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(PaginacaoResultadoDto<SecaoQuestionarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterSecoesItineranciaDeEncaminhamentoNAAPA(long encaminhamentoNAAPAId,
+        public async Task<IActionResult> ObterSecoesItineranciaDeAtendimentoNAAPA(long encaminhamentoNAAPAId,
             [FromServices] IObterSecoesItineranciaDeAtendimentoNAAPAUseCase obterSecoesItineranciaDeAtendimentoNAAPAUseCase)
         {
             return Ok(await obterSecoesItineranciaDeAtendimentoNAAPAUseCase.Executar(encaminhamentoNAAPAId));
@@ -115,7 +115,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(AtendimentoNAAPADto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_E, Policy = "Bearer")]
-        public async Task<IActionResult> ExcluirEncaminhamento(long encaminhamentoNAAPAId, [FromServices] IExcluirAtendimentoNAAPAUseCase useCase)
+        public async Task<IActionResult> ExcluirAtendimento(long encaminhamentoNAAPAId, [FromServices] IExcluirAtendimentoNAAPAUseCase useCase)
         {
             return Ok(await useCase.Executar(encaminhamentoNAAPAId));
         }
@@ -124,7 +124,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(AtendimentoNAAPARespostaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterEncaminhamento(long encaminhamentoId, [FromServices] IObterAtendimentoNAAPAPorIdUseCase useCase)
+        public async Task<IActionResult> ObterAtendimento(long encaminhamentoId, [FromServices] IObterAtendimentoNAAPAPorIdUseCase useCase)
         {
             return Ok(await useCase.Executar(encaminhamentoId));
         }
@@ -151,7 +151,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_I, Policy = "Bearer")]
-        public async Task<IActionResult> RegistrarEncaminhamentoItinerario([FromBody] AtendimentoNAAPAItineranciaDto atendimentoNAAPAItineranciaDto, [FromServices] IRegistrarAtendimentoItinerarioNAAPAUseCase registrarAtendimentoItinerarioNAAPAUseCase)
+        public async Task<IActionResult> RegistrarAtendimentoItinerario([FromBody] AtendimentoNAAPAItineranciaDto atendimentoNAAPAItineranciaDto, [FromServices] IRegistrarAtendimentoItinerarioNAAPAUseCase registrarAtendimentoItinerarioNAAPAUseCase)
         {
             return Ok(await registrarAtendimentoItinerarioNAAPAUseCase.Executar(atendimentoNAAPAItineranciaDto));
         }
@@ -169,7 +169,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_A, Policy = "Bearer")]
-        public async Task<IActionResult> EncerrarEncaminhamento([FromBody] EncerramentoAtendimentoDto parametros, [FromServices] IEncerrarAtendimentoNAAPAUseCase useCase)
+        public async Task<IActionResult> EncerrarAtendimento([FromBody] EncerramentoAtendimentoDto parametros, [FromServices] IEncerrarAtendimentoNAAPAUseCase useCase)
         {
             return Ok(await useCase.Executar(parametros.EncaminhamentoId, parametros.MotivoEncerramento));
         }
@@ -178,7 +178,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_A, Policy = "Bearer")]
-        public async Task<IActionResult> ReabrirEncaminhamento(long encaminhamentoNAAPAId, [FromServices] IReabrirAtendimentoNAAPAUseCase useCase)
+        public async Task<IActionResult> ReabrirAtendimento(long encaminhamentoNAAPAId, [FromServices] IReabrirAtendimentoNAAPAUseCase useCase)
         {
             return Ok(await useCase.Executar(encaminhamentoNAAPAId));
         }
@@ -244,7 +244,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ExisteEncaminhamentoAtivoParaAluno(string codigoAluno, [FromServices] IExisteAtendimentoNAAPAAtivoParaAlunoUseCase useCase)
+        public async Task<IActionResult> ExisteAtendimentoAtivoParaAluno(string codigoAluno, [FromServices] IExisteAtendimentoNAAPAAtivoParaAlunoUseCase useCase)
         {
             return Ok(await useCase.Executar(codigoAluno));
         }
