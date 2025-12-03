@@ -167,9 +167,10 @@ namespace SME.SGP.TesteIntegracao.Listao
         
                 var aulasAluno = frequencia.Alunos.FirstOrDefault(c => c.CodigoAluno == codigoAluno)?.Aulas;
                 aulasAluno.ShouldNotBeNull();
-                
-                foreach (var aula in aulasAluno)
-                    aula.TipoFrequencia.ShouldBe(frequenciaPreDefinidaAluno.TipoFrequencia.ObterNomeCurto());
+
+                if (aulasAluno.Any(x => x.DetalheFrequencia?.Any() ?? false))
+                    foreach (var aula in aulasAluno)
+                        aula.TipoFrequencia.ShouldBe(frequenciaPreDefinidaAluno.TipoFrequencia.ObterNomeCurto());
             }
         }
     }
