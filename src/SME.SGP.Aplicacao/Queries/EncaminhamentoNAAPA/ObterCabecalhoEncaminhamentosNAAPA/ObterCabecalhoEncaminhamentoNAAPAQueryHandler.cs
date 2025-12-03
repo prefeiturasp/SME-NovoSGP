@@ -15,10 +15,10 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterCabecalhoEncaminhamentoNAAPAQueryHandler : IRequestHandler<ObterCabecalhoEncaminhamentoNAAPAQuery, EncaminhamentoNAAPA>
     {
-        public IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA { get; }
+        public IRepositorioAtendimentoNAAPA repositorioEncaminhamentoNAAPA { get; }
 
 
-        public ObterCabecalhoEncaminhamentoNAAPAQueryHandler(IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA) 
+        public ObterCabecalhoEncaminhamentoNAAPAQueryHandler(IRepositorioAtendimentoNAAPA repositorioEncaminhamentoNAAPA) 
         {
             this.repositorioEncaminhamentoNAAPA = repositorioEncaminhamentoNAAPA ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoNAAPA));
         }

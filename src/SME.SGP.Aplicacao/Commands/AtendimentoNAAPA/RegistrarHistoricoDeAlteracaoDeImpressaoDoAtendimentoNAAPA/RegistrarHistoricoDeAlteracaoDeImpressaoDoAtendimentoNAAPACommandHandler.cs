@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao
 {
     public class RegistrarHistoricoDeAlteracaoDeImpressaoDoAtendimentoNAAPACommandHandler : IRequestHandler<RegistrarHistoricoDeAlteracaoDeImpressaoDoAtendimentoNAAPACommand, bool>
     {
-        private readonly IRepositorioEncaminhamentoNAAPAHistoricoAlteracoes repositorioEncaminhamentoNAAPAHistoricoAlteracoes;
+        private readonly IRepositorioAtendimentoNAAPAHistoricoAlteracoes repositorioEncaminhamentoNAAPAHistoricoAlteracoes;
 
-        public RegistrarHistoricoDeAlteracaoDeImpressaoDoAtendimentoNAAPACommandHandler(IRepositorioEncaminhamentoNAAPAHistoricoAlteracoes repositorioEncaminhamentoNAAPAHistoricoAlteracoes)
+        public RegistrarHistoricoDeAlteracaoDeImpressaoDoAtendimentoNAAPACommandHandler(IRepositorioAtendimentoNAAPAHistoricoAlteracoes repositorioEncaminhamentoNAAPAHistoricoAlteracoes)
         {
             this.repositorioEncaminhamentoNAAPAHistoricoAlteracoes = repositorioEncaminhamentoNAAPAHistoricoAlteracoes ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoNAAPAHistoricoAlteracoes));
         }

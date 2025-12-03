@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao
 {
     public class AlterarAtendimentoNAAPASecaoCommandHandler : IRequestHandler<AlterarAtendimentoNAAPASecaoCommand, AuditoriaDto>
     {
-        private readonly IRepositorioEncaminhamentoNAAPASecao repositorioEncaminhamentoNAAPASecao;
+        private readonly IRepositorioAtendimentoNAAPASecao repositorioEncaminhamentoNAAPASecao;
 
-        public AlterarAtendimentoNAAPASecaoCommandHandler(IRepositorioEncaminhamentoNAAPASecao repositorioEncaminhamentoNAAPASecao)
+        public AlterarAtendimentoNAAPASecaoCommandHandler(IRepositorioAtendimentoNAAPASecao repositorioEncaminhamentoNAAPASecao)
         {
             this.repositorioEncaminhamentoNAAPASecao = repositorioEncaminhamentoNAAPASecao ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoNAAPASecao));
         }

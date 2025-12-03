@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
-    public interface IRepositorioEncaminhamentoNAAPAHistoricoAlteracoes
+    public interface IRepositorioAtendimentoNAAPAHistoricoAlteracoes
     {
         Task<long> SalvarAsync(EncaminhamentoNAAPAHistoricoAlteracoes entidade);
         Task<PaginacaoResultadoDto<AtendimentoNAAPAHistoricoDeAlteracaoDto>> ListarPaginadoPorEncaminhamentoNAAPAId(long encaminhamentoNAAPAId, Paginacao paginacao);

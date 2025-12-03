@@ -11,8 +11,8 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterEncaminhamentosNAAPAConsolidadoCargaQueryHandler : ConsultasBase, IRequestHandler<ObterEncaminhamentosNAAPAConsolidadoCargaQuery,IEnumerable<AtendimentosNAAPAConsolidadoDto>>
     {
-        public readonly IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA;
-        public ObterEncaminhamentosNAAPAConsolidadoCargaQueryHandler(IContextoAplicacao contextoAplicacao,IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA) : base(contextoAplicacao)
+        public readonly IRepositorioAtendimentoNAAPA repositorioEncaminhamentoNAAPA;
+        public ObterEncaminhamentosNAAPAConsolidadoCargaQueryHandler(IContextoAplicacao contextoAplicacao,IRepositorioAtendimentoNAAPA repositorioEncaminhamentoNAAPA) : base(contextoAplicacao)
         {
             this.repositorioEncaminhamentoNAAPA = repositorioEncaminhamentoNAAPA ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoNAAPA));
         }

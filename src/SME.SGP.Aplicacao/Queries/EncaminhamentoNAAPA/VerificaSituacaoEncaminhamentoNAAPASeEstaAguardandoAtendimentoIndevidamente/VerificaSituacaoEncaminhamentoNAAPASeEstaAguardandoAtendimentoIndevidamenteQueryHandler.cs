@@ -11,9 +11,9 @@ namespace SME.SGP.Aplicacao
 {
     public class VerificaSituacaoEncaminhamentoNAAPASeEstaAguardandoAtendimentoIndevidamenteQueryHandler : IRequestHandler<VerificaSituacaoEncaminhamentoNAAPASeEstaAguardandoAtendimentoIndevidamenteQuery, bool>
     {
-        public IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA { get; }
+        public IRepositorioAtendimentoNAAPA repositorioEncaminhamentoNAAPA { get; }
 
-        public VerificaSituacaoEncaminhamentoNAAPASeEstaAguardandoAtendimentoIndevidamenteQueryHandler(IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA)
+        public VerificaSituacaoEncaminhamentoNAAPASeEstaAguardandoAtendimentoIndevidamenteQueryHandler(IRepositorioAtendimentoNAAPA repositorioEncaminhamentoNAAPA)
         {
             this.repositorioEncaminhamentoNAAPA = repositorioEncaminhamentoNAAPA ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoNAAPA));
         }

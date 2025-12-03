@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterEncaminhamentoNAAPAPorIdESecaoQueryHandler : ConsultasBase, IRequestHandler<ObterEncaminhamentoNAAPAPorIdESecaoQuery, EncaminhamentoNAAPA>
     {
-        private readonly IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNaapa;
+        private readonly IRepositorioAtendimentoNAAPA repositorioEncaminhamentoNaapa;
 
-        public ObterEncaminhamentoNAAPAPorIdESecaoQueryHandler(IContextoAplicacao contextoAplicacao, IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNaapa) : base(contextoAplicacao)
+        public ObterEncaminhamentoNAAPAPorIdESecaoQueryHandler(IContextoAplicacao contextoAplicacao, IRepositorioAtendimentoNAAPA repositorioEncaminhamentoNaapa) : base(contextoAplicacao)
         {
             this.repositorioEncaminhamentoNaapa = repositorioEncaminhamentoNaapa ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoNaapa));
         }

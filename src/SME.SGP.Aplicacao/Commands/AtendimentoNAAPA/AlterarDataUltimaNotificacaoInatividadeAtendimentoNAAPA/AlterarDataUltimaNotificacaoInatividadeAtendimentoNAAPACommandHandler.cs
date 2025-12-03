@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao
     public class AlterarDataUltimaNotificacaoInatividadeAtendimentoNAAPACommandHandler : IRequestHandler<AlterarDataUltimaNotificacaoInatividadeAtendimentoNAAPACommand, bool>
     {
         public readonly IMediator mediator;
-        public readonly IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA;
+        public readonly IRepositorioAtendimentoNAAPA repositorioEncaminhamentoNAAPA;
 
-        public AlterarDataUltimaNotificacaoInatividadeAtendimentoNAAPACommandHandler(IMediator mediator, IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA)
+        public AlterarDataUltimaNotificacaoInatividadeAtendimentoNAAPACommandHandler(IMediator mediator, IRepositorioAtendimentoNAAPA repositorioEncaminhamentoNAAPA)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioEncaminhamentoNAAPA = repositorioEncaminhamentoNAAPA ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoNAAPA));

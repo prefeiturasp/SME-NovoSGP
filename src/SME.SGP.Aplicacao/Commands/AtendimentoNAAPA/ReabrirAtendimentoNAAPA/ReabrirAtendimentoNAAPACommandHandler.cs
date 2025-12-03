@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
     public class ReabrirAtendimentoNAAPACommandHandler : IRequestHandler<ReabrirAtendimentoNAAPACommand, SituacaoDto>
     {
         private readonly IUnitOfWork unitOfWork;
-        public ReabrirAtendimentoNAAPACommandHandler(IUnitOfWork unitOfWork, IMediator mediator, IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA)
+        public ReabrirAtendimentoNAAPACommandHandler(IUnitOfWork unitOfWork, IMediator mediator, IRepositorioAtendimentoNAAPA repositorioEncaminhamentoNAAPA)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioEncaminhamentoNAAPA = repositorioEncaminhamentoNAAPA ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoNAAPA));
@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public IMediator mediator { get; }
-        public IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA { get; }
+        public IRepositorioAtendimentoNAAPA repositorioEncaminhamentoNAAPA { get; }
 
         public async Task<SituacaoDto> Handle(ReabrirAtendimentoNAAPACommand request, CancellationToken cancellationToken)
         {

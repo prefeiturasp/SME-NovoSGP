@@ -9,11 +9,11 @@ namespace SME.SGP.Aplicacao
 {
     public class ExcluirSecaoAtendimentoNAAPACommandHandler : IRequestHandler<ExcluirSecaoAtendimentoNAAPACommand, bool>
     {
-        public IRepositorioEncaminhamentoNAAPASecao repositorioEncaminhamentoNAAPASecao { get; }
+        public IRepositorioAtendimentoNAAPASecao repositorioEncaminhamentoNAAPASecao { get; }
         public IMediator mediator { get; }
         public IUnitOfWork unitOfWork { get; }
 
-        public ExcluirSecaoAtendimentoNAAPACommandHandler(IMediator mediator, IRepositorioEncaminhamentoNAAPASecao repositorioEncaminhamentoNAAPASecao, IUnitOfWork unitOfWork)
+        public ExcluirSecaoAtendimentoNAAPACommandHandler(IMediator mediator, IRepositorioAtendimentoNAAPASecao repositorioEncaminhamentoNAAPASecao, IUnitOfWork unitOfWork)
         {
             this.repositorioEncaminhamentoNAAPASecao = repositorioEncaminhamentoNAAPASecao ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoNAAPASecao));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));

@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace SME.SGP.Dados.Repositorios
 {
     [ExcludeFromCodeCoverage]
-    public class RepositorioEncaminhamentoNAAPA : RepositorioBase<EncaminhamentoNAAPA>, IRepositorioEncaminhamentoNAAPA
+    public class RepositorioAtendimentoNAAPA : RepositorioBase<EncaminhamentoNAAPA>, IRepositorioAtendimentoNAAPA
     {
         public const int QUESTAO_DATA_QUEIXA_ORDEM = 0;
         public const int QUESTAO_PRIORIDADE_ORDEM = 1;
@@ -22,7 +22,7 @@ namespace SME.SGP.Dados.Repositorios
         public const int SECAO_INFORMACOES_ALUNO_ORDEM = 1;
         public const string QUESTAO_DATA_DO_ATENDIMENTO = "DATA_DO_ATENDIMENTO";
 
-        public RepositorioEncaminhamentoNAAPA(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
+        public RepositorioAtendimentoNAAPA(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

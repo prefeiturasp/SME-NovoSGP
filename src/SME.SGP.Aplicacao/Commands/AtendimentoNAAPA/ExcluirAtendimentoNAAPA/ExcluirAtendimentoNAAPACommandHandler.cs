@@ -14,10 +14,10 @@ namespace SME.SGP.Aplicacao.Commands
     public class ExcluirAtendimentoNAAPACommandHandler : IRequestHandler<ExcluirAtendimentoNAAPACommand, bool>
     {
         public IMediator mediator { get; }
-        public IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA { get; }
+        public IRepositorioAtendimentoNAAPA repositorioEncaminhamentoNAAPA { get; }
         public IUnitOfWork unitOfWork { get; }
 
-        public ExcluirAtendimentoNAAPACommandHandler(IMediator mediator, IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA, IUnitOfWork unitOfWork)
+        public ExcluirAtendimentoNAAPACommandHandler(IMediator mediator, IRepositorioAtendimentoNAAPA repositorioEncaminhamentoNAAPA, IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioEncaminhamentoNAAPA = repositorioEncaminhamentoNAAPA ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoNAAPA));

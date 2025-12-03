@@ -8,10 +8,10 @@ namespace SME.SGP.Aplicacao
 {
     public class AlterarSituacaoNAAPACommandHandler : IRequestHandler<AlterarSituacaoNAAPACommand, bool>
     {
-        private readonly IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA;
+        private readonly IRepositorioAtendimentoNAAPA repositorioEncaminhamentoNAAPA;
         private readonly IMediator mediator;
 
-        public AlterarSituacaoNAAPACommandHandler(IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA, IMediator mediator)
+        public AlterarSituacaoNAAPACommandHandler(IRepositorioAtendimentoNAAPA repositorioEncaminhamentoNAAPA, IMediator mediator)
         {
             this.repositorioEncaminhamentoNAAPA = repositorioEncaminhamentoNAAPA ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoNAAPA));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));

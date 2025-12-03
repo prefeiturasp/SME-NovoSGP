@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao
     public class RegistrarHistoricoDeAlteracaoAtendimentoNAAPACommandHandler : IRequestHandler<RegistrarHistoricoDeAlteracaoAtendimentoNAAPACommand, long>
     {
         private readonly IMediator mediator;
-        private readonly IRepositorioEncaminhamentoNAAPAHistoricoAlteracoes repositorioEncaminhamentoNAAPAHistoricoAlteracoes;
+        private readonly IRepositorioAtendimentoNAAPAHistoricoAlteracoes repositorioEncaminhamentoNAAPAHistoricoAlteracoes;
 
-        public RegistrarHistoricoDeAlteracaoAtendimentoNAAPACommandHandler(IMediator mediator, IRepositorioEncaminhamentoNAAPAHistoricoAlteracoes repositorioEncaminhamentoNAAPAHistoricoAlteracoes)
+        public RegistrarHistoricoDeAlteracaoAtendimentoNAAPACommandHandler(IMediator mediator, IRepositorioAtendimentoNAAPAHistoricoAlteracoes repositorioEncaminhamentoNAAPAHistoricoAlteracoes)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioEncaminhamentoNAAPAHistoricoAlteracoes = repositorioEncaminhamentoNAAPAHistoricoAlteracoes ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoNAAPAHistoricoAlteracoes)); 

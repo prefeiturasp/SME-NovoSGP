@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao.Queries
 {
     public class ObterSituacaoEncaminhamentoNAAPAQueryHandler : IRequestHandler<ObterSituacaoEncaminhamentoNAAPAQuery, SituacaoDto>
     {
-        public IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA { get; }
+        public IRepositorioAtendimentoNAAPA repositorioEncaminhamentoNAAPA { get; }
 
-        public ObterSituacaoEncaminhamentoNAAPAQueryHandler(IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA) 
+        public ObterSituacaoEncaminhamentoNAAPAQueryHandler(IRepositorioAtendimentoNAAPA repositorioEncaminhamentoNAAPA) 
         {
             this.repositorioEncaminhamentoNAAPA = repositorioEncaminhamentoNAAPA ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoNAAPA));
         }

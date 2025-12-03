@@ -16,10 +16,10 @@ namespace SME.SGP.Aplicacao
     public class ObterEncaminhamentosNAAPAQueryHandler : ConsultasBase, IRequestHandler<ObterEncaminhamentosNAAPAQuery, PaginacaoResultadoDto<AtendimentoNAAPAResumoDto>>
     {
         public IMediator mediator { get; }
-        public IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA { get; }
+        public IRepositorioAtendimentoNAAPA repositorioEncaminhamentoNAAPA { get; }
 
 
-        public ObterEncaminhamentosNAAPAQueryHandler(IContextoAplicacao contextoAplicacao, IMediator mediator, IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA) : base(contextoAplicacao)
+        public ObterEncaminhamentosNAAPAQueryHandler(IContextoAplicacao contextoAplicacao, IMediator mediator, IRepositorioAtendimentoNAAPA repositorioEncaminhamentoNAAPA) : base(contextoAplicacao)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioEncaminhamentoNAAPA = repositorioEncaminhamentoNAAPA ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoNAAPA));

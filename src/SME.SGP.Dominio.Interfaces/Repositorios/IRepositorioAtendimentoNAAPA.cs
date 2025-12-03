@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
-    public interface IRepositorioEncaminhamentoNAAPA : IRepositorioBase<EncaminhamentoNAAPA>
+    public interface IRepositorioAtendimentoNAAPA : IRepositorioBase<EncaminhamentoNAAPA>
     {
         Task<PaginacaoResultadoDto<AtendimentoNAAPAResumoDto>> ListarPaginado(int anoLetivo, long dreId, 
             string codigoUe, string codigoNomeAluno, DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, 

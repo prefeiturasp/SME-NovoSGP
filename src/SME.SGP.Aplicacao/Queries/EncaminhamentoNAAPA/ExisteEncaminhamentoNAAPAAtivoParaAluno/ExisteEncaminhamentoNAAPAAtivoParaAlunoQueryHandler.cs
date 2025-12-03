@@ -7,9 +7,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ExisteEncaminhamentoNAAPAAtivoParaAlunoQueryHandler : IRequestHandler<ExisteEncaminhamentoNAAPAAtivoParaAlunoQuery, bool>
     {
-        private readonly IRepositorioEncaminhamentoNAAPA repositorio;
+        private readonly IRepositorioAtendimentoNAAPA repositorio;
 
-        public ExisteEncaminhamentoNAAPAAtivoParaAlunoQueryHandler(IRepositorioEncaminhamentoNAAPA repositorio)
+        public ExisteEncaminhamentoNAAPAAtivoParaAlunoQueryHandler(IRepositorioAtendimentoNAAPA repositorio)
         {
             this.repositorio = repositorio ?? throw new System.ArgumentNullException(nameof(repositorio));
         }

@@ -7,9 +7,9 @@ namespace SME.SGP.Aplicacao.Queries
 {
     public class ExisteSecaoDeItineranciaNoEncaminhamentoNAAPAQueryHandler : IRequestHandler<ExisteSecaoDeItineranciaNoEncaminhamentoNAAPAQuery, bool>
     {
-        private readonly IRepositorioEncaminhamentoNAAPASecao repositorioEncaminhamentoNAAPASecao;
+        private readonly IRepositorioAtendimentoNAAPASecao repositorioEncaminhamentoNAAPASecao;
 
-        public ExisteSecaoDeItineranciaNoEncaminhamentoNAAPAQueryHandler(IRepositorioEncaminhamentoNAAPASecao repositorioEncaminhamentoNAAPASecao) 
+        public ExisteSecaoDeItineranciaNoEncaminhamentoNAAPAQueryHandler(IRepositorioAtendimentoNAAPASecao repositorioEncaminhamentoNAAPASecao) 
         {
             this.repositorioEncaminhamentoNAAPASecao = repositorioEncaminhamentoNAAPASecao ?? throw new System.ArgumentNullException(nameof(repositorioEncaminhamentoNAAPASecao));
         }

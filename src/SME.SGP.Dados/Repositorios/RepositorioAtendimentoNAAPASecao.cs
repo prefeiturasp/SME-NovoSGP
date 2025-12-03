@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioEncaminhamentoNAAPASecao : RepositorioBase<EncaminhamentoNAAPASecao>, IRepositorioEncaminhamentoNAAPASecao
+    public class RepositorioAtendimentoNAAPASecao : RepositorioBase<EncaminhamentoNAAPASecao>, IRepositorioAtendimentoNAAPASecao
     {
         private const int ORDEM_SECAO_ITINERARIO = 3;
-        public RepositorioEncaminhamentoNAAPASecao(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
+        public RepositorioAtendimentoNAAPASecao(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

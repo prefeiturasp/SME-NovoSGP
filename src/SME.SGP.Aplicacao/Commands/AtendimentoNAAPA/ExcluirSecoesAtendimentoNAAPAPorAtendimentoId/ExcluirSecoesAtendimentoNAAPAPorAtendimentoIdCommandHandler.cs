@@ -8,10 +8,10 @@ namespace SME.SGP.Aplicacao
 {
     public class ExcluirSecoesAtendimentoNAAPAPorAtendimentoIdCommandHandler : IRequestHandler<ExcluirSecoesAtendimentoNAAPAPorAtendimentoIdCommand, bool>
     {
-        public IRepositorioEncaminhamentoNAAPASecao repositorioEncaminhamentoNAAPASecao { get; }
+        public IRepositorioAtendimentoNAAPASecao repositorioEncaminhamentoNAAPASecao { get; }
         public IMediator mediator { get; }
 
-        public ExcluirSecoesAtendimentoNAAPAPorAtendimentoIdCommandHandler(IMediator mediator, IRepositorioEncaminhamentoNAAPASecao repositorioEncaminhamentoNAAPASecao)
+        public ExcluirSecoesAtendimentoNAAPAPorAtendimentoIdCommandHandler(IMediator mediator, IRepositorioAtendimentoNAAPASecao repositorioEncaminhamentoNAAPASecao)
         {
             this.repositorioEncaminhamentoNAAPASecao = repositorioEncaminhamentoNAAPASecao ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoNAAPASecao));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));

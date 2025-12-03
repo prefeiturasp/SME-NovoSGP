@@ -9,10 +9,10 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAQueryHandler : ConsultasBase, IRequestHandler<ObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAQuery, PaginacaoResultadoDto<AtendimentoNAAPAHistoricoDeAlteracaoDto>>
     {
-        private readonly IRepositorioEncaminhamentoNAAPAHistoricoAlteracoes repositorio;
+        private readonly IRepositorioAtendimentoNAAPAHistoricoAlteracoes repositorio;
         public ObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAQueryHandler(
                                                 IContextoAplicacao contextoAplicacao,
-                                                IRepositorioEncaminhamentoNAAPAHistoricoAlteracoes repositorio) : base(contextoAplicacao)
+                                                IRepositorioAtendimentoNAAPAHistoricoAlteracoes repositorio) : base(contextoAplicacao)
         {
             this.repositorio = repositorio ?? throw new System.ArgumentNullException(nameof(repositorio));
         }

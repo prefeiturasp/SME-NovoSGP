@@ -16,14 +16,14 @@ namespace SME.SGP.Aplicacao.Teste.Commands.EncaminhamentoNAAPA.ReabrirEncaminham
     {
         private readonly Mock<IUnitOfWork> unitOfWork;
         private readonly Mock<IMediator> mediator;
-        private readonly Mock<IRepositorioEncaminhamentoNAAPA> repositorioEncaminhamentoNAAPA;
+        private readonly Mock<IRepositorioAtendimentoNAAPA> repositorioEncaminhamentoNAAPA;
         private readonly ReabrirAtendimentoNAAPACommandHandler command;
 
         public ReabrirEncaminhamentoNAAPACommandHandlerTeste()
         {
             unitOfWork = new Mock<IUnitOfWork>();
             mediator = new Mock<IMediator>();
-            repositorioEncaminhamentoNAAPA = new Mock<IRepositorioEncaminhamentoNAAPA>();
+            repositorioEncaminhamentoNAAPA = new Mock<IRepositorioAtendimentoNAAPA>();
             command = new ReabrirAtendimentoNAAPACommandHandler(unitOfWork.Object, mediator.Object, repositorioEncaminhamentoNAAPA.Object);
         }
 
