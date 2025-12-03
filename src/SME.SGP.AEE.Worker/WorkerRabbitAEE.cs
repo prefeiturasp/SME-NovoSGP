@@ -31,8 +31,6 @@ namespace SME.SGP.AEE.Worker
             Comandos.Add(RotasRabbitSgpAEE.RotaEncerrarEncaminhamentoAEEAutomaticoSync, new ComandoRabbit("Iniciar processo de encerramento automático do Encaminhamento AEE", typeof(IEncerrarEncaminhamentoAEEAutomaticoSyncUseCase), true));
             Comandos.Add(RotasRabbitSgpAEE.RotaValidarEncerrarEncaminhamentoAEEAutomatico, new ComandoRabbit("Validar encerramento automático do Encaminhamento AEE", typeof(IValidarEncerrarEncaminhamentoAEEAutomaticoUseCase), true));
             Comandos.Add(RotasRabbitSgpAEE.RotaEncerrarEncaminhamentoAEEEncerrarAutomatico, new ComandoRabbit("Encerrar automaticamente Encaminhamento AEE", typeof(IEncerrarEncaminhamentoAEEAutomaticoUseCase), true));
-            Comandos.Add(RotasRabbitSgpAEE.EncerrarPlanoAEEEstudantesInativos, new ComandoRabbit("Excluir plano AEE estudantes inativos", typeof(IEncerrarPlanosAEEEstudantesInativosUseCase), true));
-            Comandos.Add(RotasRabbitSgpAEE.EncerrarPlanoAEEEstudantesInativosTratar, new ComandoRabbit("Excluir plano AEE estudantes inativos individualmente", typeof(IEncerrarPlanosAEEEstudantesInativosTratarUseCase), true));
             Comandos.Add(RotasRabbitSgpAEE.GerarPendenciaValidadePlanoAEE, new ComandoRabbit("Gerar Pendência de Validade do PlanoAEE", typeof(IGerarPendenciaValidadePlanoAEEUseCase), true));
             Comandos.Add(RotasRabbitSgpAEE.NotificarPlanoAEEExpirado, new ComandoRabbit("Excluir plano AEE estudantes inativos", typeof(INotificarPlanosAEEExpiradosUseCase), true));
             Comandos.Add(RotasRabbitSgpAEE.NotificarPlanoAEEEmAberto, new ComandoRabbit("Notificar Plano AEE que estejam abertos", typeof(INotificarPlanosAEEEmAbertoUseCase), true));

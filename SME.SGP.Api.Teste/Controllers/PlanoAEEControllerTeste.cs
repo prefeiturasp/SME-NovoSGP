@@ -1,4 +1,9 @@
-﻿using Bogus;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Bogus;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -8,16 +13,10 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
-using SME.SGP.Infra.Dtos.Questionario;
 using SME.SGP.Infra.Dtos.Relatorios;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.Api.Testes.Controllers
+namespace SME.SGP.Api.Teste.Controllers
 {
     public class PlanoAEEControllerTeste
     {
@@ -318,21 +317,6 @@ namespace SME.SGP.Api.Testes.Controllers
             var okResult = Assert.IsType<OkObjectResult>(resultado);
             var retorno = Assert.IsType<RetornoBaseDto>(okResult.Value);
             Assert.Equal("Plano devolvido com sucesso", retorno.Mensagens.FirstOrDefault());
-        }
-
-        [Fact(DisplayName = "Deve enviar comando para encerrar planos em lote")]
-        public async Task DeveEnviarComando_ParaEncerrarPlanosEmLote()
-        {
-            // Arrange
-            _mediatorMock.Setup(m => m.Send(It.Is<PublicarFilaSgpCommand>(c => c.Rota == RotasRabbitSgpAEE.EncerrarPlanoAEEEstudantesInativos), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(true);
-
-            // Act
-            var resultado = await _controller.EncerrarPlanos();
-
-            // Assert
-            _mediatorMock.Verify(m => m.Send(It.IsAny<PublicarFilaSgpCommand>(), It.IsAny<CancellationToken>()), Times.Once);
-            Assert.IsType<OkResult>(resultado);
         }
 
         [Fact(DisplayName = "Deve enviar comando para expirar planos")]
