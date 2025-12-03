@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit param)
         {
             var consolidado = param.ObterObjetoMensagem<ConsolidadoEncaminhamentoNAAPA>();
-            await mediator.Send(new SalvarConsolidadoEncaminhamentoNAAPACommand(consolidado));
+            await mediator.Send(new SalvarConsolidadoAtendimentoNAAPACommand(consolidado));
             return true;
         }
     }

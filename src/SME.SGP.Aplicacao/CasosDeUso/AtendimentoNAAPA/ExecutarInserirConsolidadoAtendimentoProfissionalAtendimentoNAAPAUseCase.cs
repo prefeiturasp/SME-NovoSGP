@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
                 consolidado.CriadoPor = profissionalAtendimentoConsolidado.CriadoPor;
                 consolidado.CriadoRF = profissionalAtendimentoConsolidado.CriadoRF;
             }
-            await mediator.Send(new SalvarConsolidadoAtendimentoProfissionalEncaminhamentoNAAPACommand(consolidado));
+            await mediator.Send(new SalvarConsolidadoAtendimentoProfissionalAtendimentoNAAPACommand(consolidado));
             return true;
         }
     }

@@ -34,11 +34,11 @@ namespace SME.SGP.Aplicacao
                     return false;
 
                 var respostaEnderecoAtualizado = MapearDTO(questaoTurmasProgramaNAAPA.QuestaoId, respostaTurmasProgramaNAAPA?.Id ?? 0, turmasProgramaAluno);
-                return await mediator.Send(new AlterarEncaminhamentoNAAPASecaoQuestaoRespostaCommand(respostaTurmasProgramaNAAPA,
+                return await mediator.Send(new AlterarAtendimentoNAAPASecaoQuestaoRespostaCommand(respostaTurmasProgramaNAAPA,
                                                                                                   respostaEnderecoAtualizado));
             }
             else
-                return (await mediator.Send(new RegistrarEncaminhamentoNAAPASecaoQuestaoRespostaCommand(JsonConvert.SerializeObject(turmasProgramaAluno),
+                return (await mediator.Send(new RegistrarAtendimentoNAAPASecaoQuestaoRespostaCommand(JsonConvert.SerializeObject(turmasProgramaAluno),
                                                                                                       questaoTurmasProgramaNAAPA.QuestaoId, TipoQuestao.TurmasPrograma))) != 0;  
         }
 

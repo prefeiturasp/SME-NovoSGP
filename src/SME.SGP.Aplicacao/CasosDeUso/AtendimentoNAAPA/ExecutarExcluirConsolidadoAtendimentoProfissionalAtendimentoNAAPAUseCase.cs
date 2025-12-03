@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
             var idsExclusao = await mediator.Send(new ObterProfissionaisAtendimentoEncaminhamentosNAAPAIdConsolidadoExclusaoQuery(filtroExclusao.UeId, filtroExclusao.Mes, filtroExclusao.AnoLetivo, filtroExclusao.RfsProfissionaisIgnorados));
             if (idsExclusao.NaoEhNulo() && idsExclusao.Any())
                 foreach (var id in idsExclusao)
-                    await mediator.Send(new ExcluirConsolidadoAtendimentoProfissionalEncaminhamentoNAAPAPorIdCommand(id));
+                    await mediator.Send(new ExcluirConsolidadoAtendimentoProfissionalAtendimentoNAAPAPorIdCommand(id));
             return true;
         }
     }

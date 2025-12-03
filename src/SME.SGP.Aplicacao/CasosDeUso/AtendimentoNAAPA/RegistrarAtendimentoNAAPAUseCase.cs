@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            var resultadoEncaminhamento = await mediator.Send(new RegistrarEncaminhamentoNAAPACommand(
+            var resultadoEncaminhamento = await mediator.Send(new RegistrarAtendimentoNAAPACommand(
                 encaminhamentoNAAPADto.TurmaId, aluno.NomeAluno, aluno.CodigoAluno,
                 encaminhamentoNAAPADto.Situacao));
 
@@ -98,7 +98,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var entidadeResposta = await mediator.Send(new ObterRespostaEncaminhamentoNAAPAPorIdQuery(item.RespostaEncaminhamentoId));
                     if (entidadeResposta.NaoEhNulo())
-                        await mediator.Send(new ExcluirRespostaEncaminhamentoNAAPACommand(entidadeResposta));
+                        await mediator.Send(new ExcluirRespostaAtendimentoNAAPACommand(entidadeResposta));
                 }
             }
         }
@@ -117,18 +117,18 @@ namespace SME.SGP.Aplicacao
 
                 if (secaoExistente.EhNulo())
                 {
-                    secaoExistente = await mediator.Send(new RegistrarEncaminhamentoNAAPASecaoCommand(encaminhamentoNAAPA.Id, secao.SecaoId, secao.Concluido));
+                    secaoExistente = await mediator.Send(new RegistrarAtendimentoNAAPASecaoCommand(encaminhamentoNAAPA.Id, secao.SecaoId, secao.Concluido));
                     tipoHistorico = TipoHistoricoAlteracoesEncaminhamentoNAAPA.Inserido;
                 }
                 else
                 {
                     secaoExistente.Concluido = secao.Concluido;
-                    await mediator.Send(new AlterarEncaminhamentoNAAPASecaoCommand(secaoExistente));
+                    await mediator.Send(new AlterarAtendimentoNAAPASecaoCommand(secaoExistente));
                 }
 
                 var resultadoEncaminhamentoSecao = secaoExistente.Id;
 
-                await mediator.Send(new RegistrarHistoricoDeAlteracaoEncaminhamentoNAAPACommand(secao, secaoExistente, tipoHistorico));
+                await mediator.Send(new RegistrarHistoricoDeAlteracaoAtendimentoNAAPACommand(secao, secaoExistente, tipoHistorico));
 
                 foreach (var questoes in secao.Questoes.GroupBy(q => q.QuestaoId))
                 {
@@ -136,7 +136,7 @@ namespace SME.SGP.Aplicacao
 
                     if (questaoExistente.EhNulo())
                     {
-                        var resultadoEncaminhamentoQuestao = await mediator.Send(new RegistrarEncaminhamentoNAAPASecaoQuestaoCommand(resultadoEncaminhamentoSecao, questoes.FirstOrDefault().QuestaoId));
+                        var resultadoEncaminhamentoQuestao = await mediator.Send(new RegistrarAtendimentoNAAPASecaoQuestaoCommand(resultadoEncaminhamentoSecao, questoes.FirstOrDefault().QuestaoId));
                         await RegistrarRespostaEncaminhamento(questoes, resultadoEncaminhamentoQuestao);
                     }
                     else
@@ -149,7 +149,7 @@ namespace SME.SGP.Aplicacao
         private async Task ExcluirQuestoesExistentes(IEnumerable<QuestaoEncaminhamentoNAAPA> questoesRemovidas)
         {
             foreach (var questao in questoesRemovidas)
-                await mediator.Send(new ExcluirQuestaoEncaminhamentoNAAPAPorIdCommand(questao.Id));
+                await mediator.Send(new ExcluirQuestaoAtendimentoNAAPAPorIdCommand(questao.Id));
         }
 
         private async Task AlterarQuestoesExistentes(QuestaoEncaminhamentoNAAPA questaoExistente, IGrouping<long, AtendimentoNAAPASecaoQuestaoDto> questoesRespostas)
@@ -164,7 +164,7 @@ namespace SME.SGP.Aplicacao
         private async Task AlterarQuestaoExcluida(QuestaoEncaminhamentoNAAPA questao)
         {
             questao.Excluido = false;
-            await mediator.Send(new AlterarQuestaoEncaminhamentoNAAPACommand(questao));
+            await mediator.Send(new AlterarQuestaoAtendimentoNAAPACommand(questao));
         }
 
         private async Task IncluirRespostasEncaminhamento(QuestaoEncaminhamentoNAAPA questaoExistente, IGrouping<long, AtendimentoNAAPASecaoQuestaoDto> respostas)
@@ -174,20 +174,20 @@ namespace SME.SGP.Aplicacao
         {
             foreach (var questao in questoes)
             {
-                await mediator.Send(new RegistrarEncaminhamentoNAAPASecaoQuestaoRespostaCommand(questao.Resposta, questaoEncaminhamentoId, questao.TipoQuestao));
+                await mediator.Send(new RegistrarAtendimentoNAAPASecaoQuestaoRespostaCommand(questao.Resposta, questaoEncaminhamentoId, questao.TipoQuestao));
             }
         }
 
         private async Task AlterarRespostasEncaminhamento(QuestaoEncaminhamentoNAAPA questaoExistente, IGrouping<long, AtendimentoNAAPASecaoQuestaoDto> respostas)
         {
             foreach (var respostaAlterar in ObterRespostasAAlterar(questaoExistente, respostas))
-                await mediator.Send(new AlterarEncaminhamentoNAAPASecaoQuestaoRespostaCommand(respostaAlterar, respostas.FirstOrDefault(c => c.RespostaEncaminhamentoId == respostaAlterar.Id)));
+                await mediator.Send(new AlterarAtendimentoNAAPASecaoQuestaoRespostaCommand(respostaAlterar, respostas.FirstOrDefault(c => c.RespostaEncaminhamentoId == respostaAlterar.Id)));
         }
 
         private async Task ExcluirRespostasEncaminhamento(QuestaoEncaminhamentoNAAPA questoesExistentes, IGrouping<long, AtendimentoNAAPASecaoQuestaoDto> respostas)
         {
             foreach (var respostasExcluir in ObterRespostasAExcluir(questoesExistentes, respostas))
-                await mediator.Send(new ExcluirRespostaEncaminhamentoNAAPACommand(respostasExcluir));
+                await mediator.Send(new ExcluirRespostaAtendimentoNAAPACommand(respostasExcluir));
         }
 
         private IEnumerable<AtendimentoNAAPASecaoQuestaoDto> ObterRespostasAIncluir(IGrouping<long, AtendimentoNAAPASecaoQuestaoDto> respostas)
@@ -209,15 +209,15 @@ namespace SME.SGP.Aplicacao
                 if (!secao.Questoes.Any())
                     throw new NegocioException(string.Format(MensagemNegocioComuns.NENHUMA_QUESTAO_FOI_ENCONTRADA_NA_SECAO_X,secao.SecaoId));
 
-                var secaoEncaminhamento = await mediator.Send(new RegistrarEncaminhamentoNAAPASecaoCommand(resultadoEncaminhamento.Id, secao.SecaoId, secao.Concluido));
+                var secaoEncaminhamento = await mediator.Send(new RegistrarAtendimentoNAAPASecaoCommand(resultadoEncaminhamento.Id, secao.SecaoId, secao.Concluido));
 
                 foreach (var questoes in secao.Questoes.GroupBy(q => q.QuestaoId))
                 {
-                    var resultadoEncaminhamentoQuestao = await mediator.Send(new RegistrarEncaminhamentoNAAPASecaoQuestaoCommand(secaoEncaminhamento.Id, questoes.FirstOrDefault().QuestaoId));
+                    var resultadoEncaminhamentoQuestao = await mediator.Send(new RegistrarAtendimentoNAAPASecaoQuestaoCommand(secaoEncaminhamento.Id, questoes.FirstOrDefault().QuestaoId));
                     await RegistrarRespostaEncaminhamento(questoes, resultadoEncaminhamentoQuestao);
                 }
 
-                await mediator.Send(new RegistrarHistoricoDeAlteracaoEncaminhamentoNAAPACommand(secao, secaoEncaminhamento, TipoHistoricoAlteracoesEncaminhamentoNAAPA.Inserido));
+                await mediator.Send(new RegistrarHistoricoDeAlteracaoAtendimentoNAAPACommand(secao, secaoEncaminhamento, TipoHistoricoAlteracoesEncaminhamentoNAAPA.Inserido));
             }
         }
 

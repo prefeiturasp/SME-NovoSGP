@@ -41,7 +41,7 @@ namespace SME.SGP.Api.Testes.Controllers
             useCaseMock.Setup(u => u.Executar(encaminhamentoDto)).ReturnsAsync(retornoDto);
 
             // Act
-            var resultado = await _controller.RegistrarEncaminhamento(encaminhamentoDto, useCaseMock.Object);
+            var resultado = await _controller.RegistrarAtendimento(encaminhamentoDto, useCaseMock.Object);
 
             // Assert
             useCaseMock.Verify(u => u.Executar(encaminhamentoDto), Times.Once);
@@ -60,7 +60,7 @@ namespace SME.SGP.Api.Testes.Controllers
             useCaseMock.Setup(u => u.Executar(filtro)).ReturnsAsync(retornoPaginado);
 
             // Act
-            var resultado = await _controller.ObterEncaminhamentosNAAPA(filtro, useCaseMock.Object);
+            var resultado = await _controller.ObterAtendimentosNAAPA(filtro, useCaseMock.Object);
 
             // Assert
             useCaseMock.Verify(u => u.Executar(filtro), Times.Once);
@@ -153,7 +153,7 @@ namespace SME.SGP.Api.Testes.Controllers
             useCaseMock.Setup(u => u.Executar(encaminhamentoId)).ReturnsAsync(true);
 
             // Act
-            var resultado = await _controller.ExcluirEncaminhamento(encaminhamentoId, useCaseMock.Object);
+            var resultado = await _controller.ExcluirAtendimento(encaminhamentoId, useCaseMock.Object);
 
             // Assert
             useCaseMock.Verify(u => u.Executar(encaminhamentoId), Times.Once);
@@ -172,7 +172,7 @@ namespace SME.SGP.Api.Testes.Controllers
             useCaseMock.Setup(u => u.Executar(encaminhamentoId)).ReturnsAsync(retornoDto);
 
             // Act
-            var resultado = await _controller.ObterEncaminhamento(encaminhamentoId, useCaseMock.Object);
+            var resultado = await _controller.ObterAtendimento(encaminhamentoId, useCaseMock.Object);
 
             // Assert
             useCaseMock.Verify(u => u.Executar(encaminhamentoId), Times.Once);
@@ -191,7 +191,7 @@ namespace SME.SGP.Api.Testes.Controllers
             useCaseMock.Setup(u => u.Executar(filtro)).ReturnsAsync(retorno);
 
             // Act
-            var resultado = await _controller.ObterSecoesDeEncaminhamentoNAAPA(filtro, useCaseMock.Object);
+            var resultado = await _controller.ObterSecoesDeAtendimentoNAAPA(filtro, useCaseMock.Object);
 
             // Assert
             useCaseMock.Verify(u => u.Executar(filtro), Times.Once);
@@ -209,7 +209,7 @@ namespace SME.SGP.Api.Testes.Controllers
             useCaseMock.Setup(u => u.Executar(encaminhamentoId)).ReturnsAsync(retorno);
 
             // Act
-            var resultado = await _controller.ObterSecoesItineranciaDeEncaminhamentoNAAPA(encaminhamentoId, useCaseMock.Object);
+            var resultado = await _controller.ObterSecoesItineranciaDeAtendimentoNAAPA(encaminhamentoId, useCaseMock.Object);
 
             // Assert
             useCaseMock.Verify(u => u.Executar(encaminhamentoId), Times.Once);
@@ -297,7 +297,7 @@ namespace SME.SGP.Api.Testes.Controllers
             useCaseMock.Setup(u => u.Executar(itinerarioDto)).ReturnsAsync(true);
 
             // Act
-            var resultado = await _controller.RegistrarEncaminhamentoItinerario(itinerarioDto, useCaseMock.Object);
+            var resultado = await _controller.RegistrarAtendimentoItinerario(itinerarioDto, useCaseMock.Object);
 
             // Assert
             useCaseMock.Verify(u => u.Executar(itinerarioDto), Times.Once);
@@ -336,7 +336,7 @@ namespace SME.SGP.Api.Testes.Controllers
             useCaseMock.Setup(u => u.Executar(parametros.EncaminhamentoId, parametros.MotivoEncerramento)).ReturnsAsync(true);
 
             // Act
-            var resultado = await _controller.EncerrarEncaminhamento(parametros, useCaseMock.Object);
+            var resultado = await _controller.EncerrarAtendimento(parametros, useCaseMock.Object);
 
             // Assert
             useCaseMock.Verify(u => u.Executar(parametros.EncaminhamentoId, parametros.MotivoEncerramento), Times.Once);
@@ -354,7 +354,7 @@ namespace SME.SGP.Api.Testes.Controllers
             useCaseMock.Setup(u => u.Executar(encaminhamentoId)).ReturnsAsync(retorno);
 
             // Act
-            var resultado = await _controller.ReabrirEncaminhamento(encaminhamentoId, useCaseMock.Object);
+            var resultado = await _controller.ReabrirAtendimento(encaminhamentoId, useCaseMock.Object);
 
             // Assert
             useCaseMock.Verify(u => u.Executar(encaminhamentoId), Times.Once);
@@ -492,7 +492,7 @@ namespace SME.SGP.Api.Testes.Controllers
             useCaseMock.Setup(u => u.Executar(alunoCodigo)).ReturnsAsync(true);
 
             // Act
-            var resultado = await _controller.ExisteEncaminhamentoAtivoParaAluno(alunoCodigo, useCaseMock.Object);
+            var resultado = await _controller.ExisteAtendimentoAtivoParaAluno(alunoCodigo, useCaseMock.Object);
 
             // Assert
             useCaseMock.Verify(u => u.Executar(alunoCodigo), Times.Once);

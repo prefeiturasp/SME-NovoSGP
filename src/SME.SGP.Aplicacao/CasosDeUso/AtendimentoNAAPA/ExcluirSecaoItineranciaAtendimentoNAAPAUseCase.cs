@@ -14,9 +14,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(long encaminhamentoNAAPAId, long encaminhamentoSecaoNAAPAId)
         {
-            await mediator.Send(new ExcluirSecaoEncaminhamentoNAAPACommand(encaminhamentoSecaoNAAPAId));
+            await mediator.Send(new ExcluirSecaoAtendimentoNAAPACommand(encaminhamentoSecaoNAAPAId));
 
-            await mediator.Send(new RegistrarHistoricoDeAlteracaoExclusaoAtendimentoEncaminhamentoNAAPACommad(encaminhamentoSecaoNAAPAId));
+            await mediator.Send(new RegistrarHistoricoDeAlteracaoExclusaoAtendimentoNAAPACommad(encaminhamentoSecaoNAAPAId));
 
             await AlterarSituacaoDoAtendimento(encaminhamentoNAAPAId);
 

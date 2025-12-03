@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
                 encaminhamentoNAAPA.TurmaId = turmaId;
                 encaminhamentoNAAPA.Turma = turma;
 
-                await mediator.Send(new SalvarEncaminhamentoNAAPACommand(encaminhamentoNAAPA));
+                await mediator.Send(new SalvarAtendimentoNAAPACommand(encaminhamentoNAAPA));
             }
         }
     }

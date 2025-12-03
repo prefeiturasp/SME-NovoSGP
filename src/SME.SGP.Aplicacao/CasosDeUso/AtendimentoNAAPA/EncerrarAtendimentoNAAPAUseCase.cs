@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(long encaminhamentoId, string motivoEncerramento)
         {
-            await mediator.Send(new EncerrarEncaminhamentoNAAPACommand(encaminhamentoId, motivoEncerramento));
+            await mediator.Send(new EncerrarAtendimentoNAAPACommand(encaminhamentoId, motivoEncerramento));
 
             return true;
         }

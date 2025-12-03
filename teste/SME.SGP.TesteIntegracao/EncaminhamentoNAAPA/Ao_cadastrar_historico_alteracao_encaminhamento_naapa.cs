@@ -81,7 +81,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var mediator = ServiceProvider.GetService<IMediator>();
 
-            await mediator.Send(new RegistrarHistoricoDeAlteracaoEncaminhamentoNAAPACommand(secaoDto, encaminhamento.Secoes.FirstOrDefault(), TipoHistoricoAlteracoesEncaminhamentoNAAPA.Alteracao));
+            await mediator.Send(new RegistrarHistoricoDeAlteracaoAtendimentoNAAPACommand(secaoDto, encaminhamento.Secoes.FirstOrDefault(), TipoHistoricoAlteracoesEncaminhamentoNAAPA.Alteracao));
 
             var historico = ObterTodos<EncaminhamentoNAAPAHistoricoAlteracoes>()?.FirstOrDefault();
 
@@ -115,7 +115,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var mediator = ServiceProvider.GetService<IMediator>();
 
-            await mediator.Send(new RegistrarHistoricoDeAlteracaoDaSituacaoDoEncaminhamentoNAAPACommand(encaminhamento, SituacaoNAAPA.EmAtendimento));
+            await mediator.Send(new RegistrarHistoricoDeAlteracaoDaSituacaoDoAtendimentoNAAPACommand(encaminhamento, SituacaoNAAPA.EmAtendimento));
 
             var historico = ObterTodos<EncaminhamentoNAAPAHistoricoAlteracoes>()?.FirstOrDefault();
 
@@ -151,7 +151,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var mediator = ServiceProvider.GetService<IMediator>();
 
-            await mediator.Send(new RegistrarHistoricoDeAlteracaoExclusaoAtendimentoEncaminhamentoNAAPACommad(ENCAMINHAMENTO_NAAPA_SECAO_ID));
+            await mediator.Send(new RegistrarHistoricoDeAlteracaoExclusaoAtendimentoNAAPACommad(ENCAMINHAMENTO_NAAPA_SECAO_ID));
 
             var historico = ObterTodos<EncaminhamentoNAAPAHistoricoAlteracoes>()?.FirstOrDefault();
 
@@ -187,7 +187,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var ids = new long[] { ENCAMINHAMENTO_NAAPA_ID };
 
-            await mediator.Send(new RegistrarHistoricoDeAlteracaoDeImpressaoDoEncaminhamentoNAAPACommand(ids, USUARIO_LOGADO_ID));
+            await mediator.Send(new RegistrarHistoricoDeAlteracaoDeImpressaoDoAtendimentoNAAPACommand(ids, USUARIO_LOGADO_ID));
 
             var historico = ObterTodos<EncaminhamentoNAAPAHistoricoAlteracoes>()?.FirstOrDefault();
 

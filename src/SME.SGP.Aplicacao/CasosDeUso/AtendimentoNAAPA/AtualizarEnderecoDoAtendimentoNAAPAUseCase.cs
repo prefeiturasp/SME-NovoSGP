@@ -33,11 +33,11 @@ namespace SME.SGP.Aplicacao
                 if (enderecoResidencialAluno.EhIgual(enderecoResidencialNAAPA?.FirstOrDefault())) return false;
 
                 var respostaEnderecoAtualizado = MapearDTO(questaoEnderecoResidencialNAAPA.QuestaoId, respostaEnderecoResidencialNAAPA?.Id ?? 0, enderecoResidencialAluno);
-                return await mediator.Send(new AlterarEncaminhamentoNAAPASecaoQuestaoRespostaCommand(respostaEnderecoResidencialNAAPA,
+                return await mediator.Send(new AlterarAtendimentoNAAPASecaoQuestaoRespostaCommand(respostaEnderecoResidencialNAAPA,
                                                                                                   respostaEnderecoAtualizado));
             }
             else
-                return (await mediator.Send(new RegistrarEncaminhamentoNAAPASecaoQuestaoRespostaCommand(JsonConvert.SerializeObject(new[] { enderecoResidencialAluno }),
+                return (await mediator.Send(new RegistrarAtendimentoNAAPASecaoQuestaoRespostaCommand(JsonConvert.SerializeObject(new[] { enderecoResidencialAluno }),
                                                                                                       questaoEnderecoResidencialNAAPA.QuestaoId, TipoQuestao.Endereco))) != 0;  
         }
 

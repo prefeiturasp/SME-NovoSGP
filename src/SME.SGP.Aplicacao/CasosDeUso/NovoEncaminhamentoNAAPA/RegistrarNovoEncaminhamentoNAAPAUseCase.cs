@@ -205,7 +205,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.NovoEncaminhamentoNAAPA
         private async Task ExcluirRespostasEncaminhamento(QuestaoEncaminhamentoNAAPA questoesExistentes, IGrouping<long, NovoEncaminhamentoNAAPASecaoQuestaoDto> respostas)
         {
             foreach (var respostasExcluir in ObterRespostasAExcluir(questoesExistentes, respostas))
-                await mediator.Send(new ExcluirRespostaEncaminhamentoNAAPACommand(respostasExcluir));
+                await mediator.Send(new ExcluirRespostaAtendimentoNAAPACommand(respostasExcluir));
         }
 
         private IEnumerable<NovoEncaminhamentoNAAPASecaoQuestaoDto> ObterRespostasAIncluir(IGrouping<long, NovoEncaminhamentoNAAPASecaoQuestaoDto> respostas)

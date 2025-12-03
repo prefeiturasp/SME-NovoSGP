@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<SituacaoDto> Executar(long encaminhamentoId)
         {
-            return await mediator.Send(new ReabrirEncaminhamentoNAAPACommand(encaminhamentoId));
+            return await mediator.Send(new ReabrirAtendimentoNAAPACommand(encaminhamentoId));
         }
     }
 }

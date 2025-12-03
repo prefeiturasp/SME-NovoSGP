@@ -17,14 +17,14 @@ namespace SME.SGP.Aplicacao.Teste.Commands.EncaminhamentoNAAPA.ReabrirEncaminham
         private readonly Mock<IUnitOfWork> unitOfWork;
         private readonly Mock<IMediator> mediator;
         private readonly Mock<IRepositorioEncaminhamentoNAAPA> repositorioEncaminhamentoNAAPA;
-        private readonly ReabrirEncaminhamentoNAAPACommandHandler command;
+        private readonly ReabrirAtendimentoNAAPACommandHandler command;
 
         public ReabrirEncaminhamentoNAAPACommandHandlerTeste()
         {
             unitOfWork = new Mock<IUnitOfWork>();
             mediator = new Mock<IMediator>();
             repositorioEncaminhamentoNAAPA = new Mock<IRepositorioEncaminhamentoNAAPA>();
-            command = new ReabrirEncaminhamentoNAAPACommandHandler(unitOfWork.Object, mediator.Object, repositorioEncaminhamentoNAAPA.Object);
+            command = new ReabrirAtendimentoNAAPACommandHandler(unitOfWork.Object, mediator.Object, repositorioEncaminhamentoNAAPA.Object);
         }
 
         [Fact(DisplayName = "ReabrirEncaminhamentoNAAPACommand - Deve validar regras considerando a última matrícula válida mesmo com data de situações iguais")]
@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao.Teste.Commands.EncaminhamentoNAAPA.ReabrirEncaminham
             repositorioEncaminhamentoNAAPA.Setup(x => x.EncaminhamentoContemAtendimentosItinerancia(1))
                 .ReturnsAsync(true);
 
-            var retorno = await command.Handle(new ReabrirEncaminhamentoNAAPACommand(1), It.IsAny<CancellationToken>());
+            var retorno = await command.Handle(new ReabrirAtendimentoNAAPACommand(1), It.IsAny<CancellationToken>());
 
             Assert.NotNull(retorno);
             Assert.Equal((int)SituacaoNAAPA.EmAtendimento, retorno.Codigo);

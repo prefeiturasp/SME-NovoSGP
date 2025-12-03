@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
         {
             var encaminhamentoNAAPA = await mediator.Send(new ObterCabecalhoEncaminhamentoNAAPAQuery(encaminhamentoNAAPAId));
             encaminhamentoNAAPA.SituacaoMatriculaAluno = (SituacaoMatriculaAluno)codigoSituacaoMatriculaAluno;
-            await mediator.Send(new SalvarEncaminhamentoNAAPACommand(encaminhamentoNAAPA));
+            await mediator.Send(new SalvarAtendimentoNAAPACommand(encaminhamentoNAAPA));
         }
 
         private async Task NotificarResponsaveisSobreInativacaoAluno(string nomeAluno, string codigoAluno, Turma turma, string situacaoMatriculaAluno)

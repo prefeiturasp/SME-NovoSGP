@@ -53,11 +53,11 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
 
             ValidarAlteracao(secaoExistente, secaoDto);
 
-            await mediator.Send(new AlterarEncaminhamentoNAAPASecaoCommand(secaoExistente));
+            await mediator.Send(new AlterarAtendimentoNAAPASecaoCommand(secaoExistente));
 
-            await mediator.Send(new RegistrarHistoricoDeAlteracaoEncaminhamentoNAAPACommand(secaoDto, secaoExistente, TipoHistoricoAlteracoesEncaminhamentoNAAPA.Alteracao));
+            await mediator.Send(new RegistrarHistoricoDeAlteracaoAtendimentoNAAPACommand(secaoDto, secaoExistente, TipoHistoricoAlteracoesEncaminhamentoNAAPA.Alteracao));
 
-            await mediator.Send(new AlterarEncaminhamentoNAAPASecaoQuestaoCommand(secaoDto, secaoExistente));
+            await mediator.Send(new AlterarAtendimentoNAAPASecaoQuestaoCommand(secaoDto, secaoExistente));
             await RemoverArquivosNaoUtilizados(secaoDto);
             return true;
         }
@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
                 {
                     var entidadeResposta = await mediator.Send(new ObterRespostaEncaminhamentoNAAPAPorIdQuery(item.RespostaEncaminhamentoId));
                     if (entidadeResposta.NaoEhNulo())
-                        await mediator.Send(new ExcluirRespostaEncaminhamentoNAAPACommand(entidadeResposta));
+                        await mediator.Send(new ExcluirRespostaAtendimentoNAAPACommand(entidadeResposta));
                 }
             }
         }
@@ -91,15 +91,15 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
 
             await AlterarSituacaoDoAtendimento(encaminhamentoNAAPA);
 
-            var secaoEncaminhamento = await mediator.Send(new RegistrarEncaminhamentoNAAPASecaoCommand(encaminhamentoNAAPAItineranciaDto.EncaminhamentoId, secaoDto.SecaoId, true));
+            var secaoEncaminhamento = await mediator.Send(new RegistrarAtendimentoNAAPASecaoCommand(encaminhamentoNAAPAItineranciaDto.EncaminhamentoId, secaoDto.SecaoId, true));
 
             foreach (var questoes in secaoDto.Questoes.GroupBy(q => q.QuestaoId))
             {
-                var secaoQuestaoId = await mediator.Send(new RegistrarEncaminhamentoNAAPASecaoQuestaoCommand(secaoEncaminhamento.Id, questoes.FirstOrDefault().QuestaoId));
+                var secaoQuestaoId = await mediator.Send(new RegistrarAtendimentoNAAPASecaoQuestaoCommand(secaoEncaminhamento.Id, questoes.FirstOrDefault().QuestaoId));
                 await RegistrarRespostaEncaminhamento(questoes, secaoQuestaoId);
             }
 
-            await mediator.Send(new RegistrarHistoricoDeAlteracaoEncaminhamentoNAAPACommand(secaoDto, secaoEncaminhamento, TipoHistoricoAlteracoesEncaminhamentoNAAPA.Inserido));
+            await mediator.Send(new RegistrarHistoricoDeAlteracaoAtendimentoNAAPACommand(secaoDto, secaoEncaminhamento, TipoHistoricoAlteracoesEncaminhamentoNAAPA.Inserido));
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpNAAPA.RotaExcluirNotificacaoInatividadeAtendimento, encaminhamentoNAAPAItineranciaDto.EncaminhamentoId, Guid.NewGuid()));
             return true;
         }
@@ -107,7 +107,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
         private async Task RegistrarRespostaEncaminhamento(IEnumerable<AtendimentoNAAPASecaoQuestaoDto> questoes, long questaoEncaminhamentoId)
         {
             foreach (var questao in questoes)
-                await mediator.Send(new RegistrarEncaminhamentoNAAPASecaoQuestaoRespostaCommand(questao.Resposta, questaoEncaminhamentoId, questao.TipoQuestao));
+                await mediator.Send(new RegistrarAtendimentoNAAPASecaoQuestaoRespostaCommand(questao.Resposta, questaoEncaminhamentoId, questao.TipoQuestao));
         }
 
         private async Task AlterarSituacaoDoAtendimento(Dominio.EncaminhamentoNAAPA encaminhamentoNAAPA)
