@@ -7,11 +7,11 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Dtos.Relatorios;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.Infra.Dtos.Relatorios;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -177,15 +177,14 @@ namespace SME.SGP.Api.Controllers
             return Ok(new RetornoBaseDto("Plano devolvido com sucesso"));
         }
 
-        [HttpGet("encerrar-planos")]
-        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [HttpPost("encerramento-manual/{planoId}")]
+        [ProducesResponseType(typeof(RetornoEncerramentoPlanoAEEDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
-        public async Task<IActionResult> EncerrarPlanos()
-        {
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAEE.EncerrarPlanoAEEEstudantesInativos, Guid.NewGuid()));
-            return Ok();
+        [Permissao(Permissao.PAEE_A, Policy = "Bearer")]
+        public async Task<IActionResult> EncerramentoManualPlanoAEE(long planoId, [FromServices] IEncerramentoManualPlanoAEEUseCase useCase)
+        {            
+            return Ok(await useCase.Executar(planoId));
         }
 
         [HttpGet("expirar-planos")]

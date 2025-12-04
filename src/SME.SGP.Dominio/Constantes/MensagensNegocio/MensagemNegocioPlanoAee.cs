@@ -8,4 +8,5 @@ namespace SME.SGP.Dominio.Constantes.MensagensNegocio
         public const string PLANO_AEE_ENCERRAMENTO_MANUAL_NAO_PERMITIDO = "O encerramento manual só é permitido quando a matrícula do aluno está concluída ou inativa.";
         public const string NENHUM_PLANO_AEE_ENCONTRADO_PARA_TURMA = "Nenhum Plano AEE foi encontrado para esta turma com os filtros informados.";
     }
+
 }
