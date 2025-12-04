@@ -10,8 +10,6 @@
         public const string RotaEncerrarEncaminhamentoAEEAutomaticoSync = "sgp.encaminhamento.aee.encerrar.automatico.sync";
         public const string RotaValidarEncerrarEncaminhamentoAEEAutomatico = "sgp.encaminhamento.aee.encerrar.automatico.validar";
         public const string RotaEncerrarEncaminhamentoAEEEncerrarAutomatico = "sgp.encaminhamento.aee.encerrar.automatico.encerrar";
-        public const string EncerrarPlanoAEEEstudantesInativos = "plano.aee.encerrar.inativos";
-        public const string EncerrarPlanoAEEEstudantesInativosTratar = "plano.aee.encerrar.inativos.tratar";
         public const string GerarPendenciaValidadePlanoAEE = "plano.aee.pendencia.validade";
         public const string NotificarPlanoAEEExpirado = "plano.aee.notificar.expirados";
         public const string NotificarPlanoAEEEmAberto = "plano.aee.notificar.emaberto";

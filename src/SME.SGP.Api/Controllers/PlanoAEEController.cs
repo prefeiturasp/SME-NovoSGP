@@ -177,14 +177,13 @@ namespace SME.SGP.Api.Controllers
             return Ok(new RetornoBaseDto("Plano devolvido com sucesso"));
         }
 
-        [HttpGet("encerrar-planos")]
+        [HttpPost("encerramento-manual")]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
-        public async Task<IActionResult> EncerrarPlanos()
-        {
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAEE.EncerrarPlanoAEEEstudantesInativos, Guid.NewGuid()));
+        [Permissao(Permissao.PAEE_A, Policy = "Bearer")]
+        public async Task<IActionResult> EncerrarPlanoManual()
+        {            
             return Ok();
         }
 
