@@ -193,18 +193,22 @@ namespace SME.SGP.Aplicacao
             plano.PermitirExcluir = PermiteExclusaoPlanoAEE(plano.Situacao, usuarioLogado);
 
             plano.RegistroCadastradoEmOutraUE = !await VerificarUsuarioLogadoPertenceMesmaUEPlano(usuarioLogado, turma);
-            plano.PermitirEncerramentoManual = !(new[] { SituacaoMatriculaAluno.Ativo,
+            plano.PermitirEncerramentoManual = PermitirEncerramentoManual(plano);
+
+            await BuscarDadosSrmPaee((filtro.CodigoAluno > 0 ?  filtro.CodigoAluno :alunoCodigo),plano,novaVersao);
+
+            return plano;
+        }
+
+        private bool PermitirEncerramentoManual(PlanoAEEDto plano)
+            => !(new[] { SituacaoMatriculaAluno.Ativo,
                              SituacaoMatriculaAluno.PendenteRematricula,
                              SituacaoMatriculaAluno.Rematriculado,
                              SituacaoMatriculaAluno.SemContinuidade}.Contains(plano.Aluno.CodigoSituacaoMatricula))
 
                    || plano.Aluno.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido;
 
-            await BuscarDadosSrmPaee((filtro.CodigoAluno > 0 ?  filtro.CodigoAluno :alunoCodigo),plano,novaVersao);
 
-            return plano;
-        }
-        
         private async Task<bool> VerificarUsuarioLogadoPertenceMesmaUEPlano(Usuario usuarioLogado, Turma turmaEncaminhamentoAee)
         {
             return await mediator.Send(new VerificarUsuarioLogadoPertenceMesmaUEQuery(usuarioLogado, turmaEncaminhamentoAee));
