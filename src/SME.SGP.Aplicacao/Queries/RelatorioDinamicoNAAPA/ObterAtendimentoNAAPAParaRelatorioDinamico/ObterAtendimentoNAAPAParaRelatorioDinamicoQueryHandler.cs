@@ -10,13 +10,13 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterEncaminhamentoNAAPAParaRelatorioDinamicoQueryHandler : ConsultasBase, IRequestHandler<ObterEncaminhamentoNAAPAParaRelatorioDinamicoQuery, RelatorioDinamicoNAAPADto>
+    public class ObterAtendimentoNAAPAParaRelatorioDinamicoQueryHandler : ConsultasBase, IRequestHandler<ObterAtendimentoNAAPAParaRelatorioDinamicoQuery, RelatorioDinamicoNAAPADto>
     {
         private readonly IRepositorioRelatorioDinamicoNAAPA repositorio;
         private readonly IRepositorioQuestionario repositorioQuestionario;
         
 
-        public ObterEncaminhamentoNAAPAParaRelatorioDinamicoQueryHandler(
+        public ObterAtendimentoNAAPAParaRelatorioDinamicoQueryHandler(
                             IContextoAplicacao contextoAplicacao,
                             IRepositorioRelatorioDinamicoNAAPA repositorio,
                             IRepositorioQuestionario repositorioQuestionario) : base(contextoAplicacao)
@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioQuestionario = repositorioQuestionario ?? throw new ArgumentNullException(nameof(repositorioQuestionario));
         }
 
-        public async Task<RelatorioDinamicoNAAPADto> Handle(ObterEncaminhamentoNAAPAParaRelatorioDinamicoQuery request, CancellationToken cancellationToken)
+        public async Task<RelatorioDinamicoNAAPADto> Handle(ObterAtendimentoNAAPAParaRelatorioDinamicoQuery request, CancellationToken cancellationToken)
         {
             string[] nomesComponentesTotalizadoresAtendimento = { "PROCEDIMENTO_DE_TRABALHO", "TIPO_DO_ATENDIMENTO" };
             var questoesParaTotalizadoresAtendimento = await repositorioQuestionario.ObterQuestoesPorNomesComponentes(nomesComponentesTotalizadoresAtendimento, TipoQuestionario.EncaminhamentoNAAPA);

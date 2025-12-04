@@ -14,9 +14,9 @@ namespace SME.SGP.Aplicacao
     public class ObterQuestionarioAtendimentoNAAPAQueryHandler : IRequestHandler<ObterQuestionarioAtendimentoNAAPAQuery, IEnumerable<QuestaoDto>>
     {
         private readonly IMediator mediator;
-        private readonly IRepositorioQuestaoEncaminhamentoNAAPA repositorioQuestaoEncaminhamento;
+        private readonly IRepositorioQuestaoAtendimentoNAAPA repositorioQuestaoEncaminhamento;
 
-        public ObterQuestionarioAtendimentoNAAPAQueryHandler(IMediator mediator, IRepositorioQuestaoEncaminhamentoNAAPA repositorioQuestaoEncaminhamento, IRepositorioQuestionario repositorioQuestionario)
+        public ObterQuestionarioAtendimentoNAAPAQueryHandler(IMediator mediator, IRepositorioQuestaoAtendimentoNAAPA repositorioQuestaoEncaminhamento, IRepositorioQuestionario repositorioQuestionario)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioQuestaoEncaminhamento = repositorioQuestaoEncaminhamento ?? throw new ArgumentNullException(nameof(repositorioQuestaoEncaminhamento));

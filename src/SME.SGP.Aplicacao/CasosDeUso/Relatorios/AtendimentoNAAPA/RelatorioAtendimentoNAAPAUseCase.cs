@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class RelatorioEncaminhamentoNAAPAUseCase : IRelatorioEncaminhamentoNAAPAUseCase
+    public class RelatorioAtendimentoNAAPAUseCase : IRelatorioAtendimentoNAAPAUseCase
     {
         private readonly IMediator mediator;
 
-        public RelatorioEncaminhamentoNAAPAUseCase(IMediator mediator)
+        public RelatorioAtendimentoNAAPAUseCase(IMediator mediator)
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<bool> Executar(FiltroRelatorioEncaminhamentoNAAPADto param)
+        public async Task<bool> Executar(FiltroRelatorioAtendimentoNAAPADto param)
         {
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             param.UsuarioNome = usuarioLogado.Nome;

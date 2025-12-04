@@ -586,15 +586,15 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioTipoRelatorio, RepositorioTipoRelatorio>();
 
             // Encaminhamento NAAPA
-            services.TryAddScoped<IRepositorioSecaoEncaminhamentoNAAPA, RepositorioSecaoAtenidmentoNAAPA>();
+            services.TryAddScoped<IRepositorioSecaoAtendimentoNAAPA, RepositorioSecaoAtenidmentoNAAPA>();
             services.TryAddScoped<IRepositorioAtendimentoNAAPA, RepositorioAtendimentoNAAPA>();
             services.TryAddScoped<IRepositorioAtendimentoNAAPASecao, RepositorioAtendimentoNAAPASecao>();
-            services.TryAddScoped<IRepositorioQuestaoEncaminhamentoNAAPA, RepositorioQuestaoAtendimentoNAAPA>();
-            services.TryAddScoped<IRepositorioRespostaEncaminhamentoNAAPA, RepositorioRespostaAtendimentoNAAPA>();
-            services.TryAddScoped<IRepositorioObservacaoEncaminhamentoNAAPA, RepositorioObservacaoAtendimentoNAAPA>();
+            services.TryAddScoped<IRepositorioQuestaoAtendimentoNAAPA, RepositorioQuestaoAtendimentoNAAPA>();
+            services.TryAddScoped<IRepositorioRespostaAtendimentoNAAPA, RepositorioRespostaAtendimentoNAAPA>();
+            services.TryAddScoped<IRepositorioObservacaoAtendimentoNAAPA, RepositorioObservacaoAtendimentoNAAPA>();
             services.TryAddScoped<IRepositorioAtendimentoNAAPAHistoricoAlteracoes, RepositorioAtendimentoNAAPAHistoricoAlteracoes>();
-            services.TryAddScoped<IRepositorioConsolidadoEncaminhamentoNAAPA, RepositorioConsolidadoEncaminhamentoNAAPA>();
-            services.TryAddScoped<IRepositorioConsolidadoAtendimentoNAAPA, RepositorioConsolidadoAtendimentoNAAPA>();
+            services.TryAddScoped<IRepositorioConsolidadoEncaminhamentoNAAPA, Dados.Repositorios.RepositorioConsolidadoAtendimentoNAAPA>();
+            services.TryAddScoped<IRepositorioConsolidadoAtendimentoNAAPA, Dados.RepositorioConsolidadoAtendimentoNAAPA>();
 
             services.TryAddScoped<IRepositorioHistoricoEscolarObservacao, RepositorioHistoricoEscolarObservacao>();
 
@@ -1103,7 +1103,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRelatorioEncaminhamentoAEEUseCase, RelatorioEncaminhamentoAeeUseCase>();
 
             //Encaminhamento NAAPA
-            services.TryAddScoped<IRelatorioAtendimentoNaapaDetalhadoUseCase, RelatorioEncaminhamentoNaapaDetalhadoUseCase>();
+            services.TryAddScoped<IRelatorioAtendimentoNaapaDetalhadoUseCase, RelatorioAtendimentoNaapaDetalhadoUseCase>();
 
             // Funcionario
             services.TryAddScoped<IPesquisaFuncionariosPorDreUeUseCase, PesquisaFuncionariosPorDreUeUseCase>();
@@ -1502,8 +1502,8 @@ namespace SME.SGP.IoC
 
             services.TryAddScoped<IObterOpcoesRespostaFluxoAlertaAtendimentosNAAPAUseCase, ObterOpcoesRespostaFluxoAlertaAtendimentosNAAPAUseCase>();
             services.TryAddScoped<IObterOpcoesRespostaPortaEntradaAtendimentosNAAPAUseCase, ObterOpcoesRespostaPortaEntradaAtendimentosNAAPAUseCase>();
-            services.TryAddScoped<IRelatorioEncaminhamentoNAAPAUseCase, RelatorioEncaminhamentoNAAPAUseCase>();
-            services.TryAddScoped<IObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase, ObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase>();
+            services.TryAddScoped<IRelatorioAtendimentoNAAPAUseCase, RelatorioAtendimentoNAAPAUseCase>();
+            services.TryAddScoped<IObterQuantidadeAtendimentoNAAPAEmAbertoPorDreUseCase, ObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase>();
             services.TryAddScoped<IObterQuantidadeAtendimentoNAAPAPorProfissionalMesUseCase, ObterQuantidadeAtendimentoNAAPAPorProfissionalMesUseCase>();
             services.TryAddScoped<IExisteAtendimentoNAAPAAtivoParaAlunoUseCase, ExisteAtendimentoNAAPAAtivoParaAlunoUseCase>();
             services.TryAddScoped<IObterRegistrosDeAcaoParaNAAPAUseCase, ObterRegistrosDeAcaoParaNAAPAUseCase>();
@@ -1520,7 +1520,7 @@ namespace SME.SGP.IoC
 
 
             //Relatório Dinâmico NAAPA
-            services.TryAddScoped<IRelatorioDinamicoObterEncaminhamentoNAAPAUseCase, RelatorioDinamicoObterEncaminhamentoNAAPAUseCase>();
+            services.TryAddScoped<IRelatorioDinamicoObterAtendimentoNAAPAUseCase, RelatorioDinamicoObterAtendimentoNAAPAUseCase>();
 
             // Relatório PAP
             services.TryAddScoped<IObterPeriodosPAPUseCase, ObterPeriodosPAPUseCase>();

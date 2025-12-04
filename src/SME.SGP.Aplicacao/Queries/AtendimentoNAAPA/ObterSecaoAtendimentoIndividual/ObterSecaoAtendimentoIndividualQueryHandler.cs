@@ -11,9 +11,9 @@ namespace SME.SGP.Aplicacao.Queries.EncaminhamentoNAAPA.ObterSecaoEncaminhamento
 
        public class ObterSecaoAtendimentoIndividualQueryHandler : IRequestHandler<ObterSecaoAtendimentoIndividualQuery, IEnumerable<SecaoQuestionarioDto>>
     {
-        private readonly IRepositorioSecaoEncaminhamentoNAAPA repositorioSecaoEncaminhamentoNAPPA;
+        private readonly IRepositorioSecaoAtendimentoNAAPA repositorioSecaoEncaminhamentoNAPPA;
 
-        public ObterSecaoAtendimentoIndividualQueryHandler(IRepositorioSecaoEncaminhamentoNAAPA repositorioSecaoEncaminhamentoNAPPA)
+        public ObterSecaoAtendimentoIndividualQueryHandler(IRepositorioSecaoAtendimentoNAAPA repositorioSecaoEncaminhamentoNAPPA)
         {
             this.repositorioSecaoEncaminhamentoNAPPA = repositorioSecaoEncaminhamentoNAPPA ?? throw new System.ArgumentNullException(nameof(repositorioSecaoEncaminhamentoNAPPA));
         }

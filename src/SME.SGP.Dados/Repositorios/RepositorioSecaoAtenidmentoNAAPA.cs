@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace SME.SGP.Dados.Repositorios
 {
     [ExcludeFromCodeCoverage]
-    public class RepositorioSecaoAtenidmentoNAAPA : RepositorioBase<SecaoEncaminhamentoNAAPA>, IRepositorioSecaoEncaminhamentoNAAPA
+    public class RepositorioSecaoAtenidmentoNAAPA : RepositorioBase<SecaoEncaminhamentoNAAPA>, IRepositorioSecaoAtendimentoNAAPA
     {
 
         private const int SECAO_ITINERANCIA_NAAPA = 3;

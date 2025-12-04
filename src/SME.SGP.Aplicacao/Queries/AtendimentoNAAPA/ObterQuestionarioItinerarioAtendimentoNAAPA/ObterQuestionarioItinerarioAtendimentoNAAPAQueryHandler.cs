@@ -11,12 +11,12 @@ namespace SME.SGP.Aplicacao
     public class ObterQuestionarioItinerarioAtendimentoNAAPAQueryHandler : IRequestHandler<ObterQuestionarioItinerarioAtendimentoNAAPAQuery, AtendimentoNAAPASecaoItineranciaQuestoesDto>
     {
         private readonly IMediator mediator;
-        private readonly IRepositorioQuestaoEncaminhamentoNAAPA repositorioQuestaoEncaminhamento;
+        private readonly IRepositorioQuestaoAtendimentoNAAPA repositorioQuestaoEncaminhamento;
         private readonly IRepositorioAtendimentoNAAPASecao repositorioEncaminhamentoNAAPASecao;
 
         public ObterQuestionarioItinerarioAtendimentoNAAPAQueryHandler(
                                                         IMediator mediator, 
-                                                        IRepositorioQuestaoEncaminhamentoNAAPA repositorioQuestaoEncaminhamento,
+                                                        IRepositorioQuestaoAtendimentoNAAPA repositorioQuestaoEncaminhamento,
                                                         IRepositorioAtendimentoNAAPASecao repositorioEncaminhamentoNAAPASecao)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));

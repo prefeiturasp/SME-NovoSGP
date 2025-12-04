@@ -1,19 +1,18 @@
-﻿using System;
-using System.Threading.Tasks;
-using MediatR;
-using Org.BouncyCastle.Crypto;
+﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
+using System;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class RelatorioEncaminhamentoNaapaDetalhadoUseCase : IRelatorioAtendimentoNaapaDetalhadoUseCase
+    public class RelatorioAtendimentoNaapaDetalhadoUseCase : IRelatorioAtendimentoNaapaDetalhadoUseCase
     {
         private readonly IMediator mediator;
 
-        public RelatorioEncaminhamentoNaapaDetalhadoUseCase(IMediator mediator)
+        public RelatorioAtendimentoNaapaDetalhadoUseCase(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }

@@ -8,9 +8,9 @@ namespace SME.SGP.Aplicacao.Queries
 {
     public class ObterSecaoQuestionarioAtendimentoNAAPAPorIdQueryHandler : IRequestHandler<ObterSecaoQuestionarioAtendimentoNAAPAPorIdQuery, SecaoQuestionarioDto>
     {
-        private readonly IRepositorioSecaoEncaminhamentoNAAPA repositorioSecaoNAAPA;
+        private readonly IRepositorioSecaoAtendimentoNAAPA repositorioSecaoNAAPA;
 
-        public ObterSecaoQuestionarioAtendimentoNAAPAPorIdQueryHandler(IRepositorioSecaoEncaminhamentoNAAPA repositorioSecaoNAAPA)
+        public ObterSecaoQuestionarioAtendimentoNAAPAPorIdQueryHandler(IRepositorioSecaoAtendimentoNAAPA repositorioSecaoNAAPA)
         {
             this.repositorioSecaoNAAPA = repositorioSecaoNAAPA ?? throw new System.ArgumentNullException(nameof(repositorioSecaoNAAPA));
         }

@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioConsolidadoEncaminhamentoNAAPA: RepositorioBase<ConsolidadoEncaminhamentoNAAPA>, IRepositorioConsolidadoEncaminhamentoNAAPA
+    public class RepositorioConsolidadoAtendimentoNAAPA: RepositorioBase<ConsolidadoEncaminhamentoNAAPA>, IRepositorioConsolidadoEncaminhamentoNAAPA
     {
-        public RepositorioConsolidadoEncaminhamentoNAAPA(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
+        public RepositorioConsolidadoAtendimentoNAAPA(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 
@@ -52,7 +52,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<DadosGraficoSitaucaoPorUeAnoLetivoDto>(sql.ToString(), new {  ueId, anoLetivo, dreId, modalidade }, commandTimeout: 60);
         }
 
-        public async Task<GraficoEncaminhamentoNAAPADto> ObterQuantidadeEncaminhamentoNAAPAEmAberto(int anoLetivo, long? dreId, int? modalidade)
+        public async Task<GraficoAtendimentoNAAPADto> ObterQuantidadeEncaminhamentoNAAPAEmAberto(int anoLetivo, long? dreId, int? modalidade)
         {
             var situacaoEncerrada = (int)SituacaoNAAPA.Encerrado;
             var query = new StringBuilder();
@@ -82,7 +82,7 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine($" {where} ;");
 
-            var retorno = new GraficoEncaminhamentoNAAPADto();
+            var retorno = new GraficoAtendimentoNAAPADto();
 
             using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), new { anoLetivo, dreId, situacaoEncerrada, modalidade }))
             {

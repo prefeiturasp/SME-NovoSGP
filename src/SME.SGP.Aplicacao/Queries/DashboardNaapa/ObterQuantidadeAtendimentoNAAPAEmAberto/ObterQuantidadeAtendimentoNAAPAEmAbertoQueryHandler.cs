@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterQuantidadeAtendimentoNAAPAEmAbertoQueryHandler : IRequestHandler<ObterQuantidadeAtendimentoNAAPAEmAbertoQuery, GraficoEncaminhamentoNAAPADto>
+    public class ObterQuantidadeAtendimentoNAAPAEmAbertoQueryHandler : IRequestHandler<ObterQuantidadeAtendimentoNAAPAEmAbertoQuery, GraficoAtendimentoNAAPADto>
     {
         private IRepositorioConsolidadoEncaminhamentoNAAPA repositorioConsolidado;
         private IMediator mediator;
@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<GraficoEncaminhamentoNAAPADto> Handle(ObterQuantidadeAtendimentoNAAPAEmAbertoQuery request, CancellationToken cancellationToken)
+        public async Task<GraficoAtendimentoNAAPADto> Handle(ObterQuantidadeAtendimentoNAAPAEmAbertoQuery request, CancellationToken cancellationToken)
         {
             var grafico = await this.repositorioConsolidado.ObterQuantidadeEncaminhamentoNAAPAEmAberto(request.AnoLetivo, request.DreId, (int?)request.Modalidade);
 

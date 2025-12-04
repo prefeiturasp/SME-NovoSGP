@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Infra
 {
-    public class GraficoEncaminhamentoNAAPADto
+    public class GraficoAtendimentoNAAPADto
     {
-        public GraficoEncaminhamentoNAAPADto()
+        public GraficoAtendimentoNAAPADto()
         {
             Graficos = new List<GraficoBaseDto>();
         }

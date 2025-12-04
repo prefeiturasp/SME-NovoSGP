@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao
     public class ExcluirQuestaoAtendimentoNAAPAPorIdCommandHandler : IRequestHandler<ExcluirQuestaoAtendimentoNAAPAPorIdCommand, bool>
     {
         public IMediator mediator { get; }
-        public IRepositorioQuestaoEncaminhamentoNAAPA repositorioQuestaoEncaminhamentoNAAPA { get; }
+        public IRepositorioQuestaoAtendimentoNAAPA repositorioQuestaoEncaminhamentoNAAPA { get; }
 
-        public ExcluirQuestaoAtendimentoNAAPAPorIdCommandHandler(IMediator mediator, IRepositorioQuestaoEncaminhamentoNAAPA repositorioQuestaoEncaminhamentoNAAPA)
+        public ExcluirQuestaoAtendimentoNAAPAPorIdCommandHandler(IMediator mediator, IRepositorioQuestaoAtendimentoNAAPA repositorioQuestaoEncaminhamentoNAAPA)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioQuestaoEncaminhamentoNAAPA = repositorioQuestaoEncaminhamentoNAAPA ?? throw new ArgumentNullException(nameof(repositorioQuestaoEncaminhamentoNAAPA));

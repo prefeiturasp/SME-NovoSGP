@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarObservacaoNAAPACommandHandler : IRequestHandler<SalvarObservacaoNAAPACommand, bool>
     {
-        private readonly IRepositorioObservacaoEncaminhamentoNAAPA repositorioObs;
+        private readonly IRepositorioObservacaoAtendimentoNAAPA repositorioObs;
 
-        public SalvarObservacaoNAAPACommandHandler(IRepositorioObservacaoEncaminhamentoNAAPA repositorioObs)
+        public SalvarObservacaoNAAPACommandHandler(IRepositorioObservacaoAtendimentoNAAPA repositorioObs)
         {
             this.repositorioObs = repositorioObs ?? throw new ArgumentNullException(nameof(repositorioObs));
         }

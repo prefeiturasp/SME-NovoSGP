@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPrioridadeAtendimentoNAAPAQueryHandler : IRequestHandler<ObterPrioridadeAtendimentoNAAPAQuery, IEnumerable<PrioridadeAtendimentoNAAPADto>>
     {
-        private readonly IRepositorioQuestaoEncaminhamentoNAAPA repositorio;
+        private readonly IRepositorioQuestaoAtendimentoNAAPA repositorio;
 
-        public ObterPrioridadeAtendimentoNAAPAQueryHandler(IRepositorioQuestaoEncaminhamentoNAAPA repositorio)
+        public ObterPrioridadeAtendimentoNAAPAQueryHandler(IRepositorioQuestaoAtendimentoNAAPA repositorio)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }

@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ExcluirObservacaoNAAPACommandHandler : IRequestHandler<ExcluirObservacaoNAAPACommand,bool>
     {
-        private readonly IRepositorioObservacaoEncaminhamentoNAAPA repositorioObs;
+        private readonly IRepositorioObservacaoAtendimentoNAAPA repositorioObs;
 
-        public ExcluirObservacaoNAAPACommandHandler(IRepositorioObservacaoEncaminhamentoNAAPA repositorioObs)
+        public ExcluirObservacaoNAAPACommandHandler(IRepositorioObservacaoAtendimentoNAAPA repositorioObs)
         {
             this.repositorioObs = repositorioObs ?? throw new ArgumentNullException(nameof(repositorioObs));
         }

@@ -1,11 +1,10 @@
-﻿using Elastic.Apm.Api;
-using SME.SGP.Infra;
+﻿using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
-    public interface IRepositorioSecaoEncaminhamentoNAAPA : IRepositorioBase<SecaoEncaminhamentoNAAPA>
+    public interface IRepositorioSecaoAtendimentoNAAPA : IRepositorioBase<SecaoEncaminhamentoNAAPA>
     {
         Task<IEnumerable<SecaoQuestionarioDto>> ObterSecoesQuestionarioDto(int modalidade, long? encaminhamentoNAAPAId = null);
         Task<IEnumerable<SecaoEncaminhamentoNAAPA>> ObterSecoesEncaminhamentoPorModalidade(int? modalidade, long? encaminhamentoNAAPAId = null);

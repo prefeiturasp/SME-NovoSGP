@@ -97,7 +97,7 @@ namespace SME.SGP.TesteIntegracao.AtendimentoNAAPA.RelatorioDinamico
                 }
             };
 
-            var useCase = ServiceProvider.GetService<IRelatorioDinamicoObterEncaminhamentoNAAPAUseCase>();
+            var useCase = ServiceProvider.GetService<IRelatorioDinamicoObterAtendimentoNAAPAUseCase>();
             var retorno = await useCase.Executar(filtro);
             retorno.ShouldNotBeNull();
 
@@ -187,7 +187,7 @@ namespace SME.SGP.TesteIntegracao.AtendimentoNAAPA.RelatorioDinamico
                 }
             };
 
-            var useCase = ServiceProvider.GetService<IRelatorioDinamicoObterEncaminhamentoNAAPAUseCase>();
+            var useCase = ServiceProvider.GetService<IRelatorioDinamicoObterAtendimentoNAAPAUseCase>();
             var retorno = await useCase.Executar(filtro);
             retorno.ShouldNotBeNull();
 

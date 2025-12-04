@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterObservacaoAtendimentosNAAPAQueryHandler : ConsultasBase, IRequestHandler<ObterObservacaoAtendimentosNAAPAQuery, PaginacaoResultadoDto<AtendimentoNAAPAObservacoesDto>>
     {
-        private readonly IRepositorioObservacaoEncaminhamentoNAAPA repositorioObs;
+        private readonly IRepositorioObservacaoAtendimentoNAAPA repositorioObs;
         public ObterObservacaoAtendimentosNAAPAQueryHandler(IContextoAplicacao contextoAplicacao,
-            IRepositorioObservacaoEncaminhamentoNAAPA repositorio) : base(contextoAplicacao)
+            IRepositorioObservacaoAtendimentoNAAPA repositorio) : base(contextoAplicacao)
         {
             this.repositorioObs = repositorio ?? throw new System.ArgumentNullException(nameof(repositorio));
         }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.AtendimentoNAAPA.ServicosFake
 {
-    public class ObterHistoricosDeAlteracoesEncaminhamentoNAAPAQueryHandlerFake : IRequestHandler<ObterHistoricosDeAlteracoesAtendimentoNAAPAQuery, EncaminhamentoNAAPAHistoricoAlteracoes>
+    public class ObterHistoricosDeAlteracoesAtendimentoNAAPAQueryHandlerFake : IRequestHandler<ObterHistoricosDeAlteracoesAtendimentoNAAPAQuery, EncaminhamentoNAAPAHistoricoAlteracoes>
     {
         public async Task<EncaminhamentoNAAPAHistoricoAlteracoes> Handle(ObterHistoricosDeAlteracoesAtendimentoNAAPAQuery request, CancellationToken cancellationToken)
         {

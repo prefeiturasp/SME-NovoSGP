@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepci
 {
     public class ObterSecoesAtendimentoNAAPAPorModalidadesQueryHandler : IRequestHandler<ObterSecoesAtendimentoNAAPAPorModalidadesQuery, IEnumerable<SecaoQuestionarioDto>>
     {
-        private readonly IRepositorioSecaoEncaminhamentoNAAPA repositorioSecaoEncaminhamentoNAPPA;
+        private readonly IRepositorioSecaoAtendimentoNAAPA repositorioSecaoEncaminhamentoNAPPA;
        
-        public ObterSecoesAtendimentoNAAPAPorModalidadesQueryHandler(IRepositorioSecaoEncaminhamentoNAAPA repositorioSecaoEncaminhamentoNAPPA)
+        public ObterSecoesAtendimentoNAAPAPorModalidadesQueryHandler(IRepositorioSecaoAtendimentoNAAPA repositorioSecaoEncaminhamentoNAPPA)
         {
             this.repositorioSecaoEncaminhamentoNAPPA = repositorioSecaoEncaminhamentoNAPPA ?? throw new System.ArgumentNullException(nameof(repositorioSecaoEncaminhamentoNAPPA));
         }

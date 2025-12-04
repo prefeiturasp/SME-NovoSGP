@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
-    public interface IRepositorioQuestaoEncaminhamentoNAAPA : IRepositorioBase<QuestaoEncaminhamentoNAAPA>
+    public interface IRepositorioQuestaoAtendimentoNAAPA : IRepositorioBase<QuestaoEncaminhamentoNAAPA>
     {
         Task<IEnumerable<long>> ObterQuestoesPorSecaoId(long encaminhamentoNAAPASecaoId);
         Task<IEnumerable<RespostaQuestaoAtendimentoNAAPADto>> ObterRespostasEncaminhamento(long encaminhamentoId);

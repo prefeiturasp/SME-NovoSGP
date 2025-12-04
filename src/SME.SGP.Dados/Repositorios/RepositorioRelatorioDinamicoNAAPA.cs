@@ -37,12 +37,12 @@ namespace SME.SGP.Dados.Repositorios
             var sqlTotalDeRegistros = ObterQueryTotalDeRegistros(queryFiltro, queryTabelaResposta, filtro);
             var sql = string.Concat(sqlPaginada, ";", sqlTotalDeRegistros);
             
-            var retornoPaginado = new PaginacaoResultadoDto<EncaminhamentoNAAPARelatorioDinamico>();
+            var retornoPaginado = new PaginacaoResultadoDto<AtendimentoNAAPARelatorioDinamico>();
             IEnumerable<TotalRegistroPorModalidadeRelatorioDinamicoNAAPA> retornoTotalDeRegitros = null;
 
             using (var encaminhamentosNAAPA = await contexto.Conexao.QueryMultipleAsync(sql, ObterParametro(filtro)))
             {
-                retornoPaginado.Items = encaminhamentosNAAPA.Read<EncaminhamentoNAAPARelatorioDinamico>();
+                retornoPaginado.Items = encaminhamentosNAAPA.Read<AtendimentoNAAPARelatorioDinamico>();
                 retornoTotalDeRegitros = encaminhamentosNAAPA.Read<TotalRegistroPorModalidadeRelatorioDinamicoNAAPA>();
                 retornoPaginado.TotalRegistros = retornoTotalDeRegitros.Sum(registro => (int)registro.Total);
             }

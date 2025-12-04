@@ -21,7 +21,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.RDNAAPA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterEncaminhamentosNAAPA(
                                             [FromBody] FiltroRelatorioDinamicoNAAPADto filtro,
-                                            [FromServices] IRelatorioDinamicoObterEncaminhamentoNAAPAUseCase useCase)
+                                            [FromServices] IRelatorioDinamicoObterAtendimentoNAAPAUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
         }

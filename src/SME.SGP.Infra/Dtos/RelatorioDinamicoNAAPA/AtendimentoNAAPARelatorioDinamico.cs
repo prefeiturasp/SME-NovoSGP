@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Infra
 {
-    public class EncaminhamentoNAAPARelatorioDinamico
+    public class AtendimentoNAAPARelatorioDinamico
     {
         public long Id { get; set; }
         public string Dre { get; set; }

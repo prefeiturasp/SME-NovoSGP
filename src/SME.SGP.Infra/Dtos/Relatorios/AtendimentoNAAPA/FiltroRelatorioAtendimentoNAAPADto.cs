@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Infra
 {
-    public class FiltroRelatorioEncaminhamentoNAAPADto
+    public class FiltroRelatorioAtendimentoNAAPADto
     {
         public bool ConsideraHistorico { get; set; }
         public int AnoLetivo { get; set; }

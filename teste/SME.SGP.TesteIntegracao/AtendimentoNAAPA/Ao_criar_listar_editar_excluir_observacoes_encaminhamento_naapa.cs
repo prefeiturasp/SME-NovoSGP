@@ -28,7 +28,7 @@ namespace SME.SGP.TesteIntegracao.AtendimentoNAAPA
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorTurmaAlunoCodigoQuery, AlunoPorTurmaResposta>), typeof(ObterAlunoPorTurmaAlunoCodigoQueryHandlerFakeNAAPA), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaCodigoPorIdQuery, string>), typeof(ObterTurmaCodigoPorIdQueryHandlerFakeNAAPA), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>), typeof(ObterAlunoPorCodigoEolQueryHandlerFakeNAAPA), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterHistoricosDeAlteracoesAtendimentoNAAPAQuery, EncaminhamentoNAAPAHistoricoAlteracoes>), typeof(ObterHistoricosDeAlteracoesEncaminhamentoNAAPAQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterHistoricosDeAlteracoesAtendimentoNAAPAQuery, EncaminhamentoNAAPAHistoricoAlteracoes>), typeof(ObterHistoricosDeAlteracoesAtendimentoNAAPAQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         [Fact(DisplayName = "Encaminhamento NAAPA - Criar ,Listar ,Atualizar e Excluir Observações do Encaminhamento NAAPA")]

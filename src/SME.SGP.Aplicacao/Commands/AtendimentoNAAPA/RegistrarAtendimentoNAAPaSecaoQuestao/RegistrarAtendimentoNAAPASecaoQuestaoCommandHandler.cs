@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao.Commands
 {
     public class RegistrarAtendimentoNAAPASecaoQuestaoCommandHandler : IRequestHandler<RegistrarAtendimentoNAAPASecaoQuestaoCommand, long>
     {
-        private readonly IRepositorioQuestaoEncaminhamentoNAAPA repositorioQuestaoEncaminhamentoNAAPA;
+        private readonly IRepositorioQuestaoAtendimentoNAAPA repositorioQuestaoEncaminhamentoNAAPA;
 
-        public RegistrarAtendimentoNAAPASecaoQuestaoCommandHandler(IRepositorioQuestaoEncaminhamentoNAAPA repositorioQuestaoEncaminhamentoNAAPA)
+        public RegistrarAtendimentoNAAPASecaoQuestaoCommandHandler(IRepositorioQuestaoAtendimentoNAAPA repositorioQuestaoEncaminhamentoNAAPA)
         {
             this.repositorioQuestaoEncaminhamentoNAAPA = repositorioQuestaoEncaminhamentoNAAPA ?? throw new ArgumentNullException(nameof(repositorioQuestaoEncaminhamentoNAAPA));
         }

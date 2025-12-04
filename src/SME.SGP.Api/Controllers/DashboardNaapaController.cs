@@ -40,7 +40,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("frequencia/turma/encaminhamentosituacao")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [ProducesResponseType(typeof(IEnumerable<GraficoEncaminhamentoNAAPADto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<GraficoAtendimentoNAAPADto>), 200)]
         [Permissao(Permissao.DNA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterQuantidadeEncaminhamentoPorSituacao([FromQuery] FiltroGraficoEncaminhamentoPorSituacaoDto filtro,[FromServices] IObterQuantidadeEncaminhamentoPorSituacaoUseCase useCase)
         {
@@ -50,11 +50,11 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("quantidade-em-aberto")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [ProducesResponseType(typeof(GraficoEncaminhamentoNAAPADto), 200)]
+        [ProducesResponseType(typeof(GraficoAtendimentoNAAPADto), 200)]
         [Permissao(Permissao.DNA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterQuantidadeEncaminhamentoNAAPAEmAberto(
-                                                [FromQuery] FiltroQuantidadeEncaminhamentoNAAPAEmAbertoDto filtro,
-                                                [FromServices] IObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase useCase)
+                                                [FromQuery] FiltroQuantidadeAtendimentoNAAPAEmAbertoDto filtro,
+                                                [FromServices] IObterQuantidadeAtendimentoNAAPAEmAbertoPorDreUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
         }
@@ -62,7 +62,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("quantidade-por-profissional-mes")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [ProducesResponseType(typeof(IEnumerable<GraficoEncaminhamentoNAAPADto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<GraficoAtendimentoNAAPADto>), 200)]
         [Permissao(Permissao.DNA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterQuantidadeAtendimentoNAAPAPorProfissionalMes(
                                         [FromQuery] FiltroQuantidadeAtendimentoNAAPAPorProfissionalMesDto filtro,

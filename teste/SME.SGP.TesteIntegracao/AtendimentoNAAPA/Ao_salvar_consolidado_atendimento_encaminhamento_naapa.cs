@@ -28,7 +28,7 @@ namespace SME.SGP.TesteIntegracao.AtendimentoNAAPA
         {
             base.RegistrarFakes(services);
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodasUesIdsQuery, IEnumerable<long>>), typeof(ObterTodasUesIdsQueryHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaSgpCommand, bool>), typeof(PublicarFilaSgpCommandExecutarConsolidadoAtendimentoProfissionalEncaminhamentoNAAPAUseCase), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaSgpCommand, bool>), typeof(PublicarFilaSgpCommandExecutarConsolidadoAtendimentoProfissionalAtendimentoNAAPAUseCase), ServiceLifetime.Scoped));
         }
 
         [Fact(DisplayName = "Deve Retornar True e gerar os registros consolidados ao Executar Rotina de Consolidação")]

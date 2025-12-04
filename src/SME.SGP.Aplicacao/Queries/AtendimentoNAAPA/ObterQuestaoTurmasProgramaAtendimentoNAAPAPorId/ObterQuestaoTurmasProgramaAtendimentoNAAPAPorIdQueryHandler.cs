@@ -10,8 +10,8 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterQuestaoTurmasProgramaAtendimentoNAAPAPorIdQueryHandler : ConsultasBase, IRequestHandler<ObterQuestaoTurmasProgramaAtendimentoNAAPAPorIdQuery, QuestaoEncaminhamentoNAAPA>
     {
-        private readonly IRepositorioQuestaoEncaminhamentoNAAPA repositorioEncaminhamentoNaapaQuestao;
-        public ObterQuestaoTurmasProgramaAtendimentoNAAPAPorIdQueryHandler(IContextoAplicacao contextoAplicacao, IRepositorioQuestaoEncaminhamentoNAAPA repositorioEncaminhamentoNaapaQuestao) : base(contextoAplicacao)
+        private readonly IRepositorioQuestaoAtendimentoNAAPA repositorioEncaminhamentoNaapaQuestao;
+        public ObterQuestaoTurmasProgramaAtendimentoNAAPAPorIdQueryHandler(IContextoAplicacao contextoAplicacao, IRepositorioQuestaoAtendimentoNAAPA repositorioEncaminhamentoNaapaQuestao) : base(contextoAplicacao)
         {
             this.repositorioEncaminhamentoNaapaQuestao = repositorioEncaminhamentoNaapaQuestao ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoNaapaQuestao));
         }

@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DashboardNaapa
                 Modalidade = Modalidade.Fundamental
             };
 
-            var esperado = new GraficoEncaminhamentoNAAPADto
+            var esperado = new GraficoAtendimentoNAAPADto
             {
                 DataUltimaConsolidacao = DateTime.Today,
                 TotaEncaminhamento = 10,
@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DashboardNaapa
                 DreId = 1
             };
 
-            var esperado = new GraficoEncaminhamentoNAAPADto
+            var esperado = new GraficoAtendimentoNAAPADto
             {
                 DataUltimaConsolidacao = null,
                 TotaEncaminhamento = 0,

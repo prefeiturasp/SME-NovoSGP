@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ExcluirReferenciaArquivoNAAPAPorArquivoIdCommandHandler : IRequestHandler<ExcluirReferenciaArquivoNAAPAPorArquivoIdCommand, bool>
     {
-        private readonly IRepositorioRespostaEncaminhamentoNAAPA repositorioResposta;
+        private readonly IRepositorioRespostaAtendimentoNAAPA repositorioResposta;
 
-        public ExcluirReferenciaArquivoNAAPAPorArquivoIdCommandHandler(IRepositorioRespostaEncaminhamentoNAAPA repositorioResposta)
+        public ExcluirReferenciaArquivoNAAPAPorArquivoIdCommandHandler(IRepositorioRespostaAtendimentoNAAPA repositorioResposta)
         {
             this.repositorioResposta = repositorioResposta ?? throw new ArgumentNullException(nameof(repositorioResposta));
         }

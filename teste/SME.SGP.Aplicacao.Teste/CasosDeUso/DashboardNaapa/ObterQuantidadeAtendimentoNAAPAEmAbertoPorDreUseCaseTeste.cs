@@ -23,14 +23,14 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DashboardNaapa
         [Fact]
         public async Task Executar_Quando_Chamado_Deve_RetornarResultado_Teste()
         {
-            var filtro = new FiltroQuantidadeEncaminhamentoNAAPAEmAbertoDto
+            var filtro = new FiltroQuantidadeAtendimentoNAAPAEmAbertoDto
             {
                 AnoLetivo = 2025,
                 DreId = 1,
                 Modalidade = Modalidade.Fundamental
             };
 
-            var esperado = new GraficoEncaminhamentoNAAPADto { TotaEncaminhamento = 5 };
+            var esperado = new GraficoAtendimentoNAAPADto { TotaEncaminhamento = 5 };
 
             mediatorMock.Setup(m => m.Send(It.IsAny<ObterQuantidadeAtendimentoNAAPAEmAbertoQuery>(), It.IsAny<CancellationToken>()))
                         .ReturnsAsync(esperado);

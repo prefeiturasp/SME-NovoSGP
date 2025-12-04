@@ -13,9 +13,9 @@ namespace SME.SGP.Aplicacao
     public class ObterTiposDeImprimirAnexosNAAPAQueryHandler : IRequestHandler<ObterTiposDeImprimirAnexosNAAPAQuery, IEnumerable<ImprimirAnexoDto>>
     {
         private const string SECAO_INFORMACOES = "INFORMACOES_ESTUDANTE";
-        private readonly IRepositorioRespostaEncaminhamentoNAAPA repositorio;
+        private readonly IRepositorioRespostaAtendimentoNAAPA repositorio;
 
-        public ObterTiposDeImprimirAnexosNAAPAQueryHandler(IRepositorioRespostaEncaminhamentoNAAPA repositorio)
+        public ObterTiposDeImprimirAnexosNAAPAQueryHandler(IRepositorioRespostaAtendimentoNAAPA repositorio)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }

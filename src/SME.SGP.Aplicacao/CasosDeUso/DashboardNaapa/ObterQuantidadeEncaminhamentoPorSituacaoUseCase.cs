@@ -17,9 +17,9 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<GraficoEncaminhamentoNAAPADto> Executar(FiltroGraficoEncaminhamentoPorSituacaoDto param)
+        public async Task<GraficoAtendimentoNAAPADto> Executar(FiltroGraficoEncaminhamentoPorSituacaoDto param)
         {
-            var graficos = new GraficoEncaminhamentoNAAPADto();
+            var graficos = new GraficoAtendimentoNAAPADto();
             var consultaDados = await repositorio.ObterDadosGraficoSituacaoPorUeAnoLetivo(param.AnoLetivo, param.UeId, param.DreId, (int?)param.Modalidade);
 
             graficos.DataUltimaConsolidacao = await mediator.Send(new ObterDataUltimaConsolicacaoDashboardNaapaQuery(TipoParametroSistema.GerarConsolidadoEncaminhamentoNAAPA, param.AnoLetivo));

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioQuestaoAtendimentoNAAPA : RepositorioBase<QuestaoEncaminhamentoNAAPA>, IRepositorioQuestaoEncaminhamentoNAAPA
+    public class RepositorioQuestaoAtendimentoNAAPA : RepositorioBase<QuestaoEncaminhamentoNAAPA>, IRepositorioQuestaoAtendimentoNAAPA
     {
         private const int ETAPA_1 = 1;
         private const string QUESTAO_PRIORIDADE = "Prioridade";
