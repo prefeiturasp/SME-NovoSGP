@@ -48,7 +48,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             aluno.Items.Count().ShouldBeGreaterThanOrEqualTo(1);
 
             var verificarExistenciaPlanoAee = ObterServicoVerificarExistenciaPlanoAEEPorEstudanteUseCase();
-            var ex = await Assert.ThrowsAsync<NegocioException>(() => verificarExistenciaPlanoAee.Executar(aluno.Items.FirstOrDefault().Codigo));
+            var existePlanoEstudante = new FiltroEstudantePlanoAEEDto(aluno.Items.FirstOrDefault().Codigo, "1234");
+            var ex = await Assert.ThrowsAsync<NegocioException>(() => verificarExistenciaPlanoAee.Executar(existePlanoEstudante));
             ex.Message.ShouldNotBeNullOrEmpty();
         }
 

@@ -92,13 +92,13 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(planoAeeDto));
         }
 
-        [HttpGet("estudante/{codigoEstudante}/existe")]
+        [HttpGet("estudante/{codigoEstudante}/existe/{codigoUe}/ue")]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
-        public async Task<IActionResult> VerificarExistenciaPlanoAEEPorEstudante(string codigoEstudante, [FromServices] IVerificarExistenciaPlanoAEEPorEstudanteUseCase useCase)
+        public async Task<IActionResult> VerificarExistenciaPlanoAEEPorEstudante(string codigoEstudante, string codigoUe, [FromServices] IVerificarExistenciaPlanoAEEPorEstudanteUseCase useCase)
         {
-            return Ok(await useCase.Executar(codigoEstudante));
+            return Ok(await useCase.Executar(new FiltroEstudantePlanoAEEDto(codigoEstudante, codigoUe)));
         }
 
         [HttpGet("{planoAeeId}/reestruturacoes")]
