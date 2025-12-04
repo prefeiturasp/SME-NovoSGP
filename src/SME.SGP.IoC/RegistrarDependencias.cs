@@ -22,6 +22,7 @@ using SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Idep;
 using SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Proficiencia;
 using SME.SGP.Aplicacao.CasosDeUso.Informes;
 using SME.SGP.Aplicacao.CasosDeUso.PainelEducacional;
+using SME.SGP.Aplicacao.CasosDeUso.PlanoAEE.EncerrarPlano;
 using SME.SGP.Aplicacao.CasosDeUso.Turma;
 using SME.SGP.Aplicacao.CasosDeUso.Usuarios;
 using SME.SGP.Aplicacao.Consultas;
@@ -1218,6 +1219,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExecutaEncerramentoPlanoAEEEstudantesInativosUseCase, ExecutaEncerramentoPlanoAEEEstudantesInativosUseCase>();
             services.TryAddScoped<IObterParecerPlanoAEEPorIdUseCase, ObterParecerPlanoAEEPorIdUseCase>();
             services.TryAddScoped<IEncerrarPlanoAEEUseCase, EncerrarPlanoAEEUseCase>();
+            services.TryAddScoped<IEncerramentoManualPlanoAEEUseCase, EncerramentoManualPlanoAEEUseCase>();
 
             services.TryAddScoped<IObterAlunoPorCodigoEolEAnoLetivoUseCase, ObterAlunoPorCodigoEolEAnoLetivoUseCase>();
             services.TryAddScoped<IRegistrarEncaminhamentoAEEUseCase, RegistrarEncaminhamentoAEEUseCase>();
