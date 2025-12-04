@@ -1,6 +1,7 @@
 ﻿using FluentValidation.Results;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
@@ -14,7 +15,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioFechamentoTurmaConsulta : RepositorioBase<FechamentoTurma>, IRepositorioFechamentoTurmaConsulta
     {
-        public RepositorioFechamentoTurmaConsulta(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
+        public RepositorioFechamentoTurmaConsulta(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

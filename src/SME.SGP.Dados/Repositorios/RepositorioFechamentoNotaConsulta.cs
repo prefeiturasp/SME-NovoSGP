@@ -45,7 +45,7 @@ namespace SME.SGP.Dados.Repositorios
                          where not fn.excluido
                                and cc.permite_lancamento_nota ";
 
-        public RepositorioFechamentoNotaConsulta(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
+        public RepositorioFechamentoNotaConsulta(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 
