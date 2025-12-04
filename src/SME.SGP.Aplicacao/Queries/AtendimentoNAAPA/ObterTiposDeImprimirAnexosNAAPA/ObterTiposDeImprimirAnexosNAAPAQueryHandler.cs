@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             var dicionario = new Dictionary<string, EnumImprimirAnexosNAAPA>()
             {
                 { SECAO_INFORMACOES, EnumImprimirAnexosNAAPA.ApenasEncaminhamento },
-                { EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA, EnumImprimirAnexosNAAPA.ApenasAtendimentos }
+                { AtendimentoNAAPAConstants.SECAO_ITINERANCIA, EnumImprimirAnexosNAAPA.ApenasAtendimentos }
             };
             var itensImprimerAnexo = new List<ImprimirAnexoDto>() { ObterDto(EnumImprimirAnexosNAAPA.Nao) };
             var nomesComponentes = await repositorio.ObterNomesComponenteSecaoComAnexosEmPdf(request.EncaminhamentoId);

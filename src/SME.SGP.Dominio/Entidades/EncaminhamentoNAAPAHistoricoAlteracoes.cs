@@ -16,6 +16,6 @@ namespace SME.SGP.Dominio
         public string CamposAlterados { get; set; }
         public string DataAtendimento { get; set; }
         public DateTime DataHistorico { get; set; }
-        public TipoHistoricoAlteracoesEncaminhamentoNAAPA TipoHistorico { get; set; }
+        public TipoHistoricoAlteracoesAtendimentoNAAPA TipoHistorico { get; set; }
     }
 }

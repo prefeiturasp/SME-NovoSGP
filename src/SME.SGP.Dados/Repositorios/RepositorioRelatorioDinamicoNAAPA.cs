@@ -91,7 +91,7 @@ namespace SME.SGP.Dados.Repositorios
         private Task<IEnumerable<string>> ObterNomesComponentes(bool apenasAtendimento = false)
         {
             var sql = new StringBuilder();
-            var condicaoAtendimento = apenasAtendimento ? $"AND sen.nome_componente = '{EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA}'" : string.Empty;
+            var condicaoAtendimento = apenasAtendimento ? $"AND sen.nome_componente = '{AtendimentoNAAPAConstants.SECAO_ITINERANCIA}'" : string.Empty;
             
             sql.AppendLine(@$"SELECT DISTINCT questao.nome_componente
                              FROM questionario q
@@ -247,7 +247,7 @@ namespace SME.SGP.Dados.Repositorios
                                                      JOIN secao_encaminhamento_naapa sen on sen.questionario_id = q.id
                                                      JOIN questao on q.id = questao.questionario_id
                                                      WHERE q.tipo = {(int)TipoQuestionario.RelatorioDinamicoEncaminhamentoNAAPA}
-                                                     AND sen.nome_componente = ''{EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA}''
+                                                     AND sen.nome_componente = ''{AtendimentoNAAPAConstants.SECAO_ITINERANCIA}''
                                                      order by questao.nome_componente') AS tab_pivot
                                                     (id int8 {colunas}))");
 
@@ -361,7 +361,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = new StringBuilder();
 
-            queryFiltro += $@" AND sen.nome_componente = '{EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA}'";
+            queryFiltro += $@" AND sen.nome_componente = '{AtendimentoNAAPAConstants.SECAO_ITINERANCIA}'";
 
             sql.AppendLine(ObterQuery(queryFiltro, queryTabelaResposta, "COUNT(distinct ens.id) totalAtendimento", true));
 

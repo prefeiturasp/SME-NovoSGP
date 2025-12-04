@@ -62,10 +62,10 @@ namespace SME.SGP.Aplicacao
         private async Task ValidarRegras(EncaminhamentoNAAPA encaminhamentoNAAPA)
         {
             if (encaminhamentoNAAPA.EhNulo() || encaminhamentoNAAPA.Id == 0)
-                throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.ENCAMINHAMENTO_NAO_ENCONTRADO);
+                throw new NegocioException(MensagemNegocioAtendimentoNAAPA.ATENDIMENTO_NAO_ENCONTRADO);
 
             if (encaminhamentoNAAPA.Situacao != SituacaoNAAPA.Encerrado)
-                throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.ENCAMINHAMENTO_NAO_PODE_SER_REABERTO_NESTA_SITUACAO);
+                throw new NegocioException(MensagemNegocioAtendimentoNAAPA.ATENDIMENTO_NAO_PODE_SER_REABERTO_NESTA_SITUACAO);
 
             var matriculasAlunoEol = await mediator
                 .Send(new ObterAlunosEolPorCodigosQuery(long.Parse(encaminhamentoNAAPA.AlunoCodigo), true));
@@ -73,7 +73,7 @@ namespace SME.SGP.Aplicacao
             var matriculaVigenteAluno = FiltrarMatriculaVigenteAluno(matriculasAlunoEol);
 
             if (matriculaVigenteAluno.EhNulo() || matriculaVigenteAluno.Inativo)
-                throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.ENCAMINHAMENTO_ALUNO_INATIVO_NAO_PODE_SER_REABERTO);
+                throw new NegocioException(MensagemNegocioAtendimentoNAAPA.ATENDIMENTO_ALUNO_INATIVO_NAO_PODE_SER_REABERTO);
         }
 
         private static TurmasDoAlunoDto FiltrarMatriculaVigenteAluno(IEnumerable<TurmasDoAlunoDto> matriculasAluno)

@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             var encaminhamentoNAAPA = await mediator.Send(new ObterAtendimentoNAAPAComTurmaPorIdQuery(id));
 
             if(encaminhamentoNAAPA.EhNulo())
-                throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.ENCAMINHAMENTO_NAO_ENCONTRADO);
+                throw new NegocioException(MensagemNegocioAtendimentoNAAPA.ATENDIMENTO_NAO_ENCONTRADO);
 
             var aluno = await ObterAlunoPorCodigoETurma(encaminhamentoNAAPA.AlunoCodigo, encaminhamentoNAAPA.Turma.CodigoTurma,encaminhamentoNAAPA.Turma.AnoLetivo);
             var nomeUe = encaminhamentoNAAPA.Turma.Ue.TipoEscola == TipoEscola.Nenhum ? encaminhamentoNAAPA.Turma.Ue.Nome : 

@@ -131,12 +131,12 @@ namespace SME.SGP.Aplicacao.CasosDeUso.NovoEncaminhamentoNAAPA
                     throw new NegocioException(string.Format(MensagemNegocioComuns.NENHUMA_QUESTAO_FOI_ENCONTRADA_NA_SECAO_X, secao.SecaoId));
 
                 var secaoExistente = encaminhamentoNAAPA.Secoes.FirstOrDefault(s => s.SecaoEncaminhamentoNAAPAId == secao.SecaoId);
-                var tipoHistorico = TipoHistoricoAlteracoesEncaminhamentoNAAPA.Alteracao;
+                var tipoHistorico = TipoHistoricoAlteracoesAtendimentoNAAPA.Alteracao;
 
                 if (secaoExistente.EhNulo())
                 {
                     secaoExistente = await mediator.Send(new RegistrarNovoEncaminhamentoNAAPASecaoCommand(encaminhamentoNAAPA.Id, secao.SecaoId, secao.Concluido));
-                    tipoHistorico = TipoHistoricoAlteracoesEncaminhamentoNAAPA.Inserido;
+                    tipoHistorico = TipoHistoricoAlteracoesAtendimentoNAAPA.Inserido;
                 }
                 else
                 {
@@ -235,7 +235,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.NovoEncaminhamentoNAAPA
                     await RegistrarRespostaEncaminhamento(questoes, resultadoEncaminhamentoQuestao);
                 }
 
-                await mediator.Send(new RegistrarHistoricoDeAlteracaoNovoEncaminhamentoNAAPACommand(secao, secaoEncaminhamento, TipoHistoricoAlteracoesEncaminhamentoNAAPA.Inserido));
+                await mediator.Send(new RegistrarHistoricoDeAlteracaoNovoEncaminhamentoNAAPACommand(secao, secaoEncaminhamento, TipoHistoricoAlteracoesAtendimentoNAAPA.Inserido));
             }
         }
 

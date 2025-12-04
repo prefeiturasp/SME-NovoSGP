@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
                 SecaoEncaminhamentoNAAPAId = atendimento.SecaoEncaminhamentoNAAPAId,
                 DataAtendimento = atendimento.DataAtendimento.ToString("dd/MM/yyyy"),
                 DataHistorico = DateTimeExtension.HorarioBrasilia(),
-                TipoHistorico = TipoHistoricoAlteracoesEncaminhamentoNAAPA.Exclusao,
+                TipoHistorico = TipoHistoricoAlteracoesAtendimentoNAAPA.Exclusao,
                 UsuarioId = usuarioLogado.Id
             };
 

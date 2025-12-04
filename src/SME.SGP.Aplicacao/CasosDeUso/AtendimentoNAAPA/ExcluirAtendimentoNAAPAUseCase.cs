@@ -18,10 +18,10 @@ namespace SME.SGP.Aplicacao
             var encaminhamentoNAAPA = await mediator.Send(new ObterAtendimentoNAAPAPorIdQuery(encaminhamentoNAAPAId));
 
             if (encaminhamentoNAAPA.EhNulo())
-                throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.ENCAMINHAMENTO_NAO_ENCONTRADO);
+                throw new NegocioException(MensagemNegocioAtendimentoNAAPA.ATENDIMENTO_NAO_ENCONTRADO);
             
             if (encaminhamentoNAAPA.Situacao != SituacaoNAAPA.Rascunho && encaminhamentoNAAPA.Situacao != SituacaoNAAPA.AguardandoAtendimento)
-                throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.ENCAMINHAMENTO_NAO_PODE_SER_EXCLUIDO_NESSA_SITUACAO);
+                throw new NegocioException(MensagemNegocioAtendimentoNAAPA.ATENDIMENTO_NAO_PODE_SER_EXCLUIDO_NESSA_SITUACAO);
             
             return (await mediator.Send(new ExcluirAtendimentoNAAPACommand(encaminhamentoNAAPAId)));
         }

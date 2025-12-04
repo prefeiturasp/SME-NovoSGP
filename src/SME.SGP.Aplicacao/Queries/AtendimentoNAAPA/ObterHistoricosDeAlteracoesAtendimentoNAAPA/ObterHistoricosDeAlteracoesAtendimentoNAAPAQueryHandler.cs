@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
         private EncaminhamentoNAAPAHistoricoAlteracoes ObterHistoricoAlteracaoSecao(
                                                         AtendimentoNAAPASecaoDto encaminhamentoNAAPAAlterado, 
                                                         EncaminhamentoNAAPASecao encaminhamentoSecaoExistente,
-                                                        TipoHistoricoAlteracoesEncaminhamentoNAAPA tipoHistoricoAlteracoes)
+                                                        TipoHistoricoAlteracoesAtendimentoNAAPA tipoHistoricoAlteracoes)
         {
             if (camposInseridos.Any() || camposAlterados.Any())
             {
@@ -75,7 +75,7 @@ namespace SME.SGP.Aplicacao
 
         private bool SecaoEhItinerancia(EncaminhamentoNAAPASecao encaminhamentoSecaoExistente)
         {
-            return encaminhamentoSecaoExistente?.SecaoEncaminhamentoNAAPA?.NomeComponente == EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA;
+            return encaminhamentoSecaoExistente?.SecaoEncaminhamentoNAAPA?.NomeComponente == AtendimentoNAAPAConstants.SECAO_ITINERANCIA;
         }
 
         private string ObterCamposFormatados(List<string> campos)
@@ -89,7 +89,7 @@ namespace SME.SGP.Aplicacao
         private async Task ExecuteValidacaoAlteracaoCamposDaSecao(
                                 AtendimentoNAAPASecaoDto encaminhamentoNAAPASecaoAlterado, 
                                 EncaminhamentoNAAPASecao encaminhamentoSecaoExistente,
-                                TipoHistoricoAlteracoesEncaminhamentoNAAPA tipoHistoricoAlteracoes)
+                                TipoHistoricoAlteracoesAtendimentoNAAPA tipoHistoricoAlteracoes)
         {
             foreach (var questaoAlterada in encaminhamentoNAAPASecaoAlterado.Questoes.GroupBy(q => q.QuestaoId))
             {
@@ -105,7 +105,7 @@ namespace SME.SGP.Aplicacao
         private async Task AdicionarCamposInseridos(
                             QuestaoEncaminhamentoNAAPA questaoExistente, 
                             IGrouping<long, AtendimentoNAAPASecaoQuestaoDto> respostas,
-                            TipoHistoricoAlteracoesEncaminhamentoNAAPA tipoHistoricoAlteracoes)
+                            TipoHistoricoAlteracoesAtendimentoNAAPA tipoHistoricoAlteracoes)
         {
             var novasRespostas = respostas.ToList().Find(c => c.RespostaEncaminhamentoId == 0);
 
@@ -113,7 +113,7 @@ namespace SME.SGP.Aplicacao
             {
                 var questao = questaoExistente?.Questao ?? Questoes?.FirstOrDefault(questao => questao.Id == novasRespostas.QuestaoId);
 
-                if (tipoHistoricoAlteracoes == TipoHistoricoAlteracoesEncaminhamentoNAAPA.Inserido)
+                if (tipoHistoricoAlteracoes == TipoHistoricoAlteracoesAtendimentoNAAPA.Inserido)
                 {
                     if (CampoPodeSerInserido(novasRespostas)) 
                         camposInseridos.Add(await ObterNomeQuestao(questao));

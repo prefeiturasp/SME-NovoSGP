@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
                 {
                     EncaminhamentoNAAPAId = encaminhamentoId,
                     DataHistorico = DateTimeExtension.HorarioBrasilia(),
-                    TipoHistorico = TipoHistoricoAlteracoesEncaminhamentoNAAPA.Impressao,
+                    TipoHistorico = TipoHistoricoAlteracoesAtendimentoNAAPA.Impressao,
                     UsuarioId = request.UsuarioLogadoId
                 };
 

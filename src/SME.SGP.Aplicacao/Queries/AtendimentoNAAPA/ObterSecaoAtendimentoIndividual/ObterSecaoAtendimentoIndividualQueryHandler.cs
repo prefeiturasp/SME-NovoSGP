@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao.Queries.EncaminhamentoNAAPA.ObterSecaoEncaminhamento
                     Nome = secao.Nome,
                     QuestionarioId = secao.QuestionarioId,
                     Etapa = secao.Etapa,
-                    Concluido = (secao.NomeComponente == EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA) || (secao.EncaminhamentoNAAPASecao?.Concluido ?? false),
+                    Concluido = (secao.NomeComponente == AtendimentoNAAPAConstants.SECAO_ITINERANCIA) || (secao.EncaminhamentoNAAPASecao?.Concluido ?? false),
                     NomeComponente = secao.NomeComponente,
                     Auditoria = (AuditoriaDto)secao.EncaminhamentoNAAPASecao,
                     TipoQuestionario = secao.Questionario.Tipo

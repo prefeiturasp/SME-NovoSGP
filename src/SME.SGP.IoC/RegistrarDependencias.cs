@@ -586,12 +586,12 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioTipoRelatorio, RepositorioTipoRelatorio>();
 
             // Encaminhamento NAAPA
-            services.TryAddScoped<IRepositorioSecaoEncaminhamentoNAAPA, RepositorioSecaoEncaminhamentoNAAPA>();
+            services.TryAddScoped<IRepositorioSecaoEncaminhamentoNAAPA, RepositorioSecaoAtenidmentoNAAPA>();
             services.TryAddScoped<IRepositorioAtendimentoNAAPA, RepositorioAtendimentoNAAPA>();
             services.TryAddScoped<IRepositorioAtendimentoNAAPASecao, RepositorioAtendimentoNAAPASecao>();
-            services.TryAddScoped<IRepositorioQuestaoEncaminhamentoNAAPA, RepositorioQuestaoEncaminhamentoNAAPA>();
-            services.TryAddScoped<IRepositorioRespostaEncaminhamentoNAAPA, RepositorioRespostaEncaminhamentoNAAPA>();
-            services.TryAddScoped<IRepositorioObservacaoEncaminhamentoNAAPA, RepositorioObservacaoEncaminhamentoNAAPA>();
+            services.TryAddScoped<IRepositorioQuestaoEncaminhamentoNAAPA, RepositorioQuestaoAtendimentoNAAPA>();
+            services.TryAddScoped<IRepositorioRespostaEncaminhamentoNAAPA, RepositorioRespostaAtendimentoNAAPA>();
+            services.TryAddScoped<IRepositorioObservacaoEncaminhamentoNAAPA, RepositorioObservacaoAtendimentoNAAPA>();
             services.TryAddScoped<IRepositorioAtendimentoNAAPAHistoricoAlteracoes, RepositorioAtendimentoNAAPAHistoricoAlteracoes>();
             services.TryAddScoped<IRepositorioConsolidadoEncaminhamentoNAAPA, RepositorioConsolidadoEncaminhamentoNAAPA>();
             services.TryAddScoped<IRepositorioConsolidadoAtendimentoNAAPA, RepositorioConsolidadoAtendimentoNAAPA>();
