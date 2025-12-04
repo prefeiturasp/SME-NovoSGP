@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(AlterarDataUltimaNotificacaoInatividadeAtendimentoNAAPACommand request, CancellationToken cancellationToken)
         {
-            var encaminhamento = await mediator.Send(new ObterEncaminhamentoNAAPAPorIdQuery(request.EncaminhamentoId));
+            var encaminhamento = await mediator.Send(new ObterAtendimentoNAAPAPorIdQuery(request.EncaminhamentoId));
 
             if (encaminhamento.NaoEhNulo()) 
             {

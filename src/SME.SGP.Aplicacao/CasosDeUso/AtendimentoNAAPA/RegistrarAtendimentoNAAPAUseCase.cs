@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
 
             if (encaminhamentoNAAPADto.Id.GetValueOrDefault() > 0)
             {
-                var encaminhamentoNAAPA = await mediator.Send(new ObterEncaminhamentoNAAPAPorIdQuery(encaminhamentoNAAPADto.Id.GetValueOrDefault()));
+                var encaminhamentoNAAPA = await mediator.Send(new ObterAtendimentoNAAPAPorIdQuery(encaminhamentoNAAPADto.Id.GetValueOrDefault()));
 
                 if (encaminhamentoNAAPA.NaoEhNulo())
                 {
@@ -96,7 +96,7 @@ namespace SME.SGP.Aplicacao
             {
                 foreach (var item in resposta)
                 {
-                    var entidadeResposta = await mediator.Send(new ObterRespostaEncaminhamentoNAAPAPorIdQuery(item.RespostaEncaminhamentoId));
+                    var entidadeResposta = await mediator.Send(new ObterRespostaAtendimentoNAAPAPorIdQuery(item.RespostaEncaminhamentoId));
                     if (entidadeResposta.NaoEhNulo())
                         await mediator.Send(new ExcluirRespostaAtendimentoNAAPACommand(entidadeResposta));
                 }
@@ -282,7 +282,7 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<RespostaQuestaoObrigatoriaDto>> ObterRespostasEncaminhamentoNAAPA(long? encaminhamentoNAAPAId)
         {
             return encaminhamentoNAAPAId.HasValue ? (await mediator.Send(
-                    new ObterQuestaoRespostaEncaminhamentoNAAPAPorIdQuery(encaminhamentoNAAPAId.Value)))
+                    new ObterQuestaoRespostaAtendimentoNAAPAPorIdQuery(encaminhamentoNAAPAId.Value)))
                 .Select(resposta => new RespostaQuestaoObrigatoriaDto
                 {
                     QuestaoId = resposta.QuestaoId,
@@ -295,7 +295,7 @@ namespace SME.SGP.Aplicacao
 
         {
             List<QuestaoObrigatoriaNaoRespondidaDto> questoesObrigatoriasAConsistir = new List<QuestaoObrigatoriaNaoRespondidaDto>();
-            var secoesEtapa = await mediator.Send(new ObterSecoesQuestionarioEncaminhamentoNAAPADtoQuery(codigoModalidade));
+            var secoesEtapa = await mediator.Send(new ObterSecoesQuestionarioAtendimentoNAAPADtoQuery(codigoModalidade));
             //var secoesEtapa = await mediator.Send(new ObterSecaoEncaminhamentoIndividualQuery(null));
             IEnumerable<RespostaQuestaoObrigatoriaDto> respostasPersistidas = null;
 

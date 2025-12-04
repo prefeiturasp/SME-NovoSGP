@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<AtendimentoNAAPAHistoricoDeAlteracaoDto>> Executar(long param)
         {
-            return await mediator.Send(new ObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAQuery(param));
+            return await mediator.Send(new ObterHistoricosDeAlteracoesApresentacaoAtendimentoNAAPAQuery(param));
         }
     }
 }

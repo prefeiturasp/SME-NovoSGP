@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task AtualizarEncaminhamento(long encaminhamentoNAAPAId, long turmaId)
         {
-            var encaminhamentoNAAPA = await mediator.Send(new ObterEncaminhamentoNAAPAComTurmaPorIdQuery(encaminhamentoNAAPAId));
+            var encaminhamentoNAAPA = await mediator.Send(new ObterAtendimentoNAAPAComTurmaPorIdQuery(encaminhamentoNAAPAId));
             if(encaminhamentoNAAPA.NaoEhNulo())
             {
                 var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));

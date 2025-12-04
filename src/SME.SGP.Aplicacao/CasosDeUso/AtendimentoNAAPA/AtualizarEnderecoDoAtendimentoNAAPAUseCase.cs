@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
             if (alunoEol.EhNulo()) return false;
             var enderecoResidencialAluno = MapearDTO(alunoEol.Endereco);
 
-            var questaoEnderecoResidencialNAAPA = (await mediator.Send(new ObterQuestaoEnderecoAlunoEncaminhamentoNAAPAPorIdQuery(encaminhamentoNAAPADto.Id ?? 0)));
+            var questaoEnderecoResidencialNAAPA = (await mediator.Send(new ObterQuestaoEnderecoAlunoAtendimentoNAAPAPorIdQuery(encaminhamentoNAAPADto.Id ?? 0)));
             if (questaoEnderecoResidencialNAAPA.EhNulo()) return false;
 
             var respostaEnderecoResidencialNAAPA = questaoEnderecoResidencialNAAPA.Respostas?.FirstOrDefault();

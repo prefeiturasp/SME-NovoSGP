@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit param)
         {
             var filtro = param.ObterObjetoMensagem<FiltroBuscarAtendimentosProfissionalConsolidadoAtendimentoNAAPADto>();
-            var atendimentosProfissional = await mediator.Send(new ObterAtendimentosProfissionalEncaminhamentosNAAPAConsolidadoCargaQuery(filtro.UeId, filtro.Mes, filtro.AnoLetivo));
+            var atendimentosProfissional = await mediator.Send(new ObterAtendimentosProfissionalAtendimentosNAAPAConsolidadoCargaQuery(filtro.UeId, filtro.Mes, filtro.AnoLetivo));
             foreach (var profissional in atendimentosProfissional)
             {
                 var entidade = new ConsolidadoAtendimentoNAAPA

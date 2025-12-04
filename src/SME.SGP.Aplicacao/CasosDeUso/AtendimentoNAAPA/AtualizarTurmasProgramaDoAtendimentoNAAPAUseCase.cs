@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
             var turmasProgramaAluno = (await mediator.Send(new ObterTurmasProgramaAlunoQuery(encaminhamentoNAAPADto.AlunoCodigo, turma.AnoLetivo, true)))
                                         .Select(turmaPrograma => MapearDTO(turmaPrograma)).ToList();
 
-            var questaoTurmasProgramaNAAPA = (await mediator.Send(new ObterQuestaoTurmasProgramaEncaminhamentoNAAPAPorIdQuery(encaminhamentoNAAPADto.Id ?? 0)));
+            var questaoTurmasProgramaNAAPA = (await mediator.Send(new ObterQuestaoTurmasProgramaAtendimentoNAAPAPorIdQuery(encaminhamentoNAAPADto.Id ?? 0)));
             if (questaoTurmasProgramaNAAPA.EhNulo()) return false;
 
             var respostaTurmasProgramaNAAPA = questaoTurmasProgramaNAAPA.Respostas?.FirstOrDefault();

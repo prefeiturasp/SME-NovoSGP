@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
 
         public async Task<IEnumerable<SecaoQuestionarioDto>> Executar(long? EncaminhamentoNAAPAId)
         {
-            var secoesQuestionario = (await mediator.Send(new ObterSecaoEncaminhamentoIndividualQuery(EncaminhamentoNAAPAId))).ToList();
+            var secoesQuestionario = (await mediator.Send(new ObterSecaoAtendimentoIndividualQuery(EncaminhamentoNAAPAId))).ToList();
 
             foreach (var secao in secoesQuestionario)
             {

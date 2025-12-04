@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            var encaminhamentos = await mediator.Send(ObterEncaminhamentosComSituacaoDiferenteDeEncerradoQuery.Instance);
+            var encaminhamentos = await mediator.Send(ObterAtendimentosComSituacaoDiferenteDeEncerradoQuery.Instance);
 
             foreach (var encaminhamento in encaminhamentos) 
             {

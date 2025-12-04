@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         public async Task<PaginacaoResultadoDto<AtendimentoNAAPASecaoItineranciaDto>> Executar(long encaminhamentoNAAPAId)
         {
-            return await mediator.Send(new ObterSecoesItineranciaDeEncaminhamentoNAAPAQuery(encaminhamentoNAAPAId));
+            return await mediator.Send(new ObterSecoesItineranciaDeAtendimentoNAAPAQuery(encaminhamentoNAAPAId));
         }
     }
 }

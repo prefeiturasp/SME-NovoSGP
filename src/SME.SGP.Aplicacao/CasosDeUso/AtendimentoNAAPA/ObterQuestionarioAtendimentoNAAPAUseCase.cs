@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         {
             return
                 await mediator
-                .Send(new ObterQuestionarioEncaminhamentoNAAPAQuery(questionarioId, encaminhamentoId, codigoAluno, codigoTurma));
+                .Send(new ObterQuestionarioAtendimentoNAAPAQuery(questionarioId, encaminhamentoId, codigoAluno, codigoTurma));
         }
     }
 }

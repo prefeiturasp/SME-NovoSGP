@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<SituacaoDto> Handle(ReabrirAtendimentoNAAPACommand request, CancellationToken cancellationToken)
         {
-            var encaminhamentoNAAPA = await mediator.Send(new ObterCabecalhoEncaminhamentoNAAPAQuery(request.EncaminhamentoId), cancellationToken);
+            var encaminhamentoNAAPA = await mediator.Send(new ObterCabecalhoAtendimentoNAAPAQuery(request.EncaminhamentoId), cancellationToken);
             await ValidarRegras(encaminhamentoNAAPA);
 
             var encaminhamentoNAAPAPersistido = encaminhamentoNAAPA.Clone();

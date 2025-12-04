@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         public async Task<AtendimentoNAAPASecaoItineranciaQuestoesDto> Executar(long questionarioId, long? encaminhamentoSecaoId)
         {
             return await mediator
-                        .Send(new ObterQuestionarioItinerarioEncaminhamentoNAAPAQuery(questionarioId, encaminhamentoSecaoId));
+                        .Send(new ObterQuestionarioItinerarioAtendimentoNAAPAQuery(questionarioId, encaminhamentoSecaoId));
         }
     }
 }

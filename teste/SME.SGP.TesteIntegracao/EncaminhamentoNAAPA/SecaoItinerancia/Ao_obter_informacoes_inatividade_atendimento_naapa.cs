@@ -57,7 +57,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
                                 ENCAMINHAMENTO_SECAO_ID_2,
                                 RESPOSTA_ITINERANCIA_ID_3);
 
-            var informacoes = await mediator.Send(new ObterEncaminhamentosNAAPAComInatividadeDeAtendimentoQuery(UE_ID_1));
+            var informacoes = await mediator.Send(new ObterAtendimentosNAAPAComInatividadeDeAtendimentoQuery(UE_ID_1));
 
             informacoes.ShouldNotBeNull();
             informacoes.Count().ShouldBe(1);
@@ -101,7 +101,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
                             ENCAMINHAMENTO_SECAO_ID_2,
                             RESPOSTA_ITINERANCIA_ID_3);
 
-            var informacoes = await mediator.Send(new ObterEncaminhamentosNAAPAComInatividadeDeAtendimentoQuery(UE_ID_1));
+            var informacoes = await mediator.Send(new ObterAtendimentosNAAPAComInatividadeDeAtendimentoQuery(UE_ID_1));
 
             informacoes.ShouldNotBeNull();
             informacoes.Count().ShouldBe(1);
@@ -142,7 +142,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
             await CriarQuestoesEncaminhamentoNAAPAItinerario(ENCAMINHAMENTO_SECAO_ID_4);
             await CriarRespostasEncaminhamentoNAAPAItinerario(dataCriacao.AddDays(-40), RESPOSTA_ITINERANCIA_ID_9);
 
-            var informacoes = await mediator.Send(new ObterEncaminhamentosNAAPAComInatividadeDeAtendimentoQuery(UE_ID_1));
+            var informacoes = await mediator.Send(new ObterAtendimentosNAAPAComInatividadeDeAtendimentoQuery(UE_ID_1));
 
             informacoes.ShouldNotBeNull();
             informacoes.Count().ShouldBe(1);
@@ -193,7 +193,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
             await CriarQuestoesEncaminhamentoNAAPAItinerario(ENCAMINHAMENTO_SECAO_ID_4);
             await CriarRespostasEncaminhamentoNAAPAItinerario(dataCriacao, RESPOSTA_ITINERANCIA_ID_9);
 
-            var informacoes = await mediator.Send(new ObterEncaminhamentosNAAPAComInatividadeDeAtendimentoQuery(UE_ID_1));
+            var informacoes = await mediator.Send(new ObterAtendimentosNAAPAComInatividadeDeAtendimentoQuery(UE_ID_1));
 
             informacoes.ShouldNotBeNull();
             informacoes.Count().ShouldBe(1);
@@ -234,7 +234,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
                                 null,
                                 situacao);
 
-            var informacoes = await mediator.Send(new ObterEncaminhamentosNAAPAComInatividadeDeAtendimentoQuery(UE_ID_1));
+            var informacoes = await mediator.Send(new ObterAtendimentosNAAPAComInatividadeDeAtendimentoQuery(UE_ID_1));
             informacoes.ShouldNotBeNull();
             informacoes.Count().ShouldBe(0);
         }

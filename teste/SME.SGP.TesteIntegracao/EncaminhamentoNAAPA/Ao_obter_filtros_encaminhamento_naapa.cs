@@ -30,7 +30,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var mediator = ServiceProvider.GetService<IMediator>();
 
-            var prioridades = await mediator.Send(new ObterPrioridadeEncaminhamentoNAAPAQuery());
+            var prioridades = await mediator.Send(new ObterPrioridadeAtendimentoNAAPAQuery());
 
             prioridades.ShouldNotBeNull();
             prioridades.ShouldNotBeEmpty();

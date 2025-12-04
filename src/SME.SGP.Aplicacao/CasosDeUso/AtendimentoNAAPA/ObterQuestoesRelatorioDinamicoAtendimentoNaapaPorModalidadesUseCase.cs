@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         {
             return
                 await mediator
-                .Send(new ObterQuestoesRelatorioDinamicoEncaminhamentoNAAPAPorModalidadesQuery(modalidadesId));
+                .Send(new ObterQuestoesRelatorioDinamicoAtendimentoNAAPAPorModalidadesQuery(modalidadesId));
         }
     }
 }

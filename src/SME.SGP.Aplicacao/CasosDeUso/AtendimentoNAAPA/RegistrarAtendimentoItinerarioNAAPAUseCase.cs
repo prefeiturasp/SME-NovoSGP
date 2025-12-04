@@ -29,11 +29,11 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
             {
                 encaminhamentoNaapa =
                     await mediator.Send(
-                        new ObterEncaminhamentoNAAPAPorIdQuery(encaminhamentoNAAPAItineranciaDto.EncaminhamentoId));
+                        new ObterAtendimentoNAAPAPorIdQuery(encaminhamentoNAAPAItineranciaDto.EncaminhamentoId));
             }
             else
             {
-                encaminhamentoNaapa = await mediator.Send(new ObterEncaminhamentoNAAPAPorIdESecaoQuery(
+                encaminhamentoNaapa = await mediator.Send(new ObterAtendimentoNAAPAPorIdESecaoQuery(
                     encaminhamentoNAAPAItineranciaDto.EncaminhamentoId,
                     encaminhamentoNAAPAItineranciaDto.EncaminhamentoNAAPASecaoId.GetValueOrDefault()));                
             }
@@ -76,7 +76,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
             {
                 foreach (var item in resposta)
                 {
-                    var entidadeResposta = await mediator.Send(new ObterRespostaEncaminhamentoNAAPAPorIdQuery(item.RespostaEncaminhamentoId));
+                    var entidadeResposta = await mediator.Send(new ObterRespostaAtendimentoNAAPAPorIdQuery(item.RespostaEncaminhamentoId));
                     if (entidadeResposta.NaoEhNulo())
                         await mediator.Send(new ExcluirRespostaAtendimentoNAAPACommand(entidadeResposta));
                 }
@@ -152,7 +152,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
 
         private async Task ValidarCamposObrigatorios(AtendimentoNAAPASecaoDto encaminhamentoNAAPASecaoDto)
         {
-            var secao = await mediator.Send(new ObterSecaoQuestionarioEncaminhamentoNAAPAPorIdQuery(encaminhamentoNAAPASecaoDto.SecaoId));
+            var secao = await mediator.Send(new ObterSecaoQuestionarioAtendimentoNAAPAPorIdQuery(encaminhamentoNAAPASecaoDto.SecaoId));
             ValidarSecaoItinerancia(secao);
             var respostasEncaminhamento = encaminhamentoNAAPASecaoDto.Questoes
                                              .Select(questao => new RespostaQuestaoObrigatoriaDto()

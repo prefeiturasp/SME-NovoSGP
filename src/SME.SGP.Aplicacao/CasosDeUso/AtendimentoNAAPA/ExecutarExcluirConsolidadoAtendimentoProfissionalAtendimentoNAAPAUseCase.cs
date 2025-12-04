@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit param)
         {
             var filtroExclusao = param.ObterObjetoMensagem<FiltroExcluirAtendimentosProfissionalConsolidadoAtendimentoNAAPADto>();
-            var idsExclusao = await mediator.Send(new ObterProfissionaisAtendimentoEncaminhamentosNAAPAIdConsolidadoExclusaoQuery(filtroExclusao.UeId, filtroExclusao.Mes, filtroExclusao.AnoLetivo, filtroExclusao.RfsProfissionaisIgnorados));
+            var idsExclusao = await mediator.Send(new ObterProfissionaisAtendimentoAtendimentosNAAPAIdConsolidadoExclusaoQuery(filtroExclusao.UeId, filtroExclusao.Mes, filtroExclusao.AnoLetivo, filtroExclusao.RfsProfissionaisIgnorados));
             if (idsExclusao.NaoEhNulo() && idsExclusao.Any())
                 foreach (var id in idsExclusao)
                     await mediator.Send(new ExcluirConsolidadoAtendimentoProfissionalAtendimentoNAAPAPorIdCommand(id));

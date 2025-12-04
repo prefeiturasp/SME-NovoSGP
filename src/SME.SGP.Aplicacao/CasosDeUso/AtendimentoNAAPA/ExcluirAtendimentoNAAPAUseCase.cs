@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(long encaminhamentoNAAPAId)
         {
-            var encaminhamentoNAAPA = await mediator.Send(new ObterEncaminhamentoNAAPAPorIdQuery(encaminhamentoNAAPAId));
+            var encaminhamentoNAAPA = await mediator.Send(new ObterAtendimentoNAAPAPorIdQuery(encaminhamentoNAAPAId));
 
             if (encaminhamentoNAAPA.EhNulo())
                 throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.ENCAMINHAMENTO_NAO_ENCONTRADO);

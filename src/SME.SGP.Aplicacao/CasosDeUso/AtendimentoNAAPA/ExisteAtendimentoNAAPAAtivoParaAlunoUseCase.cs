@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao
 
         public Task<bool> Executar(string param)
         {
-            return mediator.Send(new ExisteEncaminhamentoNAAPAAtivoParaAlunoQuery(param));
+            return mediator.Send(new ExisteAtendimentoNAAPAAtivoParaAlunoQuery(param));
         }
     }
 }

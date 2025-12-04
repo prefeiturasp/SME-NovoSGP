@@ -25,11 +25,11 @@ namespace SME.SGP.Aplicacao
 
         private async Task AlterarSituacaoDoAtendimento(long encaminhamentoNAAPAId)
         {
-            var existeSecao = await mediator.Send(new ExisteSecaoDeItineranciaNoEncaminhamentoNAAPAQuery(encaminhamentoNAAPAId));
+            var existeSecao = await mediator.Send(new ExisteSecaoDeItineranciaNoAtendimentoNAAPAQuery(encaminhamentoNAAPAId));
             
             if (!existeSecao)
             {
-                var encaminhamentoNAAPA = await mediator.Send(new ObterEncaminhamentoNAAPAPorIdQuery(encaminhamentoNAAPAId));
+                var encaminhamentoNAAPA = await mediator.Send(new ObterAtendimentoNAAPAPorIdQuery(encaminhamentoNAAPAId));
 
                 await mediator.Send(new AlterarSituacaoNAAPACommand(encaminhamentoNAAPA, SituacaoNAAPA.AguardandoAtendimento));
             }

@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AtendimentoNAAPARespostaDto> Executar(long id)
         {
-            var encaminhamentoNAAPA = await mediator.Send(new ObterEncaminhamentoNAAPAComTurmaPorIdQuery(id));
+            var encaminhamentoNAAPA = await mediator.Send(new ObterAtendimentoNAAPAComTurmaPorIdQuery(id));
 
             if(encaminhamentoNAAPA.EhNulo())
                 throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.ENCAMINHAMENTO_NAO_ENCONTRADO);
@@ -112,7 +112,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task VerificaSeEstaEmAguardandoAtendimentoIndevidamente(EncaminhamentoNAAPA encaminhamento)
         {
-            bool necessitaAlteracao = await mediator.Send(new VerificaSituacaoEncaminhamentoNAAPASeEstaAguardandoAtendimentoIndevidamenteQuery(encaminhamento.Id));
+            bool necessitaAlteracao = await mediator.Send(new VerificaSituacaoAtendimentoNAAPASeEstaAguardandoAtendimentoIndevidamenteQuery(encaminhamento.Id));
             if (necessitaAlteracao)
                 await mediator.Send(new AlterarSituacaoNAAPACommand(encaminhamento, Dominio.Enumerados.SituacaoNAAPA.EmAtendimento));        
         }

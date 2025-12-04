@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<long> Handle(RegistrarHistoricoDeAlteracaoAtendimentoNAAPACommand request, CancellationToken cancellationToken)
         {
-            var historicoAlteracao = await mediator.Send(new ObterHistoricosDeAlteracoesEncaminhamentoNAAPAQuery(request.EncaminhamentoNAAPASecaoAlterado, request.EncaminhamentoNAAPASecaoExistente, request.TipoHistoricoAlteracoes));
+            var historicoAlteracao = await mediator.Send(new ObterHistoricosDeAlteracoesAtendimentoNAAPAQuery(request.EncaminhamentoNAAPASecaoAlterado, request.EncaminhamentoNAAPASecaoExistente, request.TipoHistoricoAlteracoes));
 
             if (historicoAlteracao.NaoEhNulo())
                 return await repositorioEncaminhamentoNAAPAHistoricoAlteracoes.SalvarAsync(historicoAlteracao);

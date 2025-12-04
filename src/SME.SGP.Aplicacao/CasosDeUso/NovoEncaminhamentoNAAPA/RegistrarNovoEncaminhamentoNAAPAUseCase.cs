@@ -313,7 +313,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.NovoEncaminhamentoNAAPA
 
         {
             List<QuestaoObrigatoriaNaoRespondidaDto> questoesObrigatoriasAConsistir = new List<QuestaoObrigatoriaNaoRespondidaDto>();            
-            var secoesEtapa = await mediator.Send(new ObterSecaoEncaminhamentoIndividualQuery(null));
+            var secoesEtapa = await mediator.Send(new ObterSecaoAtendimentoIndividualQuery(null));
             IEnumerable<RespostaQuestaoObrigatoriaDto> respostasPersistidas = null;
 
             foreach (var secao in secoesEtapa)

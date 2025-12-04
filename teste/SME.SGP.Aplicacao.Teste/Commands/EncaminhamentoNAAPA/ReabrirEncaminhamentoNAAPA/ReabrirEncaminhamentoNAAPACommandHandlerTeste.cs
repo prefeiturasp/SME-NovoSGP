@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao.Teste.Commands.EncaminhamentoNAAPA.ReabrirEncaminham
         [Fact(DisplayName = "ReabrirEncaminhamentoNAAPACommand - Deve validar regras considerando a última matrícula válida mesmo com data de situações iguais")]
         public async Task DeveValidarRegrasConsiderandoUltimaMatriculaValidaMesmoComDataSituacoesIguais()
         {
-            mediator.Setup(x => x.Send(It.Is<ObterCabecalhoEncaminhamentoNAAPAQuery>(y => y.EncaminhamentoNAAPAId == 1), It.IsAny<CancellationToken>()))
+            mediator.Setup(x => x.Send(It.Is<ObterCabecalhoAtendimentoNAAPAQuery>(y => y.EncaminhamentoNAAPAId == 1), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new Dominio.EncaminhamentoNAAPA() { Id = 1, Situacao = SituacaoNAAPA.Encerrado, AlunoCodigo = "1" });
 
             var dataHoraAtual = DateTimeExtension.HorarioBrasilia();

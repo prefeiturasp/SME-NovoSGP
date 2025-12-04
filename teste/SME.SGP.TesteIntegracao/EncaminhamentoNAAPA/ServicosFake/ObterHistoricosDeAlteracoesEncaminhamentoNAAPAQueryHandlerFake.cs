@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFake
 {
-    public class ObterHistoricosDeAlteracoesEncaminhamentoNAAPAQueryHandlerFake : IRequestHandler<ObterHistoricosDeAlteracoesEncaminhamentoNAAPAQuery, EncaminhamentoNAAPAHistoricoAlteracoes>
+    public class ObterHistoricosDeAlteracoesEncaminhamentoNAAPAQueryHandlerFake : IRequestHandler<ObterHistoricosDeAlteracoesAtendimentoNAAPAQuery, EncaminhamentoNAAPAHistoricoAlteracoes>
     {
-        public async Task<EncaminhamentoNAAPAHistoricoAlteracoes> Handle(ObterHistoricosDeAlteracoesEncaminhamentoNAAPAQuery request, CancellationToken cancellationToken)
+        public async Task<EncaminhamentoNAAPAHistoricoAlteracoes> Handle(ObterHistoricosDeAlteracoesAtendimentoNAAPAQuery request, CancellationToken cancellationToken)
         {
             return await Task.FromResult(new EncaminhamentoNAAPAHistoricoAlteracoes
             {

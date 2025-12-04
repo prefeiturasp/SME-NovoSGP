@@ -160,7 +160,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var mediator = ServiceProvider.GetService<IMediator>();
 
-            var historico = await mediator.Send(new ObterHistoricosDeAlteracoesEncaminhamentoNAAPAQuery(secaoDto, encaminhamento.Secoes.FirstOrDefault(), TipoHistoricoAlteracoesEncaminhamentoNAAPA.Alteracao));
+            var historico = await mediator.Send(new ObterHistoricosDeAlteracoesAtendimentoNAAPAQuery(secaoDto, encaminhamento.Secoes.FirstOrDefault(), TipoHistoricoAlteracoesEncaminhamentoNAAPA.Alteracao));
 
             historico.ShouldNotBeNull();
 
@@ -323,7 +323,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var mediator = ServiceProvider.GetService<IMediator>();
 
-            var historico = await mediator.Send(new ObterHistoricosDeAlteracoesEncaminhamentoNAAPAQuery(secaoDto, secao, TipoHistoricoAlteracoesEncaminhamentoNAAPA.Alteracao));
+            var historico = await mediator.Send(new ObterHistoricosDeAlteracoesAtendimentoNAAPAQuery(secaoDto, secao, TipoHistoricoAlteracoesEncaminhamentoNAAPA.Alteracao));
 
             historico.ShouldNotBeNull();
 

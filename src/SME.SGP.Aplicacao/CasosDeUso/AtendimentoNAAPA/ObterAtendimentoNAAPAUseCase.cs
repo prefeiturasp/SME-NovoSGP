@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
             if (!string.IsNullOrEmpty(filtro.CodigoUe) && filtro.CodigoUe.Equals("-99"))
                 filtro.CodigoUe = string.Empty;
 
-            return await mediator.Send(new ObterEncaminhamentosNAAPAQuery(filtro));
+            return await mediator.Send(new ObterAtendimentosNAAPAQuery(filtro));
         }
     }
 }

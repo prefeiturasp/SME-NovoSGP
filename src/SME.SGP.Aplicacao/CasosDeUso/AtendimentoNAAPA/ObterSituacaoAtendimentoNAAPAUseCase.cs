@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         public async Task<SituacaoDto> Executar(long id)
         {
-            return await this.mediator.Send(new ObterSituacaoEncaminhamentoNAAPAQuery(id));
+            return await this.mediator.Send(new ObterSituacaoAtendimentoNAAPAQuery(id));
         }
     }
 }
