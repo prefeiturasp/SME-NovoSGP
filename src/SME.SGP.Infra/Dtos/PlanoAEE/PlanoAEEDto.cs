@@ -2,6 +2,7 @@
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra.Dtos;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SME.SGP.Infra
 {
@@ -21,6 +22,7 @@ namespace SME.SGP.Infra
         public bool PodeDevolverPlanoAEE { get; set; }
         public bool PermitirExcluir { get; set; }
         public bool RegistroCadastradoEmOutraUE { get; set; }
+        public bool PermitirEncerramentoManual { get; set; }
     }
 
 }

@@ -156,14 +156,28 @@ namespace SME.SGP.Api.Teste.Controllers
             // Arrange
             var useCaseMock = new Mock<IVerificarExistenciaPlanoAEEPorEstudanteUseCase>();
             var codigoEstudante = _faker.Random.AlphaNumeric(8);
+            var codigoUe = _faker.Random.AlphaNumeric(6);
 
-            useCaseMock.Setup(u => u.Executar(codigoEstudante)).ReturnsAsync(true);
+            useCaseMock
+                .Setup(u => u.Executar(It.IsAny<FiltroEstudantePlanoAEEDto>()))
+                .ReturnsAsync(true);
 
             // Act
-            var resultado = await _controller.VerificarExistenciaPlanoAEEPorEstudante(codigoEstudante, useCaseMock.Object);
+            var resultado = await _controller.VerificarExistenciaPlanoAEEPorEstudante(
+                codigoEstudante,
+                codigoUe,
+                useCaseMock.Object
+            );
 
             // Assert
-            useCaseMock.Verify(u => u.Executar(codigoEstudante), Times.Once);
+            useCaseMock.Verify(u =>
+                u.Executar(It.Is<FiltroEstudantePlanoAEEDto>(f =>
+                    f.CodigoEstudante == codigoEstudante &&
+                    f.CodigoUe == codigoUe
+                )),
+                Times.Once
+            );
+
             var okResult = Assert.IsType<OkObjectResult>(resultado);
             Assert.Equal(true, okResult.Value);
         }
@@ -461,6 +475,38 @@ namespace SME.SGP.Api.Teste.Controllers
             // Assert
             useCaseMock.Verify(u => u.Executar(filtro), Times.Once);
             Assert.IsType<OkObjectResult>(resultado);
+        }
+
+        [Fact(DisplayName = "Deve encerrar manualmente o Plano AEE e retornar dados")]
+        public async Task DeveEncerrarManualPlanoAEE_RetornarRetornoEncerramento()
+        {
+            // Arrange
+            var useCaseMock = new Mock<IEncerramentoManualPlanoAEEUseCase>();
+            var planoId = _faker.Random.Long(1, 999999);
+
+            var situacao = SituacaoPlanoAEE.Encerrado;
+
+            var retornoEsperado = new RetornoEncerramentoPlanoAEEDto(planoId, situacao);
+
+            useCaseMock
+                .Setup(u => u.Executar(planoId))
+                .ReturnsAsync(retornoEsperado);
+
+            // Act
+            var resultado = await _controller.EncerramentoManualPlanoAEE(planoId, useCaseMock.Object);
+
+            // Assert
+            useCaseMock.Verify(u =>
+                u.Executar(It.Is<long>(id => id == planoId)),
+                Times.Once
+            );
+
+            var okResult = Assert.IsType<OkObjectResult>(resultado);
+            var retorno = Assert.IsType<RetornoEncerramentoPlanoAEEDto>(okResult.Value);
+
+            Assert.Equal(planoId, retorno.PlanoId);
+            Assert.Equal(situacao, retorno.Situacao);
+            Assert.Equal(situacao.Name(), retorno.SituacaoDescricao);
         }
     }
 }

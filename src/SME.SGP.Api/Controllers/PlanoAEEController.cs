@@ -7,11 +7,11 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Dtos.Relatorios;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.Infra.Dtos.Relatorios;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -92,13 +92,13 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(planoAeeDto));
         }
 
-        [HttpGet("estudante/{codigoEstudante}/existe")]
+        [HttpGet("estudante/{codigoEstudante}/existe/{codigoUe}/ue")]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
-        public async Task<IActionResult> VerificarExistenciaPlanoAEEPorEstudante(string codigoEstudante, [FromServices] IVerificarExistenciaPlanoAEEPorEstudanteUseCase useCase)
+        public async Task<IActionResult> VerificarExistenciaPlanoAEEPorEstudante(string codigoEstudante, string codigoUe, [FromServices] IVerificarExistenciaPlanoAEEPorEstudanteUseCase useCase)
         {
-            return Ok(await useCase.Executar(codigoEstudante));
+            return Ok(await useCase.Executar(new FiltroEstudantePlanoAEEDto(codigoEstudante, codigoUe)));
         }
 
         [HttpGet("{planoAeeId}/reestruturacoes")]
@@ -177,14 +177,14 @@ namespace SME.SGP.Api.Controllers
             return Ok(new RetornoBaseDto("Plano devolvido com sucesso"));
         }
 
-        [HttpPost("encerramento-manual")]
-        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [HttpPost("encerramento-manual/{planoId}")]
+        [ProducesResponseType(typeof(RetornoEncerramentoPlanoAEEDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PAEE_A, Policy = "Bearer")]
-        public async Task<IActionResult> EncerrarPlanoManual()
+        public async Task<IActionResult> EncerramentoManualPlanoAEE(long planoId, [FromServices] IEncerramentoManualPlanoAEEUseCase useCase)
         {            
-            return Ok();
+            return Ok(await useCase.Executar(planoId));
         }
 
         [HttpGet("expirar-planos")]
