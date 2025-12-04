@@ -24,14 +24,17 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         public async Task Deve_Retornar_True_Quando_Nao_Existir_Plano_AEE_Para_Estudante()
         {
             // Arrange
-            var codigoEstudante = "123456";
+            var codigoEstudante = "123";
+            var codigoUe = "456";
 
-            mediator.Setup(x => x.Send(It.Is<VerificarExistenciaPlanoAEEPorEstudanteQuery>(q => q.CodigoEstudante == codigoEstudante),
+            var filtro = new FiltroEstudantePlanoAEEDto(codigoEstudante, codigoUe);
+
+            mediator.Setup(x => x.Send(It.Is<VerificarExistenciaPlanoAEEPorEstudanteQuery>(q => q.Filtro == filtro),
                                      It.IsAny<CancellationToken>()))
                    .ReturnsAsync((PlanoAEEResumoDto)null);
 
             // Act
-            var resultado = await useCase.Executar(codigoEstudante);
+            var resultado = await useCase.Executar(filtro);
 
             // Assert
             Assert.True(resultado);
@@ -42,15 +45,18 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         {
             // Arrange
             var codigoEstudante = "123456";
+            var codigoUe = "456";
             var planoExistente = new Infra.PlanoAEEResumoDto();
 
-            mediator.Setup(x => x.Send(It.Is<VerificarExistenciaPlanoAEEPorEstudanteQuery>(q => q.CodigoEstudante == codigoEstudante),
+            var filtro = new FiltroEstudantePlanoAEEDto(codigoEstudante, codigoUe);
+
+            mediator.Setup(x => x.Send(It.Is<VerificarExistenciaPlanoAEEPorEstudanteQuery>(q => q.Filtro == filtro),
                                      It.IsAny<CancellationToken>()))
                    .ReturnsAsync(planoExistente);
 
             // Act & Assert
-            var ex = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(codigoEstudante));
-            Assert.Equal("Estudante/Criança já possui plano AEE em aberto", ex.Message);
+            var ex = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(filtro));
+            Assert.Equal("Estudante/Criança já possui plano AEE em aberto nessa UE", ex.Message);
         }
     }
 }

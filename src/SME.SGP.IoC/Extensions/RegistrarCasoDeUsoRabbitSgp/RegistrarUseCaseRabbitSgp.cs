@@ -2,7 +2,9 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.CasosDeUso;
+using SME.SGP.Aplicacao.CasosDeUso.AbrangenciaSync;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.AbrangenciaSync;
 
 namespace SME.SGP.IoC
 {
@@ -88,6 +90,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExecutarExclusaoNotificacaoUseCase, ExecutarExclusaoNotificacaoUseCase>();
             services.TryAddScoped<IAtualizarMapeamentoDosEstudantesUseCase, AtualizarMapeamentoDosEstudantesUseCase>();
             services.TryAddScoped<IAtualizarMapeamentoDoEstudanteDoBimestreUseCase, AtualizarMapeamentoDoEstudanteDoBimestreUseCase>();
+            services.TryAddScoped<IAbrangenciaSyncUseCase, AbrangenciaSyncUseCase>();
         }
     }
 }

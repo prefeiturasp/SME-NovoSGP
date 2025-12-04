@@ -141,5 +141,8 @@
         #endregion
 
         public const string ExecutarGravarObservacaoHistorioEscolar = "sgp.executar.gravar.observacao.historico.escolar";
+
+        //inicia a sincronização do worker de abrangencia
+        public const string SincronizarAbrangencia = "sgp.abrangencia.worker.sync";
     }
 }
