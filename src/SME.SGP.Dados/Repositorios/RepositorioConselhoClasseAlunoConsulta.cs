@@ -13,7 +13,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioConselhoClasseAlunoConsulta : RepositorioBase<ConselhoClasseAluno>, IRepositorioConselhoClasseAlunoConsulta
     {
-        public RepositorioConselhoClasseAlunoConsulta(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
+        public RepositorioConselhoClasseAlunoConsulta(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
         

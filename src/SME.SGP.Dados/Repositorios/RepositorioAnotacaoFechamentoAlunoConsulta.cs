@@ -10,7 +10,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioAnotacaoFechamentoAlunoConsulta : RepositorioBase<AnotacaoFechamentoAluno>, IRepositorioAnotacaoFechamentoAlunoConsulta
     {
-        public RepositorioAnotacaoFechamentoAlunoConsulta(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
+        public RepositorioAnotacaoFechamentoAlunoConsulta(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 
