@@ -179,7 +179,7 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine("                  limit 1)) ");
         }
 
-        public async Task<PlanoAEEResumoDto> ObterPlanoPorEstudante(string codigoEstudante)
+        public async Task<PlanoAEEResumoDto> ObterPlanoPorEstudante(FiltroEstudantePlanoAEEDto filtro)
         {
             var query = @"select distinct   pa.Id,
                                             pa.aluno_numero as numero,
@@ -187,15 +187,18 @@ namespace SME.SGP.Dados.Repositorios
                                             tu.nome as turma,
                                             pa.situacao 
                                         from plano_aee pa
-                                        inner join turma tu on tu.id = pa.turma_id 
+                                        inner join turma tu on tu.id = pa.turma_id                                         
+                                        inner join ue on ue.id = tu.ue_id
                                         where pa.aluno_codigo = @codigoEstudante 
+                                        and ue.ue_id = @codigoUe
                                         and not pa.situacao = any(@situacoesDesconsideradas)
                                         and not pa.excluido
                                         limit 1";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanoAEEResumoDto>(query, new
             {
-                codigoEstudante,
+                codigoEstudante = filtro.CodigoEstudante,
+                codigoUe = filtro.CodigoUe,
                 situacoesDesconsideradas = new int[] { (int)SituacaoPlanoAEE.Encerrado, (int)SituacaoPlanoAEE.EncerradoAutomaticamente }
             });
         }

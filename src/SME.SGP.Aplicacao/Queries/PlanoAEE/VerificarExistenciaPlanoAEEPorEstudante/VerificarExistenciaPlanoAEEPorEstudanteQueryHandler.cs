@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PlanoAEEResumoDto> Handle(VerificarExistenciaPlanoAEEPorEstudanteQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioPlanoAEE.ObterPlanoPorEstudante(request.CodigoEstudante);
+            return await repositorioPlanoAEE.ObterPlanoPorEstudante(request.Filtro);
         }
     }
 }
