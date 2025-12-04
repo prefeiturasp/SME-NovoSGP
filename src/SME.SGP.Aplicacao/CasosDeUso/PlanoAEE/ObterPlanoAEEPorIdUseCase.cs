@@ -114,6 +114,7 @@ namespace SME.SGP.Aplicacao
                     DataNascimento = alunoPorTurmaResposta.DataNascimento,
                     DataSituacao = alunoPorTurmaResposta.DataSituacao,
                     CodigoAluno = alunoPorTurmaResposta.CodigoAluno,
+                    CodigoSituacaoMatricula = alunoPorTurmaResposta.CodigoSituacaoMatricula,
                     Situacao = alunoPorTurmaResposta.SituacaoMatricula,
                     TurmaEscola = ObterNomeTurmaFormatado(turma),
                     NomeResponsavel = alunoPorTurmaResposta.NomeResponsavel,
@@ -192,6 +193,12 @@ namespace SME.SGP.Aplicacao
             plano.PermitirExcluir = PermiteExclusaoPlanoAEE(plano.Situacao, usuarioLogado);
 
             plano.RegistroCadastradoEmOutraUE = !await VerificarUsuarioLogadoPertenceMesmaUEPlano(usuarioLogado, turma);
+            plano.PermitirEncerramentoManual = !(new[] { SituacaoMatriculaAluno.Ativo,
+                             SituacaoMatriculaAluno.PendenteRematricula,
+                             SituacaoMatriculaAluno.Rematriculado,
+                             SituacaoMatriculaAluno.SemContinuidade}.Contains(plano.Aluno.CodigoSituacaoMatricula))
+
+                   || plano.Aluno.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido;
 
             await BuscarDadosSrmPaee((filtro.CodigoAluno > 0 ?  filtro.CodigoAluno :alunoCodigo),plano,novaVersao);
 
