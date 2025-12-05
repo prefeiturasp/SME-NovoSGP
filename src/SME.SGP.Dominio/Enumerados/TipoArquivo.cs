@@ -77,8 +77,8 @@ namespace SME.SGP.Dominio
         [Display(Name = "itinerancia")]
         Itinerancia = 24,
 
-        [Display(Name = "encaminhamento/naapa")]
-        EncaminhamentoNAAPA = 25,
+        [Display(Name = "atendimento/naapa")]
+        AtendimentoNAAPA = 25,
 
         [Display(Name = "relatorio/pap")]
         RelatorioPAP = 26,
@@ -86,8 +86,8 @@ namespace SME.SGP.Dominio
         [Display(Name = "registro-coletivo")]
         RegistroColetivo = 27,
 
-        [Display(Name = "encaminhamento/naapa/itinerancia")]
-        ItineranciaEncaminhamentoNAAPA = 28,
+        [Display(Name = "atendimento/naapa/itinerancia")]
+        ItineranciaAtendimentoNAAPA = 28,
 
         [Display(Name = "informativo")]
         Informativo = 29,

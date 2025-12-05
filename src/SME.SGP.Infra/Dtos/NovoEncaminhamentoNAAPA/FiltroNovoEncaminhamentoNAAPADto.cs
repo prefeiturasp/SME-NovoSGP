@@ -16,6 +16,6 @@ namespace SME.SGP.Infra.Dtos.NovoEncaminhamentoNAAPA
         public int Situacao { get; set; }
         public int Prioridade { get; set; }
         public bool ExibirEncerrados { get; set; }
-        public OrdenacaoListagemPaginadaEncaminhamentoNAAPA[] Ordenacao { get; set; }
+        public OrdenacaoListagemPaginadaAtendimentoNAAPA[] Ordenacao { get; set; }
     }
 }

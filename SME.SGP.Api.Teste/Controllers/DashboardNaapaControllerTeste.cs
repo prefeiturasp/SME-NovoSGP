@@ -15,7 +15,7 @@ namespace SME.SGP.Api.Teste.Controllers
         private readonly Mock<IObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoUseCase> _abaixo50UseCase;
         private readonly Mock<IObterDashboardFrequenciaTurmaEvasaoSemPresencaUseCase> _semPresencaUseCase;
         private readonly Mock<IObterQuantidadeEncaminhamentoPorSituacaoUseCase> _encaminhamentoSituacaoUseCase;
-        private readonly Mock<IObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase> _encaminhamentoAbertoUseCase;
+        private readonly Mock<IObterQuantidadeAtendimentoNAAPAEmAbertoPorDreUseCase> _encaminhamentoAbertoUseCase;
         private readonly Mock<IObterQuantidadeAtendimentoNAAPAPorProfissionalMesUseCase> _profissionalMesUseCase;
         private readonly Mock<IObterAlunosDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoUseCase> _alunosAbaixo50UseCase;
         private readonly Mock<IObterAlunosDashboardFrequenciaTurmaEvasaoSemPresencaUseCase> _alunosSemPresencaUseCase;
@@ -27,7 +27,7 @@ namespace SME.SGP.Api.Teste.Controllers
             _abaixo50UseCase = new Mock<IObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoUseCase>();
             _semPresencaUseCase = new Mock<IObterDashboardFrequenciaTurmaEvasaoSemPresencaUseCase>();
             _encaminhamentoSituacaoUseCase = new Mock<IObterQuantidadeEncaminhamentoPorSituacaoUseCase>();
-            _encaminhamentoAbertoUseCase = new Mock<IObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase>();
+            _encaminhamentoAbertoUseCase = new Mock<IObterQuantidadeAtendimentoNAAPAEmAbertoPorDreUseCase>();
             _profissionalMesUseCase = new Mock<IObterQuantidadeAtendimentoNAAPAPorProfissionalMesUseCase>();
             _alunosAbaixo50UseCase = new Mock<IObterAlunosDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoUseCase>();
             _alunosSemPresencaUseCase = new Mock<IObterAlunosDashboardFrequenciaTurmaEvasaoSemPresencaUseCase>();
@@ -69,7 +69,7 @@ namespace SME.SGP.Api.Teste.Controllers
         public async Task ObterQuantidadeEncaminhamentoPorSituacao_DeveRetornarOk()
         {
             var filtro = new FiltroGraficoEncaminhamentoPorSituacaoDto();
-            var retorno = new GraficoEncaminhamentoNAAPADto();
+            var retorno = new GraficoAtendimentoNAAPADto();
 
             _encaminhamentoSituacaoUseCase
                 .Setup(s => s.Executar(It.IsAny<FiltroGraficoEncaminhamentoPorSituacaoDto>()))
@@ -79,14 +79,14 @@ namespace SME.SGP.Api.Teste.Controllers
                 .ObterQuantidadeEncaminhamentoPorSituacao(filtro, _encaminhamentoSituacaoUseCase.Object);
 
             var ok = Assert.IsType<OkObjectResult>(result);
-            Assert.IsType<GraficoEncaminhamentoNAAPADto>(ok.Value);
+            Assert.IsType<GraficoAtendimentoNAAPADto>(ok.Value);
         }
 
         [Fact(DisplayName = "ObterQuantidadeEncaminhamentoNAAPAEmAberto deve retornar Ok com DTO")]
         public async Task ObterQuantidadeEncaminhamentoNAAPAEmAberto_DeveRetornarOk()
         {
-            var filtro = new FiltroQuantidadeEncaminhamentoNAAPAEmAbertoDto();
-            var retorno = new GraficoEncaminhamentoNAAPADto();
+            var filtro = new FiltroQuantidadeAtendimentoNAAPAEmAbertoDto();
+            var retorno = new GraficoAtendimentoNAAPADto();
 
             _encaminhamentoAbertoUseCase.Setup(s => s.Executar(filtro))
                                         .ReturnsAsync(retorno);
@@ -94,14 +94,14 @@ namespace SME.SGP.Api.Teste.Controllers
             var result = await _controller.ObterQuantidadeEncaminhamentoNAAPAEmAberto(filtro, _encaminhamentoAbertoUseCase.Object);
 
             var ok = Assert.IsType<OkObjectResult>(result);
-            Assert.IsType<GraficoEncaminhamentoNAAPADto>(ok.Value);
+            Assert.IsType<GraficoAtendimentoNAAPADto>(ok.Value);
         }
 
         [Fact(DisplayName = "ObterQuantidadeAtendimentoPorProfissionalMes deve retornar Ok com lista")]
         public async Task ObterQuantidadeAtendimentoPorProfissionalMes_DeveRetornarOk()
         {
             var filtro = new FiltroQuantidadeAtendimentoNAAPAPorProfissionalMesDto();
-            var retorno = new GraficoEncaminhamentoNAAPADto();
+            var retorno = new GraficoAtendimentoNAAPADto();
 
             _profissionalMesUseCase
                 .Setup(s => s.Executar(It.IsAny<FiltroQuantidadeAtendimentoNAAPAPorProfissionalMesDto>()))
@@ -111,7 +111,7 @@ namespace SME.SGP.Api.Teste.Controllers
                 .ObterQuantidadeAtendimentoNAAPAPorProfissionalMes(filtro, _profissionalMesUseCase.Object);
 
             var ok = Assert.IsType<OkObjectResult>(result);
-            Assert.IsType<GraficoEncaminhamentoNAAPADto>(ok.Value);
+            Assert.IsType<GraficoAtendimentoNAAPADto>(ok.Value);
         }
 
         [Fact(DisplayName = "ObterAlunosAbaixo50Porcento deve retornar Ok com lista")]

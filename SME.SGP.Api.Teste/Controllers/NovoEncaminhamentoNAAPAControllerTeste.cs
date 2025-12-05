@@ -21,27 +21,27 @@ namespace SME.SGP.Api.Teste.Controllers
     public class NovoEncaminhamentoNAAPAControllerTeste
     {
         private readonly NovoEncaminhamentoNAAPAController _controller;
-        private readonly Mock<IObterSecoesEncaminhamentoIndividualNAAPAUseCase> _secoesUseCase;
-        private readonly Mock<IObterQuestionarioEncaminhamentoNAAPAUseCase> _questionarioUseCase;
-        private readonly Mock<IExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase> _existeAtivoUseCase;
-        private readonly Mock<IObterEncaminhamentoNAAPAPorIdUseCase> _obterPorIdUseCase;
+        private readonly Mock<IObterSecoesAtendimentoIndividualNAAPAUseCase> _secoesUseCase;
+        private readonly Mock<IObterQuestionarioAtendimentoNAAPAUseCase> _questionarioUseCase;
+        private readonly Mock<IExisteAtendimentoNAAPAAtivoParaAlunoUseCase> _existeAtivoUseCase;
+        private readonly Mock<IObterAtendimentoNAAPAPorIdUseCase> _obterPorIdUseCase;
         private readonly Mock<IUploadDeArquivoUseCase> _uploadUseCase;
         private readonly Mock<IObterNovosEncaminhamentosNAAPAPorTipoUseCase> _paginadoUseCase;
         private readonly Mock<IExcluirArquivoNAAPAUseCase> _excluirArquivoUseCase;
         private readonly Mock<IRegistrarNovoEncaminhamentoNAAPAUseCase> _registrarUseCase;
-        private readonly Mock<IExcluirEncaminhamentoNAAPAUseCase> _excluirEncaminhamentoUseCase;
+        private readonly Mock<IExcluirAtendimentoNAAPAUseCase> _excluirEncaminhamentoUseCase;
 
         public NovoEncaminhamentoNAAPAControllerTeste()
         {
-            _secoesUseCase = new Mock<IObterSecoesEncaminhamentoIndividualNAAPAUseCase>();
-            _questionarioUseCase = new Mock<IObterQuestionarioEncaminhamentoNAAPAUseCase>();
-            _existeAtivoUseCase = new Mock<IExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase>();
-            _obterPorIdUseCase = new Mock<IObterEncaminhamentoNAAPAPorIdUseCase>();
+            _secoesUseCase = new Mock<IObterSecoesAtendimentoIndividualNAAPAUseCase>();
+            _questionarioUseCase = new Mock<IObterQuestionarioAtendimentoNAAPAUseCase>();
+            _existeAtivoUseCase = new Mock<IExisteAtendimentoNAAPAAtivoParaAlunoUseCase>();
+            _obterPorIdUseCase = new Mock<IObterAtendimentoNAAPAPorIdUseCase>();
             _uploadUseCase = new Mock<IUploadDeArquivoUseCase>();
             _paginadoUseCase = new Mock<IObterNovosEncaminhamentosNAAPAPorTipoUseCase>();
             _excluirArquivoUseCase = new Mock<IExcluirArquivoNAAPAUseCase>();
             _registrarUseCase = new Mock<IRegistrarNovoEncaminhamentoNAAPAUseCase>();
-            _excluirEncaminhamentoUseCase = new Mock<IExcluirEncaminhamentoNAAPAUseCase>();
+            _excluirEncaminhamentoUseCase = new Mock<IExcluirAtendimentoNAAPAUseCase>();
 
             _controller = new NovoEncaminhamentoNAAPAController();
         }
@@ -90,14 +90,14 @@ namespace SME.SGP.Api.Teste.Controllers
         [Fact(DisplayName = "ObterEncaminhamento deve retornar Ok com DTO")]
         public async Task ObterEncaminhamento_DeveRetornarOk()
         {
-            var dto = new EncaminhamentoNAAPARespostaDto();
+            var dto = new AtendimentoNAAPARespostaDto();
 
             _obterPorIdUseCase.Setup(s => s.Executar(10)).ReturnsAsync(dto);
 
             var result = await _controller.ObterEncaminhamento(10, _obterPorIdUseCase.Object);
 
             var ok = Assert.IsType<OkObjectResult>(result);
-            Assert.IsType<EncaminhamentoNAAPARespostaDto>(ok.Value);
+            Assert.IsType<AtendimentoNAAPARespostaDto>(ok.Value);
         }
 
         [Fact(DisplayName = "Upload deve retornar Ok quando arquivo possui conteúdo")]
@@ -107,7 +107,7 @@ namespace SME.SGP.Api.Teste.Controllers
             var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(content));
             var file = new FormFile(stream, 0, stream.Length, "file", "arquivo.pdf");
 
-            _uploadUseCase.Setup(s => s.Executar(file, Dominio.TipoArquivo.EncaminhamentoNAAPA))
+            _uploadUseCase.Setup(s => s.Executar(file, Dominio.TipoArquivo.AtendimentoNAAPA))
                           .ReturnsAsync(Guid.NewGuid());
 
             var result = await _controller.Upload(file, _uploadUseCase.Object);

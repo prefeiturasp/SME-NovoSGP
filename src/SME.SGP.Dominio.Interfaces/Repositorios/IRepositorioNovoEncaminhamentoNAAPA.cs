@@ -20,7 +20,7 @@ namespace SME.SGP.Dominio.Interfaces.Repositorios
             long[] turmasIds,
             Paginacao paginacao,
             bool exibirEncerrados,
-            OrdenacaoListagemPaginadaEncaminhamentoNAAPA[] ordenacao);
+            OrdenacaoListagemPaginadaAtendimentoNAAPA[] ordenacao);
 
         Task<EncaminhamentoNAAPA> ObterEncaminhamentoPorId(long id);
     }

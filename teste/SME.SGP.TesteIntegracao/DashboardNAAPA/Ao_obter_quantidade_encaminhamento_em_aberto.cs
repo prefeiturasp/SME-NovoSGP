@@ -73,8 +73,8 @@ namespace SME.SGP.TesteIntegracao.DashboardNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            var useCase = ServiceProvider.GetService<IObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase>();
-            var dto = new FiltroQuantidadeEncaminhamentoNAAPAEmAbertoDto() { AnoLetivo = DateTimeExtension.HorarioBrasilia().Year, DreId = DRE_ID_1 };
+            var useCase = ServiceProvider.GetService<IObterQuantidadeAtendimentoNAAPAEmAbertoPorDreUseCase>();
+            var dto = new FiltroQuantidadeAtendimentoNAAPAEmAbertoDto() { AnoLetivo = DateTimeExtension.HorarioBrasilia().Year, DreId = DRE_ID_1 };
             var retorno = await useCase.Executar(dto);
 
             retorno.ShouldNotBeNull();
@@ -113,8 +113,8 @@ namespace SME.SGP.TesteIntegracao.DashboardNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            var useCase = ServiceProvider.GetService<IObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase>();
-            var dto = new FiltroQuantidadeEncaminhamentoNAAPAEmAbertoDto() { AnoLetivo = DateTimeExtension.HorarioBrasilia().Year, DreId = null };
+            var useCase = ServiceProvider.GetService<IObterQuantidadeAtendimentoNAAPAEmAbertoPorDreUseCase>();
+            var dto = new FiltroQuantidadeAtendimentoNAAPAEmAbertoDto() { AnoLetivo = DateTimeExtension.HorarioBrasilia().Year, DreId = null };
             var retorno = await useCase.Executar(dto);
 
             retorno.ShouldNotBeNull();
@@ -156,8 +156,8 @@ namespace SME.SGP.TesteIntegracao.DashboardNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            var useCase = ServiceProvider.GetService<IObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase>();
-            var dto = new FiltroQuantidadeEncaminhamentoNAAPAEmAbertoDto() { AnoLetivo = DateTimeExtension.HorarioBrasilia().Year, DreId = null };
+            var useCase = ServiceProvider.GetService<IObterQuantidadeAtendimentoNAAPAEmAbertoPorDreUseCase>();
+            var dto = new FiltroQuantidadeAtendimentoNAAPAEmAbertoDto() { AnoLetivo = DateTimeExtension.HorarioBrasilia().Year, DreId = null };
             var retorno = await useCase.Executar(dto);
 
             retorno.ShouldNotBeNull();
@@ -201,8 +201,8 @@ namespace SME.SGP.TesteIntegracao.DashboardNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            var useCase = ServiceProvider.GetService<IObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase>();
-            var dto = new FiltroQuantidadeEncaminhamentoNAAPAEmAbertoDto() { AnoLetivo = DateTimeExtension.HorarioBrasilia().Year, DreId = null, Modalidade = Modalidade.Fundamental };
+            var useCase = ServiceProvider.GetService<IObterQuantidadeAtendimentoNAAPAEmAbertoPorDreUseCase>();
+            var dto = new FiltroQuantidadeAtendimentoNAAPAEmAbertoDto() { AnoLetivo = DateTimeExtension.HorarioBrasilia().Year, DreId = null, Modalidade = Modalidade.Fundamental };
             var retorno = await useCase.Executar(dto);
 
             retorno.ShouldNotBeNull();

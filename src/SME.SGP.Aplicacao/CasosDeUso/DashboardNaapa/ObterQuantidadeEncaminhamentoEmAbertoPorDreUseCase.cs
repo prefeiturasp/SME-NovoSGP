@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase : IObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase
+    public class ObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase : IObterQuantidadeAtendimentoNAAPAEmAbertoPorDreUseCase
     {
         private readonly IMediator mediator;
 
@@ -14,9 +14,9 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public Task<GraficoEncaminhamentoNAAPADto> Executar(FiltroQuantidadeEncaminhamentoNAAPAEmAbertoDto param)
+        public Task<GraficoAtendimentoNAAPADto> Executar(FiltroQuantidadeAtendimentoNAAPAEmAbertoDto param)
         {
-            return mediator.Send(new ObterQuantidadeEncaminhamentoNAAPAEmAbertoQuery(param.AnoLetivo, param.DreId, param.Modalidade));
+            return mediator.Send(new ObterQuantidadeAtendimentoNAAPAEmAbertoQuery(param.AnoLetivo, param.DreId, param.Modalidade));
         }
     }
 }

@@ -15,12 +15,12 @@ namespace SME.SGP.Aplicacao.Commands.NovoEncaminhamentoNAAPA.RegistrarHistoricoD
     {
         public NovoEncaminhamentoNAAPASecaoDto NovoEncaminhamentoNAAPASecaoAlterado { get; set; }
         public EncaminhamentoNAAPASecao NovoEncaminhamentoNAAPASecaoExistente { get; set; }
-        public TipoHistoricoAlteracoesEncaminhamentoNAAPA TipoHistoricoAlteracoes { get; set; }
+        public TipoHistoricoAlteracoesAtendimentoNAAPA TipoHistoricoAlteracoes { get; set; }
 
         public RegistrarHistoricoDeAlteracaoNovoEncaminhamentoNAAPACommand(
                                 NovoEncaminhamentoNAAPASecaoDto novoEncaminhamentoNAAPASecaoAlterado,
                                 EncaminhamentoNAAPASecao novoEncaminhamentoNAAPASecaoExistente,
-                                TipoHistoricoAlteracoesEncaminhamentoNAAPA tipoHistoricoAlteracoes)
+                                TipoHistoricoAlteracoesAtendimentoNAAPA tipoHistoricoAlteracoes)
         {
             NovoEncaminhamentoNAAPASecaoAlterado = novoEncaminhamentoNAAPASecaoAlterado;
             NovoEncaminhamentoNAAPASecaoExistente = novoEncaminhamentoNAAPASecaoExistente;
