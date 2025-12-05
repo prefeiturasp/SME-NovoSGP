@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 
 namespace SME.SGP.Aplicacao
@@ -15,8 +16,13 @@ namespace SME.SGP.Aplicacao
             DreCodigo = turma.Ue.Dre.CodigoDre;
             DreNome = turma.Ue.Dre.Nome;
             UeCodigo = turma.Ue.CodigoUe;
+            UeTipo = turma.Ue.TipoEscola;
             UeNome = turma.Ue.Nome;
             TurmaNome = turma.Nome;
+            TurmaCodigo = turma.CodigoTurma;
+            TurmaModalidade = turma.ModalidadeCodigo;
+            TurmaSemestre = turma.Semestre;
+            
             ComponenteCurricularNome = componenteCurricularNome;
             PerfilAtual = perfilAtual;
         }
@@ -27,10 +33,18 @@ namespace SME.SGP.Aplicacao
         public string DreCodigo { get; set; }
         public string DreNome { get; set; }
         public string UeCodigo { get; set; }
+        public TipoEscola UeTipo { get; set; }
         public string UeNome { get; set; }
         public string TurmaNome { get; set; }
+        public string TurmaCodigo { get; set; }
+        public int TurmaSemestre { get; set; }
+        public Modalidade TurmaModalidade { get; set; }
         public string ComponenteCurricularNome { get; set; }
         public Guid? PerfilAtual { get; set; }
+
+        public string UeTipoNome => UeTipo.GetAttribute<System.ComponentModel.DataAnnotations.DisplayAttribute>().ShortName;
+        public string TurmaModalidadeNome => TurmaModalidade.GetAttribute<System.ComponentModel.DataAnnotations.DisplayAttribute>().ShortName;
+        public string TurmaDescricao => $"{TurmaModalidadeNome} - {TurmaNome} - {UeTipoNome} {UeNome}";
     }
 
     public class InserirWorkflowReposicaoAulaCommandValidator : AbstractValidator<InserirWorkflowReposicaoAulaCommand>
@@ -68,6 +82,10 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.TurmaNome)
             .NotEmpty()
             .WithMessage("Deve ser informado o nome da turma para geração do workFlow de reposição de aula");
+
+            RuleFor(c => c.TurmaCodigo)
+            .NotEmpty()
+            .WithMessage("Deve ser informado o código da turma para geração do workFlow de reposição de aula");
 
             RuleFor(c => c.ComponenteCurricularNome)
             .NotEmpty()
