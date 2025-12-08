@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public Task<GraficoEncaminhamentoNAAPADto> Executar(FiltroQuantidadeAtendimentoNAAPAPorProfissionalMesDto param)
+        public Task<GraficoAtendimentoNAAPADto> Executar(FiltroQuantidadeAtendimentoNAAPAPorProfissionalMesDto param)
         {
             return mediator.Send(new ObterQuantidadeAtendimentoNAAPAPorProfissionalMesQuery(param.AnoLetivo, param.DreId, param.UeId, param.Mes, param.Modalidade));
         }

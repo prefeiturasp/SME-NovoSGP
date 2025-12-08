@@ -39,7 +39,7 @@ namespace SME.SGP.Dados.Repositorios
             long[] turmasIds,
             Paginacao paginacao,
             bool exibirEncerrados,
-            OrdenacaoListagemPaginadaEncaminhamentoNAAPA[] ordenacao)
+            OrdenacaoListagemPaginadaAtendimentoNAAPA[] ordenacao)
         {
             var query = MontaQueryCompleta(paginacao, codigoUe, codigoNomeAluno, dataAberturaQueixaInicio,
                 dataAberturaQueixaFim, situacao, prioridade, turmasIds, exibirEncerrados, ordenacao);
@@ -86,7 +86,7 @@ namespace SME.SGP.Dados.Repositorios
             long prioridade,
             long[] turmasIds,
             bool exibirEncerrados,
-            OrdenacaoListagemPaginadaEncaminhamentoNAAPA[] ordenacao)
+            OrdenacaoListagemPaginadaAtendimentoNAAPA[] ordenacao)
         {
             var sql = new StringBuilder();
 
@@ -113,7 +113,7 @@ namespace SME.SGP.Dados.Repositorios
             long[] turmasIds,
             string codigoUe,
             bool exibirEncerrados,
-            OrdenacaoListagemPaginadaEncaminhamentoNAAPA[] ordenacao = null)
+            OrdenacaoListagemPaginadaAtendimentoNAAPA[] ordenacao = null)
         {
             ObterCabecalho(sql, contador);
             ObterFiltro(sql, codigoNomeAluno, dataAberturaQueixaInicio, dataAberturaQueixaFim,
@@ -124,7 +124,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
         }
 
-        private static void ObterOrdenacaoConsulta(StringBuilder sql, OrdenacaoListagemPaginadaEncaminhamentoNAAPA[] ordenacao)
+        private static void ObterOrdenacaoConsulta(StringBuilder sql, OrdenacaoListagemPaginadaAtendimentoNAAPA[] ordenacao)
         {
             StringBuilder sqlAux = new StringBuilder();
             if (ordenacao != null && ordenacao.Any())
@@ -138,22 +138,22 @@ namespace SME.SGP.Dados.Repositorios
 
                     switch (order)
                     {
-                        case OrdenacaoListagemPaginadaEncaminhamentoNAAPA.UE:
+                        case OrdenacaoListagemPaginadaAtendimentoNAAPA.UE:
                             sqlAux.AppendLine($" {EnumExtensao.ObterCaseWhenSQL<TipoEscola>("ue.tipo_escola")}||' '||ue.nome");
                             break;
-                        case OrdenacaoListagemPaginadaEncaminhamentoNAAPA.Estudante:
+                        case OrdenacaoListagemPaginadaAtendimentoNAAPA.Estudante:
                             sqlAux.AppendLine(" np.aluno_nome, np.aluno_codigo");
                             break;
-                        case OrdenacaoListagemPaginadaEncaminhamentoNAAPA.DataEntradaQueixa:
+                        case OrdenacaoListagemPaginadaAtendimentoNAAPA.DataEntradaQueixa:
                             sqlAux.AppendLine(" to_date(qdata.DataAberturaQueixaInicio,'yyyy-mm-dd')");
                             break;
-                        case OrdenacaoListagemPaginadaEncaminhamentoNAAPA.UEDesc:
+                        case OrdenacaoListagemPaginadaAtendimentoNAAPA.UEDesc:
                             sqlAux.AppendLine($" {EnumExtensao.ObterCaseWhenSQL<TipoEscola>("ue.tipo_escola")}||' '||ue.nome desc");
                             break;
-                        case OrdenacaoListagemPaginadaEncaminhamentoNAAPA.EstudanteDesc:
+                        case OrdenacaoListagemPaginadaAtendimentoNAAPA.EstudanteDesc:
                             sqlAux.AppendLine(" np.aluno_nome desc, np.aluno_codigo desc");
                             break;
-                        case OrdenacaoListagemPaginadaEncaminhamentoNAAPA.DataEntradaQueixaDesc:
+                        case OrdenacaoListagemPaginadaAtendimentoNAAPA.DataEntradaQueixaDesc:
                             sqlAux.AppendLine(" to_date(qdata.DataAberturaQueixaInicio,'yyyy-mm-dd') desc ");
                             break;
                         default:

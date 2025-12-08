@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao.Queries.NovoEncaminhamentoNAAPA.ObterNovosEncaminham
             ExibirEncerrados = filtro.ExibirEncerrados;
             Ordenacao = filtro.Ordenacao;
             if (Ordenacao.NaoPossuiRegistros())
-                Ordenacao = new OrdenacaoListagemPaginadaEncaminhamentoNAAPA[] { OrdenacaoListagemPaginadaEncaminhamentoNAAPA.DataEntradaQueixa };
+                Ordenacao = new OrdenacaoListagemPaginadaAtendimentoNAAPA[] { OrdenacaoListagemPaginadaAtendimentoNAAPA.DataEntradaQueixa };
         }
 
         public bool ExibirHistorico { get; set; }
@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao.Queries.NovoEncaminhamentoNAAPA.ObterNovosEncaminham
         public int Situacao { get; set; }
         public int Prioridade { get; set; }
         public bool ExibirEncerrados { get; set; }
-        public OrdenacaoListagemPaginadaEncaminhamentoNAAPA[] Ordenacao { get; set; }
+        public OrdenacaoListagemPaginadaAtendimentoNAAPA[] Ordenacao { get; set; }
     }
 
     public class ObterNovosEncaminhamentosNAAPAPorTipoQueryValidator : AbstractValidator<ObterNovosEncaminhamentosNAAPAPorTipoQuery>

@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao.Commands.NovoEncaminhamentoNAAPA.ExcluirRespostaEnca
             var respostas = await repositorioRespostaNovoEncaminhamentoNAAPA.ObterPorQuestaoEncaminhamentoId(request.QuestaoNovoEncaminhamentoNAAPAId);
 
             foreach (var resposta in respostas)
-                await mediator.Send(new ExcluirRespostaEncaminhamentoNAAPACommand(resposta));
+                await mediator.Send(new ExcluirRespostaAtendimentoNAAPACommand(resposta));
 
             return true;
         }

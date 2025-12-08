@@ -501,8 +501,8 @@ namespace SME.SGP.Api.Testes.Controllers
         public async Task DeveChamarUseCase_ParaGerarRelatorioEncaminhamentoNAAPA()
         {
             // Arrange
-            var useCaseMock = new Mock<IRelatorioEncaminhamentoNAAPAUseCase>();
-            var filtro = new FiltroRelatorioEncaminhamentoNAAPADto { AnoLetivo = DateTime.Now.Year };
+            var useCaseMock = new Mock<IRelatorioAtendimentoNAAPAUseCase>();
+            var filtro = new FiltroRelatorioAtendimentoNAAPADto { AnoLetivo = DateTime.Now.Year };
 
             useCaseMock.Setup(u => u.Executar(filtro)).ReturnsAsync(true);
 

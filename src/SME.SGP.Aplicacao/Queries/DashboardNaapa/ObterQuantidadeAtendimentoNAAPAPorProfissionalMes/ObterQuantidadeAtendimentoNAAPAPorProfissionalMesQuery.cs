@@ -5,7 +5,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterQuantidadeAtendimentoNAAPAPorProfissionalMesQuery : IRequest<GraficoEncaminhamentoNAAPADto>
+    public class ObterQuantidadeAtendimentoNAAPAPorProfissionalMesQuery : IRequest<GraficoAtendimentoNAAPADto>
     {
         public ObterQuantidadeAtendimentoNAAPAPorProfissionalMesQuery(int anoLetivo, long dreId, long? ueId, int? mes, Modalidade? modalidade)
         {

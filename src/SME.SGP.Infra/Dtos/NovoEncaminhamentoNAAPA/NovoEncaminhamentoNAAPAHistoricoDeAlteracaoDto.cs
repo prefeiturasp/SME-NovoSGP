@@ -18,7 +18,7 @@ namespace SME.SGP.Infra.Dtos.NovoEncaminhamentoNAAPA
                 return $@"{ObterDescricaotipo()} {UsuarioNome} - {UsuarioLogin} em {DataHistorico.ToString("dd/MM/yyy HH:mm")}";
             }
         }
-        public TipoHistoricoAlteracoesEncaminhamentoNAAPA TipoHistoricoAlteracoes { get; set; }
+        public TipoHistoricoAlteracoesAtendimentoNAAPA TipoHistoricoAlteracoes { get; set; }
         public string UsuarioNome { get; set; }
         public string UsuarioLogin { get; set; }
         public DateTime DataHistorico { get; set; }
@@ -36,7 +36,7 @@ namespace SME.SGP.Infra.Dtos.NovoEncaminhamentoNAAPA
 
         private string ObterDescricaoImpressao()
         {
-            return TipoHistoricoAlteracoes == TipoHistoricoAlteracoesEncaminhamentoNAAPA.Impressao ? "realizada " : string.Empty;
+            return TipoHistoricoAlteracoes == TipoHistoricoAlteracoesAtendimentoNAAPA.Impressao ? "realizada " : string.Empty;
         }
 
         private string ObterDescricaoItinerancia()

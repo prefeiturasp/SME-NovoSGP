@@ -587,15 +587,15 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioTipoRelatorio, RepositorioTipoRelatorio>();
 
             // Encaminhamento NAAPA
-            services.TryAddScoped<IRepositorioSecaoEncaminhamentoNAAPA, RepositorioSecaoEncaminhamentoNAAPA>();
-            services.TryAddScoped<IRepositorioEncaminhamentoNAAPA, RepositorioEncaminhamentoNAAPA>();
-            services.TryAddScoped<IRepositorioEncaminhamentoNAAPASecao, RepositorioEncaminhamentoNAAPASecao>();
-            services.TryAddScoped<IRepositorioQuestaoEncaminhamentoNAAPA, RepositorioQuestaoEncaminhamentoNAAPA>();
-            services.TryAddScoped<IRepositorioRespostaEncaminhamentoNAAPA, RepositorioRespostaEncaminhamentoNAAPA>();
-            services.TryAddScoped<IRepositorioObservacaoEncaminhamentoNAAPA, RepositorioObservacaoEncaminhamentoNAAPA>();
-            services.TryAddScoped<IRepositorioEncaminhamentoNAAPAHistoricoAlteracoes, RepositorioEncaminhamentoNAAPAHistoricoAlteracoes>();
-            services.TryAddScoped<IRepositorioConsolidadoEncaminhamentoNAAPA, RepositorioConsolidadoEncaminhamentoNAAPA>();
-            services.TryAddScoped<IRepositorioConsolidadoAtendimentoNAAPA, RepositorioConsolidadoAtendimentoNAAPA>();
+            services.TryAddScoped<IRepositorioSecaoAtendimentoNAAPA, RepositorioSecaoAtenidmentoNAAPA>();
+            services.TryAddScoped<IRepositorioAtendimentoNAAPA, RepositorioAtendimentoNAAPA>();
+            services.TryAddScoped<IRepositorioAtendimentoNAAPASecao, RepositorioAtendimentoNAAPASecao>();
+            services.TryAddScoped<IRepositorioQuestaoAtendimentoNAAPA, RepositorioQuestaoAtendimentoNAAPA>();
+            services.TryAddScoped<IRepositorioRespostaAtendimentoNAAPA, RepositorioRespostaAtendimentoNAAPA>();
+            services.TryAddScoped<IRepositorioObservacaoAtendimentoNAAPA, RepositorioObservacaoAtendimentoNAAPA>();
+            services.TryAddScoped<IRepositorioAtendimentoNAAPAHistoricoAlteracoes, RepositorioAtendimentoNAAPAHistoricoAlteracoes>();
+            services.TryAddScoped<IRepositorioConsolidadoEncaminhamentoNAAPA, Dados.Repositorios.RepositorioConsolidadoAtendimentoNAAPA>();
+            services.TryAddScoped<IRepositorioConsolidadoAtendimentoNAAPA, Dados.RepositorioConsolidadoAtendimentoNAAPA>();
 
             services.TryAddScoped<IRepositorioHistoricoEscolarObservacao, RepositorioHistoricoEscolarObservacao>();
 
@@ -1104,7 +1104,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRelatorioEncaminhamentoAEEUseCase, RelatorioEncaminhamentoAeeUseCase>();
 
             //Encaminhamento NAAPA
-            services.TryAddScoped<IRelatorioEncaminhamentoNaapaDetalhadoUseCase, RelatorioEncaminhamentoNaapaDetalhadoUseCase>();
+            services.TryAddScoped<IRelatorioAtendimentoNaapaDetalhadoUseCase, RelatorioAtendimentoNaapaDetalhadoUseCase>();
 
             // Funcionario
             services.TryAddScoped<IPesquisaFuncionariosPorDreUeUseCase, PesquisaFuncionariosPorDreUeUseCase>();
@@ -1465,10 +1465,10 @@ namespace SME.SGP.IoC
             // NAAPA - Frequência turma evasão
             services.TryAddScoped<IObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoUseCase, ObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoUseCase>();
             services.TryAddScoped<IObterDashboardFrequenciaTurmaEvasaoSemPresencaUseCase, ObterDashboardFrequenciaTurmaEvasaoSemPresencaUseCase>();
-            services.TryAddScoped<IObterEncaminhamentoNAAPAUseCase, ObterEncaminhamentoNAAPAUseCase>();
-            services.TryAddScoped<IRegistrarEncaminhamentoNAAPAUseCase, RegistrarEncaminhamentoNAAPAUseCase>();
-            services.TryAddScoped<IEncerrarEncaminhamentoNAAPAUseCase, EncerrarEncaminhamentoNAAPAUseCase>();
-            services.TryAddScoped<IReabrirEncaminhamentoNAAPAUseCase, ReabrirEncaminhamentoNAAPAUseCase>();
+            services.TryAddScoped<IObterAtendimentoNAAPAUseCase, ObterAtendimentoNAAPAUseCase>();
+            services.TryAddScoped<IRegistrarAtendimentoNAAPAUseCase, RegistrarAtendimentoNAAPAUseCase>();
+            services.TryAddScoped<IEncerrarAtendimentoNAAPAUseCase, EncerrarAtendimentoNAAPAUseCase>();
+            services.TryAddScoped<IReabrirAtendimentoNAAPAUseCase, ReabrirAtendimentoNAAPAUseCase>();
             services.TryAddScoped<IObterAlunosDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoUseCase, ObterAlunosDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoUseCase>();
             services.TryAddScoped<IObterAlunosDashboardFrequenciaTurmaEvasaoSemPresencaUseCase, ObterAlunosDashboardFrequenciaTurmaEvasaoSemPresencaUseCase>();
 
@@ -1478,39 +1478,39 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IAtribuirUeResponsavelUseCase, AtribuirUeResponsavelUseCase>();
             services.TryAddScoped<IObterListaTipoReponsavelUseCase, ObterListaTipoReponsavelUseCase>();
             services.TryAddScoped<IListarAtribuicoesResponsaveisPorFiltroUseCase, ListarAtribuicoesResponsaveisPorFiltroUseCase>();
-            services.TryAddScoped<IObterObservacoesDeEncaminhamentoNAAPAUseCase, ObterObservacoesDeEncaminhamentoNAAPAUseCase>();
-            services.TryAddScoped<ISalvarObservacoesDeEncaminhamentoNAAPAUseCase, SalvarObservacoesDeEncaminhamentoNAAPAUseCase>();
-            services.TryAddScoped<IExcluirObservacoesDeEncaminhamentoNAAPAUseCase, ExcluirObservacoesDeEncaminhamentoNAAPAUseCase>();
-            services.TryAddScoped<IObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAUseCase, ObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAUseCase>();
+            services.TryAddScoped<IObterObservacoesDeAtendimentoNAAPAUseCase, ObterObservacoesDeAtendimentoNAAPAUseCase>();
+            services.TryAddScoped<ISalvarObservacoesDeAtendimentoNAAPAUseCase, SalvarObservacoesDeAtendimentoNAAPAUseCase>();
+            services.TryAddScoped<IExcluirObservacoesDeAtendimentoNAAPAUseCase, ExcluirObservacoesDeAtendimentoNAAPAUseCase>();
+            services.TryAddScoped<IObterHistoricosDeAlteracoesApresentacaoAtendimentoNAAPAUseCase, ObterHistoricosDeAlteracoesApresentacaoAtendimentoNAAPAUseCase>();
             services.TryAddScoped<IObterQuantidadeEncaminhamentoPorSituacaoUseCase, ObterQuantidadeEncaminhamentoPorSituacaoUseCase>();
 
             // Encaminhamento NAAPA
-            services.TryAddScoped<IObterSecoesEncaminhamentosSecaoNAAPAUseCase, ObterSecoesEncaminhamentosSecaoNAAPAUseCase>();
-            services.TryAddScoped<IObterQuestionarioEncaminhamentoNAAPAUseCase, ObterQuestionarioEncaminhamentoNAAPAUseCase>();
-            services.TryAddScoped<IObterQuestoesRelatorioDinamicoEncaminhamentoNAAPAPorModalidadesUseCase, ObterQuestoesRelatorioDinamicoEncaminhamentoNaapaPorModalidadesUseCase>();
-            services.TryAddScoped<IObterPrioridadeEncaminhamentoNAAPAUseCase, ObterPrioridadeEncaminhamentoNAAPAUseCase>();
+            services.TryAddScoped<IObterSecoesAtendimentoSecaoNAAPAUseCase, ObterSecoesAtendimentosSecaoNAAPAUseCase>();
+            services.TryAddScoped<IObterQuestionarioAtendimentoNAAPAUseCase, ObterQuestionarioAtendimentoNAAPAUseCase>();
+            services.TryAddScoped<IObterQuestoesRelatorioDinamicoAtendimentoNAAPAPorModalidadesUseCase, ObterQuestoesRelatorioDinamicoAtendimentoNaapaPorModalidadesUseCase>();
+            services.TryAddScoped<IObterPrioridadeAtendimentoNAAPAUseCase, ObterPrioridadeAtendimentoNAAPAUseCase>();
             services.TryAddScoped<IObterInformacoesAlunoPorCodigoUseCase, ObterInformacoesAlunoPorCodigoUseCase>();
-            services.TryAddScoped<IObterEncaminhamentoNAAPAPorIdUseCase, ObterEncaminhamentoNAAPAPorIdUseCase>();
+            services.TryAddScoped<IObterAtendimentoNAAPAPorIdUseCase, ObterAtendimentoNAAPAPorIdUseCase>();
             services.TryAddScoped<IExcluirArquivoNAAPAUseCase, ExcluirArquivoNAAPAUseCase>();
-            services.TryAddScoped<IExcluirEncaminhamentoNAAPAUseCase, ExcluirEncaminhamentoNAAPAUseCase>();
-            services.TryAddScoped<IObterSecoesItineranciaDeEncaminhamentoNAAPAUseCase, ObterSecoesItineranciaDeEncaminhamentoNAAPAUseCase>();
-            services.TryAddScoped<IObterQuestionarioItinerarioEncaminhamentoNAAPAUseCase, ObterQuestionarioItinerarioEncaminhamentoNAAPAUseCase>();
-            services.TryAddScoped<IExcluirSecaoItineranciaEncaminhamentoNAAPAUseCase, ExcluirSecaoItineranciaEncaminhamentoNAAPAUseCase>();
-            services.TryAddScoped<IRegistrarEncaminhamentoItinerarioNAAPAUseCase, RegistrarEncaminhamentoItinerarioNAAPAUseCase>();
-            services.TryAddScoped<IObterSituacaoEncaminhamentoNAAPAUseCase, ObterSituacaoEncaminhamentoNAAPAUseCase>();
+            services.TryAddScoped<IExcluirAtendimentoNAAPAUseCase, ExcluirAtendimentoNAAPAUseCase>();
+            services.TryAddScoped<IObterSecoesItineranciaDeAtendimentoNAAPAUseCase, ObterSecoesItineranciaDeAtendimentoNAAPAUseCase>();
+            services.TryAddScoped<IObterQuestionarioItinerarioAtendimentoNAAPAUseCase, ObterQuestionarioItinerarioAtendimentoNAAPAUseCase>();
+            services.TryAddScoped<IExcluirSecaoItineranciaAtendimentoNAAPAUseCase, ExcluirSecaoItineranciaAtendimentoNAAPAUseCase>();
+            services.TryAddScoped<IRegistrarAtendimentoItinerarioNAAPAUseCase, RegistrarAtendimentoItinerarioNAAPAUseCase>();
+            services.TryAddScoped<IObterSituacaoAtendimentoNAAPAUseCase, ObterSituacaoAtendimentoNAAPAUseCase>();
             services.TryAddScoped<IExcluirArquivoItineranciaNAAPAUseCase, ExcluirArquivoItineranciaNAAPAUseCase>();
 
-            services.TryAddScoped<IObterOpcoesRespostaFluxoAlertaEncaminhamentosNAAPAUseCase, ObterOpcoesRespostaFluxoAlertaEncaminhamentosNAAPAUseCase>();
-            services.TryAddScoped<IObterOpcoesRespostaPortaEntradaEncaminhamentosNAAPAUseCase, ObterOpcoesRespostaPortaEntradaEncaminhamentosNAAPAUseCase>();
-            services.TryAddScoped<IRelatorioEncaminhamentoNAAPAUseCase, RelatorioEncaminhamentoNAAPAUseCase>();
-            services.TryAddScoped<IObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase, ObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase>();
+            services.TryAddScoped<IObterOpcoesRespostaFluxoAlertaAtendimentosNAAPAUseCase, ObterOpcoesRespostaFluxoAlertaAtendimentosNAAPAUseCase>();
+            services.TryAddScoped<IObterOpcoesRespostaPortaEntradaAtendimentosNAAPAUseCase, ObterOpcoesRespostaPortaEntradaAtendimentosNAAPAUseCase>();
+            services.TryAddScoped<IRelatorioAtendimentoNAAPAUseCase, RelatorioAtendimentoNAAPAUseCase>();
+            services.TryAddScoped<IObterQuantidadeAtendimentoNAAPAEmAbertoPorDreUseCase, ObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase>();
             services.TryAddScoped<IObterQuantidadeAtendimentoNAAPAPorProfissionalMesUseCase, ObterQuantidadeAtendimentoNAAPAPorProfissionalMesUseCase>();
-            services.TryAddScoped<IExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase, ExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase>();
+            services.TryAddScoped<IExisteAtendimentoNAAPAAtivoParaAlunoUseCase, ExisteAtendimentoNAAPAAtivoParaAlunoUseCase>();
             services.TryAddScoped<IObterRegistrosDeAcaoParaNAAPAUseCase, ObterRegistrosDeAcaoParaNAAPAUseCase>();
             services.TryAddScoped<IObterTiposDeImprimirAnexosNAAPAUseCase, ObterTiposDeImprimirAnexosNAAPAUseCase>();
             services.TryAddScoped<IObterProfissionaisEnvolvidosAtendimentoNAAPANAAPAUseCase, ObterProfissionaisEnvolvidosAtendimentoNAAPANAAPAUseCase>();
 
-            services.TryAddScoped<IObterSecoesEncaminhamentoIndividualNAAPAUseCase, ObterSecoesEncaminhamentoIndividualNAAPAUseCase>();
+            services.TryAddScoped<IObterSecoesAtendimentoIndividualNAAPAUseCase, ObterSecoesAtendimentoIndividualNAAPAUseCase>();
 
             // Novo Encaminhamento NAAPA
             services.TryAddScoped<IObterNovosEncaminhamentosNAAPAPorTipoUseCase, ObterNovosEncaminhamentosNAAPAPorTipoUseCase>();
@@ -1520,7 +1520,7 @@ namespace SME.SGP.IoC
 
 
             //Relatório Dinâmico NAAPA
-            services.TryAddScoped<IRelatorioDinamicoObterEncaminhamentoNAAPAUseCase, RelatorioDinamicoObterEncaminhamentoNAAPAUseCase>();
+            services.TryAddScoped<IRelatorioDinamicoObterAtendimentoNAAPAUseCase, RelatorioDinamicoObterAtendimentoNAAPAUseCase>();
 
             // Relatório PAP
             services.TryAddScoped<IObterPeriodosPAPUseCase, ObterPeriodosPAPUseCase>();

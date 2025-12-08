@@ -28,7 +28,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ENC_NAAPA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterSecoesDeEncaminhamento([FromQuery] long? ecaminhamentoNaapaId,
-           [FromServices] IObterSecoesEncaminhamentoIndividualNAAPAUseCase obterSecoesDeEncaminhamentoNAAPAUseCase)
+           [FromServices] IObterSecoesAtendimentoIndividualNAAPAUseCase obterSecoesDeEncaminhamentoNAAPAUseCase)
         {
             return Ok(await obterSecoesDeEncaminhamentoNAAPAUseCase.Executar(ecaminhamentoNaapaId));
         }
@@ -37,7 +37,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<QuestaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ENC_NAAPA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterQuestionario([FromQuery] long questionarioId, [FromQuery] long? encaminhamentoId, [FromQuery] string codigoAluno, [FromQuery] string codigoTurma, [FromServices] IObterQuestionarioEncaminhamentoNAAPAUseCase useCase)
+        public async Task<IActionResult> ObterQuestionario([FromQuery] long questionarioId, [FromQuery] long? encaminhamentoId, [FromQuery] string codigoAluno, [FromQuery] string codigoTurma, [FromServices] IObterQuestionarioAtendimentoNAAPAUseCase useCase)
         {
             return Ok(await useCase.Executar(questionarioId, encaminhamentoId, codigoAluno, codigoTurma));
         }
@@ -46,17 +46,17 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ENC_NAAPA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ExisteEncaminhamentoAtivoParaAluno(string codigoAluno, [FromServices] IExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase useCase)
+        public async Task<IActionResult> ExisteEncaminhamentoAtivoParaAluno(string codigoAluno, [FromServices] IExisteAtendimentoNAAPAAtivoParaAlunoUseCase useCase)
         {
             return Ok(await useCase.Executar(codigoAluno));
         }
 
 
         [HttpGet("{encaminhamentoId}")]
-        [ProducesResponseType(typeof(EncaminhamentoNAAPARespostaDto), 200)]
+        [ProducesResponseType(typeof(AtendimentoNAAPARespostaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ENC_NAAPA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterEncaminhamento(long encaminhamentoId, [FromServices] IObterEncaminhamentoNAAPAPorIdUseCase useCase)
+        public async Task<IActionResult> ObterEncaminhamento(long encaminhamentoId, [FromServices] IObterAtendimentoNAAPAPorIdUseCase useCase)
         {
             return Ok(await useCase.Executar(encaminhamentoId));
         }
@@ -69,7 +69,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Upload([FromForm] IFormFile file, [FromServices] IUploadDeArquivoUseCase useCase)
         {
             if (file.Length > 0)
-                return Ok(await useCase.Executar(file, Dominio.TipoArquivo.EncaminhamentoNAAPA));
+                return Ok(await useCase.Executar(file, Dominio.TipoArquivo.AtendimentoNAAPA));
 
             return BadRequest();
         }
@@ -104,10 +104,10 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpDelete("{encaminhamentoNAAPAId}")]
-        [ProducesResponseType(typeof(EncaminhamentoNAAPADto), 200)]
+        [ProducesResponseType(typeof(AtendimentoNAAPADto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ENC_NAAPA_E, Policy = "Bearer")]
-        public async Task<IActionResult> ExcluirEncaminhamento(long encaminhamentoNAAPAId, [FromServices] IExcluirEncaminhamentoNAAPAUseCase useCase)
+        public async Task<IActionResult> ExcluirEncaminhamento(long encaminhamentoNAAPAId, [FromServices] IExcluirAtendimentoNAAPAUseCase useCase)
         {
             return Ok(await useCase.Executar(encaminhamentoNAAPAId));
         }
