@@ -31,6 +31,5 @@ namespace SME.SGP.Infra.Dtos
         public bool EhBuscaAtiva { get; set; }
         public int NumeroVisitas { get; set; }
         public int NumeroLigacoes { get; set; }
-        public int ProgramaAluno { get; set; }
     }
 }
