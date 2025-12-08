@@ -206,7 +206,7 @@ namespace SME.SGP.TesteIntegracao.AtendimentoNAAPA
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => reabrirEncaminhamentoNaapaUseCase.Executar(1));
 
-            excecao.Message.ShouldBe(MensagemNegocioAtendimentoNAAPA.ATENDIMENTO_NAO_PODE_SER_REABERTO_NESTA_SITUACAO);
+            excecao.Message.ShouldBe(MensagemNegocioAtendimentoNAAPA.ATENDIMENTO_ALUNO_INATIVO_NAO_PODE_SER_REABERTO);
         }
 
         private async Task CriarRespostasEncaminhamentoNAAPA(DateTime dataQueixa)
