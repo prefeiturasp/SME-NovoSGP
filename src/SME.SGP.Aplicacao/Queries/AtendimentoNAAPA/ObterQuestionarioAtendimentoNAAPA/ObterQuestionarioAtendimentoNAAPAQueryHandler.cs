@@ -30,6 +30,7 @@ namespace SME.SGP.Aplicacao
 
             var informacoesTurmasPrograma = await mediator.Send(new ObterInformacoesTurmasProgramaAlunoMapeamentoEstudanteQuery(request.CodigoAluno, DateTime.Now.Year));
             var questaoPAP = await repositorioQuestaoEncaminhamento.ObterIdQuestaoPorNomeComponenteQuestionario(request.QuestionarioId, "PAP");
+            var questaoProjeto = await repositorioQuestaoEncaminhamento.ObterIdQuestaoPorNomeComponenteQuestionario(request.QuestionarioId, "PROJETO");
 
             ObterRespostasFunc obterRespostasComRegra = (long questaoId) =>
             {
@@ -41,6 +42,29 @@ namespace SME.SGP.Aplicacao
                         {
                             QuestaoId = questaoId,
                             Texto = informacoesTurmasPrograma.ComponentesPAP.SerializarJsonTipoQuestaoComboMultiplaEscolhaDinamico()
+                        }
+                    };
+                }
+
+                if (questaoId == questaoProjeto)
+                {
+                    var componentesFortalecimento = informacoesTurmasPrograma.ComponentesFortalecimentoAprendizagens;
+                    var componentesMaisEducacao = informacoesTurmasPrograma.ComponentesMaisEducacao;
+                    
+                    var componentesCombinados = new List<ComponenteCurricularSimplificadoDto>();
+                    
+                    if (componentesFortalecimento?.Any() == true)
+                        componentesCombinados.AddRange(componentesFortalecimento);
+                    
+                    if (componentesMaisEducacao?.Any() == true)
+                        componentesCombinados.AddRange(componentesMaisEducacao);
+                    
+                    return new List<RespostaQuestaoDto>()
+                    {
+                        new RespostaQuestaoDto()
+                        {
+                            QuestaoId = questaoId,
+                            Texto = componentesCombinados.SerializarJsonTipoQuestaoComboMultiplaEscolhaDinamico()
                         }
                     };
                 }
