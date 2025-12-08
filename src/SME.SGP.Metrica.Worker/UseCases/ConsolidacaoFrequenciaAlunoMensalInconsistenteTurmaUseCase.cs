@@ -7,10 +7,10 @@ namespace SME.SGP.Metrica.Worker.UseCases
 {
     public class ConsolidacaoFrequenciaAlunoMensalInconsistenteTurmaUseCase : IConsolidacaoFrequenciaAlunoMensalInconsistenteTurmaUseCase
     {
-        private readonly IRepositorioSGPConsulta repositorioSGP;
+        private readonly IRepositorioSGP repositorioSGP;
         private readonly IRepositorioConsolidacaoFrequenciaAlunoMensalInconsistente repositorioInconsistencia;
 
-        public ConsolidacaoFrequenciaAlunoMensalInconsistenteTurmaUseCase(IRepositorioSGPConsulta repositorioSGP,
+        public ConsolidacaoFrequenciaAlunoMensalInconsistenteTurmaUseCase(IRepositorioSGP repositorioSGP,
                                                                           IRepositorioConsolidacaoFrequenciaAlunoMensalInconsistente repositorioInconsistencia)
         {
             this.repositorioSGP = repositorioSGP ?? throw new System.ArgumentNullException(nameof(repositorioSGP));
