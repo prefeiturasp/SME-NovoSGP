@@ -197,6 +197,7 @@ namespace SME.SGP.Aplicacao
             await SalvarCacheUsuario(usuario);
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.AtualizaUltimoLoginUsuario, usuario, usuarioLogado: usuario));
 
+            // sincronização será pelo worker de abrangencia
             //await mediator.Send(new CarregarAbrangenciaUsuarioCommand(login, perfilSelecionado));
 
             retornoAutenticacaoEol.UsuarioAutenticacaoRetornoDto.UsuarioLogin = usuario.Login;
