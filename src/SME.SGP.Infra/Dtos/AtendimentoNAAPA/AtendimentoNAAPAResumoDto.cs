@@ -13,7 +13,7 @@ namespace SME.SGP.Infra
         public string CodigoAluno { get; set; }
         public DateTime? DataAberturaQueixaInicio  { get; set; }
         public string Situacao { get; set; }
-        public string Prioridade { get; set; }
+        public bool SuspeitaViolencia { get; set; }
         public bool EhMatriculadoTurmaPAP { get; set; }
         public DateTime? DataUltimoAtendimento { get; set; }
         public string Turma { get; set; }

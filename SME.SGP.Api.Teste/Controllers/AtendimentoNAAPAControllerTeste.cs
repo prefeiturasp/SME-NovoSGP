@@ -30,27 +30,27 @@ namespace SME.SGP.Api.Testes.Controllers
             _faker = new Faker("pt_BR");
         }
 
-        [Fact(DisplayName = "Deve chamar o caso de uso para registrar um encaminhamento")]
-        public async Task DeveChamarUseCase_ParaRegistrarEncaminhamento()
+        [Fact(DisplayName = "Deve chamar o caso de uso para registrar um atendimento")]
+        public async Task DeveChamarUseCase_ParaRegistrarAtendimento()
         {
             // Arrange
             var useCaseMock = new Mock<IRegistrarAtendimentoNAAPAUseCase>();
-            var encaminhamentoDto = new AtendimentoNAAPADto { AlunoCodigo = "123" };
+            var atendimentoDto = new AtendimentoNAAPADto { AlunoCodigo = "123" };
             var retornoDto = new ResultadoAtendimentoNAAPADto { Id = 1 };
 
-            useCaseMock.Setup(u => u.Executar(encaminhamentoDto)).ReturnsAsync(retornoDto);
+            useCaseMock.Setup(u => u.Executar(atendimentoDto)).ReturnsAsync(retornoDto);
 
             // Act
-            var resultado = await _controller.RegistrarAtendimento(encaminhamentoDto, useCaseMock.Object);
+            var resultado = await _controller.RegistrarAtendimento(atendimentoDto, useCaseMock.Object);
 
             // Assert
-            useCaseMock.Verify(u => u.Executar(encaminhamentoDto), Times.Once);
+            useCaseMock.Verify(u => u.Executar(atendimentoDto), Times.Once);
             var okResult = Assert.IsType<OkObjectResult>(resultado);
             Assert.Same(retornoDto, okResult.Value);
         }
 
-        [Fact(DisplayName = "Deve chamar o caso de uso para obter encaminhamentos paginados")]
-        public async Task DeveChamarUseCase_ParaObterEncaminhamentosPaginados()
+        [Fact(DisplayName = "Deve chamar o caso de uso para obter atendimentos paginados")]
+        public async Task DeveChamarUseCase_ParaObterAtendimentosPaginados()
         {
             // Arrange
             var useCaseMock = new Mock<IObterAtendimentoNAAPAUseCase>();
@@ -74,18 +74,18 @@ namespace SME.SGP.Api.Testes.Controllers
             // Arrange
             var useCaseMock = new Mock<IObterQuestionarioAtendimentoNAAPAUseCase>();
             var questionarioId = _faker.Random.Long(1);
-            var encaminhamentoId = _faker.Random.Long(1);
+            var atendimentoId = _faker.Random.Long(1);
             var alunoCodigo = _faker.Random.AlphaNumeric(8);
             var turmaCodigo = _faker.Random.AlphaNumeric(5);
             var retorno = new List<QuestaoDto>();
 
-            useCaseMock.Setup(u => u.Executar(questionarioId, encaminhamentoId, alunoCodigo, turmaCodigo)).ReturnsAsync(retorno);
+            useCaseMock.Setup(u => u.Executar(questionarioId, atendimentoId, alunoCodigo, turmaCodigo)).ReturnsAsync(retorno);
 
             // Act
-            var resultado = await _controller.ObterQuestionario(questionarioId, encaminhamentoId, alunoCodigo, turmaCodigo, useCaseMock.Object);
+            var resultado = await _controller.ObterQuestionario(questionarioId, atendimentoId, alunoCodigo, turmaCodigo, useCaseMock.Object);
 
             // Assert
-            useCaseMock.Verify(u => u.Executar(questionarioId, encaminhamentoId, alunoCodigo, turmaCodigo), Times.Once);
+            useCaseMock.Verify(u => u.Executar(questionarioId, atendimentoId, alunoCodigo, turmaCodigo), Times.Once);
             Assert.IsType<OkObjectResult>(resultado);
         }
 
@@ -143,45 +143,45 @@ namespace SME.SGP.Api.Testes.Controllers
             useCaseMock.Verify(u => u.Executar(It.IsAny<IFormFile>(), It.IsAny<Dominio.TipoArquivo>()), Times.Never);
         }
 
-        [Fact(DisplayName = "Deve chamar o caso de uso para excluir um encaminhamento")]
-        public async Task DeveChamarUseCase_ParaExcluirEncaminhamento()
+        [Fact(DisplayName = "Deve chamar o caso de uso para excluir um atendimento")]
+        public async Task DeveChamarUseCase_ParaExcluirAtendimento()
         {
             // Arrange
             var useCaseMock = new Mock<IExcluirAtendimentoNAAPAUseCase>();
-            var encaminhamentoId = _faker.Random.Long(1);
+            var atendimentoId = _faker.Random.Long(1);
 
-            useCaseMock.Setup(u => u.Executar(encaminhamentoId)).ReturnsAsync(true);
+            useCaseMock.Setup(u => u.Executar(atendimentoId)).ReturnsAsync(true);
 
             // Act
-            var resultado = await _controller.ExcluirAtendimento(encaminhamentoId, useCaseMock.Object);
+            var resultado = await _controller.ExcluirAtendimento(atendimentoId, useCaseMock.Object);
 
             // Assert
-            useCaseMock.Verify(u => u.Executar(encaminhamentoId), Times.Once);
+            useCaseMock.Verify(u => u.Executar(atendimentoId), Times.Once);
             var okResult = Assert.IsType<OkObjectResult>(resultado);
             Assert.Equal(true, okResult.Value);
         }
 
-        [Fact(DisplayName = "Deve chamar o caso de uso para obter um encaminhamento por ID")]
-        public async Task DeveChamarUseCase_ParaObterEncaminhamentoPorId()
+        [Fact(DisplayName = "Deve chamar o caso de uso para obter um atendimento por ID")]
+        public async Task DeveChamarUseCase_ParaObterAtendimentoPorId()
         {
             // Arrange
             var useCaseMock = new Mock<IObterAtendimentoNAAPAPorIdUseCase>();
-            var encaminhamentoId = _faker.Random.Long(1);
+            var atendimentoId = _faker.Random.Long(1);
             var retornoDto = new AtendimentoNAAPARespostaDto { AnoLetivo = DateTime.Now.Year };
 
-            useCaseMock.Setup(u => u.Executar(encaminhamentoId)).ReturnsAsync(retornoDto);
+            useCaseMock.Setup(u => u.Executar(atendimentoId)).ReturnsAsync(retornoDto);
 
             // Act
-            var resultado = await _controller.ObterAtendimento(encaminhamentoId, useCaseMock.Object);
+            var resultado = await _controller.ObterAtendimento(atendimentoId, useCaseMock.Object);
 
             // Assert
-            useCaseMock.Verify(u => u.Executar(encaminhamentoId), Times.Once);
+            useCaseMock.Verify(u => u.Executar(atendimentoId), Times.Once);
             var okResult = Assert.IsType<OkObjectResult>(resultado);
             Assert.Same(retornoDto, okResult.Value);
         }
 
-        [Fact(DisplayName = "Deve chamar o caso de uso para obter seções do encaminhamento")]
-        public async Task DeveChamarUseCase_ParaObterSecoesDeEncaminhamento()
+        [Fact(DisplayName = "Deve chamar o caso de uso para obter seções do atendimento")]
+        public async Task DeveChamarUseCase_ParaObterSecoesDeAtendimento()
         {
             // Arrange
             var useCaseMock = new Mock<IObterSecoesAtendimentoSecaoNAAPAUseCase>();
@@ -203,16 +203,16 @@ namespace SME.SGP.Api.Testes.Controllers
         {
             // Arrange
             var useCaseMock = new Mock<IObterSecoesItineranciaDeAtendimentoNAAPAUseCase>();
-            var encaminhamentoId = _faker.Random.Long(1);
+            var atendimentoId = _faker.Random.Long(1);
             var retorno = new PaginacaoResultadoDto<AtendimentoNAAPASecaoItineranciaDto>();
 
-            useCaseMock.Setup(u => u.Executar(encaminhamentoId)).ReturnsAsync(retorno);
+            useCaseMock.Setup(u => u.Executar(atendimentoId)).ReturnsAsync(retorno);
 
             // Act
-            var resultado = await _controller.ObterSecoesItineranciaDeAtendimentoNAAPA(encaminhamentoId, useCaseMock.Object);
+            var resultado = await _controller.ObterSecoesItineranciaDeAtendimentoNAAPA(atendimentoId, useCaseMock.Object);
 
             // Assert
-            useCaseMock.Verify(u => u.Executar(encaminhamentoId), Times.Once);
+            useCaseMock.Verify(u => u.Executar(atendimentoId), Times.Once);
             Assert.IsType<OkObjectResult>(resultado);
         }
 
@@ -274,16 +274,16 @@ namespace SME.SGP.Api.Testes.Controllers
         {
             // Arrange
             var useCaseMock = new Mock<IExcluirSecaoItineranciaAtendimentoNAAPAUseCase>();
-            var encaminhamentoId = _faker.Random.Long(1);
+            var atendimentoId = _faker.Random.Long(1);
             var secaoId = _faker.Random.Long(1);
 
-            useCaseMock.Setup(u => u.Executar(encaminhamentoId, secaoId)).ReturnsAsync(true);
+            useCaseMock.Setup(u => u.Executar(atendimentoId, secaoId)).ReturnsAsync(true);
 
             // Act
-            var resultado = await _controller.ExcluirSecaoItinerancia(encaminhamentoId, secaoId, useCaseMock.Object);
+            var resultado = await _controller.ExcluirSecaoItinerancia(atendimentoId, secaoId, useCaseMock.Object);
 
             // Assert
-            useCaseMock.Verify(u => u.Executar(encaminhamentoId, secaoId), Times.Once);
+            useCaseMock.Verify(u => u.Executar(atendimentoId, secaoId), Times.Once);
             Assert.IsType<OkObjectResult>(resultado);
         }
 
@@ -304,26 +304,26 @@ namespace SME.SGP.Api.Testes.Controllers
             Assert.IsType<OkObjectResult>(resultado);
         }
 
-        [Fact(DisplayName = "Deve chamar o caso de uso para obter a situação do encaminhamento")]
+        [Fact(DisplayName = "Deve chamar o caso de uso para obter a situação do atendimento")]
         public async Task DeveChamarUseCase_ParaObterSituacao()
         {
             // Arrange
             var useCaseMock = new Mock<IObterSituacaoAtendimentoNAAPAUseCase>();
-            var encaminhamentoId = _faker.Random.Long(1);
+            var atendimentoId = _faker.Random.Long(1);
             var retorno = new SituacaoDto();
 
-            useCaseMock.Setup(u => u.Executar(encaminhamentoId)).ReturnsAsync(retorno);
+            useCaseMock.Setup(u => u.Executar(atendimentoId)).ReturnsAsync(retorno);
 
             // Act
-            var resultado = await _controller.ObterSituacao(encaminhamentoId, useCaseMock.Object);
+            var resultado = await _controller.ObterSituacao(atendimentoId, useCaseMock.Object);
 
             // Assert
-            useCaseMock.Verify(u => u.Executar(encaminhamentoId), Times.Once);
+            useCaseMock.Verify(u => u.Executar(atendimentoId), Times.Once);
             Assert.IsType<OkObjectResult>(resultado);
         }
 
-        [Fact(DisplayName = "Deve chamar o caso de uso para encerrar o encaminhamento")]
-        public async Task DeveChamarUseCase_ParaEncerrarEncaminhamento()
+        [Fact(DisplayName = "Deve chamar o caso de uso para encerrar o atendimento")]
+        public async Task DeveChamarUseCase_ParaEncerrarAtendimento()
         {
             // Arrange
             var useCaseMock = new Mock<IEncerrarAtendimentoNAAPAUseCase>();
@@ -343,21 +343,21 @@ namespace SME.SGP.Api.Testes.Controllers
             Assert.IsType<OkObjectResult>(resultado);
         }
 
-        [Fact(DisplayName = "Deve chamar o caso de uso para reabrir o encaminhamento")]
-        public async Task DeveChamarUseCase_ParaReabrirEncaminhamento()
+        [Fact(DisplayName = "Deve chamar o caso de uso para reabrir o atendimento")]
+        public async Task DeveChamarUseCase_ParaReabrirAtendimento()
         {
             // Arrange
             var useCaseMock = new Mock<IReabrirAtendimentoNAAPAUseCase>();
-            var encaminhamentoId = _faker.Random.Long(1);
+            var atendimentoId = _faker.Random.Long(1);
             var retorno = new SituacaoDto();
 
-            useCaseMock.Setup(u => u.Executar(encaminhamentoId)).ReturnsAsync(retorno);
+            useCaseMock.Setup(u => u.Executar(atendimentoId)).ReturnsAsync(retorno);
 
             // Act
-            var resultado = await _controller.ReabrirAtendimento(encaminhamentoId, useCaseMock.Object);
+            var resultado = await _controller.ReabrirAtendimento(atendimentoId, useCaseMock.Object);
 
             // Assert
-            useCaseMock.Verify(u => u.Executar(encaminhamentoId), Times.Once);
+            useCaseMock.Verify(u => u.Executar(atendimentoId), Times.Once);
             Assert.IsType<OkObjectResult>(resultado);
         }
 
@@ -417,16 +417,16 @@ namespace SME.SGP.Api.Testes.Controllers
         {
             // Arrange
             var useCaseMock = new Mock<IObterObservacoesDeAtendimentoNAAPAUseCase>();
-            var encaminhamentoId = _faker.Random.Long(1);
+            var atendimentoId = _faker.Random.Long(1);
             var retorno = new PaginacaoResultadoDto<AtendimentoNAAPAObservacoesDto>();
 
-            useCaseMock.Setup(u => u.Executar(encaminhamentoId)).ReturnsAsync(retorno);
+            useCaseMock.Setup(u => u.Executar(atendimentoId)).ReturnsAsync(retorno);
 
             // Act
-            var resultado = await _controller.ObterObservacoes(encaminhamentoId, useCaseMock.Object);
+            var resultado = await _controller.ObterObservacoes(atendimentoId, useCaseMock.Object);
 
             // Assert
-            useCaseMock.Verify(u => u.Executar(encaminhamentoId), Times.Once);
+            useCaseMock.Verify(u => u.Executar(atendimentoId), Times.Once);
             Assert.IsType<OkObjectResult>(resultado);
         }
 
@@ -469,21 +469,21 @@ namespace SME.SGP.Api.Testes.Controllers
         {
             // Arrange
             var useCaseMock = new Mock<IObterHistoricosDeAlteracoesApresentacaoAtendimentoNAAPAUseCase>();
-            var encaminhamentoId = _faker.Random.Long(1);
+            var atendimentoId = _faker.Random.Long(1);
             var retorno = new PaginacaoResultadoDto<AtendimentoNAAPAHistoricoDeAlteracaoDto>();
 
-            useCaseMock.Setup(u => u.Executar(encaminhamentoId)).ReturnsAsync(retorno);
+            useCaseMock.Setup(u => u.Executar(atendimentoId)).ReturnsAsync(retorno);
 
             // Act
-            var resultado = await _controller.ObterHistoricoDeAlteracoes(encaminhamentoId, useCaseMock.Object);
+            var resultado = await _controller.ObterHistoricoDeAlteracoes(atendimentoId, useCaseMock.Object);
 
             // Assert
-            useCaseMock.Verify(u => u.Executar(encaminhamentoId), Times.Once);
+            useCaseMock.Verify(u => u.Executar(atendimentoId), Times.Once);
             Assert.IsType<OkObjectResult>(resultado);
         }
 
-        [Fact(DisplayName = "Deve chamar o caso de uso para verificar encaminhamento ativo do aluno")]
-        public async Task DeveChamarUseCase_ParaVerificarEncaminhamentoAtivo()
+        [Fact(DisplayName = "Deve chamar o caso de uso para verificar atendimento ativo do aluno")]
+        public async Task DeveChamarUseCase_ParaVerificarAtendimentoAtivo()
         {
             // Arrange
             var useCaseMock = new Mock<IExisteAtendimentoNAAPAAtivoParaAlunoUseCase>();
@@ -576,16 +576,16 @@ namespace SME.SGP.Api.Testes.Controllers
         {
             // Arrange
             var useCaseMock = new Mock<IObterTiposDeImprimirAnexosNAAPAUseCase>();
-            var encaminhamentoId = _faker.Random.Long(1);
+            var atendimentoId = _faker.Random.Long(1);
             var retorno = new List<ImprimirAnexoDto>();
 
-            useCaseMock.Setup(u => u.Executar(encaminhamentoId)).ReturnsAsync(retorno);
+            useCaseMock.Setup(u => u.Executar(atendimentoId)).ReturnsAsync(retorno);
 
             // Act
-            var resultado = await _controller.ObterTiposDeImprimirAnexos(encaminhamentoId, useCaseMock.Object);
+            var resultado = await _controller.ObterTiposDeImprimirAnexos(atendimentoId, useCaseMock.Object);
 
             // Assert
-            useCaseMock.Verify(u => u.Executar(encaminhamentoId), Times.Once);
+            useCaseMock.Verify(u => u.Executar(atendimentoId), Times.Once);
             Assert.IsType<OkObjectResult>(resultado);
         }
 

@@ -21,6 +21,8 @@ namespace SME.SGP.Dados.Repositorios
         public const int SECAO_ETAPA_1 = 1;
         public const int SECAO_INFORMACOES_ALUNO_ORDEM = 1;
         public const string QUESTAO_DATA_DO_ATENDIMENTO = "DATA_DO_ATENDIMENTO";
+        public const string QUESTAO_SUSPEITA_VIOLENCIA = "SUSPEITA_VIOLENCIA";
+        public const string QUESTAO_DATA_ENTRADA_QUEIXA = "DATA_ENTRADA_QUEIXA";
 
         public RepositorioAtendimentoNAAPA(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
@@ -28,17 +30,17 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PaginacaoResultadoDto<AtendimentoNAAPAResumoDto>> ListarPaginado(int anoLetivo, long dreId, 
             string codigoUe, string codigoNomeAluno, DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, 
-            int situacao, long prioridade, long[] turmasIds, Paginacao paginacao, bool exibirEncerrados, OrdenacaoListagemPaginadaAtendimentoNAAPA[] ordenacao)
+            int situacao, long[] turmasIds, Paginacao paginacao, bool exibirEncerrados, OrdenacaoListagemPaginadaAtendimentoNAAPA[] ordenacao)
         {
             var query = MontaQueryCompleta(paginacao, codigoUe, codigoNomeAluno, dataAberturaQueixaInicio, 
-                dataAberturaQueixaFim, situacao,prioridade , turmasIds, exibirEncerrados, ordenacao);
+                dataAberturaQueixaFim, situacao, turmasIds, exibirEncerrados, ordenacao);
             var situacoesEncerrado = (int)SituacaoNAAPA.Encerrado ;
 
             if (!string.IsNullOrWhiteSpace(codigoNomeAluno))
                 codigoNomeAluno = $"%{codigoNomeAluno.ToLower()}%";
             
             var parametros = new { anoLetivo, codigoUe, dreId, codigoNomeAluno,
-                turmasIds, situacao, prioridade, dataAberturaQueixaInicio, 
+                turmasIds, situacao, dataAberturaQueixaInicio, 
                 dataAberturaQueixaFim, situacoesEncerrado };
 
             var retorno = new PaginacaoResultadoDto<AtendimentoNAAPAResumoDto>();
@@ -55,29 +57,29 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         private string MontaQueryCompleta(Paginacao paginacao, string codigoUe, string codigoNomeAluno, 
-            DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, int situacao, long prioridade, long[] turmasIds, bool exibirEncerrados, OrdenacaoListagemPaginadaAtendimentoNAAPA[] ordenacao)
+            DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, int situacao, long[] turmasIds, bool exibirEncerrados, OrdenacaoListagemPaginadaAtendimentoNAAPA[] ordenacao)
         {
             var sql = new StringBuilder();
 
             MontaQueryConsulta(paginacao, sql, contador: false, codigoNomeAluno, dataAberturaQueixaInicio,
-                dataAberturaQueixaFim,situacao, prioridade, turmasIds, codigoUe, exibirEncerrados, ordenacao);
+                dataAberturaQueixaFim,situacao, turmasIds, codigoUe, exibirEncerrados, ordenacao);
             
             sql.AppendLine(";");
 
             MontaQueryConsulta(paginacao, sql, contador: true, codigoNomeAluno, dataAberturaQueixaInicio,
-                dataAberturaQueixaFim,situacao, prioridade, turmasIds, codigoUe, exibirEncerrados);
+                dataAberturaQueixaFim,situacao, turmasIds, codigoUe, exibirEncerrados);
 
             return sql.ToString();
         }
 
         private void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, string codigoNomeAluno, 
-            DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, int situacao, long prioridade, 
+            DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, int situacao, 
             long[] turmasIds, string codigoUe, bool exibirEncerrados, OrdenacaoListagemPaginadaAtendimentoNAAPA[] ordenacao = null)
         {
             ObterCabecalho(sql, contador);
 
-            ObterFiltro(sql, codigoNomeAluno, dataAberturaQueixaInicio, dataAberturaQueixaFim,situacao, prioridade, turmasIds, codigoUe, exibirEncerrados);
-            
+            ObterFiltro(sql, codigoNomeAluno, dataAberturaQueixaInicio, dataAberturaQueixaFim,situacao, turmasIds, codigoUe, exibirEncerrados);
+
             ObterOrdenacaoConsulta(sql, ordenacao);
 
             if (paginacao.QuantidadeRegistros > 0 && !contador)
@@ -86,41 +88,46 @@ namespace SME.SGP.Dados.Repositorios
 
         private static void ObterOrdenacaoConsulta(StringBuilder sql, OrdenacaoListagemPaginadaAtendimentoNAAPA[] ordenacao)
         {
-            StringBuilder sqlAux = new StringBuilder();
-            if (ordenacao.PossuiRegistros())
+            if (!ordenacao.PossuiRegistros())
+                return;
+
+            sql.AppendLine("order by");
+            sql.Append(" case when COALESCE(vsv.SuspeitaViolencia, false) = true then 0 else 1 end,");
+            sql.Append(" case when np.situacao = 1 then 0 else 1 end");
+
+            foreach (var order in ordenacao)
             {
-                foreach (var order in ordenacao)
+                sql.Append(", ");
+
+                switch (order)
                 {
-                    if (sqlAux.Length == 0)
-                        sqlAux.AppendLine("order by");
-                    else
-                        sqlAux.Append(", ");
-                    switch (order)
-                    {
-                        case OrdenacaoListagemPaginadaAtendimentoNAAPA.UE:
-                            sqlAux.AppendLine($" {EnumExtensao.ObterCaseWhenSQL<TipoEscola>("ue.tipo_escola")}||' '||ue.nome");
-                            break;
-                        case OrdenacaoListagemPaginadaAtendimentoNAAPA.Estudante:
-                            sqlAux.AppendLine(" np.aluno_nome, np.aluno_codigo");
-                            break;
-                        case OrdenacaoListagemPaginadaAtendimentoNAAPA.DataEntradaQueixa:
-                            sqlAux.AppendLine(" to_date(qdata.DataAberturaQueixaInicio,'yyyy-mm-dd')");
-                            break;
-                        case OrdenacaoListagemPaginadaAtendimentoNAAPA.UEDesc:
-                            sqlAux.AppendLine($" {EnumExtensao.ObterCaseWhenSQL<TipoEscola>("ue.tipo_escola")}||' '||ue.nome desc");
-                            break;
-                        case OrdenacaoListagemPaginadaAtendimentoNAAPA.EstudanteDesc:
-                            sqlAux.AppendLine(" np.aluno_nome desc, np.aluno_codigo desc");
-                            break;
-                        case OrdenacaoListagemPaginadaAtendimentoNAAPA.DataEntradaQueixaDesc:
-                            sqlAux.AppendLine(" to_date(qdata.DataAberturaQueixaInicio,'yyyy-mm-dd') desc ");
-                            break;
-                        default:
-                            break;
-                    }
+                    case OrdenacaoListagemPaginadaAtendimentoNAAPA.UE:
+                        sql.Append($"{EnumExtensao.ObterCaseWhenSQL<TipoEscola>("ue.tipo_escola")}||' '||ue.nome");
+                        break;
+
+                    case OrdenacaoListagemPaginadaAtendimentoNAAPA.Estudante:
+                        sql.Append(" np.aluno_nome, np.aluno_codigo");
+                        break;
+
+                    case OrdenacaoListagemPaginadaAtendimentoNAAPA.DataEntradaQueixa:
+                        sql.Append(" to_date(qdata.DataAberturaQueixaInicio,'yyyy-mm-dd')");
+                        break;
+
+                    case OrdenacaoListagemPaginadaAtendimentoNAAPA.UEDesc:
+                        sql.Append($"{EnumExtensao.ObterCaseWhenSQL<TipoEscola>("ue.tipo_escola")}||' '||ue.nome desc");
+                        break;
+
+                    case OrdenacaoListagemPaginadaAtendimentoNAAPA.EstudanteDesc:
+                        sql.Append(" np.aluno_nome desc, np.aluno_codigo desc");
+                        break;
+
+                    case OrdenacaoListagemPaginadaAtendimentoNAAPA.DataEntradaQueixaDesc:
+                        sql.Append(" to_date(qdata.DataAberturaQueixaInicio,'yyyy-mm-dd') desc");
+                        break;
                 }
-                sql.AppendLine(sqlAux.ToString());
             }
+
+            sql.AppendLine();
         }
 
         private static void ObterCabecalho(StringBuilder sql, bool contador)
@@ -129,39 +136,49 @@ namespace SME.SGP.Dados.Repositorios
                         select ens.encaminhamento_naapa_id, 
                                enr.texto DataAberturaQueixaInicio    
                         from encaminhamento_naapa_secao ens   
-                        join encaminhamento_naapa_questao enq on ens.id = enq.encaminhamento_naapa_secao_id  
+                        join encaminhamento_escolar_questao enq on ens.id = enq.encaminhamento_escolar_secao_id  
                         join questao q on enq.questao_id = q.id 
-                        join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id 
+                        join encaminhamento_escolar_resposta enr on enr.questao_encaminhamento_id = enq.id 
                         join secao_encaminhamento_naapa secao on secao.id = ens.secao_encaminhamento_id
                         left join opcao_resposta opr on opr.id = enr.resposta_id
-                        where q.ordem = {QUESTAO_DATA_QUEIXA_ORDEM} and secao.etapa = {SECAO_ETAPA_1} and secao.ordem = {SECAO_INFORMACOES_ALUNO_ORDEM}
+                        where q.nome_componente = '{QUESTAO_DATA_ENTRADA_QUEIXA}'
                               and not ens.excluido and not enq.excluido and not enr.excluido 
                         ),
-                        vw_resposta_prioridade as (
-                        select ens.encaminhamento_naapa_id, 
-                                opr.nome as Prioridade,
-                                enr.resposta_id  as PrioridadeId
-                        from encaminhamento_naapa_secao ens   
-                        join encaminhamento_naapa_questao enq on ens.id = enq.encaminhamento_naapa_secao_id  
-                        join questao q on enq.questao_id = q.id 
-                        join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id 
-                        join secao_encaminhamento_naapa secao on secao.id = ens.secao_encaminhamento_id
-                        left join opcao_resposta opr on opr.id = enr.resposta_id
-                        where q.ordem = {QUESTAO_PRIORIDADE_ORDEM} and secao.etapa = {SECAO_ETAPA_1} and secao.ordem = {SECAO_INFORMACOES_ALUNO_ORDEM}
-                              and not ens.excluido and not enq.excluido and not enr.excluido 
+                        cte_opcao_sim_violencia as (
+                            select opr.id as resposta_sim_id
+                            from questao q
+                            join opcao_resposta opr on opr.questao_id = q.id
+                            where q.nome_componente = 'SUSPEITA_VIOLENCIA'
+                                and UPPER(opr.nome) = 'SIM'
+                                and not q.excluido
+                                and not opr.excluido
+                                limit 1
+                         ),
+                         vw_suspeita_violencia as (
+                         select distinct ens.encaminhamento_naapa_id,
+                           true as SuspeitaViolencia
+                           from encaminhamento_naapa_secao ens
+                            join encaminhamento_escolar_questao enq on enq.encaminhamento_escolar_secao_id = ens.id
+                            join questao q on q.id = enq.questao_id
+                            join encaminhamento_escolar_resposta enr on enr.questao_encaminhamento_id = enq.id
+                            join cte_opcao_sim_violencia csv on csv.resposta_sim_id = enr.resposta_id
+                            where q.nome_componente = '{QUESTAO_SUSPEITA_VIOLENCIA}'
+                              and not ens.excluido
+                              and not enq.excluido
+                              and not enr.excluido
                         ),
                         vw_resposta_data_ultimo_atendimento as (
                         select ens.encaminhamento_naapa_id, 
                                max(to_date(enr.texto,'yyyy-mm-dd')) DataUltimoAtendimento   
                         from encaminhamento_naapa_secao ens   
-                        join encaminhamento_naapa_questao enq on ens.id = enq.encaminhamento_naapa_secao_id  
+                        join encaminhamento_escolar_questao enq on ens.id = enq.encaminhamento_escolar_secao_id  
                         join questao q on enq.questao_id = q.id 
-                        join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id 
+                        join encaminhamento_escolar_resposta enr on enr.questao_encaminhamento_id = enq.id 
                         join secao_encaminhamento_naapa secao on secao.id = ens.secao_encaminhamento_id
                         join questionario q2 on q2.id = secao.questionario_id 
                         where length(enr.texto) > 0 and not ens.excluido and not enq.excluido and not enr.excluido  
                               and (secao.nome_componente = 'QUESTOES_ITINERACIA' or secao.nome_componente = 'QUESTOES_ITINERANCIA' )
-                              and q2.tipo = {(int)TipoQuestionario.EncaminhamentoNAAPA} and q.nome_componente = '{QUESTAO_DATA_DO_ATENDIMENTO}'
+                              and q2.tipo in ({string.Join(",", TipoQuestionarioNaapa())}) and q.nome_componente = '{QUESTAO_DATA_DO_ATENDIMENTO}'
                         group by ens.encaminhamento_naapa_id 
                         )
                         select ";
@@ -177,23 +194,31 @@ namespace SME.SGP.Dados.Repositorios
                                 ,np.aluno_nome as NomeAluno 
                                 ,np.situacao 
                                 ,case when length(qdata.DataAberturaQueixaInicio) > 0 then to_date(qdata.DataAberturaQueixaInicio,'yyyy-mm-dd') else null end DataAberturaQueixaInicio
-                                ,qprioridade.Prioridade
+                                ,COALESCE(vsv.SuspeitaViolencia, false) as SuspeitaViolencia
                                 ,t.nome as TurmaNome, t.modalidade_codigo as TurmaModalidade
                                 ,qdataultimoatendimento.DataUltimoAtendimento
                 ");
             }
 
-            sql.AppendLine(@" from encaminhamento_naapa np              
+            sql.AppendLine(@" from encaminhamento_escolar np              
                                 join turma t on t.id = np.turma_id
                                 join ue on t.ue_id = ue.id
                                 left join vw_resposta_data qdata on qdata.encaminhamento_naapa_id = np.id
-                                left join vw_resposta_prioridade qprioridade on qprioridade.encaminhamento_naapa_id = np.id 
                                 left join vw_resposta_data_ultimo_atendimento qdataultimoatendimento on qdataultimoatendimento.encaminhamento_naapa_id = np.id 
+                                left join vw_suspeita_violencia vsv on vsv.encaminhamento_naapa_id = np.id
             ");
         }
 
+        private static int[] TipoQuestionarioNaapa()
+        {
+            int[] tipoQuestionario = { (int)TipoQuestionario.EncaminhamentoNAAPAIndividual,
+                                       (int)TipoQuestionario.EncaminhamentoNAAPAInstitucional };
+
+            return tipoQuestionario;
+        }
+
         private void ObterFiltro(StringBuilder sql, string codigoNomeAluno, DateTime? dataAberturaQueixaInicio, 
-            DateTime? dataAberturaQueixaFim, int situacao, long prioridade, long[] turmasIds, string codigoUe, bool exibirEncerrados)
+            DateTime? dataAberturaQueixaFim, int situacao, long[] turmasIds, string codigoUe, bool exibirEncerrados)
         {
             sql.AppendLine(@" where not np.excluido 
                                     and t.ano_letivo = @anoLetivo
@@ -209,10 +234,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(" and t.id = ANY(@turmasIds) ");
             
             if (situacao > 0)
-                sql.AppendLine(" and np.situacao = @situacao ");
-            
-            if (prioridade > 0)
-                sql.AppendLine(" and qPrioridade.PrioridadeId = @prioridade ");
+                sql.AppendLine(" and np.situacao = @situacao ");            
 
             if (!exibirEncerrados)
                 sql.AppendLine(" and np.situacao <> @situacoesEncerrado ");
@@ -223,7 +245,7 @@ namespace SME.SGP.Dados.Repositorios
                     sql.AppendLine(" and to_date(qdata.DataAberturaQueixaInicio,'yyyy-mm-dd') >= @dataAberturaQueixaInicio ");
                 
                 if (dataAberturaQueixaFim.HasValue)
-                    sql.AppendLine(" and to_date(qdata.DataAberturaQueixaInicio,'yyyy-mm-dd') <= @dataAberturaQueixaFim");
+                    sql.AppendLine(" and to_date(qdata.DataAberturaQueixaInicio,'yyyy-mm-dd') <= @dataAberturaQueixaFim ");
             }
         }
         
@@ -235,11 +257,11 @@ namespace SME.SGP.Dados.Repositorios
                                         and not eas.excluido
                                     inner join secao_encaminhamento_naapa sea on sea.id = eas.secao_encaminhamento_id
                                         and not sea.excluido
-                                    inner join encaminhamento_naapa_questao qea on qea.encaminhamento_naapa_secao_id = eas.id
+                                    inner join encaminhamento_escolar_questao qea on qea.encaminhamento_naapa_secao_id = eas.id
                                         and not qea.excluido
                                     inner join questao q on q.id = qea.questao_id
                                         and not q.excluido
-                                    inner join encaminhamento_naapa_resposta rea on rea.questao_encaminhamento_id = qea.id
+                                    inner join encaminhamento_escolar_resposta rea on rea.questao_encaminhamento_id = qea.id
                                         and not rea.excluido
                                     left join opcao_resposta op on op.id = rea.resposta_id
                                         and not op.excluido
@@ -298,11 +320,11 @@ namespace SME.SGP.Dados.Repositorios
                                         and not eas.excluido
                                     inner join secao_encaminhamento_naapa sea on sea.id = eas.secao_encaminhamento_id
                                         and not sea.excluido
-                                    inner join encaminhamento_naapa_questao qea on qea.encaminhamento_naapa_secao_id = eas.id
+                                    inner join encaminhamento_escolar_questao qea on qea.encaminhamento_naapa_secao_id = eas.id
                                         and not qea.excluido
                                     inner join questao q on q.id = qea.questao_id
                                         and not q.excluido
-                                    inner join encaminhamento_naapa_resposta rea on rea.questao_encaminhamento_id = qea.id
+                                    inner join encaminhamento_escolar_resposta rea on rea.questao_encaminhamento_id = qea.id
                                         and not rea.excluido
                                     left join opcao_resposta op on op.id = rea.resposta_id
                                         and not op.excluido
@@ -362,9 +384,9 @@ namespace SME.SGP.Dados.Repositorios
                             encaminhamento_naapa ea
                         inner join encaminhamento_naapa_secao eas on
                             ea.id = eas.encaminhamento_naapa_id
-                        inner join encaminhamento_naapa_questao qea on
+                        inner join encaminhamento_escolar_questao qea on
                             eas.id = qea.encaminhamento_naapa_secao_id
-                        inner join encaminhamento_naapa_resposta rea on
+                        inner join encaminhamento_escolar_resposta rea on
                             qea.id = rea.questao_encaminhamento_id
                         inner join arquivo a on
                             rea.arquivo_id = a.id
@@ -518,8 +540,8 @@ namespace SME.SGP.Dados.Repositorios
                 inner join secao_encaminhamento_naapa sen on sen.id = ens.secao_encaminhamento_id and sen.nome_componente = '{AtendimentoNAAPAConstants.SECAO_ITINERANCIA}'
                 inner join questionario qto on qto.id = sen.questionario_id
                 inner join(select max(texto::date) dataAtendimento, enq.encaminhamento_naapa_secao_id
-                           from encaminhamento_naapa_resposta enr
-                           inner join encaminhamento_naapa_questao enq on enq.id = enr.questao_encaminhamento_id
+                           from encaminhamento_escolar_resposta enr
+                           inner join encaminhamento_escolar_questao enq on enq.id = enr.questao_encaminhamento_id
                            inner join questao q on q.id = enq.questao_id
                            where q.nome_componente = '{QUESTAO_DATA_DO_ATENDIMENTO}'
                              and not enr.excluido
