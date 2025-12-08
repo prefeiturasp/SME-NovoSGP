@@ -41,7 +41,6 @@ namespace SME.SGP.Metrica.Worker.Repositorios.Interfaces
         Task<IEnumerable<FrequenciaAlunoDuplicado>> ObterFrequenciaAlunoDuplicados(long ueId);
         Task<IEnumerable<RegistroFrequenciaDuplicado>> ObterRegistroFrequenciaDuplicados(long ueId);
         Task<IEnumerable<RegistroFrequenciaAlunoDuplicado>> ObterRegistroFrequenciaAlunoDuplicados(long turmaId);
-        Task<IEnumerable<ConsolidacaoFrequenciaAlunoMensalInconsistente>> ObterConsolidacaoFrequenciaAlunoMensalInconsistente(long turmaId);
         Task<IEnumerable<DiarioBordoDuplicado>> ObterDiariosBordoDuplicados();
         Task<int> ObterQuantidadeRegistrosFrequenciaDia(DateTime data);
         Task<int> ObterQuantidadeDiariosBordoDia(DateTime data);

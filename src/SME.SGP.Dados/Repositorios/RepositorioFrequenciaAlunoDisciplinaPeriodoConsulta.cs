@@ -16,9 +16,9 @@ namespace SME.SGP.Dados
 {
     public class RepositorioFrequenciaAlunoDisciplinaPeriodoConsulta : IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta
     {
-        private readonly ISgpContextConsultas database;
+        private readonly ISgpContext database;
 
-        public RepositorioFrequenciaAlunoDisciplinaPeriodoConsulta(ISgpContextConsultas database)
+        public RepositorioFrequenciaAlunoDisciplinaPeriodoConsulta(ISgpContext database)
         {
             this.database = database ?? throw new ArgumentNullException(nameof(database));
         }
