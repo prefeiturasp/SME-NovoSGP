@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
@@ -575,6 +576,53 @@ namespace SME.SGP.Dados.Repositorios
                                and extract(year from to_date(qdata.DataRegistro,'yyyy-mm-dd')) = @ano;";
 
             return database.Conexao.QueryFirstOrDefaultAsync<int>(sql.ToString(), new { alunoCodigo, mes, ano = anoLetivo });
+        }
+
+        public async Task<DadosBuscaAtivaAlunoDto> ObterDadosBuscaAtivaPorAluno(string alunoCodigo, int anoLetivo)
+        {
+            var sql = @"
+                WITH vw_resposta_procedimento_realizado AS (
+                    SELECT rabas.registro_acao_busca_ativa_id, 
+                           opr.nome as ProcedimentoRealizado
+                    FROM registro_acao_busca_ativa_secao rabas    
+                    INNER JOIN registro_acao_busca_ativa_questao rabaq ON rabas.id = rabaq.registro_acao_busca_ativa_secao_id  
+                    INNER JOIN questao q ON rabaq.questao_id = q.id 
+                    INNER JOIN registro_acao_busca_ativa_resposta rabar ON rabar.questao_registro_acao_id = rabaq.id 
+                    INNER JOIN secao_registro_acao_busca_ativa sraba ON sraba.id = rabas.secao_registro_acao_id
+                    LEFT JOIN opcao_resposta opr ON opr.id = rabar.resposta_id
+                    WHERE q.nome_componente = 'PROCEDIMENTO_REALIZADO'
+                        AND NOT rabar.excluido 
+                        AND NOT rabaq.excluido
+                        AND NOT rabas.excluido
+                        AND NOT sraba.excluido
+                )
+                SELECT 
+                    CASE WHEN COUNT(DISTINCT raba.id) > 0 THEN true ELSE false END as TemRegistroBuscaAtiva,
+                    COALESCE(COUNT(DISTINCT CASE 
+                        WHEN vpr.ProcedimentoRealizado = 'Visita domiciliar' THEN raba.id 
+                    END), 0) as NumeroVisitas,
+                    COALESCE(COUNT(DISTINCT CASE 
+                        WHEN vpr.ProcedimentoRealizado = 'Contato telefônico' THEN raba.id 
+                    END), 0) as NumeroLigacoes
+                FROM registro_acao_busca_ativa raba
+                INNER JOIN turma t ON t.id = raba.turma_id
+                LEFT JOIN vw_resposta_procedimento_realizado vpr ON vpr.registro_acao_busca_ativa_id = raba.id
+                WHERE raba.aluno_codigo = @alunoCodigo
+                  AND t.ano_letivo = @anoLetivo
+                  AND NOT raba.excluido";
+
+            var resultado = await database.Conexao.QueryFirstOrDefaultAsync<DadosBuscaAtivaAlunoDto>(sql, new
+            {
+                alunoCodigo,
+                anoLetivo
+            });
+
+            return resultado ?? new DadosBuscaAtivaAlunoDto
+            {
+                TemRegistroBuscaAtiva = false,
+                NumeroVisitas = 0,
+                NumeroLigacoes = 0
+            };
         }
     }
 }

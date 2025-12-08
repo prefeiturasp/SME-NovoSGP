@@ -83,6 +83,7 @@ namespace SME.SGP.Dados.Repositorios
                             t.data_inicio,
                             t.historica,
                             t.etapa_eja,
+                            t.serie_ensino,
                             u.id as UeId,
                             u.id,
                             u.ue_id,
