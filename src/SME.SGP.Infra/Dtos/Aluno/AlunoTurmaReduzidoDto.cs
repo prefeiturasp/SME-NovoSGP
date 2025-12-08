@@ -25,5 +25,12 @@ namespace SME.SGP.Infra.Dtos
         public bool EhAtendidoAEE { get; set; }
         public bool EhMatriculadoTurmaPAP { get; set; }
         public string Frequencia { get; set; }
+
+        public int NumeroAulasDadas { get; set; }
+        public int NumeroAulasFrequentadas { get; set; }
+        public string CicloEnsino { get; set; }
+        public bool EhBuscaAtiva { get; set; }
+        public int NumeroVisitas { get; set; }
+        public int NumeroLigacoes { get; set; }
     }
 }
