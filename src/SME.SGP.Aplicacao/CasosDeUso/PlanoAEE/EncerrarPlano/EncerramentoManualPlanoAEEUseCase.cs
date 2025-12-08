@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,7 +24,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PlanoAEE.EncerrarPlano
             if (planoAEE.EhNulo())
                 throw new NegocioException(MensagemNegocioPlanoAee.Plano_aee_nao_encontrado);
 
-            var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(planoAEE.AlunoCodigo, DateTime.Now.Year));
+            var aluno = await mediator.Send(new ObterAlunoPorCodigoEAnoPlanoAeeQuery(planoAEE.AlunoCodigo, DateTime.Now.Year, false));
             if(aluno.EhNulo())
                 throw new NegocioException(MensagemNegocioAluno.ESTUDANTE_NAO_ENCONTRADO);
 
@@ -34,7 +35,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PlanoAEE.EncerrarPlano
             return retorno;
         }
 
-        private static bool PermitirEncerramentoManual(AlunoPorTurmaResposta aluno)
+        private static bool PermitirEncerramentoManual(AlunoReduzidoDto aluno)
         {
             return !(new[] { SituacaoMatriculaAluno.Ativo,
                              SituacaoMatriculaAluno.PendenteRematricula,
