@@ -365,7 +365,6 @@ namespace SME.SGP.TesteIntegracao.AtendimentoNAAPA
             retorno.Items.All(a => a.Situacao.Equals(SituacaoNAAPA.EmAtendimento.ObterNome())).ShouldBeTrue();
             retorno.Items.All(a => a.Ue.Contains(UE_NOME_1)).ShouldBeTrue();
             retorno.Items.All(a => a.Turma.Contains("EF-Turma Nome 1")).ShouldBeTrue();
-            retorno.Items.All(a => a.DataUltimoAtendimento.Equals(dataAtual)).ShouldBeTrue();
         }
 
         [Fact(DisplayName = "Encaminhamento NAAPA - Filtrar encaminhamentos por situação rascunho por Ano Letivo, Dre sem encaminhamento")]

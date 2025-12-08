@@ -28,18 +28,41 @@ namespace SME.SGP.Aplicacao
                 await repositorioQuestaoEncaminhamento.ObterRespostasEncaminhamento(request.EncaminhamentoId.Value) :
                 Enumerable.Empty<RespostaQuestaoAtendimentoNAAPADto>();
 
-            var questoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(request.QuestionarioId , questaoId =>
-                respostasEncaminhamento.Where(c => c.QuestaoId == questaoId)
-                .Select(respostaEncaminhamento =>
+            var informacoesTurmasPrograma = await mediator.Send(new ObterInformacoesTurmasProgramaAlunoMapeamentoEstudanteQuery(request.CodigoAluno, DateTime.Now.Year));
+            var questaoPAP = await repositorioQuestaoEncaminhamento.ObterIdQuestaoPorNomeComponenteQuestionario(request.QuestionarioId, "PAP");
+
+            ObterRespostasFunc obterRespostasComRegra = (long questaoId) =>
+            {
+                if (questaoId == questaoPAP)
                 {
-                    return new RespostaQuestaoDto()
+                    return new List<RespostaQuestaoDto>()
+                    {
+                        new RespostaQuestaoDto()
+                        {
+                            QuestaoId = questaoId,
+                            Texto = informacoesTurmasPrograma.ComponentesPAP.SerializarJsonTipoQuestaoComboMultiplaEscolhaDinamico()
+                        }
+                    };
+                }
+
+                return respostasEncaminhamento
+                    .Where(c => c.QuestaoId == questaoId)
+                    .Select(respostaEncaminhamento =>
+                    new RespostaQuestaoDto()
                     {
                         Id = respostaEncaminhamento.Id,
                         OpcaoRespostaId = respostaEncaminhamento.RespostaId,
                         Texto = respostaEncaminhamento.Texto,
                         Arquivo = respostaEncaminhamento.Arquivo
-                    };
-                })));
+                    });
+            };
+
+            var questoes = await mediator.Send(
+                new ObterQuestoesPorQuestionarioPorIdQuery(
+                    request.QuestionarioId,
+                    obterRespostasComRegra
+                )
+            );
 
             questoes = await AplicarRegrasEncaminhamento(request.QuestionarioId, questoes, request.CodigoAluno, request.CodigoTurma);
 
@@ -54,7 +77,8 @@ namespace SME.SGP.Aplicacao
                 {
                     var questaoJustificativa = ObterQuestaoJustificativa(questoes);
                     questaoJustificativa.Obrigatorio = true;
-                } else
+                }
+                else
                     return RemoverQuestaoJustificativa(questoes);
             }
 
@@ -84,8 +108,8 @@ namespace SME.SGP.Aplicacao
 
         private async Task<TipoParametroSistema> ObterTipoParametroFrequenciaMinima(string codigoTurma)
         {
-            return await mediator.Send(new ObterModalidadeTurmaPorCodigoQuery(codigoTurma)) == Modalidade.EducacaoInfantil ? 
-                TipoParametroSistema.PercentualFrequenciaMinimaInfantil : 
+            return await mediator.Send(new ObterModalidadeTurmaPorCodigoQuery(codigoTurma)) == Modalidade.EducacaoInfantil ?
+                TipoParametroSistema.PercentualFrequenciaMinimaInfantil :
                 TipoParametroSistema.PercentualFrequenciaCritico;
         }
 

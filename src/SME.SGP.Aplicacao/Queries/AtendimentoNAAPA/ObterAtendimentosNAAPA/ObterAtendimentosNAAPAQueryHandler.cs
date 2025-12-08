@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
 
             return await MapearParaDto(await repositorioEncaminhamentoNAAPA.ListarPaginado(request.AnoLetivo, request.DreId, 
                 request.CodigoUe,request.CodigoNomeAluno, request.DataAberturaQueixaInicio, request.DataAberturaQueixaFim, request.Situacao, 
-                request.Prioridade, turmasIds.ToArray(), Paginacao, request.ExibirEncerrados, request.Ordenacao),request.AnoLetivo);
+                turmasIds.ToArray(), Paginacao, request.ExibirEncerrados, request.Ordenacao),request.AnoLetivo);
         }
 
         private async Task<PaginacaoResultadoDto<AtendimentoNAAPAResumoDto>> MapearParaDto(PaginacaoResultadoDto<AtendimentoNAAPAResumoDto> resultadoDto,int anoLetivo)
@@ -76,7 +76,7 @@ namespace SME.SGP.Aplicacao
                     TipoEscola = encaminhamento.TipoEscola,
                     CodigoAluno = encaminhamento.CodigoAluno,
                     NomeAluno = encaminhamento.NomeAluno,
-                    Prioridade = encaminhamento.Prioridade,
+                    SuspeitaViolencia = encaminhamento.SuspeitaViolencia,
                     Situacao = ((SituacaoNAAPA)int.Parse(encaminhamento.Situacao)).Name(),
                     DataAberturaQueixaInicio = encaminhamento.DataAberturaQueixaInicio,
                     EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == encaminhamento.CodigoAluno),
