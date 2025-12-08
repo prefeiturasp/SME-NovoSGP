@@ -8,5 +8,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<bool> RemoverLogicoPorInformativoIdAsync(long informativoId);
         Task<IEnumerable<long>> ObterIdsNotificacoesPorInformativoIdAsync(long informativoId);
         Task<long> ObterIdInformativoPorNotificacaoIdAsync(long notificacaoId);
+        Task<bool> VerificaSeExisteNotificacaoInformePorIdUsuarioRfAsync(long informativoId, string usuarioRf);
     }
 }

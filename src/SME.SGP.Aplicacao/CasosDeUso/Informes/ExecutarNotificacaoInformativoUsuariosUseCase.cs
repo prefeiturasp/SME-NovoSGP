@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             var usuariosPerfils = await ObterUsuarios(informativo, guidPerfis); 
             var rfUsuarios = await ObterRfUsuarios(usuariosPerfils, informativo, guidPerfis); 
             
-            foreach (var usuario in rfUsuarios)
+            foreach (var usuario in rfUsuarios.Distinct().ToList())
             {
                 var notificacaoInformativoUsuario = new NotificacaoInformativoUsuarioFiltro()
                 {
