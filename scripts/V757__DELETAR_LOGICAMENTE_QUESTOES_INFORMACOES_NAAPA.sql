@@ -1,0 +1,1 @@
+UPDATE questao SET excluido = true WHERE questionario_id = 8
