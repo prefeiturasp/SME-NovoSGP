@@ -563,5 +563,12 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<AtendimentoNAAPAInformacoesNotificacaoInatividadeAtendimentoDto>(query.ToString(), new { ueId, situacoes });
         }
+
+        public Task AtualizarSituacaoAtendimento(long id, SituacaoNAAPA situacao = SituacaoNAAPA.EmApoio)
+        {
+            var query = @"UPDATE encaminhamento_escolar SET situacao = @situacao WHERE id = @id";
+
+            return database.Conexao.QueryAsync(query, new { id, situacao });
+        }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -26,5 +27,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<AtendimentosNAAPAConsolidadoDto>> ObterQuantidadeSituacaoEncaminhamentosPorUeAnoLetivo(long ueId, int anoLetivo);
         Task<bool> ExisteEncaminhamentoNAAPAAtivoParaAluno(string codigoAluno);
         Task<IEnumerable<AtendimentoNAAPAInformacoesNotificacaoInatividadeAtendimentoDto>> ObterInformacoesDeNotificacaoDeInatividadeDeAtendimento(long ueId);
+        Task AtualizarSituacaoAtendimento(long id, SituacaoNAAPA situacao);
     }
 }
