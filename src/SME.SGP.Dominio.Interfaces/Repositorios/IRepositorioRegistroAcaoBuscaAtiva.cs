@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -18,5 +19,6 @@ namespace SME.SGP.Dominio.Interfaces
                                                                                       Paginacao paginacao);
         Task<PaginacaoResultadoDto<RegistroAcaoBuscaAtivaNAAPADto>> ListarPaginadoRegistroAcaoParaNAAPA(string codigoAluno, Paginacao paginacao);
         Task<int> ObterQdadeRegistrosAcaoAlunoMes(string alunoCodigo, int mes, int anoLetivo);
+        Task<DadosBuscaAtivaAlunoDto> ObterDadosBuscaAtivaPorAluno(string alunoCodigo, int anoLetivo);
     }
 }
