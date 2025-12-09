@@ -299,5 +299,19 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await obterProfissionaisEnvolvidosAtendimentoNAAPANAAPAUseCase.Executar(filtro));
         }
+
+        [HttpPut("alterar-situacao/em-apoio/{atendimentoId}")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_A, Policy = "Bearer")]
+        public async Task<IActionResult> AlterarSituacaoAtendimento(long atendimentoId, [FromServices] IAlterarSituacaoAtendimentoNAAPAUseCase alterarSituacaoUseCase)
+        {
+            var resultado = await alterarSituacaoUseCase.Executar(atendimentoId);
+
+            if (!resultado)
+                return NotFound("Atendimento não encontrado ou não foi possível alterar a situação.");
+
+            return Ok(resultado);
+        }
     }
 }
