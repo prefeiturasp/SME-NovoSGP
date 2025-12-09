@@ -9,12 +9,14 @@ namespace SME.SGP.Aplicacao
         public long EncaminhamentoNAAPAId { get; set; }
         public long SecaoId { get; set; }
         public bool Concluido { get; set; }
+        public long? EncaminhamentoEscolarId { get; set; } = null;
 
-        public RegistrarAtendimentoNAAPASecaoCommand(long encaminhamentoNaapaId, long secaoId, bool concluido)
+        public RegistrarAtendimentoNAAPASecaoCommand(long encaminhamentoNaapaId, long secaoId, bool concluido, long? encaminhamentoEscolarId = null)
         {
             EncaminhamentoNAAPAId = encaminhamentoNaapaId;
             SecaoId = secaoId;
             Concluido = concluido;
+            EncaminhamentoEscolarId = encaminhamentoEscolarId;
         }
     }
     public class RegistrarAtendimentoNAAPASecaoCommandValidator : AbstractValidator<RegistrarAtendimentoNAAPASecaoCommand>

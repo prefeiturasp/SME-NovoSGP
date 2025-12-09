@@ -133,12 +133,12 @@ namespace SME.SGP.Dados.Repositorios
         private static void ObterCabecalho(StringBuilder sql, bool contador)
         {
             var sqlSelect = $@"with vw_resposta_data as (
-                        select ens.encaminhamento_naapa_id, 
+                        select ens.encaminhamento_escolar_id, 
                                enr.texto DataAberturaQueixaInicio    
                         from encaminhamento_naapa_secao ens   
-                        join encaminhamento_naapa_questao enq on ens.id = enq.encaminhamento_naapa_secao_id  
+                        join encaminhamento_escolar_questao enq on ens.id = enq.encaminhamento_escolar_secao_id  
                         join questao q on enq.questao_id = q.id 
-                        join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id 
+                        join encaminhamento_escolar_resposta enr on enr.questao_encaminhamento_id = enq.id 
                         join secao_encaminhamento_naapa secao on secao.id = ens.secao_encaminhamento_id
                         left join opcao_resposta opr on opr.id = enr.resposta_id
                         where q.nome_componente = '{QUESTAO_DATA_ENTRADA_QUEIXA}'
@@ -155,12 +155,12 @@ namespace SME.SGP.Dados.Repositorios
                                 limit 1
                          ),
                          vw_suspeita_violencia as (
-                         select distinct ens.encaminhamento_naapa_id,
+                         select distinct ens.encaminhamento_escolar_id,
                            true as SuspeitaViolencia
                            from encaminhamento_naapa_secao ens
-                            join encaminhamento_naapa_questao enq on enq.encaminhamento_naapa_secao_id = ens.id
+                            join encaminhamento_escolar_questao enq on enq.encaminhamento_escolar_secao_id = ens.id
                             join questao q on q.id = enq.questao_id
-                            join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id
+                            join encaminhamento_escolar_resposta enr on enr.questao_encaminhamento_id = enq.id
                             join cte_opcao_sim_violencia csv on csv.resposta_sim_id = enr.resposta_id
                             where q.nome_componente = '{QUESTAO_SUSPEITA_VIOLENCIA}'
                               and not ens.excluido
@@ -168,18 +168,18 @@ namespace SME.SGP.Dados.Repositorios
                               and not enr.excluido
                         ),
                         vw_resposta_data_ultimo_atendimento as (
-                        select ens.encaminhamento_naapa_id, 
+                        select ens.encaminhamento_escolar_id, 
                                max(to_date(enr.texto,'yyyy-mm-dd')) DataUltimoAtendimento   
                         from encaminhamento_naapa_secao ens   
-                        join encaminhamento_naapa_questao enq on ens.id = enq.encaminhamento_naapa_secao_id  
+                        join encaminhamento_escolar_questao enq on ens.id = enq.encaminhamento_escolar_secao_id  
                         join questao q on enq.questao_id = q.id 
-                        join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id 
+                        join encaminhamento_escolar_resposta enr on enr.questao_encaminhamento_id = enq.id 
                         join secao_encaminhamento_naapa secao on secao.id = ens.secao_encaminhamento_id
                         join questionario q2 on q2.id = secao.questionario_id 
                         where length(enr.texto) > 0 and not ens.excluido and not enq.excluido and not enr.excluido  
                               and (secao.nome_componente = 'QUESTOES_ITINERACIA' or secao.nome_componente = 'QUESTOES_ITINERANCIA' )
                               and q2.tipo in ({string.Join(",", TipoQuestionarioNaapa())}) and q.nome_componente = '{QUESTAO_DATA_DO_ATENDIMENTO}'
-                        group by ens.encaminhamento_naapa_id 
+                        group by ens.encaminhamento_escolar_id 
                         )
                         select ";
             sql.AppendLine(sqlSelect);
@@ -200,19 +200,18 @@ namespace SME.SGP.Dados.Repositorios
                 ");
             }
 
-            sql.AppendLine(@" from encaminhamento_naapa np              
+            sql.AppendLine(@" from encaminhamento_escolar np              
                                 join turma t on t.id = np.turma_id
                                 join ue on t.ue_id = ue.id
-                                left join vw_resposta_data qdata on qdata.encaminhamento_naapa_id = np.id
-                                left join vw_resposta_data_ultimo_atendimento qdataultimoatendimento on qdataultimoatendimento.encaminhamento_naapa_id = np.id 
-                                left join vw_suspeita_violencia vsv on vsv.encaminhamento_naapa_id = np.id
+                                left join vw_resposta_data qdata on qdata.encaminhamento_escolar_id = np.id
+                                left join vw_resposta_data_ultimo_atendimento qdataultimoatendimento on qdataultimoatendimento.encaminhamento_escolar_id = np.id 
+                                left join vw_suspeita_violencia vsv on vsv.encaminhamento_escolar_id = np.id
             ");
         }
 
         private static int[] TipoQuestionarioNaapa()
         {
-            int[] tipoQuestionario = { (int)TipoQuestionario.EncaminhamentoNAAPAIndividual,
-                                       (int)TipoQuestionario.EncaminhamentoNAAPAInstitucional };
+            int[] tipoQuestionario = { (int)TipoQuestionario.EncaminhamentoNAAPAIndividual };
 
             return tipoQuestionario;
         }
@@ -252,16 +251,16 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<EncaminhamentoNAAPA> ObterEncaminhamentoPorId(long id)
         {
             const string query = @"select ea.*, eas.*, qea.*, rea.*, sea.*, q.*, op.*
-                                    from encaminhamento_naapa ea
-                                    inner join encaminhamento_naapa_secao eas on eas.encaminhamento_naapa_id = ea.id
+                                    from encaminhamento_escolar ea
+                                    inner join encaminhamento_naapa_secao eas on eas.encaminhamento_escolar_id = ea.id
                                         and not eas.excluido
                                     inner join secao_encaminhamento_naapa sea on sea.id = eas.secao_encaminhamento_id
                                         and not sea.excluido
-                                    inner join encaminhamento_naapa_questao qea on qea.encaminhamento_naapa_secao_id = eas.id
+                                    inner join encaminhamento_escolar_questao qea on qea.encaminhamento_escolar_secao_id = eas.id
                                         and not qea.excluido
                                     inner join questao q on q.id = qea.questao_id
                                         and not q.excluido
-                                    inner join encaminhamento_naapa_resposta rea on rea.questao_encaminhamento_id = qea.id
+                                    inner join encaminhamento_escolar_resposta rea on rea.questao_encaminhamento_id = qea.id
                                         and not rea.excluido
                                     left join opcao_resposta op on op.id = rea.resposta_id
                                         and not op.excluido
@@ -320,16 +319,16 @@ namespace SME.SGP.Dados.Repositorios
                                         and not eas.excluido
                                     inner join secao_encaminhamento_naapa sea on sea.id = eas.secao_encaminhamento_id
                                         and not sea.excluido
-                                    inner join encaminhamento_naapa_questao qea on qea.encaminhamento_naapa_secao_id = eas.id
+                                    inner join encaminhamento_escolar_questao qea on qea.encaminhamento_escolar_secao_id = eas.id
                                         and not qea.excluido
                                     inner join questao q on q.id = qea.questao_id
                                         and not q.excluido
-                                    inner join encaminhamento_naapa_resposta rea on rea.questao_encaminhamento_id = qea.id
+                                    inner join encaminhamento_escolar_resposta rea on rea.questao_encaminhamento_id = qea.id
                                         and not rea.excluido
                                     left join opcao_resposta op on op.id = rea.resposta_id
                                         and not op.excluido
                                     where ea.id = @id
-                                    and qea.encaminhamento_naapa_secao_id = @secaoId
+                                    and qea.encaminhamento_escolar_secao_id = @secaoId
                                     and not ea.excluido";
 
             var encaminhamento = new EncaminhamentoNAAPA();
@@ -384,9 +383,9 @@ namespace SME.SGP.Dados.Repositorios
                             encaminhamento_naapa ea
                         inner join encaminhamento_naapa_secao eas on
                             ea.id = eas.encaminhamento_naapa_id
-                        inner join encaminhamento_naapa_questao qea on
-                            eas.id = qea.encaminhamento_naapa_secao_id
-                        inner join encaminhamento_naapa_resposta rea on
+                        inner join encaminhamento_escolar_questao qea on
+                            eas.id = qea.encaminhamento_escolar_secao_id
+                        inner join encaminhamento_escolar_resposta rea on
                             qea.id = rea.questao_encaminhamento_id
                         inner join arquivo a on
                             rea.arquivo_id = a.id
@@ -399,7 +398,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<EncaminhamentoNAAPA> ObterEncaminhamentoComTurmaPorId(long encaminhamentoId)
         {
             var query = @" select ea.*, t.*, ue.*, dre.*
-                            from encaminhamento_naapa ea
+                            from encaminhamento_escolar ea
                            inner join turma t on t.id = ea.turma_id
                             join ue on ue.id = t.ue_id
                             join dre on dre.id = ue.dre_id  
@@ -539,14 +538,14 @@ namespace SME.SGP.Dados.Repositorios
                 inner join encaminhamento_naapa_secao ens on ens.encaminhamento_naapa_id = en.id
                 inner join secao_encaminhamento_naapa sen on sen.id = ens.secao_encaminhamento_id and sen.nome_componente = '{AtendimentoNAAPAConstants.SECAO_ITINERANCIA}'
                 inner join questionario qto on qto.id = sen.questionario_id
-                inner join(select max(texto::date) dataAtendimento, enq.encaminhamento_naapa_secao_id
-                           from encaminhamento_naapa_resposta enr
-                           inner join encaminhamento_naapa_questao enq on enq.id = enr.questao_encaminhamento_id
+                inner join(select max(texto::date) dataAtendimento, enq.encaminhamento_escolar_secao_id
+                           from encaminhamento_escolar_resposta enr
+                           inner join encaminhamento_escolar_questao enq on enq.id = enr.questao_encaminhamento_id
                            inner join questao q on q.id = enq.questao_id
                            where q.nome_componente = '{QUESTAO_DATA_DO_ATENDIMENTO}'
                              and not enr.excluido
                              and not enq.excluido
-                           group by enq.encaminhamento_naapa_secao_id) tab_dt_atendimento on tab_dt_atendimento.encaminhamento_naapa_secao_id = ens.id
+                           group by enq.encaminhamento_escolar_secao_id) tab_dt_atendimento on tab_dt_atendimento.encaminhamento_escolar_secao_id = ens.id
                 where en.situacao = any(@situacoes)
                   and not en.excluido
                   and not ens.excluido

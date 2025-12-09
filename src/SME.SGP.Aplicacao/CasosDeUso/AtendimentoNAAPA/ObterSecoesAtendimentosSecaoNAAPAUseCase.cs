@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         public async Task<IEnumerable<SecaoQuestionarioDto>> Executar(FiltroSecoesAtendimentoNAAPA filtro)
         {
             var secoesQuestionario = (await mediator.Send(new ObterSecoesAtendimentosSecaoNAAPAQuery(filtro.Modalidade, filtro.EncaminhamentoNAAPAId))).ToList();
-            var secoes = secoesQuestionario.Where(secao => secao.TipoQuestionario == TipoQuestionario.EncaminhamentoNAAPA);
+            var secoes = secoesQuestionario.Where(secao => new[] { TipoQuestionario.EncaminhamentoNAAPAIndividual }.Contains(secao.TipoQuestionario));
 
             foreach (var secao in secoes.Where(secao => secao.NomeComponente != AtendimentoNAAPAConstants.SECAO_ITINERANCIA && secao.Auditoria.EhNulo()))
             {

@@ -96,7 +96,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<RespostaQuestaoNovoEncaminhamentoNAAPADto>> ObterRespostasEncaminhamento(long encaminhamentoId)
         {
-            return await ObterRespostasEncaminhamento(encaminhamentoId, "ens.encaminhamento_naapa_id = @encaminhamentoId");
+            return await ObterRespostasEncaminhamento(encaminhamentoId, "ens.encaminhamento_escolar_id = @encaminhamentoId");
         }
 
         public async Task<IEnumerable<RespostaQuestaoNovoEncaminhamentoNAAPADto>> ObterRespostasItinerarioEncaminhamento(long encaminhamentoSecaoId)

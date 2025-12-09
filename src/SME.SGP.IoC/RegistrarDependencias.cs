@@ -588,7 +588,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioTipoRelatorio, RepositorioTipoRelatorio>();
 
             // Encaminhamento NAAPA
-            services.TryAddScoped<IRepositorioSecaoAtendimentoNAAPA, RepositorioSecaoAtenidmentoNAAPA>();
+            services.TryAddScoped<IRepositorioSecaoAtendimentoNAAPA, RepositorioSecaoAtendimentoNAAPA>();
             services.TryAddScoped<IRepositorioAtendimentoNAAPA, RepositorioAtendimentoNAAPA>();
             services.TryAddScoped<IRepositorioAtendimentoNAAPASecao, RepositorioAtendimentoNAAPASecao>();
             services.TryAddScoped<IRepositorioQuestaoAtendimentoNAAPA, RepositorioQuestaoAtendimentoNAAPA>();

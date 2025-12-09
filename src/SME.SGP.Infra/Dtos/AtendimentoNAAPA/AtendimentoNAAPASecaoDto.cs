@@ -10,6 +10,7 @@ namespace SME.SGP.Infra
         }
         public long SecaoId { get; set; }
         public bool Concluido { get; set; }
+        public long? EncaminhamentoEscolarId { get; set; } = null;
         public List<AtendimentoNAAPASecaoQuestaoDto> Questoes { get; set; }
     }
 }
