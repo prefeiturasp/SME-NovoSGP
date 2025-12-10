@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 using SME.SGP.Notificacoes.Hub.Interface;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -14,17 +17,23 @@ namespace SME.SGP.Notificacoes.Hub
         private readonly IEventoNotificacaoLida eventoLida;
         private readonly IEventoNotificacaoExcluida eventoExcluida;
         private readonly IRepositorioUsuario repositorioUsuario;
+        private readonly int limiteConexoes = 2;
+        private readonly ILogger<NotificacaoHub> logger;
+
+        private readonly static List<string> listaUsuarios = new List<string>();
 
         public NotificacaoHub(
             IEventoNotificacaoCriada eventoCriada,
             IEventoNotificacaoLida eventoLida,
-            IEventoNotificacaoExcluida eventoExcluida, 
-            IRepositorioUsuario repositorioUsuario)
+            IEventoNotificacaoExcluida eventoExcluida,
+            IRepositorioUsuario repositorioUsuario,
+            ILogger<NotificacaoHub> logger)
         {
             this.eventoCriada = eventoCriada ?? throw new System.ArgumentNullException(nameof(eventoCriada));
             this.eventoLida = eventoLida ?? throw new System.ArgumentNullException(nameof(eventoLida));
             this.eventoExcluida = eventoExcluida ?? throw new System.ArgumentNullException(nameof(eventoExcluida));
             this.repositorioUsuario = repositorioUsuario ?? throw new System.ArgumentNullException(nameof(repositorioUsuario));
+            this.logger = logger;
         }
 
         public override async Task OnConnectedAsync()
@@ -38,6 +47,8 @@ namespace SME.SGP.Notificacoes.Hub
                 await ArmazenaConexaoUsuario(usuarioRf, Context.ConnectionId);
             }
 
+            await AdicionarClienteNaListaUsuarios();
+
             await base.OnConnectedAsync();
         }
 
@@ -47,6 +58,8 @@ namespace SME.SGP.Notificacoes.Hub
             var usuarioRf = context.User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Name))?.Value;
             if (!string.IsNullOrEmpty(usuarioRf))
                 await repositorioUsuario.Excluir(usuarioRf);
+
+            await RemoverClienteDaListaUsuarios();
 
             await base.OnDisconnectedAsync(exception);
         }
@@ -81,5 +94,54 @@ namespace SME.SGP.Notificacoes.Hub
                 Claims = Context.User.Claims.Select(x => new { x.Type, x.Value })
             };
 
+
+        private async Task AdicionarClienteNaListaUsuarios()
+        {
+            try
+            {
+                listaUsuarios.Add(Context.ConnectionId);
+
+                if (listaUsuarios.Count > limiteConexoes)
+                {
+                    int posicaoFila = listaUsuarios.IndexOf(Context.ConnectionId);
+                    await Clients.Client(Context.ConnectionId).SendAsync("BloqueioUsuario", (posicaoFila + 1) - limiteConexoes);
+                }
+
+                logger.LogInformation($"Usuário conectado. ConnectionId: {Context.ConnectionId}. Total de conexões: {listaUsuarios.Count}.");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"Erro ao conectar usuário. ConnectionId: {Context.ConnectionId}.", ex.Message);
+            }
+        }
+
+        private async Task RemoverClienteDaListaUsuarios()
+        {
+            try
+            {
+                int posicaoFila = listaUsuarios.IndexOf(Context.ConnectionId);
+                listaUsuarios.Remove(Context.ConnectionId);
+
+                if (posicaoFila < limiteConexoes)
+                {
+                    var proximoFila = listaUsuarios.ElementAtOrDefault(limiteConexoes - 1);
+
+                    if (proximoFila != null)
+                        await Clients.Client(proximoFila).SendAsync("DesbloqueioUsuario");
+
+                    listaUsuarios.Skip(limiteConexoes).ToList().ForEach(async connectionId =>
+                    {
+                        int novaPosicaoFila = listaUsuarios.IndexOf(connectionId);
+                        await Clients.Client(connectionId).SendAsync("BloqueioUsuario", (novaPosicaoFila + 1) - limiteConexoes);
+                    });
+                }
+
+                logger.LogInformation($"Usuário desconectado. ConnectionId: {Context.ConnectionId}. Total de conexões: {listaUsuarios.Count}.");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"Erro ao desconectar usuário. ConnectionId: {Context.ConnectionId}.", ex.Message);
+            }
+        }
     }
 }
