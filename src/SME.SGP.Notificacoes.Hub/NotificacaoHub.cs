@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using DocumentFormat.OpenXml.Office2010.ExcelAc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using MongoDB.Driver.Core.Connections;
 using SME.SGP.Notificacoes.Hub.Interface;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -14,11 +17,14 @@ namespace SME.SGP.Notificacoes.Hub
         private readonly IEventoNotificacaoLida eventoLida;
         private readonly IEventoNotificacaoExcluida eventoExcluida;
         private readonly IRepositorioUsuario repositorioUsuario;
+        private readonly int limiteConexoes = 10;
+
+        private readonly List<string> listaUsuarios = new List<string>();
 
         public NotificacaoHub(
             IEventoNotificacaoCriada eventoCriada,
             IEventoNotificacaoLida eventoLida,
-            IEventoNotificacaoExcluida eventoExcluida, 
+            IEventoNotificacaoExcluida eventoExcluida,
             IRepositorioUsuario repositorioUsuario)
         {
             this.eventoCriada = eventoCriada ?? throw new System.ArgumentNullException(nameof(eventoCriada));
@@ -38,6 +44,14 @@ namespace SME.SGP.Notificacoes.Hub
                 await ArmazenaConexaoUsuario(usuarioRf, Context.ConnectionId);
             }
 
+            listaUsuarios.Add(Context.ConnectionId);
+
+            if (listaUsuarios.Count > limiteConexoes)
+            {
+                int posicaoFila = listaUsuarios.IndexOf(Context.ConnectionId);
+                await Clients.Client(Context.ConnectionId).SendAsync("BloqueioUsuario", posicaoFila - limiteConexoes);
+            }
+
             await base.OnConnectedAsync();
         }
 
@@ -47,6 +61,23 @@ namespace SME.SGP.Notificacoes.Hub
             var usuarioRf = context.User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Name))?.Value;
             if (!string.IsNullOrEmpty(usuarioRf))
                 await repositorioUsuario.Excluir(usuarioRf);
+
+            int posicaoFila = listaUsuarios.IndexOf(Context.ConnectionId);
+            listaUsuarios.Remove(Context.ConnectionId);
+
+            if (posicaoFila < limiteConexoes)
+            {
+                var proximoFila = listaUsuarios.ElementAtOrDefault(limiteConexoes);
+
+                if (proximoFila != null)
+                    await Clients.Client(proximoFila).SendAsync("DesbloqueioUsuario");
+
+                listaUsuarios.Skip(limiteConexoes).ToList().ForEach(async connectionId =>
+                {
+                    int novaPosicaoFila = listaUsuarios.IndexOf(connectionId);
+                    await Clients.Client(connectionId).SendAsync("BloqueioUsuario", novaPosicaoFila - limiteConexoes);
+                });
+            }
 
             await base.OnDisconnectedAsync(exception);
         }
