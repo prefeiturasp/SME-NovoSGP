@@ -17,7 +17,7 @@ namespace SME.SGP.Notificacoes.Hub
         private readonly IEventoNotificacaoLida eventoLida;
         private readonly IEventoNotificacaoExcluida eventoExcluida;
         private readonly IRepositorioUsuario repositorioUsuario;
-        private readonly int limiteConexoes = 10;
+        private readonly int limiteConexoes = 3;
 
         private readonly List<string> listaUsuarios = new List<string>();
 
