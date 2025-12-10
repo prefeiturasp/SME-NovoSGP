@@ -36,7 +36,7 @@ namespace SME.SGP.Dados.Repositorios
                                 , sea.nome_componente as nomeComponente
                          FROM secao_encaminhamento_naapa sea
                          inner join questionario q on q.id = sea.questionario_id 
-                         left join encaminhamento_naapa_secao eas on eas.encaminhamento_naapa_id = @encaminhamentoNAAPAId 
+                         left join encaminhamento_naapa_secao eas on eas.encaminhamento_escolar_id = @encaminhamentoNAAPAId 
                                                                  and eas.secao_encaminhamento_id = sea.id
                                                                  and not eas.excluido   
                          left join secao_encaminhamento_naapa_modalidade senm on senm.secao_encaminhamento_id = sea.id 
@@ -130,7 +130,7 @@ namespace SME.SGP.Dados.Repositorios
                                             ens.Criado_Em as CriadoEm,
                                             ens.Criado_Por as CriadoPor,
                                             ens.Criado_RF as CriadoRF
-                                            from encaminhamento_naapa en
+                                            from encaminhamento_escolar en
                                             inner join encaminhamento_naapa_secao ens on ens.encaminhamento_naapa_id = en.id
                                             inner join secao_encaminhamento_naapa secao on secao.id = ens.secao_encaminhamento_id 
                                             inner join vw_resposta_data questaoDataAtendimento on questaoDataAtendimento.encaminhamento_naapa_secao_id = ens.id
@@ -249,7 +249,7 @@ namespace SME.SGP.Dados.Repositorios
                 ");
             }
 
-            sql.AppendLine(@"from encaminhamento_naapa en
+            sql.AppendLine(@"from encaminhamento_escolar en
                             inner join encaminhamento_naapa_secao ens on ens.encaminhamento_naapa_id = en.id
                             inner join secao_encaminhamento_naapa secao on secao.id = ens.secao_encaminhamento_id 
                             inner join vw_resposta_data questaoDataAtendimento on questaoDataAtendimento.encaminhamento_naapa_secao_id = ens.id
@@ -270,9 +270,9 @@ namespace SME.SGP.Dados.Repositorios
                                          a.codigo as CodigoArquivo, 
                                          a.nome as NomeArquivo
                                   from encaminhamento_naapa_secao ens   
-                                  join encaminhamento_naapa_questao enq on ens.id = enq.encaminhamento_naapa_secao_id  
+                                  join encaminhamento_escolar_questao enq on ens.id = enq.encaminhamento_naapa_secao_id  
                                   join questao q on enq.questao_id = q.id 
-                                  join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id 
+                                  join encaminhamento_escolar_resposta enr on enr.questao_encaminhamento_id = enq.id 
                                   inner join arquivo a on a.id = enr.arquivo_id 
                                   where q.nome_componente  = '{NOME_COMPONENTE_QUESTAO_ANEXOS}' and q.tipo = {(int)TipoQuestao.Upload}
                                         and not enq.excluido and not ens.excluido 
@@ -280,8 +280,8 @@ namespace SME.SGP.Dados.Repositorios
                         select ens.id SecaoItineranciaId, 
                                arquivo.CodigoArquivo, arquivo.NomeArquivo  ");
         
-            sql.AppendLine(@"from encaminhamento_naapa en
-                            inner join encaminhamento_naapa_secao ens on ens.encaminhamento_naapa_id = en.id
+            sql.AppendLine(@"from encaminhamento_escolar en
+                            inner join encaminhamento_naapa_secao ens on ens.encaminhamento_escolar_id = en.id
                             inner join secao_encaminhamento_naapa secao on secao.id = ens.secao_encaminhamento_id 
                             inner join vw_resposta_arquivos arquivo on arquivo.encaminhamento_naapa_secao_id = ens.id
                             where en.id = @encaminhamentoNAAPAId and not ens.excluido ");
@@ -312,7 +312,7 @@ namespace SME.SGP.Dados.Repositorios
                         inner join questao q on q.id = enq.questao_id 
                         inner join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id 
                         inner join secao_encaminhamento_naapa sen on sen.id = ens.secao_encaminhamento_id 
-                        inner join encaminhamento_naapa en on en.id = ens.encaminhamento_naapa_id 
+                        inner join encaminhamento_escolar en on en.id = ens.encaminhamento_naapa_id 
                         inner join turma t on t.id = en.turma_id 
                         where q.nome_componente = 'DATA_DO_ATENDIMENTO' and sen.etapa = {PRIMEIRA_ETAPA_NAAPA} and sen.ordem = {SECAO_ITINERANCIA_NAAPA} 
                         and not ens.excluido 

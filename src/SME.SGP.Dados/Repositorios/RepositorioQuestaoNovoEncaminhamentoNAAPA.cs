@@ -1,13 +1,9 @@
 ﻿using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.NovoEncaminhamentoNAAPA;
 using SME.SGP.Infra.Interface;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -112,8 +108,8 @@ namespace SME.SGP.Dados.Repositorios
                             , ren.texto 
                             , a.*
                           from encaminhamento_naapa_secao ens 
-                         inner join encaminhamento_naapa_questao qen on qen.encaminhamento_naapa_secao_id = ens.id
-                         inner join encaminhamento_naapa_resposta ren on ren.questao_encaminhamento_id = qen.id
+                         inner join encaminhamento_escolar_questao qen on qen.encaminhamento_escolar_secao_id = ens.id
+                         inner join encaminhamento_escolar_resposta ren on ren.questao_encaminhamento_id = qen.id
                           left join arquivo a on a.id = ren.arquivo_id 
                          where not ens.excluido 
                            and not qen.excluido 

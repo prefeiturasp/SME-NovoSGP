@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -54,12 +55,14 @@ namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepci
         private async Task<IEnumerable<QuestaoDto>> ObterEncamaminhamentoEscolar(SecaoEncaminhamentoNAAPA secao)
         {
             if (secao.EncaminhamentoNAAPASecao?.EncaminhamentoEscolar?.NaoEhNulo() == true)
+            {
                 return await mediator.Send(
                     new ObterQuestionarioNovoEncaminhamentoNAAPAQuery(
                         secao.QuestionarioId,
                         secao.EncaminhamentoNAAPASecao.EncaminhamentoEscolar.Id,
                         secao.EncaminhamentoNAAPASecao.EncaminhamentoEscolar.AlunoCodigo,
                         secao.EncaminhamentoNAAPASecao.EncaminhamentoEscolar.TurmaId.ToString()));
+            }
 
             return null;
         }

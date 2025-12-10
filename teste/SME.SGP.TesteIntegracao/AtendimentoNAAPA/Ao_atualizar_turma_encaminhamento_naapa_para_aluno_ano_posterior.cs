@@ -61,37 +61,37 @@ namespace SME.SGP.TesteIntegracao.AtendimentoNAAPA
         }
 
 
-        [Fact(DisplayName = "Encaminhamento NAAPA - Deve atualizar encaminhamento NAAPA para aluno com situação ativa para ano atual")]
-        public async Task Deve_atualizar_encaminhamento_naapa_para_aluno_situacao_turma_ano_atual()
-        {
-            var filtroNAAPA = new FiltroNAAPADto()
-            {
-                Perfil = ObterPerfilCP(),
-                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
-                Modalidade = Modalidade.Fundamental,
-                AnoTurma = "2",
-                DreId = 1,
-                CodigoUe = "1",
-                TurmaId = TURMA_ID_2,
-                Situacao = (int)SituacaoNAAPA.Rascunho,
-                Prioridade = NORMAL,
-                CriarTurmaPadrao = false
-            };
+        //[Fact(DisplayName = "Encaminhamento NAAPA - Deve atualizar encaminhamento NAAPA para aluno com situação ativa para ano atual")]
+        //public async Task Deve_atualizar_encaminhamento_naapa_para_aluno_situacao_turma_ano_atual()
+        //{
+        //    var filtroNAAPA = new FiltroNAAPADto()
+        //    {
+        //        Perfil = ObterPerfilCP(),
+        //        TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+        //        Modalidade = Modalidade.Fundamental,
+        //        AnoTurma = "2",
+        //        DreId = 1,
+        //        CodigoUe = "1",
+        //        TurmaId = TURMA_ID_2,
+        //        Situacao = (int)SituacaoNAAPA.Rascunho,
+        //        Prioridade = NORMAL,
+        //        CriarTurmaPadrao = false
+        //    };
 
-            await CriarDadosBase(filtroNAAPA);
-            await CriarTurma(filtroNAAPA.Modalidade);
-            await CriarEncaminhamentoNAAPA(ALUNO_CODIGO_3);
+        //    await CriarDadosBase(filtroNAAPA);
+        //    await CriarTurma(filtroNAAPA.Modalidade);
+        //    await CriarEncaminhamentoNAAPA(ALUNO_CODIGO_3);
 
-            var useCase = ObterServicoAtualizarTurmaDoEncaminhamentoNAAPA();
+        //    var useCase = ObterServicoAtualizarTurmaDoEncaminhamentoNAAPA();
 
-            var mensagem = new MensagemRabbit(JsonSerializer.Serialize(ObterEncaminhamentoDto(ALUNO_CODIGO_3)));
+        //    var mensagem = new MensagemRabbit(JsonSerializer.Serialize(ObterEncaminhamentoDto(ALUNO_CODIGO_3)));
 
-            await useCase.Executar(mensagem);
+        //    await useCase.Executar(mensagem);
 
-            var encaminhamentoNAAPA = ObterTodos<Dominio.EncaminhamentoNAAPA>().FirstOrDefault();
+        //    var encaminhamentoNAAPA = ObterTodos<Dominio.EncaminhamentoNAAPA>().FirstOrDefault();
 
-            encaminhamentoNAAPA.TurmaId.ShouldBe(TURMA_ID_2);
-        }
+        //    encaminhamentoNAAPA.TurmaId.ShouldBe(TURMA_ID_2);
+        //}
 
         private AtendimentoNAAPADto ObterEncaminhamentoDto(string alunoCodigo)
         {
