@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SME.SGP.Notificacoes.Hub.Interface;
 using System;
@@ -13,6 +14,7 @@ namespace SME.SGP.Notificacoes.Hub
     //[Authorize(AuthenticationSchemes = Startup.CustomTokenScheme)]
     public class NotificacaoHub : Microsoft.AspNetCore.SignalR.Hub, IEventosNotificacao
     {
+        private readonly IConfiguration configuration;
         private readonly IEventoNotificacaoCriada eventoCriada;
         private readonly IEventoNotificacaoLida eventoLida;
         private readonly IEventoNotificacaoExcluida eventoExcluida;
@@ -27,13 +29,17 @@ namespace SME.SGP.Notificacoes.Hub
             IEventoNotificacaoLida eventoLida,
             IEventoNotificacaoExcluida eventoExcluida,
             IRepositorioUsuario repositorioUsuario,
-            ILogger<NotificacaoHub> logger)
+            ILogger<NotificacaoHub> logger,
+            IConfiguration configuration)
         {
             this.eventoCriada = eventoCriada ?? throw new System.ArgumentNullException(nameof(eventoCriada));
             this.eventoLida = eventoLida ?? throw new System.ArgumentNullException(nameof(eventoLida));
             this.eventoExcluida = eventoExcluida ?? throw new System.ArgumentNullException(nameof(eventoExcluida));
             this.repositorioUsuario = repositorioUsuario ?? throw new System.ArgumentNullException(nameof(repositorioUsuario));
             this.logger = logger;
+            this.configuration = configuration;
+
+            this.limiteConexoes =  int.TryParse(configuration.GetSection("SGP_MaxConnections").Value, out var value) ? value : 100000;
         }
 
         public override async Task OnConnectedAsync()
@@ -107,7 +113,7 @@ namespace SME.SGP.Notificacoes.Hub
                     await Clients.Client(Context.ConnectionId).SendAsync("BloqueioUsuario", (posicaoFila + 1) - limiteConexoes);
                 }
 
-                logger.LogInformation($"Usuário conectado. ConnectionId: {Context.ConnectionId}. Total de conexões: {listaUsuarios.Count}.");
+                logger.LogInformation($"Usuário conectado. ConnectionId: {Context.ConnectionId}. Total de conexões: {listaUsuarios.Count}/{limiteConexoes}.");
             }
             catch (Exception ex)
             {
@@ -135,8 +141,16 @@ namespace SME.SGP.Notificacoes.Hub
                         await Clients.Client(connectionId).SendAsync("BloqueioUsuario", (novaPosicaoFila + 1) - limiteConexoes);
                     });
                 }
+                else
+                {
+                    listaUsuarios.Skip(posicaoFila).ToList().ForEach(async connectionId =>
+                    {
+                        int novaPosicaoFila = listaUsuarios.IndexOf(connectionId);
+                        await Clients.Client(connectionId).SendAsync("BloqueioUsuario", (novaPosicaoFila + 1) - limiteConexoes);
+                    });
+                }
 
-                logger.LogInformation($"Usuário desconectado. ConnectionId: {Context.ConnectionId}. Total de conexões: {listaUsuarios.Count}.");
+                logger.LogInformation($"Usuário desconectado. ConnectionId: {Context.ConnectionId}. Total de conexões: {listaUsuarios.Count}/{limiteConexoes}.");
             }
             catch (Exception ex)
             {
