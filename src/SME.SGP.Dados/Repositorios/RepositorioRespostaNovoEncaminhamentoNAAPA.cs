@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioRespostaNovoEncaminhamentoNAAPA : RepositorioBase<RespostaEncaminhamentoNAAPA>, IRepositorioRespostaNovoEncaminhamentoNAAPA
+    public class RepositorioRespostaNovoEncaminhamentoNAAPA : RepositorioBase<RespostaEncaminhamentoEscolar>, IRepositorioRespostaNovoEncaminhamentoNAAPA
     {
         public RepositorioRespostaNovoEncaminhamentoNAAPA(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {

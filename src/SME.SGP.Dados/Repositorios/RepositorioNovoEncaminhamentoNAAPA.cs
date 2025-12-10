@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioNovoEncaminhamentoNAAPA : RepositorioBase<EncaminhamentoNAAPA>, IRepositorioNovoEncaminhamentoNAAPA
+    public class RepositorioNovoEncaminhamentoNAAPA : RepositorioBase<EncaminhamentoEscolar>, IRepositorioNovoEncaminhamentoNAAPA
     {
         public const int QUESTAO_DATA_QUEIXA_ORDEM = 0;
         public const int QUESTAO_PRIORIDADE_ORDEM = 1;

@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,12 +12,12 @@ namespace SME.SGP.Aplicacao.Commands.NovoEncaminhamentoNAAPA.AlterarQuestaoEncam
 {
     public class AlterarQuestaoNovoEncaminhamentoNAAPACommand : IRequest<bool>
     {
-        public AlterarQuestaoNovoEncaminhamentoNAAPACommand(QuestaoEncaminhamentoNAAPA questao)
+        public AlterarQuestaoNovoEncaminhamentoNAAPACommand(QuestaoEncaminhamentoEscolar questao)
         {
             Questao = questao;
         }
 
-        public QuestaoEncaminhamentoNAAPA Questao { get; }
+        public QuestaoEncaminhamentoEscolar Questao { get; }
     }
 
     public class AlterarQuestaoNovoEncaminhamentoNAAPACommandValidator : AbstractValidator<AlterarQuestaoNovoEncaminhamentoNAAPACommand>

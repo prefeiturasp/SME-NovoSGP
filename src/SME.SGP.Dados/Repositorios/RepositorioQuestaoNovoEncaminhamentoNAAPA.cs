@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioQuestaoNovoEncaminhamentoNAAPA : RepositorioBase<QuestaoEncaminhamentoNAAPA>, IRepositorioQuestaoNovoEncaminhamentoNAAPA
+    public class RepositorioQuestaoNovoEncaminhamentoNAAPA : RepositorioBase<QuestaoEncaminhamentoEscolar>, IRepositorioQuestaoNovoEncaminhamentoNAAPA
     {
         private const int ETAPA_1 = 1;
         private const string QUESTAO_PRIORIDADE = "Prioridade";

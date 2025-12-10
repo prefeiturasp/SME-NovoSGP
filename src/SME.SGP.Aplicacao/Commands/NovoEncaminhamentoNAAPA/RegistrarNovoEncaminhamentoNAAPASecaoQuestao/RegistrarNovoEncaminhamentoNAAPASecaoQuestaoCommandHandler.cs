@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using System;
@@ -27,11 +28,11 @@ namespace SME.SGP.Aplicacao.Commands.NovoEncaminhamentoNAAPA.RegistrarNovoEncami
             return await repositorioQuestaoNovoEncaminhamentoNAAPA.SalvarAsync(questao);
         }
 
-        private QuestaoEncaminhamentoNAAPA MapearParaEntidade(RegistrarNovoEncaminhamentoNAAPASecaoQuestaoCommand request)
-            => new QuestaoEncaminhamentoNAAPA()
+        private QuestaoEncaminhamentoEscolar MapearParaEntidade(RegistrarNovoEncaminhamentoNAAPASecaoQuestaoCommand request)
+            => new QuestaoEncaminhamentoEscolar()
             {
                 QuestaoId = request.QuestaoId,
-                EncaminhamentoNAAPASecaoId = request.SecaoId
+                EncaminhamentoEscolarSecaoId = request.SecaoId
             };
     }
 }

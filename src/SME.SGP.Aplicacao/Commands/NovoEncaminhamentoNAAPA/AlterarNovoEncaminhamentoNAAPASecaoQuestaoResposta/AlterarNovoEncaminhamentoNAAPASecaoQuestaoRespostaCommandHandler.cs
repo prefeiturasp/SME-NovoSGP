@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using System;
@@ -31,7 +32,7 @@ namespace SME.SGP.Aplicacao.Commands.NovoEncaminhamentoNAAPA.AlterarNovoEncaminh
             return true;
         }
 
-        private async Task<RespostaEncaminhamentoNAAPA> MapearParaEntidade(AlterarNovoEncaminhamentoNAAPASecaoQuestaoRespostaCommand request)
+        private async Task<RespostaEncaminhamentoEscolar> MapearParaEntidade(AlterarNovoEncaminhamentoNAAPASecaoQuestaoRespostaCommand request)
         {
             var resposta = request.RespostaEncaminhamento;
 

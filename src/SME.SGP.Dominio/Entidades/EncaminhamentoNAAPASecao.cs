@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SME.SGP.Dominio.Entidades;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 namespace SME.SGP.Dominio
@@ -9,6 +10,7 @@ namespace SME.SGP.Dominio
         public EncaminhamentoNAAPASecao()
         {
             Questoes = new List<QuestaoEncaminhamentoNAAPA>();
+            QuestoesEscolar = new List<QuestaoEncaminhamentoEscolar>();
         }
 
         public EncaminhamentoNAAPA EncaminhamentoNAAPA { get; set; }
@@ -21,5 +23,6 @@ namespace SME.SGP.Dominio
         public bool Excluido { get; set; }
 
         public List<QuestaoEncaminhamentoNAAPA> Questoes { get; set; }
+        public List<QuestaoEncaminhamentoEscolar> QuestoesEscolar { get; set; }
     }
 }
