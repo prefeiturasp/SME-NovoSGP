@@ -365,21 +365,23 @@ namespace SME.SGP.Dados.Repositorios
                     });           
         }
 
-        public async Task<IEnumerable<SecaoEncaminhamentoNAAPA>> ObterSecoesEncaminhamentoIndividual(long? encaminhamentoNAAPAId = null)
+        public async Task<IEnumerable<SecaoEncaminhamentoNAAPA>> ObterSecoesEncaminhamentoIndividual(long? encaminhamentoNAAPAId = null, long? tipoQuestionario = null)
         {
 
-            int tipoQuestionario = (int)TipoQuestionario.EncaminhamentoNAAPAIndividual;
-
-            var query = new StringBuilder($@"SELECT sea.*, eas.*, q.*
-                                            FROM secao_encaminhamento_naapa sea 
-                                                join questionario q on q.id = sea.questionario_id 
-                                                left join encaminhamento_naapa_secao eas on eas.encaminhamento_naapa_id = @encaminhamentoNAAPAId
-                                                                                        and eas.secao_encaminhamento_id = sea.id
-                                                                                        and not eas.excluido  
-                                              --  left join secao_encaminhamento_naapa_modalidade senm on senm.secao_encaminhamento_id = sea.id 
-                                            WHERE not sea.excluido 
+            var query = new StringBuilder($@"SELECT 
+                                                sea.*, 
+                                                eas.*, 
+                                                q.*
+                                            FROM secao_encaminhamento_naapa sea
+                                            JOIN questionario q 
+                                                   ON q.id = sea.questionario_id
+                                            LEFT JOIN encaminhamento_naapa_secao eas 
+                                                   ON eas.encaminhamento_naapa_id = @encaminhamentoNAAPAId
+                                                  AND eas.secao_encaminhamento_id = sea.id
+                                                  AND NOT eas.excluido
+                                            WHERE NOT sea.excluido  
                                               AND q.tipo = @tipoQuestionario
-                                            ORDER BY sea.etapa, sea.ordem; ");
+                                            ORDER BY sea.etapa, sea.ordem;");
 
 
             return await database.Conexao
