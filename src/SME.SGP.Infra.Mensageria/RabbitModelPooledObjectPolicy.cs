@@ -18,11 +18,11 @@ namespace SME.SGP.Infra
         {
             var connectionFactory = new ConnectionFactory()
             {
-                Port = configuracaoRabbit.Port,
-                HostName = configuracaoRabbit.HostName,
-                UserName = configuracaoRabbit.UserName,
-                Password = configuracaoRabbit.Password,
-                VirtualHost = configuracaoRabbit.VirtualHost
+                Port = -1,
+                HostName = "10.50.1.209",
+                UserName = "usr_amcom",
+                Password = "AMcom20anos",
+                VirtualHost = "hom"
             };
 
             return connectionFactory.CreateConnection();
