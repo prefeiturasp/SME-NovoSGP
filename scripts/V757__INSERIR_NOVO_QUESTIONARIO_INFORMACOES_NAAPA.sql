@@ -1,7 +1,7 @@
 -- Verifica se já existe registro com mesmo nome e tipo
 INSERT INTO questionario (nome, criado_em, criado_por, criado_rf, tipo)
 SELECT 
-    'Questionário Encaminhamento NAAPA Etapa 1 Seção 1 - Aba informações',
+    'Questionário Atendimento NAAPA Etapa 1 Seção 1 - Aba Informações',
     now(),
     'SISTEMA',
     '0',
@@ -9,6 +9,6 @@ SELECT
 WHERE NOT EXISTS (
     SELECT 1 
     FROM questionario 
-    WHERE nome = 'Questionário Encaminhamento NAAPA Etapa 1 Seção 1 - Aba informações'
+    WHERE nome = 'Questionário Atendimento NAAPA Etapa 1 Seção 1 - Aba Informações'
     AND tipo = 5
 );
