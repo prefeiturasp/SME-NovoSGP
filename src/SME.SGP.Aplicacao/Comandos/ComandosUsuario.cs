@@ -99,20 +99,20 @@ namespace SME.SGP.Aplicacao
                 return new UsuarioAutenticacaoRetornoDto();
 
             var chaveCache = string.Format(NomeChaveCache.LOGIN, login);
-            var cacheLogin = repositorioCache.Obter(chaveCache);
+            //var cacheLogin = repositorioCache.Obter(chaveCache);
 
-            if (cacheLogin.NaoEhNulo())
-            {
-                var usuarioAutenticacaoRetornoDto = JsonConvert.DeserializeObject<UsuarioAutenticacaoRetornoDto>(cacheLogin);
-                var token = ObterToken(usuarioAutenticacaoRetornoDto?.Token);
-                if (token > DateTime.Now)
-                    return usuarioAutenticacaoRetornoDto;
-            }
+            //if (cacheLogin.NaoEhNulo())
+            //{
+            //    var usuarioAutenticacaoRetornoDto = JsonConvert.DeserializeObject<UsuarioAutenticacaoRetornoDto>(cacheLogin);
+            //    var token = ObterToken(usuarioAutenticacaoRetornoDto?.Token);
+            //    if (token > DateTime.Now)
+            //        return usuarioAutenticacaoRetornoDto;
+            //}
 
             var retornoAutenticacaoEol = await servicoAutenticacao.AutenticarNoEol(usuarioAutenticacao);
 
             var autenticacao = await ObterAutenticacao(retornoAutenticacaoEol, login);
-            await repositorioCache.SalvarAsync(chaveCache, autenticacao, 2880);
+            await repositorioCache.SalvarAsync(chaveCache, autenticacao, 120);
             return autenticacao;
         }
 
