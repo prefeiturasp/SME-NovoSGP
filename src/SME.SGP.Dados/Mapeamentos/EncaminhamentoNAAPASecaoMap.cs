@@ -14,6 +14,7 @@ namespace SME.SGP.Dados
             Map(c => c.SecaoEncaminhamentoNAAPAId).ToColumn("secao_encaminhamento_id");
             Map(c => c.Concluido).ToColumn("concluido");
             Map(c => c.Excluido).ToColumn("excluido");
+            Map(c => c.EncaminhamentoEscolarId).ToColumn("encaminhamento_escolar_id");
         }
     }
 }

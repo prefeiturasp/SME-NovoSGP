@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SME.SGP.Dominio.Entidades;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 namespace SME.SGP.Dominio
@@ -21,5 +22,7 @@ namespace SME.SGP.Dominio
         public bool Excluido { get; set; }
 
         public List<QuestaoEncaminhamentoNAAPA> Questoes { get; set; }
+        public EncaminhamentoEscolar EncaminhamentoEscolar { get; set; }
+        public long? EncaminhamentoEscolarId { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
@@ -14,10 +15,12 @@ namespace SME.SGP.Aplicacao
     public class ObterAtendimentoNAAPAPorIdUseCase : IObterAtendimentoNAAPAPorIdUseCase
     {
         private readonly IMediator mediator;
+        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo;
 
-        public ObterAtendimentoNAAPAPorIdUseCase(IMediator mediator)
+        public ObterAtendimentoNAAPAPorIdUseCase(IMediator mediator, IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorio)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
 
         public async Task<AtendimentoNAAPARespostaDto> Executar(long id)
@@ -67,7 +70,16 @@ namespace SME.SGP.Aplicacao
             if (aluno.EhNulo()) throw new NegocioException(MensagemNegocioEOL.NAO_LOCALIZADO_INFORMACOES_ALUNO_TURMA_EOL);           
 
             var frequencia = await mediator.Send(new ObterConsultaFrequenciaGeralAlunoQuery(alunoCodigo, turmaCodigo));
+
+            var frequenciaAluno = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaGeralAluno(alunoCodigo, turmaCodigo);
+            var frequenciaPeriodoEspecifico = frequenciaAluno?.Where(f => f.PeriodoInicio.Year <= anoLetivo && f.PeriodoFim.Year >= anoLetivo).FirstOrDefault();
+
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
+
+            var dadosBuscaAtiva = await mediator.Send(new ObterDadosBuscaAtivaPorAlunoQuery(alunoCodigo, long.Parse(turmaCodigo), anoLetivo));
+
             var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(new []{aluno.CodigoAluno}, anoLetivo);
+
             var alunoReduzido = new AlunoTurmaReduzidoDto()
             {
                 Nome = !string.IsNullOrEmpty(aluno.NomeAluno) ? aluno.NomeAluno : aluno.NomeSocialAluno,
@@ -86,7 +98,13 @@ namespace SME.SGP.Aplicacao
                 DataAtualizacaoContato = aluno.DataAtualizacaoContato,
                 TipoResponsavel = aluno.TipoResponsavel,
                 Frequencia = frequencia,
-                EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == aluno.CodigoAluno)
+                EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == aluno.CodigoAluno),
+                NumeroAulasDadas = frequenciaPeriodoEspecifico?.TotalAulas ?? 0,
+                NumeroAulasFrequentadas = frequenciaPeriodoEspecifico?.TotalPresencas ?? 0,
+                CicloEnsino = turma?.SerieEnsino ?? string.Empty,
+                EhBuscaAtiva = dadosBuscaAtiva?.TemRegistroBuscaAtiva ?? false,
+                NumeroVisitas = dadosBuscaAtiva?.NumeroVisitas ?? 0,
+                NumeroLigacoes = dadosBuscaAtiva?.NumeroLigacoes ?? 0
             };
             return alunoReduzido;
         }

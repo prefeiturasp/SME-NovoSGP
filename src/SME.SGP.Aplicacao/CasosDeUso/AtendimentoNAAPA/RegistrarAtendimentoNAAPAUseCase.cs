@@ -209,7 +209,7 @@ namespace SME.SGP.Aplicacao
                 if (!secao.Questoes.Any())
                     throw new NegocioException(string.Format(MensagemNegocioComuns.NENHUMA_QUESTAO_FOI_ENCONTRADA_NA_SECAO_X,secao.SecaoId));
 
-                var secaoEncaminhamento = await mediator.Send(new RegistrarAtendimentoNAAPASecaoCommand(resultadoEncaminhamento.Id, secao.SecaoId, secao.Concluido));
+                var secaoEncaminhamento = await mediator.Send(new RegistrarAtendimentoNAAPASecaoCommand(resultadoEncaminhamento.Id, secao.SecaoId, secao.Concluido, secao.EncaminhamentoEscolarId));
 
                 foreach (var questoes in secao.Questoes.GroupBy(q => q.QuestaoId))
                 {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Dto
+﻿namespace SME.SGP.Dto
 {
     public class AlunoEnderecoRespostaDto
     {
@@ -12,9 +8,12 @@ namespace SME.SGP.Dto
         public string Sexo { get; set; }
         public string GrupoEtnico { get; set; }
         public string Nacionalidade { get; set; }
+        public string NacionalidadeResponsavel { get; set; }
         public EnderecoRespostaDto Endereco { get; set; }
         public bool EhImigrante { get; set; }
+        public bool ResponsavelEhImigrante { get; set; }
         public string NIS { get; set; }
         public string CNS { get; set; }
+        public string TEG { get; set; }
     }
 }

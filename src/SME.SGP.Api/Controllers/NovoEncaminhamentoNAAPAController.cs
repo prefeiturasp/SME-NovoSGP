@@ -27,10 +27,10 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<SecaoQuestionarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ENC_NAAPA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterSecoesDeEncaminhamento([FromQuery] long? ecaminhamentoNaapaId,
+        public async Task<IActionResult> ObterSecoesDeEncaminhamento([FromQuery] long? encaminhamentoNaapaId, long? tipoQuestionario,
            [FromServices] IObterSecoesAtendimentoIndividualNAAPAUseCase obterSecoesDeEncaminhamentoNAAPAUseCase)
         {
-            return Ok(await obterSecoesDeEncaminhamentoNAAPAUseCase.Executar(ecaminhamentoNaapaId));
+            return Ok(await obterSecoesDeEncaminhamentoNAAPAUseCase.Executar(encaminhamentoNaapaId, tipoQuestionario));
         }
 
         [HttpGet("questionario")]

@@ -2,7 +2,9 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.NovoEncaminhamentoNAAPA;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,82 +13,35 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterQuestionarioAtendimentoNAAPAQueryHandler : IRequestHandler<ObterQuestionarioAtendimentoNAAPAQuery, IEnumerable<QuestaoDto>>
+    public class ObterQuestionarioEncaminhamentoNAAPAQueryHandler : IRequestHandler<ObterQuestionarioNovoEncaminhamentoNAAPAQuery, IEnumerable<QuestaoDto>>
     {
         private readonly IMediator mediator;
-        private readonly IRepositorioQuestaoAtendimentoNAAPA repositorioQuestaoEncaminhamento;
+        private readonly IRepositorioQuestaoNovoEncaminhamentoNAAPA repositorioQuestaoEncaminhamento;
 
-        public ObterQuestionarioAtendimentoNAAPAQueryHandler(IMediator mediator, IRepositorioQuestaoAtendimentoNAAPA repositorioQuestaoEncaminhamento, IRepositorioQuestionario repositorioQuestionario)
+        public ObterQuestionarioEncaminhamentoNAAPAQueryHandler(IMediator mediator, IRepositorioQuestaoNovoEncaminhamentoNAAPA repositorioQuestaoEncaminhamento, IRepositorioQuestionario repositorioQuestionario)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioQuestaoEncaminhamento = repositorioQuestaoEncaminhamento ?? throw new ArgumentNullException(nameof(repositorioQuestaoEncaminhamento));
         }
 
-        public async Task<IEnumerable<QuestaoDto>> Handle(ObterQuestionarioAtendimentoNAAPAQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<QuestaoDto>> Handle(ObterQuestionarioNovoEncaminhamentoNAAPAQuery request, CancellationToken cancellationToken)
         {
             var respostasEncaminhamento = request.EncaminhamentoId.HasValue ?
                 await repositorioQuestaoEncaminhamento.ObterRespostasEncaminhamento(request.EncaminhamentoId.Value) :
-                Enumerable.Empty<RespostaQuestaoAtendimentoNAAPADto>();
+                Enumerable.Empty<RespostaQuestaoNovoEncaminhamentoNAAPADto>();
 
-            var informacoesTurmasPrograma = await mediator.Send(new ObterInformacoesTurmasProgramaAlunoMapeamentoEstudanteQuery(request.CodigoAluno, DateTime.Now.Year));
-            var questaoPAP = await repositorioQuestaoEncaminhamento.ObterIdQuestaoPorNomeComponenteQuestionario(request.QuestionarioId, "PAP");
-            var questaoProjeto = await repositorioQuestaoEncaminhamento.ObterIdQuestaoPorNomeComponenteQuestionario(request.QuestionarioId, "PROJETO");
-
-            ObterRespostasFunc obterRespostasComRegra = (long questaoId) =>
+            var questoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(request.QuestionarioId, questaoId =>
+            respostasEncaminhamento.Where(c => c.QuestaoId == questaoId)
+            .Select(respostaEncaminhamento =>
             {
-                if (questaoId == questaoPAP)
+                return new RespostaQuestaoDto()
                 {
-                    return new List<RespostaQuestaoDto>()
-                    {
-                        new RespostaQuestaoDto()
-                        {
-                            QuestaoId = questaoId,
-                            Texto = informacoesTurmasPrograma.ComponentesPAP.SerializarJsonTipoQuestaoComboMultiplaEscolhaDinamico()
-                        }
-                    };
-                }
-
-                if (questaoId == questaoProjeto)
-                {
-                    var componentesFortalecimento = informacoesTurmasPrograma.ComponentesFortalecimentoAprendizagens;
-                    var componentesMaisEducacao = informacoesTurmasPrograma.ComponentesMaisEducacao;
-                    
-                    var componentesCombinados = new List<ComponenteCurricularSimplificadoDto>();
-                    
-                    if (componentesFortalecimento?.Any() == true)
-                        componentesCombinados.AddRange(componentesFortalecimento);
-                    
-                    if (componentesMaisEducacao?.Any() == true)
-                        componentesCombinados.AddRange(componentesMaisEducacao);
-                    
-                    return new List<RespostaQuestaoDto>()
-                    {
-                        new RespostaQuestaoDto()
-                        {
-                            QuestaoId = questaoId,
-                            Texto = componentesCombinados.SerializarJsonTipoQuestaoComboMultiplaEscolhaDinamico()
-                        }
-                    };
-                }
-
-                return respostasEncaminhamento
-                    .Where(c => c.QuestaoId == questaoId)
-                    .Select(respostaEncaminhamento =>
-                    new RespostaQuestaoDto()
-                    {
-                        Id = respostaEncaminhamento.Id,
-                        OpcaoRespostaId = respostaEncaminhamento.RespostaId,
-                        Texto = respostaEncaminhamento.Texto,
-                        Arquivo = respostaEncaminhamento.Arquivo
-                    });
-            };
-
-            var questoes = await mediator.Send(
-                new ObterQuestoesPorQuestionarioPorIdQuery(
-                    request.QuestionarioId,
-                    obterRespostasComRegra
-                )
-            );
+                    Id = respostaEncaminhamento.Id,
+                    OpcaoRespostaId = respostaEncaminhamento.RespostaId,
+                    Texto = respostaEncaminhamento.Texto,
+                    Arquivo = respostaEncaminhamento.Arquivo
+                };
+            })));
 
             questoes = await AplicarRegrasEncaminhamento(request.QuestionarioId, questoes, request.CodigoAluno, request.CodigoTurma);
 
@@ -137,7 +92,7 @@ namespace SME.SGP.Aplicacao
                 TipoParametroSistema.PercentualFrequenciaCritico;
         }
 
-        QuestaoDto ObterQuestao(long questaoId, IEnumerable<Questao> dadosQuestionario, IEnumerable<RespostaQuestaoAtendimentoNAAPADto> respostasEncaminhamento)
+        QuestaoDto ObterQuestao(long questaoId, IEnumerable<Questao> dadosQuestionario, IEnumerable<RespostaQuestaoNovoEncaminhamentoNAAPADto> respostasEncaminhamento)
         {
             var questao = dadosQuestionario.FirstOrDefault(c => c.Id == questaoId);
 
@@ -177,7 +132,7 @@ namespace SME.SGP.Aplicacao
 
         }
 
-        private IEnumerable<QuestaoDto> ObterQuestoes(List<OpcaoQuestaoComplementar> questoesComplementares, IEnumerable<Questao> dadosQuestionario, IEnumerable<RespostaQuestaoAtendimentoNAAPADto> respostasEncaminhamento)
+        private IEnumerable<QuestaoDto> ObterQuestoes(List<OpcaoQuestaoComplementar> questoesComplementares, IEnumerable<Questao> dadosQuestionario, IEnumerable<RespostaQuestaoNovoEncaminhamentoNAAPADto> respostasEncaminhamento)
         {
             foreach (var questaoComplementar in questoesComplementares)
                 yield return ObterQuestao(questaoComplementar.QuestaoComplementarId, dadosQuestionario, respostasEncaminhamento);

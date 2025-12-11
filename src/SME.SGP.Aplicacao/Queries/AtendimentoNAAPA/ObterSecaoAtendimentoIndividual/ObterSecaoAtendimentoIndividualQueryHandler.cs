@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao.Queries.EncaminhamentoNAAPA.ObterSecaoEncaminhamento
 
         public async Task<IEnumerable<SecaoQuestionarioDto>> Handle(ObterSecaoAtendimentoIndividualQuery request, CancellationToken cancellationToken)
         {
-            var secoes = await repositorioSecaoEncaminhamentoNAPPA.ObterSecoesEncaminhamentoIndividual(request.EncaminhamentoNAAPAId);
+            var secoes = await repositorioSecaoEncaminhamentoNAPPA.ObterSecoesEncaminhamentoIndividual(request.EncaminhamentoNAAPAId, request.TipoQuestionario);
 
             return MapearParaDto(secoes);
         }

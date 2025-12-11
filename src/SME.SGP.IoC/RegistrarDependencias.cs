@@ -246,6 +246,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultaRecuperacaoParalelaPeriodo, ConsultaRecuperacaoParalelaPeriodo>();
             services.TryAddScoped<IConsultasPlanoAnualTerritorioSaber, ConsultasPlanoAnualTerritorioSaber>();
             services.TryAddScoped<IRepositorioConceitoConsulta, RepositorioConceitoConsulta>();
+            services.TryAddScoped<IAlterarSituacaoAtendimentoNAAPAUseCase, AlterarSituacaoAtendimentoNAAPAUseCase>();
             services.TryAddScoped<IRepositorioAulaPrevistaConsulta, RepositorioAulaPrevistaConsulta>();
             services.TryAddScoped<IRepositorioAulaPrevistaBimestreConsulta, RepositorioAulaPrevistaBimestreConsulta>();
             services.TryAddScoped<IRepositorioConsolidacaoMatriculaTurma, RepositorioConsolidacaoMatriculaTurma>();
@@ -587,7 +588,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioTipoRelatorio, RepositorioTipoRelatorio>();
 
             // Encaminhamento NAAPA
-            services.TryAddScoped<IRepositorioSecaoAtendimentoNAAPA, RepositorioSecaoAtenidmentoNAAPA>();
+            services.TryAddScoped<IRepositorioSecaoAtendimentoNAAPA, RepositorioSecaoAtendimentoNAAPA>();
             services.TryAddScoped<IRepositorioAtendimentoNAAPA, RepositorioAtendimentoNAAPA>();
             services.TryAddScoped<IRepositorioAtendimentoNAAPASecao, RepositorioAtendimentoNAAPASecao>();
             services.TryAddScoped<IRepositorioQuestaoAtendimentoNAAPA, RepositorioQuestaoAtendimentoNAAPA>();
