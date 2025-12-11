@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
@@ -13,13 +14,13 @@ using System.Threading.Tasks;
 namespace SME.SGP.Dados.Repositorios
 {
     [ExcludeFromCodeCoverage]
-    public class RepositorioSecaoAtenidmentoNAAPA : RepositorioBase<SecaoEncaminhamentoNAAPA>, IRepositorioSecaoAtendimentoNAAPA
+    public class RepositorioSecaoAtendimentoNAAPA : RepositorioBase<SecaoEncaminhamentoNAAPA>, IRepositorioSecaoAtendimentoNAAPA
     {
 
         private const int SECAO_ITINERANCIA_NAAPA = 3;
         private const int PRIMEIRA_ETAPA_NAAPA = 1;
         private const string NOME_COMPONENTE_QUESTAO_ANEXOS = "ANEXO_ITINERANCIA";
-        public RepositorioSecaoAtenidmentoNAAPA(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
+        public RepositorioSecaoAtendimentoNAAPA(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
             
         }
@@ -35,7 +36,7 @@ namespace SME.SGP.Dados.Repositorios
                                 , sea.nome_componente as nomeComponente
                          FROM secao_encaminhamento_naapa sea
                          inner join questionario q on q.id = sea.questionario_id 
-                         left join encaminhamento_naapa_secao eas on eas.encaminhamento_naapa_id = @encaminhamentoNAAPAId 
+                         left join encaminhamento_naapa_secao eas on eas.encaminhamento_escolar_id = @encaminhamentoNAAPAId 
                                                                  and eas.secao_encaminhamento_id = sea.id
                                                                  and not eas.excluido   
                          left join secao_encaminhamento_naapa_modalidade senm on senm.secao_encaminhamento_id = sea.id 
@@ -49,28 +50,44 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<SecaoEncaminhamentoNAAPA>> ObterSecoesEncaminhamentoPorModalidade(int? modalidade, long? encaminhamentoNAAPAId = null)
         {
-            var query = new StringBuilder($@"SELECT sea.*, eas.*, q.*
+            var query = new StringBuilder($@"SELECT sea.*, eas.*, q.*, ee.*
                                             FROM secao_encaminhamento_naapa sea 
                                                 join questionario q on q.id = sea.questionario_id 
-                                                left join encaminhamento_naapa_secao eas on eas.encaminhamento_naapa_id = @encaminhamentoNAAPAId
+                                                left join encaminhamento_naapa_secao eas on eas.encaminhamento_escolar_id = @encaminhamentoNAAPAId
                                                                                         and eas.secao_encaminhamento_id = sea.id
                                                                                         and not eas.excluido  
                                                                                         and sea.nome_componente <> '{AtendimentoNAAPAConstants.SECAO_ITINERANCIA}'
+                                                left join encaminhamento_escolar ee on ee.id = eas.encaminhamento_escolar_id
                                                 left join secao_encaminhamento_naapa_modalidade senm on senm.secao_encaminhamento_id = sea.id 
                                             WHERE not sea.excluido 
                                                   AND ((senm.modalidade_codigo = @modalidade) or (senm.modalidade_codigo is null)) 
                                             ORDER BY sea.etapa, sea.ordem; ");
 
 
-  
+
             return await database.Conexao
-                .QueryAsync<SecaoEncaminhamentoNAAPA, EncaminhamentoNAAPASecao, Questionario, SecaoEncaminhamentoNAAPA>(
-                    query.ToString(), (secaoEncaminhamento, encaminhamentoSecao, questionario) =>
+                .QueryAsync<SecaoEncaminhamentoNAAPA,
+                            EncaminhamentoNAAPASecao,
+                            Questionario,
+                            EncaminhamentoEscolar,
+                            SecaoEncaminhamentoNAAPA>(
+                    query.ToString(),
+                    (secaoEncaminhamento, encaminhamentoSecao, questionario, encaminhamentoEscolar) =>
                     {
                         secaoEncaminhamento.EncaminhamentoNAAPASecao = encaminhamentoSecao;
                         secaoEncaminhamento.Questionario = questionario;
+
+                        if (encaminhamentoSecao.NaoEhNulo())
+                        {
+                            encaminhamentoSecao.EncaminhamentoEscolar = encaminhamentoEscolar;
+                            encaminhamentoSecao.EncaminhamentoEscolarId = encaminhamentoEscolar?.Id;
+                        }
+
                         return secaoEncaminhamento;
-                    }, new { encaminhamentoNAAPAId = encaminhamentoNAAPAId ?? 0, modalidade },splitOn: "id");
+                    },
+                    new { encaminhamentoNAAPAId = encaminhamentoNAAPAId ?? 0, modalidade },
+                    splitOn: "id"
+                );
         }
 
 
@@ -113,7 +130,7 @@ namespace SME.SGP.Dados.Repositorios
                                             ens.Criado_Em as CriadoEm,
                                             ens.Criado_Por as CriadoPor,
                                             ens.Criado_RF as CriadoRF
-                                            from encaminhamento_naapa en
+                                            from encaminhamento_escolar en
                                             inner join encaminhamento_naapa_secao ens on ens.encaminhamento_naapa_id = en.id
                                             inner join secao_encaminhamento_naapa secao on secao.id = ens.secao_encaminhamento_id 
                                             inner join vw_resposta_data questaoDataAtendimento on questaoDataAtendimento.encaminhamento_naapa_secao_id = ens.id
@@ -232,7 +249,7 @@ namespace SME.SGP.Dados.Repositorios
                 ");
             }
 
-            sql.AppendLine(@"from encaminhamento_naapa en
+            sql.AppendLine(@"from encaminhamento_escolar en
                             inner join encaminhamento_naapa_secao ens on ens.encaminhamento_naapa_id = en.id
                             inner join secao_encaminhamento_naapa secao on secao.id = ens.secao_encaminhamento_id 
                             inner join vw_resposta_data questaoDataAtendimento on questaoDataAtendimento.encaminhamento_naapa_secao_id = ens.id
@@ -253,9 +270,9 @@ namespace SME.SGP.Dados.Repositorios
                                          a.codigo as CodigoArquivo, 
                                          a.nome as NomeArquivo
                                   from encaminhamento_naapa_secao ens   
-                                  join encaminhamento_naapa_questao enq on ens.id = enq.encaminhamento_naapa_secao_id  
+                                  join encaminhamento_escolar_questao enq on ens.id = enq.encaminhamento_naapa_secao_id  
                                   join questao q on enq.questao_id = q.id 
-                                  join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id 
+                                  join encaminhamento_escolar_resposta enr on enr.questao_encaminhamento_id = enq.id 
                                   inner join arquivo a on a.id = enr.arquivo_id 
                                   where q.nome_componente  = '{NOME_COMPONENTE_QUESTAO_ANEXOS}' and q.tipo = {(int)TipoQuestao.Upload}
                                         and not enq.excluido and not ens.excluido 
@@ -263,8 +280,8 @@ namespace SME.SGP.Dados.Repositorios
                         select ens.id SecaoItineranciaId, 
                                arquivo.CodigoArquivo, arquivo.NomeArquivo  ");
         
-            sql.AppendLine(@"from encaminhamento_naapa en
-                            inner join encaminhamento_naapa_secao ens on ens.encaminhamento_naapa_id = en.id
+            sql.AppendLine(@"from encaminhamento_escolar en
+                            inner join encaminhamento_naapa_secao ens on ens.encaminhamento_escolar_id = en.id
                             inner join secao_encaminhamento_naapa secao on secao.id = ens.secao_encaminhamento_id 
                             inner join vw_resposta_arquivos arquivo on arquivo.encaminhamento_naapa_secao_id = ens.id
                             where en.id = @encaminhamentoNAAPAId and not ens.excluido ");
@@ -295,7 +312,7 @@ namespace SME.SGP.Dados.Repositorios
                         inner join questao q on q.id = enq.questao_id 
                         inner join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id 
                         inner join secao_encaminhamento_naapa sen on sen.id = ens.secao_encaminhamento_id 
-                        inner join encaminhamento_naapa en on en.id = ens.encaminhamento_naapa_id 
+                        inner join encaminhamento_escolar en on en.id = ens.encaminhamento_naapa_id 
                         inner join turma t on t.id = en.turma_id 
                         where q.nome_componente = 'DATA_DO_ATENDIMENTO' and sen.etapa = {PRIMEIRA_ETAPA_NAAPA} and sen.ordem = {SECAO_ITINERANCIA_NAAPA} 
                         and not ens.excluido 
@@ -348,21 +365,23 @@ namespace SME.SGP.Dados.Repositorios
                     });           
         }
 
-        public async Task<IEnumerable<SecaoEncaminhamentoNAAPA>> ObterSecoesEncaminhamentoIndividual(long? encaminhamentoNAAPAId = null)
+        public async Task<IEnumerable<SecaoEncaminhamentoNAAPA>> ObterSecoesEncaminhamentoIndividual(long? encaminhamentoNAAPAId = null, long? tipoQuestionario = null)
         {
 
-            int tipoQuestionario = (int)TipoQuestionario.EncaminhamentoNAAPAIndividual;
-
-            var query = new StringBuilder($@"SELECT sea.*, eas.*, q.*
-                                            FROM secao_encaminhamento_naapa sea 
-                                                join questionario q on q.id = sea.questionario_id 
-                                                left join encaminhamento_naapa_secao eas on eas.encaminhamento_naapa_id = @encaminhamentoNAAPAId
-                                                                                        and eas.secao_encaminhamento_id = sea.id
-                                                                                        and not eas.excluido  
-                                              --  left join secao_encaminhamento_naapa_modalidade senm on senm.secao_encaminhamento_id = sea.id 
-                                            WHERE not sea.excluido 
+            var query = new StringBuilder($@"SELECT 
+                                                sea.*, 
+                                                eas.*, 
+                                                q.*
+                                            FROM secao_encaminhamento_naapa sea
+                                            JOIN questionario q 
+                                                   ON q.id = sea.questionario_id
+                                            LEFT JOIN encaminhamento_naapa_secao eas 
+                                                   ON eas.encaminhamento_naapa_id = @encaminhamentoNAAPAId
+                                                  AND eas.secao_encaminhamento_id = sea.id
+                                                  AND NOT eas.excluido
+                                            WHERE NOT sea.excluido  
                                               AND q.tipo = @tipoQuestionario
-                                            ORDER BY sea.etapa, sea.ordem; ");
+                                            ORDER BY sea.etapa, sea.ordem;");
 
 
             return await database.Conexao

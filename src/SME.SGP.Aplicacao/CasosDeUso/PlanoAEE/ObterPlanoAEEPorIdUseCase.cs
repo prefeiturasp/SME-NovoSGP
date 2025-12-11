@@ -193,7 +193,7 @@ namespace SME.SGP.Aplicacao
             plano.PermitirExcluir = PermiteExclusaoPlanoAEE(plano.Situacao, usuarioLogado);
 
             plano.RegistroCadastradoEmOutraUE = !await VerificarUsuarioLogadoPertenceMesmaUEPlano(usuarioLogado, turma);
-            plano.PermitirEncerramentoManual = PermitirEncerramentoManual(plano);
+            plano.PermitirEncerramentoManual = plano.Id > 0 && PermitirEncerramentoManual(plano);
 
             await BuscarDadosSrmPaee((filtro.CodigoAluno > 0 ?  filtro.CodigoAluno :alunoCodigo),plano,novaVersao);
 

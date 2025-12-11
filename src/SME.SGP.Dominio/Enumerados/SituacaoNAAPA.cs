@@ -11,6 +11,8 @@ namespace SME.SGP.Dominio.Enumerados
         [Display(Name = "Em atendimento")]
         EmAtendimento = 3,
         [Display(Name = "Encerrado")]
-        Encerrado = 4
+        Encerrado = 4,
+        [Display(Name = "Em apoio")]
+        EmApoio = 5,
     }
 }

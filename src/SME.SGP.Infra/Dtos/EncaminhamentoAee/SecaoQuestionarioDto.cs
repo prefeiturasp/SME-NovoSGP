@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio;
+using System.Collections.Generic;
 
 namespace SME.SGP.Infra
 {
@@ -14,5 +15,7 @@ namespace SME.SGP.Infra
         public int Ordem { get; set; }
         public TipoQuestionario TipoQuestionario { get; set; }
         public int[] ModalidadesCodigo { get; set; }
+        public long? EncaminhamentoEscolarId { get; set; }
+        public IEnumerable<QuestaoDto>? EncaminhamentoEscolar { get; set; } = null;
     }
 }

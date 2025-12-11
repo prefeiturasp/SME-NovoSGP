@@ -273,6 +273,12 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ConsolidacaoPainelEducacionalFluenciaLeitoraMap());
                config.AddMap(new TaxaAlfabetizacaoMap());
                config.AddMap(new InformeCorrelacaoMap());
+               config.AddMap(new EncaminhamentoEscolarMap());
+               config.AddMap(new EncaminhamentoEscolarHistoricoAlteracoesMap());
+               config.AddMap(new EncaminhamentoEscolarObservacaoMap());
+               config.AddMap(new QuestaoEncaminhamentoEscolarMap());
+               config.AddMap(new RespostaEncaminhamentoEscolarMap());
+               config.AddMap(new ConsolidadoEncaminhamentoEscolarMap());
 
                // Encaminhamento Escolar
                config.AddMap(new EncaminhamentoEscolarMap());

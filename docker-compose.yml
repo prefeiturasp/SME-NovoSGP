@@ -160,3 +160,4 @@ networks:
     external:
       name: sme-network
     name: sme_external_network
+ 
