@@ -51,10 +51,10 @@ namespace SME.SGP.Api.Teste.Controllers
         {
             var retorno = new List<SecaoQuestionarioDto> { new SecaoQuestionarioDto() };
 
-            _secoesUseCase.Setup(s => s.Executar(It.IsAny<long?>()))
+            _secoesUseCase.Setup(s => s.Executar(It.IsAny<long?>(), It.IsAny<long?>()))
                           .ReturnsAsync(retorno);
 
-            var result = await _controller.ObterSecoesDeEncaminhamento(1, _secoesUseCase.Object);
+            var result = await _controller.ObterSecoesDeEncaminhamento(1, 2, _secoesUseCase.Object);
 
             var ok = Assert.IsType<OkObjectResult>(result);
             Assert.IsAssignableFrom<IEnumerable<SecaoQuestionarioDto>>(ok.Value);
