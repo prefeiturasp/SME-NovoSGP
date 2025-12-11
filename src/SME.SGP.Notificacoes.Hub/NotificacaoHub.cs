@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using MongoDB.Driver.Core.Connections;
 using SME.SGP.Notificacoes.Hub.Interface;
 using System;
 using System.Collections.Generic;
