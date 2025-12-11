@@ -160,16 +160,22 @@ namespace SME.SGP.Notificacoes.Hub
 
                     listaUsuarios.Skip(limiteConexoes).ToList().ForEach(async connectionId =>
                     {
-                        int novaPosicaoFila = listaUsuarios.IndexOf(connectionId);
-                        await Clients.Client(connectionId).SendAsync("BloqueioUsuario", (novaPosicaoFila + 1) - limiteConexoes);
+                        if (!string.IsNullOrWhiteSpace(connectionId))
+                        {
+                            int novaPosicaoFila = listaUsuarios.IndexOf(connectionId);
+                            await Clients.Client(connectionId).SendAsync("BloqueioUsuario", (novaPosicaoFila + 1) - limiteConexoes);
+                        }
                     });
                 }
                 else
                 {
                     listaUsuarios.Skip(posicaoFila).ToList().ForEach(async connectionId =>
                     {
-                        int novaPosicaoFila = listaUsuarios.IndexOf(connectionId);
-                        await Clients.Client(connectionId).SendAsync("BloqueioUsuario", (novaPosicaoFila + 1) - limiteConexoes);
+                        if (!string.IsNullOrWhiteSpace(connectionId))
+                        {
+                            int novaPosicaoFila = listaUsuarios.IndexOf(connectionId);
+                            await Clients.Client(connectionId).SendAsync("BloqueioUsuario", (novaPosicaoFila + 1) - limiteConexoes);
+                        }
                     });
                 }
 
