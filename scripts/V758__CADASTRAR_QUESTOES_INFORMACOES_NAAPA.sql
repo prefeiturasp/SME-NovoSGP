@@ -62,7 +62,7 @@ INSERT INTO questao (questionario_id, ordem, nome, tipo, criado_em, criado_por, 
 SELECT 87, 10, 'Protocolo aplicável no caso', 4, now(), 'SISTEMA', '0', false, 12, null, 'Selecione', 'PROTOCOLO_APLICAVEL_NO_CASO'
 WHERE NOT EXISTS (
     SELECT 1 FROM questao WHERE questionario_id = 87 AND nome_componente = 'PROTOCOLO_APLICAVEL_NO_CASO'
-);
+); 
 
 INSERT INTO questao (questionario_id, ordem, nome, tipo, criado_em, criado_por, criado_rf, somente_leitura, dimensao, tamanho, placeholder, nome_componente)
 SELECT 87, 11, 'Observações adicionais', 2, now(), 'SISTEMA', '0', false, 12, null, 'Digite observações adicionais...', 'OBSERVACOES_ADICIONAIS'

@@ -473,7 +473,7 @@ SELECT
 7,
 'Protocolo Alerta SP',
 now(),
-'SISTEMA', 
+'SISTEMA',  
 '0'
 WHERE NOT EXISTS (
    SELECT 1 FROM opcao_resposta
