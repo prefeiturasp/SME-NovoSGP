@@ -23,6 +23,9 @@ namespace SME.SGP.Dominio
         public bool Excluido { get; set; }
 
         public List<QuestaoEncaminhamentoNAAPA> Questoes { get; set; }
+
+        public List<QuestaoEncaminhamentoEscolar> QuestoesEscolar { get; set; }
+
         public EncaminhamentoEscolar EncaminhamentoEscolar { get; set; }
         public long? EncaminhamentoEscolarId { get; set; }
     }
