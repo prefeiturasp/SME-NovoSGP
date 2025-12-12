@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.NovoEncaminhamentoNAAPA;
 using System;
@@ -13,13 +14,13 @@ namespace SME.SGP.Aplicacao.Commands.NovoEncaminhamentoNAAPA.AlterarNovoEncaminh
 {
     public class AlterarNovoEncaminhamentoNAAPASecaoQuestaoRespostaCommand : IRequest<bool>
     {
-        public AlterarNovoEncaminhamentoNAAPASecaoQuestaoRespostaCommand(RespostaEncaminhamentoNAAPA respostaAlterar, NovoEncaminhamentoNAAPASecaoQuestaoDto novoEncaminhamentoNAAPASecaoQuestaoDto)
+        public AlterarNovoEncaminhamentoNAAPASecaoQuestaoRespostaCommand(RespostaEncaminhamentoEscolar respostaAlterar, NovoEncaminhamentoNAAPASecaoQuestaoDto novoEncaminhamentoNAAPASecaoQuestaoDto)
         {
             RespostaEncaminhamento = respostaAlterar;
             RespostaQuestaoDto = novoEncaminhamentoNAAPASecaoQuestaoDto;
         }
 
-        public RespostaEncaminhamentoNAAPA RespostaEncaminhamento { get; set; }
+        public RespostaEncaminhamentoEscolar RespostaEncaminhamento { get; set; }
         public NovoEncaminhamentoNAAPASecaoQuestaoDto RespostaQuestaoDto { get; set; }
     }
 

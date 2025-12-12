@@ -1,4 +1,5 @@
-﻿using SME.SGP.Infra;
+﻿using SME.SGP.Dominio.Entidades;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.NovoEncaminhamentoNAAPA;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces.Repositorios
 {
-    public interface IRepositorioQuestaoNovoEncaminhamentoNAAPA : IRepositorioBase<QuestaoEncaminhamentoNAAPA>
+    public interface IRepositorioQuestaoNovoEncaminhamentoNAAPA : IRepositorioBase<QuestaoEncaminhamentoEscolar>
     {
         Task<IEnumerable<long>> ObterQuestoesPorSecaoId(long encaminhamentoNAAPASecaoId);
         Task<IEnumerable<RespostaQuestaoNovoEncaminhamentoNAAPADto>> ObterRespostasEncaminhamento(long encaminhamentoId);

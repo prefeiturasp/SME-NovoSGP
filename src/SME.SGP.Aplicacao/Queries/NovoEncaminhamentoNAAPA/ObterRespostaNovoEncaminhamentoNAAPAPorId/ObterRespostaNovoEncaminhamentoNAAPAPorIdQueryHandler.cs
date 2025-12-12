@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra.Interfaces;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Queries.NovoEncaminhamentoNAAPA.ObterRespostaNovoEncaminhamentoNAAPAPorId
 {
-    public class ObterRespostaNovoEncaminhamentoNAAPAPorIdQueryHandler : ConsultasBase, IRequestHandler<ObterRespostaNovoEncaminhamentoNAAPAPorIdQuery, RespostaEncaminhamentoNAAPA>
+    public class ObterRespostaNovoEncaminhamentoNAAPAPorIdQueryHandler : ConsultasBase, IRequestHandler<ObterRespostaNovoEncaminhamentoNAAPAPorIdQuery, RespostaEncaminhamentoEscolar>
     {
         public IRepositorioRespostaNovoEncaminhamentoNAAPA repositorioRespostaNovoEncaminhamentoNAAPA { get; }
 
@@ -21,7 +22,7 @@ namespace SME.SGP.Aplicacao.Queries.NovoEncaminhamentoNAAPA.ObterRespostaNovoEnc
             this.repositorioRespostaNovoEncaminhamentoNAAPA = repositorioNovoEncaminhamentoNAAPA ?? throw new ArgumentNullException(nameof(repositorioNovoEncaminhamentoNAAPA));
         }
 
-        public Task<RespostaEncaminhamentoNAAPA> Handle(ObterRespostaNovoEncaminhamentoNAAPAPorIdQuery request, CancellationToken cancellationToken)
+        public Task<RespostaEncaminhamentoEscolar> Handle(ObterRespostaNovoEncaminhamentoNAAPAPorIdQuery request, CancellationToken cancellationToken)
         {
             return Task.FromResult(repositorioRespostaNovoEncaminhamentoNAAPA.ObterPorId(request.Id));
         }

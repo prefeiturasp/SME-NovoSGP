@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +11,11 @@ namespace SME.SGP.Aplicacao.Commands.NovoEncaminhamentoNAAPA.ExcluirRespostaNovo
 {
     public class ExcluirRespostaNovoEncaminhamentoNAAPACommand : IRequest<bool>
     {
-        public ExcluirRespostaNovoEncaminhamentoNAAPACommand(RespostaEncaminhamentoNAAPA resposta)
+        public ExcluirRespostaNovoEncaminhamentoNAAPACommand(RespostaEncaminhamentoEscolar resposta)
         {
             Resposta = resposta;
         }
 
-        public RespostaEncaminhamentoNAAPA Resposta { get; }
+        public RespostaEncaminhamentoEscolar Resposta { get; }
     }
 }

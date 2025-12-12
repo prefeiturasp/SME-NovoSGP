@@ -10,6 +10,7 @@ namespace SME.SGP.Dominio
         public EncaminhamentoNAAPASecao()
         {
             Questoes = new List<QuestaoEncaminhamentoNAAPA>();
+            QuestoesEscolar = new List<QuestaoEncaminhamentoEscolar>();
         }
 
         public EncaminhamentoNAAPA EncaminhamentoNAAPA { get; set; }

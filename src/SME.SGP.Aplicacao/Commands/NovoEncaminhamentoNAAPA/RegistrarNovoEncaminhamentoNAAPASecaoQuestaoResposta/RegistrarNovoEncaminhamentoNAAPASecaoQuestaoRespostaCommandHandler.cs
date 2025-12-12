@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using System;
@@ -30,9 +31,9 @@ namespace SME.SGP.Aplicacao.Commands.NovoEncaminhamentoNAAPA.RegistrarNovoEncami
             return id;
         }
 
-        private async Task<RespostaEncaminhamentoNAAPA> MapearParaEntidade(RegistrarNovoEncaminhamentoNAAPASecaoQuestaoRespostaCommand request)
+        private async Task<RespostaEncaminhamentoEscolar> MapearParaEntidade(RegistrarNovoEncaminhamentoNAAPASecaoQuestaoRespostaCommand request)
         {
-            var resposta = new RespostaEncaminhamentoNAAPA() { QuestaoEncaminhamentoId = request.QuestaoId };
+            var resposta = new RespostaEncaminhamentoEscolar() { QuestaoEncaminhamentoId = request.QuestaoId };
 
             if (!String.IsNullOrEmpty(request.Resposta) && EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Radio, TipoQuestao.Combo, TipoQuestao.Checkbox, TipoQuestao.ComboMultiplaEscolha, TipoQuestao.SuspeitaViolenciaNAAPA }))
                 resposta.RespostaId = long.Parse(request.Resposta);

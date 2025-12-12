@@ -97,7 +97,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("salvar")]
         [ProducesResponseType(typeof(IEnumerable<ResultadoNovoEncaminhamentoNAAPADto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.ENC_NAAPA_I, Permissao.ENC_NAAPA_A, Policy = "Bearer")]
+        //[Permissao(Permissao.ENC_NAAPA_I, Permissao.ENC_NAAPA_A, Policy = "Bearer")]
         public async Task<IActionResult> RegistrarNovoEncaminhamento([FromBody] NovoEncaminhamentoNAAPADto encaminhamentoNAAPADto, [FromServices] IRegistrarNovoEncaminhamentoNAAPAUseCase registrarNovoEncaminhamentoNAAPAUseCase)
         {
             return Ok(await registrarNovoEncaminhamentoNAAPAUseCase.Executar(encaminhamentoNAAPADto));

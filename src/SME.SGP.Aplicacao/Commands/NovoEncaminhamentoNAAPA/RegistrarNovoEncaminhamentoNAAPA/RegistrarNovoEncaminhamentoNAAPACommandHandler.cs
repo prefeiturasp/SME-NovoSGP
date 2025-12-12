@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System;
-
+using SME.SGP.Dominio.Entidades;
 
 namespace SME.SGP.Aplicacao.Commands.NovoEncaminhamentoNAAPA.RegistrarNovoEncaminhamentoNAAPA
 {
@@ -26,24 +26,34 @@ namespace SME.SGP.Aplicacao.Commands.NovoEncaminhamentoNAAPA.RegistrarNovoEncami
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-
         public async Task<ResultadoNovoEncaminhamentoNAAPADto> Handle(RegistrarNovoEncaminhamentoNAAPACommand request, CancellationToken cancellationToken)
         {
-            var turmaCodigo = await mediator.Send(new ObterTurmaCodigoPorIdQuery(request.TurmaId));
-            var aluno = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(turmaCodigo, request.AlunoCodigo, true));
+            SituacaoMatriculaAluno? situacaoAluno = null;
 
-            var encaminhamento = MapearParaEntidade(request, aluno?.CodigoSituacaoMatricula);
+            if (request.Tipo == (int)TipoQuestionario.EncaminhamentoNAAPAIndividual && request.TurmaId.HasValue)
+            {
+                var turmaCodigo = await mediator.Send(new ObterTurmaCodigoPorIdQuery(request.TurmaId.Value));
+                var aluno = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(turmaCodigo, request.AlunoCodigo, true));
+                situacaoAluno = aluno?.CodigoSituacaoMatricula;
+            }
+
+            var encaminhamento = MapearParaEntidade(request, situacaoAluno);
             var id = await repositorioNovoEncaminhamentoNAAPA.SalvarAsync(encaminhamento);
+
             var resultado = new ResultadoNovoEncaminhamentoNAAPADto(id);
             resultado.Auditoria = (AuditoriaDto)encaminhamento;
+
             return resultado;
         }
 
-        private SME.SGP.Dominio.EncaminhamentoNAAPA MapearParaEntidade(RegistrarNovoEncaminhamentoNAAPACommand request, SituacaoMatriculaAluno? situacaoAluno)
+        private EncaminhamentoEscolar MapearParaEntidade(RegistrarNovoEncaminhamentoNAAPACommand request, SituacaoMatriculaAluno? situacaoAluno)
             => new()
             {
-                TurmaId = request.TurmaId,
+                Tipo = request.Tipo,
+                DreId = request.DreId,
+                UeId = request.UeId,
                 Situacao = request.Situacao,
+                TurmaId = request.TurmaId,
                 AlunoCodigo = request.AlunoCodigo,
                 AlunoNome = request.AlunoNome,
                 SituacaoMatriculaAluno = situacaoAluno
