@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.NovoEncaminhamentoNAAPA;
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Queries.NovoEncaminhamentoNAAPA.ObterHistoricosDeAlteracoesNovoEncaminhamentoNAAPA
 {
-    public class ObterHistoricosDeAlteracoesNovoEncaminhamentoNAAPAQueryHandler : IRequestHandler<ObterHistoricosDeAlteracoesNovoEncaminhamentoNAAPAQuery, EncaminhamentoNAAPAHistoricoAlteracoes>
+    public class ObterHistoricosDeAlteracoesNovoEncaminhamentoNAAPAQueryHandler : IRequestHandler<ObterHistoricosDeAlteracoesNovoEncaminhamentoNAAPAQuery, EncaminhamentoEscolarHistoricoAlteracoes>
     {
         private List<string> camposInseridos;
         private List<string> camposAlterados;
@@ -30,12 +31,7 @@ namespace SME.SGP.Aplicacao.Queries.NovoEncaminhamentoNAAPA.ObterHistoricosDeAlt
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-
-
-
-
-
-        public async Task<EncaminhamentoNAAPAHistoricoAlteracoes> Handle(ObterHistoricosDeAlteracoesNovoEncaminhamentoNAAPAQuery request, CancellationToken cancellationToken)
+        public async Task<EncaminhamentoEscolarHistoricoAlteracoes> Handle(ObterHistoricosDeAlteracoesNovoEncaminhamentoNAAPAQuery request, CancellationToken cancellationToken)
         {
             this.usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             await CarreguarQuestoesAInserir(request.NovoEncaminhamentoNAAPASecaoAlterado);
@@ -44,17 +40,17 @@ namespace SME.SGP.Aplicacao.Queries.NovoEncaminhamentoNAAPA.ObterHistoricosDeAlt
             return ObterHistoricoAlteracaoSecao(request.NovoEncaminhamentoNAAPASecaoAlterado, request.NovoEncaminhamentoNAAPASecaoExistente, request.TipoHistoricoAlteracoes);
         }
 
-        private EncaminhamentoNAAPAHistoricoAlteracoes ObterHistoricoAlteracaoSecao(
+        private EncaminhamentoEscolarHistoricoAlteracoes ObterHistoricoAlteracaoSecao(
                                                         NovoEncaminhamentoNAAPASecaoDto encaminhamentoNAAPAAlterado,
                                                         EncaminhamentoNAAPASecao encaminhamentoSecaoExistente,
                                                         TipoHistoricoAlteracoesAtendimentoNAAPA tipoHistoricoAlteracoes)
         {
             if (camposInseridos.Any() || camposAlterados.Any())
             {
-                return new EncaminhamentoNAAPAHistoricoAlteracoes()
+                return new EncaminhamentoEscolarHistoricoAlteracoes()
                 {
-                    EncaminhamentoNAAPAId = encaminhamentoSecaoExistente.EncaminhamentoNAAPAId,
-                    SecaoEncaminhamentoNAAPAId = encaminhamentoNAAPAAlterado.SecaoId,
+                    EncaminhamentoEscolarId = encaminhamentoSecaoExistente.EncaminhamentoNAAPAId ?? 0,
+                    SecaoEncaminhamentoEscolarId = encaminhamentoNAAPAAlterado.SecaoId,
                     DataHistorico = DateTimeExtension.HorarioBrasilia(),
                     TipoHistorico = tipoHistoricoAlteracoes,
                     CamposAlterados = ObterCamposFormatados(camposAlterados),

@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao.Commands.NovoEncaminhamentoNAAPA.RegistrarNovoEncami
                 SecaoEncaminhamentoNAAPAId = request.SecaoId,
                 Concluido = request.Concluido,
                 EncaminhamentoNAAPAId = request.EncaminhamentoNAAPAId,
-                EncaminhamentoEscolarId = request.EncaminhamentoNAAPAId
+                EncaminhamentoEscolarId = request.EncaminhamentoEscolarId
             };
     }
 }

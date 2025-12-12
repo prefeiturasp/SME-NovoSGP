@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
             {
                 return new EncaminhamentoNAAPAHistoricoAlteracoes()
                 {
-                    EncaminhamentoNAAPAId = encaminhamentoSecaoExistente.EncaminhamentoNAAPAId,
+                    EncaminhamentoNAAPAId = encaminhamentoSecaoExistente.EncaminhamentoNAAPAId ?? 0,
                     SecaoEncaminhamentoNAAPAId = encaminhamentoNAAPAAlterado.SecaoId,
                     DataHistorico = DateTimeExtension.HorarioBrasilia(),
                     TipoHistorico = tipoHistoricoAlteracoes,

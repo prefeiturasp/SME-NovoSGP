@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
@@ -21,7 +22,7 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database;
         }
 
-        public async Task<long> SalvarAsync(EncaminhamentoNAAPAHistoricoAlteracoes entidade)
+        public async Task<long> SalvarAsync(EncaminhamentoEscolarHistoricoAlteracoes entidade)
         {
             return (long)(await database.Conexao.InsertAsync(entidade));
         }

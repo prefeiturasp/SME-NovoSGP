@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Dominio.Entidades;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Queries.NovoEncaminhamentoNAAPA.ObterNovoEncaminhamentoNAAPAPorId
 {
-    public class ObterNovoEncaminhamentoNAAPAPorIdQuery : IRequest<SME.SGP.Dominio.EncaminhamentoNAAPA>
+    public class ObterNovoEncaminhamentoNAAPAPorIdQuery : IRequest<EncaminhamentoEscolar>
     {
         public ObterNovoEncaminhamentoNAAPAPorIdQuery(long id)
         {

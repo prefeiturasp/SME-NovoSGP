@@ -330,7 +330,7 @@ namespace SME.SGP.Dados.Repositorios
             }
         }
 
-        public async Task<EncaminhamentoNAAPA> ObterEncaminhamentoPorId(long id)
+        public async Task<EncaminhamentoEscolar> ObterEncaminhamentoPorId(long id)
         {
             const string query = @"select ea.*, eas.*, qea.*, rea.*, sea.*, q.*, op.*
                                     from encaminhamento_naapa ea
@@ -349,11 +349,11 @@ namespace SME.SGP.Dados.Repositorios
                                     where ea.id = @id
                                     and not ea.excluido";
 
-            var encaminhamento = new EncaminhamentoNAAPA();
+            var encaminhamento = new EncaminhamentoEscolar();
 
             await database.Conexao
-                .QueryAsync<EncaminhamentoNAAPA, EncaminhamentoNAAPASecao, QuestaoEncaminhamentoNAAPA,
-                    RespostaEncaminhamentoNAAPA, SecaoEncaminhamentoNAAPA, Questao, OpcaoResposta, EncaminhamentoNAAPA>(
+                .QueryAsync<EncaminhamentoEscolar, EncaminhamentoNAAPASecao, QuestaoEncaminhamentoEscolar,
+                    RespostaEncaminhamentoEscolar, SecaoEncaminhamentoNAAPA, Questao, OpcaoResposta, EncaminhamentoEscolar>(
                     query, (encaminhamentoNAAPA, encaminhamentoSecao, questaoEncaminhamentoNAAPA, respostaEncaminhamento,
                         secaoEncaminhamento, questao, opcaoResposta) =>
                     {
@@ -369,13 +369,13 @@ namespace SME.SGP.Dados.Repositorios
                             encaminhamento.Secoes.Add(secao);
                         }
 
-                        var questaoEncaminhamento = secao.Questoes.FirstOrDefault(c => c.Id == questaoEncaminhamentoNAAPA.Id);
+                        var questaoEncaminhamento = secao.QuestoesEscolar.FirstOrDefault(c => c.Id == questaoEncaminhamentoNAAPA.Id);
 
                         if (questaoEncaminhamento.EhNulo())
                         {
                             questaoEncaminhamento = questaoEncaminhamentoNAAPA;
                             questaoEncaminhamento.Questao = questao;
-                            secao.Questoes.Add(questaoEncaminhamento);
+                            secao.QuestoesEscolar.Add(questaoEncaminhamento);
                         }
 
                         var resposta = questaoEncaminhamento.Respostas.FirstOrDefault(c => c.Id == respostaEncaminhamento.Id);
