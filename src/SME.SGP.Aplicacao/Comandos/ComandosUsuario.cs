@@ -112,7 +112,7 @@ namespace SME.SGP.Aplicacao
             var retornoAutenticacaoEol = await servicoAutenticacao.AutenticarNoEol(usuarioAutenticacao);
 
             var autenticacao = await ObterAutenticacao(retornoAutenticacaoEol, login);
-            await repositorioCache.SalvarAsync(chaveCache, autenticacao, 180);
+            await repositorioCache.SalvarAsync(chaveCache, autenticacao, 120);
             return autenticacao;
         }
 
