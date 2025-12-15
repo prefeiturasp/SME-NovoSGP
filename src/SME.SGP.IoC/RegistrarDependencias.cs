@@ -1518,8 +1518,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterNovosEncaminhamentosNAAPAPorTipoUseCase, ObterNovosEncaminhamentosNAAPAPorTipoUseCase>();
             services.TryAddScoped<IRegistrarNovoEncaminhamentoNAAPAUseCase, RegistrarNovoEncaminhamentoNAAPAUseCase>();
             services.TryAddScoped<IObterQuestionarioNovoEncaminhamentoNAAPAUseCase, ObterQuestionarioNovoEncaminhamentoNAAPAUseCase>();
-
             services.TryAddScoped<IObterNovoEncaminhamentoNAAPAPorIdUseCase, ObterNovoEncaminhamentoNAAPAPorIdUseCase>();
+
+            services.TryAddScoped<IExisteNovoEncaminhamentoNAAPAAtivoParaAlunoUseCase, ExisteNovoEncaminhamentoNAAPAAtivoParaAlunoUseCase>();
 
             //Relatório Dinâmico NAAPA
             services.TryAddScoped<IRelatorioDinamicoObterAtendimentoNAAPAUseCase, RelatorioDinamicoObterAtendimentoNAAPAUseCase>();

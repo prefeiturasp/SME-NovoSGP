@@ -27,5 +27,6 @@ namespace SME.SGP.Dominio.Interfaces.Repositorios
 
         Task<EncaminhamentoEscolar> ObterEncaminhamentoComTurmaPorId(long requestEncaminhamentoId);
         Task<bool> VerificaSituacaoEncaminhamentoNAAPASeEstaAguardandoAtendimentoIndevidamente(long encaminhamentoId);
+        Task<bool> ExisteEncaminhamentoNAAPAAtivoParaAluno(string codigoAluno);
     }
 }

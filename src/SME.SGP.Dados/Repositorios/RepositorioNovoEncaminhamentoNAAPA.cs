@@ -443,6 +443,17 @@ namespace SME.SGP.Dados.Repositorios
 	                            and ee.id = @encaminhamentoId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { situacao = (int)SituacaoNAAPA.AguardandoAtendimento, encaminhamentoId, secaoNome = NovoEncaminhamentoNAAPAConstants.QUESTOES_FLUXO_ENC_INDIVIDUAL });
-            }
+        }
+
+        public async Task<bool> ExisteEncaminhamentoNAAPAAtivoParaAluno(string codigoAluno)
+        {
+            var query = @"SELECT 1 
+                          FROM encaminhamento_escolar 
+                         WHERE aluno_codigo = @codigoAluno 
+                           and situacao <> @situacao
+                           and not excluido";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { codigoAluno, situacao = (int)SituacaoNovoEncaminhamentoNAAPA.Encerrado });
+        }
     }
 }

@@ -23,7 +23,7 @@ namespace SME.SGP.Api.Teste.Controllers
         private readonly NovoEncaminhamentoNAAPAController _controller;
         private readonly Mock<IObterSecoesAtendimentoIndividualNAAPAUseCase> _secoesUseCase;
         private readonly Mock<IObterQuestionarioNovoEncaminhamentoNAAPAUseCase> _questionarioUseCase;
-        private readonly Mock<IExisteAtendimentoNAAPAAtivoParaAlunoUseCase> _existeAtivoUseCase;
+        private readonly Mock<IExisteNovoEncaminhamentoNAAPAAtivoParaAlunoUseCase> _existeAtivoUseCase;
         private readonly Mock<IObterNovoEncaminhamentoNAAPAPorIdUseCase> _obterPorIdUseCase;
         private readonly Mock<IUploadDeArquivoUseCase> _uploadUseCase;
         private readonly Mock<IObterNovosEncaminhamentosNAAPAPorTipoUseCase> _paginadoUseCase;
@@ -35,7 +35,7 @@ namespace SME.SGP.Api.Teste.Controllers
         {
             _secoesUseCase = new Mock<IObterSecoesAtendimentoIndividualNAAPAUseCase>();
             _questionarioUseCase = new Mock<IObterQuestionarioNovoEncaminhamentoNAAPAUseCase>();
-            _existeAtivoUseCase = new Mock<IExisteAtendimentoNAAPAAtivoParaAlunoUseCase>();
+            _existeAtivoUseCase = new Mock<IExisteNovoEncaminhamentoNAAPAAtivoParaAlunoUseCase>();
             _obterPorIdUseCase = new Mock<IObterNovoEncaminhamentoNAAPAPorIdUseCase>();
             _uploadUseCase = new Mock<IUploadDeArquivoUseCase>();
             _paginadoUseCase = new Mock<IObterNovosEncaminhamentosNAAPAPorTipoUseCase>();
