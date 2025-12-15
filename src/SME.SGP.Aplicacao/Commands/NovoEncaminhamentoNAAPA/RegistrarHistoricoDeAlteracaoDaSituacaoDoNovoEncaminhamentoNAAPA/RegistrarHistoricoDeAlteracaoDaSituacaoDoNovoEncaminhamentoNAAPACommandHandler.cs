@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao.Commands.NovoEncaminhamentoNAAPA.RegistrarHistoricoD
             return 0;
         }
 
-        private async Task<EncaminhamentoEscolarHistoricoAlteracoes> ObterHistoricoAlteracaoDaSituacao(EncaminhamentoEscolar encaminhamento, SituacaoNAAPA situacao)
+        private async Task<EncaminhamentoEscolarHistoricoAlteracoes> ObterHistoricoAlteracaoDaSituacao(EncaminhamentoEscolar encaminhamento, SituacaoNovoEncaminhamentoNAAPA situacao)
         {
             if (encaminhamento.Situacao != situacao)
             {

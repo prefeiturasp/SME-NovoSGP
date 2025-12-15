@@ -53,10 +53,10 @@ namespace SME.SGP.Api.Controllers
 
 
         [HttpGet("{encaminhamentoId}")]
-        [ProducesResponseType(typeof(AtendimentoNAAPARespostaDto), 200)]
+        [ProducesResponseType(typeof(NovoEncaminhamentoNAAPARespostaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ENC_NAAPA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterEncaminhamento(long encaminhamentoId, [FromServices] IObterAtendimentoNAAPAPorIdUseCase useCase)
+        public async Task<IActionResult> ObterEncaminhamento(long encaminhamentoId, [FromServices] IObterNovoEncaminhamentoNAAPAPorIdUseCase useCase)
         {
             return Ok(await useCase.Executar(encaminhamentoId));
         }

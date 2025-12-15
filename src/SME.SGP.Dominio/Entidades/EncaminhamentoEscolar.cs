@@ -12,7 +12,7 @@ namespace SME.SGP.Dominio.Entidades
         public EncaminhamentoEscolar()
         {
             Secoes = new List<EncaminhamentoNAAPASecao>();
-            Situacao = SituacaoNAAPA.Rascunho;
+            Situacao = SituacaoNovoEncaminhamentoNAAPA.EmAtendimento;
         }
 
         public Turma? Turma { get; set; }
@@ -24,7 +24,7 @@ namespace SME.SGP.Dominio.Entidades
         public Ue? Ue { get; set; }
         public long? UeId { get; set; }
         public int Tipo { get; set; }
-        public SituacaoNAAPA Situacao { get; set; }
+        public SituacaoNovoEncaminhamentoNAAPA Situacao { get; set; }
         public bool Excluido { get; set; }
         public List<EncaminhamentoNAAPASecao> Secoes { get; set; }
         public SituacaoMatriculaAluno? SituacaoMatriculaAluno { get; set; }

@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Consts;
 using SME.SGP.Infra.Dtos.NovoEncaminhamentoNAAPA;
 using SME.SGP.Infra.Interface;
 using System;
@@ -379,5 +380,69 @@ namespace SME.SGP.Dados.Repositorios
 
             return encaminhamento;
         }
+
+        public async Task<EncaminhamentoEscolar> ObterEncaminhamentoComTurmaPorId(long encaminhamentoId)
+        {
+            var query = @"select ea.*, 
+                         t.*, 
+                         ue.*, 
+                         dre.*,
+                         ue2.* as UeDireta,
+                         dre2.* as DreDireta
+                    from encaminhamento_escolar ea
+                    left join turma t on t.id = ea.turma_id
+                    left join ue on ue.id = t.ue_id
+                    left join dre on dre.id = ue.dre_id
+                    left join ue ue2 on ue2.id = ea.ue_id
+                    left join dre dre2 on dre2.id = ea.dre_id
+                    where ea.id = @encaminhamentoId";
+
+            return (await database.Conexao.QueryAsync<EncaminhamentoEscolar, Turma, Ue, Dre, Ue, Dre, EncaminhamentoEscolar>(
+                query,
+                (encaminhamento, turma, ueTurma, dreTurma, ueEncaminhamento, dreEncaminhamento) =>
+                {
+                    if (turma != null)
+                    {
+                        turma.Ue = ueTurma;
+                        turma.Ue.Dre = dreTurma;
+                        encaminhamento.Turma = turma;
+                    }
+
+                    if (ueEncaminhamento != null)
+                    {
+                        ueEncaminhamento.Dre = dreEncaminhamento;
+                        encaminhamento.Ue = ueEncaminhamento;
+                        encaminhamento.Dre = dreEncaminhamento;
+                    }
+
+                    return encaminhamento;
+                },
+                new { encaminhamentoId },
+                splitOn: "id,id,id,id,id"
+            )).FirstOrDefault();
+        }
+
+        public async Task<bool> VerificaSituacaoEncaminhamentoNAAPASeEstaAguardandoAtendimentoIndevidamente(long encaminhamentoId)
+        {
+            var query = @"select
+	                            *
+                            from
+	                            encaminhamento_escolar ee
+                            left join encaminhamento_naapa_secao ens 
+                                                     on
+	                            ens.encaminhamento_naapa_id = ee.id
+                            left join secao_encaminhamento_naapa sen 
+                                                     on
+	                            sen.id = ens.secao_encaminhamento_id
+                            where
+	                            not ee.excluido
+	                            and ee.situacao = @situacao
+	                            and sen.nome_componente =  @secaoNome
+	                            and ens.concluido
+	                            and not ens.excluido
+	                            and ee.id = @encaminhamentoId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { situacao = (int)SituacaoNAAPA.AguardandoAtendimento, encaminhamentoId, secaoNome = NovoEncaminhamentoNAAPAConstants.QUESTOES_FLUXO_ENC_INDIVIDUAL });
+            }
     }
 }

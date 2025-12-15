@@ -24,5 +24,8 @@ namespace SME.SGP.Dominio.Interfaces.Repositorios
             OrdenacaoListagemPaginadaAtendimentoNAAPA[] ordenacao);
 
         Task<EncaminhamentoEscolar> ObterEncaminhamentoPorId(long id);
+
+        Task<EncaminhamentoEscolar> ObterEncaminhamentoComTurmaPorId(long requestEncaminhamentoId);
+        Task<bool> VerificaSituacaoEncaminhamentoNAAPASeEstaAguardandoAtendimentoIndevidamente(long encaminhamentoId);
     }
 }

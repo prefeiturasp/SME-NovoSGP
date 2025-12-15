@@ -21,7 +21,7 @@ namespace SME.SGP.Infra.Dtos.NovoEncaminhamentoNAAPA
         public long? DreId { get; set; }
         public long? UeId { get; set; }
         public int Tipo { get; set; }
-        public SituacaoNAAPA Situacao { get; set; }
+        public SituacaoNovoEncaminhamentoNAAPA Situacao { get; set; }
         public SituacaoMatriculaAluno? SituacaoMatriculaAluno { get; set; }
         public List<NovoEncaminhamentoNAAPASecaoDto> Secoes { get; set; }
     }

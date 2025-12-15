@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao.Commands.NovoEncaminhamentoNAAPA.RegistrarNovoEncami
     public class RegistrarNovoEncaminhamentoNAAPACommand : IRequest<ResultadoNovoEncaminhamentoNAAPADto>
     {
         public long? TurmaId { get; set; }
-        public SituacaoNAAPA Situacao { get; set; }
+        public SituacaoNovoEncaminhamentoNAAPA Situacao { get; set; }
         public string AlunoNome { get; set; }
         public string AlunoCodigo { get; set; }
 
@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao.Commands.NovoEncaminhamentoNAAPA.RegistrarNovoEncami
         {
         }
 
-        public RegistrarNovoEncaminhamentoNAAPACommand(long? turmaId, string alunoNome, string alunoCodigo, SituacaoNAAPA situacao, long? dreId, long? ueId, int tipo)
+        public RegistrarNovoEncaminhamentoNAAPACommand(long? turmaId, string alunoNome, string alunoCodigo, SituacaoNovoEncaminhamentoNAAPA situacao, long? dreId, long? ueId, int tipo)
         {
             TurmaId = turmaId;
             AlunoNome = alunoNome;
