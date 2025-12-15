@@ -22,7 +22,7 @@ namespace SME.SGP.Api.Teste.Controllers
     {
         private readonly NovoEncaminhamentoNAAPAController _controller;
         private readonly Mock<IObterSecoesAtendimentoIndividualNAAPAUseCase> _secoesUseCase;
-        private readonly Mock<IObterQuestionarioAtendimentoNAAPAUseCase> _questionarioUseCase;
+        private readonly Mock<IObterQuestionarioNovoEncaminhamentoNAAPAUseCase> _questionarioUseCase;
         private readonly Mock<IExisteAtendimentoNAAPAAtivoParaAlunoUseCase> _existeAtivoUseCase;
         private readonly Mock<IObterAtendimentoNAAPAPorIdUseCase> _obterPorIdUseCase;
         private readonly Mock<IUploadDeArquivoUseCase> _uploadUseCase;
@@ -34,7 +34,7 @@ namespace SME.SGP.Api.Teste.Controllers
         public NovoEncaminhamentoNAAPAControllerTeste()
         {
             _secoesUseCase = new Mock<IObterSecoesAtendimentoIndividualNAAPAUseCase>();
-            _questionarioUseCase = new Mock<IObterQuestionarioAtendimentoNAAPAUseCase>();
+            _questionarioUseCase = new Mock<IObterQuestionarioNovoEncaminhamentoNAAPAUseCase>();
             _existeAtivoUseCase = new Mock<IExisteAtendimentoNAAPAAtivoParaAlunoUseCase>();
             _obterPorIdUseCase = new Mock<IObterAtendimentoNAAPAPorIdUseCase>();
             _uploadUseCase = new Mock<IUploadDeArquivoUseCase>();
