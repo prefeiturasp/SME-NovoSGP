@@ -22,9 +22,9 @@ namespace SME.SGP.Api.Teste.Controllers
     {
         private readonly NovoEncaminhamentoNAAPAController _controller;
         private readonly Mock<IObterSecoesAtendimentoIndividualNAAPAUseCase> _secoesUseCase;
-        private readonly Mock<IObterQuestionarioAtendimentoNAAPAUseCase> _questionarioUseCase;
+        private readonly Mock<IObterQuestionarioNovoEncaminhamentoNAAPAUseCase> _questionarioUseCase;
         private readonly Mock<IExisteAtendimentoNAAPAAtivoParaAlunoUseCase> _existeAtivoUseCase;
-        private readonly Mock<IObterAtendimentoNAAPAPorIdUseCase> _obterPorIdUseCase;
+        private readonly Mock<IObterNovoEncaminhamentoNAAPAPorIdUseCase> _obterPorIdUseCase;
         private readonly Mock<IUploadDeArquivoUseCase> _uploadUseCase;
         private readonly Mock<IObterNovosEncaminhamentosNAAPAPorTipoUseCase> _paginadoUseCase;
         private readonly Mock<IExcluirArquivoNAAPAUseCase> _excluirArquivoUseCase;
@@ -34,9 +34,9 @@ namespace SME.SGP.Api.Teste.Controllers
         public NovoEncaminhamentoNAAPAControllerTeste()
         {
             _secoesUseCase = new Mock<IObterSecoesAtendimentoIndividualNAAPAUseCase>();
-            _questionarioUseCase = new Mock<IObterQuestionarioAtendimentoNAAPAUseCase>();
+            _questionarioUseCase = new Mock<IObterQuestionarioNovoEncaminhamentoNAAPAUseCase>();
             _existeAtivoUseCase = new Mock<IExisteAtendimentoNAAPAAtivoParaAlunoUseCase>();
-            _obterPorIdUseCase = new Mock<IObterAtendimentoNAAPAPorIdUseCase>();
+            _obterPorIdUseCase = new Mock<IObterNovoEncaminhamentoNAAPAPorIdUseCase>();
             _uploadUseCase = new Mock<IUploadDeArquivoUseCase>();
             _paginadoUseCase = new Mock<IObterNovosEncaminhamentosNAAPAPorTipoUseCase>();
             _excluirArquivoUseCase = new Mock<IExcluirArquivoNAAPAUseCase>();
@@ -90,14 +90,14 @@ namespace SME.SGP.Api.Teste.Controllers
         [Fact(DisplayName = "ObterEncaminhamento deve retornar Ok com DTO")]
         public async Task ObterEncaminhamento_DeveRetornarOk()
         {
-            var dto = new AtendimentoNAAPARespostaDto();
+            var dto = new NovoEncaminhamentoNAAPARespostaDto();
 
             _obterPorIdUseCase.Setup(s => s.Executar(10)).ReturnsAsync(dto);
 
             var result = await _controller.ObterEncaminhamento(10, _obterPorIdUseCase.Object);
 
             var ok = Assert.IsType<OkObjectResult>(result);
-            Assert.IsType<AtendimentoNAAPARespostaDto>(ok.Value);
+            Assert.IsType<NovoEncaminhamentoNAAPARespostaDto>(ok.Value);
         }
 
         [Fact(DisplayName = "Upload deve retornar Ok quando arquivo possui conteúdo")]
@@ -185,7 +185,7 @@ namespace SME.SGP.Api.Teste.Controllers
 
             _excluirEncaminhamentoUseCase
                 .Setup(s => s.Executar(encaminhamentoId))
-                .ReturnsAsync(true); 
+                .ReturnsAsync(true);
 
             // Act
             var result = await _controller.ExcluirEncaminhamento(
@@ -195,8 +195,8 @@ namespace SME.SGP.Api.Teste.Controllers
 
             // Assert
             var ok = Assert.IsType<OkObjectResult>(result);
-            Assert.IsType<bool>(ok.Value);        
-            Assert.True((bool)ok.Value);         
+            Assert.IsType<bool>(ok.Value);
+            Assert.True((bool)ok.Value);
         }
     }
 }

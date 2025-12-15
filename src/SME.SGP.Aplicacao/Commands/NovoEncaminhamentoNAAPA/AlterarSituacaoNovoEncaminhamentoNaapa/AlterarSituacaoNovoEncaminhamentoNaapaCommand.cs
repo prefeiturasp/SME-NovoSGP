@@ -13,9 +13,9 @@ namespace SME.SGP.Aplicacao.Commands.NovoEncaminhamentoNAAPA.AlterarSituacaoNovo
     public class AlterarSituacaoNovoEncaminhamentoNaapaCommand : IRequest<bool>
     {
         public EncaminhamentoEscolar Encaminhamento { get; set; }
-        public SituacaoNAAPA Situacao { get; set; }
+        public SituacaoNovoEncaminhamentoNAAPA Situacao { get; set; }
 
-        public AlterarSituacaoNovoEncaminhamentoNaapaCommand(EncaminhamentoEscolar encaminhamentoId, SituacaoNAAPA situacao)
+        public AlterarSituacaoNovoEncaminhamentoNaapaCommand(EncaminhamentoEscolar encaminhamentoId, SituacaoNovoEncaminhamentoNAAPA situacao)
         {
             Encaminhamento = encaminhamentoId;
             Situacao = situacao;

@@ -13,9 +13,9 @@ namespace SME.SGP.Aplicacao.Commands.NovoEncaminhamentoNAAPA.RegistrarHistoricoD
     public class RegistrarHistoricoDeAlteracaoDaSituacaoDoNovoEncaminhamentoNAAPACommand : IRequest<long>
     {
         public EncaminhamentoEscolar encaminhamentoEscolar { get; set; }
-        public SituacaoNAAPA SituacaoAlterada { get; set; }
+        public SituacaoNovoEncaminhamentoNAAPA SituacaoAlterada { get; set; }
 
-        public RegistrarHistoricoDeAlteracaoDaSituacaoDoNovoEncaminhamentoNAAPACommand(EncaminhamentoEscolar encaminhamentoEscolar, SituacaoNAAPA situacaoAlterada)
+        public RegistrarHistoricoDeAlteracaoDaSituacaoDoNovoEncaminhamentoNAAPACommand(EncaminhamentoEscolar encaminhamentoEscolar, SituacaoNovoEncaminhamentoNAAPA situacaoAlterada)
         {
             this.encaminhamentoEscolar = encaminhamentoEscolar;
             this.SituacaoAlterada = situacaoAlterada;

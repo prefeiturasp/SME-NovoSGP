@@ -82,7 +82,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.NovoEncaminhamentoNAAPA
                 List<QuestaoObrigatoriaNaoRespondidaDto> questoesObrigatoriasAConsistir =
                     await ObterQuestoesObrigatoriasNaoPreechidas(encaminhamentoNAAPADto);
 
-                if (questoesObrigatoriasAConsistir.Any() && encaminhamentoNAAPADto.Situacao != SituacaoNAAPA.Rascunho)
+                if (questoesObrigatoriasAConsistir.Any() && encaminhamentoNAAPADto.Situacao != SituacaoNovoEncaminhamentoNAAPA.EmAtendimento)
                 {
                     var mensagem = questoesObrigatoriasAConsistir.GroupBy(questao => questao.SecaoNome).Select(secao =>
                             $"Seção: {secao.Key} Questões: [{string.Join(", ", secao.Select(questao => questao.QuestaoOrdem).Distinct().ToArray())}]")
