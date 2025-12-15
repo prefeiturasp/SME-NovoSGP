@@ -399,10 +399,10 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @" select ea.*, t.*, ue.*, dre.*
                             from encaminhamento_escolar ea
-                           inner join turma t on t.id = ea.turma_id
-                            join ue on ue.id = t.ue_id
-                            join dre on dre.id = ue.dre_id  
-                           where ea.id = @encaminhamentoId";
+                            left join turma t on t.id = ea.turma_id
+                            left join ue on ue.id = COALESCE(t.ue_id, ea.ue_id)
+                            left join dre on dre.id = ue.dre_id  
+                            where ea.id = @encaminhamentoId";
 
             return (await database.Conexao.QueryAsync<EncaminhamentoNAAPA, Turma, Ue, Dre,EncaminhamentoNAAPA>(query,
                 (encaminhamentoNAAPA, turma, ue, dre) =>
