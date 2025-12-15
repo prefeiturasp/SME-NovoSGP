@@ -376,7 +376,7 @@ namespace SME.SGP.Dados.Repositorios
                                             JOIN questionario q 
                                                    ON q.id = sea.questionario_id
                                             LEFT JOIN encaminhamento_naapa_secao eas 
-                                                   ON eas.encaminhamento_naapa_id = @encaminhamentoNAAPAId
+                                                   ON eas.encaminhamento_escolar_id = @encaminhamentoNAAPAId
                                                   AND eas.secao_encaminhamento_id = sea.id
                                                   AND NOT eas.excluido
                                             WHERE NOT sea.excluido  

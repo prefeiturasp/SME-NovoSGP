@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.NovoEncaminhamentoNAAPA;
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Queries.NovoEncaminhamentoNAAPA.ObterHistoricosDeAlteracoesNovoEncaminhamentoNAAPA
 {
-    public class ObterHistoricosDeAlteracoesNovoEncaminhamentoNAAPAQueryHandler : IRequestHandler<ObterHistoricosDeAlteracoesNovoEncaminhamentoNAAPAQuery, EncaminhamentoNAAPAHistoricoAlteracoes>
+    public class ObterHistoricosDeAlteracoesNovoEncaminhamentoNAAPAQueryHandler : IRequestHandler<ObterHistoricosDeAlteracoesNovoEncaminhamentoNAAPAQuery, EncaminhamentoEscolarHistoricoAlteracoes>
     {
         private List<string> camposInseridos;
         private List<string> camposAlterados;
@@ -30,12 +31,7 @@ namespace SME.SGP.Aplicacao.Queries.NovoEncaminhamentoNAAPA.ObterHistoricosDeAlt
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-
-
-
-
-
-        public async Task<EncaminhamentoNAAPAHistoricoAlteracoes> Handle(ObterHistoricosDeAlteracoesNovoEncaminhamentoNAAPAQuery request, CancellationToken cancellationToken)
+        public async Task<EncaminhamentoEscolarHistoricoAlteracoes> Handle(ObterHistoricosDeAlteracoesNovoEncaminhamentoNAAPAQuery request, CancellationToken cancellationToken)
         {
             this.usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             await CarreguarQuestoesAInserir(request.NovoEncaminhamentoNAAPASecaoAlterado);
@@ -44,17 +40,17 @@ namespace SME.SGP.Aplicacao.Queries.NovoEncaminhamentoNAAPA.ObterHistoricosDeAlt
             return ObterHistoricoAlteracaoSecao(request.NovoEncaminhamentoNAAPASecaoAlterado, request.NovoEncaminhamentoNAAPASecaoExistente, request.TipoHistoricoAlteracoes);
         }
 
-        private EncaminhamentoNAAPAHistoricoAlteracoes ObterHistoricoAlteracaoSecao(
+        private EncaminhamentoEscolarHistoricoAlteracoes ObterHistoricoAlteracaoSecao(
                                                         NovoEncaminhamentoNAAPASecaoDto encaminhamentoNAAPAAlterado,
                                                         EncaminhamentoNAAPASecao encaminhamentoSecaoExistente,
                                                         TipoHistoricoAlteracoesAtendimentoNAAPA tipoHistoricoAlteracoes)
         {
             if (camposInseridos.Any() || camposAlterados.Any())
             {
-                return new EncaminhamentoNAAPAHistoricoAlteracoes()
+                return new EncaminhamentoEscolarHistoricoAlteracoes()
                 {
-                    EncaminhamentoNAAPAId = encaminhamentoSecaoExistente.EncaminhamentoNAAPAId,
-                    SecaoEncaminhamentoNAAPAId = encaminhamentoNAAPAAlterado.SecaoId,
+                    EncaminhamentoEscolarId = encaminhamentoSecaoExistente.EncaminhamentoEscolarId ?? 0,
+                    SecaoEncaminhamentoEscolarId = encaminhamentoNAAPAAlterado.SecaoId,
                     DataHistorico = DateTimeExtension.HorarioBrasilia(),
                     TipoHistorico = tipoHistoricoAlteracoes,
                     CamposAlterados = ObterCamposFormatados(camposAlterados),
@@ -99,7 +95,7 @@ namespace SME.SGP.Aplicacao.Queries.NovoEncaminhamentoNAAPA.ObterHistoricosDeAlt
         {
             foreach (var questaoAlterada in encaminhamentoNAAPASecaoAlterado.Questoes.GroupBy(q => q.QuestaoId))
             {
-                var questaoExistente = encaminhamentoSecaoExistente?.Questoes?.Find(questao => questao.QuestaoId == questaoAlterada.Key);
+                var questaoExistente = encaminhamentoSecaoExistente?.QuestoesEscolar?.Find(questao => questao.QuestaoId == questaoAlterada.Key);
 
                 await AdicionarCamposInseridos(questaoExistente, questaoAlterada, tipoHistoricoAlteracoes);
                 await AdicionarCamposAlterados(questaoExistente, questaoAlterada);
@@ -109,7 +105,7 @@ namespace SME.SGP.Aplicacao.Queries.NovoEncaminhamentoNAAPA.ObterHistoricosDeAlt
         }
 
         private async Task AdicionarCamposInseridos(
-                            QuestaoEncaminhamentoNAAPA questaoExistente,
+                            QuestaoEncaminhamentoEscolar questaoExistente,
                             IGrouping<long, NovoEncaminhamentoNAAPASecaoQuestaoDto> respostas,
                             TipoHistoricoAlteracoesAtendimentoNAAPA tipoHistoricoAlteracoes)
         {
@@ -168,7 +164,7 @@ namespace SME.SGP.Aplicacao.Queries.NovoEncaminhamentoNAAPA.ObterHistoricosDeAlt
         }
 
         private bool CampoPodeSerAlterado(
-                            QuestaoEncaminhamentoNAAPA questaoExistente,
+                            QuestaoEncaminhamentoEscolar questaoExistente,
                             NovoEncaminhamentoNAAPASecaoQuestaoDto respostasEncaminhamento)
         {
             if (EhCampoLista(respostasEncaminhamento))
@@ -181,7 +177,7 @@ namespace SME.SGP.Aplicacao.Queries.NovoEncaminhamentoNAAPA.ObterHistoricosDeAlt
             return false;
         }
 
-        private async Task AdicionarCamposAlterados(QuestaoEncaminhamentoNAAPA questaoExistente, IGrouping<long, NovoEncaminhamentoNAAPASecaoQuestaoDto> respostasEncaminhamento)
+        private async Task AdicionarCamposAlterados(QuestaoEncaminhamentoEscolar questaoExistente, IGrouping<long, NovoEncaminhamentoNAAPASecaoQuestaoDto> respostasEncaminhamento)
         {
             if (EnumExtension.EhUmDosValores(questaoExistente?.Questao.Tipo, new Enum[] { TipoQuestao.ComboMultiplaEscolha, TipoQuestao.Upload }))
             {
@@ -216,7 +212,7 @@ namespace SME.SGP.Aplicacao.Queries.NovoEncaminhamentoNAAPA.ObterHistoricosDeAlt
             return arquivosId.ToArray();
         }
 
-        private async Task<bool> RespostaFoiRemovida(QuestaoEncaminhamentoNAAPA questaoExistente, IGrouping<long, NovoEncaminhamentoNAAPASecaoQuestaoDto> respostasEncaminhamento)
+        private async Task<bool> RespostaFoiRemovida(QuestaoEncaminhamentoEscolar questaoExistente, IGrouping<long, NovoEncaminhamentoNAAPASecaoQuestaoDto> respostasEncaminhamento)
         {
             if (EnumExtension.EhUmDosValores(questaoExistente.Questao.Tipo, new Enum[] { TipoQuestao.ComboMultiplaEscolha }))
                 return questaoExistente.Respostas.Any(resposta => !respostasEncaminhamento.Any(respostaEncaminhamento => respostaEncaminhamento.Resposta.Equals(resposta.RespostaId.ToString())));
@@ -230,9 +226,9 @@ namespace SME.SGP.Aplicacao.Queries.NovoEncaminhamentoNAAPA.ObterHistoricosDeAlt
 
         }
 
-        private bool CampoFoiAlterado(RespostaEncaminhamentoNAAPA RespostaAtual, NovoEncaminhamentoNAAPASecaoQuestaoDto respostaAlteracao)
+        private bool CampoFoiAlterado(RespostaEncaminhamentoEscolar RespostaAtual, NovoEncaminhamentoNAAPASecaoQuestaoDto respostaAlteracao)
         {
-            var funcoes = new List<Func<RespostaEncaminhamentoNAAPA, NovoEncaminhamentoNAAPASecaoQuestaoDto, bool?>> { CampoPorTextoFoiAlterado, CampoPorRespostaIdFoiAlterado, CampoPorJsonFoiAlterado };
+            var funcoes = new List<Func<RespostaEncaminhamentoEscolar, NovoEncaminhamentoNAAPASecaoQuestaoDto, bool?>> { CampoPorTextoFoiAlterado, CampoPorRespostaIdFoiAlterado, CampoPorJsonFoiAlterado };
 
             foreach (var funcao in funcoes)
             {
@@ -244,7 +240,7 @@ namespace SME.SGP.Aplicacao.Queries.NovoEncaminhamentoNAAPA.ObterHistoricosDeAlt
             return false;
         }
 
-        private bool? CampoPorTextoFoiAlterado(RespostaEncaminhamentoNAAPA RespostaAtual, NovoEncaminhamentoNAAPASecaoQuestaoDto respostaAlteracao)
+        private bool? CampoPorTextoFoiAlterado(RespostaEncaminhamentoEscolar RespostaAtual, NovoEncaminhamentoNAAPASecaoQuestaoDto respostaAlteracao)
         {
             if (EnumExtension.EhUmDosValores(respostaAlteracao.TipoQuestao, new Enum[] { TipoQuestao.Frase, TipoQuestao.Texto, TipoQuestao.EditorTexto,
                                                                                          TipoQuestao.Data, TipoQuestao.Numerico }))
@@ -253,7 +249,7 @@ namespace SME.SGP.Aplicacao.Queries.NovoEncaminhamentoNAAPA.ObterHistoricosDeAlt
             return null;
         }
 
-        private bool? CampoPorJsonFoiAlterado(RespostaEncaminhamentoNAAPA RespostaAtual, NovoEncaminhamentoNAAPASecaoQuestaoDto respostaAlteracao)
+        private bool? CampoPorJsonFoiAlterado(RespostaEncaminhamentoEscolar RespostaAtual, NovoEncaminhamentoNAAPASecaoQuestaoDto respostaAlteracao)
         {
             if (EhCampoLista(respostaAlteracao))
                 return UtilRegex.ObterJsonSemAtributoId(RespostaAtual.Texto) != UtilRegex.ObterJsonSemAtributoId(respostaAlteracao.Resposta);
@@ -261,7 +257,7 @@ namespace SME.SGP.Aplicacao.Queries.NovoEncaminhamentoNAAPA.ObterHistoricosDeAlt
             return null;
         }
 
-        private bool? CampoPorRespostaIdFoiAlterado(RespostaEncaminhamentoNAAPA RespostaAtual, NovoEncaminhamentoNAAPASecaoQuestaoDto respostaAlteracao)
+        private bool? CampoPorRespostaIdFoiAlterado(RespostaEncaminhamentoEscolar RespostaAtual, NovoEncaminhamentoNAAPASecaoQuestaoDto respostaAlteracao)
         {
             if (EnumExtension.EhUmDosValores(respostaAlteracao.TipoQuestao, new Enum[] { TipoQuestao.Radio, TipoQuestao.Combo, TipoQuestao.Checkbox, TipoQuestao.ComboMultiplaEscolha }))
                 return RespostaAtual.RespostaId != (!string.IsNullOrEmpty(respostaAlteracao.Resposta) ? long.Parse(respostaAlteracao.Resposta) : null);

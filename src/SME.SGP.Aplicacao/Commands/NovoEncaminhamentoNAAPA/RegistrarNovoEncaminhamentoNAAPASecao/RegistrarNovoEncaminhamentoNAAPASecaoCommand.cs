@@ -11,15 +11,17 @@ namespace SME.SGP.Aplicacao.Commands.NovoEncaminhamentoNAAPA.RegistrarNovoEncami
 {
     public class RegistrarNovoEncaminhamentoNAAPASecaoCommand : IRequest<EncaminhamentoNAAPASecao>
     {
-        public long EncaminhamentoNAAPAId { get; set; }
+        public long? EncaminhamentoNAAPAId { get; set; }
         public long SecaoId { get; set; }
         public bool Concluido { get; set; }
+        public long? EncaminhamentoEscolarId { get; set; } = null;
 
-        public RegistrarNovoEncaminhamentoNAAPASecaoCommand(long encaminhamentoNaapaId, long secaoId, bool concluido)
+        public RegistrarNovoEncaminhamentoNAAPASecaoCommand(long? encaminhamentoNaapaId, long secaoId, bool concluido, long? encaminhamentoEscolarId = null)
         {
             EncaminhamentoNAAPAId = encaminhamentoNaapaId;
             SecaoId = secaoId;
             Concluido = concluido;
+            EncaminhamentoEscolarId = encaminhamentoEscolarId;
         }
     }
 
@@ -27,7 +29,7 @@ namespace SME.SGP.Aplicacao.Commands.NovoEncaminhamentoNAAPA.RegistrarNovoEncami
     {
         public RegistrarNovoEncaminhamentoNAAPASecaoCommandValidator()
         {
-            RuleFor(x => x.EncaminhamentoNAAPAId)
+            RuleFor(x => x.EncaminhamentoEscolarId)
                    .GreaterThan(0)
                    .WithMessage("O Id do encaminhamento deve ser informado para registar Encaminhamento NAAPA!");
             RuleFor(x => x.SecaoId)

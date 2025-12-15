@@ -97,7 +97,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("salvar")]
         [ProducesResponseType(typeof(IEnumerable<ResultadoNovoEncaminhamentoNAAPADto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.ENC_NAAPA_I, Permissao.ENC_NAAPA_A, Policy = "Bearer")]
+        [Permissao(Permissao.ENC_NAAPA_I, Permissao.ENC_NAAPA_A, Policy = "Bearer")]
         public async Task<IActionResult> RegistrarNovoEncaminhamento([FromBody] NovoEncaminhamentoNAAPADto encaminhamentoNAAPADto, [FromServices] IRegistrarNovoEncaminhamentoNAAPAUseCase registrarNovoEncaminhamentoNAAPAUseCase)
         {
             return Ok(await registrarNovoEncaminhamentoNAAPAUseCase.Executar(encaminhamentoNAAPADto));
@@ -115,12 +115,32 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("situacoes")]
         [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        [Permissao(Permissao.ENC_NAAPA_C, Policy = "Bearer")]
         public IActionResult ObterSituacoes()
         {
             var lista = EnumExtensao.ListarDto<SituacaoNovoEncaminhamentoNAAPA>().OrderBy(situacao => situacao.Descricao);
 
             return Ok(lista);
+        }
+
+        [HttpGet("{encaminhamentoId}/observacoes")]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<NovoEncaminhamentoNAAPAObservacoesDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.ENC_NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterObservacoes(long encaminhamentoId,
+        [FromServices] IObterObservacoesDeNovoEncaminhamentoNAAPAUseCase obterObservacoesDeNovoEncaminhamentoNAAPAUseCase)
+        {
+            return Ok(await obterObservacoesDeNovoEncaminhamentoNAAPAUseCase.Executar(encaminhamentoId));
+        }
+
+        [HttpGet("{encaminhamentoId}/historico-alteracoes")]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<NovoEncaminhamentoNAAPAObservacoesDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.ENC_NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterHistoricoDeAlteracoes(long encaminhamentoId,
+        [FromServices] IObterHistoricosDeAlteracoesNovoEncaminhamentoNAAPAUseCase useCase)
+        {
+            return Ok(await useCase.Executar(encaminhamentoId));
         }
     }
 }

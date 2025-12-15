@@ -1500,7 +1500,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRegistrarAtendimentoItinerarioNAAPAUseCase, RegistrarAtendimentoItinerarioNAAPAUseCase>();
             services.TryAddScoped<IObterSituacaoAtendimentoNAAPAUseCase, ObterSituacaoAtendimentoNAAPAUseCase>();
             services.TryAddScoped<IExcluirArquivoItineranciaNAAPAUseCase, ExcluirArquivoItineranciaNAAPAUseCase>();
-
+            services.TryAddScoped<IObterHistoricosDeAlteracoesNovoEncaminhamentoNAAPAUseCase, ObterHistoricosDeAlteracoesNovoEncaminhamentoNAAPAUseCase>();
+            
             services.TryAddScoped<IObterOpcoesRespostaFluxoAlertaAtendimentosNAAPAUseCase, ObterOpcoesRespostaFluxoAlertaAtendimentosNAAPAUseCase>();
             services.TryAddScoped<IObterOpcoesRespostaPortaEntradaAtendimentosNAAPAUseCase, ObterOpcoesRespostaPortaEntradaAtendimentosNAAPAUseCase>();
             services.TryAddScoped<IRelatorioAtendimentoNAAPAUseCase, RelatorioAtendimentoNAAPAUseCase>();

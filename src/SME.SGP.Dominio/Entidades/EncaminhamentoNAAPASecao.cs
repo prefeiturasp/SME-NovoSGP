@@ -14,7 +14,7 @@ namespace SME.SGP.Dominio
         }
 
         public EncaminhamentoNAAPA EncaminhamentoNAAPA { get; set; }
-        public long EncaminhamentoNAAPAId { get; set; }
+        public long? EncaminhamentoNAAPAId { get; set; }
 
         public SecaoEncaminhamentoNAAPA SecaoEncaminhamentoNAAPA { get; set; }
         public long SecaoEncaminhamentoNAAPAId { get; set; }
