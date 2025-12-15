@@ -29,5 +29,8 @@
         ComboMultiplaEscolhaDinamico = 25,
         AvaliacoesExternasProvaSP = 26,
         SuspeitaViolenciaNAAPA = 27,
+        TabelaAvaliacoesBimestrais = 28,
+        TabelaContextoSocial = 29,
+        TabelaDinamica = 30
     }
 }
