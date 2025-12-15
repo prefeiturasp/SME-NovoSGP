@@ -128,15 +128,18 @@ namespace SME.SGP.Notificacoes.Hub
         {
             try
             {
-                listaUsuarios.Add(Context.ConnectionId);
-
-                if (listaUsuarios.Count > limiteConexoes)
+                if (!string.IsNullOrWhiteSpace(Context.ConnectionId))
                 {
-                    int posicaoFila = listaUsuarios.IndexOf(Context.ConnectionId);
-                    await Clients.Client(Context.ConnectionId).SendAsync("BloqueioUsuario", (posicaoFila + 1) - limiteConexoes);
-                }
+                    listaUsuarios.Add(Context.ConnectionId);
 
-                logger.LogWarning($"Usuário conectado. ConnectionId: {Context.ConnectionId}. Total de conexões: {listaUsuarios.Count}/{limiteConexoes}.");
+                    if (listaUsuarios.Count > limiteConexoes)
+                    {
+                        int posicaoFila = listaUsuarios.IndexOf(Context.ConnectionId);
+                        await Clients.Client(Context.ConnectionId).SendAsync("BloqueioUsuario", (posicaoFila + 1) - limiteConexoes);
+                    }
+
+                    logger.LogWarning($"Usuário conectado. ConnectionId: {Context.ConnectionId}. Total de conexões: {listaUsuarios.Count}/{limiteConexoes}.");
+                }
             }
             catch (Exception ex)
             {
