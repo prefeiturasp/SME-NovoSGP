@@ -1,1 +1,1 @@
-update secao_encaminhamento_naapa set questionario_id = 87 where nome = 'Informações'
+update secao_encaminhamento_naapa set questionario_id = 87 where nome_componente = 'INFORMACOES_ESTUDANTE' and nome = 'Informações'
