@@ -47,7 +47,8 @@ namespace SME.SGP.Aplicacao
                     continue;
 
                 // Verificar se possui conselho de classe gravado
-                var conselhoClasse = await mediator.Send(new ObterConselhoClassePorTurmaEPeriodoQuery(turma.Id, null));
+                var bimestresComConselhoClasse = await mediator.Send(new ObterBimestresComConselhoClasseTurmaQuery(turma.Id));
+                possuiConselhoClasse = bimestresComConselhoClasse.Any();
 
                 if (possuiConselhoClasse)
                 {

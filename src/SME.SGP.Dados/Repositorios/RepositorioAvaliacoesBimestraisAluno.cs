@@ -19,7 +19,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"
                 WITH notas_bimestre AS (
                     SELECT 
-                        cc.codigo AS componente,
+                        cc.id AS componente,
                         COALESCE(ccn.conceito_id::text, ccn.nota::text) AS nota
                     FROM consolidado_conselho_classe_aluno_turma_nota ccn
                     INNER JOIN consolidado_conselho_classe_aluno_turma cca ON cca.id = ccn.consolidado_conselho_classe_aluno_turma_id
@@ -33,25 +33,25 @@ namespace SME.SGP.Dados.Repositorios
                 ),
                 frequencia_bimestre AS (
                     SELECT 
-                        cc.codigo AS componente,
+                        CASE 
+                            WHEN fa.disciplina_id IS NOT NULL AND fa.disciplina_id != '' AND fa.disciplina_id ~ '^\d+$'
+                            THEN CAST(fa.disciplina_id AS BIGINT) 
+                            ELSE NULL
+                        END AS componente,
                         CASE 
                             WHEN fa.total_aulas > 0 THEN 
                                 ROUND((fa.total_aulas - fa.total_ausencias + fa.total_compensacoes) * 100.0 / fa.total_aulas, 2)
                             ELSE 100.0
                         END AS percentual_frequencia
-                    FROM fechamento_aluno fa
-                    INNER JOIN fechamento_turma_disciplina ftd ON ftd.id = fa.fechamento_turma_disciplina_id
-                    INNER JOIN consolidado_fechamento_componente_turma cfct ON cfct.turma_id = ftd.turma_id 
-                        AND cfct.componente_curricular_id = ftd.disciplina_id
-                        AND cfct.bimestre = @bimestre
-                    INNER JOIN turma t ON t.id = cfct.turma_id
-                    INNER JOIN componente_curricular cc ON cc.id = cfct.componente_curricular_id
-                    WHERE fa.aluno_codigo = @codigoAluno
-                    AND t.turma_id = @codigoTurma
+                    FROM frequencia_aluno fa
+                    INNER JOIN turma t ON t.turma_id = fa.turma_id
+                    WHERE fa.codigo_aluno = @codigoAluno
+                    AND t.id = @turmaId
+                    AND fa.bimestre = @bimestre
                     AND t.ano_letivo = @anoLetivo
-                    AND NOT fa.excluido
-                    AND NOT ftd.excluido
-                    AND NOT cfct.excluido
+                    AND fa.disciplina_id IS NOT NULL 
+                    AND fa.disciplina_id != '' 
+                    AND fa.disciplina_id ~ '^\d+$'
                 )
                 SELECT 
                     COALESCE(nb.componente, fb.componente) AS Componente,
@@ -70,7 +70,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"
                 WITH notas_final AS (
                     SELECT 
-                        cc.codigo AS componente,
+                        cc.id AS componente,
                         COALESCE(ccn.conceito_id::text, ccn.nota::text) AS nota
                     FROM consolidado_conselho_classe_aluno_turma_nota ccn
                     INNER JOIN consolidado_conselho_classe_aluno_turma cca ON cca.id = ccn.consolidado_conselho_classe_aluno_turma_id
@@ -84,25 +84,26 @@ namespace SME.SGP.Dados.Repositorios
                 ),
                 frequencia_final AS (
                     SELECT 
-                        cc.codigo AS componente,
                         CASE 
-                            WHEN fa.total_aulas > 0 THEN 
-                                ROUND((fa.total_aulas - fa.total_ausencias + fa.total_compensacoes) * 100.0 / fa.total_aulas, 2)
-                            ELSE 100.0
+                            WHEN fa.disciplina_id IS NOT NULL AND fa.disciplina_id != '' AND fa.disciplina_id ~ '^\d+$'
+                            THEN CAST(fa.disciplina_id AS BIGINT) 
+                            ELSE NULL
+                        END AS componente,
+                        CASE 
+                            WHEN SUM(fa.total_aulas) > 0 THEN 
+                                ROUND((SUM(fa.total_aulas) - SUM(fa.total_ausencias) + SUM(fa.total_compensacoes)) * 100.0 / SUM(fa.total_aulas), 2)
+                            ELSE NULL
                         END AS percentual_frequencia
-                    FROM fechamento_aluno fa
-                    INNER JOIN fechamento_turma_disciplina ftd ON ftd.id = fa.fechamento_turma_disciplina_id
-                    INNER JOIN consolidado_fechamento_componente_turma cfct ON cfct.turma_id = ftd.turma_id 
-                        AND cfct.componente_curricular_id = ftd.disciplina_id
-                        AND cfct.bimestre IS NULL
-                    INNER JOIN turma t ON t.id = cfct.turma_id
-                    INNER JOIN componente_curricular cc ON cc.id = cfct.componente_curricular_id
-                    WHERE fa.aluno_codigo = @codigoAluno
-                    AND t.turma_id = @codigoTurma
+                    FROM frequencia_aluno fa
+                    INNER JOIN turma t ON t.turma_id = fa.turma_id
+                    WHERE fa.codigo_aluno = @codigoAluno
+                    AND t.id = @turmaId
                     AND t.ano_letivo = @anoLetivo
-                    AND NOT fa.excluido
-                    AND NOT ftd.excluido
-                    AND NOT cfct.excluido
+                    AND fa.disciplina_id IS NOT NULL 
+                    AND fa.disciplina_id != '' 
+                    AND fa.disciplina_id ~ '^\d+$'
+                    GROUP BY fa.disciplina_id
+                    HAVING SUM(fa.total_aulas) > 0
                 )
                 SELECT 
                     COALESCE(nf.componente, ff.componente) AS Componente,
