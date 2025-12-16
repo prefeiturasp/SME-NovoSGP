@@ -104,10 +104,10 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpDelete("{encaminhamentoNAAPAId}")]
-        [ProducesResponseType(typeof(AtendimentoNAAPADto), 200)]
+        [ProducesResponseType(typeof(NovoEncaminhamentoNAAPADto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ENC_NAAPA_E, Policy = "Bearer")]
-        public async Task<IActionResult> ExcluirEncaminhamento(long encaminhamentoNAAPAId, [FromServices] IExcluirAtendimentoNAAPAUseCase useCase)
+        public async Task<IActionResult> ExcluirEncaminhamento(long encaminhamentoNAAPAId, [FromServices] IExcluirNovoEncaminhamentoNAAPAUseCase useCase)
         {
             return Ok(await useCase.Executar(encaminhamentoNAAPAId));
         }
