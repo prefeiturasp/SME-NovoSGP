@@ -128,22 +128,19 @@ namespace SME.SGP.Notificacoes.Hub
         {
             try
             {
-                if (!string.IsNullOrWhiteSpace(Context.ConnectionId))
+                listaUsuarios.Add(Context.ConnectionId);
+
+                if (listaUsuarios.Count > limiteConexoes)
                 {
-                    listaUsuarios.Add(Context.ConnectionId);
-
-                    if (listaUsuarios.Count > limiteConexoes)
-                    {
-                        int posicaoFila = listaUsuarios.IndexOf(Context.ConnectionId);
-                        await Clients.Client(Context.ConnectionId).SendAsync("BloqueioUsuario", (posicaoFila + 1) - limiteConexoes);
-                    }
-
-                    logger.LogWarning($"Usuário conectado. ConnectionId: {Context.ConnectionId}. Total de conexões: {listaUsuarios.Count}/{limiteConexoes}.");
+                    int posicaoFila = listaUsuarios.IndexOf(Context.ConnectionId);
+                    await Clients.Client(Context.ConnectionId).SendAsync("BloqueioUsuario", (posicaoFila + 1) - limiteConexoes);
                 }
+
+                logger.LogWarning($"Usuário conectado. ConnectionId: {Context.ConnectionId}. Total de conexões: {listaUsuarios.Count}/{limiteConexoes}.");
             }
             catch (Exception ex)
             {
-                logger.LogError($"Erro ao conectar usuário. ConnectionId.", ex.Message);
+                logger.LogError($"Erro ao conectar usuário. ConnectionId: {Context.ConnectionId}.", ex.Message);
             }
         }
 
@@ -151,45 +148,42 @@ namespace SME.SGP.Notificacoes.Hub
         {
             try
             {
-                if (!string.IsNullOrWhiteSpace(Context.ConnectionId))
+                int posicaoFila = listaUsuarios.IndexOf(Context.ConnectionId);
+                listaUsuarios.Remove(Context.ConnectionId);
+
+                if (posicaoFila < limiteConexoes)
                 {
-                    int posicaoFila = listaUsuarios.IndexOf(Context.ConnectionId);
-                    listaUsuarios.Remove(Context.ConnectionId);
+                    var proximoFila = listaUsuarios.ElementAtOrDefault(limiteConexoes - 1);
 
-                    if (posicaoFila < limiteConexoes)
+                    if (proximoFila != null)
+                        await Clients.Client(proximoFila).SendAsync("DesbloqueioUsuario");
+
+                    listaUsuarios.Skip(limiteConexoes).ToList().ForEach(async connectionId =>
                     {
-                        var proximoFila = listaUsuarios.ElementAtOrDefault(limiteConexoes - 1);
-
-                        if (proximoFila != null)
-                            await Clients.Client(proximoFila).SendAsync("DesbloqueioUsuario");
-
-                        listaUsuarios.Skip(limiteConexoes).ToList().ForEach(async connectionId =>
+                        if (!string.IsNullOrWhiteSpace(connectionId))
                         {
-                            if (!string.IsNullOrWhiteSpace(connectionId))
-                            {
-                                int novaPosicaoFila = listaUsuarios.IndexOf(connectionId);
-                                await Clients.Client(connectionId).SendAsync("BloqueioUsuario", (novaPosicaoFila + 1) - limiteConexoes);
-                            }
-                        });
-                    }
-                    else
-                    {
-                        listaUsuarios.Skip(posicaoFila).ToList().ForEach(async connectionId =>
-                        {
-                            if (!string.IsNullOrWhiteSpace(connectionId))
-                            {
-                                int novaPosicaoFila = listaUsuarios.IndexOf(connectionId);
-                                await Clients.Client(connectionId).SendAsync("BloqueioUsuario", (novaPosicaoFila + 1) - limiteConexoes);
-                            }
-                        });
-                    }
-
-                    logger.LogWarning($"Usuário desconectado. ConnectionId: {Context.ConnectionId}. Total de conexões: {listaUsuarios.Count}/{limiteConexoes}.");
+                            int novaPosicaoFila = listaUsuarios.IndexOf(connectionId);
+                            await Clients.Client(connectionId).SendAsync("BloqueioUsuario", (novaPosicaoFila + 1) - limiteConexoes);
+                        }
+                    });
                 }
+                else
+                {
+                    listaUsuarios.Skip(posicaoFila).ToList().ForEach(async connectionId =>
+                    {
+                        if (!string.IsNullOrWhiteSpace(connectionId))
+                        {
+                            int novaPosicaoFila = listaUsuarios.IndexOf(connectionId);
+                            await Clients.Client(connectionId).SendAsync("BloqueioUsuario", (novaPosicaoFila + 1) - limiteConexoes);
+                        }
+                    });
+                }
+
+                logger.LogWarning($"Usuário desconectado. ConnectionId: {Context.ConnectionId}. Total de conexões: {listaUsuarios.Count}/{limiteConexoes}.");
             }
             catch (Exception ex)
             {
-                logger.LogError($"Erro ao desconectar usuário.", ex.Message);
+                logger.LogError($"Erro ao desconectar usuário. ConnectionId: {Context.ConnectionId}.", ex.Message);
             }
         }
     }
