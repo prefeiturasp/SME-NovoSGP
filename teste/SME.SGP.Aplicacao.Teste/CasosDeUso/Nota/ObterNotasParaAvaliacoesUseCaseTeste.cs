@@ -2241,7 +2241,161 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Nota
             Assert.Equal(notaEmAprovacao.NotaEmAprovacao, notaFinalAluno.NotaConceito);
         }
 
-         #region Métodos auxiliares
+        [Fact]
+        public async Task Executar_Aluno_Com_Multiplas_Matriculas_Ativas_Deve_Permitir_Edicao_Quando_Ativo_Na_Data_Avaliacao()
+        {
+            var anoAtual = DateTimeExtension.HorarioBrasilia().Year;
+            var periodoInicio = new DateTime(anoAtual, 02, 01);
+            var periodoFim = new DateTime(anoAtual, 04, 30);
+            var dataAvaliacao1 = new DateTime(anoAtual, 03, 07);
+            var dataAvaliacao2 = new DateTime(anoAtual, 04, 24);
+
+            _mediatorMock.Setup(x => x.Send(It.Is<ObterTurmaComUeEDrePorCodigoQuery>(y => y.TurmaCodigo == "1"), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Turma() { CodigoTurma = "1", AnoLetivo = anoAtual });
+
+            _mediatorMock.Setup(x => x.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Usuario());
+
+            _consultasDisciplinaMock.Setup(x => x.ObterComponentesCurricularesPorProfessorETurma("1", true, It.IsAny<bool>(), It.IsAny<bool>()))
+                .ReturnsAsync(new List<DisciplinaDto>() { new() { CodigoComponenteCurricular = 1 } });
+
+            _mediatorMock.Setup(x => x.Send(It.Is<ObterAtividadesAvaliativasPorCCTurmaPeriodoQuery>(y =>
+                y.ComponentesCurriculares.Single() == "1" &&
+                y.TurmaCodigo == "1" &&
+                y.PeriodoInicio == periodoInicio &&
+                y.PeriodoFim == periodoFim), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<AtividadeAvaliativa>()
+                {
+                    new() { Id = 1, DataAvaliacao = dataAvaliacao1 },
+                    new() { Id = 2, DataAvaliacao = dataAvaliacao2 }
+                });
+
+            _mediatorMock.Setup(x => x.Send(It.Is<ObterTodosAlunosNaTurmaQuery>(y => y.CodigoTurma == 1), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<AlunoPorTurmaResposta>()
+                {
+                new()
+                {
+                    CodigoAluno = "1",
+                    CodigoTurma = 1,
+                    DataMatricula = new DateTime(anoAtual, 01, 15),
+                    DataSituacao = new DateTime(anoAtual, 02, 28), // Inativou antes do período
+                    CodigoSituacaoMatricula = SituacaoMatriculaAluno.RemanejadoSaida,
+                    NumeroAlunoChamada = 1
+                },
+                new()
+                {
+                    CodigoAluno = "1",
+                    CodigoTurma = 1,
+                    DataMatricula = new DateTime(anoAtual, 03, 10), // Depois da avaliação 1, antes da avaliação 2
+                    DataSituacao = new DateTime(9999, 12, 31),
+                    CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
+                    NumeroAlunoChamada = 1
+                }
+                });
+
+            _mediatorMock.Setup(x => x.Send(It.Is<ObterComponentesCurricularesPorIdsUsuarioLogadoQuery>(y =>
+                y.Ids.Single() == 1 &&
+                y.CodigoTurma == "1"), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<DisciplinaDto>() { new() { CodigoComponenteCurricular = 1 } });
+
+            _mediatorMock.Setup(x => x.Send(It.IsAny<ObterTipoAvaliacaoBimestralQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new TipoAvaliacao());
+
+            _mediatorMock.Setup(x => x.Send(It.Is<ObterValorParametroSistemaTipoEAnoQuery>(y =>
+                y.Tipo == TipoParametroSistema.MediaBimestre && y.Ano == anoAtual), It.IsAny<CancellationToken>()))
+                .ReturnsAsync("5");
+
+            _mediatorMock.Setup(x => x.Send(It.Is<ObterValorParametroSistemaTipoEAnoQuery>(y =>
+                y.Tipo == TipoParametroSistema.PercentualAlunosInsuficientes && y.Ano == anoAtual), It.IsAny<CancellationToken>()))
+                .ReturnsAsync("50");
+
+            _mediatorMock.Setup(x => x.Send(It.Is<ObterParametrosArredondamentoNotaPorDataAvaliacaoQuery>(y =>
+                y.DataAvaliacao == periodoFim), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new NotaParametroDto());
+
+            _mediatorMock.Setup(x => x.Send(It.Is<ObterNotasPorAlunosAtividadesAvaliativasQuery>(y =>
+                y.AtividadesAvaliativasId.Intersect(new long[] { 1, 2 }).Count() == 2 &&
+                y.AlunosId.Single() == "1" &&
+                y.ComponenteCurricularId == "1" &&
+                y.CodigoTurma == "1"), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<NotaConceito>());
+
+            _mediatorMock.Setup(x => x.Send(It.Is<ObterAusenciasDaAtividadesAvaliativasQuery>(y =>
+                y.TurmaCodigo == "1" && y.ComponenteCurricularCodigo == "1"), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<AusenciaAlunoDto>());
+
+            var fechamentos = new List<FechamentoPorTurmaPeriodoCCDto>() { new() };
+            fechamentos[0].FechamentoAlunos.Add(new() { AlunoCodigo = "1" });
+            fechamentos[0].FechamentoAlunos[0].FechamentoNotas.Add(new FechamentoNotaPorTurmaPeriodoCCDto() { Id = 1 });
+
+            _mediatorMock.Setup(x => x.Send(It.Is<ObterFechamentosPorTurmaPeriodoCCQuery>(y =>
+                y.PeriodoEscolarId == 1 &&
+                y.TurmaId == 1 &&
+                y.ComponenteCurricularId == 1 &&
+                !y.EhRegencia), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(fechamentos);
+
+            _mediatorMock.Setup(x => x.Send(It.Is<ObterNotaEmAprovacaoPorFechamentoNotaIdQuery>(y =>
+                y.IdsFechamentoNota.Single() == 1), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<FechamentoNotaAprovacaoDto>());
+
+            _mediatorMock.Setup(x => x.Send(It.Is<ObterFrequenciasPorAlunosTurmaCCDataQuery>(y =>
+                y.AlunosCodigo.Single() == "1" &&
+                y.DataReferencia == periodoFim &&
+                y.TipoFrequencia == TipoFrequenciaAluno.PorDisciplina &&
+                y.TurmaCodigo == "1" &&
+                y.ComponenteCurriularId == "1"), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<FrequenciaAluno>() { new() { CodigoAluno = "1" } });
+
+            _mediatorMock.Setup(x => x.Send(It.IsAny<ObterTipoCalendarioIdPorAnoLetivoEModalidadeQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
+
+            _mediatorMock.Setup(x => x.Send(It.IsAny<ObterPeriodoFechamentoPorCalendarioIdEBimestreQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new PeriodoFechamentoBimestre() { InicioDoFechamento = periodoInicio });
+
+            _consultasPeriodoFechamentoMock.Setup(x => x.TurmaEmPeriodoDeFechamento(It.IsAny<Turma>(), It.IsAny<DateTime>(), 1))
+                .ReturnsAsync(true);
+
+            _mediatorMock.Setup(x => x.Send(It.Is<VerificaPlanosAEEPorCodigosAlunosEAnoQuery>(y =>
+                y.CodigoEstudante.Single() == "1" && y.AnoLetivo == anoAtual), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<PlanoAEEResumoDto>());
+
+            _mediatorMock.Setup(x => x.Send(It.Is<ObterAlunosAtivosTurmaProgramaPapEolQuery>(y =>
+                y.AnoLetivo == anoAtual && y.AlunosCodigos.Single() == "1"), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Enumerable.Empty<AlunosTurmaProgramaPapDto>());
+
+            _mediatorMock.Setup(x => x.Send(It.IsAny<ObterMarcadorAlunoQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new MarcadorFrequenciaDto());
+
+            var resultado = await _useCase.Executar(new ListaNotasConceitosDto()
+            {
+                AnoLetivo = anoAtual,
+                Bimestre = 1,
+                DisciplinaCodigo = 1,
+                Modalidade = Modalidade.Fundamental,
+                TurmaCodigo = "1",
+                TurmaId = 1,
+                PeriodoInicioTicks = periodoInicio.Ticks,
+                PeriodoFimTicks = periodoFim.Ticks,
+                PeriodoEscolarId = 1
+            });
+
+            Assert.NotNull(resultado);
+            Assert.Single(resultado.Bimestres);
+            Assert.Single(resultado.Bimestres.Single().Alunos);
+
+            var alunoResultado = resultado.Bimestres.Single().Alunos.Single();
+            Assert.Equal("1", alunoResultado.Id);
+            Assert.Equal(2, alunoResultado.NotasAvaliacoes.Count);
+
+            var notaAvaliacao1 = alunoResultado.NotasAvaliacoes.Single(na => na.AtividadeAvaliativaId == 1);
+            Assert.False(notaAvaliacao1.PodeEditar, "Aluno não tinha matrícula ativa na data da primeira avaliação (03/07)");
+
+            var notaAvaliacao2 = alunoResultado.NotasAvaliacoes.Single(na => na.AtividadeAvaliativaId == 2);
+            Assert.True(notaAvaliacao2.PodeEditar, "Aluno estava ativo na data da segunda avaliação (04/24)");
+        }
+
+        #region Métodos auxiliares
         private void VerificaNotaEmAprovacao(double notaEmAprovacao, FechamentoNotaRetornoDto nota)
         {
             if (notaEmAprovacao > 0)
