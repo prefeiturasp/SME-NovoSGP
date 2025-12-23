@@ -25,6 +25,7 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("  from diario_bordo db");
             sqlQuery.AppendLine("  inner join aula a on db.aula_id = a.id");
             sqlQuery.AppendLine("  where a.excluido and");
+            sqlQuery.AppendLine("  db.excluido = false and");
             sqlQuery.AppendLine("  a.turma_id = @codigoTurma and");
             sqlQuery.AppendLine("  a.disciplina_id = any(@codigosDisciplinas) and");
             sqlQuery.AppendLine("  a.tipo_calendario_id = @tipoCalendarioId and");
