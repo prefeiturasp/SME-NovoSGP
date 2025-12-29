@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Aplicacao.Queries.Abrangencia.VerificaSeUsuarioPossuiAbrangencia;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
@@ -197,8 +198,9 @@ namespace SME.SGP.Aplicacao
             await SalvarCacheUsuario(usuario);
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.AtualizaUltimoLoginUsuario, usuario, usuarioLogado: usuario));
 
-            // sincronização será pelo worker de abrangencia
-            //await mediator.Send(new CarregarAbrangenciaUsuarioCommand(login, perfilSelecionado));
+            var usuarioPossuiAbrangencia = await mediator.Send(new VerificaSeUsuarioPossuiAbrangenciaQuery(login));
+            if (!usuarioPossuiAbrangencia)
+                await mediator.Send(new CarregarAbrangenciaUsuarioCommand(login, perfilSelecionado));
 
             retornoAutenticacaoEol.UsuarioAutenticacaoRetornoDto.UsuarioLogin = usuario.Login;
             retornoAutenticacaoEol.UsuarioAutenticacaoRetornoDto.UsuarioRf = usuario.CodigoRf;

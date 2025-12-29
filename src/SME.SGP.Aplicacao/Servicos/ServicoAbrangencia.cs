@@ -183,7 +183,7 @@ namespace SME.SGP.Aplicacao.Servicos
                         abrangencia.UeId = turmaSGP.Ue.Id;
                         abrangencia.UsuarioId = usuario.Id;
                         abrangencia.TurmaId = turmaSGP.Id;
-                        abrangencia.Perfil = ((Modalidade) int.Parse(turma.CodigoModalidade) == Modalidade.EducacaoInfantil) ? Perfis.PERFIL_PROFESSOR_INFANTIL : Perfis.PERFIL_PROFESSOR;
+                        abrangencia.Perfil = ((Modalidade)int.Parse(turma.CodigoModalidade) == Modalidade.EducacaoInfantil) ? Perfis.PERFIL_PROFESSOR_INFANTIL : Perfis.PERFIL_PROFESSOR;
 
                         abrangenciaTurmasHistoricasEOL.Add(abrangencia);
                     }
@@ -247,6 +247,7 @@ namespace SME.SGP.Aplicacao.Servicos
 
             var ehSupervisor = perfil == Perfis.PERFIL_SUPERVISOR;
             var ehProfessorCJ = perfil == Perfis.PERFIL_CJ || perfil == Perfis.PERFIL_CJ_INFANTIL;
+            var ehABAE = perfil == Perfis.PERFIL_ABAE;
 
             if (ehSupervisor)
             {
@@ -262,6 +263,32 @@ namespace SME.SGP.Aplicacao.Servicos
             }
             else if (ehProfessorCJ)
                 return;
+            else if (ehABAE)
+            {
+                var usuario = await repositorioUsuario.ObterPorCodigoRfLogin(null, login);
+
+                if (usuario.NaoEhNulo())
+                {
+                    //se for usuário ABAE, o CPF e o login serão os mesmos
+                    var cadastroABAE = await mediator.Send(new ObterCadastroAcessoABAEPorCpfQuery(login));
+
+                    if (cadastroABAE.NaoEhNulo() && cadastroABAE.UeId.NaoEhNulo())
+                    {
+                        // Obter informações da UE e DRE baseadas no cadastro ABAE
+                        var ue = await mediator.Send(new ObterUePorIdQuery(cadastroABAE.UeId));
+
+                        if (ue.NaoEhNulo() && ue.Dre.NaoEhNulo())
+                        {
+                            abrangenciaEol = new AbrangenciaCompactaVigenteRetornoEOLDTO()
+                            {
+                                Abrangencia = new AbrangenciaCargoRetornoEolDTO { Abrangencia = Infra.Enumerados.Abrangencia.UE },
+                                IdDres = new[] { ue.Dre.CodigoDre },
+                                IdUes = new[] { ue.CodigoUe }
+                            };
+                        }
+                    }
+                }
+            }
             else
                 consultaEol = await mediator.Send(new ObterAbrangenciaCompactaVigenteEolPorLoginEPerfilQuery(login, perfil));
 
