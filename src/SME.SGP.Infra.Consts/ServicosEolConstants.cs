@@ -259,5 +259,6 @@
         public const string URL_ALUNOS_TURMAS_PAP_ANO_LETIVO = "alunos/pap/ano-letivo/{0}";
         public const string URL_MATRICULA_TURMA_ESCOLA = "turmas/matricula-turma-escola";
         public const string URL_MATRICULA_TURMA_ESCOLA_ALUNO = "turmas/matricula-turma-escola-aluno";
+        public const string URL_USUARIOS_CORESSO_PAGINADO = "v1/usuarios/coresso/todos?paginaAtual={0}&registrosPorPagina={1}";
     }
 }
