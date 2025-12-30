@@ -29,7 +29,7 @@ namespace SME.SGP.Api.Teste.Controllers
         private readonly Mock<IObterNovosEncaminhamentosNAAPAPorTipoUseCase> _paginadoUseCase;
         private readonly Mock<IExcluirArquivoNAAPAUseCase> _excluirArquivoUseCase;
         private readonly Mock<IRegistrarNovoEncaminhamentoNAAPAUseCase> _registrarUseCase;
-        private readonly Mock<IExcluirAtendimentoNAAPAUseCase> _excluirEncaminhamentoUseCase;
+        private readonly Mock<IExcluirNovoEncaminhamentoNAAPAUseCase> _excluirEncaminhamentoUseCase;
 
         public NovoEncaminhamentoNAAPAControllerTeste()
         {
@@ -41,7 +41,7 @@ namespace SME.SGP.Api.Teste.Controllers
             _paginadoUseCase = new Mock<IObterNovosEncaminhamentosNAAPAPorTipoUseCase>();
             _excluirArquivoUseCase = new Mock<IExcluirArquivoNAAPAUseCase>();
             _registrarUseCase = new Mock<IRegistrarNovoEncaminhamentoNAAPAUseCase>();
-            _excluirEncaminhamentoUseCase = new Mock<IExcluirAtendimentoNAAPAUseCase>();
+            _excluirEncaminhamentoUseCase = new Mock<IExcluirNovoEncaminhamentoNAAPAUseCase>();
 
             _controller = new NovoEncaminhamentoNAAPAController();
         }
