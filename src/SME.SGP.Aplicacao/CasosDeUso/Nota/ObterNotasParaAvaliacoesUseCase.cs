@@ -209,9 +209,6 @@ namespace SME.SGP.Aplicacao
 
                 var matriculasAluno = alunos.Where(a => a.CodigoAluno == aluno.CodigoAluno && a.CodigoTurma == aluno.CodigoTurma);
 
-                if (matriculasAluno.Count() > 1)
-                    matriculasAluno = matriculasAluno.Where(m => m.NumeroAlunoChamada == aluno.NumeroAlunoChamada).ToList();
-
                 foreach (var atividadeAvaliativa in atividadesAvaliativasdoBimestre)
                 {
                     var notaDoAluno = ObterNotaParaVisualizacao(notas, aluno, atividadeAvaliativa);
