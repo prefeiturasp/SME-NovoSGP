@@ -134,9 +134,30 @@ namespace SME.SGP.Dados.Repositorios
             else if (!string.IsNullOrEmpty(nome))
                 sql.AppendLine(" AND lower(a.nome) LIKE @nome ");
 
-            return await database.Conexao.QueryAsync<NomeCpfABAEDto>(sql.ToString(), new { cpf, codigoDre, codigoUe, 
-                                                                                           nome = string.IsNullOrEmpty(nome) ? string.Empty
-                                                                                           : string.Format("%{0}%", nome.ToLower()) });
+            return await database.Conexao.QueryAsync<NomeCpfABAEDto>(sql.ToString(), new
+            {
+                cpf,
+                codigoDre,
+                codigoUe,
+                nome = string.IsNullOrEmpty(nome) ? string.Empty
+                                                                                                       : string.Format("%{0}%", nome.ToLower())
+            });
+        }
+
+        public async Task<CadastroAcessoABAE> ObterCadastroABAEPorCpf(string cpf)
+        {
+            var sql = new StringBuilder();
+            cpf = cpf.FormatarCPF();
+
+            sql.AppendLine(" SELECT * ");
+            sql.AppendLine(" FROM cadastro_acesso_abae a ");
+            sql.AppendLine(" WHERE not a.excluido ");
+            sql.AppendLine(" AND a.cpf = @cpf ");
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<CadastroAcessoABAE>(sql.ToString(), new
+            {
+                cpf
+            });
         }
     }
 }
