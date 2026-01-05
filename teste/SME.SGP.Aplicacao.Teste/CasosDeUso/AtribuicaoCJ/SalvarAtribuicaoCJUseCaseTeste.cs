@@ -2,6 +2,7 @@
 using Moq;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.AtribuicaoCJ
         private readonly AtribuicaoCJPersistenciaDto persistenciaDto;
         public static class TesteControl
         {
-            public static readonly int AnoAtual = 2025;
+            public static readonly int AnoAtual = DateTime.Now.Year;
         }
 
         public SalvarAtribuicaoCJUseCaseTeste()

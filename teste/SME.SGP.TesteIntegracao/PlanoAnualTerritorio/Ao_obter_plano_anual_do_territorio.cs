@@ -67,7 +67,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAnualTerritorio
 
             var consultaPlano = ServiceProvider.GetService<IConsultasPlanoAnualTerritorioSaber>();
 
-            var planosAnuais = await consultaPlano.ObterPorUETurmaAnoETerritorioExperiencia("22", "1", 2025, 1111);
+            var planosAnuais = await consultaPlano.ObterPorUETurmaAnoETerritorioExperiencia("22", "1", 2026, 1111);
 
             planosAnuais.ShouldNotBeNull();
             planosAnuais.Count().ShouldBe(2);
