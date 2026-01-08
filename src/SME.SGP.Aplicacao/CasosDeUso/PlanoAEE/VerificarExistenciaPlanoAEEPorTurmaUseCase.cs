@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PlanoAEE;
@@ -14,10 +15,10 @@ public class VerificarExistenciaPlanoAEEPorTurmaUseCase : AbstractUseCase, IVeri
     {
     }
 
-    public async Task<bool> Executar(FiltroTurmaPlanoAEEDto param)
+    public async Task<IEnumerable<PlanoAEEResumoIntegracaoDto>> Executar(FiltroTurmaPlanoAEEDto param)
     {
         var planoAee = await mediator.Send(new VerificarExistenciaPlanoAEEPorTurmaQuery(param));
 
-        return planoAee.NaoEhNulo() ? throw new NegocioException(MensagemNegocioPlanoAee.CRIANCA_JA_POSSUI_PLANO_AEE_ABERTO_INTEGRACAO) : true;
+        return planoAee.EhNulo() ? throw new NegocioException(MensagemNegocioPlanoAee.NENHUM_PLANO_AEE_ENCONTRADO_PARA_TURMA) : planoAee;
     }
 }
