@@ -9,7 +9,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/plano-aee/integracoes")]
-    //[ChaveIntegracaoSgpApi]
+    [ChaveIntegracaoSgpApi]
     public class PlanoAEEIntegracaoController : ControllerBase
     {
         
