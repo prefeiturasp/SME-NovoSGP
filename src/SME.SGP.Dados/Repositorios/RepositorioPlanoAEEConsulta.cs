@@ -5,6 +5,7 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoPlanoAEE;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System;
@@ -198,31 +199,35 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
         
-        public async Task<PlanoAEEResumoDto> ObterPlanoPorTurma(FiltroTurmaPlanoAEEDto filtro)
+        public async Task<IEnumerable<PlanoAEEResumoIntegracaoDto>> ObterPlanoPorTurma(FiltroTurmaPlanoAEEDto filtro)
         {
-            var sql = new StringBuilder(); 
-            sql.AppendLine(@"select distinct   pa.Id,");
-            sql.AppendLine(@"   pa.aluno_numero as numero,");
-            sql.AppendLine(@"   pa.aluno_nome as nome,");
-            sql.AppendLine(@"   tu.nome as turma,");
-            sql.AppendLine(@"   pa.situacao ");
-            sql.AppendLine(@"   from plano_aee pa");
-            sql.AppendLine(@"   inner join turma tu on tu.id = pa.turma_id                                         ");
-            sql.AppendLine(@"   inner join ue on ue.id = tu.ue_id");
-            sql.AppendLine(@"   where pa.turma_id = @codigoTurma ");
-            if(!string.IsNullOrWhiteSpace(filtro.CodigoUe))
-              sql.AppendLine(@"   and ue.ue_id = @codigoUe");
-            sql.AppendLine(@"   and not pa.situacao = any(@situacoesDesconsideradas)");
-            sql.AppendLine(@"   and not pa.excluido");
-            sql.AppendLine(@" limit 1");
+            var condicaoUe = !string.IsNullOrWhiteSpace(filtro.CodigoUe) ? "and ue.ue_id = @codigoUe" : "";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<PlanoAEEResumoDto>(sql.ToString(), new
+                        var sql = $@"
+                    select distinct 
+                        pa.Id,
+                        pa.aluno_numero as numero,
+                        pa.aluno_nome as nome,
+                        tu.nome as turma,
+                        pa.situacao ,
+                        pa.aluno_codigo as CodigoAluno
+                    from plano_aee pa
+                    inner join turma tu on tu.id = pa.turma_id
+                    inner join ue on ue.id = tu.ue_id
+                    where pa.turma_id = @codigoTurma 
+                        {condicaoUe}
+                        and not pa.situacao = any(@situacoesDesconsideradas)
+                        and not pa.excluido";
+
+            return await database.Conexao.QueryAsync<PlanoAEEResumoIntegracaoDto>(sql, new
             {
                 codigoTurma = filtro.CodigoTurma,
                 codigoUe = filtro.CodigoUe,
                 situacoesDesconsideradas = new int[] { (int)SituacaoPlanoAEE.Encerrado, (int)SituacaoPlanoAEE.EncerradoAutomaticamente }
             });
         }
+
+
 
         public async Task<PlanoAEEResumoDto> ObterPlanoPorEstudanteEAno(string codigoEstudante, int ano)
         {

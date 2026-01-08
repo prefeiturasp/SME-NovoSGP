@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using FluentValidation;
 using MediatR;
 using SME.SGP.Infra;
@@ -5,7 +6,7 @@ using SME.SGP.Infra.Dtos.PlanoAEE;
 
 namespace SME.SGP.Aplicacao.Queries.PlanoAEE.VerificarExistenciaPlanoAEEPorTurma
 {
-    public class VerificarExistenciaPlanoAEEPorTurmaQuery : IRequest<PlanoAEEResumoDto>
+    public class VerificarExistenciaPlanoAEEPorTurmaQuery : IRequest<IEnumerable<PlanoAEEResumoIntegracaoDto>>
     {
         public VerificarExistenciaPlanoAEEPorTurmaQuery(FiltroTurmaPlanoAEEDto filtro)
         {
