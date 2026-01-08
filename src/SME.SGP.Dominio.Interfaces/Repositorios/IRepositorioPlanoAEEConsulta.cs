@@ -6,6 +6,7 @@ using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoPlanoAEE;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Dtos.PlanoAEE;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -32,5 +33,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<PlanoAEETurmaDto>> ObterPlanosComSituacaoDiferenteDeEncerrado(long? anoLetivo);
         Task<IEnumerable<DadosParaConsolidarPlanosAEEDto>> ObterPlanosConsolidarPainelEducacional(int anoLetivo);
         Task<IEnumerable<PainelEducacionalConsolidacaoPlanoAEE>> ObterConsolidacaoPlanosPainelEducacional(FiltroPainelEducacionalPlanosAEE filtro);
+        Task<PlanoAEEResumoDto> ObterPlanoPorTurma(FiltroTurmaPlanoAEEDto filtro);
     }
 }
