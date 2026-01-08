@@ -30,6 +30,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<PlanoAEETurmaDto>> ObterPlanosComSituacaoDiferenteDeEncerrado(long? anoLetivo);
         Task<IEnumerable<DadosParaConsolidarPlanosAEEDto>> ObterPlanosConsolidarPainelEducacional(int anoLetivo);
         Task<IEnumerable<PainelEducacionalConsolidacaoPlanoAEE>> ObterConsolidacaoPlanosPainelEducacional(FiltroPainelEducacionalPlanosAEE filtro);
-        Task<PlanoAEEResumoDto> ObterPlanoPorTurma(FiltroTurmaPlanoAEEDto filtro);
+        Task<IEnumerable<PlanoAEEResumoIntegracaoDto>> ObterPlanoPorTurma(FiltroTurmaPlanoAEEDto filtro);
     }
 }
