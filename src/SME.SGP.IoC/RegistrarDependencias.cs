@@ -64,6 +64,7 @@ using SME.SGP.Infra.Interfaces;
 using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC.Extensions.RegistrarCasoDeUsoRabbitSgp;
 using System.Diagnostics.CodeAnalysis;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PlanoAEE;
 
 namespace SME.SGP.IoC
 {
@@ -1171,6 +1172,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IImpressaoPlanoAeeUseCase, ImpressaoPlanoAeeUseCase>();
             services.TryAddScoped<IObterSrmPaeeColaborativoUseCase, ObterSrmPaeeColaborativoUseCase>();
             services.TryAddScoped<IObterResponsaveisPlanosAEEUseCase, ObterResponsaveisPlanosAEEUseCase>();
+            services.TryAddScoped<IVerificarExistenciaPlanoAEEPorTurmaUseCase, VerificarExistenciaPlanoAEEPorTurmaUseCase>();
 
             // Plano Aula
             services.TryAddScoped<IObterPlanoAulaUseCase, ObterPlanoAulaUseCase>();
