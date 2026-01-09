@@ -342,7 +342,7 @@ namespace SME.SGP.TesteIntegracao
         protected string PERCENTUAL_ALUNOS_INSUFICIENTES = "PERCENTUAL_ALUNOS_INSUFICIENTES";
         protected string MEDIA_BIMESTRAL = "MEDIA_BIMESTRAL";
 
-        protected DateTime DATA_03_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 03);
+        protected DateTime DATA_03_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 02);
         protected DateTime DATA_28_04 = new(DateTimeExtension.HorarioBrasilia().Year, 04, 28);
 
         protected const int NUMERO_AULA_1 = 1;
