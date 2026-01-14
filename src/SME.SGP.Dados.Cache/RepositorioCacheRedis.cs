@@ -30,12 +30,63 @@ namespace SME.SGP.Dados.Repositorios
         public IConnectionMultiplexerSME ConnectionMultiplexerSme { get; }
 
         protected override string ObterValor(string nomeChave)
-            => redis.StringGet(string.Concat(redisOptions.Prefixo, nomeChave));
+        {
+            try
+            {
+                return redis.StringGet(string.Concat(redisOptions.Prefixo, nomeChave));
+            }
+            catch (RedisTimeoutException)
+            {
+                return default;
+            }
+            catch (RedisConnectionException)
+            {
+                return default;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
         protected override Task RemoverValor(string nomeChave)
-            => redis.KeyDeleteAsync(string.Concat(redisOptions.Prefixo, nomeChave));
+        {
+            try
+            {
+                return redis.KeyDeleteAsync(string.Concat(redisOptions.Prefixo, nomeChave));
+            }
+            catch (RedisTimeoutException)
+            {
+                return Task.CompletedTask;
+            }
+            catch (RedisConnectionException)
+            {
+                return Task.CompletedTask;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
         protected override Task SalvarValor(string nomeChave, string valor, int minutosParaExpirar)
-            => redis.StringSetAsync(new RedisKey(string.Concat(redisOptions.Prefixo, nomeChave)), new RedisValue(valor), TimeSpan.FromMinutes(minutosParaExpirar));
+        {
+            try
+            {
+               return redis.StringSetAsync(new RedisKey(string.Concat(redisOptions.Prefixo, nomeChave)), new RedisValue(valor), TimeSpan.FromMinutes(minutosParaExpirar));
+            }
+            catch (RedisTimeoutException)
+            {
+                return Task.CompletedTask;
+            }
+            catch (RedisConnectionException)
+            {
+                return Task.CompletedTask;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }
