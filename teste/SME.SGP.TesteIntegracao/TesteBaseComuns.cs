@@ -342,7 +342,7 @@ namespace SME.SGP.TesteIntegracao
         protected string PERCENTUAL_ALUNOS_INSUFICIENTES = "PERCENTUAL_ALUNOS_INSUFICIENTES";
         protected string MEDIA_BIMESTRAL = "MEDIA_BIMESTRAL";
 
-        protected DateTime DATA_03_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 03);
+        protected DateTime DATA_03_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 02);
         protected DateTime DATA_28_04 = new(DateTimeExtension.HorarioBrasilia().Year, 04, 28);
 
         protected const int NUMERO_AULA_1 = 1;
@@ -398,7 +398,7 @@ namespace SME.SGP.TesteIntegracao
 
         protected DateTime DATA_04_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 04);
 
-        protected readonly DateTime DATA_02_05 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
+        protected readonly DateTime DATA_02_05 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 04);
         protected readonly DateTime DATA_08_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
         protected readonly DateTime DATA_07_08 = new(DateTimeExtension.HorarioBrasilia().Year, 08, 07);
 
