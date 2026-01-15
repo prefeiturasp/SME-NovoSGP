@@ -26,7 +26,8 @@ namespace SME.SGP.TesteIntegracao.UsuarioFuncionario
 
             var dto = new FiltroFuncionarioDto()
             {
-                CodigoRF = "2222222"
+                CodigoRF = "2222222",
+                CodigoDRE = "1"
             };
 
             var retorno = await useCase.Executar(dto);
