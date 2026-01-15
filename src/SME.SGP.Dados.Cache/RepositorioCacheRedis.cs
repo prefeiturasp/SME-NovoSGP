@@ -18,7 +18,7 @@ namespace SME.SGP.Dados.Repositorios
                                      IServicoTelemetria servicoTelemetria,
                                      RedisOptions redisOptions,
                                      IServicoMensageriaLogs servicoMensageriaLogs,
-                                     IMetricasCache metricasCache) 
+                                     IMetricasCache metricasCache)
             : base(servicoTelemetria, servicoMensageriaLogs, metricasCache)
         {
             ConnectionMultiplexerSme = connectionMultiplexerSme ?? throw new ArgumentNullException(nameof(connectionMultiplexerSme));
@@ -26,7 +26,7 @@ namespace SME.SGP.Dados.Repositorios
             this.redisOptions = redisOptions ?? throw new ArgumentNullException(nameof(redisOptions));
             NomeServicoCache = "Cache Redis";
         }
-        
+
         public IConnectionMultiplexerSME ConnectionMultiplexerSme { get; }
 
         protected override string ObterValor(string nomeChave)
@@ -49,19 +49,17 @@ namespace SME.SGP.Dados.Repositorios
             }
         }
 
-        protected override Task RemoverValor(string nomeChave)
+        protected override async Task RemoverValor(string nomeChave)
         {
             try
             {
-                return redis.KeyDeleteAsync(string.Concat(redisOptions.Prefixo, nomeChave));
+                await redis.KeyDeleteAsync(string.Concat(redisOptions.Prefixo, nomeChave));
             }
             catch (RedisTimeoutException)
             {
-                return Task.CompletedTask;
             }
             catch (RedisConnectionException)
             {
-                return Task.CompletedTask;
             }
             catch (Exception)
             {
@@ -69,19 +67,17 @@ namespace SME.SGP.Dados.Repositorios
             }
         }
 
-        protected override Task SalvarValor(string nomeChave, string valor, int minutosParaExpirar)
+        protected override async Task SalvarValor(string nomeChave, string valor, int minutosParaExpirar)
         {
             try
             {
-               return redis.StringSetAsync(new RedisKey(string.Concat(redisOptions.Prefixo, nomeChave)), new RedisValue(valor), TimeSpan.FromMinutes(minutosParaExpirar));
+                await redis.StringSetAsync(new RedisKey(string.Concat(redisOptions.Prefixo, nomeChave)), new RedisValue(valor), TimeSpan.FromMinutes(minutosParaExpirar));
             }
             catch (RedisTimeoutException)
             {
-                return Task.CompletedTask;
             }
             catch (RedisConnectionException)
             {
-                return Task.CompletedTask;
             }
             catch (Exception)
             {
