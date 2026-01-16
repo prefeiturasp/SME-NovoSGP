@@ -9,6 +9,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interface;
+using SME.SGP.Infra.Interfaces;
 using SME.SGP.Infra.Utilitarios;
 using System;
 
@@ -20,6 +21,18 @@ namespace SME.SGP.IoC
         {
             if (configuration.EhNulo())
                 return;
+
+            services.AddOptions<CircuitBreakerSimplesOptions>()
+                .Bind(configuration.GetSection(CircuitBreakerSimplesOptions.Secao), c => c.BindNonPublicProperties = true);
+            services.AddSingleton<CircuitBreakerSimplesOptions>();
+
+            services.AddSingleton<ICircuitBreaker>(serviceProvider =>
+            {
+                var options = serviceProvider.GetService<IOptions<CircuitBreakerSimplesOptions>>()?.Value;
+                return new CircuitBreaker(
+                    limiteFalhas: options?.LimiteFalhas ?? 5,
+                    tempoAbertura: TimeSpan.FromSeconds(options?.TempoAberturaSegundos ?? 30));
+            });
 
             services.AddOptions<ConfiguracaoCacheOptions>()
                 .Bind(configuration.GetSection(ConfiguracaoCacheOptions.Secao), c => c.BindNonPublicProperties = true);
@@ -37,8 +50,9 @@ namespace SME.SGP.IoC
                 var servicoTelemetria = serviceProvider.GetService<IServicoTelemetria>();
                 var servicoMensageriaLogs = serviceProvider.GetService<IServicoMensageriaLogs>();
                 var metricasCache = serviceProvider.GetService<IMetricasCache>();
+                var circuitBreaker = serviceProvider.GetService<ICircuitBreaker>();
 
-                return ObterRepositorio(serviceProvider, options, servicoTelemetria, services, servicoMensageriaLogs, metricasCache);
+                return ObterRepositorio(serviceProvider, options, servicoTelemetria, services, servicoMensageriaLogs, metricasCache, circuitBreaker);
             });
         }
 
@@ -51,16 +65,16 @@ namespace SME.SGP.IoC
                 services.AddMemoryCache();
         }
 
-        private static IRepositorioCache ObterRepositorio(IServiceProvider serviceProvider, ConfiguracaoCacheOptions options, IServicoTelemetria servicoTelemetria, IServiceCollection services, IServicoMensageriaLogs servicoMensageriaLogs, IMetricasCache metricasCache)
+        private static IRepositorioCache ObterRepositorio(IServiceProvider serviceProvider, ConfiguracaoCacheOptions options, IServicoTelemetria servicoTelemetria, IServiceCollection services, IServicoMensageriaLogs servicoMensageriaLogs, IMetricasCache metricasCache, ICircuitBreaker circuitBreaker)
             => options.UtilizaRedis ?
-                ObterRepositorioRedis(serviceProvider, servicoTelemetria,servicoMensageriaLogs, metricasCache) :
+                ObterRepositorioRedis(serviceProvider, servicoTelemetria,servicoMensageriaLogs, metricasCache, circuitBreaker) :
                 ObterRepositorioMemory(serviceProvider, servicoTelemetria, servicoMensageriaLogs, metricasCache);
 
-        private static IRepositorioCache ObterRepositorioRedis(IServiceProvider serviceProvider, IServicoTelemetria servicoTelemetria, IServicoMensageriaLogs servicoMensageriaLogs, IMetricasCache metricasCache)
+        private static IRepositorioCache ObterRepositorioRedis(IServiceProvider serviceProvider, IServicoTelemetria servicoTelemetria, IServicoMensageriaLogs servicoMensageriaLogs, IMetricasCache metricasCache, ICircuitBreaker circuitBreaker)
         {
             var redisOptions = serviceProvider.GetService<IOptions<RedisOptions>>()?.Value;
             var connection = new ConnectionMultiplexerSME(redisOptions);
-            return new RepositorioCacheRedis(connection, servicoTelemetria, redisOptions, servicoMensageriaLogs, metricasCache);
+            return new RepositorioCacheRedis(connection, servicoTelemetria, servicoMensageriaLogs, metricasCache, redisOptions, circuitBreaker);
         }
 
         private static IRepositorioCache ObterRepositorioMemory(IServiceProvider serviceProvider, IServicoTelemetria servicoTelemetria, IServicoMensageriaLogs servicoMensageriaLogs, IMetricasCache metricasCache)
