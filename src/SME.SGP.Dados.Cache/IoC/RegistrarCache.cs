@@ -29,7 +29,7 @@ namespace SME.SGP.IoC
             services.AddSingleton<ICircuitBreaker>(serviceProvider =>
             {
                 var options = serviceProvider.GetService<IOptions<CircuitBreakerSimplesOptions>>()?.Value;
-                return new CircuitBreakerSimples(
+                return new CircuitBreaker(
                     limiteFalhas: options?.LimiteFalhas ?? 5,
                     tempoAbertura: TimeSpan.FromSeconds(options?.TempoAberturaSegundos ?? 30));
             });
