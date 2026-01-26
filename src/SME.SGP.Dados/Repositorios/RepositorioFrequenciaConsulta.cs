@@ -24,12 +24,15 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioFrequenciaConsulta : RepositorioBase<RegistroFrequencia>, IRepositorioFrequenciaConsulta
     {
         private readonly IAsyncPolicy policy;
+        private readonly ISgpContext contexto;
         public RepositorioFrequenciaConsulta(ISgpContextConsultas database,
+                                             ISgpContext _contexto,
                                              IReadOnlyPolicyRegistry<string> registry,
                                              IServicoAuditoria servicoAuditoria)
             : base(database, servicoAuditoria)
         {
             policy = registry.Get<IAsyncPolicy>(PoliticaPolly.SGP);
+            contexto = _contexto;
         }
 
         public async Task<bool> FrequenciaAulaRegistrada(long aulaId)
@@ -246,7 +249,7 @@ namespace SME.SGP.Dados.Repositorios
                           where not excluido
                             and aula_id = @aulaId";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<RegistroFrequencia>(query, new { aulaId });
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<RegistroFrequencia>(query, new { aulaId });
         }
 
         public async Task<IEnumerable<AusenciaMotivoDto>> ObterAusenciaMotivoPorAlunoTurmaBimestreAno(string codigoAluno, string turma, short bimestre, short anoLetivo)
