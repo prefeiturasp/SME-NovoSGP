@@ -18,18 +18,28 @@ namespace SME.SGP.Api.Configuracoes
                 o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(o =>
             {
+                o.Authority = "https://SEU-KC/realms/SEU_REALM";
+                o.Audience = "SEU_CLIENT_ID";
+                o.RequireHttpsMetadata = true;
+
                 o.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateLifetime = true,
-                    ValidateAudience = true,
-                    ValidAudience = configuration.GetValue<string>("JwtTokenSettings:Audience"),
                     ValidateIssuer = true,
-                    ValidIssuer = configuration.GetValue<string>("JwtTokenSettings:Issuer"),
-                    ValidateIssuerSigningKey = true,
-                    ClockSkew = TimeSpan.Zero,
-                    IssuerSigningKey = new SymmetricSecurityKey(UTF8
-                        .GetBytes(configuration.GetValue<string>("JwtTokenSettings:IssuerSigningKey")))
+                    NameClaimType = "preferred_username",
+                    RoleClaimType = "roles"
                 };
+                //o.TokenValidationParameters = new TokenValidationParameters
+                //{
+                //    ValidateLifetime = true,
+                //    ValidateAudience = true,
+                //    ValidAudience = configuration.GetValue<string>("JwtTokenSettings:Audience"),
+                //    ValidateIssuer = true,
+                //    ValidIssuer = configuration.GetValue<string>("JwtTokenSettings:Issuer"),
+                //    ValidateIssuerSigningKey = true,
+                //    ClockSkew = TimeSpan.Zero,
+                //    IssuerSigningKey = new SymmetricSecurityKey(UTF8
+                //        .GetBytes(configuration.GetValue<string>("JwtTokenSettings:IssuerSigningKey")))
+                //};
             });
 
             services.AddAuthorization(auth =>

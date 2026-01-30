@@ -86,6 +86,32 @@ namespace SME.SGP.Aplicacao
             return await mediator.Send(new AlterarSenhaUsuarioCommand(usuario.Login, primeiroAcessoDto.NovaSenha));
         }
 
+        public async Task<UsuarioAutenticacaoRetornoDto> AutenticarSSO(string login, string senha)
+        {
+            login = login.Trim().ToLower();
+            var retornoAutenticacaoSSO = await servicoAutenticacao.AutenticarNoSSO(login, senha);
+            if (!retornoAutenticacaoSSO.UsuarioAutenticacaoRetornoDto.Autenticado)
+                return retornoAutenticacaoSSO.UsuarioAutenticacaoRetornoDto;
+
+            //TODO: Remover quando SSO estiver 100%
+            var usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(retornoAutenticacaoSSO.CodigoRf, login, retornoAutenticacaoSSO.UsuarioAutenticacaoRetornoDto.UsuarioNome, retornoAutenticacaoSSO.UsuarioAutenticacaoRetornoDto.UsuarioEmail, true);
+            retornoAutenticacaoSSO.UsuarioAutenticacaoRetornoDto.PerfisUsuario = await servicoPerfil.DefinirPerfilPrioritario(retornoAutenticacaoSSO.Perfis, usuario);
+            retornoAutenticacaoSSO.UsuarioAutenticacaoRetornoDto.UsuarioLogin = usuario.Login;
+            retornoAutenticacaoSSO.UsuarioAutenticacaoRetornoDto.UsuarioRf = usuario.CodigoRf;
+
+            SuporteUsuario suporte = null;
+            var administradorSuporte = ObterAdministradorSuporte(suporte, usuario);
+            retornoAutenticacaoSSO.UsuarioAutenticacaoRetornoDto.AdministradorSuporte = administradorSuporte;
+
+            //TODO: Para casos de primeira autenticação do usuario
+            var perfilSelecionado = retornoAutenticacaoSSO.UsuarioAutenticacaoRetornoDto.PerfisUsuario.PerfilSelecionado;
+            var usuarioPossuiAbrangencia = await mediator.Send(new VerificaSeUsuarioPossuiAbrangenciaQuery(login));
+            if (!usuarioPossuiAbrangencia)
+                await mediator.Send(new CarregarAbrangenciaUsuarioCommand(login, perfilSelecionado));
+
+            return retornoAutenticacaoSSO.UsuarioAutenticacaoRetornoDto;
+        }
+
         public async Task<UsuarioAutenticacaoRetornoDto> Autenticar(string login, string senha)
         {
             login = login.Trim().ToLower();

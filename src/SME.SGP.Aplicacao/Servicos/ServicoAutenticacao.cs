@@ -7,6 +7,8 @@ using System.Net;
 using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Infra.Dtos;
+using SME.SGP.Aplicacao.Queries.Autenticação.AutenticarSSO;
 
 namespace SME.SGP.Aplicacao.Servicos
 {
@@ -62,6 +64,31 @@ namespace SME.SGP.Aplicacao.Servicos
                 throw new NegocioException("Usuário sem perfis de acesso.");
 
             return (retornoDto, retornoServicoEol.CodigoRf, perfis.Perfis, perfis.PossuiCargoCJ, perfis.PossuiPerfilCJ);
+        }
+
+        public async Task<(UsuarioAutenticacaoRetornoDto UsuarioAutenticacaoRetornoDto, string CodigoRf, IEnumerable<Guid> Perfis, bool PossuiCargoCJ, bool PossuiPerfilCJ)> AutenticarNoSSO(string login, string senha)
+        {
+            var retornoSSO = await mediator.Send(new AutenticarSSOQuery(login, senha));
+            var retornoDto = new UsuarioAutenticacaoRetornoDto();
+
+            if (retornoSSO.EhNulo())
+                return (retornoDto, "", null, false, false);
+
+            retornoDto.Token = retornoSSO.AccessToken;
+            retornoDto.UsuarioId = retornoSSO.Payload?.UsuarioId ?? Guid.Empty;
+            retornoDto.UsuarioNome = retornoSSO.Payload?.Nome;
+            retornoDto.UsuarioEmail = retornoSSO.Payload?.Email;
+            retornoDto.Autenticado = true;
+            retornoDto.ModificarSenha = false;
+
+            var perfis = new List<Guid>();
+            if(retornoSSO.Payload?.Perfil != null)
+                perfis.Add(retornoSSO.Payload.Perfil);
+
+            var possuiCargoCJ = false;
+            var possuiPerfilCJ = false;
+
+            return (retornoDto, retornoSSO?.Payload?.CodigoRf, perfis, possuiCargoCJ, possuiPerfilCJ);
         }
 
         public bool TemPerfilNoToken(string guid)

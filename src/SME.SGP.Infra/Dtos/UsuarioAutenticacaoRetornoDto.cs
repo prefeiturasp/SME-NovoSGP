@@ -20,5 +20,7 @@ namespace SME.SGP.Infra
         public string UsuarioLogin { get; set; }
         public bool ContratoExterno { get; set; }
         public AdministradorSuporteDto AdministradorSuporte { get; set; }
+        public string UsuarioNome { get; set; }
+        public string UsuarioEmail { get; set; }
     }
 }

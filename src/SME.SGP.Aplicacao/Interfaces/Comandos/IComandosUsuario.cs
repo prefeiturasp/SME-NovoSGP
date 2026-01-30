@@ -19,6 +19,7 @@ namespace SME.SGP.Aplicacao
         Task<AlterarSenhaRespostaDto> AlterarSenhaPrimeiroAcesso(PrimeiroAcessoDto primeiroAcessoDto);
 
         Task<UsuarioAutenticacaoRetornoDto> Autenticar(string login, string senha);
+        Task<UsuarioAutenticacaoRetornoDto> AutenticarSSO(string login, string senha);
 
         Task<TrocaPerfilDto> ModificarPerfil(Guid perfil);
 
