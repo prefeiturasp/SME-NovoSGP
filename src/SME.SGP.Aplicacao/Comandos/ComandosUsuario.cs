@@ -198,8 +198,8 @@ namespace SME.SGP.Aplicacao
             await SalvarCacheUsuario(usuario);
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.AtualizaUltimoLoginUsuario, usuario, usuarioLogado: usuario));
 
-            var usuarioPossuiAbrangencia = await mediator.Send(new VerificaSeUsuarioPossuiAbrangenciaQuery(login));
-            if (!usuarioPossuiAbrangencia)
+            var usuarioPossuiAbrangencia = await mediator.Send(new VerificaSeUsuarioPossuiAbrangenciaQuery(login, perfilSelecionado));
+            if(!usuarioPossuiAbrangencia)
                 await mediator.Send(new CarregarAbrangenciaUsuarioCommand(login, perfilSelecionado));
 
             retornoAutenticacaoEol.UsuarioAutenticacaoRetornoDto.UsuarioLogin = usuario.Login;
