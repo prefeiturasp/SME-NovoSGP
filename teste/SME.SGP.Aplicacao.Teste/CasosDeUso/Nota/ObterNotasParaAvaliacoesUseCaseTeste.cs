@@ -1510,7 +1510,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Nota
         public void Deve_Incluir_Aluno_Ativo()
         {
             var filtro = new ListaNotasConceitosDto { TurmaHistorico = true };
-            var alunoMock = CriarAlunoMock(ativo: true, situacao: SituacaoMatriculaAluno.Ativo);
+            var alunoMock = CriarAlunoMock(ativo: true, situacao: SituacaoMatriculaAluno.Ativo, dataSituacao: new DateTime(2023, 4, 10));
             var alunos = new List<AlunoPorTurmaResposta> { alunoMock };
 
             var resultado = FiltrarAlunos(alunos, filtro);
