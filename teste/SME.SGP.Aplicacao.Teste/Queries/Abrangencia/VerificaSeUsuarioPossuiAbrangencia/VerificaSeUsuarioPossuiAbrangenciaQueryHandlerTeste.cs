@@ -32,51 +32,54 @@ namespace SME.SGP.Aplicacao.Teste.Queries.Abrangencia.VerificaSeUsuarioPossuiAbr
         public async Task Handle_DeveRetornarTrue_QuandoUsuarioPossuirAbrangencia()
         {
             var usuarioRf = "1234567";
-            var query = new VerificaSeUsuarioPossuiAbrangenciaQuery(usuarioRf);
+            var perfilSelecionado = Guid.NewGuid();
+            var query = new VerificaSeUsuarioPossuiAbrangenciaQuery(usuarioRf, perfilSelecionado);
             var cancellationToken = CancellationToken.None;
 
             _mockRepositorio
-                .Setup(r => r.VerificaSeUsuarioPossuiAbrangencia(usuarioRf))
+                .Setup(r => r.VerificaSeUsuarioPossuiAbrangencia(usuarioRf, perfilSelecionado))
                 .ReturnsAsync(true);
 
             var resultado = await _handler.Handle(query, cancellationToken);
 
             Assert.True(resultado);
-            _mockRepositorio.Verify(r => r.VerificaSeUsuarioPossuiAbrangencia(usuarioRf), Times.Once);
+            _mockRepositorio.Verify(r => r.VerificaSeUsuarioPossuiAbrangencia(usuarioRf, perfilSelecionado), Times.Once);
         }
 
         [Fact]
         public async Task Handle_DeveRetornarFalse_QuandoUsuarioNaoPossuirAbrangencia()
         {
             var usuarioRf = "7654321";
-            var query = new VerificaSeUsuarioPossuiAbrangenciaQuery(usuarioRf);
+            var perfilSelecionado = Guid.NewGuid();
+            var query = new VerificaSeUsuarioPossuiAbrangenciaQuery(usuarioRf, perfilSelecionado);
             var cancellationToken = CancellationToken.None;
 
             _mockRepositorio
-                .Setup(r => r.VerificaSeUsuarioPossuiAbrangencia(usuarioRf))
+                .Setup(r => r.VerificaSeUsuarioPossuiAbrangencia(usuarioRf, perfilSelecionado))
                 .ReturnsAsync(false);
 
             var resultado = await _handler.Handle(query, cancellationToken);
 
             Assert.False(resultado);
-            _mockRepositorio.Verify(r => r.VerificaSeUsuarioPossuiAbrangencia(usuarioRf), Times.Once);
+            _mockRepositorio.Verify(r => r.VerificaSeUsuarioPossuiAbrangencia(usuarioRf, perfilSelecionado), Times.Once);
         }
 
         [Fact]
         public async Task Handle_DeveChamarRepositorioComParametroCorreto()
         {
             var usuarioRf = "9876543";
-            var query = new VerificaSeUsuarioPossuiAbrangenciaQuery(usuarioRf);
+            var perfilSelecionado = Guid.NewGuid();
+            var query = new VerificaSeUsuarioPossuiAbrangenciaQuery(usuarioRf, perfilSelecionado);
             var cancellationToken = CancellationToken.None;
 
             _mockRepositorio
-                .Setup(r => r.VerificaSeUsuarioPossuiAbrangencia(It.IsAny<string>()))
+                .Setup(r => r.VerificaSeUsuarioPossuiAbrangencia(It.IsAny<string>(), It.IsAny<Guid>()))
                 .ReturnsAsync(true);
 
             await _handler.Handle(query, cancellationToken);
 
             _mockRepositorio.Verify(
-                r => r.VerificaSeUsuarioPossuiAbrangencia(usuarioRf),
+                r => r.VerificaSeUsuarioPossuiAbrangencia(usuarioRf, perfilSelecionado),
                 Times.Once,
                 "O método deve ser chamado exatamente uma vez com o RF correto");
         }
@@ -85,12 +88,13 @@ namespace SME.SGP.Aplicacao.Teste.Queries.Abrangencia.VerificaSeUsuarioPossuiAbr
         public async Task Handle_DeveRespeitarCancellationToken()
         {
             var usuarioRf = "1234567";
-            var query = new VerificaSeUsuarioPossuiAbrangenciaQuery(usuarioRf);
+            var perfilSelecionado = Guid.NewGuid();
+            var query = new VerificaSeUsuarioPossuiAbrangenciaQuery(usuarioRf, perfilSelecionado);
             var cancellationTokenSource = new CancellationTokenSource();
             cancellationTokenSource.Cancel();
 
             _mockRepositorio
-                .Setup(r => r.VerificaSeUsuarioPossuiAbrangencia(usuarioRf))
+                .Setup(r => r.VerificaSeUsuarioPossuiAbrangencia(usuarioRf, perfilSelecionado))
                 .ThrowsAsync(new OperationCanceledException());
 
             await Assert.ThrowsAsync<OperationCanceledException>(() =>
@@ -101,12 +105,13 @@ namespace SME.SGP.Aplicacao.Teste.Queries.Abrangencia.VerificaSeUsuarioPossuiAbr
         public async Task Handle_DevePropagaExcecaoDoRepositorio()
         {
             var usuarioRf = "1234567";
-            var query = new VerificaSeUsuarioPossuiAbrangenciaQuery(usuarioRf);
+            var perfilSelecionado = Guid.NewGuid();
+            var query = new VerificaSeUsuarioPossuiAbrangenciaQuery(usuarioRf, perfilSelecionado);
             var cancellationToken = CancellationToken.None;
             var mensagemErro = "Erro ao acessar o banco de dados";
 
             _mockRepositorio
-                .Setup(r => r.VerificaSeUsuarioPossuiAbrangencia(usuarioRf))
+                .Setup(r => r.VerificaSeUsuarioPossuiAbrangencia(usuarioRf, perfilSelecionado))
                 .ThrowsAsync(new Exception(mensagemErro));
 
             var exception = await Assert.ThrowsAsync<Exception>(() =>
