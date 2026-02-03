@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao.Queries.Abrangencia.VerificaSeUsuarioPossuiAbrangenc
 
         public Task<bool> Handle(VerificaSeUsuarioPossuiAbrangenciaQuery request, CancellationToken cancellationToken)
         {
-            return repositorioAbrangencia.VerificaSeUsuarioPossuiAbrangencia(request.UsuarioRf);
+            return repositorioAbrangencia.VerificaSeUsuarioPossuiAbrangencia(request.UsuarioRf, request.PerfilSelecionado);
         }
     }
 }
