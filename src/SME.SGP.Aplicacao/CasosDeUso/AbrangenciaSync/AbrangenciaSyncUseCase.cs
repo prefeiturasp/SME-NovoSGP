@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.AbrangenciaSync;
 using SME.SGP.Aplicacao.Queries.ObterUsuariosPerfis;
 using SME.SGP.Infra;

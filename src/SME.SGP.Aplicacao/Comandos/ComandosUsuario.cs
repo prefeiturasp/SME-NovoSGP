@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SME.SGP.Aplicacao.Integracoes;
