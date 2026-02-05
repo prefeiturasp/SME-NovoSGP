@@ -1,5 +1,8 @@
-﻿using SME.SGP.Infra;
+﻿using SME.SGP.Dominio.Entidades;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoDistorcaoIdade;
+using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoPlanoAEE;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -11,7 +14,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<PaginacaoResultadoDto<PlanoAEEAlunoTurmaDto>> ListarPaginado(long dreId, long[] ueId, long turmaId, string alunoCodigo, int? situacao, string[] turmasCodigos, bool ehAdmin, bool ehPAEE, Paginacao paginacao, bool exibirEncerrados, string responsavelRf, string responsavelRfPaai);
 
-        Task<PlanoAEEResumoDto> ObterPlanoPorEstudante(string codigoEstudante);
+        Task<PlanoAEEResumoDto> ObterPlanoPorEstudante(FiltroEstudantePlanoAEEDto filtro);
 
         Task<PlanoAEE> ObterPlanoComTurmaPorId(long planoId);
         Task<IEnumerable<PlanoAEE>> ObterPlanosAtivos();

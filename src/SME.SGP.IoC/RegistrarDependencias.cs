@@ -22,6 +22,7 @@ using SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Idep;
 using SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Proficiencia;
 using SME.SGP.Aplicacao.CasosDeUso.Informes;
 using SME.SGP.Aplicacao.CasosDeUso.PainelEducacional;
+using SME.SGP.Aplicacao.CasosDeUso.PlanoAEE.EncerrarPlano;
 using SME.SGP.Aplicacao.CasosDeUso.Turma;
 using SME.SGP.Aplicacao.CasosDeUso.Usuarios;
 using SME.SGP.Aplicacao.Consultas;
@@ -265,6 +266,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasFrequenciaSemanalUeUseCase, ConsultasFrequenciaSemanalUeUseCase>();
             services.TryAddScoped<IConsultasDistorcaoIdadeUseCase, ConsultasDistorcaoIdadeUseCase>();
             services.TryAddScoped<IRepositorioPainelEducacionalProficienciaIdeb, RepositorioPainelEducacionalProficienciaIdeb>();
+            services.TryAddScoped<IConsultasModalidadesNotasVisaoUeUseCase, ConsultasModalidadesNotasVisaoUeUseCase>();
+            services.TryAddScoped<IConsultasPlanosAEEPainelEducacionalUseCase, ConsultasPlanosAEEPainelEducacionalUseCase>();
         }
 
         protected virtual void RegistrarContextos(IServiceCollection services)
@@ -699,6 +702,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsolidarNotasPainelEducacionalUseCase, ConsolidarNotasPainelEducacionalUseCase>();
             services.TryAddScoped<IConsolidarReclassificacaoPainelEducacionalUseCase, ConsolidarReclassificacaoPainelEducacionalUseCase>();
             services.TryAddScoped<IConsolidarDistorcaoIdadePainelEducacionalUseCase, ConsolidarDistorcaoIdadePainelEducacionalUseCase>();
+            services.TryAddScoped<IConsolidarPlanoAEEPainelEducacionalUseCase, ConsolidarPlanoAEEPainelEducacionalUseCase>();
 
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoProficienciaIdep, RepositorioPainelEducacionalConsolidacaoProficienciaIdep>();
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoProficienciaIdeb, RepositorioPainelEducacionalConsolidacaoProficienciaIdeb>();
@@ -1215,6 +1219,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExecutaEncerramentoPlanoAEEEstudantesInativosUseCase, ExecutaEncerramentoPlanoAEEEstudantesInativosUseCase>();
             services.TryAddScoped<IObterParecerPlanoAEEPorIdUseCase, ObterParecerPlanoAEEPorIdUseCase>();
             services.TryAddScoped<IEncerrarPlanoAEEUseCase, EncerrarPlanoAEEUseCase>();
+            services.TryAddScoped<IEncerramentoManualPlanoAEEUseCase, EncerramentoManualPlanoAEEUseCase>();
 
             services.TryAddScoped<IObterAlunoPorCodigoEolEAnoLetivoUseCase, ObterAlunoPorCodigoEolEAnoLetivoUseCase>();
             services.TryAddScoped<IRegistrarEncaminhamentoAEEUseCase, RegistrarEncaminhamentoAEEUseCase>();
