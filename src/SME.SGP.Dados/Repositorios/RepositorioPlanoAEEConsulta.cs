@@ -6,7 +6,6 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
-using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoDistorcaoIdade;
 using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoPlanoAEE;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
@@ -180,7 +179,7 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine("                  limit 1)) ");
         }
 
-        public async Task<PlanoAEEResumoDto> ObterPlanoPorEstudante(string codigoEstudante)
+        public async Task<PlanoAEEResumoDto> ObterPlanoPorEstudante(FiltroEstudantePlanoAEEDto filtro)
         {
             var query = @"select distinct   pa.Id,
                                             pa.aluno_numero as numero,
@@ -188,24 +187,27 @@ namespace SME.SGP.Dados.Repositorios
                                             tu.nome as turma,
                                             pa.situacao 
                                         from plano_aee pa
-                                        inner join turma tu on tu.id = pa.turma_id 
+                                        inner join turma tu on tu.id = pa.turma_id                                         
+                                        inner join ue on ue.id = tu.ue_id
                                         where pa.aluno_codigo = @codigoEstudante 
+                                        and ue.ue_id = @codigoUe
                                         and not pa.situacao = any(@situacoesDesconsideradas)
                                         and not pa.excluido
                                         limit 1";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanoAEEResumoDto>(query, new
             {
-                codigoEstudante,
+                codigoEstudante = filtro.CodigoEstudante,
+                codigoUe = filtro.CodigoUe,
                 situacoesDesconsideradas = new int[] { (int)SituacaoPlanoAEE.Encerrado, (int)SituacaoPlanoAEE.EncerradoAutomaticamente }
             });
         }
-        
+
         public async Task<IEnumerable<PlanoAEEResumoIntegracaoDto>> ObterPlanoPorTurma(FiltroTurmaPlanoAEEDto filtro)
         {
             var condicaoUe = !string.IsNullOrWhiteSpace(filtro.CodigoUe) ? "and ue.ue_id = @codigoUe" : "";
 
-                        var sql = $@"
+            var sql = $@"
                     select distinct 
                         pa.Id,
                         pa.aluno_numero as numero,
@@ -429,7 +431,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (dreId > 0)
                 where.Append(" and ue.dre_id = @dreId");
- 
+
             if (ueId > 0)
                 where.Append(" and ue.id = @ueId");
 
@@ -472,7 +474,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (ueId > 0)
                 where.Append(" and ue.id = @ueId");
-            
+
             var sqlTotalPlanos = ObterQueryTotalPlanos(where.ToString());
 
             where.Append(" and pa.situacao in (1,2,8)");
@@ -606,7 +608,7 @@ namespace SME.SGP.Dados.Repositorios
             return sql.ToString();
         }
 
-        public async Task<IEnumerable<DadosParaConsolidarPlanosAEEDto>> ObterPlanosConsolidarPainelEducacional()
+        public async Task<IEnumerable<DadosParaConsolidarPlanosAEEDto>> ObterPlanosConsolidarPainelEducacional(int anoLetivo)
         {
             var query = $@"SELECT 
 	                        t4.dre_id AS codigoDre
@@ -619,7 +621,7 @@ namespace SME.SGP.Dados.Repositorios
                         INNER JOIN dre t4 ON (t4.id = t3.dre_id)
                         WHERE t1.excluido = false AND t2.ano_letivo = @anoLetivo;";
 
-            return await database.Conexao.QueryAsync<DadosParaConsolidarPlanosAEEDto>(query, new { anoLetivo = DateTime.Now.Year });
+            return await database.Conexao.QueryAsync<DadosParaConsolidarPlanosAEEDto>(query, new { anoLetivo });
         }
 
         public async Task<IEnumerable<PainelEducacionalConsolidacaoPlanoAEE>> ObterConsolidacaoPlanosPainelEducacional(FiltroPainelEducacionalPlanosAEE filtro)
@@ -632,13 +634,14 @@ namespace SME.SGP.Dados.Repositorios
                         FROM painel_educacional_consolidacao_plano_aee
                         WHERE ano_letivo = @anoLetivo";
 
-            if(!string.IsNullOrEmpty(filtro.CodigoDre))
+            if (!string.IsNullOrEmpty(filtro.CodigoDre))
                 query += " AND codigo_dre = @codigoDre";
 
             if (!string.IsNullOrEmpty(filtro.CodigoUe))
                 query += " AND codigo_ue = @codigoUe";
 
-            return await database.Conexao.QueryAsync<PainelEducacionalConsolidacaoPlanoAEE>(query, new { 
+            return await database.Conexao.QueryAsync<PainelEducacionalConsolidacaoPlanoAEE>(query, new
+            {
                 anoLetivo = filtro.AnoLetivo,
                 codigoDre = filtro.CodigoDre,
                 codigoUe = filtro.CodigoUe
