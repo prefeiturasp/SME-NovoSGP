@@ -18,8 +18,10 @@ namespace SME.SGP.Dados.Repositorios
     [ExcludeFromCodeCoverage]
     public class RepositorioAulaConsulta : RepositorioBase<Aula>, IRepositorioAulaConsulta
     {
-        public RepositorioAulaConsulta(ISgpContextConsultas conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
+        private readonly ISgpContext contexto;
+        public RepositorioAulaConsulta(ISgpContextConsultas conexao, ISgpContext _contexto, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
+            contexto = _contexto;
         }
 
         public async Task<AulaConsultaDto> ObterAulaDataTurmaDisciplina(DateTime data, string turmaId, string disciplinaId)
@@ -631,7 +633,7 @@ namespace SME.SGP.Dados.Repositorios
                 aulaInicio,
                 aulaFim
             };
-            return await database.Conexao.QueryAsync<AulaPossuiFrequenciaAulaRegistradaDto>(query.ToString(), parametros);
+            return await contexto.QueryAsync<AulaPossuiFrequenciaAulaRegistradaDto>(query.ToString(), parametros);
         }
         public IEnumerable<Aula> ObterDatasDeAulasPorAnoTurmaEDisciplina(IEnumerable<long> periodosEscolaresId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF, DateTime? aulaInicio, DateTime? aulaFim, bool aulaCj)
         {
@@ -657,7 +659,7 @@ namespace SME.SGP.Dados.Repositorios
             if (aulaCj)
                 query.AppendLine("and a.aula_cj = true");
 
-            return database.Conexao.Query<Aula, Turma, Aula>(query.ToString(), (aula, turma) =>
+            return contexto.Query<Aula, Turma, Aula>(query.ToString(), (aula, turma) =>
             {
                 aula.Turma = turma;
                 return aula;
@@ -902,7 +904,6 @@ namespace SME.SGP.Dados.Repositorios
                                 left join plano_aula pa
                                     on a.id = pa.aula_id
                           where a.tipo_calendario_id = @tipoCalendarioId and
-                                a.excluido = false and
                                 a.turma_id = @turmaId";
 
             var criadoRf = new string[] { criadoPor?.ToUpper() };
@@ -1200,7 +1201,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = "select * from aula where id = ANY(@aulasIds)";
 
-            return await database.Conexao.QueryAsync<Aula>(query, new { aulasIds = aulasIds.ToList() });
+            return await contexto.QueryAsync<Aula>(query, new { aulasIds = aulasIds.ToList() });
         }
 
         public async Task<IEnumerable<TotalAulasNaoLancamNotaDto>> ObterTotalAulasPorTurmaDisciplinaAluno(string disciplinaId, string codigoTurma, string codigoAluno)

@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Aplicacao.Queries.Informes.VerificaSeExisteNotificacaoInformePorIdUsuarioRf;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
@@ -23,6 +24,10 @@ namespace SME.SGP.Aplicacao
             var informeExcluido = await mediator.Send(new InformeFoiExcluidoQuery(notificacaoInformativoUsuario.InformativoId));
             
             if (informeExcluido)
+                return false;
+
+            var existeNotificacaoUsuario = await mediator.Send(new VerificaSeExisteNotificacaoInformePorIdUsuarioRfQuery(notificacaoInformativoUsuario.InformativoId, notificacaoInformativoUsuario.UsuarioRf));
+            if (existeNotificacaoUsuario)
                 return false;
 
             unitOfWork.IniciarTransacao();

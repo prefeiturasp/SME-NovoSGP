@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using SME.SGP.Metrica.Worker.Entidade;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Metrica.Worker.Repositorios.Interfaces
 {
@@ -50,5 +52,6 @@ namespace SME.SGP.Metrica.Worker.Repositorios.Interfaces
         Task<bool> AtualizarCompensacoesRegistroFrequenciaAlunoDuplicado(long registroFrequenciaId, long aulaId, int numeroAula, string alunoCodigo, long ultimoId);
         Task AtualizarAusenciaRegistroFrequenciaAlunoDuplicado(long ultimoId);
         Task ExcluirRegistroFrequenciaAlunoDuplicado(long registroFrequenciaId, long aulaId, int numeroAula, string alunoCodigo, long ultimoId);
+        Task<IEnumerable<ConsolidacaoFrequenciaAlunoMensalInconsistente>> ObterConsolidacaoFrequenciaAlunoMensalInconsistente(long turmaId);
     }
 }

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -63,15 +63,38 @@ namespace SME.SGP.Notificacoes.Hub
             var context = Context.GetHttpContext();
             var usuarioRf = context.User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Name))?.Value;
             if (!string.IsNullOrEmpty(usuarioRf))
-                await repositorioUsuario.Excluir(usuarioRf);
+                await RemoverConexaoUsuario(usuarioRf);
 
             await RemoverClienteDaListaUsuarios();
 
             await base.OnDisconnectedAsync(exception);
         }
 
+        private Task RemoverConexaoUsuario(string usuarioRf)
+        {
+            try
+            {
+                return repositorioUsuario.Excluir(usuarioRf);
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError("Erro remover usuario do armazenamento redis", ex.Message);
+                return Task.CompletedTask;
+            }
+        }
+
         private Task ArmazenaConexaoUsuario(string usuarioRf, string connectionId)
-            => repositorioUsuario.Salvar(usuarioRf, connectionId);
+        {
+            try
+            {
+                return repositorioUsuario.Salvar(usuarioRf, connectionId);
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError("Erro armazenar usuario redis", ex.Message);
+                return Task.CompletedTask;
+            }
+        }
 
         public async Task SendMessage(string user, string message)
         {
@@ -113,7 +136,7 @@ namespace SME.SGP.Notificacoes.Hub
                     await Clients.Client(Context.ConnectionId).SendAsync("BloqueioUsuario", (posicaoFila + 1) - limiteConexoes);
                 }
 
-                logger.LogInformation($"Usuário conectado. ConnectionId: {Context.ConnectionId}. Total de conexões: {listaUsuarios.Count}/{limiteConexoes}.");
+                logger.LogWarning($"Usuário conectado. ConnectionId: {Context.ConnectionId}. Total de conexões: {listaUsuarios.Count}/{limiteConexoes}.");
             }
             catch (Exception ex)
             {
@@ -137,20 +160,26 @@ namespace SME.SGP.Notificacoes.Hub
 
                     listaUsuarios.Skip(limiteConexoes).ToList().ForEach(async connectionId =>
                     {
-                        int novaPosicaoFila = listaUsuarios.IndexOf(connectionId);
-                        await Clients.Client(connectionId).SendAsync("BloqueioUsuario", (novaPosicaoFila + 1) - limiteConexoes);
+                        if (!string.IsNullOrWhiteSpace(connectionId))
+                        {
+                            int novaPosicaoFila = listaUsuarios.IndexOf(connectionId);
+                            await Clients.Client(connectionId).SendAsync("BloqueioUsuario", (novaPosicaoFila + 1) - limiteConexoes);
+                        }
                     });
                 }
                 else
                 {
                     listaUsuarios.Skip(posicaoFila).ToList().ForEach(async connectionId =>
                     {
-                        int novaPosicaoFila = listaUsuarios.IndexOf(connectionId);
-                        await Clients.Client(connectionId).SendAsync("BloqueioUsuario", (novaPosicaoFila + 1) - limiteConexoes);
+                        if (!string.IsNullOrWhiteSpace(connectionId))
+                        {
+                            int novaPosicaoFila = listaUsuarios.IndexOf(connectionId);
+                            await Clients.Client(connectionId).SendAsync("BloqueioUsuario", (novaPosicaoFila + 1) - limiteConexoes);
+                        }
                     });
                 }
 
-                logger.LogInformation($"Usuário desconectado. ConnectionId: {Context.ConnectionId}. Total de conexões: {listaUsuarios.Count}/{limiteConexoes}.");
+                logger.LogWarning($"Usuário desconectado. ConnectionId: {Context.ConnectionId}. Total de conexões: {listaUsuarios.Count}/{limiteConexoes}.");
             }
             catch (Exception ex)
             {

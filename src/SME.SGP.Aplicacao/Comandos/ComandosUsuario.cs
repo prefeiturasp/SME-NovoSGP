@@ -1,7 +1,8 @@
-﻿using MediatR;
+using MediatR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Aplicacao.Queries.Abrangencia.VerificaSeUsuarioPossuiAbrangencia;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
@@ -99,20 +100,20 @@ namespace SME.SGP.Aplicacao
                 return new UsuarioAutenticacaoRetornoDto();
 
             var chaveCache = string.Format(NomeChaveCache.LOGIN, login);
-            //var cacheLogin = repositorioCache.Obter(chaveCache);
+            var cacheLogin = repositorioCache.Obter(chaveCache);
 
-            //if (cacheLogin.NaoEhNulo())
-            //{
-            //    var usuarioAutenticacaoRetornoDto = JsonConvert.DeserializeObject<UsuarioAutenticacaoRetornoDto>(cacheLogin);
-            //    var token = ObterToken(usuarioAutenticacaoRetornoDto?.Token);
-            //    if (token > DateTime.Now)
-            //        return usuarioAutenticacaoRetornoDto;
-            //}
+            if (cacheLogin.NaoEhNulo())
+            {
+                var usuarioAutenticacaoRetornoDto = JsonConvert.DeserializeObject<UsuarioAutenticacaoRetornoDto>(cacheLogin);
+                var token = ObterToken(usuarioAutenticacaoRetornoDto?.Token);
+                if (token > DateTime.Now)
+                    return usuarioAutenticacaoRetornoDto;
+            }
 
             var retornoAutenticacaoEol = await servicoAutenticacao.AutenticarNoEol(usuarioAutenticacao);
 
             var autenticacao = await ObterAutenticacao(retornoAutenticacaoEol, login);
-            await repositorioCache.SalvarAsync(chaveCache, autenticacao, 120);
+            await repositorioCache.SalvarAsync(chaveCache, autenticacao, 180);
             return autenticacao;
         }
 
@@ -197,7 +198,9 @@ namespace SME.SGP.Aplicacao
             await SalvarCacheUsuario(usuario);
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.AtualizaUltimoLoginUsuario, usuario, usuarioLogado: usuario));
 
-            //await mediator.Send(new CarregarAbrangenciaUsuarioCommand(login, perfilSelecionado));
+            var usuarioPossuiAbrangencia = await mediator.Send(new VerificaSeUsuarioPossuiAbrangenciaQuery(login));
+            if (!usuarioPossuiAbrangencia)
+                await mediator.Send(new CarregarAbrangenciaUsuarioCommand(login, perfilSelecionado));
 
             retornoAutenticacaoEol.UsuarioAutenticacaoRetornoDto.UsuarioLogin = usuario.Login;
             retornoAutenticacaoEol.UsuarioAutenticacaoRetornoDto.UsuarioRf = usuario.CodigoRf;
