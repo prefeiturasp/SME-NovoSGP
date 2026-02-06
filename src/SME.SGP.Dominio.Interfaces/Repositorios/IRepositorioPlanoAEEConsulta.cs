@@ -28,8 +28,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<Pendencia> ObterUltimaPendenciaPlano(long planoId);
         Task<IEnumerable<UsuarioEolRetornoDto>> ObterResponsaveis(long dreId, long[] ueId, long turmaId, string alunoCodigo, int? situacao, bool exibirEncerrados);
         Task<IEnumerable<PlanoAEETurmaDto>> ObterPlanosComSituacaoDiferenteDeEncerrado(long? anoLetivo);
-        Task<IEnumerable<DadosParaConsolidarPlanosAEEDto>> ObterPlanosConsolidarPainelEducacional(int anoLetivo);
-        Task<IEnumerable<PainelEducacionalConsolidacaoPlanoAEE>> ObterConsolidacaoPlanosPainelEducacional(FiltroPainelEducacionalPlanosAEE filtro);
         Task<IEnumerable<PlanoAEEResumoIntegracaoDto>> ObterPlanoPorTurma(FiltroTurmaPlanoAEEDto filtro);
     }
 }
