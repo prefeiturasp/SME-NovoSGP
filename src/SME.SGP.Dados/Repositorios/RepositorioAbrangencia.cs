@@ -1036,7 +1036,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<Turma>(query, new { perfilCP = Guid.Parse(PerfilUsuario.CP.Name().ToString()), anoLetivo, codigoRf, modalidadeTurma, anoTurma, turmaIdReferencia });
         }
 
-        public async Task<bool> VerificaSeUsuarioPossuiAbrangencia(string usuarioRf)
+        public async Task<bool> VerificaSeUsuarioPossuiAbrangencia(string usuarioRf, Guid perfil)
         {
             var query = @"select
 	                        count(a.id) > 0
@@ -1045,9 +1045,9 @@ namespace SME.SGP.Dados.Repositorios
                         inner join usuario u on
 	                        u.id = a.usuario_id
                         where
-	                        u.rf_codigo = @usuarioRf";
+	                        u.rf_codigo = @usuarioRf and a.perfil = @perfil";
 
-            var retorno = await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { usuarioRf });
+            var retorno = await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { usuarioRf, perfil });
 
             return retorno;
         }
