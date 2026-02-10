@@ -8,6 +8,7 @@ using SME.SGP.Infra.Consts;
 using SME.SGP.Infra.Dtos.NovoEncaminhamentoNAAPA;
 using SME.SGP.Infra.Interface;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -454,6 +455,37 @@ namespace SME.SGP.Dados.Repositorios
                            and not excluido";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { codigoAluno, situacao = (int)SituacaoNovoEncaminhamentoNAAPA.Encerrado });
+        }
+
+        public async Task<IEnumerable<NovoEncaminhamentoNAAPACodigoArquivoDto>> ObterCodigoArquivoPorEncaminhamentoNAAPAId(long encaminhamentoId)
+        {
+            var sql = @"select
+                                a.codigo
+                            from
+                                encaminhamento_escolar ee
+                            inner join encaminhamento_naapa_secao eas on
+                                ee.id = eas.encaminhamento_naapa_id
+                            inner join encaminhamento_escolar_questao qea on
+                                eas.id = qea.encaminhamento_escolar_secao_id
+                            inner join encaminhamento_escolar_resposta rea on
+                                qea.id = rea.questao_encaminhamento_id
+                            inner join arquivo a on
+                                rea.arquivo_id = a.id
+                            where
+                                ee.id = @encaminhamentoId";
+
+            return await database.Conexao.QueryAsync<NovoEncaminhamentoNAAPACodigoArquivoDto>(sql.ToString(), new { encaminhamentoId });
+        }
+
+        public async Task<bool> ExisteEncaminhamentoNAAPAAtivoId(long encaminhamentoId)
+        {
+            var query = @"SELECT 1 
+                              FROM encaminhamento_escolar 
+                             WHERE id = @encaminhamentoId
+                               and situacao <> @situacao
+                               and not excluido";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { encaminhamentoId, situacao = (int)SituacaoNovoEncaminhamentoNAAPA.Encerrado });
         }
     }
 }
