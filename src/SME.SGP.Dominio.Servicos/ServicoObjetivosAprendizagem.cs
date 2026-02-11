@@ -7,6 +7,7 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
@@ -34,88 +35,214 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task SincronizarObjetivosComJurema()
         {
-            var parametrosDataUltimaAtualizacao = await mediator.Send(new ObterParametroSistemaUnicoChaveEValorPorTipoQuery(TipoParametroSistema.DataUltimaAtualizacaoObjetivosJurema));
-
-            if (parametrosDataUltimaAtualizacao.HasValue)
+            try
             {
-                var dataUltimaAtualizacao = DateTime.Parse(parametrosDataUltimaAtualizacao.Value.Value);
+                var parametrosDataUltimaAtualizacao = await mediator.Send(new ObterParametroSistemaUnicoChaveEValorPorTipoQuery(TipoParametroSistema.DataUltimaAtualizacaoObjetivosJurema));
 
-                var objetivosJuremaRespostaApi = await servicoJurema.ObterListaObjetivosAprendizagem();
-                if (objetivosJuremaRespostaApi != null && objetivosJuremaRespostaApi.Any())
+                if (parametrosDataUltimaAtualizacao.HasValue)
                 {
-                    var objetivosBase = await repositorioObjetivoAprendizagem.ListarAsync();
+                    var dataUltimaAtualizacao = DateTime.Parse(parametrosDataUltimaAtualizacao.Value.Value);
 
-                    var objetivosJuremaResposta = objetivosJuremaRespostaApi.Where(c => c.Codigo.Length <= 20);
-
-                    var objetivosAIncluir = objetivosJuremaResposta?
-                        .Where(c => !objetivosBase.Any(b => b.Id == c.Id));
-
-                    var objetivosADesativar = objetivosBase?
-                        .Where(c => !c.Excluido)?.Where(c => !objetivosJuremaResposta.Any(b => b.Id == c.Id));
-
-                    var objetivosAReativar = objetivosJuremaResposta?
-                        .Where(c => objetivosBase.Any(b => b.Id == c.Id && b.Excluido));
-
-                    var objetivosAAtualizar = objetivosJuremaResposta?
-                        .Where(c => c.AtualizadoEm > dataUltimaAtualizacao);
-
-                    var atualizarUltimaDataAtualizacao = false;
-                    var houveAlteracaoNosDados = false;
-
-                    if (objetivosAAtualizar != null && objetivosAAtualizar.Any())
+                    var objetivosJuremaRespostaApi = await servicoJurema.ObterListaObjetivosAprendizagem();
+                    if (objetivosJuremaRespostaApi != null && objetivosJuremaRespostaApi.Any())
                     {
-                        foreach (var objetivo in objetivosAAtualizar)
-                            await AtualizarObjetivoBase(objetivo);
+                        var objetivosBase = await repositorioObjetivoAprendizagem.ListarAsync();
 
-                        atualizarUltimaDataAtualizacao = true;
-                        houveAlteracaoNosDados = true;
-                    }
+                        var objetivosJuremaResposta = objetivosJuremaRespostaApi.Where(c => c.Codigo.Length <= 20);
 
-                    if (objetivosAIncluir != null && objetivosAIncluir.Any())
-                    {
-                        foreach (var objetivo in objetivosAIncluir)
-                            await repositorioObjetivoAprendizagem.InserirAsync(MapearObjetivoRespostaParaDominio(objetivo));
+                        var objetivosAIncluir = objetivosJuremaResposta?
+                            .Where(c => !objetivosBase.Any(b => b.Id == c.Id));
 
-                        houveAlteracaoNosDados = true;
-                    }
+                        var objetivosADesativar = objetivosBase?
+                            .Where(c => !c.Excluido)?.Where(c => !objetivosJuremaResposta.Any(b => b.Id == c.Id));
 
-                    if (objetivosAReativar != null && objetivosAReativar.Any())
-                    {
-                        foreach (var objetivo in objetivosAReativar)
-                            await repositorioObjetivoAprendizagem.ReativarAsync(objetivo.Id);
+                        var objetivosAReativar = objetivosJuremaResposta?
+                            .Where(c => objetivosBase.Any(b => b.Id == c.Id && b.Excluido));
 
-                        houveAlteracaoNosDados = true;
-                    }
+                        var objetivosAAtualizar = objetivosJuremaResposta?
+                            .Where(c => c.AtualizadoEm > dataUltimaAtualizacao);
 
-                    if (objetivosADesativar != null && objetivosADesativar.Any())
-                    {
-                        foreach (var objetivo in objetivosADesativar)
+                        var atualizarUltimaDataAtualizacao = false;
+                        var houveAlteracaoNosDados = false;
+
+                        if (objetivosAAtualizar != null && objetivosAAtualizar.Any())
                         {
-                            objetivo.Desativar();
-                            await repositorioObjetivoAprendizagem.AtualizarAsync(objetivo);
+                            try
+                            {
+                                foreach (var objetivo in objetivosAAtualizar)
+                                    await AtualizarObjetivoBaseComVerificacaoCodigo(objetivo);
+                            }
+                            catch (Exception ex)
+                            {
+                                await mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro ao atualizar os objetivos de aprendizagem: {ex.Message}", LogNivel.Critico, LogContexto.ObjetivosAprendizagem, ex.ToString()));
+                            }
+
+                            atualizarUltimaDataAtualizacao = true;
+                            houveAlteracaoNosDados = true;
                         }
-                        houveAlteracaoNosDados = true;
-                    }
 
-                    if (atualizarUltimaDataAtualizacao)
+                        if (objetivosAIncluir != null && objetivosAIncluir.Any())
+                        {
+                            foreach (var objetivo in objetivosAIncluir)
+                            {
+                                var codigoCompleto = NormalizarCodigoObjetivo(objetivo.Codigo);
+
+                                if (string.IsNullOrEmpty(codigoCompleto))
+                                {
+                                    await mediator.Send(new SalvarLogViaRabbitCommand($"Objetivo de aprendizagem com ID '{objetivo.Id}' possui código vazio ou nulo após normalização. Inserção ignorada.", LogNivel.Negocio, LogContexto.ObjetivosAprendizagem));
+                                    continue;
+                                }
+
+                                var existeCodigo = await repositorioObjetivoAprendizagem.ExistePorCodigoCompletoAsync(codigoCompleto);
+                                if (!existeCodigo)
+                                {
+                                    try { 
+                                    var objetivoParaInserir = MapearObjetivoRespostaParaDominio(objetivo);
+                                    objetivoParaInserir.CodigoCompleto = codigoCompleto;
+
+                                    await repositorioObjetivoAprendizagem.InserirAsync(objetivoParaInserir);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        await mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro ao inserir os objetivos de aprendizagem: {ex.Message}", LogNivel.Critico, LogContexto.ObjetivosAprendizagem, ex.ToString()));
+                                    }
+                                    houveAlteracaoNosDados = true;                                  
+                                }
+                                else
+                                {
+                                    await mediator.Send(new SalvarLogViaRabbitCommand($"Objetivo de aprendizagem com código '{codigoCompleto}' já existe na base de dados. Inserção ignorada.", LogNivel.Negocio, LogContexto.ObjetivosAprendizagem));
+                                }
+                            }
+                        }
+
+                        if (objetivosAReativar != null && objetivosAReativar.Any())
+                        {
+                            try
+                            {
+                                foreach (var objetivo in objetivosAReativar)
+                                {
+                                    await ReativarObjetivoComVerificacaoCodigo(objetivo);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                await mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro ao reativar os objetivos de aprendizagem: {ex.Message}", LogNivel.Critico, LogContexto.ObjetivosAprendizagem, ex.ToString()));
+                            }
+
+                            houveAlteracaoNosDados = true;
+                        }
+
+                        if (objetivosADesativar != null && objetivosADesativar.Any())
+                        {
+                            foreach (var objetivo in objetivosADesativar)
+                            {
+                                objetivo.Desativar();
+                                await repositorioObjetivoAprendizagem.AtualizarAsync(objetivo);
+                            }
+                            houveAlteracaoNosDados = true;
+                        }
+
+                        if (atualizarUltimaDataAtualizacao)
+                        {
+                            dataUltimaAtualizacao = objetivosJuremaResposta.Max(c => c.AtualizadoEm);
+                            await repositorioParametrosSistema.AtualizarValorPorTipoAsync(TipoParametroSistema.DataUltimaAtualizacaoObjetivosJurema, dataUltimaAtualizacao.ToString("yyyy-MM-dd HH:mm:ss.fff tt"));
+                        }
+
+                        if (houveAlteracaoNosDados)
+                            await repositorioCache.RemoverAsync(NomeChaveCache.OBJETIVOS_APRENDIZAGEM);
+
+                        await mediator.Send(new SalvarLogViaRabbitCommand($"Sincronização de objetivos de aprendizagem concluída com sucesso.", LogNivel.Negocio, LogContexto.ObjetivosAprendizagem));
+                    }
+                    else
                     {
-                        dataUltimaAtualizacao = objetivosJuremaResposta.Max(c => c.AtualizadoEm);
-                        await repositorioParametrosSistema.AtualizarValorPorTipoAsync(TipoParametroSistema.DataUltimaAtualizacaoObjetivosJurema, dataUltimaAtualizacao.ToString("yyyy-MM-dd HH:mm:ss.fff tt"));
+                        await mediator.Send(new SalvarLogViaRabbitCommand("Sincronização concluída: nenhum objetivo de aprendizagem retornado pela API da Jurema.", LogNivel.Negocio, LogContexto.ObjetivosAprendizagem));
                     }
-
-                    if (houveAlteracaoNosDados)
-                        await repositorioCache.RemoverAsync(NomeChaveCache.OBJETIVOS_APRENDIZAGEM);
                 }
+                else
+                    await mediator.Send(new SalvarLogViaRabbitCommand("Parâmetro 'DataUltimaAtualizacaoObjetivosJurema' não encontrado na base de dados, os objetivos de aprendizagem não serão atualizados.", LogNivel.Negocio, LogContexto.ObjetivosAprendizagem));
             }
-            else
-                await mediator.Send(new SalvarLogViaRabbitCommand("Parâmetro 'DataUltimaAtualizacaoObjetivosJurema' não encontrado na base de dados, os objetivos de aprendizagem não serão atualizados.", LogNivel.Negocio, LogContexto.ObjetivosAprendizagem));
+            catch (Exception ex)
+            {
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro ao sincronizar os objetivos de aprendizagem com a Jurema: {ex.Message}", LogNivel.Critico, LogContexto.ObjetivosAprendizagem, ex.ToString()));
+            }
+        }
+
+        private async Task<bool> ReativarObjetivoComVerificacaoCodigo(ObjetivoAprendizagemResposta objetivo)
+        {
+            var objetivoBase = await repositorioObjetivoAprendizagem.ObterPorIdAsync(objetivo.Id);
+
+            if (objetivoBase != null && objetivoBase.Excluido)
+            {
+                var codigoNormalizado = NormalizarCodigoObjetivo(objetivo.Codigo);
+
+                var existeCodigoEmObjetivoAtivo = await repositorioObjetivoAprendizagem.ExistePorCodigoCompletoAsync(codigoNormalizado);
+
+                if (existeCodigoEmObjetivoAtivo)
+                {
+                    await mediator.Send(new SalvarLogViaRabbitCommand(
+                        $"Reativação do objetivo ID '{objetivo.Id}' ignorada: já existe outro objetivo ativo com o código '{codigoNormalizado}'.",
+                        LogNivel.Negocio, LogContexto.ObjetivosAprendizagem));
+
+                    return false;
+                }
+
+                await repositorioObjetivoAprendizagem.ReativarAsync(objetivo.Id);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        private async Task AtualizarObjetivoBaseComVerificacaoCodigo(ObjetivoAprendizagemResposta objetivo)
+        {
+            var objetivoBase = await repositorioObjetivoAprendizagem.ObterPorIdAsync(objetivo.Id);
+            if (objetivoBase != null)
+            {
+                var codigoNormalizado = NormalizarCodigoObjetivo(objetivo.Codigo);
+
+                var existeCodigoEmOutroObjetivo = await repositorioObjetivoAprendizagem.ExistePorCodigoCompletoAsync(codigoNormalizado);
+
+                if (existeCodigoEmOutroObjetivo)
+                {
+                    MapearParaObjetivoDominioSemCodigo(objetivo, objetivoBase);
+
+                    await mediator.Send(new SalvarLogViaRabbitCommand(
+                        $"Objetivo ID '{objetivo.Id}': código '{codigoNormalizado}' já existe em outro objetivo. Mantido código original '{objetivoBase.CodigoCompleto}' e atualizados demais campos.",
+                        LogNivel.Negocio, LogContexto.ObjetivosAprendizagem));
+                }
+                else
+                {
+                    MapearParaObjetivoDominio(objetivo, objetivoBase);
+                }
+
+                await repositorioObjetivoAprendizagem.AtualizarAsync(objetivoBase);
+            }
+        }
+
+        private static void MapearParaObjetivoDominioSemCodigo(ObjetivoAprendizagemResposta objetivo, ObjetivoAprendizagem objetivoBase)
+        {
+            objetivoBase.AnoTurma = objetivo.Ano;
+            objetivoBase.AtualizadoEm = objetivo.AtualizadoEm;
+            objetivoBase.ComponenteCurricularId = objetivo.ComponenteCurricularId;
+            objetivoBase.CriadoEm = objetivo.CriadoEm;
+            objetivoBase.Descricao = objetivo.Descricao;
+        }
+
+        private static string NormalizarCodigoObjetivo(string codigo)
+        {
+            if (string.IsNullOrWhiteSpace(codigo))
+                return string.Empty;
+
+            // Remove espaços e caracteres especiais, mantendo apenas letras e números
+            return Regex.Replace(codigo.Trim(), @"[^\w\d]", "");
         }
 
         private static void MapearParaObjetivoDominio(ObjetivoAprendizagemResposta objetivo, ObjetivoAprendizagem objetivoBase)
         {
             objetivoBase.AnoTurma = objetivo.Ano;
             objetivoBase.AtualizadoEm = objetivo.AtualizadoEm;
-            objetivoBase.CodigoCompleto = objetivo.Codigo.Trim();
+            objetivoBase.CodigoCompleto = NormalizarCodigoObjetivo(objetivo.Codigo);
             objetivoBase.ComponenteCurricularId = objetivo.ComponenteCurricularId;
             objetivoBase.CriadoEm = objetivo.CriadoEm;
             objetivoBase.Descricao = objetivo.Descricao;
@@ -137,7 +264,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 AnoTurma = objetivo.Ano,
                 AtualizadoEm = objetivo.AtualizadoEm,
-                CodigoCompleto = objetivo.Codigo,
+                CodigoCompleto = NormalizarCodigoObjetivo(objetivo.Codigo),
                 ComponenteCurricularId = objetivo.ComponenteCurricularId,
                 CriadoEm = objetivo.CriadoEm,
                 Descricao = objetivo.Descricao,
