@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
@@ -31,6 +32,10 @@ namespace SME.SGP.Aplicacao
             var informacoesTurmasPrograma = await mediator.Send(new ObterInformacoesTurmasProgramaAlunoMapeamentoEstudanteQuery(request.CodigoAluno, DateTime.Now.Year));
             var questaoPAP = await repositorioQuestaoEncaminhamento.ObterIdQuestaoPorNomeComponenteQuestionario(request.QuestionarioId, "PAP");
             var questaoProjeto = await repositorioQuestaoEncaminhamento.ObterIdQuestaoPorNomeComponenteQuestionario(request.QuestionarioId, "PROJETO");
+            var questaoClasseHospitalar = await repositorioQuestaoEncaminhamento.ObterIdQuestaoPorNomeComponenteQuestionario(request.QuestionarioId, "CLASSE_HOSPITALAR");
+            var questaoTabela = await repositorioQuestaoEncaminhamento.ObterIdQuestaoPorNomeComponenteQuestionario(request.QuestionarioId, "TABELA_AVALIACOES_BIMESTRAIS");
+
+            var tabelaAvaliacoesBimestrais = await mediator.Send(new ObterAvaliacoesBimestraisAlunoQuery(request.CodigoAluno, DateTime.Now.Year));
 
             ObterRespostasFunc obterRespostasComRegra = (long questaoId) =>
             {
@@ -65,6 +70,18 @@ namespace SME.SGP.Aplicacao
                         {
                             QuestaoId = questaoId,
                             Texto = componentesCombinados.SerializarJsonTipoQuestaoComboMultiplaEscolhaDinamico()
+                        }
+                    };
+                }
+
+                if (questaoId == questaoTabela)
+                {            
+                    return new List<RespostaQuestaoDto>()
+                    {
+                        new RespostaQuestaoDto()
+                        {
+                            QuestaoId = questaoId,
+                            Texto = JsonConvert.SerializeObject(tabelaAvaliacoesBimestrais)
                         }
                     };
                 }

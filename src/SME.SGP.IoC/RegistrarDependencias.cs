@@ -250,6 +250,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IAlterarSituacaoAtendimentoNAAPAUseCase, AlterarSituacaoAtendimentoNAAPAUseCase>();
             services.TryAddScoped<IRepositorioAulaPrevistaConsulta, RepositorioAulaPrevistaConsulta>();
             services.TryAddScoped<IRepositorioAulaPrevistaBimestreConsulta, RepositorioAulaPrevistaBimestreConsulta>();
+            services.TryAddScoped<IRepositorioAvaliacoesBimestraisAluno, RepositorioAvaliacoesBimestraisAluno>();
             services.TryAddScoped<IRepositorioConsolidacaoMatriculaTurma, RepositorioConsolidacaoMatriculaTurma>();
             services.TryAddScoped<IRepositorioImportacaoLog, RepositorioImportacaoLog>();
             services.TryAddScoped<IRepositorioPainelEducacionalProficienciaIdep, RepositorioPainelEducacionalProficienciaIdep>();
