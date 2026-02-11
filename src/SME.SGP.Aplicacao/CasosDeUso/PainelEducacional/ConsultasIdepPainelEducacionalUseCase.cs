@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             return new PainelEducacionalIdepAgrupamentoDto
             {
                 AnoSolicitado = anoSolicitado,
-                AnoUtilizado = anoUtilizado,
+                AnoUtilizado = anoSolicitado,
                 AnoSolicitadoSemDados = true,
                 Etapa = string.Empty,
                 MediaGeral = 0,
