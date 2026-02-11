@@ -28,7 +28,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             return (long)(await database.Conexao.InsertAsync(entidade)) > 0;
         }
-        public async Task<IEnumerable<ConsolidacaoAlfabetizacaoCriticaEscrita>> ObterNumeroEstudantes(string codigoDre, string codigoUe)
+        public async Task<IEnumerable<ConsolidacaoAlfabetizacaoCriticaEscrita>> ObterNumeroEstudantes(int anoLetivo, string codigoDre, string codigoUe)
         {
             var query = new StringBuilder(@"
                                            SELECT * 
@@ -48,6 +48,9 @@ namespace SME.SGP.Dados.Repositorios
                 condicoes.Add("ue_codigo = @codigoUe");
                 parametros.Add("codigoUe", codigoUe);
             }
+
+            condicoes.Add("ano_letivo = @anoLetivo");
+            parametros.Add("anoLetivo", anoLetivo);
 
             if (condicoes.Any())
             {

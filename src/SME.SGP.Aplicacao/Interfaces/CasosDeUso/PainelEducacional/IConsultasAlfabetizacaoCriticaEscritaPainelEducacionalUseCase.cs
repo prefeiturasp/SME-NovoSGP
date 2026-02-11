@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional
 {
     public interface IConsultasAlfabetizacaoCriticaEscritaPainelEducacionalUseCase
     {
-        Task<IEnumerable<PainelEducacionalIndicadorAlfabetizacaoCriticaDto>> ObterNumeroEstudantes(string codigoDre = null, string codigoUe = null);
+        Task<IEnumerable<PainelEducacionalIndicadorAlfabetizacaoCriticaDto>> ObterNumeroEstudantes(int anoLetivo, string codigoDre = null, string codigoUe = null);
     }
 }

@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterIndicadoresAlfabetiza
 
         public async Task<IEnumerable<PainelEducacionalIndicadorAlfabetizacaoCriticaDto>> Handle(PainelEducacionalIndicadoresNivelAlfabetizacaoCriticaQuery request, CancellationToken cancellationToken)
         {
-            var registros = await repositorioConsolidacaoAlfabetizacaoCriticaEscrita.ObterNumeroEstudantes(request.CodigoDre, request.CodigoUe);
+            var registros = await repositorioConsolidacaoAlfabetizacaoCriticaEscrita.ObterNumeroEstudantes(request.AnoLetivo, request.CodigoDre, request.CodigoUe);
 
             return MapearParaDto(registros);
         }
@@ -37,7 +37,8 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterIndicadoresAlfabetiza
                     Dre = item.DreNome,
                     CodigoDre = item.DreCodigo,
                     TotalAlunosNaoAlfabetizados = item.TotalAlunosNaoAlfabetizados,
-                    PercentualTotalAlunos = item.PercentualTotalAlunos
+                    PercentualTotalAlunos = item.PercentualTotalAlunos,
+                    AnoLetivo = item.AnoLetivo
                 });
             }
 

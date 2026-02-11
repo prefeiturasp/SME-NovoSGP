@@ -16,6 +16,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.Posicao).ToColumn("posicao");
             Map(c => c.TotalAlunosNaoAlfabetizados).ToColumn("total_alunos_nao_alfabetizados");
             Map(c => c.PercentualTotalAlunos).ToColumn("percentual_total_alunos");
+            Map(c => c.AnoLetivo).ToColumn("ano_letivo");
         }
     }
 }

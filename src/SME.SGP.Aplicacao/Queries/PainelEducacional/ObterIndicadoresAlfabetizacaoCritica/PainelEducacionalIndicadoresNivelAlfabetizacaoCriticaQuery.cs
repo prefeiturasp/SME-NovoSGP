@@ -6,12 +6,14 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterIndicadoresAlfabetiza
 {
     public class PainelEducacionalIndicadoresNivelAlfabetizacaoCriticaQuery : IRequest<IEnumerable<PainelEducacionalIndicadorAlfabetizacaoCriticaDto>>
     {
-        public PainelEducacionalIndicadoresNivelAlfabetizacaoCriticaQuery(string codigoDre, string codigoUe)
+        public PainelEducacionalIndicadoresNivelAlfabetizacaoCriticaQuery(int anoLetivo, string codigoDre, string codigoUe)
         {
+            AnoLetivo = anoLetivo;
             CodigoDre = codigoDre;
             CodigoUe = codigoUe;
         }
 
+        public int AnoLetivo { get; set; }
         public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }
     }
