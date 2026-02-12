@@ -6,6 +6,7 @@ using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -19,6 +20,24 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioObjetivoAprendizagem repositorioObjetivoAprendizagem;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IServicoJurema servicoJurema;
+
+        private readonly Dictionary<string, int> Anos = new Dictionary<string, int>
+        {           
+            {"first", 1},
+            {"second", 2},
+            {"third", 3},
+            {"fourth", 4},
+            {"fifth", 5},
+            {"sixth", 6},
+            {"seventh", 7},
+            {"eighth", 8},
+            {"nineth", 9},
+            {"tenth", 10},
+            {"eleventh", 11},
+            {"twelfth", 12},
+            {"thirteenth", 13},
+            {"fourteenth", 14}
+        };
 
         public ServicoObjetivosAprendizagem(IServicoJurema servicoJurema,
                                             IRepositorioObjetivoAprendizagem repositorioObjetivoAprendizagem,
@@ -70,7 +89,12 @@ namespace SME.SGP.Dominio.Servicos
                             try
                             {
                                 foreach (var objetivo in objetivosAAtualizar)
-                                    await AtualizarObjetivoBaseComVerificacaoCodigo(objetivo);
+                                {
+                                    if (ValidarAno(objetivo.Ano))
+                                        await AtualizarObjetivoBaseComVerificacaoCodigo(objetivo);
+                                    else
+                                        await mediator.Send(new SalvarLogViaRabbitCommand($"Objetivo ID '{objetivo.Id}' possui ano inválido '{objetivo.Ano}'. Atualização ignorada.", LogNivel.Negocio, LogContexto.ObjetivosAprendizagem));
+                                }
                             }
                             catch (Exception ex)
                             {
@@ -85,6 +109,12 @@ namespace SME.SGP.Dominio.Servicos
                         {
                             foreach (var objetivo in objetivosAIncluir)
                             {
+                                if (!ValidarAno(objetivo.Ano))
+                                {
+                                    await mediator.Send(new SalvarLogViaRabbitCommand($"Objetivo ID '{objetivo.Id}' possui ano inválido '{objetivo.Ano}'. Inserção ignorada.", LogNivel.Negocio, LogContexto.ObjetivosAprendizagem));
+                                    continue;
+                                }
+
                                 var codigoCompleto = NormalizarCodigoObjetivo(objetivo.Codigo);
 
                                 if (string.IsNullOrEmpty(codigoCompleto))
@@ -93,7 +123,7 @@ namespace SME.SGP.Dominio.Servicos
                                     continue;
                                 }
 
-                                var existeCodigo = await repositorioObjetivoAprendizagem.ExistePorCodigoCompletoAsync(codigoCompleto);
+                                var existeCodigo = await repositorioObjetivoAprendizagem.ExistePorCodigoCompletoEAnoTurmaAsync(codigoCompleto, objetivo.Ano);
                                 if (!existeCodigo)
                                 {
                                     try { 
@@ -121,7 +151,10 @@ namespace SME.SGP.Dominio.Servicos
                             {
                                 foreach (var objetivo in objetivosAReativar)
                                 {
-                                    await ReativarObjetivoComVerificacaoCodigo(objetivo);
+                                    if (ValidarAno(objetivo.Ano))
+                                        await ReativarObjetivoComVerificacaoCodigo(objetivo);
+                                    else
+                                        await mediator.Send(new SalvarLogViaRabbitCommand($"Objetivo ID '{objetivo.Id}' possui ano inválido '{objetivo.Ano}'. Reativação ignorada.", LogNivel.Negocio, LogContexto.ObjetivosAprendizagem));
                                 }
                             }
                             catch (Exception ex)
@@ -167,6 +200,20 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
+        private bool ValidarAno(string ano)
+        {
+            if (string.IsNullOrWhiteSpace(ano))
+                return false;
+
+            if (ano.All(v => char.IsDigit(v)))
+            {
+                var anoNumerico = Convert.ToInt32(ano);
+                return Anos.ContainsValue(anoNumerico);
+            }
+
+            return Anos.ContainsKey(ano);
+        }
+
         private async Task<bool> ReativarObjetivoComVerificacaoCodigo(ObjetivoAprendizagemResposta objetivo)
         {
             var objetivoBase = await repositorioObjetivoAprendizagem.ObterPorIdAsync(objetivo.Id);
@@ -175,7 +222,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 var codigoNormalizado = NormalizarCodigoObjetivo(objetivo.Codigo);
 
-                var existeCodigoEmObjetivoAtivo = await repositorioObjetivoAprendizagem.ExistePorCodigoCompletoAsync(codigoNormalizado);
+                var existeCodigoEmObjetivoAtivo = await repositorioObjetivoAprendizagem.ExistePorCodigoCompletoEAnoTurmaAsync(codigoNormalizado, objetivo.Ano);
 
                 if (existeCodigoEmObjetivoAtivo)
                 {
@@ -201,7 +248,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 var codigoNormalizado = NormalizarCodigoObjetivo(objetivo.Codigo);
 
-                var existeCodigoEmOutroObjetivo = await repositorioObjetivoAprendizagem.ExistePorCodigoCompletoAsync(codigoNormalizado);
+                var existeCodigoEmOutroObjetivo = await repositorioObjetivoAprendizagem.ExistePorCodigoCompletoEAnoTurmaAsync(codigoNormalizado, objetivo.Ano);
 
                 if (existeCodigoEmOutroObjetivo)
                 {
@@ -234,7 +281,6 @@ namespace SME.SGP.Dominio.Servicos
             if (string.IsNullOrWhiteSpace(codigo))
                 return string.Empty;
 
-            // Remove espaços e caracteres especiais, mantendo apenas letras e números
             return Regex.Replace(codigo.Trim(), @"[^\w\d]", "");
         }
 
@@ -246,16 +292,6 @@ namespace SME.SGP.Dominio.Servicos
             objetivoBase.ComponenteCurricularId = objetivo.ComponenteCurricularId;
             objetivoBase.CriadoEm = objetivo.CriadoEm;
             objetivoBase.Descricao = objetivo.Descricao;
-        }
-
-        private async Task AtualizarObjetivoBase(ObjetivoAprendizagemResposta objetivo)
-        {
-            var objetivoBase = await repositorioObjetivoAprendizagem.ObterPorIdAsync(objetivo.Id);
-            if (objetivoBase != null)
-            {
-                MapearParaObjetivoDominio(objetivo, objetivoBase);
-                await repositorioObjetivoAprendizagem.AtualizarAsync(objetivoBase);
-            }
         }
 
         private ObjetivoAprendizagem MapearObjetivoRespostaParaDominio(ObjetivoAprendizagemResposta objetivo)
