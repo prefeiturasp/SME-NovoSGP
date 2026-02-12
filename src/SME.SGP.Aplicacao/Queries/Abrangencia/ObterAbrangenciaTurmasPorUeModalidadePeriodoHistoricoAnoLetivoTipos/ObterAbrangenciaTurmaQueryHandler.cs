@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 
+
 namespace SME.SGP.Aplicacao
 {
     public class ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQueryHandler : IRequestHandler<ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery, IEnumerable<AbrangenciaTurmaRetorno>>
@@ -38,7 +39,55 @@ namespace SME.SGP.Aplicacao
                 request.Modalidade, request.Tipos.NaoEhNulo() && request.Tipos.Any() ? request.Tipos : null, request.Periodo,
                 request.ConsideraHistorico, request.AnoLetivo, anosInfantilDesconsiderar);
 
-            return OrdernarTurmasItinerario(result);
+            // Com base no codigo das turmas listada, é feito uma busca na Api Eol que está atualizada. 
+            var codigosTurmas = result?.Select(t => t.Codigo.ToString())?.ToList();
+            var listaTurmaEOL = await mediator.Send(new ObterTurmasApiEolQuery(codigosTurmas));
+
+            // Transforma codigo em string e remove os repetidos.
+            var codigosValidos = new HashSet<string>(
+                listaTurmaEOL.Select(x => x.Codigo.ToString())
+            );
+
+            // Dados mocados
+            var turmasFakes = new[]
+            {
+                new AbrangenciaTurmaRetorno
+                {
+                    Ano = "2025",
+                    AnoLetivo = 2025,
+                    Codigo = "0002 TURMA123",
+                    CodigoModalidade = (int)Modalidade.Fundamental,
+                    Nome = "Turma Teste 1",
+                    Semestre = 1,
+                    EnsinoEspecial = false,
+                    Id = 1,
+                    TipoTurma = 10,
+                    NomeFiltro = "0 ATurma Teste 1"
+                },
+                new AbrangenciaTurmaRetorno
+                {
+                    Ano = "2025",
+                    AnoLetivo = 2025,
+                    Codigo = "0003 TURMA456",
+                    CodigoModalidade = (int)Modalidade.Medio,
+                    Nome = "Turma Teste 2",
+                    Semestre = 2,
+                    EnsinoEspecial = false,
+                    Id = 2,
+                    TipoTurma = 20,
+                    NomeFiltro = "0 ATurma Teste 2"
+                }
+            };
+
+            //result = (result ?? Enumerable.Empty<AbrangenciaTurmaRetorno>()).Concat(turmasFakes);
+
+            // Filtrando as turmas com base nas turmas atualizada.
+            var resultatualizado = result
+                .Where(x => !string.IsNullOrEmpty(x.Codigo) && codigosValidos.Contains(x.Codigo))
+                .ToList();
+
+            //return OrdernarTurmasItinerario(result);
+            return OrdernarTurmasItinerario(resultatualizado);            
         }  
  
         private IEnumerable<AbrangenciaTurmaRetorno> OrdernarTurmasItinerario(IEnumerable<AbrangenciaTurmaRetorno> result)
