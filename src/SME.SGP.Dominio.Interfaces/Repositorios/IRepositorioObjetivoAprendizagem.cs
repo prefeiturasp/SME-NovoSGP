@@ -21,6 +21,6 @@ namespace SME.SGP.Dominio.Interfaces
         
         Task InserirAsync(ObjetivoAprendizagem objetivoAprendizagem);
         
-        Task<bool> ExistePorCodigoCompletoAsync(string codigoCompleto);
+        Task<bool> ExistePorCodigoCompletoEAnoTurmaAsync(string codigoCompleto, string anoTurma);
     }
 }
