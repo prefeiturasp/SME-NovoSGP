@@ -13,6 +13,7 @@ namespace SME.SGP.Aplicacao
     public class ObterComponentesCurricularesPorUsuarioECodigoTurmaQueryHandler : IRequestHandler<ObterComponentesCurricularesPorUsuarioECodigoTurmaQuery, IEnumerable<DisciplinaNomeDto>>
     {
         private readonly IMediator mediator;
+        private readonly int ANO_LETIVO_INICIOU_AGRUPAMENTO = 2024;
         
         public ObterComponentesCurricularesPorUsuarioECodigoTurmaQueryHandler(IMediator mediator)
         {
@@ -31,7 +32,7 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<DisciplinaNomeDto>> ObterComponentesCurricularesUsuario(string turmaCodigo, string codigoRf, Guid perfilAtual)
         {
             var obterTurma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo));
-            bool realizarAgrupamentoComponente = obterTurma.AnoLetivo != DateTimeExtension.HorarioBrasilia().Year;
+            bool realizarAgrupamentoComponente = obterTurma.AnoLetivo <= ANO_LETIVO_INICIOU_AGRUPAMENTO;
             var componentesCurricularesEol = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(turmaCodigo, codigoRf,
                                                                perfilAtual,
                                                                realizarAgrupamentoComponente));
@@ -69,7 +70,5 @@ namespace SME.SGP.Aplicacao
                 Nome = cc.Nome
             }).OrderBy(c => c.Nome)?.ToList();
         }
-
-
     }
 }
