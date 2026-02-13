@@ -253,7 +253,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             await CriaFechamentoNota(FECHAMENTO_ALUNO_ID_1, COMPONENTE_CURRICULAR_ARTES_ID_139, (int)ConceitoValores.P);
             await CriaFechamentoNota(FECHAMENTO_ALUNO_ID_2, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, (int)ConceitoValores.NS, true);
 
-            var consulta = ServiceProvider.GetService<IRepositorioFechamentoNotaConsulta>();
+            var consulta = ServiceProvider.GetService<IRepositorioFechamentoNota>();
             var retorno = await consulta.ObterPorFechamentosTurma(new long[] { FECHAMENTO_TURMA_ID_1 } );
 
             var valor = retorno.Any(x => x.ComponenteCurricularId == COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
@@ -281,7 +281,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             await CriaFechamentoNota(FECHAMENTO_ALUNO_ID_1, COMPONENTE_CURRICULAR_ARTES_ID_139, (int)ConceitoValores.P);
             await CriaFechamentoNota(FECHAMENTO_ALUNO_ID_2, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, (int)ConceitoValores.NS, true);
 
-            var consulta = ServiceProvider.GetService<IRepositorioFechamentoNotaConsulta>();
+            var consulta = ServiceProvider.GetService<IRepositorioFechamentoNota>();
             var retorno = await consulta.ObterPorFechamentosTurma(new long[] { FECHAMENTO_TURMA_ID_1 });
 
             var valor = retorno.Any(x => x.ComponenteCurricularId == COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
