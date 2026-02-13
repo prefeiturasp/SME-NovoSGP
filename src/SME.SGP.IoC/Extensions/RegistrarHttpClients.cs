@@ -105,6 +105,14 @@ namespace SME.SGP.IoC
                 c.DefaultRequestHeaders.Add("x-sr-api-key", configuration.GetSection("ApiKeySr").Value);
             });
 
+            services.AddHttpClient(name: ServicoConectaFormacaoConstants.Servico, c =>
+            {
+                c.BaseAddress = new Uri(configuration.GetSection("UrlApiConectaFormacao").Value);
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+                if (configuration.GetSection("HttpClientTimeoutSecond").Value.NaoEhNulo())
+                    c.Timeout = TimeSpan.FromSeconds(double.Parse(configuration.GetSection("HttpClientTimeoutSecond").Value));
+            }).AddPolicyHandler(GetRetryPolicy());
+
             services.AdicionarHttpClientsProdam(configuration);
         }
 
