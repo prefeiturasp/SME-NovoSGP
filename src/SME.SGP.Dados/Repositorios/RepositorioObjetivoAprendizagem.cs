@@ -30,6 +30,19 @@ namespace SME.SGP.Dados.Repositorios
             }
         }
 
+        public async Task<bool> ExistePorCodigoCompletoEAnoTurmaAsync(string codigoCompleto, string anoTurma)
+        {
+            using (var conexao = new NpgsqlConnection(connectionString))
+            {
+                await conexao.OpenAsync();
+                var existe = await conexao.QueryFirstOrDefaultAsync<bool>(
+                    "SELECT EXISTS(SELECT 1 FROM objetivo_aprendizagem WHERE codigo = @codigoCompleto AND excluido = false AND ano_turma = @anoTurma)", 
+                    new { codigoCompleto, anoTurma });
+                conexao.Close();
+                return existe;
+            }
+        }
+
         public async Task<IEnumerable<ObjetivoAprendizagem>> ListarAsync()
         {
             using (var conexao = new NpgsqlConnection(connectionString))
