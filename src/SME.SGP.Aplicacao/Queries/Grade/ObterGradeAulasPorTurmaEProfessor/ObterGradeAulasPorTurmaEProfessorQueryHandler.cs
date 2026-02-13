@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<GradeComponenteTurmaAulasDto> Handle(ObterGradeAulasPorTurmaEProfessorQuery request, CancellationToken cancellationToken)
         {
-            var semana = UtilData.ObterSemanaDoAno(request.DataAula);
+            var semana = UtilData.ObterSemanaDoAnoISO(request.DataAula);
 
             var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(request.TurmaCodigo);
             if (turma.EhNulo())
