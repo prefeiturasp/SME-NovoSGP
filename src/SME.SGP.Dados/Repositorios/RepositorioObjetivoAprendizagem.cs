@@ -27,10 +27,6 @@ namespace SME.SGP.Dados.Repositorios
                     await conexao.OpenAsync();
                     await conexao.UpdateAsync(objetivoAprendizagem);
                 }
-                catch (System.Exception ex)
-                {
-                    throw;
-                }
                 finally
                 {
                     conexao.Close();
@@ -51,10 +47,6 @@ namespace SME.SGP.Dados.Repositorios
 
                     return existe;
                 }
-                catch (System.Exception ex)
-                {
-                    return false;
-                }
                 finally
                 {
                     conexao.Close();
@@ -72,10 +64,6 @@ namespace SME.SGP.Dados.Repositorios
                     var objetivos = await conexao.QueryAsync<ObjetivoAprendizagem>("select * from objetivo_aprendizagem");
 
                     return objetivos;
-                }
-                catch (System.Exception ex)
-                {
-                    throw;
                 }
                 finally
                 {
@@ -100,10 +88,6 @@ namespace SME.SGP.Dados.Repositorios
 
                     return objetivos;
                 }
-                catch (System.Exception ex)
-                {
-                    throw;
-                }
                 finally
                 {
                     conexao.Close();
@@ -126,10 +110,6 @@ namespace SME.SGP.Dados.Repositorios
 
                     return objetivos;
                 }
-                catch (System.Exception ex)
-                {
-                    throw;
-                }
                 finally
                 {
                     conexao.Close();
@@ -148,10 +128,6 @@ namespace SME.SGP.Dados.Repositorios
 
                     return objetivo;
                 }
-                catch (System.Exception ex)
-                {
-                    throw;
-                }
                 finally
                 {
                     conexao.Close();
@@ -167,10 +143,6 @@ namespace SME.SGP.Dados.Repositorios
                 {
                     await conexao.OpenAsync();
                     await conexao.ExecuteAsync("update objetivo_aprendizagem set excluido = false where id = @id", new { id });
-                }
-                catch (System.Exception ex)
-                {
-                    throw;
                 }
                 finally
                 {
@@ -215,10 +187,6 @@ namespace SME.SGP.Dados.Repositorios
                             descricao = objetivoAprendizagem.Descricao,
                             id = objetivoAprendizagem.Id
                         });
-                }
-                catch (System.Exception ex)
-                {
-                    throw;
                 }
                 finally
                 {
