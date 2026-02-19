@@ -23,7 +23,17 @@ namespace SME.SGP.Dominio
             {"eleventh", 11},
             {"twelfth", 12},
             {"thirteenth", 13},
-            {"fourteenth", 14}
+            {"fourteenth", 14},
+            {"fifteenth", 15},
+            {"sixteenth", 16},
+            {"seventeenth", 17},
+            {"eighteenth", 18},
+            {"nineteenth", 19},
+            {"twentieth", 20},
+            {"twenty-first", 21},
+            {"twenty-second", 22},
+            {"twenty-third", 23},
+            {"twenty-fourth", 24},
         };
 
         public int Ano => Anos[AnoTurma];

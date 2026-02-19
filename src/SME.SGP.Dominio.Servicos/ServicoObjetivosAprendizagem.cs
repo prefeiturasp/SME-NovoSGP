@@ -36,7 +36,17 @@ namespace SME.SGP.Dominio.Servicos
             {"eleventh", 11},
             {"twelfth", 12},
             {"thirteenth", 13},
-            {"fourteenth", 14}
+            {"fourteenth", 14},
+            {"fifteenth", 15},
+            {"sixteenth", 16},
+            {"seventeenth", 17},
+            {"eighteenth", 18},
+            {"nineteenth", 19},
+            {"twentieth", 20},
+            {"twenty-first", 21},
+            {"twenty-second", 22},
+            {"twenty-third", 23},
+            {"twenty-fourth", 24},
         };
 
         public ServicoObjetivosAprendizagem(IServicoJurema servicoJurema,
@@ -57,7 +67,7 @@ namespace SME.SGP.Dominio.Servicos
             try
             {
                 var parametrosDataUltimaAtualizacao = await mediator.Send(new ObterParametroSistemaUnicoChaveEValorPorTipoQuery(TipoParametroSistema.DataUltimaAtualizacaoObjetivosJurema));
-
+               
                 if (parametrosDataUltimaAtualizacao.HasValue)
                 {
                     var dataUltimaAtualizacao = DateTime.Parse(parametrosDataUltimaAtualizacao.Value.Value);
@@ -70,16 +80,18 @@ namespace SME.SGP.Dominio.Servicos
                         var objetivosJuremaResposta = objetivosJuremaRespostaApi.Where(c => c.Codigo.Length <= 20);
 
                         var objetivosAIncluir = objetivosJuremaResposta?
-                            .Where(c => !objetivosBase.Any(b => b.Id == c.Id));
+                            .Where(c => !objetivosBase.Any(b => b.Id == c.Id && b.Codigo == c.Codigo && b.AnoTurma != c.Ano && !b.Excluido));
 
                         var objetivosADesativar = objetivosBase?
-                            .Where(c => !c.Excluido)?.Where(c => !objetivosJuremaResposta.Any(b => b.Id == c.Id));
+                            .Where(c => !c.Excluido)?.Where(c => !objetivosJuremaResposta.Any(b => b.Id == c.Id && b.Codigo == c.Codigo));
 
                         var objetivosAReativar = objetivosJuremaResposta?
-                            .Where(c => objetivosBase.Any(b => b.Id == c.Id && b.Excluido));
+                            .Where(c => objetivosBase.Any(b => b.Id == c.Id && b.Codigo == c.Codigo && b.Excluido));
 
-                        var objetivosAAtualizar = objetivosJuremaResposta?
-                            .Where(c => c.AtualizadoEm > dataUltimaAtualizacao);
+                        var atualizar = objetivosJuremaResposta?
+                            .Where(c => c.AtualizadoEm < dataUltimaAtualizacao);
+
+                        var objetivosAAtualizar = atualizar.Where(x => !objetivosAIncluir.Any(i => i.Id == x.Id && i.Codigo == x.Codigo && i.Ano == x.Ano));
 
                         var atualizarUltimaDataAtualizacao = false;
                         var houveAlteracaoNosDados = false;
@@ -90,10 +102,7 @@ namespace SME.SGP.Dominio.Servicos
                             {
                                 foreach (var objetivo in objetivosAAtualizar)
                                 {
-                                    if (ValidarAno(objetivo.Ano))
-                                        await AtualizarObjetivoBaseComVerificacaoCodigo(objetivo);
-                                    else
-                                        await mediator.Send(new SalvarLogViaRabbitCommand($"Objetivo ID '{objetivo.Id}' possui ano inválido '{objetivo.Ano}'. Atualização ignorada.", LogNivel.Negocio, LogContexto.ObjetivosAprendizagem));
+                                    await AtualizarObjetivo(objetivo);
                                 }
                             }
                             catch (Exception ex)
@@ -123,24 +132,27 @@ namespace SME.SGP.Dominio.Servicos
                                     continue;
                                 }
 
-                                var existeCodigo = await repositorioObjetivoAprendizagem.ExistePorCodigoCompletoEAnoTurmaAsync(codigoCompleto, objetivo.Ano);
+                                string anoTurma = ObterAnoDoDicionario(objetivo);
+                                var existeCodigo = await repositorioObjetivoAprendizagem.ExistePorCodigoCompletoEAnoTurmaAsync(codigoCompleto, anoTurma);
                                 if (!existeCodigo)
                                 {
-                                    try { 
-                                    var objetivoParaInserir = MapearObjetivoRespostaParaDominio(objetivo);
-                                    objetivoParaInserir.CodigoCompleto = codigoCompleto;
+                                    try
+                                    {
+                                        var objetivoParaInserir = MapearObjetivoRespostaParaDominio(objetivo);
 
-                                    await repositorioObjetivoAprendizagem.InserirAsync(objetivoParaInserir);
+                                        objetivoParaInserir.CodigoCompleto = codigoCompleto;
+
+                                        await repositorioObjetivoAprendizagem.InserirAsync(objetivoParaInserir);
                                     }
                                     catch (Exception ex)
                                     {
                                         await mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro ao inserir os objetivos de aprendizagem: {ex.Message}", LogNivel.Critico, LogContexto.ObjetivosAprendizagem, ex.ToString()));
                                     }
-                                    houveAlteracaoNosDados = true;                                  
+                                    houveAlteracaoNosDados = true;
                                 }
                                 else
                                 {
-                                    await mediator.Send(new SalvarLogViaRabbitCommand($"Objetivo de aprendizagem com código '{codigoCompleto}' já existe na base de dados. Inserção ignorada.", LogNivel.Negocio, LogContexto.ObjetivosAprendizagem));
+                                    await AtualizarObjetivo(objetivo);
                                 }
                             }
                         }
@@ -198,6 +210,21 @@ namespace SME.SGP.Dominio.Servicos
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro ao sincronizar os objetivos de aprendizagem com a Jurema: {ex.Message}", LogNivel.Critico, LogContexto.ObjetivosAprendizagem, ex.ToString()));
             }
+        }
+
+        private string ObterAnoDoDicionario(ObjetivoAprendizagemResposta objetivo)
+        {
+            var anoNumerico = Convert.ToInt32(objetivo.Ano);
+            var anoTurma = Anos.Where(x => x.Value == anoNumerico);
+            return anoTurma.FirstOrDefault().Key;
+        }
+
+        private async Task AtualizarObjetivo(ObjetivoAprendizagemResposta objetivo)
+        {
+            if (ValidarAno(objetivo.Ano))
+                await AtualizarObjetivoBaseComVerificacaoCodigo(objetivo);
+            else
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Objetivo ID '{objetivo.Id}' possui ano inválido '{objetivo.Ano}'. Atualização ignorada.", LogNivel.Negocio, LogContexto.ObjetivosAprendizagem));
         }
 
         private bool ValidarAno(string ano)
@@ -263,6 +290,7 @@ namespace SME.SGP.Dominio.Servicos
                     MapearParaObjetivoDominio(objetivo, objetivoBase);
                 }
 
+                objetivoBase.AtualizadoEm = DateTime.Now;
                 await repositorioObjetivoAprendizagem.AtualizarAsync(objetivoBase);
             }
         }
