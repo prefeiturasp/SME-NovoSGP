@@ -34,7 +34,7 @@ namespace SME.SGP.Dados.Repositorios
             }
         }
 
-        public async Task<bool> ExistePorCodigoCompletoEAnoTurmaAsync(string codigoCompleto, string anoTurma)
+        public async Task<bool> ExistePorCodigoCompletoEAnoTurmaAsync(long id,string codigoCompleto, string anoTurma)
         {
             using (var conexao = new NpgsqlConnection(connectionString))
             {
@@ -42,8 +42,8 @@ namespace SME.SGP.Dados.Repositorios
                 {
                     await conexao.OpenAsync();
                     var existe = await conexao.QueryFirstOrDefaultAsync<bool>(
-                        "SELECT EXISTS(SELECT 1 FROM objetivo_aprendizagem WHERE codigo = @codigoCompleto AND ano_turma = @anoTurma)",
-                        new { codigoCompleto, anoTurma });
+                        "SELECT EXISTS(SELECT 1 FROM objetivo_aprendizagem WHERE codigo = @codigoCompleto AND ano_turma = @anoTurma and id = @id)",
+                        new { codigoCompleto, anoTurma,id });
 
                     return existe;
                 }
@@ -125,6 +125,24 @@ namespace SME.SGP.Dados.Repositorios
                 {
                     await conexao.OpenAsync();
                     var objetivo = await conexao.QueryFirstOrDefaultAsync<ObjetivoAprendizagem>("select * from objetivo_aprendizagem where id = @id", new { id });
+
+                    return objetivo;
+                }
+                finally
+                {
+                    conexao.Close();
+                }
+            }
+        }
+
+        public async Task<ObjetivoAprendizagem> ObterPorCodigoAnoComponente(string codigo, string anoTurma,long componenteId)
+        {
+            using (var conexao = new NpgsqlConnection(connectionString))
+            {
+                try
+                {
+                    await conexao.OpenAsync();
+                    var objetivo = await conexao.QueryFirstOrDefaultAsync<ObjetivoAprendizagem>("select * from objetivo_aprendizagem where codigo = @codigo and ano_turma = @anoTurma and componente_curricular_id = @componenteId ", new { codigo, anoTurma, componenteId });
 
                     return objetivo;
                 }
