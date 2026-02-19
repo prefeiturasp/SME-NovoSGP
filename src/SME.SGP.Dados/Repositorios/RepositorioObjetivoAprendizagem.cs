@@ -1,13 +1,11 @@
-﻿using Dapper;
-using Dommel;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Npgsql;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -24,9 +22,15 @@ namespace SME.SGP.Dados.Repositorios
         {
             using (var conexao = new NpgsqlConnection(connectionString))
             {
-                await conexao.OpenAsync();
-                await conexao.UpdateAsync(objetivoAprendizagem);
-                conexao.Close();
+                try
+                {
+                    await conexao.OpenAsync();
+                    await conexao.UpdateAsync(objetivoAprendizagem);
+                }
+                finally
+                {
+                    conexao.Close();
+                }
             }
         }
 
@@ -34,12 +38,19 @@ namespace SME.SGP.Dados.Repositorios
         {
             using (var conexao = new NpgsqlConnection(connectionString))
             {
-                await conexao.OpenAsync();
-                var existe = await conexao.QueryFirstOrDefaultAsync<bool>(
-                    "SELECT EXISTS(SELECT 1 FROM objetivo_aprendizagem WHERE codigo = @codigoCompleto AND excluido = false AND ano_turma = @anoTurma)", 
-                    new { codigoCompleto, anoTurma });
-                conexao.Close();
-                return existe;
+                try
+                {
+                    await conexao.OpenAsync();
+                    var existe = await conexao.QueryFirstOrDefaultAsync<bool>(
+                        "SELECT EXISTS(SELECT 1 FROM objetivo_aprendizagem WHERE codigo = @codigoCompleto AND ano_turma = @anoTurma)",
+                        new { codigoCompleto, anoTurma });
+
+                    return existe;
+                }
+                finally
+                {
+                    conexao.Close();
+                }
             }
         }
 
@@ -47,10 +58,17 @@ namespace SME.SGP.Dados.Repositorios
         {
             using (var conexao = new NpgsqlConnection(connectionString))
             {
-                await conexao.OpenAsync();
-                var objetivos = await conexao.QueryAsync<ObjetivoAprendizagem>("select * from objetivo_aprendizagem");
-                conexao.Close();
-                return objetivos;
+                try
+                {
+                    await conexao.OpenAsync();
+                    var objetivos = await conexao.QueryAsync<ObjetivoAprendizagem>("select * from objetivo_aprendizagem");
+
+                    return objetivos;
+                }
+                finally
+                {
+                    conexao.Close();
+                }
             }
         }
 
@@ -58,15 +76,22 @@ namespace SME.SGP.Dados.Repositorios
         {
             using (var conexao = new NpgsqlConnection(connectionString))
             {
-                await conexao.OpenAsync();
-                var objetivos = await conexao.QueryAsync<ObjetivoAprendizagemDto>($@"id, descricao, codigo, 
+                try
+                {
+                    await conexao.OpenAsync();
+                    var objetivos = await conexao.QueryAsync<ObjetivoAprendizagemDto>($@"id, descricao, codigo, 
                         ano_turma as ano, componente_curricular_id as idComponenteCurricular, componente_curricular_id as ComponenteCurricularEolId 
                         from objetivo_aprendizagem 
                         where ano_turma = @ano and 
                         componente_curricular_id = @componente",
-                        new { ano = ano.Name(), componente = componenteCurricularId });
-                conexao.Close();
-                return objetivos;
+                            new { ano = ano.Name(), componente = componenteCurricularId });
+
+                    return objetivos;
+                }
+                finally
+                {
+                    conexao.Close();
+                }
             }
         }
 
@@ -74,14 +99,21 @@ namespace SME.SGP.Dados.Repositorios
         {
             using (var conexao = new NpgsqlConnection(connectionString))
             {
-                await conexao.OpenAsync();
-                var objetivos = await conexao.QueryAsync<ObjetivoAprendizagemDto>($@"select id, descricao, codigo, 
+                try
+                {
+                    await conexao.OpenAsync();
+                    var objetivos = await conexao.QueryAsync<ObjetivoAprendizagemDto>($@"select id, descricao, codigo, 
                         ano_turma as ano, componente_curricular_id as idComponenteCurricular, componente_curricular_id as ComponenteCurricularEolId 
                         from objetivo_aprendizagem 
                         where componente_curricular_id = ANY(@componentes)",
-                        new { componentes = juremaIds });
-                conexao.Close();
-                return objetivos;
+                            new { componentes = juremaIds });
+
+                    return objetivos;
+                }
+                finally
+                {
+                    conexao.Close();
+                }
             }
         }
 
@@ -89,10 +121,17 @@ namespace SME.SGP.Dados.Repositorios
         {
             using (var conexao = new NpgsqlConnection(connectionString))
             {
-                await conexao.OpenAsync();
-                var objetivo = await conexao.QueryFirstOrDefaultAsync<ObjetivoAprendizagem>("select * from objetivo_aprendizagem where id = @id", new { id });
-                conexao.Close();
-                return objetivo;
+                try
+                {
+                    await conexao.OpenAsync();
+                    var objetivo = await conexao.QueryFirstOrDefaultAsync<ObjetivoAprendizagem>("select * from objetivo_aprendizagem where id = @id", new { id });
+
+                    return objetivo;
+                }
+                finally
+                {
+                    conexao.Close();
+                }
             }
         }
 
@@ -100,9 +139,15 @@ namespace SME.SGP.Dados.Repositorios
         {
             using (var conexao = new NpgsqlConnection(connectionString))
             {
-                await conexao.OpenAsync();
-                await conexao.ExecuteAsync("update objetivo_aprendizagem set excluido = false where id = @id", new { id });
-                conexao.Close();
+                try
+                {
+                    await conexao.OpenAsync();
+                    await conexao.ExecuteAsync("update objetivo_aprendizagem set excluido = false where id = @id", new { id });
+                }
+                finally
+                {
+                    conexao.Close();
+                }
             }
         }
 
@@ -110,9 +155,11 @@ namespace SME.SGP.Dados.Repositorios
         {
             using (var conexao = new NpgsqlConnection(connectionString))
             {
-                await conexao.OpenAsync();
+                try
+                {
+                    await conexao.OpenAsync();
 
-                var query = @"INSERT
+                    var query = @"INSERT
                             INTO
                             objetivo_aprendizagem (ano_turma,
                             atualizado_em,
@@ -129,17 +176,22 @@ namespace SME.SGP.Dados.Repositorios
                         @descricao,
                         @id)";
 
-                await conexao.ExecuteAsync(query,
-                    new
-                    {
-                        anoTurma = objetivoAprendizagem.AnoTurma,
-                        atualizadoEm = objetivoAprendizagem.AtualizadoEm,
-                        codigo = objetivoAprendizagem.CodigoCompleto,
-                        componenteCurricularId = objetivoAprendizagem.ComponenteCurricularId,
-                        criadoEm = objetivoAprendizagem.CriadoEm,
-                        descricao = objetivoAprendizagem.Descricao,
-                        id = objetivoAprendizagem.Id
-                    });
+                    await conexao.ExecuteAsync(query,
+                        new
+                        {
+                            anoTurma = objetivoAprendizagem.AnoTurma,
+                            atualizadoEm = objetivoAprendizagem.AtualizadoEm,
+                            codigo = objetivoAprendizagem.CodigoCompleto,
+                            componenteCurricularId = objetivoAprendizagem.ComponenteCurricularId,
+                            criadoEm = objetivoAprendizagem.CriadoEm,
+                            descricao = objetivoAprendizagem.Descricao,
+                            id = objetivoAprendizagem.Id
+                        });
+                }
+                finally
+                {
+                    conexao.Close();
+                }
             }
         }
     }
