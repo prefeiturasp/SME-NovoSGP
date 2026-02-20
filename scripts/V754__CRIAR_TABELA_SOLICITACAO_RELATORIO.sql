@@ -1,7 +1,8 @@
 CREATE TABLE IF NOT EXISTS solicitacao_relatorio (
     id int8 GENERATED ALWAYS AS IDENTITY,
     filtros_usados varchar NOT NULL,
-    tipo_relatorio int4 NOT NULL,
+    extensao_relatorio int4 NOT NULL,
+    relatorio int4 NOT NULL,
     usuario_que_solicitou varchar NOT NULL,
     status_solicitacao int4 NOT NULL,
     excluido bool DEFAULT false NOT NULL,
