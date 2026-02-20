@@ -18,6 +18,10 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<ObjetivoAprendizagemDto>> ObterPorAnoEComponenteCurricularId(AnoTurma ano, long componenteCurricularId);
 
         Task<IEnumerable<ObjetivoAprendizagemDto>> ObterPorComponenteCurricularJuremaIds(long[] juremaIds);
+        
         Task InserirAsync(ObjetivoAprendizagem objetivoAprendizagem);
+        
+        Task<bool> ExistePorCodigoCompletoEAnoTurmaAsync(long id, string codigoCompleto, string anoTurma);
+        Task<ObjetivoAprendizagem> ObterPorCodigoAnoComponente(string codigo, string anoTurma, long componenteId);
     }
 }
