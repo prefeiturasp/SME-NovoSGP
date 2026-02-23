@@ -227,11 +227,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PendenciaDiarioBordo
         public async Task BuscaPendenciaESalva_QuandoAulaNaoTemComponente_DeveGerarPendenciaParaTodos()
         {
             var turma = CriarTurmaFake();
-            var professoresEComponentes = CriarProfessoresEComponentesFake();
+            var professoresEComponentes = CriarProfessoresEComponentesFake(); 
 
             var aulasPendentes = new List<AulaComComponenteDto>
             {
-                new AulaComComponenteDto { Id = 999, ComponenteId = 0 }
+                new AulaComComponenteDto { Id = 999, ComponenteId = 0 } 
             };
 
             _mediatorMock.Setup(m => m.Send(It.IsAny<ObterPendenciasDiarioBordoQuery>(), It.IsAny<CancellationToken>()))
@@ -253,11 +253,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PendenciaDiarioBordo
         public async Task BuscaPendenciaESalva_QuandoAulaTemComponente_DeveGerarPendenciaParaComponentesFaltantes()
         {
             var turma = CriarTurmaFake();
-            var professoresEComponentes = CriarProfessoresEComponentesFake();
+            var professoresEComponentes = CriarProfessoresEComponentesFake(); 
 
             var aulasPendentes = new List<AulaComComponenteDto>
             {
-                new AulaComComponenteDto { Id = 999, ComponenteId = 1 }
+                new AulaComComponenteDto { Id = 999, ComponenteId = 1 } 
             };
 
             _mediatorMock.Setup(m => m.Send(It.IsAny<ObterPendenciasDiarioBordoQuery>(), It.IsAny<CancellationToken>()))

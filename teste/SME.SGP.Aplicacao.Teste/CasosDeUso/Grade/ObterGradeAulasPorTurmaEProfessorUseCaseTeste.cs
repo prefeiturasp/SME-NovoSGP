@@ -28,6 +28,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Grade
             var dataAula = DateTime.Now;
             var codigoRf = "789";
             var ehRegencia = true;
+            var gradeRetorno = new GradeComponenteTurmaAulasDto { PodeEditar = true, QuantidadeAulasGrade = 2 };
 
             var retornoEsperado = new GradeComponenteTurmaAulasDto { PodeEditar = true, QuantidadeAulasGrade = 2 };
 

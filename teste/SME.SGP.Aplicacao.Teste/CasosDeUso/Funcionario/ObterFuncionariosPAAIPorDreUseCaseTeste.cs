@@ -28,6 +28,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Funcionario
                                            It.IsAny<CancellationToken>()))
                          .ReturnsAsync((SME.SGP.Dominio.Dre)null);
 
+            await Assert.ThrowsAsync<NegocioException>(() => _useCase.Executar(dreIdInexistente));
 
             var exception = await Assert.ThrowsAsync<NegocioException>(() => _useCase.Executar(dreIdInexistente));
 

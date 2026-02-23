@@ -61,8 +61,10 @@
         public const string MENU_ATRIBUICOES =  "Atribuições";
         public const string MENU_USUARIOS =  "Usuários";
         public const string MENU_NOTIFICACOES =  "Notificações";
-        public const string MENU_AEE =  "AEE";
-        public const string MENU_RELATORIOS_ANALITICOS =  "Relatórios Analíticos";
+        public const string MENU_AEE = "AEE";
+        public const string MENU_RELATORIOS_ANALITICOS = "Relatórios Analíticos";
+        public const string MENU_RELATORIOS_SONDAGEM_CONSOLIDADO = "Consolidado";
+        public const string MENU_RELATORIOS_SONDAGEM_POR_TURMA= "Por turma";
         public const string MENU_BOLETIM =  "Boletim";
         public const string MENU_ATA_BIMESTRAL =  "Ata Bimestral";
         public const string MENU_ATA_FINAL_DE_RESULTADOS =  "Ata Final de Resultados";
@@ -175,6 +177,8 @@
         public const string ROTA_RELATORIOS_NAAPA_ENCMAINHAMENTO = "/relatorios/naapa/encaminhamento";
         public const string ROTA_RELATORIOS_NAAPA_BUSCA_ATIVA = "/relatorios/naapa/busca-ativa";
         public const string ROTA_RELATORIOS_SONDAGEM_ANALITICOS = "/relatorios/sondagem/analitico";
+        public const string ROTA_RELATORIOS_SONDAGEM_POR_TURMA = "/relatorios/sondagem/por-turma";
+        public const string ROTA_RELATORIOS_SONDAGEM_CONSOLIDADO = "/relatorios/sondagem/consolidado";
         public const string ROTA_RELATORIOS_DIARIO_CLASSE_BOLETIM_SIMPLES = "/relatorios/diario-classe/boletim-simples";
         public const string ROTA_RELATORIOS_ATAS_ATA_BIMESTRAL = "/relatorios/atas/ata-bimestral";
         public const string ROTA_RELATORIOS_ATAS_ATA_FINAL_RESULTADOS = "/relatorios/atas/ata-final-resultados";
@@ -257,24 +261,24 @@
         public const int ORDEM_MENU_PENDENCIAS_DO_FECHAMENTO = 4;
         public const int ORDEM_MENU_RAA = 5;
 
-        public const int ORDEM_MENU_DEVOLUTIVAS_EI = 1;
-        public const int ORDEM_MENU_CALENDARIO_ESCOLAR = 2;
-        public const int ORDEM_MENU_DOCUMENTOS_E_PLANOS_DE_TRABALHO = 3;
-        public const int ORDEM_MENU_PERIODOS_ESCOLARES_BIMESTRES = 4;
-        public const int ORDEM_MENU_PERIODOS_ESCOLARES_ABERTURA = 5;
-        public const int ORDEM_MENU_PERIODOS_ESCOLARES_REABERTURA = 6;
-        public const int ORDEM_MENU_EVENTOS = 7;
-        public const int ORDEM_MENU_TIPO_DE_EVENTO = 8;
-        public const int ORDEM_MENU_TIPO_DE_FERIADO = 9;
-        public const int ORDEM_MENU_TIPOS_DE_CALENDARIO_ESCOLAR = 10;
-        public const int ORDEM_MENU_ATRIBUICAO_DE_RESPONSAVEIS = 11;
-        public const int ORDEM_MENU_ATRIBUICAO_ESPORADICA = 12;
-        public const int ORDEM_MENU_COMUNICADOS = 13;
-        public const int ORDEM_MENU_OCORRENCIAS = 14;
-        public const int ORDEM_MENU_INFORMES = 15;
-        public const int ORDEM_MENU_CADASTRO_DE_ABAE = 16;
-        public const int ORDEM_MENU_INFORMACOES_EDUCACIONAIS = 17;
-        public const int ORDEM_MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS = 18;
+        public const int ORDEM_MENU_INFORMACOES_EDUCACIONAIS = 1;
+        public const int ORDEM_MENU_DEVOLUTIVAS_EI = 2;
+        public const int ORDEM_MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS = 3;
+        public const int ORDEM_MENU_CALENDARIO_ESCOLAR = 4;
+        public const int ORDEM_MENU_DOCUMENTOS_E_PLANOS_DE_TRABALHO = 5;
+        public const int ORDEM_MENU_PERIODOS_ESCOLARES_BIMESTRES = 6;
+        public const int ORDEM_MENU_PERIODOS_ESCOLARES_ABERTURA = 7;
+        public const int ORDEM_MENU_PERIODOS_ESCOLARES_REABERTURA = 8;
+        public const int ORDEM_MENU_EVENTOS = 9;
+        public const int ORDEM_MENU_TIPO_DE_EVENTO = 10;
+        public const int ORDEM_MENU_TIPO_DE_FERIADO = 11;
+        public const int ORDEM_MENU_TIPOS_DE_CALENDARIO_ESCOLAR = 12;
+        public const int ORDEM_MENU_ATRIBUICAO_DE_RESPONSAVEIS = 13;
+        public const int ORDEM_MENU_ATRIBUICAO_ESPORADICA = 14;
+        public const int ORDEM_MENU_COMUNICADOS = 15;
+        public const int ORDEM_MENU_OCORRENCIAS = 16;
+        public const int ORDEM_MENU_INFORMES = 17;
+        public const int ORDEM_MENU_CADASTRO_DE_ABAE = 18;
 
         public const int ORDEM_MENU_ENCAMINHAMENTO_AEE = 1;
         public const int ORDEM_MENU_PLANO_AEE = 2;
@@ -344,10 +348,12 @@
         public const int ORDEM_SUB_MENU_RELATORIO_ENCAMINHAMENTO_NAAPA = 1;
         public const int ORDEM_SUB_MENU_RELATORIO_BUSCA_ATIVA = 2;
 
-        public const int ORDEM_SUB_MENU_RELATORIO_RELATORIOS_ANALITICOS = 1;
-        public const int ORDEM_SUB_MENU_RELATORIO_RELATORIO_ADESAO = 2;
-        public const int ORDEM_SUB_MENU_RELATORIO_RELATORIO_LEITURA = 3;
-
+        public const int ORDEM_SUB_MENU_RELATORIO_RELATORIOS_POR_TURMA = 1;
+        public const int ORDEM_SUB_MENU_RELATORIO_RELATORIOS_CONSOLIDADO = 2;
+        public const int ORDEM_SUB_MENU_RELATORIO_RELATORIOS_ANALITICOS = 3;
+        public const int ORDEM_SUB_MENU_RELATORIO_RELATORIO_ADESAO = 4;
+        public const int ORDEM_SUB_MENU_RELATORIO_RELATORIO_LEITURA = 5;
+        
         public const int ORDEM_SUB_MENU_BUSCA_ATIVA_CONS_CRIANCAS_ESTUD_AUSENTES = 1;
         public const int ORDEM_SUB_MENU_BUSCA_ATIVA_REGISTRO_ACOES = 2;
 

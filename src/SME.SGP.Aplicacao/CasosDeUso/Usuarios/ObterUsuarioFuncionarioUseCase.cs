@@ -18,8 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<UsuarioEolRetornoDto>> Executar(FiltroFuncionarioDto filtroFuncionariosDto)
         {
-            var usuarios = (await mediator.Send(new ObterUsuarioFuncionarioQuery(filtroFuncionariosDto)))?.ToList() 
-                ?? new List<UsuarioEolRetornoDto>();
+            var usuarios = (await mediator.Send(new ObterUsuarioFuncionarioQuery(filtroFuncionariosDto))).ToList();
 
             var acessosABAE = await mediator.Send(new ObterCadastroAcessoABAEPorDreQuery(
                                                                                 filtroFuncionariosDto.CodigoRF,

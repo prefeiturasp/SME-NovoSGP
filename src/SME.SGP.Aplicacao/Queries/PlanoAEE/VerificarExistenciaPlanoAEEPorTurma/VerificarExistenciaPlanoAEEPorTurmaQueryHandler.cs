@@ -1,11 +1,10 @@
+using MediatR;
+using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra.Dtos.PlanoAEE;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.PlanoAEE;
 
 namespace SME.SGP.Aplicacao.Queries.PlanoAEE.VerificarExistenciaPlanoAEEPorTurma
 {

@@ -1,20 +1,25 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.OpenApi.Extensions;
+﻿using Bogus;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using SME.SGP.Api.Controllers;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoDistorcaoIdade;
+using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoEducacaoIntegral;
+using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoPlanoAEE;
 using SME.SGP.Infra.Dtos.PainelEducacional.FrequenciaDiaria;
 using SME.SGP.Infra.Dtos.PainelEducacional.IndicadoresPap;
+using SME.SGP.Infra.Dtos.PainelEducacional.InformacoesEducacionais;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoSmeDre;
 using SME.SGP.Infra.Dtos.PainelEducacional.Notas.VisaoUe;
 using SME.SGP.Infra.Dtos.PainelEducacional.Reclassificacao;
 using SME.SGP.Infra.Dtos.PainelEducacional.SondagemEscrita;
+using SME.SGP.Infra.Enumerados;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,6 +30,7 @@ namespace SME.SGP.Api.Teste.Controllers
     public class PainelEducacionalControllerTeste
     {
         private readonly PainelEducacionalController _controller;
+        private readonly Faker _faker;
         private readonly Mock<IConsultasVisaoGeralPainelEducacionalUseCase> _consultasVisaoGeralPainelEducacionalUseCase = new();
         private readonly Mock<IConsultasIdebPainelEducacionalUseCase> _consultasIdebPainelEducacionalUseCase = new();
         private readonly Mock<IConsultasPainelEducacionalFluenciaLeitoraUseCase> _consultasFluenciaLeitoraUseCase = new();
@@ -32,10 +38,15 @@ namespace SME.SGP.Api.Teste.Controllers
         private readonly Mock<IConsultasProficienciaIdepPainelEducacionalUseCase> _consultasProficienciaIdepUseCase = new();
         private readonly Mock<IConsultasRegistroFrequenciaDiariaDreUseCase> _consultasRegistroFrequenciaDiariaDreUseCase = new();
         private readonly Mock<IConsultasRegistroFrequenciaDiariaUeUseCase> _consultasRegistroFrequenciaDiariaUeUseCase = new();
+        private readonly Mock<IConsultasFluenciaLeitoraUeUseCase> _consultasFluenciaLeitoraUeUseCase = new();
+        private readonly Mock<IConsultasPlanosAEEPainelEducacionalUseCase> _consultasPlanosAEEPainelEducacionalUseCase = new();
+        private readonly Mock<IConsultasEducacaoIntegralPainelEducacionalUseCase> _consultasEducacaoIntegralPainelEducacionalUseCase = new();
+        private readonly Mock<IConsultasInformacoesEducacionaisUseCase> _consultasInformacoesEducacionaisUseCase = new();
 
         public PainelEducacionalControllerTeste()
         {
             _controller = new PainelEducacionalController();
+            _faker = new Faker();
         }
 
         [Fact]
@@ -1642,7 +1653,7 @@ namespace SME.SGP.Api.Teste.Controllers
             _consultasDistorcaoIdadeUseCase.Verify(x => x.ObterDistorcaoIdade(It.IsAny<FiltroPainelEducacionalDistorcaoIdade>()), Times.Once);
         }
 
-        [Fact(DisplayName = "Deve retornar Ok com frequência diária para DRE")]
+        [Fact(DisplayName = "Deve retornar Ok com frequência diária para Dre")]
         public async Task ObterFrequenciaDiariaDre_DeveRetornarOkComDados()
         {
             // Arrange
@@ -1709,5 +1720,182 @@ namespace SME.SGP.Api.Teste.Controllers
 
             _consultasRegistroFrequenciaDiariaUeUseCase.Verify(x => x.ObterFrequenciaDiariaPorUe(filtro), Times.Once);
         }
+
+        [Fact(DisplayName = "Deve retornar Ok com fluencia leitora ue")]
+        public async Task ObterFluenciaLeitoraUe_DeveRetornarOkComDados()
+        {
+            // Arrange
+            var filtro = new FiltroPainelEducacionalFluenciaLeitoraUe
+            {
+                AnoLetivo = 2025,
+                TipoAvaliacao = (int)FluenciaLeitoraTipoAvaliacaoEnum.AvaliacaoEntrada,
+                CodigoUe = "00001"
+            };
+
+            var retorno = new List<PainelEducacionalFluenciaLeitoraUeDto>
+            {
+                new PainelEducacionalFluenciaLeitoraUeDto
+                {
+                    Turma = "0001",
+                    AlunosPrevistos = _faker.Random.Number(),
+                    AlunosAvaliados = $"{_faker.Random.Number(0, 100)}%",
+                    TotalPreLeitor = $"{_faker.Random.Number(0, 100)}%",
+                    PreLeitor1 = $"{_faker.Random.Number(0, 100)}%",
+                    PreLeitor2 = $"{_faker.Random.Number(0, 100)}%",
+                    PreLeitor3 = $"{_faker.Random.Number(0, 100)}%",
+                    PreLeitor4 = $"{_faker.Random.Number(0, 100)}%",
+                    LeitorIniciante = $"{_faker.Random.Number(0, 100)}%",
+                    LeitorFluente = $"{_faker.Random.Number(0, 100)}%",
+                },
+                new PainelEducacionalFluenciaLeitoraUeDto
+                {
+                    Turma = "0002",
+                    AlunosPrevistos = _faker.Random.Number(),
+                    AlunosAvaliados = $"{_faker.Random.Number(0, 100)}%",
+                    TotalPreLeitor = $"{_faker.Random.Number(0, 100)}%",
+                    PreLeitor1 = $"{_faker.Random.Number(0, 100)}%",
+                    PreLeitor2 = $"{_faker.Random.Number(0, 100)}%",
+                    PreLeitor3 = $"{_faker.Random.Number(0, 100)}%",
+                    PreLeitor4 = $"{_faker.Random.Number(0, 100)}%",
+                    LeitorIniciante = $"{_faker.Random.Number(0, 100)}%",
+                    LeitorFluente = $"{_faker.Random.Number(0, 100)}%",
+                }
+            };
+
+            _consultasFluenciaLeitoraUeUseCase
+                .Setup(x => x.ObterFluenciaLeitoraUe(It.IsAny<FiltroPainelEducacionalFluenciaLeitoraUe>()))
+                .Returns(Task.FromResult<IEnumerable<PainelEducacionalFluenciaLeitoraUeDto>>(retorno));
+
+            // Act
+            var result = await _controller.ObterFluenciaLeitoraUe(filtro, _consultasFluenciaLeitoraUeUseCase.Object);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            _consultasFluenciaLeitoraUeUseCase.Verify(x => x.ObterFluenciaLeitoraUe(filtro), Times.Once);
+        }
+
+        [Fact(DisplayName = "Deve retornar Ok com planos aee")]
+        public async Task ObterPlanosAEE_DeveRetornarOkComDados()
+        {
+            // Arrange
+            var filtro = new FiltroPainelEducacionalPlanosAEE
+            {
+                AnoLetivo = 2025,
+                CodigoDre = "00001",
+                CodigoUe = "00002"
+            };
+
+            var retorno = new List<PainelEducacionalPlanoAEEDto>
+            {
+                new PainelEducacionalPlanoAEEDto
+                {
+                QuantidadePlanos = _faker.Random.Number(),
+                Planos = new List<IndicadorPlanoAEEDto>
+                {
+                   new IndicadorPlanoAEEDto
+                   {
+                       SituacaoPlano = SituacaoPlanoAEE.Validado.ObterDisplayName(),
+                       QuantidadeAlunos = _faker.Random.Number(),
+                   },
+                   new IndicadorPlanoAEEDto
+                   {
+                       SituacaoPlano = SituacaoPlanoAEE.Encerrado.ObterDisplayName(),
+                       QuantidadeAlunos = _faker.Random.Number(),
+                   }
+                },
+                }
+            };
+
+            _consultasPlanosAEEPainelEducacionalUseCase
+                .Setup(x => x.ObterPlanosAEE(It.IsAny<FiltroPainelEducacionalPlanosAEE>()))
+                .Returns(Task.FromResult<IEnumerable<PainelEducacionalPlanoAEEDto>>(retorno));
+
+            // Act
+            var result = await _controller.ObterPlanosAEE(filtro, _consultasPlanosAEEPainelEducacionalUseCase.Object);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            _consultasPlanosAEEPainelEducacionalUseCase.Verify(x => x.ObterPlanosAEE(filtro), Times.Once);
+        }
+
+        [Fact(DisplayName = "Deve retornar Ok com educação integral")]
+        public async Task ObterEducacaoIntegral_DeveRetornarOkComDados()
+        {
+            // Arrange
+            var filtro = new FiltroPainelEducacionalEducacaoIntegral
+            {
+                AnoLetivo = 2025,
+                CodigoDre = "00001",
+                CodigoUe = "00002"
+            };
+
+            var retorno = new List<PainelEducacionalEducacaoIntegralDto>
+            {
+                new PainelEducacionalEducacaoIntegralDto
+                {
+                Modalidade = Modalidade.Fundamental.ObterDisplayName(),
+                Indicadores = new List<IndicadorEducacaoIntegralDto>
+                {
+                   new IndicadorEducacaoIntegralDto
+                   {
+                       AnoSerieEtapa = $"{_faker.Random.Number(1,9)}º",
+                       QuantidadeAlunosIntegral = _faker.Random.Number(),
+                       QuantidadeAlunosParcial = _faker.Random.Number(),
+                   },
+                   new IndicadorEducacaoIntegralDto
+                   {
+                       AnoSerieEtapa = $"{_faker.Random.Number(1,9)}º",
+                       QuantidadeAlunosIntegral = _faker.Random.Number(),
+                       QuantidadeAlunosParcial = _faker.Random.Number(),
+                   }
+                },
+                }
+            };
+
+            _consultasEducacaoIntegralPainelEducacionalUseCase
+                .Setup(x => x.ObterEducacaoIntegral(It.IsAny<FiltroPainelEducacionalEducacaoIntegral>()))
+                .Returns(Task.FromResult<IEnumerable<PainelEducacionalEducacaoIntegralDto>>(retorno));
+
+            // Act
+            var result = await _controller.ObterEducacaoIntegral(filtro, _consultasEducacaoIntegralPainelEducacionalUseCase.Object);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            _consultasEducacaoIntegralPainelEducacionalUseCase.Verify(x => x.ObterEducacaoIntegral(filtro), Times.Once);
+        }
+
+        [Fact(DisplayName = "Deve retornar Ok com informaçoes educacionais")]
+        public async Task ObterInformacoesEducacionais_DeveRetornarOkComDados()
+        {
+            // Arrange
+            var filtro = new FiltroInformacoesEducacionais
+            {
+                AnoLetivo = 2025,
+                CodigoDre = "123456"
+            };
+
+            var resultadoEsperado = new InformacoesEducacionaisRetornoDto
+            {
+                Ues = new List<RegistroInformacoesEducacionaisUeDto>(),
+                TotalPaginas = 1,
+                TotalRegistros = 10
+            };
+
+            _consultasInformacoesEducacionaisUseCase
+                .Setup(x => x.ObterInformacoesEducacionais(filtro))
+                .ReturnsAsync(resultadoEsperado);
+
+            // Act
+            var result = await _controller.ObterInformacoesEducacionais(filtro, _consultasInformacoesEducacionaisUseCase.Object);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var dto = Assert.IsType<InformacoesEducacionaisRetornoDto>(okResult.Value);
+            Assert.Equal(1, dto.TotalPaginas);
+            Assert.Equal(10, dto.TotalRegistros);
+
+            _consultasInformacoesEducacionaisUseCase.Verify(x => x.ObterInformacoesEducacionais(filtro), Times.Once);
+        }
+
     }
 }
