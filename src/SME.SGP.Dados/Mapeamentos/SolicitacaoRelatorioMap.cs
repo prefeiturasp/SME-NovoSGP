@@ -13,6 +13,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.UsuarioQueSolicitou).ToColumn("usuario_que_solicitou");
             Map(c => c.StatusSolicitacao).ToColumn("status_solicitacao");
             Map(c => c.Excluido).ToColumn("excluido");
+            Map(c => c.SolicitadoEm).ToColumn("solicitado_em");
         }
     }
 }
