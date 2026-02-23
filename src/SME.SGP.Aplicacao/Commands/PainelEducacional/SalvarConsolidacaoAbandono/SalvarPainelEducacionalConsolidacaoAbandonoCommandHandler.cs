@@ -30,9 +30,6 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarConsolidacaoAbandon
             await repositorioPainelEducacionalConsolidacaoAbandono.BulkInsertAsync(MapearParaEntidade(request.IndicadoresUe));
             await repositorioPainelEducacionalConsolidacaoAbandono.BulkInsertAsync(MapearParaEntidade(request.IndicadoresDre));
 
-            await repositorioPainelEducacionalConsolidacaoAbandono.BulkInsertAsync(MapearParaEntidade(request.IndicadoresUe));
-            await repositorioPainelEducacionalConsolidacaoAbandono.BulkInsertAsync(MapearParaEntidade(request.IndicadoresDre));
-
             return true;
         }
 
