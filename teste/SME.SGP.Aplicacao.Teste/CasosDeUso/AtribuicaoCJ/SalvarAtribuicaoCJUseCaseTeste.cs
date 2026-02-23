@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.AtribuicaoCJ
         private readonly AtribuicaoCJPersistenciaDto persistenciaDto;
         public static class TesteControl
         {
-            public static readonly int AnoAtual = 2025;
+            public static readonly int AnoAtual = 2026;
         }
 
         public SalvarAtribuicaoCJUseCaseTeste()

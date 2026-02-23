@@ -50,7 +50,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                .GroupBy(db => new
                {
                    db.CodigoDre,
-                   db.CodigoUe,
                    db.AnoLetivo,
                    db.Bimestre,
                    db.Modalidade,
