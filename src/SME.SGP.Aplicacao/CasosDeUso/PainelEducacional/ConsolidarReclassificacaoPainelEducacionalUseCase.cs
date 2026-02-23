@@ -51,11 +51,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                                                  && int.TryParse(t.Ano, out _))
                                           .ToList();
 
-            var turmasPainelEducacional = (await repositorioTurmaConsulta.ObterTurmasPorAnoLetivo(anoLetivo))
-                                          .Where(t => (t.ModalidadeCodigo == Modalidade.Fundamental || t.ModalidadeCodigo == Modalidade.Medio || t.ModalidadeCodigo == Modalidade.EJA)
-                                                 && int.TryParse(t.Ano, out _))
-                                          .ToList();
-
             if (!turmasPainelEducacional.Any())
                 return new List<PainelEducacionalReclassificacao>();
 
