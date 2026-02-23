@@ -1607,98 +1607,50 @@ namespace SME.SGP.Api.Teste.Controllers
         [Fact(DisplayName = "Deve retornar 200 OK com os dados de distorção idade/série")]
         public async Task ObterDistorcaoSerieIdade_DeveRetornarOkComDados()
         {
-            var filtro = new FiltroPainelEducacionalReclassificacao
+            // Arrange
+            var filtro = new FiltroPainelEducacionalDistorcaoIdade
             {
                 AnoLetivo = 2025,
-                CodigoDre = "DRE456",
-                CodigoUe = "UE789",
-                AnoTurma = 1
+                CodigoDre = "110000",
+                CodigoUe = "110001"
             };
 
-            var retornoEsperado = new List<PainelEducacionalReclassificacaoDto>
+            var retorno = new List<PainelEducacionalDistorcaoIdadeDto>
             {
-                new PainelEducacionalReclassificacaoDto
+                new PainelEducacionalDistorcaoIdadeDto
                 {
-                    Modalidade = new List<ModalidadeReclassificacaoDto>
+                    Modalidade = "Ensino Fundamental",
+                    SerieAno = new List<SerieAnoDistorcaoIdadeDto>
                     {
-                        new ModalidadeReclassificacaoDto
+                        new SerieAnoDistorcaoIdadeDto
                         {
-                            Nome = "Ensino Fundamental",
-                            AnoTurma = 1,
-                            QuantidadeAlunos = 28
+                            Ano = "1º",
+                            QuantidadeAlunos = 5,
+                        },
+                        new SerieAnoDistorcaoIdadeDto
+                        {
+                            Ano = "2º",
+                            QuantidadeAlunos = 3,
                         }
                     }
                 }
             };
 
-            var mockUseCase = new Mock<IConsultasReclassificacaoPainelEducacionalUseCase>();
-            mockUseCase
-                .Setup(x => x.ObterReclassificacao(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
-                .ReturnsAsync(retornoEsperado);
+            _consultasDistorcaoIdadeUseCase
+                .Setup(x => x.ObterDistorcaoIdade(It.IsAny<FiltroPainelEducacionalDistorcaoIdade>()))
+                .Returns(Task.FromResult<IEnumerable<PainelEducacionalDistorcaoIdadeDto>>(retorno));
 
-            await _controller.ObterReclassificacao(filtro, mockUseCase.Object);
+            // Act
+            var resultado = await _controller.ObterDistorcaoSerieIdade(filtro, _consultasDistorcaoIdadeUseCase.Object);
 
-            mockUseCase.Verify(x => x.ObterReclassificacao(
-                It.Is<string>(d => d == filtro.CodigoDre),
-                It.Is<string>(u => u == filtro.CodigoUe),
-                It.Is<int>(a => a == filtro.AnoLetivo),
-                It.Is<int>(t => t == filtro.AnoTurma)
-            ), Times.Once);
-        }
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(resultado);
+            var dto = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalDistorcaoIdadeDto>>(okResult.Value);
 
-        [Fact]
-        public async Task Obter_Reclassificacao_Com_Ano_Turma_Nulo_Deve_Retornar_Ok_Com_Dados()
-        {
-            var filtro = new FiltroPainelEducacionalReclassificacao
-            {
-                AnoLetivo = 2024,
-                CodigoDre = "DRE111",
-                CodigoUe = "UE222",
-                AnoTurma = 0
-            };
+            Assert.Single(dto);
+            Assert.Equal("Ensino Fundamental", dto.First().Modalidade);
 
-            var retornoEsperado = new List<PainelEducacionalReclassificacaoDto>
-            {
-                new PainelEducacionalReclassificacaoDto
-                {
-                    Modalidade = new List<ModalidadeReclassificacaoDto>
-                    {
-                        new ModalidadeReclassificacaoDto
-                        {
-                            Nome = "Ensino Fundamental",
-                            AnoTurma = 0,
-                            QuantidadeAlunos = 150
-                        }
-                    }
-                }
-            };
-
-            var mockUseCase = new Mock<IConsultasReclassificacaoPainelEducacionalUseCase>();
-            mockUseCase
-                .Setup(x => x.ObterReclassificacao(filtro.CodigoDre, filtro.CodigoUe, filtro.AnoLetivo, filtro.AnoTurma))
-                .ReturnsAsync(retornoEsperado);
-
-            var result = await _controller.ObterReclassificacao(filtro, mockUseCase.Object);
-
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var retorno = Assert.IsAssignableFrom<IEnumerable<PainelEducacionalReclassificacaoDto>>(okResult.Value);
-
-            Assert.Single(retorno);
-            var item = retorno.First();
-            Assert.NotNull(item.Modalidade);
-            Assert.Single(item.Modalidade);
-
-            var modalidade = item.Modalidade.First();
-            Assert.Equal("Ensino Fundamental", modalidade.Nome);
-            Assert.Equal(0, modalidade.AnoTurma);
-            Assert.Equal(150, modalidade.QuantidadeAlunos);
-
-            mockUseCase.Verify(x => x.ObterReclassificacao(
-                It.Is<string>(d => d == "DRE111"),
-                It.Is<string>(u => u == "UE222"),
-                It.Is<int>(a => a == 2024),
-                It.Is<int>(t => t == 0)
-            ), Times.Once);
+            _consultasDistorcaoIdadeUseCase.Verify(x => x.ObterDistorcaoIdade(It.IsAny<FiltroPainelEducacionalDistorcaoIdade>()), Times.Once);
         }
 
         [Fact(DisplayName = "Deve retornar Ok com frequência diária para Dre")]

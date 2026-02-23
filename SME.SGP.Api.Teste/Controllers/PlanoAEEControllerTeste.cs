@@ -138,7 +138,7 @@ namespace SME.SGP.Api.Teste.Controllers
             // Arrange
             var useCaseMock = new Mock<ISalvarPlanoAEEUseCase>();
             var planoDto = new PlanoAEEPersistenciaDto();
-            var retorno = new RetornoPlanoAEEDto(0,0);
+            var retorno = new RetornoPlanoAEEDto(0, 0);
 
             useCaseMock.Setup(u => u.Executar(planoDto)).ReturnsAsync(retorno);
 
