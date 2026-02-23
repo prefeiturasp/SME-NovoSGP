@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces.Repositorios
 {
-    public interface IRepositorioSolicitacaoRelatorio
+    public interface IRepositorioSolicitacaoRelatorio : IRepositorioBase<SolicitacaoRelatorio>
     {
-        Task<long> InserirAsync(SolicitacaoRelatorio solicitacao);
         Task<IEnumerable<SolicitacaoRelatorio>> BuscarPorFiltrosExatosAsync(FiltroRelatorioBase filtros,TipoRelatorio? tipoRelatorio = null,StatusSolicitacao? statusSolicitacao = null);
         Task<bool> RelatorioJaSolicitadoAsync(FiltroRelatorioBase filtros,TipoRelatorio tipoRelatorio,string usuarioQueSolicitou);
     }
