@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<long> Handle(InserirSolicitacaoRelatorioCommand request, CancellationToken cancellationToken)
         {
-            return await _repositorio.InserirAsync(request.SolicitacaoRelatorio);
+            return await _repositorio.SalvarAsync(request.SolicitacaoRelatorio);
         }
     }
 }

@@ -3,21 +3,19 @@ using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
-using System;
+using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioSolicitacaoRelatorio : IRepositorioSolicitacaoRelatorio
+    public class RepositorioSolicitacaoRelatorio : RepositorioBase<SolicitacaoRelatorio>, IRepositorioSolicitacaoRelatorio
     {
-        protected readonly ISgpContext database;
-
-        public RepositorioSolicitacaoRelatorio(ISgpContext database)
+        public RepositorioSolicitacaoRelatorio(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
-            this.database = database ?? throw new ArgumentNullException(nameof(database));
         }
+
 
         public async Task<IEnumerable<SolicitacaoRelatorio>> BuscarPorFiltrosExatosAsync(FiltroRelatorioBase filtros, TipoRelatorio? tipoRelatorio = null, StatusSolicitacao? statusSolicitacao = null)
         {
@@ -38,35 +36,6 @@ namespace SME.SGP.Dados.Repositorios
                 TipoRelatorio = tipoRelatorio.HasValue ? (int?)tipoRelatorio.Value : null,
                 StatusSolicitacao = statusSolicitacao.HasValue ? (int?)statusSolicitacao.Value : null
             });
-        }
-
-        public async Task<long> InserirAsync(SolicitacaoRelatorio solicitacao)
-        {
-            var sql = @"
-            INSERT INTO solicitacao_relatorio (
-                filtros_usados,
-                tipo_relatorio,
-                usuario_que_solicitou,
-                status_solicitacao,
-                excluido,
-                criado_em,
-                criado_por,
-                criado_rf,
-                solicitado_em
-            ) VALUES (
-                @FiltrosUsados,
-                @TipoRelatorio,
-                @UsuarioQueSolicitou,
-                @StatusSolicitacao,
-                @Excluido,
-                @CriadoEm,
-                @CriadoPor,
-                @CriadoRf,
-                @SolicitadoEm
-            ) RETURNING id;";
-
-
-            return await database.Conexao.ExecuteAsync(sql, solicitacao);
         }
 
         public async Task<bool> RelatorioJaSolicitadoAsync(FiltroRelatorioBase filtros, TipoRelatorio tipoRelatorio, string usuarioQueSolicitou)
