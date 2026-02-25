@@ -46,38 +46,40 @@
         public const string MENU_RELATORIO_DINAMICO_NAAPA = "Relatório dinâmico";
         public const string MENU_FREQUENCIA = "Frequência";
         public const string MENU_FREQUENCIA_MENSAL = "Frequência mensal";
-        public const string MENU_CONTROLE_DE_FREQUENCIA_MENSAL =  "Controle de frequência mensal";
-        public const string MENU_DIARIO_DE_CLASSE =  "Diário de Classe";
-        public const string MENU_CONTROLE_DE_GRADE =  "Controle de Grade";
-        public const string MENU_CONTROLE_DE_PLANEJAMENTO_DIARIO =  "Controle de planejamento diário";
-        public const string MENU_DEVOLUTIVAS =  "Devolutivas";
-        public const string MENU_FECHAMENTO =  "Fechamento";
-        public const string MENU_NOTAS_E_CONCEITOS_FINAIS =  "Notas e Conceitos Finais";
-        public const string MENU_PARECER_CONCLUSIVO =  "Parecer Conclusivo";
-        public const string MENU_HISTORICO_DE_ALTERACAO_DE_NOTAS =  "Histórico de alteração de notas";
-        public const string MENU_GESTAO =  "Gestão";
-        public const string MENU_PENDENCIAS =  "Pendências";
-        public const string MENU_ACOMPANHAMENTO_DOS_REGISTROS =  "Acompanhamento dos registros";
-        public const string MENU_ATRIBUICOES =  "Atribuições";
-        public const string MENU_USUARIOS =  "Usuários";
-        public const string MENU_NOTIFICACOES =  "Notificações";
-        public const string MENU_AEE =  "AEE";
-        public const string MENU_RELATORIOS_ANALITICOS =  "Relatórios Analíticos";
-        public const string MENU_BOLETIM =  "Boletim";
-        public const string MENU_ATA_BIMESTRAL =  "Ata Bimestral";
-        public const string MENU_ATA_FINAL_DE_RESULTADOS =  "Ata Final de Resultados";
-        public const string MENU_HISTORICO_ESCOLAR =  "Histórico Escolar";
-        public const string MENU_INFORMACOES_ESCOLARES =  "Informações Escolares";
-        public const string MENU_RELATORIO_DO_ACOMPANHAMENTO_DE_APRENDIZAGEM =  "Relatório do Acompanhamento da Aprendizagem";
-        public const string MENU_ESCOLA_AQUI =  "Escola aqui";
-        public const string MENU_REINICIAR_SENHA =  "Reiniciar Senha";
-        public const string MENU_SUPORTE =  "Suporte";
-        public const string MENU_MEUS_DADOS =  "Meus Dados";
-        public const string MENU_NOTIFICACAO =  "Notificação";
-        public const string MENU_ADESAO =  "Adesão";
-        public const string MENU_LEITURA =  "Leitura";
+        public const string MENU_CONTROLE_DE_FREQUENCIA_MENSAL = "Controle de frequência mensal";
+        public const string MENU_DIARIO_DE_CLASSE = "Diário de Classe";
+        public const string MENU_CONTROLE_DE_GRADE = "Controle de Grade";
+        public const string MENU_CONTROLE_DE_PLANEJAMENTO_DIARIO = "Controle de planejamento diário";
+        public const string MENU_DEVOLUTIVAS = "Devolutivas";
+        public const string MENU_FECHAMENTO = "Fechamento";
+        public const string MENU_NOTAS_E_CONCEITOS_FINAIS = "Notas e Conceitos Finais";
+        public const string MENU_PARECER_CONCLUSIVO = "Parecer Conclusivo";
+        public const string MENU_HISTORICO_DE_ALTERACAO_DE_NOTAS = "Histórico de alteração de notas";
+        public const string MENU_GESTAO = "Gestão";
+        public const string MENU_PENDENCIAS = "Pendências";
+        public const string MENU_ACOMPANHAMENTO_DOS_REGISTROS = "Acompanhamento dos registros";
+        public const string MENU_ATRIBUICOES = "Atribuições";
+        public const string MENU_USUARIOS = "Usuários";
+        public const string MENU_NOTIFICACOES = "Notificações";
+        public const string MENU_AEE = "AEE";
+        public const string MENU_RELATORIOS_ANALITICOS = "Relatórios Analíticos";
+        public const string MENU_RELATORIOS_SONDAGEM_CONSOLIDADO = "Consolidado";
+        public const string MENU_RELATORIOS_SONDAGEM_POR_TURMA = "Por turma";
+        public const string MENU_BOLETIM = "Boletim";
+        public const string MENU_ATA_BIMESTRAL = "Ata Bimestral";
+        public const string MENU_ATA_FINAL_DE_RESULTADOS = "Ata Final de Resultados";
+        public const string MENU_HISTORICO_ESCOLAR = "Histórico Escolar";
+        public const string MENU_INFORMACOES_ESCOLARES = "Informações Escolares";
+        public const string MENU_RELATORIO_DO_ACOMPANHAMENTO_DE_APRENDIZAGEM = "Relatório do Acompanhamento da Aprendizagem";
+        public const string MENU_ESCOLA_AQUI = "Escola aqui";
+        public const string MENU_REINICIAR_SENHA = "Reiniciar Senha";
+        public const string MENU_SUPORTE = "Suporte";
+        public const string MENU_MEUS_DADOS = "Meus Dados";
+        public const string MENU_NOTIFICACAO = "Notificação";
+        public const string MENU_ADESAO = "Adesão";
+        public const string MENU_LEITURA = "Leitura";
         public const string MENU_INFORMES = "Informes";
-        public const string MENU_CADASTRO_DE_ABAE =  "Cadastro de ABAE";
+        public const string MENU_CADASTRO_DE_ABAE = "Cadastro de ABAE";
         public const string MENU_BUSCA_ATIVA = "Busca Ativa";
         public const string MENU_CONS_CRIANCAS_ESTUD_AUSENTES = "Consulta de crianças/estudantes ausentes";
         public const string MENU_REGISTRO_ACOES = "Registro de ações";
@@ -100,7 +102,7 @@
         public const string AGRUPAMENTO_MEUS_DADOS = "Meus Dados";
         public const string AGRUPAMENTO_NOTIFICACAO = "Notificação";
 
-        
+
         public const string ROTA_PLANEJAMENTO_PLANO_ANUAL = "/planejamento/plano-anual";
         public const string ROTA_PLANEJAMENTO_PLANO_CICLO = "/planejamento/plano-ciclo";
         public const string ROTA_PLANEJAMENTO_CARTA_DE_INTENCOES = "/planejamento/carta-intencoes";
@@ -175,6 +177,8 @@
         public const string ROTA_RELATORIOS_NAAPA_ENCMAINHAMENTO = "/relatorios/naapa/encaminhamento";
         public const string ROTA_RELATORIOS_NAAPA_BUSCA_ATIVA = "/relatorios/naapa/busca-ativa";
         public const string ROTA_RELATORIOS_SONDAGEM_ANALITICOS = "/relatorios/sondagem/analitico";
+        public const string ROTA_RELATORIOS_SONDAGEM_POR_TURMA = "/relatorios/sondagem/por-turma";
+        public const string ROTA_RELATORIOS_SONDAGEM_CONSOLIDADO = "/relatorios/sondagem/consolidado";
         public const string ROTA_RELATORIOS_DIARIO_CLASSE_BOLETIM_SIMPLES = "/relatorios/diario-classe/boletim-simples";
         public const string ROTA_RELATORIOS_ATAS_ATA_BIMESTRAL = "/relatorios/atas/ata-bimestral";
         public const string ROTA_RELATORIOS_ATAS_ATA_FINAL_RESULTADOS = "/relatorios/atas/ata-final-resultados";
@@ -184,11 +188,11 @@
         public const string ROTA_DASHBOARD_INFORMACOES_ESCOLARES = "/dashboard/informacoes-escolares";
         public const string ROTA_DASHBOARD_DIARIO_BORDO = "/dashboard/diario-bordo";
         public const string ROTA_DASHBOARD_DEVOLUTIVAS = "/dashboard/devolutivas";
-        public const string ROTA_DASHBOARD_REGISTRO_INDIVIDUAL =  "/dashboard/registro-individual";
+        public const string ROTA_DASHBOARD_REGISTRO_INDIVIDUAL = "/dashboard/registro-individual";
         public const string ROTA_DASHBOARD_AEE = "/dashboard/aee";
         public const string ROTA_DASHBOARD_REGISTRO_ITINERANCIA = "/dashboard/registro-itinerancia";
         public const string ROTA_DASHBOARD_NAAPA = "/dashboard/naapa";
-        public const string ROTA_DASHBOARD_ESCOLA_AQUI ="/dashboard/escola-aqui";
+        public const string ROTA_DASHBOARD_ESCOLA_AQUI = "/dashboard/escola-aqui";
         public const string ROTA_DASHBOARD_BUSCA_ATIVA = "/dashboard/busca-ativa";
         public const string ROTA_USUARIOS_REINICIAR_SENHA = "/usuarios/reiniciar-senha";
         public const string ROTA_FECHAMENTO_ACOMPANHAMENTO_APRENDIZAGEM = "/fechamento/acompanhamento-aprendizagem";
@@ -230,24 +234,24 @@
         public const int ORDEM_AGRUPAMENTO_GESTAO = 8;
         public const int ORDEM_AGRUPAMENTO_CONFIGURACAO = 9;
         public const int ORDEM_AGRUPAMENTO_GRAFICOS = 10;
-        
+
         public const int ORDEM_MENU_PLANO_CICLO = 1;
         public const int ORDEM_MENU_PLANO_ANUAL = 2;
         public const int ORDEM_MENU_TERRITORIO_SABER = 3;
         public const int ORDEM_MENU_CARTA_DE_INTENCOES = 4;
         public const int ORDEM_MENU_REGISTRO_POA = 5;
-        
+
         public const int ORDEM_MENU_LISTAO = 1;
         public const int ORDEM_MENU_AULAS_DADAS_AULAS_PREVISTAS = 2;
         public const int ORDEM_MENU_CALENDARIO_DO_PROFESSOR = 3;
         public const int ORDEM_MENU_FREQUENCIA_PLANO_DE_AULA = 4;
         public const int ORDEM_MENU_NOTAS = 5;
-        public const int ORDEM_MENU_COMPENSACAO_DE_AUSENCIA  = 6;
+        public const int ORDEM_MENU_COMPENSACAO_DE_AUSENCIA = 6;
         public const int ORDEM_MENU_DIARIO_DE_BORDO = 7;
         public const int ORDEM_MENU_REGISTRO_INDIVIDUAL = 8;
         public const int ORDEM_MENU_ATRIBUICAO_DE_CJ = 9;
         public const int ORDEM_MENU_ACOMPANHAMENTO_DE_FREQUENCIA = 10;
-        public const int ORDEM_MENU_RELATORIO_DE_PAP  = 11;
+        public const int ORDEM_MENU_RELATORIO_DE_PAP = 11;
         public const int ORDEM_MENU_SONDAGEM_ACESSO = 12;
         public const int ORDEM_MENU_MAPEAMENTO_ESTUDANTES = 13;
 
@@ -257,24 +261,24 @@
         public const int ORDEM_MENU_PENDENCIAS_DO_FECHAMENTO = 4;
         public const int ORDEM_MENU_RAA = 5;
 
-        public const int ORDEM_MENU_DEVOLUTIVAS_EI = 1;
-        public const int ORDEM_MENU_CALENDARIO_ESCOLAR = 2;
-        public const int ORDEM_MENU_DOCUMENTOS_E_PLANOS_DE_TRABALHO = 3;
-        public const int ORDEM_MENU_PERIODOS_ESCOLARES_BIMESTRES = 4;
-        public const int ORDEM_MENU_PERIODOS_ESCOLARES_ABERTURA = 5;
-        public const int ORDEM_MENU_PERIODOS_ESCOLARES_REABERTURA = 6;
-        public const int ORDEM_MENU_EVENTOS = 7;
-        public const int ORDEM_MENU_TIPO_DE_EVENTO = 8;
-        public const int ORDEM_MENU_TIPO_DE_FERIADO = 9;
-        public const int ORDEM_MENU_TIPOS_DE_CALENDARIO_ESCOLAR = 10;
-        public const int ORDEM_MENU_ATRIBUICAO_DE_RESPONSAVEIS = 11;
-        public const int ORDEM_MENU_ATRIBUICAO_ESPORADICA = 12;
-        public const int ORDEM_MENU_COMUNICADOS = 13;
-        public const int ORDEM_MENU_OCORRENCIAS = 14;
-        public const int ORDEM_MENU_INFORMES = 15;
-        public const int ORDEM_MENU_CADASTRO_DE_ABAE = 16;
-        public const int ORDEM_MENU_INFORMACOES_EDUCACIONAIS = 17;
-        public const int ORDEM_MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS = 18;
+        public const int ORDEM_MENU_INFORMACOES_EDUCACIONAIS = 1;
+        public const int ORDEM_MENU_DEVOLUTIVAS_EI = 2;
+        public const int ORDEM_MENU_INFORMACOES_EDUCACIONAIS_IMPORTACOES_DADOS = 3;
+        public const int ORDEM_MENU_CALENDARIO_ESCOLAR = 4;
+        public const int ORDEM_MENU_DOCUMENTOS_E_PLANOS_DE_TRABALHO = 5;
+        public const int ORDEM_MENU_PERIODOS_ESCOLARES_BIMESTRES = 6;
+        public const int ORDEM_MENU_PERIODOS_ESCOLARES_ABERTURA = 7;
+        public const int ORDEM_MENU_PERIODOS_ESCOLARES_REABERTURA = 8;
+        public const int ORDEM_MENU_EVENTOS = 9;
+        public const int ORDEM_MENU_TIPO_DE_EVENTO = 10;
+        public const int ORDEM_MENU_TIPO_DE_FERIADO = 11;
+        public const int ORDEM_MENU_TIPOS_DE_CALENDARIO_ESCOLAR = 12;
+        public const int ORDEM_MENU_ATRIBUICAO_DE_RESPONSAVEIS = 13;
+        public const int ORDEM_MENU_ATRIBUICAO_ESPORADICA = 14;
+        public const int ORDEM_MENU_COMUNICADOS = 15;
+        public const int ORDEM_MENU_OCORRENCIAS = 16;
+        public const int ORDEM_MENU_INFORMES = 17;
+        public const int ORDEM_MENU_CADASTRO_DE_ABAE = 18;
 
         public const int ORDEM_MENU_ENCAMINHAMENTO_AEE = 1;
         public const int ORDEM_MENU_PLANO_AEE = 2;
@@ -292,12 +296,12 @@
         public const int ORDEM_MENU_RELATORIO_NAAPA = 6;
         public const int ORDEM_MENU_RELATORIO_SONDAGEM = 7;
         public const int ORDEM_MENU_RELATORIO_ESCOLA_AQUI = 8;
-        
+
         public const int ORDEM_MENU_BOLETIM = 1;
         public const int ORDEM_MENU_ATA_BIMESTRAL = 2;
         public const int ORDEM_MENU_ATA_FINAL_DE_RESULTADOS = 3;
         public const int ORDEM_MENU_HISTORICO_ESCOLAR = 4;
-        
+
         public const int ORDEM_MENU_GRAFICO_FREQUENCIA = 1;
         public const int ORDEM_MENU_GRAFICO_FECHAMENTO = 2;
         public const int ORDEM_MENU_GRAFICO_INFORMACOES_ESCOLARES = 3;
@@ -313,7 +317,7 @@
 
         public const int ORDEM_MENU_REINICIAR_SENHA = 1;
         public const int ORDEM_MENU_SUPORTE = 2;
-        
+
         public const int ORDEM_SUB_MENU_RELATORIO_FREQUENCIA = 1;
         public const int ORDEM_SUB_MENU_RELATORIO_FREQUENCIA_MENSAL = 2;
         public const int ORDEM_SUB_MENU_RELATORIO_CONTROLE_DE_FREQUENCIA_MENSAL = 3;
@@ -329,24 +333,26 @@
         public const int ORDEM_SUB_MENU_RELATORIO_PARECER_CONCLUSIVO = 2;
         public const int ORDEM_SUB_MENU_RELATORIO_ACOMPANHAMENTO_DO_FECHAMENTO = 3;
         public const int ORDEM_SUB_MENU_RELATORIO_HISTORICO_DE_ALTERACAO_DE_NOTAS = 4;
-        
+
         public const int ORDEM_SUB_MENU_RELATORIO_PENDENCIAS = 1;
         public const int ORDEM_SUB_MENU_RELATORIO_ACOMPANHAMENTO_DOS_REGISTROS = 2;
         public const int ORDEM_SUB_MENU_RELATORIO_ATRIBUICOES = 3;
         public const int ORDEM_SUB_MENU_RELATORIO_USUARIOS = 4;
         public const int ORDEM_SUB_MENU_RELATORIO_NOTIFICACOES = 5;
         public const int ORDEM_SUB_MENU_RELATORIO_OCORRENCIAS = 6;
-        
+
         public const int ORDEM_SUB_MENU_RELATORIO_ENCAMINHAMENTO_AEE = 1;
         public const int ORDEM_SUB_MENU_RELATORIO_PLANO_AEE = 2;
         public const int ORDEM_SUB_MENU_RELATORIO_REGISTRO_DE_ITINERANCIA = 3;
-        
+
         public const int ORDEM_SUB_MENU_RELATORIO_ENCAMINHAMENTO_NAAPA = 1;
         public const int ORDEM_SUB_MENU_RELATORIO_BUSCA_ATIVA = 2;
 
-        public const int ORDEM_SUB_MENU_RELATORIO_RELATORIOS_ANALITICOS = 1;
-        public const int ORDEM_SUB_MENU_RELATORIO_RELATORIO_ADESAO = 2;
-        public const int ORDEM_SUB_MENU_RELATORIO_RELATORIO_LEITURA = 3;
+        public const int ORDEM_SUB_MENU_RELATORIO_RELATORIOS_POR_TURMA = 1;
+        public const int ORDEM_SUB_MENU_RELATORIO_RELATORIOS_CONSOLIDADO = 2;
+        public const int ORDEM_SUB_MENU_RELATORIO_RELATORIOS_ANALITICOS = 3;
+        public const int ORDEM_SUB_MENU_RELATORIO_RELATORIO_ADESAO = 4;
+        public const int ORDEM_SUB_MENU_RELATORIO_RELATORIO_LEITURA = 5;
 
         public const int ORDEM_SUB_MENU_BUSCA_ATIVA_CONS_CRIANCAS_ESTUD_AUSENTES = 1;
         public const int ORDEM_SUB_MENU_BUSCA_ATIVA_REGISTRO_ACOES = 2;

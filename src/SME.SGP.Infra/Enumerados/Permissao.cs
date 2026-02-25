@@ -1961,6 +1961,19 @@ namespace SME.SGP.Infra
             EhConsulta = true)]
         RLC_C = 185,
 
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_RELATORIOS,
+            Menu = ConstantesMenuPermissao.MENU_SONDAGEM,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_RELATORIOS,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_RELATORIO_SONDAGEM,
+            EhSubMenu = true,
+            SubMenu = ConstantesMenuPermissao.MENU_RELATORIOS_SONDAGEM_POR_TURMA,
+            OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_RELATORIO_RELATORIOS_POR_TURMA,
+            Url = ConstantesMenuPermissao.ROTA_RELATORIOS_SONDAGEM_POR_TURMA,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhAlteracao = false,
+            EhConsulta = true)]
+        RESON_P_T = 290,
+
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DOCUMENTOS_ESCOLARES,
             Menu = ConstantesMenuPermissao.MENU_BOLETIM,
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DOCUMENTOS_ESCOLARES,
