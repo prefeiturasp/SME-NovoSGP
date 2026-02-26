@@ -23,6 +23,7 @@ using SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Proficiencia;
 using SME.SGP.Aplicacao.CasosDeUso.Informes;
 using SME.SGP.Aplicacao.CasosDeUso.PainelEducacional;
 using SME.SGP.Aplicacao.CasosDeUso.PlanoAEE.EncerrarPlano;
+using SME.SGP.Aplicacao.CasosDeUso.Relatorios.SolicitacaoRelatorio;
 using SME.SGP.Aplicacao.CasosDeUso.Turma;
 using SME.SGP.Aplicacao.CasosDeUso.Usuarios;
 using SME.SGP.Aplicacao.Consultas;
@@ -44,6 +45,7 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Proficiencia;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.MapeamentoEstudante;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PlanoAEE;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.Relatorios.SolicitacaoRelatorio;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.Turma;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.Usuarios;
 using SME.SGP.Aplicacao.Servicos;
@@ -720,6 +722,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoProficienciaIdebConsultas, RepositorioPainelEducacionalConsolidacaoProficienciaIdebConsultas>();
             services.TryAddScoped<IRepositorioPainelEducacionalAprovacao, RepositorioPainelEducacionalAprovacao>();
             services.TryAddScoped<IRepositorioPainelEducacionalAprovacaoUe, RepositorioPainelEducacionalAprovacaoUe>();
+            services.TryAddScoped<IRepositorioSolicitacaoRelatorio, RepositorioSolicitacaoRelatorio>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)
@@ -1601,6 +1604,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IBoletimIdepUseCase, BoletimIdepUseCase>();
             services.TryAddScoped<IBoletimIdebUseCase, BoletimIdebUseCase>();
             services.TryAddScoped<IImportacaoArquivoAlfabetizacaoUseCase, ImportacaoArquivoAlfabetizacaoUseCase>();
+            services.TryAddScoped<IObterSolicitacaoRelatorioUseCase, ObterSolicitacaoRelatorioUseCase>();
+            services.TryAddScoped<IRegistrarSolicitacaoRelatorioUseCase, RegistrarSolicitacaoRelatorioUseCase>();
 
             RegistrarCasoDeUsoAEERabbitSgp(services);
             RegistrarCasoDeUsoAulaRabbitSgp(services);

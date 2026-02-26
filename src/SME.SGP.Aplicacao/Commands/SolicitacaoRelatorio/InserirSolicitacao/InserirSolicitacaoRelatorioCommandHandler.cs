@@ -1,4 +1,6 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using System;
 using System.Threading;
@@ -17,7 +19,19 @@ namespace SME.SGP.Aplicacao
 
         public async Task<long> Handle(InserirSolicitacaoRelatorioCommand request, CancellationToken cancellationToken)
         {
-            return await _repositorio.SalvarAsync(request.SolicitacaoRelatorio);
+
+            var entidade = new SolicitacaoRelatorio
+            {
+                ExtensaoRelatorio = request.SolicitacaoRelatorio.ExtensaoRelatorio,
+                FiltrosUsados = request.SolicitacaoRelatorio.FiltrosUsados,
+                Relatorio = request.SolicitacaoRelatorio.Relatorio,
+                UsuarioQueSolicitou = request.SolicitacaoRelatorio.UsuarioQueSolicitou,
+                StatusSolicitacao = request.SolicitacaoRelatorio.StatusSolicitacao,
+                Excluido = false,
+                SolicitadoEm = DateTimeExtension.HorarioBrasilia()
+            };
+
+            return await _repositorio.SalvarAsync(entidade);
         }
     }
 }

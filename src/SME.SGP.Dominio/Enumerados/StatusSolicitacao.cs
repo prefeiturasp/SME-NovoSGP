@@ -4,7 +4,6 @@
     {
         Solicitado = 1,
         EmProcessamento = 2,
-        Entregue = 3,
-        Falha = 4
+        Entregue = 3
     }
 }
