@@ -1,9 +1,11 @@
 ﻿using SME.SGP.Dominio.Dtos;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso.Relatorios.SolicitacaoRelatorio;
-
-public interface IRegistrarSolicitacaoRelatorioUseCase
+namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso.Relatorios.SolicitacaoRelatorio
 {
-    Task Executar(SolicitacaoRelatorioDto solicitacaoRelatorio);
+    public interface IRegistrarSolicitacaoRelatorioUseCase
+    {
+        Task Executar(SolicitacaoRelatorioDto solicitacaoRelatorio);
+    }
 }
+
