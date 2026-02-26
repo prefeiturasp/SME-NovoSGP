@@ -14,7 +14,7 @@ public class ObterSolicitacaoRelatorioUseCase : AbstractUseCase, IObterSolicitac
 
     public async Task<bool> Executar(FiltroSolicitacaoRelatorioDto filtroRelatorio)
     {
-        var relatorio = await mediator.Send(new ObterSolicitacaoRelatorioQuery(filtroRelatorio.TipoRelatorio, filtroRelatorio.ExtensaoRelatorio, filtroRelatorio.UsuarioQueSolicitou));
+        var relatorio = await mediator.Send(new ObterSolicitacaoRelatorioQuery(filtroRelatorio.Relatorio, filtroRelatorio.ExtensaoRelatorio, filtroRelatorio.UsuarioQueSolicitou));
         if (relatorio == null)
             return false;
 
