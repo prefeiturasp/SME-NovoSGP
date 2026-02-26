@@ -3,15 +3,16 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso.Relatorios.SolicitacaoRelatorio;
 using SME.SGP.Dominio.Dtos;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.CasosDeUso.Relatorios.SolicitacaoRelatorio;
-
-public class RegistrarSolicitacaoRelatorioUseCase : AbstractUseCase, IRegistrarSolicitacaoRelatorioUseCase
+namespace SME.SGP.Aplicacao.CasosDeUso.Relatorios.SolicitacaoRelatorio
 {
-    public RegistrarSolicitacaoRelatorioUseCase(IMediator mediator) : base(mediator)
+    public class RegistrarSolicitacaoRelatorioUseCase : AbstractUseCase, IRegistrarSolicitacaoRelatorioUseCase
     {
-    }
-    public async Task Executar(SolicitacaoRelatorioDto solicitacaoRelatorio)
-    {
-       await mediator.Send(new InserirSolicitacaoRelatorioCommand(solicitacaoRelatorio));
+        public RegistrarSolicitacaoRelatorioUseCase(IMediator mediator) : base(mediator)
+        {
+        }
+        public async Task Executar(SolicitacaoRelatorioDto solicitacaoRelatorio)
+        {
+            await mediator.Send(new InserirSolicitacaoRelatorioCommand(solicitacaoRelatorio));
+        }
     }
 }
