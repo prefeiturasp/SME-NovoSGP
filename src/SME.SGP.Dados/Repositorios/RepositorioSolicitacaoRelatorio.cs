@@ -17,47 +17,50 @@ namespace SME.SGP.Dados.Repositorios
         }
 
 
-        public async Task<IEnumerable<SolicitacaoRelatorio>> BuscarPorFiltrosExatosAsync(FiltroRelatorioBase filtros, TipoRelatorio? tipoRelatorio = null, StatusSolicitacao? statusSolicitacao = null)
+        public async Task<IEnumerable<SolicitacaoRelatorio>> ObterSolicitacaoRelatorioAsync(TipoRelatorio tipoRelatorio, TipoFormatoRelatorio extensaoRelatorio, string usuarioQueSolicitou, int? intervaloSolicitacao = 1)
         {
-            var filtrosJson = JsonSerializer.Serialize(filtros);
-
             var sql = @"
-                    SELECT *
-                    FROM solicitacao_relatorio
-                    WHERE
-                        excluido = false AND
-                        (@FiltrosUsados IS NULL OR filtros_usados = @FiltrosUsados::text) AND
-                        (@TipoRelatorio IS NULL OR tipo_relatorio = @TipoRelatorio) AND
-                        (@StatusSolicitacao IS NULL OR status_solicitacao = @StatusSolicitacao);";
+                        SELECT *
+                        FROM solicitacao_relatorio
+                        WHERE excluido = false
+                            AND relatorio = @TipoRelatorio 
+                            AND extensao_relatorio = @ExtensaoRelatorio 
+                            AND usuario_que_solicitou = @UsuarioQueSolicitou 
+                            AND status_solicitacao != @StatusEntregue 
+                            AND solicitado_em >= NOW() - (@Horas * INTERVAL '1 hour');";
 
             return await database.Conexao.QueryAsync<SolicitacaoRelatorio>(sql, new
             {
-                FiltrosUsados = filtrosJson,
-                TipoRelatorio = tipoRelatorio.HasValue ? (int?)tipoRelatorio.Value : null,
-                StatusSolicitacao = statusSolicitacao.HasValue ? (int?)statusSolicitacao.Value : null
+                TipoRelatorio = (int)tipoRelatorio,
+                ExtensaoRelatorio = (int)extensaoRelatorio,
+                UsuarioQueSolicitou = usuarioQueSolicitou,
+                StatusEntregue = (int)StatusSolicitacao.Entregue,
+                Horas = intervaloSolicitacao
             });
         }
 
-        public async Task<bool> RelatorioJaSolicitadoAsync(FiltroRelatorioBase filtros, TipoRelatorio tipoRelatorio, string usuarioQueSolicitou)
+        public async Task<bool> RelatorioJaSolicitadoAsync(string filtros, TipoRelatorio tipoRelatorio, string usuarioQueSolicitou)
         {
-            var filtrosJson = JsonSerializer.Serialize(filtros);
+            var objeto = JsonSerializer.Deserialize<object>(filtros);
+            string filtrosFormatado = JsonSerializer.Serialize(objeto);
+
             var sql = @"
                         SELECT COUNT(1)
                         FROM solicitacao_relatorio
                         WHERE
                             excluido = false AND
                             filtros_usados = @FiltrosUsados::text AND
-                            tipo_relatorio = @TipoRelatorio AND
+                            relatorio = @TipoRelatorio AND
                             usuario_que_solicitou = @UsuarioQueSolicitou AND
-                            status_solicitacao != @StatusFalha AND
+                            status_solicitacao != @StatusEntregue AND
                             solicitado_em >= NOW() - INTERVAL '1 hour';";
 
             var count = await database.Conexao.QueryFirstOrDefaultAsync<int>(sql, new
             {
-                FiltrosUsados = filtrosJson,
+                FiltrosUsados = filtrosFormatado,
                 TipoRelatorio = (int)tipoRelatorio,
                 UsuarioQueSolicitou = usuarioQueSolicitou,
-                StatusFalha = (int)StatusSolicitacao.Falha
+                StatusEntregue = (int)StatusSolicitacao.Entregue
             });
 
             return count > 0;
