@@ -1,17 +1,17 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Dominio.Entidades;
+using SME.SGP.Dominio.Dtos;
 
 namespace SME.SGP.Aplicacao
 {
     public class InserirSolicitacaoRelatorioCommand : IRequest<long>
     {
-        public InserirSolicitacaoRelatorioCommand(SolicitacaoRelatorio solicitacaoRelatorio)
+        public InserirSolicitacaoRelatorioCommand(SolicitacaoRelatorioDto solicitacaoRelatorio)
         {
             SolicitacaoRelatorio = solicitacaoRelatorio;
         }
 
-        public SolicitacaoRelatorio SolicitacaoRelatorio { get; set; }
+        public SolicitacaoRelatorioDto SolicitacaoRelatorio { get; set; }
     }
     public class InserirSolicitacaoRelatorioCommandValidator : AbstractValidator<InserirSolicitacaoRelatorioCommand>
     {
