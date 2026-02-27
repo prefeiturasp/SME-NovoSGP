@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso.Relatorios.SolicitacaoRelatorio
         public RegistrarSolicitacaoRelatorioUseCase(IMediator mediator) : base(mediator)
         {
         }
-        public async Task Executar(SolicitacaoRelatorioDto solicitacaoRelatorio)
+        public async Task<long> Executar(SolicitacaoRelatorioDto solicitacaoRelatorio)
         {
-            await mediator.Send(new InserirSolicitacaoRelatorioCommand(solicitacaoRelatorio));
+           return await mediator.Send(new InserirSolicitacaoRelatorioCommand(solicitacaoRelatorio));
         }
     }
 }

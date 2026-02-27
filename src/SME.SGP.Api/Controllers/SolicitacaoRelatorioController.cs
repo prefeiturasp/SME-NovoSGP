@@ -12,7 +12,7 @@ namespace SME.SGP.Api.Controllers
     [ChaveIntegracaoSgpApi]
     public class SolicitacaoRelatorioController : ControllerBase
     {
-        [HttpPost()]
+        [HttpPost("obter-solicitacao-relatorio")]
         [ProducesResponseType(typeof(RetornoBaseDto), 400)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         /// <summary>
@@ -23,12 +23,20 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(filtro));
         }
 
-        [HttpPut()]
+        [HttpPost("salvar")]
         [ProducesResponseType(typeof(RetornoBaseDto), 400)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> AtualizarSolicitacaoRelatorio([FromBody] SolicitacaoRelatorioDto solicitacaoRelatorio, [FromServices] IRegistrarSolicitacaoRelatorioUseCase useCase)
         {
-            await useCase.Executar(solicitacaoRelatorio);
+            return Ok(await useCase.Executar(solicitacaoRelatorio));
+        }
+
+        [HttpPatch("finalizar-solicitacao")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 400)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> FinalizarSolicitacaoRelatorio([FromBody] long solicitacaoRelatorioId, [FromServices] IFinalizarSolicitacaoRelatorioUseCase useCase)
+        {
+            await useCase.Executar(solicitacaoRelatorioId);
             return Ok();
         }
     }

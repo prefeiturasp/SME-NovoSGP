@@ -1606,6 +1606,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IImportacaoArquivoAlfabetizacaoUseCase, ImportacaoArquivoAlfabetizacaoUseCase>();
             services.TryAddScoped<IObterSolicitacaoRelatorioUseCase, ObterSolicitacaoRelatorioUseCase>();
             services.TryAddScoped<IRegistrarSolicitacaoRelatorioUseCase, RegistrarSolicitacaoRelatorioUseCase>();
+            services.TryAddScoped<IFinalizarSolicitacaoRelatorioUseCase, FinalizarSolicitacaoRelatorioUseCase>();
 
             RegistrarCasoDeUsoAEERabbitSgp(services);
             RegistrarCasoDeUsoAulaRabbitSgp(services);

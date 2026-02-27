@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             {
                 ExtensaoRelatorio = request.SolicitacaoRelatorio.ExtensaoRelatorio,
                 FiltrosUsados = request.SolicitacaoRelatorio.FiltrosUsados,
-                Relatorio = request.SolicitacaoRelatorio.Relatorio,
+                Relatorio = request.SolicitacaoRelatorio.TipoRelatorio,
                 UsuarioQueSolicitou = request.SolicitacaoRelatorio.UsuarioQueSolicitou,
                 StatusSolicitacao = request.SolicitacaoRelatorio.StatusSolicitacao,
                 Excluido = false,

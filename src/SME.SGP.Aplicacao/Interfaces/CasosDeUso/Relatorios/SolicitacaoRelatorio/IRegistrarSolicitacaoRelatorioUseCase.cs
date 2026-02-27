@@ -5,7 +5,7 @@ namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso.Relatorios.SolicitacaoRelatori
 {
     public interface IRegistrarSolicitacaoRelatorioUseCase
     {
-        Task Executar(SolicitacaoRelatorioDto solicitacaoRelatorio);
+        Task<long> Executar(SolicitacaoRelatorioDto solicitacaoRelatorio);
     }
 }
 

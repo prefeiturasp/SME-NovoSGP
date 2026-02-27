@@ -12,17 +12,17 @@ namespace SME.SGP.Aplicacao.CasosDeUso.Relatorios.SolicitacaoRelatorio
         {
         }
 
-        public async Task<bool> Executar(FiltroSolicitacaoRelatorioDto filtroRelatorio)
+        public async Task<long> Executar(FiltroSolicitacaoRelatorioDto filtroRelatorio)
         {
             var relatorio = await mediator.Send(new ObterSolicitacaoRelatorioQuery(filtroRelatorio.TipoRelatorio, filtroRelatorio.ExtensaoRelatorio, filtroRelatorio.UsuarioQueSolicitou));
             if (relatorio == null)
-                return false;
+                return 0;
 
             var relatorioFiltrado = relatorio?.FirstOrDefault(r => r.FiltrosUsados == filtroRelatorio.FiltrosUsados);
             if (relatorioFiltrado == null)
-                return false;
+                return 0;
 
-            return true;
+            return relatorioFiltrado.Id;
         }
     }
 }
