@@ -5,6 +5,6 @@ namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso.Relatorios.SolicitacaoRelatori
 {
     public interface IObterSolicitacaoRelatorioUseCase
     {
-        Task<bool> Executar(FiltroSolicitacaoRelatorioDto filtroRelatorio);
+        Task<long> Executar(FiltroSolicitacaoRelatorioDto filtroRelatorio);
     }
 }
