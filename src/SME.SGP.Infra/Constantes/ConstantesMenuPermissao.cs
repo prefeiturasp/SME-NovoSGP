@@ -79,7 +79,7 @@
         public const string MENU_ADESAO =  "Adesão";
         public const string MENU_LEITURA =  "Leitura";
         public const string MENU_INFORMES = "Informes";
-        public const string MENU_CADASTRO_DE_ABAE =  "Cadastro de ABAE";
+        public const string MENU_CADASTRO_DE_ABAE = "Cadastro de ABAE";
         public const string MENU_BUSCA_ATIVA = "Busca Ativa";
         public const string MENU_CONS_CRIANCAS_ESTUD_AUSENTES = "Consulta de crianças/estudantes ausentes";
         public const string MENU_REGISTRO_ACOES = "Registro de ações";
@@ -102,7 +102,7 @@
         public const string AGRUPAMENTO_MEUS_DADOS = "Meus Dados";
         public const string AGRUPAMENTO_NOTIFICACAO = "Notificação";
 
-        
+
         public const string ROTA_PLANEJAMENTO_PLANO_ANUAL = "/planejamento/plano-anual";
         public const string ROTA_PLANEJAMENTO_PLANO_CICLO = "/planejamento/plano-ciclo";
         public const string ROTA_PLANEJAMENTO_CARTA_DE_INTENCOES = "/planejamento/carta-intencoes";
@@ -188,11 +188,11 @@
         public const string ROTA_DASHBOARD_INFORMACOES_ESCOLARES = "/dashboard/informacoes-escolares";
         public const string ROTA_DASHBOARD_DIARIO_BORDO = "/dashboard/diario-bordo";
         public const string ROTA_DASHBOARD_DEVOLUTIVAS = "/dashboard/devolutivas";
-        public const string ROTA_DASHBOARD_REGISTRO_INDIVIDUAL =  "/dashboard/registro-individual";
+        public const string ROTA_DASHBOARD_REGISTRO_INDIVIDUAL = "/dashboard/registro-individual";
         public const string ROTA_DASHBOARD_AEE = "/dashboard/aee";
         public const string ROTA_DASHBOARD_REGISTRO_ITINERANCIA = "/dashboard/registro-itinerancia";
         public const string ROTA_DASHBOARD_NAAPA = "/dashboard/naapa";
-        public const string ROTA_DASHBOARD_ESCOLA_AQUI ="/dashboard/escola-aqui";
+        public const string ROTA_DASHBOARD_ESCOLA_AQUI = "/dashboard/escola-aqui";
         public const string ROTA_DASHBOARD_BUSCA_ATIVA = "/dashboard/busca-ativa";
         public const string ROTA_USUARIOS_REINICIAR_SENHA = "/usuarios/reiniciar-senha";
         public const string ROTA_FECHAMENTO_ACOMPANHAMENTO_APRENDIZAGEM = "/fechamento/acompanhamento-aprendizagem";
@@ -234,24 +234,24 @@
         public const int ORDEM_AGRUPAMENTO_GESTAO = 8;
         public const int ORDEM_AGRUPAMENTO_CONFIGURACAO = 9;
         public const int ORDEM_AGRUPAMENTO_GRAFICOS = 10;
-        
+
         public const int ORDEM_MENU_PLANO_CICLO = 1;
         public const int ORDEM_MENU_PLANO_ANUAL = 2;
         public const int ORDEM_MENU_TERRITORIO_SABER = 3;
         public const int ORDEM_MENU_CARTA_DE_INTENCOES = 4;
         public const int ORDEM_MENU_REGISTRO_POA = 5;
-        
+
         public const int ORDEM_MENU_LISTAO = 1;
         public const int ORDEM_MENU_AULAS_DADAS_AULAS_PREVISTAS = 2;
         public const int ORDEM_MENU_CALENDARIO_DO_PROFESSOR = 3;
         public const int ORDEM_MENU_FREQUENCIA_PLANO_DE_AULA = 4;
         public const int ORDEM_MENU_NOTAS = 5;
-        public const int ORDEM_MENU_COMPENSACAO_DE_AUSENCIA  = 6;
+        public const int ORDEM_MENU_COMPENSACAO_DE_AUSENCIA = 6;
         public const int ORDEM_MENU_DIARIO_DE_BORDO = 7;
         public const int ORDEM_MENU_REGISTRO_INDIVIDUAL = 8;
         public const int ORDEM_MENU_ATRIBUICAO_DE_CJ = 9;
         public const int ORDEM_MENU_ACOMPANHAMENTO_DE_FREQUENCIA = 10;
-        public const int ORDEM_MENU_RELATORIO_DE_PAP  = 11;
+        public const int ORDEM_MENU_RELATORIO_DE_PAP = 11;
         public const int ORDEM_MENU_SONDAGEM_ACESSO = 12;
         public const int ORDEM_MENU_MAPEAMENTO_ESTUDANTES = 13;
 
@@ -296,12 +296,12 @@
         public const int ORDEM_MENU_RELATORIO_NAAPA = 6;
         public const int ORDEM_MENU_RELATORIO_SONDAGEM = 7;
         public const int ORDEM_MENU_RELATORIO_ESCOLA_AQUI = 8;
-        
+
         public const int ORDEM_MENU_BOLETIM = 1;
         public const int ORDEM_MENU_ATA_BIMESTRAL = 2;
         public const int ORDEM_MENU_ATA_FINAL_DE_RESULTADOS = 3;
         public const int ORDEM_MENU_HISTORICO_ESCOLAR = 4;
-        
+
         public const int ORDEM_MENU_GRAFICO_FREQUENCIA = 1;
         public const int ORDEM_MENU_GRAFICO_FECHAMENTO = 2;
         public const int ORDEM_MENU_GRAFICO_INFORMACOES_ESCOLARES = 3;
@@ -317,7 +317,7 @@
 
         public const int ORDEM_MENU_REINICIAR_SENHA = 1;
         public const int ORDEM_MENU_SUPORTE = 2;
-        
+
         public const int ORDEM_SUB_MENU_RELATORIO_FREQUENCIA = 1;
         public const int ORDEM_SUB_MENU_RELATORIO_FREQUENCIA_MENSAL = 2;
         public const int ORDEM_SUB_MENU_RELATORIO_CONTROLE_DE_FREQUENCIA_MENSAL = 3;
@@ -333,18 +333,18 @@
         public const int ORDEM_SUB_MENU_RELATORIO_PARECER_CONCLUSIVO = 2;
         public const int ORDEM_SUB_MENU_RELATORIO_ACOMPANHAMENTO_DO_FECHAMENTO = 3;
         public const int ORDEM_SUB_MENU_RELATORIO_HISTORICO_DE_ALTERACAO_DE_NOTAS = 4;
-        
+
         public const int ORDEM_SUB_MENU_RELATORIO_PENDENCIAS = 1;
         public const int ORDEM_SUB_MENU_RELATORIO_ACOMPANHAMENTO_DOS_REGISTROS = 2;
         public const int ORDEM_SUB_MENU_RELATORIO_ATRIBUICOES = 3;
         public const int ORDEM_SUB_MENU_RELATORIO_USUARIOS = 4;
         public const int ORDEM_SUB_MENU_RELATORIO_NOTIFICACOES = 5;
         public const int ORDEM_SUB_MENU_RELATORIO_OCORRENCIAS = 6;
-        
+
         public const int ORDEM_SUB_MENU_RELATORIO_ENCAMINHAMENTO_AEE = 1;
         public const int ORDEM_SUB_MENU_RELATORIO_PLANO_AEE = 2;
         public const int ORDEM_SUB_MENU_RELATORIO_REGISTRO_DE_ITINERANCIA = 3;
-        
+
         public const int ORDEM_SUB_MENU_RELATORIO_ENCAMINHAMENTO_NAAPA = 1;
         public const int ORDEM_SUB_MENU_RELATORIO_BUSCA_ATIVA = 2;
 
