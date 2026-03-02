@@ -112,6 +112,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             // Arrange
             var anoAtual = DateTime.Now.Year;
             var mensagemRabbit = new MensagemRabbit();
+            var totalAnosEsperado = anoAtual - PainelEducacionalConstants.ANO_LETIVO_MIM_LIMITE + 1;
 
             ConfigurarMockMediator(anoAtual, (new List<DadosMatriculaAlunoTipoPapDto> { new DadosMatriculaAlunoTipoPapDto() }, null, null));
 

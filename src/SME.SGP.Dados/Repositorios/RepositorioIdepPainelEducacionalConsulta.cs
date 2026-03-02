@@ -24,15 +24,15 @@ namespace SME.SGP.Dados.Repositorios
                                     t1.serie_ano AS etapa,
                                     t1.nota,
                                     CASE
-                                        WHEN t1.nota >= 0  AND t1.nota < 0.99 THEN '0-1'
-                                        WHEN t1.nota >= 1  AND t1.nota < 1.99 THEN '1-2'
-                                        WHEN t1.nota >= 2  AND t1.nota < 2.99 THEN '2-3'
-                                        WHEN t1.nota >= 3  AND t1.nota < 3.99 THEN '3-4'
-                                        WHEN t1.nota >= 4  AND t1.nota < 4.99 THEN '4-5'
-                                        WHEN t1.nota >= 5  AND t1.nota < 5.99 THEN '5-6'
-                                        WHEN t1.nota >= 6  AND t1.nota < 6.99 THEN '6-7'
-                                        WHEN t1.nota >= 7  AND t1.nota < 7.99 THEN '7-8'
-                                        WHEN t1.nota >= 8  AND t1.nota < 8.99 THEN '8-9'
+                                        WHEN t1.nota >= 0  AND t1.nota <= 0.99 THEN '0-1'
+                                        WHEN t1.nota >= 1  AND t1.nota <= 1.99 THEN '1-2'
+                                        WHEN t1.nota >= 2  AND t1.nota <= 2.99 THEN '2-3'
+                                        WHEN t1.nota >= 3  AND t1.nota <= 3.99 THEN '3-4'
+                                        WHEN t1.nota >= 4  AND t1.nota <= 4.99 THEN '4-5'
+                                        WHEN t1.nota >= 5  AND t1.nota <= 5.99 THEN '5-6'
+                                        WHEN t1.nota >= 6  AND t1.nota <= 6.99 THEN '6-7'
+                                        WHEN t1.nota >= 7  AND t1.nota <= 7.99 THEN '7-8'
+                                        WHEN t1.nota >= 8  AND t1.nota <= 8.99 THEN '8-9'
                                         WHEN t1.nota >= 9  AND t1.nota <= 10 THEN '9-10'
                                     END AS faixa,
                                     t1.criado_em,

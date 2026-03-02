@@ -1936,6 +1936,32 @@ namespace SME.SGP.Infra
         RESON_C = 242,
 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_RELATORIOS,
+            Menu = ConstantesMenuPermissao.MENU_SONDAGEM,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_RELATORIOS,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_RELATORIO_SONDAGEM,
+            EhSubMenu = true,
+            SubMenu = ConstantesMenuPermissao.MENU_RELATORIOS_SONDAGEM_CONSOLIDADO,
+            OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_RELATORIO_RELATORIOS_CONSOLIDADO,
+            Url = ConstantesMenuPermissao.ROTA_RELATORIOS_SONDAGEM_CONSOLIDADO,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhAlteracao = false,
+            EhConsulta = true)]
+        RESON_CO = 287,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_RELATORIOS,
+            Menu = ConstantesMenuPermissao.MENU_SONDAGEM,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_RELATORIOS,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_RELATORIO_SONDAGEM,
+            EhSubMenu = true,
+            SubMenu = ConstantesMenuPermissao.MENU_RELATORIOS_SONDAGEM_POR_TURMA,
+            OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_RELATORIO_RELATORIOS_POR_TURMA,
+            Url = ConstantesMenuPermissao.ROTA_RELATORIOS_SONDAGEM_POR_TURMA,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhAlteracao = false,
+            EhConsulta = true)]
+        RESON_P_T = 290,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_RELATORIOS,
             Menu = ConstantesMenuPermissao.MENU_ESCOLA_AQUI,
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_RELATORIOS,
             OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_RELATORIO_ESCOLA_AQUI,

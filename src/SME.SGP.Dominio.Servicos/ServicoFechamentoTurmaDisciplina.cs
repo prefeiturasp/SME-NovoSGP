@@ -676,7 +676,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<(PeriodoEscolar periodoEscolar, PeriodoDto periodoFechamento)> ObterPeriodoEscolarFechamentoReabertura(long tipoCalendarioId, Ue ue, int bimestre)
         {
-            var periodoFechamento = await servicoPeriodoFechamento.ObterPorTipoCalendarioSme(tipoCalendarioId);
+            var periodoFechamento = await servicoPeriodoFechamento.ObterPorTipoCalendarioSme(tipoCalendarioId, Aplicacao.SGP);
             var periodoFechamentoBimestre = periodoFechamento?.FechamentosBimestres.FirstOrDefault(x => x.Bimestre == bimestre);
 
             if (periodoFechamento.EhNulo() || periodoFechamentoBimestre.EhNulo())

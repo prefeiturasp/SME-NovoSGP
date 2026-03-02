@@ -376,7 +376,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
         {
             // Arrange
             var (fechamentoDto, turma) = PrepararCenarioBaseSalvar();
-            _servicoPeriodoFechamentoMock.Setup(s => s.ObterPorTipoCalendarioSme(It.IsAny<long>()))
+            _servicoPeriodoFechamentoMock.Setup(s => s.ObterPorTipoCalendarioSme(It.IsAny<long>(), It.IsAny<Aplicacao>()))
                                       .ReturnsAsync((FechamentoDto)null);
             // Act & Assert
             await Assert.ThrowsAsync<NegocioException>(() => _servico.Salvar(0, fechamentoDto));
@@ -539,7 +539,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             // Arrange
             var (fechamentoDto, turma) = PrepararCenarioBaseSalvar();
 
-            _servicoPeriodoFechamentoMock.Setup(s => s.ObterPorTipoCalendarioSme(It.IsAny<long>())).ReturnsAsync((FechamentoDto)null);
+            _servicoPeriodoFechamentoMock.Setup(s => s.ObterPorTipoCalendarioSme(It.IsAny<long>(), It.IsAny<Aplicacao>())).ReturnsAsync((FechamentoDto)null);
             _repositorioFechamentoAlunoConsultaMock
                 .Setup(r => r.ObterPorFechamentoTurmaDisciplina(It.IsAny<long>()))
                 .ReturnsAsync(new List<FechamentoAluno>
@@ -609,7 +609,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             _repositorioTurmaConsultaMock
                 .Setup(r => r.ObterTurmaComUeEDrePorCodigo(turma.CodigoTurma))
                 .ReturnsAsync(turma);
-            _servicoPeriodoFechamentoMock.Setup(s => s.ObterPorTipoCalendarioSme(It.IsAny<long>())).ReturnsAsync((FechamentoDto)null);
+            _servicoPeriodoFechamentoMock.Setup(s => s.ObterPorTipoCalendarioSme(It.IsAny<long>(), It.IsAny<Aplicacao>())).ReturnsAsync((FechamentoDto)null);
             _repositorioFechamentoAlunoConsultaMock
                 .Setup(r => r.ObterPorFechamentoTurmaDisciplina(It.IsAny<long>()))
                 .ReturnsAsync(new List<FechamentoAluno>
@@ -651,7 +651,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             // Arrange
             var (fechamentoDto, turma) = PrepararCenarioBaseSalvar();
 
-            _servicoPeriodoFechamentoMock.Setup(s => s.ObterPorTipoCalendarioSme(It.IsAny<long>())).ReturnsAsync((FechamentoDto)null);
+            _servicoPeriodoFechamentoMock.Setup(s => s.ObterPorTipoCalendarioSme(It.IsAny<long>(), It.IsAny<Aplicacao>())).ReturnsAsync((FechamentoDto)null);
             _repositorioFechamentoAlunoConsultaMock
                 .Setup(r => r.ObterPorFechamentoTurmaDisciplina(It.IsAny<long>()))
                 .ReturnsAsync(new List<FechamentoAluno>
@@ -779,7 +779,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             _repositorioTurmaConsultaMock.Setup(r => r.ObterTurmaComUeEDrePorCodigo(turma.CodigoTurma)).ReturnsAsync(turma);
             _repositorioTurmaConsultaMock.Setup(r => r.ObterTurmaComUeEDrePorId(turma.Id)).ReturnsAsync(turma);
             _repositorioTipoCalendarioMock.Setup(r => r.BuscarPorAnoLetivoEModalidade(It.IsAny<int>(), It.IsAny<ModalidadeTipoCalendario>(), It.IsAny<int>())).ReturnsAsync(new TipoCalendario { Id = 1 });
-            _servicoPeriodoFechamentoMock.Setup(s => s.ObterPorTipoCalendarioSme(It.IsAny<long>())).ReturnsAsync(periodoFechamento);
+            _servicoPeriodoFechamentoMock.Setup(s => s.ObterPorTipoCalendarioSme(It.IsAny<long>(), It.IsAny<Aplicacao>())).ReturnsAsync(periodoFechamento);
             _mediatorMock.Setup(m => m.Send(It.IsAny<ObterParametroSistemaPorTipoEAnoQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new ParametrosSistema { Ativo = false });
             _mediatorMock.Setup(m => m.Send(It.IsAny<TurmaEmPeriodoAbertoQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
             _consultasDisciplinaMock.Setup(c => c.ObterDisciplina(fechamentoDto.DisciplinaId)).ReturnsAsync(disciplinaEol);

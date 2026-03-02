@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using Npgsql;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -1193,7 +1192,8 @@ namespace SME.SGP.Dados.Repositorios
                                  t.nome as Nome, 
                                  t.modalidade_codigo as ModalidadeCodigo,
                                  t.ano_letivo as AnoLetivo,
-                                 t.ano
+                                 t.ano,
+                                 t.tipo_turno as TipoTurno
                             from turma t
                             inner join ue u on t.ue_id = u.id
                             inner join dre d on
@@ -1202,6 +1202,27 @@ namespace SME.SGP.Dados.Repositorios
                             and ano_letivo = @anoLetivo";
 
             return await contexto.Conexao.QueryAsync<TurmaPainelEducacionalDto>(query, new { anoLetivo });
+        }
+
+        public async Task<IEnumerable<TurmaModalidadeSerieAnoDto>> ObterTurmasComModalidadePorModalidadeAnoUe(int ano, long[] ueId, int[] modalidades)
+        {
+            var query = @"select 
+                                    t.id as TurmaId, 
+                                    t.turma_id as TurmaCodigo,
+                                    t.nome as Turma,
+                                    u.ue_id as CodigoUe,
+                                    d.dre_id as CodigoDre,
+                                    t.modalidade_codigo as Modalidade,
+                                    t.ano as SerieAno,  
+                                    t.ano_letivo as AnoLetivo
+                           from turma t
+                           inner join ue u on t.ue_id = u.id
+                           inner join dre d on u.dre_id = d.id
+                           where t.ano_letivo = @ano 
+                           and t.modalidade_codigo = any(@modalidades)
+                           and t.ue_id = any(@ueId)";
+
+            return await contexto.Conexao.QueryAsync<TurmaModalidadeSerieAnoDto>(query, new { ano, ueId, modalidades });
         }
     }
 }

@@ -7,7 +7,6 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Utilitarios;
 using System.Diagnostics.CodeAnalysis;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional.Frequencia;
 
@@ -29,7 +28,6 @@ namespace SME.SGP.PainelEducacional.Worker
 
         }
 
-
         protected override void RegistrarUseCases()
         {
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarIdepPainelEducacional, new ComandoRabbit("Consolidar idep para painel educacional", typeof(IConsolidarIdepPainelEducacionalUseCase)));
@@ -45,9 +43,15 @@ namespace SME.SGP.PainelEducacional.Worker
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarNotasPainelEducacional, new ComandoRabbit("Consolidar Notas para o Painel Educacional", typeof(IConsolidarNotasPainelEducacionalUseCase)));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarReclassificacaoPainelEducacional, new ComandoRabbit("Consolidar Reclassificação para o Painel Educacional", typeof(IConsolidarReclassificacaoPainelEducacionalUseCase)));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarFrequenciaDiariaPainelEducacional, new ComandoRabbit("Consolidar frequência diária para o Painel Educacional", typeof(IConsolidarFrequenciaDiariaPainelEducacionalUseCase)));
+            Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarFrequenciaSemanalPainelEducacional, new ComandoRabbit("Consolidar frequencia semanal para o Painel Educacional", typeof(IConsolidarFrequenciaSemanalPainelEducacionalUseCase)));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarDistorcaoSerieIdadePainelEducacional, new ComandoRabbit("Consolidar Distorção Idade para o Painel Educacional", typeof(IConsolidarDistorcaoIdadePainelEducacionalUseCase)));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarProficienciaIdebPainelEducacional, new ComandoRabbit("Consolidar Proficiência Ideb para o Painel Educacional", typeof(IConsolidarProficienciaIdebPainelEducacionalUseCase)));
             Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarProficienciaIdepPainelEducacional, new ComandoRabbit("Consolidar Proficiência Idep para o Painel Educacional", typeof(IConsolidarProficienciaIdepPainelEducacionalUseCase)));
+            Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarAprovacaoPainelEducacional, new ComandoRabbit("Consolidar Aprovacao para o Painel Educacional", typeof(IConsolidarAprovacaoPainelEducacionalUseCase)));
+            Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarFluenciaLeitoraUePainelEducacional, new ComandoRabbit("Consolidar Fluencia Leitora Ue para o Painel Educacional", typeof(IConsolidarFluenciaLeitoraUePainelEducacionalUseCase)));
+            Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarPlanosAEEPainelEducacional, new ComandoRabbit("Consolidar PlanosAEE para o Painel Educacional", typeof(IConsolidarPlanoAEEPainelEducacionalUseCase)));
+            Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarEducacaoIntegralPainelEducacional, new ComandoRabbit("Consolidar Educacão Integral para o Painel Educacional", typeof(IConsolidarEducacaoIntegralPainelEducacionalUseCase)));
+            Comandos.Add(RotasRabbitSgpPainelEducacional.ConsolidarInformacoesEducacionaisPainelEducacional, new ComandoRabbit("Consolidar Informações Educacionais para o Painel Educacional", typeof(IConsolidarInformacoesEducacionaisPainelEducacionalUseCase)));
         }
     }
 }

@@ -1,9 +1,11 @@
-﻿using SME.SGP.Infra;
+﻿using SME.SGP.Dominio.Entidades;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoPlanoAEE;
+using SME.SGP.Infra.Dtos.PlanoAEE;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SME.SGP.Infra.Dtos.PlanoAEE;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -11,7 +13,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<PaginacaoResultadoDto<PlanoAEEAlunoTurmaDto>> ListarPaginado(long dreId, long[] ueId, long turmaId, string alunoCodigo, int? situacao, string[] turmasCodigos, bool ehAdmin, bool ehPAEE, Paginacao paginacao, bool exibirEncerrados, string responsavelRf, string responsavelRfPaai);
 
-        Task<PlanoAEEResumoDto> ObterPlanoPorEstudante(string codigoEstudante);
+        Task<PlanoAEEResumoDto> ObterPlanoPorEstudante(FiltroEstudantePlanoAEEDto filtro);
 
         Task<PlanoAEE> ObterPlanoComTurmaPorId(long planoId);
         Task<IEnumerable<PlanoAEE>> ObterPlanosAtivos();
@@ -28,6 +30,8 @@ namespace SME.SGP.Dominio.Interfaces
         Task<Pendencia> ObterUltimaPendenciaPlano(long planoId);
         Task<IEnumerable<UsuarioEolRetornoDto>> ObterResponsaveis(long dreId, long[] ueId, long turmaId, string alunoCodigo, int? situacao, bool exibirEncerrados);
         Task<IEnumerable<PlanoAEETurmaDto>> ObterPlanosComSituacaoDiferenteDeEncerrado(long? anoLetivo);
+        Task<IEnumerable<DadosParaConsolidarPlanosAEEDto>> ObterPlanosConsolidarPainelEducacional(int anoLetivo);
+        Task<IEnumerable<PainelEducacionalConsolidacaoPlanoAEE>> ObterConsolidacaoPlanosPainelEducacional(FiltroPainelEducacionalPlanosAEE filtro);
         Task<IEnumerable<PlanoAEEResumoIntegracaoDto>> ObterPlanoPorTurma(FiltroTurmaPlanoAEEDto filtro);
     }
 }

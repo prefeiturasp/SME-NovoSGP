@@ -5,6 +5,7 @@ namespace SME.SGP.Dominio.Entidades
 {
     public class PainelEducacionalConsolidacaoFrequenciaDiaria
     {
+        public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }
         public long TurmaId { get; set; }
         public NivelFrequenciaEnum NivelFrequencia { get; set; }
