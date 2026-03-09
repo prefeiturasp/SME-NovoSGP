@@ -7,11 +7,11 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Dtos.Relatorios;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.Infra.Dtos.Relatorios;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -67,9 +67,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterPlanoAee(long? planoAeeId,long codigoAluno ,[FromQuery] string turmaCodigo, [FromServices] IObterPlanoAEEPorIdUseCase useCase)
+        public async Task<IActionResult> ObterPlanoAee(long? planoAeeId, long codigoAluno, [FromQuery] string turmaCodigo, [FromServices] IObterPlanoAEEPorIdUseCase useCase)
         {
-            return Ok(await useCase.Executar(new FiltroPesquisaQuestoesPorPlanoAEEIdDto(planoAeeId,turmaCodigo,codigoAluno)));
+            return Ok(await useCase.Executar(new FiltroPesquisaQuestoesPorPlanoAEEIdDto(planoAeeId, turmaCodigo, codigoAluno)));
         }
 
         [HttpGet]
@@ -92,13 +92,13 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(planoAeeDto));
         }
 
-        [HttpGet("estudante/{codigoEstudante}/existe")]
+        [HttpGet("estudante/{codigoEstudante}/existe/{codigoUe}/ue")]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
-        public async Task<IActionResult> VerificarExistenciaPlanoAEEPorEstudante(string codigoEstudante, [FromServices] IVerificarExistenciaPlanoAEEPorEstudanteUseCase useCase)
+        public async Task<IActionResult> VerificarExistenciaPlanoAEEPorEstudante(string codigoEstudante, string codigoUe, [FromServices] IVerificarExistenciaPlanoAEEPorEstudanteUseCase useCase)
         {
-            return Ok(await useCase.Executar(codigoEstudante));
+            return Ok(await useCase.Executar(new FiltroEstudantePlanoAEEDto(codigoEstudante, codigoUe)));
         }
 
         [HttpGet("{planoAeeId}/reestruturacoes")]
@@ -117,7 +117,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterVersoes(long planoAeeId, long reestruturacaoId, [FromServices] IObterVersoesPlanoAEEUseCase useCase)
         {
             return Ok(await useCase.Executar(new FiltroVersoesPlanoAEEDto(planoAeeId, reestruturacaoId)));
-        }      
+        }
 
         [HttpGet("{planoAeeId}/parecer")]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
@@ -177,15 +177,14 @@ namespace SME.SGP.Api.Controllers
             return Ok(new RetornoBaseDto("Plano devolvido com sucesso"));
         }
 
-        [HttpGet("encerrar-planos")]
-        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [HttpPost("encerramento-manual/{planoId}")]
+        [ProducesResponseType(typeof(RetornoEncerramentoPlanoAEEDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
-        public async Task<IActionResult> EncerrarPlanos()
+        [Permissao(Permissao.PAEE_A, Policy = "Bearer")]
+        public async Task<IActionResult> EncerramentoManualPlanoAEE(long planoId, [FromServices] IEncerramentoManualPlanoAEEUseCase useCase)
         {
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAEE.EncerrarPlanoAEEEstudantesInativos, Guid.NewGuid()));
-            return Ok();
+            return Ok(await useCase.Executar(planoId));
         }
 
         [HttpGet("expirar-planos")]
@@ -207,7 +206,7 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(parametros.PlanoAEEId, parametros.ResponsavelRF, parametros.ResponsavelNome));
         }
-        
+
         [HttpGet]
         [Route("paai")]
         [ProducesResponseType(typeof(IEnumerable<UsuarioEolRetornoDto>), 200)]
@@ -235,7 +234,7 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(planoAeeId));
         }
-        
+
         [HttpPost("imprimir")]
         [ProducesResponseType(typeof(bool), 200)]
         [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
@@ -247,9 +246,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterDadosSrmPaeeColaborativo([FromBody] FiltroSrmPaeeColaborativoDto filtro,[FromServices] IObterSrmPaeeColaborativoUseCase usecase)
+        public async Task<IActionResult> ObterDadosSrmPaeeColaborativo([FromBody] FiltroSrmPaeeColaborativoDto filtro, [FromServices] IObterSrmPaeeColaborativoUseCase usecase)
         {
-            return Ok(await  usecase.Executar(filtro));
+            return Ok(await usecase.Executar(filtro));
         }
 
         [HttpGet("responsaveis")]

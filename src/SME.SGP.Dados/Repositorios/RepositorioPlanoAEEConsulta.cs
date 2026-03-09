@@ -1,10 +1,12 @@
 using Dapper;
 using Dommel;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoPlanoAEE;
 using SME.SGP.Infra.Dtos.PlanoAEE;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
@@ -177,7 +179,7 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine("                  limit 1)) ");
         }
 
-        public async Task<PlanoAEEResumoDto> ObterPlanoPorEstudante(string codigoEstudante)
+        public async Task<PlanoAEEResumoDto> ObterPlanoPorEstudante(FiltroEstudantePlanoAEEDto filtro)
         {
             var query = @"select distinct   pa.Id,
                                             pa.aluno_numero as numero,
@@ -185,15 +187,18 @@ namespace SME.SGP.Dados.Repositorios
                                             tu.nome as turma,
                                             pa.situacao 
                                         from plano_aee pa
-                                        inner join turma tu on tu.id = pa.turma_id 
+                                        inner join turma tu on tu.id = pa.turma_id                                         
+                                        inner join ue on ue.id = tu.ue_id
                                         where pa.aluno_codigo = @codigoEstudante 
+                                        and ue.ue_id = @codigoUe
                                         and not pa.situacao = any(@situacoesDesconsideradas)
                                         and not pa.excluido
                                         limit 1";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanoAEEResumoDto>(query, new
             {
-                codigoEstudante,
+                codigoEstudante = filtro.CodigoEstudante,
+                codigoUe = filtro.CodigoUe,
                 situacoesDesconsideradas = new int[] { (int)SituacaoPlanoAEE.Encerrado, (int)SituacaoPlanoAEE.EncerradoAutomaticamente }
             });
         }
@@ -601,6 +606,45 @@ namespace SME.SGP.Dados.Repositorios
             sql.Append(";");
 
             return sql.ToString();
+        }
+
+        public async Task<IEnumerable<DadosParaConsolidarPlanosAEEDto>> ObterPlanosConsolidarPainelEducacional(int anoLetivo)
+        {
+            var query = $@"SELECT 
+	                        t4.dre_id AS codigoDre
+                          , t3.ue_id AS codigoUe  
+                          , t2.ano_letivo AS anoLetivo
+                          , t1.situacao AS situacaoPlano  
+                        FROM plano_aee t1 
+                        INNER JOIN turma t2 ON (t2.id = t1.turma_id)
+                        INNER JOIN ue t3 ON (t3.id = t2.ue_id)
+                        INNER JOIN dre t4 ON (t4.id = t3.dre_id)
+                        WHERE t1.excluido = false AND t2.ano_letivo = @anoLetivo;";
+
+            return await database.Conexao.QueryAsync<DadosParaConsolidarPlanosAEEDto>(query, new { anoLetivo });
+        }
+
+        public async Task<IEnumerable<PainelEducacionalConsolidacaoPlanoAEE>> ObterConsolidacaoPlanosPainelEducacional(FiltroPainelEducacionalPlanosAEE filtro)
+        {
+            var query = $@"SELECT 
+	                        codigo_dre AS codigoDre
+                          , codigo_ue AS codigoUe 
+                          , situacao_plano AS situacaoPlano
+                          , quantidade_situacao_plano AS quantidadeSituacaoPlano
+                        FROM painel_educacional_consolidacao_plano_aee
+                        WHERE ano_letivo = @anoLetivo";
+
+            if(!string.IsNullOrEmpty(filtro.CodigoDre))
+                query += " AND codigo_dre = @codigoDre";
+
+            if (!string.IsNullOrEmpty(filtro.CodigoUe))
+                query += " AND codigo_ue = @codigoUe";
+
+            return await database.Conexao.QueryAsync<PainelEducacionalConsolidacaoPlanoAEE>(query, new { 
+                anoLetivo = filtro.AnoLetivo,
+                codigoDre = filtro.CodigoDre,
+                codigoUe = filtro.CodigoUe
+            });
         }
     }
 }

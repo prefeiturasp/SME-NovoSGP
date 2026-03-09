@@ -25,6 +25,12 @@ namespace SME.SGP.Dominio
         public void EncerrarPlanoAEE() {
             Situacao = SituacaoPlanoAEE.ParecerCP;
         }
+
+        public void EncerramentoManualPlanoAEE()
+        {
+            Situacao = SituacaoPlanoAEE.Encerrado;
+        }
+
         public bool SituacaoPodeDevolverPlanoAEE()
             => Situacao == SituacaoPlanoAEE.ParecerCP
             || Situacao == SituacaoPlanoAEE.ParecerPAAI

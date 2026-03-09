@@ -1,8 +1,5 @@
 ﻿using MediatR;
-using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
-using SME.SGP.Infra.Dtos.PainelEducacional;
-using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoDistorcaoIdade;
 using System;
 using System.Collections.Generic;
 using System.Linq;

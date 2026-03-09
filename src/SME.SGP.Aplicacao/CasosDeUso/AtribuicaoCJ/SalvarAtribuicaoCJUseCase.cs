@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
                 var atribuicao = TransformaDtoEmEntidade(persistenciaDto, atribuicaoDto);
 
                 var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
-                await mediator.Send(new InserirAtribuicaoCJCommand(atribuicao, professoresTitularesDisciplinasEol, atribuicoesAtuais, usuario, persistenciaDto.Historico,excluiAbrangencia));
+                await mediator.Send(new InserirAtribuicaoCJCommand(atribuicao, professoresTitularesDisciplinasEol, atribuicoesAtuais, usuario, persistenciaDto.Historico, excluiAbrangencia));
 
                 var perfilCJ = atribuicao.Modalidade == Modalidade.EducacaoInfantil ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
 
@@ -72,7 +72,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task RemoverDisciplinasCache(AtribuicaoCJPersistenciaDto atribuicaoCJPersistenciaDto)
         {
-            
+
             var chaveCache = string.Format(NomeChaveCache.COMPONENTES_TURMA_PROFESSOR_PERFIL, atribuicaoCJPersistenciaDto.TurmaId, atribuicaoCJPersistenciaDto.UsuarioRf, Perfis.PERFIL_CJ);
             await mediator.Send(new RemoverChaveCacheCommand(chaveCache));
         }
