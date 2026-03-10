@@ -12,7 +12,10 @@ namespace SME.SGP.Aplicacao.CasosDeUso.Relatorios.SolicitacaoRelatorio
         }
         public async Task<long> Executar(SolicitacaoRelatorioDto solicitacaoRelatorio)
         {
-           return await mediator.Send(new InserirSolicitacaoRelatorioCommand(solicitacaoRelatorio));
+            var solicitacaoRelatorioId = await mediator.Send(new InserirSolicitacaoRelatorioCommand(solicitacaoRelatorio));
+            await mediator.Send(new InserirCodigoCorrelacaoCommand(solicitacaoRelatorio.CodigoCorrelacao, solicitacaoRelatorio.UsuarioQueSolicitou, solicitacaoRelatorio.TipoRelatorio, solicitacaoRelatorio.ExtensaoRelatorio));
+
+            return solicitacaoRelatorioId;
         }
     }
 }

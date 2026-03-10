@@ -1,10 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using SME.SGP.Dominio.Dtos;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso.Relatorios.SolicitacaoRelatorio
 {
     public interface IFinalizarSolicitacaoRelatorioUseCase
     {
-        Task Executar(long Id);
+        Task Executar(FinalizarSolicitacaoRelatorioDto finalizarSolicitacaoRelatorioDto);
     }
 }
 
