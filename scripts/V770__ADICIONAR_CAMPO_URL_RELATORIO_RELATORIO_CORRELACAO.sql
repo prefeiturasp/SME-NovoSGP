@@ -1,0 +1,1 @@
+ALTER TABLE public.relatorio_correlacao ADD column IF NOT exists url_relatorio TEXT NULL;
