@@ -14,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database;
         }
 
-        public async Task<IEnumerable<PainelEducacionalIdebDto>> ObterIdebPorAnoSerie(int anoLetivo, int serie, string codigoDre, string codigoUe)
+        public async Task<IEnumerable<PainelEducacionalIdebDto>> ObterIdebPorAnoSerie(int anoLetivo, string serie, string codigoDre, string codigoUe)
         {
             string query = @"SELECT 
                                   peci.ano_letivo AS AnoLetivo,
@@ -39,7 +39,7 @@ namespace SME.SGP.Dados.Repositorios
             );
         }
 
-        public async Task<int?> ObterAnoMaisRecenteIdeb(int serie, string codigoDre, string codigoUe)
+        public async Task<int?> ObterAnoMaisRecenteIdeb(string serie, string codigoDre, string codigoUe)
         {
             var query = @"SELECT MAX(peci.ano_letivo)
                       FROM painel_educacional_consolidacao_ideb peci
