@@ -4,12 +4,13 @@ namespace SME.SGP.Dominio
 {
     public class RelatorioCorrelacao : EntidadeBase, ICloneable
     {
-        public RelatorioCorrelacao(TipoRelatorio tipoRelatorio, long usuarioSolicitanteId, TipoFormatoRelatorio formato)
+        public RelatorioCorrelacao(TipoRelatorio tipoRelatorio, long usuarioSolicitanteId, TipoFormatoRelatorio formato, string urlRelatorio = null)
         {
             Codigo = Guid.NewGuid();
             TipoRelatorio = tipoRelatorio;
             UsuarioSolicitanteId = usuarioSolicitanteId;
             Formato = formato;
+            UrlRelatorio = urlRelatorio;
         }
 
         public RelatorioCorrelacao()
@@ -26,6 +27,7 @@ namespace SME.SGP.Dominio
         public long UsuarioSolicitanteId { get; set; }
 
         public TipoFormatoRelatorio Formato { get; set; }
+        public string? UrlRelatorio { get; set; }
 
         public void AdicionarCorrelacaoJasper(RelatorioCorrelacaoJasper relatorioCorrelacaoJasper)
         {
