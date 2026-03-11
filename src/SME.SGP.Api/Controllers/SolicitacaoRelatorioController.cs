@@ -34,9 +34,9 @@ namespace SME.SGP.Api.Controllers
         [HttpPatch("finalizar-solicitacao")]
         [ProducesResponseType(typeof(RetornoBaseDto), 400)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> FinalizarSolicitacaoRelatorio([FromBody] long solicitacaoRelatorioId, [FromServices] IFinalizarSolicitacaoRelatorioUseCase useCase)
+        public async Task<IActionResult> FinalizarSolicitacaoRelatorio([FromBody] FinalizarSolicitacaoRelatorioDto finalizarSolicitacaoRelatorioDto, [FromServices] IFinalizarSolicitacaoRelatorioUseCase useCase)
         {
-            await useCase.Executar(solicitacaoRelatorioId);
+            await useCase.Executar(finalizarSolicitacaoRelatorioDto);
             return Ok();
         }
     }
