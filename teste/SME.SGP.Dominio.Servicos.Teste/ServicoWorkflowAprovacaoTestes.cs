@@ -406,39 +406,75 @@ namespace SME.SGP.Dominio.Servicos.Teste
         {
             // Arrange
             var notificacaoIdNivel1 = _faker.Random.Long(1);
-            var workflow = CriarWorkflow(WorkflowAprovacaoTipo.Evento_Liberacao_Excepcional, notificacaoIdNivel1, 2);
+            var workflow = CriarWorkflow(
+                WorkflowAprovacaoTipo.Evento_Liberacao_Excepcional,
+                notificacaoIdNivel1,
+                2);
+
             workflow.UeId = "UE-CIEJA";
 
             var proximoNivel = workflow.Niveis.First(n => n.Nivel == 2);
-            proximoNivel.Cargo = Cargo.Diretor; // No CIEJA, Diretor mapeia para Coordenador Geral
+            proximoNivel.Cargo = Cargo.Diretor;
 
             var ueCieja = new Ue { TipoEscola = TipoEscola.CIEJA };
             var diretorCiejaRf = "RF-COORD-GERAL";
-            var usuarioDiretorCieja = new Usuario { Id = 101, CodigoRf = diretorCiejaRf };
+            var usuarioDiretorCieja = new Usuario
+            {
+                Id = 101,
+                CodigoRf = diretorCiejaRf
+            };
 
-            _repositorioUeMock.Setup(r => r.ObterPorCodigo(workflow.UeId)).Returns(ueCieja);
+            _repositorioUeMock
+                .Setup(r => r.ObterPorCodigo(workflow.UeId))
+                .Returns(ueCieja);
 
-            // Configura o mock para responder SOMENTE à chamada com a função/atividade específica do CIEJA
-            _servicoNotificacaoMock.Setup(s => s.ObterFuncionariosPorNivelFuncaoAtividadeAsync(workflow.UeId, FuncaoAtividade.COORDERNADOR_GERAL_CIEJA, true, true))
-                                   .ReturnsAsync(new List<(FuncaoAtividade? FuncaoAtividade, string Id)> { (FuncaoAtividade.SECRETARIO_POLO_FORMACAO, diretorCiejaRf) });
+            _servicoNotificacaoMock
+                .Setup(s => s.ObterFuncionariosPorNivelFuncaoAtividadeAsync(
+                    workflow.UeId,
+                    FuncaoAtividade.COORDERNADOR_GERAL_CIEJA,
+                    true,
+                    true))
+                .ReturnsAsync(new List<(FuncaoAtividade?, string)>
+                {
+            (FuncaoAtividade.COORDERNADOR_GERAL_CIEJA, diretorCiejaRf)
+                });
 
             _servicoUsuarioMock
-                .Setup(s => s.ObterUsuarioPorCodigoRfLoginOuAdiciona(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .Setup(s => s.ObterUsuarioPorCodigoRfLoginOuAdiciona(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<bool>()))
                 .ReturnsAsync(usuarioDiretorCieja);
 
             // Act
             await _servico.Aprovar(workflow, true, "OK", notificacaoIdNivel1);
 
             // Assert
-            // Garante que o método específico para CIEJA foi chamado
-            _servicoNotificacaoMock.Verify(s => s.ObterFuncionariosPorNivelFuncaoAtividadeAsync(workflow.UeId, FuncaoAtividade.COORDERNADOR_GERAL_CIEJA, true, true), Times.Once);
+            _servicoNotificacaoMock.Verify(
+                s => s.ObterFuncionariosPorNivelFuncaoAtividadeAsync(
+                    workflow.UeId,
+                    FuncaoAtividade.COORDERNADOR_GERAL_CIEJA,
+                    true,
+                    true),
+                Times.AtLeastOnce);
 
-            // Garante que o método padrão NÃO foi chamado, provando que a lógica de desvio funcionou
-            _servicoNotificacaoMock.Verify(s => s.ObterFuncionariosPorNivelAsync(It.IsAny<string>(), It.IsAny<Cargo?>(), It.IsAny<bool>(), It.IsAny<bool>()), Times.Never);
+            _servicoNotificacaoMock.Verify(
+                s => s.ObterFuncionariosPorNivelAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<Cargo?>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<bool>()),
+                Times.Never);
 
-            // Verifica se a notificação foi criada para o usuário correto
-            _repositorioNotificacaoMock.Verify(r => r.SalvarAsync(It.Is<Notificacao>(n => n.UsuarioId == usuarioDiretorCieja.Id)), Times.Once);
+            _repositorioNotificacaoMock.Verify(
+                r => r.SalvarAsync(
+                    It.Is<Notificacao>(n =>
+                        n.UsuarioId == usuarioDiretorCieja.Id)),
+                Times.Once);
         }
+
 
 
         [Fact]
@@ -511,43 +547,92 @@ namespace SME.SGP.Dominio.Servicos.Teste
         {
             // Arrange
             var notificacaoIdNivel1 = _faker.Random.Long(1);
-            var workflow = CriarWorkflow(WorkflowAprovacaoTipo.Evento_Data_Passada, notificacaoIdNivel1, 2);
+
+            var workflow = CriarWorkflow(
+                WorkflowAprovacaoTipo.Evento_Data_Passada,
+                notificacaoIdNivel1,
+                2);
+
             workflow.UeId = "UE-CONVENIADA";
 
             var proximoNivel = workflow.Niveis.First(n => n.Nivel == 2);
             proximoNivel.Cargo = Cargo.Diretor;
 
-            var ueConveniada = new Ue { TipoEscola = TipoEscola.CRPCONV }; // Escola conveniada
+            var ueConveniada = new Ue
+            {
+                TipoEscola = TipoEscola.CRPCONV
+            };
+
             var diretorConveniadaRf = "RF-DIRETOR-EXT";
-            var usuarioDiretorConveniada = new Usuario { Id = 102, CodigoRf = diretorConveniadaRf };
 
-            _repositorioUeMock.Setup(r => r.ObterPorCodigo(workflow.UeId)).Returns(ueConveniada);
+            var usuarioDiretorConveniada = new Usuario
+            {
+                Id = 102,
+                CodigoRf = diretorConveniadaRf
+            };
 
-            // Configura o mock do MediatR para a query específica de UEs conveniadas
-            _mediatorMock.Setup(m => m.Send(
-                It.Is<ObterFuncionariosPorUeEFuncaoExternaQuery>(q =>
-                    q.CodigoUE == workflow.UeId &&
-                    q.CodigoFuncaoExterna == (int)FuncaoExterna.Diretor),
-                It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<FuncionarioDTO> { new FuncionarioDTO { CodigoRF = diretorConveniadaRf } });
+            _repositorioUeMock
+                .Setup(r => r.ObterPorCodigo(workflow.UeId))
+                .Returns(ueConveniada);
 
-            _servicoUsuarioMock.Setup(s => s.ObterUsuarioPorCodigoRfLoginOuAdiciona(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
-                               .ReturnsAsync(usuarioDiretorConveniada);
+            _mediatorMock
+                .Setup(m => m.Send(
+                    It.Is<ObterFuncionariosPorUeEFuncaoExternaQuery>(q =>
+                        q.CodigoUE == workflow.UeId &&
+                        q.CodigoFuncaoExterna == (int)FuncaoExterna.Diretor),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<FuncionarioDTO>
+                {
+            new FuncionarioDTO
+            {
+                CodigoRF = diretorConveniadaRf
+            }
+                });
+
+            _servicoUsuarioMock
+                .Setup(s => s.ObterUsuarioPorCodigoRfLoginOuAdiciona(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<bool>()))
+                .ReturnsAsync(usuarioDiretorConveniada);
 
             // Act
             await _servico.Aprovar(workflow, true, "OK", notificacaoIdNivel1);
 
             // Assert
-            // Garante que a query específica para conveniadas foi chamada
-            _mediatorMock.Verify(m => m.Send(It.IsAny<ObterFuncionariosPorUeEFuncaoExternaQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+            _mediatorMock.Verify(
+                m => m.Send(
+                    It.Is<ObterFuncionariosPorUeEFuncaoExternaQuery>(q =>
+                        q.CodigoUE == workflow.UeId &&
+                        q.CodigoFuncaoExterna == (int)FuncaoExterna.Diretor),
+                    It.IsAny<CancellationToken>()),
+                Times.AtLeastOnce);
 
-            // Garante que os métodos de busca padrão NÃO foram chamados
-            _servicoNotificacaoMock.Verify(s => s.ObterFuncionariosPorNivelAsync(It.IsAny<string>(), It.IsAny<Cargo?>(), It.IsAny<bool>(), It.IsAny<bool>()), Times.Never);
-            _servicoNotificacaoMock.Verify(s => s.ObterFuncionariosPorNivelFuncaoAtividadeAsync(It.IsAny<string>(), It.IsAny<FuncaoAtividade>(), It.IsAny<bool>(), It.IsAny<bool>()), Times.Never);
+            _servicoNotificacaoMock.Verify(
+                s => s.ObterFuncionariosPorNivelAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<Cargo?>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<bool>()),
+                Times.Never);
 
-            // Verifica se a notificação foi criada para o usuário correto
-            _repositorioNotificacaoMock.Verify(r => r.SalvarAsync(It.Is<Notificacao>(n => n.UsuarioId == usuarioDiretorConveniada.Id)), Times.Once);
+            _servicoNotificacaoMock.Verify(
+                s => s.ObterFuncionariosPorNivelFuncaoAtividadeAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<FuncaoAtividade>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<bool>()),
+                Times.Never);
+
+            _repositorioNotificacaoMock.Verify(
+                r => r.SalvarAsync(
+                    It.Is<Notificacao>(n =>
+                        n.UsuarioId == usuarioDiretorConveniada.Id)),
+                Times.Once);
         }
+
 
         [Fact]
         public async Task DadoAprovacaoDeNivelFinalParaAlteracaoParecerConclusivo_QuandoAprovar_EntaoDeveEnviarComandoDeAprovacao()

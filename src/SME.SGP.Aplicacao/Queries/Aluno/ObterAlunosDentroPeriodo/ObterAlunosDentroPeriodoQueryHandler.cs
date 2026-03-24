@@ -29,6 +29,14 @@ namespace SME.SGP.Aplicacao
             if (request.ConsideraSomenteAtivos)
                 return alunosEol.Where(a => !a.Inativo && a.CodigoSituacaoMatricula != SituacaoMatriculaAluno.VinculoIndevido);
 
+            if (request.ConsideraSomenteAtivosPeriodoFechamento)
+                return alunosEol.Where(a => (new[] {
+                                    SituacaoMatriculaAluno.Ativo,
+                                    SituacaoMatriculaAluno.PendenteRematricula,
+                                    SituacaoMatriculaAluno.Rematriculado,
+                                    SituacaoMatriculaAluno.SemContinuidade,
+                                    SituacaoMatriculaAluno.Concluido }).Contains(a.CodigoSituacaoMatricula));
+
             return alunosEol
                 .Where(a => ((!a.Inativo && a.DataMatricula.Date < request.Periodo.dataFim.Date) ||
                              (a.Inativo && a.DataMatricula.Date < request.Periodo.dataFim.Date && a.DataSituacao.Date >= request.Periodo.dataInicio.Date)) &&
