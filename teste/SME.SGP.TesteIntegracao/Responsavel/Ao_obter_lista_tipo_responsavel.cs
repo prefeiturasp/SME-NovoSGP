@@ -29,7 +29,7 @@ namespace SME.SGP.TesteIntegracao.TipoResponsavel
             var resultados = await useCase.Executar(true);
 
             resultados.ShouldNotBeEmpty();
-            resultados.Count().ShouldBe(5);
+            resultados.Count().ShouldBe(6);
         }
 
         private async Task CriarUsuarioLogado()
