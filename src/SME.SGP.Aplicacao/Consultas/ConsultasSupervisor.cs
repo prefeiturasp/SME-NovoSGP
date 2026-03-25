@@ -315,7 +315,9 @@ namespace SME.SGP.Aplicacao
             {
                 var permitidos = new int[] { (int)TipoResponsavelAtribuicao.AssistenteSocial,
                                              (int)TipoResponsavelAtribuicao.PsicologoEscolar,
-                                             (int)TipoResponsavelAtribuicao.Psicopedagogo };
+                                             (int)TipoResponsavelAtribuicao.Psicopedagogo,
+                                             (int)TipoResponsavelAtribuicao.Fonoaudiologo
+                };
 
                 return tipos
                     .Where(t => permitidos.Contains(t.Codigo));
