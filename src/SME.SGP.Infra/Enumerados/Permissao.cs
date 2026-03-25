@@ -2207,7 +2207,7 @@ namespace SME.SGP.Infra
           IconeDashBoard = ConstantesMenuPermissao.ICONE_FAR_FA_CHECK_SQUARE,
           EhConsulta = true)]
         IE_C = 279,
-        
+
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
           Menu = ConstantesMenuPermissao.MENU_INFORMACOES_EDUCACIONAIS,
           OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
