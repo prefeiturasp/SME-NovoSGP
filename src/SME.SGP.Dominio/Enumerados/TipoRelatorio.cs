@@ -173,5 +173,8 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "relatorios/frequencia-global-todos", ShortName = "RelatorioFrequenciaMensalTodosDreUe", Description = "Relatório de frequência mensal filtro todos dre ou ue")]
         FrequenciaMensalTodosDreUe = 57,
+       
+        [Display(Name = "relatorios/sondagem-por-turma", ShortName = "RelatorioSondagemPorTurma", Description = "Relatório de sondagem por turma")]
+        SondagemPorTurma = 58,
     }
 }
