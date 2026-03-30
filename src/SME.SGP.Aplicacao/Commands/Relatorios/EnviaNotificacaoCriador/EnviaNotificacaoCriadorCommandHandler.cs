@@ -15,20 +15,23 @@ namespace SME.SGP.Aplicacao
 
         public EnviaNotificacaoCriadorCommandHandler(IServicoNotificacao servicoNotificacao)
         {
-            this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));            
+            this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
         }
 
         public async Task<bool> Handle(EnviaNotificacaoCriadorCommand request, CancellationToken cancellationToken)
         {
             var extensaoRelatorio = request.RelatorioCorrelacao.Formato.Name();
-            var urlNotificacao = $"{request.UrlRedirecionamentoBase}api/v1/downloads/sgp/{extensaoRelatorio}/{request.RelatorioCorrelacao.TipoRelatorio.ShortName()}.{extensaoRelatorio}/{request.RelatorioCorrelacao.Codigo}";
+            var urlNotificacao = request.RelatorioCorrelacao.UrlRelatorio;
+
+            if (string.IsNullOrEmpty(urlNotificacao))
+                urlNotificacao = $"{request.UrlRedirecionamentoBase}api/v1/downloads/sgp/{extensaoRelatorio}/{request.RelatorioCorrelacao.TipoRelatorio.ShortName()}.{extensaoRelatorio}/{request.RelatorioCorrelacao.Codigo}";
 
             string descricaoDoRelatorio;
             if (string.IsNullOrEmpty(request.MensagemTitulo))
                 descricaoDoRelatorio = request.RelatorioCorrelacao.TipoRelatorio.GetAttribute<DisplayAttribute>().Description;
             else descricaoDoRelatorio = request.MensagemTitulo;
 
-            var mensagem = FormatarMensagem(descricaoDoRelatorio, urlNotificacao, request.MensagemUsuario);                        
+            var mensagem = FormatarMensagem(descricaoDoRelatorio, urlNotificacao, request.MensagemUsuario);
 
             var notificacao = new Notificacao()
             {

@@ -5,6 +5,7 @@ namespace SME.SGP.Dominio.Dtos
 {
     public class SolicitacaoRelatorioDto
     {
+        public Guid CodigoCorrelacao { get; set; }
         public string FiltrosUsados { get; set; }
         public TipoFormatoRelatorio ExtensaoRelatorio { get; set; }
         public TipoRelatorio TipoRelatorio { get; set; }
