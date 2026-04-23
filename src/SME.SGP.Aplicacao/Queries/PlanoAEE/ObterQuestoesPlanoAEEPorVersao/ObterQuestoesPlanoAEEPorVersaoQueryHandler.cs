@@ -38,7 +38,10 @@ namespace SME.SGP.Aplicacao
 
             if (!versaoPlano.Numero.Equals(ultimaVersaoPlano.Numero))
             {
-                var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo));
+                var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo), cancellationToken);
+                if(turma == null)
+                    throw new NegocioException("Turma Não encontrada!");
+                
                 var dataUltimaAtualizacaoVersaoSelecionada = versaoPlano.AlteradoEm ?? versaoPlano.CriadoEm;
                 var anoUltimaVersaoCriadaPlano = ultimaVersaoPlano.AlteradoEm.HasValue ? ultimaVersaoPlano.AlteradoEm.Value.Year : ultimaVersaoPlano.CriadoEm.Year;
 
