@@ -5,6 +5,7 @@ using SME.SGP.Dominio.Interfaces;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Infra;
 using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.Consultas
@@ -46,6 +47,9 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
 
             mediator.Setup(x => x.Send(It.IsAny<ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<ComponenteCurricularEol>());
+            
+            mediator.Setup(x => x.Send(It.IsAny<ObterComponentesCurricularesPorIdsQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<DisciplinaDto>());
 
             var consulta = new ConsultasDisciplina(repositorioCache.Object,
                                                    consultasObjetivoAprendizagem.Object,
@@ -56,7 +60,8 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             var resultado = await consulta.ObterComponentesCurricularesPorProfessorETurma("1", false);
 
             mediator.Verify(x =>
-                x.Send(It.Is<ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery>(x => x.RealizarAgrupamentoComponente), It.IsAny<CancellationToken>()), Times.Once);
+                x.Send(It.Is<ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery>(x => x.RealizarAgrupamentoComponente), 
+                    It.IsAny<CancellationToken>()), Times.Exactly(2));
 
             Assert.NotNull(resultado);
         }
