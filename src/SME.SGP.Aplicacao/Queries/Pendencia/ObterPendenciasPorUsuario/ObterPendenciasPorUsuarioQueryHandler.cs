@@ -96,7 +96,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var pendencia in pendencias)
             {
-                var pendenciasDto = await ObterPendencias(pendencia, usuarioLogado.CodigoRf);
+                var pendenciasDto = (await ObterPendencias(pendencia, usuarioLogado.CodigoRf)).ToList();
 
                 foreach (var dto in pendenciasDto)
                 {
@@ -105,8 +105,8 @@ namespace SME.SGP.Aplicacao
 
                     dto.MensagemTooltip = ObterMensagemTooltip(pendencia, dias);
                 }
-
-                listaPendenciasDto.AddRange(pendenciasDto);
+                if(pendenciasDto?.ToList().Count > 0)    
+                    listaPendenciasDto.AddRange(pendenciasDto);
             }
 
             return listaPendenciasDto;

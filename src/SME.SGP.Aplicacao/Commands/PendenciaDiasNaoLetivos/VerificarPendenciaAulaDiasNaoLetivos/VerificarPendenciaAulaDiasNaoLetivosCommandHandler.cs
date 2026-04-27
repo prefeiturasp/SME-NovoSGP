@@ -84,11 +84,28 @@ namespace SME.SGP.Aplicacao
                 {
                     try
                     {
+                        var idPendencias = new List<long>()
+                        {
+                            219950946,
+                            219950949,
+                            220002423,
+                            220028400,
+                            220072122,
+                            220131332,
+                            220192574
+                        };
                         var professor = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(turmas.Key.TurmaId.ToString(), turmas.Key.DisciplinaId.ToString()));
                         if (professor.EhNulo() && turmas.Key.ProfessorRf == "Sistema") continue;
                         var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(professor.NaoEhNulo() ? professor.ProfessorRf : turmas.Key.ProfessorRf));
 
                         var pendenciaId = await mediator.Send(new ObterPendenciaAulaPorTurmaIdDisciplinaIdQuery(turmas.Key.TurmaId, turmas.Key.DisciplinaId, professor.NaoEhNulo() ? professor.ProfessorRf : turmas.Key.ProfessorRf, TipoPendencia.AulaNaoLetivo));
+
+                        var exist = idPendencias.Contains(pendenciaId);
+                        if (exist)
+                        {
+                            
+                        }
+                        
                         var pendenciaExistente = pendenciaId != 0;
 
                         var ue = await mediator.Send(new ObterUEPorTurmaCodigoQuery(turmas.Key.TurmaId));
@@ -105,6 +122,11 @@ namespace SME.SGP.Aplicacao
                         foreach (var aula in turmas)
                         {
                             var pendenciaAulaId = await mediator.Send(new ObterPendenciaAulaPorAulaIdQuery(aula.aulaId, TipoPendencia.AulaNaoLetivo));
+                            var existe = idPendencias.Contains(pendenciaAulaId);
+                            if (existe)
+                            {
+                            
+                            }
                             if (pendenciaAulaId == 0)
                             {
                                 var motivo = motivos.FirstOrDefault(m => m.data == aula.Data && m.UesIds.Contains(aula.CodigoUe))?.motivo;
