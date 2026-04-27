@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             PlanoAEEVersaoDto ultimaVersao = null;
             Turma turma;
 
-            if (filtro.PlanoAEEId is > 0)
+            if (filtro.PlanoAEEId.HasValue && filtro.PlanoAEEId > 0)
             {
                 var entidadePlano = await mediator
                     .Send(new ObterPlanoAEEComTurmaPorIdQuery(filtro.PlanoAEEId.Value));
@@ -47,7 +47,10 @@ namespace SME.SGP.Aplicacao
                 if (alunoTurma.NaoEhNulo())
                     verificaMatriculaAnoVigente = true;
 
-                alunoTurma ??= await ObterAlunoReduzido(entidadePlano.AlunoCodigo,entidadePlano.Turma.AnoLetivo);
+                alunoTurma ??= await mediator.Send(new ObterAlunoPorCodigoEAnoQuery(entidadePlano.AlunoCodigo, entidadePlano.Turma.AnoLetivo, true));
+
+                if (alunoTurma.EhNulo())
+                    throw new NegocioException("Aluno não encontrado.");
 
                 var anoLetivo = entidadePlano.Turma.AnoLetivo;
 
@@ -98,7 +101,8 @@ namespace SME.SGP.Aplicacao
                 }
                     
 
-                turma = await ObterTurma(alunoPorTurmaResposta.CodigoTurma.ToString());
+                turma = await mediator
+                    .Send(new ObterTurmaPorCodigoQuery(alunoPorTurmaResposta.CodigoTurma.ToString()));
 
                 if (turma.TipoTurma == TipoTurma.Programa && entidadePlano.Turma.AnoLetivo == anoLetivo)
                     turma = entidadePlano.Turma;
@@ -155,9 +159,7 @@ namespace SME.SGP.Aplicacao
             {
                 novaVersao = true;
                 plano.Responsavel = await ObterResponsavel();
-                turma = await ObterTurma(filtro.TurmaCodigo);
-                var alunoTurma = await ObterAlunoReduzido(filtro.CodigoAluno.ToString(), turma.AnoLetivo);
-                plano.Aluno = alunoTurma;
+                turma = await mediator.Send(new ObterTurmaPorCodigoQuery(filtro.TurmaCodigo));
             }
 
             var questionarioId = await mediator
@@ -198,25 +200,13 @@ namespace SME.SGP.Aplicacao
             return plano;
         }
 
-        private async Task<Turma> ObterTurma(string turmaCodigo)
-        {
-            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
-            return turma ?? throw new NegocioException("Turma não encontrada!");
-        }
-
-        private async Task<AlunoReduzidoDto> ObterAlunoReduzido(string codigoAluno, int anoLetivoTurma)
-        {
-            var alunoTurma = await mediator.Send(new ObterAlunoPorCodigoEAnoQuery(codigoAluno, anoLetivoTurma, true));
-            return alunoTurma.EhNulo() ? throw new NegocioException("Aluno não encontrado.") : alunoTurma;
-        }
-
-        private static bool PermitirEncerramentoManual(PlanoAEEDto plano)
+        private bool PermitirEncerramentoManual(PlanoAEEDto plano)
             => !(new[] { SituacaoMatriculaAluno.Ativo,
                              SituacaoMatriculaAluno.PendenteRematricula,
                              SituacaoMatriculaAluno.Rematriculado,
                              SituacaoMatriculaAluno.SemContinuidade}.Contains(plano.Aluno.CodigoSituacaoMatricula))
 
-                   || plano?.Aluno?.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido;
+                   || plano.Aluno.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido;
 
 
         private async Task<bool> VerificarUsuarioLogadoPertenceMesmaUEPlano(Usuario usuarioLogado, Turma turmaEncaminhamentoAee)
@@ -304,7 +294,7 @@ namespace SME.SGP.Aplicacao
         public async Task<PlanoAEE> VerificaTurmaProgramaEAtribuiRegularNoPlano(string codigoTurma, PlanoAEE entidadePlano)
         {
             bool turmaAtualizada = false;
-            var turmaAlunoEol = await ObterTurma(codigoTurma);
+            var turmaAlunoEol = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
             if (turmaAlunoEol.EhTurmaRegular())
                 turmaAtualizada = await mediator.Send(new AtualizarTurmaAlunoPlanoAEECommand() { PlanoAEEId = entidadePlano.Id, TurmaId = turmaAlunoEol.Id });
 
