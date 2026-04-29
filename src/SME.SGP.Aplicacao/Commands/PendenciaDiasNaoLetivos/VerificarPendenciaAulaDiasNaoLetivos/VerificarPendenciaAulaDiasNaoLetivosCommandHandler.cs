@@ -107,11 +107,7 @@ namespace SME.SGP.Aplicacao
                         foreach (var aula in turmas)
                         {
                             var pendenciaAulaId = await mediator.Send(new ObterPendenciaAulaPorAulaIdQuery(aula.aulaId, TipoPendencia.AulaNaoLetivo));
-                            var existe = idPendencias.Contains(pendenciaAulaId);
-                            if (existe)
-                            {
-                            
-                            }
+
                             if (pendenciaAulaId == 0)
                             {
                                 var motivo = motivos.FirstOrDefault(m => m.data == aula.Data && m.UesIds.Contains(aula.CodigoUe))?.motivo;
