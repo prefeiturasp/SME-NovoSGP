@@ -480,9 +480,10 @@ namespace SME.SGP.Dados.Repositorios
                                             where tc.modalidade = @modalidadeTipoCalendario
                                             and pe.periodo_inicio <= @dataReferencia 
                                             and pe.periodo_fim >= @dataReferencia
+                                            and tc.ano_letivo = @anoLetivo  
                                             and not tc.excluido ");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolar>(query.ToString(), new { modalidadeTipoCalendario = (int)modalidadeTipoCalendario, dataReferencia });
+            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolar>(query.ToString(), new { modalidadeTipoCalendario = (int)modalidadeTipoCalendario, dataReferencia, anoLetivo = dataReferencia.Year });
         }
     }
 }
