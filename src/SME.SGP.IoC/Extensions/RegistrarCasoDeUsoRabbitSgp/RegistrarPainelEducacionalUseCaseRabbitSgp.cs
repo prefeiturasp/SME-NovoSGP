@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao.CasosDeUso.PainelEducacional;
 using SME.SGP.Aplicacao.CasosDeUso.PainelEducacional.Frequencia;
 using SME.SGP.Aplicacao.Interfaces;
@@ -28,6 +29,17 @@ namespace SME.SGP.IoC.Extensions.RegistrarCasoDeUsoRabbitSgp
             services.AddScoped<IConsolidarReclassificacaoPainelEducacionalUseCase, ConsolidarReclassificacaoPainelEducacionalUseCase>();
             services.AddScoped<IConsolidarProficienciaIdebPainelEducacionalUseCase, ConsolidarProficienciaIdebPainelEducacionalUseCase>();
             services.AddScoped<IConsolidarProficienciaIdepPainelEducacionalUseCase, ConsolidarProficienciaIdepPainelEducacionalUseCase>();
+            services.AddScoped<IConsolidarAprovacaoPainelEducacionalUseCase, ConsolidarAprovacaoPainelEducacionalUseCase>();
+            services.AddScoped<IConsolidarTaxaAlfabetizacaoPainelEducacionalUseCase, ConsolidarTaxaAlfabetizacaoPainelEducacionalUseCase>();
+            services.AddScoped<IConsolidarSondagemEscritaUePainelEducacionalUseCase, ConsolidarSondagemEscritaUePainelEducacionalUseCase>();
+            services.AddScoped<IConsolidarAbandonoPainelEducacionalUseCase, ConsolidarAbandonoPainelEducacionalUseCase>();
+            services.AddScoped<IConsolidarNotasPainelEducacionalUseCase, ConsolidarNotasPainelEducacionalUseCase>();
+            services.AddScoped<IConsolidarDistorcaoIdadePainelEducacionalUseCase, ConsolidarDistorcaoIdadePainelEducacionalUseCase>();
+            services.AddScoped<IConsolidarPlanoAEEPainelEducacionalUseCase, ConsolidarPlanoAEEPainelEducacionalUseCase>();
+            services.AddScoped<IConsolidarEducacaoIntegralPainelEducacionalUseCase, ConsolidarEducacaoIntegralPainelEducacionalUseCase>();
+            services.AddScoped<IConsolidarInformacoesEducacionaisPainelEducacionalUseCase, ConsolidarInformacoesEducacionaisPainelEducacionalUseCase>();
+            services.AddScoped<IConsolidarFrequenciaSemanalPainelEducacionalUseCase, ConsolidarFrequenciaSemanalPainelEducacionalUseCase>();
+            services.AddScoped<IConsolidarFluenciaLeitoraUePainelEducacionalUseCase, ConsolidarFluenciaLeitoraUePainelEducacionalUseCase>();
         }
     }
 }

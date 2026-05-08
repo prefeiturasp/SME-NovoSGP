@@ -11,6 +11,11 @@ namespace SME.SGP.Infra.Utilitarios
             return dfi.Calendar.GetWeekOfYear(data, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
         }
 
+        public static int ObterSemanaDoAnoISO(DateTime data)
+        {
+            return ISOWeek.GetWeekOfYear(data);
+        }
+
         public static int ObterDiferencaDeMesesEntreDatas(DateTime dataInicial, DateTime dataFinal) 
         {
             int meses = 0;
