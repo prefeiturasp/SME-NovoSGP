@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -9,17 +8,19 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAlunosDentroPeriodoQuery : IRequest<IEnumerable<AlunoPorTurmaResposta>>
     {
-        public ObterAlunosDentroPeriodoQuery(string codigoTurma, (DateTime dataInicio, DateTime dataFim) periodo = default, bool consideraSomenteAtivos = false, int tempoArmazenamentoCache = 720)
+        public ObterAlunosDentroPeriodoQuery(string codigoTurma, (DateTime dataInicio, DateTime dataFim) periodo = default, bool consideraSomenteAtivos = false, bool consideraSomenteAtivosPeriodoFechamento = false, int tempoArmazenamentoCache = 720)
         {
             CodigoTurma = codigoTurma;
             Periodo = periodo;
             ConsideraSomenteAtivos = consideraSomenteAtivos;
+            ConsideraSomenteAtivosPeriodoFechamento = consideraSomenteAtivosPeriodoFechamento;
             TempoArmazenamentoCache = tempoArmazenamentoCache;
         }
 
-        public string CodigoTurma { get; set; }        
+        public string CodigoTurma { get; set; }
         public (DateTime dataInicio, DateTime dataFim) Periodo { get; set; }
         public bool ConsideraSomenteAtivos { get; set; }
+        public bool ConsideraSomenteAtivosPeriodoFechamento { get; set; }
         public int TempoArmazenamentoCache { get; }
     }
 
