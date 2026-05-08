@@ -121,6 +121,7 @@ namespace SME.SGP.Dominio
         [Display(Name = "89e1e074-37d6-e911-abd6-f81654fe895d")]
         PERFIL_SECRETARIO_EDUCACAO = 39,
 
-
+        [Display(Name = "90e1e074-37d6-e911-abd6-f81654fe895d")]
+        PERFIL_FONOAUDIOLOGO = 40
     }
 }
