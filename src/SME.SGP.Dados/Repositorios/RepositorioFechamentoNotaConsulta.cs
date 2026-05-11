@@ -151,12 +151,6 @@ namespace SME.SGP.Dados.Repositorios
                  }, new { wfAprovacaoId });
         }
 
-        public Task<IEnumerable<FechamentoNotaAlunoAprovacaoDto>> ObterPorFechamentosTurma(long[] fechamentosTurmaDisciplinaId)
-        {
-            var query = string.Concat(queryPorFechamento, ") select * from lista where sequencia = 1;");
-            return database.Conexao.QueryAsync<FechamentoNotaAlunoAprovacaoDto>(query, new { fechamentosTurmaDisciplinaId });
-        }
-
         public async Task<IEnumerable<AlunosFechamentoNotaDto>> ObterComNotaLancadaPorPeriodoEscolarUE(long ueId, long periodoEscolarId)
         {
             const string query = @"select distinct 
