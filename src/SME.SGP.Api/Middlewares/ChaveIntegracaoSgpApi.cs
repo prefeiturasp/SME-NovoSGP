@@ -13,14 +13,14 @@ namespace SME.SGP.Api.Middlewares
         private const string ChaveIntegracaoEnvironmentVariableName = "ChaveIntegracaoSgpApi";
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            //string chaveApi = Environment.GetEnvironmentVariable(ChaveIntegracaoEnvironmentVariableName);
+            string chaveApi = Environment.GetEnvironmentVariable(ChaveIntegracaoEnvironmentVariableName);
 
-            //if (!context.HttpContext.Request.Headers.TryGetValue(ChaveIntegracaoHeader, out var chaveRecebida) ||
-            //    !chaveRecebida.Equals(chaveApi))
-            //{
-            //    context.Result = new UnauthorizedResult();
-            //    return;
-            //}
+            if (!context.HttpContext.Request.Headers.TryGetValue(ChaveIntegracaoHeader, out var chaveRecebida) ||
+                !chaveRecebida.Equals(chaveApi))
+            {
+                context.Result = new UnauthorizedResult();
+                return;
+            }
 
             await next();
         }
