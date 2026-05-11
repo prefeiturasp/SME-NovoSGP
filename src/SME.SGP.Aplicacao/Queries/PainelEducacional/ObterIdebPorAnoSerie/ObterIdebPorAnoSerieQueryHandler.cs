@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterIdebPorAnoSerie
         }
         public async Task<IEnumerable<PainelEducacionalIdebDto>> Handle(ObterIdebPorAnoSerieQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioIdebConsulta.ObterIdebPorAnoSerie(request.AnoLetivo, request.Serie, request.CodigoDre, request.CodigoUe);
+            return await repositorioIdebConsulta.ObterIdebPorAnoSerie(request.AnoLetivo, request.Serie.ToString(), request.CodigoDre, request.CodigoUe);
         }
     }
 }
