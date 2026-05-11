@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
-        private readonly IRepositorioFechamentoNotaConsulta repositorioFechamentoNota;
+        private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
         private readonly IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina;
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo;
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
 
         public ConsultasFechamentoFinal(IRepositorioTurmaConsulta repositorioTurma, IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                             IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar, IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina,
-                            IRepositorioFechamentoNotaConsulta repositorioFechamentoNota,
+                            IRepositorioFechamentoNota repositorioFechamentoNota,
                             IServicoAluno servicoAluno,
                             IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo,
                             IServicoUsuario servicoUsuario,
