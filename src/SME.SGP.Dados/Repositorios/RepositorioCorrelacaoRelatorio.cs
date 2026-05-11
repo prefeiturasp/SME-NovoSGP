@@ -41,11 +41,6 @@ namespace SME.SGP.Dados.Repositorios
                     return correlacao;
                 }, new { codigoCorrelacao });
 
-            if (result.FirstOrDefault() == null)
-            {
-                throw new NegocioException( $"Não foi possível obter a correlação do relatório pronto: {codigoCorrelacao} | conn: {contexto.ConnectionString} | query: {query}");
-            }
-
             return result.FirstOrDefault();
 
         }
