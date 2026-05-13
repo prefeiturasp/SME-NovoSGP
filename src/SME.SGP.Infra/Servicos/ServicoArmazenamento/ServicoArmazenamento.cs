@@ -59,12 +59,12 @@ namespace SME.SGP.Infra
                     .WithVersionId("1.0")
                     .WithContentType(contentType);
 
-                await minioClient.PutObjectAsync(args);
+             await minioClient.PutObjectAsync(args);
 
-                if (bucket.Equals(configuracaoArmazenamentoOptions.BucketArquivos))
+             if (bucket.Equals(configuracaoArmazenamentoOptions.BucketArquivos))
                     await OtimizarArquivos(nomeArquivo);
 
-                return ObterUrl(nomeArquivo, bucket);
+             return ObterUrl(nomeArquivo, bucket);
         }
 
         private async Task<string> Copiar(string nomeArquivo)
