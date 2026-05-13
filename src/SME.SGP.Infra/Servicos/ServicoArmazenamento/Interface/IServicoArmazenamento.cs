@@ -12,5 +12,7 @@ namespace SME.SGP.Infra.Interface
         Task<bool> Excluir(string nomeArquivo, string nomeBucket = "");
         Task<IEnumerable<string>> ObterBuckets();
         string Obter(string nomeArquivo, bool ehPastaTemp);
+        Task<Stream> ObterStream(string nomeArquivo, string bucket);
+        Task<string> ArmazenarSemOtimizar(string nomeArquivo, Stream stream, string contentType);
     }
 }

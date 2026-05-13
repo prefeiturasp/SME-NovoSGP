@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Minio;
+using Minio.DataModel;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Utilitarios;
 using System;
@@ -51,19 +52,19 @@ namespace SME.SGP.Infra
         private async Task<string> ArmazenarArquivo(string nomeArquivo, Stream stream, string contentType, string bucket)
         {
             var args = new PutObjectArgs()
-                .WithBucket(bucket)
-                .WithObject(nomeArquivo)
-                .WithStreamData(stream)
-                .WithObjectSize(stream.Length)
-                .WithVersionId("1.0")
-                .WithContentType(contentType);
+                    .WithBucket(bucket)
+                    .WithObject(nomeArquivo)
+                    .WithStreamData(stream)
+                    .WithObjectSize(stream.Length)
+                    .WithVersionId("1.0")
+                    .WithContentType(contentType);
 
-            await minioClient.PutObjectAsync(args);
+                await minioClient.PutObjectAsync(args);
 
-            if (bucket.Equals(configuracaoArmazenamentoOptions.BucketArquivos))
-                await OtimizarArquivos(nomeArquivo);
+                if (bucket.Equals(configuracaoArmazenamentoOptions.BucketArquivos))
+                    await OtimizarArquivos(nomeArquivo);
 
-            return ObterUrl(nomeArquivo, bucket);
+                return ObterUrl(nomeArquivo, bucket);
         }
 
         private async Task<string> Copiar(string nomeArquivo)
@@ -84,7 +85,56 @@ namespace SME.SGP.Infra
 
             return $"{configuracaoArmazenamentoOptions.BucketArquivos}/{nomeArquivo}";
         }
+        public async Task<string> ArmazenarSemOtimizar(string nomeArquivo, Stream stream, string contentType)
+        {
+            var bucket = configuracaoArmazenamentoOptions.BucketArquivos;
+            var args = new PutObjectArgs()
+                    .WithBucket(bucket)
+                    .WithObject(nomeArquivo)
+                    .WithStreamData(stream)
+                    .WithObjectSize(stream.Length)
+                    .WithVersionId("1.0")
+                    .WithContentType(contentType);
 
+            await minioClient.PutObjectAsync(args);
+
+            return ObterUrl(nomeArquivo, bucket);
+        }
+        
+        public async Task<Stream> ObterStream(string nomeArquivo, string bucket)
+        {
+            var stream = await TentarObterStream(nomeArquivo, bucket);
+
+            if (stream == null && !bucket.Equals(configuracaoArmazenamentoOptions.BucketTemp))
+                stream = await TentarObterStream(nomeArquivo, configuracaoArmazenamentoOptions.BucketTemp);
+
+            return stream;
+        }
+        private async Task<Stream> TentarObterStream(string nomeArquivo, string bucket)
+        {
+            try
+            {
+                var memoryStream = new MemoryStream();
+
+                var args = new GetObjectArgs()
+                    .WithBucket(bucket)
+                    .WithObject(nomeArquivo)
+                    .WithCallbackStream(stream => stream.CopyTo(memoryStream));
+
+                await minioClient.GetObjectAsync(args);
+
+                memoryStream.Position = 0;
+                return memoryStream;
+            }
+            catch (Minio.Exceptions.ObjectNotFoundException)
+            {
+                return null;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
         public async Task<string> Mover(string nomeArquivo)
         {
             if (!configuracaoArmazenamentoOptions.BucketTemp.Equals(configuracaoArmazenamentoOptions.BucketArquivos))
