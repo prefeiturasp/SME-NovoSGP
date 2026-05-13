@@ -11,62 +11,80 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using SME.SGP.Infra.Interface;
+using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.ComprimirArquivos.Worker
 {
     public class ComprimirImagemCommandHandler : IRequestHandler<ComprimirImagemCommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly CaminhoArmazenamentoOptions caminhoArmazenamentoOptions;
+        private readonly IServicoArmazenamento servicoArmazenamento;
+        private readonly ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions;
 
-        public ComprimirImagemCommandHandler(IMediator mediator, CaminhoArmazenamentoOptions caminhoArmazenamentoOptions)
+        public ComprimirImagemCommandHandler(IMediator mediator, IServicoArmazenamento servicoArmazenamento, IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.caminhoArmazenamentoOptions = caminhoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(caminhoArmazenamentoOptions));
+            this.servicoArmazenamento = servicoArmazenamento ?? throw new ArgumentNullException(nameof(servicoArmazenamento));
+            this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions?.Value ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
         }
         
         public async Task<bool> Handle(ComprimirImagemCommand request, CancellationToken cancellationToken)
         {
+            var inputTemp = Path.Combine(Path.GetTempPath(), $"input_{request.NomeArquivo}");
+            var outputTemp = Path.Combine(Path.GetTempPath(), $"output_{request.NomeArquivo}");
             try
             {
                 if (!request.NomeArquivo.EhArquivoImagemParaOtimizar())
                     return false;
             
-                var input = Path.Combine(caminhoArmazenamentoOptions.CaminhoFisico, request.NomeArquivo);
-
-                if (!File.Exists(input))
-                    await mediator.Send(new SalvarLogViaRabbitCommand($"O arquivo '{request.NomeArquivo}' não foi localizado no endereço '{input}'", LogNivel.Critico, LogContexto.ComprimirArquivos)); 
-
-                var output = Path.Combine(caminhoArmazenamentoOptions.CaminhoTemporario, request.NomeArquivo);
-
-                using (Image image = Image.Load(input))
+                var stream = await servicoArmazenamento.ObterStream(request.NomeArquivo, configuracaoArmazenamentoOptions.BucketArquivos);
+                if (stream == null)
                 {
-                    IImageEncoder imageEncoder;
-                    switch (image)
-                    {
-                        case Image<Rgba32> _:
-                        case Image<Bgra32> _:
-                            imageEncoder = new PngEncoder { CompressionLevel = PngCompressionLevel.BestCompression };
-                            break;
-                        case Image<Argb32> _:
-                            imageEncoder = new GifEncoder();
-                            break;
-                        default: 
-                            imageEncoder = new JpegEncoder { Quality = 50 };
-                            break;
-                    }
-                    image.Save(output, imageEncoder);
+                    await mediator.Send(new SalvarLogViaRabbitCommand(
+                        $"O arquivo '{request.NomeArquivo}' não foi localizado no MinIO",
+                        LogNivel.Critico, LogContexto.ComprimirArquivos), cancellationToken);
+                    return false;
                 }
 
-                await mediator.Send(new MoverExcluirArquivoFisicoCommand(input, output));
+                using var outputStream = new MemoryStream();
+                using (Image image = Image.Load(stream))
+                {
+                    IImageEncoder imageEncoder = image switch
+                    {
+                        Image<Rgba32> _ or Image<Bgra32> _ => new PngEncoder
+                        {
+                            CompressionLevel = PngCompressionLevel.BestCompression
+                        },
+                        Image<Argb32> _ => new GifEncoder(),
+                        _ => new JpegEncoder { Quality = 50 }
+                    };
+                    await image.SaveAsync(outputStream, imageEncoder, cancellationToken);
+                }
+
+                outputStream.Position = 0;
+                await servicoArmazenamento.ArmazenarSemOtimizar(request.NomeArquivo, outputStream, ObterContentType(request.NomeArquivo));
+
 
                 return true;
             }
             catch (Exception ex)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao comprimir arquivo imagem", LogNivel.Critico, LogContexto.ComprimirArquivos, ex.Message,rastreamento:ex.StackTrace,excecaoInterna:ex.InnerException?.ToString()));
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao comprimir arquivo imagem ComprimirImagemCommandHandler", LogNivel.Critico, LogContexto.ComprimirArquivos, ex.Message,rastreamento:ex.StackTrace,excecaoInterna:ex.InnerException?.ToString()), cancellationToken);
                 return false;
             }
+        }
+        private static string ObterContentType(string nomeArquivo)
+        {
+            var ext = Path.GetExtension(nomeArquivo).ToLower();
+            return ext switch
+            {
+                ".png" => "image/png",
+                ".gif" => "image/gif",
+                ".jpg" or ".jpeg" => "image/jpeg",
+                _ => "application/octet-stream"
+            };
         }
     }
 }
