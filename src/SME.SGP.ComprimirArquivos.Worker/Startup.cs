@@ -1,3 +1,4 @@
+using System;
 using Elastic.Apm.AspNetCore;
 using Elastic.Apm.DiagnosticSource;
 using Elastic.Apm.SqlClient;
@@ -19,6 +20,9 @@ using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC;
 using System.IO;
 using System.Reflection;
+using Polly;
+using Polly.Registry;
+using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.ComprimirArquivos.Worker
 {
@@ -39,11 +43,6 @@ namespace SME.SGP.ComprimirArquivos.Worker
             RegistrarRabbitMQ(services);
             RegistrarRabbitMQLog(services);
             RegistrarTelemetria(services);
-
-            var caminhoArmazenamentoOptions = new CaminhoArmazenamentoOptions();
-            Configuration.GetSection(CaminhoArmazenamentoOptions.Secao).Bind(caminhoArmazenamentoOptions, c => c.BindNonPublicProperties = true);
-            services.AddSingleton(caminhoArmazenamentoOptions);
-
             services.AddHealthChecks();
             
             services.AddHealthChecksUiSgp();
@@ -96,6 +95,34 @@ namespace SME.SGP.ComprimirArquivos.Worker
         private void RegistrarDependencias(IServiceCollection services)
         {
             services.ConfigurarTelemetria(Configuration);
+
+            services.AddOptions<ConfiguracaoArmazenamentoOptions>()
+                .Bind(Configuration.GetSection(ConfiguracaoArmazenamentoOptions.Secao), c => c.BindNonPublicProperties = true);
+
+            services.AddOptions<ConfiguracaoRabbitOptions>()
+                .Bind(Configuration.GetSection(ConfiguracaoRabbitOptions.Secao), c => c.BindNonPublicProperties = true);
+
+            services.TryAddSingleton<IConexoesRabbitFilasSGP>(serviceProvider =>
+            {
+                var options = serviceProvider.GetService<IOptions<ConfiguracaoRabbitOptions>>().Value;
+                var provider = serviceProvider.GetService<ObjectPoolProvider>() ?? new DefaultObjectPoolProvider();
+                return new ConexoesRabbitFilasSGP(options, provider);
+            });
+
+            var policyRegistry = new Polly.Registry.PolicyRegistry
+            {
+                {
+                    "RetryPolicyFilasRabbit",
+                    Policy
+                        .Handle<Exception>()
+                        .WaitAndRetryAsync(3, retryAttempt =>
+                            TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)))
+                }
+            };
+            services.AddSingleton<IReadOnlyPolicyRegistry<string>>(policyRegistry);
+
+            services.TryAddScoped<IServicoMensageriaSGP, ServicoMensageriaSGP>();
+            services.TryAddScoped<IServicoArmazenamento, ServicoArmazenamento>();
             services.TryAddScoped<IComprimirImagensUseCase, ComprimirImagemUseCase>();
             services.TryAddScoped<IComprimirVideoUseCase, ComprimirVideoUseCase>();
         }
