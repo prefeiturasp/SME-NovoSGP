@@ -186,7 +186,7 @@ namespace SME.SGP.Dominio
         [Display(Name = "relatorios/consolidado-por-raca-genero", ShortName = "RelatorioSondagemConsolidadoPorRacaGenero", Description = "Relatório de sondagem consolidado por raca e genero")]
         ConsolidadoPorRacaGenero = 61,
 
-        [Display(Name = "relatorios/consolidado-por-ano", ShortName = "RelatorioSondagemConsolidadoPorAno", Description = "Relatório de sondagem consolidado por ano")]
+        [Display(Name = "relatorios/consolidado-por-ano", ShortName = "RelatorioSondagemConsolidadoPorAno", Description = "Relatório de sondagem consolidado por questão")]
         ConsolidadoPorAno = 62,
 
         [Display(Name = "relatorios/consolidado-por-bimestre", ShortName = "RelatorioSondagemConsolidadoPorBimestre", Description = "Relatório de sondagem consolidado por bimestre")]
