@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Moq;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -160,6 +160,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
                 DataInicio = DateTime.Parse("2021-02-10"),
                 Extinta = false,
                 DataAtualizacao = DateTime.Parse("2021-02-10"),
+                Ue = new Ue { CodigoUe = "222" }
             };
 
             //Act  
