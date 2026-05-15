@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using Dommel;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -309,7 +309,7 @@ namespace SME.SGP.Dados.Repositorios
             
         }
 
-        public async Task<bool> AtualizarTurmaSincronizacaoInstitucionalAsync(TurmaParaSyncInstitucionalDto turma, bool deveMarcarHistorica = false)
+        public async Task<bool> AtualizarTurmaSincronizacaoInstitucionalAsync(TurmaParaSyncInstitucionalDto turma, bool deveMarcarHistorica = false, long? ueId = null)
         {
             var query = @"update
                                 public.turma
@@ -329,7 +329,7 @@ namespace SME.SGP.Dados.Repositorios
                                 dt_fim_eol = @dataFim,
                                 tipo_turma = @tipoTurma,
                                 historica = @historica,
-                                nome_filtro = @nomeFiltro
+                                nome_filtro = @nomeFiltro" + (ueId.HasValue ? ", ue_id = @ueId " : string.Empty) + @"
                             where
                                 turma_id = @turmaId";
 
@@ -351,7 +351,8 @@ namespace SME.SGP.Dados.Repositorios
                 turma.TipoTurma,
                 turmaId = turma.Codigo.ToString(),
                 historica = deveMarcarHistorica,
-                turma.NomeFiltro
+                turma.NomeFiltro,
+                ueId
             };
 
             var retorno = await contexto.Conexao.ExecuteAsync(query, parametros);

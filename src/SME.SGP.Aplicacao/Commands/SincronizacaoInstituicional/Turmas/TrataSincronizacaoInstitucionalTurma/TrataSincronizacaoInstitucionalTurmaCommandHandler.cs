@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
@@ -133,6 +133,8 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
+                bool divergiuUe = turmaSgp.Ue?.CodigoUe != turmaEol.UeCodigo;
+
                 if (turmaSgp.Nome != turmaEol.NomeTurma ||
                    turmaSgp.Ano != turmaEol.Ano ||
                    (int)turmaSgp.TipoTurma != turmaEol.TipoTurma ||
@@ -148,11 +150,18 @@ namespace SME.SGP.Aplicacao
                    (turmaSgp.DataInicio.HasValue && turmaEol.DataInicioTurma.HasValue && turmaSgp.DataInicio.Value.Date != turmaEol.DataInicioTurma.Value.Date) ||
                    turmaSgp.DataFim.HasValue != turmaEol.DataFim.HasValue ||
                    (turmaSgp.DataFim.HasValue && turmaEol.DataFim.HasValue && turmaSgp.DataFim.Value.Date != turmaEol.DataFim.Value.Date) ||
-                   turmaSgp.NomeFiltro != turmaEol.NomeFiltro)
-
-
+                   turmaSgp.NomeFiltro != turmaEol.NomeFiltro ||
+                   divergiuUe)
                 {
-                    await repositorioTurma.AtualizarTurmaSincronizacaoInstitucionalAsync(turmaEol);
+                    long? novaUeId = null;
+                    if (divergiuUe)
+                    {
+                        var novaUe = await mediator.Send(new ObterUeComDrePorCodigoQuery(turmaEol.UeCodigo));
+                        if (novaUe.NaoEhNulo())
+                            novaUeId = novaUe.Id;
+                    }
+
+                    await repositorioTurma.AtualizarTurmaSincronizacaoInstitucionalAsync(turmaEol, false, novaUeId);
                 }
 
             }
