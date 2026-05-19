@@ -1,4 +1,4 @@
-﻿using SME.SGP.Infra;
+using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -12,6 +12,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<bool> AtualizarTurmaModalidadeEParaHistorica(string turmaId, Modalidade modalidadeEol, int? semestre = null);
         Task<bool> SalvarAsync(TurmaParaSyncInstitucionalDto turma, long ueId);
         Task ExcluirTurmaExtintaAsync(long turmaId);
-        Task<bool> AtualizarTurmaSincronizacaoInstitucionalAsync(TurmaParaSyncInstitucionalDto turma, bool deveMarcarHistorica = false);
+        Task<bool> AtualizarTurmaSincronizacaoInstitucionalAsync(TurmaParaSyncInstitucionalDto turma, bool deveMarcarHistorica = false, long? ueId = null);
     }
 }
