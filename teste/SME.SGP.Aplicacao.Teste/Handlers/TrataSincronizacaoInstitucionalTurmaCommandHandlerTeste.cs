@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Moq;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -160,13 +160,14 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
                 DataInicio = DateTime.Parse("2021-02-10"),
                 Extinta = false,
                 DataAtualizacao = DateTime.Parse("2021-02-10"),
+                Ue = new Ue { CodigoUe = "222" }
             };
 
             //Act  
             await trataSincronizacaoInstitucionalTurmaCommandHandler.Handle(new TrataSincronizacaoInstitucionalTurmaCommand(turmaEol, turmaSgp), new CancellationToken());
 
             //Assert
-            repositorioTurma.Verify(r => r.AtualizarTurmaSincronizacaoInstitucionalAsync(turmaEol, false), Times.Once);
+            repositorioTurma.Verify(r => r.AtualizarTurmaSincronizacaoInstitucionalAsync(turmaEol, false, null), Times.Once);
         }
 
         //[Fact(DisplayName = "Valida o tratamento de turma extinta antes da criação do cadendario para excluír da base")]
@@ -374,7 +375,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             await trataSincronizacaoInstitucionalTurmaCommandHandler.Handle(new TrataSincronizacaoInstitucionalTurmaCommand(turmaEol, turmaSgp), new CancellationToken());
 
             //Assert
-            repositorioTurma.Verify(r => r.AtualizarTurmaSincronizacaoInstitucionalAsync(turmaEol, true), Times.Once);
+            repositorioTurma.Verify(r => r.AtualizarTurmaSincronizacaoInstitucionalAsync(turmaEol, true, null), Times.Once);
         }
     }
 }
