@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Minio;
-using Minio.DataModel;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Utilitarios;
 using System;
@@ -151,13 +150,16 @@ namespace SME.SGP.Infra
 
         private async Task OtimizarArquivos(string nomeArquivo)
         {
-            var ehImagem = nomeArquivo.EhArquivoImagemParaOtimizar();
-
-            var ehVideo = nomeArquivo.EhArquivoVideoParaOtimizar();
-
-            if (ehImagem || ehVideo)
+            string nomeFila = (nomeArquivo) switch
             {
-                var nomeFila = ehImagem ? RotasRabbitSgpComprimirArquivos.OtimizarArquivoImagem : RotasRabbitSgpComprimirArquivos.OtimizarArquivoVideo;
+                var nome when nome.EhArquivoImagemParaOtimizar() => RotasRabbitSgpComprimirArquivos.OtimizarArquivoImagem,
+                var nome when nome.EhArquivoVideoParaOtimizar() => RotasRabbitSgpComprimirArquivos.OtimizarArquivoVideo,
+                var nome when nome.EhArquivoPdfParaOtimizar() => RotasRabbitSgpComprimirArquivos.OtimizarArquivoPdf,
+                _ => null
+            };
+
+            if (nomeFila != null)
+            {
                 await servicoMensageria.Publicar(new MensagemRabbit(nomeArquivo), nomeFila, ExchangeSgpRabbit.Sgp, "PublicarFilaSgpComprimirArquivos");
             }
         }

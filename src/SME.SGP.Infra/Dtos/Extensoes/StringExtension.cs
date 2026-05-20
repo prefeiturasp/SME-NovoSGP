@@ -50,7 +50,15 @@ namespace SME.SGP.Infra
         {
             return EhExtensaoImagemParaOtimizar(Path.GetExtension(nomeArquivo));
         }
-        
+        public static bool EhArquivoPdfParaOtimizar(this string nomeArquivo)
+        {
+            if (string.IsNullOrWhiteSpace(nomeArquivo))
+                return false;
+
+            var extensao = Path.GetExtension(nomeArquivo)?.ToLowerInvariant();
+            return extensao == ".pdf";
+        }
+
         public static bool EhExtensaoVideoParaOtimizar(this string extensao)
         {
             return (extensao.ToLower().Equals(".mp4") || extensao.ToLower().Equals(".mpeg"));

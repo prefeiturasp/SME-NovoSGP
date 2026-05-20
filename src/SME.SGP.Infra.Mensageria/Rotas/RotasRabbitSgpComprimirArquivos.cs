@@ -4,5 +4,6 @@
     {
         public const string OtimizarArquivoImagem = "sgp.otimizar.arquivo.imagem";
         public const string OtimizarArquivoVideo = "sgp.otimizar.arquivo.video";
+        public const string OtimizarArquivoPdf = "sgp.otimizar.arquivo.pdf";
     }
 }
