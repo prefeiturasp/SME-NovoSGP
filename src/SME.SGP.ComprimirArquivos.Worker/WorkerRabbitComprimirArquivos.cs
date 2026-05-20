@@ -8,6 +8,7 @@ using RabbitMQ.Client.Events;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
+using SME.SGP.OtimizarArquivos.Worker.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -50,6 +51,10 @@ namespace SME.SGP.ComprimirArquivos.Worker
             canalRabbit.QueueDeclare(RotasRabbitOtimizarArquivos.OtimizarArquivoVideo, true, false, false, args);
             canalRabbit.QueueBind(RotasRabbitOtimizarArquivos.OtimizarArquivoVideo, RotasRabbitOtimizarArquivos.ExchangeSgp, RotasRabbitOtimizarArquivos.OtimizarArquivoVideo, null);
 
+
+            canalRabbit.QueueDeclare(RotasRabbitOtimizarArquivos.OtimizarArquivoPdf, true, false, false, args);
+            canalRabbit.QueueBind(RotasRabbitOtimizarArquivos.OtimizarArquivoPdf, RotasRabbitOtimizarArquivos.ExchangeSgp, RotasRabbitOtimizarArquivos.OtimizarArquivoPdf, null);
+
             var argsDlq = new Dictionary<string, object>
             {
                 { "x-queue-mode", "lazy" },
@@ -59,23 +64,32 @@ namespace SME.SGP.ComprimirArquivos.Worker
 
             var filaDeadLetterImagem = $"{RotasRabbitOtimizarArquivos.OtimizarArquivoImagem}.deadletter";
             var filaDeadLetterVideo = $"{RotasRabbitOtimizarArquivos.OtimizarArquivoVideo}.deadletter";
+            var filaDeadLetterPdf = $"{RotasRabbitOtimizarArquivos.OtimizarArquivoPdf}.deadletter";
 
             canalRabbit.QueueDeclare(filaDeadLetterImagem, true, false, false, argsDlq);
             canalRabbit.QueueBind(filaDeadLetterImagem, RotasRabbitOtimizarArquivos.ExchangeSgpDeadLetter, RotasRabbitOtimizarArquivos.OtimizarArquivoImagem, null);
             
             canalRabbit.QueueDeclare(filaDeadLetterVideo, true, false, false, argsDlq);
             canalRabbit.QueueBind(filaDeadLetterVideo, RotasRabbitOtimizarArquivos.ExchangeSgpDeadLetter, RotasRabbitOtimizarArquivos.OtimizarArquivoVideo, null);
-            
+
+
+            canalRabbit.QueueDeclare(filaDeadLetterPdf, true, false, false, argsDlq);
+            canalRabbit.QueueBind(filaDeadLetterPdf, RotasRabbitOtimizarArquivos.ExchangeSgpDeadLetter, RotasRabbitOtimizarArquivos.OtimizarArquivoPdf, null);
+
             var argsLimbo = new Dictionary<string, object> { { "x-queue-mode", "lazy" } };
 
             var filaLimboImagem = $"{RotasRabbitOtimizarArquivos.OtimizarArquivoImagem}.limbo";
             var filaLimboVideo = $"{RotasRabbitOtimizarArquivos.OtimizarArquivoVideo}.limbo";
+            var filaLimboPdf = $"{RotasRabbitOtimizarArquivos.OtimizarArquivoPdf}.limbo";
 
             canalRabbit.QueueDeclare(filaLimboImagem, true, false, false, argsLimbo);
             canalRabbit.QueueBind(filaLimboImagem, RotasRabbitOtimizarArquivos.ExchangeSgpDeadLetter, filaDeadLetterImagem);
             
             canalRabbit.QueueDeclare(filaLimboVideo, true, false, false, argsLimbo);
             canalRabbit.QueueBind(filaLimboVideo, RotasRabbitOtimizarArquivos.ExchangeSgpDeadLetter, filaDeadLetterImagem, null);
+
+            canalRabbit.QueueDeclare(filaLimboPdf, true, false, false, argsLimbo);
+            canalRabbit.QueueBind(filaLimboPdf, RotasRabbitOtimizarArquivos.ExchangeSgpDeadLetter, filaDeadLetterPdf, null);
         }
 
         public Task StartAsync(CancellationToken stoppingToken)
@@ -112,6 +126,7 @@ namespace SME.SGP.ComprimirArquivos.Worker
         {
             canalRabbit.BasicConsume(RotasRabbitOtimizarArquivos.OtimizarArquivoImagem, false, consumer);
             canalRabbit.BasicConsume(RotasRabbitOtimizarArquivos.OtimizarArquivoVideo, false, consumer);
+            canalRabbit.BasicConsume(RotasRabbitOtimizarArquivos.OtimizarArquivoPdf, false, consumer);
         }
 
         private async Task TratarMensagem(BasicDeliverEventArgs ea)
@@ -165,6 +180,8 @@ namespace SME.SGP.ComprimirArquivos.Worker
                     .GetService<IComprimirImagensUseCase>(),
                 RotasRabbitOtimizarArquivos.OtimizarArquivoVideo => scope.ServiceProvider
                     .GetService<IComprimirVideoUseCase>(),
+                RotasRabbitOtimizarArquivos.OtimizarArquivoPdf => scope.ServiceProvider
+                    .GetService<IComprimirPdfUsecase>(),    
                 _ => null
             };
         }

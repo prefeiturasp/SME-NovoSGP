@@ -1,4 +1,3 @@
-using System;
 using Elastic.Apm.AspNetCore;
 using Elastic.Apm.DiagnosticSource;
 using Elastic.Apm.SqlClient;
@@ -13,16 +12,19 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
+using Polly;
+using Polly.Registry;
 using RabbitMQ.Client;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC;
+using SME.SGP.OtimizarArquivos.Worker.Interfaces;
+using SME.SGP.OtimizarArquivos.Worker.UseCases;
+using System;
 using System.IO;
 using System.Reflection;
-using Polly;
-using Polly.Registry;
-using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.ComprimirArquivos.Worker
 {
@@ -125,6 +127,8 @@ namespace SME.SGP.ComprimirArquivos.Worker
             services.TryAddScoped<IServicoArmazenamento, ServicoArmazenamento>();
             services.TryAddScoped<IComprimirImagensUseCase, ComprimirImagemUseCase>();
             services.TryAddScoped<IComprimirVideoUseCase, ComprimirVideoUseCase>();
+            services.TryAddScoped<IComprimirPdfUsecase, ComprimirPdfUsecase>();
+            services.AddSingleton<CaminhoGhostscriptUtil>();
         }
 
         private static void RegistrarMediator(IServiceCollection services)
