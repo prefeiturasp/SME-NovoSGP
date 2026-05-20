@@ -5,7 +5,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS base
 RUN sed -i 's|http://deb.debian.org/debian|http://archive.debian.org/debian|g' /etc/apt/sources.list && \
     sed -i 's|http://security.debian.org/debian-security|http://archive.debian.org/debian-security|g' /etc/apt/sources.list && \
     apt update && \
-    apt install -y ffmpeg && \
+    apt install -y ffmpeg ghostscript && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
