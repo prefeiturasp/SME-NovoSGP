@@ -28,9 +28,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterAbrangenciaCompleta(bool consideraHistorico, string login, Guid perfil, [FromServices] IObterAbrangenciaCompletaIntegracaoUseCase useCase, [Required][FromQuery] Modalidade modalidade, [Required][FromQuery] int anoLetivo, [FromQuery] int semestre = 0, [FromQuery] string codigoDre = null, [FromQuery] string codigoUe = null, [FromQuery] bool includeTurmas = false)
+        public async Task<IActionResult> ObterAbrangenciaCompleta(bool consideraHistorico, string login, Guid perfil, [FromServices] IObterAbrangenciaCompletaIntegracaoUseCase useCase, [Required][FromQuery] Modalidade modalidade, [Required][FromQuery] int anoLetivo, [FromQuery] int semestre = 0, [FromQuery] string codigoDre = null, [FromQuery] string codigoUe = null, [FromQuery] string codigoTurma = null, [FromQuery] bool includeTurmas = false)
         {
-            return Ok(await useCase.Executar(login, perfil, consideraHistorico, anoLetivo, semestre, modalidade, codigoDre, codigoUe, includeTurmas));
+            return Ok(await useCase.Executar(login, perfil, consideraHistorico, anoLetivo, semestre, modalidade, codigoDre, codigoUe, codigoTurma, includeTurmas));
         }
     }
 }
