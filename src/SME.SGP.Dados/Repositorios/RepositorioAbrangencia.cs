@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -508,6 +509,69 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             return retorno;
+        }
+
+        public async Task<IEnumerable<AbrangenciaUeComDreRetorno>> ObterUesPorListaDres(string[] codigosDres, string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, int[] ignorarTiposUE = null)
+        {
+            const string query = @"select distinct codigo,
+                nome as NomeSimples,
+                tipoescola,
+                ue_id as id,
+                dre_codigo as CodigoDre
+            from f_abrangencia_ues_lista_dres(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigosDres, @anoLetivo, @ignorarTiposUE)
+            order by nome;";
+
+            var parametros = new
+            {
+                login,
+                perfil,
+                consideraHistorico,
+                modalidade = (int)(modalidade ?? 0),
+                semestre = periodo,
+                codigosDres,
+                anoLetivo,
+                ignorarTiposUE
+            };
+
+            var retorno = await database.Conexao.QueryAsync<AbrangenciaUeComDreRetorno>(query, parametros);
+
+            if (perfil == Perfis.PERFIL_SUPERVISOR)
+                retorno = await AcrescentarUesSupervisorListaDres(login, modalidade ?? 0, periodo, codigosDres, consideraHistorico, anoLetivo, ignorarTiposUE, retorno);
+
+            return retorno;
+        }
+
+        private async Task<IEnumerable<AbrangenciaUeComDreRetorno>> AcrescentarUesSupervisorListaDres(string login, Modalidade modalidade, int semestre, string[] codigosDres, bool consideraHistorico, int anoLetivo, int[] tiposEscolasIgnoradas, IEnumerable<AbrangenciaUeComDreRetorno> retorno)
+        {
+            var retornoUes = new List<AbrangenciaUeComDreRetorno>(retorno);
+            var dadosAbrangenciaSupervisor = await ObterDadosAbrangenciaSupervisor(login, consideraHistorico, anoLetivo);
+
+            if (dadosAbrangenciaSupervisor.NaoEhNulo() && dadosAbrangenciaSupervisor.Any())
+            {
+                var uesExistentes = retornoUes.Select(u => u.Id).ToHashSet();
+
+                var uesComplementares = dadosAbrangenciaSupervisor
+                    .Where(da =>
+                        (codigosDres == null || codigosDres.Contains(da.CodigoDre)) &&
+                        (modalidade == 0 || (Modalidade)da.Modalidade == modalidade) &&
+                        (semestre == 0 || da.Semestre == semestre) &&
+                        (tiposEscolasIgnoradas == null || !tiposEscolasIgnoradas.Contains((int)da.TipoEscola)) &&
+                        !uesExistentes.Contains(da.UeId))
+                    .GroupBy(da => da.UeId)
+                    .Select(g => g.First())
+                    .Select(da => new AbrangenciaUeComDreRetorno
+                    {
+                        Codigo = da.CodigoUe,
+                        NomeSimples = da.UeNome,
+                        TipoEscola = da.TipoEscola,
+                        Id = da.UeId,
+                        CodigoDre = da.CodigoDre
+                    });
+
+                retornoUes.AddRange(uesComplementares);
+            }
+
+            return retornoUes.OrderBy(r => r.Nome);
         }
 
         public bool PossuiAbrangenciaTurmaAtivaPorLogin(string login, bool cj = false)
