@@ -1,6 +1,8 @@
 using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra.Dtos;
 using System;
@@ -12,22 +14,31 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAbrangenciaCompletaIntegracaoUseCase : AbstractUseCase, IObterAbrangenciaCompletaIntegracaoUseCase
     {
-        public ObterAbrangenciaCompletaIntegracaoUseCase(IMediator mediator) : base(mediator)
+        private readonly IRepositorioCache repositorioCache;
+
+        public ObterAbrangenciaCompletaIntegracaoUseCase(IMediator mediator, IRepositorioCache repositorioCache) : base(mediator)
         {
+            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
         public async Task<AbrangenciaCompletaRetornoDto> Executar(string login, Guid perfil, bool consideraHistorico, int anoLetivo, int semestre, Modalidade modalidade, string codigoDre, string codigoUe, bool includeTurmas)
         {
-            var dres = await ObterDres(login, perfil, consideraHistorico, anoLetivo, semestre, modalidade, codigoDre);
-            var ues = await ObterUes(login, perfil, consideraHistorico, anoLetivo, semestre, modalidade, codigoUe, dres);
-            var turmas = await ObterTurmas(login, perfil, consideraHistorico, anoLetivo, semestre, modalidade, includeTurmas, ues);
+            var chaveCache = string.Format(NomeChaveCache.ABRANGENCIA_COMPLETA_INTEGRACAO,
+                login, perfil, consideraHistorico, anoLetivo, semestre, (int)modalidade, codigoDre, codigoUe, includeTurmas);
 
-            return new AbrangenciaCompletaRetornoDto
+            return await repositorioCache.ObterAsync<AbrangenciaCompletaRetornoDto>(chaveCache, async () =>
             {
-                Dres = dres,
-                Ues = ues,
-                Turmas = turmas
-            };
+                var dres = await ObterDres(login, perfil, consideraHistorico, anoLetivo, semestre, modalidade, codigoDre);
+                var ues = await ObterUes(login, perfil, consideraHistorico, anoLetivo, semestre, modalidade, codigoUe, dres);
+                var turmas = await ObterTurmas(login, perfil, consideraHistorico, anoLetivo, semestre, modalidade, includeTurmas, ues);
+
+                return new AbrangenciaCompletaRetornoDto
+                {
+                    Dres = dres,
+                    Ues = ues,
+                    Turmas = turmas
+                };
+            });
         }
 
         private async Task<List<AbrangenciaDreRetornoDto>> ObterDres(string login, Guid perfil, bool consideraHistorico, int anoLetivo, int semestre, Modalidade modalidade, string codigoDre)
