@@ -21,16 +21,18 @@ namespace SME.SGP.Aplicacao
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
-        public async Task<AbrangenciaCompletaRetornoDto> Executar(string login, Guid perfil, bool consideraHistorico, int anoLetivo, int semestre, Modalidade modalidade, string codigoDre, string codigoUe, bool includeTurmas)
+        public async Task<AbrangenciaCompletaRetornoDto> Executar(string login, Guid perfil, bool consideraHistorico, int anoLetivo, int semestre, Modalidade modalidade, string codigoDre, string codigoUe, string codigoTurma, bool includeTurmas)
         {
+            var buscarTurmas = includeTurmas || !string.IsNullOrWhiteSpace(codigoTurma);
+
             var chaveCache = string.Format(NomeChaveCache.ABRANGENCIA_COMPLETA_INTEGRACAO,
-                login, perfil, consideraHistorico, anoLetivo, semestre, (int)modalidade, codigoDre, codigoUe, includeTurmas);
+                login, perfil, consideraHistorico, anoLetivo, semestre, (int)modalidade, codigoDre, codigoUe, codigoTurma, buscarTurmas);
 
             return await repositorioCache.ObterAsync<AbrangenciaCompletaRetornoDto>(chaveCache, async () =>
             {
                 var dres = await ObterDres(login, perfil, consideraHistorico, anoLetivo, semestre, modalidade, codigoDre);
                 var ues = await ObterUes(login, perfil, consideraHistorico, anoLetivo, semestre, modalidade, codigoUe, dres);
-                var turmas = await ObterTurmas(login, perfil, consideraHistorico, anoLetivo, semestre, modalidade, includeTurmas, ues);
+                var turmas = await ObterTurmas(login, perfil, consideraHistorico, anoLetivo, semestre, modalidade, buscarTurmas, codigoTurma, ues);
 
                 return new AbrangenciaCompletaRetornoDto
                 {
@@ -90,7 +92,7 @@ namespace SME.SGP.Aplicacao
             return resultado;
         }
 
-        private async Task<List<AbrangenciaTurmaIntegracaoRetornoDto>> ObterTurmas(string login, Guid perfil, bool consideraHistorico, int anoLetivo, int semestre, Modalidade modalidade, bool includeTurmas, List<AbrangenciaUeIntegracaoRetornoDto> ues)
+        private async Task<List<AbrangenciaTurmaIntegracaoRetornoDto>> ObterTurmas(string login, Guid perfil, bool consideraHistorico, int anoLetivo, int semestre, Modalidade modalidade, bool includeTurmas, string codigoTurma, List<AbrangenciaUeIntegracaoRetornoDto> ues)
         {
             if (!includeTurmas)
                 return new List<AbrangenciaTurmaIntegracaoRetornoDto>();
@@ -99,8 +101,11 @@ namespace SME.SGP.Aplicacao
 
             foreach (var ue in ues)
             {
-                var turmas = await mediator.Send(new ObterTurmasPorUeLoginPerfilQuery(
-                    ue.Codigo, login, perfil, modalidade, semestre, consideraHistorico, anoLetivo));
+                var turmas = (await mediator.Send(new ObterTurmasPorUeLoginPerfilQuery(
+                    ue.Codigo, login, perfil, modalidade, semestre, consideraHistorico, anoLetivo))).AsEnumerable();
+
+                if (!string.IsNullOrWhiteSpace(codigoTurma))
+                    turmas = turmas.Where(t => t.Codigo == codigoTurma);
 
                 resultado.AddRange(turmas.Select(t => new AbrangenciaTurmaIntegracaoRetornoDto
                 {
