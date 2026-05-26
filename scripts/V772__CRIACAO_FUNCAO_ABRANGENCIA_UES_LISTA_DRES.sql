@@ -1,4 +1,4 @@
-DROP FUNCTION IF EXISTS public.f_abrangencia_ues_lista_dres(character varying, uuid, boolean, integer, integer, character varying[], integer, integer[]);
+drop function if exists f_abrangencia_ues_lista_dres;
 
 CREATE OR REPLACE FUNCTION public.f_abrangencia_ues_lista_dres(
     p_login character varying,
@@ -14,7 +14,7 @@ RETURNS TABLE(
     codigo character varying,
     nome character varying,
     tipoescola smallint,
-    modalidade_codigo smallint,
+    modalidade_codigo integer,
     ue_id bigint,
     dre_codigo character varying
 )
