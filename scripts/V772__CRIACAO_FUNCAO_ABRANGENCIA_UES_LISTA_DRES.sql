@@ -1,3 +1,5 @@
+DROP FUNCTION IF EXISTS public.f_abrangencia_ues_lista_dres(character varying, uuid, boolean, integer, integer, character varying[], integer, integer[]);
+
 -- Função que retorna UEs de abrangência para uma lista de DREs (array de códigos),
 -- incluindo o dre_codigo em cada linha para manter a relação UE → DRE sem N+1 queries.
 CREATE OR REPLACE FUNCTION public.f_abrangencia_ues_lista_dres(
