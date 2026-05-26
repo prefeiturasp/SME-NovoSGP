@@ -51,6 +51,8 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<AbrangenciaUeComDreRetorno>> ObterUesPorListaDres(string[] codigosDres, string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, int[] ignorarTiposUE = null);
 
+        Task<IEnumerable<AbrangenciaTurmaComUeRetorno>> ObterTurmasPorTiposListaUes(string[] codigosUes, string login, Guid perfil, Modalidade modalidade, int[] tipos, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, string[] anosInfantilDesconsiderar = null);
+
         bool PossuiAbrangenciaTurmaAtivaPorLogin(string login, bool cj = false);
 
         bool PossuiAbrangenciaTurmaInfantilAtivaPorLogin(string login, bool cj = false);

@@ -1052,6 +1052,78 @@ namespace SME.SGP.Dados.Repositorios
             return retornoUesSupervisor.Distinct().OrderBy(r=> r.Nome);
         }
 
+        public async Task<IEnumerable<AbrangenciaTurmaComUeRetorno>> ObterTurmasPorTiposListaUes(string[] codigosUes, string login, Guid perfil, Modalidade modalidade, int[] tipos, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, string[] anosInfantilDesconsiderar = null)
+        {
+            const string query = @"select ano,
+                                 anoletivo as AnoLetivo,
+                                 codigo,
+                                 codigomodalidade as CodigoModalidade,
+                                 nome,
+                                 semestre,
+                                 qtduracaoaula as qtDuracaoAula,
+                                 tipoturno as tipoTurno,
+                                 ensinoespecial as ensinoEspecial,
+                                 turma_id as id,
+                                 tipoturma as tipoTurma,
+                                 nome_filtro as nomeFiltro,
+                                 ue_codigo as CodigoUe
+                            from f_abrangencia_turmas_tipos_lista_ues(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigosUes, @anoLetivo, @tipos, @anosInfantilDesconsiderar)
+                          order by nome";
+
+            var resultado = await database.Conexao
+                .QueryAsync<AbrangenciaTurmaComUeRetorno>(query, new { login, perfil, consideraHistorico, modalidade, semestre = periodo, codigosUes, anoLetivo, tipos, anosInfantilDesconsiderar });
+
+            var resultadoFiltrado = resultado.GroupBy(x => x.Codigo).SelectMany(y => y.OrderBy(a => a.Codigo).Take(1));
+
+            if (perfil == Perfis.PERFIL_SUPERVISOR)
+            {
+                resultadoFiltrado = await AcrescentarTurmasSupervisorListaUes(login, modalidade, periodo, codigosUes, consideraHistorico, anoLetivo, resultadoFiltrado);
+
+                if (tipos.NaoEhNulo() && tipos.Any())
+                    resultadoFiltrado = resultadoFiltrado.Where(r => tipos.Contains(r.TipoTurma));
+
+                if (anosInfantilDesconsiderar.NaoEhNulo() && anosInfantilDesconsiderar.Any())
+                    resultadoFiltrado = resultadoFiltrado.Where(r => !anosInfantilDesconsiderar.Contains(r.Ano));
+            }
+
+            return resultadoFiltrado.DistinctBy(p => new { p.Codigo, p.Nome });
+        }
+
+        private async Task<IEnumerable<AbrangenciaTurmaComUeRetorno>> AcrescentarTurmasSupervisorListaUes(string login, Modalidade modalidade, int semestre, string[] codigosUes, bool consideraHistorico, int anoLetivo, IEnumerable<AbrangenciaTurmaComUeRetorno> retorno)
+        {
+            var dadosAbrangenciaSupervisor = await ObterDadosAbrangenciaSupervisor(login, consideraHistorico, anoLetivo);
+
+            if (dadosAbrangenciaSupervisor.NaoEhNulo() && dadosAbrangenciaSupervisor.Any())
+            {
+                var turmasExistentes = retorno.Select(t => t.Id).ToHashSet();
+
+                var turmasComplementares = dadosAbrangenciaSupervisor
+                    .Where(da =>
+                        (Modalidade)da.Modalidade == modalidade &&
+                        (codigosUes == null || codigosUes.Contains(da.CodigoUe)) &&
+                        (semestre == 0 || (semestre > 0 && da.Semestre == semestre)) &&
+                        !turmasExistentes.Contains(da.TurmaId))
+                    .Select(da => new AbrangenciaTurmaComUeRetorno
+                    {
+                        NomeFiltro = da.NomeFiltro,
+                        Ano = da.TurmaAno,
+                        AnoLetivo = da.TurmaAnoLetivo,
+                        Codigo = da.CodigoTurma,
+                        CodigoModalidade = da.Modalidade,
+                        Nome = da.TurmaNome,
+                        Semestre = da.Semestre,
+                        EnsinoEspecial = da.EnsinoEspecial,
+                        Id = da.TurmaId,
+                        TipoTurma = da.TipoTurma,
+                        CodigoUe = da.CodigoUe
+                    });
+
+                retorno = retorno.Concat(turmasComplementares).OrderBy(d => d.Nome);
+            }
+
+            return retorno;
+        }
+
         private async Task<IEnumerable<AbrangenciaTurmaRetorno>> AcrescentarTurmasSupervisor(string login, Modalidade modalidade, int semestre, string ue, bool consideraHistorico, int anoLetivo, IEnumerable<AbrangenciaTurmaRetorno> retorno)
         {
             var dadosAbrangenciaSupervisor =
