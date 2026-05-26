@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -47,6 +48,10 @@ namespace SME.SGP.Dominio.Interfaces
         Task<bool> UsuarioPossuiAbrangenciaAdm(long usuarioId);
 
         Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, int[] ignorarTiposUE = null, string filtro = "", bool filtroEhCodigo = false);
+
+        Task<IEnumerable<AbrangenciaUeComDreRetorno>> ObterUesPorListaDres(string[] codigosDres, string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, int[] ignorarTiposUE = null);
+
+        Task<IEnumerable<AbrangenciaTurmaComUeRetorno>> ObterTurmasPorTiposListaUes(string[] codigosUes, string login, Guid perfil, Modalidade modalidade, int[] tipos, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, string[] anosInfantilDesconsiderar = null);
 
         bool PossuiAbrangenciaTurmaAtivaPorLogin(string login, bool cj = false);
 

@@ -7,6 +7,6 @@ namespace SME.SGP.Aplicacao.Interfaces
 {
     public interface IObterAbrangenciaCompletaIntegracaoUseCase
     {
-        Task<AbrangenciaCompletaRetornoDto> Executar(string login, Guid perfil, bool consideraHistorico, int anoLetivo, int semestre, Modalidade modalidade, string codigoDre, string codigoUe, bool includeTurmas);
+        Task<AbrangenciaCompletaRetornoDto> Executar(string login, Guid perfil, bool consideraHistorico, int anoLetivo, int semestre, Modalidade modalidade, string codigoDre, string codigoUe, string codigoTurma, bool includeTurmas);
     }
 }
