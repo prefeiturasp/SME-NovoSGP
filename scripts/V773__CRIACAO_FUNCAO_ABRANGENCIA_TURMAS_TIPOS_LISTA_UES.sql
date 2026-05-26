@@ -1,4 +1,4 @@
-DROP FUNCTION IF EXISTS public.f_abrangencia_turmas_tipos_lista_ues(character varying, uuid, boolean, integer, integer, character varying[], integer, integer[], text[]);
+drop function if exists f_abrangencia_turmas_tipos_lista_ues;
 
 CREATE OR REPLACE FUNCTION public.f_abrangencia_turmas_tipos_lista_ues(
     p_login character varying,
@@ -15,9 +15,9 @@ RETURNS TABLE(
     ano character varying,
     anoletivo integer,
     codigo character varying,
-    codigomodalidade smallint,
+    codigomodalidade integer,
     nome character varying,
-    semestre smallint,
+    semestre integer,
     qtduracaoaula smallint,
     tipoturno smallint,
     ensinoespecial boolean,
