@@ -1,3 +1,5 @@
+DROP FUNCTION IF EXISTS public.f_abrangencia_turmas_tipos_lista_ues(character varying, uuid, boolean, integer, integer, character varying[], integer, integer[], text[]);
+
 CREATE OR REPLACE FUNCTION public.f_abrangencia_turmas_tipos_lista_ues(
     p_login character varying,
     p_perfil_id uuid,
