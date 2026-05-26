@@ -1,5 +1,5 @@
--- Função que retorna UEs de abrangência para uma lista de DREs (array de códigos),
--- incluindo o dre_codigo em cada linha para manter a relação UE → DRE sem N+1 queries.
+DROP FUNCTION IF EXISTS public.f_abrangencia_ues_lista_dres(character varying, uuid, boolean, integer, integer, character varying[], integer, integer[]);
+
 CREATE OR REPLACE FUNCTION public.f_abrangencia_ues_lista_dres(
     p_login character varying,
     p_perfil_id uuid,
