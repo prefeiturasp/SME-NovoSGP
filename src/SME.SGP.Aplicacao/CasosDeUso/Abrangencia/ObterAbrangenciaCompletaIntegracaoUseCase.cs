@@ -28,8 +28,8 @@ namespace SME.SGP.Aplicacao
             var chaveCache = string.Format(NomeChaveCache.ABRANGENCIA_COMPLETA_INTEGRACAO,
                 login, perfil, consideraHistorico, anoLetivo, semestre, (int)modalidade, codigoDre, codigoUe, codigoTurma, buscarTurmas);
 
-            return await repositorioCache.ObterAsync<AbrangenciaCompletaRetornoDto>(chaveCache, async () =>
-            {
+            //return await repositorioCache.ObterAsync<AbrangenciaCompletaRetornoDto>(chaveCache, async () =>
+            //{
                 var dres = await ObterDres(login, perfil, consideraHistorico, anoLetivo, semestre, modalidade, codigoDre);
                 var ues = await ObterUes(login, perfil, consideraHistorico, anoLetivo, semestre, modalidade, codigoUe, dres);
                 var turmas = await ObterTurmas(login, perfil, consideraHistorico, anoLetivo, semestre, modalidade, buscarTurmas, codigoTurma, ues);
@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
                     Ues = ues,
                     Turmas = turmas
                 };
-            });
+            //});
         }
 
         private async Task<List<AbrangenciaDreRetornoDto>> ObterDres(string login, Guid perfil, bool consideraHistorico, int anoLetivo, int semestre, Modalidade modalidade, string codigoDre)
@@ -79,32 +79,25 @@ namespace SME.SGP.Aplicacao
             if (!includeTurmas)
                 return new List<AbrangenciaTurmaIntegracaoRetornoDto>();
 
-            var resultado = new List<AbrangenciaTurmaIntegracaoRetornoDto>();
+            var codigosUes = ues.Select(u => u.Codigo).ToArray();
+            var turmas = (await mediator.Send(new ObterTurmasPorUesLoginPerfilQuery(codigosUes, login, perfil, modalidade, semestre, consideraHistorico, anoLetivo))).AsEnumerable();
 
-            foreach (var ue in ues)
+            if (!string.IsNullOrWhiteSpace(codigoTurma))
+                turmas = turmas.Where(t => t.Codigo == codigoTurma);
+
+            return turmas.Select(t => new AbrangenciaTurmaIntegracaoRetornoDto
             {
-                var turmas = (await mediator.Send(new ObterTurmasPorUeLoginPerfilQuery(
-                    ue.Codigo, login, perfil, modalidade, semestre, consideraHistorico, anoLetivo))).AsEnumerable();
-
-                if (!string.IsNullOrWhiteSpace(codigoTurma))
-                    turmas = turmas.Where(t => t.Codigo == codigoTurma);
-
-                resultado.AddRange(turmas.Select(t => new AbrangenciaTurmaIntegracaoRetornoDto
-                {
-                    Codigo = t.Codigo,
-                    Nome = t.Nome,
-                    Ano = t.Ano,
-                    AnoLetivo = t.AnoLetivo,
-                    CodigoModalidade = t.CodigoModalidade,
-                    Semestre = t.Semestre,
-                    EnsinoEspecial = t.EnsinoEspecial,
-                    Id = t.Id,
-                    TipoTurma = t.TipoTurma,
-                    CodigoUe = ue.Codigo
-                }));
-            }
-
-            return resultado;
+                Codigo = t.Codigo,
+                Nome = t.Nome,
+                Ano = t.Ano,
+                AnoLetivo = t.AnoLetivo,
+                CodigoModalidade = t.CodigoModalidade,
+                Semestre = t.Semestre,
+                EnsinoEspecial = t.EnsinoEspecial,
+                Id = t.Id,
+                TipoTurma = t.TipoTurma,
+                CodigoUe = t.CodigoUe
+            }).ToList();
         }
     }
 }
