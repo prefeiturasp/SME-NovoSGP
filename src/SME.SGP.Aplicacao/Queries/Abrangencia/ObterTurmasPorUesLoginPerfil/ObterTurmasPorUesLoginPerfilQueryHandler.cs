@@ -40,9 +40,11 @@ namespace SME.SGP.Aplicacao
                 .GroupBy(x => x.i / tamanhoChunk)
                 .Select(g => g.Select(x => x.codigo).ToList());
 
-            var resultados = await Task.WhenAll(chunks.Select(chunk => mediator.Send(new ObterTurmasApiEolQuery(chunk))));
+            var resultados = new List<TurmaApiEolDto>();
+            foreach (var chunk in chunks)
+                resultados.AddRange(await mediator.Send(new ObterTurmasApiEolQuery(chunk)));
 
-            return resultados.SelectMany(r => r);
+            return resultados;
         }
 
         public async Task<IEnumerable<AbrangenciaTurmaComUeRetorno>> Handle(ObterTurmasPorUesLoginPerfilQuery request, CancellationToken cancellationToken)
@@ -56,14 +58,7 @@ namespace SME.SGP.Aplicacao
                 request.Periodo, request.ConsideraHistorico, request.AnoLetivo,
                 anosInfantilDesconsiderar);
 
-            var codigosTurmas = result?.Select(t => t.Codigo.ToString()).ToList();
-            var listaTurmaEOL = await ObterTurmasEolEmLotes(codigosTurmas);
-
-            var codigosValidos = new HashSet<string>(listaTurmaEOL.Select(x => x.Codigo.ToString()));
-
-            return result
-                .Where(x => !string.IsNullOrEmpty(x.Codigo) && codigosValidos.Contains(x.Codigo))
-                .ToList();
+            return result;
         }
     }
 }
