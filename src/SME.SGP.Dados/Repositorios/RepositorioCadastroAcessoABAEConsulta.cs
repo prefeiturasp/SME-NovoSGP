@@ -152,6 +152,7 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(" SELECT * ");
             sql.AppendLine(" FROM cadastro_acesso_abae a ");
             sql.AppendLine(" WHERE not a.excluido ");
+            sql.AppendLine(" AND a.situacao ");
             sql.AppendLine(" AND a.cpf = @cpf ");
 
             return await database.Conexao.QueryFirstOrDefaultAsync<CadastroAcessoABAE>(sql.ToString(), new
