@@ -50,5 +50,6 @@
         public const string ATRIBUICOES_ESPORADICAS_ATIVAS = "atribuicoes-esporadicas";
         public const string OBTER_QUESTOES_ORIGEM_RELATORIO_PAP = "questoes_origem_pap_turma:{0}/codigo-aluno:{1}/sessaoPap:{2}";
         public const string LOGIN = "login:{0}";
+        public const string ABRANGENCIA_COMPLETA_INTEGRACAO = "abrangencia-completa-integracao:{0}-{1}-{2}-{3}-{4}-{5}-{6}-{7}-{8}-{9}";
     }
 }
