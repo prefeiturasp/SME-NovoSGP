@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.NotaAtividadeAvaliativa
             var mensagemRabbit = new MensagemRabbit(mensagemJson);
 
             mediatorMock.Setup(m => m.Send(It.IsAny<ImportarNotaAtividadeGsaCommand>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(Unit.Value);
+                .Returns(Task.CompletedTask);
 
             var resultado = await useCase.Executar(mensagemRabbit);
 

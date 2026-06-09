@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Commands.PendenciaRegistroIndividual.PublicarAtualizacaoPendenciaRegistroIndividual
 {
-    public class PublicarAtualizacaoPendenciaRegistroIndividualCommandHandler : AsyncRequestHandler<PublicarAtualizacaoPendenciaRegistroIndividualCommand>
+    public class PublicarAtualizacaoPendenciaRegistroIndividualCommandHandler : IRequestHandler<PublicarAtualizacaoPendenciaRegistroIndividualCommand>
     {
         private readonly IMediator mediator;
 
@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao.Commands.PendenciaRegistroIndividual.PublicarAtualiz
             this.mediator = mediator;
         }
 
-        protected override async Task Handle(PublicarAtualizacaoPendenciaRegistroIndividualCommand request, CancellationToken cancellationToken)
+        public async Task Handle(PublicarAtualizacaoPendenciaRegistroIndividualCommand request, CancellationToken cancellationToken)
         {
             var dto = new AtualizarPendenciaRegistroIndividualDto { TurmaId = request.TurmaId, CodigoAluno = request.CodigoAluno, DataRegistro = request.DataRegistro };
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaAtualizarPendenciaAusenciaRegistroIndividual, dto, Guid.NewGuid(), null));

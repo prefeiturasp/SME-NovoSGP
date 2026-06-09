@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AtualizarPendenciaRegistroIndividualCommandHandler : AsyncRequestHandler<AtualizarPendenciaRegistroIndividualCommand>
+    public class AtualizarPendenciaRegistroIndividualCommandHandler : IRequestHandler<AtualizarPendenciaRegistroIndividualCommand>
     {
         private readonly IRepositorioPendenciaRegistroIndividual repositorioPendenciaRegistroIndividual;
         private readonly IRepositorioPendenciaRegistroIndividualAluno repositorioPendenciaRegistroIndividualAluno;
@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
             this.unitOfWork = unitOfWork;
         }
 
-        protected override async Task Handle(AtualizarPendenciaRegistroIndividualCommand request, CancellationToken cancellationToken)
+        public async Task Handle(AtualizarPendenciaRegistroIndividualCommand request, CancellationToken cancellationToken)
         {
             var pendenciaRegistroIndividual = await repositorioPendenciaRegistroIndividual.ObterPendenciaRegistroIndividualPorTurmaESituacao(request.TurmaId, SituacaoPendencia.Pendente);
             if (pendenciaRegistroIndividual is null) return;

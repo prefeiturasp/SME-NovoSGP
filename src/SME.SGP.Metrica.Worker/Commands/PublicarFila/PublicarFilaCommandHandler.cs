@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Metrica.Worker.Commands
 {
-    public class PublicarFilaCommandHandler : AsyncRequestHandler<PublicarFilaCommand>
+    public class PublicarFilaCommandHandler : IRequestHandler<PublicarFilaCommand>
     {
         private readonly IServicoMensageriaSGP servicoMensageria;
         private readonly IServicoMensageriaMetricas servicoMensageriaMetricas;
@@ -18,7 +18,7 @@ namespace SME.SGP.Metrica.Worker.Commands
             this.servicoMensageriaMetricas = servicoMensageriaMetricas ?? throw new System.ArgumentNullException(nameof(servicoMensageriaMetricas));
         }
 
-        protected override async Task Handle(PublicarFilaCommand request, CancellationToken cancellationToken)
+        public async Task Handle(PublicarFilaCommand request, CancellationToken cancellationToken)
         {
             var mensagem = new MensagemRabbit(request.Mensagem,
                                              Guid.NewGuid(),

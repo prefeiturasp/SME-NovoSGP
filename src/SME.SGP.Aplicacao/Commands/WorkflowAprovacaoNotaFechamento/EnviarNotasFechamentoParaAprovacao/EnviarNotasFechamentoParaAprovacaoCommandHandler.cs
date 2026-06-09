@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class EnviarNotasFechamentoParaAprovacaoCommandHandler : AsyncRequestHandler<EnviarNotasFechamentoParaAprovacaoCommand>
+    public class EnviarNotasFechamentoParaAprovacaoCommandHandler : IRequestHandler<EnviarNotasFechamentoParaAprovacaoCommand>
     {
         private readonly IMediator mediator;
         private readonly IRepositorioWfAprovacaoNotaFechamento repositorioWfAprovacaoNotaFechamento;
@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioWfAprovacaoNotaFechamento = repositorioWfAprovacaoNotaFechamento ?? throw new ArgumentNullException(nameof(repositorioWfAprovacaoNotaFechamento));
         }
 
-        protected override async Task Handle(EnviarNotasFechamentoParaAprovacaoCommand request, CancellationToken cancellationToken)
+        public async Task Handle(EnviarNotasFechamentoParaAprovacaoCommand request, CancellationToken cancellationToken)
         {
             foreach (var notaFechamento in request.NotasAprovacao)
             {

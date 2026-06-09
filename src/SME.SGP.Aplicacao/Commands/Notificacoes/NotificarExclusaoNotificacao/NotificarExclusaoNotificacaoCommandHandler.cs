@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class NotificarExclusaoNotificacaoCommandHandler : AsyncRequestHandler<NotificarExclusaoNotificacaoCommand>
+    public class NotificarExclusaoNotificacaoCommandHandler : IRequestHandler<NotificarExclusaoNotificacaoCommand>
     {
         private readonly IMediator mediator;
 
@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
-        protected override async Task Handle(NotificarExclusaoNotificacaoCommand request, CancellationToken cancellationToken)
+        public async Task Handle(NotificarExclusaoNotificacaoCommand request, CancellationToken cancellationToken)
         {
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpNotificacoes.Exclusao,
                                                            new MensagemExclusaoNotificacaoDto(

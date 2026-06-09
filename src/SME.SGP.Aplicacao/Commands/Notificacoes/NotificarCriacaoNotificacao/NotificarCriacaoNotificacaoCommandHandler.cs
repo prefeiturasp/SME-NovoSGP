@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class NotificarCriacaoNotificacaoCommandHandler : AsyncRequestHandler<NotificarCriacaoNotificacaoCommand>
+    public class NotificarCriacaoNotificacaoCommandHandler : IRequestHandler<NotificarCriacaoNotificacaoCommand>
     {
         private readonly IMediator mediator;
 
@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        protected override async Task Handle(NotificarCriacaoNotificacaoCommand request, CancellationToken cancellationToken)
+        public async Task Handle(NotificarCriacaoNotificacaoCommand request, CancellationToken cancellationToken)
         {
             var usuarioRf = string.IsNullOrEmpty(request.UsuarioRf) ?
                 await mediator.Send(new ObterUsuarioRfPorIdQuery(request.Notificacao.UsuarioId.Value)) :

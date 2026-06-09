@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirWfAprovacaoNotaConselhoClasseCommandHandler : AsyncRequestHandler<ExcluirWfAprovacaoNotaConselhoClasseCommand>
+    public class ExcluirWfAprovacaoNotaConselhoClasseCommandHandler : IRequestHandler<ExcluirWfAprovacaoNotaConselhoClasseCommand>
     {
         private readonly IRepositorioWFAprovacaoNotaConselho repositorioWF;
 
@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioWF = repositorioWF ?? throw new ArgumentNullException(nameof(repositorioWF));
         }
 
-        protected override async Task Handle(ExcluirWfAprovacaoNotaConselhoClasseCommand request, CancellationToken cancellationToken)
+        public async Task Handle(ExcluirWfAprovacaoNotaConselhoClasseCommand request, CancellationToken cancellationToken)
         {
             var wfAprovacao = await repositorioWF.ObterPorIdAsync(request.WfAprovacaoConselhoClasseNotaId);
             await repositorioWF.ExcluirLogico(wfAprovacao);

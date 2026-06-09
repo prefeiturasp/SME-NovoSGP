@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirPendenciaPerfilUsuarioCommandHandler : AsyncRequestHandler<ExcluirPendenciaPerfilUsuarioCommand>
+    public class ExcluirPendenciaPerfilUsuarioCommandHandler : IRequestHandler<ExcluirPendenciaPerfilUsuarioCommand>
     {
         private readonly IRepositorioPendenciaPerfilUsuario repositorio;
 
@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
 
-        protected override async Task Handle(ExcluirPendenciaPerfilUsuarioCommand request, CancellationToken cancellationToken)
+        public async Task Handle(ExcluirPendenciaPerfilUsuarioCommand request, CancellationToken cancellationToken)
         {
             await repositorio.Excluir(request.Id);
         }

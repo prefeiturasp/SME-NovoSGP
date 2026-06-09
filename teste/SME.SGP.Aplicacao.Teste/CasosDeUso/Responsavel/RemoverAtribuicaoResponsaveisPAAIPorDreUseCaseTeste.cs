@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Responsavel
                             var command = cmd as RemoverAtribuicoesResponsaveisCommand;
                             idsRemovidosCapturados = command.AtribuicoesIds;
                         })
-                        .ReturnsAsync(Unit.Value);
+                        .Returns(Task.CompletedTask);
 
             // Act
             var resultado = await useCase.Executar(mensagem);

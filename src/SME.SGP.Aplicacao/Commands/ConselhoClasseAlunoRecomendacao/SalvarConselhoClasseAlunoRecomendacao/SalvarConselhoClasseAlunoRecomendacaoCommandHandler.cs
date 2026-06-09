@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarConselhoClasseAlunoRecomendacaoCommandHandler : AsyncRequestHandler<SalvarConselhoClasseAlunoRecomendacaoCommand>
+    public class SalvarConselhoClasseAlunoRecomendacaoCommandHandler : IRequestHandler<SalvarConselhoClasseAlunoRecomendacaoCommand>
     {
         private readonly IRepositorioConselhoClasseAlunoRecomendacao repositorioConselhoClasseAlunoRecomendacao;
 
@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioConselhoClasseAlunoRecomendacao = repositorioConselhoClasseAlunoRecomendacao ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAlunoRecomendacao));
         }
 
-        protected override async Task Handle(SalvarConselhoClasseAlunoRecomendacaoCommand request, CancellationToken cancellationToken)
+        public async Task Handle(SalvarConselhoClasseAlunoRecomendacaoCommand request, CancellationToken cancellationToken)
         {
             var listaRecomendacoesExcluidas = new List<long>();
             var recomendacoesAlunoFamilia = new List<long>();
