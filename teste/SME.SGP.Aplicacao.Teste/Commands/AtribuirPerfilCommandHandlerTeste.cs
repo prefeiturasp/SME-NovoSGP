@@ -50,9 +50,8 @@ namespace SME.SGP.Aplicacao.Teste.Commands
             var handler = new AtribuirPerfilCommandHandler(httpClientFactoryMock.Object);
             var command = new AtribuirPerfilCommand(codigoRfTeste, perfilTeste);
 
-            var resultado = await handler.Handle(command, CancellationToken.None);
+            await handler.Handle(command, CancellationToken.None);
 
-            Assert.Equal(Unit.Value, resultado);
         }
 
         [Fact]

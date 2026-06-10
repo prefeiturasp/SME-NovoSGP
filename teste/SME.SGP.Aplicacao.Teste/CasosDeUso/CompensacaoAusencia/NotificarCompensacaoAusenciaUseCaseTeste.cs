@@ -283,7 +283,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.CompensacaoAusencia
 
             mediatorMock
                 .Setup(m => m.Send(It.IsAny<ExcluirNotificacaoCompensacaoAusenciaCommand>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(Unit.Value);
+                .Returns(Task.CompletedTask);
 
             mediatorMock
                 .Setup(m => m.Send(It.IsAny<EnviarNotificacaoCommand>(), It.IsAny<CancellationToken>()))

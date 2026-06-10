@@ -134,7 +134,10 @@ namespace SME.SGP.ComprimirArquivos.Worker
         private static void RegistrarMediator(IServiceCollection services)
         {
             var assembly = Assembly.GetExecutingAssembly();
-            services.AddMediatR(assembly);
+
+            services.AddMediatR(cfg =>
+                cfg.RegisterServicesFromAssembly(assembly));
+
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidacoesPipeline<,>));
 
             AssemblyScanner

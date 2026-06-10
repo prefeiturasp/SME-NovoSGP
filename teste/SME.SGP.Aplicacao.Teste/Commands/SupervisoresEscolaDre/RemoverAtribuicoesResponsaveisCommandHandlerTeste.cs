@@ -29,10 +29,7 @@ namespace SME.SGP.Aplicacao.Teste.Commands.SupervisoresEscolaDre
             var command = new RemoverAtribuicoesResponsaveisCommand(idsParaRemover);
 
             // Act
-            var result = await handler.Handle(command, CancellationToken.None);
-
-            // Assert
-            Assert.Equal(Unit.Value, result);
+            await handler.Handle(command, CancellationToken.None);
 
             // Verifica se o método de remoção em lote do repositório foi chamado exatamente uma vez
             // e se foi chamado com a lista de IDs correta.
@@ -49,10 +46,7 @@ namespace SME.SGP.Aplicacao.Teste.Commands.SupervisoresEscolaDre
             var command = new RemoverAtribuicoesResponsaveisCommand(idsParaRemover);
 
             // Act
-            var result = await handler.Handle(command, CancellationToken.None);
-
-            // Assert
-            Assert.Equal(Unit.Value, result);
+            await handler.Handle(command, CancellationToken.None);
 
             // Verifica se o método de remoção do repositório NUNCA foi chamado,
             // confirmando que a cláusula de guarda para listas vazias funcionou.
@@ -68,10 +62,7 @@ namespace SME.SGP.Aplicacao.Teste.Commands.SupervisoresEscolaDre
             var command = new RemoverAtribuicoesResponsaveisCommand(null); // Lista nula
 
             // Act
-            var result = await handler.Handle(command, CancellationToken.None);
-
-            // Assert
-            Assert.Equal(Unit.Value, result);
+            await handler.Handle(command, CancellationToken.None);
 
             // Verifica se o método de remoção do repositório NUNCA foi chamado,
             // confirmando que a cláusula de guarda para listas nulas funcionou.

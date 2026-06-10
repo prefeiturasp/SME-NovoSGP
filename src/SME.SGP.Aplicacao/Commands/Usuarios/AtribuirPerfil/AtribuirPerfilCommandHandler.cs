@@ -17,15 +17,15 @@ namespace SME.SGP.Aplicacao
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
-        public async Task<Unit> Handle(AtribuirPerfilCommand request, CancellationToken cancellationToken)
+        public async Task Handle(AtribuirPerfilCommand request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
             var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_PERFIS_SERVIDORES_PERFIL_ATRIBUIR_PERFIL, request.CodigoRf, request.Perfil));
 
             if (resposta.IsSuccessStatusCode)
-                return Unit.Value;
+                return;
 
-            var mensagem = await resposta.Content.ReadAsStringAsync();
+            var mensagem = await resposta.Content.ReadAsStringAsync(cancellationToken);
 
             throw new NegocioException(mensagem);
         }

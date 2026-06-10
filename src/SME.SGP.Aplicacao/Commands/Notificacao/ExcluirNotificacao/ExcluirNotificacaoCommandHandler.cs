@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirNotificacaoCommandHandler : AsyncRequestHandler<ExcluirNotificacaoCommand>
+    public class ExcluirNotificacaoCommandHandler : IRequestHandler<ExcluirNotificacaoCommand>
     {
         private readonly IMediator mediator;
         private readonly IRepositorioNotificacao repositorioNotificacao;
@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioNotificacaoconsulta = repositorioNotificacaoconsulta ?? throw new ArgumentNullException(nameof(repositorioNotificacaoconsulta));
         }
 
-        protected override async Task Handle(ExcluirNotificacaoCommand request, CancellationToken cancellationToken)
+        public async Task Handle(ExcluirNotificacaoCommand request, CancellationToken cancellationToken)
         {
             var usuarioRf = await repositorioNotificacaoconsulta.ObterUsuarioNotificacaoPorId(request.Notificacao.Id);
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class RegistraConsolidacaoDevolutivasTurmaCommandHandler : AsyncRequestHandler<RegistraConsolidacaoDevolutivasTurmaCommand>
+    public class RegistraConsolidacaoDevolutivasTurmaCommandHandler : IRequestHandler<RegistraConsolidacaoDevolutivasTurmaCommand>
     {
         private readonly IRepositorioConsolidacaoDevolutivas repositorio;
 
@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
             this.repositorio = repositorio ?? throw new System.ArgumentNullException(nameof(repositorio));
         }
 
-        protected override async Task Handle(RegistraConsolidacaoDevolutivasTurmaCommand request, CancellationToken cancellationToken)
+        public async Task Handle(RegistraConsolidacaoDevolutivasTurmaCommand request, CancellationToken cancellationToken)
         { 
             await repositorio.Salvar(request.ConsolidacaoDevolutivas);
         }
