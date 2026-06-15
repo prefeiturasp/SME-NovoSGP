@@ -51,7 +51,7 @@
     <PackageReference Include="Polly" Version="7.2.2" />
     <PackageReference Include="Polly.Extensions.Http" Version="3.0.0" />
     <PackageReference Include="Sentry.AspNetCore" Version="3.9.4" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="4.0.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.7" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.12.2" />
   </ItemGroup>
 
@@ -71,6 +71,5 @@
     <Folder Include="obj\" />
     <Folder Include="Queries\ConselhoClasseAcompanhamento\ObterAlunoEStatusConselhoClasseConsolidadoPorTurmaEBimestre\" />
     <Folder Include="Queries\TipoCalendario\ObterTiposCalendariosAulaAutomaticaPorAnoLetivoEModalidades\" />
-    <Folder Include="Servicos\Interfaces\" />
   </ItemGroup>
 </Project>
