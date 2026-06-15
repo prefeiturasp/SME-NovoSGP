@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirWFAprovacaoParecerPorAlunoCommandHandler : AsyncRequestHandler<ExcluirWFAprovacaoParecerPorAlunoCommand>
+    public class ExcluirWFAprovacaoParecerPorAlunoCommandHandler : IRequestHandler<ExcluirWFAprovacaoParecerPorAlunoCommand>
     {
         private readonly IRepositorioWFAprovacaoParecerConclusivo repositorioWFAprovacaoParecerConclusivo;
         private readonly IMediator mediator;
@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        protected override async Task Handle(ExcluirWFAprovacaoParecerPorAlunoCommand request, CancellationToken cancellationToken)
+        public async Task Handle(ExcluirWFAprovacaoParecerPorAlunoCommand request, CancellationToken cancellationToken)
         {
             var wfAprovacaoPareceres = await repositorioWFAprovacaoParecerConclusivo.ObterPorConselhoClasseAlunoId(request.ConselhoClasseAlunoId);
             

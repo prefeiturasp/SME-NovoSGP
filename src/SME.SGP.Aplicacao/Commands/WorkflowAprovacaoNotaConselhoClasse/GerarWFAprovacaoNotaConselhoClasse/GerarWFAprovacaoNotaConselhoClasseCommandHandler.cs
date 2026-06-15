@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class GerarWFAprovacaoNotaConselhoClasseCommandHandler : AsyncRequestHandler<GerarWFAprovacaoNotaConselhoClasseCommand>
+    public class GerarWFAprovacaoNotaConselhoClasseCommandHandler : IRequestHandler<GerarWFAprovacaoNotaConselhoClasseCommand>
     {
         private readonly IRepositorioWFAprovacaoNotaConselho repositorioWFAprovacaoNotaConselho;
         private readonly IMediator mediator;
@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
-        protected override async Task Handle(GerarWFAprovacaoNotaConselhoClasseCommand request, CancellationToken cancellationToken)
+        public async Task Handle(GerarWFAprovacaoNotaConselhoClasseCommand request, CancellationToken cancellationToken)
         {
             await ExcluirWorkflowAprovacao(request.ConselhoClasseNotaId);
 

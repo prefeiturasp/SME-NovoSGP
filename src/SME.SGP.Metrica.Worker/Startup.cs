@@ -101,7 +101,7 @@ namespace SME.SGP.Metrica.Worker
         {
             services.ConfigurarTelemetria(Configuration);
             services.AddHttpContextAccessor();
-            services.AddMediatR(Assembly.GetExecutingAssembly());
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
             RegistrarRepositorio(services);
             RegistrarUseCases(services);
             AdicionarHttpClients(services);

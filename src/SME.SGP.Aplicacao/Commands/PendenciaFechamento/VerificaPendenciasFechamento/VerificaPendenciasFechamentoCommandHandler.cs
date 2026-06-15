@@ -9,7 +9,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class VerificaPendenciasFechamentoCommandHandler : AsyncRequestHandler<VerificaPendenciasFechamentoCommand>
+    public class VerificaPendenciasFechamentoCommandHandler : IRequestHandler<VerificaPendenciasFechamentoCommand>
     {
         private readonly IServicoPendenciaFechamento servicoPendenciaFechamento;
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        protected override async Task Handle(VerificaPendenciasFechamentoCommand request, CancellationToken cancellationToken)
+        public async Task Handle(VerificaPendenciasFechamentoCommand request, CancellationToken cancellationToken)
         {
             // Verifica existencia de pendencia em aberto
             if (!servicoPendenciaFechamento.VerificarPendenciasEmAbertoPorFechamento(request.FechamentoId))

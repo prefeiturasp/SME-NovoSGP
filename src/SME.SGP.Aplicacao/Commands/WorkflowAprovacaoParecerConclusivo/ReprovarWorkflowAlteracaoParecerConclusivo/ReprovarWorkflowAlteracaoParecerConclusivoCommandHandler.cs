@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ReprovarWorkflowAlteracaoParecerConclusivoCommandHandler : AsyncRequestHandler<ReprovarWorkflowAlteracaoParecerConclusivoCommand>
+    public class ReprovarWorkflowAlteracaoParecerConclusivoCommandHandler : IRequestHandler<ReprovarWorkflowAlteracaoParecerConclusivoCommand>
     {
         private readonly IMediator mediator;
 
@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        protected override async Task Handle(ReprovarWorkflowAlteracaoParecerConclusivoCommand request, CancellationToken cancellationToken)
+        public async Task Handle(ReprovarWorkflowAlteracaoParecerConclusivoCommand request, CancellationToken cancellationToken)
         {
             var pareceresEmAprovacao = await mediator.Send(new ObterPareceresConclusivosDtoEmAprovacaoPorWorkflowQuery(request.WorkflowId));
             if (pareceresEmAprovacao.NaoEhNulo() && pareceresEmAprovacao.Any())
