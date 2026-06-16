@@ -458,7 +458,6 @@ namespace SME.SGP.Dominio.Servicos
             if (nivel.Cargo.HasValue)
             {
                 usuarios = await ObterUsuariosParaEnviarNotificacoes(nivel, nivel.Cargo, nivel.Workflow.UeId);
-                usuarios = await ObterUsuariosParaEnviarNotificacoes(nivel, nivel.Cargo, nivel.Workflow.UeId);
             }
 
             foreach (var usuario in usuarios)
@@ -511,7 +510,6 @@ namespace SME.SGP.Dominio.Servicos
 
             if (nivel.Cargo.HasValue)
             {
-                usuarios = await ObterUsuariosParaEnviarNotificacoes(nivel, nivel.Cargo, nivel.Workflow.UeId);
                 usuarios = await ObterUsuariosParaEnviarNotificacoes(nivel, nivel.Cargo, nivel.Workflow.UeId);
             }
 

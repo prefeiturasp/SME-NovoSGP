@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<Unit> Handle(InserirAtribuicaoCJCommand request, CancellationToken cancellationToken)
+        public async Task Handle(InserirAtribuicaoCJCommand request, CancellationToken cancellationToken)
         {
             var atribuicaoCJ = request.AtribuicaoCJ;
             var atribuicoesAtuais = request.AtribuicoesAtuais;
@@ -44,14 +44,14 @@ namespace SME.SGP.Aplicacao
             if (atribuicaoJaCadastrada.EhNulo())
             {
                 if (!atribuicaoCJ.Substituir)
-                    return Unit.Value;
+                    return;
             }
             else
             {
                 if (atribuicaoCJ.Substituir == atribuicaoJaCadastrada.Substituir)
                 {
                     await TratarAbrangencia(atribuicaoCJ, atribuicoesAtuais.ToList(), request.EhHistorico, excluiAbrangencia);
-                    return Unit.Value;
+                    return;
                 }
 
                 atribuicaoJaCadastrada.Substituir = atribuicaoCJ.Substituir;
@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
             await repositorioAtribuicaoCJ.SalvarAsync(atribuicaoCJ);
             await TratarAbrangencia(atribuicaoCJ, atribuicoesAtuais.ToList(), request.EhHistorico, excluiAbrangencia);
 
-            return Unit.Value;
+            return;
         }
 
         private async Task TratarAbrangencia(AtribuicaoCJ atribuicaoCJ, List<AtribuicaoCJ> atribuicoesAtuais, bool ehHistorico, bool excluiAbrangencia)

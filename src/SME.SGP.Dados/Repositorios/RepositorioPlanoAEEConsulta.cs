@@ -218,7 +218,7 @@ namespace SME.SGP.Dados.Repositorios
                     from plano_aee pa
                     inner join turma tu on tu.id = pa.turma_id
                     inner join ue on ue.id = tu.ue_id
-                    where pa.turma_id = @codigoTurma 
+                    where tu.turma_id = @codigoTurma::text
                         {condicaoUe}
                         and not pa.situacao = any(@situacoesDesconsideradas)
                         and not pa.excluido";
@@ -230,8 +230,6 @@ namespace SME.SGP.Dados.Repositorios
                 situacoesDesconsideradas = new int[] { (int)SituacaoPlanoAEE.Encerrado, (int)SituacaoPlanoAEE.EncerradoAutomaticamente }
             });
         }
-
-
 
         public async Task<PlanoAEEResumoDto> ObterPlanoPorEstudanteEAno(string codigoEstudante, int ano)
         {

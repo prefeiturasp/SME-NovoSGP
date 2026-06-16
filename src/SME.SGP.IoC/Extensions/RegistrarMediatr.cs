@@ -10,7 +10,7 @@ namespace SME.SGP.IoC
         internal static void AdicionarMediatr(this IServiceCollection services)
         {
             var assembly = AppDomain.CurrentDomain.Load("SME.SGP.Aplicacao");
-            services.AddMediatR(assembly);
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(assembly));
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidacoesPipeline<,>));
         }
     }

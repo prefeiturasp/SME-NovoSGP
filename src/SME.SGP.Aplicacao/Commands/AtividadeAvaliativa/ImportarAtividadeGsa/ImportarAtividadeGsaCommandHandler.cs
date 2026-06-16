@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ImportarAtividadeGsaCommandHandler : AsyncRequestHandler<ImportarAtividadeGsaCommand>
+    public class ImportarAtividadeGsaCommandHandler : IRequestHandler<ImportarAtividadeGsaCommand>
     {
         private readonly IMediator mediator;
         public ImportarAtividadeGsaCommandHandler(IMediator mediator)
@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        protected override async Task Handle(ImportarAtividadeGsaCommand request, CancellationToken cancellationToken)
+        public async Task Handle(ImportarAtividadeGsaCommand request, CancellationToken cancellationToken)
         {
             await ValidarImportacaoAtividade(request.AtividadeGsa.DataCriacao);
 
