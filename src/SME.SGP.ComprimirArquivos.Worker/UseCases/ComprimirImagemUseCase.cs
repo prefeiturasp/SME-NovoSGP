@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.ComprimirArquivos.Worker
 {

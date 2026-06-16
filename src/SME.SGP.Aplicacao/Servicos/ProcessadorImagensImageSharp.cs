@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Processing;
+using SkiaSharp;
 using SME.SGP.Aplicacao.Servicos.Interfaces;
 using System;
 using System.IO;
@@ -33,23 +32,35 @@ namespace SME.SGP.Aplicacao.Servicos
             if (imagemBytes == null || imagemBytes.Length == 0)
                 throw new ArgumentException("Bytes da imagem inválidos", nameof(imagemBytes));
 
-            using (var memoryStream = new MemoryStream(imagemBytes))
+            return await Task.Run(() =>
             {
-                using (var image = Image.Load(memoryStream))
+                // Carrega a imagem original
+                using (var skBitmap = SKBitmap.Decode(imagemBytes))
                 {
-                    image.Mutate(x => x.Resize(new ResizeOptions
-                    {
-                        Size = new Size(largura, altura),
-                        Mode = ResizeMode.Max 
-                    }));
+                    if (skBitmap == null)
+                        throw new ArgumentException("Não foi possível decodificar a imagem", nameof(imagemBytes));
 
-                    using (var outputStream = new MemoryStream())
+                    // Calcula novas dimensões mantendo proporção
+                    var (novaLargura, novaAltura) = CalcularDimensoes(skBitmap.Width, skBitmap.Height, largura, altura);
+
+                    // Opções de amostragem para redimensionamento de alta qualidade
+                    var samplingOptions = new SKSamplingOptions(SKFilterMode.Linear, SKMipmapMode.Linear);
+
+                    // Redimensiona a imagem
+                    using (var resizedBitmap = skBitmap.Resize(new SKSizeI(novaLargura, novaAltura), samplingOptions))
                     {
-                        image.SaveAsPng(outputStream);
-                        return outputStream.ToArray();
+                        if (resizedBitmap == null)
+                            throw new InvalidOperationException("Falha ao redimensionar a imagem");
+
+                        // Converte para JPEG com qualidade 85
+                        using (var image = SKImage.FromBitmap(resizedBitmap))
+                        {
+                            var jpegData = image.Encode(SKEncodedImageFormat.Jpeg, 85);
+                            return jpegData.ToArray();
+                        }
                     }
                 }
-            }
+            });
         }
 
         public string ObterTipoConteudo(string nomeArquivo)
@@ -68,6 +79,29 @@ namespace SME.SGP.Aplicacao.Servicos
                 ".bmp" => "image/bmp",
                 _ => "image/jpeg"
             };
+        }
+
+        /// <summary>
+        /// Calcula as novas dimensões mantendo a proporção da imagem
+        /// Modo: Max (redimensiona para caber dentro do tamanho especificado)
+        /// </summary>
+        private (int largura, int altura) CalcularDimensoes(int larguraOriginal, int alturaOriginal, int larguraMax, int alturaMax)
+        {
+            // Se a imagem já é menor que o máximo, retorna as dimensões originais
+            if (larguraOriginal <= larguraMax && alturaOriginal <= alturaMax)
+                return (larguraOriginal, alturaOriginal);
+
+            // Calcula as proporções
+            double proporcaoLargura = (double)larguraMax / larguraOriginal;
+            double proporcaoAltura = (double)alturaMax / alturaOriginal;
+
+            // Usa a menor proporção para manter a imagem dentro dos limites
+            double proporcao = Math.Min(proporcaoLargura, proporcaoAltura);
+
+            int novaLargura = (int)(larguraOriginal * proporcao);
+            int novaAltura = (int)(alturaOriginal * proporcao);
+
+            return (novaLargura, novaAltura);
         }
     }
 }
