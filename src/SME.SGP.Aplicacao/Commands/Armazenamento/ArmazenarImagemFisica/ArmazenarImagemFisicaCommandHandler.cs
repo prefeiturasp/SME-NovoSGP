@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
                     await servicoArmazenamento.ArmazenarTemporaria(request.NomeFisico, msImagem, request.Formato);
                 else
                     await servicoArmazenamento.Armazenar(request.NomeFisico, msImagem, request.Formato);
-            }
+             }
 
             return true;
         }
