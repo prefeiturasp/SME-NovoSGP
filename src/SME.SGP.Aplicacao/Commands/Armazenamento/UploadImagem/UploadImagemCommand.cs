@@ -2,24 +2,20 @@
 using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
     public class UploadImagemCommand : IRequest<ArquivoArmazenadoDto>
     {
-        public UploadImagemCommand(Image imagem, TipoArquivo tipoArquivo, string nomeArquivo, string formato)
+        public UploadImagemCommand(byte[] imagemBytes, TipoArquivo tipoArquivo, string nomeArquivo, string formato)
         {
-            Imagem = imagem;
+            ImagemBytes = imagemBytes;
             TipoArquivo = tipoArquivo;
             NomeArquivo = nomeArquivo;
             Formato = formato;
         }
 
-        public Image Imagem { get; }
+        public byte[] ImagemBytes { get; }
         public TipoArquivo TipoArquivo { get; }
         public string NomeArquivo { get; }
         public string Formato { get; }
@@ -29,9 +25,11 @@ namespace SME.SGP.Aplicacao
     {
         public UploadImagemCommandValidator()
         {
-            RuleFor(a => a.Imagem)
-                .NotEmpty()
-                .WithMessage("A imagem deve ser informada para realizar o upload para o servidor");
+            RuleFor(a => a.ImagemBytes)
+                  .NotEmpty()
+                  .WithMessage("A imagem deve ser informada para realizar o upload para o servidor")
+                  .Must(bytes => bytes != null && bytes.Length > 0)
+                  .WithMessage("A imagem não pode estar vazia");
 
             RuleFor(a => a.NomeArquivo)
                 .NotEmpty()
