@@ -7,7 +7,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.TesteIntegracao.RegistroIndividual.ServicosFakes
 {
-    public class PublicarAtualizacaoPendenciaRegistroIndividualCommandHandlerFake: AsyncRequestHandler<PublicarAtualizacaoPendenciaRegistroIndividualCommand>
+    public class PublicarAtualizacaoPendenciaRegistroIndividualCommandHandlerFake: IRequestHandler<PublicarAtualizacaoPendenciaRegistroIndividualCommand>
     {
         private readonly IMediator mediator;
 
@@ -16,7 +16,7 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual.ServicosFakes
             this.mediator = mediator;
         }
 
-        protected override async Task Handle(PublicarAtualizacaoPendenciaRegistroIndividualCommand request, CancellationToken cancellationToken)
+        public async Task Handle(PublicarAtualizacaoPendenciaRegistroIndividualCommand request, CancellationToken cancellationToken)
         {
             var command = new AtualizarPendenciaRegistroIndividualDto { TurmaId = request.TurmaId, CodigoAluno = request.CodigoAluno, DataRegistro = request.DataRegistro };
             await mediator.Send(command);

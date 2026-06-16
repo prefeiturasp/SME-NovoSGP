@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirConsolidacaoFechamentoPorTurmaIdEBimestreCommandHandler : AsyncRequestHandler<ExcluirConsolidacaoFechamentoPorTurmaIdEBimestreCommand>
+    public class ExcluirConsolidacaoFechamentoPorTurmaIdEBimestreCommandHandler : IRequestHandler<ExcluirConsolidacaoFechamentoPorTurmaIdEBimestreCommand>
     {
         private readonly IRepositorioFechamentoConsolidado repositorioFechamentoConsolidado;
 
@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioFechamentoConsolidado = repositorioFechamentoConsolidado ?? throw new ArgumentNullException(nameof(repositorioFechamentoConsolidado));
         }
 
-        protected override async Task Handle(ExcluirConsolidacaoFechamentoPorTurmaIdEBimestreCommand request, CancellationToken cancellationToken)
+        public async Task Handle(ExcluirConsolidacaoFechamentoPorTurmaIdEBimestreCommand request, CancellationToken cancellationToken)
         {
             await repositorioFechamentoConsolidado.ExcluirConsolidacaoPorTurmaIdEBimestre(request.TurmaId, request.Bimestre);
         }

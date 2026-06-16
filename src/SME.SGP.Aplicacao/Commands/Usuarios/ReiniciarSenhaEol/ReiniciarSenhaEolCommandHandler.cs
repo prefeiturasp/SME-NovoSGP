@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ReiniciarSenhaEolCommandHandler : AsyncRequestHandler<ReiniciarSenhaEolCommand>
+    public class ReiniciarSenhaEolCommandHandler : IRequestHandler<ReiniciarSenhaEolCommand>
     {
         private readonly IHttpClientFactory httpClientFactory;
 
@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
-        protected override async Task Handle(ReiniciarSenhaEolCommand request, CancellationToken cancellationToken)
+        public async Task Handle(ReiniciarSenhaEolCommand request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
             

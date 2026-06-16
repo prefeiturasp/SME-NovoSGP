@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarPendenciaDiarioBordoCommandHandler : AsyncRequestHandler<SalvarPendenciaDiarioBordoCommand>
+    public class SalvarPendenciaDiarioBordoCommandHandler : IRequestHandler<SalvarPendenciaDiarioBordoCommand>
     {
         private readonly IRepositorioPendenciaDiarioBordo repositorioDiarioBordo;
         private readonly IMediator mediator;
@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        protected override async Task Handle(SalvarPendenciaDiarioBordoCommand request, CancellationToken cancellationToken)
+        public async Task Handle(SalvarPendenciaDiarioBordoCommand request, CancellationToken cancellationToken)
         {
             var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(request.ProfessorRf));
 

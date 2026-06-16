@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarFechamentoAlunoCommandHandler : AsyncRequestHandler<SalvarFechamentoAlunoCommand>
+    public class SalvarFechamentoAlunoCommandHandler : IRequestHandler<SalvarFechamentoAlunoCommand>
     {
         private readonly IRepositorioFechamentoAluno repositorioFechamentoAluno;
 
@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioFechamentoAluno = repositorioFechamentoAluno ?? throw new ArgumentNullException(nameof(repositorioFechamentoAluno));
         }
 
-        protected override Task Handle(SalvarFechamentoAlunoCommand request, CancellationToken cancellationToken)
+        public Task Handle(SalvarFechamentoAlunoCommand request, CancellationToken cancellationToken)
             => repositorioFechamentoAluno.SalvarAsync(request.FechamentoAluno);
     }
 }
