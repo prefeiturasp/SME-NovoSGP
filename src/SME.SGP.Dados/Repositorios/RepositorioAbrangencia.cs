@@ -1049,7 +1049,7 @@ namespace SME.SGP.Dados.Repositorios
 
             }
 
-            return retornoUesSupervisor.Distinct().OrderBy(r=> r.Nome);
+            return retornoUesSupervisor.DistinctBy(u => u.Codigo).OrderBy(r=> r.Nome);
         }
 
         public async Task<IEnumerable<AbrangenciaTurmaComUeRetorno>> ObterTurmasPorTiposListaUes(string[] codigosUes, string login, Guid perfil, Modalidade modalidade, int[] tipos, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, string[] anosInfantilDesconsiderar = null)
