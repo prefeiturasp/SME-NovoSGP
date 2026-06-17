@@ -1,10 +1,9 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
+using SME.SGP.Aplicacao.Servicos.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
-using System.Drawing;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,11 +13,13 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IProcessadorImagens _processadorImagens;
 
-        public SalvarFotoAcompanhamentoAlunoCommandHandler(IMediator mediator, IUnitOfWork unitOfWork)
+        public SalvarFotoAcompanhamentoAlunoCommandHandler(IMediator mediator, IUnitOfWork unitOfWork, IProcessadorImagens processadorImagens)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            _processadorImagens = processadorImagens ?? throw new ArgumentNullException(nameof(processadorImagens));
         }
 
         public async Task<AuditoriaDto> Handle(SalvarFotoAcompanhamentoAlunoCommand request, CancellationToken cancellationToken)
@@ -35,18 +36,35 @@ namespace SME.SGP.Aplicacao
 
         private async Task<AuditoriaDto> GerarFotosSemestre(AcompanhamentoAlunoSemestre acompanhamentoSemestre, IFormFile file, bool auditarSemestre)
         {
-            var imagem = await ObterImagem(file);
-            var miniatura = imagem.GetThumbnailImage(88, 88, () => false, IntPtr.Zero);
-
             using (var transacao = unitOfWork.IniciarTransacao())
             {
                 try
                 {
-                    var miniaturaId = await GerarFotoSemestre(miniatura, ObterNomeMiniatura(file.FileName), file.ContentType, acompanhamentoSemestre.Id);
-                    await GerarFotoSemestre(imagem, file.FileName, file.ContentType, acompanhamentoSemestre.Id, miniaturaId);
+                    // Obtém a imagem original em bytes
+                    var imagemBytes = await _processadorImagens.ObterImagemEmBytesAsync(file);
+
+                    // Cria miniatura (88x88)
+                    var miniaturaBytes = await _processadorImagens.CriarMiniaturaAsync(imagemBytes, 88, 88);
+                    var tipoConteudo = _processadorImagens.ObterTipoConteudo(file.FileName);
+
+                    // Salva miniatura
+                    var miniaturaId = await GerarFotoSemestre(
+                        miniaturaBytes,
+                        ObterNomeMiniatura(file.FileName),
+                        tipoConteudo,
+                        acompanhamentoSemestre.Id);
+
+                    // Salva imagem original
+                    await GerarFotoSemestre(
+                        imagemBytes,
+                        file.FileName,
+                        tipoConteudo,
+                        acompanhamentoSemestre.Id,
+                        miniaturaId);
 
                     if (auditarSemestre)
                         await mediator.Send(new SalvarAcompanhamentoAlunoSemestreCommand(acompanhamentoSemestre));
+
                     unitOfWork.PersistirTransacao();
 
                     return (AuditoriaDto)acompanhamentoSemestre;
@@ -59,9 +77,9 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<long> GerarFotoSemestre(Image foto, string nomeArquivo, string formato, long acompanhamentoSemestreId, long? miniaturaId = null)
+        private async Task<long> GerarFotoSemestre(byte[] fotoBytes, string nomeArquivo, string tipoConteudo, long acompanhamentoSemestreId, long? miniaturaId = null)
         {
-            var arquivo = await mediator.Send(new UploadImagemCommand(foto, Dominio.TipoArquivo.FotoAluno, nomeArquivo, formato));
+            var arquivo = await mediator.Send(new UploadImagemCommand(fotoBytes, Dominio.TipoArquivo.FotoAluno, nomeArquivo, tipoConteudo));
             return await mediator.Send(new GerarAcompanhamentoAlunoFotoCommand(acompanhamentoSemestreId, arquivo.Id, miniaturaId));
         }
 
@@ -79,15 +97,5 @@ namespace SME.SGP.Aplicacao
 
         private string ObterNomeMiniatura(string nomeArquivo)
             => $"miniatura_{nomeArquivo}";
-
-        private async Task<Image> ObterImagem(IFormFile file)
-        {
-            using (var memoryStream = new MemoryStream())
-            {
-                await file.CopyToAsync(memoryStream);
-                var img = Image.FromStream(memoryStream);
-                return img;
-            }
-        }
     }
 }
