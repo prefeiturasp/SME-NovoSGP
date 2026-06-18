@@ -47,11 +47,11 @@ namespace SME.SGP.Aplicacao
 
             comunicado.Alunos = (await repositorioComunicadoAluno.ObterPorComunicado(comunicado.Id)).ToList();
 
-            if(comunicado.Alunos.Any())
+            if (comunicado.Alunos.Any())
             {
                 var alunos = await mediator.Send(new ObterAlunosEolPorCodigosEAnoQuery(comunicado.Alunos.Select(a => Convert.ToInt64(a.AlunoCodigo)).ToArray(), comunicado.AnoLetivo));
                 List<ComunicadoAluno> comunicadosAlunos = new List<ComunicadoAluno>();
-                foreach(var aluno in comunicado.Alunos)
+                foreach (var aluno in comunicado.Alunos)
                 {
                     comunicadosAlunos.Add(new ComunicadoAluno()
                     {
@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao
 
                 comunicado.Alunos = comunicadosAlunos;
             }
-                
+
 
             comunicado.Turmas = (await repositorioComunicadoTurma.ObterPorComunicado(comunicado.Id)).ToList();
 

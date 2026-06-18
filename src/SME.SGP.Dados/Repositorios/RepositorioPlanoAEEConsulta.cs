@@ -202,12 +202,12 @@ namespace SME.SGP.Dados.Repositorios
                 situacoesDesconsideradas = new int[] { (int)SituacaoPlanoAEE.Encerrado, (int)SituacaoPlanoAEE.EncerradoAutomaticamente }
             });
         }
-        
+
         public async Task<IEnumerable<PlanoAEEResumoIntegracaoDto>> ObterPlanoPorTurma(FiltroTurmaPlanoAEEDto filtro)
         {
             var condicaoUe = !string.IsNullOrWhiteSpace(filtro.CodigoUe) ? "and ue.ue_id = @codigoUe" : "";
 
-                        var sql = $@"
+            var sql = $@"
                     select distinct 
                         pa.Id,
                         pa.aluno_numero as numero,
@@ -431,7 +431,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (dreId > 0)
                 where.Append(" and ue.dre_id = @dreId");
- 
+
             if (ueId > 0)
                 where.Append(" and ue.id = @ueId");
 
@@ -474,7 +474,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (ueId > 0)
                 where.Append(" and ue.id = @ueId");
-            
+
             var sqlTotalPlanos = ObterQueryTotalPlanos(where.ToString());
 
             where.Append(" and pa.situacao in (1,2,8)");
@@ -634,13 +634,14 @@ namespace SME.SGP.Dados.Repositorios
                         FROM painel_educacional_consolidacao_plano_aee
                         WHERE ano_letivo = @anoLetivo";
 
-            if(!string.IsNullOrEmpty(filtro.CodigoDre))
+            if (!string.IsNullOrEmpty(filtro.CodigoDre))
                 query += " AND codigo_dre = @codigoDre";
 
             if (!string.IsNullOrEmpty(filtro.CodigoUe))
                 query += " AND codigo_ue = @codigoUe";
 
-            return await database.Conexao.QueryAsync<PainelEducacionalConsolidacaoPlanoAEE>(query, new { 
+            return await database.Conexao.QueryAsync<PainelEducacionalConsolidacaoPlanoAEE>(query, new
+            {
                 anoLetivo = filtro.AnoLetivo,
                 codigoDre = filtro.CodigoDre,
                 codigoUe = filtro.CodigoUe

@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.TaxaAlfabetizacao.ObterSon
 {
     public class ObterSondagemEscritaUePorAnoLetivoPeriodoQuery : IRequest<IEnumerable<SondagemEscritaUeDto>>
     {
-       
+
     }
 }

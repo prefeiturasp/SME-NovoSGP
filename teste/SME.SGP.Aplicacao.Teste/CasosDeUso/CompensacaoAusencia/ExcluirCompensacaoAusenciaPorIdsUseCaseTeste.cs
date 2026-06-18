@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.CompensacaoAusencia
             Assert.True(resultado);
             mediatorMock.Verify(m => m.Send(It.Is<ExcluirCompensacaoAusenciaPorIdsCommand>(
                 c => c.CompensacaoAusenciaIds.SequenceEqual(ids)), It.IsAny<CancellationToken>()), Times.Once);
-        }  
+        }
 
         [Fact]
         public void Validator_Deve_Ser_Invalido_Quando_Ids_For_Nulo()

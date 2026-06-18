@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         public async Task<long> Handle(ObterPeriodoEscolarIdPorTurmaBimestreAnoLetivoQuery request, CancellationToken cancellationToken)
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo), cancellationToken);
-            
+
             if (turma.EhNulo())
                 throw new NegocioException("Turma não encontrada");
 

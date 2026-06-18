@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao
     public class SalvarPendenciaDiarioBordoCommand : IRequest
     {
         public SalvarPendenciaDiarioBordoCommand()
-        {}
+        { }
 
         public string ProfessorRf { get; set; }
         public long PendenciaId { get; set; }

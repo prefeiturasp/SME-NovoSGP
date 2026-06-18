@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         }
         public Task<ConselhoClasse> Handle(ObterConselhoClassePorTurmaEPeriodoQuery request, CancellationToken cancellationToken)
         {
-            return repositorioConselhoClasse.ObterPorTurmaEPeriodoAsync(request.TurmaId, request.PeriodoEscolarId);          
+            return repositorioConselhoClasse.ObterPorTurmaEPeriodoAsync(request.TurmaId, request.PeriodoEscolarId);
         }
     }
 }

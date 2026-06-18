@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces.Repositorios
 {
-    public interface IRepositorioPainelEducacionalConsolidacaoNota 
+    public interface IRepositorioPainelEducacionalConsolidacaoNota
     {
         Task LimparConsolidacaoAsync(int anoLetivo);
         Task SalvarConsolidacaoAsync(IList<PainelEducacionalConsolidacaoNota> indicadores);

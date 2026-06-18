@@ -49,10 +49,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.AulasPrevistas
             var mensagem = new MensagemRabbit(Newtonsoft.Json.JsonConvert.SerializeObject(dto));
 
             mediatorMock.Setup(m => m.Send(It.IsAny<ObterUsuarioIdPorRfOuCriaQuery>(), It.IsAny<CancellationToken>()))
-                        .ReturnsAsync(10); 
+                        .ReturnsAsync(10);
 
             mediatorMock.Setup(m => m.Send(It.IsAny<UsuarioNotificadoAulaPrevistaDivergenteQuery>(), It.IsAny<CancellationToken>()))
-                        .ReturnsAsync(false); 
+                        .ReturnsAsync(false);
 
             mediatorMock.Setup(m => m.Send(It.IsAny<SalvarNotificacaoAulaPrevistaCommand>(), It.IsAny<CancellationToken>()))
                         .ReturnsAsync(true);
@@ -70,10 +70,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.AulasPrevistas
             var mensagem = new MensagemRabbit(Newtonsoft.Json.JsonConvert.SerializeObject(dto));
 
             mediatorMock.Setup(m => m.Send(It.IsAny<ObterUsuarioIdPorRfOuCriaQuery>(), It.IsAny<CancellationToken>()))
-                        .ReturnsAsync(10); 
+                        .ReturnsAsync(10);
 
             mediatorMock.Setup(m => m.Send(It.IsAny<UsuarioNotificadoAulaPrevistaDivergenteQuery>(), It.IsAny<CancellationToken>()))
-                        .ReturnsAsync(true); 
+                        .ReturnsAsync(true);
 
             var resultado = await useCase.Executar(mensagem);
 
@@ -88,7 +88,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.AulasPrevistas
             var mensagem = new MensagemRabbit(Newtonsoft.Json.JsonConvert.SerializeObject(dto));
 
             mediatorMock.Setup(m => m.Send(It.IsAny<ObterUsuarioIdPorRfOuCriaQuery>(), It.IsAny<CancellationToken>()))
-                        .ReturnsAsync(0); 
+                        .ReturnsAsync(0);
 
             var resultado = await useCase.Executar(mensagem);
 

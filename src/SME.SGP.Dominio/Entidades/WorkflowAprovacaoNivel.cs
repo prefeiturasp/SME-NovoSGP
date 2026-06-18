@@ -28,7 +28,7 @@ namespace SME.SGP.Dominio
         {
             if (notificacao.NaoEhNulo() && !notificacoes.Any(a => a.Id == notificacao.Id))
                 notificacoes.Add(notificacao);
-        }        
+        }
         public void Adicionar(Usuario usuario)
         {
             if (usuario.NaoEhNulo())
@@ -45,7 +45,7 @@ namespace SME.SGP.Dominio
         {
             if ((status == WorkflowAprovacaoNivelStatus.Reprovado) &&
                 (string.IsNullOrEmpty(observacao)))
-                    throw new NegocioException("Para recusar é obrigatório informar uma observação.");
+                throw new NegocioException("Para recusar é obrigatório informar uma observação.");
 
             this.Observacao = observacao;
             this.Status = status;

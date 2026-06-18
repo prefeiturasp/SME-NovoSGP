@@ -16,6 +16,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<bool> Handle(ExcluirComunicadoTipoEscolaCommand request, CancellationToken cancellationToken)
-            => await repositorioComunicadoTipoEscola.ExcluirPorIdComunicado(request.Id);        
+            => await repositorioComunicadoTipoEscola.ExcluirPorIdComunicado(request.Id);
     }
 }

@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConsolidacaoFrequenciaTurma
         public async Task Obter_Frequencia_Consideradas_Retorna_Frequencia_Semanal_Correta()
         {
             string codigoTurma = "TURMA456";
-            var data = new DateTime(2025, 7, 15); 
+            var data = new DateTime(2025, 7, 15);
 
             var alunos = new List<AlunoPorTurmaResposta>
             {

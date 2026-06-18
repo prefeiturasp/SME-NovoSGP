@@ -1,14 +1,11 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Utilities;
 
 namespace SME.SGP.Aplicacao
 {
@@ -88,7 +85,7 @@ namespace SME.SGP.Aplicacao
             if (usuario.EhProfessor())
             {
                 var temAtribuicao = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaNoPeriodoQuery(componenteCurricularId,
-                                                            turma.CodigoTurma, usuario.CodigoRf, 
+                                                            turma.CodigoTurma, usuario.CodigoRf,
                                                             periodo.PeriodoInicio.Date, periodo.PeriodoFim.Date));
                 if (!temAtribuicao)
                     excessoes.Add($"Você não possui atribuição na turma {turma.Nome} - {periodo.Bimestre}° Bimestre.");
@@ -106,7 +103,7 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<PlanejamentoAnualPeriodoEscolar>> ObterPlanejamentoAnualPeriodosEscolares(long[] ids)
         {
             var periodos = await mediator.Send(new ObterPlanejamentoAnualPeriodosEscolaresCompletoPorIdQuery(ids));
-            if (periodos.NaoPossuiRegistros()) 
+            if (periodos.NaoPossuiRegistros())
                 throw new NegocioException($"Nenhum período foi encontrado");
             return periodos;
         }

@@ -6,9 +6,9 @@ namespace SME.SGP.Dominio
     {
         public ConsolidacaoFrequenciaTurma() { }
         public ConsolidacaoFrequenciaTurma(
-                                            long turmaId, 
-                                            int quantidadeAcimaMinimoFrequencia, 
-                                            int quantidadeAbaixoMinimoFrequencia, 
+                                            long turmaId,
+                                            int quantidadeAcimaMinimoFrequencia,
+                                            int quantidadeAbaixoMinimoFrequencia,
                                             TipoConsolidadoFrequencia tipoConsolidacao,
                                             DateTime? periodoInicio,
                                             DateTime? periodoFim)

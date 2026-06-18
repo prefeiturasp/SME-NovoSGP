@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using MediatR;
 using Newtonsoft.Json;
-using System.Net.Http;
+using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
+using System;
+using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Infra.Dtos;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {

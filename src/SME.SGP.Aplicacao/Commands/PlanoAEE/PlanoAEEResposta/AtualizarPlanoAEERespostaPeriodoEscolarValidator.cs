@@ -1,8 +1,7 @@
 ﻿using FluentValidation;
-using MediatR;
 
 namespace SME.SGP.Aplicacao
-{ 
+{
     public class AtualizarPlanoAEERespostaPeriodoEscolarValidator : AbstractValidator<AtualizarPlanoAEERespostaPeriodoEscolarCommand>
     {
         public AtualizarPlanoAEERespostaPeriodoEscolarValidator()

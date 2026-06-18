@@ -1,13 +1,13 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.Aplicacao.Queries;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -57,12 +57,12 @@ namespace SME.SGP.Aplicacao
             switch (fechamentoTurma)
             {
                 case null when !turma.EhAnoAnterior():
-                {
-                    if (!ehFinal && bimestre > 0)
-                        throw new NegocioException(string.Format(MensagemNegocioFechamentoTurma.FECHAMENTO_TURMA_NAO_LOCALIZADO_BIMESTRE, bimestre));
-                
-                    throw new NegocioException(MensagemNegocioFechamentoTurma.FECHAMENTO_TURMA_NAO_LOCALIZADO);
-                }
+                    {
+                        if (!ehFinal && bimestre > 0)
+                            throw new NegocioException(string.Format(MensagemNegocioFechamentoTurma.FECHAMENTO_TURMA_NAO_LOCALIZADO_BIMESTRE, bimestre));
+
+                        throw new NegocioException(MensagemNegocioFechamentoTurma.FECHAMENTO_TURMA_NAO_LOCALIZADO);
+                    }
                 case null:
                     throw new NegocioException(MensagemNegocioFechamentoTurma.FECHAMENTO_TURMA_NAO_LOCALIZADO);
             }
@@ -75,7 +75,7 @@ namespace SME.SGP.Aplicacao
                 tiposParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
 
                 var turmasRegularesDoAluno = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tiposParaConsulta, semestre: turma.Semestre != 0 ? turma.Semestre : null));
-                
+
                 var turmaRegularCodigo = turmasRegularesDoAluno.FirstOrDefault();
 
                 if (turmaRegularCodigo.EhNulo())
@@ -84,8 +84,8 @@ namespace SME.SGP.Aplicacao
                 var turmaRegularId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(turmaRegularCodigo));
 
                 var fechamentoDaTurmaRegular = await mediator.Send(new ObterFechamentoPorTurmaPeriodoQuery
-                    { TurmaId = turmaRegularId, PeriodoEscolarId = fechamentoTurma.PeriodoEscolarId ?? 0 });
-                
+                { TurmaId = turmaRegularId, PeriodoEscolarId = fechamentoTurma.PeriodoEscolarId ?? 0 });
+
                 if (fechamentoDaTurmaRegular.NaoEhNulo())
                     fechamentoTurma = await repositorioFechamentoTurma.ObterCompletoPorIdAsync(fechamentoDaTurmaRegular.Id);
 
@@ -119,7 +119,7 @@ namespace SME.SGP.Aplicacao
             {
                 var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
 
-                if (tipoCalendario.EhNulo()) 
+                if (tipoCalendario.EhNulo())
                     throw new NegocioException(MensagemNegocioTipoCalendario.TIPO_CALENDARIO_NAO_ENCONTRADO);
 
                 periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioEBimestreAsync(tipoCalendario.Id, bimestre);

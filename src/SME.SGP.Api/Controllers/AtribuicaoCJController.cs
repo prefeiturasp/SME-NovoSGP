@@ -20,7 +20,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ACJ_C, Policy = "Bearer")]
-        public async Task<IActionResult> Get([FromQuery]AtribuicaoCJListaFiltroDto atribuicaoCJListaFiltroDto, [FromServices] IListarAtribuicoesCJPorFiltroUseCase useCase)
+        public async Task<IActionResult> Get([FromQuery] AtribuicaoCJListaFiltroDto atribuicaoCJListaFiltroDto, [FromServices] IListarAtribuicoesCJPorFiltroUseCase useCase)
         {
             return Ok(await useCase.Executar(atribuicaoCJListaFiltroDto));
         }
@@ -41,7 +41,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ACJ_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterAtribuicaoDeProfessores(string ueId, string turmaId,
-            string professorRf, Modalidade modalidadeId,[FromQuery] int anoLetivo, [FromServices] IObterProfessoresTitularesECjsUseCase useCase)
+            string professorRf, Modalidade modalidadeId, [FromQuery] int anoLetivo, [FromServices] IObterProfessoresTitularesECjsUseCase useCase)
         {
             return Ok(await useCase.Executar(ueId, turmaId, professorRf, modalidadeId, anoLetivo));
         }
@@ -50,7 +50,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ACJ_C, Policy = "Bearer")]
-        public async Task<IActionResult> Post([FromBody]AtribuicaoCJPersistenciaDto atribuicaoCJPersistenciaDto, [FromServices] ISalvarAtribuicaoCJUseCase useCase)
+        public async Task<IActionResult> Post([FromBody] AtribuicaoCJPersistenciaDto atribuicaoCJPersistenciaDto, [FromServices] ISalvarAtribuicaoCJUseCase useCase)
         {
             await useCase.Executar(atribuicaoCJPersistenciaDto);
             return Ok();

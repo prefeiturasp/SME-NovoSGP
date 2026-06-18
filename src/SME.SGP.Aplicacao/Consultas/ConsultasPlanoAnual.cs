@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
                                    IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
                                    IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                                    IRepositorioComponenteCurricularJurema repositorioComponenteCurricular,
-                                   IServicoUsuario servicoUsuario,IMediator mediator)
+                                   IServicoUsuario servicoUsuario, IMediator mediator)
         {
             this.repositorioPlanoAnual = repositorioPlanoAnual ?? throw new System.ArgumentNullException(nameof(repositorioPlanoAnual));
             this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem ?? throw new System.ArgumentNullException(nameof(consultasObjetivoAprendizagem));
@@ -166,7 +166,7 @@ namespace SME.SGP.Aplicacao
         }
         private void PreencherPlanoAnualObrigatorio(PlanoAnualCompletoDto planoAnual, PeriodoEscolar periodo, DateTime dataAtual)
         {
-            if (periodo.PeriodoFim.Local() >= dataAtual 
+            if (periodo.PeriodoFim.Local() >= dataAtual
                 && periodo.PeriodoInicio.Local() <= dataAtual)
                 planoAnual.Obrigatorio = true;
         }
@@ -176,7 +176,7 @@ namespace SME.SGP.Aplicacao
             var turmasEOL = await mediator.Send(new ObterTurmasParaCopiaPlanoAnualQuery(codigoRfUsuarioLogado, componenteCurricular, turmaId));
             if (turmasEOL.NaoEhNulo() && turmasEOL.Any())
             {
-                var idsTurmas = turmasEOL.Select(c => c.TurmaId.ToString());                
+                var idsTurmas = turmasEOL.Select(c => c.TurmaId.ToString());
                 turmasEOL = await mediator.Send(new ValidaSeTurmasPossuemPlanoAnualQuery(idsTurmas.ToArray(), consideraHistorico));
             }
             return turmasEOL;

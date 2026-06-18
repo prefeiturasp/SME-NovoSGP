@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Schema;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -17,7 +16,7 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioAnotacaoFrequenciaAlunoConsulta(ISgpContextConsultas conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
-        }         
+        }
 
         public async Task<IEnumerable<string>> ListarAlunosComAnotacaoFrequenciaNaAula(long aulaId)
         {
@@ -36,7 +35,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = "select * from anotacao_frequencia_aluno where aula_id = @aulaId";
 
-            return await database.Conexao.QueryAsync<AnotacaoFrequenciaAluno>(query, new {aulaId });
+            return await database.Conexao.QueryAsync<AnotacaoFrequenciaAluno>(query, new { aulaId });
         }
 
         public async Task<IEnumerable<JustificativaAlunoDto>> ObterPorTurmaAlunoComponenteCurricular(long turmaId, long codigoAluno, long componenteCurricularId)
@@ -92,14 +91,14 @@ namespace SME.SGP.Dados.Repositorios
                             left join motivo_ausencia ma on an.motivo_ausencia_id = ma.id  
                             inner join aula a on a.id = an.aula_id 
                             inner join turma t on t.turma_id = a.turma_id ";
-            if(bimestre > 0)
-            { 
+            if (bimestre > 0)
+            {
                 query += " inner join periodo_escolar pe on a.tipo_calendario_id = pe.tipo_calendario_id and a.data_aula between pe.periodo_inicio and pe.periodo_fim and pe.bimestre = @bimestre";
             }
             query += @" where not an.excluido 
                             and t.id = @turmaId 
                             and an.codigo_aluno = @codigoAluno ";
-            if(componenteCurricularId > 0)
+            if (componenteCurricularId > 0)
                 query += " and a.disciplina_id = @componenteCurricularId ";
 
             query += @")
@@ -111,8 +110,8 @@ namespace SME.SGP.Dados.Repositorios
                             inner join aula a on a.id = rf.aula_id 
                             left join anotacao_frequencia_aluno an on an.aula_id = a.id and an.codigo_aluno = @codigoAluno
                             left join turma t on t.turma_id = a.turma_id ";
-            if(bimestre > 0)
-            { 
+            if (bimestre > 0)
+            {
                 query += " inner join periodo_escolar pe on a.tipo_calendario_id = pe.tipo_calendario_id and a.data_aula between pe.periodo_inicio and pe.periodo_fim and pe.bimestre = @bimestre";
             }
             query += @" where t.id = @turmaId

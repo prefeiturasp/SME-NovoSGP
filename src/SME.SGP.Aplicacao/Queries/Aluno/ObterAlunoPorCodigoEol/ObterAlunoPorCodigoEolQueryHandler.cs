@@ -1,14 +1,13 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Infra;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
-using Newtonsoft.Json;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -22,11 +21,11 @@ namespace SME.SGP.Aplicacao
             this.httpClientFactory = httpClientFactory ?? throw new System.ArgumentNullException(nameof(httpClientFactory));
         }
 
-        public async Task<AlunoPorTurmaResposta> Handle(ObterAlunoPorCodigoEolQuery request,CancellationToken cancellationToken)
+        public async Task<AlunoPorTurmaResposta> Handle(ObterAlunoPorCodigoEolQuery request, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(request.CodigoTurma))
             {
-                return (await ObterDadosAluno(request.CodigoAluno, request.AnoLetivo,request.ConsideraHistorico, request.FiltrarSituacao, request.VerificarTipoTurma))
+                return (await ObterDadosAluno(request.CodigoAluno, request.AnoLetivo, request.ConsideraHistorico, request.FiltrarSituacao, request.VerificarTipoTurma))
                              .OrderByDescending(a => a.DataSituacao)?.FirstOrDefault();
             }
 
@@ -46,7 +45,7 @@ namespace SME.SGP.Aplicacao
         }
 
 
-        private async Task<AlunoPorTurmaResposta> ObterAluno(string codigoAluno, int anoLetivo,bool historica, bool filtrarSituacao, string codigoTurma, bool verificarTipoTurma)
+        private async Task<AlunoPorTurmaResposta> ObterAluno(string codigoAluno, int anoLetivo, bool historica, bool filtrarSituacao, string codigoTurma, bool verificarTipoTurma)
         {
             var response = (await ObterDadosAluno(codigoAluno, anoLetivo, historica, filtrarSituacao, verificarTipoTurma))
                                                                         .OrderByDescending(a => a.DataSituacao);
@@ -58,17 +57,17 @@ namespace SME.SGP.Aplicacao
 
             return retorno.FirstOrDefault(a => a.EstaAtivo(DateTime.Today.Date));
         }
-        
+
         private async Task<IEnumerable<AlunoPorTurmaResposta>> ObterDadosAluno(string codigoAluno, int anoLetivo, bool consideraHistorico, bool filtrarSituacao = true, bool verificarTipoTurma = true)
         {
             var alunos = Enumerable.Empty<AlunoPorTurmaResposta>();
-            
+
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
 
             var url = string.Format(ServicosEolConstants.URL_ALUNOS_TURMAS_ANOS_LETIVOS_HISTORICO_FILTRAR_SITUACAO_TIPO_TURMA, codigoAluno, anoLetivo, consideraHistorico, filtrarSituacao, verificarTipoTurma);
 
             var resposta = await httpClient.GetAsync(url);
-            
+
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();

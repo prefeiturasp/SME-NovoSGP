@@ -1,5 +1,5 @@
-﻿using System.Net;
-using StackExchange.Redis;
+﻿using StackExchange.Redis;
+using System.Net;
 
 namespace SME.SGP.Infra.Interfaces
 {

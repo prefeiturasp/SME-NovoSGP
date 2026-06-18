@@ -8,6 +8,6 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioCadastroAcessoABAE : RepositorioBase<CadastroAcessoABAE>, IRepositorioCadastroAcessoABAE
     {
         public RepositorioCadastroAcessoABAE(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
-        {}
+        { }
     }
 }

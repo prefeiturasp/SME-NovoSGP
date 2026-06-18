@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             camposAlterados = new List<string>();
             this.repositorioQuestao = repositorioQuestao ?? throw new ArgumentNullException(nameof(repositorioQuestao));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            
+
         }
 
         public async Task<EncaminhamentoNAAPAHistoricoAlteracoes> Handle(ObterHistoricosDeAlteracoesEncaminhamentoNAAPAQuery request, CancellationToken cancellationToken)
@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private EncaminhamentoNAAPAHistoricoAlteracoes ObterHistoricoAlteracaoSecao(
-                                                        EncaminhamentoNAAPASecaoDto encaminhamentoNAAPAAlterado, 
+                                                        EncaminhamentoNAAPASecaoDto encaminhamentoNAAPAAlterado,
                                                         EncaminhamentoNAAPASecao encaminhamentoSecaoExistente,
                                                         TipoHistoricoAlteracoesEncaminhamentoNAAPA tipoHistoricoAlteracoes)
         {
@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
                     UsuarioId = usuarioLogado.Id
                 };
             }
-        
+
             return null;
         }
 
@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task ExecuteValidacaoAlteracaoCamposDaSecao(
-                                EncaminhamentoNAAPASecaoDto encaminhamentoNAAPASecaoAlterado, 
+                                EncaminhamentoNAAPASecaoDto encaminhamentoNAAPASecaoAlterado,
                                 EncaminhamentoNAAPASecao encaminhamentoSecaoExistente,
                                 TipoHistoricoAlteracoesEncaminhamentoNAAPA tipoHistoricoAlteracoes)
         {
@@ -103,7 +103,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task AdicionarCamposInseridos(
-                            QuestaoEncaminhamentoNAAPA questaoExistente, 
+                            QuestaoEncaminhamentoNAAPA questaoExistente,
                             IGrouping<long, EncaminhamentoNAAPASecaoQuestaoDto> respostas,
                             TipoHistoricoAlteracoesEncaminhamentoNAAPA tipoHistoricoAlteracoes)
         {
@@ -115,7 +115,7 @@ namespace SME.SGP.Aplicacao
 
                 if (tipoHistoricoAlteracoes == TipoHistoricoAlteracoesEncaminhamentoNAAPA.Inserido)
                 {
-                    if (CampoPodeSerInserido(novasRespostas)) 
+                    if (CampoPodeSerInserido(novasRespostas))
                         camposInseridos.Add(await ObterNomeQuestao(questao));
                 }
                 else if (CampoPodeSerAlterado(questaoExistente, novasRespostas))
@@ -228,7 +228,7 @@ namespace SME.SGP.Aplicacao
         {
             var funcoes = new List<Func<RespostaEncaminhamentoNAAPA, EncaminhamentoNAAPASecaoQuestaoDto, bool?>> { CampoPorTextoFoiAlterado, CampoPorRespostaIdFoiAlterado, CampoPorJsonFoiAlterado };
 
-            foreach(var funcao in funcoes)
+            foreach (var funcao in funcoes)
             {
                 var foiAlterado = funcao(RespostaAtual, respostaAlteracao);
 
@@ -251,7 +251,7 @@ namespace SME.SGP.Aplicacao
         {
             if (EhCampoLista(respostaAlteracao))
                 return UtilRegex.ObterJsonSemAtributoId(RespostaAtual.Texto) != UtilRegex.ObterJsonSemAtributoId(respostaAlteracao.Resposta);
-            
+
             return null;
         }
 
@@ -284,7 +284,7 @@ namespace SME.SGP.Aplicacao
                 var nomeComponentePai = questaoFilha.NomeComponente.Substring(4);
                 var questaoPai = await repositorioQuestao.ObterPorNomeComponente(nomeComponentePai);
 
-                return $"{questaoPai?.Nome} - {questaoFilha.Nome}"; 
+                return $"{questaoPai?.Nome} - {questaoFilha.Nome}";
             }
 
             return string.Empty;

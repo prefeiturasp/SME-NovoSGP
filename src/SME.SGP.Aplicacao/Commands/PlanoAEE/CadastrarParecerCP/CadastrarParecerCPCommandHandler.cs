@@ -1,13 +1,13 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao.Commands
 {
@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao.Commands
 
             if (planoAEE.EhNulo())
                 throw new NegocioException(MensagemNegocioPlanoAee.Plano_aee_nao_encontrado);
-            
+
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(planoAEE.TurmaId), cancellationToken);
 
             if (turma.EhNulo())
@@ -72,7 +72,7 @@ namespace SME.SGP.Aplicacao.Commands
                 unitOfWork.Rollback();
                 throw;
             }
-            
+
             return idEntidadeEncaminhamento;
         }
 

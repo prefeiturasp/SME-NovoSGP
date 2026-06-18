@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             var registros = await repositorioPainelEducacionalVisaoGeral.ObterVisaoGeralPainelEducacional();
 
             await SalvarAgrupamentoVisaoGeral(registros);
-            
+
             return true;
         }
 

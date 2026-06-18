@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.AtribuicaoCJ
 
             //Assert.NotNull(resultado);
             //Assert.True(resultado.Itens.First().Substituir);
-           // Assert.Equal(atribuicao.CriadoEm, resultado.CriadoEm);
+            // Assert.Equal(atribuicao.CriadoEm, resultado.CriadoEm);
             //Assert.Equal(atribuicao.CriadoPor, resultado.CriadoPor);
         }
 

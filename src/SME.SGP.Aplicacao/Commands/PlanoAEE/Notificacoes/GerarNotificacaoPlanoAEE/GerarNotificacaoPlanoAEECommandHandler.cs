@@ -27,17 +27,17 @@ namespace SME.SGP.Aplicacao
                 try
                 {
                     var notificacoes = await mediator.Send(new EnviarNotificacaoUsuariosCommand(request.Titulo, request.Descricao, request.TipoNotificacao, Dominio.NotificacaoTipo.AEE, request.UsuariosIds));
-                    foreach(var notificacaoId in notificacoes)
+                    foreach (var notificacaoId in notificacoes)
                         await repositorioNotificacaoPlanoAEE.SalvarAsync(new Dominio.NotificacaoPlanoAEE(notificacaoId, request.PlanoId, request.Tipo));
 
                     unitOfWork.PersistirTransacao();
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     unitOfWork.Rollback();
 
                     throw;
-                }            
+                }
             }
 
             return true;

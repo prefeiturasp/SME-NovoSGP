@@ -1,11 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using Shouldly;
+﻿using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Api.Controllers;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
@@ -13,7 +10,6 @@ using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Xunit;
 using TipoAvaliacao = SME.SGP.Dominio.TipoAvaliacao;
 
 namespace SME.SGP.TesteIntegracao.Nota
@@ -407,7 +403,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             });
         }
 
-        private async Task CriarTipoCalendarioEja() 
+        private async Task CriarTipoCalendarioEja()
         {
             await InserirNaBase(new TipoCalendario
             {
@@ -423,7 +419,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 Migrado = false
             });
         }
-        private async Task CriarTipoCalendarioFundamentalMedio() 
+        private async Task CriarTipoCalendarioFundamentalMedio()
         {
             await InserirNaBase(new TipoCalendario
             {
@@ -465,7 +461,8 @@ namespace SME.SGP.TesteIntegracao.Nota
         }
         private async Task CriarParametroSistema()
         {
-            await InserirNaBase(new ParametrosSistema {
+            await InserirNaBase(new ParametrosSistema
+            {
                 Nome = "MediaBimestre",
                 Tipo = TipoParametroSistema.MediaBimestre,
                 Descricao = "Media final para aprovacão no bimestre",
@@ -473,7 +470,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 Ano = DateTimeExtension.HorarioBrasilia().Year,
                 CriadoEm = DateTime.Now,
                 CriadoPor = "Sistema",
-                CriadoRF= "1",
+                CriadoRF = "1",
                 Ativo = true
             });
             await InserirNaBase(new ParametrosSistema

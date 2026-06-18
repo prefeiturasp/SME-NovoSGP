@@ -1,12 +1,10 @@
 ﻿using FluentValidation;
 using MediatR;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaNoPeriodoQuery: IRequest<bool>
+    public class ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaNoPeriodoQuery : IRequest<bool>
     {
         public ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaNoPeriodoQuery(long componenteCurricularId, string codigoTurma, string usuarioRf, DateTime dataInicio, DateTime dataFim)
         {

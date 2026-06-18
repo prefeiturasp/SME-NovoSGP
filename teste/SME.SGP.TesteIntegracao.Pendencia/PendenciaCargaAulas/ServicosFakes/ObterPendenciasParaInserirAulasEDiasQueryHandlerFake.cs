@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.PendenciaCargaAulas.ServicosFakes
 {
-    public class ObterPendenciasParaInserirAulasEDiasQueryHandlerFake:  IRequestHandler<ObterPendenciasParaInserirAulasEDiasQuery, IEnumerable<AulasDiasPendenciaDto>>
+    public class ObterPendenciasParaInserirAulasEDiasQueryHandlerFake : IRequestHandler<ObterPendenciasParaInserirAulasEDiasQuery, IEnumerable<AulasDiasPendenciaDto>>
     {
         public async Task<IEnumerable<AulasDiasPendenciaDto>> Handle(ObterPendenciasParaInserirAulasEDiasQuery request, CancellationToken cancellationToken)
         {

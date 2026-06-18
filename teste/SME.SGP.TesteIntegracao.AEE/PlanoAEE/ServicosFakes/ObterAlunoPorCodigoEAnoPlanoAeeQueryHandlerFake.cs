@@ -1,10 +1,10 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra.Dtos;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
 {
@@ -17,7 +17,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
                 CodigoAluno = "1",
                 Nome = "Nome Aluno",
                 NumeroAlunoChamada = 1,
-                DataNascimento = new DateTime(1990,2,1),
+                DataNascimento = new DateTime(1990, 2, 1),
                 DataSituacao = DateTimeExtension.HorarioBrasilia(),
                 CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
                 Situacao = "Ativo",

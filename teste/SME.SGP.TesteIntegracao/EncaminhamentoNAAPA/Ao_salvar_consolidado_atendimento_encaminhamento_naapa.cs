@@ -13,7 +13,6 @@ using SME.SGP.TesteIntegracao.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -24,7 +23,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         public Ao_salvar_consolidado_atendimento_encaminhamento_naapa(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
-        
+
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);

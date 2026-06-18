@@ -1,5 +1,8 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dto;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
 using System;
@@ -7,9 +10,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dto;
 
 namespace SME.SGP.Aplicacao
 {
@@ -32,20 +32,20 @@ namespace SME.SGP.Aplicacao
             if (!string.IsNullOrEmpty(request.CodigoUe))
             {
                 if (request.TurmaId > 0)
-                    turmas = new List<AbrangenciaTurmaRetorno>() { new () { Id = request.TurmaId }};
+                    turmas = new List<AbrangenciaTurmaRetorno>() { new() { Id = request.TurmaId } };
                 else
                     turmas = await mediator.Send(new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(request.CodigoUe,
                         0, 0, request.ExibirHistorico, request.AnoLetivo, null, true));
             }
-            
+
             var turmasIds = turmas.NaoEhNulo() || turmas.Any() ? turmas.Select(s => s.Id) : null;
 
-            return await MapearParaDto(await repositorioEncaminhamentoNAAPA.ListarPaginado(request.AnoLetivo, request.DreId, 
-                request.CodigoUe,request.CodigoNomeAluno, request.DataAberturaQueixaInicio, request.DataAberturaQueixaFim, request.Situacao, 
-                request.Prioridade, turmasIds.ToArray(), Paginacao, request.ExibirEncerrados, request.Ordenacao),request.AnoLetivo);
+            return await MapearParaDto(await repositorioEncaminhamentoNAAPA.ListarPaginado(request.AnoLetivo, request.DreId,
+                request.CodigoUe, request.CodigoNomeAluno, request.DataAberturaQueixaInicio, request.DataAberturaQueixaFim, request.Situacao,
+                request.Prioridade, turmasIds.ToArray(), Paginacao, request.ExibirEncerrados, request.Ordenacao), request.AnoLetivo);
         }
 
-        private async Task<PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>> MapearParaDto(PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto> resultadoDto,int anoLetivo)
+        private async Task<PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>> MapearParaDto(PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto> resultadoDto, int anoLetivo)
         {
             return new PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>()
             {
@@ -56,16 +56,16 @@ namespace SME.SGP.Aplicacao
         }
         private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, int anoLetivo)
         {
-            return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
+            return await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
         }
         private async Task<IEnumerable<EncaminhamentoNAAPAResumoDto>> MapearParaDto(IEnumerable<EncaminhamentoNAAPAResumoDto> encaminhamentos, int anoLetivo)
         {
             var listaEncaminhamentos = new List<EncaminhamentoNAAPAResumoDto>();
             IEnumerable<AlunosTurmaProgramaPapDto> matriculadosTurmaPAP = Enumerable.Empty<AlunosTurmaProgramaPapDto>();
-            
-            if(encaminhamentos.Any())
+
+            if (encaminhamentos.Any())
                 matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(encaminhamentos.Select(x => x.CodigoAluno).ToArray(), anoLetivo);
-            
+
             foreach (var encaminhamento in encaminhamentos)
             {
                 listaEncaminhamentos.Add(new EncaminhamentoNAAPAResumoDto()
@@ -84,7 +84,7 @@ namespace SME.SGP.Aplicacao
                     TurmaNome = encaminhamento.TurmaNome,
                     TurmaModalidade = encaminhamento.TurmaModalidade,
                     DataUltimoAtendimento = encaminhamento.DataUltimoAtendimento,
-            });
+                });
             }
 
             return listaEncaminhamentos;

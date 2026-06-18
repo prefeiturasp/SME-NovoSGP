@@ -1,14 +1,10 @@
-﻿using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
-using System;
+﻿using SME.SGP.Infra;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
-    public interface IRepositorioConselhoClasseAlunoRecomendacao 
+    public interface IRepositorioConselhoClasseAlunoRecomendacao
     {
         Task<IEnumerable<RecomendacoesAlunoFamiliaDto>> ObterRecomendacoesDoAlunoPorConselho(string alunoCodigo, int? bimestre, long fechamentoTurmaId, long[] conselhoClasseIds);
         void InserirRecomendacaoAlunoFamilia(long[] recomendacaoId, long conselhoClasseAlunoId);

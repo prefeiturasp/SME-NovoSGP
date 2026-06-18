@@ -1,19 +1,19 @@
-﻿using System.Collections.Generic;
-using SME.SGP.Dominio;
-using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.Setup;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Shouldly;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
-using Xunit;
+using SME.SGP.TesteIntegracao.ConsolidacaoConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
+using SME.SGP.TesteIntegracao.Setup;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Xunit;
 using ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake = SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes.ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake;
 using ObterTurmaItinerarioEnsinoMedioQueryHandlerFake = SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes.ObterTurmaItinerarioEnsinoMedioQueryHandlerFake;
-using SME.SGP.TesteIntegracao.ConsolidacaoConselhoDeClasse.ServicosFakes;
-using Shouldly;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 {
@@ -110,7 +110,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [Fact(DisplayName = "Conselho de Classe - Professor deve lançar nota numérica pós conselho - EJA")]
         public async Task Ao_lancar_nota_pos_conselho_bimestre_numerica_eja()
         {
-            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota, fechamentoTurma: FECHAMENTO_TURMA_ID_2, bimestre:BIMESTRE_2);
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota, fechamentoTurma: FECHAMENTO_TURMA_ID_2, bimestre: BIMESTRE_2);
 
             await CriarDados(ObterPerfilProfessor(),
                             salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular,
@@ -156,7 +156,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                             true);
 
             var comando = ServiceProvider.GetService<ISalvarConselhoClasseAlunoNotaUseCase>();
-            
+
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => comando.Executar(salvarConselhoClasseAlunoNotaDto));
             excecao.Message.ShouldBe("A nota pós-conselho deve ser menor ou igual a 10.");
         }

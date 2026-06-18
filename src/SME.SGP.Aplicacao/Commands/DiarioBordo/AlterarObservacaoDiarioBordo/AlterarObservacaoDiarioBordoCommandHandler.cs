@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
             var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             if (request.Observacao.Trim().Length < 200 && (request.UsuariosIdNotificacao.EhNulo() || !request.UsuariosIdNotificacao.Any()))
-            {          
+            {
                 var usuariosIdNotificacao = notificacoes.Select(n => n.IdUsuario);
                 var usuariosNotificacaoAnterior = usuariosIdNotificacao?.Select(async u => await mediator.Send(new ObterUsuarioPorIdQuery(u)))?.Select(_task => _task.Result);
 
@@ -49,16 +49,16 @@ namespace SME.SGP.Aplicacao
                       new ExcluirNotificacaoDiarioBordoDto(request.ObservacaoId), Guid.NewGuid(), null));
 
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoNovaObservacaoDiarioBordo,
-                      new NotificarDiarioBordoObservacaoDto(diarioBordoObservacao.DiarioBordoId, request.Observacao, usuario, request.ObservacaoId, usuariosNotificacaoAnterior.Select(u=> u.CodigoRf)), Guid.NewGuid(), null));
+                      new NotificarDiarioBordoObservacaoDto(diarioBordoObservacao.DiarioBordoId, request.Observacao, usuario, request.ObservacaoId, usuariosNotificacaoAnterior.Select(u => u.CodigoRf)), Guid.NewGuid(), null));
             }
             else if (request.UsuariosIdNotificacao.NaoEhNulo() && request.UsuariosIdNotificacao.Any())
             {
-                var usuariosNotificados = notificacoes.Select(n => n.IdUsuario);               
+                var usuariosNotificados = notificacoes.Select(n => n.IdUsuario);
                 var usuariosExcluidos = usuariosNotificados.Where(u => !request.UsuariosIdNotificacao.Contains(u) && u != usuario.Id);
                 var usuariosNotificacao = request.UsuariosIdNotificacao?.Select(async u => await mediator.Send(new ObterUsuarioPorIdQuery(u)))?.Select(_task => _task.Result);
 
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoNovaObservacaoDiarioBordo,
-                        new NotificarDiarioBordoObservacaoDto(diarioBordoObservacao.DiarioBordoId, request.Observacao, usuario, request.ObservacaoId, usuariosNotificacao.Select(u=> u.CodigoRf)), Guid.NewGuid(), null));
+                        new NotificarDiarioBordoObservacaoDto(diarioBordoObservacao.DiarioBordoId, request.Observacao, usuario, request.ObservacaoId, usuariosNotificacao.Select(u => u.CodigoRf)), Guid.NewGuid(), null));
 
                 foreach (var usuarioExcluido in usuariosExcluidos)
                 {

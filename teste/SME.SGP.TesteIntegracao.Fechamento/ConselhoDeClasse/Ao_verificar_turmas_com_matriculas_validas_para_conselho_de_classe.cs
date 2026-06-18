@@ -6,13 +6,9 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ConselhoDeClasse;
-using SME.SGP.TesteIntegracao.Fechamento;
-using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -27,7 +23,7 @@ namespace SME.SGP.TesteIntegracao.Fechamento.ConselhoDeClasse
         {
             base.RegistrarFakes(services);
 
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterMatriculasAlunoNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterMatriculasAlunoNaTurmaQueryHandlerFakeSituacaoVinculoIndevido), ServiceLifetime.Scoped));          
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterMatriculasAlunoNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterMatriculasAlunoNaTurmaQueryHandlerFakeSituacaoVinculoIndevido), ServiceLifetime.Scoped));
         }
 
         [Fact]
@@ -61,10 +57,10 @@ namespace SME.SGP.TesteIntegracao.Fechamento.ConselhoDeClasse
             });
             var mediator = ServiceProvider.GetService<IMediator>();
 
-            var retorno = await mediator.Send(new ObterTurmasComMatriculaValidasParaValidarConselhoQuery("1", new string[] {"1","2"}, DateTimeExtension.HorarioBrasilia().AddMonths(-2), DateTimeExtension.HorarioBrasilia()));
+            var retorno = await mediator.Send(new ObterTurmasComMatriculaValidasParaValidarConselhoQuery("1", new string[] { "1", "2" }, DateTimeExtension.HorarioBrasilia().AddMonths(-2), DateTimeExtension.HorarioBrasilia()));
 
             retorno.ShouldBeEmpty();
         }
     }
-    
+
 }

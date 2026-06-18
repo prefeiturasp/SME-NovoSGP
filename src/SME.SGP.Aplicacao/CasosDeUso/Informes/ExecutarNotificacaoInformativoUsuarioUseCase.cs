@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         {
             var notificacaoInformativoUsuario = param.ObterObjetoMensagem<NotificacaoInformativoUsuarioFiltro>();
             var informeExcluido = await mediator.Send(new InformeFoiExcluidoQuery(notificacaoInformativoUsuario.InformativoId));
-            
+
             if (informeExcluido)
                 return false;
 

@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             if (filtro.Modalidade.NaoEhNulo())
             {
                 var tipoParametroSistema = ObterTipoParametroPorModalidade((Modalidade)filtro.Modalidade);
-                var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(tipoParametroSistema, filtro.AnoLetivo.NaoEhNulo() ? filtro.AnoLetivo.Value : DateTime.Now.Year));;
+                var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(tipoParametroSistema, filtro.AnoLetivo.NaoEhNulo() ? filtro.AnoLetivo.Value : DateTime.Now.Year)); ;
 
                 if (parametro.EhNulo() || parametro.Valor == "0")
                     return retorno.Where(a => a.Valor != TipoFrequencia.R.ShortName());

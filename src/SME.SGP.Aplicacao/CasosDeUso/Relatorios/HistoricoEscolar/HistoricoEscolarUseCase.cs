@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             var tipoRelatorio = filtroHistoricoEscolarDto.Modalidade == Modalidade.EJA ? TipoRelatorio.HistoricoEscolarEJARazor : TipoRelatorio.HistoricoEscolarFundamentalRazor;
 
-            return await mediator.Send(new GerarRelatorioCommand(tipoRelatorio, filtroHistoricoEscolarDto, usuarioLogado,rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosHistoricoEscolar));
+            return await mediator.Send(new GerarRelatorioCommand(tipoRelatorio, filtroHistoricoEscolarDto, usuarioLogado, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosHistoricoEscolar));
         }
 
         private async Task ObterAlunosNaTurmaEObservacoesHistoricoEscolarAsync(FiltroHistoricoEscolarDto filtroHistoricoEscolarDto)

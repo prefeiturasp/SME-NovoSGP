@@ -7,13 +7,13 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
+using SME.SGP.TesteIntegracao.Nota.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SME.SGP.Infra.Dtos;
-using SME.SGP.TesteIntegracao.Nota.ServicosFakes;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Nota

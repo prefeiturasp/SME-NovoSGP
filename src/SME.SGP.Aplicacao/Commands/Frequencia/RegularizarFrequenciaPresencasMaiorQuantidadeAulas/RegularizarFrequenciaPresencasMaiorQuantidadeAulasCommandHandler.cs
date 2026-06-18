@@ -113,7 +113,7 @@ namespace SME.SGP.Aplicacao
             var registrosFrequenciaForaPeriodoMatriculaAluno = from rf in registrosFrequenciaAluno
                                                                from at in alunoTurma
                                                                where (at.CodigoSituacaoMatricula == SituacaoMatriculaAluno.VinculoIndevido) ||
-                                                                     (at.Ativo && rf.DataAula.Date <= at.DataMatricula.Date) ||                                                                      
+                                                                     (at.Ativo && rf.DataAula.Date <= at.DataMatricula.Date) ||
                                                                      (at.Inativo && (rf.DataAula.Date <= at.DataMatricula.Date || rf.DataAula.Date > at.DataSituacao.Date))
                                                                select rf;
 

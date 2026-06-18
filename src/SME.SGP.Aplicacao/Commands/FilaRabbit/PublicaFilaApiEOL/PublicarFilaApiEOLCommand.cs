@@ -1,5 +1,5 @@
-﻿using MediatR;
-using FluentValidation;
+﻿using FluentValidation;
+using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         public object Filtros { get; set; }
         public string Exchange { get; set; }
     }
-    
+
     public class PublicarFilaApiEOLCommandValidator : AbstractValidator<PublicarFilaApiEOLCommand>
     {
         public PublicarFilaApiEOLCommandValidator()
@@ -24,12 +24,12 @@ namespace SME.SGP.Aplicacao
             RuleFor(a => a.Filtros)
                 .NotEmpty()
                 .WithMessage("O payload da mensagem deve ser informado para a execução da fila");
-            
+
             RuleFor(a => a.Rota)
                 .NotEmpty()
                 .WithMessage("A rota deve ser informado para a execução da fila");
         }
     }
-    
-    
+
+
 }

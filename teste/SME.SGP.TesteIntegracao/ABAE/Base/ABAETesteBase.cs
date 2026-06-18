@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Bogus;
+﻿using Bogus;
 using Bogus.Extensions.Brazil;
-using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.ABAE.Base
 {
-    public  abstract class ABAETesteBase : TesteBaseComuns
+    public abstract class ABAETesteBase : TesteBaseComuns
     {
         protected ABAETesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
@@ -22,14 +19,14 @@ namespace SME.SGP.TesteIntegracao.ABAE.Base
         {
             CriarClaimUsuario(ObterPerfilDiretor());
             await CriarUsuarios();
-            
+
             if (dresUes.PossuiRegistros())
                 foreach (var dreUe in dresUes)
-                    await CriarDreUe(dreUe.CodigoDre, $"Nome Dre {dreUe.CodigoDre}", 
+                    await CriarDreUe(dreUe.CodigoDre, $"Nome Dre {dreUe.CodigoDre}",
                                      dreUe.CodigoUe, $"Nome Ue {dreUe.CodigoUe}");
             else
                 await CriarDreUe(DRE_CODIGO_1, UE_CODIGO_1);
-            
+
             if (criarCadastroAcessoABAE)
                 await CriarCadastroAcessoABAE();
         }
@@ -41,7 +38,7 @@ namespace SME.SGP.TesteIntegracao.ABAE.Base
             foreach (var cadastroAcessoAbae in cadastrosAcessosABAE)
                 await InserirNaBase(cadastroAcessoAbae);
         }
-        
+
         protected static Faker<CadastroAcessoABAE> GerarCadastroAcessoABAE(long ueId = UE_ID_1)
         {
             var faker = new Faker<CadastroAcessoABAE>("pt_BR");
@@ -61,7 +58,7 @@ namespace SME.SGP.TesteIntegracao.ABAE.Base
             AuditoriaFaker(faker);
             return faker;
         }
-        
+
         protected static Faker<CadastroAcessoABAEDto> GerarCadastroAcessoABAEDto()
         {
             var faker = new Faker<CadastroAcessoABAEDto>("pt_BR");
@@ -85,20 +82,20 @@ namespace SME.SGP.TesteIntegracao.ABAE.Base
         {
             return ServiceProvider.GetService<ISalvarCadastroAcessoABAEUseCase>();
         }
-        
+
         protected IExcluirCadastroAcessoABAEUseCase ObterServicoExcluirCadastroAcessoABAEUseCase()
         {
             return ServiceProvider.GetService<IExcluirCadastroAcessoABAEUseCase>();
         }
-        
+
         protected IObterCadastroAcessoABAEUseCase ObterServicoObterCadastroAcessoABAEUseCase()
         {
             return ServiceProvider.GetService<IObterCadastroAcessoABAEUseCase>();
         }
-        
+
         protected IObterPaginadoCadastroAcessoABAEUseCase ObterServicoObterPaginadoCadastroAcessoABAEUseCase()
         {
             return ServiceProvider.GetService<IObterPaginadoCadastroAcessoABAEUseCase>();
-        } 
+        }
     }
 }

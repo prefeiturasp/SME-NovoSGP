@@ -1,4 +1,6 @@
 ﻿using MediatR;
+using SME.SGP.Infra.Interface;
+using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,10 +8,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
-using SME.SGP.Infra.Interface;
-using SME.SGP.Infra.Utilitarios;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao.Commands.DeletarArquivo
 {
@@ -36,7 +34,7 @@ namespace SME.SGP.Aplicacao.Commands.DeletarArquivo
             var retornosExclusao = new List<bool>();
             foreach (var item in arquivos)
             {
-                retornosExclusao.Add(await servicoArmazenamento.Excluir(item.ToString()));;
+                retornosExclusao.Add(await servicoArmazenamento.Excluir(item.ToString())); ;
             }
 
             return retornosExclusao.All(a => a != false);

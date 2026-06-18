@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
 using SME.SGP.Aplicacao.Commands.ImportarArquivo.ProficienciaIdep;
-using SME.SGP.Aplicacao.Commands.PainelEducacional.SolicitarConsolidacaoProficienciaIdeb;
 using SME.SGP.Aplicacao.Commands.PainelEducacional.SolicitarConsolidacaoProficienciaIdep;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Boletim;
 using SME.SGP.Aplicacao.Queries.ProficienciaIdep;

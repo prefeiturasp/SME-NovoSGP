@@ -5,7 +5,7 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarPendenciaAusenciaFechamentoCommand : IRequest<bool>
     {
-        public SalvarPendenciaAusenciaFechamentoCommand(long turmaId, long componenteCurricularId, string professorRf, 
+        public SalvarPendenciaAusenciaFechamentoCommand(long turmaId, long componenteCurricularId, string professorRf,
             string titulo, string mensagem, string instrucao, long? periodoEscolarId)
         {
             TurmaId = turmaId;

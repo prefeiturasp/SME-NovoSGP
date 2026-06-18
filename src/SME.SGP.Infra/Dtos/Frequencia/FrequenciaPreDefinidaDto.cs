@@ -7,6 +7,6 @@ namespace SME.SGP.Infra
         public string CodigoAluno { get; set; }
         public string TipoFrequencia { get => Tipo.ShortName(); }
         public TipoFrequencia Tipo { get; set; }
-            
+
     }
 }

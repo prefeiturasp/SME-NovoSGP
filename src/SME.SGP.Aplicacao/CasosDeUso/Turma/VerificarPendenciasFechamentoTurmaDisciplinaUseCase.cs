@@ -19,8 +19,8 @@ namespace SME.SGP.Aplicacao
         {
             var data = param.ObterObjetoMensagem<PendenciaFechamentoCompletoDto>();
             servicoFechamentoTurmaDisciplina.VerificarPendenciasEmAbertoPorFechamento(data.FechamentoId);
-            
-            return Task.FromResult(true); 
+
+            return Task.FromResult(true);
         }
     }
 }

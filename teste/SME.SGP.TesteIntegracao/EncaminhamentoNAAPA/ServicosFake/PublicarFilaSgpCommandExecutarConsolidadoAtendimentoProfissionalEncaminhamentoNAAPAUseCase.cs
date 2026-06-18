@@ -1,10 +1,10 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFake
 {

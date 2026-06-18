@@ -1,7 +1,5 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -14,7 +12,7 @@ namespace SME.SGP.Aplicacao
 
         public Task<AlunoSinalizadoPrioridadeMapeamentoEstudanteDto[]> Executar(long turmaId, int bimestre)
         {
-            return mediator.Send(new ObterCodigosAlunosSinalizadosPrioridadeMapeamentoEstudanteQuery(turmaId, bimestre));   
+            return mediator.Send(new ObterCodigosAlunosSinalizadosPrioridadeMapeamentoEstudanteQuery(turmaId, bimestre));
         }
     }
 }

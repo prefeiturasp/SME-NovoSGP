@@ -8,9 +8,9 @@
         public const string ConsolidarUeConselhoClasseSync = "sgp.consolidacao.ue.conselhoclasse.sync";
         public const string ConsolidarTurmaConselhoClasseSync = "sgp.consolidacao.turma.conselhoclasse.sync";
         public const string ConsolidarTurmaConselhoClasseAlunoTratar = "sgp.consolidacao.turma.conselhoclasse.aluno.tratar";
-        public const string ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresTratar = "sgp.consolidacao.turma.conselhoclasse.aluno.anos.anteriores.tratar"; 
-        public const string ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresUeTratar = "sgp.consolidacao.turma.conselhoclasse.aluno.anos.anteriores.ue.tratar";        
-        public const string ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresTurmaTratar = "sgp.consolidacao.turma.conselhoclasse.aluno.anos.anteriores.turma.tratar";        
+        public const string ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresTratar = "sgp.consolidacao.turma.conselhoclasse.aluno.anos.anteriores.tratar";
+        public const string ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresUeTratar = "sgp.consolidacao.turma.conselhoclasse.aluno.anos.anteriores.ue.tratar";
+        public const string ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresTurmaTratar = "sgp.consolidacao.turma.conselhoclasse.aluno.anos.anteriores.turma.tratar";
         public const string ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoTratar = "sgp.consolidacao.turma.conselhoclasse.aluno.anos.anteriores.aluno.tratar";
         public const string RotaAtualizarParecerConclusivoAlunoPorDre = "sgp.conselho.classe.aluno.parecer.atualizar.dre";
         public const string RotaAtualizarParecerConclusivoAlunoPorUe = "sgp.conselho.classe.aluno.parecer.atualizar.ue";

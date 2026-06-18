@@ -1,5 +1,4 @@
-﻿using MediatR;
-using Moq;
+﻿using Moq;
 using Moq.Protected;
 using SME.SGP.Dominio;
 using System;
@@ -34,7 +33,7 @@ namespace SME.SGP.Aplicacao.Teste.Commands
 
             var client = new HttpClient(handlerMock.Object)
             {
-                BaseAddress = new Uri("http://localhost") 
+                BaseAddress = new Uri("http://localhost")
             };
 
             return client;

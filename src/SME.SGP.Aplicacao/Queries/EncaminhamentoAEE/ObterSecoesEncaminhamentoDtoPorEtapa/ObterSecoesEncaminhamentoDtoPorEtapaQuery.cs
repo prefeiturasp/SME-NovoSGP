@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao.Queries
         }
 
         public int Etapa { get; set; }
-        
+
 
     }
 

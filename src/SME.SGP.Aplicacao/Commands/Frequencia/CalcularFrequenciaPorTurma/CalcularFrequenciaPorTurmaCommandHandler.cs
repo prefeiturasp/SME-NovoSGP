@@ -83,7 +83,7 @@ namespace SME.SGP.Aplicacao
                         var totalAulasParaAluno = ObterTotalAulasAluno(registroFreqAlunos, codigoAluno);
                         excluirFrequenciaAlunoIds.AddRange(ObterIdsFrequenciaAlunoSemAulaDisciplinaExclusao(totalAulasNaDisciplinaParaAluno, frequenciaDosAlunos, codigoAluno, disciplinasIdsConsideradas));
                         excluirFrequenciaAlunoIds.AddRange(ObterIdsFrequenciaAlunoSemAulaExclusao(totalAulasParaAluno, frequenciaDosAlunos, codigoAluno));
-                        
+
                         TrataFrequenciaPorDisciplinaAluno(codigoAluno, totalAulasNaDisciplinaParaAluno, registroFrequenciaAgregado, frequenciaDosAlunos, totalCompensacoesDisciplinaAlunos, request.DisciplinaId, excluirFrequenciaAlunoIds);
                         TrataFrequenciaGlobalAluno(codigoAluno, totalAulasParaAluno, registroFrequenciaAgregado, frequenciaDosAlunos, totalCompensacoesDisciplinaAlunos, request.TurmaId);
                     }
@@ -129,7 +129,7 @@ namespace SME.SGP.Aplicacao
                             .Sum(s => s.TotalAulas);
         }
 
-        private int ObterTotalAulasAlunoNaDisciplina(IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto> registroFreqAlunos, 
+        private int ObterTotalAulasAlunoNaDisciplina(IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto> registroFreqAlunos,
                                                      string codigoAluno, IEnumerable<string> disciplinasIdsConsideradas)
         {
             return registroFreqAlunos
@@ -277,11 +277,11 @@ namespace SME.SGP.Aplicacao
                                                        IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto> registroFrequenciaAlunos,
                                                        List<FrequenciaAluno> frequenciaDosAlunos,
                                                        IEnumerable<CompensacaoAusenciaAlunoCalculoFrequenciaDto> compensacoesDisciplinasAlunos,
-                                                       string componenteCurricularId, 
+                                                       string componenteCurricularId,
                                                        List<long> excluirFrequenciaAlunoIds)
         {
             var registrosFrequenciaDisciplina = from rf in registroFrequenciaAlunos
-                                                where rf.ComponenteCurricularId == componenteCurricularId 
+                                                where rf.ComponenteCurricularId == componenteCurricularId
                                                 select rf;
 
             if (registrosFrequenciaDisciplina.Any() || totalAulasNaDisciplina > 0)
@@ -365,7 +365,7 @@ namespace SME.SGP.Aplicacao
         {
             if (registroFrequenciaAlunos.Any() && totalAulasDaTurmaGeral > 0)
             {
-                var registroFrequenciaAluno = ObterRegistroFrequenciaDisciplinaAluno(registroFrequenciaAlunos, alunoCodigo); 
+                var registroFrequenciaAluno = ObterRegistroFrequenciaDisciplinaAluno(registroFrequenciaAlunos, alunoCodigo);
                 var totalCompensacoesAluno = compensacoesDisciplinasAlunos
                                                     .Where(a => a.AlunoCodigo == alunoCodigo)
                                                     .Sum(c => c.Compensacoes);

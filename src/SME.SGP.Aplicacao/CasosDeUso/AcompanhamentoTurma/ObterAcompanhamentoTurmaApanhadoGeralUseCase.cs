@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
         {
             if (acompanhamentoTurma.EhNulo())
                 return new AcompanhamentoTurmaDto();
-           
+
             var acompanhamentoTurmaDto = new AcompanhamentoTurmaDto
             {
                 AcompanhamentoTurmaId = acompanhamentoTurma.Id,

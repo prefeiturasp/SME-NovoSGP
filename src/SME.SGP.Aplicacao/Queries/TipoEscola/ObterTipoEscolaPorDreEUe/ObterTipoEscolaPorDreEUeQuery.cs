@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         public ObterTipoEscolaPorDreEUeQueryValidator()
         {
             RuleFor(c => c.DreCodigo)
-                .NotEmpty()                
+                .NotEmpty()
                 .WithMessage("O código da Dre deve ser informado.");
 
             RuleFor(c => c.UeCodigo)

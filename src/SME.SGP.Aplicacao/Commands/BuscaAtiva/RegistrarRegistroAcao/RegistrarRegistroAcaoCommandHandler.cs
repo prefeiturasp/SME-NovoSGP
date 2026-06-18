@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private RegistroAcaoBuscaAtiva MapearParaEntidade(RegistrarRegistroAcaoCommand request)
-            => new ()
+            => new()
             {
                 TurmaId = request.TurmaId,
                 AlunoCodigo = request.AlunoCodigo,

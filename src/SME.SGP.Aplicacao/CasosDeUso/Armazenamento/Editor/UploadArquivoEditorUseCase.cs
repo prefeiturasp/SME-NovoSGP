@@ -1,9 +1,9 @@
-﻿using System.IO;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Http;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -13,10 +13,10 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<RetornoArquivoEditorDto> Executar(IFormFile arquivo,string caminho, TipoArquivo tipoArquivo = TipoArquivo.Geral)
+        public async Task<RetornoArquivoEditorDto> Executar(IFormFile arquivo, string caminho, TipoArquivo tipoArquivo = TipoArquivo.Geral)
         {
             var resposta = await mediator.Send(new UploadArquivoCommand(arquivo, tipoArquivo));
-            
+
             var fileName = $"{resposta.Codigo}{Path.GetExtension(arquivo.FileName)}";
 
             return new RetornoArquivoEditorDto()

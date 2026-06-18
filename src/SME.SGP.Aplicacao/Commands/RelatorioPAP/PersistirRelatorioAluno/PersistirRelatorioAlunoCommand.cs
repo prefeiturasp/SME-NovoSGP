@@ -13,8 +13,8 @@ namespace SME.SGP.Aplicacao
             RelatorioTurmaId = relatorioTurmaId;
         }
 
-        public RelatorioPAPDto RelatorioPAPDto { get; set; } 
-        public long RelatorioTurmaId { get; set; } 
+        public RelatorioPAPDto RelatorioPAPDto { get; set; }
+        public long RelatorioTurmaId { get; set; }
     }
 
     public class PersistirRelatorioAlunoCommandValidator : AbstractValidator<PersistirRelatorioAlunoCommand>

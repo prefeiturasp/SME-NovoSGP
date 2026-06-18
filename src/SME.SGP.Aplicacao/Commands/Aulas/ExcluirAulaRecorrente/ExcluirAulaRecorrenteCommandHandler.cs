@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPlanoAula repositorioPlanoAula;
         private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
         private readonly IRepositorioAnotacaoFrequenciaAlunoConsulta repositorioAnotacaoFrequenciaAluno;
-        
+
         public ExcluirAulaRecorrenteCommandHandler(IMediator mediator,
                                                    IRepositorioAulaConsulta repositorioAulaConsulta,
                                                    IRepositorioAula repositorioAula,
@@ -79,7 +79,7 @@ namespace SME.SGP.Aplicacao
             await RemoverArquivosDiarioBordo(request.AulaId);
 
             await PublicarRecalculoFrequencia(listaAlteracoesFrequencia.ToArray(), aulaOrigem.TurmaId, aulaOrigem.DisciplinaId, cancellationToken);
-            
+
             return true;
         }
 
@@ -103,7 +103,7 @@ namespace SME.SGP.Aplicacao
             {
                 await ExcluirArquivo(plano.Descricao, TipoArquivo.PlanoAula);
                 await ExcluirArquivo(plano.RecuperacaoAula, TipoArquivo.PlanoAulaRecuperacao);
-                await ExcluirArquivo(plano.LicaoCasa, TipoArquivo.PlanoAulaLicaoCasa); 
+                await ExcluirArquivo(plano.LicaoCasa, TipoArquivo.PlanoAulaLicaoCasa);
             }
         }
 
@@ -113,21 +113,21 @@ namespace SME.SGP.Aplicacao
 
             foreach (var diarioDeBordo in diariosDeBordos)
             {
-                if((diarioDeBordo?.Planejamento).NaoEhNulo())
-                    await ExcluirArquivo(diarioDeBordo?.Planejamento,TipoArquivo.DiarioBordo);
+                if ((diarioDeBordo?.Planejamento).NaoEhNulo())
+                    await ExcluirArquivo(diarioDeBordo?.Planejamento, TipoArquivo.DiarioBordo);
             }
         }
-        
+
         private async Task ExcluirArquivoAnotacaoFrequencia(long aulaId)
         {
             var anotacaoFrequencia = await repositorioAnotacaoFrequenciaAluno.ObterPorAulaIdRegistroExcluido(aulaId);
 
             foreach (var item in anotacaoFrequencia)
             {
-                await ExcluirArquivo(item.Anotacao,TipoArquivo.FrequenciaAnotacaoEstudante);
+                await ExcluirArquivo(item.Anotacao, TipoArquivo.FrequenciaAnotacaoEstudante);
             }
         }
-        private async Task ExcluirArquivo(string mensagem,TipoArquivo tipo)
+        private async Task ExcluirArquivo(string mensagem, TipoArquivo tipo)
         {
             if (!string.IsNullOrEmpty(mensagem))
             {
@@ -252,14 +252,14 @@ namespace SME.SGP.Aplicacao
             try
             {
                 // Salva Notificação
-                var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(tituloMensagem, 
-                                                               mensagemUsuario.ToString(), 
-                                                               usuario.CodigoRf, 
-                                                               NotificacaoCategoria.Aviso, 
-                                                               NotificacaoTipo.Calendario, 
+                var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(tituloMensagem,
+                                                               mensagemUsuario.ToString(),
+                                                               usuario.CodigoRf,
+                                                               NotificacaoCategoria.Aviso,
+                                                               NotificacaoTipo.Calendario,
                                                                turma.Ue.Dre.CodigoDre,
-                                                               turma.Ue.CodigoUe, 
-                                                               turma.CodigoTurma, 
+                                                               turma.Ue.CodigoUe,
+                                                               turma.CodigoTurma,
                                                                DateTime.Now.Year));
 
                 // Gera vinculo Notificacao x Aula

@@ -1,5 +1,4 @@
-﻿using SME.SGP.Dto;
-using SME.SGP.Infra;
+﻿using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
@@ -24,7 +23,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<FrequenciaAluno> ObterPorAlunoDataAsync(string codigoAluno, DateTime dataAtual, TipoFrequenciaAluno tipoFrequencia, string disciplinaId = "", string codigoTurma = "");
         FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string[] disciplinasId, DateTime dataAtual, string turmaCodigo = "", string professor = null);
         FrequenciaAluno ObterPorAlunoDisciplinaPeriodo(string codigoAluno, string[] disciplinaIds, long periodoEscolarId, string turmaCodigo = "", string professor = null);
-        Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaPorListaDeAlunosDisciplinaData(string[] codigosAlunos,string[] disciplinaId, long periodoEscolarId, string turmaCodigo = "", string professor = null);
+        Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaPorListaDeAlunosDisciplinaData(string[] codigosAlunos, string[] disciplinaId, long periodoEscolarId, string turmaCodigo = "", string professor = null);
         Task<IEnumerable<FrequenciaAluno>> ObterPorAlunosDisciplinasDataAsync(string[] codigosAlunos, string[] disciplinasIds, DateTime dataAtual, string turmaCodigo = "");
         Task<FrequenciaAluno> ObterPorAlunoDisciplinaDataAsync(string codigoAluno, string disciplinaId, DateTime dataAtual, string turmaCodigo);
         Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolar(string codigoTurma, string[] componentesCurricularesId, TipoFrequenciaAluno tipoFrequencia, IEnumerable<long> periodosEscolaresIds, string professor = null);

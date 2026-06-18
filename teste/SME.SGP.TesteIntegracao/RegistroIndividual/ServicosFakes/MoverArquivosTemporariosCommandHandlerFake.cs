@@ -1,7 +1,7 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Aplicacao;
 
 namespace SME.SGP.TesteIntegracao.RegistroIndividual.ServicosFakes
 {

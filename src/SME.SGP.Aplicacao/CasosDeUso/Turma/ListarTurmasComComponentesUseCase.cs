@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
                 componentesCurricularesDoProfessorCJ = String.Join(",", atribuicoes.Select(s => s.DisciplinaId.ToString()).Distinct());
             }
 
-            var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(filtroTurmaDto.Modalidade.Value, filtroTurmaDto.AnoLetivo, filtroTurmaDto.Semestre.HasValue ? filtroTurmaDto.Semestre.Value :  1));
+            var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(filtroTurmaDto.Modalidade.Value, filtroTurmaDto.AnoLetivo, filtroTurmaDto.Semestre.HasValue ? filtroTurmaDto.Semestre.Value : 1));
 
             if (!periodoEscolar.Any())
                 throw new NegocioException(MensagemNegocioPeriodo.PERIODO_ESCOLAR_NAO_ENCONTRADO);

@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public RelatorioPeriodicoPAPResposta Resposta { get; set; }
-        public RelatorioPAPRespostaDto RespostaDto { get; set; }    
+        public RelatorioPAPRespostaDto RespostaDto { get; set; }
     }
 
     public class AlterarRelatorioPeriodicoRespostaPAPCommandValidator : AbstractValidator<AlterarRelatorioPeriodicoRespostaPAPCommand>

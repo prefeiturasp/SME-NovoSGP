@@ -1,15 +1,15 @@
-﻿using System;
+﻿using MediatR;
+using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra.Dtos;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Aplicacao
 {
     public class
-        ObterFechamentoSituacaoPorEstudanteQueryHandler : IRequestHandler<ObterFechamentoSituacaoQuery,IEnumerable<FechamentoSituacaoQuantidadeDto>>
+        ObterFechamentoSituacaoPorEstudanteQueryHandler : IRequestHandler<ObterFechamentoSituacaoQuery, IEnumerable<FechamentoSituacaoQuantidadeDto>>
     {
         private readonly IRepositorioFechamentoTurmaDisciplinaConsulta repositorio;
 

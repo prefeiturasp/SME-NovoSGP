@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(string turmaCodigo, long[] componentesCurricularesId, long tipoCalendarioId, long periodoEscolarId, string professor = null)
-            :this(turmaCodigo, componentesCurricularesId, tipoCalendarioId)
+            : this(turmaCodigo, componentesCurricularesId, tipoCalendarioId)
         {
             PeriodosEscolaresIds = new List<long> { periodoEscolarId };
             Professor = professor;

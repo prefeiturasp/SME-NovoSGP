@@ -1,11 +1,11 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Aplicacao.Queries;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -14,12 +14,12 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private readonly IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAlunoConsulta;
 
-        public ExisteConselhoClasseUltimoBimestreQueryHandler(IMediator mediator,IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAlunoConsulta)
+        public ExisteConselhoClasseUltimoBimestreQueryHandler(IMediator mediator, IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAlunoConsulta)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioConselhoClasseAlunoConsulta = repositorioConselhoClasseAlunoConsulta ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAlunoConsulta));
         }
-        
+
         public async Task<bool> Handle(ExisteConselhoClasseUltimoBimestreQuery request, CancellationToken cancellationToken)
         {
 
@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
 
             return await mediator.Send(new VerificaNotasTodosComponentesCurricularesQuery(request.AlunoCodigo, request.Turma, periodoEscolar.Bimestre, request.Turma.Historica));
         }
-        
+
         private async Task<PeriodoEscolar> ObterPeriodoUltimoBimestre(Turma turma)
         {
             var periodoEscolarUltimoBimestre = await mediator.Send(new ObterUltimoPeriodoEscolarPorAnoModalidadeSemestreQuery(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre));

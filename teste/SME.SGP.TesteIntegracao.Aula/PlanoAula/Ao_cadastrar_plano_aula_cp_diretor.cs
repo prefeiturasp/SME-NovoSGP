@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
@@ -14,14 +10,17 @@ using SME.SGP.TesteIntegracao.PlanoAula.Base;
 using SME.SGP.TesteIntegracao.PlanoAula.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.PlanoAula
 {
     public class Ao_cadastrar_plano_aula_cp_diretor : PlanoAulaTesteBase
     {
-        public Ao_cadastrar_plano_aula_cp_diretor(CollectionFixture collectionFixture) : base(collectionFixture){}
-        
+        public Ao_cadastrar_plano_aula_cp_diretor(CollectionFixture collectionFixture) : base(collectionFixture) { }
+
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
@@ -46,13 +45,13 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             retorno.Descricao.ShouldNotBeNull();
             retorno.LicaoCasa.ShouldNotBeNull();
             retorno.RecuperacaoAula.ShouldNotBeNull();
-            
+
             var planoAlunaTodos = ObterTodos<Dominio.PlanoAula>();
             planoAlunaTodos.Count.ShouldBeGreaterThanOrEqualTo(1);
-            
+
             var objetivoAprendizagemAula = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
-            objetivoAprendizagemAula.Count(w=> !w.Excluido).ShouldBe(3);
-            objetivoAprendizagemAula.Count(w=> w.Excluido).ShouldBe(0);
+            objetivoAprendizagemAula.Count(w => !w.Excluido).ShouldBe(3);
+            objetivoAprendizagemAula.Count(w => w.Excluido).ShouldBe(0);
         }
         [Fact(DisplayName = "Cadastro do plano de aula pelo Diretor")]
         public async Task Deve_cadastrar_plano_aula_usuario_diretor()
@@ -64,19 +63,19 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
 
             var retorno = await salvarPlanoAulaUseCase.Executar(planoAulaDto);
-            
+
             retorno.ShouldNotBeNull();
             Assert.True(retorno.Id > 0);
             retorno.Descricao.ShouldNotBeNull();
             retorno.LicaoCasa.ShouldNotBeNull();
             retorno.RecuperacaoAula.ShouldNotBeNull();
-            
+
             var planoAlunaTodos = ObterTodos<Dominio.PlanoAula>();
             planoAlunaTodos.Count.ShouldBeGreaterThanOrEqualTo(1);
-            
+
             var objetivoAprendizagemAula = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
-            objetivoAprendizagemAula.Count(w=> !w.Excluido).ShouldBe(3);
-            objetivoAprendizagemAula.Count(w=> w.Excluido).ShouldBe(0);
+            objetivoAprendizagemAula.Count(w => !w.Excluido).ShouldBe(3);
+            objetivoAprendizagemAula.Count(w => w.Excluido).ShouldBe(0);
         }
         private FiltroPlanoAula ObterFiltroPlanoAulaPorPerfil(string perfil)
         {

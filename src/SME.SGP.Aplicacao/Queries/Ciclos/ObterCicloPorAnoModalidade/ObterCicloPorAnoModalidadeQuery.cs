@@ -5,7 +5,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterCicloPorAnoModalidadeQuery :IRequest<CicloDto>
+    public class ObterCicloPorAnoModalidadeQuery : IRequest<CicloDto>
     {
         public ObterCicloPorAnoModalidadeQuery(string ano, Modalidade modalidade)
         {

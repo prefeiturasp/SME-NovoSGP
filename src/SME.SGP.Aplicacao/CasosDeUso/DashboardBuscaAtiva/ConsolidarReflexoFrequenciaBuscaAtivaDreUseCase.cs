@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         {
             var filtro = mensagem.ObterObjetoMensagem<FiltroIdAnoLetivoDto>();
             var ues = await mediator.Send(new ObterUEsIdsPorDreQuery(filtro.Id));
-            foreach(long UeId in ues)
+            foreach (long UeId in ues)
             {
                 filtro.Id = UeId;
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.ConsolidarReflexoFrequenciaBuscaAtivaUe, filtro, Guid.NewGuid()));

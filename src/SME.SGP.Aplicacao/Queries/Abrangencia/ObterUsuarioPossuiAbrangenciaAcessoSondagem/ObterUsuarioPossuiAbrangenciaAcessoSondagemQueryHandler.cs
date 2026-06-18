@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
         }
-        public async  Task<bool> Handle(ObterUsuarioPossuiAbrangenciaAcessoSondagemQuery request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(ObterUsuarioPossuiAbrangenciaAcessoSondagemQuery request, CancellationToken cancellationToken)
         {
             return await repositorioAbrangencia.ObterUsuarioPossuiAbrangenciaAcessoSondagemTiposEscola(request.UsuarioRF, request.UsuarioPerfil);
         }

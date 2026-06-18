@@ -7,8 +7,8 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterIndicativoPendenciasAulasPorTipoQuery : IRequest<PendenciaPaginaInicialListao>
     {
-        public ObterIndicativoPendenciasAulasPorTipoQuery(Turma turma, 
-                                                          Usuario usuario, 
+        public ObterIndicativoPendenciasAulasPorTipoQuery(Turma turma,
+                                                          Usuario usuario,
                                                           string disciplinaId,
                                                           int anoLetivo,
                                                           int bimestre)
@@ -53,10 +53,10 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.TurmaId)
                 .NotEmpty()
                 .WithMessage("O código da turma deve ser informado para consulta de pendência na aula.");
-            
+
             RuleFor(c => c.AnoLetivo)
                 .NotEmpty()
-                .WithMessage("O ano letivo deve ser informado para consulta de pendência na aula.");            
+                .WithMessage("O ano letivo deve ser informado para consulta de pendência na aula.");
 
             RuleFor(c => c.Bimestre)
                 .NotEmpty()

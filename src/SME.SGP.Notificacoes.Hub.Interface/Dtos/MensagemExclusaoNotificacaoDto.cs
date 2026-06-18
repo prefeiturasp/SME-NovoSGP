@@ -4,7 +4,7 @@
     {
         public MensagemExclusaoNotificacaoDto() { }
         public MensagemExclusaoNotificacaoDto(long codigo, int status, string usuarioRf, bool anoAnterior = false)
-        { 
+        {
             Codigo = codigo;
             UsuarioRf = usuarioRf;
             Status = status;

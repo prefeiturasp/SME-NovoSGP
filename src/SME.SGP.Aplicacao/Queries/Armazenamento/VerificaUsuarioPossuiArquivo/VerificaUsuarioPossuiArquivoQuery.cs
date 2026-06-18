@@ -5,7 +5,7 @@ namespace SME.SGP.Aplicacao
 {
     public class VerificaUsuarioPossuiArquivoQuery : IRequest<bool>
     {
-        public VerificaUsuarioPossuiArquivoQuery(long tipoDocumentoId, long classificacaoId, long usuarioId, long ueId,long anoLetivo ,long documentoId = 0)
+        public VerificaUsuarioPossuiArquivoQuery(long tipoDocumentoId, long classificacaoId, long usuarioId, long ueId, long anoLetivo, long documentoId = 0)
         {
             TipoDocumentoId = tipoDocumentoId;
             ClassificacaoId = classificacaoId;
@@ -34,15 +34,15 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.ClassificacaoId)
                 .NotEmpty()
                 .WithMessage("O id da classificacao de documento deve ser informada.");
-            
+
             RuleFor(c => c.UsuarioId)
                 .NotEmpty()
                 .WithMessage("O id do usuario deve ser informado.");
 
             RuleFor(c => c.UeId)
                .NotEmpty()
-               .WithMessage("O id do UE deve ser informado.");            
-            
+               .WithMessage("O id do UE deve ser informado.");
+
             RuleFor(c => c.AnoLetivo)
                .NotEmpty()
                .WithMessage("O Ano Letivo deve ser informado.");

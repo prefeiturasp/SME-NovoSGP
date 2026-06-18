@@ -8,7 +8,7 @@ namespace SME.SGP.Dominio
         {
             return data;
         }
-       
+
         /// <summary>
         /// Método improvisado para aplicar o GMT de Brasília manualmente, enquanto o problema de reagionalização do servidor não é resolvido;
         /// </summary>

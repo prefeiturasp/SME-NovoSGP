@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public  class RelatorioGraficoPAPUseCase : IRelatorioGraficoPAPUseCase
+    public class RelatorioGraficoPAPUseCase : IRelatorioGraficoPAPUseCase
     {
         private readonly IMediator mediator;
 
@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             if (!string.IsNullOrEmpty(filtro.TurmaId) && filtro.TurmaId != "0")
                 await mediator.Send(new ValidaSeExisteTurmaPorCodigoQuery(filtro.TurmaId));
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.GraficoPAP, filtro, usuarioLogado,rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosPapGraficos));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.GraficoPAP, filtro, usuarioLogado, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosPapGraficos));
         }
     }
 }

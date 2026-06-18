@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
 
             var usuariosId = await ObterCEFAI(turma.Ue.Dre.CodigoDre);
 
-            foreach(var usuarioId in usuariosId)
+            foreach (var usuarioId in usuariosId)
                 await mediator.Send(new GerarNotificacaoPlanoAEECommand(plano.Id, usuarioId, titulo, descricao, NotificacaoPlanoAEETipo.PlanoExpirado));
         }
 

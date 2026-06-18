@@ -1,10 +1,12 @@
-﻿using Moq;
+﻿using MediatR;
+using Moq;
 using SME.SGP.Aplicacao.CasosDeUso.PainelEducacional.Frequencia;
 using SME.SGP.Aplicacao.Commands.PainelEducacional.ConsolidacaoFrequenciaDiaria;
 using SME.SGP.Aplicacao.Commands.PainelEducacional.ConsolidacaoFrequenciaDiaria.LimparConsolidacao;
 using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterFrequenciaDiaria;
 using SME.SGP.Aplicacao.Queries.UE.ObterTodasUes;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional.Frequencia;
 using System;
@@ -13,8 +15,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
-using MediatR;
-using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Aplicacao.Testes.CasosDeUso.PainelEducacional.Frequencia
 {

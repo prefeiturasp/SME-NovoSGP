@@ -27,13 +27,13 @@ namespace SME.SGP.Aplicacao
         {
             var notasEmAprovacao = await ObterNotaEmAprovacaoPosConselho(request.WorkflowId);
 
-            foreach(var notaEmProvacao in notasEmAprovacao)
+            foreach (var notaEmProvacao in notasEmAprovacao)
             {
                 await mediator.Send(new ExcluirWfAprovacaoNotaConselhoClasseCommand(notaEmProvacao.Id));
 
                 if (notaEmProvacao.ConselhoClasseNota.Nota.EhNulo() && notaEmProvacao.ConselhoClasseNota.Conceito.EhNulo()) //Conselho de classe nota gerado automaticamente pelo WF Conselho Nota
                 {
-                    await mediator.Send(new ExcluirConselhoClasseNotaCommand(notaEmProvacao.ConselhoClasseNotaId??0));
+                    await mediator.Send(new ExcluirConselhoClasseNotaCommand(notaEmProvacao.ConselhoClasseNotaId ?? 0));
                 }
             }
 

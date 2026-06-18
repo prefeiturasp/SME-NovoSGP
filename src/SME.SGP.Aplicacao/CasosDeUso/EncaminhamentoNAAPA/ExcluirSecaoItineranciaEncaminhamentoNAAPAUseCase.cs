@@ -10,7 +10,7 @@ namespace SME.SGP.Aplicacao
     public class ExcluirSecaoItineranciaEncaminhamentoNAAPAUseCase : AbstractUseCase, IExcluirSecaoItineranciaEncaminhamentoNAAPAUseCase
     {
         public ExcluirSecaoItineranciaEncaminhamentoNAAPAUseCase(IMediator mediator) : base(mediator)
-        {}
+        { }
 
         public async Task<bool> Executar(long encaminhamentoNAAPAId, long encaminhamentoSecaoNAAPAId)
         {
@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
         private async Task AlterarSituacaoDoAtendimento(long encaminhamentoNAAPAId)
         {
             var existeSecao = await mediator.Send(new ExisteSecaoDeItineranciaNoEncaminhamentoNAAPAQuery(encaminhamentoNAAPAId));
-            
+
             if (!existeSecao)
             {
                 var encaminhamentoNAAPA = await mediator.Send(new ObterEncaminhamentoNAAPAPorIdQuery(encaminhamentoNAAPAId));

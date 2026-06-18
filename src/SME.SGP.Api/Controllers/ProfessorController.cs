@@ -89,11 +89,11 @@ namespace SME.SGP.Api.Controllers
 
             return Ok(retorno);
         }
-        
+
         [HttpGet("rfs/{codigoRf}/anos-letivos/{anoLetivo}/buscar")]
         [ProducesResponseType(typeof(ProfessorResumoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ConsultarProfessorDreUe(int anoLetivo,string codigoRf,[FromQuery] string dreId, [FromQuery] string ueId)
+        public async Task<IActionResult> ConsultarProfessorDreUe(int anoLetivo, string codigoRf, [FromQuery] string dreId, [FromQuery] string ueId)
         {
             var retorno = await consultasProfessor.ObterResumoPorRFUeDreAnoLetivo(codigoRf, anoLetivo, dreId, ueId);
             return Ok(retorno);

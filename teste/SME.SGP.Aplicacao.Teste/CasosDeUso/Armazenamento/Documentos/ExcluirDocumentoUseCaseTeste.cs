@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         {
             mediator = new Mock<IMediator>();
             unitOfWork = new Mock<IUnitOfWork>();
-            useCase = new ExcluirDocumentoUseCase(mediator.Object,unitOfWork.Object);
+            useCase = new ExcluirDocumentoUseCase(mediator.Object, unitOfWork.Object);
         }
 
         [Fact]

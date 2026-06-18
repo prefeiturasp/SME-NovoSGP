@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
                 conselhoClasseAluno.ConselhoClasseId = conselhoClasse.Id;
 
                 conselhoClasseAluno.Id = await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
-                
+
                 await mediator.Send(new InserirTurmasComplementaresCommand(request.FechamentoTurma.TurmaId, conselhoClasseAluno.Id, request.CodigoAluno), cancellationToken);
 
                 await MoverJustificativaConselhoClasseNota(request.ConselhoClasseNotaDto, string.Empty);
@@ -67,14 +67,14 @@ namespace SME.SGP.Aplicacao
 
                 auditoria = (AuditoriaDto)conselhoClasseNota;
             }
-            catch(PostgresException ex)
+            catch (PostgresException ex)
             {
                 unitOfWork.Rollback();
 
                 await LogarExcecao(ex);
                 throw new ErroInternoException("Erro ao inserir o conselho de classe");
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 unitOfWork.Rollback();
                 throw;

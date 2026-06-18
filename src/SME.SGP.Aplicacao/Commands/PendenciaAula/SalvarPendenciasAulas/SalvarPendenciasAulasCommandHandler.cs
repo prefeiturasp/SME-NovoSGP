@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         public Task<bool> Handle(SalvarPendenciasAulasCommand request, CancellationToken cancellationToken)
         {
             repositorioPendenciaAula.SalvarVarias(request.PendenciaId, request.AulasIds);
-            
+
             return Task.FromResult(true);
         }
     }

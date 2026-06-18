@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.AtribuicaoCJ
             _mediatorMock.Setup(m => m.Send(It.IsAny<ObterAtribuicoesPorTurmaEProfessorQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(atribuicoesMock);
             _mediatorMock.Setup(m => m.Send(It.Is<ObterDisciplinasPorCodigoTurmaQuery>(q => q.CodigoTurma == "T001"), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(Enumerable.Empty<DisciplinaResposta>()); 
+                .ReturnsAsync(Enumerable.Empty<DisciplinaResposta>());
 
             // Act & Assert
             var ex = await Assert.ThrowsAsync<NegocioException>(() => _useCase.Executar(filtro));
@@ -143,7 +143,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.AtribuicaoCJ
             var firstAtribuicao = resultList.First();
             Assert.Equal("Educação Infantil", firstAtribuicao.Modalidade);
             Assert.Equal("Infantil B", firstAtribuicao.Turma);
-            Assert.Contains("Higiene Pessoal", firstAtribuicao.Disciplinas); 
+            Assert.Contains("Higiene Pessoal", firstAtribuicao.Disciplinas);
             Assert.DoesNotContain("Corpo e Gestos", firstAtribuicao.Disciplinas);
 
             _mediatorMock.Verify(m => m.Send(It.IsAny<ObterAtribuicoesPorTurmaEProfessorQuery>(), It.IsAny<CancellationToken>()), Times.Once);

@@ -4,7 +4,6 @@ using SME.SGP.Dominio;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -19,7 +18,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         public ObterCartasDeIntencoesPorTurmaEComponenteUseCaseTeste()
         {
             mediator = new Mock<IMediator>();
-            useCase= new ObterCartasDeIntencoesPorTurmaEComponenteUseCase(mediator.Object);
+            useCase = new ObterCartasDeIntencoesPorTurmaEComponenteUseCase(mediator.Object);
         }
 
         [Fact]

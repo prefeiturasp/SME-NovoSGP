@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
             RuleFor(c => c.TipoCalendarioId)
                 .NotEmpty()
-                .WithMessage("O id do tipo de claendário deve ser informado.");            
+                .WithMessage("O id do tipo de claendário deve ser informado.");
         }
     }
 }

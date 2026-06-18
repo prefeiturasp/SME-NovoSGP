@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -17,7 +16,7 @@ namespace SME.SGP.Aplicacao
             TempoArmazenamentoCache = tempoArmazenamentoCache;
         }
 
-        public string CodigoTurma { get; set; }        
+        public string CodigoTurma { get; set; }
         public (DateTime dataInicio, DateTime dataFim) Periodo { get; set; }
         public bool ConsideraSomenteAtivos { get; set; }
         public int TempoArmazenamentoCache { get; }

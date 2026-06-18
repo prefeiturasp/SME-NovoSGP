@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
             if (filtro.NaoEhNulo())
             {
-                var uesDre = await CarregarUesPorDreCodigo(filtro.DreCodigo); 
+                var uesDre = await CarregarUesPorDreCodigo(filtro.DreCodigo);
 
                 foreach (var ue in uesDre)
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaExecutaPendenciasAulaDreUe, ue));

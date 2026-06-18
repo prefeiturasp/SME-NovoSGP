@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.TaxaAlfabetizacao.ObterTax
 {
     public class ObterTaxaAlfabetizacaoPorAnoLetivoQuery : IRequest<IEnumerable<TaxaAlfabetizacaoDto>>
     {
-       
+
     }
 }

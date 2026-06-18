@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Infra
+﻿namespace SME.SGP.Infra
 {
-    public class PendenciaFechamentoCompletoDto: AuditoriaDto
+    public class PendenciaFechamentoCompletoDto : AuditoriaDto
     {
         public long PendenciaId { get; set; }
         public long FechamentoId { get; set; }

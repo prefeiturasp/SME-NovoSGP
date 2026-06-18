@@ -1,8 +1,8 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System.Collections.Generic;
 using SME.SGP.Infra.Interface;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -49,7 +49,7 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioPendenciaRegistroIndividual(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         { }
 
-        public async Task<PendenciaRegistroIndividual> ObterPendenciaRegistroIndividualPorPendenciaESituacao(long pendenciaId, SituacaoPendencia situacaoPendencia, 
+        public async Task<PendenciaRegistroIndividual> ObterPendenciaRegistroIndividualPorPendenciaESituacao(long pendenciaId, SituacaoPendencia situacaoPendencia,
             SituacaoPendenciaRegistroIndividualAluno situacaoAluno)
         {
             var sql = $@"{SelectCompletoPadrao}

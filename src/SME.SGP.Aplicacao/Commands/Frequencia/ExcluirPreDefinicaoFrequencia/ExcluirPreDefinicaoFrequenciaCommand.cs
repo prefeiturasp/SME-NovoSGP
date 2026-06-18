@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             RuleFor(a => a.TurmaId)
                 .NotEmpty()
                 .WithMessage("O Id da Turma deve ser informado");
-            
+
             RuleFor(a => a.ComponenteCurricularId)
                 .NotEmpty()
                 .WithMessage("O Id do componente curricular deve ser informado");

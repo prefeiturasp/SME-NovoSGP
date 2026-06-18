@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
                     {
                         var responsaveisEOL = await mediator.Send(new ObterSupervisorPorCodigoDreQuery(supervisoresSGPIds.ToArray(), codigoDre));
                         await RemoverSupervisorSemAtribuicao(responsaveisSGP, responsaveisEOL);
-                    }                    
+                    }
                 }
                 return true;
             }
@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            return responsaveisSGP.Where(r => !idsResponsaveisDesconsiderar.Contains(r.AtribuicaoSupervisorId));            
+            return responsaveisSGP.Where(r => !idsResponsaveisDesconsiderar.Contains(r.AtribuicaoSupervisorId));
         }
 
         private async Task<bool> RemoverSupervisorSemAtribuicao(IEnumerable<SupervisorEscolasDreDto> responsaveisSGP, IEnumerable<SupervisoresRetornoDto> responsaveisEOL)

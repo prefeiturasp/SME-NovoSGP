@@ -205,7 +205,7 @@ namespace SME.SGP.Dados.Repositorios
                             join wf_aprovacao_nota_fechamento wfanc on wfanc.wf_aprovacao_id = wa.id
                             where wfanc.wf_aprovacao_id = @workFlowAprovacaoId";
 
-            return await database.Conexao.QueryAsync<Notificacao>(query, new {workFlowAprovacaoId});
+            return await database.Conexao.QueryAsync<Notificacao>(query, new { workFlowAprovacaoId });
         }
 
         public int ObterQuantidadeNotificacoesNaoLidasPorAnoLetivoERf(int anoLetivo, string usuarioRf)
@@ -255,7 +255,7 @@ namespace SME.SGP.Dados.Repositorios
                             and extract(year from n.criado_em) = @anoLetivo";
 
             return await database.Conexao.QueryFirstAsync<int>(sql, new { anoLetivo, codigoRf, naoLida = (int)NotificacaoStatus.Pendente });
-       }
+        }
 
         public async Task<IEnumerable<NotificacoesParaTratamentoCargosNiveisDto>> ObterNotificacoesParaTratamentoCargosNiveis(string codigoUe)
         {

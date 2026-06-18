@@ -17,7 +17,7 @@ namespace SME.SGP.Dados.Repositorios
     {
         private readonly IConfiguration configuration;
 
-        public RepositorioConsolidacaoFluenciaLeitora(ISgpContext database, IServicoAuditoria servicoAuditoria, IConfiguration configuration) 
+        public RepositorioConsolidacaoFluenciaLeitora(ISgpContext database, IServicoAuditoria servicoAuditoria, IConfiguration configuration)
             : base(database, servicoAuditoria)
         {
             this.configuration = configuration;
@@ -28,7 +28,7 @@ namespace SME.SGP.Dados.Repositorios
             const string sql = @"DELETE FROM consolidacao_painel_educacional_fluencia_leitora";
             await database.Conexao.ExecuteAsync(sql);
         }
-        
+
         public async Task<IEnumerable<ConsolidacaoPainelEducacionalFluenciaLeitora>> ObterFluenciaLeitora(string codigoDre)
         {
             var sql = @"

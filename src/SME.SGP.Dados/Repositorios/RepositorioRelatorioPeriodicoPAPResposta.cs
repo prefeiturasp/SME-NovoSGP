@@ -1,5 +1,4 @@
-﻿using Dapper;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
@@ -69,9 +68,9 @@ namespace SME.SGP.Dados.Repositorios
                            and not rppq.excluido 
                            and not rppr.excluido";
 
-            return await database.Conexao.QueryAsync<RelatorioPeriodicoPAPResposta, 
-                                                     RelatorioPeriodicoPAPQuestao, 
-                                                     Arquivo, 
+            return await database.Conexao.QueryAsync<RelatorioPeriodicoPAPResposta,
+                                                     RelatorioPeriodicoPAPQuestao,
+                                                     Arquivo,
                                                      RelatorioPeriodicoPAPResposta>(query,
                                                                                     (resposta, periodicoPAPQuestao, arquivo) =>
                                                                                     {
@@ -84,7 +83,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<bool> RemoverPorArquivoId(long arquivoId)
         {
-            var sql =$@"update relatorio_periodico_pap_resposta 
+            var sql = $@"update relatorio_periodico_pap_resposta 
                         set excluido = true,
                             arquivo_id = null
                     where arquivo_id = @arquivoId";

@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         public async Task<PlanoAEEDto> Executar(FiltroPesquisaQuestoesPorPlanoAEEIdDto filtro)
         {
             var plano = new PlanoAEEDto();
-            bool verificaMatriculaAnoVigente = false; 
+            bool verificaMatriculaAnoVigente = false;
             bool novaVersao = false;
             var alunoCodigo = 0;
 
@@ -35,10 +35,10 @@ namespace SME.SGP.Aplicacao
                 var entidadePlano = await mediator
                     .Send(new ObterPlanoAEEComTurmaPorIdQuery(filtro.PlanoAEEId.Value));
 
-                
-                if(entidadePlano.EhNulo())
+
+                if (entidadePlano.EhNulo())
                     throw new NegocioException("Plano AEE não encontrado");
-                
+
                 alunoCodigo = int.Parse(entidadePlano.AlunoCodigo);
                 var alunoTurma = await mediator
                     .Send(new ObterAlunoPorCodigoEAnoPlanoAeeQuery(entidadePlano.AlunoCodigo,
@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
                 if (alunoTurma.NaoEhNulo())
                     verificaMatriculaAnoVigente = true;
 
-                alunoTurma ??= await ObterAlunoReduzido(entidadePlano.AlunoCodigo,entidadePlano.Turma.AnoLetivo);
+                alunoTurma ??= await ObterAlunoReduzido(entidadePlano.AlunoCodigo, entidadePlano.Turma.AnoLetivo);
 
                 var anoLetivo = entidadePlano.Turma.AnoLetivo;
 
@@ -96,13 +96,13 @@ namespace SME.SGP.Aplicacao
                     else
                         throw new NegocioException("Não foi localizada matrícula ativa para o aluno selecionado.");
                 }
-                    
+
 
                 turma = await ObterTurma(alunoPorTurmaResposta.CodigoTurma.ToString());
 
                 if (turma.TipoTurma == TipoTurma.Programa && entidadePlano.Turma.AnoLetivo == anoLetivo)
                     turma = entidadePlano.Turma;
-                var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(new string[]{alunoPorTurmaResposta.CodigoAluno}, turma.AnoLetivo);
+                var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(new string[] { alunoPorTurmaResposta.CodigoAluno }, turma.AnoLetivo);
                 var aluno = new AlunoReduzidoDto()
                 {
                     Nome = !string.IsNullOrEmpty(alunoPorTurmaResposta.NomeAluno) ? alunoPorTurmaResposta.NomeAluno : alunoPorTurmaResposta.NomeSocialAluno,
@@ -193,7 +193,7 @@ namespace SME.SGP.Aplicacao
             plano.RegistroCadastradoEmOutraUE = !await VerificarUsuarioLogadoPertenceMesmaUEPlano(usuarioLogado, turma);
             plano.PermitirEncerramentoManual = PermitirEncerramentoManual(plano);
 
-            await BuscarDadosSrmPaee((filtro.CodigoAluno > 0 ?  filtro.CodigoAluno :alunoCodigo),plano,novaVersao);
+            await BuscarDadosSrmPaee((filtro.CodigoAluno > 0 ? filtro.CodigoAluno : alunoCodigo), plano, novaVersao);
 
             return plano;
         }
@@ -223,13 +223,13 @@ namespace SME.SGP.Aplicacao
         {
             return await mediator.Send(new VerificarUsuarioLogadoPertenceMesmaUEQuery(usuarioLogado, turmaEncaminhamentoAee));
         }
-        
+
         private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, int anoLetivo)
         {
-            return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
+            return await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
         }
 
-        private async Task BuscarDadosSrmPaee(long codigoAluno,PlanoAEEDto plano,bool novaVersao)
+        private async Task BuscarDadosSrmPaee(long codigoAluno, PlanoAEEDto plano, bool novaVersao)
         {
             if (novaVersao)
             {
@@ -238,15 +238,15 @@ namespace SME.SGP.Aplicacao
 
                 if (dadoSrm.Count > 0)
                 {
-                    var json = JsonConvert.SerializeObject(dadoSrm); 
-                    resposta.Add(new RespostaQuestaoDto() {Texto = json});
-                    
+                    var json = JsonConvert.SerializeObject(dadoSrm);
+                    resposta.Add(new RespostaQuestaoDto() { Texto = json });
+
                     plano.Questoes.FirstOrDefault(q => q.TipoQuestao == TipoQuestao.InformacoesSrm)!.Resposta = resposta;
                 }
             }
-            
+
         }
-        
+
         public void CriarRespostaPeriodoEscolarParaPlanoASerCriado(PlanoAEEDto plano, PeriodoEscolar periodoAtual, bool planoEstaAtivo)
         {
             if (periodoAtual.EhNulo())
@@ -265,7 +265,7 @@ namespace SME.SGP.Aplicacao
 
                 questao.Resposta = questaoPeriodoEscolar.Resposta;
             }
-            
+
         }
 
         public bool VerificaSeUltimaVersaoPlanoEDoAnoAtual(PlanoAEEDto plano)
@@ -286,7 +286,7 @@ namespace SME.SGP.Aplicacao
         private async Task<AlunoPorTurmaResposta> ChecaSeOAlunoTeveMudancaDeTurmaAnual(string codigoAluno, int anoLetivo)
         {
             var turmasAluno = await mediator.Send(new ObterTurmasAlunoPorFiltroQuery(codigoAluno, anoLetivo, false, true));
-            
+
             if (turmasAluno.Any())
             {
                 var alunoComMatriculaAtiva = turmasAluno.FirstOrDefault(t => t.PossuiSituacaoAtiva());

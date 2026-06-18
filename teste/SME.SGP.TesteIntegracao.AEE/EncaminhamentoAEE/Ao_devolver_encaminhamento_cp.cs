@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -12,6 +8,9 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
@@ -51,9 +50,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 AlunoCodigo = ALUNO_CODIGO_1,
                 Situacao = SituacaoAEE.Encaminhado,
                 AlunoNome = "Nome do aluno 1",
-                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
-            
+
             await CriarEncaminhamentoSecaoPerguntasRespostas();
 
             await CriarPendenciasEncaminhamentoAee();
@@ -68,7 +69,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 
             var retorno = await obterServicoDevolverEncaminhamentoAee.Executar(filtroEncaminhamentoAeeDto);
             retorno.ShouldBeTrue();
-            
+
             var encaminhamentoDevolvido = ObterTodos<Dominio.EncaminhamentoAEE>();
             (encaminhamentoDevolvido.FirstOrDefault().Situacao == SituacaoAEE.Devolvido).ShouldBeTrue();
 
@@ -80,10 +81,10 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 
             var pendenciaPerfilUsuario = ObterTodos<PendenciaPerfilUsuario>();
             pendenciaPerfilUsuario.Any().ShouldBeFalse();
-            
+
             var pendenciaPerfil = ObterTodos<PendenciaPerfil>();
             pendenciaPerfil.Any().ShouldBeFalse();
-            
+
             var pendencia = ObterTodos<Pendencia>();
             (pendencia.FirstOrDefault().Excluido).ShouldBeTrue();
         }
@@ -100,14 +101,16 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             };
 
             await CriarDadosBase(filtroAee);
-            
+
             await InserirNaBase(new Dominio.EncaminhamentoAEE()
             {
                 TurmaId = TURMA_ID_1,
                 AlunoCodigo = ALUNO_CODIGO_1,
                 Situacao = SituacaoAEE.Rascunho,
                 AlunoNome = "Nome do aluno 1",
-                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
 
             await CriarEncaminhamentoSecaoPerguntasRespostas();
@@ -124,7 +127,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 
             await Assert.ThrowsAsync<NegocioException>(() => obterServicoDevolverEncaminhamentoAee.Executar(filtroEncaminhamentoAeeDto));
         }
-        
+
         [Fact(DisplayName = "Encaminhamento AEE - Professor não poderá devolver encaminhamentos em situação aguardando validação")]
         public async Task Ao_devolver_encaminhamento_em_situacao_aguardando_validacao_professor()
         {
@@ -137,14 +140,16 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             };
 
             await CriarDadosBase(filtroAee);
-            
+
             await InserirNaBase(new Dominio.EncaminhamentoAEE()
             {
                 TurmaId = TURMA_ID_1,
                 AlunoCodigo = ALUNO_CODIGO_1,
                 Situacao = SituacaoAEE.Encaminhado,
                 AlunoNome = "Nome do aluno 1",
-                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
 
             await CriarEncaminhamentoSecaoPerguntasRespostas();
@@ -161,7 +166,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 
             await Assert.ThrowsAsync<NegocioException>(() => obterServicoDevolverEncaminhamentoAee.Executar(filtroEncaminhamentoAeeDto));
         }
-        
+
         [Fact(DisplayName = "Encaminhamento AEE - Professor não poderá devolver encaminhamentos em situação diferente de aguardando validação coordenação")]
         public async Task Ao_devolver_encaminhamento_em_situacao_diferente_aguardando_validacao_professor()
         {
@@ -174,14 +179,16 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             };
 
             await CriarDadosBase(filtroAee);
-            
+
             await InserirNaBase(new Dominio.EncaminhamentoAEE()
             {
                 TurmaId = TURMA_ID_1,
                 AlunoCodigo = ALUNO_CODIGO_1,
                 Situacao = SituacaoAEE.Rascunho,
                 AlunoNome = "Nome do aluno 1",
-                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
 
             await CriarEncaminhamentoSecaoPerguntasRespostas();
@@ -198,7 +205,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 
             await Assert.ThrowsAsync<NegocioException>(() => obterServicoDevolverEncaminhamentoAee.Executar(filtroEncaminhamentoAeeDto));
         }
-        
+
         private async Task CriarEncaminhamentoSecaoPerguntasRespostas()
         {
             await InserirNaBase(new SecaoEncaminhamentoAEE()
@@ -338,9 +345,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 AlunoCodigo = ALUNO_CODIGO_1,
                 Situacao = SituacaoAEE.Analise,
                 AlunoNome = "Nome do aluno 1",
-                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
-            
+
             await InserirNaBase(new SecaoEncaminhamentoAEE()
             {
                 QuestionarioId = 1,
@@ -388,7 +397,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            await InserirNaBase(new RespostaEncaminhamentoAEE() {
+            await InserirNaBase(new RespostaEncaminhamentoAEE()
+            {
                 QuestaoEncaminhamentoId = 1,
                 Texto = "Resposta",
                 CriadoEm = DateTime.Now,

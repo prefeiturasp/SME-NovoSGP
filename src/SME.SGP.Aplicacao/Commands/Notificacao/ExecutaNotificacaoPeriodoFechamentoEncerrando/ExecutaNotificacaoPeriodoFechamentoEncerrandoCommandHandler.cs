@@ -1,11 +1,9 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Queries.Funcionario;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -64,7 +62,7 @@ namespace SME.SGP.Aplicacao
         {
             var listaUsuarios = new List<long>();
             var professores = await mediator.Send(new ObterProfessoresTitularesDasTurmasQuery(turmas.Select(a => a.CodigoTurma)));
-            
+
             var professoresDaTurma = professores
                 .SelectMany(c => c.ProfessorRf.Split(',').AsEnumerable())
                 .Where(c => !string.IsNullOrEmpty(c))

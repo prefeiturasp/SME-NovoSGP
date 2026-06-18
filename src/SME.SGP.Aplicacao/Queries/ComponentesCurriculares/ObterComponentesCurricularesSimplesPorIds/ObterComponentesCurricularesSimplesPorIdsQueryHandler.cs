@@ -20,6 +20,6 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<ComponenteCurricularSimplesDto>> Handle(ObterComponentesCurricularesSimplesPorIdsQuery request, CancellationToken cancellationToken)
             => await repositorioComponenteCurricular.ObterComponentesSimplesPorIds(request.Ids);
 
-        
+
     }
 }

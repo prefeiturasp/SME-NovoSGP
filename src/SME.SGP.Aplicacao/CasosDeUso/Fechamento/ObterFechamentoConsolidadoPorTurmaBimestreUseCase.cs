@@ -18,8 +18,8 @@ namespace SME.SGP.Aplicacao
         {
             int[] situacoesFechamento = new int[] { filtro.SituacaoFechamento };
 
-            if (filtro.SituacaoFechamento == (int)SituacaoFechamento.NaoIniciado)            
-                situacoesFechamento = new int[] { (int)SituacaoFechamento.NaoIniciado, (int)SituacaoFechamento.EmProcessamento };                     
+            if (filtro.SituacaoFechamento == (int)SituacaoFechamento.NaoIniciado)
+                situacoesFechamento = new int[] { (int)SituacaoFechamento.NaoIniciado, (int)SituacaoFechamento.EmProcessamento };
 
             var listaFechamentosConsolidado = await mediator.Send(new ObterFechamentoConsolidadoPorTurmaBimestreQuery(filtro.TurmaId, filtro.Bimestre, situacoesFechamento));
 
@@ -35,10 +35,10 @@ namespace SME.SGP.Aplicacao
         {
             var lstStatus = new List<StatusTotalFechamentoDto>();
 
-            if (statusAgrupados.Any(sa => sa.Key == SituacaoFechamento.NaoIniciado || 
+            if (statusAgrupados.Any(sa => sa.Key == SituacaoFechamento.NaoIniciado ||
                                           sa.Key == SituacaoFechamento.EmProcessamento))
             {
-                var qtdStatusNaoIniciado = statusAgrupados.Where(sa => sa.Key == SituacaoFechamento.NaoIniciado || 
+                var qtdStatusNaoIniciado = statusAgrupados.Where(sa => sa.Key == SituacaoFechamento.NaoIniciado ||
                                                                        sa.Key == SituacaoFechamento.EmProcessamento)
                                                           .SelectMany(s => s).Count();
 
@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
                 });
             }
 
-            foreach (var status in statusAgrupados.Where(sa => sa.Key != SituacaoFechamento.NaoIniciado && 
+            foreach (var status in statusAgrupados.Where(sa => sa.Key != SituacaoFechamento.NaoIniciado &&
                                                                sa.Key != SituacaoFechamento.EmProcessamento))
             {
                 lstStatus.Add(new StatusTotalFechamentoDto()
@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao
 
             if (statusNaoEncontrados.NaoEhNulo() && statusNaoEncontrados.Any())
             {
-                foreach (var status in statusNaoEncontrados.Where(s => s != SituacaoFechamento.NaoIniciado && 
+                foreach (var status in statusNaoEncontrados.Where(s => s != SituacaoFechamento.NaoIniciado &&
                                                                        s != SituacaoFechamento.EmProcessamento))
                 {
                     lstStatus.Add(new StatusTotalFechamentoDto()

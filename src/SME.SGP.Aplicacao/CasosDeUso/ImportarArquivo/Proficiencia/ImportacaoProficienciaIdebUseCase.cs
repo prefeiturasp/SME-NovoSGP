@@ -162,7 +162,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Proficiencia
                         continue;
                     }
 
-                    if(!Enum.IsDefined(typeof(ComponenteCurricularEnum), compId))
+                    if (!Enum.IsDefined(typeof(ComponenteCurricularEnum), compId))
                     {
                         SalvarErroLinha(importacaoLogId, dto.LinhaAtual, "Componente curricular inválido");
                         continue;

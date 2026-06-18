@@ -18,8 +18,8 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioQuestao repositorioQuestao;
 
         public ObterQuestionarioPAPQueryHandler(
-                                                IMediator mediator, 
-                                                IRepositorioRelatorioPeriodicoPAPResposta repositorio, 
+                                                IMediator mediator,
+                                                IRepositorioRelatorioPeriodicoPAPResposta repositorio,
                                                 IRepositorioQuestao repositorioQuestao)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
 
         private IEnumerable<QuestaoDto> ObterQuestoesSemIdResposta(IEnumerable<QuestaoDto> questoes)
         {
-            foreach(var questao in questoes)
+            foreach (var questao in questoes)
             {
                 foreach (var resposta in questao.Resposta)
                     resposta.Id = 0;

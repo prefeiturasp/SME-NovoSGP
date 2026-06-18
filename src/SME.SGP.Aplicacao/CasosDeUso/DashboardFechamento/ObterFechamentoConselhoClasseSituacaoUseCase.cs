@@ -1,10 +1,10 @@
-﻿using System;
+﻿using MediatR;
+using SME.SGP.Dominio;
+using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dominio;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
                     quantidadeEmAndamentoEConcluido += AdicionaGraficoConselhosClassePorTurma(graficos, informacoesTurma);
 
                 if (quantidadeEmAndamentoEConcluido > 0)
-                    graficos.Add(new GraficoBaseDto(conselho.FirstOrDefault().AnoTurma, await DefinirQuantidadeConselhoNaoIniciado(conselho.FirstOrDefault().CodigoTurma, parametrosUseCase.Bimestre, quantidadeEmAndamentoEConcluido), 
+                    graficos.Add(new GraficoBaseDto(conselho.FirstOrDefault().AnoTurma, await DefinirQuantidadeConselhoNaoIniciado(conselho.FirstOrDefault().CodigoTurma, parametrosUseCase.Bimestre, quantidadeEmAndamentoEConcluido),
                                                     SituacaoConselhoClasse.NaoIniciado.Name()));
             }
         }
@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao
                 case SituacaoConselhoClasse.Concluido:
                     graficos.Add(new GraficoBaseDto(conselhoClasseTurma.AnoTurma, qdadeConselhosClasseTurma, SituacaoConselhoClasse.Concluido.Name()));
                     return conselhoClasseTurma.Quantidade;
-                default : return 0;
+                default: return 0;
             }
         }
 
@@ -77,10 +77,10 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
 
-            if(turma.NaoEhNulo())
+            if (turma.NaoEhNulo())
             {
                 var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre));
-                if(periodoEscolar.NaoEhNulo())
+                if (periodoEscolar.NaoEhNulo())
                 {
                     var alunosDaTurma = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turma.CodigoTurma)));
                     if (alunosDaTurma.Any() && alunosDaTurma.NaoEhNulo())
@@ -91,7 +91,7 @@ namespace SME.SGP.Aplicacao
                     }
                 }
             }
-           
+
             return 0;
         }
 

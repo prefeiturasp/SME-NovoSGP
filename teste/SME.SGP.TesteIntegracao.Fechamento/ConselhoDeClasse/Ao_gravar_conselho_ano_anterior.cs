@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -9,7 +7,8 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
-using Xunit;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 {
@@ -33,7 +32,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             var fechamentoTurma = ObterTodos<FechamentoTurma>().FirstOrDefault();
             fechamentoTurma.ShouldNotBeNull();
-            
+
             var conselhoClasseNota = new ConselhoClasseNotaDto
             {
                 Conceito = null,
@@ -51,7 +50,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 FechamentoTurmaId = fechamentoTurma.Id,
                 ConselhoClasseNotaDto = conselhoClasseNota
             };
-            
+
             var useCase = ServiceProvider.GetService<ISalvarConselhoClasseAlunoNotaUseCase>();
             useCase.ShouldNotBeNull();
 
@@ -60,15 +59,15 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             conselhoClasseNotaRetorno.FechamentoTurmaId.ShouldBe(1);
             conselhoClasseNotaRetorno.EmAprovacao.ShouldBeTrue();
         }
-        
+
         //[Fact]
         public async Task Deve_gravar_conselho_final_sem_existencia_do_conselho_2_bimestre_eja()
         {
             await CriarBase(TipoNota.Nota, Modalidade.EJA, ModalidadeTipoCalendario.EJA, ANO_3);
-            
+
             var fechamentoTurma = ObterTodos<FechamentoTurma>().FirstOrDefault();
             fechamentoTurma.ShouldNotBeNull();
-            
+
             var conselhoClasseNota = new ConselhoClasseNotaDto
             {
                 Conceito = null,
@@ -86,21 +85,21 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 FechamentoTurmaId = fechamentoTurma.Id,
                 ConselhoClasseNotaDto = conselhoClasseNota
             };
-            
+
             var useCase = ServiceProvider.GetService<ISalvarConselhoClasseAlunoNotaUseCase>();
             useCase.ShouldNotBeNull();
 
             var conselhoClasseNotaRetorno = await useCase.Executar(salvarConselhoClasseAlunoNota);
             conselhoClasseNotaRetorno.ConselhoClasseId.ShouldBe(1);
             conselhoClasseNotaRetorno.FechamentoTurmaId.ShouldBe(1);
-            conselhoClasseNotaRetorno.EmAprovacao.ShouldBeTrue();            
+            conselhoClasseNotaRetorno.EmAprovacao.ShouldBeTrue();
         }
 
         private async Task CriarBase(TipoNota tipoNota, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario,
             string anoTurma)
         {
             var dataAula = DATA_02_05_INICIO_BIMESTRE_2.AddYears(-1);
-            
+
             var filtroConselhoClasse = new FiltroConselhoClasseDto
             {
                 Perfil = ObterPerfilProfessor(),

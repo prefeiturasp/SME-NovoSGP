@@ -1,8 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,7 +20,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(AtualizarDatasEventosItineranciaCommand request, CancellationToken cancellationToken)
         {
             var eventos = await repositorioItineranciaEvento.ObterEventosPorItineranciaId(request.ItineranciaId);
-            foreach(var evento in eventos)
+            foreach (var evento in eventos)
             {
                 evento.DataInicio = request.DataEvento;
                 evento.DataFim = request.DataEvento;

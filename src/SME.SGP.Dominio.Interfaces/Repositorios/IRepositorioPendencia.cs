@@ -15,7 +15,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<PendenciaPendenteDto>> ObterPendenciasPendentes();
         Task<IEnumerable<PendenciaPendenteDto>> ObterPendenciasSemPendenciaPerfilUsuario();
         Task<int> ObterModalidadePorPendenciaETurmaId(long pendenciaId, long turmaId);
-        Task<IEnumerable<AulasDiasPendenciaDto>> ObterPendenciasParaCargaDiasAulas(int? anoLetivo,long ueid);
+        Task<IEnumerable<AulasDiasPendenciaDto>> ObterPendenciasParaCargaDiasAulas(int? anoLetivo, long ueid);
         Task AtualizarQuantidadeDiasAulas(long pendenciaId, long quantidadeAulas, long quantidadeDias);
         Task<IEnumerable<Pendencia>> ObterPorIdsAsync(long[] pendenciasId);
         Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuarioSemFiltro(long usuarioId, Paginacao paginacao);

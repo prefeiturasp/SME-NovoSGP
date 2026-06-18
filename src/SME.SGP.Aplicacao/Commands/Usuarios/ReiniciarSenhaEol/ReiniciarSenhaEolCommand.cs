@@ -9,7 +9,7 @@ namespace SME.SGP.Aplicacao
         {
             Login = login;
         }
-        
+
         public string Login { get; set; }
     }
 

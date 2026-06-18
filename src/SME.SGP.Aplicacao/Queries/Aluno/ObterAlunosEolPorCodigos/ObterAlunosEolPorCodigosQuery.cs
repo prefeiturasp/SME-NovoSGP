@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
         }
         public ObterAlunosEolPorCodigosQuery(long codigoAluno, bool todasMatriculas = false)
         {
-            CodigosAluno = new long[] { codigoAluno } ;
+            CodigosAluno = new long[] { codigoAluno };
             TodasMatriculas = todasMatriculas;
         }
 

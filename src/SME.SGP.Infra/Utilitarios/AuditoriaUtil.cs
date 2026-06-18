@@ -13,8 +13,8 @@ namespace SME.SGP.Infra.Utilitarios
             }
 
             return string.Empty;
-        }        
-        
+        }
+
         public static string MontarTextoAuditoriaInclusao(EntidadeBase fechamentoTurmaDisciplina, bool ehNota)
         {
             var criadorRf =
@@ -29,6 +29,6 @@ namespace SME.SGP.Infra.Utilitarios
             return fechamentoTurmaDisciplina.NaoEhNulo()
                 ? $"{descricaoNotaConceito} finais {descricaoIncluida} por {fechamentoTurmaDisciplina.CriadoPor}{criadorRf} em {fechamentoTurmaDisciplina.CriadoEm:dd/MM/yyyy}, às {fechamentoTurmaDisciplina.CriadoEm:HH:mm}."
                 : string.Empty;
-        }        
+        }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -52,7 +51,7 @@ namespace SME.SGP.Dados.Repositorios
                             WHERE NOT rfa.excluido
                               AND rfa.aula_id = @aulaId";
 
-            return sgpContextConsultas.Conexao.QueryAsync<RegistroFrequenciaAluno>(query, new { aulaId});
+            return sgpContextConsultas.Conexao.QueryAsync<RegistroFrequenciaAluno>(query, new { aulaId });
         }
 
         public async Task<IEnumerable<AusenciaPorDisciplinaAlunoDto>> ObterAusenciasAlunosPorAlunosETurmaIdEDataAula(DateTime dataAula, IEnumerable<string> codigoAlunos, params string[] turmasId)
@@ -215,7 +214,7 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrWhiteSpace(professor))
                 query.AppendLine("and a.professor_rf = @professor");
 
-            query.AppendLine("and a.turma_id = any(@turmasId)");            
+            query.AppendLine("and a.turma_id = any(@turmasId)");
             query.AppendLine("and exists (select 1");
             query.AppendLine("                from registro_frequencia_aluno rfa");
             query.AppendLine("              where a.id = rfa.aula_id and");
@@ -290,7 +289,7 @@ namespace SME.SGP.Dados.Repositorios
                             and registro_frequencia_id = @registroFrequenciaId";
             return sgpContextConsultas.Conexao.QueryAsync<RegistroFrequenciaAluno>(query, new { registroFrequenciaId });
         }
-        
+
         public async Task<IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto>> ObterRegistroFrequenciaAlunosPorAlunosETurmaIdEDataAula(DateTime dataAula, string[] turmasId, IEnumerable<(string codigo, DateTime dataMatricula, DateTime? dataSituacao)> alunos, bool somenteAusencias = false)
         {
             var query = "with lista1 as (";
@@ -326,7 +325,7 @@ namespace SME.SGP.Dados.Repositorios
 
                 query += i + 1 == listaAlunos.Count ? string.Empty : " union ";
             }
-            
+
             query += $@"), lista2 as (
                     select *,
                            row_number() over (partition by aula_id, codigo_aluno, numero_aula order by registro_frequencia_aluno_id desc) sequencia
@@ -370,7 +369,7 @@ namespace SME.SGP.Dados.Repositorios
                                                   group by a.id)
                             select coalesce(sum(qdade), 0) from qdadeAulasAluno;";
 
-            
+
             return await sgpContextConsultas.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(),
                 new { dataAula, disciplinaId, turmasId, codigoAluno });
         }

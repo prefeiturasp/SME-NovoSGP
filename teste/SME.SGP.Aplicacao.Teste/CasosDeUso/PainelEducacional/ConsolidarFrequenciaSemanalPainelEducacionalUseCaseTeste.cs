@@ -1,16 +1,16 @@
 ﻿using MediatR;
 using Moq;
-using SME.SGP.Aplicacao.Commands.PainelEducacional.ConsolidacaoFrequenciaSemanal;
 using SME.SGP.Aplicacao.CasosDeUso.PainelEducacional.Frequencia;
+using SME.SGP.Aplicacao.Commands.PainelEducacional.ConsolidacaoFrequenciaSemanal;
 using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterFrequenciaSemanal;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional.Frequencia;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
-using System.Threading;
 
 namespace SME.SGP.Aplicacao.Testes.CasosDeUso.PainelEducacional.Frequencia
 {
@@ -42,8 +42,8 @@ namespace SME.SGP.Aplicacao.Testes.CasosDeUso.PainelEducacional.Frequencia
         public async Task Executar_DeveBuscarFrequencia_ConsolidarDados_EEnviarComandoDeSalvar()
         {
             // Arrange
-            var dataMock1 = new DateTime(2025, 10, 17); 
-            var dataMock2 = new DateTime(2025, 10, 10); 
+            var dataMock1 = new DateTime(2025, 10, 17);
+            var dataMock2 = new DateTime(2025, 10, 10);
             var listaFrequenciaMock = ObterListaFrequenciaMock(dataMock1, dataMock2);
             var param = new MensagemRabbit();
 

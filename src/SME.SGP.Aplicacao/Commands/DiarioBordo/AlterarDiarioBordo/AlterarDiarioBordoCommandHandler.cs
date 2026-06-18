@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
 
                 var atribuicoesEsporadica = await mediator.Send(new ObterAtribuicoesPorRFEAnoQuery(usuario.CodigoRf, false, aula.DataAula.Year, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe));
 
-                if (possuiAtribuicaoCJ && 
+                if (possuiAtribuicaoCJ &&
                     atribuicoesEsporadica.Any() &&
                     !atribuicoesEsporadica.Any(a => a.DataInicio <= aula.DataAula.Date && a.DataFim >= aula.DataAula.Date && a.DreId == turma.Ue.Dre.CodigoDre && a.UeId == turma.Ue.CodigoUe))
                     throw new NegocioException($"Você não possui permissão para alterar o registro de diário de bordo neste período");
@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException($"Diário de Bordo para a aula {request.AulaId} não encontrado!");
 
             await MoverRemoverExcluidos(request, diarioBordo);
-            
+
             MapearAlteracoes(diarioBordo, request, componenteCurricularPrincipalProfessor);
 
             await repositorioDiarioBordo.SalvarAsync(diarioBordo);

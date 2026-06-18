@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
         {
             var dataEvento = DateTime.Now.Date.AddDays(diasParaEvento);
             var eventos = await mediator.Send(new ObterEventoPorTipoEDataQuery(tipoEvento, dataEvento));
-            foreach(var evento in eventos)
+            foreach (var evento in eventos)
             {
                 await mediator.Send(new NotificarEventoCommand(evento));
             }

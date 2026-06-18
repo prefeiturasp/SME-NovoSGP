@@ -51,16 +51,17 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             var consulta = ServiceProvider.GetService<IConsultaConselhoClasseRecomendacaoUseCase>();
             consulta.ShouldNotBeNull();
-            
+
             var retorno = await consulta.Executar(new ConselhoClasseRecomendacaoDto()
-                {
-                    ConselhoClasseId = CONSELHO_CLASSE_ID_1,
-                    FechamentoTurmaId = FECHAMENTO_TURMA_ID_1,
-                    AlunoCodigo = ALUNO_CODIGO_1,
-                    CodigoTurma = TURMA_CODIGO_1,
-                    Bimestre = BIMESTRE_1}
+            {
+                ConselhoClasseId = CONSELHO_CLASSE_ID_1,
+                FechamentoTurmaId = FECHAMENTO_TURMA_ID_1,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                CodigoTurma = TURMA_CODIGO_1,
+                Bimestre = BIMESTRE_1
+            }
             );
-            
+
             retorno.ShouldNotBeNull();
             retorno.AnotacoesAluno.ShouldNotBeNull();
             retorno.AnotacoesAluno.Count().ShouldBeGreaterThan(0);
@@ -138,7 +139,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         {
             var fechamentoTurmaDisciplinaId = 1;
 
-            foreach(var componente in ObterComponentesCurriculares())
+            foreach (var componente in ObterComponentesCurriculares())
             {
                 await CriarFechamentoTurmaDisciplina(componente, FECHAMENTO_TURMA_ID_1);
 

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.RegistroIndividual.ServicosFakes
 {
-    public class ObterAlunoPorTurmaAlunoCodigoQueryHandlerFake: IRequestHandler<ObterAlunoPorTurmaAlunoCodigoQuery, AlunoPorTurmaResposta>
+    public class ObterAlunoPorTurmaAlunoCodigoQueryHandlerFake : IRequestHandler<ObterAlunoPorTurmaAlunoCodigoQuery, AlunoPorTurmaResposta>
     {
         public Task<AlunoPorTurmaResposta> Handle(ObterAlunoPorTurmaAlunoCodigoQuery request, CancellationToken cancellationToken)
         {

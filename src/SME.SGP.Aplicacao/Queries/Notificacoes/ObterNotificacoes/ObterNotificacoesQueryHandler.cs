@@ -20,5 +20,5 @@ namespace SME.SGP.Aplicacao
         {
             return repositorioNotificacaoConsulta.Obter(request.DreId, request.UeId, request.Status, request.TurmaId, request.UsuarioRf, request.Tipo, request.Categoria, request.Titulo, request.Codigo, request.AnoLetivo, request.Paginacao);
         }
-    }    
+    }
 }

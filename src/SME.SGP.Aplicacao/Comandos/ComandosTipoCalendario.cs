@@ -1,11 +1,11 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Text;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using static SME.SGP.Aplicacao.ExecutarTipoCalendarioUseCase;
 
 namespace SME.SGP.Aplicacao

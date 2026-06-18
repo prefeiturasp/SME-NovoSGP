@@ -10,46 +10,46 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioConsolidadoEncaminhamentoNAAPA: RepositorioBase<ConsolidadoEncaminhamentoNAAPA>, IRepositorioConsolidadoEncaminhamentoNAAPA
+    public class RepositorioConsolidadoEncaminhamentoNAAPA : RepositorioBase<ConsolidadoEncaminhamentoNAAPA>, IRepositorioConsolidadoEncaminhamentoNAAPA
     {
         public RepositorioConsolidadoEncaminhamentoNAAPA(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 
-        public async Task<IEnumerable<ConsolidadoEncaminhamentoNAAPA>> ObterPorUeIdAnoLetivo(long ueId,int anoLetivo)
+        public async Task<IEnumerable<ConsolidadoEncaminhamentoNAAPA>> ObterPorUeIdAnoLetivo(long ueId, int anoLetivo)
         {
             var query = " select * from consolidado_encaminhamento_naapa cen where cen.ue_id = @ueId and cen.ano_letivo = @anoLetivo ";
-            return await database.Conexao.QueryAsync<ConsolidadoEncaminhamentoNAAPA>(query, new {  ueId,anoLetivo }, commandTimeout: 60);
+            return await database.Conexao.QueryAsync<ConsolidadoEncaminhamentoNAAPA>(query, new { ueId, anoLetivo }, commandTimeout: 60);
         }
 
         public async Task<ConsolidadoEncaminhamentoNAAPA> ObterPorUeIdAnoLetivoSituacao(long ueId, int anoLetivo, int situacao, int modalidade)
         {
-           var query = @"select * from consolidado_encaminhamento_naapa cen 
+            var query = @"select * from consolidado_encaminhamento_naapa cen 
                          where cen.ue_id = @ueId 
                             and cen.ano_letivo = @anoLetivo 
                             and cen.situacao = @situacao 
                             and cen.modalidade_codigo = @modalidade";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<ConsolidadoEncaminhamentoNAAPA>(query, new { ueId, anoLetivo, situacao, modalidade }, commandTimeout:60);
+            return await database.Conexao.QueryFirstOrDefaultAsync<ConsolidadoEncaminhamentoNAAPA>(query, new { ueId, anoLetivo, situacao, modalidade }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<DadosGraficoSitaucaoPorUeAnoLetivoDto>> ObterDadosGraficoSituacaoPorUeAnoLetivo(int anoLetivo, long? ueId, long? dreId, int? modalidade)
         {
-            var sql = new StringBuilder(); 
+            var sql = new StringBuilder();
             sql.AppendLine(@"select");
             sql.AppendLine(@"     cen.situacao,");
             sql.AppendLine(@"     sum(cen.quantidade)::int4 as quantidade");
             sql.AppendLine(@"from consolidado_encaminhamento_naapa cen");
             sql.AppendLine(@"inner join ue u on u.id = cen.ue_id");
             sql.AppendLine(@"where cen.ano_Letivo = @anoLetivo ");
-            if(ueId.NaoEhNulo())
-               sql.AppendLine(@"    and cen.ue_id= @ueId ");
-            if(dreId.NaoEhNulo())
-               sql.AppendLine(@"    and u.dre_id = @dreId ");
-            if(modalidade.NaoEhNulo())
+            if (ueId.NaoEhNulo())
+                sql.AppendLine(@"    and cen.ue_id= @ueId ");
+            if (dreId.NaoEhNulo())
+                sql.AppendLine(@"    and u.dre_id = @dreId ");
+            if (modalidade.NaoEhNulo())
                 sql.AppendLine(@"    and cen.modalidade_codigo = @modalidade ");
             sql.AppendLine(@"group by cen.situacao;");
-            return await database.Conexao.QueryAsync<DadosGraficoSitaucaoPorUeAnoLetivoDto>(sql.ToString(), new {  ueId, anoLetivo, dreId, modalidade }, commandTimeout: 60);
+            return await database.Conexao.QueryAsync<DadosGraficoSitaucaoPorUeAnoLetivoDto>(sql.ToString(), new { ueId, anoLetivo, dreId, modalidade }, commandTimeout: 60);
         }
 
         public async Task<GraficoEncaminhamentoNAAPADto> ObterQuantidadeEncaminhamentoNAAPAEmAberto(int anoLetivo, long? dreId, int? modalidade)

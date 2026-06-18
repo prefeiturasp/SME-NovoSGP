@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         private readonly IUnitOfWork unitOfWork;
 
         public GerarPendenciaAtribuirResponsavelEncaminhamentoAEECommandHandler(IMediator mediator, IConfiguration configuration,
-            IRepositorioPendencia repositorioPendencia, 
+            IRepositorioPendencia repositorioPendencia,
             IRepositorioPendenciaEncaminhamentoAEE repositorioPendenciaEncaminhamentoAEE,
             IUnitOfWork unitOfWork)
         {
@@ -83,7 +83,7 @@ namespace SME.SGP.Aplicacao
                     if (pendencia.Id > 0)
                         await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendencia.Id, turma.UeId), Guid.NewGuid()));
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     unitOfWork.Rollback();
                     throw;

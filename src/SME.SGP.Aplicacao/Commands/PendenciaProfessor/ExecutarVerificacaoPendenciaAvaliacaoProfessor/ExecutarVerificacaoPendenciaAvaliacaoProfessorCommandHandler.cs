@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             var componentesCurriculares = await mediator.Send(ObterComponentesCurricularesQuery.Instance);
 
             var periodosEncerrando = await mediator.Send(new ObterPeriodosFechamentoEscolasPorDataFinalQuery(DateTime.Now.Date.AddDays(request.DiasParaGeracaoDePendencia)));
-            foreach (var periodoEncerrando in periodosEncerrando.Where(w=> w.PeriodoEscolar.TipoCalendario.Modalidade.NaoEhEducacaoInfantil()))
+            foreach (var periodoEncerrando in periodosEncerrando.Where(w => w.PeriodoEscolar.TipoCalendario.Modalidade.NaoEhEducacaoInfantil()))
             {
                 await ExecutaAcaoComTratamentoExcecao(async () =>
                 {
@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
-        private async Task TratarPorTurmas(IEnumerable<Turma> turmas, 
+        private async Task TratarPorTurmas(IEnumerable<Turma> turmas,
                                            IEnumerable<ComponenteCurricularDto> componentesCurriculares,
                                            PeriodoFechamentoBimestre periodoEncerrando,
                                            IEnumerable<AvaliacoesPorTurmaComponenteDto> turmasComAvaliacao)

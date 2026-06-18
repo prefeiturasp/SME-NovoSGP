@@ -3,7 +3,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AtualizarComponenteCurricularCommand: IRequest<bool>
+    public class AtualizarComponenteCurricularCommand : IRequest<bool>
     {
         public ComponenteCurricularDto ComponenteCurricular { get; set; }
 

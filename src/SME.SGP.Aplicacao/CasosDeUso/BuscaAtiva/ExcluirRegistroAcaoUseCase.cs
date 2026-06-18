@@ -1,10 +1,8 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
-using System.Linq;
-using System.Threading.Tasks;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
-using SME.SGP.Dominio.Enumerados;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -20,10 +18,10 @@ namespace SME.SGP.Aplicacao
 
             if (registroAcao.EhNulo())
                 throw new NegocioException(MensagemNegocioRegistroAcao.REGISTROACAO_NAO_ENCONTRADO);
-            
+
             return (await mediator.Send(new ExcluirRegistroAcaoCommand(registroAcaoid)));
         }
 
-       
+
     }
 }

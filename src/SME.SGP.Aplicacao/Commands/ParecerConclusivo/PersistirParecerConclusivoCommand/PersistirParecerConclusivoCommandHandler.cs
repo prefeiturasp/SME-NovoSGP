@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class PersistirParecerConclusivoCommandHandler : IRequestHandler<PersistirParecerConclusivoCommand,bool>
+    public class PersistirParecerConclusivoCommandHandler : IRequestHandler<PersistirParecerConclusivoCommand, bool>
     {
         private readonly IMediator mediator;
         private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
@@ -28,8 +28,8 @@ namespace SME.SGP.Aplicacao
 
             var alunoDaTurma = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(request.TurmaCodigo, conselhoClasseAluno.AlunoCodigo));
 
-            var mensagemConsolidacaoConselhoClasseAluno = new MensagemConsolidacaoConselhoClasseAlunoDto(conselhoClasseAluno.AlunoCodigo, 
-                                                                                                         request.TurmaId, 
+            var mensagemConsolidacaoConselhoClasseAluno = new MensagemConsolidacaoConselhoClasseAlunoDto(conselhoClasseAluno.AlunoCodigo,
+                                                                                                         request.TurmaId,
                                                                                                          request.Bimestre,
                                                                                                          alunoDaTurma?.Inativo ?? true, null, true);
 

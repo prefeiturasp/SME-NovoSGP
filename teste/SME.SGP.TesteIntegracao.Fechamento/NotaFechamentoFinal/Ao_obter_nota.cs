@@ -193,8 +193,8 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             await CriaFechamentoTurma_Disciplina(null, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, FECHAMENTO_TURMA_ID_1);
             await CriaFechamentoAluno(FECHAMENTO_TURMA_DISCIPLINA_ID_1, CODIGO_ALUNO_1);
             await CriaFechamentoAluno(FECHAMENTO_TURMA_DISCIPLINA_ID_2, CODIGO_ALUNO_1);
-            await CriaFechamentoNota(FECHAMENTO_ALUNO_ID_1, COMPONENTE_CURRICULAR_ARTES_ID_139,(int)ConceitoValores.P);
-            await CriaFechamentoNota(FECHAMENTO_ALUNO_ID_2, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, (int)ConceitoValores.NS,true);
+            await CriaFechamentoNota(FECHAMENTO_ALUNO_ID_1, COMPONENTE_CURRICULAR_ARTES_ID_139, (int)ConceitoValores.P);
+            await CriaFechamentoNota(FECHAMENTO_ALUNO_ID_2, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, (int)ConceitoValores.NS, true);
 
             var consulta = ServiceProvider.GetService<IRepositorioFechamentoNotaConsulta>();
             var retorno = await consulta.ObterNotasFinaisAlunoAsync(turmas, CODIGO_ALUNO_1);
@@ -254,7 +254,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             await CriaFechamentoNota(FECHAMENTO_ALUNO_ID_2, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, (int)ConceitoValores.NS, true);
 
             var consulta = ServiceProvider.GetService<IRepositorioFechamentoNotaConsulta>();
-            var retorno = await consulta.ObterPorFechamentosTurma(new long[] { FECHAMENTO_TURMA_ID_1 } );
+            var retorno = await consulta.ObterPorFechamentosTurma(new long[] { FECHAMENTO_TURMA_ID_1 });
 
             var valor = retorno.Any(x => x.ComponenteCurricularId == COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
             Assert.False(valor);
@@ -599,7 +599,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
         private async Task CriaFechamentoNota(
                             long idFechamentoAluno,
                             long idDiciplina,
-                            double nota, 
+                            double nota,
                             bool excluido = false)
         {
             await InserirNaBase(new FechamentoNota()

@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Minio.DataModel;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
@@ -31,7 +30,7 @@ namespace SME.SGP.Aplicacao
                     return false;
                 }
 
-                foreach (var tipoEscola in turmasDoEnsinoInfantil.GroupBy(turma => turma.Ue.TipoEscola)) 
+                foreach (var tipoEscola in turmasDoEnsinoInfantil.GroupBy(turma => turma.Ue.TipoEscola))
                 {
                     var ignorarGeracaoPendencia = await mediator.Send(new ObterTipoUeIgnoraGeracaoPendenciasQuery(tipoEscola.Key, ""));
                     if (!ignorarGeracaoPendencia)

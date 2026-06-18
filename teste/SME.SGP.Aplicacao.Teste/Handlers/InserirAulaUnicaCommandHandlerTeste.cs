@@ -33,7 +33,8 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             var usuario = new Usuario() { Id = 1, CodigoRf = "1234", PerfilAtual = Perfis.PERFIL_PROFESSOR };
             var turma = new Turma() { CodigoTurma = "1234", Ue = new Ue { CodigoUe = "321", Dre = new Dre { CodigoDre = "1" } } };
             var podeCadastrarAula = new PodeCadastrarAulaPorDataRetornoDto(true);
-            var persistirAuladto = new PersistirAulaDto() {
+            var persistirAuladto = new PersistirAulaDto()
+            {
                 DataAula = DateTime.Today,
                 Quantidade = 1,
                 CodigoTurma = "1234",

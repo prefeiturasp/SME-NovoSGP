@@ -2,12 +2,11 @@
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ConsultasCompensacaoAusenciaDisciplinaRegencia: IConsultasCompensacaoAusenciaDisciplinaRegencia
+    public class ConsultasCompensacaoAusenciaDisciplinaRegencia : IConsultasCompensacaoAusenciaDisciplinaRegencia
     {
         private readonly IRepositorioCompensacaoAusenciaDisciplinaRegencia repositorioCompensacaoAusenciaDisciplinaRegencia;
 

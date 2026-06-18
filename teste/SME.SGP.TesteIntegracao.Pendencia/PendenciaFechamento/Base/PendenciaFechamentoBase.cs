@@ -48,7 +48,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento.Base
             return ServiceProvider.GetService<IPendenciaAulaFechamentoUseCase>();
         }
 
-        
+
 
         protected async Task CriarDadosBasicos(FiltroPendenciaFechamentoDto filtro)
         {
@@ -118,7 +118,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento.Base
                 AulaId = aulaId,
                 PendenciaId = pendenciaId
             });
-            
+
             await InserirNaBase(new Dominio.PendenciaUsuario
             {
                 UsuarioId = 1,
@@ -225,10 +225,10 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento.Base
         protected class FiltroPendenciaFechamentoDto
         {
             public Modalidade Modalidade { get; set; }
-            public ModalidadeTipoCalendario TipoCalendario { get; set; } 
+            public ModalidadeTipoCalendario TipoCalendario { get; set; }
             public string ComponenteCurricularCodigo { get; set; }
             public bool IgnorarCricaoFechamento { get; set; }
-    }
+        }
     }
 
 

@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -47,7 +46,7 @@ namespace SME.SGP.Aplicacao
                 $"<a href='{hostAplicacao}aee/encaminhamento/editar/{encaminhamentoAEE.Id}'>Clique aqui para acessar o encaminhamento.</a>";
 
 
-            
+
 
             await mediator.Send(new EnviarNotificacaoUsuariosCommand(titulo,
                                                                      mensagem,
@@ -61,7 +60,7 @@ namespace SME.SGP.Aplicacao
         private async Task<List<long>> ObterUsuariosId(List<string> funcionarios)
         {
             List<long> usuarios = new List<long>();
-            foreach(var functionario in funcionarios)
+            foreach (var functionario in funcionarios)
             {
                 var usuario = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(functionario));
                 usuarios.Add(usuario);
@@ -73,7 +72,7 @@ namespace SME.SGP.Aplicacao
         {
 
             var funcionariosCP = await mediator.Send(new ObterFuncionariosPorUeECargoQuery(codigoUe, (int)Cargo.CP));
-            if(funcionariosCP.Any())
+            if (funcionariosCP.Any())
                 return funcionariosCP.Select(f => f.CodigoRF).ToList();
 
             var funcionariosAD = await mediator.Send(new ObterFuncionariosPorUeECargoQuery(codigoUe, (int)Cargo.AD));

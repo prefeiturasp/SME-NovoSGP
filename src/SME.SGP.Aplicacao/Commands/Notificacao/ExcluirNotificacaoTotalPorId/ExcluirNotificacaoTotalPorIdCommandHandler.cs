@@ -9,7 +9,7 @@ namespace SME.SGP.Aplicacao
     public class ExcluirNotificacaoTotalPorIdCommandHandler : IRequestHandler<ExcluirNotificacaoTotalPorIdCommand, bool>
     {
         private readonly IRepositorioNotificacao repositorio;
-        
+
         public ExcluirNotificacaoTotalPorIdCommandHandler(IRepositorioNotificacao repositorio)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));

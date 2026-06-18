@@ -15,12 +15,12 @@ namespace SME.SGP.Aplicacao
             var listaSituacoes = new List<SituacaoDto>();
             foreach (var status in Enum.GetValues(typeof(SituacaoConselhoClasse)))
             {
-                    var situacao = new SituacaoDto
-                    {
-                        Codigo = (int)status,
-                        Descricao = ((SituacaoConselhoClasse)status).ObterNome()
-                    };
-                    listaSituacoes.Add(situacao);
+                var situacao = new SituacaoDto
+                {
+                    Codigo = (int)status,
+                    Descricao = ((SituacaoConselhoClasse)status).ObterNome()
+                };
+                listaSituacoes.Add(situacao);
             }
             return Task.FromResult(listaSituacoes);
         }

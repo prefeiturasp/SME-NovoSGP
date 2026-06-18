@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(RegistrarHistoricoDeAlteracaoDeImpressaoDoEncaminhamentoNAAPACommand request, CancellationToken cancellationToken)
         {
 
-            foreach(var encaminhamentoId in request.EncaminhamentoNaapaIds)
+            foreach (var encaminhamentoId in request.EncaminhamentoNaapaIds)
             {
                 var historico = new EncaminhamentoNAAPAHistoricoAlteracoes()
                 {

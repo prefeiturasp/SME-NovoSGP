@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,7 +15,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<long> Handle(RegistraConsolidacaoMediaRegistroIndividualCommand request, CancellationToken cancellationToken)
-        { 
+        {
             return await repositorio.Inserir(new ConsolidacaoRegistroIndividualMedia(request.TurmaId, request.Quantidade));
         }
     }

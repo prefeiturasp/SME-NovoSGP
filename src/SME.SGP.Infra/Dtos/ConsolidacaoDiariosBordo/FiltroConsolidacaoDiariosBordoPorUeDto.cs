@@ -7,6 +7,6 @@
             UeId = ueId;
         }
 
-        public long UeId { get; set;  }
+        public long UeId { get; set; }
     }
 }

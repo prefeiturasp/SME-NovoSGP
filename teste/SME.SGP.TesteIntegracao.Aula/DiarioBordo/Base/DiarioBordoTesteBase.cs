@@ -1,14 +1,14 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using SME.SGP.Aplicacao;
-using SME.SGP.TesteIntegracao.Setup;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.RegistroIndividual.ServicosFakes;
-using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.TesteIntegracao.ServicosFake;
+using SME.SGP.TesteIntegracao.Setup;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.DiarioBordo
 {
@@ -28,8 +28,8 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
-        
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorTurmaAlunoCodigoQuery,AlunoPorTurmaResposta>),
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorTurmaAlunoCodigoQuery, AlunoPorTurmaResposta>),
                 typeof(ObterAlunoPorTurmaAlunoCodigoQueryHandlerFake), ServiceLifetime.Scoped));
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioLogadoQuery, Usuario>),
@@ -38,14 +38,14 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterProfessorTitularPorTurmaEComponenteCurricularQuery, ProfessorTitularDisciplinaEol>),
                 typeof(DiarioBordo.ServicosFakes.ObterProfessorTitularPorTurmaEComponenteCurricularQueryHandlerFakeDiarioClasse), ServiceLifetime.Scoped));
 
-            
+
         }
 
         protected IExcluirDiarioBordoUseCase ObterServicoExcluirDiarioBordoUseCase()
         {
             return ServiceProvider.GetService<IExcluirDiarioBordoUseCase>();
         }
-                
+
         protected async Task CriarDadosBasicos(FiltroDiarioBordoDto filtroDiarioBordoDto, bool criarDiario = true)
         {
             await CriarDreUePerfil();
@@ -55,9 +55,9 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo
             await CriarComponenteCurricular();
             await CriarTipoCalendario(ModalidadeTipoCalendario.FundamentalMedio);
             await CriarTurma(Modalidade.Fundamental);
-            await CriarAula(filtroDiarioBordoDto.DataAulaDiarioBordo, RecorrenciaAula.AulaUnica, 
-                            TipoAula.Normal, 
-                            USUARIO_PROFESSOR_CODIGO_RF_1111111, 
+            await CriarAula(filtroDiarioBordoDto.DataAulaDiarioBordo, RecorrenciaAula.AulaUnica,
+                            TipoAula.Normal,
+                            USUARIO_PROFESSOR_CODIGO_RF_1111111,
                             TURMA_CODIGO_1, UE_CODIGO_1,
                             filtroDiarioBordoDto.ComponenteCurricularId.ToString(), TIPO_CALENDARIO_1);
             if (criarDiario)
@@ -100,7 +100,8 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo
 
             if (filtroDiarioBordoDto.ContemObservacoes)
             {
-                await InserirNaBase(new DiarioBordoObservacao() { 
+                await InserirNaBase(new DiarioBordoObservacao()
+                {
                     Id = DIARIO_BORDO_OBS_ID_1,
                     Observacao = "Observação Diário de Bordo 01",
                     DiarioBordoId = DIARIO_BORDO_ID_1,

@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao.Queries.ProficienciaIdep
 {
     public class ObterProficienciaIdepPorAnoLetivoQuery : IRequest<IEnumerable<Dominio.Entidades.ProficienciaIdep>>
     {
-        public ObterProficienciaIdepPorAnoLetivoQuery(int anoLetivo, List<string> codigoUe) 
+        public ObterProficienciaIdepPorAnoLetivoQuery(int anoLetivo, List<string> codigoUe)
         {
             AnoLetivo = anoLetivo;
             CodigoUe = codigoUe;

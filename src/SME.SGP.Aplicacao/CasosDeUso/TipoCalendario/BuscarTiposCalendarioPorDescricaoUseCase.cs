@@ -2,10 +2,8 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -38,13 +36,13 @@ namespace SME.SGP.Aplicacao
             //TODO: MELHORAR ISSO AQUI
             var anosLetivosHistorico = await consultasAbrangencia.ObterAnosLetivos(true, 0);
             var anosLetivos = await consultasAbrangencia.ObterAnosLetivos(false, 0);
-            int[] anosLetivosTipoCalendario = anosLetivosHistorico.Union(anosLetivos.ToArray()).ToArray();    
+            int[] anosLetivosTipoCalendario = anosLetivosHistorico.Union(anosLetivos.ToArray()).ToArray();
 
             string[] codigosUes = lstAbrangencia.Select(a => a.CodigoUe)?.Distinct()?.ToArray();
 
             var modalidadesUes = await mediator.Send(new ObterModalidadesPorCodigosUeQuery(codigosUes));
 
-            var modalidadesTipoCalendarioUes = modalidadesUes.Select(a => (int)a.ObterModalidadeTipoCalendario()).ToArray();             
+            var modalidadesTipoCalendarioUes = modalidadesUes.Select(a => (int)a.ObterModalidadeTipoCalendario()).ToArray();
             return await mediator.Send(new ObterTiposCalendariosPorAnosLetivoModalidadesQuery(anosLetivosTipoCalendario.Distinct().ToArray(), modalidadesTipoCalendarioUes, descricao));
         }
 

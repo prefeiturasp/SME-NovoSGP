@@ -24,6 +24,6 @@ namespace SME.SGP.Aplicacao
             await repositorioPainelEducacionalIdeb.BulkInsertAsync(request.Ideb);
 
             return true;
-          }
+        }
     }
 }

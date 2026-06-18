@@ -1,5 +1,4 @@
-﻿using Dapper;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra.Consts;
 using SME.SGP.Infra.Interface;
@@ -10,7 +9,6 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -62,7 +60,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<bool> UeEmFechamento(DateTime dataReferencia, long tipoCalendarioId, bool ehModalidadeInfantil, int bimestre = 0)
         {
-            var retorno = (await UeEmFechamentoBimestreVigente(dataReferencia,tipoCalendarioId, ehModalidadeInfantil, bimestre));
+            var retorno = (await UeEmFechamentoBimestreVigente(dataReferencia, tipoCalendarioId, ehModalidadeInfantil, bimestre));
             return retorno.NaoEhNulo();
         }
 

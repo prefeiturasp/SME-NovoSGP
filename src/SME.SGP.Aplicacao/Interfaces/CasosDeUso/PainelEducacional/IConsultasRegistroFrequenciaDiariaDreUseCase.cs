@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional
 {
-    public interface IConsultasRegistroFrequenciaDiariaDreUseCase 
+    public interface IConsultasRegistroFrequenciaDiariaDreUseCase
     {
         Task<FrequenciaDiariaDreDto> ObterFrequenciaDiariaPorDre(FiltroFrequenciaDiariaDreDto filtro);
     }

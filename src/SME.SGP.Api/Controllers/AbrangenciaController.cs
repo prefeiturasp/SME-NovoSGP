@@ -1,17 +1,17 @@
-﻿using System;
+﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -51,7 +51,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<AbrangenciaFiltroRetorno>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterAbrangenciaAutoComplete(string filtro, [FromQuery]bool consideraAnosTurmasInfantil = false)
+        public async Task<IActionResult> ObterAbrangenciaAutoComplete(string filtro, [FromQuery] bool consideraAnosTurmasInfantil = false)
         {
             if (filtro.Length < 2)
                 return StatusCode(204);
@@ -66,9 +66,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<OpcaoDropdownDto>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterAnosLetivos(string codigoUe, int modalidade,int? anoletivo)
+        public async Task<IActionResult> ObterAnosLetivos(string codigoUe, int modalidade, int? anoletivo)
         {
-            var retorno = (await consultasAbrangencia.ObterAnosTurmasPorUeModalidade(codigoUe, (Modalidade)modalidade, ConsideraHistorico,anoletivo));
+            var retorno = (await consultasAbrangencia.ObterAnosTurmasPorUeModalidade(codigoUe, (Modalidade)modalidade, ConsideraHistorico, anoletivo));
 
             if (!retorno.Any())
                 return NoContent();
@@ -108,9 +108,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<AbrangenciaDreRetornoDto>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterDres([FromServices] IObterAbrangenciaDresUseCase useCase, [FromQuery] Modalidade? modalidade, [FromQuery] int periodo = 0, [FromQuery] int anoLetivo = 0, [FromQuery]  string filtro = "")
+        public async Task<IActionResult> ObterDres([FromServices] IObterAbrangenciaDresUseCase useCase, [FromQuery] Modalidade? modalidade, [FromQuery] int periodo = 0, [FromQuery] int anoLetivo = 0, [FromQuery] string filtro = "")
         {
-             if (filtro.Length < 3)
+            if (filtro.Length < 3)
                 filtro = "";
 
             var dres = await useCase.Executar(modalidade, periodo, ConsideraHistorico, anoLetivo, filtro);
@@ -164,7 +164,7 @@ namespace SME.SGP.Api.Controllers
         {
             var turmas = await mediator.Send(
                 new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(codigoUe, modalidade,
-                    periodo, ConsideraHistorico, anoLetivo, tipos, consideraNovosAnosInfantil)); 
+                    periodo, ConsideraHistorico, anoLetivo, tipos, consideraNovosAnosInfantil));
 
             if (!turmas.Any())
                 return NoContent();
@@ -178,7 +178,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterTurmasMesmoComponenteCurricular([FromServices] IMediator mediator,string codigoUe, string codigoDisciplina, bool turmasRegulares, [FromQuery] Modalidade modalidade, int periodo = 0, [FromQuery] int anoLetivo = 0, [FromQuery] int[] tipos = null, [FromQuery] bool consideraNovosAnosInfantil = false)
+        public async Task<IActionResult> ObterTurmasMesmoComponenteCurricular([FromServices] IMediator mediator, string codigoUe, string codigoDisciplina, bool turmasRegulares, [FromQuery] Modalidade modalidade, int periodo = 0, [FromQuery] int anoLetivo = 0, [FromQuery] int[] tipos = null, [FromQuery] bool consideraNovosAnosInfantil = false)
         {
             IEnumerable<AbrangenciaTurmaRetorno> turmas;
 
@@ -186,12 +186,12 @@ namespace SME.SGP.Api.Controllers
             {
                 turmas = await mediator.Send(
                     new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(codigoUe, modalidade,
-                        periodo, ConsideraHistorico, anoLetivo, tipos, consideraNovosAnosInfantil)); 
+                        periodo, ConsideraHistorico, anoLetivo, tipos, consideraNovosAnosInfantil));
 
                 if ((turmas.EhNulo() || !turmas.Any()) && !ConsideraHistorico)
                     turmas = await mediator.Send(
                         new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(codigoUe,
-                            modalidade, periodo, true, anoLetivo, tipos, consideraNovosAnosInfantil)); 
+                            modalidade, periodo, true, anoLetivo, tipos, consideraNovosAnosInfantil));
             }
             else
             {

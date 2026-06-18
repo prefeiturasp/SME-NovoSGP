@@ -1,11 +1,11 @@
-﻿using SME.SGP.Dominio;
+﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MediatR;
 
 namespace SME.SGP.Aplicacao.Consultas
 {
@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao.Consultas
                     PeriodoInicio = x.PeriodoInicio,
                     PeriodoFim = x.PeriodoFim,
                     Migrado = x.Migrado,
-                    Id = x.Id                    
+                    Id = x.Id
                 }).ToList()
             };
         }
@@ -125,9 +125,9 @@ namespace SME.SGP.Aplicacao.Consultas
         public async Task<PeriodoEscolar> ObterPeriodoPorModalidade(Modalidade modalidade, DateTime data, int semestre = 0)
         {
             var tipoCalendario = await ObterTipoCalendario(modalidade, data.Year, semestre);
-            var periodosEscolares = await mediator.Send(new ObterPeridosEscolaresPorTipoCalendarioIdQuery(tipoCalendario.Id));            
+            var periodosEscolares = await mediator.Send(new ObterPeridosEscolaresPorTipoCalendarioIdQuery(tipoCalendario.Id));
 
-            return periodosEscolares.FirstOrDefault(x => x.PeriodoInicio <= data.Date && x.PeriodoFim >= data.Date) ?? 
+            return periodosEscolares.FirstOrDefault(x => x.PeriodoInicio <= data.Date && x.PeriodoFim >= data.Date) ??
                    periodosEscolares.OrderBy(x => x.Bimestre).FirstOrDefault(x => data.Date < x.PeriodoInicio) ??
                    periodosEscolares.OrderByDescending(x => x.Bimestre).FirstOrDefault(x => data.Date > x.PeriodoFim);
         }
@@ -146,7 +146,7 @@ namespace SME.SGP.Aplicacao.Consultas
 
         public PeriodoEscolar ObterUltimoPeriodoPorData(IEnumerable<PeriodoEscolar> periodosEscolares, DateTime data)
             => periodosEscolares.OrderByDescending(o => o.PeriodoInicio)
-                .FirstOrDefault(p => p.PeriodoFim <= data);        
+                .FirstOrDefault(p => p.PeriodoFim <= data);
 
         public async Task<PeriodoEscolar> ObterUltimoPeriodoAbertoAsync(Turma turma)
         {
@@ -161,7 +161,7 @@ namespace SME.SGP.Aplicacao.Consultas
             return await BuscaUltimoPeriodoEscolar(tipoCalendario);
         }
 
-        public async Task<PeriodoEscolar> ObterPeriodoEscolarPorTipoCalendarioBimestre(long tipoCalendarioId, int bimestre) 
+        public async Task<PeriodoEscolar> ObterPeriodoEscolarPorTipoCalendarioBimestre(long tipoCalendarioId, int bimestre)
             => await repositorio.ObterPorTipoCalendarioEBimestreAsync(tipoCalendarioId, bimestre);
 
         private async Task<PeriodoEscolar> BuscaUltimoPeriodoEscolar(TipoCalendarioCompletoDto tipoCalendario)

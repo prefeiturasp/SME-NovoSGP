@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private IEnumerable<InformeResumoDto> MapearParaDto(
-                                    IEnumerable<Informativo> informativos, 
+                                    IEnumerable<Informativo> informativos,
                                     IEnumerable<GruposDeUsuariosDto> perfils)
         {
             var informes = new List<InformeResumoDto>();
@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao
                     Titulo = informativo.Titulo,
                     EnviadoPor = $"{informativo.CriadoPor} ({informativo.CriadoRF})",
                     Modalidades = ObterModalidades(informativo.Modalidades)
-                }); 
+                });
             }
 
             return informes;

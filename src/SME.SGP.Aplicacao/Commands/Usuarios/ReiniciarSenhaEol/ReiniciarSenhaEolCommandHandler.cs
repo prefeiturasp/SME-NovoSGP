@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -22,9 +21,9 @@ namespace SME.SGP.Aplicacao
         public async Task Handle(ReiniciarSenhaEolCommand request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
-            
-            var valoresParaEnvio = new List<KeyValuePair<string, string>> { { new ("login", request.Login) }};
-            
+
+            var valoresParaEnvio = new List<KeyValuePair<string, string>> { { new("login", request.Login) } };
+
             var resposta = await httpClient.PostAsync(ServicosEolConstants.URL_AUTENTICACAO_SGP_REINICIAR_SENHA, new FormUrlEncodedContent(valoresParaEnvio));
 
             if (!resposta.IsSuccessStatusCode)

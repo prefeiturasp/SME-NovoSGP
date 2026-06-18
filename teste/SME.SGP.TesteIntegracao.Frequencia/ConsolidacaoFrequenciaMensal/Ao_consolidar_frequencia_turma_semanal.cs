@@ -30,7 +30,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaMensal
 
         [Fact(DisplayName = "Ao consolidar frequência de turma semanal completa")]
         public async Task Ao_consolidar_frequencia_turma_semanal_completa()
-        { 
+        {
             await CriarDreUePerfilComponenteCurricular();
             await CriarTipoCalendario(ModalidadeTipoCalendario.FundamentalMedio);
             await CriarTurma(Modalidade.Medio, ANO_5, TURMA_CODIGO_1);

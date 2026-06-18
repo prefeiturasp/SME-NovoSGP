@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
             if (request.TipoConteudo != TipoConteudoArquivo.Indefinido &&
                 request.Arquivo.ContentType != request.TipoConteudo.Name())
                 throw new NegocioException(MensagemNegocioComuns.FORMATO_ARQUIVO_NAO_ACEITO);
-            
+
             var nomeArquivo = request.Arquivo.FileName;
 
             var arquivo = await mediator.Send(new SalvarArquivoRepositorioCommand(nomeArquivo, request.Tipo, request.Arquivo.ContentType));

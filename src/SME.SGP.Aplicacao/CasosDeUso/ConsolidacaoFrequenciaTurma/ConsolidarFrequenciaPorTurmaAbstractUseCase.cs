@@ -63,14 +63,14 @@ namespace SME.SGP.Aplicacao
 
             var frequenciasAgrupadasPorAluno = frequenciasConsideradas.GroupBy(f => f.AlunoCodigo);
             var listaAlunoPercentualGeral = (from fa in frequenciasAgrupadasPorAluno
-                                                where fa.Any(f => f.TotalAulas > 0)
-                                                select new
-                                                {
-                                                    codigoAluno = fa.Key,
-                                                    totalAulas = fa.FirstOrDefault().TotalAulas,
-                                                    totalAusencias = Convert.ToDouble(fa.Sum(f => f.TotalAusencias) - fa.Sum(f => f.TotalCompensacoes)),
-                                                    totalFrequencias = int.Parse(fa.FirstOrDefault().TotalFrequencias.ToString())
-                                                })
+                                             where fa.Any(f => f.TotalAulas > 0)
+                                             select new
+                                             {
+                                                 codigoAluno = fa.Key,
+                                                 totalAulas = fa.FirstOrDefault().TotalAulas,
+                                                 totalAusencias = Convert.ToDouble(fa.Sum(f => f.TotalAusencias) - fa.Sum(f => f.TotalCompensacoes)),
+                                                 totalFrequencias = int.Parse(fa.FirstOrDefault().TotalFrequencias.ToString())
+                                             })
                                                 .Select(fa => new
                                                 {
                                                     fa.codigoAluno,
@@ -83,8 +83,8 @@ namespace SME.SGP.Aplicacao
             quantidadeAprovados = listaAlunoPercentualGeral.Count(fg => fg.percentualTotal >= percentualFrequenciaMinimo);
             totalAulas = listaAlunoPercentualGeral.Any() ? int.Parse(listaAlunoPercentualGeral.FirstOrDefault().totalAulas.ToString()) : 0;
             totalFrequencias = listaAlunoPercentualGeral.Any() ? listaAlunoPercentualGeral.FirstOrDefault().totalFrequencias : 0;
-            
-            await RegistraConsolidacaoFrequenciaTurma(turmaId, quantidadeAprovados, quantidadeReprovados,totalAulas, totalFrequencias);
+
+            await RegistraConsolidacaoFrequenciaTurma(turmaId, quantidadeAprovados, quantidadeReprovados, totalAulas, totalFrequencias);
         }
 
         private async Task RegistraConsolidacaoFrequenciaTurma(long turmaId, int quantidadeAprovados, int quantidadeReprovados, int totalAulas, int totalFrequencias)

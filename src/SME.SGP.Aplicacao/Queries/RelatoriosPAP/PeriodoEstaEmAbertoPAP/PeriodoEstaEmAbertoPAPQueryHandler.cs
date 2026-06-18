@@ -38,19 +38,19 @@ namespace SME.SGP.Aplicacao
             var periodoRelatorio = await this.repositorio.ObterComPeriodosEscolares(periodoRelatorioId);
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorAnoLetivoEModalidadeQuery(turma.ModalidadeTipoCalendario, turma.AnoLetivo, turma.Semestre));
 
-            return await TurmaEmPeriodoDeFechamento(turma, periodoRelatorio, tipoCalendarioId) || 
+            return await TurmaEmPeriodoDeFechamento(turma, periodoRelatorio, tipoCalendarioId) ||
                 await UeEmReaberturaDeFechamento(tipoCalendarioId, turma, periodoRelatorio);
         }
 
         private async Task<bool> TurmaEmPeriodoDeFechamento(Turma turma, PeriodoRelatorioPAP periodoRelatorio, long tipoCalendarioId)
         {
-            var periodosFechamento = await this.repositorioEventoFechamento.UeEmFechamentoVigente(DateTimeExtension.HorarioBrasilia().Date, tipoCalendarioId, turma.EhTurmaInfantil, periodoRelatorio.Configuracao.EhSemestre ? 0 : periodoRelatorio.Periodo) ;
-        
+            var periodosFechamento = await this.repositorioEventoFechamento.UeEmFechamentoVigente(DateTimeExtension.HorarioBrasilia().Date, tipoCalendarioId, turma.EhTurmaInfantil, periodoRelatorio.Configuracao.EhSemestre ? 0 : periodoRelatorio.Periodo);
+
             if (periodosFechamento.NaoEhNulo())
             {
                 return periodoRelatorio.PeriodosEscolaresRelatorio.Any(periodo => periodo.PeriodoEscolarId == periodosFechamento.PeriodoEscolarId);
             }
-            
+
             return false;
         }
 
@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
             const int SEGUNDO_BIMESTRE = 2;
             const int QUARTO_BIMESTRE = 4;
 
-            int bimestre = periodoRelatorio.Periodo; 
+            int bimestre = periodoRelatorio.Periodo;
 
             if (periodoRelatorio.Configuracao.EhSemestre)
                 bimestre = periodoRelatorio.Periodo == PRIMEIRO_SEMESTRE ? SEGUNDO_BIMESTRE : QUARTO_BIMESTRE;

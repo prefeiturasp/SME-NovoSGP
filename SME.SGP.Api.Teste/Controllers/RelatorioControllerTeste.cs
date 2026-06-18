@@ -2,19 +2,19 @@
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using SME.SGP.Api.Controllers;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.Relatorios;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace SME.SGP.Api.Testes.Controllers
 {

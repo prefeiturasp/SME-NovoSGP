@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
                     return default;
                 else
                     throw new NegocioException("Turma não encontrada.");
-            }                
+            }
 
             var ehQtdeDuracaoAulaTurma4h = turma.QuantidadeDuracaoAula == 4;
             var turno = ehQtdeDuracaoAulaTurma4h ? turma.QuantidadeDuracaoAula : 0;

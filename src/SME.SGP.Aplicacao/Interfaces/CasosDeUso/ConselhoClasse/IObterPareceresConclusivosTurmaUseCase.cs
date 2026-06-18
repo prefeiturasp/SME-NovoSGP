@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IObterPareceresConclusivosTurmaUseCase 
+    public interface IObterPareceresConclusivosTurmaUseCase
     {
         Task<IEnumerable<ParecerConclusivoDto>> Executar(long turmaId, bool anoLetivoAnterior);
     }

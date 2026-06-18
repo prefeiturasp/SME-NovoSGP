@@ -1,12 +1,8 @@
-﻿using MediatR;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
-using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
-using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base;
 using SME.SGP.TesteIntegracao.Setup;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -52,7 +48,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
             retorno.OpcoesRespostaHipoteseEscritaEstudante.Any(op => op.Equals("Silábico com valor")).ShouldBeTrue();
             retorno.OpcoesRespostaHipoteseEscritaEstudante.Any(op => op.Equals("Silábico alfabético")).ShouldBeTrue();
             retorno.OpcoesRespostaHipoteseEscritaEstudante.Any(op => op.Equals("Alfabético")).ShouldBeTrue();
-            
+
             retorno.OpcoesRespostaAvaliacoesExternasProvaSP.Any(op => op.Equals("Abaixo do básico")).ShouldBeTrue();
             retorno.OpcoesRespostaAvaliacoesExternasProvaSP.Any(op => op.Equals("Básico")).ShouldBeTrue();
             retorno.OpcoesRespostaAvaliacoesExternasProvaSP.Any(op => op.Equals("Adequado")).ShouldBeTrue();

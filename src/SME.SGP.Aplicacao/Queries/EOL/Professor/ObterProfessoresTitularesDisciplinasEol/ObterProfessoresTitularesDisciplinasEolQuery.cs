@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using FluentValidation;
+﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Infra;
+using System;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
@@ -17,8 +17,8 @@ namespace SME.SGP.Aplicacao
         }
 
         public string CodigoTurma { get; set; }
-        public DateTime? DataReferencia  { get; set; }
-        public string ProfessorRf  { get; set; }
+        public DateTime? DataReferencia { get; set; }
+        public string ProfessorRf { get; set; }
         public bool RealizaAgrupamento { get; set; }
     }
 
@@ -28,6 +28,6 @@ namespace SME.SGP.Aplicacao
         public ObterProfessoresTitularesDisciplinasEolQueryValidator()
         {
             RuleFor(x => x.CodigoTurma).NotEmpty().WithMessage("Informe o Código da Turma para Obter Professores Titulares Disciplinas do EOL");
-        } 
+        }
     }
 }

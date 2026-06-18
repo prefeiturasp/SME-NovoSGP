@@ -1,15 +1,15 @@
 ﻿using Bogus;
+using FluentAssertions;
 using Moq;
 using SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarConsolidacaoNivelEscritaAlfabetizacao;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra.Dtos.Sondagem;
+using System;
 using System.Collections.Generic;
 using System.Threading;
-using System;
-using Xunit;
 using System.Threading.Tasks;
-using FluentAssertions;
-using SME.SGP.Dominio.Entidades;
+using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.Commands.PainelEducacional
 {

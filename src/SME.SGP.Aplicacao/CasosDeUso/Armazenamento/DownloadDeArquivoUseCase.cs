@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         public async virtual Task<(byte[], string, string)> Executar(Guid codigoArquivo)
         {
             var entidadeArquivo = await ObterArquivoPorCodigo(codigoArquivo);
-            
+
             var extensao = Path.GetExtension(entidadeArquivo.Nome);
 
             var nomeArquivoComExtensao = $"{codigoArquivo}{extensao}";

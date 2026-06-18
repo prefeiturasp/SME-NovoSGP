@@ -51,12 +51,12 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private int ObterQdadeAlunosAtivosComParecerConclusivo(IEnumerable<ParecerConclusivoSituacaoQuantidadeDto> pareceresConslusivosTurma, 
+        private int ObterQdadeAlunosAtivosComParecerConclusivo(IEnumerable<ParecerConclusivoSituacaoQuantidadeDto> pareceresConslusivosTurma,
                                                                                                               IEnumerable<AlunoPorTurmaResposta> alunosAtivos,
                                                                                                               int qdadeAlunosInativosComParecerConclusivo)
         {
             var quantidadePareceres = pareceresConslusivosTurma.Count();
-            var alunosAtivosComParecer = Math.Max(quantidadePareceres - qdadeAlunosInativosComParecerConclusivo, 0);  
+            var alunosAtivosComParecer = Math.Max(quantidadePareceres - qdadeAlunosInativosComParecerConclusivo, 0);
             return Math.Max(alunosAtivos.Count() - alunosAtivosComParecer, 0);
         }
 

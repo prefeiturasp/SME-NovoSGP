@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -47,7 +46,7 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new GravarHistoricoReinicioSenhaCommand(usuarioRf, dreCodigo, ueCodigo));
         }
 
-        private string FormatarSenha(string codigoRf) 
+        private string FormatarSenha(string codigoRf)
         {
             string sufixoSenha = !string.IsNullOrWhiteSpace(codigoRf) ? codigoRf.Substring(codigoRf.Length - 4, 4) : "@1234";
             return $"Sgp{sufixoSenha}";

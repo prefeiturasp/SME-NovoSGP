@@ -9,7 +9,7 @@ namespace SME.SGP.Aplicacao
     public class DownloadTodosAnexosInformativoUseCase : AbstractUseCase, IDownloadTodosAnexosInformativoUseCase
     {
         public DownloadTodosAnexosInformativoUseCase(IMediator mediator) : base(mediator)
-        {}
+        { }
 
         public async Task<(byte[], string, string)> Executar(long informativoId)
         {

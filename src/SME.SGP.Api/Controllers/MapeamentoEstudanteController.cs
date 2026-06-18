@@ -1,18 +1,12 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.MapeamentoEstudante;
-using SME.SGP.Aplicacao.Queries;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Dtos.MapeamentoEstudantes;
 using SME.SGP.Infra.Dtos.Relatorios.MapeamentoEstudantes;
-using SME.SGP.Infra.Dtos.Sondagem;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -52,7 +46,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<QuestaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ME_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterQuestionario(long questionarioId, [FromQuery] FiltroQuestoesQuestionarioMapeamentoEstudanteDto filtro, 
+        public async Task<IActionResult> ObterQuestionario(long questionarioId, [FromQuery] FiltroQuestoesQuestionarioMapeamentoEstudanteDto filtro,
                                                            [FromServices] IObterQuestionarioMapeamentoEstudanteUseCase useCase)
         {
             filtro.QuestionarioId = questionarioId;

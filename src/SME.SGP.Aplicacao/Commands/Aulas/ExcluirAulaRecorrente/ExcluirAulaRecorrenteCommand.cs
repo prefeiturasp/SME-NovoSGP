@@ -4,7 +4,7 @@ using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirAulaRecorrenteCommand: IRequest<bool>
+    public class ExcluirAulaRecorrenteCommand : IRequest<bool>
     {
         public ExcluirAulaRecorrenteCommand(long aulaId, RecorrenciaAula recorrenciaAula, string componenteCurricularNome, Usuario usuario)
         {
@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         public Usuario Usuario { get; set; }
     }
 
-    public class ExcluirAulaRecorrenteCommandValidator: AbstractValidator<ExcluirAulaRecorrenteCommand>
+    public class ExcluirAulaRecorrenteCommandValidator : AbstractValidator<ExcluirAulaRecorrenteCommand>
     {
         public ExcluirAulaRecorrenteCommandValidator()
         {

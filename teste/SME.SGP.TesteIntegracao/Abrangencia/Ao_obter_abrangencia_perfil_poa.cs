@@ -1,6 +1,8 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Newtonsoft.Json;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
@@ -14,12 +16,10 @@ using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
-using Newtonsoft.Json;
-using Microsoft.Extensions.Configuration;
 
 namespace SME.SGP.TesteIntegracao.Abrangencia
 {

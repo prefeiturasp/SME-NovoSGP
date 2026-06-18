@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public async Task<string> RecuperarUltimaVersao()
         {
-            
+
             string usuario = configuration.GetSection("UsuarioGithub").Value ?? throw new NegocioException("Não foi possível localizar o usuário github.");
             string senha = configuration.GetSection("SenhaGithub").Value ?? throw new NegocioException("Não foi possível localizar a senha github.");
 
@@ -37,12 +37,12 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                var versoes =  JsonConvert.DeserializeObject<IEnumerable<VersaoGitHubRetornoDto>>(json);
-                
+                var versoes = JsonConvert.DeserializeObject<IEnumerable<VersaoGitHubRetornoDto>>(json);
+
                 if (versoes.Any())
                     return $"Versão: {versoes.FirstOrDefault().Name}";
                 else return string.Empty;
-                
+
             }
             return string.Empty;
         }

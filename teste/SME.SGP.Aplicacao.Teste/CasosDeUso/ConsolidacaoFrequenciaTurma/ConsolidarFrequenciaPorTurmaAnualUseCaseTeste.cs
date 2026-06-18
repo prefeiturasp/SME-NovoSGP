@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConsolidacaoFrequenciaTurma
         {
             mediatorMock = new Mock<IMediator>();
             useCaseFake = new ConsolidarFrequenciaPorTurmaAnualUseCaseFake(mediatorMock.Object);
-            useCaseFake.DefinirAnoAnterior(true); 
+            useCaseFake.DefinirAnoAnterior(true);
         }
 
         [Fact]

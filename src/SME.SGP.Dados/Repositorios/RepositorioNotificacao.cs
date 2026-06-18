@@ -43,7 +43,7 @@ namespace SME.SGP.Dados.Repositorios
 
             await database.Conexao.ExecuteAsync(query, new { ids, dataAlteracao = DateTime.Now });
         }
-        
+
         public override async Task<long> RemoverLogico(long id, string coluna = null)
         {
             var columName = coluna ?? "id";
@@ -93,7 +93,7 @@ namespace SME.SGP.Dados.Repositorios
                             n.status asc,
                             n.criado_em desc
                         limit @limite";
-            return await database.Conexao.QueryAsync<NotificacaoBasicaDto>(sql, new {usuarioRf, limite });
+            return await database.Conexao.QueryAsync<NotificacaoBasicaDto>(sql, new { usuarioRf, limite });
         }
 
         public async Task AtualizarMensagemPorWorkFlowAprovacao(long[] ids, string mensagem)
@@ -105,7 +105,7 @@ namespace SME.SGP.Dados.Repositorios
                             ALTERADO_RF = @alteradoRf
                          WHERE ID = any(@ids)";
 
-           await database.Conexao.ExecuteAsync(query, new { ids, mensagem, alteradoPor = "Sistema", alteradoEm = DateTimeExtension.HorarioBrasilia(), alteradoRf = "Sistema" });
+            await database.Conexao.ExecuteAsync(query, new { ids, mensagem, alteradoPor = "Sistema", alteradoEm = DateTimeExtension.HorarioBrasilia(), alteradoRf = "Sistema" });
         }
 
         public async Task<long[]> ObterIdsAsync(string turmaCodigo, NotificacaoCategoria categoria, NotificacaoTipo tipo, int ano)

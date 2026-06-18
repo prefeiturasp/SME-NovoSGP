@@ -4,7 +4,6 @@ using SME.SGP.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -74,13 +73,13 @@ namespace SME.SGP.Aplicacao
         {
             switch (modalidade)
             {
-                case ModalidadeTipoCalendario.EJA : 
+                case ModalidadeTipoCalendario.EJA:
                     return Convert.ToInt32(await ObterParametroSistemaDiasLetivos(TipoParametroSistema.EjaDiasLetivos, anoLetivo));
-                
-                case ModalidadeTipoCalendario.CELP : 
+
+                case ModalidadeTipoCalendario.CELP:
                     return Convert.ToInt32(await ObterParametroSistemaDiasLetivos(TipoParametroSistema.CelpDiasLetivos, anoLetivo));
-                
-                default : 
+
+                default:
                     return Convert.ToInt32(await ObterParametroSistemaDiasLetivos(TipoParametroSistema.FundamentalMedioDiasLetivos, anoLetivo));
             }
         }

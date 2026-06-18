@@ -11,7 +11,7 @@ namespace SME.SGP.Infra
         }
 
         public long AulaId { get; set; }
-        public int QuantidadeAnterior { get; set; }    
+        public int QuantidadeAnterior { get; set; }
     }
 
     public class AulaAlterarFrequenciaRequestDtoValidator : AbstractValidator<AulaAlterarFrequenciaRequestDto>

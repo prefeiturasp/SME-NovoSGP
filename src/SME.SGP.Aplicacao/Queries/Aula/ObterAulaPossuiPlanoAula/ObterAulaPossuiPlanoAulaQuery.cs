@@ -1,12 +1,9 @@
 ﻿using FluentValidation;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterAulaPossuiPlanoAulaQuery: IRequest<bool>
+    public class ObterAulaPossuiPlanoAulaQuery : IRequest<bool>
     {
         public ObterAulaPossuiPlanoAulaQuery(long aulaId)
         {
@@ -16,7 +13,7 @@ namespace SME.SGP.Aplicacao
         public long AulaId { get; set; }
     }
 
-    public class AulaPossuiPlanoAulaQueryValidator: AbstractValidator<ObterAulaPossuiPlanoAulaQuery>
+    public class AulaPossuiPlanoAulaQueryValidator : AbstractValidator<ObterAulaPossuiPlanoAulaQuery>
     {
         public AulaPossuiPlanoAulaQueryValidator()
         {

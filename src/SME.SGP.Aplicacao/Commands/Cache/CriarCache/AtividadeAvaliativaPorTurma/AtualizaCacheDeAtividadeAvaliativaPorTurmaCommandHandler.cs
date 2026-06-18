@@ -4,7 +4,6 @@ using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -38,8 +37,8 @@ namespace SME.SGP.Aplicacao
 
             foreach (var alterar in request.EntidadesAlterar)
             {
-                var atividade = atividadeAvaliativas.Find(atividade => atividade.Id == alterar.Id 
-                                                          && atividade.AlunoId == alterar.AlunoId 
+                var atividade = atividadeAvaliativas.Find(atividade => atividade.Id == alterar.Id
+                                                          && atividade.AlunoId == alterar.AlunoId
                                                           && atividade.DisciplinaId == alterar.DisciplinaId);
 
                 if (atividade.NaoEhNulo())

@@ -1,7 +1,4 @@
-﻿using FluentValidation;
-using System.Collections.Generic;
-
-namespace SME.SGP.Infra
+﻿namespace SME.SGP.Infra
 {
     public class DiarioBordoObservacaoDto
     {

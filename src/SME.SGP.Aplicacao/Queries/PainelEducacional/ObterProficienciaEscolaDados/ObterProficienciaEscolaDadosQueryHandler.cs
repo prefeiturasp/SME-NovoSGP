@@ -10,11 +10,11 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterProficienciaEscolaDad
 {
     public class ObterProficienciaEscolaDadosQueryHandler : IRequestHandler<ObterProficienciaEscolaDadosQuery, PainelEducacionalProficienciaEscolaDadosDto>
     {
-        private readonly IMediator mediator; 
+        private readonly IMediator mediator;
 
         public ObterProficienciaEscolaDadosQueryHandler(
-            IMediator mediator) 
-        {          
+            IMediator mediator)
+        {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 

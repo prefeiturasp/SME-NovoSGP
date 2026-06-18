@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
 
             var funcionarioPAAI = await mediator.Send(new ObterResponsavelAtribuidoUePorUeTipoQuery(turma.Ue.CodigoUe, TipoResponsavelAtribuicao.PAAI));
 
-            if(funcionarioPAAI.NaoEhNulo() && funcionarioPAAI.Any())
+            if (funcionarioPAAI.NaoEhNulo() && funcionarioPAAI.Any())
                 encaminhamentoAEE.Situacao = Dominio.Enumerados.SituacaoAEE.AtribuicaoPAAI;
             else
                 encaminhamentoAEE.Situacao = Dominio.Enumerados.SituacaoAEE.AtribuicaoResponsavel;

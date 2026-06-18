@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
             RelatorioPeriodicoAlunoId = relatorioPeriodicoAlunoId;
         }
 
-        public long SecaoRelatorioPeriodicoId { get; set; } 
+        public long SecaoRelatorioPeriodicoId { get; set; }
         public long RelatorioPeriodicoAlunoId { get; set; }
     }
 

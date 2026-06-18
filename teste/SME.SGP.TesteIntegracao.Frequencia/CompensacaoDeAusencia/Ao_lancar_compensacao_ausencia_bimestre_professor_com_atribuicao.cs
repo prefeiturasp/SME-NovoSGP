@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -9,7 +7,8 @@ using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
-using Xunit;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
 {
@@ -42,26 +41,26 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                 true,
                 true,
                 false);
-            
+
             var comando = ServiceProvider.GetService<IComandosCompensacaoAusencia>();
-            comando.ShouldNotBeNull();            
-            
+            comando.ShouldNotBeNull();
+
             var compensacaoAusenciaDosAlunos = await LancarCompensacaoAusenciasAlunos(compensacaoDeAusencia);
 
             await comando.Inserir(compensacaoAusenciaDosAlunos);
-            
+
             var listaDeCompensacaoAusencia = ObterTodos<CompensacaoAusencia>();
             listaDeCompensacaoAusencia.ShouldNotBeNull();
 
             var listaDeCompensacaoAusenciaAluno = ObterTodos<CompensacaoAusenciaAluno>();
             listaDeCompensacaoAusenciaAluno.ShouldNotBeNull();
-            
+
             var compensacao = listaDeCompensacaoAusencia.FirstOrDefault();
             compensacao.ShouldNotBeNull();
-            
+
             var listaDaCompensacaoAluno = listaDeCompensacaoAusenciaAluno.FindAll(aluno => aluno.CompensacaoAusenciaId == compensacao.Id);
-            listaDaCompensacaoAluno.ShouldNotBeNull(); 
-            
+            listaDaCompensacaoAluno.ShouldNotBeNull();
+
             var compensacaoAusenciasAlunos = await ObterCompensacaoAusenciasAlunos();
 
             foreach (var compensacaoAusenciaAluno in compensacaoAusenciasAlunos)
@@ -69,8 +68,8 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                 var compensacaoAluno = listaDaCompensacaoAluno.Find(aluno => aluno.CodigoAluno == compensacaoAusenciaAluno.CodigoAluno);
                 compensacaoAluno.ShouldNotBeNull();
 
-                compensacaoAluno.QuantidadeFaltasCompensadas.ShouldBe(compensacaoAusenciaAluno.QdadeAula);                
-            }       
+                compensacaoAluno.QuantidadeFaltasCompensadas.ShouldBe(compensacaoAusenciaAluno.QdadeAula);
+            }
         }
     }
 }

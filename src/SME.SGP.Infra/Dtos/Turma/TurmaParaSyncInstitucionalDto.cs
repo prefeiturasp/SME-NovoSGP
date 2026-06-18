@@ -8,14 +8,14 @@ namespace SME.SGP.Infra
         public string Ano { get; set; }
         public int AnoLetivo { get; set; }
         public int Codigo { get; set; }
-        public int TipoTurma { get; set; }        
+        public int TipoTurma { get; set; }
         public Modalidade CodigoModalidade { get; set; }
         public string NomeTurma { get; set; }
         public int Semestre { get; set; }
         public int DuracaoTurno { get; set; }
         public int TipoTurno { get; set; }
         public DateTime? DataFim { get; set; }
-        public bool EnsinoEspecial { get; set; }        
+        public bool EnsinoEspecial { get; set; }
         public string SerieEnsino { get; set; }
         public DateTime? DataInicioTurma { get; set; }
         public bool Extinta { get; set; }

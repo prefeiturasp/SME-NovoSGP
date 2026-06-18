@@ -1,16 +1,13 @@
-﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
+﻿using Microsoft.Extensions.Options;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
-using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao
 {
@@ -33,7 +30,7 @@ namespace SME.SGP.Aplicacao
                                   IConsultasTurma consultasTurma,
                                   IConsultasPlanoAnual consultasPlanoAnual,
                                   IUnitOfWork unitOfWork,
-                                  IServicoUsuario servicoUsuario, 
+                                  IServicoUsuario servicoUsuario,
                                   IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
         {
             this.repositorioPlanoAnual = repositorioPlanoAnual ?? throw new ArgumentNullException(nameof(repositorioPlanoAnual));
@@ -59,14 +56,14 @@ namespace SME.SGP.Aplicacao
                 planoAnualDto.ComponenteCurricularEolId);
 
             unitOfWork.IniciarTransacao();
-            try 
-            { 
+            try
+            {
                 foreach (var bimestrePlanoAnual in migrarPlanoAnualDto.BimestresDestino.OrderBy(c => c))
                 {
                     var planoAnualOrigem = ObterPlanoAnualSimplificado(planoAnualDto, bimestrePlanoAnual);
 
-                if (planoAnualOrigem.EhNulo())
-                    throw new NegocioException("Plano anual de origem não encontrado");
+                    if (planoAnualOrigem.EhNulo())
+                        throw new NegocioException("Plano anual de origem não encontrado");
 
                     var bimestreAtual = planoAnualDto.Bimestres.FirstOrDefault(c => c.Bimestre == bimestrePlanoAnual);
                     foreach (var turmaId in migrarPlanoAnualDto.IdsTurmasDestino)
@@ -75,8 +72,8 @@ namespace SME.SGP.Aplicacao
 
                         var planoAnual = ObterPlanoAnualSimplificado(planoCopia, bimestrePlanoAnual);
 
-                    if (planoAnual.EhNulo())
-                        planoAnual = MapearParaDominio(planoCopia, planoAnual, bimestrePlanoAnual, bimestreAtual.Descricao, bimestreAtual.ObjetivosAprendizagemOpcionais);
+                        if (planoAnual.EhNulo())
+                            planoAnual = MapearParaDominio(planoCopia, planoAnual, bimestrePlanoAnual, bimestreAtual.Descricao, bimestreAtual.ObjetivosAprendizagemOpcionais);
 
                         planoAnual.Descricao = planoAnualOrigem.Descricao;
                         await Salvar(planoCopia, planoAnual, bimestreAtual);
@@ -103,8 +100,8 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Turma não esta em período aberto");
 
             unitOfWork.IniciarTransacao();
-            try 
-            { 
+            try
+            {
                 foreach (var bimestrePlanoAnual in planoAnualDto.Bimestres)
                 {
                     PlanoAnual planoAnual = ObterPlanoAnualSimplificado(planoAnualDto, bimestrePlanoAnual.Bimestre.Value);
@@ -196,7 +193,7 @@ namespace SME.SGP.Aplicacao
             return componentesCurriculares;
         }
 
-        private async Task <IEnumerable<ObjetivoAprendizagemDto>> ObterObjetivosDeAprendizagem()
+        private async Task<IEnumerable<ObjetivoAprendizagemDto>> ObterObjetivosDeAprendizagem()
         {
             var objetivosAprendizagem = await consultasObjetivoAprendizagem.Listar();
             if (objetivosAprendizagem.EhNulo())

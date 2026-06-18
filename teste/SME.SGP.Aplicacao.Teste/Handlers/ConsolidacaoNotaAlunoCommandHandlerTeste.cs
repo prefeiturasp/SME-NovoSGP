@@ -1,13 +1,8 @@
 ﻿using MediatR;
 using Moq;
-using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -26,7 +21,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             consolidacaoNotaAlunoCommandHandler = new ConsolidacaoNotaAlunoCommandHandler(mediator.Object, repositorioConselhoClasseNota.Object);
         }
 
-        [Fact( DisplayName = "ConsolidacaoNotaAlunoCommandHandler - Não deve publicar na fila quando o componente não lança nota")]
+        [Fact(DisplayName = "ConsolidacaoNotaAlunoCommandHandler - Não deve publicar na fila quando o componente não lança nota")]
         public async Task NaoDevePublicarNaFilaQuandoComponenteNaoLancaNota()
         {
             // Arrange

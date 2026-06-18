@@ -95,8 +95,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             var mensagem = new MensagemRabbit();
             var registros = new List<PainelEducacionalRegistroFluenciaLeitoraDto>
             {
-                CriarRegistroFluenciaLeitora(2023, 0, "108900", "DRE TESTE", 1), 
-                CriarRegistroFluenciaLeitora(2023, 1, "108900", "DRE TESTE", 1)  
+                CriarRegistroFluenciaLeitora(2023, 0, "108900", "DRE TESTE", 1),
+                CriarRegistroFluenciaLeitora(2023, 1, "108900", "DRE TESTE", 1)
             };
 
             _repositorioFluenciaLeitoraMock
@@ -155,10 +155,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             var mensagem = new MensagemRabbit();
             var registros = new List<PainelEducacionalRegistroFluenciaLeitoraDto>
             {
-                CriarRegistroFluenciaLeitora(2023, 1, "108900", "DRE TESTE", 1), 
-                CriarRegistroFluenciaLeitora(2023, 1, "108900", "DRE TESTE", 1), 
-                CriarRegistroFluenciaLeitora(2023, 1, "108900", "DRE TESTE", 2), 
-                CriarRegistroFluenciaLeitora(2023, 1, "108900", "DRE TESTE", 2)  
+                CriarRegistroFluenciaLeitora(2023, 1, "108900", "DRE TESTE", 1),
+                CriarRegistroFluenciaLeitora(2023, 1, "108900", "DRE TESTE", 1),
+                CriarRegistroFluenciaLeitora(2023, 1, "108900", "DRE TESTE", 2),
+                CriarRegistroFluenciaLeitora(2023, 1, "108900", "DRE TESTE", 2)
             };
 
             _repositorioFluenciaLeitoraMock
@@ -189,8 +189,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             var fluencia1 = consolidacoesSalvas.First(c => c.Fluencia.Contains("Pré-leitor 1"));
             var fluencia2 = consolidacoesSalvas.First(c => c.Fluencia.Contains("Pré-leitor 2"));
 
-            Assert.Equal(50, fluencia1.Percentual); 
-            Assert.Equal(50, fluencia2.Percentual); 
+            Assert.Equal(50, fluencia1.Percentual);
+            Assert.Equal(50, fluencia2.Percentual);
             Assert.Equal(2, fluencia1.QuantidadeAluno);
             Assert.Equal(2, fluencia2.QuantidadeAluno);
         }
@@ -201,7 +201,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             var mensagem = new MensagemRabbit();
             var registros = new List<PainelEducacionalRegistroFluenciaLeitoraDto>
             {
-                CriarRegistroFluenciaLeitora(2023, 0, "108900", "DRE TESTE", 1) 
+                CriarRegistroFluenciaLeitora(2023, 0, "108900", "DRE TESTE", 1)
             };
 
             _repositorioFluenciaLeitoraMock
@@ -225,13 +225,13 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             var mensagem = new MensagemRabbit();
             var registros = new List<PainelEducacionalRegistroFluenciaLeitoraDto>
             {
-                CriarRegistroFluenciaLeitora(2023, 1, "108900", "DRE TESTE", 1), 
-                CriarRegistroFluenciaLeitora(2023, 1, "108900", "DRE TESTE", 2),  
-                CriarRegistroFluenciaLeitora(2023, 1, "108900", "DRE TESTE", 3), 
-                CriarRegistroFluenciaLeitora(2023, 1, "108900", "DRE TESTE", 4), 
-                CriarRegistroFluenciaLeitora(2023, 1, "108900", "DRE TESTE", 5), 
-                CriarRegistroFluenciaLeitora(2023, 1, "108900", "DRE TESTE", 6), 
-                CriarRegistroFluenciaLeitora(2023, 1, "108900", "DRE TESTE", 99) 
+                CriarRegistroFluenciaLeitora(2023, 1, "108900", "DRE TESTE", 1),
+                CriarRegistroFluenciaLeitora(2023, 1, "108900", "DRE TESTE", 2),
+                CriarRegistroFluenciaLeitora(2023, 1, "108900", "DRE TESTE", 3),
+                CriarRegistroFluenciaLeitora(2023, 1, "108900", "DRE TESTE", 4),
+                CriarRegistroFluenciaLeitora(2023, 1, "108900", "DRE TESTE", 5),
+                CriarRegistroFluenciaLeitora(2023, 1, "108900", "DRE TESTE", 6),
+                CriarRegistroFluenciaLeitora(2023, 1, "108900", "DRE TESTE", 99)
             };
 
             _repositorioFluenciaLeitoraMock
@@ -270,7 +270,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
             Assert.Contains(consolidacoesSalvas, c => c.DescricaoFluencia == "Soletrou");
             Assert.Contains(consolidacoesSalvas, c => c.DescricaoFluencia == "Silabou");
             Assert.Contains(consolidacoesSalvas, c => c.DescricaoFluencia == "Leu até 10 palavras");
-            Assert.Contains(consolidacoesSalvas, c => c.DescricaoFluencia == ""); 
+            Assert.Contains(consolidacoesSalvas, c => c.DescricaoFluencia == "");
             Assert.Contains(consolidacoesSalvas, c => c.DescricaoFluencia == "Não identificado");
         }
 
@@ -345,7 +345,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
 
         [Fact]
         public async Task Executar_Com_Percentual_Zero_Quando_TotalAlunos_Zero()
-        {         
+        {
             var mensagem = new MensagemRabbit();
             var registros = CriarRegistrosFluenciaLeitora();
 

@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
             var filtro = mensagem.ObterObjetoMensagem<FiltroTratarRegistroFrequenciaDto>();
             var ues = await mediator.Send(new ObterUesCodigosPorDreQuery(filtro.DreId));
 
-            foreach(string UeId in ues)
+            foreach (string UeId in ues)
             {
                 filtro.UeId = UeId;
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaTratarCargaRegistroFrequenciaAlunoTurma, filtro, Guid.NewGuid(), null));

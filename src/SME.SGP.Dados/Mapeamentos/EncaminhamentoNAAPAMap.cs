@@ -1,7 +1,7 @@
 ﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados
-{ 
+{
     public class EncaminhamentoNAAPAMap : BaseMap<EncaminhamentoNAAPA>
     {
         public EncaminhamentoNAAPAMap()

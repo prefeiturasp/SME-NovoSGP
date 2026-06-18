@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao.Queries.Funcionario
 
         public ObterFuncionariosQuery() { }
 
-        public ObterFuncionariosQuery(string codigoDre, 
+        public ObterFuncionariosQuery(string codigoDre,
                                       string codigoUe,
                                       string codigoRf,
                                       string nomeServidor)

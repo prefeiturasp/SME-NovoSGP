@@ -134,7 +134,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
                 });
                 idRegistroAcaoQuestao++;
 
-                opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_4_ID_PROCEDIMENTO_REALIZADO 
+                opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_4_ID_PROCEDIMENTO_REALIZADO
                                                          && q.Nome == ConstantesQuestionarioBuscaAtiva.QUESTAO_PROCEDIMENTO_REALIZADO_RESPOSTA_LIG_TELEFONICA).FirstOrDefault();
                 await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
                 {

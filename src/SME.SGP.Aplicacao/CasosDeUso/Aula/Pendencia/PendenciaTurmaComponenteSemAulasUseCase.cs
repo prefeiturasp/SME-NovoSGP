@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> GerarPendencia(PeriodoEscolar periodoEscolar, Turma turmaDreUe, IEnumerable<ComponenteCurricularEol> componentes)
         {
-            
+
             var gerouPendencia = false;
             foreach (var componente in componentes)
             {
@@ -46,8 +46,8 @@ namespace SME.SGP.Aplicacao
                     if (professorTitular.EhNulo())
                         continue;
 
-                    var possuiPendencia = await mediator.Send(new ExistePendenciaProfessorPorTurmaEComponenteQuery(turmaDreUe.Id, componente.Codigo, 
-                                                                                                                   periodoEscolar.Id, professorTitular.ProfessorRf, 
+                    var possuiPendencia = await mediator.Send(new ExistePendenciaProfessorPorTurmaEComponenteQuery(turmaDreUe.Id, componente.Codigo,
+                                                                                                                   periodoEscolar.Id, professorTitular.ProfessorRf,
                                                                                                                    TipoPendencia.ComponenteSemAula));
                     if (!possuiPendencia)
                     {

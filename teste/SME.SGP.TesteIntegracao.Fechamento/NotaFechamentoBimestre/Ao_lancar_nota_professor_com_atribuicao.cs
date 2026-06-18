@@ -1,22 +1,21 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.Fechamento.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.NotaFechamentoBimestre.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 using ObterTurmaItinerarioEnsinoMedioQueryHandlerFake = SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes.ObterTurmaItinerarioEnsinoMedioQueryHandlerFake;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 {
-    public class Ao_lancar_nota_professor_com_atribuicao: NotaFechamentoBimestreTesteBase
+    public class Ao_lancar_nota_professor_com_atribuicao : NotaFechamentoBimestreTesteBase
     {
         public Ao_lancar_nota_professor_com_atribuicao(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
@@ -27,17 +26,17 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>),
                 typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
-            
+
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaEAnoLetivoQuery, IEnumerable<AlunoPorTurmaResposta>>),
                 typeof(ObterAlunosPorTurmaEAnoLetivoQueryHandlerFakeValidarAlunos), ServiceLifetime.Scoped));
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>),
                 typeof(ObterTodosAlunosNaTurmaQueryHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaItinerarioEnsinoMedioQuery, IEnumerable<TurmaItinerarioEnsinoMedioDto>>), 
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaItinerarioEnsinoMedioQuery, IEnumerable<TurmaItinerarioEnsinoMedioDto>>),
                 typeof(ObterTurmaItinerarioEnsinoMedioQueryHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery, string[]>), 
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery, string[]>),
                 typeof(ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQueryHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterInfoComponentesCurricularesESPorTurmasCodigoQuery, IEnumerable<InfoComponenteCurricular>>), 
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterInfoComponentesCurricularesESPorTurmasCodigoQuery, IEnumerable<InfoComponenteCurricular>>),
                 typeof(ObterInfoComponentesCurricularesESPorTurmasCodigoQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
@@ -45,15 +44,15 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         public async Task Deve_permitir_lancamento_nota_para_professor_com_atribuicao()
         {
             var filtroFechamentoNota = ObterFiltroFechamentoNotaDtoFundamental(ObterPerfilProfessor(), ANO_7);
-            
+
             filtroFechamentoNota.CriarPeriodoEscolar = false;
-            
+
             filtroFechamentoNota.CriarPeriodoEscolarCustomizado = true;
-            
+
             filtroFechamentoNota.PeriodoEscolarValido = true;
-            
+
             filtroFechamentoNota.CriarPeriodoAbertura = false;
-            
+
             await CriarDadosBase(filtroFechamentoNota);
 
             await ExecutarComandoConceito();
@@ -65,7 +64,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             await ExecutarTeste(fechamentoTurmaDisciplinaDto);
         }
-        
+
         private async Task ExecutarComandoConceitoComExcecao()
         {
             var fechamentoTurmaDisciplinaDto = ObterFechamentoTurmaDisciplinaDto();
@@ -144,4 +143,4 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             };
         }
     }
-} 
+}

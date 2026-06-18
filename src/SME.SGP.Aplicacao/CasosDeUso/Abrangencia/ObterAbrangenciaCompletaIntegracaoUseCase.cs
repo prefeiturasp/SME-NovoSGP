@@ -30,16 +30,16 @@ namespace SME.SGP.Aplicacao
 
             //return await repositorioCache.ObterAsync<AbrangenciaCompletaRetornoDto>(chaveCache, async () =>
             //{
-                var dres = await ObterDres(login, perfil, consideraHistorico, anoLetivo, semestre, modalidade, codigoDre);
-                var ues = await ObterUes(login, perfil, consideraHistorico, anoLetivo, semestre, modalidade, codigoUe, dres);
-                var turmas = await ObterTurmas(login, perfil, consideraHistorico, anoLetivo, semestre, modalidade, buscarTurmas, codigoTurma, ues);
+            var dres = await ObterDres(login, perfil, consideraHistorico, anoLetivo, semestre, modalidade, codigoDre);
+            var ues = await ObterUes(login, perfil, consideraHistorico, anoLetivo, semestre, modalidade, codigoUe, dres);
+            var turmas = await ObterTurmas(login, perfil, consideraHistorico, anoLetivo, semestre, modalidade, buscarTurmas, codigoTurma, ues);
 
-                return new AbrangenciaCompletaRetornoDto
-                {
-                    Dres = dres,
-                    Ues = ues,
-                    Turmas = turmas
-                };
+            return new AbrangenciaCompletaRetornoDto
+            {
+                Dres = dres,
+                Ues = ues,
+                Turmas = turmas
+            };
             //});
         }
 

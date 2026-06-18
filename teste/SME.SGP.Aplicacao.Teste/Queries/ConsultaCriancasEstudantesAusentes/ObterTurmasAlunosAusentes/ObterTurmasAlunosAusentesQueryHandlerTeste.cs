@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries.ConsultaCriancasEstudantesAusentes.Obt
         {
             mediator = new Mock<IMediator>();
             repositorio = new Mock<IRepositorioConsultaCriancasEstudantesAusentes>();
-            query = new ObterTurmasAlunosAusentesQueryHandler(repositorio.Object,mediator.Object);
+            query = new ObterTurmasAlunosAusentesQueryHandler(repositorio.Object, mediator.Object);
         }
 
         [Fact(DisplayName = "ObterTurmasAlunosAusentesQueryHandler - Deve Obter Alunos na turma ausentes")]
@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries.ConsultaCriancasEstudantesAusentes.Obt
             mediator.Setup(x => x.Send(It.IsAny<ObterAlunosEolPorTurmaQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(alunosTurma);
 
-            var filtroObterAlunosAusentesDto = new FiltroObterAlunosAusentesDto() 
+            var filtroObterAlunosAusentesDto = new FiltroObterAlunosAusentesDto()
             {
                 CodigoUe = "1",
                 CodigoTurma = "1",
@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries.ConsultaCriancasEstudantesAusentes.Obt
             };
 
             var retorno = await query.Handle(new ObterTurmasAlunosAusentesQuery(filtroObterAlunosAusentesDto), new CancellationToken());
-            
+
             Assert.Equal(alunosTurma.First().CodigoAluno, retorno.First().CodigoEol);
         }
     }

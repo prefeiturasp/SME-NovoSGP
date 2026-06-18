@@ -9,7 +9,7 @@ namespace SME.SGP.Dominio
         private string anoTurma;
 
         private readonly Dictionary<string, int> Anos = new Dictionary<string, int>
-        {           
+        {
             {"first", 1},
             {"second", 2},
             {"third", 3},
@@ -37,14 +37,14 @@ namespace SME.SGP.Dominio
         };
 
         public int Ano => Anos[AnoTurma];
-        public string AnoTurma 
-        { 
-            get => anoTurma.All(v => char.IsDigit(v)) ? Anos.Single(a => a.Value.Equals(Convert.ToInt32(anoTurma))).Key : anoTurma; 
-            set 
-            { 
-                anoTurma = value.All(v => char.IsDigit(v)) ? Anos.Single(a => a.Value.Equals(Convert.ToInt32(value))).Key : value; 
+        public string AnoTurma
+        {
+            get => anoTurma.All(v => char.IsDigit(v)) ? Anos.Single(a => a.Value.Equals(Convert.ToInt32(anoTurma))).Key : anoTurma;
+            set
+            {
+                anoTurma = value.All(v => char.IsDigit(v)) ? Anos.Single(a => a.Value.Equals(Convert.ToInt32(value))).Key : value;
             }
-            
+
         }
         public DateTime AtualizadoEm { get; set; }
         public string Codigo => CodigoCompleto?.Trim()?.Replace("(", "")?.Replace(")", "");

@@ -115,7 +115,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.CompensacaoAusencia
 
             var exception = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(0, compensacaoDto));
             Assert.Equal("Você não pode fazer alterações ou inclusões nesta turma e data.", exception.Message);
-        }  
+        }
 
         [Fact]
         public async Task Executar_Disciplina_Nao_Encontrada_EOL_Deve_Lancar_Negocio_Exception()
@@ -244,7 +244,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.CompensacaoAusencia
             unitOfWorkMock.Verify(u => u.PersistirTransacao(), Times.Once);
             mediatorMock.Verify(m => m.Send(It.IsAny<SalvarCompensacaoAusenciaCommand>(), It.IsAny<CancellationToken>()), Times.Once);
         }
-     
+
         [Fact]
         public async Task Executar_Alteracao_Compensacao_Com_Remocao_Alunos_Deve_Executar_Com_Sucesso()
         {
@@ -513,12 +513,12 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.CompensacaoAusencia
             mediatorMock.Verify(m => m.Send(It.IsAny<IncluirFilaCalcularFrequenciaPorTurmaCommand>(), It.IsAny<CancellationToken>()), Times.Once);
             mediatorMock.Verify(m => m.Send(It.IsAny<PublicarFilaSgpCommand>(), It.IsAny<CancellationToken>()), Times.Once);
         }
-      
+
         [Fact]
         public async Task Executar_Ano_Anterior_2023_Nao_Deve_Gravar_Aluno_Aulas_Deve_Executar_Com_Sucesso()
         {
             var turma = CriarTurma();
-            turma.AnoLetivo = 2022; 
+            turma.AnoLetivo = 2022;
             var periodo = CriarPeriodo();
             var compensacaoDto = CriarCompensacaoDto();
             compensacaoDto.Alunos = new List<CompensacaoAusenciaAlunoDto>
@@ -562,11 +562,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.CompensacaoAusencia
             var compensacaoDto = CriarCompensacaoDto();
             compensacaoDto.Alunos = new List<CompensacaoAusenciaAlunoDto>
             {
-                new CompensacaoAusenciaAlunoDto 
-                { 
-                    Id = "12345", 
+                new CompensacaoAusenciaAlunoDto
+                {
+                    Id = "12345",
                     QtdFaltasCompensadas = 2,
-                    CompensacaoAusenciaAlunoAula = new List<CompensacaoAusenciaAlunoAulaDto>() 
+                    CompensacaoAusenciaAlunoAula = new List<CompensacaoAusenciaAlunoAulaDto>()
                 }
             };
             var usuario = CriarUsuarioGestor();
@@ -619,12 +619,12 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.CompensacaoAusencia
             compensacaoDto.DisciplinasRegenciaIds = null;
             compensacaoDto.Alunos = new List<CompensacaoAusenciaAlunoDto>();
             var usuario = CriarUsuarioGestor();
-            var compensacaoExistente = new SME.SGP.Dominio.CompensacaoAusencia { Id = 1, Migrado = true }; 
+            var compensacaoExistente = new SME.SGP.Dominio.CompensacaoAusencia { Id = 1, Migrado = true };
             var componenteRegencia = new DisciplinaDto { Id = 123, Regencia = true };
 
             ConfigurarMocksFluxoBasicoValido(turma, periodo, usuario);
             ConfigurarSalvamento();
-            
+
             mediatorMock.Setup(m => m.Send(It.IsAny<ObterCompensacaoAusenciaPorIdQuery>(), It.IsAny<CancellationToken>()))
                         .ReturnsAsync(compensacaoExistente);
 
@@ -692,11 +692,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.CompensacaoAusencia
             var compensacaoDto = CriarCompensacaoDto();
             compensacaoDto.Alunos = new List<CompensacaoAusenciaAlunoDto>
             {
-                new CompensacaoAusenciaAlunoDto 
-                { 
-                    Id = "12345", 
-                    QtdFaltasCompensadas = 3, 
-                    CompensacaoAusenciaAlunoAula = new List<CompensacaoAusenciaAlunoAulaDto> 
+                new CompensacaoAusenciaAlunoDto
+                {
+                    Id = "12345",
+                    QtdFaltasCompensadas = 3,
+                    CompensacaoAusenciaAlunoAula = new List<CompensacaoAusenciaAlunoAulaDto>
                     {
                         new CompensacaoAusenciaAlunoAulaDto { RegistroFrequenciaAlunoId = 2 }
                     }
@@ -754,11 +754,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.CompensacaoAusencia
             var compensacaoDto = CriarCompensacaoDto();
             compensacaoDto.Alunos = new List<CompensacaoAusenciaAlunoDto>
             {
-                new CompensacaoAusenciaAlunoDto 
-                { 
-                    Id = "12345", 
-                    QtdFaltasCompensadas = 2, 
-                    CompensacaoAusenciaAlunoAula = new List<CompensacaoAusenciaAlunoAulaDto> 
+                new CompensacaoAusenciaAlunoDto
+                {
+                    Id = "12345",
+                    QtdFaltasCompensadas = 2,
+                    CompensacaoAusenciaAlunoAula = new List<CompensacaoAusenciaAlunoAulaDto>
                     {
                         new CompensacaoAusenciaAlunoAulaDto { RegistroFrequenciaAlunoId = 1 },
                         new CompensacaoAusenciaAlunoAulaDto { RegistroFrequenciaAlunoId = 2 },

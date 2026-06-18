@@ -27,11 +27,11 @@ namespace SME.SGP.Aplicacao
                     var ue = await mediator.Send(new ObterCodigoUEDREPorIdQuery(filtro.Id));
                     var responsaveis = await ObterResponsaveis(ue.UeCodigo);
 
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.ExecutarNotificacaoAlunosBaixaFrequenciaBuscaAtivaProfissionaisNAAPA, 
-                                                                   new FiltroNotificacaoAlunosFreqMensalInsuficienteBuscaAtiva() 
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.ExecutarNotificacaoAlunosBaixaFrequenciaBuscaAtivaProfissionaisNAAPA,
+                                                                   new FiltroNotificacaoAlunosFreqMensalInsuficienteBuscaAtiva()
                                                                    {
-                                                                      ConsolidacoesFrequenciaMensalInsuficientes = consolidacoesFrequenciaMensalInsuficientes,
-                                                                      ResponsaveisNotificacao = responsaveis
+                                                                       ConsolidacoesFrequenciaMensalInsuficientes = consolidacoesFrequenciaMensalInsuficientes,
+                                                                       ResponsaveisNotificacao = responsaveis
                                                                    },
                                                                    Guid.NewGuid()));
                 }

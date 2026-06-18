@@ -49,14 +49,14 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConsolidacaoAcompanhamentoAprendiza
                 .ReturnsAsync(true);
 
             _mediatorMock.Setup(m => m.Send(It.IsAny<AtualizarParametroSistemaCommand>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(1); 
+                .ReturnsAsync(1);
 
             var result = await _useCase.Executar(new MensagemRabbit(JsonConvert.SerializeObject(new { })));
 
             Assert.True(result);
             _mediatorMock.Verify(m => m.Send(It.Is<ObterParametroSistemaPorTipoEAnoQuery>(q =>
                 q.TipoParametroSistema == TipoParametroSistema.ExecucaoConsolidacaoAcompanhamentoAprendizagemAlunoTurma &&
-                q.Ano == anoAtual), It.IsAny<CancellationToken>()), Times.Exactly(2)); 
+                q.Ano == anoAtual), It.IsAny<CancellationToken>()), Times.Exactly(2));
             _mediatorMock.Verify(m => m.Send(It.Is<LimparConsolidacaoAcompanhamentoAprendizagemCommand>(c => c.AnoLetivo == anoAtual), It.IsAny<CancellationToken>()), Times.Once);
             _mediatorMock.Verify(m => m.Send(ObterCodigosUEsQuery.Instance, It.IsAny<CancellationToken>()), Times.Once);
             _mediatorMock.Verify(m => m.Send(It.Is<PublicarFilaSgpCommand>(c => c.Rota == RotasRabbitSgp.ConsolidarAcompanhamentoAprendizagemAlunoPorUE && ((FiltroUEDto)c.Filtros).UeCodigo == "UE001"), It.IsAny<CancellationToken>()), Times.Once);

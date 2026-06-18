@@ -36,8 +36,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 AlunoCodigo = ALUNO_CODIGO_1,
                 ConselhoClasseId = CONSELHO_CLASSE_ID_1,
                 FechamentoTurmaId = FECHAMENTO_TURMA_ID_1,
-                RecomendacaoAlunoIds = new long[] { 1,2 },
-                RecomendacaoFamiliaIds = new long[] { 3,4 }
+                RecomendacaoAlunoIds = new long[] { 1, 2 },
+                RecomendacaoFamiliaIds = new long[] { 3, 4 }
             };
             var conselhoAluno = await useCase.Executar(dto);
 
@@ -119,7 +119,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             listaAlunoRecomendacao.Exists(recomenda => recomenda.ConselhoClasseRecomendacaoId == 1).ShouldBeFalse();
             listaAlunoRecomendacao.Exists(recomenda => recomenda.ConselhoClasseRecomendacaoId == 3).ShouldBeFalse();
         }
-        
+
         [Fact]
         public async Task Nao_deve_inserir_recomendacoes_sem_periodo_abertura_apos_encerramento_bimestre()
         {
@@ -152,7 +152,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             await Assert.ThrowsAsync<NegocioException>(async () => await useCase.Executar(dto));
         }
-        
+
         [Fact]
         public async Task Nao_deve_inserir_recomendacoes_sem_periodo_rabertura_apos_encerramento_bimestre_e_abertura()
         {

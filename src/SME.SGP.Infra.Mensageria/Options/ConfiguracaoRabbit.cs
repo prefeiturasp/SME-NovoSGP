@@ -12,7 +12,7 @@ namespace SME.SGP.Infra.Utilitarios
             get
             {
                 if (_port == 0)
-                    _port = AmqpTcpEndpoint.UseDefaultPort; 
+                    _port = AmqpTcpEndpoint.UseDefaultPort;
                 return _port;
             }
             set

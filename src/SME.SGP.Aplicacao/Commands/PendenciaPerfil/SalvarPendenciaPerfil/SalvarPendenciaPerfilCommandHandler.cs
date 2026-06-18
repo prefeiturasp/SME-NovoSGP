@@ -1,8 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task Handle(SalvarPendenciaPerfilCommand request, CancellationToken cancellationToken)
         {
-            foreach(var perfil in request.PerfisCodigo)
+            foreach (var perfil in request.PerfisCodigo)
             {
                 var pendencia = new PendenciaPerfil();
                 pendencia.PendenciaId = request.PendenciaId;

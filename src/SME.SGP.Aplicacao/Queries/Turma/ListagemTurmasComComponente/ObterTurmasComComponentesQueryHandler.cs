@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
     public class ObterTurmasComComponentesQueryHandler : IRequestHandler<ObterTurmasComComponentesQuery, PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto>>
     {
         private readonly IHttpClientFactory httpClientFactory;
-        private readonly IMediator mediator;    
+        private readonly IMediator mediator;
 
         public ObterTurmasComComponentesQueryHandler(IHttpClientFactory httpClientFactory, IMediator mediator)
         {

@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
             if (!string.IsNullOrEmpty(request.CodigoTurma))
                 (codigoDre, codigoUe) = await ObterCodigos(request.CodigoTurma, usuario);
-            
+
             var funcaoAtividadePesquisa = ObterFuncaoAtividadeAPesquisarPorPerfil(usuario, request.EhRelatorio);
 
             var funcionarios = await mediator.Send(new PesquisaFuncionariosPorDreUeQuery(request.CodigoRF, request.Nome, codigoDre, codigoUe, usuario: usuario));

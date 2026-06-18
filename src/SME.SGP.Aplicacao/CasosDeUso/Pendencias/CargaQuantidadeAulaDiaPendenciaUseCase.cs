@@ -1,13 +1,12 @@
-﻿using System;
-using System.Threading.Tasks;
-using MediatR;
-using Newtonsoft.Json;
+﻿using MediatR;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using System;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class CargaQuantidadeAulaDiaPendenciaUseCase : AbstractUseCase,ICargaQuantidadeAulaDiaPendenciaUseCase
+    public class CargaQuantidadeAulaDiaPendenciaUseCase : AbstractUseCase, ICargaQuantidadeAulaDiaPendenciaUseCase
     {
         public CargaQuantidadeAulaDiaPendenciaUseCase(IMediator mediator) : base(mediator)
         {
@@ -20,7 +19,7 @@ namespace SME.SGP.Aplicacao
                 var pendencia = param.ObterObjetoMensagem<AulasDiasPendenciaDto>();
                 await mediator.Send(new CargaPendenciasQuantidadeDiasQuantidadeAulasCommand(pendencia));
                 return true;
-                
+
             }
             catch (Exception ex)
             {

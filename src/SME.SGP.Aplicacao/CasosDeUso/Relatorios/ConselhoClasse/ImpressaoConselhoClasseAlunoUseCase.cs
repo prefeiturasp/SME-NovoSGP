@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(FiltroRelatorioConselhoClasseAlunoDto filtroRelatorioConselhoClasseAlunoDto)
         {
             var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
-          
+
             filtroRelatorioConselhoClasseAlunoDto.Usuario = usuario ?? throw new NegocioException("Não foi possível localizar o usuário.");
 
             return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ConselhoClasseAluno, filtroRelatorioConselhoClasseAlunoDto, usuario));

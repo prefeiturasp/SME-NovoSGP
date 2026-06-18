@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Dados;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;

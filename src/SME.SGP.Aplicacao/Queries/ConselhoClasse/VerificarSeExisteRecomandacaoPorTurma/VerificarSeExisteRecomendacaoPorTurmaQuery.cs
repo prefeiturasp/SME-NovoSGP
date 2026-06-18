@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
-using FluentValidation;
+﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
     public class VerificarSeExisteRecomendacaoPorTurmaQuery : IRequest<IEnumerable<AlunoTemRecomandacaoDto>>
     {
-        public VerificarSeExisteRecomendacaoPorTurmaQuery(string[] turmaCodigo,int bimestre)
+        public VerificarSeExisteRecomendacaoPorTurmaQuery(string[] turmaCodigo, int bimestre)
         {
             TurmasCodigo = turmaCodigo;
             Bimestre = bimestre;

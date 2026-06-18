@@ -1,12 +1,12 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using System.Collections.Generic;
-using FluentValidation;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterPendenciasCalendarioUeEAnoLetivoParaEncerramentoAutomaticoQuery : IRequest<IEnumerable<long>>
     {
-        public ObterPendenciasCalendarioUeEAnoLetivoParaEncerramentoAutomaticoQuery(long ueId,int anoLetivo)
+        public ObterPendenciasCalendarioUeEAnoLetivoParaEncerramentoAutomaticoQuery(long ueId, int anoLetivo)
         {
             UeId = ueId;
             AnoLetivo = anoLetivo;

@@ -21,7 +21,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
     {
         private const string PROFISSIONAIS_ENVOLVIDOS_02 = "[{\"login\": \"11223344\", \"nome\": \"psicopedagogo 02\"},{\"login\": \"55667788\", \"nome\": \"psicólogo 02\"},{\"login\": \"66778899\", \"nome\": \"coordenador naapa 01\"},{\"login\": \"77889900\", \"nome\": \"assistente social 01\"}]";
         private const string PROFISSIONAIS_ENVOLVIDOS_01 = "[{\"login\": \"11223344\", \"nome\": \"psicopedagogo 01\"},{\"login\": \"55667788\", \"nome\": \"psicólogo 01\"},{\"login\": \"66778899\", \"nome\": \"coordenador naapa 01\"},{\"login\": \"77889900\", \"nome\": \"assistente social 01\"}]";
-        
+
         public Ao_cadastrar_editar_encaminhamento_naapa_itinerancia(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -834,7 +834,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            id = await InserirNaBaseAsync (new Notificacao()
+            id = await InserirNaBaseAsync(new Notificacao()
             {
                 Codigo = 2,
                 Tipo = NotificacaoTipo.InatividadeAtendimentoNAAPA,

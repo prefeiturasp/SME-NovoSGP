@@ -19,7 +19,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
     {
         public Ao_pesquisar_aluno_plano_aee(CollectionFixture collectionFixture) : base(collectionFixture)
         {
-            
+
         }
 
         protected override void RegistrarFakes(IServiceCollection services)
@@ -43,7 +43,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             };
             var obterAlunosServico = ObterAlunosPorCodigoEolNomeUseCase();
             var aluno = await obterAlunosServico.Executar(filtro);
-            
+
             aluno.ShouldNotBeNull();
             aluno.Items.Count().ShouldBeGreaterThanOrEqualTo(1);
 
@@ -65,7 +65,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             };
             var obterAlunosServico = ObterAlunosPorCodigoEolNomeUseCase();
             var aluno = await obterAlunosServico.Executar(filtro);
-            
+
             aluno.ShouldNotBeNull();
             aluno.Items.Where(x => x.Nome.Contains(filtro.Nome)).Count().ShouldBe(1);
         }
@@ -81,7 +81,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             };
             var obterAlunosServico = ObterAlunosPorCodigoEolNomeUseCase();
             var aluno = await obterAlunosServico.Executar(filtro);
-            
+
             aluno.ShouldNotBeNull();
             aluno.Items.Where(x => x.Nome.Contains(filtro.Nome)).Count().ShouldBe(1);
         }

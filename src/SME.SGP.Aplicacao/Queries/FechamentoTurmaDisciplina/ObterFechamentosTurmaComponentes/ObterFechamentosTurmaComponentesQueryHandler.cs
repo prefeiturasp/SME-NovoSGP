@@ -1,13 +1,13 @@
-﻿using SME.SGP.Dominio.Interfaces;
+﻿using MediatR;
+using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
-   public class ObterFechamentosTurmaComponentesQueryHandler : IRequestHandler<ObterFechamentosTurmaComponentesQuery, IEnumerable<Dominio.FechamentoTurmaDisciplina>>
+    public class ObterFechamentosTurmaComponentesQueryHandler : IRequestHandler<ObterFechamentosTurmaComponentesQuery, IEnumerable<Dominio.FechamentoTurmaDisciplina>>
     {
         private readonly IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina;
 

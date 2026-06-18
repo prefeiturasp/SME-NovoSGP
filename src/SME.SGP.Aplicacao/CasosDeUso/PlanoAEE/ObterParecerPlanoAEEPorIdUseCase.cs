@@ -80,13 +80,13 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> PodeEditarParecerCP(PlanoAEE planoAEE, Usuario usuario, Turma turma)
             => SituacaoPermiteEdicaoCP(planoAEE.Situacao) &&
               (usuario.EhGestorEscolar() &&
-               await UsuarioGestorDoPlano(usuario, turma) 
+               await UsuarioGestorDoPlano(usuario, turma)
               || usuario.EhGestorCIEJA() &&
                await UsuarioGestorDoPlano(usuario, turma));
 
         private bool SituacaoPermiteEdicaoCP(SituacaoPlanoAEE situacao)
-            => new SituacaoPlanoAEE[] 
-            { 
+            => new SituacaoPlanoAEE[]
+            {
                 SituacaoPlanoAEE.ParecerCP,
                 SituacaoPlanoAEE.AtribuicaoPAAI,
                 SituacaoPlanoAEE.ParecerPAAI,
@@ -100,7 +100,7 @@ namespace SME.SGP.Aplicacao
             => await mediator.Send(new ObterUsuarioPorIdQuery(responsavelId));
 
         private bool PodeDevolverPlanoAEE(Usuario usuario, bool situacaoPodeDevolverPlanoAEE)
-        {            
+        {
             if (usuario.EhNulo())
                 throw new NegocioException("Usuário não localizado");
 

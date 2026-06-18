@@ -1,5 +1,4 @@
-﻿using SME.SGP.Dominio;
-using System;
+﻿using System;
 
 namespace SME.SGP.Infra.Dtos.EscolaAqui.ComunicadosFiltro
 {
@@ -7,7 +6,7 @@ namespace SME.SGP.Infra.Dtos.EscolaAqui.ComunicadosFiltro
     {
         public int AnoLetivo { get; set; }
         public string CodigoDre { get; set; }
-        public string CodigoUe { get; set; }        
+        public string CodigoUe { get; set; }
         public int[] Modalidades { get; set; }
         public short? Semestre { get; set; }
         public string AnoEscolar { get; set; }

@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
 
             if (!permiteEdicao)
                 throw new NegocioException(MensagemNegocioFechamentoNota.ALUNO_INATIVO_ANTES_PERIODO_ESCOLAR);
-            
+
             var bimestreParaValidacaoNotasPreenchidas = fechamentoTurma.PeriodoEscolarId.HasValue ? bimestre : BIMESTRE_FINAL_CONSULTA_NOTA;
 
             var existeConselhoClasseBimestre = await mediator
@@ -75,7 +75,7 @@ namespace SME.SGP.Aplicacao
 
             return fechamentoTurma.Turma.EhTurmaModalidadeSemestral() ? BIMESTRE_FINAL_EJA_CELP : BIMESTRE_FINAL_FUNDAMENTAL_MEDIO;
         }
-        
+
         private async Task<bool> EstaInativoDentroPeriodoAberturaReabertura(AlunoPorTurmaResposta dadosAluno, int bimestre, long tipoCalendarioId, Turma turma)
         {
             return await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, dadosAluno.DataSituacao.Date, bimestre, turma.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year, tipoCalendarioId));

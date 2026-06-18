@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
 
         Task<TipoCalendarioCompletoDto> BuscarPorId(long id);
 
-       Task<IEnumerable<TipoCalendarioDto>> Listar();
+        Task<IEnumerable<TipoCalendarioDto>> Listar();
 
         Task<IEnumerable<TipoCalendarioDto>> ListarPorAnoLetivo(int anoLetivo, int? modalidade);
 

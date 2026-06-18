@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using FluentValidation;
+﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Infra;
+using System;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         public string CodigoAluno { get; }
         public int? AnoLetivo { get; }
         public bool? FiltrarSituacaoMatricula { get; }
-        public bool TipoTurma { get; } 
+        public bool TipoTurma { get; }
     }
     public class ObterTurmasAlunoPorFiltroPlanoAeeQueryValidator : AbstractValidator<ObterTurmasAlunoPorFiltroQuery>
     {
@@ -28,6 +28,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.CodigoAluno)
                 .NotEmpty()
                 .WithMessage("O código do aluno deve ser informado.");
-        }        
+        }
     }
 }

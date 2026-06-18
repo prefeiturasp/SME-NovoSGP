@@ -21,6 +21,6 @@ namespace SME.SGP.Aplicacao
         {
             return await repositorioTurma.ObterModalidadesPorAnos(request.AnoLetivo, request.DreId, request.UeId, request.Modalidade, request.Semestre);
         }
-                
+
     }
 }

@@ -6,7 +6,7 @@ namespace SME.SGP.Dominio
     {
         public ConsolidadoEncaminhamentoNAAPA()
         {
-            
+
         }
         public ConsolidadoEncaminhamentoNAAPA(int anoLetivo, long ueId, long quantidade, SituacaoNAAPA situacao, Modalidade modalidade)
         {

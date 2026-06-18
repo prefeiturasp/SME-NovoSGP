@@ -15,7 +15,7 @@ namespace SME.SGP.Api.Controllers
     public class DiasLetivosCalendarioController : ControllerBase
     {
         public DiasLetivosCalendarioController()
-        {}
+        { }
 
         [HttpPost]
         [ProducesResponseType(typeof(DiasLetivosDto), 200)]

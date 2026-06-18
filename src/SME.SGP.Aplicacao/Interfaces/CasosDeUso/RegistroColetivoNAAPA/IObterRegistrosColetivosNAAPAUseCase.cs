@@ -4,6 +4,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterRegistrosColetivosNAAPAUseCase : IUseCase<FiltroRegistroColetivoDto, PaginacaoResultadoDto<RegistroColetivoListagemDto>>
     {
-        
+
     }
 }

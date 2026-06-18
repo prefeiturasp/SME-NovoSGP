@@ -4,7 +4,6 @@ using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,7 +19,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<FrequenciaAluno>> Handle(ObterFrequenciaGeralPorAlunosTurmaQuery request, CancellationToken cancellationToken)
-        {         
+        {
             var frequenciaAlunosPeriodos = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaGeralPorAlunosETurmas(request.CodigosAlunos, request.CodigoTurma);
             var frequenciaAlunosAgrupados = frequenciaAlunosPeriodos.GroupBy(fa => fa.CodigoAluno);
             List<FrequenciaAluno> frequenciaRetorno = new List<FrequenciaAluno>();

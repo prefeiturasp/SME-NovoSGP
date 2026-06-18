@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterFrequenciaSemanal
 
         public async Task<IEnumerable<DadosParaConsolidarFrequenciaSemanalAlunoDto>> Handle(ObterFrequenciaSemanalQuery request, CancellationToken cancellationToken)
         {
-           return await repositorioPainelEducacionalConsolidacaoFrequenciaDiaria.ObterFrequenciaSemanal(request.DataAulas);
+            return await repositorioPainelEducacionalConsolidacaoFrequenciaDiaria.ObterFrequenciaSemanal(request.DataAulas);
         }
     }
 }

@@ -33,14 +33,14 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         {
             base.RegistrarFakes(services);
 
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorTurmaAlunoCodigoQuery, AlunoPorTurmaResposta>),typeof(ObterAlunoPorTurmaAlunoCodigoQueryHandlerParecerConclusivo), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorTurmaAlunoCodigoQuery, AlunoPorTurmaResposta>), typeof(ObterAlunoPorTurmaAlunoCodigoQueryHandlerParecerConclusivo), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosAtivosPorTurmaCodigoQueryHandlerParecerConclusivo), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ProfessorPodePersistirTurmaQuery, bool>), typeof(ProfessorPodePersistirTurmaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosEolPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosEolPorTurmaQueryHandlerParecerConclusivo), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<VerificaNotasTodosComponentesCurricularesQuery, bool>), typeof(VerificaNotasTodosComponentesCurricularesQueryHandlerFake), ServiceLifetime.Scoped));
         }
-        
+
         [Fact]
         public async Task Ao_validar_situacao_parecer_conclusivo_sem_parecer()
         {
@@ -50,7 +50,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ANO_8,
                 Modalidade.Fundamental,
                 ModalidadeTipoCalendario.FundamentalMedio,
-                false, 
+                false,
                 NOTA_4,
                 SituacaoConselhoClasse.EmAndamento,
                 false);
@@ -58,11 +58,11 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriaTurmaFechamentoAtual(TipoNota.Nota, NOTA_4, null);
 
             await ExecutarReprocessamentoParacerConclusivo(ObterConselhoClasseFechamentoAluno(ALUNO_CODIGO_2));
-            
+
             var parecerConclusivo = ObterTodos<ConselhoClasseAluno>();
-            parecerConclusivo.FirstOrDefault(f=> f.ConselhoClasseId == CONSELHO_CLASSE_ID_1).ConselhoClasseParecerId.ShouldBeNull();
+            parecerConclusivo.FirstOrDefault(f => f.ConselhoClasseId == CONSELHO_CLASSE_ID_1).ConselhoClasseParecerId.ShouldBeNull();
         }
-        
+
         [Fact]
         public async Task Ao_validar_situacao_parecer_conclusivo_retido_por_frequencia_abaixo_75_por_cento()
         {
@@ -72,7 +72,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ANO_7,
                 Modalidade.Fundamental,
                 ModalidadeTipoCalendario.FundamentalMedio,
-                false, 
+                false,
                 NOTA_6,
                 SituacaoConselhoClasse.EmAndamento,
                 false);
@@ -82,7 +82,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await ExecutarReprocessamentoParacerConclusivo(ObterConselhoClasseFechamentoAluno());
 
             var parecerConclusivo = ObterTodos<ConselhoClasseAluno>();
-            parecerConclusivo.Any(f=> f.ConselhoClasseParecerId == RETIDO_POR_FREQUENCIA).ShouldBeTrue();
+            parecerConclusivo.Any(f => f.ConselhoClasseParecerId == RETIDO_POR_FREQUENCIA).ShouldBeTrue();
         }
 
         [Theory]
@@ -114,7 +114,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var frequenciaAlunos = ObterTodos<Dominio.FrequenciaAluno>();
             var frequenciaAluno = frequenciaAlunos.First();
             await AtualizarFrequenciaAluno(frequenciaAluno);
-            
+
             //Gerando parecer como retido
             await ExecutarReprocessamentoParacerConclusivo(ObterConselhoClasseFechamentoAluno());
 
@@ -122,9 +122,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             //Retido pq estamos colocando nota abaixo da média no conselho
             parecerConclusivo.Any(f => f.ConselhoClasseId == CONSELHO_CLASSE_ID_1 && f.ConselhoClasseParecerId == RETIDO).ShouldBeTrue();
         }
-      
+
         [Fact]
-        public async Task Ao_validar_situacao_parecer_conclusivo_retido_por_estudante_com_algum_conceito_ns() 
+        public async Task Ao_validar_situacao_parecer_conclusivo_retido_por_estudante_com_algum_conceito_ns()
         {
             await CriarDadosConceito(ObterPerfilProfessor(),
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
@@ -132,19 +132,19 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ANO_3,
                 Modalidade.Fundamental,
                 ModalidadeTipoCalendario.FundamentalMedio,
-                false, 
+                false,
                 NAO_SATISFATORIO_ID_3,
                 SituacaoConselhoClasse.EmAndamento,
                 false);
 
             await CriaTurmaFechamentoAtual(TipoNota.Conceito, null, NAO_SATISFATORIO_ID_3);
 
-            await CriarFrequenciaAluno(TipoFrequenciaAluno.Geral,COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+            await CriarFrequenciaAluno(TipoFrequenciaAluno.Geral, COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
 
             await ExecutarReprocessamentoParacerConclusivo(ObterConselhoClasseFechamentoAluno());
-            
+
             var parecerConclusivo = ObterTodos<ConselhoClasseAluno>();
-            parecerConclusivo.Any(f=> f.ConselhoClasseParecerId == RETIDO).ShouldBeTrue();
+            parecerConclusivo.Any(f => f.ConselhoClasseParecerId == RETIDO).ShouldBeTrue();
         }
 
         [Theory]
@@ -158,19 +158,19 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ano,
                 Modalidade.Fundamental,
                 ModalidadeTipoCalendario.FundamentalMedio,
-                false, 
+                false,
                 NOTA_4,
                 SituacaoConselhoClasse.EmAndamento,
                 false);
 
             await CriaTurmaFechamentoAtual(TipoNota.Nota, NOTA_4, null);
 
-            await CriarFrequenciaAluno(TipoFrequenciaAluno.Geral,COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+            await CriarFrequenciaAluno(TipoFrequenciaAluno.Geral, COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
 
             await ExecutarReprocessamentoParacerConclusivo(ObterConselhoClasseFechamentoAluno());
-            
+
             var parecerConclusivo = ObterTodos<ConselhoClasseAluno>();
-            parecerConclusivo.Any(f=> f.ConselhoClasseParecerId == RETIDO).ShouldBeTrue();
+            parecerConclusivo.Any(f => f.ConselhoClasseParecerId == RETIDO).ShouldBeTrue();
         }
 
         [Theory]
@@ -212,21 +212,21 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ano,
                 Modalidade.Fundamental,
                 ModalidadeTipoCalendario.FundamentalMedio,
-                false, 
+                false,
                 NOTA_4,
                 SituacaoConselhoClasse.EmAndamento,
                 false);
 
             await CriaTurmaFechamentoAtual(TipoNota.Nota, NOTA_4, null);
 
-            await CriarFrequenciaAluno(TipoFrequenciaAluno.Geral,COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+            await CriarFrequenciaAluno(TipoFrequenciaAluno.Geral, COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
 
             await ExecutarReprocessamentoParacerConclusivo(ObterConselhoClasseFechamentoAluno());
 
             await ExecutarReprocessamentoParacerConclusivo(ObterConselhoClasseFechamentoAluno());
-            
+
             var parecerConclusivo = ObterTodos<ConselhoClasseAluno>();
-            parecerConclusivo.Any(f=> f.ConselhoClasseId == CONSELHO_CLASSE_ID_1 && f.ConselhoClasseParecerId == RETIDO).ShouldBeTrue();
+            parecerConclusivo.Any(f => f.ConselhoClasseId == CONSELHO_CLASSE_ID_1 && f.ConselhoClasseParecerId == RETIDO).ShouldBeTrue();
 
             var listaFechamento = ObterTodos<FechamentoNota>();
             var fichamentoFinal = listaFechamento.Find(f => f.FechamentoAlunoId == 2);
@@ -237,9 +237,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var listaFechamento2 = ObterTodos<FechamentoNota>();
 
             await ExecutarReprocessamentoParacerConclusivo(ObterConselhoClasseFechamentoAluno());
-            
+
             parecerConclusivo = ObterTodos<ConselhoClasseAluno>();
-            parecerConclusivo.Any(f=> f.ConselhoClasseId == CONSELHO_CLASSE_ID_1 && f.ConselhoClasseParecerId != RETIDO).ShouldBeTrue();
+            parecerConclusivo.Any(f => f.ConselhoClasseId == CONSELHO_CLASSE_ID_1 && f.ConselhoClasseParecerId != RETIDO).ShouldBeTrue();
         }
 
         [Theory]
@@ -254,7 +254,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ano,
                 Modalidade.Fundamental,
                 ModalidadeTipoCalendario.FundamentalMedio,
-                false, 
+                false,
                 NOTA_8,
                 SituacaoConselhoClasse.EmAndamento,
                 false
@@ -262,14 +262,14 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             await CriaTurmaFechamentoAtual(TipoNota.Nota, NOTA_8, null);
 
-            await CriarFrequenciaAluno(TipoFrequenciaAluno.Geral,COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+            await CriarFrequenciaAluno(TipoFrequenciaAluno.Geral, COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
 
             await ExecutarReprocessamentoParacerConclusivo(ObterConselhoClasseFechamentoAluno());
 
             await ExecutarReprocessamentoParacerConclusivo(ObterConselhoClasseFechamentoAluno());
-            
+
             var parecerConclusivo = ObterTodos<ConselhoClasseAluno>();
-            parecerConclusivo.Any(f=> f.ConselhoClasseParecerId == PROMOVIDO).ShouldBeTrue();
+            parecerConclusivo.Any(f => f.ConselhoClasseParecerId == PROMOVIDO).ShouldBeTrue();
         }
 
         [Theory]
@@ -291,7 +291,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             await CriaTurmaFechamentoAtual(TipoNota.Nota, NOTA_4, null);
 
-            await CriarFrequenciaAluno(TipoFrequenciaAluno.Geral,COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+            await CriarFrequenciaAluno(TipoFrequenciaAluno.Geral, COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
 
             await ExecutarReprocessamentoParacerConclusivo(ObterConselhoClasseFechamentoAluno());
 
@@ -310,9 +310,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                                                                                   BIMESTRE_FINAL));
 
             await ExecutarReprocessamentoParacerConclusivo(ObterConselhoClasseFechamentoAluno());
-            
+
             var parecerConclusivo = ObterTodos<ConselhoClasseAluno>();
-            parecerConclusivo.Any(f=> f.ConselhoClasseParecerId == PROMOVIDO_PELO_CONSELHO).ShouldBeTrue();
+            parecerConclusivo.Any(f => f.ConselhoClasseParecerId == PROMOVIDO_PELO_CONSELHO).ShouldBeTrue();
         }
 
         private ConselhoClasseFechamentoAlunoDto ObterConselhoClasseFechamentoAluno(string alunoCodigo = ALUNO_CODIGO_1)
@@ -347,21 +347,23 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 TotalAulas = totalAulas,
                 TotalCompensacoes = totalCompensacoes,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
                 TurmaId = TURMA_CODIGO_1,
                 PeriodoEscolarId = NUMERO_LONGO_1,
                 TotalPresencas = totalPresencas,
                 TotalRemotos = totalRemotos,
                 TotalAusencias = totalAusencias
             });
-            
+
             await InserirNaBase(new RegistroFrequencia
             {
                 AulaId = AULA_ID,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
-            
+
             await InserirNaBase(new RegistroFrequenciaAluno
             {
                 CodigoAluno = CODIGO_ALUNO_1,
@@ -376,7 +378,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         }
         private async Task AtualizarFrequenciaAluno(Dominio.FrequenciaAluno frequenciaAluno)
         {
-           var frequenciaAlunoAtualizar = new Dominio.FrequenciaAluno()
+            var frequenciaAlunoAtualizar = new Dominio.FrequenciaAluno()
             {
                 Id = frequenciaAluno.Id,
                 CodigoAluno = frequenciaAluno.CodigoAluno,
@@ -401,55 +403,55 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         private async Task<IEnumerable<SalvarConselhoClasseAlunoNotaDto>> CriarConselhosClasseComNotasNaoAleatorias(TipoNota tipoNota = TipoNota.Nota, long conceitoId = NAO_SATISFATORIO_ID_3, double nota = NOTA_4)
         {
             var conselhosClasseParaPersistir = new List<SalvarConselhoClasseAlunoNotaDto>();
-            conselhosClasseParaPersistir.AddRange(await CriarConselhoClasseTodosBimestres(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, tipoNota, true,conceitoId, nota));
-            conselhosClasseParaPersistir.AddRange(await CriarConselhoClasseTodosBimestres(long.Parse(COMPONENTE_MATEMATICA_ID_2), tipoNota, true,conceitoId, nota));
-            conselhosClasseParaPersistir.AddRange(await CriarConselhoClasseTodosBimestres(long.Parse(COMPONENTE_HISTORIA_ID_7), tipoNota, true,conceitoId, nota));
-            conselhosClasseParaPersistir.AddRange(await CriarConselhoClasseTodosBimestres(long.Parse(COMPONENTE_GEOGRAFIA_ID_8), tipoNota, true,conceitoId, nota));
-            conselhosClasseParaPersistir.AddRange(await CriarConselhoClasseTodosBimestres(COMPONENTE_CURRICULAR_INGLES_ID_9, tipoNota, true,conceitoId, nota));
-            conselhosClasseParaPersistir.AddRange(await CriarConselhoClasseTodosBimestres(COMPONENTE_CURRICULAR_ARTES_ID_139, tipoNota, true,conceitoId, nota));
+            conselhosClasseParaPersistir.AddRange(await CriarConselhoClasseTodosBimestres(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, tipoNota, true, conceitoId, nota));
+            conselhosClasseParaPersistir.AddRange(await CriarConselhoClasseTodosBimestres(long.Parse(COMPONENTE_MATEMATICA_ID_2), tipoNota, true, conceitoId, nota));
+            conselhosClasseParaPersistir.AddRange(await CriarConselhoClasseTodosBimestres(long.Parse(COMPONENTE_HISTORIA_ID_7), tipoNota, true, conceitoId, nota));
+            conselhosClasseParaPersistir.AddRange(await CriarConselhoClasseTodosBimestres(long.Parse(COMPONENTE_GEOGRAFIA_ID_8), tipoNota, true, conceitoId, nota));
+            conselhosClasseParaPersistir.AddRange(await CriarConselhoClasseTodosBimestres(COMPONENTE_CURRICULAR_INGLES_ID_9, tipoNota, true, conceitoId, nota));
+            conselhosClasseParaPersistir.AddRange(await CriarConselhoClasseTodosBimestres(COMPONENTE_CURRICULAR_ARTES_ID_139, tipoNota, true, conceitoId, nota));
 
             return conselhosClasseParaPersistir;
         }
 
-        private async Task CriarDadosConceito(string perfil, 
-                                              long componente, 
-                                              TipoNota tipo, 
+        private async Task CriarDadosConceito(string perfil,
+                                              long componente,
+                                              TipoNota tipo,
                                               string anoTurma,
-                                              Modalidade modalidade, 
-                                              ModalidadeTipoCalendario modalidadeTipoCalendario, 
+                                              Modalidade modalidade,
+                                              ModalidadeTipoCalendario modalidadeTipoCalendario,
                                               bool anoAnterior,
                                               int? conceitoId,
                                               SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado,
-                                              bool criarFechamentoDisciplinaAlunoNota = false 
+                                              bool criarFechamentoDisciplinaAlunoNota = false
                                               )
         {
-            await CriarDados(perfil,componente,tipo, anoTurma,modalidade,modalidadeTipoCalendario,anoAnterior,null, conceitoId,situacaoConselhoClasse, criarFechamentoDisciplinaAlunoNota);
+            await CriarDados(perfil, componente, tipo, anoTurma, modalidade, modalidadeTipoCalendario, anoAnterior, null, conceitoId, situacaoConselhoClasse, criarFechamentoDisciplinaAlunoNota);
         }
-        
-        private async Task CriarDadosNotas(string perfil, 
-                                           long componente, 
-                                           TipoNota tipo, 
+
+        private async Task CriarDadosNotas(string perfil,
+                                           long componente,
+                                           TipoNota tipo,
                                            string anoTurma,
-                                           Modalidade modalidade, 
-                                           ModalidadeTipoCalendario modalidadeTipoCalendario, 
+                                           Modalidade modalidade,
+                                           ModalidadeTipoCalendario modalidadeTipoCalendario,
                                            bool anoAnterior,
                                            double? notaFixa,
                                            SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado,
                                            bool criarFechamentoDisciplinaAlunoNota = false)
         {
-            await CriarDados(perfil,componente,tipo, anoTurma,modalidade,modalidadeTipoCalendario,anoAnterior,notaFixa,null,situacaoConselhoClasse, criarFechamentoDisciplinaAlunoNota);
+            await CriarDados(perfil, componente, tipo, anoTurma, modalidade, modalidadeTipoCalendario, anoAnterior, notaFixa, null, situacaoConselhoClasse, criarFechamentoDisciplinaAlunoNota);
         }
 
-        private async Task CriarDados(string perfil, 
-                                      long componente, 
-                                      TipoNota tipo, 
-                                      string anoTurma, 
-                                      Modalidade modalidade, 
-                                      ModalidadeTipoCalendario modalidadeTipoCalendario, 
-                                      bool anoAnterior, 
-                                      double? nota4, 
-                                      int? conceitoNSId, 
-                                      SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado, 
+        private async Task CriarDados(string perfil,
+                                      long componente,
+                                      TipoNota tipo,
+                                      string anoTurma,
+                                      Modalidade modalidade,
+                                      ModalidadeTipoCalendario modalidadeTipoCalendario,
+                                      bool anoAnterior,
+                                      double? nota4,
+                                      int? conceitoNSId,
+                                      SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado,
                                       bool criarFechamentoDisciplinaAlunoNota = false)
         {
             var dataAula = anoAnterior ? DATA_02_05_INICIO_BIMESTRE_2.AddYears(-1) : DateTimeExtension.HorarioBrasilia().Date.AddDays(-1);
@@ -478,9 +480,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CrieTipoAtividade();
             await CriarAtividadeAvaliativa(dataAula, filtroNota.ComponenteCurricular, USUARIO_PROFESSOR_LOGIN_1111111, true, ATIVIDADE_AVALIATIVA_1);
         }
-        
+
         private async Task<IEnumerable<SalvarConselhoClasseAlunoNotaDto>> CriarConselhoClasseTodosBimestres(long componenteCurricular = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
-            TipoNota tipoNota = TipoNota.Nota, bool gerarConselhoBimestreFinal = false, long conceitoId = NAO_SATISFATORIO_ID_3, double nota = NOTA_4 )
+            TipoNota tipoNota = TipoNota.Nota, bool gerarConselhoBimestreFinal = false, long conceitoId = NAO_SATISFATORIO_ID_3, double nota = NOTA_4)
         {
             var conselhosClasseParaPersistir = new List<SalvarConselhoClasseAlunoNotaDto>
             {
@@ -491,20 +493,20 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             };
 
             if (gerarConselhoBimestreFinal)
-                conselhosClasseParaPersistir.Add(ObterSalvarConselhoClasseAlunoNotaDto(componenteCurricular,tipoNota, conceitoId, nota, FECHAMENTO_TURMA_ID_5, BIMESTRE_FINAL));
+                conselhosClasseParaPersistir.Add(ObterSalvarConselhoClasseAlunoNotaDto(componenteCurricular, tipoNota, conceitoId, nota, FECHAMENTO_TURMA_ID_5, BIMESTRE_FINAL));
 
             foreach (var conselhoClasse in conselhosClasseParaPersistir)
                 await ExecutarTesteSemValidacao(conselhoClasse);
 
             return conselhosClasseParaPersistir;
         }
-        
-        private SalvarConselhoClasseAlunoNotaDto ObterSalvarConselhoClasseAlunoNotaDto(long componenteCurricular, TipoNota tipoNota 
-            ,long conceitoId, double nota,long fechamentoTurma = FECHAMENTO_TURMA_ID_2, int bimestre = BIMESTRE_2)
+
+        private SalvarConselhoClasseAlunoNotaDto ObterSalvarConselhoClasseAlunoNotaDto(long componenteCurricular, TipoNota tipoNota
+            , long conceitoId, double nota, long fechamentoTurma = FECHAMENTO_TURMA_ID_2, int bimestre = BIMESTRE_2)
         {
             return new SalvarConselhoClasseAlunoNotaDto()
             {
-                ConselhoClasseNotaDto = ObterConselhoClasseNotaDto(componenteCurricular,tipoNota, conceitoId, nota),
+                ConselhoClasseNotaDto = ObterConselhoClasseNotaDto(componenteCurricular, tipoNota, conceitoId, nota),
                 CodigoAluno = ALUNO_CODIGO_1,
                 ConselhoClasseId = 0,
                 FechamentoTurmaId = fechamentoTurma,
@@ -512,8 +514,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 Bimestre = bimestre
             };
         }
-        
-        private ConselhoClasseNotaDto ObterConselhoClasseNotaDto(long componenteCurricular, TipoNota tipoNota,long conceitoId, double nota)
+
+        private ConselhoClasseNotaDto ObterConselhoClasseNotaDto(long componenteCurricular, TipoNota tipoNota, long conceitoId, double nota)
         {
             return new ConselhoClasseNotaDto()
             {

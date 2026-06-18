@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Pendencias
             {
                 mediator.Verify(x => x.Send(It.Is<PublicarFilaSgpCommand>(y => y.Rota == RotasRabbitSgpPendencias.RotaExcluirPendenciaCalendarioAnoAnteriorCalendarioUes &&
                     ((ExcluirPendenciaCalendarioAnoAnteriorBuscarPorUeDto)y.Filtros).Equals(mensagemEsperada)), It.IsAny<CancellationToken>()), Times.Once);
-            }                
+            }
         }
     }
 }

@@ -1,16 +1,16 @@
-﻿using System;
+﻿using MediatR;
+using Newtonsoft.Json;
+using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using Newtonsoft.Json;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterFuncionariosPorCargoUeQueryHandler : IRequestHandler<ObterFuncionariosPorCargoUeQuery,IEnumerable<UsuarioEolRetornoDto>>
+    public class ObterFuncionariosPorCargoUeQueryHandler : IRequestHandler<ObterFuncionariosPorCargoUeQuery, IEnumerable<UsuarioEolRetornoDto>>
     {
         private readonly IHttpClientFactory httpClientFactory;
 

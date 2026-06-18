@@ -1,28 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Newtonsoft.Json;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterAlunosEolPorTurmaQueryHandler : IRequestHandler<ObterAlunosEolPorTurmaQuery,IEnumerable<AlunoPorTurmaResposta>>
+    public class ObterAlunosEolPorTurmaQueryHandler : IRequestHandler<ObterAlunosEolPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>
     {
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IRepositorioCache cache;
         private readonly IMediator mediator;
-        
 
-        public ObterAlunosEolPorTurmaQueryHandler(IHttpClientFactory httpClientFactory,IRepositorioCache cache,IMediator mediator)
+
+        public ObterAlunosEolPorTurmaQueryHandler(IHttpClientFactory httpClientFactory, IRepositorioCache cache, IMediator mediator)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
@@ -59,7 +58,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Falha ao Obter Alunos Eol Por Turma Query", LogNivel.Critico, LogContexto.Geral, ex.Message,rastreamento: ex.StackTrace, excecaoInterna: ex.InnerException?.ToString()));
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Falha ao Obter Alunos Eol Por Turma Query", LogNivel.Critico, LogContexto.Geral, ex.Message, rastreamento: ex.StackTrace, excecaoInterna: ex.InnerException?.ToString()));
                 throw;
             }
         }

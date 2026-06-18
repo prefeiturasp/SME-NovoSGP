@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries.PainelEducacional
         public ObterAbandonoUltimoAnoConsolidadoQueryHandlerTeste()
         {
             _repositorioPainelEducacionalConsolidacaoAbandono = new Mock<IRepositorioPainelEducacionalConsolidacaoAbandono>();
-            _queryHandler = new (_repositorioPainelEducacionalConsolidacaoAbandono.Object);
+            _queryHandler = new(_repositorioPainelEducacionalConsolidacaoAbandono.Object);
         }
 
         [Fact]

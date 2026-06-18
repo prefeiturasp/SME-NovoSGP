@@ -12,6 +12,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public string EstudanteCodigo { get; }
-        public string UeCodigo { get;  }
+        public string UeCodigo { get; }
     }
 }

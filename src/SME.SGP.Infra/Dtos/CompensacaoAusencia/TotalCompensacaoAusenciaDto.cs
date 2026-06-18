@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Infra.Dtos
 {
@@ -20,7 +18,7 @@ namespace SME.SGP.Infra.Dtos
                 if (TotalAulas == 0)
                     return 0;
 
-                var porcentagem = ((double)TotalCompensacoes / TotalAulas ) * 100;
+                var porcentagem = ((double)TotalCompensacoes / TotalAulas) * 100;
 
                 return Math.Round(porcentagem > 100 ? 100 : porcentagem, 2);
             }

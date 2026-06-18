@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
             SecaoId = secaoId;
         }
 
-        public long SecaoId {  get; set; }
+        public long SecaoId { get; set; }
     }
 
     public class ObterRespostaPorSecaoPAPQueryValidator : AbstractValidator<ObterRespostaPorSecaoPAPQuery>

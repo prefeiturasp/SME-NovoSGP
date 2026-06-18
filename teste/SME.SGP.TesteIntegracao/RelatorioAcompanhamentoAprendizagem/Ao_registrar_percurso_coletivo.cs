@@ -3,7 +3,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -15,7 +14,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
         {
         }
 
-        [Theory(DisplayName= "Relatorio Acompanhamento Aprendizagem - Ao registrar percurso coletivo dos semestres")]
+        [Theory(DisplayName = "Relatorio Acompanhamento Aprendizagem - Ao registrar percurso coletivo dos semestres")]
         [InlineData(1)]
         [InlineData(2)]
         public async Task Ao_registrar_percurso_coletivo_dos_semestres(int semestre)
@@ -38,7 +37,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
         }
 
         [Fact(DisplayName = "Relatorio Acompanhamento Aprendizagem -  Ao registrar percurso coletivo com período fechado")]
-        public async Task Ao_registrar_percurso_coletivo_com_periodo_fechado() 
+        public async Task Ao_registrar_percurso_coletivo_com_periodo_fechado()
         {
             await CriarDadosBasicos(false);
             await CriarPeriodoEscolarCustomizadoQuartoBimestre();

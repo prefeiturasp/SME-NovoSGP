@@ -1,15 +1,15 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Infra;
-using System.Collections.Generic;
-using System.Linq;
-using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Aplicacao
 {
@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
             var encaminhamentoNAAPAPersistido = encaminhamentoNAAPA.Clone();
             encaminhamentoNAAPA.Situacao = await ObterSituacaoNAAPAReabertura(request.EncaminhamentoId);
             var situacaoDTO = new SituacaoDto() { Codigo = (int)encaminhamentoNAAPA.Situacao, Descricao = encaminhamentoNAAPA.Situacao.GetAttribute<DisplayAttribute>().Name };
-            
+
             using (var transacao = unitOfWork.IniciarTransacao())
             {
                 try

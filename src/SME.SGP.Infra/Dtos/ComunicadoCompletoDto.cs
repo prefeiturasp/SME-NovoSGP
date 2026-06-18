@@ -1,5 +1,4 @@
 ﻿using SME.SGP.Dominio;
-using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
 using System.Linq;
@@ -27,7 +26,7 @@ namespace SME.SGP.Dto
                  CodigoDre = comunicado.CodigoDre,
                  CodigoUe = comunicado.CodigoUe,
                  CriadoEm = comunicado.CriadoEm,
-                 CriadoPor  = comunicado.CriadoPor,
+                 CriadoPor = comunicado.CriadoPor,
                  CriadoRF = comunicado.CriadoRF,
                  DataExpiracao = comunicado.DataExpiracao,
                  Descricao = comunicado.Descricao,
@@ -43,6 +42,6 @@ namespace SME.SGP.Dto
                  EventoId = comunicado.EventoId,
                  AnosEscolares = comunicado.AnosEscolares
              };
-        
+
     }
 }

@@ -1,9 +1,7 @@
 ﻿using MediatR;
 using Moq;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -28,7 +26,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             var grafico = new List<GraficoTotalDevolutivasPorAnoDTO>();
             var dados = new GraficoTotalDevolutivasPorAnoDTO() { Ano = "1", Descricao = "Devolutivas", Quantidade = 10 };
             grafico.Add(dados);
-            
+
             mediator.Setup(a => a.Send(It.IsAny<ObterQuantidadeTotalDeDevolutivasPorAnoDreQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(grafico);
 

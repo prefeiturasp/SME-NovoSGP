@@ -1,11 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
 {
@@ -20,7 +20,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
         private readonly string RESPONSAVEL = "RESPONSAVEL";
         private readonly string TIPO_RESPONSAVEL_4 = "4";
         private readonly string CELULAR_RESPONSAVEL = "11111111111";
-        
+
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosPorTurmaEAnoLetivoQuery request, CancellationToken cancellationToken)
         {
             var dataRefencia = DateTimeExtension.HorarioBrasilia();
@@ -80,7 +80,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
                     TipoResponsavel = TIPO_RESPONSAVEL_4,
                     CelularResponsavel =CELULAR_RESPONSAVEL,
                     DataAtualizacaoContato = DateTimeExtension.HorarioBrasilia().AddMonths(-1)
-                },                
+                },
                 new AlunoPorTurmaResposta
                 {
                     Ano = 0,

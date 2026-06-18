@@ -36,9 +36,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(PaginacaoResultadoDto<NotificacaoBasicaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.N_C, Policy = "Bearer")]
-        public async Task<IActionResult> Get([FromQuery]NotificacaoFiltroDto notificacaoFiltroDto)
+        public async Task<IActionResult> Get([FromQuery] NotificacaoFiltroDto notificacaoFiltroDto)
         {
-             return Ok(await consultasNotificacao.Listar(notificacaoFiltroDto));
+            return Ok(await consultasNotificacao.Listar(notificacaoFiltroDto));
         }
 
         [HttpGet]
@@ -106,7 +106,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.N_I, Policy = "Bearer")]
-        public async Task<IActionResult> Post([FromBody]NotificacaoDto notificacaoDto)
+        public async Task<IActionResult> Post([FromBody] NotificacaoDto notificacaoDto)
         {
             await comandosNotificacao.Salvar(notificacaoDto);
             return Ok();
@@ -128,7 +128,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("nao-lidas")]
         [Permissao(Permissao.N_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterUltimasNaoLidas([FromServices] IObterUltimasNotificacoesNaoLidasPorUsuarioUseCase useCase, [FromQuery]bool tituloReduzido = false)
+        public async Task<IActionResult> ObterUltimasNaoLidas([FromServices] IObterUltimasNotificacoesNaoLidasPorUsuarioUseCase useCase, [FromQuery] bool tituloReduzido = false)
         {
             return Ok(await useCase.Executar(tituloReduzido));
         }

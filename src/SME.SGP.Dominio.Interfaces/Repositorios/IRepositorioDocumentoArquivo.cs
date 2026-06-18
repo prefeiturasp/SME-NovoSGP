@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using SME.SGP.Infra.Dtos;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Dominio.Interfaces
 {

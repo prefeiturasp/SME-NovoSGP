@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
+using Newtonsoft.Json;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,6 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace SME.SGP.Aplicacao
 {
@@ -27,7 +26,7 @@ namespace SME.SGP.Aplicacao
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
 
             var parametros = JsonConvert.SerializeObject(request.CodigosTurmas);
-            
+
             var resposta = await httpClient.PostAsync(ServicosEolConstants.URL_TURMAS_REGULARES, new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
 
             if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)

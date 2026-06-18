@@ -115,7 +115,7 @@ namespace SME.SGP.TesteIntegracao.Fechamento.Notificacoes
                 CriadoRF = SISTEMA_CODIGO_RF
             };
 
-            var periodoEscolar = ObterTodos<PeriodoEscolar>().FirstOrDefault(p => p.Bimestre == BIMESTRE_4); 
+            var periodoEscolar = ObterTodos<PeriodoEscolar>().FirstOrDefault(p => p.Bimestre == BIMESTRE_4);
 
             periodoFechamento.AdicionarFechamentoBimestre(new PeriodoFechamentoBimestre(1, periodoEscolar, periodoEscolar.PeriodoFim, DateTime.Now.Date.AddDays(5)));
 

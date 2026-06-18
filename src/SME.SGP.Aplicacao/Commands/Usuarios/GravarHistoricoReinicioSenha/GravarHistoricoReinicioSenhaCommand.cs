@@ -1,12 +1,9 @@
 ﻿using FluentValidation;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class GravarHistoricoReinicioSenhaCommand: IRequest<bool>
+    public class GravarHistoricoReinicioSenhaCommand : IRequest<bool>
     {
         public GravarHistoricoReinicioSenhaCommand(string usuarioRf, string dreCodigo, string ueCodigo)
         {
@@ -20,7 +17,7 @@ namespace SME.SGP.Aplicacao
         public string UeCodigo { get; set; }
     }
 
-    public class GravarHistoricoReinicioSenhaCommandValidator: AbstractValidator<GravarHistoricoReinicioSenhaCommand>
+    public class GravarHistoricoReinicioSenhaCommandValidator : AbstractValidator<GravarHistoricoReinicioSenhaCommand>
     {
         public GravarHistoricoReinicioSenhaCommandValidator()
         {

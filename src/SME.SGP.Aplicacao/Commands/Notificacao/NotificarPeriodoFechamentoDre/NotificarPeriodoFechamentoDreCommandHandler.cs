@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
             {
                 var dre = grupoDre.First().Dre;
                 mensagem.Append($"<li>{dre.Abreviacao}<ul>");
-                foreach(var ue in grupoDre)
+                foreach (var ue in grupoDre)
                 {
                     mensagem.Append($"<li>{ue.TipoEscola.ShortName()} {ue.Nome}</li>");
                 }
@@ -72,7 +72,7 @@ namespace SME.SGP.Aplicacao
             var mensagem = new StringBuilder($"As UEs abaixo ainda não cadastraram o período de fechamento para o tipo de calendário <b>{modalidadeTipoCalendario.Name()} {ano} ({dre.Abreviacao})</b>.<br/>");
 
             mensagem.Append("<ul>");
-            foreach(var ue in grupoDre)
+            foreach (var ue in grupoDre)
             {
                 mensagem.Append($"<li>{ue.TipoEscola.ShortName()} {ue.Nome}</li>");
             }

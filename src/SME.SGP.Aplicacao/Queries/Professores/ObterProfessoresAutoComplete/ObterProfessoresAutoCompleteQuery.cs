@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using MediatR;
-using System.Collections.Generic;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
@@ -27,15 +27,15 @@ namespace SME.SGP.Aplicacao
             RuleFor(a => a.AnoLetivo)
                 .GreaterThan(0)
                 .WithMessage("O ano letivo deve ser informado para obter professores.");
-            
+
             RuleFor(a => a.DreId)
                 .NotEmpty()
                 .WithMessage("O código da Dre deve ser informado para obter professores.");
-            
+
             RuleFor(a => a.UeId)
                 .NotEmpty()
                 .WithMessage("O código da Ue deve ser informado para obter professores.");
-            
+
             RuleFor(a => a.NomeProfessor)
                 .NotEmpty()
                 .WithMessage("O nome do professor deve ser informado para obter professores.");

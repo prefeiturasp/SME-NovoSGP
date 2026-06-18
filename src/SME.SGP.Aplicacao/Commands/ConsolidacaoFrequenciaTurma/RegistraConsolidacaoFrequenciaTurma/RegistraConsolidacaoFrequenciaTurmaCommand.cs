@@ -7,12 +7,12 @@ namespace SME.SGP.Aplicacao
     public class RegistraConsolidacaoFrequenciaTurmaCommand : IRequest<long>
     {
         public RegistraConsolidacaoFrequenciaTurmaCommand(
-                                                          long turmaId, 
-                                                          int quantidadeAcimaMinimoFrequencia, 
-                                                          int quantidadeAbaixoMinimoFrequencia, 
+                                                          long turmaId,
+                                                          int quantidadeAcimaMinimoFrequencia,
+                                                          int quantidadeAbaixoMinimoFrequencia,
                                                           TipoConsolidadoFrequencia tipoConsolidacao,
                                                           (DateTime? DataInicio, DateTime? DataFim) periodo,
-                                                          int totalAulas, 
+                                                          int totalAulas,
                                                           int totalFrequencias)
         {
             TurmaId = turmaId;

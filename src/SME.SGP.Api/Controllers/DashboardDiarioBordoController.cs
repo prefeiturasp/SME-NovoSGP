@@ -29,7 +29,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(IEnumerable<GraficoTotalDiariosEDevolutivasPorDreDTO>), 200)]
         [Permissao(Permissao.DB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterQuantidadeTotalDeDiariosPendentesPorDre([FromQuery]int anoLetivo, string ano, [FromServices] IObterQuantidadeTotalDeDiariosPendentesPorDREUseCase useCase)
+        public async Task<IActionResult> ObterQuantidadeTotalDeDiariosPendentesPorDre([FromQuery] int anoLetivo, string ano, [FromServices] IObterQuantidadeTotalDeDiariosPendentesPorDREUseCase useCase)
         {
             return Ok(await useCase.Executar(anoLetivo, ano));
         }

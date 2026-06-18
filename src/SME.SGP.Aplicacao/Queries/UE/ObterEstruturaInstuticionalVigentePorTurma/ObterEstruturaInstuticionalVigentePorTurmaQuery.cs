@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
         }
         public string[] CodigosTurma { get; set; }
     }
-    
+
     public class ObterEstruturaInstuticionalVigentePorTurmaQueryValidator : AbstractValidator<ObterEstruturaInstuticionalVigentePorTurmaQuery>
     {
         public ObterEstruturaInstuticionalVigentePorTurmaQueryValidator()

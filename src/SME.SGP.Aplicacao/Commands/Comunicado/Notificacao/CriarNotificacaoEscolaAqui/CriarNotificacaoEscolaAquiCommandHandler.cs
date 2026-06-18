@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
             MapearParaEntidadeServico(comunicadoServico, request.Comunicado);
             var httpClient = httpClientFactory.CreateClient("servicoAcompanhamentoEscolar");
-            
+
             var parametros = JsonConvert.SerializeObject(comunicadoServico);
 
             var resposta = await httpClient.PostAsync("v1/notificacao", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));

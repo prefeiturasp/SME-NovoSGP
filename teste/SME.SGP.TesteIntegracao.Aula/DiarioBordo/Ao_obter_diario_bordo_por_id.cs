@@ -1,12 +1,7 @@
-﻿using MediatR;
-using Microsoft.Extensions.DependencyInjection;
-using Moq;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using SME.SGP.Aplicacao;
-using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Setup;
-using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 

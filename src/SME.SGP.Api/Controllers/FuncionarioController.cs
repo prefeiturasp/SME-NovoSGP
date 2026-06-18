@@ -19,7 +19,7 @@ namespace SME.SGP.Api.Controllers
         [Route("pesquisa")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<UsuarioEolRetornoDto>), 200)]
-        [Permissao(Permissao.AS_C,Permissao.OCO_C,Policy = "Bearer")]
+        [Permissao(Permissao.AS_C, Permissao.OCO_C, Policy = "Bearer")]
         public async Task<IActionResult> PesquisaFuncionariosPorDreUe([FromBody] FiltroPesquisaFuncionarioDto filtro, [FromServices] IPesquisaFuncionariosPorDreUeUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
@@ -40,7 +40,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(IEnumerable<UsuarioEolRetornoDto>), 200)]
         [Permissao(Permissao.OCO_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterFuncionariosPorUe(string codigoUe, string filtro,[FromServices] IObterFuncionariosPorUeUseCase useCase)
+        public async Task<IActionResult> ObterFuncionariosPorUe(string codigoUe, string filtro, [FromServices] IObterFuncionariosPorUeUseCase useCase)
         {
             var consulta = await useCase.Executar(codigoUe, filtro);
             if (!consulta.Any())

@@ -18,7 +18,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<PlanoAnualTerritorioSaberCompletoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PT_C, Policy = "Bearer")]
-        public async Task<IActionResult> Get(string turmaId, string ueId, int anoLetivo, long territorioExperienciaId, [FromServices]IConsultasPlanoAnualTerritorioSaber consultasPlanoAnualTerritorioSaber)
+        public async Task<IActionResult> Get(string turmaId, string ueId, int anoLetivo, long territorioExperienciaId, [FromServices] IConsultasPlanoAnualTerritorioSaber consultasPlanoAnualTerritorioSaber)
         {
             return Ok(await consultasPlanoAnualTerritorioSaber.ObterPorUETurmaAnoETerritorioExperiencia(ueId, turmaId, anoLetivo, territorioExperienciaId));
         }
@@ -27,7 +27,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PT_I, Permissao.PT_A, Policy = "Bearer")]
-        public async Task<IActionResult> Post(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto, [FromServices]IComandosPlanoAnualTerritorioSaber comandosPlanoAnualTerritorioSaber)
+        public async Task<IActionResult> Post(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto, [FromServices] IComandosPlanoAnualTerritorioSaber comandosPlanoAnualTerritorioSaber)
         {
             var resultado = await comandosPlanoAnualTerritorioSaber.Salvar(planoAnualTerritorioSaberDto);
 

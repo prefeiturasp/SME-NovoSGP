@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao.Commands.PendenciasGerais.SalvarPendencia
                 case TipoPendencia.AlteracaoNotaFechamento:
                     return "";
                 case TipoPendencia.Frequencia:
-                    return PendenciaConstants.ObterDescricaoPendenciaFrequencia(request.DescricaoComponenteCurricular, request.TurmaAnoComModalidade, request.DescricaoUeDre);                    
+                    return PendenciaConstants.ObterDescricaoPendenciaFrequencia(request.DescricaoComponenteCurricular, request.TurmaAnoComModalidade, request.DescricaoUeDre);
                 case TipoPendencia.PlanoAula:
                     return PendenciaConstants.ObterDescricaoPendenciaPlanoAula(request.DescricaoComponenteCurricular, request.TurmaAnoComModalidade, request.DescricaoUeDre);
                 case TipoPendencia.DiarioBordo:

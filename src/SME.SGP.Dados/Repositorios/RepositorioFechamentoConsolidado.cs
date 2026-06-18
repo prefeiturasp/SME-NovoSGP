@@ -45,7 +45,7 @@ namespace SME.SGP.Dados
                                               where turma_id = @turmaId and bimestre = @bimestre and status = ANY(@situacoesFechamento))");
 
             query.AppendLine(") x where x.sequencia = 1");
-            
+
             return await database.Conexao.QueryAsync<FechamentoConsolidadoComponenteTurma>(query.ToString(), new { turmaId, bimestre, situacoesFechamento });
         }
         public async Task<IEnumerable<ConsolidacaoTurmaComponenteCurricularDto>> ObterComponentesFechamentoConsolidadoPorTurmaBimestre(long turmaId, int bimestre, int[] situacoesFechamento)
@@ -62,12 +62,12 @@ namespace SME.SGP.Dados
                                                from consolidado_fechamento_componente_turma cfct   
                                                inner join componente_curricular cc on cc.id = cfct.componente_curricular_id           
                                                where cfct.turma_id = @turmaId
-                                                 and cfct.bimestre = @bimestre  ");                             
+                                                 and cfct.bimestre = @bimestre  ");
 
             if (!situacoesFechamento.Any(c => c == -99))
                 query.AppendLine(@"and EXISTS(select 1 from consolidado_fechamento_componente_turma 
                                               where turma_id = @turmaId and bimestre = @bimestre and status = ANY(@situacoesFechamento)) ");
-            
+
             query.AppendLine(") x where x.sequencia = 1");
 
             return await database.Conexao.QueryAsync<ConsolidacaoTurmaComponenteCurricularDto>(query.ToString(), new { turmaId, bimestre, situacoesFechamento });

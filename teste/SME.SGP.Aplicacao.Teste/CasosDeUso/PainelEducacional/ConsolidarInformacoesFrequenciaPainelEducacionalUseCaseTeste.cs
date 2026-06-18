@@ -1,23 +1,23 @@
-﻿using MediatR;
+﻿using FluentAssertions;
+using MediatR;
 using Moq;
 using SME.SGP.Aplicacao.CasosDeUso.PainelEducacional;
+using SME.SGP.Aplicacao.Commands.PainelEducacional.ExcluirAgrupamentoEscola;
+using SME.SGP.Aplicacao.Commands.PainelEducacional.ExcluirAgrupamentoGlobal;
+using SME.SGP.Aplicacao.Commands.PainelEducacional.ExcluirAgrupamentoMensal;
 using SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarAgrupamentoEscola;
 using SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarAgrupamentoGlobal;
 using SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarAgrupamentoMensal;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dominio;
-using SME.SGP.Infra.Dtos.PainelEducacional;
-using System.Collections.Generic;
-using System.Threading;
-using Xunit;
-using System.Threading.Tasks;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using FluentAssertions;
-using SME.SGP.Aplicacao.Commands.PainelEducacional.ExcluirAgrupamentoMensal;
-using SME.SGP.Aplicacao.Commands.PainelEducacional.ExcluirAgrupamentoGlobal;
-using SME.SGP.Aplicacao.Commands.PainelEducacional.ExcluirAgrupamentoEscola;
+using SME.SGP.Infra.Dtos.PainelEducacional;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
 {
@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                         TurmaId = 1,
                         UeId = 1,
                         ModalidadeCodigo = (int)Modalidade.EducacaoInfantil,
-                        Ano = "2", 
+                        Ano = "2",
                         AnoLetivo = DateTime.Now.Year.ToString()
                     },
                     new TurmaPainelEducacionalFrequenciaDto
@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                         TurmaId = 2,
                         UeId = 2,
                         ModalidadeCodigo = (int)Modalidade.Fundamental,
-                        Ano = "6", 
+                        Ano = "6",
                         AnoLetivo = DateTime.Now.Year.ToString()
                     }
                 });
@@ -141,7 +141,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
 
             commandMensalCapturado.Should().NotBeNull();
             commandMensalCapturado.RegistroFrequencia.Should().HaveCount(2);
-            
+
             var agrupamentoMensalCreche = commandMensalCapturado.RegistroFrequencia.FirstOrDefault(r => r.Modalidade == "Creche");
             agrupamentoMensalCreche.Should().NotBeNull("Deve existir um agrupamento para Creche");
             agrupamentoMensalCreche.Modalidade.Should().Be("Creche");
@@ -156,7 +156,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
 
             commandGlobalCapturado.Should().NotBeNull();
             commandGlobalCapturado.RegistroFrequencia.Should().HaveCount(2);
-            
+
             var agrupamentoGlobalCreche = commandGlobalCapturado.RegistroFrequencia.FirstOrDefault(r => r.Modalidade == "Creche");
             agrupamentoGlobalCreche.Should().NotBeNull("Deve existir um agrupamento global para Creche");
             agrupamentoGlobalCreche.TotalAlunos.Should().Be(1);
@@ -171,7 +171,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
 
             commandEscolaCapturado.Should().NotBeNull();
             commandEscolaCapturado.RegistroFrequencia.Should().HaveCount(2);
-            
+
             var agrupamentoEscola1 = commandEscolaCapturado.RegistroFrequencia.FirstOrDefault(r => r.CodigoUe == "987654");
             agrupamentoEscola1.Should().NotBeNull("Deve existir um agrupamento para a escola 987654");
             agrupamentoEscola1.TotalAlunos.Should().Be(1);
@@ -226,7 +226,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     QuantidadeAulas = 20,
                     QuantidadeAusencias = 2,
                     ModalidadeCodigo = (int)Modalidade.EducacaoInfantil,
-                    AnoTurma = "2", 
+                    AnoTurma = "2",
                     AnoLetivo = DateTime.Now.Year
                 },
                 new RegistroFrequenciaPainelEducacionalDto
@@ -241,7 +241,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
                     QuantidadeAulas = 20,
                     QuantidadeAusencias = 1,
                     ModalidadeCodigo = (int)Modalidade.Fundamental,
-                    AnoTurma = "6", 
+                    AnoTurma = "6",
                     AnoLetivo = DateTime.Now.Year
                 }
             };

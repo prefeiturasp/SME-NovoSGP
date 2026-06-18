@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using FluentValidation;
+﻿using FluentValidation;
 using MediatR;
+using System;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterTurmaCodigosAlunoPorAnoLetivoUeTipoTurmaQuery : IRequest<string[]>
     {
-        public ObterTurmaCodigosAlunoPorAnoLetivoUeTipoTurmaQuery(int anoLetivo, IEnumerable<int> tiposTurmas, bool consideraHistorico, string ueCodigo, int semestre,DateTime? dataReferencia)
+        public ObterTurmaCodigosAlunoPorAnoLetivoUeTipoTurmaQuery(int anoLetivo, IEnumerable<int> tiposTurmas, bool consideraHistorico, string ueCodigo, int semestre, DateTime? dataReferencia)
         {
             AnoLetivo = anoLetivo;
             TiposTurmas = tiposTurmas;
@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
             RuleFor(a => a.UeCodigo)
                 .NotEmpty()
                 .WithMessage("Necessário informar o código da ue para obter o código da turma regular");
-            
+
             RuleFor(a => a.Semestre)
                 .GreaterThanOrEqualTo(0)
                 .WithMessage("Necessário informar o semestre para obter o código da turma regular");

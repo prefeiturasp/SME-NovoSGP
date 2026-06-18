@@ -4,6 +4,6 @@ namespace SME.SGP.Dominio.Constantes.MensagensNegocio
     {
         protected MensagemNegocioRegistroColetivoNAAPA() { }
 
-        public const string REGISTRO_COLETIVO_NAO_ENCONTRADO = "Registro Coletivo não encontrado";              
+        public const string REGISTRO_COLETIVO_NAO_ENCONTRADO = "Registro Coletivo não encontrado";
     }
 }

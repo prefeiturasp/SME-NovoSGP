@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterQuantidadeAulasNaSemanaPorProfessorComponenteCurricularQueryHandler: IRequestHandler<ObterQuantidadeAulasNaSemanaPorProfessorComponenteCurricularQuery, int>
+    public class ObterQuantidadeAulasNaSemanaPorProfessorComponenteCurricularQueryHandler : IRequestHandler<ObterQuantidadeAulasNaSemanaPorProfessorComponenteCurricularQuery, int>
     {
         private readonly IRepositorioAulaConsulta repositorioAula;
 

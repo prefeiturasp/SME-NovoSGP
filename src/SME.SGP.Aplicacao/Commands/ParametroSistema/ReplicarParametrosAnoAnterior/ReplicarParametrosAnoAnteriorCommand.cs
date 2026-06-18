@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -14,7 +13,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public int AnoLetivo { get; set; }
-        public ModalidadeTipoCalendario ModalidadeTipoCalendario { get; set; }        
+        public ModalidadeTipoCalendario ModalidadeTipoCalendario { get; set; }
     }
 
     public class ReplicarParametrosAnoAnteriorCommandValidator : AbstractValidator<ReplicarParametrosAnoAnteriorCommand>

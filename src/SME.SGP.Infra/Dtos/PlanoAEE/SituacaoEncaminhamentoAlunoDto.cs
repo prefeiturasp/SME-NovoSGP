@@ -1,6 +1,4 @@
-﻿using SME.SGP.Dominio.Enumerados;
-
-namespace SME.SGP.Infra
+﻿namespace SME.SGP.Infra
 {
     public class SituacaoEncaminhamentoPorEstudanteDto
     {

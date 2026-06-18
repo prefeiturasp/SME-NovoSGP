@@ -106,7 +106,7 @@ namespace SME.SGP.Aplicacao.Interfaces
                 {
                     if (questao.Id != 0 &&
                         !await mediator.Send(new ExcluirItineranciaQuestaoCommand(questao.Id, itinerancia.Id)))
-                            throw new NegocioException($"Não foi possível excluir a questão da itinerância de Id {questao.Id}");
+                        throw new NegocioException($"Não foi possível excluir a questão da itinerância de Id {questao.Id}");
 
                     await ExcluirItineranciaQuestaoUpload(questao);
                 }

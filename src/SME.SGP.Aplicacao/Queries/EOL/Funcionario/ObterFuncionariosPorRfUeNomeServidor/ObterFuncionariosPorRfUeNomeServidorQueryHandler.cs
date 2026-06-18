@@ -1,10 +1,8 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -31,7 +29,7 @@ namespace SME.SGP.Aplicacao
                 CodigoRF = request.CodigoRF,
                 CodigoUE = request.CodigoUE,
             };
-            
+
             var jsonParaPost = new StringContent(JsonConvert.SerializeObject(buscaFuncionariosFiltroDto), UnicodeEncoding.UTF8, "application/json");
 
             var resposta = await httpClient.PostAsync(ServicosEolConstants.URL_FUNCIONARIOS, jsonParaPost);

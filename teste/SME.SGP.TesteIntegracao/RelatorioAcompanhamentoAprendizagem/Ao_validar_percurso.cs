@@ -28,7 +28,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             var inconsistencia = await useCase.Executar(new FiltroInconsistenciaPercursoRAADto(TURMA_ID_1, 1));
 
             inconsistencia.ShouldNotBeNull();
-            inconsistencia.MensagemInconsistenciaPercursoColetivo.ShouldBe(string.Empty); 
+            inconsistencia.MensagemInconsistenciaPercursoColetivo.ShouldBe(string.Empty);
         }
 
         [Fact(DisplayName = "Validar RAA sem percurso coletivo")]

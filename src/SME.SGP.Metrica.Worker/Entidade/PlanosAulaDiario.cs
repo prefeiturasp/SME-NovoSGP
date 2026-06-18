@@ -4,7 +4,7 @@ namespace SME.SGP.Metrica.Worker.Entidade
 {
     public class PlanosAulaDiario : EntidadeElasticBase
     {
-        public PlanosAulaDiario(DateTime data, int quantidade): base(data.ToString("yyyyMMdd"))
+        public PlanosAulaDiario(DateTime data, int quantidade) : base(data.ToString("yyyyMMdd"))
         {
             Data = data.Date.ToUniversalTime();
             Quantidade = quantidade;

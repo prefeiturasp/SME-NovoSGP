@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<string>> Handle(ObterTurmasComMatriculasValidasQuery request, CancellationToken cancellationToken)
         {
             var turmasCodigosComMatriculasValidas = new List<string>();
-            
+
             foreach (string codTurma in request.TurmasCodigos)
             {
                 var matriculasAluno = await ObterMatriculasAlunoTurma(codTurma, request.AlunoCodigo, request.PeriodoInicio, cancellationToken);
@@ -29,12 +29,12 @@ namespace SME.SGP.Aplicacao
                 {
                     Func<Task<Turma>> fncInstanciarTurma = async () => await mediator.Send(new ObterTurmaPorCodigoQuery(codTurma));
                     if (matriculasAluno.Any(m => m.CodigoTurma.ToString() == codTurma &&
-                       ((m.PossuiSituacaoAtiva() && m.DataMatricula <= request.PeriodoFim) 
-                       || (!m.PossuiSituacaoAtiva() && m.DataSituacao >= request.PeriodoInicio && m.DataSituacao <= request.PeriodoFim) 
+                       ((m.PossuiSituacaoAtiva() && m.DataMatricula <= request.PeriodoFim)
+                       || (!m.PossuiSituacaoAtiva() && m.DataSituacao >= request.PeriodoInicio && m.DataSituacao <= request.PeriodoFim)
                        || (!m.PossuiSituacaoAtiva() && m.DataMatricula <= request.PeriodoFim && m.DataSituacao > request.PeriodoFim))
                        && !(m.PossuiSituacaoDispensadoTurmaEdFisica(fncInstanciarTurma))
                        ))
-                            turmasCodigosComMatriculasValidas.Add(codTurma);
+                        turmasCodigosComMatriculasValidas.Add(codTurma);
                 }
             }
 

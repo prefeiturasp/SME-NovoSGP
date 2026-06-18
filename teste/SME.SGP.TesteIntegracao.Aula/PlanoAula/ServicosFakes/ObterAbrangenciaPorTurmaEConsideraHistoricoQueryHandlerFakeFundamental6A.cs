@@ -1,13 +1,13 @@
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dto;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.PlanoAula.ServicosFakes
 {
-    public class ObterAbrangenciaPorTurmaEConsideraHistoricoQueryHandlerFakeFundamental6A: IRequestHandler<ObterAbrangenciaPorTurmaEConsideraHistoricoQuery, AbrangenciaFiltroRetorno>
+    public class ObterAbrangenciaPorTurmaEConsideraHistoricoQueryHandlerFakeFundamental6A : IRequestHandler<ObterAbrangenciaPorTurmaEConsideraHistoricoQuery, AbrangenciaFiltroRetorno>
     {
         private readonly string DRE_CODIGO_1 = "1";
         private readonly string DRE_NOME_1 = "NOME DRE 1";
@@ -16,8 +16,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.ServicosFakes
         private readonly string TURMA_6A = "6A";
         private readonly string UE_CODIGO_1 = "1";
         private readonly string UE_NOME_1 = "NOME UE 1";
-        
-        public Task<AbrangenciaFiltroRetorno> Handle(ObterAbrangenciaPorTurmaEConsideraHistoricoQuery request,CancellationToken cancellationToken)
+
+        public Task<AbrangenciaFiltroRetorno> Handle(ObterAbrangenciaPorTurmaEConsideraHistoricoQuery request, CancellationToken cancellationToken)
         {
             return Task.FromResult(new AbrangenciaFiltroRetorno()
             {

@@ -1,12 +1,12 @@
+using MediatR;
+using SME.SGP.Dominio.Constantes;
+using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dominio.Constantes;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -30,13 +30,13 @@ namespace SME.SGP.Aplicacao
             var retorno = new List<NotaConceitoBimestreComponenteDto>();
 
             foreach (var turmaCodigo in request.TurmasCodigos)
-            {   
+            {
                 var notasConceitosFechamento = (await repositorioCache.ObterAsync(
                         string.Format(NomeChaveCache.NOTA_CONCEITO_FECHAMENTO_TURMA_ALUNO_BIMESTRES_E_FINAL, turmaCodigo, request.AlunoCodigo),
                         async () => await repositorioConselhoClasseNota
                             .ObterNotasConceitosFechamentoPorTurmaCodigoEBimestreAsync(turmaCodigo, request.Bimestre, tipoCalendario: request.TipoCalendario, alunoCodigo: request.AlunoCodigo),
                         "Obter notas ou conceitos do fechamento."))
-                    .ToList();                 
+                    .ToList();
 
                 if (notasConceitosFechamento.Any())
                     retorno.AddRange(notasConceitosFechamento);

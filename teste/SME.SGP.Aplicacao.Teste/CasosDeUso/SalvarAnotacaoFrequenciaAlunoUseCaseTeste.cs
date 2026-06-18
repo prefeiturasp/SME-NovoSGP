@@ -110,12 +110,13 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                 MotivoAusenciaId = 1
             };
             var hoje = DateTime.Today;
-            
+
             mediator.Setup(a => a.Send(It.IsAny<ObterAulaPorIdQuery>(), It.IsAny<CancellationToken>()))
                .ReturnsAsync(new SME.SGP.Dominio.Aula() { DataAula = hoje, TurmaId = "1" });
 
             mediator.Setup(a => a.Send(It.IsAny<ObterTurmaPorCodigoQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new Turma() { 
+                .ReturnsAsync(new Turma()
+                {
                     UeId = 1,
                     CodigoTurma = "1",
                     Historica = false,
@@ -147,12 +148,13 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                 MotivoAusenciaId = 1
             };
             var hoje = DateTime.Today;
-            
+
             mediator.Setup(a => a.Send(It.IsAny<ObterAulaPorIdQuery>(), It.IsAny<CancellationToken>()))
                .ReturnsAsync(new SME.SGP.Dominio.Aula() { DataAula = hoje, TurmaId = "1" });
 
             mediator.Setup(a => a.Send(It.IsAny<ObterTurmaPorCodigoQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new Turma() { 
+                .ReturnsAsync(new Turma()
+                {
                     UeId = 1,
                     CodigoTurma = "1",
                     Historica = false,
@@ -187,12 +189,13 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                 MotivoAusenciaId = 1
             };
             var hoje = DateTime.Today;
-            
+
             mediator.Setup(a => a.Send(It.IsAny<ObterAulaPorIdQuery>(), It.IsAny<CancellationToken>()))
                .ReturnsAsync(new SME.SGP.Dominio.Aula() { DataAula = hoje, TurmaId = "1" });
 
             mediator.Setup(a => a.Send(It.IsAny<ObterTurmaPorCodigoQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new Turma() { 
+                .ReturnsAsync(new Turma()
+                {
                     UeId = 1,
                     CodigoTurma = "1",
                     Historica = false,
@@ -227,12 +230,13 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                 MotivoAusenciaId = 1
             };
             var hoje = DateTime.Today;
-            
+
             mediator.Setup(a => a.Send(It.IsAny<ObterAulaPorIdQuery>(), It.IsAny<CancellationToken>()))
                .ReturnsAsync(new SME.SGP.Dominio.Aula() { DataAula = hoje, TurmaId = "1" });
 
             mediator.Setup(a => a.Send(It.IsAny<ObterTurmaPorCodigoQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new Turma() { 
+                .ReturnsAsync(new Turma()
+                {
                     UeId = 1,
                     CodigoTurma = "1",
                     Historica = false,
@@ -272,12 +276,13 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                 MotivoAusenciaId = 1
             };
             var hoje = DateTime.Today;
-            
+
             mediator.Setup(a => a.Send(It.IsAny<ObterAulaPorIdQuery>(), It.IsAny<CancellationToken>()))
                .ReturnsAsync(new SME.SGP.Dominio.Aula() { DataAula = hoje, TurmaId = "1" });
 
             mediator.Setup(a => a.Send(It.IsAny<ObterTurmaPorCodigoQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new Turma() { 
+                .ReturnsAsync(new Turma()
+                {
                     UeId = 1,
                     CodigoTurma = "1",
                     Historica = false,
@@ -325,7 +330,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                .ReturnsAsync(new SME.SGP.Dominio.Aula() { DataAula = hoje, TurmaId = "1" });
 
             mediator.Setup(a => a.Send(It.IsAny<ObterTurmaPorCodigoQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new Turma() { 
+                .ReturnsAsync(new Turma()
+                {
                     UeId = 1,
                     CodigoTurma = "1",
                     Historica = false,
@@ -377,7 +383,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                .ReturnsAsync(new SME.SGP.Dominio.Aula() { DataAula = hoje, TurmaId = "1" });
 
             mediator.Setup(a => a.Send(It.IsAny<ObterTurmaPorCodigoQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new Turma() { 
+                .ReturnsAsync(new Turma()
+                {
                     UeId = 1,
                     CodigoTurma = "1",
                     Historica = false,
@@ -426,7 +433,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                .ReturnsAsync(new SME.SGP.Dominio.Aula() { DataAula = hoje, TurmaId = "1" });
 
             mediator.Setup(a => a.Send(It.IsAny<ObterTurmaPorCodigoQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new Turma() { 
+                .ReturnsAsync(new Turma()
+                {
                     UeId = 1,
                     CodigoTurma = "1",
                     Historica = false,
@@ -454,7 +462,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
 
             var exception = await Assert.ThrowsAsync<NegocioException>(() => salvarAnotacaoFrequenciaAlunoUseCase.Executar(dto));
             Assert.Equal("Você não pode fazer alterações ou inclusões nesta turma, componente e data.", exception.Message);
-            
+
             mediator.Verify(x => x.Send(It.IsAny<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
@@ -476,7 +484,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                .ReturnsAsync(new SME.SGP.Dominio.Aula() { DataAula = hoje, TurmaId = "1" });
 
             mediator.Setup(a => a.Send(It.IsAny<ObterTurmaPorCodigoQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new Turma() { 
+                .ReturnsAsync(new Turma()
+                {
                     UeId = 1,
                     CodigoTurma = "1",
                     Historica = false,

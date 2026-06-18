@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao.Queries.ParametroSistema.ObterNovasModalidadesPorAno
 
         public async Task<IEnumerable<Modalidade>> Handle(ObterNovasModalidadesPorAnoQuery request, CancellationToken cancellationToken)
         {
-            if (request.ConsideraNovasModalidades && request.AnoLetivo == DateTime.Now.Year) 
+            if (request.ConsideraNovasModalidades && request.AnoLetivo == DateTime.Now.Year)
                 return null;
 
             var anoLetivo = ObterAnoParaConsulta(request);

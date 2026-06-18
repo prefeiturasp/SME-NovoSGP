@@ -110,7 +110,7 @@ namespace SME.SGP.Aplicacao
             var mensagensErroRetorno = new StringBuilder();
 
             if (eventoSemPemissaoExclusao.Any())
-                mensagensErroRetorno.AppendLine($"Não foi permitida a exclusão do(s) evento(s): { string.Join(", ", eventoSemPemissaoExclusao) }");
+                mensagensErroRetorno.AppendLine($"Não foi permitida a exclusão do(s) evento(s): {string.Join(", ", eventoSemPemissaoExclusao)}");
 
             if (idsComErroAoExcluir.Any())
                 mensagensErroRetorno.AppendLine($"Não foi possível excluir os eventos de ids {string.Join(",", idsComErroAoExcluir)}");

@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioEventoBimestre = new Mock<IRepositorioEventoBimestre>();
             consultasAbrangencia = new Mock<IConsultasAbrangencia>();
 
-            consultaEventos = new ConsultasEvento(repositorioEvento.Object, new ContextoHttp(httpContextAcessorObj), servicoUsuario.Object, repositorioEventoTipo.Object, repositorioEventoBimestre.Object ,consultasAbrangencia.Object);
+            consultaEventos = new ConsultasEvento(repositorioEvento.Object, new ContextoHttp(httpContextAcessorObj), servicoUsuario.Object, repositorioEventoTipo.Object, repositorioEventoBimestre.Object, consultasAbrangencia.Object);
         }
 
         //[Fact]

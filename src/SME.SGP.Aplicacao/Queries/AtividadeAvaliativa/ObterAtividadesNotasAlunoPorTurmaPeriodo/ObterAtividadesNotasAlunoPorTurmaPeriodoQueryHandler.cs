@@ -3,7 +3,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,7 +18,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<AvaliacaoNotaAlunoDto>> Handle(ObterAtividadesNotasAlunoPorTurmaPeriodoQuery request, CancellationToken cancellationToken)
-            =>  await repositorioAtividadeAvaliativa.ObterAtividadesNotasAlunoPorTurmaPeriodo(request.TurmaId, request.PeriodoEscolarId, request.AlunoCodigo, request.ComponenteCurricular);
+            => await repositorioAtividadeAvaliativa.ObterAtividadesNotasAlunoPorTurmaPeriodo(request.TurmaId, request.PeriodoEscolarId, request.AlunoCodigo, request.ComponenteCurricular);
 
     }
 }

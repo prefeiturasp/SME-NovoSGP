@@ -1,8 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -22,7 +20,7 @@ namespace SME.SGP.Aplicacao
     public class RegistrarEncaminhamentoNAAPASecaoQuestaoRespostaCommandValidator : AbstractValidator<RegistrarEncaminhamentoNAAPASecaoQuestaoRespostaCommand>
     {
         public RegistrarEncaminhamentoNAAPASecaoQuestaoRespostaCommandValidator()
-        {           
+        {
             RuleFor(x => x.QuestaoId)
                    .GreaterThan(0)
                    .WithMessage("O Id da Questão do Encaminhamento NAAPA deve ser informada!");

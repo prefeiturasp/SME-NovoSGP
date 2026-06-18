@@ -35,9 +35,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
             {
                 encaminhamentoNaapa = await mediator.Send(new ObterEncaminhamentoNAAPAPorIdESecaoQuery(
                     encaminhamentoNAAPAItineranciaDto.EncaminhamentoId,
-                    encaminhamentoNAAPAItineranciaDto.EncaminhamentoNAAPASecaoId.GetValueOrDefault()));                
+                    encaminhamentoNAAPAItineranciaDto.EncaminhamentoNAAPASecaoId.GetValueOrDefault()));
             }
-            
+
             await Validar(encaminhamentoNaapa, encaminhamentoNAAPAItineranciaDto.EncaminhamentoNAAPASecao);
 
             if (encaminhamentoNAAPAItineranciaDto.EncaminhamentoNAAPASecaoId.HasValue)
@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
                 if (string.IsNullOrEmpty(q.Resposta) && q.TipoQuestao == TipoQuestao.Upload)
                     resposta.Add(q);
             }
-            
+
             if (resposta.Any())
             {
                 foreach (var item in resposta)

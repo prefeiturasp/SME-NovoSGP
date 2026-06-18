@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -12,7 +11,7 @@ namespace SME.SGP.Aplicacao
 
         public Task<long?> Executar(string codigoAluno, long turmaId, int bimestre)
         {
-            return mediator.Send(new ObterIdentificadorMapeamentoEstudanteQuery(codigoAluno, turmaId, bimestre));   
+            return mediator.Send(new ObterIdentificadorMapeamentoEstudanteQuery(codigoAluno, turmaId, bimestre));
         }
     }
 }

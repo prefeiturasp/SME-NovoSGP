@@ -1,10 +1,10 @@
+using MediatR;
+using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dominio;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ConsolidacaoRegistrosPedagogicosDto>> Handle(ObterConsolidacaoRegistrosComSeparacaoDiarioBordoQuery request, CancellationToken cancellationToken)
         {
-            
+
             return await repositorio.GerarRegistrosPedagogicosComSeparacaoDiarioBordo(request.TurmaCodigo, request.AnoLetivo, request.ComponentesCurricularesIds);
         }
     }

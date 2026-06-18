@@ -8,16 +8,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MediatR;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.CompilerServices;
-using Org.BouncyCastle.Crypto;
 
 namespace SME.SGP.Aplicacao
 {
     public class ComandoComunicado : IComandoComunicado
     {
-        private readonly IRepositorioComunicado repositorio;        
+        private readonly IRepositorioComunicado repositorio;
         private readonly IServicoAcompanhamentoEscolar servicoAcompanhamentoEscolar;
         private readonly IUnitOfWork unitOfWork;
         private readonly IRepositorioComunicadoAluno repositorioComunicadoAluno;
@@ -28,7 +24,7 @@ namespace SME.SGP.Aplicacao
         private const string Todas = "-99";
 
         public ComandoComunicado(IRepositorioComunicado repositorio,
-            IServicoAcompanhamentoEscolar servicoAcompanhamentoEscolar,            
+            IServicoAcompanhamentoEscolar servicoAcompanhamentoEscolar,
             IUnitOfWork unitOfWork,
             IRepositorioComunicadoAluno repositorioComunicadoAluno,
             IServicoUsuario servicoUsuario,
@@ -36,7 +32,7 @@ namespace SME.SGP.Aplicacao
             IRepositorioComunicadoTurma repositorioComunicadoTurma,
             IRepositorioEvento repositorioEvento)
         {
-            this.repositorio = repositorio ?? throw new System.ArgumentNullException(nameof(repositorio));            
+            this.repositorio = repositorio ?? throw new System.ArgumentNullException(nameof(repositorio));
             this.servicoAcompanhamentoEscolar = servicoAcompanhamentoEscolar ?? throw new System.ArgumentNullException(nameof(servicoAcompanhamentoEscolar));
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
             this.repositorioComunicadoAluno = repositorioComunicadoAluno ?? throw new ArgumentNullException(nameof(repositorioComunicadoAluno));
@@ -142,7 +138,7 @@ namespace SME.SGP.Aplicacao
             {
                 unitOfWork.IniciarTransacao();
 
-                var id = await repositorio.SalvarAsync(comunicado);                
+                var id = await repositorio.SalvarAsync(comunicado);
 
                 comunicado.AtualizarIdAlunos();
 
@@ -177,7 +173,7 @@ namespace SME.SGP.Aplicacao
         {
             foreach (var turma in turmas)
                 await repositorioComunicadoTurma.SalvarAsync(turma);
-        }       
+        }
 
         private void MapearAlteracao(ComunicadoInserirDto comunicadoDto, Comunicado comunicado)
         {
@@ -274,7 +270,7 @@ namespace SME.SGP.Aplicacao
                 comunicadoDto.Turmas.ToList().ForEach(x => comunicado.AdicionarTurma(x));
 
             if (comunicadoDto.Modalidades.Any())
-                comunicado.Modalidades = comunicadoDto.Modalidades;           
+                comunicado.Modalidades = comunicadoDto.Modalidades;
 
             if (comunicadoDto.AlunoEspecificado)
                 comunicadoDto.Alunos.ToList().ForEach(x => comunicado.AdicionarAluno(x));
@@ -299,7 +295,7 @@ namespace SME.SGP.Aplicacao
             comunicadoServico.DataEnvio = comunicado.DataEnvio;
             comunicadoServico.DataExpiracao = comunicado.DataExpiracao;
             comunicadoServico.Mensagem = comunicado.Descricao;
-            comunicadoServico.Titulo = comunicado.Titulo;            
+            comunicadoServico.Titulo = comunicado.Titulo;
             comunicadoServico.CriadoEm = comunicado.CriadoEm;
             comunicadoServico.CriadoPor = comunicado.CriadoPor;
             comunicadoServico.CriadoRF = comunicado.CriadoRF;

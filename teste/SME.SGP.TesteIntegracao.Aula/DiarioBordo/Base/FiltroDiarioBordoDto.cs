@@ -11,4 +11,4 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo
 
         public DateTime DataAulaDiarioBordo { get; set; } = DateTimeExtension.HorarioBrasilia().Date;
     }
-} 
+}

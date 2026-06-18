@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                var retorno  = JsonConvert.DeserializeObject<List<DisciplinaResposta>>(json);
+                var retorno = JsonConvert.DeserializeObject<List<DisciplinaResposta>>(json);
 
                 var componentesCurricularesSgp = await mediator.Send(new ObterInfoPedagogicasComponentesCurricularesPorIdsQuery(retorno.ObterCodigos()));
                 retorno.PreencherInformacoesPegagogicasSgp(componentesCurricularesSgp);

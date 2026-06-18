@@ -1,8 +1,8 @@
-﻿using System;
+﻿using MediatR;
+using SME.SGP.Aplicacao;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Aplicacao;
 
 namespace SME.SGP.TesteIntegracao.ServicosFakes
 {
@@ -17,7 +17,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
         }
 
         public async Task<bool> Handle(RemoverArquivosExcluidosCommand request, CancellationToken cancellationToken)
-        {   
+        {
             return await Task.FromResult(true);
         }
     }

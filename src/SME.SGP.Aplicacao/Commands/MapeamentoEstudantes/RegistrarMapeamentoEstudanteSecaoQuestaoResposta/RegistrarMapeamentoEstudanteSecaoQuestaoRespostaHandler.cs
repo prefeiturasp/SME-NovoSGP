@@ -29,11 +29,11 @@ namespace SME.SGP.Aplicacao
         {
             var resposta = new RespostaMapeamentoEstudante() { QuestaoMapeamentoEstudanteId = request.QuestaoId };
 
-            if (!String.IsNullOrEmpty(request.Resposta) && EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Radio, TipoQuestao.Combo, 
+            if (!String.IsNullOrEmpty(request.Resposta) && EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Radio, TipoQuestao.Combo,
                                                                                         TipoQuestao.Checkbox, TipoQuestao.ComboMultiplaEscolha }))
                 resposta.RespostaId = long.Parse(request.Resposta);
 
-            if (EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Frase, TipoQuestao.Texto, TipoQuestao.EditorTexto, 
+            if (EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Frase, TipoQuestao.Texto, TipoQuestao.EditorTexto,
                                                                                TipoQuestao.Data, TipoQuestao.Numerico, TipoQuestao.ComboDinamico, TipoQuestao.ComboMultiplaEscolhaDinamico,
                                                                                TipoQuestao.AvaliacoesExternasProvaSP }))
                 resposta.Texto = request.Resposta;

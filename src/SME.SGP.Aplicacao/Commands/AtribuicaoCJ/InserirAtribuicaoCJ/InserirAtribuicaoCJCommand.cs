@@ -7,7 +7,7 @@ namespace SME.SGP.Aplicacao
 {
     public class InserirAtribuicaoCJCommand : IRequest
     {
-        public InserirAtribuicaoCJCommand(AtribuicaoCJ atribuicaoCJ, IEnumerable<ProfessorTitularDisciplinaEol> professoresTitulares, IEnumerable<AtribuicaoCJ> atribuicoesAtuais, Usuario usuario, bool ehHistorico,bool excluiAbrangencia)
+        public InserirAtribuicaoCJCommand(AtribuicaoCJ atribuicaoCJ, IEnumerable<ProfessorTitularDisciplinaEol> professoresTitulares, IEnumerable<AtribuicaoCJ> atribuicoesAtuais, Usuario usuario, bool ehHistorico, bool excluiAbrangencia)
         {
             AtribuicaoCJ = atribuicaoCJ;
             ProfessoresTitulares = professoresTitulares;

@@ -27,8 +27,8 @@ namespace SME.SGP.TesteIntegracao.AlunosSemFrequencia
 
             var useCase = ServiceProvider.GetService<IObterTotalAlunosSemFrequenciaPorTurmaBimestreUseCase>();
 
-            var retorno = await useCase.Executar("1106", "1", 1, new System.DateTime(DateTime.Now.Year, 02,09));
-           
+            var retorno = await useCase.Executar("1106", "1", 1, new System.DateTime(DateTime.Now.Year, 02, 09));
+
             retorno.ShouldNotBeNull();
 
             Assert.True(retorno.Any());

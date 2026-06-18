@@ -1,8 +1,8 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra.Dtos;
 using System.Collections.Generic;
-using FluentValidation;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
             Tipo = tipo;
         }
     }
-    
+
     public class ObterFuncionariosPorUeTipoQueryValidator : AbstractValidator<ObterAtribuicaoResponsaveisPorUeTipoQuery>
     {
         public ObterFuncionariosPorUeTipoQueryValidator()

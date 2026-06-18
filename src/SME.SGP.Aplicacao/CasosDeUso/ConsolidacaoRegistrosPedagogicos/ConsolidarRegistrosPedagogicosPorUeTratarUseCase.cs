@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var agrupadoTurma in professoresTitularesAgrupadoTurma)
                 {
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarRegistrosPedagogicosPorTurmaTratar, 
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarRegistrosPedagogicosPorTurmaTratar,
                         new FiltroConsolidacaoRegistrosPedagogicosPorTurmaDto(agrupadoTurma.Key.ToString(), filtro.AnoLetivo,
                         agrupadoTurma), Guid.NewGuid(), null));
                 }

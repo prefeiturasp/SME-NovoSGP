@@ -1,12 +1,11 @@
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class UploadDeArquivoItineranciaUseCase : AbstractUseCase,IUploadDeArquivoItineranciaUseCase
+    public class UploadDeArquivoItineranciaUseCase : AbstractUseCase, IUploadDeArquivoItineranciaUseCase
     {
         public UploadDeArquivoItineranciaUseCase(IMediator mediator) : base(mediator)
         {

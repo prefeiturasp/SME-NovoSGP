@@ -1,11 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
-using MediatR;
-using Org.BouncyCastle.Crypto;
+﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
+using System;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -29,7 +28,7 @@ namespace SME.SGP.Aplicacao
 
             await mediator.Send(new RegistrarHistoricoDeAlteracaoDeImpressaoDoEncaminhamentoNAAPACommand(param.EncaminhamentoNaapaIds, usuarioLogado.Id));
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RelatorioEncaminhamentoNaapaDetalhado,param,usuarioLogado,rotaRelatorio:RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosEncaminhamentoNaapaDetalhado));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RelatorioEncaminhamentoNaapaDetalhado, param, usuarioLogado, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosEncaminhamentoNaapaDetalhado));
         }
     }
 }

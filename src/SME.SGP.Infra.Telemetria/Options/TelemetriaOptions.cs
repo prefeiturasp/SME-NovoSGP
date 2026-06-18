@@ -3,6 +3,6 @@
     public class TelemetriaOptions
     {
         public const string Secao = "Telemetria";
-        public bool Apm { get; set; }        
+        public bool Apm { get; set; }
     }
 }

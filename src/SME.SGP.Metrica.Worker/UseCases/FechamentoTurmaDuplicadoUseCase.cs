@@ -27,7 +27,7 @@ namespace SME.SGP.Metrica.Worker.UseCases
             await repositorioFechamentoTurmaDuplicado.ExcluirTodos();
 
             var fechamentosTurmaDuplicados = await repositorioSGP.ObterFechamentosTurmaDuplicados();
-            foreach(var fechamentoTurmaDuplicado in fechamentosTurmaDuplicados)
+            foreach (var fechamentoTurmaDuplicado in fechamentosTurmaDuplicados)
             {
                 await repositorioFechamentoTurmaDuplicado.InserirAsync(fechamentoTurmaDuplicado);
                 await mediator.Send(new PublicarFilaCommand(Rotas.RotasRabbitMetrica.LimpezaFechamentoTurmaDuplicado, fechamentoTurmaDuplicado));

@@ -2,9 +2,7 @@
 using MediatR;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
@@ -27,7 +25,7 @@ namespace SME.SGP.Aplicacao
         public string AlunoCodigo { get; }
         public SituacaoAEE? Situacao { get; }
         public int AnoLetivo { get; }
-        public bool ExibirEncerrados { get;  }
+        public bool ExibirEncerrados { get; }
     }
 
     public class ObterResponsaveisDosEncaminhamentosAEEQueryValidator : AbstractValidator<ObterResponsaveisDosEncaminhamentosAEEQuery>

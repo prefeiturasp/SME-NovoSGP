@@ -4,7 +4,7 @@ namespace SME.SGP.Infra.Dtos
 {
     public class FiltroDataDto
     {
-        public FiltroDataDto(DateTime data) 
+        public FiltroDataDto(DateTime data)
         {
             Data = data;
         }

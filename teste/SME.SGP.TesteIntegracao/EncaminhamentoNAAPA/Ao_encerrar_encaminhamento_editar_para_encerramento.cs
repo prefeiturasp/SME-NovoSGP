@@ -13,7 +13,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
     public class Ao_encerrar_encaminhamento_editar_para_encerramento : EncaminhamentoNAAPATesteBase
     {
         public Ao_encerrar_encaminhamento_editar_para_encerramento(CollectionFixture collectionFixture) : base(collectionFixture)
-        {}
+        { }
 
         [Fact(DisplayName = "Encaminhamento NAAPA - Deve realizar o encerramento do encaminhamento NAAPA pelo Coordenador NAAPA")]
         public async Task Ao_encerrar_encaminhamento_naapa()
@@ -34,18 +34,18 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             await CriarDadosBase(filtroNAAPA);
 
             await CriarEncaminhamentoNAAPA();
-            
+
             await CriarEncaminhamentoNAAPASecao();
-            
+
             await CriarQuestoesEncaminhamentoNAAPA();
 
             await CriarRespostasEncaminhamentoNAAPA(new DateTime(DateTimeExtension.HorarioBrasilia().Date.Year, 11, 18));
-            
+
             var encerrarEncaminhamentoNaapaUseCase = ObterServicoEncerrarEncaminhamento();
 
             var retorno = await encerrarEncaminhamentoNaapaUseCase.Executar(1, MOTIVO_ENCERRAMENTO);
             retorno.ShouldBeTrue();
-            
+
             var encaminhamento = ObterTodos<Dominio.EncaminhamentoNAAPA>().FirstOrDefault();
             encaminhamento.ShouldNotBeNull();
             encaminhamento.Situacao.ShouldBe(SituacaoNAAPA.Encerrado);
@@ -54,8 +54,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var historico = ObterTodos<Dominio.EncaminhamentoNAAPAHistoricoAlteracoes>().FirstOrDefault();
             historico.ShouldNotBeNull();
             historico.CamposAlterados.ShouldBe("Situação");
-        } 
-        
+        }
+
         [Fact(DisplayName = "Encaminhamento NAAPA - Não deve permitir o encerramento de um encaminhamento NAAPA que não existe pelo Coordenador NAAPA")]
         public async Task Ao_encerrar_encaminhamento_naapa_inexistente()
         {
@@ -75,34 +75,38 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             await CriarDadosBase(filtroNAAPA);
 
             await CriarEncaminhamentoNAAPA();
-            
+
             await CriarEncaminhamentoNAAPASecao();
-            
+
             await CriarQuestoesEncaminhamentoNAAPA();
 
             await CriarRespostasEncaminhamentoNAAPA(new DateTime(DateTimeExtension.HorarioBrasilia().Date.Year, 11, 18));
-            
+
             var encerrarEncaminhamentoNaapaUseCase = ObterServicoEncerrarEncaminhamento();
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => encerrarEncaminhamentoNaapaUseCase.Executar(2, MOTIVO_ENCERRAMENTO));
 
             excecao.Message.ShouldBe(MensagemNegocioEncaminhamentoNAAPA.ENCAMINHAMENTO_NAO_ENCONTRADO);
-        } 
-        
+        }
+
         private async Task CriarRespostasEncaminhamentoNAAPA(DateTime dataQueixa)
         {
             await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
             {
                 QuestaoEncaminhamentoId = 1,
                 Texto = dataQueixa.ToString("dd/MM/yyyy"),
-                CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
 
             await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
             {
                 QuestaoEncaminhamentoId = 2,
                 Texto = "1",
-                CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
         }
 
@@ -112,14 +116,18 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             {
                 EncaminhamentoNAAPASecaoId = 1,
                 QuestaoId = 1,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
 
             await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
             {
                 EncaminhamentoNAAPASecaoId = 1,
                 QuestaoId = 2,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
         }
 
@@ -129,7 +137,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             {
                 EncaminhamentoNAAPAId = 1,
                 SecaoEncaminhamentoNAAPAId = 1,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
         }
 
@@ -141,7 +151,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 AlunoCodigo = ALUNO_CODIGO_1,
                 Situacao = SituacaoNAAPA.Rascunho,
                 AlunoNome = "Nome do aluno 1",
-                CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
         }
     }

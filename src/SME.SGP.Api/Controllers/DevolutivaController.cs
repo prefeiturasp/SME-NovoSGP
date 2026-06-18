@@ -70,7 +70,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.DE_C, Policy = "Bearer")]
         public async Task<IActionResult> SugestaoDataInicio(string turmaCodigo, long componenteCurricularId, [FromServices] IObterDataDiarioBordoSemDevolutivaPorTurmaComponenteUseCase useCase)
         {
-           var data = await useCase.Executar(new FiltroTurmaComponenteDto(turmaCodigo, componenteCurricularId));
+            var data = await useCase.Executar(new FiltroTurmaComponenteDto(turmaCodigo, componenteCurricularId));
 
             if (!data.HasValue)
                 return NoContent();

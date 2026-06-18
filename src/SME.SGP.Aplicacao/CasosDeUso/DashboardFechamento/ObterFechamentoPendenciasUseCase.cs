@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using MediatR;
+using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Aplicacao
 {
@@ -38,7 +37,7 @@ namespace SME.SGP.Aplicacao
                         Quantidade = fechamento.Quantidade
                     });
                 }
-                
+
             }
             return fechamentos.OrderBy(a => a.Descricao).ToList();
         }

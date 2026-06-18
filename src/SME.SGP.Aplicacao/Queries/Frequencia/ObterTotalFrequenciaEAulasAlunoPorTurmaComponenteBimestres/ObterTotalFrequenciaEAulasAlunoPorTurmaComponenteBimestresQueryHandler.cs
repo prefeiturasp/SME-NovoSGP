@@ -22,6 +22,6 @@ namespace SME.SGP.Aplicacao
                                                                                                                                     request.TipoCalendarioId,
                                                                                                                                     request.ComponentesCurricularesIds,
                                                                                                                                     request.TurmasCodigo,
-                                                                                                                                    request.Bimestre);       
+                                                                                                                                    request.Bimestre);
     }
 }

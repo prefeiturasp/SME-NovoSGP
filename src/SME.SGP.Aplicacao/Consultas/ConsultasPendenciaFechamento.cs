@@ -1,11 +1,9 @@
 ﻿using MediatR;
-using Minio.DataModel;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -38,7 +36,7 @@ namespace SME.SGP.Aplicacao
                 var disciplinasEOL = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(retornoConsultaPaginada.Items.Select(a => a.DisciplinaId).Distinct().ToArray()));
                 var componentesTurma = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(filtro.TurmaCodigo));
 
-                foreach(var disciplinaEOL in disciplinasEOL)
+                foreach (var disciplinaEOL in disciplinasEOL)
                 {
                     retornoConsultaPaginada.Items.Where(c => c.DisciplinaId == disciplinaEOL.CodigoComponenteCurricular).ToList()
                         .ForEach(d => d.ComponenteCurricular = disciplinaEOL.Nome);

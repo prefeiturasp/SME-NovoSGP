@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.SincronizacaoInstitucional.Dre
         {
             var mensagemRabbit = new MensagemRabbit();
             _mediatorMock.Setup(m => m.Send(It.IsAny<ObterCodigosDresQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((string[]?)null!); 
+                .ReturnsAsync((string[]?)null!);
 
             var exception = await Assert.ThrowsAsync<NegocioException>(() => _useCase.Executar(mensagemRabbit));
 
@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.SincronizacaoInstitucional.Dre
         {
             var mensagemRabbit = new MensagemRabbit();
             _mediatorMock.Setup(m => m.Send(It.IsAny<ObterCodigosDresQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(Array.Empty<string>()); 
+                .ReturnsAsync(Array.Empty<string>());
             var exception = await Assert.ThrowsAsync<NegocioException>(() => _useCase.Executar(mensagemRabbit));
 
             Assert.Equal("Não foi possível localizar as Dres no EOL para a sincronização instituicional", exception.Message);
@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.SincronizacaoInstitucional.Dre
             var codigosDre = new List<string> { "012345" };
 
             _mediatorMock.Setup(m => m.Send(It.IsAny<ObterCodigosDresQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(codigosDre.ToArray()); 
+                .ReturnsAsync(codigosDre.ToArray());
 
             _mediatorMock.Setup(m => m.Send(It.IsAny<PublicarFilaSgpCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);

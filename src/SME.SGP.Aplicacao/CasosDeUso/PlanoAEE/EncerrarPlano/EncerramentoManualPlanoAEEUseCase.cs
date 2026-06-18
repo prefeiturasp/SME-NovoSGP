@@ -24,10 +24,10 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PlanoAEE.EncerrarPlano
                 throw new NegocioException(MensagemNegocioPlanoAee.Plano_aee_nao_encontrado);
 
             var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(planoAEE.AlunoCodigo, DateTime.Now.Year));
-            if(aluno.EhNulo())
+            if (aluno.EhNulo())
                 throw new NegocioException(MensagemNegocioAluno.ESTUDANTE_NAO_ENCONTRADO);
 
-            if(!PermitirEncerramentoManual(aluno))
+            if (!PermitirEncerramentoManual(aluno))
                 throw new NegocioException(MensagemNegocioPlanoAee.PLANO_AEE_ENCERRAMENTO_MANUAL_NAO_PERMITIDO);
 
             var retorno = await mediator.Send(new EncerramentoManualPlanoAEECommand(planoId));

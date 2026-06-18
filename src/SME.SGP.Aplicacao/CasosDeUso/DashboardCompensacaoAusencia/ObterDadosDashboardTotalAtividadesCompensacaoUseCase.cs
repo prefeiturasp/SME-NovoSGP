@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
                                                                                                                         bimestre,
                                                                                                                         semestre));
 
-            if(dadosAtividadesCompensadas.NaoEhNulo() && dadosAtividadesCompensadas.Any())
+            if (dadosAtividadesCompensadas.NaoEhNulo() && dadosAtividadesCompensadas.Any())
                 return MapearParaDto(dadosAtividadesCompensadas, "");
 
             return default;

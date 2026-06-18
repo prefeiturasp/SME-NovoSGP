@@ -1,13 +1,13 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.PlanoAula.ServicosFakes
 {
-    public class ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQueryHandlerFake: IRequestHandler<ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery,PlanejamentoAnual>
+    public class ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQueryHandlerFake : IRequestHandler<ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery, PlanejamentoAnual>
     {
         public Task<PlanejamentoAnual> Handle(ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery request, CancellationToken cancellationToken)
         {
@@ -16,8 +16,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.ServicosFakes
                 Id = 1,
                 TurmaId = 1,
                 ComponenteCurricularId = long.Parse("138"),
-                CriadoEm = DateTime.Now, 
-                CriadoPor = "Sistema", 
+                CriadoEm = DateTime.Now,
+                CriadoPor = "Sistema",
                 CriadoRF = "1"
             });
         }

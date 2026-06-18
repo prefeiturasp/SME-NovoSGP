@@ -1,12 +1,10 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -36,7 +34,7 @@ namespace SME.SGP.Aplicacao
                 if (aula.TipoAula != TipoAula.Reposicao)
                     throw new NegocioException(mensagemErro);
 
-                
+
                 var eventoReposicaoAulaNoDia = await repositorioEvento
                     .EventosNosDiasETipo(aula.DataAula, aula.DataAula, TipoEvento.ReposicaoDoDia, aula.TipoCalendarioId, turma.Ue.CodigoUe, string.Empty);
 
@@ -59,11 +57,11 @@ namespace SME.SGP.Aplicacao
             }
 
             var alunos = (await mediator.Send(new ObterAlunosPorTurmaQuery(request.TurmaCodigo, true), cancellationToken)).Select(c => c.CodigoAluno).Distinct();
-            
+
             await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunos, aula.DataAula, request.TurmaCodigo, request.ComponenteCurricularId, request.Meses), cancellationToken);
-            
+
             await mediator.Send(new IncluirFilaConsolidacaoDiariaDashBoardFrequenciaCommand(turma.Id, aula.DataAula));
-            
+
             await mediator.Send(new IncluirFilaConsolidacaoSemanalMensalDashBoardFrequenciaCommand(turma.Id, turma.CodigoTurma, turma.ModalidadeCodigo == Modalidade.EducacaoInfantil, turma.AnoLetivo, aula.DataAula));
 
             return await mediator.Send(new IncluirFilaConciliacaoFrequenciaTurmaCommand(request.TurmaCodigo, periodo.Bimestre, request.ComponenteCurricularId, periodo.DataInicio, periodo.DataFim), cancellationToken);

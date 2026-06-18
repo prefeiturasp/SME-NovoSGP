@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao.Integracoes.Respostas
             codigosComponentes.AddRange(disciplinasReposta.Select(cc => cc.CodigoComponenteTerritorioSaber ?? 0).Where(cc => cc != 0).ToList());
             return codigosComponentes.ToArray();
         }
-        
+
         public static void PreencherInformacoesPegagogicasSgp(this List<DisciplinaResposta> disciplinasReposta, IEnumerable<InfoComponenteCurricular> componentesCurricularesSgp)
         {
             disciplinasReposta.ForEach(componenteCurricular =>

@@ -74,9 +74,9 @@ namespace SME.SGP.Aplicacao.Teste.Queries.PainelEducacional.ObterIdepPorAnoEtapa
         {
             var dadosRepositorio = new List<PainelEducacionalIdepDto>
             {
-                new PainelEducacionalIdepDto 
-                { 
-                    AnoLetivo = 2023, 
+                new PainelEducacionalIdepDto
+                {
+                    AnoLetivo = 2023,
                     Etapa = PainelEducacionalIdepEtapa.AnosIniciais,
                     Faixa = "0-4.9",
                     CodigoDre = "123456",
@@ -84,9 +84,9 @@ namespace SME.SGP.Aplicacao.Teste.Queries.PainelEducacional.ObterIdepPorAnoEtapa
                     MediaGeral = 4.5m,
                     UltimaAtualizacao = new DateTime(2023, 10, 1)
                 },
-                new PainelEducacionalIdepDto 
-                { 
-                    AnoLetivo = 2023, 
+                new PainelEducacionalIdepDto
+                {
+                    AnoLetivo = 2023,
                     Etapa = PainelEducacionalIdepEtapa.AnosIniciais,
                     Faixa = "0-4.9",
                     CodigoDre = "123456",
@@ -94,9 +94,9 @@ namespace SME.SGP.Aplicacao.Teste.Queries.PainelEducacional.ObterIdepPorAnoEtapa
                     MediaGeral = 3.5m,
                     UltimaAtualizacao = new DateTime(2023, 10, 15)
                 },
-                new PainelEducacionalIdepDto 
-                { 
-                    AnoLetivo = 2023, 
+                new PainelEducacionalIdepDto
+                {
+                    AnoLetivo = 2023,
                     Etapa = PainelEducacionalIdepEtapa.AnosIniciais,
                     Faixa = "5.0-6.9",
                     CodigoDre = "123456",
@@ -120,9 +120,9 @@ namespace SME.SGP.Aplicacao.Teste.Queries.PainelEducacional.ObterIdepPorAnoEtapa
             Assert.Equal(2023, primeiroGrupo.AnoLetivo);
             Assert.Equal(PainelEducacionalIdepEtapa.AnosIniciais, primeiroGrupo.Etapa);
             Assert.Equal("123456", primeiroGrupo.CodigoDre);
-            Assert.Equal(15, primeiroGrupo.Quantidade); 
-            Assert.Equal(4.0m, primeiroGrupo.MediaGeral); 
-            Assert.Equal(new DateTime(2023, 10, 15), primeiroGrupo.UltimaAtualizacao); 
+            Assert.Equal(15, primeiroGrupo.Quantidade);
+            Assert.Equal(4.0m, primeiroGrupo.MediaGeral);
+            Assert.Equal(new DateTime(2023, 10, 15), primeiroGrupo.UltimaAtualizacao);
 
             var segundoGrupo = resultadoLista.First(x => x.Faixa == "5.0-6.9");
             Assert.Equal(2023, segundoGrupo.AnoLetivo);

@@ -42,7 +42,7 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("Não é possível incluir um aluno sem informação");
 
             if (!alunos.Any(a => a.Id == aluno.Id))
-                alunos.Add(aluno);            
+                alunos.Add(aluno);
         }
 
         public void AdicionarQuestaoAluno(long alunoId, ItineranciaAlunoQuestao itineranciaAlunoQuestao)
@@ -52,13 +52,13 @@ namespace SME.SGP.Dominio
                 throw new NegocioException($"Não foi possível localizar o nível de Id {alunoId}");
 
             if (!aluno.AlunosQuestoes.Any(q => q.Id == itineranciaAlunoQuestao.Id))
-                aluno.Adicionar(itineranciaAlunoQuestao);            
+                aluno.Adicionar(itineranciaAlunoQuestao);
         }
 
         public void AdicionarQuestao(ItineranciaQuestao questao)
         {
             if (!questoes.Any(q => q.Id == questao.Id))
-                questoes.Add(questao);            
+                questoes.Add(questao);
         }
         public void AdicionarObjetivo(ItineranciaObjetivo objetivo)
         {

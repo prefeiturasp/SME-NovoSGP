@@ -1,13 +1,9 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -15,7 +11,7 @@ namespace SME.SGP.Aplicacao
     public class NotificarFechamentoReaberturaDREUseCase : AbstractUseCase, INotificarFechamentoReaberturaDREUseCase
     {
         public NotificarFechamentoReaberturaDREUseCase(IMediator mediator) : base(mediator)
-        {}
+        { }
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
             var filtro = mensagem.ObterObjetoMensagem<FiltroNotificacaoFechamentoReaberturaDREDto>();
@@ -34,7 +30,7 @@ namespace SME.SGP.Aplicacao
                     filtro.FechamentoReabertura.CodigoRf = adminSgpUe;
                     await mediator.Send(new ExecutaNotificacaoCadastroFechamentoReaberturaCommand(filtro.FechamentoReabertura));
                 }
-                    
+
             }
 
             foreach (var ue in filtro.Ues)
@@ -42,8 +38,8 @@ namespace SME.SGP.Aplicacao
                 filtro.FechamentoReabertura.UeCodigo = ue;
                 filtro.FechamentoReabertura.DreCodigo = filtro.Dre;
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaNotificacaoFechamentoReaberturaUE, new FiltroNotificacaoFechamentoReaberturaUEDto(filtro.FechamentoReabertura), Guid.NewGuid(), null));
-            }                
-                    
+            }
+
             return true;
         }
     }

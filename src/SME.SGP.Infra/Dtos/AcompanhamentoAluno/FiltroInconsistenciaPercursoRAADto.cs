@@ -8,7 +8,7 @@
             Semestre = semestre;
         }
 
-        public long TurmaId { get; set; } 
-        public int Semestre {  get; set; }
+        public long TurmaId { get; set; }
+        public int Semestre { get; set; }
     }
 }

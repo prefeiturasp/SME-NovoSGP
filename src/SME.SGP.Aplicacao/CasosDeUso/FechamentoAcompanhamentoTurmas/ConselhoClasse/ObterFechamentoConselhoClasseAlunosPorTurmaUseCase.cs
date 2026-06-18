@@ -17,6 +17,6 @@ namespace SME.SGP.Aplicacao
             var lista = await mediator.Send(new ObterAlunosEStatusConselhoClasseConsolidadoPorTurmaEbimestreQuery(param.TurmaId, param.Bimestre, param.SituacaoConselhoClasse));
             return lista;
         }
- 
+
     }
 }

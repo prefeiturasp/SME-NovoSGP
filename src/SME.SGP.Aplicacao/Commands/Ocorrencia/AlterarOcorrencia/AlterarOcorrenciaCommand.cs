@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
             RuleFor(x => x.Titulo)
                 .NotEmpty()
                 .WithMessage("O título da ocorrência deve ser informado.");
-            
+
         }
     }
 }

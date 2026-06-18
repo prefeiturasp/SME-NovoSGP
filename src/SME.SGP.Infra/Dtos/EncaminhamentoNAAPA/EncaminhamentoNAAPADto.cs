@@ -16,6 +16,6 @@ namespace SME.SGP.Infra
         public string AlunoNome { get; set; }
         public SituacaoNAAPA Situacao { get; set; }
         public SituacaoMatriculaAluno? SituacaoMatriculaAluno { get; set; }
-    public List<EncaminhamentoNAAPASecaoDto> Secoes { get; set; }
+        public List<EncaminhamentoNAAPASecaoDto> Secoes { get; set; }
     }
 }

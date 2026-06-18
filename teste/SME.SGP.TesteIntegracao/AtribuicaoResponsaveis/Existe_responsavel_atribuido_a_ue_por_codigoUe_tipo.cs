@@ -36,7 +36,7 @@ namespace SME.SGP.TesteIntegracao
 
             var retorno = await mediator.Send(new ObterResponsavelAtribuidoUePorUeTipoQuery(CODIGO_UE_1, TipoResponsavelAtribuicao.PAAI));
 
-            retorno.Any().ShouldBeTrue();            
+            retorno.Any().ShouldBeTrue();
         }
 
         [Fact]
@@ -71,7 +71,7 @@ namespace SME.SGP.TesteIntegracao
         public async Task Deve_retornar_false_quando_nao_existir_atribuicao_por_tipo_paai_para_ue()
         {
             var mediator = ServiceProvider.GetService<IMediator>();
-                        
+
             var retorno = await mediator.Send(new ObterResponsavelAtribuidoUePorUeTipoQuery(CODIGO_UE_2, TipoResponsavelAtribuicao.PAAI));
 
             retorno.Any().ShouldBeFalse();
@@ -91,7 +91,7 @@ namespace SME.SGP.TesteIntegracao
             retorno.Any().ShouldBeFalse();
         }
 
-        public async Task InserirResponsavel(string codigoUe, string responsavel,  TipoResponsavelAtribuicao tipoResponsavelAtribuicao)
+        public async Task InserirResponsavel(string codigoUe, string responsavel, TipoResponsavelAtribuicao tipoResponsavelAtribuicao)
         {
             await InserirNaBase(new SupervisorEscolaDre()
             {
@@ -104,6 +104,6 @@ namespace SME.SGP.TesteIntegracao
                 CriadoRF = SISTEMA,
                 Excluido = false
             });
-        }    
+        }
     }
 }

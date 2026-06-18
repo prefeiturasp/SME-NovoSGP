@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 
 namespace SME.SGP.Dominio
 {
@@ -102,7 +101,7 @@ namespace SME.SGP.Dominio
             if (turma.NaoEhNulo())
             {
                 Turma = turma;
-                TurmaId = turma.Id;    
+                TurmaId = turma.Id;
             }
         }
 

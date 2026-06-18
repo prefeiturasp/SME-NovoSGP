@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private readonly IRepositorioEncaminhamentoAEE repositorioEncaminhamentoAEE;
 
-        public AtribuirResponsavelEncaminhamentoAEECommandHandler(IMediator mediator, 
+        public AtribuirResponsavelEncaminhamentoAEECommandHandler(IMediator mediator,
             IRepositorioEncaminhamentoAEE repositorioEncaminhamentoAEE
             )
         {
@@ -37,10 +37,10 @@ namespace SME.SGP.Aplicacao
             var idEntidadeEncaminhamento = await repositorioEncaminhamentoAEE.SalvarAsync(encaminhamentoAEE);
 
             var dadosPendencia = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdQuery(encaminhamentoAEE.Id));
-            
+
             if (dadosPendencia.NaoEhNulo() && dadosPendencia.PendenciaId > 0)
                 await RemovePendencias(dadosPendencia.PendenciaId);
-            
+
             if (await ParametroGeracaoPendenciaAtivo())
                 await mediator.Send(new GerarPendenciaPAEEEncaminhamentoAEECommand(encaminhamentoAEE));
 

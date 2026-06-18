@@ -1,5 +1,4 @@
-﻿using Elastic.Apm.Api;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using SME.SGP.Aplicacao;
@@ -8,7 +7,6 @@ using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -32,7 +30,7 @@ namespace SME.SGP.TesteIntegracao.WorkfflowAprovacaoNotaFechamento
             await CriaFechamento();
             var wf = new WfAprovacaoNotaFechamento()
             {
-                Id= 1,
+                Id = 1,
                 FechamentoNotaId = 1,
                 Nota = NOTA_5,
                 CriadoEm = DateTime.Now,
@@ -168,7 +166,7 @@ namespace SME.SGP.TesteIntegracao.WorkfflowAprovacaoNotaFechamento
 
             var mediator = ServiceProvider.GetService<IMediator>();
 
-            var wfs = await mediator.Send(new ObterNotaEmAprovacaoPorFechamentoNotaIdQuery() {  IdsFechamentoNota = new List<long>() { 1 } });
+            var wfs = await mediator.Send(new ObterNotaEmAprovacaoPorFechamentoNotaIdQuery() { IdsFechamentoNota = new List<long>() { 1 } });
             wfs.ShouldNotBeNull();
             wfs.Count().ShouldBe(0);
         }
@@ -226,7 +224,7 @@ namespace SME.SGP.TesteIntegracao.WorkfflowAprovacaoNotaFechamento
             var avaliacao = AvaliacoesNotas.FirstOrDefault();
             avaliacao.NotaConceito.ShouldBe(NOTA_6);
         }
-   
+
         private async Task CriaFechamento()
         {
             await InserirNaBase(new FechamentoTurma()

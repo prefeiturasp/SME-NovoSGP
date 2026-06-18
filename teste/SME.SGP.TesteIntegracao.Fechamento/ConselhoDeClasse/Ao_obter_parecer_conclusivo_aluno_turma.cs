@@ -22,11 +22,11 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
     {
         public Ao_obter_parecer_conclusivo_aluno_turma(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
-        
+
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
-            
+
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEOLPorTurmasCodigoQuery, IEnumerable<ComponenteCurricularEol>>), typeof(ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake138), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaItinerarioEnsinoMedioQuery, IEnumerable<TurmaItinerarioEnsinoMedioDto>>), typeof(ObterTurmaItinerarioEnsinoMedioQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake), ServiceLifetime.Scoped));
@@ -59,7 +59,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarAula(filtroNota.ComponenteCurricular, dataAula, RecorrenciaAula.AulaUnica, NUMERO_AULA_1);
             await CrieTipoAtividade();
             await CriarAtividadeAvaliativa(dataAula, filtroNota.ComponenteCurricular, USUARIO_PROFESSOR_LOGIN_1111111, false, ATIVIDADE_AVALIATIVA_1);
-            
+
             await InserirNaBase(new ConselhoClasse()
             {
                 FechamentoTurmaId = FECHAMENTO_TURMA_ID_1,
@@ -68,7 +68,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 CriadoRF = SISTEMA_CODIGO_RF,
                 Situacao = SituacaoConselhoClasse.EmAndamento
             });
-            
+
             await InserirNaBase(new ConselhoClasseAluno()
             {
                 ConselhoClasseId = CONSELHO_CLASSE_ID_1,
@@ -78,7 +78,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
             });
-            
+
             await InserirNaBase(new ConselhoClasseNota()
             {
                 ConselhoClasseAlunoId = CONSELHO_CLASSE_ALUNO_ID_1,
@@ -91,8 +91,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             });
 
             var obterPareceresConclusivosUseCase = ServiceProvider.GetService<IObterParecerConclusivoAlunoTurmaUseCase>();
-            
-            var retorno = await obterPareceresConclusivosUseCase.Executar(TURMA_CODIGO_1,ALUNO_CODIGO_1);
+
+            var retorno = await obterPareceresConclusivosUseCase.Executar(TURMA_CODIGO_1, ALUNO_CODIGO_1);
             retorno.ShouldNotBeNull();
             retorno.Id.ShouldBeGreaterThan(0);
             retorno.Nome.ShouldNotBeEmpty();

@@ -61,7 +61,7 @@ namespace SME.SGP.TesteIntegracao.Setup
         private void MontaBaseDados()
         {
             ExecutarPreScripts();
-            ExecutarScripts();            
+            ExecutarScripts();
         }
 
         private string ReadFileAndGetEncoding(Byte[] docBytes, ref Encoding encoding)
@@ -154,7 +154,7 @@ namespace SME.SGP.TesteIntegracao.Setup
                 Console.WriteLine(e);
                 throw;
             }
-            
+
         }
 
         private string ObterScripts()

@@ -1,12 +1,9 @@
 ﻿using FluentValidation;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterUsuarioPossuiAbrangenciaAdmQuery: IRequest<bool>
+    public class ObterUsuarioPossuiAbrangenciaAdmQuery : IRequest<bool>
     {
         public ObterUsuarioPossuiAbrangenciaAdmQuery(long usuarioId)
         {
@@ -16,7 +13,7 @@ namespace SME.SGP.Aplicacao
         public long UsuarioId { get; set; }
     }
 
-    public class ObterUsuarioPossuiAbrangenciaAdmQueryValidator: AbstractValidator<ObterUsuarioPossuiAbrangenciaAdmQuery>
+    public class ObterUsuarioPossuiAbrangenciaAdmQueryValidator : AbstractValidator<ObterUsuarioPossuiAbrangenciaAdmQuery>
     {
         public ObterUsuarioPossuiAbrangenciaAdmQueryValidator()
         {

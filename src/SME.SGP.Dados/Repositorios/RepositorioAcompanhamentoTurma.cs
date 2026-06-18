@@ -21,7 +21,7 @@ namespace SME.SGP.Dados.Repositorios
                         and not at.excluido";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<AcompanhamentoTurma>(query, new { turmaId, semestre });
-            
+
         }
     }
 }

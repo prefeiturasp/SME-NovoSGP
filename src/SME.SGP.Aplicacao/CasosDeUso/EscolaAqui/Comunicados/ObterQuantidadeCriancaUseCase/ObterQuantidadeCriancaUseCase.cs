@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<QuantidadeCriancaDto> Executar(int anoLetivo, string[] turma, string dreId, string ueId, int[] modalidade, string[] anoTurma)
         {
-            var quantidade = await mediator.Send(new ObterQuantidadeCriancaQuery(anoLetivo,turma,dreId,ueId,modalidade,anoTurma));
+            var quantidade = await mediator.Send(new ObterQuantidadeCriancaQuery(anoLetivo, turma, dreId, ueId, modalidade, anoTurma));
 
             if (quantidade.EhNulo())
                 return default;

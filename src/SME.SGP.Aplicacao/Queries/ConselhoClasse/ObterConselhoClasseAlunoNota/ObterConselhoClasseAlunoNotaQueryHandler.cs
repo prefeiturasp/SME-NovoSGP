@@ -1,14 +1,14 @@
-﻿using System;
+﻿using MediatR;
+using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterConselhoClasseAlunoNotaQueryHandler: IRequestHandler<ObterConselhoClasseAlunoNotaQuery,IEnumerable<ConselhoClasseAlunoNotaDto>>
+    public class ObterConselhoClasseAlunoNotaQueryHandler : IRequestHandler<ObterConselhoClasseAlunoNotaQuery, IEnumerable<ConselhoClasseAlunoNotaDto>>
     {
         private readonly IRepositorioConselhoClasse repoConselhoClasse;
 
@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ConselhoClasseAlunoNotaDto>> Handle(ObterConselhoClasseAlunoNotaQuery request, CancellationToken cancellationToken)
         {
-            return await repoConselhoClasse.ObterConselhoClasseAlunoNota(request.TurmasCodigo,request.Bimestre);
+            return await repoConselhoClasse.ObterConselhoClasseAlunoNota(request.TurmasCodigo, request.Bimestre);
         }
     }
 }

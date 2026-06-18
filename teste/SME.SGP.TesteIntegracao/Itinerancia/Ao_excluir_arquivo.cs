@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
@@ -10,6 +7,9 @@ using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Itinerancia.Base;
 using SME.SGP.TesteIntegracao.Itinerancia.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Itinerancia
@@ -35,13 +35,13 @@ namespace SME.SGP.TesteIntegracao.Itinerancia
             var arquivoAntesDeExcluir = ObterTodos<Arquivo>();
             arquivoAntesDeExcluir.Count.ShouldBeEquivalentTo(1);
             arquivoAntesDeExcluir.FirstOrDefault()?.Codigo.ShouldBeEquivalentTo(codigoArquivo);
-            
+
             await useCase.Executar(codigoArquivo);
 
             var arquivoDepoisDeExcluir = ObterTodos<Arquivo>();
             arquivoDepoisDeExcluir.Count.ShouldBeEquivalentTo(0);
         }
-        
+
         [Fact(DisplayName = "Registro de itinerância - Excluir Arquivo Não Existente")]
         public async Task Excluir_arquivo_nao_existente()
         {
@@ -50,7 +50,7 @@ namespace SME.SGP.TesteIntegracao.Itinerancia
 
             var arquivoAntesDeExcluir = ObterTodos<Arquivo>();
             arquivoAntesDeExcluir.Count.ShouldBeEquivalentTo(0);
-            
+
             await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(codigoArquivo));
         }
 

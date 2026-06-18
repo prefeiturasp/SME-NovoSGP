@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
             {
                 unitOfWork.Rollback();
                 throw;
-            }      
+            }
 
             return true;
         }

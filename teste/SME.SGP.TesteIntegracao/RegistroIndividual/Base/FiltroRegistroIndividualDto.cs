@@ -13,4 +13,4 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
         public bool BimestreEncerrado { get; set; }
         public bool NaoCriarPeriodosEscolares { get; set; }
     }
-} 
+}

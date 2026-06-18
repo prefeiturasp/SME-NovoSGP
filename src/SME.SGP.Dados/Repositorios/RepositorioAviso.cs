@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System.Threading.Tasks;
 using SME.SGP.Infra.Interface;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -18,7 +18,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select * from aviso where aviso_classroom_id = @avisoClassroomId";
             return await database.Conexao.QueryFirstOrDefaultAsync<Aviso>(query, new { avisoClassroomId });
         }
-        
+
         public async Task<IEnumerable<MuralAvisosRetornoDto>> ObterPorAulaId(long aulaId)
         {
             var query = @"select id, criado_em as DataPublicacao, mensagem, email from aviso where aula_id = @aulaId";

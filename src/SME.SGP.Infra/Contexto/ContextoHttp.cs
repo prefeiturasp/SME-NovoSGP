@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
-using SME.SGP.Dominio;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -34,7 +33,7 @@ namespace SME.SGP.Infra.Contexto
             Variaveis.Add("Administrador", httpContextAccessor.HttpContext?.User?.FindFirst("login_adm_suporte")?.Value ?? string.Empty);
             Variaveis.Add("NomeAdministrador", httpContextAccessor.HttpContext?.User?.FindFirst("nome_adm_suporte")?.Value ?? string.Empty);
             Variaveis.Add("PerfilUsuario", ObterPerfilAtual());
-            
+
             var authorizationHeader = httpContextAccessor.HttpContext?.Request?.Headers["authorization"];
 
             if (!authorizationHeader.HasValue || authorizationHeader.Value == StringValues.Empty)

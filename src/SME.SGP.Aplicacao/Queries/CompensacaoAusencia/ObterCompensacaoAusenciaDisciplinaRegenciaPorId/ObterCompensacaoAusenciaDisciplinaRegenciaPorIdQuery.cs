@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Data;
-using FluentValidation;
+﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterCompensacaoAusenciaDisciplinaRegenciaPorIdQuery: IRequest<IEnumerable<CompensacaoAusenciaDisciplinaRegencia>>
+    public class ObterCompensacaoAusenciaDisciplinaRegenciaPorIdQuery : IRequest<IEnumerable<CompensacaoAusenciaDisciplinaRegencia>>
     {
         public ObterCompensacaoAusenciaDisciplinaRegenciaPorIdQuery(long compensacaoId)
         {

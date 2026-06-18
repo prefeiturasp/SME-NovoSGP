@@ -1,8 +1,8 @@
-using System.Threading.Tasks;
 using Shouldly;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
@@ -15,9 +15,9 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
         [Fact(DisplayName = "Relatório do Acompanhamento da Aprendizagem - Não Deve Registrar o percurso coletivo para semestre e ano anterior sem reabertura")]
         public async Task Registrar_percurso_coletivo_para_semestre_e_ano_anterior_sem_reabertura()
         {
-            await CriarDadosBasicos(abrirPeriodos:false);
+            await CriarDadosBasicos(abrirPeriodos: false);
             var useCase = ObterSalvarAcompanhamentoUseCase();
-            
+
             var dto = new AcompanhamentoTurmaDto
             {
                 TurmaId = TURMA_ID_1,
@@ -26,7 +26,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             };
             var ex = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
             ex.ShouldNotBeNull();
-            
+
             var obterTodos = ObterTodos<AcompanhamentoTurma>();
             obterTodos.ShouldNotBeNull();
             obterTodos.Count.ShouldBeEquivalentTo(0);

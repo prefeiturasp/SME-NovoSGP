@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<FrequenciaTurmaEvasaoDto> Executar(FiltroGraficoFrequenciaTurmaEvasaoDto filtro)
         {
-            return await mediator.Send(new ObterDashboardFrequenciaTurmaEvasaoSemPresencaQuery(filtro.AnoLetivo, 
+            return await mediator.Send(new ObterDashboardFrequenciaTurmaEvasaoSemPresencaQuery(filtro.AnoLetivo,
                 filtro.DreCodigo, filtro.UeCodigo, filtro.Modalidade, filtro.Semestre, filtro.Mes));
         }
     }

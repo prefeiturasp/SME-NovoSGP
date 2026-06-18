@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Dominio
 {
@@ -150,7 +149,7 @@ namespace SME.SGP.Dominio
 
         CJInfantilPodeEditarAulaTitular = 84,
 
-        SepararDiarioBordoPorComponente = 85,       
+        SepararDiarioBordoPorComponente = 85,
 
         //PendenciasAula
         ExecutaPendenciaAulaDiarioBordo = 87,
@@ -172,7 +171,7 @@ namespace SME.SGP.Dominio
         DiasAposInicioPeriodoLetivoComponenteSemAula = 106,
         ExecutaPendenciaComponenteSemAula = 107,
         ComponentesParaObjetivosAprendizagemOpcionais = 108,
-        
+
         CelpDiasLetivos = 109,
 
         DiasExclusaoNotificacoesLidasDeAlerta = 110,

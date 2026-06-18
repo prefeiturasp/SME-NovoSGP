@@ -1,5 +1,5 @@
-using System;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace SME.SGP.TesteIntegracao.ServicosFakes
 {
@@ -17,7 +17,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             return new WorkerServiceScopeFake(_provider);
         }
     }
-    
+
     public class WorkerServiceScopeFake : IServiceScope
     {
         private readonly ServiceProvider _provider;

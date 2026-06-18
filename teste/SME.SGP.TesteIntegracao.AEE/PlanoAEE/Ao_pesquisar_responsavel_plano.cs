@@ -1,13 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
-using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -26,7 +25,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
         [Fact(DisplayName = "Plano AEE - Deve retornar o responsável pelo plano aee por ue")]
         public async Task Deve_retornar_responsavel_pelo_planoaee_por_ue()
         {
-            await _builder.CriaItensComunsEja(); 
+            await _builder.CriaItensComunsEja();
 
             var useCase = ServiceProvider.GetService<IPesquisaResponsavelPlanoPorDreUEUseCase>();
             var filtro = new FiltroPesquisaFuncionarioDto()
@@ -133,9 +132,9 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             {
                 DreId = 1,
                 UeId = 1,
-                AlunoCodigo= CODIGO_ALUNO_2,
+                AlunoCodigo = CODIGO_ALUNO_2,
                 ExibirEncerrados = false,
-                TurmaId= TURMA_ID_1
+                TurmaId = TURMA_ID_1
             };
             var useCase = ObterServicoObterResponsaveisPlanosAEEUseCase();
             var retorno = await useCase.Executar(filtroPlanoAeeDto);

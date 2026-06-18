@@ -54,7 +54,7 @@ namespace SME.SGP.TesteIntegracao.DashboardBuscaAtiva
 
             retorno.Graficos.Where(gf => gf.Grupo.Equals("8º ano")).Any(gf => gf.Descricao.Equals(REFLEXO_FREQUENCIA_AUMENTO) && gf.Quantidade == 1);
             retorno.Graficos.Where(gf => gf.Grupo.Equals("8º ano")).Any(gf => gf.Descricao.Equals(REFLEXO_FREQUENCIA_DIMINUICAO)).ShouldBeFalse();
-            
+
             retorno.Graficos.Where(gf => gf.Grupo.Equals("9º ano")).Any(gf => gf.Descricao.Equals(REFLEXO_FREQUENCIA_AUMENTO)).ShouldBeFalse();
             retorno.Graficos.Where(gf => gf.Grupo.Equals("9º ano")).Any(gf => gf.Descricao.Equals(REFLEXO_FREQUENCIA_DIMINUICAO) && gf.Quantidade == 1);
 

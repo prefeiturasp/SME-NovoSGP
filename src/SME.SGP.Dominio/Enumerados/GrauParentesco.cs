@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Dominio
-{    
+{
     public enum GrauParentesco
     {
         [Display(Name = "Avós")]

@@ -15,12 +15,12 @@ namespace SME.SGP.Aplicacao.Queries.FechamentoAcompanhamento.Situacao
             var listaSituacoes = new List<SituacaoDto>();
             foreach (var status in Enum.GetValues(typeof(SituacaoFechamento)))
             {
-                    var situacao = new SituacaoDto
-                    {
-                        Codigo = (int)status,
-                        Descricao = ((SituacaoFechamento)status).ObterNome()
-                    };
-                    listaSituacoes.Add(situacao);
+                var situacao = new SituacaoDto
+                {
+                    Codigo = (int)status,
+                    Descricao = ((SituacaoFechamento)status).ObterNome()
+                };
+                listaSituacoes.Add(situacao);
             }
 
             if (request.UnificarNaoIniciado)

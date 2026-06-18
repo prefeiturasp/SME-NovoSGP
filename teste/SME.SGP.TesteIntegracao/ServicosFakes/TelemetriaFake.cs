@@ -1,7 +1,7 @@
-using System;
-using System.Threading.Tasks;
 using Elastic.Apm.Api;
 using SME.SGP.Infra;
+using System;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.ServicosFakes
 {

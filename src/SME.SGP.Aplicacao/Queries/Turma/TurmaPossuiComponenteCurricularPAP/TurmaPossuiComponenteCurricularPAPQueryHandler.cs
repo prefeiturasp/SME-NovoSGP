@@ -1,11 +1,10 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
+using Newtonsoft.Json;
+using SME.SGP.Infra;
 using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -21,7 +20,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(TurmaPossuiComponenteCurricularPAPQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
-            
+
             var url = string.Format(ServicosEolConstants.URL_COMPONENTES_CURRICULARES_TURMAS_FUNCIONARIOS_PERFIS_VALIDAR_PAP, request.TurmaCodigo, request.Login, request.Perfil);
 
             var resposta = await httpClient.GetAsync(url);

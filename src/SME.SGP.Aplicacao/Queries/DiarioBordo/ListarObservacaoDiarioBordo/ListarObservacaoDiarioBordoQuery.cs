@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ListarObservacaoDiarioBordoQuery:IRequest<IEnumerable<ListarObservacaoDiarioBordoDto>>
+    public class ListarObservacaoDiarioBordoQuery : IRequest<IEnumerable<ListarObservacaoDiarioBordoDto>>
     {
         public ListarObservacaoDiarioBordoQuery(long diarioBordoId, long usuarioLogadoId)
         {

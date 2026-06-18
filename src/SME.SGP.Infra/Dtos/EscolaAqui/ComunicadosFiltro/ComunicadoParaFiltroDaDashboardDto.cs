@@ -20,7 +20,7 @@ namespace SME.SGP.Infra.Dtos.EscolaAqui.ComunicadosFiltro
         }
     }
 
-    public class ComunicadoTurmaDto 
+    public class ComunicadoTurmaDto
     {
         public string CodigoTurma { get; set; }
     }

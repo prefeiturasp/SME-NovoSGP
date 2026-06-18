@@ -1,11 +1,11 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -47,9 +47,9 @@ namespace SME.SGP.Aplicacao
             }
 
             var existeArquivo = await mediator.Send(
-                new VerificaUsuarioPossuiArquivoQuery(request.SalvarDocumentoDto.TipoDocumentoId,request.SalvarDocumentoDto.ClassificacaoId, 
-                    request.SalvarDocumentoDto.UsuarioId,request.SalvarDocumentoDto.UeId,request.SalvarDocumentoDto.AnoLetivo), cancellationToken);
-            
+                new VerificaUsuarioPossuiArquivoQuery(request.SalvarDocumentoDto.TipoDocumentoId, request.SalvarDocumentoDto.ClassificacaoId,
+                    request.SalvarDocumentoDto.UsuarioId, request.SalvarDocumentoDto.UeId, request.SalvarDocumentoDto.AnoLetivo), cancellationToken);
+
             if (existeArquivo)
                 throw new NegocioException(MensagemNegocioDocumento.ESTE_USUARIO_JA_POSSUI_ARQUIVO);
 
@@ -87,14 +87,14 @@ namespace SME.SGP.Aplicacao
                     TurmaId = request.SalvarDocumentoDto.TurmaId,
                     ComponenteCurricularId = request.SalvarDocumentoDto.ComponenteCurricularId
                 };
-                
+
                 var documentoId = await repositorioDocumento.SalvarAsync(documento);
 
                 foreach (var documentoArquivo in arquivos.Select(arquivo => new DocumentoArquivo
-                         {
-                             ArquivoId = arquivo.Id,
-                             DocumentoId = documentoId
-                         }))
+                {
+                    ArquivoId = arquivo.Id,
+                    DocumentoId = documentoId
+                }))
                 {
                     await repositorioDocumentoArquivo.SalvarAsync(documentoArquivo);
                 }

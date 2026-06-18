@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         public ExisteConselhoClasseParaTurmaQueryValidator()
         {
             RuleFor(c => c.CodigosTurmas)
-                .NotEmpty() 
+                .NotEmpty()
                 .NotNull()
                 .WithMessage("A turma deve ser informado para a busca do conselho de classe.");
         }

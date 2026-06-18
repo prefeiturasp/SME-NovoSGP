@@ -1,8 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -14,7 +12,7 @@ namespace SME.SGP.Aplicacao
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo));
             if (turma.EhNulo())
                 throw new NegocioException($"Turma de código [{turmaCodigo}] não localizada!");
-            
+
             return await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, dataReferencia, bimestre, ehAnoLetivo));
         }
     }

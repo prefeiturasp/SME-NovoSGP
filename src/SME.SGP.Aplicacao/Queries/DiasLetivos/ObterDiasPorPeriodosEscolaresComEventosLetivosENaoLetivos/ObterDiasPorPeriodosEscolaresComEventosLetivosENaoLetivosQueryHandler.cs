@@ -1,9 +1,7 @@
 ﻿using MediatR;
-using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -66,7 +64,7 @@ namespace SME.SGP.Aplicacao
                         PossuiEvento = false
                     };
 
-                    var eventosComData = eventos.Where(e => diaAtual.Date >= e.DataInicio.Date 
+                    var eventosComData = eventos.Where(e => diaAtual.Date >= e.DataInicio.Date
                                                             && diaAtual.Date <= e.DataFim.Date)
                                                 .ToList();
                     PreencherInformacoesDiaLetivo(diaLetivoDto, eventosComData, datasDosPeriodosEscolares, desconsiderarCriacaoDiaLetivoProximasUes, diaAtual);
@@ -74,7 +72,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private static void PreencherInformacoesDiaLetivo(DiaLetivoDto diaLetivoDto, List<Evento> eventosComData, 
+        private static void PreencherInformacoesDiaLetivo(DiaLetivoDto diaLetivoDto, List<Evento> eventosComData,
                                              List<DiaLetivoDto> datasDosPeriodosEscolares,
                                              bool desconsiderarCriacaoDiaLetivoProximasUes,
                                              DateTime diaPeriodo)

@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using System;
 
 namespace SME.SGP.Aplicacao
 {
@@ -11,7 +10,7 @@ namespace SME.SGP.Aplicacao
             Ano = ano;
         }
 
-        public string TurmaCodigo { get; set;  }
+        public string TurmaCodigo { get; set; }
         public int Ano { get; set; }
     }
 }

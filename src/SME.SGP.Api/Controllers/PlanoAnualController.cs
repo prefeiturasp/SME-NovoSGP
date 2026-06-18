@@ -20,7 +20,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<PlanoAnualCompletoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PA_C, Policy = "Bearer")]
-        public async Task<IActionResult> Get(string turmaId, string ueId, int anoLetivo, long componenteCurricularEolId, [FromServices]IConsultasPlanoAnual consultasPlanoAnual)
+        public async Task<IActionResult> Get(string turmaId, string ueId, int anoLetivo, long componenteCurricularEolId, [FromServices] IConsultasPlanoAnual consultasPlanoAnual)
         {
             return Ok(await consultasPlanoAnual.ObterPorUETurmaAnoEComponenteCurricular(ueId, turmaId, anoLetivo, componenteCurricularEolId));
         }
@@ -29,7 +29,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PA_I, Permissao.PA_A, Policy = "Bearer")]
-        public async Task<IActionResult> Migrar(MigrarPlanoAnualDto migrarPlanoAnualDto, [FromServices]IComandosPlanoAnual comandosPlanoAnual)
+        public async Task<IActionResult> Migrar(MigrarPlanoAnualDto migrarPlanoAnualDto, [FromServices] IComandosPlanoAnual comandosPlanoAnual)
         {
             await comandosPlanoAnual.Migrar(migrarPlanoAnualDto);
             return Ok();
@@ -39,7 +39,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(PlanoAnualCompletoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PA_C, Policy = "Bearer")]
-        public async Task<IActionResult> Obter(FiltroPlanoAnualDto filtroPlanoAnualDto, [FromServices]IConsultasPlanoAnual consultasPlanoAnual)
+        public async Task<IActionResult> Obter(FiltroPlanoAnualDto filtroPlanoAnualDto, [FromServices] IConsultasPlanoAnual consultasPlanoAnual)
         {
             return Ok(await consultasPlanoAnual.ObterPorEscolaTurmaAnoEBimestre(filtroPlanoAnualDto));
         }
@@ -48,7 +48,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(PlanoAnualCompletoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterExpandido(FiltroPlanoAnualBimestreExpandidoDto filtroPlanoAnualDto, [FromServices]IConsultasPlanoAnual consultasPlanoAnual)
+        public async Task<IActionResult> ObterExpandido(FiltroPlanoAnualBimestreExpandidoDto filtroPlanoAnualDto, [FromServices] IConsultasPlanoAnual consultasPlanoAnual)
         {
             return Ok(await consultasPlanoAnual.ObterBimestreExpandido(filtroPlanoAnualDto));
         }
@@ -58,7 +58,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(204)]
         [Permissao(Permissao.PA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterObjetivos(FiltroPlanoAnualDisciplinaDto filtro, [FromServices]IConsultasPlanoAnual consultasPlanoAnual)
+        public async Task<IActionResult> ObterObjetivos(FiltroPlanoAnualDisciplinaDto filtro, [FromServices] IConsultasPlanoAnual consultasPlanoAnual)
         {
             var objetivosPlano = await consultasPlanoAnual.ObterObjetivosEscolaTurmaDisciplina(filtro);
             if (objetivosPlano.NaoEhNulo())
@@ -71,7 +71,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(PlanoAnualCompletoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterTurmasParaCopia([FromQuery] int turmaId, [FromQuery] long componenteCurricular, bool consideraHistorico, [FromServices]IConsultasPlanoAnual consultasPlanoAnual)
+        public async Task<IActionResult> ObterTurmasParaCopia([FromQuery] int turmaId, [FromQuery] long componenteCurricular, bool consideraHistorico, [FromServices] IConsultasPlanoAnual consultasPlanoAnual)
         {
             var retorno = await consultasPlanoAnual.ObterTurmasParaCopia(turmaId, componenteCurricular, consideraHistorico);
 
@@ -85,8 +85,8 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<PlanoAnualCompletoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PA_I, Permissao.PA_A, Policy = "Bearer")]
-        public async Task<IActionResult> Post(PlanoAnualDto planoAnualDto, [FromServices]IComandosPlanoAnual comandosPlanoAnual)
-        {            
+        public async Task<IActionResult> Post(PlanoAnualDto planoAnualDto, [FromServices] IComandosPlanoAnual comandosPlanoAnual)
+        {
             return Ok(await comandosPlanoAnual.Salvar(planoAnualDto));
         }
 
@@ -94,7 +94,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PA_C, Policy = "Bearer")]
-        public IActionResult ValidarPlanoAnualExistente(FiltroPlanoAnualDto filtroPlanoAnualDto, [FromServices]IConsultasPlanoAnual consultasPlanoAnual)
+        public IActionResult ValidarPlanoAnualExistente(FiltroPlanoAnualDto filtroPlanoAnualDto, [FromServices] IConsultasPlanoAnual consultasPlanoAnual)
         {
             return Ok(consultasPlanoAnual.ValidarPlanoAnualExistente(filtroPlanoAnualDto));
         }

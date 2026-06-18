@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Bimestre
 
             mockMediator
                 .Setup(m => m.Send(It.IsAny<ObterBimestrePorModalidadeQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<FiltroBimestreDto>()); 
+                .ReturnsAsync(new List<FiltroBimestreDto>());
 
             var useCase = new ObterBimestrePorModalidadeUseCase(mockMediator.Object);
 
@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Bimestre
         [Fact]
         public void Validator_Deve_Falhar_Quando_Modalidade_Nao_Informada()
         {
-            var query = new ObterBimestrePorModalidadeQuery(true, false, 0); 
+            var query = new ObterBimestrePorModalidadeQuery(true, false, 0);
             var result = _validator.TestValidate(query);
 
             result.ShouldHaveValidationErrorFor(q => q.Modalidade)

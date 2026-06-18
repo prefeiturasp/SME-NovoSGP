@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(c => c.Turma)
                .NotNull()
-               .WithMessage("A turma deve ser informada.");               
+               .WithMessage("A turma deve ser informada.");
         }
     }
 }

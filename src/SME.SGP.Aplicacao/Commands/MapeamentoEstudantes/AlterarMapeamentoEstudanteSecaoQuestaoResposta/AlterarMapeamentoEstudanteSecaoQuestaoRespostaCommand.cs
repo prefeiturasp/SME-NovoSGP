@@ -2,13 +2,10 @@
 using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AlterarMapeamentoEstudanteSecaoQuestaoRespostaCommand : IRequest<bool> 
+    public class AlterarMapeamentoEstudanteSecaoQuestaoRespostaCommand : IRequest<bool>
     {
         public AlterarMapeamentoEstudanteSecaoQuestaoRespostaCommand(RespostaMapeamentoEstudante respostaAlterar, MapeamentoEstudanteSecaoQuestaoDto respostaQuestaoDto)
         {

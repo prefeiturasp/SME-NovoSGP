@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao
         public ObterFrequenciasAlunoIdsComPresencasMaiorQueTotalAulasPorUeQuery(long ueId, int anoLetivo)
         {
             UeId = ueId;
-            AnoLetivo = anoLetivo;                
+            AnoLetivo = anoLetivo;
         }
         public long UeId { get; set; }
         public int AnoLetivo { get; set; }

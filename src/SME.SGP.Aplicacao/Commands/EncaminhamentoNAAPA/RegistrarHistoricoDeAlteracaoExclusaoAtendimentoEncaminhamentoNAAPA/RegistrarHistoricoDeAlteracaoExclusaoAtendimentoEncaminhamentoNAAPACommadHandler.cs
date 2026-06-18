@@ -15,11 +15,11 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioSecaoEncaminhamentoNAAPA repositorioSecaoEncaminhamentoNAAPA;
 
         public RegistrarHistoricoDeAlteracaoExclusaoAtendimentoEncaminhamentoNAAPACommadHandler(
-                                                    IMediator mediator, 
+                                                    IMediator mediator,
                                                     IRepositorioEncaminhamentoNAAPAHistoricoAlteracoes repositorioEncaminhamentoNAAPAHistoricoAlteracoes,
                                                     IRepositorioSecaoEncaminhamentoNAAPA repositorioSecaoEncaminhamentoNAAPA)
         {
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator)); 
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioEncaminhamentoNAAPAHistoricoAlteracoes = repositorioEncaminhamentoNAAPAHistoricoAlteracoes ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoNAAPAHistoricoAlteracoes));
             this.repositorioSecaoEncaminhamentoNAAPA = repositorioSecaoEncaminhamentoNAAPA ?? throw new ArgumentNullException(nameof(repositorioSecaoEncaminhamentoNAAPA));
         }

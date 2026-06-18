@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
             Bimestre = bimestre;
             EhFinal = ehFinal;
         }
-        
+
         public class ObterPorConselhoClasseAlunoPorTurmaAlunoBimestreQueryValidator : AbstractValidator<ObterPorConselhoClasseAlunoPorTurmaAlunoBimestreQuery>
         {
             public ObterPorConselhoClasseAlunoPorTurmaAlunoBimestreQueryValidator()
@@ -26,14 +26,14 @@ namespace SME.SGP.Aplicacao
                 RuleFor(c => c.CodigoTurma)
                     .NotEmpty()
                     .WithMessage("O código da turma deve ser informado para a busca de conselho de classe do aluno.");
-                
+
                 RuleFor(c => c.CodigoAluno)
                     .NotEmpty()
                     .WithMessage("O código do aluno deve ser informado para a busca de conselho de classe do aluno.");
-                
+
                 RuleFor(c => c.Bimestre)
                     .NotEmpty()
-                    .When(a=> !a.EhFinal)
+                    .When(a => !a.EhFinal)
                     .WithMessage("O bimestre deve ser informado para a busca de conselho de classe do aluno.");
             }
         }

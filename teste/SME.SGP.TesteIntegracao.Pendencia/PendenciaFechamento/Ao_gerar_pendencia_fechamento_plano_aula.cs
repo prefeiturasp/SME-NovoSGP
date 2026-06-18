@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Shouldly;
 using SME.SGP.Aplicacao;
-using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.PendenciaFechamento.Base;

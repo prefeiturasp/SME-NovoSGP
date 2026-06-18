@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
                     QuantidadeAusencias = frequencia.TotalAusencias,
                     QuantidadeCompensacoes = frequencia.TotalCompensacoes,
                     TotalAulas = frequencia.TotalAulas
-                    
+
                 };
 
                 frequenciaBimestreAlunoDto.Add(frequenciaBimestreAluno);

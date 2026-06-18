@@ -1,15 +1,14 @@
-﻿using System;
+﻿using Moq;
+using Moq.Protected;
+using Newtonsoft.Json;
+using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Moq;
-using Moq.Protected;
-using Newtonsoft.Json;
-using SME.SGP.Aplicacao;
-using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
 using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.Queries.EOL.Turma.ObterTurmasApiEol

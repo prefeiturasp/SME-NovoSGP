@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
             DataFechamento = dataFechamento;
         }
 
-        
+
         public int ModalidadeTipoCalendario { get; set; }
         public DateTime DataFechamento { get; set; }
     }

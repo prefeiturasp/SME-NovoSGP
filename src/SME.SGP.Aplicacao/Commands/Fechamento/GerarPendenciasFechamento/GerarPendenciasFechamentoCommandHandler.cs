@@ -6,7 +6,6 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,7 +15,7 @@ namespace SME.SGP.Aplicacao.Commands.Fechamento.GerarPendenciasFechamento
     {
         private readonly IMediator mediator;
         private readonly IServicoPendenciaFechamento servicoPendenciaFechamento;
-        
+
         public GerarPendenciasFechamentoCommandHandler(IMediator mediator, IServicoPendenciaFechamento servicoPendenciaFechamento)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -39,12 +38,12 @@ namespace SME.SGP.Aplicacao.Commands.Fechamento.GerarPendenciasFechamento
                 }
                 await servicoPendenciaFechamento.ValidarAulasReposicaoPendente(request.FechamentoTurmaDisciplinaId, request.TurmaCodigo, request.TurmaNome, request.ComponenteCurricularId, request.PeriodoEscolarInicio, request.PeriodoEscolarFim, request.Bimestre, request.TurmaId);
                 await servicoPendenciaFechamento.ValidarAulasSemPlanoAulaNaDataDoFechamento(
-                                                            request.FechamentoTurmaDisciplinaId, 
+                                                            request.FechamentoTurmaDisciplinaId,
                                                             await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId)),
                                                             request.ComponenteCurricularId,
-                                                            request.PeriodoEscolarInicio, 
+                                                            request.PeriodoEscolarInicio,
                                                             request.PeriodoEscolarFim,
-                                                            request.Bimestre, 
+                                                            request.Bimestre,
                                                             request.TurmaId);
                 if (request.RegistraFrequencia)
                     await servicoPendenciaFechamento.ValidarAulasSemFrequenciaRegistrada(request.FechamentoTurmaDisciplinaId, request.TurmaCodigo, request.TurmaNome, request.ComponenteCurricularId, request.PeriodoEscolarInicio, request.PeriodoEscolarFim, request.Bimestre, request.TurmaId);
@@ -99,15 +98,15 @@ namespace SME.SGP.Aplicacao.Commands.Fechamento.GerarPendenciasFechamento
             await NotificarUsuarios($"Pendência no fechamento da turma {turma.Nome} - {bimestre}º bimestre",
                     $"O fechamento do {bimestre}º bimestre de {componentes.FirstOrDefault().Nome} da turma {turma.Nome} da {ue.Nome} ({dre.Nome}) gerou {servicoPendenciaFechamento.ObterQuantidadePendenciasGeradas()} pendência(s): " +
                     pendencias +
-                    "Para consultar os detalhes da(s) pendência(s) acesse a tela 'Fechamento > Pendências do fechamento'", 
-                    dre.CodigoDre, 
-                    ue.CodigoUe, 
+                    "Para consultar os detalhes da(s) pendência(s) acesse a tela 'Fechamento > Pendências do fechamento'",
+                    dre.CodigoDre,
+                    ue.CodigoUe,
                     turma.CodigoTurma, perfilUsuario);
         }
 
         private async Task NotificarUsuarios(string titulo, string mensagem, string codigoDre, string codigoUe, string codigoTurma, string perfilUsuario)
         {
-            var enviarPara = new List<Cargo>() { Cargo.Diretor, Cargo.CP};
+            var enviarPara = new List<Cargo>() { Cargo.Diretor, Cargo.CP };
 
             if (Perfis.PERFIL_CP.ToString().Equals(perfilUsuario))
                 enviarPara.Remove(Cargo.CP);

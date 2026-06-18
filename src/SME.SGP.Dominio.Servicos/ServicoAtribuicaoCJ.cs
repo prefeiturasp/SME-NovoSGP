@@ -21,7 +21,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IMediator mediator;
 
         public ServicoAtribuicaoCJ(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IServicoAbrangencia servicoAbrangencia,
-            IRepositorioAbrangencia repositorioAbrangencia, IRepositorioAulaConsulta repositorioAula, IServicoUsuario servicoUsuario, 
+            IRepositorioAbrangencia repositorioAbrangencia, IRepositorioAulaConsulta repositorioAula, IServicoUsuario servicoUsuario,
             IMediator mediator)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
@@ -32,7 +32,7 @@ namespace SME.SGP.Dominio.Servicos
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task Salvar(AtribuicaoCJ atribuicaoCJ,IEnumerable<ProfessorTitularDisciplinaEol> professoresTitularesDisciplinasEol, IEnumerable<AtribuicaoCJ> atribuicoesAtuais = null)
+        public async Task Salvar(AtribuicaoCJ atribuicaoCJ, IEnumerable<ProfessorTitularDisciplinaEol> professoresTitularesDisciplinasEol, IEnumerable<AtribuicaoCJ> atribuicoesAtuais = null)
         {
             await ValidaComponentesCurricularesQueNaoPodemSerSubstituidos(atribuicaoCJ);
 
@@ -99,7 +99,7 @@ namespace SME.SGP.Dominio.Servicos
                                                             IEnumerable<AtribuicaoCJ> atribuicoesAtuais, AtribuicaoCJ atribuicaoCJ)
         {
             var atribuicaoPresenteNasAtribuicoesAtuais = atribuicoesAtuais.Any(a => a.Id != atribuicaoCJ.Id && a.Substituir);
-            if (abrangenciasAtuais.PossuiRegistros() 
+            if (abrangenciasAtuais.PossuiRegistros()
                 && !atribuicaoPresenteNasAtribuicoesAtuais)
             {
                 await servicoAbrangencia.RemoverAbrangencias(abrangenciasAtuais.Select(a => a.Id).ToArray());
@@ -138,7 +138,7 @@ namespace SME.SGP.Dominio.Servicos
                 var aulas = await repositorioAula.ObterAulas(atribuicaoCJ.TurmaId, atribuicaoCJ.UeId, atribuicaoCJ.ProfessorRf, null, atribuicaoCJ.DisciplinaId.ToString());
                 if (aulas.NaoEhNulo() && aulas.Any())
                 {
-                    var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(atribuicaoCJ.DisciplinaId)); 
+                    var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(atribuicaoCJ.DisciplinaId));
                     var nomeComponenteCurricular = componenteCurricular?.Nome ?? atribuicaoCJ.DisciplinaId.ToString();
                     throw new NegocioException($"Não é possível remover a substituição da turma {atribuicaoCJ.Turma.Nome} no componente curricular {nomeComponenteCurricular} porque existem aulas cadastradas.");
                 }

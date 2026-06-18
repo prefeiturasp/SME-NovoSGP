@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
                 .WithMessage("O código da DRE deve ser informado.");
             RuleFor(a => a.UeCodigo)
                 .NotEmpty()
-                .WithMessage("O código da Ue deve ser informado.");            
+                .WithMessage("O código da Ue deve ser informado.");
             RuleFor(a => a.Modalidades)
                 .NotEmpty()
                 .WithMessage("Pelo menos uma modalidade deve ser informada.");

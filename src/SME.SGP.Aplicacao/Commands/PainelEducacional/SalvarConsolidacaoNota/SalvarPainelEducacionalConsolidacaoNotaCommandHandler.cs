@@ -17,15 +17,15 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarConsolidacaoNota
 
         public async Task<bool> Handle(SalvarPainelEducacionalConsolidacaoNotaCommand request, CancellationToken cancellationToken)
         {
-            if(request.NotasConsolidadasDre?.Any() != true)
+            if (request.NotasConsolidadasDre?.Any() != true)
                 return false;
 
             var menorAnoLetivo = request.NotasConsolidadasDre.Min(c => c.AnoLetivo);
 
             await _repositorioPainelEducacionalConsolidacaoNota.LimparConsolidacaoAsync(menorAnoLetivo);
 
-            await  _repositorioPainelEducacionalConsolidacaoNota.SalvarConsolidacaoAsync(request.NotasConsolidadasDre.ToList());
-            await  _repositorioPainelEducacionalConsolidacaoNota.SalvarConsolidacaoUeAsync(request.NotasConsolidadasUe.ToList());
+            await _repositorioPainelEducacionalConsolidacaoNota.SalvarConsolidacaoAsync(request.NotasConsolidadasDre.ToList());
+            await _repositorioPainelEducacionalConsolidacaoNota.SalvarConsolidacaoUeAsync(request.NotasConsolidadasUe.ToList());
             return true;
         }
     }

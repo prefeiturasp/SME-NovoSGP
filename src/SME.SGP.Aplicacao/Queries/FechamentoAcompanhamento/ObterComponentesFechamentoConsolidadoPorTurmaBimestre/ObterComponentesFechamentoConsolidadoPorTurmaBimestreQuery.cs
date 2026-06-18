@@ -24,10 +24,10 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(a => a.TurmaId)
                 .NotEmpty()
-                .WithMessage("O id da turma deve ser informado.");            
+                .WithMessage("O id da turma deve ser informado.");
             RuleFor(a => a.Bimestre)
                 .NotNull()
-                .WithMessage("O bimestre deve ser informado.");           
+                .WithMessage("O bimestre deve ser informado.");
         }
     }
 }

@@ -42,4 +42,4 @@ namespace SME.SGP.Aplicacao
                 .WithMessage("O componente curricular deve ser informado.");
         }
     }
-} 
+}

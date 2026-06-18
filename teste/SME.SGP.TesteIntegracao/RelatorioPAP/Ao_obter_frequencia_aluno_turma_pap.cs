@@ -101,7 +101,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
 
             await InserirNaBase(new Dominio.FrequenciaAluno()
             {
-                Id= 2,
+                Id = 2,
                 CodigoAluno = CODIGO_ALUNO_1,
                 TurmaId = TURMA_CODIGO_1,
                 TotalAulas = 5,

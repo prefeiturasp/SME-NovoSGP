@@ -1,8 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,7 +25,7 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new ExcluirRespostaEncaminhamentoAEEPorQuestaoIdCommand(questaoId));
 
             await repositorioQuestaoEncaminhamentoAEE.RemoverLogico(request.EncaminhamentoAEESecaoId, "encaminhamento_aee_secao_id");
-            
+
             return true;
         }
     }

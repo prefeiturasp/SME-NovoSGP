@@ -1,17 +1,11 @@
+using Microsoft.Extensions.DependencyInjection;
+using Shouldly;
+using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
+using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using MediatR;
-using Microsoft.Extensions.DependencyInjection;
-using Moq;
-using Shouldly;
-using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
-using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.EscolaAqui
@@ -26,11 +20,11 @@ namespace SME.SGP.TesteIntegracao.EscolaAqui
         private const string RECOMENDACOES_FAMILIA_PADRAO = "Recomendações Família PADRÃO";
         private int ANO_ATUAL = DateTimeExtension.HorarioBrasilia().Year;
         public Ao_obter_recomendacoes_aluno(CollectionFixture collectionFixture) : base(collectionFixture)
-        {}
+        { }
 
         protected override void RegistrarFakes(IServiceCollection services)
         {
-            base.RegistrarFakes(services);     
+            base.RegistrarFakes(services);
         }
 
         [Fact(DisplayName = "Retornar recomendações de conselho de classe do aluno/turma informado")]
@@ -42,10 +36,10 @@ namespace SME.SGP.TesteIntegracao.EscolaAqui
 
             var useCase = ServiceProvider.GetService<IObterRecomendacoesPorAlunoTurmaUseCase>();
 
-            var retorno = await useCase.Executar(new Infra.FiltroRecomendacaoConselhoClasseAlunoTurmaDto() { AnoLetivo = ANO_ATUAL, CodigoAluno = CODIGO_ALUNO_1, CodigoTurma = TURMA_CODIGO_1, Modalidade = (int)Modalidade.Fundamental});
+            var retorno = await useCase.Executar(new Infra.FiltroRecomendacaoConselhoClasseAlunoTurmaDto() { AnoLetivo = ANO_ATUAL, CodigoAluno = CODIGO_ALUNO_1, CodigoTurma = TURMA_CODIGO_1, Modalidade = (int)Modalidade.Fundamental });
             retorno.ShouldNotBeEmpty();
             retorno.Count().ShouldBe(1);
-            retorno.Where(e => e.AlunoCodigo == CODIGO_ALUNO_1 && e.TurmaCodigo == TURMA_CODIGO_1 
+            retorno.Where(e => e.AlunoCodigo == CODIGO_ALUNO_1 && e.TurmaCodigo == TURMA_CODIGO_1
                             && e.RecomendacoesAluno.Contains(RECOMENDACOES_ALUNO_1) && e.RecomendacoesFamilia.Contains(RECOMENDACOES_FAMILIA_ALUNO_1)).Count().ShouldBe(1);
         }
 
@@ -70,7 +64,7 @@ namespace SME.SGP.TesteIntegracao.EscolaAqui
         {
             await CriarItensBasicos();
             await CriarConselhoClasseRecomendacao();
-            await CriarConselhoClasseFechamentoTurma("","","");
+            await CriarConselhoClasseFechamentoTurma("", "", "");
             await CriarConselhoClasseRecomendacaoAluno();
 
             var useCase = ServiceProvider.GetService<IObterRecomendacoesPorAlunoTurmaUseCase>();

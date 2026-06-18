@@ -10,7 +10,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 {
     public class RepositorioConselhoClasseNotaDuplicado : RepositorioElasticBase<ConselhoClasseNotaDuplicado>, IRepositorioConselhoClasseNotaDuplicado
     {
-        public RepositorioConselhoClasseNotaDuplicado(IElasticClient elasticClient, IServicoTelemetria servicoTelemetria, IOptions<ElasticOptions> elasticOptions) 
+        public RepositorioConselhoClasseNotaDuplicado(IElasticClient elasticClient, IServicoTelemetria servicoTelemetria, IOptions<ElasticOptions> elasticOptions)
             : base(elasticClient, servicoTelemetria, elasticOptions, "metricas_sgp_conselho_classe_nota_duplicado")
         {
         }

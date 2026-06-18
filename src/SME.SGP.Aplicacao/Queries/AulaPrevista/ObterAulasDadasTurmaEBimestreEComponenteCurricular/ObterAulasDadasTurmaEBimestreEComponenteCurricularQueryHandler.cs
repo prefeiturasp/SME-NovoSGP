@@ -11,11 +11,11 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAulasDadasTurmaEBimestreEComponenteCurricularQueryHandler : IRequestHandler<ObterAulasDadasTurmaEBimestreEComponenteCurricularQuery, IEnumerable<TurmaComponenteQntAulasDto>>
     {
-        private readonly IRepositorioAulaPrevistaBimestreConsulta repositorioAulaPrevistaBimestre;        
+        private readonly IRepositorioAulaPrevistaBimestreConsulta repositorioAulaPrevistaBimestre;
 
         public ObterAulasDadasTurmaEBimestreEComponenteCurricularQueryHandler(IRepositorioAulaPrevistaBimestreConsulta repositorioAulaPrevistaBimestre)
         {
-            this.repositorioAulaPrevistaBimestre = repositorioAulaPrevistaBimestre;            
+            this.repositorioAulaPrevistaBimestre = repositorioAulaPrevistaBimestre;
         }
 
         public async Task<IEnumerable<TurmaComponenteQntAulasDto>> Handle(ObterAulasDadasTurmaEBimestreEComponenteCurricularQuery request, CancellationToken cancellationToken)

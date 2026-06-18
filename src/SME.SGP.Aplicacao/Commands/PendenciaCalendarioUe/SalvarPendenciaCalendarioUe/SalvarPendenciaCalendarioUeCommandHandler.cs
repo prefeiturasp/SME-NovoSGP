@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
                 case TipoPendencia.CalendarioLetivoInsuficiente:
                     return new List<PerfilUsuario> { PerfilUsuario.CP, PerfilUsuario.AD, PerfilUsuario.DIRETOR, PerfilUsuario.ADMUE };
                 case TipoPendencia.CadastroEventoPendente:
-                    return new List<PerfilUsuario> {PerfilUsuario.ADMUE };
+                    return new List<PerfilUsuario> { PerfilUsuario.ADMUE };
                 default:
                     return null;
             }

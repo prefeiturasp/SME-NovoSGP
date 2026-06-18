@@ -10,7 +10,7 @@ namespace SME.SGP.Aplicacao
             CodigoAluno = codigoAluno;
         }
 
-        public string CodigoAluno { get; set; } 
+        public string CodigoAluno { get; set; }
     }
 
     public class ExisteEncaminhamentoNAAPAAtivoParaAlunoQueryValidator : AbstractValidator<ExisteEncaminhamentoNAAPAAtivoParaAlunoQuery>

@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -28,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var turma in turmas)
                 {
-                    
+
                     var mensagemPorTurma = new MensagemConsolidarTurmaConselhoClasseAlunoPorTurmaDto(turma.Id);
 
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresTurmaTratar, JsonConvert.SerializeObject(mensagemPorTurma), mensagemRabbit.CodigoCorrelacao, null));

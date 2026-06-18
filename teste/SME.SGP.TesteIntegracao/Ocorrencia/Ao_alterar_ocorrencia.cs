@@ -1,11 +1,11 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Shouldly;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Ocorrencia.Base;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Ocorrencia
@@ -63,7 +63,7 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             await ValidarAlteracao(dtoIncluir);
 
         }
-        
+
         [Fact(DisplayName = "Ocorrencia - Alterar Ocorrencia Com Ue sem Turma")]
         public async Task AlterarOcorrenciaComUeSemTurma()
         {
@@ -86,7 +86,7 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             await useCaseIncluir.Executar(dtoIncluir);
             await ValidarAlteracao(dtoIncluir);
         }
-        
+
         [Fact(DisplayName = "Ocorrencia - Alterar Ocorrencia Com Turma e Aluno")]
         public async Task AlterarOcorrenciaComTurmaEAluno()
         {
@@ -104,12 +104,12 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
                 Descricao = "Lorem Ipsum é simplesmente uma simulação de texto da",
                 OcorrenciaTipoId = 1,
                 HoraOcorrencia = "17:34",
-                CodigosAlunos = new List<long>(){1,2}
+                CodigosAlunos = new List<long>() { 1, 2 }
             };
             var useCaseIncluir = InserirOcorrenciaUseCase();
             await useCaseIncluir.Executar(dtoIncluir);
-            
-            await ValidarAlteracao(dtoIncluir,temAlunos:true);
+
+            await ValidarAlteracao(dtoIncluir, temAlunos: true);
         }
 
         [Fact(DisplayName = "Ocorrencia - Alterar Ocorrencia Com Ue e Servidor")]
@@ -129,14 +129,14 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
                 Descricao = "Lorem Ipsum é simplesmente uma simulação de texto da",
                 OcorrenciaTipoId = 1,
                 HoraOcorrencia = "17:34",
-                CodigosServidores = new List<string>(){"rf1","rf2"}
+                CodigosServidores = new List<string>() { "rf1", "rf2" }
             };
             var useCaseIncluir = InserirOcorrenciaUseCase();
             await useCaseIncluir.Executar(dtoIncluir);
-            
-            await ValidarAlteracao(dtoIncluir,temServidor:true);
+
+            await ValidarAlteracao(dtoIncluir, temServidor: true);
         }
-        
+
         [Fact(DisplayName = "Ocorrencia - Alterar Ocorrencia Com Turma, Aluno e Servidor")]
         public async Task AlterarOcorrenciaComTurmaAlunoEServidor()
         {
@@ -154,15 +154,15 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
                 Descricao = "Lorem Ipsum é simplesmente uma simulação de texto da",
                 OcorrenciaTipoId = 1,
                 HoraOcorrencia = "17:34",
-                CodigosServidores = new List<string>(){"rf1","rf2"},
-                CodigosAlunos = new List<long>(){1,2}
+                CodigosServidores = new List<string>() { "rf1", "rf2" },
+                CodigosAlunos = new List<long>() { 1, 2 }
             };
             var useCaseIncluir = InserirOcorrenciaUseCase();
             await useCaseIncluir.Executar(dtoIncluir);
-            
-            await ValidarAlteracao(dtoIncluir,true,true);
+
+            await ValidarAlteracao(dtoIncluir, true, true);
         }
-        private async Task ValidarAlteracao(InserirOcorrenciaDto dtoIncluir,bool temAlunos = false,bool temServidor = false)
+        private async Task ValidarAlteracao(InserirOcorrenciaDto dtoIncluir, bool temAlunos = false, bool temServidor = false)
         {
             var obterTodos = ObterTodos<Dominio.Ocorrencia>();
             obterTodos.ShouldNotBeNull();
@@ -179,8 +179,8 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
                 DataOcorrencia = dtoIncluir.DataOcorrencia,
                 Descricao = "Descricao Alterada",
                 Titulo = "Titulo Alterado",
-                CodigosAlunos = temAlunos ? new List<long>(){1,2} : new List<long>(),
-                CodigosServidores = temServidor ? new List<string>(){"1","2"} : new List<string>()
+                CodigosAlunos = temAlunos ? new List<long>() { 1, 2 } : new List<long>(),
+                CodigosServidores = temServidor ? new List<string>() { "1", "2" } : new List<string>()
             };
             var alterarUseCase = AlterarOcorrenciaUseCase();
             await alterarUseCase.Executar(alterarDto);

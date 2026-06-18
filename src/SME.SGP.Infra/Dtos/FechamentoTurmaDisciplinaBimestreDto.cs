@@ -13,7 +13,7 @@ namespace SME.SGP.Infra
         public int TotalAulasPrevistas { get; set; }
         public int Bimestre { get; set; }
         public bool EhSintese { get; set; }
-        public Periodo Periodo { get; set; }        
+        public Periodo Periodo { get; set; }
         public SituacaoFechamento Situacao { get; set; }
         public bool PodeProcessarReprocessar { get; set; }
         public bool PeriodoAberto { get; set; }

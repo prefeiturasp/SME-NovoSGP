@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
                 tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Modalidade.EJA, anoAtual, 2));
                 if (tipoCalendarioId > 0)
                     await VerificaPendenciasAulaDiasNaoLetivos(tipoCalendarioId);
-                
+
                 tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Modalidade.CELP, anoAtual, 1));
                 if (tipoCalendarioId > 0)
                     await VerificaPendenciasAulaDiasNaoLetivos(tipoCalendarioId);
@@ -68,8 +68,8 @@ namespace SME.SGP.Aplicacao
             {
                 var listaAgrupada = aulas
                     .Where(a => diasComEventosNaoLetivos.Any(d => d.Data == a.Data &&
-                                                                (d.UesIds.Contains(a.CodigoUe) || 
-                                                                 d.NaoPossuiDre || 
+                                                                (d.UesIds.Contains(a.CodigoUe) ||
+                                                                 d.NaoPossuiDre ||
                                                                  (d.DreIds.Contains(a.CodigoDre) && d.NaoPossuiUe))))
                     .GroupBy(x => new { x.TurmaId, x.IdTurma, x.DisciplinaId, x.ProfessorRf }).ToList();
 
@@ -96,7 +96,7 @@ namespace SME.SGP.Aplicacao
                         if (!pendenciaExistente)
                         {
                             pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AulaNaoLetivo, ue.Id, turmas.Key.IdTurma, await ObterDescricao(turmas.FirstOrDefault(), TipoPendencia.AulaNaoLetivo), ObterInstrucoes()));
-                            await mediator.Send(new SalvarPendenciaPerfilCommand(pendenciaId, ObterCodigoPerfis())); 
+                            await mediator.Send(new SalvarPendenciaPerfilCommand(pendenciaId, ObterCodigoPerfis()));
                             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendenciaId, ue.Id), Guid.NewGuid()));
 
                             await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, usuarioId));
@@ -122,7 +122,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private List<PerfilUsuario> ObterCodigoPerfis()
-                 => new List<PerfilUsuario> { PerfilUsuario.CP }; 
+                 => new List<PerfilUsuario> { PerfilUsuario.CP };
 
         private static TipoEscola[] ObterTiposDeEscolasValidos()
             => new[]

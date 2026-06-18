@@ -16,7 +16,7 @@ namespace SME.SGP.Infra
         public DateTime Data { get; set; }
         public string Motivo { get; set; }
         public bool EhLetivo { get; set; }
-        public bool EhNaoLetivo { get { return !EhLetivo; }  }
+        public bool EhNaoLetivo { get { return !EhLetivo; } }
         public List<string> UesIds { get; set; }
         public List<string> DreIds { get; set; }
         public bool PossuiEvento { get; set; }

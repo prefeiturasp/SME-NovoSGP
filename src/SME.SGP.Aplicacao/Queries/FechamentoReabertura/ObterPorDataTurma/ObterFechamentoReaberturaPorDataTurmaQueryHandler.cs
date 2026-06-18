@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<FechamentoReabertura> Handle(ObterFechamentoReaberturaPorDataTurmaQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioFechamentoReabertura.ObterPorDataTurmaCalendarioAsync(request.UeId, request.DataParaVerificar, request.TipoCalendarioId);            
+            return await repositorioFechamentoReabertura.ObterPorDataTurmaCalendarioAsync(request.UeId, request.DataParaVerificar, request.TipoCalendarioId);
         }
     }
 }

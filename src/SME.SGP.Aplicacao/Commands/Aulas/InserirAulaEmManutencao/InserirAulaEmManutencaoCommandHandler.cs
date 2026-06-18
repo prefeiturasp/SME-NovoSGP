@@ -3,7 +3,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,7 +21,7 @@ namespace SME.SGP.Aplicacao
         {
             var processosExecutando = new List<ProcessoExecutando>();
 
-            foreach(var aulaId in request.AulasIds)
+            foreach (var aulaId in request.AulasIds)
             {
                 var processoExecutando = new ProcessoExecutando()
                 {

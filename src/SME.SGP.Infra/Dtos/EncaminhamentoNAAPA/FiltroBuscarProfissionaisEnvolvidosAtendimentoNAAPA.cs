@@ -3,7 +3,7 @@
     public class FiltroBuscarProfissionaisEnvolvidosAtendimentoNAAPA
     {
         public FiltroBuscarProfissionaisEnvolvidosAtendimentoNAAPA()
-        {}
+        { }
         public FiltroBuscarProfissionaisEnvolvidosAtendimentoNAAPA(string codigoDre, string codigoUe = null)
         {
             CodigoDre = codigoDre;

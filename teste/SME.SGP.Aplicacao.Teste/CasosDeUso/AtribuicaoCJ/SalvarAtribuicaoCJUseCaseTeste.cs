@@ -172,11 +172,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.AtribuicaoCJ
             mediatorMock.Setup(x => x.Send(It.IsAny<PublicarFilaGoogleClassroomCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(false);
 
-            var metodo = useCase.GetType().GetMethod("PublicarAtribuicaoNoGoogleClassroomApiAsync", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);     
+            var metodo = useCase.GetType().GetMethod("PublicarAtribuicaoNoGoogleClassroomApiAsync", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             await (Task)metodo.Invoke(useCase, new object[] { atribuicao });
 
             mediatorMock.Verify(x => x.Send(It.Is<PublicarFilaGoogleClassroomCommand>(c => c.Fila == RotasRabbitSgpGoogleClassroomApi.FilaProfessorCursoIncluir), It.IsAny<CancellationToken>()), Times.Once);
             mediatorMock.Verify(x => x.Send(It.Is<SalvarLogViaRabbitCommand>(c => c.Mensagem.Contains("Não foi possível publicar na fila")), It.IsAny<CancellationToken>()), Times.Once);
-        }    
+        }
     }
 }

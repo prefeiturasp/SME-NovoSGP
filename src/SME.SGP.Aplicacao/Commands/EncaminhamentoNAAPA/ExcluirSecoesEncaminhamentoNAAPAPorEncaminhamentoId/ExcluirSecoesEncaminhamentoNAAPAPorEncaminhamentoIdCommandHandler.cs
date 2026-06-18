@@ -1,8 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,9 +21,9 @@ namespace SME.SGP.Aplicacao
         {
             var secoesIds = await repositorioEncaminhamentoNAAPASecao.ObterIdsSecoesPorEncaminhamentoNAAPAId(request.EncaminhamentoNAAPAId);
 
-            foreach(var secaoId in secoesIds)
+            foreach (var secaoId in secoesIds)
                 await mediator.Send(new ExcluirQuestaoEncaminhamentoNAAPAPorSecaoIdCommand(secaoId));
-            
+
             await repositorioEncaminhamentoNAAPASecao.RemoverLogico(request.EncaminhamentoNAAPAId, "encaminhamento_naapa_id");
 
             return true;

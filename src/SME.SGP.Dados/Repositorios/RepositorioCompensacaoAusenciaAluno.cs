@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Dapper;
+﻿using Dapper;
 using Npgsql;
 using NpgsqlTypes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -30,7 +29,7 @@ namespace SME.SGP.Dados.Repositorios
                             from
                             stdin (FORMAT binary)";
 
-            using (var writer = ((NpgsqlConnection) database.Conexao).BeginBinaryImport(sql))
+            using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
             {
                 foreach (var compensacao in registros)
                 {
@@ -54,21 +53,21 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = $@"update compensacao_ausencia_aluno set qtd_faltas_compensadas = @quantidade where id = @compensacaoAusenciaAlunoId";
 
-            return await database.Conexao.ExecuteScalarAsync<bool>(sql, new { compensacaoAusenciaAlunoId, quantidade});
+            return await database.Conexao.ExecuteScalarAsync<bool>(sql, new { compensacaoAusenciaAlunoId, quantidade });
         }
 
         public async Task<bool> ExcluirCompensacaoAusenciaAlunoPorId(long id)
         {
             var sql = $@"delete from compensacao_ausencia_aluno where id = @id";
 
-            return await database.Conexao.ExecuteScalarAsync<bool>(sql, new { id});
+            return await database.Conexao.ExecuteScalarAsync<bool>(sql, new { id });
         }
 
         public async Task<bool> AlterarQuantidadeFaltasCompensadasPorId(long compensacoesAlunosAtualizar, int quantidade)
         {
             var sql = $@"update compensacao_ausencia_aluno set qtd_faltas_compensadas = @quantidade where id = @compensacoesAlunosAtualizar";
 
-            return await database.Conexao.ExecuteScalarAsync<bool>(sql, new { compensacoesAlunosAtualizar, quantidade});
+            return await database.Conexao.ExecuteScalarAsync<bool>(sql, new { compensacoesAlunosAtualizar, quantidade });
         }
     }
 }

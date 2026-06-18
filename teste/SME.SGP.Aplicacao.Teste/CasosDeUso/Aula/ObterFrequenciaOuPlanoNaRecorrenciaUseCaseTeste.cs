@@ -1,7 +1,7 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Moq;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Aula

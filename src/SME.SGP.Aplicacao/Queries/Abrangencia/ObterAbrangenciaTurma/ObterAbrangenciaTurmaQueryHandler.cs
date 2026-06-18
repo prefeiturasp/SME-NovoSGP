@@ -21,6 +21,6 @@ namespace SME.SGP.Aplicacao
                                                                   request.Login,
                                                                   request.Perfil,
                                                                   request.ConsideraHistorico,
-                                                                  request.AbrangenciaPermitida);       
+                                                                  request.AbrangenciaPermitida);
     }
 }

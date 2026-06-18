@@ -9,14 +9,14 @@ namespace SME.SGP.Aplicacao
         public IncluirFilaConciliacaoFrequenciaTurmaCommand(string turmaCodigo, int bimestre, string componenteCurricularId, DateTime dataInicio, DateTime dataFim)
         {
             TurmaCodigo = turmaCodigo;
-            Bimestre = bimestre;            
+            Bimestre = bimestre;
             ComponenteCurricularId = componenteCurricularId;
             DataInicio = dataInicio;
             DataFim = dataFim;
         }
 
         public string TurmaCodigo { get; }
-        public int Bimestre { get; }        
+        public int Bimestre { get; }
         public DateTime DataInicio { get; set; }
         public DateTime DataFim { get; }
         public string ComponenteCurricularId { get; set; }

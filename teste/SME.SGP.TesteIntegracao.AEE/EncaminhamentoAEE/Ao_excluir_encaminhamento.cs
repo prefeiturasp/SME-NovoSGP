@@ -1,16 +1,10 @@
+using Shouldly;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
+using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using MediatR;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Shouldly;
-using SME.SGP.Aplicacao;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake;
-using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
@@ -35,7 +29,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 AlunoCodigo = ALUNO_CODIGO_1,
                 Situacao = SituacaoAEE.Rascunho,
                 AlunoNome = "Nome do aluno 1",
-                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
 
             await CriarEncaminhamentoSecaoPerguntasRespostas();
@@ -49,10 +45,10 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 
             var encaminhamentoExcluido = ObterTodos<Dominio.EncaminhamentoAEE>();
             (encaminhamentoExcluido.FirstOrDefault().Excluido).ShouldBeTrue();
-            
+
             var encaminhamentoAeeSecaoExcluido = ObterTodos<Dominio.EncaminhamentoAEESecao>();
             (encaminhamentoAeeSecaoExcluido.FirstOrDefault().Excluido).ShouldBeTrue();
-            
+
             var questaoEncaminhamentoAeeExcluido = ObterTodos<Dominio.QuestaoEncaminhamentoAEE>();
             questaoEncaminhamentoAeeExcluido.FirstOrDefault().Respostas.Any(a => !a.Excluido).ShouldBeFalse();
 
@@ -85,7 +81,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 AlunoCodigo = ALUNO_CODIGO_1,
                 Situacao = SituacaoAEE.Encaminhado,
                 AlunoNome = "Nome do aluno 1",
-                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
 
             await CriarEncaminhamentoSecaoPerguntasRespostas();
@@ -99,10 +97,10 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 
             var encaminhamentoExcluido = ObterTodos<Dominio.EncaminhamentoAEE>();
             (encaminhamentoExcluido.FirstOrDefault().Excluido).ShouldBeTrue();
-            
+
             var encaminhamentoAeeSecaoExcluido = ObterTodos<Dominio.EncaminhamentoAEESecao>();
             (encaminhamentoAeeSecaoExcluido.FirstOrDefault().Excluido).ShouldBeTrue();
-            
+
             var questaoEncaminhamentoAeeExcluido = ObterTodos<Dominio.QuestaoEncaminhamentoAEE>();
             questaoEncaminhamentoAeeExcluido.FirstOrDefault().Respostas.Any(a => !a.Excluido).ShouldBeFalse();
 
@@ -121,7 +119,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             var pendencia = ObterTodos<Pendencia>();
             (pendencia.FirstOrDefault().Excluido).ShouldBeTrue();
         }
-        
+
         [Fact(DisplayName = "Encaminhamento AEE - Gestor da Ue não deve excluir encaminhamento em situação diferente de encaminhado e rascunho")]
         public async Task Gestor_Ue_nao_deve_excluir_em_situacao_diferente_encaminhado_rascunho()
         {
@@ -135,7 +133,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 AlunoCodigo = ALUNO_CODIGO_1,
                 Situacao = SituacaoAEE.Indeferido,
                 AlunoNome = "Nome do aluno 1",
-                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
 
             await CriarEncaminhamentoSecaoPerguntasRespostas();
@@ -146,7 +146,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 
             await Assert.ThrowsAsync<NegocioException>(() => obterServicoExcluirEncaminhamentoAee.Executar(1));
         }
-        
+
         [Fact(DisplayName = "Encaminhamento AEE - Professor não criador do encaminhamento não deve excluir encaminhamento em situação diferente de encaminhado ou rascunho")]
         public async Task Professor_nao_criador_nao_deve_excluir_em_situacao_diferente_encaminhado_rascunho()
         {
@@ -161,7 +161,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 AlunoCodigo = ALUNO_CODIGO_1,
                 Situacao = SituacaoAEE.Indeferido,
                 AlunoNome = "Nome do aluno 1",
-                CriadoEm = DateTime.Now, CriadoPor = "Professor não criador 2", CriadoRF = "2"
+                CriadoEm = DateTime.Now,
+                CriadoPor = "Professor não criador 2",
+                CriadoRF = "2"
             });
 
             await CriarEncaminhamentoSecaoPerguntasRespostas();
@@ -172,7 +174,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 
             await Assert.ThrowsAsync<NegocioException>(() => obterServicoExcluirEncaminhamentoAee.Executar(1));
         }
-        
+
         [Fact(DisplayName = "Encaminhamento AEE - Professor não criador do encaminhamento não deve excluir encaminhamento em situação encaminhado")]
         public async Task Professor_nao_criador_nao_deve_excluir_em_situacao_encaminhado()
         {
@@ -187,7 +189,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 AlunoCodigo = ALUNO_CODIGO_1,
                 Situacao = SituacaoAEE.Encaminhado,
                 AlunoNome = "Nome do aluno 1",
-                CriadoEm = DateTime.Now, CriadoPor = "Professor não Criador", CriadoRF = "2"
+                CriadoEm = DateTime.Now,
+                CriadoPor = "Professor não Criador",
+                CriadoRF = "2"
             });
 
             await CriarEncaminhamentoSecaoPerguntasRespostas();
@@ -198,7 +202,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 
             await Assert.ThrowsAsync<NegocioException>(() => obterServicoExcluirEncaminhamentoAee.Executar(1));
         }
-        
+
         [Fact(DisplayName = "Encaminhamento AEE - Professor não criador do encaminhamento não deve excluir encaminhamento em situação rascunho")]
         public async Task Professor_nao_criador_nao_deve_excluir_em_situacao_rascunho()
         {
@@ -213,7 +217,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 AlunoCodigo = ALUNO_CODIGO_1,
                 Situacao = SituacaoAEE.Rascunho,
                 AlunoNome = "Nome do aluno 1",
-                CriadoEm = DateTime.Now, CriadoPor = "Professor não Criador", CriadoRF = "2"
+                CriadoEm = DateTime.Now,
+                CriadoPor = "Professor não Criador",
+                CriadoRF = "2"
             });
 
             await CriarEncaminhamentoSecaoPerguntasRespostas();
@@ -224,7 +230,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 
             await Assert.ThrowsAsync<NegocioException>(() => obterServicoExcluirEncaminhamentoAee.Executar(1));
         }
-        
+
         [Fact(DisplayName = "Encaminhamento AEE - Professor criador do encaminhamento não deve excluir encaminhamento em situação diferente de encaminhado ou rascunho")]
         public async Task Professor_criador_nao_deve_excluir_em_situacao_diferente_encaminhado_rascunho()
         {
@@ -239,7 +245,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 AlunoCodigo = ALUNO_CODIGO_1,
                 Situacao = SituacaoAEE.Indeferido,
                 AlunoNome = "Nome do aluno 1",
-                CriadoEm = DateTime.Now, CriadoPor = "Professor criador 1", CriadoRF = USUARIO_PROFESSOR_LOGIN_2222222
+                CriadoEm = DateTime.Now,
+                CriadoPor = "Professor criador 1",
+                CriadoRF = USUARIO_PROFESSOR_LOGIN_2222222
             });
 
             await CriarEncaminhamentoSecaoPerguntasRespostas();
@@ -250,7 +258,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 
             await Assert.ThrowsAsync<NegocioException>(() => obterServicoExcluirEncaminhamentoAee.Executar(1));
         }
-        
+
         [Fact(DisplayName = "Encaminhamento AEE - Professor criador do encaminhamento deve excluir encaminhamento em situação encaminhado")]
         public async Task Professor_criador_deve_excluir_em_situacao_encaminhado()
         {
@@ -265,7 +273,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 AlunoCodigo = ALUNO_CODIGO_1,
                 Situacao = SituacaoAEE.Encaminhado,
                 AlunoNome = "Nome do aluno 1",
-                CriadoEm = DateTime.Now, CriadoPor = "Professor Criador", CriadoRF = USUARIO_PROFESSOR_LOGIN_2222222
+                CriadoEm = DateTime.Now,
+                CriadoPor = "Professor Criador",
+                CriadoRF = USUARIO_PROFESSOR_LOGIN_2222222
             });
 
             await CriarEncaminhamentoSecaoPerguntasRespostas();
@@ -279,10 +289,10 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 
             var encaminhamentoExcluido = ObterTodos<Dominio.EncaminhamentoAEE>();
             (encaminhamentoExcluido.FirstOrDefault().Excluido).ShouldBeTrue();
-            
+
             var encaminhamentoAeeSecaoExcluido = ObterTodos<Dominio.EncaminhamentoAEESecao>();
             (encaminhamentoAeeSecaoExcluido.FirstOrDefault().Excluido).ShouldBeTrue();
-            
+
             var questaoEncaminhamentoAeeExcluido = ObterTodos<Dominio.QuestaoEncaminhamentoAEE>();
             questaoEncaminhamentoAeeExcluido.FirstOrDefault().Respostas.Any(a => !a.Excluido).ShouldBeFalse();
 
@@ -301,7 +311,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             var pendencia = ObterTodos<Pendencia>();
             (pendencia.FirstOrDefault().Excluido).ShouldBeTrue();
         }
-        
+
         [Fact(DisplayName = "Encaminhamento AEE - Professor criador do encaminhamento deve excluir encaminhamento em situação rascunho")]
         public async Task Professor_criador_deve_excluir_em_situacao_rascunho()
         {
@@ -316,7 +326,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 AlunoCodigo = ALUNO_CODIGO_1,
                 Situacao = SituacaoAEE.Rascunho,
                 AlunoNome = "Nome do aluno 1",
-                CriadoEm = DateTime.Now, CriadoPor = "Professor Criador", CriadoRF = USUARIO_PROFESSOR_LOGIN_2222222
+                CriadoEm = DateTime.Now,
+                CriadoPor = "Professor Criador",
+                CriadoRF = USUARIO_PROFESSOR_LOGIN_2222222
             });
 
             await CriarEncaminhamentoSecaoPerguntasRespostas();
@@ -330,10 +342,10 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 
             var encaminhamentoExcluido = ObterTodos<Dominio.EncaminhamentoAEE>();
             (encaminhamentoExcluido.FirstOrDefault().Excluido).ShouldBeTrue();
-            
+
             var encaminhamentoAeeSecaoExcluido = ObterTodos<Dominio.EncaminhamentoAEESecao>();
             (encaminhamentoAeeSecaoExcluido.FirstOrDefault().Excluido).ShouldBeTrue();
-            
+
             var questaoEncaminhamentoAeeExcluido = ObterTodos<Dominio.QuestaoEncaminhamentoAEE>();
             questaoEncaminhamentoAeeExcluido.FirstOrDefault().Respostas.Any(a => !a.Excluido).ShouldBeFalse();
 
@@ -363,7 +375,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 AnoTurma = "8"
             };
         }
-        
+
         private async Task CriarPendenciasEncaminhamento()
         {
             await InserirNaBase(new Pendencia()

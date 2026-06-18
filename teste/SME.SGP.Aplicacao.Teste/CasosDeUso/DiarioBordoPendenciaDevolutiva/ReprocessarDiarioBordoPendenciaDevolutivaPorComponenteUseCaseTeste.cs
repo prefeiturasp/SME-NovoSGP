@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DiarioBordoPendenciaDevolutiva
 
             _repositorioPendenciaDevolutivaMock
                 .Setup(r => r.ObterPendenciasDevolutivaPorTurmaComponente(turmaId, componenteIdLong))
-                .ReturnsAsync(new List<SME.SGP.Dominio.PendenciaDevolutiva>()); 
+                .ReturnsAsync(new List<SME.SGP.Dominio.PendenciaDevolutiva>());
 
             _mediatorMock
                 .Setup(m => m.Send(It.Is<ExistePendenciaDiarioBordoQuery>(q => q.TurmaId == turmaId && q.ComponenteCodigo == componente), It.IsAny<CancellationToken>()))

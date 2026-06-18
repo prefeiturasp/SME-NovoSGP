@@ -1,13 +1,9 @@
-﻿using Dapper;
-using Npgsql;
-using SME.SGP.Dados.Repositorios;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -65,7 +61,7 @@ namespace SME.SGP.Dados.Repositorios
             };
 
             return await database.Conexao.QueryAsync<RecomendacaoConselhoClasseAlunoDTO>(query.ToString(), parametros);
-            
+
         }
 
         public async Task<IEnumerable<RecomendacoesAlunoFamiliaDto>> ObterRecomendacoesAlunoFamiliaPorAlunoETurma(string codigoAluno, string codigoTurma)
@@ -78,7 +74,7 @@ namespace SME.SGP.Dados.Repositorios
                                  inner join turma t on t.id = ft.turma_id
                                     where t.turma_id = @codigoTurma and cca.aluno_codigo = @codigoAluno";
 
-           return await database.Conexao.QueryAsync<RecomendacoesAlunoFamiliaDto>(sql, new { codigoAluno, codigoTurma });
+            return await database.Conexao.QueryAsync<RecomendacoesAlunoFamiliaDto>(sql, new { codigoAluno, codigoTurma });
         }
     }
 }

@@ -25,8 +25,8 @@ namespace SME.SGP.Aplicacao
 
             if (alunoPorTurmaResposta.EhNulo())
                 throw new NegocioException("Aluno não localizado");
-            
-            var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(new[]{codigoAluno}, anoLetivo);
+
+            var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(new[] { codigoAluno }, anoLetivo);
 
             var alunoReduzido = new AlunoReduzidoDto()
             {
@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, int anoLetivo)
         {
-            return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
+            return await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
         }
         private async Task<string> OberterNomeTurmaFormatado(string turmaId)
         {
@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
                     TipoTurnoEOL tipoTurno = (TipoTurnoEOL)turma.TipoTurno;
                     nomeTurno = $"- {tipoTurno.GetAttribute<DisplayAttribute>()?.GetName()}";
                 }
-                
+
                 turmaNome = $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome} {nomeTurno}";
             }
 
@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao
             var retorno = new DadosResponsavelFiliacaoAlunoDto();
             var responsaveisFiliacao = await mediator.Send(new ObterDadosResponsaveisAlunoEolQuery(codigoAluno));
 
-            foreach(var responsaveis in  responsaveisFiliacao)
+            foreach (var responsaveis in responsaveisFiliacao)
             {
                 var telefonesFiliacao = new List<TelefonesDto>();
 

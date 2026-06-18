@@ -1,10 +1,5 @@
-﻿using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentValidation;
+﻿using FluentValidation;
+using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
@@ -17,7 +12,7 @@ namespace SME.SGP.Aplicacao
 
         public long[] CompensacaoAusenciaIds { get; set; }
     }
-    
+
     public class ExcluirCompensacaoAusenciaPorIdsCommandValidator : AbstractValidator<ExcluirCompensacaoAusenciaPorIdsCommand>
     {
         public ExcluirCompensacaoAusenciaPorIdsCommandValidator()

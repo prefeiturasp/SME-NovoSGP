@@ -1,13 +1,12 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.RegistroIndividual.ServicosFakes
 {
-    public class PublicarAtualizacaoPendenciaRegistroIndividualCommandHandlerFake: IRequestHandler<PublicarAtualizacaoPendenciaRegistroIndividualCommand>
+    public class PublicarAtualizacaoPendenciaRegistroIndividualCommandHandlerFake : IRequestHandler<PublicarAtualizacaoPendenciaRegistroIndividualCommand>
     {
         private readonly IMediator mediator;
 

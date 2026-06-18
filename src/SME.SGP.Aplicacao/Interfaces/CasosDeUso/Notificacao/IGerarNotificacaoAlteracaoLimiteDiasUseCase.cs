@@ -1,6 +1,6 @@
 ﻿namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IGerarNotificacaoAlteracaoLimiteDiasUseCase :IRabbitUseCase
+    public interface IGerarNotificacaoAlteracaoLimiteDiasUseCase : IRabbitUseCase
     {
     }
 }

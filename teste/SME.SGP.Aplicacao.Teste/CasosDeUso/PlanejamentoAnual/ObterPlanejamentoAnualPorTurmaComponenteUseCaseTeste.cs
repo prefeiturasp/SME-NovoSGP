@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             mediator.Setup(a => a.Send(It.IsAny<ObterPlanejamentoAnualPorTurmaComponenteQuery>(), It.IsAny<CancellationToken>()))
                           .ReturnsAsync(mockRetorno);
 
-            var retorno = await useCase.Executar(1,1);
+            var retorno = await useCase.Executar(1, 1);
 
             mediator.Verify(x => x.Send(It.IsAny<ObterPlanejamentoAnualPorTurmaComponenteQuery>(), It.IsAny<CancellationToken>()), Times.Once);
 
@@ -36,9 +36,9 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         [Fact]
         public void Deve_Lancar_ArgumentNullException_Quando_Mediator_For_Nulo()
         {
-            var exception = Assert.Throws<ArgumentNullException>(() => 
+            var exception = Assert.Throws<ArgumentNullException>(() =>
                 new ObterPlanejamentoAnualPorTurmaComponenteUseCase(null));
-            
+
             Assert.Equal("mediator", exception.ParamName);
         }
     }

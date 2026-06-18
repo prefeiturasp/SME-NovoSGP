@@ -1,7 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Dominio;
-using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -22,6 +20,6 @@ namespace SME.SGP.Aplicacao
             var usuariosNotificados = await mediator.Send(new ObterDiarioBordoNotificacaoQuery(dto.TurmaId, dto.ObservacaoId, dto.DiarioBordoId));
 
             return usuariosNotificados;
-        }        
+        }
     }
 }

@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -10,6 +8,8 @@ using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Listao
@@ -23,9 +23,9 @@ namespace SME.SGP.TesteIntegracao.Listao
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
-            
+
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<VerificaPodePersistirTurmaDisciplinaEOLQuery, bool>),
-                typeof(VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));            
+                typeof(VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
         }
 
         [Fact(DisplayName = "Frequência Listão - Não deve Lançar frequência para bimestre encerrado sem reabertura")]
@@ -50,16 +50,16 @@ namespace SME.SGP.TesteIntegracao.Listao
             listaAulaId.ShouldNotBeNull();
 
             var frequenciasSalvar = listaAulaId.Select(aulaId => new FrequenciaSalvarAulaAlunosDto
-                { AulaId = aulaId, Alunos = ObterListaFrequenciaSalvarAluno() }).ToList();
+            { AulaId = aulaId, Alunos = ObterListaFrequenciaSalvarAluno() }).ToList();
 
             //-> Salvar a frequencia
             var useCaseSalvar = ServiceProvider.GetService<IInserirFrequenciaListaoUseCase>();
             useCaseSalvar.ShouldNotBeNull();
-            
+
             await useCaseSalvar.Executar(frequenciasSalvar)
                 .ShouldThrowAsync<NegocioException>(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
         }
-        
+
         [Fact(DisplayName = "Frequência Listão - Lançamento de frequência para bimestre encerrado com reabertura")]
         public async Task Deve_lancar_frequencia_bimestre_encerrado_com_reabertura()
         {
@@ -81,7 +81,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             listaAulaId.ShouldNotBeNull();
 
             var frequenciasSalvar = listaAulaId.Select(aulaId => new FrequenciaSalvarAulaAlunosDto
-                { AulaId = aulaId, Alunos = ObterListaFrequenciaSalvarAluno() }).ToList();
+            { AulaId = aulaId, Alunos = ObterListaFrequenciaSalvarAluno() }).ToList();
 
             //-> Salvar a frequencia
             var useCaseSalvar = ServiceProvider.GetService<IInserirFrequenciaListaoUseCase>();
@@ -89,6 +89,6 @@ namespace SME.SGP.TesteIntegracao.Listao
             var retorno = await useCaseSalvar.Executar(frequenciasSalvar);
             retorno.ShouldNotBeNull();
             retorno.AulasIDsComErros.Any().ShouldBeFalse();
-        }              
+        }
     }
 }

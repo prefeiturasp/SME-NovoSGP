@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         {
             var notificacoesObservacao = await repositorioNotificacaoPlanoAEEObservacao.ObterPorObservacaoPlanoAEEId(request.ObservacaoPlanoId);
 
-            foreach(var notificacaoObservacao in notificacoesObservacao)
+            foreach (var notificacaoObservacao in notificacoesObservacao)
             {
                 repositorioNotificacaoPlanoAEEObservacao.Remover(notificacaoObservacao.Id);
                 await mediator.Send(new ExcluirNotificacaoPorIdCommand(notificacaoObservacao.NotificacaoId));

@@ -13,8 +13,8 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
             var command = mensagem.ObterObjetoMensagem<VerificaExclusaoPendenciasParametroEventoCommand>();
-            
-            await mediator.Send(command);            
+
+            await mediator.Send(command);
 
             return true;
         }

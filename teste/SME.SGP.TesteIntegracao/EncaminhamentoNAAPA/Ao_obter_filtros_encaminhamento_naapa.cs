@@ -21,7 +21,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
-}
+        }
 
         [Fact(DisplayName = "Encaminhamento NAAPA - Obter filtro de prioridades do encaminhamento naapa")]
         public async Task Deve_retornar_registros_de_prioridades_apenas_do_encaminhamento_naapa()

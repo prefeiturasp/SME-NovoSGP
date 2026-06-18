@@ -10,7 +10,7 @@ namespace SME.SGP.Infra.Dtos
         }
 
         public long DevolutivaId { get; set; }
-        
+
     }
 
     public class ExcluirNotificacaoDevolutivaDtoValidator : AbstractValidator<ExcluirNotificacaoDevolutivaDto>

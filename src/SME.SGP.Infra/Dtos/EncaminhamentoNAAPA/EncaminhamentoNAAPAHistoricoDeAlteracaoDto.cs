@@ -6,19 +6,20 @@ namespace SME.SGP.Infra
 {
     public class EncaminhamentoNAAPAHistoricoDeAlteracaoDto
     {
-        public long Id {  get; set; }
-        public string Descricao { 
+        public long Id { get; set; }
+        public string Descricao
+        {
             get
             {
                 return $@"{ObterDescricaotipo()} {UsuarioNome} - {UsuarioLogin} em {DataHistorico.ToString("dd/MM/yyy HH:mm")}";
             }
         }
         public TipoHistoricoAlteracoesEncaminhamentoNAAPA TipoHistoricoAlteracoes { get; set; }
-        public string UsuarioNome {  get; set; }
-        public string UsuarioLogin {  get; set; }
+        public string UsuarioNome { get; set; }
+        public string UsuarioLogin { get; set; }
         public DateTime DataHistorico { get; set; }
         public string Secao { get; set; }
-        public string CamposInseridos { get; set; } 
+        public string CamposInseridos { get; set; }
         public string CamposAlterados { get; set; }
         public string DataAtendimento { get; set; }
 

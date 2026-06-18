@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<PeriodoEscolarComponenteDto>> Executar(string turmaCodigo, long componenteCodigo, bool ehRegencia, int bimestre, bool exibirDataFutura = false)
         {
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
-            
+
             var listaPeriodos = new List<PeriodoEscolarComponenteDto>();
 
             if (ehRegencia)
@@ -26,14 +26,14 @@ namespace SME.SGP.Aplicacao
                 var dadosTurma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
                 var periodoBimestre = await mediator.Send(new ObterPeriodoEscolaresPorTurmaBimestresAulaCjQuery(dadosTurma, bimestre, usuarioLogado.EhSomenteProfessorCj()));
                 listaPeriodos = periodoBimestre.NaoEhNulo() ? SepararSemanasRegencia(periodoBimestre, exibirDataFutura) : listaPeriodos;
-            }                
+            }
             else
             {
                 var codigosComponentesBusca = new List<long>() { componenteCodigo };
                 var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorComponenteBimestreTurmaQuery(turmaCodigo, codigosComponentesBusca.ToArray(), bimestre, usuarioLogado.EhSomenteProfessorCj()));
                 listaPeriodos = periodoEscolar.Any() ? SepararPeriodosAulas(periodoEscolar.OrderBy(x => x.DataAula), exibirDataFutura) : listaPeriodos;
             }
-                
+
             return listaPeriodos;
         }
 
@@ -108,7 +108,7 @@ namespace SME.SGP.Aplicacao
 
                 if (qtdeDiasAulas < 5)
                     qtdeDiasAulas++;
-                
+
                 if (qtdeDiasAulas == 5 || ((quantidadeExata && contador == datasConsideradas.Count) || (!quantidadeExata && contador >= datasConsideradas.Count)))
                 {
                     string formataDataInicio = dataInicioPeriodo.Date.ToString("dd/MM/yy");

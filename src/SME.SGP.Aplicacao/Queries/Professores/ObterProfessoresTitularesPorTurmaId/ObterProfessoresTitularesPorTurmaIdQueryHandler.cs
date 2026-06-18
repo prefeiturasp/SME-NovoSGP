@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
-using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -10,12 +11,10 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
-    public  class ObterProfessoresTitularesPorTurmaIdQueryHandler: IRequestHandler<ObterProfessoresTitularesPorTurmaIdQuery, IEnumerable<ProfessorTitularDisciplinaEol>>
+    public class ObterProfessoresTitularesPorTurmaIdQueryHandler : IRequestHandler<ObterProfessoresTitularesPorTurmaIdQuery, IEnumerable<ProfessorTitularDisciplinaEol>>
     {
         private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
         private readonly IHttpClientFactory httpClientFactory;
@@ -28,13 +27,13 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> Handle(ObterProfessoresTitularesPorTurmaIdQuery request, CancellationToken cancellationToken)
         {
             var turma = await repositorioTurmaConsulta.ObterPorId(request.TurmaId);
-            
+
             if (turma.EhNulo())
                 throw new NegocioException(MensagensNegocioFrequencia.TURMA_NAO_ENCONTRADA_POR_CODIGO);
 
             StringBuilder url = new StringBuilder();
 
-            url.Append(ServicosEolConstants.URL_PROFESSORES_TITULARES  + $"?codigosTurmas={turma.CodigoTurma}");
+            url.Append(ServicosEolConstants.URL_PROFESSORES_TITULARES + $"?codigosTurmas={turma.CodigoTurma}");
 
             //Ao passar o RF do professor, o endpoint retorna todas as disciplinas que o professor não é titular para evitar
             //que o professor se atribua como CJ da própria da turma que ele é titular da disciplina

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirCompensacaoAusenciaAlunoEAulaPorRegistroFrequenciaIdsCommand  : IRequest<bool>
+    public class ExcluirCompensacaoAusenciaAlunoEAulaPorRegistroFrequenciaIdsCommand : IRequest<bool>
     {
         public ExcluirCompensacaoAusenciaAlunoEAulaPorRegistroFrequenciaIdsCommand(IEnumerable<long> registroFrequenciaAlunoIds)
         {
@@ -13,8 +13,8 @@ namespace SME.SGP.Aplicacao
 
         public IEnumerable<long> RegistroFrequenciaAlunoIds { get; set; }
     }
-        
-    public class AlterarCompensacaoAusenciaAlunoEAulaCommandValidator: AbstractValidator<ExcluirCompensacaoAusenciaAlunoEAulaPorRegistroFrequenciaIdsCommand>
+
+    public class AlterarCompensacaoAusenciaAlunoEAulaCommandValidator : AbstractValidator<ExcluirCompensacaoAusenciaAlunoEAulaPorRegistroFrequenciaIdsCommand>
     {
         public AlterarCompensacaoAusenciaAlunoEAulaCommandValidator()
         {

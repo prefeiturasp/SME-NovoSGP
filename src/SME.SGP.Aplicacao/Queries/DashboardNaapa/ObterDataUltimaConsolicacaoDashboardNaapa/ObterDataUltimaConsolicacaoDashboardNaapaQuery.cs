@@ -28,5 +28,5 @@ namespace SME.SGP.Aplicacao
                 .NotNull()
                 .WithMessage("O Ano letivo deve ser informado para obter a data da última consolidação do dash NAAPA.");
         }
-    } 
+    }
 }

@@ -33,11 +33,11 @@ namespace SME.SGP.ComprimirArquivos.Worker
             {
                 NullValueHandling = NullValueHandling.Ignore
             });
-            
+
             var body = Encoding.UTF8.GetBytes(mensagem);
-            
+
             var props = conexoesRabbitFilasLog.Get().CreateBasicProperties();
-            
+
             props.Persistent = true;
 
             conexoesRabbitFilasLog.Get().BasicPublish(ExchangeSgpRabbit.SgpLogs, RotasRabbitLogs.RotaLogs, true, props, body);
@@ -45,5 +45,5 @@ namespace SME.SGP.ComprimirArquivos.Worker
             return Task.FromResult(true);
         }
     }
-    
+
 }

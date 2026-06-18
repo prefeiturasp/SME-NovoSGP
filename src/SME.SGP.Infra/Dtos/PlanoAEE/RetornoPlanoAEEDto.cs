@@ -1,6 +1,7 @@
 ﻿namespace SME.SGP.Infra
 {
-    public class RetornoPlanoAEEDto {
+    public class RetornoPlanoAEEDto
+    {
         public long PlanoId { get; set; }
         public long PlanoVersaoId { get; set; }
 
@@ -10,5 +11,5 @@
             PlanoVersaoId = planoVersaoId;
         }
     }
-        
+
 }

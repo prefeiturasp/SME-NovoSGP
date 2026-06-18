@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(x => x.Id)
                 .NotEmpty()
-                .WithMessage("O id do evento fechamento deve ser informado.");           
+                .WithMessage("O id do evento fechamento deve ser informado.");
         }
     }
 }

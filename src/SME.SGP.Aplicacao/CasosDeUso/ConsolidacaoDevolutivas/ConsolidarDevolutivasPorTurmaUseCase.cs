@@ -1,9 +1,9 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System.Threading.Tasks;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
             var filtro = mensagem.ObterObjetoMensagem<FiltroDevolutivaTurmaDTO>();
 
             var diarioBordoTurma = await mediator.Send(new ObterDiariosDeBordoComDevolutivasPorAnoLetivoTurmaQuery(filtro.TurmaId, filtro.AnoLetivo));
-                
+
             if (diarioBordoTurma.NaoEhNulo())
             {
                 var consolidacaoDevolutiva = await mediator.Send(new ObterConsolidacaoDevolutivasPorTurmaIdQuery(filtro.TurmaId)) ?? new ConsolidacaoDevolutivas();
@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
                 consolidacaoDevolutiva.QuantidadeRegistradaDevolutivas = diarioBordoTurma.QtdeRegistradaDevolutivas;
                 consolidacaoDevolutiva.QuantidadeEstimadaDevolutivas = 0;
                 consolidacaoDevolutiva.TurmaId = diarioBordoTurma.TurmaId;
-                
+
                 var periodoDeDiasDevolutivas = await mediator.Send(new ObterParametroSistemaPorTipoQuery(Dominio.TipoParametroSistema.PeriodoDeDiasDevolutiva));
                 if (periodoDeDiasDevolutivas.EhNulo())
                     return false;

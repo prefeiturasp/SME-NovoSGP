@@ -10,7 +10,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake
 {
     public class ObterAlunoPorCodigoEAnoQueryHandlerFake : IRequestHandler<ObterAlunoPorCodigoEAnoQuery, AlunoReduzidoDto>
     {
-        
+
         public Task<AlunoReduzidoDto> Handle(ObterAlunoPorCodigoEAnoQuery request, CancellationToken cancellationToken)
         {
             var dataRefencia = DateTimeExtension.HorarioBrasilia();

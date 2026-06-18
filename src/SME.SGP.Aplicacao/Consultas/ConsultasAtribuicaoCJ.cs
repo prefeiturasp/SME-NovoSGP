@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -39,7 +38,7 @@ namespace SME.SGP.Aplicacao
                 .Select(a => a.DisciplinaId)
                 .Distinct<long>()
                 .ToArray();
-            var disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(idsDisciplinas)); ;          
+            var disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(idsDisciplinas)); ;
             if (!disciplinasEol.Any())
                 throw new NegocioException("Não foi possível obter as descrições das disciplinas no Eol.");
 

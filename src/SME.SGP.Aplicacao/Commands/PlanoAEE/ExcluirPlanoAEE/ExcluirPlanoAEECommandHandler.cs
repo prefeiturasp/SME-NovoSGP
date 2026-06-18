@@ -1,10 +1,7 @@
 ﻿using MediatR;
-using SME.SGP.Dados;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,7 +14,7 @@ namespace SME.SGP.Aplicacao
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
 
-        public ExcluirPlanoAEECommandHandler(IRepositorioPlanoAEE repositorioPlanoAEE, IRepositorioPlanoAEEObservacao repositorioPlanoAEEObs, 
+        public ExcluirPlanoAEECommandHandler(IRepositorioPlanoAEE repositorioPlanoAEE, IRepositorioPlanoAEEObservacao repositorioPlanoAEEObs,
                                             IUnitOfWork unitOfWork, IMediator mediator)
         {
             this.repositorioPlanoAEE = repositorioPlanoAEE ?? throw new ArgumentNullException(nameof(repositorioPlanoAEE));
@@ -28,10 +25,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExcluirPlanoAEECommand request, CancellationToken cancellationToken)
         {
-            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance); 
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var planoAEEObservacoes = (await repositorioPlanoAEEObs.ObterObservacoesPlanoPorId(request.PlanoAEEId, usuarioLogado.CodigoRf));
 
-            unitOfWork.IniciarTransacao();            
+            unitOfWork.IniciarTransacao();
             try
             {
                 await repositorioPlanoAEE.RemoverLogico(request.PlanoAEEId);
@@ -44,7 +41,7 @@ namespace SME.SGP.Aplicacao
 
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 unitOfWork.Rollback();
                 throw;

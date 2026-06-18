@@ -186,7 +186,7 @@ namespace SME.SGP.Dados.Repositorios
 
             query.Append(" group by t.ano");
 
-            return await database.Conexao.QueryAsync<QuantidadeTotalDevolutivasPorAnoDTO>(query.ToString(), new { anoLetivo, mes, dreId});
+            return await database.Conexao.QueryAsync<QuantidadeTotalDevolutivasPorAnoDTO>(query.ToString(), new { anoLetivo, mes, dreId });
         }
     }
 }

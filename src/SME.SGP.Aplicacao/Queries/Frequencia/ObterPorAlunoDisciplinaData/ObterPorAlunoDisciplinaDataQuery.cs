@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
 
         public string CodigoAluno { get; set; }
         public string[] DisciplinasId { get; set; }
-        public DateTime DataAtual { get; set; } 
+        public DateTime DataAtual { get; set; }
         public string TurmaId { get; set; }
         public string Professor { get; set; }
     }

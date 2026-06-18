@@ -30,7 +30,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             await CrieUsuarioNovoResponsavel();
 
             var useCase = ServiceProvider.GetService<IAtribuirResponsavelGeralDoPlanoUseCase>();
- 
+
             var retorno = await useCase.Executar(1, RF_NOVO, string.Empty);
 
             retorno.ShouldBe(true);

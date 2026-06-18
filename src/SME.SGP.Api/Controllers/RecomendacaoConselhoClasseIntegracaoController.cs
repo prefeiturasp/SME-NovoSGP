@@ -16,7 +16,7 @@ namespace SME.SGP.Api.Controllers
         [ChaveIntegracaoSgpApi]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterRecomendascoesAlunoTurma([FromQuery] FiltroRecomendacaoConselhoClasseAlunoTurmaDto filtro, 
+        public async Task<IActionResult> ObterRecomendascoesAlunoTurma([FromQuery] FiltroRecomendacaoConselhoClasseAlunoTurmaDto filtro,
                                                                         [FromServices] IObterRecomendacoesPorAlunoTurmaUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));

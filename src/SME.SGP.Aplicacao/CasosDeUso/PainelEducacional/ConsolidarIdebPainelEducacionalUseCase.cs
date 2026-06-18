@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
 
             return serieAno switch
             {
-                1  => PainelEducacionalIdebSerie.AnosIniciais,
+                1 => PainelEducacionalIdebSerie.AnosIniciais,
                 2 => PainelEducacionalIdebSerie.AnosFinais,
                 3 => PainelEducacionalIdebSerie.EnsinoMedio,
                 _ => PainelEducacionalIdebSerie.EnsinoMedio

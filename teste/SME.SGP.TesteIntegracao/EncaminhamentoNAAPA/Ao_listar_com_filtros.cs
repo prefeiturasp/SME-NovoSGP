@@ -16,7 +16,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 {
-    public class Ao_listar_com_filtros: EncaminhamentoNAAPATesteBase
+    public class Ao_listar_com_filtros : EncaminhamentoNAAPATesteBase
     {
         public Ao_listar_com_filtros(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -25,7 +25,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
-        
+
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmasAlunoPorFiltroQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ServicosFake.ObterTurmasAlunoPorFiltroQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery, IEnumerable<AbrangenciaTurmaRetorno>>), typeof(ServicosFake.ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQueryHandlerFake), ServiceLifetime.Scoped));
         }
@@ -34,7 +34,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         public async Task Deve_retornar_registros_ao_filtrar_por_situacao_rascunho_por_ano_letivo_dre_ue_questao_prioridade()
         {
             var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
-            
+
             var filtroNAAPA = new FiltroNAAPADto()
             {
                 Perfil = ObterPerfilCP(),
@@ -65,14 +65,14 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             retorno.ShouldNotBeNull();
             retorno.Items.ShouldNotBeNull();
             retorno.Items.Count().ShouldBe(10);
-            retorno.Items.Any(a=> !a.Situacao.Equals(SituacaoNAAPA.Rascunho.ToString())).ShouldBeFalse();
+            retorno.Items.Any(a => !a.Situacao.Equals(SituacaoNAAPA.Rascunho.ToString())).ShouldBeFalse();
         }
 
         [Fact(DisplayName = "Encaminhamento NAAPA - Filtrar encaminhamentos por situação rascunho por Ano Letivo, Dre, Ue e Questão Data Entrada Queixa")]
         public async Task Deve_retornar_registros_ao_filtrar_por_situacao_rascunho_por_ano_letivo_dre_ue_questao_data_entrada_queixa()
         {
             var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
-            
+
             var filtroNAAPA = new FiltroNAAPADto()
             {
                 Perfil = ObterPerfilCP(),
@@ -107,14 +107,14 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             retorno.ShouldNotBeNull();
             retorno.Items.ShouldNotBeNull();
             retorno.Items.Count().ShouldBe(6);
-            retorno.Items.Any(a=> !a.Situacao.Equals(SituacaoNAAPA.Rascunho.ToString())).ShouldBeFalse();
+            retorno.Items.Any(a => !a.Situacao.Equals(SituacaoNAAPA.Rascunho.ToString())).ShouldBeFalse();
         }
-        
+
         [Fact(DisplayName = "Encaminhamento NAAPA - Filtrar encaminhamentos por situação rascunho somente por Ano Letivo e Dre")]
         public async Task Deve_retornar_registros_ao_filtrar_por_situacao_rascunho_somente_por_ano_e_dre()
         {
             var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
-            
+
             var filtroNAAPA = new FiltroNAAPADto()
             {
                 Perfil = ObterPerfilCP(),
@@ -144,14 +144,14 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             retorno.ShouldNotBeNull();
             retorno.Items.ShouldNotBeNull();
             retorno.Items.Count().ShouldBe(10);
-            retorno.Items.Any(a=> !a.Situacao.Equals(SituacaoNAAPA.Rascunho.ToString())).ShouldBeFalse();            
+            retorno.Items.Any(a => !a.Situacao.Equals(SituacaoNAAPA.Rascunho.ToString())).ShouldBeFalse();
         }
-        
+
         [Fact(DisplayName = "Encaminhamento NAAPA - Filtrar encaminhamentos por situação rascunho somente por Ano Letivo e Dre e Nome/Código do Aluno")]
         public async Task Deve_retornar_registros_ao_filtrar_por_situacao_rascunho_somente_por_ano_e_dre_nome_aluno()
         {
             var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
-            
+
             var filtroNAAPA = new FiltroNAAPADto()
             {
                 Perfil = ObterPerfilCP(),
@@ -182,7 +182,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             retorno.ShouldNotBeNull();
             retorno.Items.ShouldNotBeNull();
             retorno.Items.Count().ShouldBe(10);
-            retorno.Items.Any(a=> !a.Situacao.Equals(SituacaoNAAPA.Rascunho.ToString())).ShouldBeFalse();
+            retorno.Items.Any(a => !a.Situacao.Equals(SituacaoNAAPA.Rascunho.ToString())).ShouldBeFalse();
 
             filtroEncaminhamentosNAAPADto = new FiltroEncaminhamentoNAAPADto()
             {
@@ -200,12 +200,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             retorno.Items.Count().ShouldBe(10);
             retorno.Items.Any(a => !a.Situacao.Equals(SituacaoNAAPA.Rascunho.ToString())).ShouldBeFalse();
         }
-        
+
         [Fact(DisplayName = "Encaminhamento NAAPA - Filtrar encaminhamentos por situação rascunho somente por Ano Letivo e Dre e Nome do Aluno inválido")]
         public async Task Nao_deve_retornar_registros_ao_filtrar_por_situacao_rascunho_somente_por_ano_e_dre_nome_aluno_invalido()
         {
             var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
-            
+
             var filtroNAAPA = new FiltroNAAPADto()
             {
                 Perfil = ObterPerfilCP(),
@@ -235,14 +235,14 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var retorno = await obterEncaminhamentosNAAPAUseCase.Executar(filtroEncaminhamentosNAAPADto);
             retorno.ShouldNotBeNull();
             retorno.Items.ShouldNotBeNull();
-            retorno.Items.Count().ShouldBe(0);          
+            retorno.Items.Count().ShouldBe(0);
         }
-        
+
         [Fact(DisplayName = "Encaminhamento NAAPA - Filtrar encaminhamentos por situação rascunho por Ano Letivo e Dre")]
         public async Task Deve_retornar_registros_ao_filtrar_por_situacao_rascunho_por_ano_letivo_dre()
         {
             var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
-            
+
             var filtroNAAPA = new FiltroNAAPADto()
             {
                 Perfil = ObterPerfilCP(),
@@ -271,8 +271,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             retorno.ShouldNotBeNull();
             retorno.Items.ShouldNotBeNull();
             retorno.Items.Count().ShouldBe(10);
-            retorno.Items.Any(a=> !a.Situacao.Equals(SituacaoNAAPA.Rascunho.ToString())).ShouldBeFalse();
-            
+            retorno.Items.Any(a => !a.Situacao.Equals(SituacaoNAAPA.Rascunho.ToString())).ShouldBeFalse();
+
             await InserirNaBase(new Dre
             {
                 CodigoDre = DRE_CODIGO_1,
@@ -287,12 +287,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Nome = UE_NOME_1,
             });
         }
-        
+
         [Fact(DisplayName = "Encaminhamento NAAPA - Filtrar encaminhamentos por situação rascunho por Ano Letivo, Dre e Ue")]
         public async Task Deve_retornar_registros_ao_filtrar_por_situacao_rascunho_por_ano_letivo_dre_e_ue()
         {
             var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
-            
+
             var filtroNAAPA = new FiltroNAAPADto()
             {
                 Perfil = ObterPerfilCP(),
@@ -323,8 +323,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             retorno.ShouldNotBeNull();
             retorno.Items.ShouldNotBeNull();
             retorno.Items.Count().ShouldBe(10);
-            retorno.Items.Any(a=> !a.Situacao.Equals(SituacaoNAAPA.Rascunho.ToString())).ShouldBeFalse();
-            retorno.Items.Any(a=> !a.Ue.Contains(UE_NOME_1)).ShouldBeFalse();
+            retorno.Items.Any(a => !a.Situacao.Equals(SituacaoNAAPA.Rascunho.ToString())).ShouldBeFalse();
+            retorno.Items.Any(a => !a.Ue.Contains(UE_NOME_1)).ShouldBeFalse();
         }
 
         [Fact(DisplayName = "Encaminhamento NAAPA - Filtrar encaminhamentos por situação Em Atendimento por Ano Letivo, Dre e Ue")]
@@ -372,7 +372,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         public async Task Nao_deve_retornar_registros_ao_filtrar_por_situacao_rascunho_por_ano_letivo_e_Dre_sem_encaminhamento()
         {
             var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
-            
+
             var filtroNAAPA = new FiltroNAAPADto()
             {
                 Perfil = ObterPerfilCP(),
@@ -403,12 +403,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             retorno.Items.ShouldNotBeNull();
             retorno.Items.Count().ShouldBe(0);
         }
-        
+
         [Fact(DisplayName = "Encaminhamento NAAPA - Filtrar encaminhamentos por situação rascunho por Ano Letivo, Dre e Todas as Ue")]
         public async Task Deve_retornar_registros_ao_filtrar_por_situacao_rascunho_por_ano_letivo_dre_e_todas_Ues()
         {
             var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
-            
+
             var filtroNAAPA = new FiltroNAAPADto()
             {
                 Perfil = ObterPerfilCP(),
@@ -438,8 +438,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             retorno.ShouldNotBeNull();
             retorno.Items.ShouldNotBeNull();
             retorno.Items.Count().ShouldBe(10);
-            retorno.Items.Any(a=> !a.Situacao.Equals(SituacaoNAAPA.Rascunho.ToString())).ShouldBeFalse();
-            retorno.Items.Any(a=> !a.Ue.Contains(UE_NOME_1)).ShouldBeFalse();
+            retorno.Items.Any(a => !a.Situacao.Equals(SituacaoNAAPA.Rascunho.ToString())).ShouldBeFalse();
+            retorno.Items.Any(a => !a.Ue.Contains(UE_NOME_1)).ShouldBeFalse();
         }
 
         [Fact(DisplayName = "Encaminhamento NAAPA - Filtrar encaminhamentos por situação rascunho por Ano Letivo, Dre e Todas as Ue com ordenação")]
@@ -621,28 +621,36 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                     AlunoCodigo = ALUNO_CODIGO_1,
                     Situacao = SituacaoNAAPA.Rascunho,
                     AlunoNome = NOME_ALUNO_1,
-                    CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
                 });
 
                 await InserirNaBase(new Dominio.EncaminhamentoNAAPASecao()
                 {
                     EncaminhamentoNAAPAId = encaminhamentoNAAPAId,
                     SecaoEncaminhamentoNAAPAId = 1,
-                    CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
                 });
 
                 await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
                 {
                     EncaminhamentoNAAPASecaoId = encaminhamentoNAAPASecaoID,
                     QuestaoId = 1,
-                    CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
                 });
 
                 await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
                 {
                     QuestaoEncaminhamentoId = questaoEncaminhamentoNAAPAId,
                     Texto = dataQueixa.ToString("yyyy-MM-dd"),
-                    CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
                 });
                 questaoEncaminhamentoNAAPAId++;
                 dataQueixa = dataQueixa.AddDays(i);
@@ -651,14 +659,18 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 {
                     EncaminhamentoNAAPASecaoId = encaminhamentoNAAPASecaoID,
                     QuestaoId = 2,
-                    CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
                 });
 
                 await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
                 {
                     QuestaoEncaminhamentoId = questaoEncaminhamentoNAAPAId,
                     RespostaId = 1,
-                    CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
                 });
                 encaminhamentoNAAPASecaoID++;
                 questaoEncaminhamentoNAAPAId++;
@@ -755,7 +767,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                     CriadoEm = DateTimeExtension.HorarioBrasilia(),
                     CriadoPor = SISTEMA_NOME,
                     CriadoRF = SISTEMA_CODIGO_RF
-                }) ;
+                });
 
                 //ITINERANCIAS - 2
                 await InserirNaBase(new Dominio.EncaminhamentoNAAPASecao()

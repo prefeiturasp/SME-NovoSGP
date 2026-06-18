@@ -3,7 +3,6 @@ using SME.SGP.Infra;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -24,7 +23,7 @@ namespace SME.SGP.Aplicacao
                 Mes = request.DataAula.Month,
                 AnoLetivo = request.DataAula.Year,
                 DataAula = request.DataAula,
-            };            
+            };
 
             return await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaConsolidacaoDiariaDashBoardFrequenciaPorTurma, filtro, Guid.NewGuid(), null));
         }

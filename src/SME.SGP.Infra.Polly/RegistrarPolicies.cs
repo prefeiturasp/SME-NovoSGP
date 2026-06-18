@@ -1,9 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Polly;
-using Polly.Registry;
 using SME.SGP.Infra;
 using System;
-using System.Runtime.ConstrainedExecution;
 
 namespace SME.SGP.IoC
 {
@@ -17,7 +15,7 @@ namespace SME.SGP.IoC
             policyRegistry.Add(PoliticaPolly.PublicaFila, policy);
             policyRegistry.Add(PoliticaPolly.SGP, policy);
         }
-        
+
         private static TimeSpan WithRetryAttempt(int retryAttempt)
         {
             var jitter = ConcurrentRandom.Next(0, 30);

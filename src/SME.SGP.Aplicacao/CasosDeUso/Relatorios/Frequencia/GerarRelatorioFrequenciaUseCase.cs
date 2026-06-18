@@ -38,16 +38,16 @@ namespace SME.SGP.Aplicacao
                     case Modalidade.Fundamental:
                     case Modalidade.EducacaoInfantil:
                     case Modalidade.Medio:
-                        filtro.Bimestres.AddRange(new int[] { 0, 1, 2, 3, 4});
+                        filtro.Bimestres.AddRange(new int[] { 0, 1, 2, 3, 4 });
                         break;
                     case Modalidade.EJA:
                     case Modalidade.CELP:
-                        filtro.Bimestres.AddRange(new int[] { 0, 1, 2});
+                        filtro.Bimestres.AddRange(new int[] { 0, 1, 2 });
                         break;
                 }
             }
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.Frequencia, filtro, usuario, formato:filtro.TipoFormatoRelatorio, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosFrequencia));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.Frequencia, filtro, usuario, formato: filtro.TipoFormatoRelatorio, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosFrequencia));
         }
     }
 }

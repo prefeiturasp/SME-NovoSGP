@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterReclassificacao
         public async Task<IEnumerable<PainelEducacionalReclassificacaoDto>> Handle(ObterReclassificacaoQuery request, CancellationToken cancellationToken)
         {
             var dadosConsolidados = await repositorio.ObterReclassificacao(request.CodigoDre, request.CodigoUe, request.AnoLetivo, request.AnoTurma);
-            
+
             return MapearParaDto(dadosConsolidados);
         }
 
@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterReclassificacao
                     return displayAttribute?.Name ?? modalidade.ToString();
                 }
             }
-            
+
             return codigoModalidade;
         }
     }

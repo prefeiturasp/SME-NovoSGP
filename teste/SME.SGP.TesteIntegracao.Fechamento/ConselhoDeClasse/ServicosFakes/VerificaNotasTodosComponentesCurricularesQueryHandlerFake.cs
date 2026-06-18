@@ -1,13 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
+using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao.Queries
 {
@@ -17,7 +10,7 @@ namespace SME.SGP.Aplicacao.Queries
         private const string ALUNO_CODIGO_1 = "1";
 
         public VerificaNotasTodosComponentesCurricularesQueryHandlerFake()
-        {}
+        { }
 
         public async Task<bool> Handle(VerificaNotasTodosComponentesCurricularesQuery request, CancellationToken cancellationToken)
         {

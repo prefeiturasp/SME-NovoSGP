@@ -1,16 +1,11 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Dominio;
-using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterIdPorObjetivoAprendizagemJuremaQuery : IRequest<long>
     {
-    
+
         public ObterIdPorObjetivoAprendizagemJuremaQuery(long planoId, long objetivoAprendizagemJuremaId)
         {
             PlanoId = planoId;
@@ -19,7 +14,7 @@ namespace SME.SGP.Aplicacao
 
         public long PlanoId { get; set; }
         public long ObjetivoAprendizagemJuremaId { get; set; }
-        
+
     }
 
     public class ObterIdPorObjetivoAprendizagemJuremaQueryValidator : AbstractValidator<ObterIdPorObjetivoAprendizagemJuremaQuery>

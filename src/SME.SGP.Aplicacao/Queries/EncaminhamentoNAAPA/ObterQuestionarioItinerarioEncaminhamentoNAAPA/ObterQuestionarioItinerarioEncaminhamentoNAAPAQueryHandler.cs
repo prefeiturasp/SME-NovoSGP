@@ -1,9 +1,7 @@
 ﻿using MediatR;
-using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,7 +15,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioEncaminhamentoNAAPASecao repositorioEncaminhamentoNAAPASecao;
 
         public ObterQuestionarioItinerarioEncaminhamentoNAAPAQueryHandler(
-                                                        IMediator mediator, 
+                                                        IMediator mediator,
                                                         IRepositorioQuestaoEncaminhamentoNAAPA repositorioQuestaoEncaminhamento,
                                                         IRepositorioEncaminhamentoNAAPASecao repositorioEncaminhamentoNAAPASecao)
         {
@@ -35,7 +33,7 @@ namespace SME.SGP.Aplicacao
 
             if (respostasEncaminhamento.Any())
                 encaminhamento.Auditoria = await repositorioEncaminhamentoNAAPASecao.ObterAuditoriaEncaminhamentoNaapaSecao(request.EncaminhamentoSecaoId.Value);
-                
+
             encaminhamento.Questoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(request.QuestionarioId, questaoId =>
                 respostasEncaminhamento.Where(c => c.QuestaoId == questaoId)
                 .Select(respostaEncaminhamento =>

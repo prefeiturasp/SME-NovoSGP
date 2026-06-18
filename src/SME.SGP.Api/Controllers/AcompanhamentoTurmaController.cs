@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
-using System.Threading.Tasks;
 using SME.SGP.Infra.Dtos;
-using Microsoft.AspNetCore.Authorization;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {

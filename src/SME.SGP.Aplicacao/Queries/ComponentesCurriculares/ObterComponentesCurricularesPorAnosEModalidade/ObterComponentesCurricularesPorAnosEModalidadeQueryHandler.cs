@@ -10,7 +10,7 @@ namespace SME.SGP.Aplicacao.Queries.ComponentesCurriculares.ObterComponentesCurr
     public class ObterComponentesCurricularesPorAnosEModalidadeQueryHandler : IRequestHandler<ObterComponentesCurricularesPorAnosEModalidadeQuery, IEnumerable<ComponenteCurricularEol>>
     {
         private readonly IMediator mediator;
-        
+
         public ObterComponentesCurricularesPorAnosEModalidadeQueryHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao.Queries.ComponentesCurriculares.ObterComponentesCurr
             var componentes = (await mediator.Send(new ObterComponentesCurricularesPorUeModalidadeAnoQuery(request.CodigoUe, request.Modalidade, request.AnoLetivo, request.AnosEscolares)))?.ToList();
 
             if (request.TurmaPrograma)
-            {                
+            {
                 var componentesTurmaPrograma = (await mediator.Send(new ObterComponentesCurricularesPorUeModalidadeAnoQuery(request.CodigoUe, request.Modalidade, request.AnoLetivo, null)))?.ToList();
                 if (componentesTurmaPrograma.NaoEhNulo())
                 {

@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Text.Json;
@@ -13,7 +12,7 @@ namespace SME.SGP.TesteIntegracao
     {
         private readonly IMediator mediator;
         private readonly IExecutaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase executaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase;
-        
+
 
         public IncluirFilaConsolidacaoDashBoardFrequenciaCommandHandlerFake(IMediator mediator, IExecutaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase executaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase)
         {

@@ -4,6 +4,6 @@ namespace SME.SGP.Aplicacao.Interfaces
 {
     public interface IRelatorioEncaminhamentoNaapaDetalhadoUseCase : IUseCase<FiltroRelatorioEncaminhamentoNaapaDetalhadoDto, bool>
     {
-    
+
     }
 }

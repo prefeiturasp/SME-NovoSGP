@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var dadoAluno in dadosAlunosAgrupados.OrderBy(w => w.Nome))
             {
-                if (dadoAluno.SituacaoCodigo == SituacaoMatriculaAluno.Ativo 
+                if (dadoAluno.SituacaoCodigo == SituacaoMatriculaAluno.Ativo
                     || dadoAluno.SituacaoCodigo == SituacaoMatriculaAluno.Rematriculado
                     || dadoAluno.DataSituacao.Date >= periodoEscolarInicio.PeriodoInicio.Date)
                     dadosAlunosDto.Add(dadoAluno);

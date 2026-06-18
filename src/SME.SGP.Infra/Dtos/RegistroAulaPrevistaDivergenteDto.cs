@@ -1,11 +1,6 @@
-﻿using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Infra
+﻿namespace SME.SGP.Infra
 {
-   public class RegistroAulaPrevistaDivergenteDto
+    public class RegistroAulaPrevistaDivergenteDto
     {
         public int Bimestre { get; set; }
         public string DisciplinaId { get; set; }

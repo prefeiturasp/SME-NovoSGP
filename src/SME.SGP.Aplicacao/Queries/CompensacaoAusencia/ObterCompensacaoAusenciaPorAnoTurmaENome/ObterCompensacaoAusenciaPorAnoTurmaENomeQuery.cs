@@ -38,8 +38,8 @@ namespace SME.SGP.Aplicacao
 
             RuleFor(x => x.Atividade)
                 .NotEmpty()
-                .WithMessage("A atividade deve ser informado.");           
-            
+                .WithMessage("A atividade deve ser informado.");
+
             RuleFor(x => x.DisciplinasId)
                 .NotEmpty()
                 .WithMessage("A disciplina deve ser informada.");

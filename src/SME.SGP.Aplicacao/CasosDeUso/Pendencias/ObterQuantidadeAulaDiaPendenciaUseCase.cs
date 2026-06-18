@@ -1,13 +1,12 @@
-﻿using System;
-using System.Threading.Tasks;
-using MediatR;
-using Newtonsoft.Json;
+﻿using MediatR;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using System;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterQuantidadeAulaDiaPendenciaUseCase : AbstractUseCase,IObterQuantidadeAulaDiaPendenciaUseCase
+    public class ObterQuantidadeAulaDiaPendenciaUseCase : AbstractUseCase, IObterQuantidadeAulaDiaPendenciaUseCase
     {
         public ObterQuantidadeAulaDiaPendenciaUseCase(IMediator mediator) : base(mediator)
         {
@@ -18,8 +17,8 @@ namespace SME.SGP.Aplicacao
             try
             {
                 int? anoletivo = null;
-                if(!string.IsNullOrEmpty(param.Mensagem?.ToString()))
-                        anoletivo = int.Parse(param.Mensagem.ToString()!);
+                if (!string.IsNullOrEmpty(param.Mensagem?.ToString()))
+                    anoletivo = int.Parse(param.Mensagem.ToString()!);
 
                 var listaUes = await mediator.Send(ObterTodasUesIdsQuery.Instance);
                 foreach (var ue in listaUes)

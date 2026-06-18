@@ -20,6 +20,6 @@
 
         public int Semestre { get; set; }
 
-        public long ComponenteCurricularId { get; set; }        
+        public long ComponenteCurricularId { get; set; }
     }
 }

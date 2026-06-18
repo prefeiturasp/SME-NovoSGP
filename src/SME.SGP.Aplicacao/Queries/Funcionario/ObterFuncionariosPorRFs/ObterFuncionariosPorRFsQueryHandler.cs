@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao.Queries.Funcionario.ObterListaNomePorListaRF
                 return JsonConvert.DeserializeObject<IEnumerable<ProfessorResumoDto>>(json);
             }
 
-            throw new NegocioException($"Não foi possível localizar os rfs : {string.Join(",",request.CodigosRf)}.");
-        } 
+            throw new NegocioException($"Não foi possível localizar os rfs : {string.Join(",", request.CodigosRf)}.");
+        }
     }
 }

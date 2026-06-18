@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         public int AnoLetivo { get; }
         public bool IgnorarInfoPedagogicasSgp { get; }
     }
-    
+
     public class ObterComponentesCurricularesPorUeModalidadeAnoQueryValidator : AbstractValidator<ObterComponentesCurricularesPorUeModalidadeAnoQuery>
     {
         public ObterComponentesCurricularesPorUeModalidadeAnoQueryValidator()
@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.CodigoUe)
             .NotEmpty()
             .WithMessage("O código da ue deve ser informado para a busca de componentes curriculares.");
-            
+
             RuleFor(c => c.Modalidade)
             .IsInEnum()
             .WithMessage("A modalidade deve ser informada para a busca de componentes curriculares.");

@@ -1,15 +1,15 @@
 ﻿using FFMpegCore;
 using FFMpegCore.Enums;
 using MediatR;
+using Microsoft.Extensions.Options;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
+using SME.SGP.Infra.Utilitarios;
 using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
-using SME.SGP.Infra.Interface;
-using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.ComprimirArquivos.Worker
 {
@@ -65,7 +65,7 @@ namespace SME.SGP.ComprimirArquivos.Worker
 
                 var tamanhoOriginal = new FileInfo(inputTemp).Length;
                 var tamanhoComprimido = new FileInfo(outputTemp).Length;
-                
+
                 if (tamanhoComprimido >= tamanhoOriginal) return true;
                 using var outputStream = File.OpenRead(outputTemp);
                 await servicoArmazenamento.ArmazenarSemOtimizar(request.NomeArquivo, outputStream, "video/mp4");

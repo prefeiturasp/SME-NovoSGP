@@ -37,7 +37,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
             resultados.ShouldNotBeNull();
             resultados.GraficosFrequencia.Count().ShouldBe(2);
             resultados.TotalEstudantes.ShouldBe(13);
-            resultados.GraficosFrequencia.FirstOrDefault(c => c.Descricao == "BT" 
+            resultados.GraficosFrequencia.FirstOrDefault(c => c.Descricao == "BT"
                                                               && c.DreCodigo == "1"
                                                               && string.IsNullOrEmpty(c.UeCodigo)
                                                               && string.IsNullOrEmpty(c.TurmaCodigo)).Quantidade.ShouldBe(10);
@@ -90,7 +90,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
                 Modalidade = Modalidade.Medio
             };
 
-            var resultados = await useCase.Executar(filtro);            
+            var resultados = await useCase.Executar(filtro);
 
             resultados.ShouldNotBeNull();
             resultados.GraficosFrequencia.Count().ShouldBe(1);

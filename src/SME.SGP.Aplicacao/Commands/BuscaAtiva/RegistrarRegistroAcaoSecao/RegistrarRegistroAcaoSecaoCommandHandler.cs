@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao.Commands
         }
 
         private RegistroAcaoBuscaAtivaSecao MapearParaEntidade(RegistrarRegistroAcaoSecaoCommand request)
-            => new ()
+            => new()
             {
                 SecaoRegistroAcaoBuscaAtivaId = request.SecaoId,
                 Concluido = request.Concluido,

@@ -21,7 +21,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             await database.Conexao.ExecuteAsync("DELETE FROM frequencia_pre_definida " +
             "WHERE turma_id = @turmaId AND componente_curricular_id = @componenteCurricularId and codigo_aluno = any(@alunosComFrequenciaRegistrada);",
-            new { turmaId, componenteCurricularId, alunosComFrequenciaRegistrada });            
+            new { turmaId, componenteCurricularId, alunosComFrequenciaRegistrada });
         }
 
         public async Task Salvar(FrequenciaPreDefinida frequenciaPreDefinida)
@@ -55,7 +55,7 @@ namespace SME.SGP.Dados.Repositorios
                    tipoFrequencia = frequenciaPreDefinida.TipoFrequencia
                });
         }
-        
+
         public Task<bool> InserirVarios(IEnumerable<FrequenciaPreDefinida> registros)
         {
             var sql = @"copy frequencia_pre_definida (                                         

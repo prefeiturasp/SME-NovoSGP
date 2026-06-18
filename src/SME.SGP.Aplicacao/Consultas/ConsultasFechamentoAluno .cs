@@ -3,7 +3,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -41,7 +40,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> BuscarAlunosTurmaPAP(string alunoCodigo, int anoLetivo)
         {
-            var matriculadosTurmaPAP =  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, new []{alunoCodigo}));
+            var matriculadosTurmaPAP = await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, new[] { alunoCodigo }));
             return matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == alunoCodigo);
         }
         public async Task<AnotacaoFechamentoAluno> ObterAnotacaoPorAlunoEFechamento(long fechamentoId, string codigoAluno)

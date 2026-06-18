@@ -10,7 +10,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 {
     public class RepositorioAulasSemAtribuicaoSubstituicaoMensal : RepositorioElasticBase<AulasSemAtribuicaoSubstituicaoMensal>, IRepositorioAulasSemAtribuicaoSubstituicaoMensal
     {
-        public RepositorioAulasSemAtribuicaoSubstituicaoMensal(IElasticClient elasticClient, IServicoTelemetria servicoTelemetria, IOptions<ElasticOptions> elasticOptions) 
+        public RepositorioAulasSemAtribuicaoSubstituicaoMensal(IElasticClient elasticClient, IServicoTelemetria servicoTelemetria, IOptions<ElasticOptions> elasticOptions)
             : base(elasticClient, servicoTelemetria, elasticOptions, "metricas_sgp_aulas_sem_atribuicao_substituicao_mensal")
         {
         }

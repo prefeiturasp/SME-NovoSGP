@@ -9,10 +9,8 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.MapeamentoEstudantes;
-using SME.SGP.TesteIntegracao.Constantes;
 using SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,7 +21,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
     public class Ao_cadastrar_editar_mapeamento_estudante : MapeamentoBase
     {
         public Ao_cadastrar_editar_mapeamento_estudante(CollectionFixture collectionFixture) : base(collectionFixture)
-        {}
+        { }
 
         protected override void RegistrarFakes(IServiceCollection services)
         {
@@ -51,7 +49,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
             retorno.Auditoria.ShouldNotBeNull();
             retorno.Auditoria.AlteradoEm.HasValue.ShouldBeFalse();
             (retorno.Auditoria.CriadoEm.Year == DateTimeExtension.HorarioBrasilia().Year).ShouldBeTrue();
-            
+
             var mapeamento = ObterTodos<Dominio.MapeamentoEstudante>();
             mapeamento.Count().ShouldBe(1);
             mapeamento.FirstOrDefault().TurmaId.ShouldBe(TURMA_ID_1);
@@ -61,7 +59,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
             mapeamentoSecao.ShouldNotBeNull();
             mapeamentoSecao.FirstOrDefault()?.SecaoMapeamentoEstudanteId.ShouldBe(SECAO_MAPEAMENTO_ESTUDANTE_ID_1);
             mapeamentoSecao.FirstOrDefault()?.Concluido.ShouldBeTrue();
-            
+
             var questaoMapeamento = ObterTodos<QuestaoMapeamentoEstudante>();
             questaoMapeamento.ShouldNotBeNull();
             questaoMapeamento.Count.ShouldBe(19);
@@ -91,7 +89,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
             respostaMapeamento.Any(a => a.QuestaoMapeamentoEstudanteId == questaoMapeamento.Where(q => q.QuestaoId ==
                                                                                                        Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PARECER_CONCLUSIVO_ANO_ANTERIOR)).Id).FirstOrDefault().Id
                                           && a.Texto.Equals("{\"index\":\"1\",\"value\":\"Promovido\"}")).ShouldBeTrue();
-            
+
             respostaMapeamento.Any(a => a.QuestaoMapeamentoEstudanteId == questaoMapeamento.Where(q => q.QuestaoId ==
                                                                                                        Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.TURMA_ANO_ANTERIOR)).Id).FirstOrDefault().Id
                                           && a.Texto.Equals("EF-4B")).ShouldBeTrue();
@@ -125,7 +123,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
                                                                                                        Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.QDADE_REGISTROS_BUSCA_ATIVA)).Id).FirstOrDefault().Id
                                           && a.Texto.Equals("10")).ShouldBeTrue();
         }
-        
+
         [Fact(DisplayName = "Mapeamento Estudante - Consistir questões obrigatórias ao cadastrar")]
         public async Task Ao_cadastrar_mapeamento_estudante_consistir_questoes_obrigatorias()
         {
@@ -191,7 +189,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
             mapeamentoSecao.ShouldNotBeNull();
             mapeamentoSecao.FirstOrDefault()?.SecaoMapeamentoEstudanteId.ShouldBe(SECAO_MAPEAMENTO_ESTUDANTE_ID_1);
             mapeamentoSecao.FirstOrDefault()?.Concluido.ShouldBeTrue();
-            
+
             var questaoMapeamento = ObterTodos<QuestaoMapeamentoEstudante>();
             questaoMapeamento.ShouldNotBeNull();
             questaoMapeamento.Count.ShouldBe(19);
@@ -274,7 +272,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
             excecao.Message.ShouldBe(MensagemNegocioMapeamentoEstudante.MAPEAMENTO_ESTUDANTE_JA_EXISTENTE);
         }
 
-            private void PreencherIdsEdicao(MapeamentoEstudanteDto dtoUseCase)
+        private void PreencherIdsEdicao(MapeamentoEstudanteDto dtoUseCase)
         {
             dtoUseCase.Id = 1;
             var secao = dtoUseCase.Secoes.FirstOrDefault();
@@ -283,7 +281,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
             {
                 var nomeComponenteQuestao = Questoes.FirstOrDefault(q => q.Id == questao.QuestaoId).NomeComponente;
                 questao.RespostaMapeamentoEstudanteId = respostasQuestao.FirstOrDefault(resp => resp.QuestaoMapeamentoEstudanteId ==
-                                                                                                IdsQuestoesPorNomeComponente.FirstOrDefault(pair => 
+                                                                                                IdsQuestoesPorNomeComponente.FirstOrDefault(pair =>
                                                                                                                         pair.Key.Equals(nomeComponenteQuestao)).Value
                 ).Id;
                 switch (nomeComponenteQuestao)
@@ -312,7 +310,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
                         questao.Resposta = "5";
                         break;
                 }
-            } 
+            }
         }
 
 
@@ -334,8 +332,8 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
                             new ()
                             {
                                 QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PARECER_CONCLUSIVO_ANO_ANTERIOR)).Id,
-                                Resposta = semParecerTurmaAnoAnterior 
-                                           ? string.Empty 
+                                Resposta = semParecerTurmaAnoAnterior
+                                           ? string.Empty
                                            : "{\"index\":\"1\",\"value\":\"Promovido\"}",
                                 TipoQuestao = TipoQuestao.ComboDinamico
                             },
@@ -343,7 +341,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
                             {
                                 QuestaoId = Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.TURMA_ANO_ANTERIOR)).Id,
                                 Resposta = ignorarRespostasObrigatorias || semParecerTurmaAnoAnterior
-                                           ? string.Empty 
+                                           ? string.Empty
                                            : "EF-4B",
                                 TipoQuestao = TipoQuestao.Frase
                             },

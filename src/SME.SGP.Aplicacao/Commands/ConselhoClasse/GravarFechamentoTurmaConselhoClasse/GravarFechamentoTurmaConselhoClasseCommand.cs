@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao
         public int? Bimestre { get; set; }
 
         public GravarFechamentoTurmaConselhoClasseCommand(
-                        FechamentoTurma fechamentoDeTurma, 
+                        FechamentoTurma fechamentoDeTurma,
                         FechamentoTurmaDisciplina fechamentoDeTurmaDisciplina,
                         int? bimestre)
         {

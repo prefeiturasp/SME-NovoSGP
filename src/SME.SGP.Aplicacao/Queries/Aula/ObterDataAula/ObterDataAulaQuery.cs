@@ -1,12 +1,10 @@
 ﻿using FluentValidation;
 using MediatR;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterDataAulaQuery: IRequest<DateTime>
+    public class ObterDataAulaQuery : IRequest<DateTime>
     {
         public ObterDataAulaQuery(long aulaId)
         {
@@ -16,7 +14,7 @@ namespace SME.SGP.Aplicacao
         public long AulaId { get; set; }
     }
 
-    public class ObterDataAulaQueryValidator: AbstractValidator<ObterDataAulaQuery>
+    public class ObterDataAulaQueryValidator : AbstractValidator<ObterDataAulaQuery>
     {
         public ObterDataAulaQueryValidator()
         {

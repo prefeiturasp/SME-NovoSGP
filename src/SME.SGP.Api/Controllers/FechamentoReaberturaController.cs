@@ -28,7 +28,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(string), 200)]
         [Permissao(Permissao.PFR_E, Policy = "Bearer")]
-        public async Task<IActionResult> Excluir([FromServices] IComandosFechamentoReabertura comandosFechamentoReabertura, [FromBody]long[] ids)
+        public async Task<IActionResult> Excluir([FromServices] IComandosFechamentoReabertura comandosFechamentoReabertura, [FromBody] long[] ids)
         {
             return Ok(await comandosFechamentoReabertura.Excluir(ids));
         }
@@ -38,7 +38,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<FechamentoReaberturaListagemDto>), 200)]
         [Permissao(Permissao.PFR_C, Policy = "Bearer")]
-        public async Task<IActionResult> Listar([FromServices] IConsultasFechamentoReabertura consultasFechamentoReabertura, [FromQuery]FechamentoReaberturaFiltroDto fechamentoReaberturaFiltroDto)
+        public async Task<IActionResult> Listar([FromServices] IConsultasFechamentoReabertura consultasFechamentoReabertura, [FromQuery] FechamentoReaberturaFiltroDto fechamentoReaberturaFiltroDto)
         {
             return Ok(await consultasFechamentoReabertura.Listar(fechamentoReaberturaFiltroDto.TipoCalendarioId, fechamentoReaberturaFiltroDto.DreCodigo, fechamentoReaberturaFiltroDto.UeCodigo));
         }
@@ -58,7 +58,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(string), 200)]
         [Permissao(Permissao.PFR_I, Policy = "Bearer")]
-        public async Task<IActionResult> Salvar([FromServices] IComandosFechamentoReabertura comandosFechamentoReabertura, [FromBody]FechamentoReaberturaPersistenciaDto fechamentoReaberturaPersistenciaDto)
+        public async Task<IActionResult> Salvar([FromServices] IComandosFechamentoReabertura comandosFechamentoReabertura, [FromBody] FechamentoReaberturaPersistenciaDto fechamentoReaberturaPersistenciaDto)
         {
             return Ok(await comandosFechamentoReabertura.Salvar(fechamentoReaberturaPersistenciaDto));
         }

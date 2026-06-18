@@ -47,8 +47,8 @@ namespace SME.SGP.Aplicacao
             catch (Exception e)
             {
 
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao obter as matrículas/turma do aluno no EOL - Aluno: {request.CodigoAluno} - Erro: {e.Message}", 
-                                                                    LogNivel.Critico, 
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao obter as matrículas/turma do aluno no EOL - Aluno: {request.CodigoAluno} - Erro: {e.Message}",
+                                                                    LogNivel.Critico,
                                                                     LogContexto.Turma, e.Message));
                 throw;
             }

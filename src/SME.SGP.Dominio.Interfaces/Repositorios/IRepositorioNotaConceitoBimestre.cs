@@ -2,6 +2,6 @@
 {
     public interface IRepositorioFechamentoNota : IRepositorioBase<FechamentoNota>
     {
-        
+
     }
 }

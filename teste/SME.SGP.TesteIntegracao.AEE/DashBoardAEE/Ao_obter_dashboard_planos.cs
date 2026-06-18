@@ -1,15 +1,15 @@
-﻿using SME.SGP.Dominio;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Shouldly;
+using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Infra.Dtos;
 using SME.SGP.TesteIntegracao.Setup;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
-using Microsoft.Extensions.DependencyInjection;
-using SME.SGP.Aplicacao;
-using SME.SGP.Infra.Dtos;
-using Shouldly;
-using System.Linq;
 
 namespace SME.SGP.TesteIntegracao.AEE.DashBoardAEE
 {

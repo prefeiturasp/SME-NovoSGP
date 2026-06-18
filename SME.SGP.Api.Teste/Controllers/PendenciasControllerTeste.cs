@@ -4,8 +4,8 @@ using SME.SGP.Api.Controllers;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 public class PendenciasControllerTeste

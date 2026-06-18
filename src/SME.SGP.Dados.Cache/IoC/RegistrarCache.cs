@@ -67,7 +67,7 @@ namespace SME.SGP.IoC
 
         private static IRepositorioCache ObterRepositorio(IServiceProvider serviceProvider, ConfiguracaoCacheOptions options, IServicoTelemetria servicoTelemetria, IServiceCollection services, IServicoMensageriaLogs servicoMensageriaLogs, IMetricasCache metricasCache, ICircuitBreaker circuitBreaker)
             => options.UtilizaRedis ?
-                ObterRepositorioRedis(serviceProvider, servicoTelemetria,servicoMensageriaLogs, metricasCache, circuitBreaker) :
+                ObterRepositorioRedis(serviceProvider, servicoTelemetria, servicoMensageriaLogs, metricasCache, circuitBreaker) :
                 ObterRepositorioMemory(serviceProvider, servicoTelemetria, servicoMensageriaLogs, metricasCache);
 
         private static IRepositorioCache ObterRepositorioRedis(IServiceProvider serviceProvider, IServicoTelemetria servicoTelemetria, IServicoMensageriaLogs servicoMensageriaLogs, IMetricasCache metricasCache, ICircuitBreaker circuitBreaker)

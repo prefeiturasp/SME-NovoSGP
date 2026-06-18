@@ -1,11 +1,11 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
 {
@@ -25,7 +25,7 @@ namespace SME.SGP.Dados
                           where rfa.aula_id = @aulaId 
                                 and caaa.numero_aula > @quantidade 
                                 and not caaa.excluido";
-            
+
             return await database.Conexao.QueryAsync<CompensacaoAusenciaAlunoAulaDto>(query, new { aulaId, quantidade });
         }
 

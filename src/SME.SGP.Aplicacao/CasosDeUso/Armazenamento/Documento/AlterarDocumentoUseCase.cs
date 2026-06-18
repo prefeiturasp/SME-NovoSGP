@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao
 {
     public class AlterarDocumentoUseCase : AbstractUseCase, IAlterarDocumentoUseCase
     {
-        public AlterarDocumentoUseCase(IMediator mediator): base(mediator)
+        public AlterarDocumentoUseCase(IMediator mediator) : base(mediator)
         {
         }
 

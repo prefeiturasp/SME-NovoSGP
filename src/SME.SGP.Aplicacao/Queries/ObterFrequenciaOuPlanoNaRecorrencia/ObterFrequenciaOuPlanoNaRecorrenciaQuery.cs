@@ -1,12 +1,9 @@
 ﻿using FluentValidation;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterFrequenciaOuPlanoNaRecorrenciaQuery: IRequest<bool>
+    public class ObterFrequenciaOuPlanoNaRecorrenciaQuery : IRequest<bool>
     {
         public ObterFrequenciaOuPlanoNaRecorrenciaQuery(long aulaId)
         {
@@ -16,7 +13,7 @@ namespace SME.SGP.Aplicacao
         public long AulaId { get; set; }
     }
 
-    public class ObterFrequenciaOuPlanoNaRecorrenciaQueryValidator: AbstractValidator<ObterFrequenciaOuPlanoNaRecorrenciaQuery>
+    public class ObterFrequenciaOuPlanoNaRecorrenciaQueryValidator : AbstractValidator<ObterFrequenciaOuPlanoNaRecorrenciaQuery>
     {
         public ObterFrequenciaOuPlanoNaRecorrenciaQueryValidator()
         {

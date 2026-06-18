@@ -45,7 +45,7 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await obterUltimaAtualizacaoPorProcessoUseCase.Executar(nomeProcesso));
         }
-        
+
         [HttpGet("comunicados/totais")]
         [ProducesResponseType(typeof(UsuarioEscolaAquiDto), 200)]
         [ProducesResponseType(typeof(UsuarioEscolaAquiDto), 204)]

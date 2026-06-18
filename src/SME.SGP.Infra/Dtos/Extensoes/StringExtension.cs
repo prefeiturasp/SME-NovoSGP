@@ -29,23 +29,23 @@ namespace SME.SGP.Infra
         public static bool EhLoginCpf(this string login)
         {
             return (login.ToCharArray().All(c => char.IsDigit(c)) && login.Length > 7);
-        } 
-        
+        }
+
         public static bool EstaPreenchido(this string str)
         {
             return !NaoEstaPreenchido(str);
         }
-        
+
         public static bool NaoEstaPreenchido(this string str)
         {
             return (string.IsNullOrEmpty(str) || string.IsNullOrWhiteSpace(str));
         }
-        
+
         public static bool EhExtensaoImagemParaOtimizar(this string extensao)
         {
             return (extensao.ToLower().Equals(".jpg") || extensao.ToLower().Equals(".jpeg") || extensao.ToLower().Equals(".png"));
         }
-        
+
         public static bool EhArquivoImagemParaOtimizar(this string nomeArquivo)
         {
             return EhExtensaoImagemParaOtimizar(Path.GetExtension(nomeArquivo));
@@ -63,7 +63,7 @@ namespace SME.SGP.Infra
         {
             return (extensao.ToLower().Equals(".mp4") || extensao.ToLower().Equals(".mpeg"));
         }
-        
+
         public static bool EhArquivoVideoParaOtimizar(this string nomeArquivo)
         {
             return EhExtensaoVideoParaOtimizar(Path.GetExtension(nomeArquivo));
@@ -83,23 +83,23 @@ namespace SME.SGP.Infra
         {
             return source >= TerritorioSaberConstants.COMPONENTE_AGRUPAMENTO_TERRITORIO_SABER_ID_INICIAL;
         }
-        
-        
+
+
         public static bool EhTelefoneValido(this string telefone)
         {
             return new Regex(@"^\(\d{2}\)\s\d{5}-\d{4}$").Match(telefone).Success;
         }
-        
+
         public static bool NaoEhTelefoneValido(this string telefone)
         {
             return !EhTelefoneValido(telefone);
         }
-        
+
         public static bool EhEmailValido(this string email)
         {
             return new Regex(@"^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$").Match(email).Success;
         }
-        
+
         public static bool NaoEhEmailValido(this string email)
         {
             return !EhEmailValido(email);
@@ -137,7 +137,7 @@ namespace SME.SGP.Infra
 
             string digito = resto.ToString();
             tempCpf += digito;
-            
+
             soma = 0;
             for (int i = 0; i < 10; i++)
                 soma += int.Parse(tempCpf[i].ToString()) * multiplicador2[i];

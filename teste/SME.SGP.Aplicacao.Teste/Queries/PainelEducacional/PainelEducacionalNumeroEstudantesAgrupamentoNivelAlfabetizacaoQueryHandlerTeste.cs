@@ -91,8 +91,8 @@ namespace SME.SGP.Aplicacao.Teste.Queries.PainelEducacional
         [InlineData("A", NivelAlfabetizacao.Alfabetico)]
         [InlineData(" ps ", NivelAlfabetizacao.PreSilabico)]
         [InlineData("a", NivelAlfabetizacao.Alfabetico)]
-        [InlineData("", NivelAlfabetizacao.PreSilabico)]   
-        [InlineData(null, NivelAlfabetizacao.PreSilabico)] 
+        [InlineData("", NivelAlfabetizacao.PreSilabico)]
+        [InlineData(null, NivelAlfabetizacao.PreSilabico)]
         public async Task Handle_DeveMapearNivelEscritaStringParaEnumCorretamente(string nivelEscritaString, NivelAlfabetizacao nivelEsperado)
         {
             var query = new PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoQuery(2025, 1);

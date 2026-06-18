@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         {
             //Arrange
             mediator.Setup(a => a.Send(It.IsAny<ReiniciarSenhaCommand>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new UsuarioReinicioSenhaDto() {  Mensagem = resultadoSenha, DeveAtualizarEmail = true} );
+                .ReturnsAsync(new UsuarioReinicioSenhaDto() { Mensagem = resultadoSenha, DeveAtualizarEmail = true });
 
             //Act
             var result = await reiniciarSenhaUseCase.ReiniciarSenha(codigoRf, dreCodigo, ueCodigo);

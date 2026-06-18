@@ -1,9 +1,9 @@
-﻿using System;
-using MediatR;
+﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao.Queries
 {
@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao.Queries
         {
 
             var planoAula = await repositorioPlanoAula.ObterPorIdAsync(request.Id);
-            if(planoAula.EhNulo())
+            if (planoAula.EhNulo())
                 throw new NegocioException("Não foi possível encontrar o plano de aula");
 
             return true;

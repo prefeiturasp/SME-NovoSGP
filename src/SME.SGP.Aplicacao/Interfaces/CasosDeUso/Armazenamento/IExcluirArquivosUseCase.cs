@@ -5,6 +5,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IExcluirArquivosUseCase : IUseCase<IEnumerable<Guid>, bool>
     {
-    
+
     }
 }

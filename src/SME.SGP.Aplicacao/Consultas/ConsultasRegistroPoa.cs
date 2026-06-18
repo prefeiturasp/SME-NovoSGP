@@ -1,14 +1,13 @@
-﻿using System;
-using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MediatR;
 
 namespace SME.SGP.Aplicacao.Consultas
 {

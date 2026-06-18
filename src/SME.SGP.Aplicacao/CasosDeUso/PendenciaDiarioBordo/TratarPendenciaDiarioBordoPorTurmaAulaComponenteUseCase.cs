@@ -1,10 +1,10 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var item in filtro.AulasProfessoresComponentesCurriculares)
             {
-                var pendencia = pendenciaProfessorDisciplinaCache.FirstOrDefault(f => f.ComponenteCurricularId == item.ComponenteCurricularId 
+                var pendencia = pendenciaProfessorDisciplinaCache.FirstOrDefault(f => f.ComponenteCurricularId == item.ComponenteCurricularId
                                                                                     && f.ProfessorRf.Equals(item.ProfessorRf)
                                                                                     && f.CodigoTurma == filtro.CodigoTurma);
                 if (pendencia.EhNulo())
@@ -66,9 +66,9 @@ namespace SME.SGP.Aplicacao
         }
 
         private SalvarPendenciaCommand MapearPendencia(
-                                            TipoPendencia tipoPendencia, 
-                                            string descricaoComponenteCurricular, 
-                                            string turmaAnoComModalidade, 
+                                            TipoPendencia tipoPendencia,
+                                            string descricaoComponenteCurricular,
+                                            string turmaAnoComModalidade,
                                             string descricaoUeDre,
                                             long turmaId)
         {

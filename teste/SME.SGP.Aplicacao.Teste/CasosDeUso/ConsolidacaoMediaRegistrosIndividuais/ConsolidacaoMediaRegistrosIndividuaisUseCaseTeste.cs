@@ -93,7 +93,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConsolidacaoMediaRegistrosIndividua
             var alunos = new List<AlunoInfantilComRegistroIndividualDTO> { aluno };
 
             var dataInicio = new DateTime(2025, 9, 1);
-            var dataFim = new DateTime(2025, 9, 11); 
+            var dataFim = new DateTime(2025, 9, 11);
             var registros = new List<RegistroIndividualAlunoDTO>
             {
                 new RegistroIndividualAlunoDTO { DataRegistro = dataInicio },

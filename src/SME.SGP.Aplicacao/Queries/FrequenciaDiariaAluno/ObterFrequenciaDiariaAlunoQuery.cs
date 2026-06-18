@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
                 .WithMessage("O id da Componente deve ser informado.");
             RuleFor(a => a.Bimestre)
                 .NotEmpty()
-                .When(a=> a.Semestre == 0 && a.Bimestre == 0)
+                .When(a => a.Semestre == 0 && a.Bimestre == 0)
                 .WithMessage("O Bimestre deve ser informado.");
         }
     }

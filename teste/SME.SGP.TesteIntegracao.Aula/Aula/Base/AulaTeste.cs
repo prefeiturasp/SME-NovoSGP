@@ -1,5 +1,4 @@
-﻿using Elastic.Apm.Api;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
@@ -7,11 +6,8 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.Nota.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes.AulaRecorrenteFake;
-using SME.SGP.TesteIntegracao.ServicosFakes.Query;
-using SME.SGP.TesteIntegracao.ServicosFakes.Rabbit;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
@@ -38,7 +34,7 @@ namespace SME.SGP.TesteIntegracao
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaInserirAulaRecorrenteCommand, bool>), typeof(IncluirFilaInserirAulaRecorrenteCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaExclusaoAulaRecorrenteCommand, bool>), typeof(IncluirFilaExclusaoAulaRecorrenteCommandHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaAlteracaoAulaRecorrenteCommand, bool>), typeof(IncluirFilaAlteracaoAulaRecorrenteCommandHandlerFake), ServiceLifetime.Scoped));            
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaAlteracaoAulaRecorrenteCommand, bool>), typeof(IncluirFilaAlteracaoAulaRecorrenteCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterValidacaoPodePersistirTurmaNasDatasQuery, List<PodePersistirNaDataRetornoEolDto>>), typeof(ObterValidacaoPodePersistirTurmaNasDatasQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosEolPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosEolPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosEolPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
@@ -108,7 +104,7 @@ namespace SME.SGP.TesteIntegracao
             await CriarTurma(modalidade);
             await CriarParametrosSistema(dataInicio.Year);
         }
-        
+
         protected async Task CriarDadosBasicosAulaSemPeriodoEscolar(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario)
         {
             await CriarTipoCalendario(tipoCalendario);
@@ -250,7 +246,7 @@ namespace SME.SGP.TesteIntegracao
             return new ExcluirAulasRecorrentesComponenteTerritorioSaberDisponibilizadoFiltro()
             {
                 DataReferenciaAtribuicao = dataReferencia,
-                CodigosComponentesCurricularesDisponibilizados = new string[] {codigoComponenteCurricular},
+                CodigosComponentesCurricularesDisponibilizados = new string[] { codigoComponenteCurricular },
                 CodigoTurma = codigoTurma
             };
         }

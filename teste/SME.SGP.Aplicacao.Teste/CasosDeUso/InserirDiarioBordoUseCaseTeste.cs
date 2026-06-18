@@ -1,11 +1,8 @@
 ﻿using MediatR;
 using Moq;
-using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -36,9 +33,9 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                 {
                     Id = 1
                 });
-            
+
             mediator.Setup(x => x.Send(It.IsAny<ObterTurmaComUeEDrePorCodigoQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new Dominio.Turma { CodigoTurma = "1"});
+                .ReturnsAsync(new Dominio.Turma { CodigoTurma = "1" });
 
             mediator.Setup(x => x.Send(It.IsAny<ObterAulaPorIdQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new Dominio.Aula { Id = 1, TurmaId = "1" });

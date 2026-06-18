@@ -26,8 +26,8 @@ namespace SME.SGP.Aplicacao
         private Devolutiva devolutiva;
 
         public SalvarNotificacaoDevolutivaUseCase(
-                                                  IMediator mediator, 
-                                                  IConfiguration configuration, 
+                                                  IMediator mediator,
+                                                  IConfiguration configuration,
                                                   IServicoNotificacao servicoNotificacao,
                                                   IRepositorioNotificacaoDevolutiva repositorioNotificacaoDevolutiva,
                                                   IConsultasDisciplina consultasDisciplina)
@@ -124,9 +124,9 @@ namespace SME.SGP.Aplicacao
         {
             var disciplinas = await ObterComponentesCurricularesTurma(turma.CodigoTurma, devolutiva.CodigoComponenteCurricular);
 
-            foreach(var disciplina in disciplinas)
+            foreach (var disciplina in disciplinas)
                 await ExecuteNotificacaoDevolutiva(disciplina.CodigoComponenteCurricular, usuarioNome, usuarioRf);
-            
+
             return true;
         }
 
@@ -142,6 +142,6 @@ namespace SME.SGP.Aplicacao
             var urlRedirecionamentoBase = configuration.GetSection("UrlServidorRelatorios").Value;
             var urlNotificacao = $"{urlRedirecionamentoBase}api/v1/downloads/sgp/pdfsincrono/Devolutivas.pdf/{codigoRelatorio}";
             return $"<br/><br/><a href='{urlNotificacao}' target='_blank' class='btn-baixar-relatorio'><i class='fas fa-arrow-down mr-2'></i>Download</a>";
-        }        
+        }
     }
 }

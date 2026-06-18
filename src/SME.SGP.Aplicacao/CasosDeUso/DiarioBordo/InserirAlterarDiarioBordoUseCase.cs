@@ -1,8 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -20,14 +18,14 @@ namespace SME.SGP.Aplicacao
 
             foreach (var param in dados)
             {
-                if(param.Id == 0)    
+                if (param.Id == 0)
                 {
                     dadosAuditoria = await mediator.Send(new InserirDiarioBordoCommand(param.AulaId, param.Planejamento, param.ComponenteCurricularId));
                     await mediator.Send(new ExcluirPendenciaDiarioBordoPorIdEComponenteIdCommand(param.AulaId, param.ComponenteCurricularId));
                 }
                 else
                 {
-                    dadosAuditoria = await mediator.Send(new AlterarDiarioBordoCommand(param.Id, param.AulaId, param.Planejamento, param.ComponenteCurricularId));       
+                    dadosAuditoria = await mediator.Send(new AlterarDiarioBordoCommand(param.Id, param.AulaId, param.Planejamento, param.ComponenteCurricularId));
                 }
 
                 var valorAuditoria = new AuditoriaDiarioBordoDto(dadosAuditoria, param.AulaId);

@@ -4,7 +4,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -33,25 +32,25 @@ namespace SME.SGP.Aplicacao
 
                     await repositorioPendenciaPlanoAEE.SalvarAsync(new PendenciaPlanoAEE(pendenciaId, request.PlanoAEEId));
 
-                    if(request.Perfil.NaoEhNulo())
+                    if (request.Perfil.NaoEhNulo())
                         await mediator.Send(new SalvarPendenciaPerfilCommand(pendenciaId, new List<PerfilUsuario> { request.Perfil.Value }));
 
-                    if(request.UsuariosIds.NaoEhNulo())
+                    if (request.UsuariosIds.NaoEhNulo())
                     {
                         foreach (var usuarioId in request.UsuariosIds)
                             await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, usuarioId));
                     }
-        
+
                     unitOfWork.PersistirTransacao();
 
                     if (request.Perfil.NaoEhNulo())
                         await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendenciaId, request.UeId), Guid.NewGuid()));
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     unitOfWork.Rollback();
                     throw;
-                }            
+                }
             }
 
             return true;

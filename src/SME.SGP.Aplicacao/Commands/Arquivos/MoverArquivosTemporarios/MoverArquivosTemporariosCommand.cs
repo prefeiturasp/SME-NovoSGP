@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao
 {
     public class MoverArquivosTemporariosCommand : IRequest<string>
     {
-        public MoverArquivosTemporariosCommand(TipoArquivo tipoArquivo, string textoEditorAtual,string textoEditorNovo)
+        public MoverArquivosTemporariosCommand(TipoArquivo tipoArquivo, string textoEditorAtual, string textoEditorNovo)
         {
             TipoArquivo = tipoArquivo;
             TextoEditorAtual = textoEditorAtual;

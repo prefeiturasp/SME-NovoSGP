@@ -13,7 +13,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             this.database = database ?? throw new System.ArgumentNullException(nameof(database));
         }
-        
+
         public async Task Salvar(ConsolidacaoDevolutivas consolidacaoDevolutivas)
         {
             if (consolidacaoDevolutivas.Id > 0)

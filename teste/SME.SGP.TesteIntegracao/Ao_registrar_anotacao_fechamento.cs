@@ -43,8 +43,8 @@ namespace SME.SGP.TesteIntegracao.AnotacaoFechamentoAluno
 
         public async Task CarregarDados()
         {
-            await InserirNaBase(new TipoCalendario() 
-            { 
+            await InserirNaBase(new TipoCalendario()
+            {
                 Id = 1,
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Nome = "Calendário Teste Ano Atual",
@@ -59,8 +59,8 @@ namespace SME.SGP.TesteIntegracao.AnotacaoFechamentoAluno
             {
                 Id = 1,
                 Bimestre = 1,
-                PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 1,1),
-                PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 1,12),
+                PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 1, 1),
+                PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 1, 12),
                 TipoCalendarioId = 1,
                 CriadoEm = DateTime.Now,
                 CriadoPor = "",

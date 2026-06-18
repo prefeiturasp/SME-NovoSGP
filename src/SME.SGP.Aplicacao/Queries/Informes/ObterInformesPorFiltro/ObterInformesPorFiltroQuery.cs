@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
             Filtro = filtro;
         }
 
-        public InformeFiltroDto Filtro {  get; set; }
+        public InformeFiltroDto Filtro { get; set; }
     }
 
     public class ObterInformesPorFiltroQueryValidator : AbstractValidator<ObterInformesPorFiltroQuery>

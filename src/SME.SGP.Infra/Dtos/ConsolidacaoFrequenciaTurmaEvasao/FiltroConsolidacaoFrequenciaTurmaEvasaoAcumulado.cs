@@ -5,11 +5,11 @@
         public FiltroConsolidacaoFrequenciaTurmaEvasaoAcumulado(int ano, long turmaId)
         {
             Ano = ano;
-            TurmaId = turmaId;            
+            TurmaId = turmaId;
         }
 
         public int Ano { get; set; }
         public long TurmaId { get; set; }
-        
+
     }
 }

@@ -1,14 +1,14 @@
-﻿using System;
+﻿using MediatR;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPeriodoEscolarPorTipoCalendarioQueryHandler :IRequestHandler<ObterPeriodoEscolarPorTipoCalendarioQuery,IEnumerable<PeriodoEscolar>>
+    public class ObterPeriodoEscolarPorTipoCalendarioQueryHandler : IRequestHandler<ObterPeriodoEscolarPorTipoCalendarioQuery, IEnumerable<PeriodoEscolar>>
     {
         private readonly IRepositorioPeriodoEscolarConsulta repositorioConsulta;
 

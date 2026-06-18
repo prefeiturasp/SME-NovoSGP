@@ -21,7 +21,7 @@ namespace SME.SGP.Fechamento.Worker
             IOptions<TelemetriaOptions> telemetriaOptions,
             IOptions<ConsumoFilasOptions> consumoFilasOptions,
             IConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria, servicoMensageria, servicoMensageriaMetricas,
-                telemetriaOptions, consumoFilasOptions, factory, "WorkerRabbitFechamento", 
+                telemetriaOptions, consumoFilasOptions, factory, "WorkerRabbitFechamento",
                 typeof(RotasRabbitSgpFechamento))
         {
         }

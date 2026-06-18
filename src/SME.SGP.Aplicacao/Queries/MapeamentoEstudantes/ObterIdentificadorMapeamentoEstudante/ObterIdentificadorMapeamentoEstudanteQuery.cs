@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
             Bimestre = bimestre;
         }
 
-        public string CodigoAluno { get; set; } 
+        public string CodigoAluno { get; set; }
         public long TurmaId { get; set; }
         public int Bimestre { get; set; }
     }

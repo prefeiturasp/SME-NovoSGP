@@ -1,11 +1,9 @@
-﻿using Dapper;
-using Dommel;
+﻿using Dommel;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -68,7 +66,7 @@ namespace SME.SGP.Dados
                              and bimestre = @bimestre
                            order by id";
 
-            return await database.Conexao.QueryAsync<ProcessoExecutando>(query, new { turmaId, disciplinaId, bimestre, tipoProcesso = (int)tipoProcesso });            
+            return await database.Conexao.QueryAsync<ProcessoExecutando>(query, new { turmaId, disciplinaId, bimestre, tipoProcesso = (int)tipoProcesso });
         }
 
         public async Task<bool> ProcessoEstaEmExecucao(TipoProcesso tipoProcesso)

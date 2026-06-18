@@ -1,3 +1,5 @@
+using MediatR;
+using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -5,8 +7,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Infra.Interfaces;
 
 namespace SME.SGP.Aplicacao
 {
@@ -24,17 +24,17 @@ namespace SME.SGP.Aplicacao
             return await Task.FromResult(Guid.Parse(
                 ObterClaims(ObterTokenAtual()).FirstOrDefault(claim => claim.Type == "perfil")?.Value ?? string.Empty));
         }
-    
+
         private static IEnumerable<Claim> ObterClaims(string token)
         {
             var handler = new JwtSecurityTokenHandler();
             var tokenS = handler.ReadToken(token) as JwtSecurityToken;
             return tokenS?.Claims;
-        }    
-    
+        }
+
         private string ObterTokenAtual()
         {
             return contextoAplicacao.ObterVariavel<string>("TokenAtual");
-        }    
+        }
     }
 }

@@ -1,11 +1,8 @@
 ﻿using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Dados
 {
-    public class CompensacaoAusenciaDisciplinaRegenciaMap: BaseMap<CompensacaoAusenciaDisciplinaRegencia>
+    public class CompensacaoAusenciaDisciplinaRegenciaMap : BaseMap<CompensacaoAusenciaDisciplinaRegencia>
     {
         public CompensacaoAusenciaDisciplinaRegenciaMap()
         {

@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
-using SME.SGP.Aplicacao.Interfaces;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -19,7 +19,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PFA_C, Policy = "Bearer")]
-        public async Task<IActionResult> Get([FromQuery]FiltroFechamentoDto fechamentoDto, [FromServices] IConsultasPeriodoFechamento consultasFechamento)
+        public async Task<IActionResult> Get([FromQuery] FiltroFechamentoDto fechamentoDto, [FromServices] IConsultasPeriodoFechamento consultasFechamento)
         {
             return Ok(await consultasFechamento.ObterPorTipoCalendarioSme(fechamentoDto));
         }
@@ -28,7 +28,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PFA_I, Permissao.PFA_A, Policy = "Bearer")]
-        public async Task<IActionResult> Post([FromBody]FechamentoDto fechamentoDto, [FromServices] IComandosPeriodoFechamento comandosFechamento)
+        public async Task<IActionResult> Post([FromBody] FechamentoDto fechamentoDto, [FromServices] IComandosPeriodoFechamento comandosFechamento)
         {
             await comandosFechamento.Salvar(fechamentoDto);
             return Ok();

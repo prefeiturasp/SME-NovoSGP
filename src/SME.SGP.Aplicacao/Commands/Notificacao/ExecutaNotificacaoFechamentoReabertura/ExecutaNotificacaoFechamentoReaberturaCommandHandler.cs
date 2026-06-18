@@ -1,13 +1,8 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Aplicacao.Queries.Funcionario;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -31,10 +26,10 @@ namespace SME.SGP.Aplicacao
 
             var diretores =
                 await mediator.Send(
-                    new ObterFuncionariosPorCargoUeQuery(fechamentoReabertura.UeCodigo, (long) Cargo.Diretor));
+                    new ObterFuncionariosPorCargoUeQuery(fechamentoReabertura.UeCodigo, (long)Cargo.Diretor));
             if (diretores.PossuiRegistros())
                 await NotificarUsuariosCadastroFechamentoReabertura(diretores.Select(d => d.CodigoRf).ToArray(), fechamentoReabertura);
-            
+
 
             var ads = await mediator.Send(
                 new ObterFuncionariosPorCargoUeQuery(fechamentoReabertura.UeCodigo, (long)Cargo.AD));

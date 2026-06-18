@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using SME.SGP.Dominio.Enumerados;
+﻿using SME.SGP.Dominio.Enumerados;
+using System.Linq;
 
 namespace SME.SGP.Dominio
 {

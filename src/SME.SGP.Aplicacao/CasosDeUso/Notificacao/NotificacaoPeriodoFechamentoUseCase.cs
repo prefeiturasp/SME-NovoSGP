@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
         private async Task VerificaNotificacaoPeriodoFechamentoUe(int ano)
         {
             var parametros = await mediator.Send(new ObterParametrosSistemaPorTipoEAnoQuery(Dominio.TipoParametroSistema.DiasNotificacaoPeriodoFechamentoUe, ano));
-            foreach(var parametro in parametros)
+            foreach (var parametro in parametros)
             {
                 var diasParaFechamento = int.Parse(parametro.Valor);
 

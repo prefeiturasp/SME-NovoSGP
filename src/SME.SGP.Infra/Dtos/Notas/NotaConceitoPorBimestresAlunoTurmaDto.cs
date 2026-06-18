@@ -12,7 +12,7 @@
 
         public string UeCodigo { get; set; }
         public string TurmaCodigo { get; set; }
-        public string  AlunoCodigo { get; set; }
+        public string AlunoCodigo { get; set; }
         public int[] Bimestres { get; set; }
     }
 }

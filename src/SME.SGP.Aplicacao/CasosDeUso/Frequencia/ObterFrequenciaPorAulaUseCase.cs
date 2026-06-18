@@ -1,12 +1,12 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
                 var alunoPossuiPlanoAEE = await mediator
                     .Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo));
 
-                var periodoDeCompensacaoAberto = new PeriodoDeCompensacaoAbertoUseCase(mediator);   
+                var periodoDeCompensacaoAberto = new PeriodoDeCompensacaoAbertoUseCase(mediator);
 
                 var registroFrequenciaAluno = new RegistroFrequenciaAlunoDto
                 {

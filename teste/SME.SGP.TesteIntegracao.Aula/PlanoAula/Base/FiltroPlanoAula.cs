@@ -1,5 +1,5 @@
-using System;
 using SME.SGP.Dominio;
+using System;
 
 namespace SME.SGP.TesteIntegracao.PlanoAula.Base
 {
@@ -21,4 +21,4 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.Base
 
         public bool CriarPlanejamentoAnual { get; set; } = true;
     }
-} 
+}

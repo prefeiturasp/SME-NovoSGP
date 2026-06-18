@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task SalvarAtividadeAvaliativa(ImportarAtividadeGsaCommand request, DataAulaDto aula)
         {
-            await mediator.Send(new SalvarAtividadeAvaliativaGsaCommand(aula.DataAula,request.AtividadeGsa));
+            await mediator.Send(new SalvarAtividadeAvaliativaGsaCommand(aula.DataAula, request.AtividadeGsa));
         }
 
         private async Task ValidarLancamentoNotaComponente(long componenteCurricularId)
@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private bool ReagendarImportacao(DataAulaDto dataAula)
-            => dataAula.EhNulo() 
+            => dataAula.EhNulo()
             || dataAula.AulaId == 0;
     }
 }

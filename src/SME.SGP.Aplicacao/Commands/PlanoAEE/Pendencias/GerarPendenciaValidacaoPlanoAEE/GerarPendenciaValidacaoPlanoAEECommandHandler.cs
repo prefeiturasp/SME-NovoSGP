@@ -4,9 +4,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -53,7 +50,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível Gerar pendência de Validacao do Plano AEE {request.PlanoAEEId}", LogNivel.Negocio, LogContexto.Geral,ex.Message,rastreamento:ex.StackTrace,innerException:ex.InnerException.ToString()));
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível Gerar pendência de Validacao do Plano AEE {request.PlanoAEEId}", LogNivel.Negocio, LogContexto.Geral, ex.Message, rastreamento: ex.StackTrace, innerException: ex.InnerException.ToString()));
                 throw;
             }
         }

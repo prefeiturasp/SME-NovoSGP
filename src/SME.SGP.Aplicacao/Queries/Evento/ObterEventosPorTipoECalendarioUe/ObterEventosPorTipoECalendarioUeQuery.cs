@@ -1,9 +1,7 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
@@ -34,7 +32,7 @@ namespace SME.SGP.Aplicacao
             .WithMessage("O código da UE deve ser informado para consulta dos eventos no calendário.");
 
             RuleFor(c => c.TipoEvento)
-            .NotEmpty() 
+            .NotEmpty()
             .WithMessage("O tipo de evento deve ser informado para consulta dos eventos no calendário.");
         }
     }

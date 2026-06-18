@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.Estudante.ServicosFakes
 {
-    public class ObterTurmasAlunoPorFiltroQueryHandler_TurmasProgramaEstudanteFake  : IRequestHandler<ObterTurmasAlunoPorFiltroQuery, IEnumerable<AlunoPorTurmaResposta>>
+    public class ObterTurmasAlunoPorFiltroQueryHandler_TurmasProgramaEstudanteFake : IRequestHandler<ObterTurmasAlunoPorFiltroQuery, IEnumerable<AlunoPorTurmaResposta>>
     {
         private readonly string ATIVO = "Ativo";
         private readonly string RESPONSAVEL = "RESPONSAVEL";

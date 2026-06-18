@@ -4,7 +4,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class InserirDiarioBordoCommand: IRequest<AuditoriaDto>
+    public class InserirDiarioBordoCommand : IRequest<AuditoriaDto>
     {
         public InserirDiarioBordoCommand(long aulaId, string planejamento, long componenteCurricularId)
         {
@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         public string Planejamento { get; set; }
     }
 
-    public class InserirDiarioBordoCommandValidator: AbstractValidator<InserirDiarioBordoCommand>
+    public class InserirDiarioBordoCommandValidator : AbstractValidator<InserirDiarioBordoCommand>
     {
         public InserirDiarioBordoCommandValidator()
         {

@@ -14,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioConselhoClasseParecerConclusivoConsulta : RepositorioBase<ConselhoClasseParecerConclusivo>, IRepositorioConselhoClasseParecerConclusivo
     {
         private const char ANO_IDENTIFICACAO_TURMA_BILINGUE_OU_INFANTIL_LIBRAS = 'S';
-        private const string ANO_IDENTIFICACAO_TURMA_TECNICA_P = "P",  ANO_IDENTIFICACAO_TURMA_TECNICA_Q = "Q";
+        private const string ANO_IDENTIFICACAO_TURMA_TECNICA_P = "P", ANO_IDENTIFICACAO_TURMA_TECNICA_Q = "Q";
 
         public RepositorioConselhoClasseParecerConclusivoConsulta(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
@@ -48,11 +48,11 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = string.Format(ObterSqlParecerConclusivoTurma(), where);
 
-            var param = new 
-            { 
-                parametro, 
-                dataConsulta, 
-                modalidadeEja = (int)Modalidade.EJA, 
+            var param = new
+            {
+                parametro,
+                dataConsulta,
+                modalidadeEja = (int)Modalidade.EJA,
                 anoBilingueOuInfantilLibras = ANO_IDENTIFICACAO_TURMA_BILINGUE_OU_INFANTIL_LIBRAS,
                 anosTurmasTecnicas = new string[] { ANO_IDENTIFICACAO_TURMA_TECNICA_P, ANO_IDENTIFICACAO_TURMA_TECNICA_Q }
             };

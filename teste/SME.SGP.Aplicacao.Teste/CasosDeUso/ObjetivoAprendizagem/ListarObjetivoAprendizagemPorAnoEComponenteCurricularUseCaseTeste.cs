@@ -159,7 +159,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
 
             mediator.Verify(x => x.Send(It.IsAny<ObterJuremaIdsPorComponentesCurricularIdQuery>(), It.IsAny<CancellationToken>()), Times.Never);
             Assert.True(retorno.Any());
-        }       
+        }
 
         [Fact]
         public async Task Executar_Quando_Ensino_Especial_E_Ano_Nao_Contido_Deve_Retornar_Ordenado_Por_Enum()
@@ -199,8 +199,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             Assert.True(retorno.Any());
             Assert.Equal(2, retorno.Count());
         }
-      
-               [Fact]
+
+        [Fact]
         public async Task Executar_Quando_Componente_Nao_Lingua_Portuguesa_Deve_Buscar_Ids_Jurema()
         {
             var mockObjetivos = new List<ObjetivoAprendizagemDto> {

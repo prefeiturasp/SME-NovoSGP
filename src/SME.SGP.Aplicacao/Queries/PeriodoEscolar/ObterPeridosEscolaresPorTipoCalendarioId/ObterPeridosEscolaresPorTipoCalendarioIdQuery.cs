@@ -1,13 +1,11 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPeridosEscolaresPorTipoCalendarioIdQuery: IRequest<IEnumerable<PeriodoEscolar>>
+    public class ObterPeridosEscolaresPorTipoCalendarioIdQuery : IRequest<IEnumerable<PeriodoEscolar>>
     {
         public ObterPeridosEscolaresPorTipoCalendarioIdQuery(long tipoCalendarioId)
         {

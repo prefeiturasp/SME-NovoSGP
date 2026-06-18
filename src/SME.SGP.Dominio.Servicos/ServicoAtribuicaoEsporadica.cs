@@ -1,10 +1,9 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Aplicacao;
 
 namespace SME.SGP.Dominio.Servicos
 {

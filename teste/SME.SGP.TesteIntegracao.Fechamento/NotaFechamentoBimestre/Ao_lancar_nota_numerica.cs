@@ -5,16 +5,15 @@ using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.Fechamento.ConselhoDeClasse.ServicosFakes;
+using SME.SGP.TesteIntegracao.NotaFechamentoBimestre.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
-using SME.SGP.TesteIntegracao.Setup; 
+using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.TesteIntegracao.NotaFechamentoBimestre.ServicosFakes;
 using Xunit;
-using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
-using SME.SGP.TesteIntegracao.Fechamento.ConselhoDeClasse.ServicosFakes;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 {
@@ -31,10 +30,10 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
-            
+
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>),
                 typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
-            
+
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaEAnoLetivoQuery, IEnumerable<AlunoPorTurmaResposta>>),
                 typeof(ObterAlunosPorTurmaEAnoLetivoQueryHandlerFakeValidarAlunos), ServiceLifetime.Scoped));
 
@@ -71,14 +70,14 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             var fechamentosNotas = ObterTodos<FechamentoNota>();
             fechamentosNotas.ShouldNotBeNull();
             fechamentosNotas.Count.ShouldBe(4);
-            
+
             var historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(4);
-            
+
             var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(4);
 
-            historicoNotas.Count(w=> !w.NotaAnterior.HasValue).ShouldBe(4);
+            historicoNotas.Count(w => !w.NotaAnterior.HasValue).ShouldBe(4);
         }
 
         [Fact(DisplayName = "Fechamento Bimestre - Deve lançar nota numérica pelo Professor Titular em ano atual com avaliação")]
@@ -105,14 +104,14 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             var fechamentosNotas = ObterTodos<FechamentoNota>();
             fechamentosNotas.ShouldNotBeNull();
             fechamentosNotas.Count.ShouldBe(4);
-            
+
             var historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(4);
-            
+
             var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(4);
 
-            historicoNotas.Count(w=> !w.NotaAnterior.HasValue).ShouldBe(4);
+            historicoNotas.Count(w => !w.NotaAnterior.HasValue).ShouldBe(4);
         }
 
         [Fact(DisplayName = "Fechamento Bimestre - Deve lançar nota numérica pelo Professor Titular em ano atual regência com avaliação")]
@@ -139,14 +138,14 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             var fechamentosNotas = ObterTodos<FechamentoNota>();
             fechamentosNotas.ShouldNotBeNull();
             fechamentosNotas.Count.ShouldBe(4);
-            
+
             var historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(4);
-            
+
             var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(4);
 
-            historicoNotas.Count(w=> !w.NotaAnterior.HasValue).ShouldBe(4);
+            historicoNotas.Count(w => !w.NotaAnterior.HasValue).ShouldBe(4);
         }
 
         [Fact(DisplayName = "Fechamento Bimestre - Deve lançar nota numérica pelo Professor Titular em ano atual EM com avaliação")]
@@ -173,14 +172,14 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             var fechamentosNotas = ObterTodos<FechamentoNota>();
             fechamentosNotas.ShouldNotBeNull();
             fechamentosNotas.Count.ShouldBe(4);
-            
+
             var historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(4);
-            
+
             var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(4);
 
-            historicoNotas.Count(w=> !w.NotaAnterior.HasValue).ShouldBe(4);
+            historicoNotas.Count(w => !w.NotaAnterior.HasValue).ShouldBe(4);
         }
 
         [Fact(DisplayName = "Fechamento Bimestre - Deve lançar nota numérica pelo Professor Titular em ano atual EJA com avaliação")]
@@ -207,14 +206,14 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             var fechamentosNotas = ObterTodos<FechamentoNota>();
             fechamentosNotas.ShouldNotBeNull();
             fechamentosNotas.Count.ShouldBe(4);
-            
+
             var historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(4);
-            
+
             var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(4);
 
-            historicoNotas.Count(w=> !w.NotaAnterior.HasValue).ShouldBe(4);
+            historicoNotas.Count(w => !w.NotaAnterior.HasValue).ShouldBe(4);
         }
 
         [Fact(DisplayName = "Fechamento Bimestre - Deve lançar nota numérica pelo Professor Titular em ano atual com mais de 50% alunos abaixo da media")]
@@ -244,14 +243,14 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             var percentualAlunosAbaixoMedia = Convert.ToDecimal(qtdeAlunosAbaixoMedia * 100 / qtdeLancamentos);
 
             percentualAlunosAbaixoMedia.ShouldBeGreaterThanOrEqualTo(CINQUENTA_PORCENTO);
-            
+
             var historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(4);
-            
+
             var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(4);
 
-            historicoNotas.Count(w=> !w.NotaAnterior.HasValue).ShouldBe(4);
+            historicoNotas.Count(w => !w.NotaAnterior.HasValue).ShouldBe(4);
         }
 
         [Fact(DisplayName = "Fechamento Bimestre - Deve lançar nota numérica pelo Professor Titular em ano atual com mais de 50% alunos abaixo da media regência")]
@@ -281,14 +280,14 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             var percentualAlunosAbaixoMedia = Convert.ToDecimal(qtdeAlunosAbaixoMedia * 100 / qtdeLancamentos);
 
             percentualAlunosAbaixoMedia.ShouldBeGreaterThanOrEqualTo(CINQUENTA_PORCENTO);
-            
+
             var historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(4);
-            
+
             var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(4);
 
-            historicoNotas.Count(w=> !w.NotaAnterior.HasValue).ShouldBe(4);
+            historicoNotas.Count(w => !w.NotaAnterior.HasValue).ShouldBe(4);
         }
 
         private async Task<IList<FechamentoTurmaDisciplinaDto>> LancarNotasAlunos50PorcentoAbaixoDaMedia(long disciplinaId)

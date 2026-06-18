@@ -1,7 +1,5 @@
-﻿using Elastic.Apm;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -9,7 +7,6 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -113,10 +110,10 @@ namespace SME.SGP.Notificacoes.Worker
                     var metodo = UtilMethod.ObterMetodo(tipoHub, comando);
 
                     await servicoTelemetria.RegistrarAsync(
-                        async () => await (Task)metodo.Invoke(hubNotificacoes, new object[] { mensagemRabbit }), 
-                        "RabbitMQ", 
-                        rota, 
-                        comando, 
+                        async () => await (Task)metodo.Invoke(hubNotificacoes, new object[] { mensagemRabbit }),
+                        "RabbitMQ",
+                        rota,
+                        comando,
                         mensagem);
 
                     canalRabbit.BasicAck(ea.DeliveryTag, false);
@@ -131,7 +128,7 @@ namespace SME.SGP.Notificacoes.Worker
                 {
                     servicoTelemetria.Finalizar(transacao);
                 }
-            }        
+            }
         }
 
         private void RegistrarConsumerSgp(EventingBasicConsumer consumer)

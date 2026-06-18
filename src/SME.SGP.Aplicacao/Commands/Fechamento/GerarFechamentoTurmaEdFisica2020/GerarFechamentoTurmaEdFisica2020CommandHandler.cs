@@ -4,9 +4,7 @@ using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,7 +17,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
         private readonly IRepositorioFechamentoAluno repositorioFechamentoAluno;
         private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
-        
+
         public GerarFechamentoTurmaEdFisica2020CommandHandler(IMediator mediator, IRepositorioFechamentoTurma repositorioFechamentoTurma,
                                                               IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
                                                               IRepositorioFechamentoAluno repositorioFechamentoAluno,
@@ -51,9 +49,9 @@ namespace SME.SGP.Aplicacao
                 fechamentoTurmaId = verificaFechamento.Id;
 
             var verificaFechamentoTurmaDisciplina = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorTurmaIdQuery(request.TurmaId));
-            
 
-            if (!verificaFechamentoTurmaDisciplina.Any(f=> f.DisciplinaId == MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_ED_FISICA))   
+
+            if (!verificaFechamentoTurmaDisciplina.Any(f => f.DisciplinaId == MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_ED_FISICA))
             {
                 var fechamentoTurmaDisciplina = new FechamentoTurmaDisciplina()
                 {
@@ -63,7 +61,7 @@ namespace SME.SGP.Aplicacao
                 };
 
                 fechamentoTurmaDisciplinaId = await repositorioFechamentoTurmaDisciplina.SalvarAsync(fechamentoTurmaDisciplina);
-           
+
                 foreach (var aluno in request.CodigoAlunos)
                 {
                     var fechamentoAluno = new FechamentoAluno()
@@ -85,7 +83,7 @@ namespace SME.SGP.Aplicacao
                     {
                         await repositorioFechamentoNota.SalvarAsync(fechamentoAlunoNota);
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao salvar fechamento de aluno - Turma Ed. Física 2020 - Aluno: {aluno} / Turma: {request.TurmaId}", LogNivel.Critico, LogContexto.Fechamento));
                         return false;

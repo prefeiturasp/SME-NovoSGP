@@ -29,7 +29,8 @@ namespace SME.SGP.Aplicacao
                     var turmasDaModalidade = (await ObterTurmasPorModalidade(modalidade.Key, request.Data.Year, request.TurmaCodigo)).ToList();
                     await TratarConciliacaoBimestral(request, turmasDaModalidade, modalidade);
                     await TratarConciliacaoMensal(request, turmasDaModalidade);
-                };
+                }
+                ;
 
                 return true;
             }
@@ -41,7 +42,7 @@ namespace SME.SGP.Aplicacao
         }
         private async Task TratarConciliacaoMensal(ConciliacaoFrequenciaTurmasCommand request, List<string> turmasDaModalidade)
         {
-            if (turmasDaModalidade.PossuiRegistros() 
+            if (turmasDaModalidade.PossuiRegistros()
                 && request.Mensal)
             {
                 foreach (var mes in ObterMesesAnteriores(request.Data))

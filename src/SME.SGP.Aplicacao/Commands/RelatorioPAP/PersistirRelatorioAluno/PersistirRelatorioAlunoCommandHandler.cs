@@ -1,12 +1,12 @@
-﻿using System;
+﻿using MediatR;
+using SME.SGP.Dominio;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
-    public class PersistirRelatorioAlunoCommandHandler : IRequestHandler<PersistirRelatorioAlunoCommand,RelatorioPeriodicoPAPAluno>
+    public class PersistirRelatorioAlunoCommandHandler : IRequestHandler<PersistirRelatorioAlunoCommand, RelatorioPeriodicoPAPAluno>
     {
         private readonly IMediator mediator;
 
@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
             if (request.RelatorioPAPDto.PAPAlunoId.HasValue)
                 return await mediator.Send(new ObterRelatorioPeriodicoAlunoPAPQuery(request.RelatorioPAPDto.PAPAlunoId.Value), cancellationToken);
 
-            return await mediator.Send(new SalvarRelatorioPeriodicoAlunoPAPCommand(request.RelatorioPAPDto.AlunoCodigo, 
+            return await mediator.Send(new SalvarRelatorioPeriodicoAlunoPAPCommand(request.RelatorioPAPDto.AlunoCodigo,
                 request.RelatorioPAPDto.AlunoNome,
                 request.RelatorioTurmaId), cancellationToken);
         }

@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Metrica.Worker.Entidade
 {
-    public class RegistrosFrequenciaDiario: EntidadeElasticBase
+    public class RegistrosFrequenciaDiario : EntidadeElasticBase
     {
         public RegistrosFrequenciaDiario(DateTime data, int quantidade) : base(data.ToString("yyyyMMdd"))
         {

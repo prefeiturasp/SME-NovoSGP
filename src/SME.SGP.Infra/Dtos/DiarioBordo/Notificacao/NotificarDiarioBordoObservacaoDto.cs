@@ -1,8 +1,6 @@
 ﻿using FluentValidation;
 using SME.SGP.Dominio;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Infra.Dtos
 {
@@ -33,7 +31,7 @@ namespace SME.SGP.Infra.Dtos
 
             RuleFor(c => c.Usuario)
                 .NotEmpty()
-                .WithMessage("O usuario deve ser informado");           
+                .WithMessage("O usuario deve ser informado");
         }
-    }    
+    }
 }

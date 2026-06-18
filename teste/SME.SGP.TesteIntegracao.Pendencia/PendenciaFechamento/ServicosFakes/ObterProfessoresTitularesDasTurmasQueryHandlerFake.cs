@@ -1,9 +1,9 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
+using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Infra;
 
 namespace SME.SGP.TesteIntegracao.PendenciaFechamento.ServicosFakes
 {

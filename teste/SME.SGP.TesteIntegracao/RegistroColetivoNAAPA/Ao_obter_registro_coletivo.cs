@@ -1,6 +1,4 @@
-﻿using Microsoft.Diagnostics.Tracing.Parsers.Kernel;
-using Microsoft.Extensions.DependencyInjection;
-using Nest;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
@@ -9,7 +7,6 @@ using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.RegistroColetivoNAAPA.Base;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -31,7 +28,7 @@ namespace SME.SGP.TesteIntegracao.RegistroColetivoNAAPA
         {
             await CriaBase();
             await InserirRegistrosColetivos();
-           
+
             var useCase = ServiceProvider.GetService<IObterRegistroColetivoNAAPAPorIdUseCase>();
             var retorno = await useCase.Executar(1);
             Validar(retorno, 1);
@@ -53,13 +50,14 @@ namespace SME.SGP.TesteIntegracao.RegistroColetivoNAAPA
         {
             retorno.ShouldNotBeNull();
             retorno.Id.ShouldBe(id);
-            
+
             if (id == 1)
             {
                 retorno.DataRegistro.ShouldBe(DateTimeExtension.HorarioBrasilia().Date);
                 retorno.Ues.All(ue => new string[] { "EMEF UE 2", "EMEF UE 3", "EMEF Nome da UE" }.Contains(ue.NomeFormatado)).ShouldBe(true);
                 retorno.TipoReuniaoDescricao.ShouldBe(TipoReuniaoConstants.ATENDIMENTO_NAO_PRESENCIAL_NOME);
-            } else
+            }
+            else
             {
                 retorno.DataRegistro.ShouldBe(DateTimeExtension.HorarioBrasilia().Date.AddDays(1));
                 retorno.Ues.All(ue => ue.NomeFormatado.Equals("EMEF UE 2")).ShouldBe(true);

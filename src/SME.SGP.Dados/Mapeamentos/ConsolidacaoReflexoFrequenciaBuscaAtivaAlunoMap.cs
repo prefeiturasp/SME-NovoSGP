@@ -1,6 +1,4 @@
-﻿using Dapper.FluentMap.Dommel.Mapping;
-using MongoDB.Bson;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
@@ -15,7 +13,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.Modalidade).ToColumn("modalidade_codigo");
             Map(c => c.AlunoCodigo).ToColumn("aluno_codigo");
             Map(c => c.AlunoNome).ToColumn("aluno_nome");
-            Map(c => c.DataBuscaAtiva).ToColumn("data_acao");           
+            Map(c => c.DataBuscaAtiva).ToColumn("data_acao");
             Map(c => c.Mes).ToColumn("mes");
             Map(c => c.PercFrequenciaAntesAcao).ToColumn("percentual_frequencia_anterior_acao");
             Map(c => c.PercFrequenciaAposAcao).ToColumn("percentual_frequencia_atual");

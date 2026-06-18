@@ -8,7 +8,7 @@
         public int QuantidadeEstimadaDevolutivas { get; set; }
         public int QuantidadeRegistradaDevolutivas { get; set; }
     }
-    
+
     public class QuantidadeDiarioBordoRegistradoPorAnoletivoTurmaDTO
     {
         public string DreId { get; set; }

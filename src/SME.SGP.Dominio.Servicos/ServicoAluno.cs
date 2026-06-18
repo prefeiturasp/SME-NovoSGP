@@ -1,7 +1,7 @@
-﻿using SME.SGP.Dominio.Interfaces;
+﻿using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -12,7 +12,7 @@ namespace SME.SGP.Dominio.Servicos
             MarcadorFrequenciaDto marcador = null;
 
             var dataSituacao = $"{aluno.DataSituacao.Day.ToString().PadLeft(2, '0')}/{aluno.DataSituacao.Month.ToString().PadLeft(2, '0')}/{aluno.DataSituacao.Year}";
-          
+
             switch (aluno.CodigoSituacaoMatricula)
             {
                 case SituacaoMatriculaAluno.Ativo:

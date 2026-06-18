@@ -1,12 +1,12 @@
-﻿using System;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.TesteIntegracao
 {
@@ -14,7 +14,7 @@ namespace SME.SGP.TesteIntegracao
     {
         public Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosPorTurmaQuery request, CancellationToken cancellationToken)
         {
-           var alunos = new List<AlunoPorTurmaResposta>();
+            var alunos = new List<AlunoPorTurmaResposta>();
             if (!request.ConsideraInativos)
             {
                 alunos = new List<AlunoPorTurmaResposta>

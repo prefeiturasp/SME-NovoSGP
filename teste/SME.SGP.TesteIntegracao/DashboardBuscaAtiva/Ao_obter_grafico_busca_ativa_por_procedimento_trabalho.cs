@@ -39,16 +39,20 @@ namespace SME.SGP.TesteIntegracao.DashboardBuscaAtiva
             await InserirRegistrosAcao(EnumProcedimentoTrabalhoBuscaAtiva.LigacaoTelefonica, false);
 
             var useCase = ServiceProvider.GetService<IObterQuantidadeBuscaAtivaPorProcedimentosTrabalhoDreUseCase>();
-            var dto = new FiltroGraficoProcedimentoTrabalhoBuscaAtivaDto() { AnoLetivo = DateTimeExtension.HorarioBrasilia().Year, 
-                                                                             Modalidade = Modalidade.Fundamental,
-                                                                             TipoProcedimentoTrabalho = EnumProcedimentoTrabalhoBuscaAtiva.LigacaoTelefonica  };
+            var dto = new FiltroGraficoProcedimentoTrabalhoBuscaAtivaDto()
+            {
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                Modalidade = Modalidade.Fundamental,
+                TipoProcedimentoTrabalho = EnumProcedimentoTrabalhoBuscaAtiva.LigacaoTelefonica
+            };
             var retorno = await useCase.Executar(dto);
             ValidarProcedimentoLigacaoTelefonica(retorno, true);
             dto = new FiltroGraficoProcedimentoTrabalhoBuscaAtivaDto()
             {
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Modalidade = Modalidade.Fundamental,
-                DreId = 1, UeId = 1,
+                DreId = 1,
+                UeId = 1,
                 TipoProcedimentoTrabalho = EnumProcedimentoTrabalhoBuscaAtiva.LigacaoTelefonica
             };
             retorno = await useCase.Executar(dto);
@@ -151,7 +155,7 @@ namespace SME.SGP.TesteIntegracao.DashboardBuscaAtiva
             });
 
             var opcaoResposta = opcaoRespostaBase.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP
-                                                 &&  q.Ordem == (realizouContatoResponsavel ? 1 : 2)).FirstOrDefault();
+                                                 && q.Ordem == (realizouContatoResponsavel ? 1 : 2)).FirstOrDefault();
             await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
             {
                 QuestaoRegistroAcaoBuscaAtivaId = idQuestaoRegistro,
@@ -175,13 +179,13 @@ namespace SME.SGP.TesteIntegracao.DashboardBuscaAtiva
             var opcaoRespostaProcedimento = opcaoRespostaBase.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_4_ID_PROCEDIMENTO_REALIZADO
                                                              && q.Ordem.Equals((int)tipoProcedimentoTrabalho)).FirstOrDefault();
             await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
-                {
-                    QuestaoRegistroAcaoBuscaAtivaId = idQuestaoRegistro,
-                    RespostaId = opcaoRespostaProcedimento.Id,
-                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF
-                });
+            {
+                QuestaoRegistroAcaoBuscaAtivaId = idQuestaoRegistro,
+                RespostaId = opcaoRespostaProcedimento.Id,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
         }
 
     }

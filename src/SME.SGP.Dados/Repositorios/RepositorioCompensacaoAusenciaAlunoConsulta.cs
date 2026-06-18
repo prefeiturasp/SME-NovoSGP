@@ -37,10 +37,10 @@ namespace SME.SGP.Dados.Repositorios
                                     and c.bimestre = @bimestre
                                     and a.codigo_aluno = @codigoAluno
                                     and t.turma_id = @turmaId ");
-            
+
             if (!string.IsNullOrEmpty(disciplinaId))
                 query.Append("and c.disciplina_id = @disciplinaId");
-            
+
             return query.ToString();
         }
 

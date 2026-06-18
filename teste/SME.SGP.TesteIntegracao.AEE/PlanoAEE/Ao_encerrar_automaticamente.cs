@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Newtonsoft.Json;
@@ -13,6 +9,10 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.PlanoAEE
@@ -45,7 +45,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             var servicoEncerrarTratar = EncerrarPlanosAEEEstudantesInativosTratarUseCase();
             var planosAeeMensagem = ObterTodos<Dominio.PlanoAEE>();
 
-            foreach(var plano in planosAeeMensagem)
+            foreach (var plano in planosAeeMensagem)
             {
                 var mensagemJson = JsonConvert.SerializeObject(plano);
                 var retornoUseCase = await servicoEncerrarTratar.Executar(new MensagemRabbit() { Mensagem = mensagemJson });
@@ -54,7 +54,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
 
             var planosAee = ObterTodos<Dominio.PlanoAEE>();
             planosAee.ShouldNotBeNull();
-            
+
             planosAee.Count(x => x.Situacao == SituacaoPlanoAEE.ParecerCP).ShouldBeEquivalentTo(2);
             planosAee.Count(x => x.Situacao == SituacaoPlanoAEE.EncerradoAutomaticamente).ShouldBeEquivalentTo(2);
         }
@@ -68,12 +68,12 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
                 Perfil = ObterPerfilCP(),
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
             });
-            await CriarDreUe("1","1");
-            await CriarTurma(Modalidade.Fundamental, "1", "2", TipoTurma.Regular, 1, 2021,false);
+            await CriarDreUe("1", "1");
+            await CriarTurma(Modalidade.Fundamental, "1", "2", TipoTurma.Regular, 1, 2021, false);
             await CriarPlanosAeeAlunoConcluido();
-            
+
             var servicoEncerrar = EncerrarPlanosAEEEstudantesInativosUseCase();
-            
+
             var retornoUseCase = await servicoEncerrar.Executar(new MensagemRabbit());
             retornoUseCase.ShouldBeTrue();
             var planosAee = ObterTodos<Dominio.PlanoAEE>();
@@ -81,7 +81,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             planosAee.Count(x => x.Situacao == SituacaoPlanoAEE.ParecerCP).ShouldBeEquivalentTo(1);
             planosAee.Count(x => x.Situacao == SituacaoPlanoAEE.EncerradoAutomaticamente).ShouldBeEquivalentTo(0);
         }
-        
+
         [Fact(DisplayName = "Plano AEE - Deve Encerrar automáticamente os planos de Alunos Concluidos, com matricula no Ano seguinte em outra UE")]
         public async Task Deve_encerrar_aluno_concluido_com_matricula_no_ano_seguinte_em_outra_ue()
         {
@@ -91,10 +91,10 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
                 Perfil = ObterPerfilCP(),
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
             });
-            await CriarDreUe("2","2");
-            await CriarTurma(Modalidade.EducacaoInfantil, "2", "2", TipoTurma.Regular, 2, 2021,false);
+            await CriarDreUe("2", "2");
+            await CriarTurma(Modalidade.EducacaoInfantil, "2", "2", TipoTurma.Regular, 2, 2021, false);
             await CriarPlanosAeeAlunoConcluido();
-            
+
             var servicoEncerrarTratar = EncerrarPlanosAEEEstudantesInativosTratarUseCase();
             var planosAeeMensagem = ObterTodos<Dominio.PlanoAEE>();
             var mensagemJson = JsonConvert.SerializeObject(planosAeeMensagem.FirstOrDefault());
@@ -180,14 +180,14 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             var planosAee = ObterTodos<Dominio.PlanoAEE>();
             planosAee.ShouldNotBeNull();
 
-            var retornoUseCaseTratar = await servicoEncerrarTratar.Executar(new MensagemRabbit(JsonConvert.SerializeObject(planosAee.FirstOrDefault()))); 
+            var retornoUseCaseTratar = await servicoEncerrarTratar.Executar(new MensagemRabbit(JsonConvert.SerializeObject(planosAee.FirstOrDefault())));
             retornoUseCaseTratar.ShouldBeTrue();
 
             var planosAEEPosExecucao = ObterTodos<Dominio.PlanoAEE>();
-            planosAEEPosExecucao.Count(p=> p.Situacao == SituacaoPlanoAEE.EncerradoAutomaticamente).ShouldBe(1);
+            planosAEEPosExecucao.Count(p => p.Situacao == SituacaoPlanoAEE.EncerradoAutomaticamente).ShouldBe(1);
         }
 
-        private new async Task CriarDreUe(string codigoDre,string codigoUe)
+        private new async Task CriarDreUe(string codigoDre, string codigoUe)
         {
             await InserirNaBase(new Dre
             {

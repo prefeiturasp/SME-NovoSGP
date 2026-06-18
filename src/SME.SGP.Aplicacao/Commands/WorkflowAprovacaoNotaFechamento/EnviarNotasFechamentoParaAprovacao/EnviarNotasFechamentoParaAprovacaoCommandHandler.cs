@@ -38,6 +38,6 @@ namespace SME.SGP.Aplicacao
                     NotaAnterior = notaFechamento.NotaAnterior
                 });
             }
-        } 
+        }
     }
 }

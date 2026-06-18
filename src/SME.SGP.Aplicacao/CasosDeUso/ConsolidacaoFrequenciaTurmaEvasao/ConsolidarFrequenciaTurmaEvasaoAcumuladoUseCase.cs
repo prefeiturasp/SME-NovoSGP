@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var dre in dres)
                 {
-                    var ues = await mediator.Send(new ObterUEsIdsPorDreQuery(dre));                    
+                    var ues = await mediator.Send(new ObterUEsIdsPorDreQuery(dre));
 
                     foreach (var ue in ues)
                     {
@@ -47,9 +47,9 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
-        private IEnumerable<(string AlunoCodigo, 
-                             string AlunoNome, 
-                             double PercentualFrequencia)> ObterAlunosFrequenciaInferior50(IEnumerable<AlunoPorTurmaResposta> alunos, 
+        private IEnumerable<(string AlunoCodigo,
+                             string AlunoNome,
+                             double PercentualFrequencia)> ObterAlunosFrequenciaInferior50(IEnumerable<AlunoPorTurmaResposta> alunos,
                                                                                            IEnumerable<FrequenciaAluno> frequencias)
         {
             foreach (var frequencia in frequencias.Where(a => a.PercentualFrequencia < 50))
@@ -84,7 +84,7 @@ namespace SME.SGP.Aplicacao
                 await RegistrarFrequenciaTurmaEvasaoAluno(id, ObterAlunosFrequenciaInferior50(alunos, alunosFrequencia));
                 unitOfWork.PersistirTransacao();
             }
-            catch 
+            catch
             {
                 unitOfWork.Rollback();
                 throw;

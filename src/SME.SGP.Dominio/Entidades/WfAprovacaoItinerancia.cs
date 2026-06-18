@@ -1,6 +1,6 @@
 ﻿namespace SME.SGP.Dominio
 {
-    public class WfAprovacaoItinerancia 
+    public class WfAprovacaoItinerancia
     {
         public long Id { get; set; }
         public long WfAprovacaoId { get; set; }

@@ -1,6 +1,4 @@
-﻿using Elasticsearch.Net;
-using MediatR;
-using SME.SGP.Dominio.Enumerados;
+﻿using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,10 +12,10 @@ namespace SME.SGP.Aplicacao
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
-        
+
         public async Task<bool> Handle(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery request, CancellationToken cancellationToken)
         {
-            return await mediator.Send(new PodePersistirTurmaDisciplinaQuery(request.Usuario.CodigoRf, request.CodigoTurma, request.ComponenteCurricularId.ToString(), request.Data.Ticks));     
+            return await mediator.Send(new PodePersistirTurmaDisciplinaQuery(request.Usuario.CodigoRf, request.CodigoTurma, request.ComponenteCurricularId.ToString(), request.Data.Ticks));
         }
     }
 }

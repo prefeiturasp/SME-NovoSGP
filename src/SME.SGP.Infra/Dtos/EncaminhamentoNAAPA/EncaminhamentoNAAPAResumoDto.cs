@@ -1,5 +1,5 @@
-﻿using System;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
+using System;
 
 namespace SME.SGP.Infra
 {
@@ -11,7 +11,7 @@ namespace SME.SGP.Infra
         public TipoEscola TipoEscola { get; set; }
         public string NomeAluno { get; set; }
         public string CodigoAluno { get; set; }
-        public DateTime? DataAberturaQueixaInicio  { get; set; }
+        public DateTime? DataAberturaQueixaInicio { get; set; }
         public string Situacao { get; set; }
         public string Prioridade { get; set; }
         public bool EhMatriculadoTurmaPAP { get; set; }

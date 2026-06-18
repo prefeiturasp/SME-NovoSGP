@@ -3,15 +3,14 @@ using MediatR;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterQuestoesObrigatoriasNaoRespondidasQuery : IRequest<IEnumerable<QuestaoObrigatoriaNaoRespondidaDto>>
     {
-       
-        public ObterQuestoesObrigatoriasNaoRespondidasQuery(SecaoQuestionarioDto secaoAValidar, 
+
+        public ObterQuestoesObrigatoriasNaoRespondidasQuery(SecaoQuestionarioDto secaoAValidar,
                                                             IEnumerable<RespostaQuestaoObrigatoriaDto> respostas,
                                                             Func<SecaoQuestionarioDto, IEnumerable<QuestaoDto>, List<QuestaoObrigatoriaNaoRespondidaDto>, Task> addQuestoesObrigatoriasNaoPreenchidasEspecificas = null)
         {

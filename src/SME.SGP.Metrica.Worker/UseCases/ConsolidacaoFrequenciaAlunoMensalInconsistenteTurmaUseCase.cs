@@ -22,7 +22,7 @@ namespace SME.SGP.Metrica.Worker.UseCases
             var turma = mensagem.ObterObjetoMensagem<FiltroIdDto>();
             var registrosInconsistentes = await repositorioSGP.ObterConsolidacaoFrequenciaAlunoMensalInconsistente(turma.Id);
 
-            foreach(var registroInconsistente in registrosInconsistentes)
+            foreach (var registroInconsistente in registrosInconsistentes)
                 await repositorioInconsistencia.InserirAsync(registroInconsistente);
 
             return true;

@@ -8,7 +8,7 @@
             DreId = dreId;
         }
 
-        public int AnoLetivo { get; set;  }
+        public int AnoLetivo { get; set; }
         public long DreId { get; set; }
     }
 }

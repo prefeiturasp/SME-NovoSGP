@@ -1,17 +1,16 @@
-﻿using SME.SGP.Dominio.Enumerados;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Shouldly;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using SME.SGP.Infra;
-using MediatR;
-using Microsoft.Extensions.DependencyInjection;
-using SME.SGP.Aplicacao;
-using Shouldly;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 {

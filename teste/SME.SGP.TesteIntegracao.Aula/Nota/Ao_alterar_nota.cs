@@ -10,7 +10,6 @@ using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Nota
 {
@@ -22,7 +21,7 @@ namespace SME.SGP.TesteIntegracao.Nota
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
-            
+
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery, IEnumerable<ComponenteCurricularEol>>), typeof(ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQueryHandlerFakePortugues), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaEAnoLetivoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosPorTurmaEAnoLetivoQueryHandlerFake), ServiceLifetime.Scoped));
@@ -66,7 +65,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             var filtroNota = ObterFiltroNotas(ObterPerfilProfessor(), TipoNota.Conceito, ANO_1);
 
             await CriarEstruturaBaseDeNota(filtroNota);
-            
+
             await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_1, ATIVIDADE_AVALIATIVA_1, null, (int)ConceitoValores.NS);
             await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_2, ATIVIDADE_AVALIATIVA_1, null, (int)ConceitoValores.S);
             await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_3, ATIVIDADE_AVALIATIVA_1, null, (int)ConceitoValores.P);
@@ -108,7 +107,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             var notaconceito = ObterNotaNumericaPersistencia(filtroNota);
 
             var listaNotaConceito = ObterNotaConceitoListar(filtroNota);
-            
+
             await ExecutarNotasConceito(notaconceito, listaNotaConceito, false);
         }
 

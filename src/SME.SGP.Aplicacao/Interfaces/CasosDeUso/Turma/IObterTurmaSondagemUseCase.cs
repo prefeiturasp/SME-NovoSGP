@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IObterTurmaSondagemUseCase 
+    public interface IObterTurmaSondagemUseCase
     {
         Task<IEnumerable<TurmaRetornoDto>> Executar(string ueCodigo, int anoLetivo);
     }

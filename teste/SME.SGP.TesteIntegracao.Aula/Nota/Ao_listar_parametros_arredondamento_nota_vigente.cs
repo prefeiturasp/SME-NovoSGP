@@ -9,7 +9,6 @@ using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -17,7 +16,7 @@ namespace SME.SGP.TesteIntegracao.Nota
 {
     public class Ao_listar_parametros_arredondamento_nota_vigente : NotaTesteBase
     {
-        
+
         public Ao_listar_parametros_arredondamento_nota_vigente(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }

@@ -24,7 +24,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia.ServicosFakes
                         CodigoAluno = "1",
                         CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
                         DataMatricula = new System.DateTime(dataAtual.Year, dataAtual.Month, 10)
-                    }                
+                    }
                 }.AsEnumerable());
             }
 

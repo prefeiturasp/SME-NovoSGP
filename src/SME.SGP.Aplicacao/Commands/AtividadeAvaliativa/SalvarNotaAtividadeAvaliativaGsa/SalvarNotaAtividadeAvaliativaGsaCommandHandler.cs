@@ -1,9 +1,9 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -26,8 +26,8 @@ namespace SME.SGP.Aplicacao
 
         private async Task InserirAtividade(SalvarNotaAtividadeAvaliativaGsaCommand request)
         {
-            var notaConceito = new NotaConceito() 
-            { 
+            var notaConceito = new NotaConceito()
+            {
                 AtividadeAvaliativaID = request.AtividadeId,
                 AlunoId = request.CodigoAluno,
                 StatusGsa = request.StatusGsa,

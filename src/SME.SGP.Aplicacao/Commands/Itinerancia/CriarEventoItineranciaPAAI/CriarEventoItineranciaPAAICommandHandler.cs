@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao.Commands
             catch (Exception e)
             {
                 throw new ErroInternoException($"Erro ao salvar evento da itinerância: {e.Message}");
-            }        
+            }
         }
 
         private async Task<long> ObterTipoEventoItinerancia()
@@ -72,9 +72,9 @@ namespace SME.SGP.Aplicacao.Commands
         {
             var descricao = new StringBuilder();
             descricao.AppendLine($"Evento cadastrado automaticamente a partir do registro de itinerância do dia {request.DataItinerancia:dd/MM/yyyy}");
-            
+
             descricao.AppendLine("Objetivos:");
-            foreach(var objetivo in request.Objetivos)
+            foreach (var objetivo in request.Objetivos)
                 descricao.AppendLine($" - {objetivo.Nome}");
 
             return descricao.ToString();

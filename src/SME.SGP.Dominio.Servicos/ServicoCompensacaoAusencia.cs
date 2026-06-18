@@ -293,7 +293,7 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     var listaIdsAluno = listaAlunosDto.Select(x => x.Id);
                     var consultaAlunosFrequencia = obterFrequenciaPorListaDeAlunosDisciplinaData.Where(c => listaIdsAluno.Contains(c.CodigoAluno) && disciplinasId.Contains(c.DisciplinaId) && c.PeriodoFim == periodo.PeriodoFim && c.TurmaId == turmaId);
-                    
+
                     if (listaAlunosDto != null)
                     {
                         foreach (var alunoDto in listaAlunosDto)

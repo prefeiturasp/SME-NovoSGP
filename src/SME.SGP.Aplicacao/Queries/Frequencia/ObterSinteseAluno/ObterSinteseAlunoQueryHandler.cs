@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         {
             var sintese = SinteseEnum.NaoFrequente;
 
-            if (request.PercentualFrequencia.NaoEhNulo() && 
+            if (request.PercentualFrequencia.NaoEhNulo() &&
                 request.PercentualFrequencia >= await mediator.Send(new ObterFrequenciaMediaQuery(request.Disciplina, request.AnoLetivo)))
                 sintese = SinteseEnum.Frequente;
 

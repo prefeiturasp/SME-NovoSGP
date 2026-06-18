@@ -1,9 +1,9 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         public async Task<FechamentoTurma> Handle(ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestreTipoCalendarioQuery request, CancellationToken cancellationToken)
         {
             return await repositorioFechamentoTurmaConsulta
-                .ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestre(request.CodigoTurma, request.Bimestre, request.AnoLetivoTurma, request.Semestre,request.TipoCalendario);
+                .ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestre(request.CodigoTurma, request.Bimestre, request.AnoLetivoTurma, request.Semestre, request.TipoCalendario);
         }
     }
 }

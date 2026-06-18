@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -14,6 +10,9 @@ using SME.SGP.TesteIntegracao.PlanoAula.Base;
 using SME.SGP.TesteIntegracao.PlanoAula.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.PlanoAula
@@ -22,11 +21,11 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
     {
         public Ao_cadastrar_plano_aula_professor(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
-        
+
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
-            
+
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAbrangenciaPorTurmaEConsideraHistoricoQuery, AbrangenciaFiltroRetorno>), typeof(ObterAbrangenciaPorTurmaEConsideraHistoricoQueryHandlerFakeFundamental6A), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
         }
@@ -36,9 +35,9 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
         {
             var planoAulaDto = ObterPlanoAula(true, long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138));
 
-            await CriarDadosBasicos(ObterFiltroPlanoAula(COMPONENTE_LINGUA_PORTUGUESA_ID_138, 
+            await CriarDadosBasicos(ObterFiltroPlanoAula(COMPONENTE_LINGUA_PORTUGUESA_ID_138,
                 Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio));
-                
+
             var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
 
             var retorno = await salvarPlanoAulaUseCase.Executar(planoAulaDto);
@@ -46,18 +45,18 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             retorno.Id.ShouldBe(1);
 
             var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
-            objetivoAprendizagemAulas.Count(w=> !w.Excluido).ShouldBe(3);
-            objetivoAprendizagemAulas.Count(w=> w.Excluido).ShouldBe(0);
+            objetivoAprendizagemAulas.Count(w => !w.Excluido).ShouldBe(3);
+            objetivoAprendizagemAulas.Count(w => w.Excluido).ShouldBe(0);
         }
-        
+
         [Fact]
         public async Task Deve_cadastrar_plano_aula_componente_diferente_regencia_sem_objetivos_aprendizagem()
         {
             var planoAulaDto = ObterPlanoAula(false, long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138));
 
-            await CriarDadosBasicos(ObterFiltroPlanoAula(COMPONENTE_LINGUA_PORTUGUESA_ID_138, 
+            await CriarDadosBasicos(ObterFiltroPlanoAula(COMPONENTE_LINGUA_PORTUGUESA_ID_138,
                 Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio));
-                
+
             var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
 
             var retorno = await salvarPlanoAulaUseCase.Executar(planoAulaDto);
@@ -67,15 +66,15 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
             objetivoAprendizagemAulas.Count.ShouldBe(0);
         }
-        
+
         [Fact]
         public async Task Deve_cadastrar_plano_aula_componente_regencia_com_objetivos_aprendizagem()
         {
-            var planoAulaDto = ObterPlanoAula(true,COMPONENTE_CURRICULAR_ARTES_ID_139);
+            var planoAulaDto = ObterPlanoAula(true, COMPONENTE_CURRICULAR_ARTES_ID_139);
 
-            await CriarDadosBasicos(ObterFiltroPlanoAula(COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), 
+            await CriarDadosBasicos(ObterFiltroPlanoAula(COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(),
                 Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio));
-                
+
             var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
 
             var retorno = await salvarPlanoAulaUseCase.Executar(planoAulaDto);
@@ -83,24 +82,24 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             retorno.Id.ShouldBe(1);
 
             var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
-            objetivoAprendizagemAulas.Count(w=> !w.Excluido).ShouldBe(3);
-            objetivoAprendizagemAulas.Count(w=> w.Excluido).ShouldBe(0);
+            objetivoAprendizagemAulas.Count(w => !w.Excluido).ShouldBe(3);
+            objetivoAprendizagemAulas.Count(w => w.Excluido).ShouldBe(0);
         }
-        
+
         [Fact]
         public async Task Deve_cadastrar_plano_aula_componente_regencia_sem_objetivos_aprendizagem_eja()
         {
-            var planoAulaDto = ObterPlanoAula(false,COMPONENTE_CURRICULAR_ARTES_ID_139);
-        
+            var planoAulaDto = ObterPlanoAula(false, COMPONENTE_CURRICULAR_ARTES_ID_139);
+
             await CriarDadosBasicos(ObterFiltroPlanoAula(COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(),
                 Modalidade.EJA, ModalidadeTipoCalendario.EJA));
-                
+
             var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
-        
+
             var retorno = await salvarPlanoAulaUseCase.Executar(planoAulaDto);
             retorno.ShouldNotBeNull();
             retorno.Id.ShouldBe(1);
-        
+
             var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
             objetivoAprendizagemAulas.Count.ShouldBe(0);
         }
@@ -135,7 +134,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
                 Descricao = "<p><span>Objetivos específicos e desenvolvimento da aula</span></p>",
                 LicaoCasa = null,
                 RecuperacaoAula = null
-                
+
             };
 
             if (incluirObjetivosAprendizagem)

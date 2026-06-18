@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SME.SGP.Infra
+﻿namespace SME.SGP.Infra
 {
     public class FiltroFuncionarioDto
     {
@@ -10,7 +8,7 @@ namespace SME.SGP.Infra
         public string NomeServidor { get; set; }
 
         public FiltroFuncionarioDto()
-        {}
+        { }
 
         public FiltroFuncionarioDto(string codigoDre, string codigoUe, string codigoRf, string nomeServidor)
         {
@@ -30,5 +28,5 @@ namespace SME.SGP.Infra
             CodigoUE = codigoUe;
         }
     }
-    
+
 }

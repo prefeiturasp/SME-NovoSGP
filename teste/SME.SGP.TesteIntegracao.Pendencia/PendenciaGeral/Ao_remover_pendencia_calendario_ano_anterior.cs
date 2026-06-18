@@ -1,20 +1,19 @@
 ﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Newtonsoft.Json;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.PendenciaGeral.ServicosFake;
+using SME.SGP.TesteIntegracao.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using SME.SGP.Infra;
 using Xunit;
-using SME.SGP.TesteIntegracao.ServicosFake;
 
 namespace SME.SGP.TesteIntegracao.PendenciaGeral
 {
@@ -36,14 +35,14 @@ namespace SME.SGP.TesteIntegracao.PendenciaGeral
         {
             await CriarBaseReplicarParametro();
             var useCase = ServiceProvider.GetService<IReplicarParametrosAnoAnteriorUseCase>();
-            var dtoParametro = new FiltroInclusaoParametrosAnoAnterior() {AnoLetivo = DateTimeExtension.HorarioBrasilia().Year, ModalidadeTipoCalendario = ModalidadeTipoCalendario.Infantil};
-            var mensagemParaPublicar = new MensagemRabbit() {Mensagem = JsonConvert.SerializeObject(dtoParametro)};
+            var dtoParametro = new FiltroInclusaoParametrosAnoAnterior() { AnoLetivo = DateTimeExtension.HorarioBrasilia().Year, ModalidadeTipoCalendario = ModalidadeTipoCalendario.Infantil };
+            var mensagemParaPublicar = new MensagemRabbit() { Mensagem = JsonConvert.SerializeObject(dtoParametro) };
             var retornoUseCase = await useCase.Executar(mensagemParaPublicar);
             retornoUseCase.ShouldBeTrue();
             var obterTodosParam = ObterTodos<ParametrosSistema>();
             obterTodosParam.Count.ShouldBeEquivalentTo(2);
         }
-        
+
         [Fact(DisplayName = "Pendências Calendário - Exclusão de Pendencias Calendario")]
         public async Task Ao_Excluir_Pendencia_Calendario_Ano_Anterior_Calendario_PorUe()
         {
@@ -51,15 +50,15 @@ namespace SME.SGP.TesteIntegracao.PendenciaGeral
             await CriarBaseReplicarExcluirCalendarioAnoAnteriorCalendario();
             var pendenciasAntesDaExlusao = ObterTodos<Pendencia>().Where(x => !x.Excluido);
             pendenciasAntesDaExlusao.Count().ShouldBeEquivalentTo(3);
-            
+
             var useCase = ServiceProvider.GetService<IRemoverPendenciasCalendarioNoFinalDoAnoLetivoUseCase>();
 
             var pendenciasParaExcluir = pendenciasAntesDaExlusao.Select(x => x.Id).ToArray();
-            
-            var mensagemParaPublicar = new MensagemRabbit() {Mensagem = JsonConvert.SerializeObject(pendenciasParaExcluir)};
+
+            var mensagemParaPublicar = new MensagemRabbit() { Mensagem = JsonConvert.SerializeObject(pendenciasParaExcluir) };
             var retornoUseCase = await useCase.Executar(mensagemParaPublicar);
             retornoUseCase.ShouldBeTrue();
-            
+
             var pendenciasDepoisDaExlusao = ObterTodos<Pendencia>().Where(x => x.Excluido);
             pendenciasDepoisDaExlusao.Count().ShouldBeEquivalentTo(3);
         }
@@ -99,7 +98,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaGeral
         {
             await InserirNaBase(new Pendencia()
             {
-                Tipo = TipoPendencia.AulaNaoLetivo ,
+                Tipo = TipoPendencia.AulaNaoLetivo,
                 Descricao = "Aulas criadas em dias não letivos",
                 Titulo = "Aulas criadas em dias não letivos",
                 CriadoPor = "",
@@ -108,7 +107,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaGeral
             });
             await InserirNaBase(new Pendencia()
             {
-                Tipo = TipoPendencia.CalendarioLetivoInsuficiente ,
+                Tipo = TipoPendencia.CalendarioLetivoInsuficiente,
                 Descricao = "Calendário com dias letivos abaixo do permitido",
                 Titulo = "Calendário com dias letivos abaixo do permitido",
                 CriadoPor = "",
@@ -117,7 +116,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaGeral
             });
             await InserirNaBase(new Pendencia()
             {
-                Tipo = TipoPendencia.CadastroEventoPendente  ,
+                Tipo = TipoPendencia.CadastroEventoPendente,
                 Descricao = "Cadastro de eventos pendente",
                 Titulo = "Cadastro de eventos pendente",
                 CriadoPor = "",

@@ -18,7 +18,7 @@ namespace SME.SGP.Dominio
         public Modalidade ModalidadeCodigo { get; set; }
         public ModalidadeTipoCalendario ModalidadeTipoCalendario
         {
-                get => ModalidadeCodigo.ObterModalidadeTipoCalendario();
+            get => ModalidadeCodigo.ObterModalidadeTipoCalendario();
         }
 
         public string Nome { get; set; }
@@ -108,7 +108,7 @@ namespace SME.SGP.Dominio
         public IEnumerable<int> ObterTiposRegularesDiferentes()
         {
             return TiposRegulares
-                .Where(a => a != TipoTurma).Select(s=> (int)s)
+                .Where(a => a != TipoTurma).Select(s => (int)s)
                 .ToList();
         }
         public bool DeveVerificarRegraRegulares()

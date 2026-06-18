@@ -1,14 +1,14 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
+using SME.SGP.Infra.Utilitarios;
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio;
-using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao
 {

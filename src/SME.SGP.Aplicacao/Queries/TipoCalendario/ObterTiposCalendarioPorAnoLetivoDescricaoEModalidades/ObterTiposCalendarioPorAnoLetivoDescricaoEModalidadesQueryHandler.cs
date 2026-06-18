@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
                 var modalidades = request.Modalidades.Select(m => (Modalidade)m);
 
                 modalidadesTipoCalendario = modalidades.Select(m => (int)m.ObterModalidadeTipoCalendario()).Distinct().ToArray();
-            }            
+            }
 
             return await repositorioTipoCalendario.ListarPorAnoLetivoDescricaoEModalidades(request.AnoLetivo, request.Descricao, modalidadesTipoCalendario);
         }

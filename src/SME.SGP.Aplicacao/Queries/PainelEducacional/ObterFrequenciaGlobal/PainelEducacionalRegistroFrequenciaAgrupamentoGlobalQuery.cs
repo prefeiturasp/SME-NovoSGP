@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterFrequenciaGlobal
             CodigoUe = codigoUe;
         }
 
-        public int AnoLetivo { get; set; } 
+        public int AnoLetivo { get; set; }
         public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }
     }

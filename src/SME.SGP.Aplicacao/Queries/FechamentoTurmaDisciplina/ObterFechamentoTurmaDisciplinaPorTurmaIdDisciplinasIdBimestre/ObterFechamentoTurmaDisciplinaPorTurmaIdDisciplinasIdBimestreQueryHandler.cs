@@ -1,9 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,7 +15,7 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorioFechamentoTurmaDisciplina = repositorio;
         }
-        public async  Task<IEnumerable<FechamentoTurmaDisciplina>> Handle(ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinasIdBimestreQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<FechamentoTurmaDisciplina>> Handle(ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinasIdBimestreQuery request, CancellationToken cancellationToken)
             => await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(request.TurmaId, request.DisciplinasId, request.Bimestre, request.TipoCalendario);
     }
 }

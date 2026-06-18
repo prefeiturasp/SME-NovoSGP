@@ -5,7 +5,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirAulaUnicaCommand: IRequest<RetornoBaseDto>
+    public class ExcluirAulaUnicaCommand : IRequest<RetornoBaseDto>
     {
         public ExcluirAulaUnicaCommand(Usuario usuario, Aula aula)
         {
@@ -17,11 +17,11 @@ namespace SME.SGP.Aplicacao
         public Aula Aula { get; set; } = new Aula();
     }
 
-    public class ExcluirAulaUnicaCommandValidator: AbstractValidator<ExcluirAulaUnicaCommand>
+    public class ExcluirAulaUnicaCommandValidator : AbstractValidator<ExcluirAulaUnicaCommand>
     {
         public ExcluirAulaUnicaCommandValidator()
         {
-          
+
         }
     }
 }

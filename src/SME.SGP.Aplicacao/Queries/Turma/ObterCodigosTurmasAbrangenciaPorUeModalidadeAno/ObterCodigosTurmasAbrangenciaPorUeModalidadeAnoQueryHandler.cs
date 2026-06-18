@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<long>> Handle(ObterCodigosTurmasAbrangenciaPorUeModalidadeAnoQuery request, CancellationToken cancellationToken)
         {
-            return await consultasAbrangencia.ObterCodigoTurmasAbrangencia(request.UeCodigo,request.Modalidade,request.Periodo,request.ConsideraHistorico,request.AnoLetivo,request.Tipos,request.DesconsideraNovosAnosInfantil);
+            return await consultasAbrangencia.ObterCodigoTurmasAbrangencia(request.UeCodigo, request.Modalidade, request.Periodo, request.ConsideraHistorico, request.AnoLetivo, request.Tipos, request.DesconsideraNovosAnosInfantil);
         }
     }
 }

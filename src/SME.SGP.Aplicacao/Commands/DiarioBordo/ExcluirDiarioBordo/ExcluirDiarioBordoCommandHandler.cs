@@ -1,12 +1,9 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using System;
-using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
-using Minio.DataModel;
 
 namespace SME.SGP.Aplicacao
 {
@@ -17,8 +14,8 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         public readonly IUnitOfWork unitOfWork;
 
-        public ExcluirDiarioBordoCommandHandler(IRepositorioDiarioBordo repositorioDiarioBordo, 
-                                                IRepositorioDiarioBordoObservacao repositorioDiarioBordoObservacao, 
+        public ExcluirDiarioBordoCommandHandler(IRepositorioDiarioBordo repositorioDiarioBordo,
+                                                IRepositorioDiarioBordoObservacao repositorioDiarioBordoObservacao,
                                                 IMediator mediator, IUnitOfWork unitOfWork)
         {
             this.repositorioDiarioBordo = repositorioDiarioBordo ?? throw new ArgumentNullException(nameof(repositorioDiarioBordo));

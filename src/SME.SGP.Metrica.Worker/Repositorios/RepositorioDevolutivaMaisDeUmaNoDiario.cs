@@ -10,7 +10,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 {
     public class RepositorioDevolutivaMaisDeUmaNoDiario : RepositorioElasticBase<DevolutivaMaisDeUmaNoDiario>, IRepositorioDevolutivaMaisDeUmaNoDiario
     {
-        public RepositorioDevolutivaMaisDeUmaNoDiario(IElasticClient elasticClient, IServicoTelemetria servicoTelemetria, IOptions<ElasticOptions> elasticOptions) : 
+        public RepositorioDevolutivaMaisDeUmaNoDiario(IElasticClient elasticClient, IServicoTelemetria servicoTelemetria, IOptions<ElasticOptions> elasticOptions) :
             base(elasticClient, servicoTelemetria, elasticOptions, "metricas_sgp_devolutiva_mais_um_diario")
         {
         }

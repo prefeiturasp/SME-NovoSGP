@@ -1,14 +1,13 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
-using SME.SGP.Infra;
-using System.Linq;
-using System.Threading;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -25,32 +24,32 @@ namespace SME.SGP.Aplicacao
         {
             var encaminhamentoNAAPA = await mediator.Send(new ObterEncaminhamentoNAAPAComTurmaPorIdQuery(id));
 
-            if(encaminhamentoNAAPA.EhNulo())
+            if (encaminhamentoNAAPA.EhNulo())
                 throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.ENCAMINHAMENTO_NAO_ENCONTRADO);
 
-            var aluno = await ObterAlunoPorCodigoETurma(encaminhamentoNAAPA.AlunoCodigo, encaminhamentoNAAPA.Turma.CodigoTurma,encaminhamentoNAAPA.Turma.AnoLetivo);
-            var nomeUe = encaminhamentoNAAPA.Turma.Ue.TipoEscola == TipoEscola.Nenhum ? encaminhamentoNAAPA.Turma.Ue.Nome : 
+            var aluno = await ObterAlunoPorCodigoETurma(encaminhamentoNAAPA.AlunoCodigo, encaminhamentoNAAPA.Turma.CodigoTurma, encaminhamentoNAAPA.Turma.AnoLetivo);
+            var nomeUe = encaminhamentoNAAPA.Turma.Ue.TipoEscola == TipoEscola.Nenhum ? encaminhamentoNAAPA.Turma.Ue.Nome :
                             $"{encaminhamentoNAAPA.Turma.Ue.TipoEscola.ObterNomeCurto()} {encaminhamentoNAAPA.Turma.Ue.Nome}";
 
-            if(encaminhamentoNAAPA.Situacao == Dominio.Enumerados.SituacaoNAAPA.AguardandoAtendimento)
+            if (encaminhamentoNAAPA.Situacao == Dominio.Enumerados.SituacaoNAAPA.AguardandoAtendimento)
                 await VerificaSeEstaEmAguardandoAtendimentoIndevidamente(encaminhamentoNAAPA);
 
             return new EncaminhamentoNAAPARespostaDto()
             {
                 Aluno = aluno,
-                
+
                 DreId = encaminhamentoNAAPA.Turma.Ue.Dre.Id,
                 DreCodigo = encaminhamentoNAAPA.Turma.Ue.Dre.CodigoDre,
                 DreNome = encaminhamentoNAAPA.Turma.Ue.Dre.Nome,
-                
+
                 UeId = encaminhamentoNAAPA.Turma.Ue.Id,
                 UeCodigo = encaminhamentoNAAPA.Turma.Ue.CodigoUe,
                 UeNome = nomeUe,
-                
+
                 TurmaId = encaminhamentoNAAPA.Turma.Id,
                 TurmaCodigo = encaminhamentoNAAPA.Turma.CodigoTurma,
                 TurmaNome = encaminhamentoNAAPA.Turma.Nome,
-                
+
                 AnoLetivo = encaminhamentoNAAPA.Turma.AnoLetivo,
                 Situacao = (int)encaminhamentoNAAPA.Situacao,
                 DescricaoSituacao = encaminhamentoNAAPA.Situacao.Name(),
@@ -60,15 +59,15 @@ namespace SME.SGP.Aplicacao
         }
         private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, int anoLetivo)
         {
-            return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
+            return await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
         }
-        private async Task<AlunoTurmaReduzidoDto> ObterAlunoPorCodigoETurma(string alunoCodigo, string turmaCodigo,int anoLetivo)
+        private async Task<AlunoTurmaReduzidoDto> ObterAlunoPorCodigoETurma(string alunoCodigo, string turmaCodigo, int anoLetivo)
         {
             var aluno = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(turmaCodigo, alunoCodigo, true));
-            if (aluno.EhNulo()) throw new NegocioException(MensagemNegocioEOL.NAO_LOCALIZADO_INFORMACOES_ALUNO_TURMA_EOL);           
+            if (aluno.EhNulo()) throw new NegocioException(MensagemNegocioEOL.NAO_LOCALIZADO_INFORMACOES_ALUNO_TURMA_EOL);
 
             var frequencia = await mediator.Send(new ObterConsultaFrequenciaGeralAlunoQuery(alunoCodigo, turmaCodigo));
-            var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(new []{aluno.CodigoAluno}, anoLetivo);
+            var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(new[] { aluno.CodigoAluno }, anoLetivo);
             var alunoReduzido = new AlunoTurmaReduzidoDto()
             {
                 Nome = !string.IsNullOrEmpty(aluno.NomeAluno) ? aluno.NomeAluno : aluno.NomeSocialAluno,
@@ -113,7 +112,7 @@ namespace SME.SGP.Aplicacao
         {
             bool necessitaAlteracao = await mediator.Send(new VerificaSituacaoEncaminhamentoNAAPASeEstaAguardandoAtendimentoIndevidamenteQuery(encaminhamento.Id));
             if (necessitaAlteracao)
-                await mediator.Send(new AlterarSituacaoNAAPACommand(encaminhamento, Dominio.Enumerados.SituacaoNAAPA.EmAtendimento));        
+                await mediator.Send(new AlterarSituacaoNAAPACommand(encaminhamento, Dominio.Enumerados.SituacaoNAAPA.EmAtendimento));
         }
     }
 }

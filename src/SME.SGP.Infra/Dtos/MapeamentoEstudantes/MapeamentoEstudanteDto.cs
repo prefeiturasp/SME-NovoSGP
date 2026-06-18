@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace SME.SGP.Infra.Dtos.MapeamentoEstudantes
 {
@@ -16,7 +12,7 @@ namespace SME.SGP.Infra.Dtos.MapeamentoEstudantes
         public long TurmaId { get; set; }
         public string AlunoCodigo { get; set; }
         public string AlunoNome { get; set; }
-        public int Bimestre {  get; set; }
+        public int Bimestre { get; set; }
         public List<MapeamentoEstudanteSecaoDto> Secoes { get; set; }
     }
 }

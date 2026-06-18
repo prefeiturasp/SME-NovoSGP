@@ -1,5 +1,6 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
+using Newtonsoft.Json;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -7,13 +8,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Constantes;
 
 namespace SME.SGP.Aplicacao
 {
@@ -23,7 +20,7 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private readonly IHttpClientFactory httpClientFactory;
 
-        public ObterComponentesCurricularesPorIdsQueryHandler(IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular, 
+        public ObterComponentesCurricularesPorIdsQueryHandler(IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
                                                               IMediator mediator,
                                                               IHttpClientFactory httpClientFactory)
         {
@@ -48,8 +45,8 @@ namespace SME.SGP.Aplicacao
         {
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
             var parametros = JsonConvert.SerializeObject(idsComponentesCurricularesAgrupamento);
-            
-            var resposta = await httpClient.PostAsync(ServicosEolConstants.URL_COMPONENTES_CURRICULARES_AGRUPAMENTO_TERRITORIO_SABER, 
+
+            var resposta = await httpClient.PostAsync(ServicosEolConstants.URL_COMPONENTES_CURRICULARES_AGRUPAMENTO_TERRITORIO_SABER,
                                                     new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
             if (!resposta.IsSuccessStatusCode)
             {
@@ -62,24 +59,24 @@ namespace SME.SGP.Aplicacao
             var componentesCurricularesEol = JsonConvert.DeserializeObject<List<ComponenteCurricularEol>>(json);
             var componentesCurricularesSgp = await mediator.Send(new ObterInfoPedagogicasComponentesCurricularesPorIdsQuery(componentesCurricularesEol.ObterCodigos()));
             componentesCurricularesEol.PreencherInformacoesPegagogicasSgp(componentesCurricularesSgp);
-            
+
             return componentesCurricularesEol.Select(cc => new DisciplinaDto()
-                    {
-                        Id = cc.Codigo,
-                        CodigoComponenteCurricular = cc.Codigo,
-                        CodigoComponenteCurricularTerritorioSaber = cc.CodigoComponenteTerritorioSaber,
-                        CdComponenteCurricularPai = cc.CodigoComponenteCurricularPai,
-                        Compartilhada = cc.Compartilhada,
-                        GrupoMatrizId = cc.GrupoMatriz?.Id ?? 0,
-                        GrupoMatrizNome = cc.GrupoMatriz?.Nome ?? string.Empty,
-                        LancaNota = cc.LancaNota,
-                        Nome = cc.Descricao,
-                        NomeComponenteInfantil = cc.DescricaoComponenteInfantil,
-                        Professor = cc.Professor,
-                        Regencia = cc.Regencia,
-                        RegistraFrequencia = cc.RegistraFrequencia,
-                        TerritorioSaber = cc.TerritorioSaber,
-                        TurmaCodigo = cc.TurmaCodigo
+            {
+                Id = cc.Codigo,
+                CodigoComponenteCurricular = cc.Codigo,
+                CodigoComponenteCurricularTerritorioSaber = cc.CodigoComponenteTerritorioSaber,
+                CdComponenteCurricularPai = cc.CodigoComponenteCurricularPai,
+                Compartilhada = cc.Compartilhada,
+                GrupoMatrizId = cc.GrupoMatriz?.Id ?? 0,
+                GrupoMatrizNome = cc.GrupoMatriz?.Nome ?? string.Empty,
+                LancaNota = cc.LancaNota,
+                Nome = cc.Descricao,
+                NomeComponenteInfantil = cc.DescricaoComponenteInfantil,
+                Professor = cc.Professor,
+                Regencia = cc.Regencia,
+                RegistraFrequencia = cc.RegistraFrequencia,
+                TerritorioSaber = cc.TerritorioSaber,
+                TurmaCodigo = cc.TurmaCodigo
             });
         }
     }

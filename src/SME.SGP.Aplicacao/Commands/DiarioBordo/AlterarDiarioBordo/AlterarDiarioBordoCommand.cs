@@ -1,13 +1,10 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AlterarDiarioBordoCommand  : IRequest<AuditoriaDto>
+    public class AlterarDiarioBordoCommand : IRequest<AuditoriaDto>
     {
         public AlterarDiarioBordoCommand(long id, long aulaId, string planejamento, long componenteCurricularId)
         {

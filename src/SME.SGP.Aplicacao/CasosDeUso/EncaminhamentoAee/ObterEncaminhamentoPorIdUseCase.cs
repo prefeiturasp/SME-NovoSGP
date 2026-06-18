@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         {
             var encaminhamentoAee = await mediator.Send(new ObterEncaminhamentoAEEComTurmaPorIdQuery(id));
 
-            if(encaminhamentoAee.EhNulo())
+            if (encaminhamentoAee.EhNulo())
                 throw new NegocioException("Encaminhamento não localizado");
 
             var aluno = await mediator.Send(new ObterAlunoPorCodigoEAnoQuery(encaminhamentoAee.AlunoCodigo, encaminhamentoAee.Turma.AnoLetivo, true));
@@ -33,9 +33,9 @@ namespace SME.SGP.Aplicacao
 
             var podeEditar = await VerificaPodeEditar(encaminhamentoAee, usuarioLogado);
             var podeAtribuirResponsavel = await VerificaPodeAtribuirResponsavel(encaminhamentoAee, usuarioLogado);
-            
+
             var registroCadastradoEmOutraUE = !await VerificarUsuarioLogadoPertenceMesmaUEEncaminhamento(usuarioLogado, encaminhamentoAee.Turma);
-            
+
             aluno.EhMatriculadoTurmaPAP = await BuscarAlunosTurmaPAP(aluno.CodigoAluno, encaminhamentoAee.Turma.AnoLetivo);
             return new EncaminhamentoAEERespostaDto()
             {
@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> BuscarAlunosTurmaPAP(string alunoCodigo, int anoLetivo)
         {
-            var consulta =  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, new []{alunoCodigo}));
+            var consulta = await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, new[] { alunoCodigo }));
             return consulta.Any(x => x.CodigoAluno.ToString() == alunoCodigo);
         }
         private async Task<bool> VerificaPodeAtribuirResponsavel(EncaminhamentoAEE encaminhamentoAee, Usuario usuarioLogado)
@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao
                 case SituacaoAEE.AtribuicaoResponsavel:
                 case SituacaoAEE.AtribuicaoPAAI:
                 case SituacaoAEE.Analise:
-                    return await EhGestorDaEscolaDaTurma(usuarioLogado, encaminhamentoAee.Turma) 
+                    return await EhGestorDaEscolaDaTurma(usuarioLogado, encaminhamentoAee.Turma)
                         || await EhCoordenadorCEFAI(usuarioLogado, encaminhamentoAee.Turma);
                 default:
                     return false;
@@ -108,10 +108,10 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> VerificaPodeEditar(EncaminhamentoAEE encaminhamento, Usuario usuarioLogado)
         {
             return (await EhProfessorDaTurma(usuarioLogado, encaminhamento.Turma) &&
-                    (encaminhamento.Situacao == SituacaoAEE.Rascunho || 
+                    (encaminhamento.Situacao == SituacaoAEE.Rascunho ||
                      encaminhamento.Situacao == SituacaoAEE.Devolvido))
-                || (await EhGestorDaEscolaDaTurma(usuarioLogado, encaminhamento.Turma) && 
-                    (encaminhamento.Situacao == SituacaoAEE.Encaminhado || 
+                || (await EhGestorDaEscolaDaTurma(usuarioLogado, encaminhamento.Turma) &&
+                    (encaminhamento.Situacao == SituacaoAEE.Encaminhado ||
                      encaminhamento.Situacao == SituacaoAEE.Devolvido ||
                      encaminhamento.Situacao == SituacaoAEE.Rascunho))
                 || (usuarioLogado.EhGestorCIEJA() &&
@@ -119,7 +119,7 @@ namespace SME.SGP.Aplicacao
                                      encaminhamento.Situacao == SituacaoAEE.Devolvido ||
                                      encaminhamento.Situacao == SituacaoAEE.Rascunho))
                 || (usuarioLogado.EhCoordenadorCEFAI() && encaminhamento.Situacao == SituacaoAEE.AtribuicaoPAAI)
-                || ((usuarioLogado.EhProfessorPaee() || usuarioLogado.EhPerfilPaai()) && 
+                || ((usuarioLogado.EhProfessorPaee() || usuarioLogado.EhPerfilPaai()) &&
                     (encaminhamento.Situacao == SituacaoAEE.Analise || encaminhamento.Situacao == SituacaoAEE.Rascunho));
         }
 

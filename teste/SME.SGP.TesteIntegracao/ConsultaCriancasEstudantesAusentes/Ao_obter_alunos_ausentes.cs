@@ -344,7 +344,7 @@ namespace SME.SGP.TesteIntegracao.ConsultaCriancasEstudantesAusentes
             await CriarFrequencia(AULA_ID_12, (int)TipoFrequencia.F);
             await CriarFrequencia(AULA_ID_13, (int)TipoFrequencia.F);
             await CriarFrequencia(AULA_ID_14, (int)TipoFrequencia.F);
-            await CriarFrequencia(AULA_ID_15, (int) TipoFrequencia.F);
+            await CriarFrequencia(AULA_ID_15, (int)TipoFrequencia.F);
             await CriarFrequencia(AULA_ID_16, (int)TipoFrequencia.F);
             await CriarFrequencia(AULA_ID_17, (int)TipoFrequencia.F);
             await CriarFrequencia(AULA_ID_18, (int)TipoFrequencia.F);
@@ -380,7 +380,7 @@ namespace SME.SGP.TesteIntegracao.ConsultaCriancasEstudantesAusentes
 
             await CriarAula(DateTimeExtension.HorarioBrasilia(), RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), TIPO_CALENDARIO_1);
             await CriarAula(DateTimeExtension.HorarioBrasilia().AddDays(-1), RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), TIPO_CALENDARIO_1);
-            await CriarAula(DateTimeExtension.HorarioBrasilia().AddDays(-4), RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), TIPO_CALENDARIO_1); 
+            await CriarAula(DateTimeExtension.HorarioBrasilia().AddDays(-4), RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), TIPO_CALENDARIO_1);
             await CriarAula(DateTimeExtension.HorarioBrasilia().AddDays(-5), RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), TIPO_CALENDARIO_1);
             await CriarAula(DateTimeExtension.HorarioBrasilia().AddDays(-20), RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), TIPO_CALENDARIO_1);
 

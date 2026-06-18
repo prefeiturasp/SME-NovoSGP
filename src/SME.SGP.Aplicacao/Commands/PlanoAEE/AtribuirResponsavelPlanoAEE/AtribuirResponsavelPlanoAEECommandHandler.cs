@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConfiguration configuration;
         private readonly IUnitOfWork unitOfWork;
 
-        public AtribuirResponsavelPlanoAEECommandHandler(IMediator mediator, IRepositorioPlanoAEE repositorioPlanoAEE, IConfiguration configuration,IUnitOfWork unitOfWork)
+        public AtribuirResponsavelPlanoAEECommandHandler(IMediator mediator, IRepositorioPlanoAEE repositorioPlanoAEE, IConfiguration configuration, IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioPlanoAEE = repositorioPlanoAEE ?? throw new ArgumentNullException(nameof(repositorioPlanoAEE));
@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
 
                 unitOfWork.PersistirTransacao();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 unitOfWork.Rollback();
                 throw;
@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
             await ExcluirPendenciaCEFAI(planoAEE);
 
             if (!await ParametroGeracaoPendenciaAtivo() || await AtribuidoAoMesmoUsuario(planoAEE))
-                return;            
+                return;
 
             await GerarPendenciaPAAI(planoAEE, turma);
         }

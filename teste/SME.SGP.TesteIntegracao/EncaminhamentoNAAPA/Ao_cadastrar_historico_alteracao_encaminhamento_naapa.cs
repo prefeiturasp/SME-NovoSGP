@@ -40,7 +40,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             await CriarDadosBase(filtroNAAPA);
 
             var dataQueixa = DateTimeExtension.HorarioBrasilia().Date;
-            
+
             await GerarDadosEncaminhamentoNAAPA(dataQueixa);
 
             var secaoDto = new EncaminhamentoNAAPASecaoDto()

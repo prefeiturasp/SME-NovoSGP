@@ -1,10 +1,10 @@
-﻿using System;
-using FluentValidation;
+﻿using FluentValidation;
 using MediatR;
+using System;
 
 namespace SME.SGP.Aplicacao
 {
-    public class PodePersistirTurmaNoPeriodoQuery: IRequest<bool>
+    public class PodePersistirTurmaNoPeriodoQuery : IRequest<bool>
     {
         public PodePersistirTurmaNoPeriodoQuery(string professorRf, string codigoTurma, long componenteCurricularId, DateTime dataInicio, DateTime dataFim)
         {
@@ -22,26 +22,26 @@ namespace SME.SGP.Aplicacao
         public DateTime DataFim { get; set; }
     }
 
-    public class PodePersistirTurmaNoPeriodoQueryValidator: AbstractValidator<PodePersistirTurmaNoPeriodoQuery>
+    public class PodePersistirTurmaNoPeriodoQueryValidator : AbstractValidator<PodePersistirTurmaNoPeriodoQuery>
     {
         public PodePersistirTurmaNoPeriodoQueryValidator()
         {
             RuleFor(c => c.ProfessorRf)
                 .NotEmpty()
                 .WithMessage("O Rf do professor deve ser informado para validar se pode persistir na turma.");
-            
+
             RuleFor(c => c.CodigoTurma)
                 .NotEmpty()
                 .WithMessage("O código da turma deve ser informado para validar se pode persistir na turma.");
-            
+
             RuleFor(c => c.ComponenteCurricularId)
                 .GreaterThan(0)
                 .WithMessage("O componente curricular deve ser informado para validar se pode persistir na turma.");
-            
+
             RuleFor(c => c.DataInicio)
                 .NotNull()
                 .WithMessage("A data início deve ser informada para validar se pode persistir na turma.");
-            
+
             RuleFor(c => c.DataFim)
                 .NotNull()
                 .WithMessage("A data final deve ser informada para validar se pode persistir na turma.");

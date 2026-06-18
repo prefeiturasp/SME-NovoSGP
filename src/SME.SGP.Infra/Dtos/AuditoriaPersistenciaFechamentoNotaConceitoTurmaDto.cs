@@ -1,5 +1,5 @@
-using System;
 using SME.SGP.Dominio;
+using System;
 
 namespace SME.SGP.Infra
 {
@@ -10,7 +10,7 @@ namespace SME.SGP.Infra
         public SituacaoFechamento Situacao { get; set; }
         public string SituacaoNome { get; set; }
         public DateTime DataFechamento { get; set; }
-        
+
         public static explicit operator AuditoriaPersistenciaFechamentoNotaConceitoTurmaDto(EntidadeBase entidade)
             => new()
             {
@@ -21,6 +21,6 @@ namespace SME.SGP.Infra
                 AlteradoEm = entidade.AlteradoEm,
                 AlteradoPor = entidade.AlteradoPor,
                 AlteradoRF = entidade.AlteradoRF
-            };        
+            };
     }
 }

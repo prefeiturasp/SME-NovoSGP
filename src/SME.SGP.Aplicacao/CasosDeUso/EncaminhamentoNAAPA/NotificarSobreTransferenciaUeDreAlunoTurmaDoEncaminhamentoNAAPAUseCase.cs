@@ -1,12 +1,8 @@
 ﻿using MediatR;
-using Microsoft.Extensions.Caching.Memory;
-using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,7 +19,7 @@ namespace SME.SGP.Aplicacao
         {
             var encaminhamentoNAAPADto = param.ObterObjetoMensagem<EncaminhamentoNAAPADto>();
             var notificacoesEnviadas = false;
-            
+
             var alunosEol = (await mediator.Send(new ObterAlunosEolPorCodigosQuery(long.Parse(encaminhamentoNAAPADto.AlunoCodigo), true))).ToList();
             var matriculaVigenteAluno = FiltrarMatriculaVigenteAluno(alunosEol);
 
@@ -55,7 +51,7 @@ namespace SME.SGP.Aplicacao
                                      .FirstOrDefault();
         }
 
-        private async Task NotificarResponsaveisSobreTransferenciaUeDreAluno(string nomeAluno, string codigoAluno, Turma turmaAnterior, 
+        private async Task NotificarResponsaveisSobreTransferenciaUeDreAluno(string nomeAluno, string codigoAluno, Turma turmaAnterior,
                                                                              Turma turmaNova)
         {
             var responsaveisUeAnterior = await RetornarReponsaveisDreUe(turmaAnterior.Ue.Dre.CodigoDre, turmaAnterior.Ue.CodigoUe);
@@ -66,7 +62,7 @@ namespace SME.SGP.Aplicacao
             var titulo = $"Criança/Estudante transferida - {nomeAluno}({codigoAluno})";
             var mensagem = $@"A criança/estudante {nomeAluno}({codigoAluno}) que está em acompanhamento pelo NAAPA da {turmaAnterior.Ue.Dre.Abreviacao} e estava matriculada na turma {turmaAnterior.NomeComModalidade()} na {turmaAnterior.Ue.TipoEscola.ObterNomeCurto()} {turmaAnterior.Ue.Nome} foi transferida para a turma {turmaNova.NomeComModalidade()} na {turmaNova.Ue.TipoEscola.ObterNomeCurto()} {turmaNova.Ue.Nome}{(turmaAnterior.Ue.Dre.CodigoDre != turmaNova.Ue.Dre.CodigoDre ? $"({turmaNova.Ue.Dre.Abreviacao})" : "")}. {MontarMensagemResponsaveisNovaUe(responsaveisUeNova)}";
 
-            
+
             foreach (var responsavel in responsaveisNotificados.DistinctBy(resp => resp.Login))
             {
                 await mediator.Send(new NotificarUsuarioCommand(titulo,
@@ -85,7 +81,7 @@ namespace SME.SGP.Aplicacao
                 return string.Empty;
 
             var msg = "O encaminhamento NAAPA agora é de responsabilidade dos seguintes profissionais:";
-            foreach (var responsavel in responsaveis.Where(resp => perfisMsg.Contains(resp.Perfil) ))
+            foreach (var responsavel in responsaveis.Where(resp => perfisMsg.Contains(resp.Perfil)))
                 msg += $"</br>{RetornarNomePerfil(responsavel.Perfil)}: {responsavel.NomeServidor}({responsavel.Login})";
             return msg;
         }
@@ -98,10 +94,10 @@ namespace SME.SGP.Aplicacao
                 return "Psicopedagogo";
             if (perfil == Perfis.PERFIL_ASSISTENTE_SOCIAL)
                 return "Assistente Social";
-            return string.Empty;            
+            return string.Empty;
         }
 
-        private async Task<List<FuncionarioUnidadeDto>> RetornarReponsaveisDreUe(string codigoDre, string codigoUe) 
+        private async Task<List<FuncionarioUnidadeDto>> RetornarReponsaveisDreUe(string codigoDre, string codigoUe)
         {
             var perfisDre = new Guid[] { Perfis.PERFIL_COORDENADOR_NAAPA };
             var tiposAtribuicaoUe = new TipoResponsavelAtribuicao[] { TipoResponsavelAtribuicao.Psicopedagogo,
@@ -113,12 +109,14 @@ namespace SME.SGP.Aplicacao
                 responsaveisDre = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoDre, perfisDre))).ToList();
 
             var responsaveisUe = (await mediator.Send(new ObterResponsaveisAtribuidosUePorDreUeTiposQuery(codigoDre, codigoUe, tiposAtribuicaoUe)))
-                                .Select(atribuicaoResponsavel => new FuncionarioUnidadeDto(){  Login = atribuicaoResponsavel.SupervisorId,
-                                                                                               NomeServidor = atribuicaoResponsavel.SupervisorNome,
-                                                                                               Perfil = ((TipoResponsavelAtribuicao)atribuicaoResponsavel.TipoAtribuicao).ToPerfil()
+                                .Select(atribuicaoResponsavel => new FuncionarioUnidadeDto()
+                                {
+                                    Login = atribuicaoResponsavel.SupervisorId,
+                                    NomeServidor = atribuicaoResponsavel.SupervisorNome,
+                                    Perfil = ((TipoResponsavelAtribuicao)atribuicaoResponsavel.TipoAtribuicao).ToPerfil()
                                 }).ToList();
-            
-            
+
+
             if (responsaveisDre.NaoEhNulo() && responsaveisDre.Any())
                 responsaveisUe.AddRange(responsaveisDre);
             return responsaveisUe.DistinctBy(resp => resp.Login).ToList();

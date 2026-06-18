@@ -9,7 +9,7 @@
         public int Bimestre { get; set; }
         public bool ConsideraHistorico { get; set; }
 
-        public ConselhoClasseNotasFrequenciaDto(long conselhoClasseId, long fechamentoTurmaId,string alunoCodigo,string codigoTurma,int bimestre,bool consideraHistorico)
+        public ConselhoClasseNotasFrequenciaDto(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre, bool consideraHistorico)
         {
             ConselhoClasseId = conselhoClasseId;
             FechamentoTurmaId = fechamentoTurmaId;

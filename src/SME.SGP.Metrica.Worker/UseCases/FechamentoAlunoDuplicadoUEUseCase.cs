@@ -27,7 +27,7 @@ namespace SME.SGP.Metrica.Worker.UseCases
             var ue = mensagem.ObterObjetoMensagem<FiltroIdDto>();
             var fechamentosAlunoDuplicados = await repositorioSGP.ObterFechamentosAlunoDuplicados(ue.Id);
 
-            foreach(var fechamentoAlunoDuplicado in fechamentosAlunoDuplicados)
+            foreach (var fechamentoAlunoDuplicado in fechamentosAlunoDuplicados)
             {
                 await repositorioFechamentoAlunoDuplicado.InserirAsync(fechamentoAlunoDuplicado);
                 await mediator.Send(new PublicarFilaCommand(Rotas.RotasRabbitMetrica.LimpezaFechamentoAlunoDuplicado, fechamentoAlunoDuplicado));

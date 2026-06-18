@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using SME.SGP.Aplicacao;
@@ -8,6 +6,8 @@ using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Listao
@@ -36,7 +36,7 @@ namespace SME.SGP.TesteIntegracao.Listao
 
             await ExecutarTeste(filtroListao);
         }
-        
+
         private async Task ExecutarTeste(FiltroListao filtroListao)
         {
             await CriarDadosBasicos(filtroListao);
@@ -45,14 +45,14 @@ namespace SME.SGP.TesteIntegracao.Listao
             listaAulaId.ShouldNotBeNull();
 
             var frequenciasSalvar = listaAulaId.Select(aulaId => new FrequenciaSalvarAulaAlunosDto
-                { AulaId = aulaId, Alunos = ObterListaFrequenciaSalvarAluno() }).ToList();
+            { AulaId = aulaId, Alunos = ObterListaFrequenciaSalvarAluno() }).ToList();
 
             //-> Salvar a frequencia
             var useCaseSalvar = ServiceProvider.GetService<IInserirFrequenciaListaoUseCase>();
             useCaseSalvar.ShouldNotBeNull();
-            
+
             await useCaseSalvar.Executar(frequenciasSalvar)
                 .ShouldThrowAsync<NegocioException>(MensagensNegocioFrequencia.Nao_e_permitido_registro_de_frequencia_para_este_componente);
-        }       
+        }
     }
 }

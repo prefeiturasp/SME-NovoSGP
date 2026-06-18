@@ -3,12 +3,12 @@ using Dommel;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -50,7 +50,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<PendenciaFechamentoCompletoDto> ObterPorPendenciaId(long pendenciaId)
         {
 
-                var query = @"select p.id as PendenciaId, p.titulo as descricao, p.descricao as detalhamento, p.descricao_html as descricaohtml
+            var query = @"select p.id as PendenciaId, p.titulo as descricao, p.descricao as detalhamento, p.descricao_html as descricaohtml
                                 , p.situacao, ftd.disciplina_id as DisciplinaId, pe.bimestre, pf.fechamento_turma_disciplina_id as FechamentoId
                                 , p.criado_em as CriadoEm, p.criado_por as CriadoPor, p.criado_rf as CriadoRf, p.alterado_em as AlteradoEm, p.alterado_por as AlteradoPor, p.alterado_rf as AlteradoRf,
                                   ft.turma_id as turmaId, 
@@ -63,7 +63,7 @@ namespace SME.SGP.Dados.Repositorios
                          inner join pendencia p on p.id = pf.pendencia_id
                          where p.id = @pendenciaId";
 
-                return await database.Conexao.QueryFirstOrDefaultAsync<PendenciaFechamentoCompletoDto>(query, new { pendenciaId });
+            return await database.Conexao.QueryFirstOrDefaultAsync<PendenciaFechamentoCompletoDto>(query, new { pendenciaId });
         }
 
         public async Task<Turma> ObterTurmaPorPendenciaId(long pendenciaId)
@@ -148,7 +148,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (paginacao.QuantidadeRegistros > 0 && !contador)
                 query.AppendLine($"OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY;");
-            
+
             return query.ToString();
         }
 

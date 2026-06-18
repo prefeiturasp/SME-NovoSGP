@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         public long EncaminhamentoAEEId { get; }
     }
 
-    public class ObterEncaminhamentoAEETurmaAlunoPorIdQueryValidator: AbstractValidator<ObterEncaminhamentoAEETurmaAlunoPorIdQuery>
+    public class ObterEncaminhamentoAEETurmaAlunoPorIdQueryValidator : AbstractValidator<ObterEncaminhamentoAEETurmaAlunoPorIdQuery>
     {
         public ObterEncaminhamentoAEETurmaAlunoPorIdQueryValidator()
         {

@@ -1,8 +1,7 @@
-using System.Collections.Generic;
 using FluentValidation;
 using MediatR;
-using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PlanoAEE;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao.Queries.PlanoAEE.VerificarExistenciaPlanoAEEPorTurma
 {
@@ -12,7 +11,7 @@ namespace SME.SGP.Aplicacao.Queries.PlanoAEE.VerificarExistenciaPlanoAEEPorTurma
         {
             Filtro = filtro;
         }
-        public FiltroTurmaPlanoAEEDto Filtro { get; set; }   
+        public FiltroTurmaPlanoAEEDto Filtro { get; set; }
     }
     public class VerificarExistenciaPlanoAEEPorTurmaQueryValidator : AbstractValidator<VerificarExistenciaPlanoAEEPorTurmaQuery>
     {

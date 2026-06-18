@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
 
         public long? NumeroAula { get; set; }
     }
-    
+
     public class ExcluirCompensacaoAusenciaPorAulaIdCommandValidator : AbstractValidator<ExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdCommand>
     {
         public ExcluirCompensacaoAusenciaPorAulaIdCommandValidator()

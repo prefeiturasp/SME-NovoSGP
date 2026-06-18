@@ -1,7 +1,5 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Dominio;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -12,7 +10,7 @@ namespace SME.SGP.Aplicacao
             TipoCalendarioId = tipoCalendarioId;
         }
 
-        public long TipoCalendarioId { get; set; }        
+        public long TipoCalendarioId { get; set; }
     }
 
     public class CriarPeriodosConfiguracaoRelatorioPAPAnoAtualCommandValidator : AbstractValidator<CriarPeriodosConfiguracaoRelatorioPAPAnoAtualCommand>

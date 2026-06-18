@@ -5,7 +5,7 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarFechamentoCommand : IRequest<AuditoriaPersistenciaFechamentoNotaConceitoTurmaDto>
     {
-        public SalvarFechamentoCommand (FechamentoFinalTurmaDisciplinaDto fechamentoFinalTurmaDisciplina)
+        public SalvarFechamentoCommand(FechamentoFinalTurmaDisciplinaDto fechamentoFinalTurmaDisciplina)
         {
             FechamentoFinalTurmaDisciplina = fechamentoFinalTurmaDisciplina;
         }

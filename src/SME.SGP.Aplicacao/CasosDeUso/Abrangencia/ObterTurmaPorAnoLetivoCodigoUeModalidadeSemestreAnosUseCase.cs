@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.Abrangencia
     public class ObterTurmaPorAnoLetivoCodigoUeModalidadeSemestreAnosUseCase : AbstractUseCase, IObterTurmaPorAnoLetivoCodigoUeModalidadeSemestreAnosUseCase
     {
         public ObterTurmaPorAnoLetivoCodigoUeModalidadeSemestreAnosUseCase(IMediator mediator) : base(mediator)
-        {}
+        { }
 
         public async Task<IEnumerable<OpcaoDropdownDto>> Executar(string codigoUe, int anoLetivo, Modalidade? modalidade, int semestre, IList<string> anos)
         {

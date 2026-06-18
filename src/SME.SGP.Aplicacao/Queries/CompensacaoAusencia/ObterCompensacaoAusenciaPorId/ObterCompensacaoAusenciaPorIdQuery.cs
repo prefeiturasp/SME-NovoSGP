@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
         public long Id { get; }
     }
 
-    public class ObterCompensacaoAusenciaPorIdQueryValidator: AbstractValidator<ObterCompensacaoAusenciaPorIdQuery>
+    public class ObterCompensacaoAusenciaPorIdQueryValidator : AbstractValidator<ObterCompensacaoAusenciaPorIdQuery>
     {
         public ObterCompensacaoAusenciaPorIdQueryValidator()
         {

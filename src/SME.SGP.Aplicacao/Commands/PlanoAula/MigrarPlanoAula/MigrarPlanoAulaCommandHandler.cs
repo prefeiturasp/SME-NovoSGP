@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPlanoAula repositorioPlanoAula;
         private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
-        
+
         private readonly IRepositorioUeConsulta repositorioUe;
 
         public MigrarPlanoAulaCommandHandler(IUnitOfWork unitOfWork, IMediator mediator, IRepositorioPlanoAula repositorioPlanoAula,
@@ -82,7 +82,7 @@ namespace SME.SGP.Aplicacao
                 unitOfWork.PersistirTransacao();
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 unitOfWork.Rollback();
                 throw;
@@ -126,7 +126,7 @@ namespace SME.SGP.Aplicacao
                 var turmasAtribuidasCJ = turmasAtribuidasAoProfessor.ToList();
                 var professoresAbragenciaTurma = await mediator.Send(new ObterProfessoresTurmaAbrangenciaQuery(turmaCodigo));
 
-                if(professoresAbragenciaTurma.Any(p=> p == codigoRf))
+                if (professoresAbragenciaTurma.Any(p => p == codigoRf))
                 {
                     turmasAtribuidasCJ.Add(new ProfessorTurmaDto()
                     {
@@ -140,14 +140,14 @@ namespace SME.SGP.Aplicacao
 
             if (turmaAula.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year)
             {
-                if(turmasAtribuidasAoProfessorPorAno.Any())      
-                    turmasAtribuidasAoProfessor = turmasAtribuidasAoProfessor.Concat(turmasAtribuidasAoProfessorPorAno.Select( a=> new ProfessorTurmaDto()
+                if (turmasAtribuidasAoProfessorPorAno.Any())
+                    turmasAtribuidasAoProfessor = turmasAtribuidasAoProfessor.Concat(turmasAtribuidasAoProfessorPorAno.Select(a => new ProfessorTurmaDto()
                     {
                         CodTurma = Convert.ToInt32(a.Codigo),
                         Ano = a.AnoTurma.ToString(),
                         NomeTurma = a.Nome
                     }));
-                
+
 
                 await ValidaTurmasProfessor(ehProfessorCj, ueId,
                                       migrarPlanoAulaDto.DisciplinaId,
@@ -167,12 +167,12 @@ namespace SME.SGP.Aplicacao
                                       turmasAtribuidasAoProfessorPorAno,
                                       turmasAbrangencia,
                                       idsTurmasSelecionadas);
-                
+
                 ValidaTurmasAnoHistorico(ehProfessorCj, migrarPlanoAulaDto.MigrarObjetivos,
                             turmasAtribuidasAoProfessorPorAno, turmasAbrangencia, idsTurmasSelecionadas);
             }
 
-            
+
         }
 
         private void ValidaTurmasAno(bool ehProfessorCJ, bool migrarObjetivos,

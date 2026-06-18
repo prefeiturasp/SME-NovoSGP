@@ -14,7 +14,7 @@ namespace SME.SGP.Infra
         public double? Frequencia { get; set; }
         public bool PossuiJustificativas { get; set; }
         public int Semestre { get; set; }
-        public string FrequenciaFormatado => FormatarPercentual(Frequencia??0);
+        public string FrequenciaFormatado => FormatarPercentual(Frequencia ?? 0);
 
         public double CalcularPercentualFrequencia(int? TotalAulas = null, int? TotalFaltasNaoCompensadas = null)
         {
@@ -30,7 +30,7 @@ namespace SME.SGP.Infra
             var porcentagem = 100 - (((double)TotalFaltasNaoCompensadas / (double)TotalAulas) * 100);
 
             return ArredondarPercentual(porcentagem > 100 ? 100 : porcentagem);
-            
+
         }
         public static double ArredondarPercentual(double percentual) => Math.Round(percentual, PERCENTUAL_FREQUENCIA_PRECISAO);
 

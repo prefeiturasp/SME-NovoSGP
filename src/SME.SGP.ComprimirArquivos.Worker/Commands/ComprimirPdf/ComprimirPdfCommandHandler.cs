@@ -64,7 +64,7 @@ namespace SME.SGP.OtimizarArquivos.Worker.Commands.ComprimirPdf
                                 $"-dDownsampleColorImages=true -dColorImageResolution=72 -dColorImageDownsampleType=/Bicubic -dColorImageCompression=/JPEG -dJPEGQ=50 " +
                                 $"-dDownsampleGrayImages=true -dGrayImageResolution=72 -dGrayImageDownsampleType=/Bicubic -dGrayImageCompression=/JPEG -dJPEGQ=50 " +
                                 $"-dDownsampleMonoImages=true -dMonoImageResolution=72 " +
-                                $"-dEmbedAllFonts=false -dSubsetFonts=false " + 
+                                $"-dEmbedAllFonts=false -dSubsetFonts=false " +
                                 $"-dNOPAUSE -dBATCH -sOutputFile=\"{outputTemp}\" \"{inputTemp}\"";
 
                 var startInfo = new ProcessStartInfo
@@ -124,7 +124,7 @@ namespace SME.SGP.OtimizarArquivos.Worker.Commands.ComprimirPdf
                             $"Erro ao comprimir arquivo PDF",
                             LogNivel.Critico, LogContexto.ComprimirArquivos,
                             ex.Message, rastreamento: ex.StackTrace, excecaoInterna: ex.InnerException?.ToString()), cancellationToken);
-                                        return false;
+                return false;
             }
             finally
             {

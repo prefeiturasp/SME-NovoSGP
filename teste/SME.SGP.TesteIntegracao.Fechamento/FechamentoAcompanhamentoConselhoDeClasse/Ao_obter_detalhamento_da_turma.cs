@@ -45,7 +45,7 @@ namespace SME.SGP.TesteIntegracao.FechamentoAcompanhamentoConselhoDeClasse
             var resultado = await obterConselhoClasseConsolidado.Executar(filtro);
 
             var retorno = resultado.Any(x => conselhoClasseConsolidadoTurmaAluno.Any(b => b.AlunoCodigo == x.AlunoCodigo && x.SituacaoFechamentoCodigo == (int)b.Status));
-            Assert.True(retorno);           
+            Assert.True(retorno);
 
         }
     }

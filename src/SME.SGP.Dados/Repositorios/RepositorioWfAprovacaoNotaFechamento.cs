@@ -4,13 +4,11 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using Dapper;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioWfAprovacaoNotaFechamento: IRepositorioWfAprovacaoNotaFechamento
+    public class RepositorioWfAprovacaoNotaFechamento : IRepositorioWfAprovacaoNotaFechamento
     {
         protected readonly ISgpContext database;
 
@@ -71,7 +69,7 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.ExecuteAsync(query, new { workflowAprovacaoId, workflowAprovacaoNotaFechamentoIds });
             return true;
         }
-        
+
         public async Task<IEnumerable<WfAprovacaoNotaFechamentoTurmaDto>> ObterWfAprovacaoNotaFechamentoComWfAprovacaoId(long workflowId)
         {
             var query = @"select ft.turma_id as TurmaId, t.turma_id as TurmaCodigo, t.ano_letivo as AnoLetivo, fa.fechamento_turma_disciplina_id as FechamentoTurmaDisciplinaId, pe.bimestre as Bimestre, 
@@ -93,7 +91,7 @@ namespace SME.SGP.Dados.Repositorios
                     wfAprovacaoDto.WfAprovacao = wfAprovacaoNotaFechamento;
 
                     return wfAprovacaoDto;
-                },new { workflowId }, splitOn: "TurmaId, FechamentoTurmaDisciplinaId,Bimestre,CodigoAluno, NotaAnterior, ComponenteCurricularDescricao, ComponenteCurricularEhRegencia, ConceitoAnterior, id"
+                }, new { workflowId }, splitOn: "TurmaId, FechamentoTurmaDisciplinaId,Bimestre,CodigoAluno, NotaAnterior, ComponenteCurricularDescricao, ComponenteCurricularEhRegencia, ConceitoAnterior, id"
             );
         }
 

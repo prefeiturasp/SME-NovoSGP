@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IListarTiposOcorrenciaUseCase 
+    public interface IListarTiposOcorrenciaUseCase
     {
         Task<IEnumerable<OcorrenciaTipoDto>> Executar();
     }

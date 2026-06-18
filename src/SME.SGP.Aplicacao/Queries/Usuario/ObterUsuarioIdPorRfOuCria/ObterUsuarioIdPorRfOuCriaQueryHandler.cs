@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioUsuario repositorioUsuario;
 
         public ObterUsuarioIdPorRfOuCriaQueryHandler(IRepositorioUsuarioConsulta repositorioUsuarioConsulta, IRepositorioUsuario repositorioUsuario)
-        {            
+        {
             this.repositorioUsuarioConsulta = repositorioUsuarioConsulta ?? throw new System.ArgumentNullException(nameof(repositorioUsuarioConsulta));
             this.repositorioUsuario = repositorioUsuario ?? throw new System.ArgumentNullException(nameof(repositorioUsuario));
         }

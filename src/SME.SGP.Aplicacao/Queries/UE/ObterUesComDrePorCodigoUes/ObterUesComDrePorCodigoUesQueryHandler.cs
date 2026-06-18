@@ -1,14 +1,14 @@
-﻿using System;
+﻿using MediatR;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterUesComDrePorCodigoUesQueryHandler : IRequestHandler<ObterUesComDrePorCodigoUesQuery,IEnumerable<Ue>>
+    public class ObterUesComDrePorCodigoUesQueryHandler : IRequestHandler<ObterUesComDrePorCodigoUesQuery, IEnumerable<Ue>>
     {
         private readonly IRepositorioUeConsulta repositorioUe;
 
@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<Ue>> Handle(ObterUesComDrePorCodigoUesQuery request, CancellationToken cancellationToken)
-            =>  await repositorioUe.ObterUEsComDREsPorCodigoUes(request.UesCodigos);
-        
+            => await repositorioUe.ObterUEsComDREsPorCodigoUes(request.UesCodigos);
+
     }
 }

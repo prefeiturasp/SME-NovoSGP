@@ -1,8 +1,6 @@
 ﻿using MediatR;
 using Moq;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Infra;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -30,7 +28,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             //Arrange
             mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioCoreSSOQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new MeusDadosDto() { CodigoRf = codigoRf, Email = "teste@teste.com.br" });
             mediator.Setup(a => a.Send(It.IsAny<ReiniciarSenhaEolCommand>(), It.IsAny<CancellationToken>()));
-            
+
             mediator.Setup(a => a.Send(It.IsAny<GravarHistoricoReinicioSenhaCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
 

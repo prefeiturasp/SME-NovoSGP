@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
             TurmaCodigo = turma.CodigoTurma;
             TurmaModalidade = turma.ModalidadeCodigo;
             TurmaSemestre = turma.Semestre;
-            
+
             ComponenteCurricularNome = componenteCurricularNome;
             PerfilAtual = perfilAtual;
         }
@@ -89,7 +89,7 @@ namespace SME.SGP.Aplicacao
 
             RuleFor(c => c.ComponenteCurricularNome)
             .NotEmpty()
-            .WithMessage("Deve ser informado o nome do componente curricular para geração do workFlow de reposição de aula");            
+            .WithMessage("Deve ser informado o nome do componente curricular para geração do workFlow de reposição de aula");
         }
     }
 }

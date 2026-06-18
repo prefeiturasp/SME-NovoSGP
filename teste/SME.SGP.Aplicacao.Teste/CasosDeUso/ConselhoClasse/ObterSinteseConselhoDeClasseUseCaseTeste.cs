@@ -133,7 +133,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
             {
                 new TotalAulasNaoLancamNotaDto { DisciplinaId = 123, TotalAulas = "10" }
             };
-           
+
             SetupMocksIniciais(fechamentoTurma);
             SetupMocksFluxoPrincipal(turma, disciplinas, new List<FrequenciaAluno>());
             _mediatorMock.Setup(m => m.Send(It.IsAny<ExisteConselhoClasseUltimoBimestreQuery>(), It.IsAny<CancellationToken>()))

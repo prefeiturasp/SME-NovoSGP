@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao
             if (tipoCalendario.EhNulo())
                 throw new NegocioException("Não foi possível localizar o Tipo de Calendário.");
 
-            FechamentoReabertura fechamentoReabertura;          
+            FechamentoReabertura fechamentoReabertura;
 
             if (fechamentoReaberturaExistenteDto.NaoEhNulo())
                 fechamentoReabertura = fechamentoReaberturaExistenteDto;

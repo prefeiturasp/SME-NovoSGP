@@ -1,16 +1,16 @@
+using MediatR;
+using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Aplicacao;
-using SME.SGP.Dominio;
-using SME.SGP.Infra;
 
 namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem.ServicosFake
 {
-    public class ObterAlunoPorCodigoEolQueryHandlerAlunoAtivoFake  : IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>
+    public class ObterAlunoPorCodigoEolQueryHandlerAlunoAtivoFake : IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>
     {
         private const string ALUNO_DESISTENTE_CODIGO_77777 = "77777";
         private const string ALUNO_DESISTENTE_NOME_77777 = "ALUNO INATIVO 77777";
@@ -19,7 +19,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem.ServicosFa
             if (string.IsNullOrEmpty(request.CodigoTurma))
                 return Obter(request.CodigoTurma).OrderByDescending(a => a.DataSituacao)?.FirstOrDefault();
 
-            return Obter(request.CodigoTurma).Where(da => da.CodigoTurma.ToString().Equals(request.CodigoTurma)).FirstOrDefault(); ; 
+            return Obter(request.CodigoTurma).Where(da => da.CodigoTurma.ToString().Equals(request.CodigoTurma)).FirstOrDefault(); ;
         }
         private List<AlunoPorTurmaResposta> Obter(string turmaId)
         {

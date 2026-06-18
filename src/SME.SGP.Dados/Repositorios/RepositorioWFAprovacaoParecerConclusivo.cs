@@ -15,7 +15,7 @@ namespace SME.SGP.Dados
     {
 
         public RepositorioWFAprovacaoParecerConclusivo(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
-        {}
+        { }
 
         public async Task Excluir(long id)
         {

@@ -3,11 +3,11 @@ using MediatR;
 using Moq;
 using SME.SGP.Infra;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Threading;
-using Xunit;
 using System.Linq;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Responsavel
 {
@@ -55,7 +55,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Responsavel
 
             // Corrigido: use os tipos específicos no Callback
             mediatorMock.Setup(m => m.Send(It.IsAny<RemoverAtribuicoesResponsaveisCommand>(), It.IsAny<CancellationToken>()))
-                        .Callback<RemoverAtribuicoesResponsaveisCommand, CancellationToken>((cmd, token) => {
+                        .Callback<RemoverAtribuicoesResponsaveisCommand, CancellationToken>((cmd, token) =>
+                        {
                             idsRemovidosCapturados = cmd.AtribuicoesIds;
                         })
                         .Returns(Task.CompletedTask);

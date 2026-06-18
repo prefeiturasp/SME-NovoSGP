@@ -26,7 +26,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee.ServicosFake
                 UsuarioRF = request.UsuarioRF,
                 UsuarioNome = request.UsuarioNome
             };
-   
+
             var mensagem = new MensagemRabbit(JsonConvert.SerializeObject(dto));
 
             return await this.notificaoUseCase.Executar(mensagem);

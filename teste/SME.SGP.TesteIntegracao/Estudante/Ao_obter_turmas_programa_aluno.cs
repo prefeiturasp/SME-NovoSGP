@@ -34,7 +34,7 @@ namespace SME.SGP.TesteIntegracao.TestarEstudante
             collectionFixture.Services.Replace(
                 new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>),
                 typeof(ObterAlunoPorCodigoEolQueryHandlerFake), ServiceLifetime.Scoped));
-            
+
             collectionFixture.BuildServiceProvider();
         }
 
@@ -42,7 +42,7 @@ namespace SME.SGP.TesteIntegracao.TestarEstudante
         public async Task Deve_obter_turmas_programa_estudante_por_codigo_e_anoletivo()
         {
             _builder = new ItensBasicosBuilder(this);
-            
+
             await _builder.CriaItensComuns();
 
             var useCase = ServiceProvider.GetService<IObterEstudanteTurmasProgramaUseCase>();

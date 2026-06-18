@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao.Queries.Sondagem.ObterConsolidacaoAlfabetizacaoCriti
             this.httpClientFactory = httpClientFactory;
             this.mediator = mediator;
         }
-        public async Task<IEnumerable<SondagemConsolidacaoAlfabetizacaoCriticaEscritaDto>> 
+        public async Task<IEnumerable<SondagemConsolidacaoAlfabetizacaoCriticaEscritaDto>>
             Handle(ObterConsolidacaoAlfabetizacaoCriticaEscritaQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient(ServicoSondagemConstants.Servico);

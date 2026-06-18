@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dto;
@@ -13,19 +9,22 @@ using SME.SGP.TesteIntegracao.PlanoAula.Base;
 using SME.SGP.TesteIntegracao.PlanoAula.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.PlanoAula
 {
-    public class Ao_registrar_plano_aula_com_atribuicao_encerrada: PlanoAulaTesteBase
+    public class Ao_registrar_plano_aula_com_atribuicao_encerrada : PlanoAulaTesteBase
     {
         public Ao_registrar_plano_aula_com_atribuicao_encerrada(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
-        
+
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
-            
+
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAbrangenciaPorTurmaEConsideraHistoricoQuery, AbrangenciaFiltroRetorno>), typeof(ObterAbrangenciaPorTurmaEConsideraHistoricoQueryHandlerFakeFundamental6A), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerSemPermissaoFake), ServiceLifetime.Scoped));
         }
@@ -35,9 +34,9 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
         {
             var planoAulaDto = ObterPlanoAula(true, long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138));
 
-            await CriarDadosBasicos(ObterFiltroPlanoAula(COMPONENTE_LINGUA_PORTUGUESA_ID_138, 
+            await CriarDadosBasicos(ObterFiltroPlanoAula(COMPONENTE_LINGUA_PORTUGUESA_ID_138,
                 Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio));
-                
+
             var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
 
             await Assert.ThrowsAsync<NegocioException>(() => salvarPlanoAulaUseCase.Executar(planoAulaDto));
@@ -72,7 +71,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
                 Descricao = "<p><span>Objetivos específicos e desenvolvimento da aula</span></p>",
                 LicaoCasa = null,
                 RecuperacaoAula = null
-                
+
             };
 
             if (incluirObjetivosAprendizagem)

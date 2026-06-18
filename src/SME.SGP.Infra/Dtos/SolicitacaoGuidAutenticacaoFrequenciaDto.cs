@@ -11,6 +11,6 @@ namespace SME.SGP.Infra
         public string TurmaCodigo { get; set; }
 
         [Required(ErrorMessage = "É necessário informar o código do componente curricular.")]
-        public string ComponenteCurricularCodigo { get; set; }       
+        public string ComponenteCurricularCodigo { get; set; }
     }
 }

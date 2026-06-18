@@ -4,7 +4,7 @@ using SME.SGP.Dominio.Interfaces;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao 
+namespace SME.SGP.Aplicacao
 {
     public class ObterNotificacaoPorCodigoQueryHandler : IRequestHandler<ObterNotificacaoPorCodigoQuery, Notificacao>
     {

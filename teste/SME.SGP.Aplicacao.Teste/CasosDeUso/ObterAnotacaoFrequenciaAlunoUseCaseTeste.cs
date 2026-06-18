@@ -121,10 +121,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             await obterAnotacaoFrequenciaAlunoUseCase.Executar(filtro);
 
             mediator.Verify(m => m.Send(
-                It.Is<ObterAnotacaoFrequenciaAlunoQuery>(q => 
-                    q.CodigoAluno == codigoAluno && 
-                    q.AulaId == aulaId), 
-                It.IsAny<CancellationToken>()), 
+                It.Is<ObterAnotacaoFrequenciaAlunoQuery>(q =>
+                    q.CodigoAluno == codigoAluno &&
+                    q.AulaId == aulaId),
+                It.IsAny<CancellationToken>()),
                 Times.Once);
         }
 

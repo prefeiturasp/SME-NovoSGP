@@ -13,5 +13,5 @@ namespace SME.SGP.Infra.Dtos.Questionario
         public TipoQuestionario TipoQuestionario { get; set; }
         public int[] ModalidadesCodigo { get; set; }
         public IEnumerable<QuestaoDto> Questoes { get; set; }
-}
+    }
 }

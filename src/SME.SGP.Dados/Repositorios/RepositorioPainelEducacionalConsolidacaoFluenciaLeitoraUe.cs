@@ -25,10 +25,10 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task BulkInsertAsync(IEnumerable<PainelEducacionalConsolidacaoFluenciaLeitoraUe> indicadores)
         {
-                await using var conn = new NpgsqlConnection(configuration.GetConnectionString("SGP_Postgres"));
-                await conn.OpenAsync();
+            await using var conn = new NpgsqlConnection(configuration.GetConnectionString("SGP_Postgres"));
+            await conn.OpenAsync();
 
-                await using var writer = conn.BeginBinaryImport(@"
+            await using var writer = conn.BeginBinaryImport(@"
                     COPY painel_educacional_consolidacao_fluencia_leitora_ue
                         (ano_letivo, codigo_dre, codigo_ue, codigo_turma, turma, alunos_previstos, alunos_avaliados,
                          tipo_avaliacao, pre_leitor_total, fluencia, quantidade_aluno_fluencia,
@@ -36,24 +36,24 @@ namespace SME.SGP.Dados.Repositorios
                     FROM STDIN (FORMAT BINARY)
                 ");
 
-                foreach (var item in indicadores)
-                {
-                    await writer.StartRowAsync();
-                    await writer.WriteAsync(item.AnoLetivo, NpgsqlDbType.Integer);
-                    await writer.WriteAsync(item.CodigoDre, NpgsqlDbType.Varchar);
-                    await writer.WriteAsync(item.CodigoUe, NpgsqlDbType.Varchar);
-                    await writer.WriteAsync(item.CodigoTurma, NpgsqlDbType.Varchar);
-                    await writer.WriteAsync(item.Turma, NpgsqlDbType.Varchar);
-                    await writer.WriteAsync(item.AlunosPrevistos, NpgsqlDbType.Integer);
-                    await writer.WriteAsync(item.AlunosAvaliados, NpgsqlDbType.Integer);
-                    await writer.WriteAsync(item.TipoAvaliacao, NpgsqlDbType.Integer);
-                    await writer.WriteAsync(item.PreLeitorTotal, NpgsqlDbType.Integer);
-                    await writer.WriteAsync((int)item.Fluencia, NpgsqlDbType.Integer);
-                    await writer.WriteAsync(item.QuantidadeAlunoFluencia, NpgsqlDbType.Integer);
-                    await writer.WriteAsync(item.PercentualFluencia, NpgsqlDbType.Numeric);
-                    await writer.WriteAsync(item.CriadoEm, NpgsqlDbType.TimestampTz);
-                }
-                await writer.CompleteAsync();
+            foreach (var item in indicadores)
+            {
+                await writer.StartRowAsync();
+                await writer.WriteAsync(item.AnoLetivo, NpgsqlDbType.Integer);
+                await writer.WriteAsync(item.CodigoDre, NpgsqlDbType.Varchar);
+                await writer.WriteAsync(item.CodigoUe, NpgsqlDbType.Varchar);
+                await writer.WriteAsync(item.CodigoTurma, NpgsqlDbType.Varchar);
+                await writer.WriteAsync(item.Turma, NpgsqlDbType.Varchar);
+                await writer.WriteAsync(item.AlunosPrevistos, NpgsqlDbType.Integer);
+                await writer.WriteAsync(item.AlunosAvaliados, NpgsqlDbType.Integer);
+                await writer.WriteAsync(item.TipoAvaliacao, NpgsqlDbType.Integer);
+                await writer.WriteAsync(item.PreLeitorTotal, NpgsqlDbType.Integer);
+                await writer.WriteAsync((int)item.Fluencia, NpgsqlDbType.Integer);
+                await writer.WriteAsync(item.QuantidadeAlunoFluencia, NpgsqlDbType.Integer);
+                await writer.WriteAsync(item.PercentualFluencia, NpgsqlDbType.Numeric);
+                await writer.WriteAsync(item.CriadoEm, NpgsqlDbType.TimestampTz);
+            }
+            await writer.CompleteAsync();
         }
 
         public async Task LimparConsolidacao(int ano)

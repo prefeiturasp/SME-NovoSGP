@@ -2,8 +2,6 @@
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -26,7 +24,7 @@ namespace SME.SGP.Aplicacao
             filtro.UsuarioNome = usuario.Nome;
             filtro.UsuarioRf = usuario.CodigoRf;
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ProdutividadeFrequencia, filtro, usuario, formato:TipoFormatoRelatorio.Xlsx, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosProdutividadeFrequencia));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ProdutividadeFrequencia, filtro, usuario, formato: TipoFormatoRelatorio.Xlsx, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosProdutividadeFrequencia));
         }
     }
 }

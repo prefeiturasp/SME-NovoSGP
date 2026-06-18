@@ -2,10 +2,6 @@
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -13,7 +9,7 @@ namespace SME.SGP.Aplicacao
     {
         public Turma Turma { get; set; }
         public DateTime DataReferencia { get; set; }
-        public int Bimestre  { get; set; }
+        public int Bimestre { get; set; }
 
         public ObterPeriodoFechamentoVigentePorTurmaDataBimestreQuery(Turma turma, DateTime dataReferencia, int bimestre)
         {

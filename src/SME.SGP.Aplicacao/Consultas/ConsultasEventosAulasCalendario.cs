@@ -1,4 +1,4 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
@@ -11,7 +11,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
@@ -102,8 +101,8 @@ namespace SME.SGP.Aplicacao
             IEnumerable<DisciplinaDto> disciplinasEol = new List<DisciplinaDto>();
             if (idsDisciplinasAulas.NaoEhNulo() && idsDisciplinasAulas.Any())
                 disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(idsDisciplinasAulas.ToArray()));
-                    
-            foreach(var x in aulas)
+
+            foreach (var x in aulas)
             {
                 bool podeCriarAtividade = true;
                 var listaAtividades = atividades.Where(w => w.DataAvaliacao.Date == x.DataAula.Date && w.TurmaId == x.TurmaId
@@ -117,7 +116,7 @@ namespace SME.SGP.Aplicacao
                         if (disciplina.Regencia)
                         {
                             var disciplinasRegenciasComAtividades = (await repositorioAtividadeAvaliativaRegencia.Listar(item.Id)).ToList();
-                            foreach(var disciplinaRegencia in disciplinasRegenciasComAtividades)
+                            foreach (var disciplinaRegencia in disciplinasRegenciasComAtividades)
                             {
                                 disciplinaRegencia.DisciplinaContidaRegenciaNome = (await mediator.Send(new ObterComponenteCurricularPorIdQuery(long.Parse(disciplinaRegencia.DisciplinaContidaRegenciaId))))?.Nome;
                             }
@@ -200,8 +199,8 @@ namespace SME.SGP.Aplicacao
                 var periodoEscolarDaAula = await repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, dataAula);
                 if (periodoEscolarDaAula.EhNulo())
                     throw new NegocioException("Não foi possível localizar o período escolar da aula.");
-                
-                
+
+
                 var hoje = DateTime.Today;
 
                 var tipodeEventoReabertura = ObterTipoEventoFechamentoBimestre();
@@ -371,7 +370,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var aula in aulas)
                 aula.DentroPeriodo = await consultasAula.AulaDentroPeriodo(aula.TurmaId, aula.DataAula);
-            
+
             if (disciplinas.NaoEhNulo())
                 VerificarAulasSomenteConsulta(disciplinas, aulas);
 

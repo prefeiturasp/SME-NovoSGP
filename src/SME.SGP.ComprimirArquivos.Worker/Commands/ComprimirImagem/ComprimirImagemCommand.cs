@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using MediatR;
-using System.IO;
 
 namespace SME.SGP.ComprimirArquivos.Worker
 {

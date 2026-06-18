@@ -1,12 +1,12 @@
-﻿using System;
+﻿using MediatR;
+using SME.SGP.Infra;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarRelatorioPAPCommandHandler : IRequestHandler<SalvarRelatorioPAPCommand,ResultadoRelatorioPAPDto>
+    public class SalvarRelatorioPAPCommandHandler : IRequestHandler<SalvarRelatorioPAPCommand, ResultadoRelatorioPAPDto>
     {
         private readonly IMediator mediator;
 

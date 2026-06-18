@@ -34,14 +34,14 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                     SilabicoAlfabetico = g.Sum(x => x.SilabicoAlfabetico),
                     Alfabetico = g.Sum(x => x.Alfabetico),
                     SemPreenchimento = g.Sum(x => x.SemPreenchimento),
-                    QuantidadeAluno = g.Sum(x => x.QuantidadeAluno), 
+                    QuantidadeAluno = g.Sum(x => x.QuantidadeAluno),
                     Bimestre = g.Key.Bimestre,
                     AnoLetivo = g.Key.AnoLetivo,
                     SerieAno = g.Key.SerieAno
                 })
                 .OrderBy(x => x.SerieAno)
                 .ThenBy(x => x.CodigoDre)
-                .ThenBy(x => x.Bimestre) 
+                .ThenBy(x => x.Bimestre)
                 .ToList();
 
             await mediator.Send(new SalvarPainelEducacionalConsolidacaoSondagemEscritaUeCommand(registroConsolidado));

@@ -31,19 +31,19 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    if(!await mediator.Send(new ExcluirItineranciaCommand(itinerancia.Id)))
+                    if (!await mediator.Send(new ExcluirItineranciaCommand(itinerancia.Id)))
                         throw new NegocioException($"Não foi possível excluir a itinerância de Id {itinerancia.Id}");
 
-                    foreach (var aluno in itinerancia.Alunos)                    
-                        if(!await mediator.Send(new ExcluirItineranciaAlunoCommand(aluno)))
+                    foreach (var aluno in itinerancia.Alunos)
+                        if (!await mediator.Send(new ExcluirItineranciaAlunoCommand(aluno)))
                             throw new NegocioException($"Não foi possível excluir a itinerância do aluno de Id {aluno.Id}");
 
                     foreach (var objetivo in itinerancia.ObjetivosVisita)
-                        if(!await mediator.Send(new ExcluirItineranciaObjetivoCommand(objetivo.Id, itinerancia.Id)))
+                        if (!await mediator.Send(new ExcluirItineranciaObjetivoCommand(objetivo.Id, itinerancia.Id)))
                             throw new NegocioException($"Não foi possível excluir o objetivo da itinerância de Id {objetivo.Id}");
 
                     foreach (var questao in itinerancia.Questoes)
-                        if(!await mediator.Send(new ExcluirItineranciaQuestaoCommand(questao.Id, itinerancia.Id)))
+                        if (!await mediator.Send(new ExcluirItineranciaQuestaoCommand(questao.Id, itinerancia.Id)))
                             throw new NegocioException($"Não foi possível excluir a quesão da itinerância de Id {questao.Id}");
 
                     unitOfWork.PersistirTransacao();
@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
                     unitOfWork.Rollback();
                     throw;
                 }
-            }            
+            }
         }
     }
 }

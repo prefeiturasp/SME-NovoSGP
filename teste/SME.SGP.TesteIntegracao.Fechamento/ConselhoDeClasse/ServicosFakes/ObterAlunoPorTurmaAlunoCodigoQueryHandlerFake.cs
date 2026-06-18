@@ -1,20 +1,20 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
 {
-    public class ObterAlunoPorTurmaAlunoCodigoQueryHandlerFake: IRequestHandler<ObterAlunoPorTurmaAlunoCodigoQuery, AlunoPorTurmaResposta>
+    public class ObterAlunoPorTurmaAlunoCodigoQueryHandlerFake : IRequestHandler<ObterAlunoPorTurmaAlunoCodigoQuery, AlunoPorTurmaResposta>
     {
         public ObterAlunoPorTurmaAlunoCodigoQueryHandlerFake()
-        {}
+        { }
 
-        public async Task<AlunoPorTurmaResposta> Handle(ObterAlunoPorTurmaAlunoCodigoQuery request,CancellationToken cancellationToken)
+        public async Task<AlunoPorTurmaResposta> Handle(ObterAlunoPorTurmaAlunoCodigoQuery request, CancellationToken cancellationToken)
         {
             var alunosPorTurmaResposta = new List<AlunoPorTurmaResposta>()
             {

@@ -1,14 +1,14 @@
-﻿using SME.SGP.Dominio.Enumerados;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Shouldly;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
-using System;
-using MediatR;
-using Microsoft.Extensions.DependencyInjection;
-using SME.SGP.Aplicacao;
-using Shouldly;
-using System.Linq;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
 {

@@ -10,7 +10,6 @@ using SME.SGP.TesteIntegracao.PlanoAula.Base;
 using SME.SGP.TesteIntegracao.PlanoAula.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -59,10 +58,10 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
 
             retorno.ShouldNotBeNull();
             retorno.Id.ShouldBe(1);
-            
+
             var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
-            objetivoAprendizagemAulas.Count(w=> !w.Excluido).ShouldBe(3);
-            objetivoAprendizagemAulas.Count(w=> w.Excluido).ShouldBe(0);
+            objetivoAprendizagemAulas.Count(w => !w.Excluido).ShouldBe(3);
+            objetivoAprendizagemAulas.Count(w => w.Excluido).ShouldBe(0);
         }
 
         [Fact]
@@ -92,7 +91,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
 
             retorno.ShouldNotBeNull();
             retorno.Id.ShouldBe(1);
-            
+
             var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
             objetivoAprendizagemAulas.Count.ShouldBe(0);
         }

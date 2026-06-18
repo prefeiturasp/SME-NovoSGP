@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<Dominio.PeriodoEscolar>> Handle(ObterPeriodosEscolaresPorTipoCalendarioIdQuery request, CancellationToken cancellationToken)
         {
             var chaveCache = string.Format(NomeChaveCache.PERIODOS_ESCOLARES_CALENDARIO, request.TipoCalendarioId);
-                        
+
             return await repositorioCache
                 .ObterAsync(chaveCache, async
                     () => await repositorioPeriodoEscolar.ObterPorTipoCalendarioAsync(request.TipoCalendarioId));

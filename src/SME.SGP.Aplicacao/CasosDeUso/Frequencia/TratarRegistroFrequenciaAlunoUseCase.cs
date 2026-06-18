@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
             {
                 var dres = await mediator.Send(ObterIdsDresQuery.Instance);
 
-                foreach(long dreId in dres)
+                foreach (long dreId in dres)
                 {
                     var dto = new FiltroTratarRegistroFrequenciaDto() { AnoLetivo = ano, DreId = dreId };
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaTratarCargaRegistroFrequenciaAlunoUe, dto, Guid.NewGuid(), null));

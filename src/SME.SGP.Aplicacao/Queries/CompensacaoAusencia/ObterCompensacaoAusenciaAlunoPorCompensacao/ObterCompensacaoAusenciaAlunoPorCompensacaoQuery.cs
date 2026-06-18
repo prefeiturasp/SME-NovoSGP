@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
         public ObterCompensacaoAusenciaAlunoPorCompensacaoQuery(long compensacaoId)
         {
             CompensacaoId = compensacaoId;
-        }        
+        }
     }
 
     public class ObterCompensacaoAusenciaAlunoPorCompensacaoQueryValidator : AbstractValidator<ObterCompensacaoAusenciaAlunoPorCompensacaoQuery>

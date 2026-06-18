@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
 
             var alunosMatriculados = new List<AlunosMatriculadosEolDto>();
             {
-               for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 5; i++)
                 {
                     alunosMatriculados.Add(new AlunosMatriculadosEolDto
                     {
@@ -44,8 +44,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                         Turma = _faker.Random.String2(2),
                         Ano = "2025"
                     });
-                };
-            };
+                }
+                ;
+            }
+            ;
 
             _mediator.Setup(m => m.Send(It.IsAny<ObterAlunosMatriculadosPorAnoLetivoECCEolQuery>(), It.IsAny<CancellationToken>()))
                         .ReturnsAsync(alunosMatriculados);

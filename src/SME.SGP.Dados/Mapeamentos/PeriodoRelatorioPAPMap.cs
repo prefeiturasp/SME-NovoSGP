@@ -4,7 +4,7 @@ namespace SME.SGP.Dados.Mapeamentos
 {
     public class PeriodoRelatorioPAPMap : BaseMap<PeriodoRelatorioPAP>
     {
-        public PeriodoRelatorioPAPMap() 
+        public PeriodoRelatorioPAPMap()
         {
             ToTable("periodo_relatorio_pap");
 

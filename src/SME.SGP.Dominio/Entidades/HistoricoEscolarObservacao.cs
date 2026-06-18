@@ -1,7 +1,7 @@
 namespace SME.SGP.Dominio
 {
     public class HistoricoEscolarObservacao : EntidadeBase
-	{
+    {
         public HistoricoEscolarObservacao() { }
 
         public HistoricoEscolarObservacao(string alunoCodigo, string observacao)

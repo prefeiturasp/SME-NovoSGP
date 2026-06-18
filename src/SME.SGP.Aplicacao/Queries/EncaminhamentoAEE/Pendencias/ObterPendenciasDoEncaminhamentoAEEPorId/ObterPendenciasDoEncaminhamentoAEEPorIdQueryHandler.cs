@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioPendenciaEncaminhamentoAEE = repositorioPendenciaEncaminhamentoAEE ?? throw new ArgumentNullException(nameof(repositorioPendenciaEncaminhamentoAEE));
         }
 
-        public async Task<IEnumerable<PendenciaEncaminhamentoAEE>> Handle(ObterPendenciasDoEncaminhamentoAEEPorIdQuery request, CancellationToken cancellationToken)        
+        public async Task<IEnumerable<PendenciaEncaminhamentoAEE>> Handle(ObterPendenciasDoEncaminhamentoAEEPorIdQuery request, CancellationToken cancellationToken)
             => await repositorioPendenciaEncaminhamentoAEE.ObterPendenciasPorEncaminhamentoAEEId(request.EncaminhamentoAEEId);
 
     }

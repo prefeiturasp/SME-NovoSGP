@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
             {
                 var grupo = filtrouTodos ? $"{fechamento.Ano}" : $"{fechamento.AnoTurma}";
 
-                if(fechamento.Quantidade > 0)
+                if (fechamento.Quantidade > 0)
                 {
                     GraficoBaseDto fechamentoExistente = fechamentos?.FirstOrDefault(f => f.Grupo == grupo && f.Descricao == fechamento.Situacao.Name());
 
@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
                     else
                         fechamentos.Add(new GraficoBaseDto(grupo, fechamento.Quantidade, fechamento.Situacao.Name()));
                 }
-                    
+
             }
 
             return fechamentos.OrderBy(a => a.Grupo).ToList();

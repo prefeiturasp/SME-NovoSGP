@@ -15,9 +15,9 @@ namespace SME.SGP.Aplicacao
         {
             var frequencias = param.ObterObjetoMensagem<FrequenciaDto>();
             var usuarioLogin = param.UsuarioLogadoRF ?? "Sistema";
-            
+
             await mediator.Send(new InserirFrequenciasAulaCommand(frequencias, usuarioLogin: usuarioLogin));
-            
+
             return true;
         }
     }

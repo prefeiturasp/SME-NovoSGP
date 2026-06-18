@@ -39,7 +39,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<FeriadoCalendarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("listar")]
-        [Permissao(Permissao.TF_C,Permissao.E_A,Permissao.E_C, Policy = "Bearer")]
+        [Permissao(Permissao.TF_C, Permissao.E_A, Permissao.E_C, Policy = "Bearer")]
         public async Task<IActionResult> BuscarTodos([FromBody] FiltroFeriadoCalendarioDto filtro)
         {
             var retorno = await consultas.Listar(filtro);
@@ -52,7 +52,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.TF_E, Policy = "Bearer")]
-        public IActionResult MarcarExcluidos([FromBody]long[] ids)
+        public IActionResult MarcarExcluidos([FromBody] long[] ids)
         {
             comandos.MarcarExcluidos(ids);
             return Ok();
@@ -82,7 +82,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.TF_I, Permissao.TF_A, Policy = "Bearer")]
-        public IActionResult Salvar([FromBody]FeriadoCalendarioDto dto)
+        public IActionResult Salvar([FromBody] FeriadoCalendarioDto dto)
         {
             comandos.Salvar(dto);
             return Ok();

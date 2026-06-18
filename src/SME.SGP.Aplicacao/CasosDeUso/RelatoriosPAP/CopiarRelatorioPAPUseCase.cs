@@ -1,12 +1,11 @@
-﻿using System;
+﻿using MediatR;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Constantes;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -16,7 +15,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioCache repositorioCache;
         private const string NOME_COMPONENTE_SECAO_FREQUENCIA_TURMA_PAP = "SECAO_FREQUENCIA";
 
-        public CopiarRelatorioPAPUseCase(IMediator mediator,IUnitOfWork unitOfWork,IRepositorioCache repositorioCache) : base(mediator)
+        public CopiarRelatorioPAPUseCase(IMediator mediator, IUnitOfWork unitOfWork, IRepositorioCache repositorioCache) : base(mediator)
         {
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
@@ -34,7 +33,7 @@ namespace SME.SGP.Aplicacao
 
                     var obterSecoesDestino = await mediator.Send(new ObterSecoesPAPQuery(copiarPapDto.CodigoTurma,
                         estudante.AlunoCodigo, copiarPapDto.PeriodoRelatorioPAPId));
-                    
+
                     var relatorioPAPDto = new RelatorioPAPDto()
                     {
                         periodoRelatorioPAPId = copiarPapDto.PeriodoRelatorioPAPId,
@@ -48,7 +47,7 @@ namespace SME.SGP.Aplicacao
                     foreach (var questionarioSecaoId in obterSecoesDestino.Secoes.Where(s => !s.NomeComponente.Equals(NOME_COMPONENTE_SECAO_FREQUENCIA_TURMA_PAP)))
                     {
                         var sessaoDestino = new RelatorioPAPSecaoDto()
-                            { Id = questionarioSecaoId.PAPSecaoId, SecaoId = questionarioSecaoId.Id };
+                        { Id = questionarioSecaoId.PAPSecaoId, SecaoId = questionarioSecaoId.Id };
                         var secaoOrigem = obterSecoesOrigem.Secoes.FirstOrDefault(x => x.Id == questionarioSecaoId.Id);
                         var questoesOrigem = await ObterQuestoesOrigem(copiarPapDto, secaoOrigem);
 
@@ -100,14 +99,14 @@ namespace SME.SGP.Aplicacao
                 var resposta = new RelatorioPAPRespostaDto()
                 {
                     RelatorioRespostaId = ehquestaoOrigem ? null : respostas.Id,
-                    Resposta = respostas.OpcaoRespostaId?.ToString() ?? respostas.Texto,  
+                    Resposta = respostas.OpcaoRespostaId?.ToString() ?? respostas.Texto,
                     QuestaoId = questao.Id,
                     TipoQuestao = questao.TipoQuestao
                 };
                 sessao.Respostas.Add(resposta);
             }
             if (!questao.Resposta.Any())
-                sessao.Respostas.Add(new RelatorioPAPRespostaDto(){QuestaoId = questao.Id, TipoQuestao = questao.TipoQuestao});
+                sessao.Respostas.Add(new RelatorioPAPRespostaDto() { QuestaoId = questao.Id, TipoQuestao = questao.TipoQuestao });
         }
     }
 }

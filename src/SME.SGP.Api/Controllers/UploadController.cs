@@ -1,15 +1,15 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
-using SME.SGP.Aplicacao;
-using SME.SGP.Infra;
-using System.Linq;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -28,7 +28,7 @@ namespace SME.SGP.Api.Controllers
             this.mediator = mediator;
             this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions?.Value ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
         }
-        
+
         [HttpPost]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(401)]
@@ -40,11 +40,11 @@ namespace SME.SGP.Api.Controllers
             {
                 var file = files.FirstOrDefault();
                 if (file.Length > 0)
-                    return Ok(await useCase.Executar(files.FirstOrDefault(), 
-                        $"https://{Request.Host}{Request.PathBase}/{configuracaoArmazenamentoOptions.BucketTemp}", 
+                    return Ok(await useCase.Executar(files.FirstOrDefault(),
+                        $"https://{Request.Host}{Request.PathBase}/{configuracaoArmazenamentoOptions.BucketTemp}",
                         Dominio.TipoArquivo.Editor));
             }
-                
+
             return BadRequest();
         }
 
@@ -56,65 +56,65 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await mediator.Send(ObterBucketsServicoArmazenamentoQuery.Instance));
         }
-        
+
         [HttpPost("/servico-armazenamento/armazenar-temporario")]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ArmazenarTemporarioServicoArmazenamento(IFormFile iFromFile)
         {
-            if (iFromFile.NaoEhNulo()) 
-                return Ok(await mediator.Send(new ArmazenarArquivoFisicoCommand(iFromFile,Guid.NewGuid().ToString(),TipoArquivo.temp)));
-                
+            if (iFromFile.NaoEhNulo())
+                return Ok(await mediator.Send(new ArmazenarArquivoFisicoCommand(iFromFile, Guid.NewGuid().ToString(), TipoArquivo.temp)));
+
             return BadRequest();
         }
-        
+
         [HttpPost("/servico-armazenamento/armazenar")]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ArmazenarServicoArmazenamento(IFormFile iFromFile)
         {
-            if (iFromFile.NaoEhNulo()) 
-                return Ok(await mediator.Send(new ArmazenarArquivoFisicoCommand(iFromFile,iFromFile.FileName,TipoArquivo.Geral)));
-                
+            if (iFromFile.NaoEhNulo())
+                return Ok(await mediator.Send(new ArmazenarArquivoFisicoCommand(iFromFile, iFromFile.FileName, TipoArquivo.Geral)));
+
             return BadRequest();
         }
-        
+
         [HttpPost("/servico-armazenamento/copiar")]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> CopiarServicoArmazenamento(string nomeArquivo,[FromServices] ICopiarServicoArmazenamentoUseCase useCase)
+        public async Task<IActionResult> CopiarServicoArmazenamento(string nomeArquivo, [FromServices] ICopiarServicoArmazenamentoUseCase useCase)
         {
             return Ok(await useCase.Executar(nomeArquivo));
         }
-        
+
         [HttpPost("/servico-armazenamento/excluir")]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ExcluirServicoArmazenamento(string nomeArquivo,[FromServices] IExcluirTemporarioServicoArmazenamentoUseCase useCase)
+        public async Task<IActionResult> ExcluirServicoArmazenamento(string nomeArquivo, [FromServices] IExcluirTemporarioServicoArmazenamentoUseCase useCase)
         {
             return Ok(await useCase.Executar(nomeArquivo, configuracaoArmazenamentoOptions.BucketTemp));
         }
-        
+
         [HttpPost("/servico-armazenamento/mover")]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> MoverServicoArmazenamento(string nomeArquivo,[FromServices] IMoverServicoArmazenamentoUseCase useCase)
+        public async Task<IActionResult> MoverServicoArmazenamento(string nomeArquivo, [FromServices] IMoverServicoArmazenamentoUseCase useCase)
         {
             return Ok(await useCase.Executar(nomeArquivo));
         }
-        
+
         [HttpPost("/servico-armazenamento/obter-url")]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult ObterUrlServicoArmazenamento(string nomeArquivo, bool ehPastaTemporaria,[FromServices] IObterServicoArmazenamentoUseCase useCase)
+        public IActionResult ObterUrlServicoArmazenamento(string nomeArquivo, bool ehPastaTemporaria, [FromServices] IObterServicoArmazenamentoUseCase useCase)
         {
-            return Ok(useCase.Executar(nomeArquivo,ehPastaTemporaria));
+            return Ok(useCase.Executar(nomeArquivo, ehPastaTemporaria));
         }
     }
 }

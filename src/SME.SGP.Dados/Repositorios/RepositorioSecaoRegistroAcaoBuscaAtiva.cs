@@ -12,7 +12,7 @@ namespace SME.SGP.Dados.Repositorios
     {
 
         public RepositorioSecaoRegistroAcaoBuscaAtiva(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
-        {}
+        { }
 
         public async Task<IEnumerable<SecaoQuestionarioDto>> ObterSecoesQuestionarioDto(long? registroAcaoId = null)
         {

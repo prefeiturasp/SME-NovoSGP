@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IObterPendenciasUseCase 
+    public interface IObterPendenciasUseCase
     {
         Task<PaginacaoResultadoDto<PendenciaDto>> Executar(string turmaCodigo, int tipoPendencia, string tituloPendencia);
     }

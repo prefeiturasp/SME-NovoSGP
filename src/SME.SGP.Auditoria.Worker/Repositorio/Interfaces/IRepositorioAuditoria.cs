@@ -1,5 +1,5 @@
-﻿using System.Threading.Tasks;
-using SME.Pedagogico.Interface;
+﻿using SME.Pedagogico.Interface;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Auditoria.Worker.Repositorio.Interfaces
 {

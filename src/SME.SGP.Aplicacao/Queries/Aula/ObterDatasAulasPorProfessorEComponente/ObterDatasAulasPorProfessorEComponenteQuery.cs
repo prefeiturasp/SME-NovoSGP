@@ -1,13 +1,11 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterDatasAulasPorProfessorEComponenteQuery: IRequest<IEnumerable<DatasAulasDto>>
+    public class ObterDatasAulasPorProfessorEComponenteQuery : IRequest<IEnumerable<DatasAulasDto>>
     {
         public ObterDatasAulasPorProfessorEComponenteQuery(string turmaCodigo, string componenteCurricularCodigo)
         {
@@ -19,7 +17,7 @@ namespace SME.SGP.Aplicacao
         public string ComponenteCurricularCodigo { get; set; }
     }
 
-    public class ObterDatasAulasPorProfessorEComponenteQueryValidator: AbstractValidator<ObterDatasAulasPorProfessorEComponenteQuery>
+    public class ObterDatasAulasPorProfessorEComponenteQueryValidator : AbstractValidator<ObterDatasAulasPorProfessorEComponenteQuery>
     {
         public ObterDatasAulasPorProfessorEComponenteQueryValidator()
         {

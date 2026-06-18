@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<IGrouping<(string Nome, int? Ordem, long Id), AreaDoConhecimentoDto>>> Executar((IEnumerable<DisciplinaDto> Disciplinas, IEnumerable<AreaDoConhecimentoDto> AreasConhecimento, 
+        public async Task<IEnumerable<IGrouping<(string Nome, int? Ordem, long Id), AreaDoConhecimentoDto>>> Executar((IEnumerable<DisciplinaDto> Disciplinas, IEnumerable<AreaDoConhecimentoDto> AreasConhecimento,
                                                                                                                        IEnumerable<ComponenteCurricularGrupoAreaOrdenacaoDto> ComponentesCuricularesGrupoAreaOrdem, long GrupoMatrizId) param)
         {
             return await mediator

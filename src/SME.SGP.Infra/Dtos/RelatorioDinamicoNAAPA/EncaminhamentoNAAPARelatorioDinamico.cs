@@ -10,7 +10,7 @@ namespace SME.SGP.Infra
         public string NomeEscola { get; set; }
         public TipoEscola TipoEscola { get; set; }
         public string Estudante { get; set; }
-        public string Ano {  get; set; }
+        public string Ano { get; set; }
         public Modalidade Modalidade { get; set; }
         public string DescricaoAno { get { return string.Concat(Modalidade.ShortName(), "-", Ano); } }
     }

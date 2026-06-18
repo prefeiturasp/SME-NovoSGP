@@ -75,7 +75,7 @@ namespace SME.SGP.Dados.Repositorios
                                   inner join componente_curricular cc on ri.componente_curricular_id = cc.id
                                    where not ri.excluido 
                                     and ri.turma_id = @turmaId
-                                    {(componentePai.NaoEhNulo()? "and cc.componente_curricular_pai_id = @componentePai":"")}
+                                    {(componentePai.NaoEhNulo() ? "and cc.componente_curricular_pai_id = @componentePai" : "")}
                                     and ri.aluno_codigo = @alunoCodigo
                                     and ri.data_registro::date between @dataInicio and @dataFim ";
             var orderBy = "order by ri.data_registro desc";
@@ -225,7 +225,7 @@ namespace SME.SGP.Dados.Repositorios
                             order by ri.data_registro ";
 
             return await database.Conexao.QueryAsync<RegistroIndividualAlunoDTO>(query, new { turmaCodigo, codigoAluno, modalidades });
-         }
+        }
 
         public async Task<IEnumerable<RegistroItineranciaPorAnoDto>> ObterQuantidadeDeAunosSemRegistroPorPeriodoAsync(int anoLetivo, long dreId, Modalidade modalidade, DateTime dataInicial)
         {

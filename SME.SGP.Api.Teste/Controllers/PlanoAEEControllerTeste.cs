@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Bogus;
+﻿using Bogus;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -14,6 +9,11 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Dtos.Relatorios;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.Api.Teste.Controllers

@@ -8,7 +8,7 @@ namespace SME.SGP.Infra
         {
             Secoes = new List<SecaoPAPDto>();
         }
-            
+
         public long? PAPTurmaId { get; set; }
         public long? PAPAlunoId { get; set; }
         public List<SecaoPAPDto> Secoes { get; set; }

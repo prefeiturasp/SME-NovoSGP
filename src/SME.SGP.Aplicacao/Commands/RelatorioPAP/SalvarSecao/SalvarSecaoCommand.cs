@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
             RelatorioAlunoId = relatorioAlunoId;
         }
 
-        public  RelatorioPAPSecaoDto Secao { get; set; }
+        public RelatorioPAPSecaoDto Secao { get; set; }
         public long RelatorioAlunoId { get; set; }
     }
 

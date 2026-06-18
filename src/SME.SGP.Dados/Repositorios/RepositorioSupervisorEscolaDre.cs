@@ -36,7 +36,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new { supervisorId, dreId });
         }
 
-        public async Task<IEnumerable<ExisteAtribuicaoExcluidaDto>> VerificarSeJaExisteAtribuicaoExcluida(string dreCodigo, string[]uesCodigos,int tipoAtribuicao)
+        public async Task<IEnumerable<ExisteAtribuicaoExcluidaDto>> VerificarSeJaExisteAtribuicaoExcluida(string dreCodigo, string[] uesCodigos, int tipoAtribuicao)
         {
             StringBuilder query = new(@"SELECT 
                                             Id,
@@ -64,7 +64,7 @@ namespace SME.SGP.Dados.Repositorios
                                         AND sed.escola_id = @ueCodigo
                                         AND sed.supervisor_id  <> @responsavelCodigo ");
 
-            return await database.Conexao.QueryFirstAsync<int>(query.ToString(), new {tipo,ueCodigo,dreCodigo,responsavelCodigo });
+            return await database.Conexao.QueryFirstAsync<int>(query.ToString(), new { tipo, ueCodigo, dreCodigo, responsavelCodigo });
         }
 
         public async Task<IEnumerable<UnidadeEscolarSemAtribuicaolDto>> ObterListaUEsParaNovaAtribuicaoPorCodigoDre(string dreCodigo)
@@ -173,7 +173,7 @@ namespace SME.SGP.Dados.Repositorios
             if (filtro.TipoCodigo > 0)
                 query.AppendLine(" and sed.tipo = @tipo ");
 
-            if(!string.IsNullOrEmpty(filtro.SupervisorId))
+            if (!string.IsNullOrEmpty(filtro.SupervisorId))
                 query.AppendLine(" AND sed.supervisor_id = ANY(@supervisor)  AND sed.excluido = False ");
 
             if (filtro.SupervisorId?.Length == 0 || filtro.SupervisorId.EhNulo() && filtro.UESemResponsavel)
@@ -209,7 +209,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new { codigoDre, tipoResponsavelAtribuicao });
         }
-        
+
         public async Task<IEnumerable<SupervisorEscolasDreDto>> ObtemSupervisoresPorUe(string ueId)
         {
             StringBuilder query = new();
@@ -220,7 +220,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new { ueId });
         }
-        
+
         public async Task<IEnumerable<SupervisorEscolasDreDto>> ObterSupervisoresPorUeTipo(string ueId, TipoResponsavelAtribuicao tipoResponsavelAtribuicao)
         {
             StringBuilder query = new();
@@ -232,7 +232,7 @@ namespace SME.SGP.Dados.Repositorios
                                 left join usuario u on login = sed.supervisor_id 
                                where escola_id = @ueId and excluido = false and tipo = @tipoResponsavelAtribuicao");
 
-            return await database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new { ueId,tipoResponsavelAtribuicao });
+            return await database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new { ueId, tipoResponsavelAtribuicao });
         }
 
         public async Task<IEnumerable<SupervisorEscolasDreDto>> ObtemSupervisoresPorUeAsync(string ueId)
@@ -278,8 +278,8 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("where sed.supervisor_id = @rfSupervisor and");
             sqlQuery.AppendLine("     not sed.excluido and");
             sqlQuery.AppendLine("    vact.turma_historica = @consideraHistorico and");
-            
-            if(anoLetivo > 0)
+
+            if (anoLetivo > 0)
                 sqlQuery.AppendLine("    vact.turma_ano_letivo = @anoLetivo and");
 
             sqlQuery.AppendLine("    sed.Tipo = @tipoResponsavelAtribuicao");
@@ -315,7 +315,7 @@ namespace SME.SGP.Dados.Repositorios
                            GROUP BY u.id 
                            ORDER BY u.tipo_escola,u.nome ");
 
-            return await database.Conexao.QueryAsync<ListaUesConsultaAtribuicaoResponsavelDto>(sql.ToString(), new {dreCodigo});
+            return await database.Conexao.QueryAsync<ListaUesConsultaAtribuicaoResponsavelDto>(sql.ToString(), new { dreCodigo });
         }
 
         public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterResponsavelAtribuidoUePorUeTipo(string codigoUe, TipoResponsavelAtribuicao tipoResponsavelAtribuicao)
@@ -351,8 +351,8 @@ namespace SME.SGP.Dados.Repositorios
                 codigoUe,
                 tiposResponsavelAtribuicao = tiposResponsavelAtribuicao.ToIntegerArray()
             });
-            
-            
+
+
         }
         public async Task RemoverAtribuicoesEmLote(IEnumerable<long> atribuicoesIds)
         {

@@ -51,10 +51,16 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(@"    and t.semestre = @semestre ");
             sql.AppendLine(@"group by or2.nome;");
             return await database.Conexao
-                                 .QueryAsync<DadosGraficoMotivoAusenciaBuscaAtivaDto>(sql.ToString(), 
-                                                  new { anoLetivo, modalidade = (int)modalidade,
-                                                        nomeComponenteQuestao = NOME_COMPONENTE_QUESTAO_JUSTIFICATIVA_MOTIVO_FALTA,
-                                                        ueId, dreId, semestre }, commandTimeout: 60);
+                                 .QueryAsync<DadosGraficoMotivoAusenciaBuscaAtivaDto>(sql.ToString(),
+                                                  new
+                                                  {
+                                                      anoLetivo,
+                                                      modalidade = (int)modalidade,
+                                                      nomeComponenteQuestao = NOME_COMPONENTE_QUESTAO_JUSTIFICATIVA_MOTIVO_FALTA,
+                                                      ueId,
+                                                      dreId,
+                                                      semestre
+                                                  }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<DadosGraficoProcedimentoTrabalhoDreBuscaAtivaDto>> ObterDadosGraficoProcedimentoTrabalho(EnumProcedimentoTrabalhoBuscaAtiva tipoProcedimentoRealizado, int anoLetivo, Modalidade modalidade, long? ueId, long? dreId, int? semestre)

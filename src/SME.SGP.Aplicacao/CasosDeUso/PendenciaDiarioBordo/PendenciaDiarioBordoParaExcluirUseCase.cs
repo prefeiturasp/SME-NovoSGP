@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PendenciaDiarioBordo;
 using SME.SGP.Infra;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao

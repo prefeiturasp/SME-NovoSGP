@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
             {
                 var ues = await mediator.Send(new ObterUesPorDreCodigoQuery(filtro.DreId));
 
-                foreach(var ue in ues)
+                foreach (var ue in ues)
                 {
                     var filtroUe = new FiltroRemoverPendenciaFinalAnoLetivoDto(filtro.AnoLetivo, filtro.DreId, ue.CodigoUe);
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaExecutarExclusaoPendenciasDiarioDeClasseNoFinalDoAnoLetivo, filtroUe, Guid.NewGuid()));

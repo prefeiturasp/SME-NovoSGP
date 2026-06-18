@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries.EOL.Aluno.Turmas.ObterTurmasComMatricu
                 {
                     CodigoAluno = "2",
                     CodigoTurma = 2,
-                    CodigoSituacaoMatricula = SituacaoMatriculaAluno.VinculoIndevido                    
+                    CodigoSituacaoMatricula = SituacaoMatriculaAluno.VinculoIndevido
                 },
                 new()
                 {
@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries.EOL.Aluno.Turmas.ObterTurmasComMatricu
 
             var periodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 05);
             var periodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 30);
-            var query = new ObterTurmasComMatriculasValidasQuery(null, codigosTurmas, periodoInicio, periodoFim); 
+            var query = new ObterTurmasComMatriculasValidasQuery(null, codigosTurmas, periodoInicio, periodoFim);
 
             var resultado = await queryHandler.Handle(query, It.IsAny<CancellationToken>());
 

@@ -4,7 +4,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra.Dtos.EscolaAqui.DadosDeLeituraDeComunicados;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -39,7 +38,7 @@ namespace SME.SGP.Aplicacao
             if (request.CodigosTurmas.NaoEhNulo())
             {
                 foreach (var item in request.CodigosTurmas)
-                {                    
+                {
                     url.Append(@"&codigosTurmas=" + item);
                 }
             }

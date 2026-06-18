@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -21,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             var tipoCalendario = await mediator.Send(new ObterTipoCalendarioPorIdQuery(request.TipoCalendarioId));
 
-            foreach(var ue in await ObterUesEvento(request.DreCodigo, request.UeCodigo, tipoCalendario))
+            foreach (var ue in await ObterUesEvento(request.DreCodigo, request.UeCodigo, tipoCalendario))
             {
                 if (await mediator.Send(new ExistePendenciaDiasLetivosCalendarioUeQuery(tipoCalendario.Id, ue.Id)))
                 {

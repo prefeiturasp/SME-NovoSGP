@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
 
-        public InserirDiarioBordoCommandHandler(IMediator mediator,IRepositorioDiarioBordo repositorioDiarioBordo)
+        public InserirDiarioBordoCommandHandler(IMediator mediator, IRepositorioDiarioBordo repositorioDiarioBordo)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioDiarioBordo = repositorioDiarioBordo ?? throw new ArgumentNullException(nameof(repositorioDiarioBordo));
@@ -25,8 +25,8 @@ namespace SME.SGP.Aplicacao
             var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var aula = await mediator.Send(new ObterAulaPorIdQuery(request.AulaId));
             bool inseridoCJ = false;
-            
-            if(aula.EhNulo())
+
+            if (aula.EhNulo())
                 throw new NegocioException("Aula informada não existe");
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aula.TurmaId));
@@ -41,11 +41,11 @@ namespace SME.SGP.Aplicacao
 
                 var atribuicoesEsporadica = await mediator.Send(new ObterAtribuicoesPorRFEAnoQuery(usuario.CodigoRf, false, aula.DataAula.Year, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe));
 
-                if (possuiAtribuicaoCJ && 
+                if (possuiAtribuicaoCJ &&
                     atribuicoesEsporadica.Any() &&
                     !atribuicoesEsporadica.Any(a => a.DataInicio <= aula.DataAula.Date && a.DataFim >= aula.DataAula.Date && a.DreId == turma.Ue.Dre.CodigoDre && a.UeId == turma.Ue.CodigoUe))
-                    throw new NegocioException($"Você não possui permissão para inserir registro de diário de bordo neste período");   
-                
+                    throw new NegocioException($"Você não possui permissão para inserir registro de diário de bordo neste período");
+
                 inseridoCJ = true;
             }
 
@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
                 diarioBordo.Id = diarioAulaComponente.Id;
                 diarioBordo.CriadoEm = diarioAulaComponente.CriadoEm;
                 diarioBordo.CriadoPor = diarioAulaComponente.CriadoPor;
-                diarioBordo.CriadoRF = diarioAulaComponente.CriadoRF;      
+                diarioBordo.CriadoRF = diarioAulaComponente.CriadoRF;
             }
 
             await repositorioDiarioBordo.SalvarAsync(diarioBordo);
@@ -75,7 +75,7 @@ namespace SME.SGP.Aplicacao
         }
         private DiarioBordo MapearParaEntidade(InserirDiarioBordoCommand request, long turmaId, bool inseridoCJ)
             => new DiarioBordo()
-            { 
+            {
                 AulaId = request.AulaId,
                 Planejamento = request.Planejamento,
                 ComponenteCurricularId = request.ComponenteCurricularId,

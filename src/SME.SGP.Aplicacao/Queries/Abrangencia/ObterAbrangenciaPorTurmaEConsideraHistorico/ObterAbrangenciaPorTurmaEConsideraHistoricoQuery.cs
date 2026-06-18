@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAbrangenciaPorTurmaEConsideraHistoricoQuery : IRequest<AbrangenciaFiltroRetorno>
     {
-        public ObterAbrangenciaPorTurmaEConsideraHistoricoQuery(string turmaId, bool consideraHistorico=false)
+        public ObterAbrangenciaPorTurmaEConsideraHistoricoQuery(string turmaId, bool consideraHistorico = false)
         {
             TurmaId = turmaId;
             ConsideraHistorico = consideraHistorico;

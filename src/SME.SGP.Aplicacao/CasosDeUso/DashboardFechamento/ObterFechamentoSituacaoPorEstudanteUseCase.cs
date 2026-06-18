@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Minio.DataModel;
 using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -65,7 +64,7 @@ namespace SME.SGP.Aplicacao
                     var fechamento = new FechamentoSituacaoPorEstudanteDto();
                     fechamento.AdicionarQuantidadeCompleto(alunoFechamentoStatus.Count(a => a.Situacao == SituacaoFechamentoAluno.Completo));
                     fechamento.AdicionarQuantidadeParcial(alunoFechamentoStatus.Count(a => a.Situacao == SituacaoFechamentoAluno.Parcial));
-                    fechamento.AdicionarQuantidadeSemRegistro(await TotalAlunosSemRegistroPorTurma(new long[] { alunoFechamentoStatus.FirstOrDefault().TurmaId }, param.Bimestre, "0", 
+                    fechamento.AdicionarQuantidadeSemRegistro(await TotalAlunosSemRegistroPorTurma(new long[] { alunoFechamentoStatus.FirstOrDefault().TurmaId }, param.Bimestre, "0",
                                                                 (fechamento.QuantidadeParcial + fechamento.QuantidadeCompleto), param.UeId, param.DreId));
 
                     if (fechamento.QuantidadeSemRegistro > 0)
@@ -86,8 +85,8 @@ namespace SME.SGP.Aplicacao
                     var fechamento = new FechamentoSituacaoPorEstudanteDto();
                     fechamento.AdicionarQuantidadeCompleto(alunoFechamentoStatus.Count(a => a.Situacao == SituacaoFechamentoAluno.Completo));
                     fechamento.AdicionarQuantidadeParcial(alunoFechamentoStatus.Count(a => a.Situacao == SituacaoFechamentoAluno.Parcial));
-                    fechamento.AdicionarQuantidadeSemRegistro(await TotalAlunosSemRegistroPorTurma(alunoFechamentoStatus.GroupBy(c => c.TurmaId).Select(a=> a.Key).ToArray(), param.Bimestre, turmaAno,
-                                                                                            (fechamento.QuantidadeParcial + fechamento.QuantidadeCompleto), param.UeId, param.DreId));;
+                    fechamento.AdicionarQuantidadeSemRegistro(await TotalAlunosSemRegistroPorTurma(alunoFechamentoStatus.GroupBy(c => c.TurmaId).Select(a => a.Key).ToArray(), param.Bimestre, turmaAno,
+                                                                                            (fechamento.QuantidadeParcial + fechamento.QuantidadeCompleto), param.UeId, param.DreId)); ;
 
                     if (fechamento.QuantidadeSemRegistro > 0)
                         fechamentos.Add(new GraficoBaseDto(turmaAno == "-88" ? "Ed. Física" : turmaAno.ToString(), fechamento.QuantidadeSemRegistro, fechamento.LegendaSemRegistro));
@@ -132,18 +131,18 @@ namespace SME.SGP.Aplicacao
                         if (dadosDre.NaoEhNulo())
                             dreId = Convert.ToInt64(dadosDre.CodigoDre);
                     }
-                      
+
                     var alunos = await mediator
-                                    .Send(new ObterTotalAlunosPorAnoModalidadeDreAnoLetivoInicioEFimQuery(anoEscolar, 
+                                    .Send(new ObterTotalAlunosPorAnoModalidadeDreAnoLetivoInicioEFimQuery(anoEscolar,
                                     (int)turmas.FirstOrDefault().ModalidadeCodigo, turmas.FirstOrDefault().AnoLetivo, dreId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim));
 
                     if (alunos > 0)
                         totalAlunosSemRegistro += Convert.ToInt32(alunos);
-                    
+
                 }
                 else
                 {
-                    foreach(var turma in turmas)
+                    foreach (var turma in turmas)
                     {
                         var alunosDaTurma = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turma.CodigoTurma)));
                         if (alunosDaTurma.Any() && alunosDaTurma.NaoEhNulo())

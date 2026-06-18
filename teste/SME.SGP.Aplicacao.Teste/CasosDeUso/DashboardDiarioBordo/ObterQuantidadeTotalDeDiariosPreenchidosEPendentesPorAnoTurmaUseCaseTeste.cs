@@ -3,11 +3,8 @@ using Moq;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -39,7 +36,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DashboardDiarioBordo
             var listaPerfis = new List<PrioridadePerfil>();
             listaPerfis.Add(new PrioridadePerfil() { Tipo = TipoPerfil.DRE });
 
-            var usuario = new Usuario() {CodigoRf = "7909179"};
+            var usuario = new Usuario() { CodigoRf = "7909179" };
 
             usuario.DefinirPerfis(listaPerfis);
 
@@ -48,10 +45,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DashboardDiarioBordo
 
             var dados = new List<GraficoTotalDiariosPreenchidosEPendentesDTO>();
             dados.Add(
-                new GraficoTotalDiariosPreenchidosEPendentesDTO() 
-                { 
+                new GraficoTotalDiariosPreenchidosEPendentesDTO()
+                {
                     TurmaAno = "1",
-                    Descricao = "Preenchidos", 
+                    Descricao = "Preenchidos",
                     Quantidade = 100
                 });
 
@@ -191,7 +188,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DashboardDiarioBordo
             var dadosGrafico = await useCase.Executar(filtro);
 
             // Assert
-            Assert.False(dadosGrafico?.Where(d=> d.TurmaAno.Equals("1B")).Any());
+            Assert.False(dadosGrafico?.Where(d => d.TurmaAno.Equals("1B")).Any());
         }
     }
 }

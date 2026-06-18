@@ -1,25 +1,23 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.Aplicacao
 {
     public class ExecutaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase : AbstractUseCase, IExecutaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase
     {
-        public ExecutaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase(IMediator mediator,IRepositorioConsolidacaoFrequenciaTurma repositorioConsolidacaoFrequenciaTurma) : base(mediator)
-        {}
+        public ExecutaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase(IMediator mediator, IRepositorioConsolidacaoFrequenciaTurma repositorioConsolidacaoFrequenciaTurma) : base(mediator)
+        { }
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
             var filtro = mensagemRabbit.ObterObjetoMensagem<ConsolidacaoPorTurmaDashBoardFrequencia>();
-            
+
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(filtro.TurmaId));
 
             var anoLetivo = filtro.AnoLetivo;
@@ -27,23 +25,23 @@ namespace SME.SGP.Aplicacao
             var mes = filtro.Mes;
             var primeiroDiaDoMes = new DateTime(anoLetivo, mes, 1);
             var ultimoDiaDoMes = new DateTime(anoLetivo, mes, DateTime.DaysInMonth(anoLetivo, mes));
-            
+
             var frequenciasParaConsolidar = await mediator.Send(new ObterDadosParaConsolidacaoDashBoardFrequenciaPorTurmaQuery(anoLetivo,
-                filtro.TurmaId,turma.ModalidadeCodigo,filtro.DataAula));
-            
+                filtro.TurmaId, turma.ModalidadeCodigo, filtro.DataAula));
+
             if (frequenciasParaConsolidar.EhNulo())
                 return false;
-            
+
             var alunos = await mediator
                 .Send(new ObterAlunosDentroPeriodoQuery(turma.CodigoTurma, (primeiroDiaDoMes, ultimoDiaDoMes)));
-            
-            var frequenciasFinais = 
+
+            var frequenciasFinais =
                 (from a in alunos
-                    join ft in frequenciasParaConsolidar on a.CodigoAluno equals ft.CodigoAluno
-                    where (ehAnosAnterior && !a.Inativo && a.DataMatricula.Date <= ultimoDiaDoMes.Date) ||
-                          (!ehAnosAnterior && a.DataMatricula.Date <= ultimoDiaDoMes.Date)
-                    select new {a.CodigoAluno, ft.DataAula, ft.TotalAulas, ft.TotalFrequencias, ft.Presentes, ft.Ausentes, ft.Remotos})
-                .GroupBy(g=> new {g.DataAula, g.TotalAulas, g.TotalFrequencias})
+                 join ft in frequenciasParaConsolidar on a.CodigoAluno equals ft.CodigoAluno
+                 where (ehAnosAnterior && !a.Inativo && a.DataMatricula.Date <= ultimoDiaDoMes.Date) ||
+                       (!ehAnosAnterior && a.DataMatricula.Date <= ultimoDiaDoMes.Date)
+                 select new { a.CodigoAluno, ft.DataAula, ft.TotalAulas, ft.TotalFrequencias, ft.Presentes, ft.Ausentes, ft.Remotos })
+                .GroupBy(g => new { g.DataAula, g.TotalAulas, g.TotalFrequencias })
                 .Select(f => new DadosParaConsolidacaoDashBoardFrequenciaDto()
                 {
                     DataAula = f.Key.DataAula,
@@ -56,7 +54,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var frequencia in frequenciasFinais)
                 await SalvarConsolidacaoDashBoardFrequencia(filtro.AnoLetivo, frequencia, turma, mes);
-                
+
             return true;
         }
 
@@ -92,6 +90,6 @@ namespace SME.SGP.Aplicacao
             return consolidacaoDashBoardFrequencia;
         }
         private static string AbreviacaoDreFormatado(string abreviacaoDre)
-            => abreviacaoDre.Replace(DashboardConstants.PrefixoDreParaSerRemovido, string.Empty).Trim();  
+            => abreviacaoDre.Replace(DashboardConstants.PrefixoDreParaSerRemovido, string.Empty).Trim();
     }
 }

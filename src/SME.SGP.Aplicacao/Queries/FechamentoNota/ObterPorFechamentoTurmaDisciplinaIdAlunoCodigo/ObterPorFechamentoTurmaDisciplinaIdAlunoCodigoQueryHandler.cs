@@ -3,8 +3,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,6 +16,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new ArgumentNullException(nameof(repositorioFechamentoNota));
         }
         public async Task<IEnumerable<FechamentoNotaAlunoAprovacaoDto>> Handle(ObterPorFechamentoTurmaDisciplinaIdAlunoCodigoQuery request, CancellationToken cancellationToken)
-             => await repositorioFechamentoNota.ObterPorFechamentosTurmaAlunoCodigo(request.Ids,request.AlunoCodigo);
+             => await repositorioFechamentoNota.ObterPorFechamentosTurmaAlunoCodigo(request.Ids, request.AlunoCodigo);
     }
 }

@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Nest;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Nest;
 
 namespace SME.Pedagogico.Interface
 {

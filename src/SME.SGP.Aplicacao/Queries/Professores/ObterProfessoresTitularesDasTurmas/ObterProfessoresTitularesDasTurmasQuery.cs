@@ -1,13 +1,11 @@
-﻿using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using FluentValidation;
+﻿using FluentValidation;
+using MediatR;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterProfessoresTitularesDasTurmasQuery: IRequest<IEnumerable<ProfessorTitularDisciplinaEol>>
+    public class ObterProfessoresTitularesDasTurmasQuery : IRequest<IEnumerable<ProfessorTitularDisciplinaEol>>
     {
         public ObterProfessoresTitularesDasTurmasQuery(IEnumerable<string> codigosTurmas)
         {
@@ -16,7 +14,7 @@ namespace SME.SGP.Aplicacao
 
         public IEnumerable<string> CodigosTurmas { get; }
     }
-    
+
     public class ObterProfessoresTitularesDasTurmasQueryValidator : AbstractValidator<ObterProfessoresTitularesDasTurmasQuery>
     {
         public ObterProfessoresTitularesDasTurmasQueryValidator()

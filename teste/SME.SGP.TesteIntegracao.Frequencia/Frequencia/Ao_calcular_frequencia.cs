@@ -214,7 +214,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 Valor = 2,
                 NumeroAula = 1,
                 AulaId = 1
-            });            
+            });
 
             var mensagem = new CalcularFrequenciaPorTurmaCommand(new List<string> { "1" }, new DateTime(DateTimeExtension.HorarioBrasilia().Year, 08, 15), "1", "1");
             var jsonMensagem = JsonSerializer.Serialize(mensagem);
@@ -231,7 +231,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
             frequencias.First(x => x.Tipo == TipoFrequenciaAluno.PorDisciplina).PercentualFrequencia.ShouldBe(50);
         }
 
-        [Fact]        
+        [Fact]
         public async Task Deve_gravar_50_de_percentual_de_frequencia_discplina_para_um_aluno_e_75_para_outro()
         {
             var useCase = ServiceProvider.GetService<ICalculoFrequenciaTurmaDisciplinaUseCase>();
@@ -555,7 +555,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
 
         }
 
-        [Fact]        
+        [Fact]
         public async Task Deve_gravar_50_de_percentual_de_frequencia_para_um_aluno_com_presencial_e_remoto()
         {
             var useCase = ServiceProvider.GetService<ICalculoFrequenciaTurmaDisciplinaUseCase>();

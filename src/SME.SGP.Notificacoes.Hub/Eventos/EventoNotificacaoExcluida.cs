@@ -7,7 +7,7 @@ namespace SME.SGP.Notificacoes.Hub
 {
     public class EventoNotificacaoExcluida : EventoNotificacao<MensagemExclusaoNotificacaoDto>, IEventoNotificacaoExcluida
     {
-        public EventoNotificacaoExcluida(IServicoTelemetria servicoTelemetria) 
+        public EventoNotificacaoExcluida(IServicoTelemetria servicoTelemetria)
             : base(servicoTelemetria, "Excluida")
         {
         }

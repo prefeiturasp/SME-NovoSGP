@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<TipoAvaliacao> Handle(ObterTipoAvaliacaoBimestralQuery request, CancellationToken cancellationToken)
         {
-            var tipoAvaliacao =  await repositorioCache.ObterAsync(NomeChaveCache.TIPO_AVALIACAO_BIMESTRAL, () => repositorioTipoAvaliacao.ObterTipoAvaliacaoBimestral());
+            var tipoAvaliacao = await repositorioCache.ObterAsync(NomeChaveCache.TIPO_AVALIACAO_BIMESTRAL, () => repositorioTipoAvaliacao.ObterTipoAvaliacaoBimestral());
             return tipoAvaliacao;
         }
     }

@@ -25,16 +25,16 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Notificacao
         public async Task Executar_Quando_Mensagem_Valida_Deve_Executar_Teste()
         {
             var dto = new NotificacaoAndamentoFechamentoPorUeDto
-                 {
-                     PeriodoEscolarId = 1,
-                     UeId = 2,
-                     TurmasIds = new long[] { 1, 2 },
-                     Componentes = new[]
+            {
+                PeriodoEscolarId = 1,
+                UeId = 2,
+                TurmasIds = new long[] { 1, 2 },
+                Componentes = new[]
                          {
                             new ComponenteCurricularDto { Codigo = "101", Descricao = "Matemática" },
                             new ComponenteCurricularDto { Codigo = "102", Descricao = "Português" }
                          }
-                 };
+            };
 
             var periodoEscolar = new PeriodoEscolar { Id = 1, Bimestre = 1 };
             var ue = new Ue { Id = 2, Nome = "Escola Teste", CodigoUe = "UE1", DreId = 10, TipoEscola = Dominio.TipoEscola.EMEF };

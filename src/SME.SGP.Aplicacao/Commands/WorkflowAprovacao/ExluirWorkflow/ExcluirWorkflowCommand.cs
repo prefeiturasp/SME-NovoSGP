@@ -1,12 +1,9 @@
 ﻿using FluentValidation;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirWorkflowCommand: IRequest<bool>
+    public class ExcluirWorkflowCommand : IRequest<bool>
     {
         public ExcluirWorkflowCommand(long workflowId)
         {
@@ -16,7 +13,7 @@ namespace SME.SGP.Aplicacao
         public long WorkflowId { get; set; }
     }
 
-    public class ExcluirWorkflowCommandValidator: AbstractValidator<ExcluirWorkflowCommand>
+    public class ExcluirWorkflowCommandValidator : AbstractValidator<ExcluirWorkflowCommand>
     {
         public ExcluirWorkflowCommandValidator()
         {

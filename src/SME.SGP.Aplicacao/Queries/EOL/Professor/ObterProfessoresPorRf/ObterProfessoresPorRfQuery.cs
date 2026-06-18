@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using FluentValidation;
+﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
             AnoLetivo = anoLetivo;
         }
 
-        public IEnumerable<string> CodigosRF  { get; set; }
+        public IEnumerable<string> CodigosRF { get; set; }
         public int AnoLetivo { get; set; }
     }
 
@@ -27,6 +27,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(x => x.CodigosRF)
                 .NotNull()
                 .WithMessage("A listagem de Rfs deve ser informada para obter professores por Rf");
-        } 
+        }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IObterListaAlunosDaTurmaUseCase: IUseCase<string, PaginacaoResultadoDto<AlunoSimplesDto>>
+    public interface IObterListaAlunosDaTurmaUseCase : IUseCase<string, PaginacaoResultadoDto<AlunoSimplesDto>>
     {
     }
 }

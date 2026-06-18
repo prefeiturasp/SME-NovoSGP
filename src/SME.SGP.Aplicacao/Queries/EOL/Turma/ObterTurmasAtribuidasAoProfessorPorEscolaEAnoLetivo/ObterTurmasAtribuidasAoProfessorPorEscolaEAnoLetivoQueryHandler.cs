@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
 
             var url = string.Format(ServicosEolConstants.URL_PROFESSORES_ESCOLAS_TURMAS_ANOS_LETIVOS, request.RfProfessor, request.CodigoEscola, request.AnoLetivo);
-            
+
             var resposta = await httpClient.GetAsync(url);
 
             if (resposta.IsSuccessStatusCode)

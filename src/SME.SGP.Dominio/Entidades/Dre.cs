@@ -14,7 +14,7 @@ namespace SME.SGP.Dominio
         {
             get
             {
-                if(string.IsNullOrWhiteSpace(Nome))
+                if (string.IsNullOrWhiteSpace(Nome))
                     return Nome;
 
                 string novaSigla = "DRE";

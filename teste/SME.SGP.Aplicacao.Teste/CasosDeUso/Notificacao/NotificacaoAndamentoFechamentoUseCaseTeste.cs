@@ -72,7 +72,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Notificacao
             mediatorMock.Setup(x => x.Send(It.IsAny<ObterPeriodosFechamentoBimestrePorDataFinalQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<PeriodoFechamentoBimestre> {
                     new PeriodoFechamentoBimestre(),
-                    new PeriodoFechamentoBimestre() 
+                    new PeriodoFechamentoBimestre()
                   });
 
             mediatorMock.Setup(x => x.Send(It.IsAny<ExecutaNotificacaoAndamentoFechamentoCommand>(), It.IsAny<CancellationToken>()))

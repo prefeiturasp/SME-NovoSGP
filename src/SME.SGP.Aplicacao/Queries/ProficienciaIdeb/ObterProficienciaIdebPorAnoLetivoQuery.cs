@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao.Queries.ProficienciaIdeb
 {
-    public class ObterProficienciaIdebPorAnoLetivoQuery : IRequest<IEnumerable<Dominio.Entidades.ProficienciaIdeb>> 
+    public class ObterProficienciaIdebPorAnoLetivoQuery : IRequest<IEnumerable<Dominio.Entidades.ProficienciaIdeb>>
     {
         public ObterProficienciaIdebPorAnoLetivoQuery(int anoLetivo, List<string> codigoUe)
         {

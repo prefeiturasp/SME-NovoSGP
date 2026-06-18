@@ -61,7 +61,7 @@ namespace SME.SGP.Dados.Repositorios
                             left join periodo_escolar pe on pe.id = ft.periodo_escolar_id
                             where t.turma_id = ANY(@turmasCodigos) ");
 
-            if ((bimestre?? 0) > 0)
+            if ((bimestre ?? 0) > 0)
                 query.AppendLine("and pe.bimestre = @bimestre");
             else
                 query.AppendLine("and ft.periodo_escolar_id is null");

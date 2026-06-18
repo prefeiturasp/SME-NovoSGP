@@ -1,8 +1,6 @@
 using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.Relatorios;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -43,7 +41,7 @@ namespace SME.SGP.Aplicacao
                 totalAulas = frequencia.Sum(f => f.TotalAulas);
                 totalAusencias = frequencia.Sum(f => f.TotalAusencias);
                 totalCompensacoes = frequencia.Sum(f => f.TotalCompensacoes);
-                
+
                 var frequenciaBimestreAluno = new FrequenciaBimestreAlunoDto()
                 {
                     Bimestre = frequencia.Key.Bimestre,
@@ -73,15 +71,15 @@ namespace SME.SGP.Aplicacao
             return informacoesEscolaresAluno;
         }
 
-        private (double percentualFrequencia,string percentualFrequenciaFormatado) PercentualFrequencia(int totalAulas,int totalAusencias,int totalCompensacoes)
+        private (double percentualFrequencia, string percentualFrequenciaFormatado) PercentualFrequencia(int totalAulas, int totalAusencias, int totalCompensacoes)
         {
-           var frequenciaAlunoCalculo = new FrequenciaAluno()
+            var frequenciaAlunoCalculo = new FrequenciaAluno()
             {
                 TotalAulas = totalAulas,
                 TotalAusencias = totalAusencias,
                 TotalCompensacoes = totalCompensacoes
             };
-            return (frequenciaAlunoCalculo.PercentualFrequencia,frequenciaAlunoCalculo.PercentualFrequenciaFormatado);   
+            return (frequenciaAlunoCalculo.PercentualFrequencia, frequenciaAlunoCalculo.PercentualFrequenciaFormatado);
         }
     }
 }

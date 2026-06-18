@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class VerificaSeExisteConselhoClassePorIdQueryHandler: IRequestHandler<VerificaSeExisteConselhoClassePorIdQuery, bool>
+    public class VerificaSeExisteConselhoClassePorIdQueryHandler : IRequestHandler<VerificaSeExisteConselhoClassePorIdQuery, bool>
     {
         private readonly IRepositorioConselhoClasseConsulta repositorioConselhoClasseConsulta;
 

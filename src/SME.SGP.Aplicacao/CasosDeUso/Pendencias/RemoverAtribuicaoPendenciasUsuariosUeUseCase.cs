@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Minio.DataModel;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -87,8 +86,8 @@ namespace SME.SGP.Aplicacao
                     {
                         var (PerfilCodigo, _) = ObterParametrosKey(dados);
                         if (dados.ExistemNFuncionariosMesmoPerfil())
-                            await GerarPendenciasPerfilUsuario(PerfilCodigo, 
-                                                               filtro, 
+                            await GerarPendenciasPerfilUsuario(PerfilCodigo,
+                                                               filtro,
                                                                valorDados.FuncionarioRF);
                     }
                 }
@@ -137,10 +136,10 @@ namespace SME.SGP.Aplicacao
                     case PerfilUsuario.AD:
                     case PerfilUsuario.DIRETOR:
                         var funcionarios = await mediator.Send(new ObterFuncionariosPorCargoHierarquicoQuery(dreUe.UeCodigo, EnumHelper.ObterCargoPorPerfil(uePerfilCodigo.PerfilCodigo)));
-    
+
                         if (funcionarios.NaoEhNulo() && funcionarios.Any())
                             dicUePerfilCodigoFuncionarios.Add($"{uePerfilCodigo.UeId}_{uePerfilCodigo.PerfilCodigo}", funcionarios);
-                        
+
                         break;
 
                     case PerfilUsuario.CEFAI:

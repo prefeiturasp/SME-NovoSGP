@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         {
             var filtro = JsonConvert.DeserializeObject<FiltroRemoverPendenciaFinalAnoLetivoDto>(param.Mensagem.ToString());
 
-            if (!string.IsNullOrEmpty(filtro.CodigoUe)) 
+            if (!string.IsNullOrEmpty(filtro.CodigoUe))
             {
                 var idsPendencia = new List<long>();
                 var idsPendenciaAula = await mediator.Send(new ObterIdsPendenciaAulaPorAnoLetivoQuery(filtro.AnoLetivo, filtro.CodigoUe));

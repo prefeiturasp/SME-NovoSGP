@@ -1,11 +1,9 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,7 +25,7 @@ namespace SME.SGP.Aplicacao
                   new Turma() {
                       Id = 1,
                       CodigoTurma = "1",
-                  }              
+                  }
             };
 
             return await Task.Run(() => turmas.Where(turma => turma.Id == request.TurmaId).FirstOrDefault().CodigoTurma);

@@ -76,7 +76,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
             secoes.ShouldNotBeNull();
             secoes.Secoes.ShouldNotBeNull();
             secoes.Secoes.Count().ShouldBe(4);
-            
+
             var secaoAvanco = secoes.Secoes.Find(secao => secao.Nome == ConstantesTestePAP.AVANÇOS_NA_APRENDIZAGEM_DURANTE_O_BIMESTRE);
             secaoAvanco.ShouldNotBeNull();
             secaoAvanco.Auditoria.ShouldNotBeNull();
@@ -145,7 +145,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            await InserirNaBase(new RelatorioPeriodicoPAPResposta() 
+            await InserirNaBase(new RelatorioPeriodicoPAPResposta()
             {
                 RelatorioPeriodicoQuestaoId = 1,
                 Texto = "teste resposta",
@@ -187,7 +187,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
-            });;
+            }); ;
 
             await InserirNaBase(new RelatorioPeriodicoPAPSecao()
             {

@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
                 RuleFor(a => a.Modalidade)
                     .NotEmpty()
                     .WithMessage("A modalidade da turma deve ser informada para consulta de turmas na modalidade.");
-                
+
                 RuleFor(a => a.UeId)
                     .NotEmpty()
                     .WithMessage("A UE da turma deve ser informada para consulta de turmas na modalidade.");

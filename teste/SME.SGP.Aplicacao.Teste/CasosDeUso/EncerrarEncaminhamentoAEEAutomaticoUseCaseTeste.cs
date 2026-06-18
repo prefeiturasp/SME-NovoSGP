@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
 
             _mediator.Setup(c => c.Send(It.IsAny<ObterPendenciasDoEncaminhamentoAEEPorIdQuery>(), new CancellationToken()))
                 .ReturnsAsync(new List<PendenciaEncaminhamentoAEE>
-                { 
+                {
                     new PendenciaEncaminhamentoAEE
                     {
                         Id = 1,

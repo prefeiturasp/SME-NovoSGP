@@ -9,6 +9,6 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioNotaTipoValor(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
-        }        
+        }
     }
 }

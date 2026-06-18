@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
@@ -14,14 +11,16 @@ using SME.SGP.TesteIntegracao.PlanoAula.Base;
 using SME.SGP.TesteIntegracao.PlanoAula.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.PlanoAula
 {
     public class Ao_cadastrar_plano_aula_sem_plano_anual : PlanoAulaTesteBase
     {
-        public Ao_cadastrar_plano_aula_sem_plano_anual(CollectionFixture collectionFixture) : base(collectionFixture){}
-        
+        public Ao_cadastrar_plano_aula_sem_plano_anual(CollectionFixture collectionFixture) : base(collectionFixture) { }
+
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
@@ -37,7 +36,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             await CriarDadosBasicos(filtroPlanoAulaDiretor);
 
             var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
-            var ex = await Assert.ThrowsAsync<NegocioException>(() =>  salvarPlanoAulaUseCase.Executar(planoAulaDto));
+            var ex = await Assert.ThrowsAsync<NegocioException>(() => salvarPlanoAulaUseCase.Executar(planoAulaDto));
             ex.Message.ShouldNotBeNullOrEmpty();
             ex.Message.ShouldBeEquivalentTo(MensagemNegocioPlanoAula.NAO_EXISTE_PLANO_ANUAL_CADASTRADO);
         }
@@ -59,7 +58,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
                 CriarPeriodoReabertura = true,
                 CriarPlanejamentoAnual = false
             };
-            
+
             return filtro;
         }
         private PlanoAulaDto ObterPlanoAula()

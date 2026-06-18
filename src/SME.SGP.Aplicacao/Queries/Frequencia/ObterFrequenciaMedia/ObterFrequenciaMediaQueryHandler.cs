@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         {
             if (request.Disciplina.Regencia || !request.Disciplina.LancaNota)
                 return double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse, request.AnoLetivo)));
-          
+
             return double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.CompensacaoAusenciaPercentualFund2, request.AnoLetivo)));
         }
     }

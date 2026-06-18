@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         {
             var compensacaoAusenciaAlunoAulas = await repositorioCompensacaoAusenciaAlunoAulaConsulta.ObterPorRegistroFrequenciaAlunoIdsAsync(request.RegistroFrequenciaAlunoIds.ToArray());
 
-            if(compensacaoAusenciaAlunoAulas.Any())
+            if (compensacaoAusenciaAlunoAulas.Any())
                 await mediator.Send(new ExcluirCompensacaoAusenciaEAlunoEAulaCommand(compensacaoAusenciaAlunoAulas), cancellationToken);
 
             return true;

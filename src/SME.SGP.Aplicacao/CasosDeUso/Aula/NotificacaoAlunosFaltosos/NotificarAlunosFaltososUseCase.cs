@@ -1,8 +1,8 @@
-﻿using SME.SGP.Aplicacao.Interfaces;
+﻿using MediatR;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
-using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
-        {   
+        {
             var dresIds = await mediator.Send(ObterIdsDresQuery.Instance);
 
             foreach (var dreId in dresIds)

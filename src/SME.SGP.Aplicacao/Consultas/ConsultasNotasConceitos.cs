@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
             IRepositorioFrequenciaConsulta repositorioFrequencia, IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodoConsulta,
             IServicoUsuario servicoUsuario, IServicoAluno servicoAluno, IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
             IRepositorioNotaParametro repositorioNotaParametro, IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
-            IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar, 
+            IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
             IRepositorioTipoAvaliacao repositorioTipoAvaliacao, IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
             IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,
             IMediator mediator,
@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
         public async Task<NotasConceitosRetornoDto> ListarNotasConceitos(ListaNotasConceitosConsultaDto filtro)
         {
             var modalidadeTipoCalendario = filtro.Modalidade.ObterModalidadeTipoCalendario();
-            
+
             var turma = await consultasTurma.ObterComUeDrePorCodigo(filtro.TurmaCodigo);
 
             var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(filtro.AnoLetivo, modalidadeTipoCalendario, filtro.Semestre);
@@ -159,7 +159,7 @@ namespace SME.SGP.Aplicacao
                     var disciplinaEOL = await mediator.Send(new ObterComponenteCurricularPorIdQuery(long.Parse(filtro.DisciplinaCodigo)));
                     if (disciplinaEOL.EhNulo())
                         throw new NegocioException("Componente curricular informado não encontrado no EOL");
-                    
+
                     IEnumerable<DisciplinaResposta> disciplinasRegencia = null;
                     if (disciplinaEOL.Regencia)
                     {
@@ -319,7 +319,7 @@ namespace SME.SGP.Aplicacao
                                     DisciplinaId = disciplinaRegencia.CodigoComponenteCurricular,
                                     Disciplina = disciplinaRegencia.Nome,
                                 });
-                            } 
+                            }
                         }
 
                         // Carrega Frequencia Aluno
@@ -394,7 +394,7 @@ namespace SME.SGP.Aplicacao
             if (turmaEOL.TipoTurma == TipoTurma.EdFisica)
                 return TipoNota.Nota;
 
-            if (await ModalidadeTurmaEhCelp(turmaEOL)) 
+            if (await ModalidadeTurmaEhCelp(turmaEOL))
                 return TipoNota.Conceito;
 
             var notaTipo = await servicoDeNotasConceitos.TipoNotaPorAvaliacao(new AtividadeAvaliativa()

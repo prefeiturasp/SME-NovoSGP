@@ -1,5 +1,4 @@
 ﻿using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using System;
 using System.Collections.Generic;
 
@@ -8,7 +7,7 @@ namespace SME.SGP.Infra
     public class RegistroAcaoBuscaAtivaAlunoDto
     {
         public RegistroAcaoBuscaAtivaAlunoDto()
-        {}
+        { }
         public long Id { get; set; }
         public string AlunoCodigo { get; set; }
         public string AlunoNome { get; set; }

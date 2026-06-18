@@ -1,13 +1,13 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterAulaIntervaloTurmaDisciplinaQueryHandler : IRequestHandler<ObterAulaIntervaloTurmaDisciplinaQuery,AulaConsultaDto>
+    public class ObterAulaIntervaloTurmaDisciplinaQueryHandler : IRequestHandler<ObterAulaIntervaloTurmaDisciplinaQuery, AulaConsultaDto>
     {
         private readonly IRepositorioAulaConsulta repositorioAulaConsulta;
 

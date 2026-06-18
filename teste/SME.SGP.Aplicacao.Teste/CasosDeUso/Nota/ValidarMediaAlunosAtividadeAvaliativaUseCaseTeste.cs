@@ -349,7 +349,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Nota
             _repositorioNotaParametroMock.Setup(x => x.ObterPorDataAvaliacao(It.IsAny<DateTime>())).ReturnsAsync(notaParametro);
 
             _repositorioAulaMock.Setup(x => x.ObterAulaIntervaloTurmaDisciplina(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<long>())).ReturnsAsync((AulaConsultaDto)null);
-           
+
             _repositorioCicloMock
                 .Setup(x => x.ObterCicloPorAnoModalidade(It.IsAny<string>(), It.IsAny<Modalidade>()))
                 .ReturnsAsync(new CicloDto { Id = 1 });
@@ -412,7 +412,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Nota
             var excecao = await Assert.ThrowsAsync<NegocioException>(async () =>
             {
                 var task = (Task<NotaTipoValor>)metodo.Invoke(_useCase, new object[] { atividade, usuario, abrangencia, false });
-                await task; 
+                await task;
             });
 
             Assert.Equal(MensagemNegocioNota.TIPO_NOTA_NAO_ENCONTRADO, excecao.Message);
@@ -426,7 +426,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Nota
             _repositorioCicloMock.Setup(x => x.ObterCicloPorAnoModalidade(It.IsAny<string>(), It.IsAny<Modalidade>())).ReturnsAsync((CicloDto)null);
 
             var ex = await Assert.ThrowsAsync<NegocioException>(async () => await _useCase.ObterNotaTipo(abrangencia, DateTime.Now, CriarUsuario()));
-            
+
             Assert.Equal(MensagemNegocioTurma.CICLO_TURMA_NAO_ENCONTRADO, ex.Message);
         }
 
@@ -569,7 +569,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Nota
 
         [Fact]
         public async Task Carrega_Usuarios_Por_RFs_Deve_Retornar_Lista_Vazia_Quando_Lista_Vazia()
-        {        
+        {
             var metodo = _useCase.GetType()
                .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
                .FirstOrDefault(m =>

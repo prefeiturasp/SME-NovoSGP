@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
-            var filtro = mensagem.ObterObjetoMensagem<FiltroConsolidacaoFrequenciaTurmaEvasao>();            
+            var filtro = mensagem.ObterObjetoMensagem<FiltroConsolidacaoFrequenciaTurmaEvasao>();
             var quantidadeAlunosAbaixo50Porcento = 0;
             var quantidadeAlunox0Porcento = 0;
             var consolidacoesFrequenciaAlunoMensal = await mediator.Send(new ObterConsolidacoesFrequenciaAlunoMensalPorTurmaEMesQuery(filtro.TurmaId, filtro.Mes));

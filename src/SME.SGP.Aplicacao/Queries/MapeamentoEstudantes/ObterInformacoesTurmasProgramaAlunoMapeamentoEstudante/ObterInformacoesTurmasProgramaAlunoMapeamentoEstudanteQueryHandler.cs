@@ -1,4 +1,7 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.MapeamentoEstudantes;
 using System;
@@ -7,9 +10,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Constantes;
 
 namespace SME.SGP.Aplicacao
 {
@@ -43,8 +43,11 @@ namespace SME.SGP.Aplicacao
                                                                                                     ComponentesCurricularesConstants.CODIGO_PAP_2_ANO_ALFABETIZACAO,
                                                                                                     ComponentesCurricularesConstants.CODIGO_PAP_2_ANO_COLABORATIVO_ALFABETIZACAO  }
                                                                                     .Contains(cc.codigoComponenteCurricular))
-                                                                      .Select(cc => new ComponenteCurricularSimplificadoDto() { Id = cc.codigoComponenteCurricular, 
-                                                                                                                                Descricao =  cc.nomeComponenteCurricular})
+                                                                      .Select(cc => new ComponenteCurricularSimplificadoDto()
+                                                                      {
+                                                                          Id = cc.codigoComponenteCurricular,
+                                                                          Descricao = cc.nomeComponenteCurricular
+                                                                      })
                                                                       .DistinctBy(cc => cc.Id));
                 retorno.ComponentesPAP.AddRange(componentesTurmasAluno.Where(cc => new List<long> { ComponentesCurricularesConstants.CODIGO_PAP_RECUPERACAO_APRENDIZAGENS }
                                                                                     .Contains(cc.codigoComponenteCurricular))
@@ -117,7 +120,7 @@ namespace SME.SGP.Aplicacao
         {
             var lista = source.PossuiRegistros()
                              ? source
-                             : new List<ComponenteCurricularSimplificadoDto>() { new() { Id = 0, Descricao = "Não"} };
+                             : new List<ComponenteCurricularSimplificadoDto>() { new() { Id = 0, Descricao = "Não" } };
 
             return JsonConvert.SerializeObject(lista.Select(cc => new { index = cc.Id.ToString(), value = cc.Descricao }));
         }

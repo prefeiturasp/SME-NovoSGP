@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using Elastic.Apm.Api;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -7,10 +6,8 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.MapeamentoEstudantes;
 using SME.SGP.Infra.Interface;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -218,6 +215,6 @@ namespace SME.SGP.Dados.Repositorios
 
         public Task<long> ObterTurmaIdMapeamentoEstudante(long mapeamentoEstudanteId)
         => database.Conexao.QueryFirstOrDefaultAsync<long>("SELECT turma_id FROM mapeamento_estudante WHERE id = @mapeamentoEstudanteId ", new { mapeamentoEstudanteId });
-        
+
     }
 }

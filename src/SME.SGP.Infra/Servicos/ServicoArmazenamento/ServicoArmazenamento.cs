@@ -58,12 +58,12 @@ namespace SME.SGP.Infra
                     .WithVersionId("1.0")
                     .WithContentType(contentType);
 
-             await minioClient.PutObjectAsync(args);
+            await minioClient.PutObjectAsync(args);
 
-             if (bucket.Equals(configuracaoArmazenamentoOptions.BucketArquivos))
-                    await OtimizarArquivos(nomeArquivo);
+            if (bucket.Equals(configuracaoArmazenamentoOptions.BucketArquivos))
+                await OtimizarArquivos(nomeArquivo);
 
-             return ObterUrl(nomeArquivo, bucket);
+            return ObterUrl(nomeArquivo, bucket);
         }
 
         private async Task<string> Copiar(string nomeArquivo)
@@ -99,7 +99,7 @@ namespace SME.SGP.Infra
 
             return ObterUrl(nomeArquivo, bucket);
         }
-        
+
         public async Task<Stream> ObterStream(string nomeArquivo, string bucket)
         {
             var stream = await TentarObterStream(nomeArquivo, bucket);
@@ -224,7 +224,7 @@ namespace SME.SGP.Infra
                     if (response.IsSuccessStatusCode)
                         return true;
                 }
-                catch (HttpRequestException e)
+                catch (HttpRequestException)
                 {
                     return false;
                 }

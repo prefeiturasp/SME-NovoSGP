@@ -31,9 +31,9 @@ namespace SME.SGP.Aplicacao
             var dre = periodosEncerrando.First().PeriodoFechamento.Ue.Dre;
 
             var listaUes = new List<(bool notificar, Ue ue, int quantidadeTurmasPendentes)>();
-            foreach(var periodoEncerrandoBimestre in periodosEncerrando.GroupBy(c => c.PeriodoEscolar.Bimestre))
+            foreach (var periodoEncerrandoBimestre in periodosEncerrando.GroupBy(c => c.PeriodoEscolar.Bimestre))
             {
-                foreach(var periodoEncerrando in periodoEncerrandoBimestre)
+                foreach (var periodoEncerrando in periodoEncerrandoBimestre)
                 {
                     var turmas = await mediator.Send(new ObterTurmasComFechamentoOuConselhoNaoFinalizadosQuery(periodoEncerrando.PeriodoFechamento.UeId.Value,
                                                                                                                DateTime.Now.Year,
@@ -95,7 +95,7 @@ namespace SME.SGP.Aplicacao
             var mensagem = new StringBuilder($"As UEs da <b>{dre.Abreviacao}</b> abaixo estão com menos de {percentualFechamentoInsuficiente}% do fechamento do <b>{descricaoBimestre}</b> concluído:<br/>");
 
             mensagem.Append(ObterHeaderTabela());
-            foreach(var notificarUe in listaUes.Where(c => c.notificar))
+            foreach (var notificarUe in listaUes.Where(c => c.notificar))
             {
                 mensagem.Append("<tr>");
                 mensagem.Append($"<td>{notificarUe.ue.TipoEscola.ShortName()} {notificarUe.ue.Nome}</td>");

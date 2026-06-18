@@ -1,6 +1,5 @@
 ﻿using SME.SGP.Dominio;
 using System;
-using System.Globalization;
 
 namespace SME.SGP.Infra
 {
@@ -16,7 +15,7 @@ namespace SME.SGP.Infra
         public int NumeroFaltasNaoCompensadas { get => TotalAusencias - TotalCompensacoes; }
         public string PercentualFrequenciaFormatado => FrequenciaAluno.FormatarPercentual(PercentualFrequencia);
         public int TotalPresencaRemoto { get => TotalPresencas + TotalRemotos; }
-        public double PercentualFrequencia 
+        public double PercentualFrequencia
         {
             get
             {
@@ -28,7 +27,7 @@ namespace SME.SGP.Infra
                 return Math.Round(porcentagem > 100 ? 100 : porcentagem, 2);
             }
         }
-        public double TotalFrequencias 
+        public double TotalFrequencias
         {
             get
             {

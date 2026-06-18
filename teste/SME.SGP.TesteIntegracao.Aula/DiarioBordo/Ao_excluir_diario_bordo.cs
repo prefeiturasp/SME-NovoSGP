@@ -1,8 +1,8 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Shouldly;
+﻿using Shouldly;
 using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.DiarioBordo
@@ -89,7 +89,7 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo
 
             var diariosBordoObsExcluidos = ObterTodos<Dominio.DiarioBordoObservacao>().Where(diariobordoObs => diariobordoObs.Excluido).OrderBy(obs => obs.Id).ToList();
             diariosBordoObsExcluidos.Count.ShouldBeEquivalentTo(2);
-            
+
             diariosBordoExcluidos.FirstOrDefault()?.Id.ShouldBeEquivalentTo(DIARIO_BORDO_ID_1);
             diariosBordoObsExcluidos.FirstOrDefault()?.Id.ShouldBeEquivalentTo(DIARIO_BORDO_OBS_ID_1);
             diariosBordoObsExcluidos.LastOrDefault()?.Id.ShouldBeEquivalentTo(DIARIO_BORDO_OBS_ID_2);
@@ -118,7 +118,7 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo
 
             var pendenciasDiarioBordo = ObterTodos<Dominio.PendenciaDiarioBordo>();
             pendenciasDiarioBordo.Count.ShouldBeEquivalentTo(0);
-            
+
             await CriarDadosBasicos(filtro);
 
             var obterResgistrosNaoExcluidos = ObterTodos<Dominio.DiarioBordo>().Where(diariobordo => !diariobordo.Excluido).ToList();
@@ -135,7 +135,7 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo
             obterResgistrosExcluidos.FirstOrDefault()?.Id.ShouldBeEquivalentTo(DIARIO_BORDO_ID_1);
 
             pendenciasDiarioBordo = ObterTodos<Dominio.PendenciaDiarioBordo>();
-            if (filtro.DataAulaDiarioBordo < DateTimeExtension.HorarioBrasilia().Date)             
+            if (filtro.DataAulaDiarioBordo < DateTimeExtension.HorarioBrasilia().Date)
                 pendenciasDiarioBordo.Count.ShouldBeEquivalentTo(1);
             else
                 pendenciasDiarioBordo.Count.ShouldBeEquivalentTo(0);

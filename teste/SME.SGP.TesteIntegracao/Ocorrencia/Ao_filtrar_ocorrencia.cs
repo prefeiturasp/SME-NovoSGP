@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.Dto;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Ocorrencia.Base;
 using SME.SGP.TesteIntegracao.Ocorrencia.ServicosFakes;
@@ -12,10 +13,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.Dto;
 using Xunit;
 using OcorrenciaObj = SME.SGP.Dominio.Ocorrencia;
-using Nest;
 
 namespace SME.SGP.TesteIntegracao.Ocorrencia
 {
@@ -198,8 +197,8 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             retorno.Items.FirstOrDefault().DataOcorrencia.ShouldBeEquivalentTo(DateTimeExtension.HorarioBrasilia().ToString("dd/MM/yyyy"));
 
         }
-        
-        
+
+
         private async Task CriarOcorrencia()
         {
             await InserirNaBase(new OcorrenciaObj

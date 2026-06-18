@@ -1,18 +1,18 @@
-﻿using System.Collections.Generic;
-using SME.SGP.Dominio;
-using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.Setup;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
-using Xunit;
-using SME.SGP.TesteIntegracao.ServicosFakes;
-using ObterTurmaItinerarioEnsinoMedioQueryHandlerFake = SME.SGP.TesteIntegracao.ServicosFakes.ObterTurmaItinerarioEnsinoMedioQueryHandlerFake;
-using ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake = SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes.ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake;
 using SME.SGP.TesteIntegracao.ConsolidacaoConselhoDeClasse.ServicosFakes;
+using SME.SGP.TesteIntegracao.ServicosFakes;
+using SME.SGP.TesteIntegracao.Setup;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Xunit;
+using ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake = SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes.ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake;
+using ObterTurmaItinerarioEnsinoMedioQueryHandlerFake = SME.SGP.TesteIntegracao.ServicosFakes.ObterTurmaItinerarioEnsinoMedioQueryHandlerFake;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 {
@@ -20,9 +20,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
     {
         public Ao_inserir_nota_numerica_pos_conselho_bimestre_final(CollectionFixture collectionFixture) : base(collectionFixture)
         {
-             
+
         }
-        
+
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
@@ -47,14 +47,14 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ANO_7,
                 Modalidade.Fundamental,
                 ModalidadeTipoCalendario.FundamentalMedio,
-                anoAnterior, 
+                anoAnterior,
                 SituacaoConselhoClasse.EmAndamento,
                 true);
-            
+
             await CriarConselhoClasseTodosBimestres();
-            
+
             var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota, FECHAMENTO_TURMA_ID_5, BIMESTRE_FINAL);
-            
+
             await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Nota);
         }
 
@@ -68,15 +68,15 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                             ANO_5,
                             Modalidade.Fundamental,
                             ModalidadeTipoCalendario.FundamentalMedio,
-                            anoAnterior, 
+                            anoAnterior,
                             SituacaoConselhoClasse.EmAndamento,
                             true);
-                
+
             await CriarConselhoClasseTodosBimestres();
 
             var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota, FECHAMENTO_TURMA_ID_5, BIMESTRE_FINAL);
-            
-            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Nota,SituacaoConselhoClasse.EmAndamento,true);
+
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Nota, SituacaoConselhoClasse.EmAndamento, true);
         }
 
         [Theory]
@@ -89,14 +89,14 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                             ANO_7,
                             Modalidade.Fundamental,
                             ModalidadeTipoCalendario.FundamentalMedio,
-                            anoAnterior, 
+                            anoAnterior,
                             SituacaoConselhoClasse.EmAndamento,
                             true);
-            
+
             await CriarConselhoClasseTodosBimestres();
-            
+
             var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota, FECHAMENTO_TURMA_ID_5, BIMESTRE_FINAL);
-            
+
             await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Nota);
         }
 
@@ -110,15 +110,15 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                             ANO_5,
                             Modalidade.Medio,
                             ModalidadeTipoCalendario.FundamentalMedio,
-                            anoAnterior, 
+                            anoAnterior,
                             SituacaoConselhoClasse.EmAndamento,
                             true);
-            
+
             await CriarConselhoClasseTodosBimestres();
-            
+
             var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota, FECHAMENTO_TURMA_ID_5, BIMESTRE_FINAL);
-            
-            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Nota,SituacaoConselhoClasse.EmAndamento,true);
+
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Nota, SituacaoConselhoClasse.EmAndamento, true);
         }
 
         [Theory]
@@ -131,16 +131,16 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ANO_9,
                 Modalidade.EJA,
                 ModalidadeTipoCalendario.EJA,
-                anoAnterior, 
+                anoAnterior,
                 SituacaoConselhoClasse.EmAndamento,
                 true);
-            
+
             await CriarConselhoClasseTodosBimestres(ehEja: true);
-            
+
             var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota, FECHAMENTO_TURMA_ID_5, BIMESTRE_FINAL);
-            
+
             await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Nota, ehEja: true);
-                
+
         }
 
         [Theory]
@@ -153,14 +153,14 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             ANO_6,
             Modalidade.Fundamental,
             ModalidadeTipoCalendario.FundamentalMedio,
-            anoAnterior, 
+            anoAnterior,
             SituacaoConselhoClasse.EmAndamento,
             true);
-            
+
             await CriarConselhoClasseTodosBimestres();
 
             var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota, FECHAMENTO_TURMA_ID_5, BIMESTRE_FINAL);
-            
+
             await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Nota);
         }
 
@@ -171,7 +171,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                         Modalidade modalidade,
                         ModalidadeTipoCalendario modalidadeTipoCalendario,
                         bool anoAnterior,
-                        SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado, 
+                        SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado,
                         bool criarFechamentoDisciplinaAlunoNota = false,
                         bool criarConselhosTodosBimestres = false)
         {

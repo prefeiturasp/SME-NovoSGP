@@ -170,8 +170,8 @@ namespace SME.SGP.Dominio
             if (turma.EhNulo())
                 throw new NegocioException("A turma deve ser informada.");
 
-            return !(EhAulaCompartilhada 
-                     || (EhTecnologiaAprendizagem && turma.EhEJA()) 
+            return !(EhAulaCompartilhada
+                     || (EhTecnologiaAprendizagem && turma.EhEJA())
                      || (EhTecAprendizagemELeitura && turma.EhMedioNoturno()));
         }
 

@@ -4,18 +4,12 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
 using Shouldly;
 using SME.SGP.Aplicacao;
-using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.AtribuicaoCJs.ServicosFake;
 using SME.SGP.TesteIntegracao.ConsultaDisciplina.ServicosFake;
-using SME.SGP.TesteIntegracao.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -43,7 +37,7 @@ namespace SME.SGP.TesteIntegracao.ConsultaDisciplina
         {
             base.RegistrarFakes(services);
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery, IEnumerable<ComponenteCurricularEol>>), typeof(ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQueryHandlerFake), ServiceLifetime.Scoped));
-            
+
         }
 
         [Fact]

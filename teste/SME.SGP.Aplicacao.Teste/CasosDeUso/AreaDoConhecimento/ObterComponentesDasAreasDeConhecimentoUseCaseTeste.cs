@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using MediatR;
 using Moq;
-using Xunit;
-using MediatR;
-using System.Threading.Tasks;
-using System.Linq;
 using SME.SGP.Infra;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.CasosDeUso.AreaDoConhecimento
 {

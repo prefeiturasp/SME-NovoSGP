@@ -217,7 +217,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("salvar-observacao")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> SalvarObservacao([FromBody]EncaminhamentoNAAPAObservacaoSalvarDto filtro,[FromServices]ISalvarObservacoesDeEncaminhamentoNAAPAUseCase useCase)
+        public async Task<IActionResult> SalvarObservacao([FromBody] EncaminhamentoNAAPAObservacaoSalvarDto filtro, [FromServices] ISalvarObservacoesDeEncaminhamentoNAAPAUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
         }

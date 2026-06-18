@@ -8,14 +8,14 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IServicoArmazenamento servicoArmazenamento;
 
-        public ObterServicoArmazenamentoUseCase(IServicoArmazenamento servicoArmazenamento,IMediator mediator) : base(mediator)
+        public ObterServicoArmazenamentoUseCase(IServicoArmazenamento servicoArmazenamento, IMediator mediator) : base(mediator)
         {
             this.servicoArmazenamento = servicoArmazenamento ?? throw new ArgumentNullException(nameof(servicoArmazenamento));
-        } 
+        }
 
         public string Executar(string nomeArquivo, bool ehPastaTemporaria)
         {
-            return servicoArmazenamento.Obter(nomeArquivo,ehPastaTemporaria);
+            return servicoArmazenamento.Obter(nomeArquivo, ehPastaTemporaria);
         }
     }
 }

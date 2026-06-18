@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
 
 
             var totalCompensacoes = await mediator.Send(new ObterTotalCompensacaoAusenciaPorAnoLetivoQuery(anoLetivo, dreId, ueId, modalidade, semestre, bimestre));
-            
+
 
             return MapearParaDto(dadosAusenciaAlunos, totalCompensacoes.TotalCompensacoesFormatado);
         }

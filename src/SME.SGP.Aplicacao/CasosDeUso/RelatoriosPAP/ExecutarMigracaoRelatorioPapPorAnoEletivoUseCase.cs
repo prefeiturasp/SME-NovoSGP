@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
             var anoSemestre = param.ObterObjetoMensagem<AnoSemestreDto>();
             var idsAlunoPAP = await mediator.Send(new ObterRelatorioSemestralAlunoPAPPorAnoSemestreQuery(anoSemestre.AnoLetivo, anoSemestre.Semestre));
             var IdPeriodoPAP = await mediator.Send(new ObterIdPeriodoRelatorioPAPQuery(anoSemestre.AnoLetivo, anoSemestre.Semestre, SEMESTRE));
-            
+
             foreach (var id in idsAlunoPAP)
             {
                 var dto = new MigradorRelatorioPAPDto()

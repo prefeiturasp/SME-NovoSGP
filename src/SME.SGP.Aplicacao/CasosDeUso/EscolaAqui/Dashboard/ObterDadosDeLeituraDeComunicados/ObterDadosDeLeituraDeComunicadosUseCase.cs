@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Dashboard.ObterDadosDeLeituraD
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<DadosDeLeituraDoComunicadoDto>> Executar(ObterDadosDeLeituraDeComunicadosDto obterDadosDeLeituraDeComunicadosDto) 
+        public async Task<IEnumerable<DadosDeLeituraDoComunicadoDto>> Executar(ObterDadosDeLeituraDeComunicadosDto obterDadosDeLeituraDeComunicadosDto)
             => await mediator.Send(new ObterDadosDeLeituraDeComunicadosQuery(obterDadosDeLeituraDeComunicadosDto.CodigoDre, obterDadosDeLeituraDeComunicadosDto.CodigoUe, obterDadosDeLeituraDeComunicadosDto.NotificacaoId, obterDadosDeLeituraDeComunicadosDto.ModoVisualizacao, obterDadosDeLeituraDeComunicadosDto.AgruparModalidade));
     }
 }

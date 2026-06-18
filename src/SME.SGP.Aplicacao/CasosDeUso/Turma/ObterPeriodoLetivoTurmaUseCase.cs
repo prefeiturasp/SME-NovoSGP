@@ -10,7 +10,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.Turma
     public class ObterPeriodoLetivoTurmaUseCase : AbstractUseCase, IObterPeriodoLetivoTurmaUseCase
     {
         public ObterPeriodoLetivoTurmaUseCase(IMediator mediator)
-            : base (mediator)
+            : base(mediator)
         {
         }
 

@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioItinerancia repositorioItinerancia;
 
-        public ObterItineranciasRfsCriadoresPorNomeQueryHandler(IRepositorioItinerancia repositorioItinerancia )
+        public ObterItineranciasRfsCriadoresPorNomeQueryHandler(IRepositorioItinerancia repositorioItinerancia)
         {
             this.repositorioItinerancia = repositorioItinerancia ?? throw new System.ArgumentNullException(nameof(repositorioItinerancia));
         }

@@ -1,13 +1,9 @@
-﻿using MediatR;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.CompensacaoDeAusencia.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -133,7 +129,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
             compensacaoAusenciaAlterada.Alunos.FirstOrDefault(t => t.CodigoAluno == CODIGO_ALUNO_2).QuantidadeFaltasCompensadas = 2;
 
             var compensacaoAusenciaAlunoDto = new List<CompensacaoAusenciaAlunoDto>()
-            { 
+            {
                 new CompensacaoAusenciaAlunoDto()
                 {
                     Id = compensacaoAusenciaAlterada.Alunos.FirstOrDefault(t => t.CodigoAluno == CODIGO_ALUNO_2).Id.ToString(),
@@ -199,7 +195,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
                 {
                     Id = compensacaoAusenciaAlterada.Alunos.FirstOrDefault(t => t.CodigoAluno == CODIGO_ALUNO_2).Id.ToString(),
                     QtdFaltasCompensadas = compensacaoAusenciaAlterada.Alunos.FirstOrDefault(t => t.CodigoAluno == CODIGO_ALUNO_2).QuantidadeFaltasCompensadas,
-                    CompensacaoAusenciaAlunoAula = new List<CompensacaoAusenciaAlunoAulaDto> 
+                    CompensacaoAusenciaAlunoAula = new List<CompensacaoAusenciaAlunoAulaDto>
                     {
                          new CompensacaoAusenciaAlunoAulaDto()
                         {
@@ -314,8 +310,8 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
         }
 
         protected CompensacaoDeAusenciaDBDto ObtenhaDtoDadoBase(
-            string perfil, 
-            string componente, 
+            string perfil,
+            string componente,
             Modalidade modalidade = Modalidade.Fundamental,
             ModalidadeTipoCalendario tipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
             long tipoCalendarioId = TIPO_CALENDARIO_1,

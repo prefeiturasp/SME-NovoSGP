@@ -19,13 +19,13 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         public async Task<PaginacaoResultadoDto<RegistroColetivoListagemDto>> ListarPaginado(long dreId, long? ueId,
-                                                                                             DateTime? dataReuniaoInicio, DateTime? dataReuniaoFim, long[] tiposReuniaoId, 
+                                                                                             DateTime? dataReuniaoInicio, DateTime? dataReuniaoFim, long[] tiposReuniaoId,
                                                                                              Paginacao paginacao)
         {
             var query = MontaQueryConsulta(paginacao, contador: false, dreId, ueId,
                                          dataReuniaoInicio, dataReuniaoFim,
                                          tiposReuniaoId);
-            
+
             var queryContador = MontaQueryConsulta(paginacao, contador: true, dreId, ueId,
                                           dataReuniaoInicio, dataReuniaoFim,
                                           tiposReuniaoId);
@@ -77,7 +77,7 @@ namespace SME.SGP.Dados.Repositorios
 
         private static void ObterQueryListagem(StringBuilder sql, bool contador,
                                            long dreId, long? ueId,
-                                           DateTime? dataReuniaoInicio, 
+                                           DateTime? dataReuniaoInicio,
                                            DateTime? dataReuniaoFim, long[] tiposReuniaoId)
         {
             if (contador)
@@ -138,7 +138,7 @@ namespace SME.SGP.Dados.Repositorios
                     sql.AppendLine(@" and rc.data_registro::date between @dataReuniaoInicio and @dataReuniaoFim");
             }
 
-           
+
         }
 
 

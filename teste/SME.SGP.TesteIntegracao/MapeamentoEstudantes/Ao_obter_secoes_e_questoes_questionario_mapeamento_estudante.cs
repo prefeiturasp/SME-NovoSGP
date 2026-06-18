@@ -13,14 +13,9 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.MapeamentoEstudantes;
 using SME.SGP.Infra.Dtos.ProvaSP;
 using SME.SGP.Infra.Dtos.Sondagem;
-using SME.SGP.TesteIntegracao.Constantes;
-using SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFake;
-using SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFakes;
 using SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base;
 using SME.SGP.TesteIntegracao.MapeamentoEstudantes.ServicosFakes;
-using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -32,7 +27,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
     {
 
         public Ao_obter_secoes_e_questoes_questionario_mapeamento_estudante(CollectionFixture collectionFixture) : base(collectionFixture)
-        {}
+        { }
 
         protected override void RegistrarFakes(IServiceCollection services)
         {
@@ -74,7 +69,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
             var retorno = await useCase.Executar(new FiltroQuestoesQuestionarioMapeamentoEstudanteDto() { QuestionarioId = 1, TurmaId = TURMA_ID_1, CodigoAluno = ALUNO_CODIGO_1, Bimestre = 2 });
             retorno.ShouldNotBeNull();
             retorno.Count().ShouldBe(19);
-            retorno.Any(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PARECER_CONCLUSIVO_ANO_ANTERIOR) 
+            retorno.Any(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PARECER_CONCLUSIVO_ANO_ANTERIOR)
                              && q.TipoQuestao.Equals(TipoQuestao.ComboDinamico)
                              && q.Obrigatorio).ShouldBeTrue();
             retorno.Any(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.TURMA_ANO_ANTERIOR)
@@ -199,7 +194,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
             var retorno = await useCase.Executar(new FiltroQuestoesQuestionarioMapeamentoEstudanteDto() { QuestionarioId = 1, MapeamentoEstudanteId = 1 });
             retorno.ShouldNotBeNull();
             retorno.Count().ShouldBe(19);
-            
+
             var questao = retorno.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PARECER_CONCLUSIVO_ANO_ANTERIOR));
             questao.Resposta.FirstOrDefault().Texto.ShouldBe("{\"index\":\"1\",\"value\":\"Promovido\"}");
 

@@ -6,7 +6,7 @@ namespace SME.SGP.Infra
     public class FiltroRelatorioAlteracaoNotas
     {
         public string CodigoDre { get; set; }
-        public string CodigoUe { get; set; }        
+        public string CodigoUe { get; set; }
         public long AnoLetivo { get; set; }
         public Modalidade ModalidadeTurma { get; set; }
         public int Semestre { get; set; }

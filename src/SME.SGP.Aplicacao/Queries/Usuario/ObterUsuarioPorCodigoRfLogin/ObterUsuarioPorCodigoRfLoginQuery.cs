@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
     {
         public ObterUsuarioPorCodigoRfLoginQueryValidator()
         {
-            
+
         }
     }
 }

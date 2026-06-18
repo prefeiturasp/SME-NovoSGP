@@ -10,7 +10,7 @@ namespace SME.SGP.ComprimirArquivos.Worker
         public Task<bool> Handle(MoverExcluirArquivoFisicoCommand request, CancellationToken cancellationToken)
         {
             var arquivoComprimido = new FileInfo(request.NomeArquivoDestino);
-            
+
             if (arquivoComprimido.Length > new FileInfo(request.NomeArquivoOrigem).Length)
                 arquivoComprimido.Delete();
             else

@@ -1,17 +1,16 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
-using System;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
+using System;
+using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -22,7 +21,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
         private readonly IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions;
-        
+
         public SalvarPlanoAulaCommandHandler(IMediator mediator,
             IRepositorioObjetivoAprendizagemAula repositorioObjetivosAula,
             IRepositorioPlanoAula repositorioPlanoAula,
@@ -55,24 +54,24 @@ namespace SME.SGP.Aplicacao
                 PlanoAula planoAula = await mediator.Send(new ObterPlanoAulaPorAulaIdQuery(planoAulaDto.AulaId));
                 var planoAulaResumidoDto = MapearParaDto(planoAulaDto, planoAula);
                 planoAula = MapearParaDominio(planoAulaDto, planoAula);
-                
-                var planejamentoAnual = await mediator.Send(new ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery(turma.Id, 
-                                                                                                                      periodoEscolar.Id, 
+
+                var planejamentoAnual = await mediator.Send(new ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery(turma.Id,
+                                                                                                                      periodoEscolar.Id,
                                                                                                                       long.Parse(aula.DisciplinaId)));
                 ValidarSeNaoExistePlanoAnualCadastrado(planejamentoAnual, periodoEscolar, usuario, disciplinaDto);
-                    
-                if (planoAulaDto.ObjetivosAprendizagemComponente.NaoPossuiRegistros() 
+
+                if (planoAulaDto.ObjetivosAprendizagemComponente.NaoPossuiRegistros()
                     && !planoAula.Migrado)
                     await ValidarPlanoSemObjetivos(turma, usuario, aula.DisciplinaId, periodoEscolar.TipoCalendario.AnoLetivo);
-                
+
                 unitOfWork.IniciarTransacao();
                 await repositorioPlanoAula.SalvarAsync(planoAula);
                 await mediator.Send(new ExcluirPendenciaAulaCommand(planoAula.AulaId, Dominio.TipoPendencia.PlanoAula));
 
                 // Salvar Objetivos aprendizagem
-                var objetivosAtuais =  (await mediator.Send(new ObterObjetivosAprendizagemAulaPorPlanoAulaIdQuery(planoAula.Id))).ToList();
+                var objetivosAtuais = (await mediator.Send(new ObterObjetivosAprendizagemAulaPorPlanoAulaIdQuery(planoAula.Id))).ToList();
                 var objetivosPropostos = planoAulaDto.ObjetivosAprendizagemComponente;
-                
+
                 if (objetivosPropostos.PossuiRegistros())
                 {
                     var objetivosIdParaIncluir = objetivosPropostos.Select(s => s.Id).Except(objetivosAtuais.Select(s => s.ObjetivoAprendizagemId));
@@ -80,7 +79,7 @@ namespace SME.SGP.Aplicacao
 
                     foreach (var objetivoAtual in objetivosAtuais.Where(w => objetivosIdParaExcluir.Contains(w.ObjetivoAprendizagemId)))
                         await ExcluirObjetivoAprendizagemAulaLogicamente(objetivoAtual);
-                    foreach (var objetivoAprendizagem in objetivosPropostos.Where(w=> objetivosIdParaIncluir.Contains(w.Id)))
+                    foreach (var objetivoAprendizagem in objetivosPropostos.Where(w => objetivosIdParaIncluir.Contains(w.Id)))
                         await repositorioObjetivosAula.SalvarAsync(new ObjetivoAprendizagemAula(planoAula.Id, objetivoAprendizagem.Id, objetivoAprendizagem.ComponenteCurricularId));
                 }
                 else
@@ -90,9 +89,9 @@ namespace SME.SGP.Aplicacao
                 }
                 unitOfWork.PersistirTransacao();
 
-                 var planoAulaDescricao = await MoverRemoverExcluidos(planoAulaResumidoDto.DescricaoNovo, planoAulaResumidoDto.DescricaoAtual,TipoArquivo.PlanoAula);
-                 var recuperacaoAula = await MoverRemoverExcluidos(planoAulaResumidoDto.RecuperacaoAulaNovo, planoAulaResumidoDto.RecuperacaoAulaAtual,TipoArquivo.PlanoAulaRecuperacao);
-                 var licaoCasa = await MoverRemoverExcluidos(planoAulaResumidoDto.LicaoCasaNovo, planoAulaResumidoDto.LicaoCasaAtual, TipoArquivo.PlanoAulaLicaoCasa);
+                var planoAulaDescricao = await MoverRemoverExcluidos(planoAulaResumidoDto.DescricaoNovo, planoAulaResumidoDto.DescricaoAtual, TipoArquivo.PlanoAula);
+                var recuperacaoAula = await MoverRemoverExcluidos(planoAulaResumidoDto.RecuperacaoAulaNovo, planoAulaResumidoDto.RecuperacaoAulaAtual, TipoArquivo.PlanoAulaRecuperacao);
+                var licaoCasa = await MoverRemoverExcluidos(planoAulaResumidoDto.LicaoCasaNovo, planoAulaResumidoDto.LicaoCasaAtual, TipoArquivo.PlanoAulaLicaoCasa);
 
                 planoAulaDto.Id = planoAula.Id;
                 planoAulaDto.Descricao = planoAulaDescricao;
@@ -113,7 +112,7 @@ namespace SME.SGP.Aplicacao
             catch (Exception ex)
             {
                 unitOfWork.Rollback();
-                await mediator.Send(new SalvarLogViaRabbitCommand("Não foi registrar o plano de aula.", LogNivel.Negocio, LogContexto.PlanoAula,ex.Message,"SGP",string.Empty,ex.StackTrace));
+                await mediator.Send(new SalvarLogViaRabbitCommand("Não foi registrar o plano de aula.", LogNivel.Negocio, LogContexto.PlanoAula, ex.Message, "SGP", string.Empty, ex.StackTrace));
                 throw;
             }
         }
@@ -122,7 +121,7 @@ namespace SME.SGP.Aplicacao
         {
             if (planoAulaDto.CopiarConteudo.EhNulo())
                 return;
-            
+
             var migrarPlanoAula = planoAulaDto.CopiarConteudo;
             migrarPlanoAula.PlanoAulaId = planoAulaId;
             await mediator.Send(new MigrarPlanoAulaCommand(migrarPlanoAula, usuario));
@@ -186,9 +185,9 @@ namespace SME.SGP.Aplicacao
 
         private static void ValidarSeNaoExistePlanoAnualCadastrado(PlanejamentoAnual planejamentoAnual, PeriodoEscolar periodoEscolar, Usuario usuario, DisciplinaDto disciplinaDto)
         {
-            var naoExistePlanoAulaCadastrado = (planejamentoAnual?.Id <= 0 || planejamentoAnual.EhNulo()) 
-                                                && periodoEscolar.TipoCalendario.AnoLetivo.Equals(DateTime.Now.Year) 
-                                                && !usuario.PerfilAtual.Equals(Perfis.PERFIL_CJ) 
+            var naoExistePlanoAulaCadastrado = (planejamentoAnual?.Id <= 0 || planejamentoAnual.EhNulo())
+                                                && periodoEscolar.TipoCalendario.AnoLetivo.Equals(DateTime.Now.Year)
+                                                && !usuario.PerfilAtual.Equals(Perfis.PERFIL_CJ)
                                                 && !(disciplinaDto.NaoEhNulo() && disciplinaDto.TerritorioSaber);
             if (naoExistePlanoAulaCadastrado)
                 throw new NegocioException(MensagemNegocioPlanoAula.NAO_EXISTE_PLANO_ANUAL_CADASTRADO);
@@ -203,7 +202,7 @@ namespace SME.SGP.Aplicacao
         private async Task ValidarAbrangenciaGestorEscolar(Usuario usuario, string turmaCodigo, bool ehTurmaHistorica)
         {
             var ehAbrangenciaUeOuDreOuSme = usuario.EhPerfilUE() || usuario.EhPerfilDRE() || usuario.EhPerfilSME();
-            
+
             var abrangenciaTurmas = await mediator.Send(new ObterAbrangenciaTurmaQuery(turmaCodigo, usuario.Login,
                 usuario.PerfilAtual, ehTurmaHistorica, ehAbrangenciaUeOuDreOuSme));
 
@@ -241,11 +240,11 @@ namespace SME.SGP.Aplicacao
             string novaDescricao = string.Empty;
             if (!string.IsNullOrEmpty(novo))
             {
-                 novaDescricao = await mediator.Send(new MoverArquivosTemporariosCommand(tipo, atual, novo));
+                novaDescricao = await mediator.Send(new MoverArquivosTemporariosCommand(tipo, atual, novo));
             }
             if (!string.IsNullOrEmpty(atual))
             {
-                 await mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, tipo.Name()));
+                await mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, tipo.Name()));
             }
             return novaDescricao;
         }
@@ -257,7 +256,7 @@ namespace SME.SGP.Aplicacao
         private string TratativaReplaceTempParaArquivoPorRegex(string descricao)
         {
             if (descricao == null)
-                return descricao; 
+                return descricao;
 
             string pattern = $@"\b{configuracaoArmazenamentoOptions.Value.BucketTemp}\b";
             return Regex.Replace(descricao, pattern, configuracaoArmazenamentoOptions.Value.BucketArquivos);

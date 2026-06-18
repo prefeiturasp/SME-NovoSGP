@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(a => a.AlunosCodigo)
                 .NotEmpty()
-                .WithMessage("Necessário informar o código dos alunos para consulta de suas frequências");            
+                .WithMessage("Necessário informar o código dos alunos para consulta de suas frequências");
 
             RuleFor(a => a.TurmaId)
                 .NotEmpty()

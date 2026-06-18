@@ -11,11 +11,11 @@ using System.Threading.Tasks;
 namespace SME.SGP.Aplicacao
 {
     public class ObterAlunoPorCodigoEAnoQueryHandler : IRequestHandler<ObterAlunoPorCodigoEAnoQuery, AlunoReduzidoDto>
-    {        
+    {
         private readonly IMediator mediator;
 
         public ObterAlunoPorCodigoEAnoQueryHandler(IMediator mediator)
-        {            
+        {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
                 DataSituacao = alunoPorTurmaResposta.DataSituacao,
                 CodigoAluno = alunoPorTurmaResposta.CodigoAluno,
                 CodigoSituacaoMatricula = alunoPorTurmaResposta.CodigoSituacaoMatricula,
-                Situacao = alunoPorTurmaResposta.SituacaoMatricula,               
+                Situacao = alunoPorTurmaResposta.SituacaoMatricula,
                 TurmaEscola = await ObterNomeTurmaFormatado(alunoPorTurmaResposta.CodigoTurma.ToString()),
                 CodigoTurma = alunoPorTurmaResposta.CodigoTurma.ToString(),
                 CelularResponsavel = alunoPorTurmaResposta.CelularResponsavel,

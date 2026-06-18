@@ -46,7 +46,7 @@ namespace SME.SGP.IoC
                     var factory = new ConnectionFactory
                     {
                         Port = options.Port,
-                        HostName = options.HostName,                        
+                        HostName = options.HostName,
                         UserName = options.UserName,
                         Password = options.Password,
                         VirtualHost = options.VirtualHost,

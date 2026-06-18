@@ -28,10 +28,10 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("avaliacoes-bimestre")]
-        [ProducesResponseType(typeof(NotasConceitosListaoRetornoDto),200)]
-        [ProducesResponseType(typeof(RetornoBaseDto),500)]
+        [ProducesResponseType(typeof(NotasConceitosListaoRetornoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NC_C, Permissao.NC_I, Permissao.L_I, Permissao.L_C, Policy = "Bearer")]
-        public async Task<IActionResult> ListaNotaAvaliacoesBimestre([FromQuery]ListaNotasConceitosBimestreRefatoradaDto conceitosBimestreRefatoradaDto,[FromServices]IObterNotasParaAvaliacoesListaoUseCase useCase)
+        public async Task<IActionResult> ListaNotaAvaliacoesBimestre([FromQuery] ListaNotasConceitosBimestreRefatoradaDto conceitosBimestreRefatoradaDto, [FromServices] IObterNotasParaAvaliacoesListaoUseCase useCase)
         {
             return Ok(await useCase.Executar(conceitosBimestreRefatoradaDto));
         }
@@ -39,7 +39,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("periodos")]
         [ProducesResponseType(typeof(IEnumerable<PeriodosParaConsultaNotasDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.NC_C, Permissao.NC_I,Permissao.L_I, Permissao.L_C, Policy = "Bearer")]
+        [Permissao(Permissao.NC_C, Permissao.NC_I, Permissao.L_I, Permissao.L_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterPeriodosParaConsulta([FromQuery] ObterPeriodosParaConsultaNotasFiltroDto filtro, [FromServices] IObterPeriodosParaConsultaNotasUseCase obterNotasParaAvaliacoesUseCase)
         {
             return Ok(await obterNotasParaAvaliacoesUseCase.Executar(filtro));
@@ -72,7 +72,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(NotasConceitosRetornoDto),200)]
+        [ProducesResponseType(typeof(NotasConceitosRetornoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NC_A, Permissao.NC_I, Policy = "Bearer")]
         public async Task<IActionResult> Post([FromQuery] ListaNotasConceitosDto consultaListaNotasConceitosDto, [FromBody] NotaConceitoListaDto notaConceitoListaDto, [FromServices] IComandosNotasConceitos comandosNotasConceitos, [FromServices] IObterNotasParaAvaliacoesUseCase obterNotasParaAvaliacoesUseCase)

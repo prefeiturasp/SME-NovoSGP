@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
     public class ObterAcompanhamentoAlunoUseCase : AbstractUseCase, IObterAcompanhamentoAlunoUseCase
     {
         public ObterAcompanhamentoAlunoUseCase(IMediator mediator) : base(mediator)
-        {}
+        { }
 
         public async Task<AcompanhamentoAlunoTurmaSemestreDto> Executar(FiltroAcompanhamentoTurmaAlunoSemestreDto filtro)
         {
@@ -39,9 +39,9 @@ namespace SME.SGP.Aplicacao
         {
             var dataReferencia = DateTimeExtension.HorarioBrasilia().Date;
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
-            if(tipoCalendarioId == 0)
+            if (tipoCalendarioId == 0)
                 throw new NegocioException($"Não foi possível obter o id do tipo calêndario para a turma : {turma.CodigoTurma}");
-            
+
             var turmaEmPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestre, false, tipoCalendarioId));
 
             if (turma.EhTurmaInfantil)
@@ -106,7 +106,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task<Turma> ObterTurma(string turmaCodigo)
-        {            
+        {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
 
             if (turma.EhNulo())

@@ -9,7 +9,8 @@ namespace SME.SGP.Infra
 
         public string Descricao
         {
-            get {
+            get
+            {
                 return $"{Inicio:dd/MM/yyyy} até {Fim:dd/MM/yyyy}";
             }
         }

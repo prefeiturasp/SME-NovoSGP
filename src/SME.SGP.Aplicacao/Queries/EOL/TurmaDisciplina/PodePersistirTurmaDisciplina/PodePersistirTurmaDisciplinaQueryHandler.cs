@@ -1,5 +1,4 @@
-﻿using Elasticsearch.Net;
-using MediatR;
+﻿using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
@@ -27,7 +26,7 @@ namespace SME.SGP.Aplicacao
             {
                 var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
                 var url = string.Format(ServicosEolConstants.URL_FUNCIONARIOS_TURMAS_DISCIPLINAS_ATRIBUICAO_VERIFICAR_DATA, request.CriadoRF, request.TurmaCodigo, request.ComponenteParaVerificarAtribuicao) + $"?dataConsultaTick={request.DataTick}";
-           
+
                 var resposta = await httpClient.GetAsync(url);
                 if (resposta.IsSuccessStatusCode)
                 {

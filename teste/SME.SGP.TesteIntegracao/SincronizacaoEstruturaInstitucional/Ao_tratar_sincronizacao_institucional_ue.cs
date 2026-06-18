@@ -9,7 +9,6 @@ using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Documento;
 using SME.SGP.TesteIntegracao.Setup;
 using SME.SGP.TesteIntegracao.SincronizacaoEstruturaInstitucional.ServicosFakes;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -30,9 +29,9 @@ namespace SME.SGP.TesteIntegracao.SincronizacaoEstruturaInstitucional
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUeDetalhesParaSincronizacaoInstitucionalQuery, UeDetalhesParaSincronizacaoInstituicionalDto>), typeof(ObterUeDetalhesParaSincronizacaoInstitucionalQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
-        [Fact(DisplayName ="Sincronização Institucional UE - Deve alterar a DRE da UE em caso de remanejamento")]
+        [Fact(DisplayName = "Sincronização Institucional UE - Deve alterar a DRE da UE em caso de remanejamento")]
         public async Task Ao_tratar_sincronizacao_institucional_ue_alterar_dre_remanejamento()
-        {            
+        {
             var dataHoraAtual = DateTimeExtension.HorarioBrasilia();
 
             await InserirNaBase(new Dre()
@@ -47,7 +46,7 @@ namespace SME.SGP.TesteIntegracao.SincronizacaoEstruturaInstitucional
                 CodigoDre = DRE_CODIGO_2,
                 Nome = DRE_NOME_2,
                 DataAtualizacao = dataHoraAtual
-            });          
+            });
 
             await InserirNaBase(new Ue()
             {
@@ -56,7 +55,7 @@ namespace SME.SGP.TesteIntegracao.SincronizacaoEstruturaInstitucional
                 DataAtualizacao = dataHoraAtual,
                 DreId = ObterTodos<Dre>().Single(d => d.CodigoDre == DRE_CODIGO_1).Id
             });
-            
+
             var useCase = ServiceProvider.GetService<IExecutarSincronizacaoInstitucionalUeTratarUseCase>();
 
             var retorno = await useCase.Executar(new MensagemRabbit(UE_CODIGO_1));
@@ -65,6 +64,6 @@ namespace SME.SGP.TesteIntegracao.SincronizacaoEstruturaInstitucional
             var ueRemanejada = ObterTodos<Ue>()?.SingleOrDefault(u => u.Id == UE_ID_1);
             ueRemanejada.ShouldNotBeNull();
             ueRemanejada.DreId.ShouldBe(ObterTodos<Dre>().Single(d => d.CodigoDre == DRE_CODIGO_2).Id);
-        }        
+        }
     }
 }

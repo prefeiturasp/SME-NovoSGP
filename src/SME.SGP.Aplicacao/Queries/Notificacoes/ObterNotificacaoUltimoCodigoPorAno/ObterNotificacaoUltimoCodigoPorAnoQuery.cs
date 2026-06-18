@@ -2,7 +2,7 @@
 using MediatR;
 
 namespace SME.SGP.Aplicacao
-{ 
+{
     public class ObterNotificacaoUltimoCodigoPorAnoQuery : IRequest<long>
     {
         public int Ano { get; set; }

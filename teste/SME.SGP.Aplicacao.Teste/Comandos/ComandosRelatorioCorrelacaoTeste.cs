@@ -1,12 +1,4 @@
-﻿using Moq;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
-using SME.SGP.Dominio.Interfaces;
-using System;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SME.SGP.Aplicacao.Teste.Comandos
+﻿namespace SME.SGP.Aplicacao.Teste.Comandos
 {
     public class ComandosRelatorioCorrelacaoTeste
     {
@@ -18,7 +10,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         //    repositorioRelatorioCorrelacaoJasper = new Mock<IRepositorioCorrelacaoRelatorioJasper>();
         //    comandoRelatorioCorrelacaoJasper = new ComandoRelatorioCorrelacaoJasper(repositorioRelatorioCorrelacaoJasper.Object);
         //}
-        
+
         //[Fact(DisplayName = "Deve_Salvar_Relatorio_Correlacao_Jasper")]
         //public async Task Deve_Salvar_Relatorio_Correlacao_Jasper()
         //{

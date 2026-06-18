@@ -25,11 +25,11 @@ namespace SME.SGP.Aplicacao
             RuleFor(x => x.ProfessorRf)
                 .NotEmpty()
                 .WithMessage("Informe o rf do profesor para verificação se o professor pode persistir na turma.");
-            
+
             RuleFor(x => x.CodigoTurma)
                 .NotEmpty()
                 .WithMessage("Informe o código da turma para verificação se o professor pode persistir na turma.");
-            
+
             RuleFor(x => x.DataAula)
                 .NotEmpty()
                 .WithMessage("Informe a data da aula para verificação se o professor pode persistir na turma.");

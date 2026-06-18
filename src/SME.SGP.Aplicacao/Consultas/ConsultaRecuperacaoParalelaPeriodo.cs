@@ -1,14 +1,10 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Dominio;
+﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using MediatR;
 
 namespace SME.SGP.Aplicacao.Consultas
 {
@@ -16,7 +12,7 @@ namespace SME.SGP.Aplicacao.Consultas
     {
         private readonly IMediator mediator;
         private readonly IServicoUsuario servicoUsuario;
-        private readonly IRepositorioRecuperacaoParalelaPeriodo repositorioRecuperacaoParalelaPeriodo;        
+        private readonly IRepositorioRecuperacaoParalelaPeriodo repositorioRecuperacaoParalelaPeriodo;
 
         public ConsultaRecuperacaoParalelaPeriodo(IMediator mediator, IServicoUsuario servicoUsuario,
             IRepositorioRecuperacaoParalelaPeriodo repositorioRecuperacaoParalelaPeriodo)
@@ -35,7 +31,7 @@ namespace SME.SGP.Aplicacao.Consultas
             if (!turmaPossuiComponente)
                 return null;
 
-            return repositorioRecuperacaoParalelaPeriodo.Listar().Select(x => (RecuperacaoParalelaPeriodoPAPDto)x);            
+            return repositorioRecuperacaoParalelaPeriodo.Listar().Select(x => (RecuperacaoParalelaPeriodoPAPDto)x);
         }
     }
 }

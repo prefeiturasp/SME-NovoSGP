@@ -12,7 +12,7 @@ namespace SME.SGP.Dados
     public class RepositorioPendenciaPerfilUsuario : RepositorioBase<PendenciaPerfilUsuario>, IRepositorioPendenciaPerfilUsuario
     {
         public RepositorioPendenciaPerfilUsuario(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
-        {}
+        { }
 
         public async Task<bool> Excluir(long id)
         {
@@ -38,12 +38,12 @@ namespace SME.SGP.Dados
             return await database.Conexao.QueryAsync<PendenciaPerfilUsuarioDto>(query, new { situacao });
         }
 
-        public async Task<IEnumerable<long>> VerificaExistencia (long pendenciaPerfilId, long usuarioId)
+        public async Task<IEnumerable<long>> VerificaExistencia(long pendenciaPerfilId, long usuarioId)
         {
             var query = @"select id from pendencia_perfil_usuario 
                                     where pendencia_perfil_id = @pendenciaPerfilId and usuario_id = @usuarioId";
 
-            return await database.Conexao.QueryAsync<long>(query, new { pendenciaPerfilId, usuarioId});
+            return await database.Conexao.QueryAsync<long>(query, new { pendenciaPerfilId, usuarioId });
         }
     }
 }

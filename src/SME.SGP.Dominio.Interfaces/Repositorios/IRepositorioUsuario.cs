@@ -1,7 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using SME.SGP.Infra.Dtos.Abrangencia;
+using System;
 using System.Collections.Generic;
-using SME.SGP.Infra.Dtos.Abrangencia;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {

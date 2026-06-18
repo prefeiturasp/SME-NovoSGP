@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException(MensagemNegocioAluno.ESTUDANTE_NAO_ENCONTRADO);
 
             List<QuestaoObrigatoriaNaoRespondidaDto> questoesObrigatoriasAConsistir = await ObterQuestoesObrigatoriasNaoPreechidas(encaminhamentoNAAPADto, (int)turma.ModalidadeCodigo);
-            
+
             if (questoesObrigatoriasAConsistir.Any() && encaminhamentoNAAPADto.Situacao != SituacaoNAAPA.Rascunho)
             {
                 var mensagem = questoesObrigatoriasAConsistir.GroupBy(questao => questao.SecaoNome).Select(secao =>
@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
                 .Select(questao => questao.SecaoId).Distinct().ToArray();
 
             foreach (var secao in encaminhamentoNAAPADto.Secoes)
-                secao.Concluido = !secoesComQuestoesObrigatoriasAConsistir.Contains(secao.SecaoId); 
+                secao.Concluido = !secoesComQuestoesObrigatoriasAConsistir.Contains(secao.SecaoId);
 
             if (encaminhamentoNAAPADto.Id.GetValueOrDefault() > 0)
             {
@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
                     await RemoverArquivosNaoUtilizados(encaminhamentoNAAPADto.Secoes);
 
                     return new ResultadoEncaminhamentoNAAPADto
-                        { Id = encaminhamentoNAAPA.Id, Auditoria = (AuditoriaDto)encaminhamentoNAAPA };
+                    { Id = encaminhamentoNAAPA.Id, Auditoria = (AuditoriaDto)encaminhamentoNAAPA };
                 }
             }
 
@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao
 
             return resultadoEncaminhamento;
         }
-      
+
         private async Task RemoverArquivosNaoUtilizados(List<EncaminhamentoNAAPASecaoDto> secoes)
         {
             var resposta = new List<EncaminhamentoNAAPASecaoQuestaoDto>();
@@ -104,13 +104,13 @@ namespace SME.SGP.Aplicacao
         }
         public async Task AlterarEncaminhamento(EncaminhamentoNAAPADto encaminhamentoNAAPADto, EncaminhamentoNAAPA encaminhamentoNAAPA)
         {
-            if(encaminhamentoNAAPADto.Situacao != encaminhamentoNAAPA.Situacao)
+            if (encaminhamentoNAAPADto.Situacao != encaminhamentoNAAPA.Situacao)
                 await mediator.Send(new AlterarSituacaoNAAPACommand(encaminhamentoNAAPA, encaminhamentoNAAPADto.Situacao));
 
             foreach (var secao in encaminhamentoNAAPADto.Secoes)
             {
                 if (!secao.Questoes.Any())
-                    throw new NegocioException(string.Format(MensagemNegocioComuns.NENHUMA_QUESTAO_FOI_ENCONTRADA_NA_SECAO_X,secao.SecaoId));
+                    throw new NegocioException(string.Format(MensagemNegocioComuns.NENHUMA_QUESTAO_FOI_ENCONTRADA_NA_SECAO_X, secao.SecaoId));
 
                 var secaoExistente = encaminhamentoNAAPA.Secoes.FirstOrDefault(s => s.SecaoEncaminhamentoNAAPAId == secao.SecaoId);
                 var tipoHistorico = TipoHistoricoAlteracoesEncaminhamentoNAAPA.Alteracao;
@@ -207,7 +207,7 @@ namespace SME.SGP.Aplicacao
             foreach (var secao in encaminhamentoNAAPADto.Secoes)
             {
                 if (!secao.Questoes.Any())
-                    throw new NegocioException(string.Format(MensagemNegocioComuns.NENHUMA_QUESTAO_FOI_ENCONTRADA_NA_SECAO_X,secao.SecaoId));
+                    throw new NegocioException(string.Format(MensagemNegocioComuns.NENHUMA_QUESTAO_FOI_ENCONTRADA_NA_SECAO_X, secao.SecaoId));
 
                 var secaoEncaminhamento = await mediator.Send(new RegistrarEncaminhamentoNAAPASecaoCommand(resultadoEncaminhamento.Id, secao.SecaoId, secao.Concluido));
 
@@ -227,7 +227,7 @@ namespace SME.SGP.Aplicacao
             if (secaoAValidar.NomeComponente != SECAO_QUESTOES_APRESENTADAS)
                 return;
 
-                var questaoObservacoes = ObterQuestaoObservacoesAgrupamentoPromocaoCuidadosNaoPreenchida(questoes);
+            var questaoObservacoes = ObterQuestaoObservacoesAgrupamentoPromocaoCuidadosNaoPreenchida(questoes);
             if (questaoObservacoes.NaoEhNulo())
             {
                 var questaoAgrupamentoPromocaoCuidados = ObterQuestaoAgrupamentoPromocaoCuidados(questoes);
@@ -243,7 +243,7 @@ namespace SME.SGP.Aplicacao
                 }
 
                 if (questaoDoencaCronica.NaoEhNulo())
-                { 
+                {
                     var opcaoOutras_QuestaoDoencaCronica = (await mediator.Send(new ObterOpcoesRespostaPorQuestaoIdQuery(questaoDoencaCronica.Id))).FirstOrDefault(opcao => opcao.Nome == "Outras");
                     if (questaoDoencaCronica.Resposta.Any(resposta => resposta.Texto == opcaoOutras_QuestaoDoencaCronica.Id.ToString()))
                         questoesObrigatoriasNaoRespondidas.Add(new QuestaoObrigatoriaNaoRespondidaDto(secaoAValidar.Id, secaoAValidar.Nome, questaoObservacoes.Ordem.ToString()));
@@ -291,7 +291,7 @@ namespace SME.SGP.Aplicacao
                 })
                 : Enumerable.Empty<RespostaQuestaoObrigatoriaDto>();
         }
-            private async Task<List<QuestaoObrigatoriaNaoRespondidaDto>> ObterQuestoesObrigatoriasNaoPreechidas(EncaminhamentoNAAPADto encaminhamentoNAAPADto, int codigoModalidade)
+        private async Task<List<QuestaoObrigatoriaNaoRespondidaDto>> ObterQuestoesObrigatoriasNaoPreechidas(EncaminhamentoNAAPADto encaminhamentoNAAPADto, int codigoModalidade)
 
         {
             List<QuestaoObrigatoriaNaoRespondidaDto> questoesObrigatoriasAConsistir = new List<QuestaoObrigatoriaNaoRespondidaDto>();

@@ -2,17 +2,14 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Newtonsoft.Json;
-using Org.BouncyCastle.Asn1.Ocsp;
 using Shouldly;
 using SME.SGP.Aplicacao;
-using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.PendenciaFechamento.Base;
 using SME.SGP.TesteIntegracao.PendenciaFechamento.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -31,7 +28,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaGeracaoPendenciasFechamentoCommand, bool>), typeof(IncluirFilaGeracaoPendenciasFechamentoCommandHandlerFake), ServiceLifetime.Scoped));
         }
 
-            [Fact]
+        [Fact]
         public async Task Disparar_geracao_pendencia_fechamento_quando_pendencia_aula_frequencia_existente_em_fechamento()
         {
             var dto = new FiltroPendenciaFechamentoDto()
@@ -40,7 +37,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 ComponenteCurricularCodigo = COMPONENTE_LINGUA_PORTUGUESA_ID_138
             };
-            
+
             await CriarDadosBasicos(dto);
             await CriaPendenciaPorTipo(TipoPendencia.Frequencia);
             await CriarPendenciaAula(AULA_ID, PENDENCIA_ID_1);

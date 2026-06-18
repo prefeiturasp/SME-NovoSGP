@@ -40,9 +40,9 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
-            });;
+            }); ;
             await InserirSecoesQuestoes();
-            
+
             var useCase = ServiceProvider.GetService<IObterRelatorioPAPConselhoClasseUseCase>();
             var secoesQuestoes = await useCase.Executar(TURMA_CODIGO_1, CODIGO_ALUNO_1, 1);
 

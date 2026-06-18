@@ -5,7 +5,7 @@ namespace SME.SGP.Infra
 {
     public class TurmaAlunoDto
     {
-        
+
         public long AlunoCodigo { get; set; }
         public string TurmaCodigo { get; set; }
         public string RegularCodigo { get; set; }
@@ -15,7 +15,8 @@ namespace SME.SGP.Infra
         public string Ciclo { get; set; }
         public string ParecerConclusivo { get; set; }
         public TipoTurma TipoTurma { get; set; }
-        public string DescricaoAno() {
+        public string DescricaoAno()
+        {
             var descricaoEtapa = EtapaEJA == 1 ? "I" : "II";
 
             return Modalidade == Modalidade.EJA ? $"{Ciclo} - {descricaoEtapa}" : $"{Ano}º ano";

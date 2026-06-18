@@ -29,8 +29,8 @@ namespace SME.SGP.Aplicacao
                 request.ConsolidacaoReflexoFrequencia.CriadoPor = consolidacaoExistente.CriadoPor;
                 request.ConsolidacaoReflexoFrequencia.CriadoRF = consolidacaoExistente.CriadoRF;
             }
-                
-            return await repositorioConsolidacaoReflexoFrequencia.SalvarAsync(request.ConsolidacaoReflexoFrequencia);           
+
+            return await repositorioConsolidacaoReflexoFrequencia.SalvarAsync(request.ConsolidacaoReflexoFrequencia);
         }
     }
 }

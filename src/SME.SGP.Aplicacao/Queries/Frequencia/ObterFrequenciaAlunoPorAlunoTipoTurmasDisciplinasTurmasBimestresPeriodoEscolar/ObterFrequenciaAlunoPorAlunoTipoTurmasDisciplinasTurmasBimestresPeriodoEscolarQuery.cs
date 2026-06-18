@@ -1,8 +1,7 @@
 ﻿using FluentValidation;
 using MediatR;
-using System;
-using System.Collections.Generic;
 using SME.SGP.Dominio;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
@@ -37,15 +36,15 @@ namespace SME.SGP.Aplicacao
             RuleFor(a => a.TipoFrequencia)
                 .NotEmpty()
                 .WithMessage("O tipo de frequência deve ser informado para consulta de sua frequência aluno.");
-            
+
             RuleFor(a => a.DisciplinasId)
                 .NotEmpty()
                 .WithMessage("Os códigos das disciplinas devem ser informados para consulta de sua frequência aluno.");
-            
+
             RuleFor(a => a.TurmasCodigo)
                 .NotEmpty()
                 .WithMessage("Os códigos das turmas devem ser informados para consulta de sua frequência aluno.");
-            
+
             RuleFor(a => a.Bimestres)
                 .NotEmpty()
                 .WithMessage("Os bimestres devem ser informados para consulta de sua frequência aluno.");

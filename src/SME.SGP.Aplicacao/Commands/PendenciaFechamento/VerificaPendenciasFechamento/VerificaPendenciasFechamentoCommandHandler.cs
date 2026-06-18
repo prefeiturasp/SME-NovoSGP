@@ -1,11 +1,11 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
                 // Atualiza situação do fechamento
                 fechamentoTurmaDisciplina.Situacao = SituacaoFechamento.ProcessadoComSucesso;
                 repositorioFechamentoTurmaDisciplina.Salvar(fechamentoTurmaDisciplina);
-                
+
                 var consolidacaoTurma = new ConsolidacaoTurmaDto(request.TurmaId, request.Bimestre);
                 var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaFechamentoSync, mensagemParaPublicar, Guid.NewGuid(), null));

@@ -3,7 +3,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -22,7 +21,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select id, nome, descricao, obrigatorio 
                           from public.secao_relatorio_semestral_pap";
 
-            return await database.Conexao.QueryAsync<SecaoRelatorioSemestralPAP>(query, new {  });
+            return await database.Conexao.QueryAsync<SecaoRelatorioSemestralPAP>(query, new { });
         }
     }
 }

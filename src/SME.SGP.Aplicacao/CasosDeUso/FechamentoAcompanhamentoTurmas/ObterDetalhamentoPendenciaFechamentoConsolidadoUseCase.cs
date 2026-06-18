@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
                 DescricaoHtml = string.IsNullOrEmpty(descricaoHtml) ?
                 descricaoTexto :
                 descricaoHtml
-            };            
+            };
         }
     }
 }

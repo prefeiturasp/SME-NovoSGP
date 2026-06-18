@@ -21,7 +21,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<bool> ExcluirItineranciaQuestaoPorArquivo(long arquivoId)
         {
-            return await database.Conexao.ExecuteAsync("delete from itinerancia_questao where  arquivo_id  = @arquivoId", new {arquivoId}) > 0;
+            return await database.Conexao.ExecuteAsync("delete from itinerancia_questao where  arquivo_id  = @arquivoId", new { arquivoId }) > 0;
         }
     }
 }

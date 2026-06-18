@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
@@ -21,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
             var cicloSgp = await mediator.Send(new ObterCicloPorCodigoQuery(cicloEOL.Codigo));
 
-            await mediator.Send(new TrataSincronizacaoInstitucionalCicloEnsinoCommand(cicloEOL, cicloSgp));          
+            await mediator.Send(new TrataSincronizacaoInstitucionalCicloEnsinoCommand(cicloEOL, cicloSgp));
 
             return true;
         }

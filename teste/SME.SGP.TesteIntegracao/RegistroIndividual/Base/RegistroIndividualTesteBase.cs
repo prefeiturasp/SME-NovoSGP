@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using SME.SGP.Aplicacao;
-using SME.SGP.TesteIntegracao.Setup;
-using System.Threading.Tasks;
-using MediatR;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.RegistroIndividual.ServicosFakes;
-using SME.SGP.TesteIntegracao.ServicosFakes;
+using SME.SGP.TesteIntegracao.Setup;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.RegistroIndividual
 {
@@ -30,14 +28,14 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
-        
+
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<MoverArquivosTemporariosCommand, string>),
                  typeof(MoverArquivosTemporariosCommandHandlerFake), ServiceLifetime.Scoped));
-            
+
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarAtualizacaoPendenciaRegistroIndividualCommand>),
                 typeof(PublicarAtualizacaoPendenciaRegistroIndividualCommandHandlerFake), ServiceLifetime.Scoped));
-            
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorTurmaAlunoCodigoQuery,AlunoPorTurmaResposta>),
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorTurmaAlunoCodigoQuery, AlunoPorTurmaResposta>),
                 typeof(ObterAlunoPorTurmaAlunoCodigoQueryHandlerFake), ServiceLifetime.Scoped));
         }
         protected IInserirRegistroIndividualUseCase ObterServicoInserirRegistroIndividualUseCase()
@@ -63,13 +61,13 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
         {
             return ServiceProvider.GetService<IObterSugestaoTopicoRegistroIndividualPorMesUseCase>();
         }
-        
+
         protected async Task CriarDadosBasicos(FiltroRegistroIndividualDto filtroRegistroIndividualDto)
         {
             await CriarTipoCalendario(filtroRegistroIndividualDto.TipoCalendario);
 
             await CriarDreUePerfil();
-            
+
             if (!filtroRegistroIndividualDto.NaoCriarPeriodosEscolares)
                 await CriarPeriodoEscolarCustomizadoQuartoBimestre(!filtroRegistroIndividualDto.BimestreEncerrado);
 
@@ -84,7 +82,7 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
             if (filtroRegistroIndividualDto.CriarPeriodoReabertura)
                 await CriarPeriodoReabertura(filtroRegistroIndividualDto.TipoCalendarioId);
         }
-        
+
         private async Task CriarTurma(Modalidade modalidade, bool ehAnoAnterior = false)
         {
             await InserirNaBase(new Dominio.Turma

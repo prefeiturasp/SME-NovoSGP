@@ -72,9 +72,9 @@ namespace SME.SGP.Aplicacao
                 return null;
 
             evento.TipoEvento = await repositorioEventoTipo.ObterPorIdAsync(evento.TipoEventoId);
-           
+
             var bimestres = await repositorioEventoBimestre.ObterEventoBimestres(evento.Id);
-              
+
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             //verificar se o evento e o perfil do usuário é SME para possibilitar alteração
@@ -184,7 +184,7 @@ namespace SME.SGP.Aplicacao
 
             return "DRE: Todas";
         }
-        
+
         private string MontarDescricaoUe(Evento evento)
         {
             if (evento.Ue.NaoEhNulo() && !string.IsNullOrEmpty(evento.Ue.Nome))

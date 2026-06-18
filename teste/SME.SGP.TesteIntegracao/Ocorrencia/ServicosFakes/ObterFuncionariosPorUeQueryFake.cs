@@ -1,10 +1,10 @@
+using MediatR;
+using SME.SGP.Aplicacao;
+using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Aplicacao;
-using SME.SGP.Infra;
 
 namespace SME.SGP.TesteIntegracao.Ocorrencia.ServicosFakes
 {

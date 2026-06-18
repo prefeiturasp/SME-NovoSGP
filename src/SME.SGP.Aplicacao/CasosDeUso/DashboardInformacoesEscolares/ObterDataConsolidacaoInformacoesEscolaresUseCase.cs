@@ -15,12 +15,12 @@ namespace SME.SGP.Aplicacao
         public async Task<DateTime?> Executar(int anoLetivo)
         {
             var parametroExecucao = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ExecucaoConsolidacaoInformacoesEscolares, anoLetivo));
-            
+
             if (parametroExecucao.EhNulo())
                 throw new NegocioException("Não foi possível localizar a última consolidação de Informações escolares para o Ano informado");
 
-                if (!string.IsNullOrEmpty(parametroExecucao.Valor))
-                    return DateTime.Parse(parametroExecucao.Valor);
+            if (!string.IsNullOrEmpty(parametroExecucao.Valor))
+                return DateTime.Parse(parametroExecucao.Valor);
 
             return null;
         }

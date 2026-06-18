@@ -3,9 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,7 +13,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IRepositorioCache repositorioCache;
-        
+
         public ObterFimPeriodoRecorrenciaQueryHandler(IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar, IRepositorioCache repositorioCache)
         {
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));

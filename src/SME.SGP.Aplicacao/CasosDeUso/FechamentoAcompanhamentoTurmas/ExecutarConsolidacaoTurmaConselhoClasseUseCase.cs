@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível iniciar a consolidação do conselho de clase da turma. O id da turma não foi informado", LogNivel.Critico, LogContexto.ConselhoClasse));
                 return false;
             }
-            
+
             var turma = await mediator
                 .Send(new ObterTurmaComUeEDrePorIdQuery(consolidacaoTurmaConselhoClasse.TurmaId));
 
@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var aluno in alunos)
             {
-                await PublicarMensagem(aluno, consolidacaoTurmaConselhoClasse, 0, mensagemRabbit.CodigoCorrelacao);                 
+                await PublicarMensagem(aluno, consolidacaoTurmaConselhoClasse, 0, mensagemRabbit.CodigoCorrelacao);
             }
 
             return true;

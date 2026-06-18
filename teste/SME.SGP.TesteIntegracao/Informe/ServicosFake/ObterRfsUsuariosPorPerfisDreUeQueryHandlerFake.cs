@@ -15,8 +15,8 @@ namespace SME.SGP.TesteIntegracao.Informe.ServicosFake
             return Task.FromResult<IEnumerable<UsuarioPerfilsAbrangenciaDto>>(
                 new List<UsuarioPerfilsAbrangenciaDto>()
                 {
-                    new UsuarioPerfilsAbrangenciaDto() { 
-                        UsuarioRf = "DIR999998" , 
+                    new UsuarioPerfilsAbrangenciaDto() {
+                        UsuarioRf = "DIR999998" ,
                         Perfils = new List<PerfilsAbrangenciaDto>()
                         {
                             new PerfilsAbrangenciaDto()
@@ -29,7 +29,7 @@ namespace SME.SGP.TesteIntegracao.Informe.ServicosFake
                             }
                         }
                     },
-                    new UsuarioPerfilsAbrangenciaDto() { 
+                    new UsuarioPerfilsAbrangenciaDto() {
                         UsuarioRf = "2222222",
                         Perfils = new List<PerfilsAbrangenciaDto>()
                         {
@@ -42,7 +42,7 @@ namespace SME.SGP.TesteIntegracao.Informe.ServicosFake
                                 }
                             }
                         }},
-                    new UsuarioPerfilsAbrangenciaDto() { 
+                    new UsuarioPerfilsAbrangenciaDto() {
                         UsuarioRf = "3333333",
                         Perfils = new List<PerfilsAbrangenciaDto>()
                         {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
@@ -14,14 +10,18 @@ using SME.SGP.TesteIntegracao.PlanoAula.Base;
 using SME.SGP.TesteIntegracao.PlanoAula.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.PlanoAula
 {
     public class Ao_copiar_plano_de_aula : PlanoAulaTesteBase
     {
-        public Ao_copiar_plano_de_aula(CollectionFixture collectionFixture) : base(collectionFixture){}
-        
+        public Ao_copiar_plano_de_aula(CollectionFixture collectionFixture) : base(collectionFixture) { }
+
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
@@ -40,24 +40,24 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             await CriarPlanoDeAula(Modalidade.Fundamental);
             await CriarAula(dataAula, RecorrenciaAula.AulaUnica, TipoAula.Normal,
                 USUARIO_PROFESSOR_LOGIN_2222222, "1", "1", "138", 1, false);
-            
-            
+
+
             var aula = ObterTodos<Dominio.Aula>().FirstOrDefault();
             var planoAula = ObterTodos<Dominio.PlanoAula>();
-            
-            var dtoMigrarPlanoAula = ObterMigrarPlanoAulaDto(aula,planoAula.FirstOrDefault().Id,dataAula);
+
+            var dtoMigrarPlanoAula = ObterMigrarPlanoAulaDto(aula, planoAula.FirstOrDefault().Id, dataAula);
             var servicoMigrarPlano = ObterServicoMigrarPlanoAulaUseCase();
-            
+
             var retorno = await servicoMigrarPlano.Executar(dtoMigrarPlanoAula);
             retorno.ShouldBeTrue();
 
             var planosAula = ObterTodos<Dominio.PlanoAula>();
             planosAula.ShouldNotBeNull();
             planosAula.Count.ShouldBeGreaterThanOrEqualTo(2);
-            
+
             var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
-            objetivoAprendizagemAulas.Count(w=> !w.Excluido).ShouldBe(6);
-            objetivoAprendizagemAulas.Count(w=> w.Excluido).ShouldBe(0);
+            objetivoAprendizagemAulas.Count(w => !w.Excluido).ShouldBe(6);
+            objetivoAprendizagemAulas.Count(w => w.Excluido).ShouldBe(0);
 
         }
 
@@ -66,26 +66,26 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
         {
             var dataAula = DateTimeExtension.HorarioBrasilia();
             await CriarPlanoDeAula(Modalidade.Fundamental);
-            
+
             var aula = ObterTodos<Dominio.Aula>().FirstOrDefault();
             var planoAula = ObterTodos<Dominio.PlanoAula>();
-            
-            var dtoMigrarPlanoAula = ObterMigrarPlanoAulaDto(aula,planoAula.FirstOrDefault().Id,null);
+
+            var dtoMigrarPlanoAula = ObterMigrarPlanoAulaDto(aula, planoAula.FirstOrDefault().Id, null);
             var servicoMigrarPlano = ObterServicoMigrarPlanoAulaUseCase();
-            
+
             var retorno = await servicoMigrarPlano.Executar(dtoMigrarPlanoAula);
             retorno.ShouldBeTrue();
 
             var planosAula = ObterTodos<Dominio.PlanoAula>();
             planosAula.ShouldNotBeNull();
             planoAula.Count.ShouldBeGreaterThanOrEqualTo(1);
-            
+
             var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
-            objetivoAprendizagemAulas.Count(w=> !w.Excluido).ShouldBe(3);
-            objetivoAprendizagemAulas.Count(w=> w.Excluido).ShouldBe(0);
+            objetivoAprendizagemAulas.Count(w => !w.Excluido).ShouldBe(3);
+            objetivoAprendizagemAulas.Count(w => w.Excluido).ShouldBe(0);
         }
 
-        
+
         [Fact(DisplayName = "Plano de Aula - Cópia de plano de aula para outra turma com o mesmo componente curricular")]
         public async Task Copiar_plano_para_outra_turma_com_o_mesmo_componente_curricular()
         {
@@ -95,28 +95,28 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             await CriarAula(dataAula, RecorrenciaAula.AulaUnica, TipoAula.Normal,
                 USUARIO_PROFESSOR_LOGIN_2222222, "1", "1", "138", 1, false);
             var aula = ObterTodos<Dominio.Aula>().FirstOrDefault();
-            
+
             var planoAula = ObterTodos<Dominio.PlanoAula>().FirstOrDefault();
-            
-            var dtoMigrarPlanoAula = ObterMigrarPlanoAulaDto(aula,planoAula.Id,dataAula);
-            
-            
+
+            var dtoMigrarPlanoAula = ObterMigrarPlanoAulaDto(aula, planoAula.Id, dataAula);
+
+
             var servicoMigrarPlano = ObterServicoMigrarPlanoAulaUseCase();
-            
+
             var retorno = await servicoMigrarPlano.Executar(dtoMigrarPlanoAula);
             retorno.ShouldBeTrue();
 
             var planosAula = ObterTodos<Dominio.PlanoAula>();
-            
+
             planosAula.ShouldNotBeNull();
             planosAula.Count.ShouldBeGreaterThanOrEqualTo(2);
 
             planosAula.FirstOrDefault().AulaId.ShouldBeGreaterThanOrEqualTo(1);
             planosAula.LastOrDefault().AulaId.ShouldBeGreaterThanOrEqualTo(2);
-            
+
             var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
-            objetivoAprendizagemAulas.Count(w=> !w.Excluido).ShouldBe(6);
-            objetivoAprendizagemAulas.Count(w=> w.Excluido).ShouldBe(0);
+            objetivoAprendizagemAulas.Count(w => !w.Excluido).ShouldBe(6);
+            objetivoAprendizagemAulas.Count(w => w.Excluido).ShouldBe(0);
 
         }
 
@@ -125,20 +125,20 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
         {
             var dataAula = DateTimeExtension.HorarioBrasilia();
             await CriarPlanoDeAula(Modalidade.Fundamental);
-            
+
             await CriarTurma(Modalidade.Medio);
-            await CriarAula(dataAula, RecorrenciaAula.AulaUnica, TipoAula.Normal,USUARIO_PROFESSOR_LOGIN_2222222, "1", "1", "139", 1, false);
+            await CriarAula(dataAula, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_LOGIN_2222222, "1", "1", "139", 1, false);
             var aula = ObterTodos<Dominio.Aula>().FirstOrDefault();
-            
+
             var planoAula = ObterTodos<Dominio.PlanoAula>().FirstOrDefault();
             var planoAulas = ObterTodos<Dominio.PlanoAula>();
             var aulas = ObterTodos<Dominio.Aula>();
-            
-            var dtoMigrarPlanoAula = ObterMigrarPlanoAulaDto(aula,planoAula.Id,dataAula);
+
+            var dtoMigrarPlanoAula = ObterMigrarPlanoAulaDto(aula, planoAula.Id, dataAula);
 
             var servicoMigrarPlano = ObterServicoMigrarPlanoAulaUseCase();
-            
-            var retorno = await  servicoMigrarPlano.Executar(dtoMigrarPlanoAula);
+
+            var retorno = await servicoMigrarPlano.Executar(dtoMigrarPlanoAula);
             retorno.ShouldBeTrue();
             //TODO: Ver com Marlon sobre essa regra
             // var ex = await Assert.ThrowsAsync<NegocioException>(() =>  servicoMigrarPlano.Executar(dtoMigrarPlanoAula));
@@ -148,7 +148,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
         private async Task CriarPlanoDeAula(Modalidade modalidade)
         {
             var planoAulaDto = ObterPlanoAula();
-            var filtroPlanoAulaDiretor = ObterFiltroPlanoAulaPorPerfil(ObterPerfilProfessor(),Modalidade.Fundamental);
+            var filtroPlanoAulaDiretor = ObterFiltroPlanoAulaPorPerfil(ObterPerfilProfessor(), Modalidade.Fundamental);
             await CriarDadosBasicos(filtroPlanoAulaDiretor);
 
             var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
@@ -174,7 +174,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
                 MigrarObjetivos = true
             };
         }
-        private FiltroPlanoAula ObterFiltroPlanoAulaPorPerfil(string perfil,Modalidade modalidade)
+        private FiltroPlanoAula ObterFiltroPlanoAulaPorPerfil(string perfil, Modalidade modalidade)
         {
             return new FiltroPlanoAula()
             {

@@ -1,12 +1,12 @@
-﻿using SME.SGP.Aplicacao;
+﻿using MediatR;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Threading;
 using System;
-using MediatR;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.ServicosFakes
 {
@@ -332,7 +332,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                 }
             };
 
-            if(request.CodigoAluno.NaoEhNulo())
+            if (request.CodigoAluno.NaoEhNulo())
                 return await Task.FromResult(alunos.Where(x => x.CodigoTurma == request.CodigoTurma && Convert.ToInt32(x.CodigoAluno) == request.CodigoAluno.Value));
             else
                 return await Task.FromResult(alunos.Where(x => x.CodigoTurma == request.CodigoTurma));

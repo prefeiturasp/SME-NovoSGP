@@ -25,7 +25,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             base.RegistrarFakes(services);
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<RemoverArquivosExcluidosCommand, bool>), typeof(RemoverArquivosExcluidosCommandHandlerFake), ServiceLifetime.Scoped));       
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<RemoverArquivosExcluidosCommand, bool>), typeof(RemoverArquivosExcluidosCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorTurmaAlunoCodigoQuery, AlunoPorTurmaResposta>), typeof(ObterAlunoPorTurmaAlunoCodigoFrequenciaQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
@@ -256,7 +256,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         [Fact(DisplayName = "Frequência - Deve alterar justificativa somente com descricao sem motivo")]
         public async Task Deve_Alterar_justificativa_somente_com_descricao_sem_motivo()
         {
-            
+
             var parametrosFrontEnd = new AlterarAnotacaoFrequenciaAlunoDto
             {
                 Id = await Criar_Justificativa_Para_Exclusao_Alteracao_Somente_Com_Descricao(),

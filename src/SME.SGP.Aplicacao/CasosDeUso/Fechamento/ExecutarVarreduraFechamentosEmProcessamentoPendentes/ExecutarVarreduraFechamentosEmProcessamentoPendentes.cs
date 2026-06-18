@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExecutarVarreduraFechamentosEmProcessamentoPendentes: AbstractUseCase, IExecutarVarreduraFechamentosEmProcessamentoPendentes
+    public class ExecutarVarreduraFechamentosEmProcessamentoPendentes : AbstractUseCase, IExecutarVarreduraFechamentosEmProcessamentoPendentes
     {
         public ExecutarVarreduraFechamentosEmProcessamentoPendentes(IMediator mediator)
             : base(mediator)

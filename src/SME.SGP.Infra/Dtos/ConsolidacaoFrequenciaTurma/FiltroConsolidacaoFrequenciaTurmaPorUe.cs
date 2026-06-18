@@ -6,9 +6,9 @@ namespace SME.SGP.Infra
     public class FiltroConsolidacaoFrequenciaTurmaPorUe
     {
         public FiltroConsolidacaoFrequenciaTurmaPorUe(DateTime data,
-                                                      TipoConsolidadoFrequencia tipoConsolidado, 
-                                                      long ueId, 
-                                                      double percentualMinimo, 
+                                                      TipoConsolidadoFrequencia tipoConsolidado,
+                                                      long ueId,
+                                                      double percentualMinimo,
                                                       double percentualMinimoInfantil)
         {
             Data = data;

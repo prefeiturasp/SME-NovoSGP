@@ -1,14 +1,13 @@
+using MediatR;
+using SME.SGP.Aplicacao;
+using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Integracoes.Respostas;
-using SME.SGP.Infra;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
 {
-    public class ObterComponentesCurricularesPorTurmasCodigoQueryFake: IRequestHandler<ObterComponentesCurricularesPorTurmasCodigoQuery, IEnumerable<DisciplinaDto>>
+    public class ObterComponentesCurricularesPorTurmasCodigoQueryFake : IRequestHandler<ObterComponentesCurricularesPorTurmasCodigoQuery, IEnumerable<DisciplinaDto>>
     {
         private const string TURMA_CODIGO_1 = "1";
         private const string MATEMATICA = "MATEMATICA";
@@ -26,7 +25,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
         private const string ORIENTACAO_DE_ESTUDOS_E_INVENCAO_CRIATIVA_OUTRAS_DE_ACORDO_COM_O_PROJETO_POLITICO_PEDAGOGICO = "ORIENTAÇÃO DE ESTUDOS E INVENÇÃO CRIATIVA - OUTRAS, DE ACORDO COM O PROJETO POLITICO - PEDAGOGICO";
         private const string CONSCIENCIA_E_SUSTENTABILIDADE_SOCIOAMBIENTAL_ECON_SOLIDARIA_ED_FINAN_OUTRAS_DE_ACORDO_COM_O_PROJETO_POLITICO_PEDAGOGICO = "CONSCIÊNCIA E SUSTENTABILIDADE SOCIOAMBIENTAL,ECON SOLIDARIA ED FINAN - OUTRAS, DE ACORDO COM O PROJETO POLITICO - PEDAGOGICO";
         private const string ETICA_CONVIVENCIA_E_PROTAGONISMOS_OUTRAS_DE_ACORDO_COM_O_PROJETO_POLITICO_PEDAGOGICO = "ÉTICA, CONVIVÊNCIA E PROTAGONISMOS - OUTRAS, DE ACORDO COM O PROJETO POLITICO - PEDAGOGICO";
-        
+
         public ObterComponentesCurricularesPorTurmasCodigoQueryFake()
         {
         }

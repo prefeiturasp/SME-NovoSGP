@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using FluentValidation;
+﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Dominio;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
@@ -12,7 +11,7 @@ namespace SME.SGP.Aplicacao
             CompensacaoAusenciaIds = compensacaoAusenciaIds;
         }
 
-        public long[] CompensacaoAusenciaIds { get; set; }   
+        public long[] CompensacaoAusenciaIds { get; set; }
     }
 
     public class ObterCompensacaoAusenciaSemAlunoEAulaPorIdsQueryValidator : AbstractValidator<ObterCompensacaoAusenciaSemAlunoEAulaPorIdsQuery>

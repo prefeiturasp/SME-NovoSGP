@@ -1,10 +1,10 @@
+using MediatR;
+using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<NotaConceitoFechamentoConselhoFinalDto>> Handle(ObterNotasConselhoClassePorAlunoTurmaQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioConselhoClasseAluno.ObterNotasConselhoAlunoTurma(request.AlunoCodigo,request.TurmasCodigos);
+            return await repositorioConselhoClasseAluno.ObterNotasConselhoAlunoTurma(request.AlunoCodigo, request.TurmasCodigos);
         }
     }
 }

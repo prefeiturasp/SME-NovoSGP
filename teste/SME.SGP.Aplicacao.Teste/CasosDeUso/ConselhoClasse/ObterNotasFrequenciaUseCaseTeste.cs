@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
                                                                                                    y.Semestre == 0), It.IsAny<CancellationToken>())).ReturnsAsync(new Dominio.TipoCalendario() { Id = 1 });
 
             mediator.Setup(x => x.Send(It.Is<ObterPeriodosEscolaresPorTipoCalendarioQuery>(y => y.TipoCalendarioId == 1), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<PeriodoEscolar>() { new () });
+                .ReturnsAsync(new List<PeriodoEscolar>() { new() });
 
             mediator.Setup(x => x.Send(It.Is<ObterPeriodosEscolaresPorTipoCalendarioIdQuery>(y => y.TipoCalendarioId == 1), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<PeriodoEscolar>() { periodoEscolar });
@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
             mediator.Verify(x => x.Send(It.Is<ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery>(y => y.AnoLetivo == anoAtual &&
                                                                                                           y.CodigoAluno == "1" &&
                                                                                                           y.DataReferencia == periodoEscolar.PeriodoFim &&
-                                                                                                          !y.Semestre.HasValue), It.IsAny<CancellationToken>()), Times.Once);            
+                                                                                                          !y.Semestre.HasValue), It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }

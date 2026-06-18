@@ -4,7 +4,6 @@ using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,7 +21,7 @@ namespace SME.SGP.Aplicacao.Queries.MotivosAusencia.ObterMotivosAusencia
         }
         public async Task<IEnumerable<MotivoAusencia>> Handle(ObterMotivosAusenciaQuery request, CancellationToken cancellationToken)
         {
-            var motivoAusencia = await repositorioCache.ObterAsync(NomeChaveCache.MOTIVOS_AUSENCIA , async () => await repositorioMotivoAusencia.ListarAsync());
+            var motivoAusencia = await repositorioCache.ObterAsync(NomeChaveCache.MOTIVOS_AUSENCIA, async () => await repositorioMotivoAusencia.ListarAsync());
             if (motivoAusencia.EhNulo())
             {
                 throw new NegocioException("Não foi possível recuperar a lista de motivo ausência.");

@@ -99,8 +99,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PlanoAEE
                 new PlanoAEEVersaoDto { Id = 100, Numero = 1 }
             };
 
-                    // Questões
-                    var questoes = new List<QuestaoDto>
+            // Questões
+            var questoes = new List<QuestaoDto>
             {
                 new QuestaoDto { Id = 1, TipoQuestao = TipoQuestao.Texto }
             };

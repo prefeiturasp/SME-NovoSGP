@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
                 alunoAusente.Nome = aluno.NomeAluno;
                 alunoAusente.NumeroChamada = aluno.NumeroAlunoChamada.GetValueOrDefault();
                 alunoAusente.FrequenciaGlobal = frequenciaGlobal;
-                
+
                 alunosAusentesFiltrados.Add(alunoAusente);
             }
         }

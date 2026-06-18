@@ -9,6 +9,6 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioFechamentoAluno(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
-        }  
+        }
     }
 }

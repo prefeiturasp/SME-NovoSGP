@@ -9,7 +9,7 @@ namespace SME.SGP.Dominio.Enumerados
 
         [Display(Name = "MT")]
         Matematica = 2,
-            
+
         [Display(Name = "CN")]
         CienciasNatureza = 89
     }

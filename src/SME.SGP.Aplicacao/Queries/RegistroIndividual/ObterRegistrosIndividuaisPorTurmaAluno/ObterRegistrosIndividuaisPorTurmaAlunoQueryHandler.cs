@@ -18,6 +18,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<RegistroIndividualAlunoDTO>> Handle(ObterRegistrosIndividuaisPorTurmaAlunoQuery request, CancellationToken cancellationToken)
-                => await repositorio.ObterRegistrosIndividuaisPorTurmaAlunoAsync(request.TurmaCodigo, request.AlunoCodigo, request.Modalidades);            
+                => await repositorio.ObterRegistrosIndividuaisPorTurmaAlunoAsync(request.TurmaCodigo, request.AlunoCodigo, request.Modalidades);
     }
 }

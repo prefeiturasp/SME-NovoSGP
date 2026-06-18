@@ -1,7 +1,7 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using FluentValidation;
 
 namespace SME.SGP.Aplicacao
 {
@@ -14,9 +14,9 @@ namespace SME.SGP.Aplicacao
         public Usuario UsuarioLogado { get; set; }
 
         public InserirConselhoClasseNotaCommad(
-                    FechamentoTurma fechamentoTurma, 
-                    string codigoAluno, 
-                    ConselhoClasseNotaDto conselhoClasseNotaDto, 
+                    FechamentoTurma fechamentoTurma,
+                    string codigoAluno,
+                    ConselhoClasseNotaDto conselhoClasseNotaDto,
                     int? bimestre,
                     Usuario usuarioLogado)
         {

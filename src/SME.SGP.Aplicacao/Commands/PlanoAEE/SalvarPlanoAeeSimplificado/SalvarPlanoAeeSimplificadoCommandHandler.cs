@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,6 +17,6 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(SalvarPlanoAeeSimplificadoCommand request, CancellationToken cancellationToken) =>
             (await repositorioPlanoAEE.SalvarAsync(request.PlanoAEE)) > 0;
-       
+
     }
 }

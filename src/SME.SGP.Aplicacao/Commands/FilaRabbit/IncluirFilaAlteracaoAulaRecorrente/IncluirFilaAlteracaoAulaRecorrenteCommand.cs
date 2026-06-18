@@ -6,7 +6,7 @@ using System;
 
 namespace SME.SGP.Aplicacao
 {
-    public class IncluirFilaAlteracaoAulaRecorrenteCommand: IRequest<bool>
+    public class IncluirFilaAlteracaoAulaRecorrenteCommand : IRequest<bool>
     {
         public IncluirFilaAlteracaoAulaRecorrenteCommand(Usuario usuario, PersistirAulaDto aulaDto)
         {

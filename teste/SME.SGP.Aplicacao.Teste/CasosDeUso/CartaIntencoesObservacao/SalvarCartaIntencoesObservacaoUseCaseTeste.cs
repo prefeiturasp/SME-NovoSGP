@@ -3,9 +3,6 @@ using MediatR;
 using Moq;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -38,7 +35,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             dto.Observacao = "observacao";
             mediator.Setup(a => a.Send(It.IsAny<ObterTurmaIdPorCodigoQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(1);
 
-            var auditoriaDto = await useCase.Executar("1",1, dto);
+            var auditoriaDto = await useCase.Executar("1", 1, dto);
             //Asert
             mediator.Verify(x => x.Send(It.IsAny<SalvarCartaIntencoesObservacaoCommand>(), It.IsAny<CancellationToken>()), Times.Once);
 

@@ -7,7 +7,7 @@ namespace SME.SGP.Infra.Dtos
     public class AlunoReduzidoDto
     {
         public string CodigoAluno { get; set; }
-        public string Nome { get; set; }        
+        public string Nome { get; set; }
         public int NumeroAlunoChamada { get; set; }
         public DateTime DataNascimento { get; set; }
         public DateTime DataSituacao { get; set; }

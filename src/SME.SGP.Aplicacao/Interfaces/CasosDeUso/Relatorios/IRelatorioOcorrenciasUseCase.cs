@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IRelatorioOcorrenciasUseCase: IUseCase<FiltroImpressaoOcorrenciaDto, bool>
+    public interface IRelatorioOcorrenciasUseCase : IUseCase<FiltroImpressaoOcorrenciaDto, bool>
     {
     }
 }

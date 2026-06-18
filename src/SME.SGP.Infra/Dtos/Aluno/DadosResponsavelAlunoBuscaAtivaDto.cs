@@ -1,5 +1,5 @@
 ﻿namespace SME.SGP.Infra
-{ 
+{
     public class DadosResponsavelAlunoBuscaAtivaDto
     {
         public DadosResponsavelAlunoBuscaAtivaDto(DadosResponsavelAlunoEolDto dadosResponsavel, AtualizarDadosResponsavelDto atualizarDados)

@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
         {
             var todosComponentesCurriculares = (await repositorioCache.ObterAsync("InformacoesComponentesCurriculares",
                                                                                    async () => await repositorioComponenteCurricular.ObterInformacoesComponentesCurriculares()))?.ToList();
-            
+
             if (todosComponentesCurriculares.EhNulo())
                 return Enumerable.Empty<InfoComponenteCurricular>();
 

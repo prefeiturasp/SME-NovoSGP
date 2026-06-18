@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.consultasTipoCalendario = consultasTipoCalendario ?? throw new ArgumentNullException(nameof(consultasTipoCalendario));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }               
+        }
 
         public async Task<bool> AulaDentroPeriodo(Aula aula)
         {
@@ -102,7 +102,7 @@ namespace SME.SGP.Aplicacao
 
             var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(turmaCodigo, usuarioLogado.Login, usuarioLogado.PerfilAtual, true));
 
-            var disciplinaCJ = (await mediator.Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.CodigoRf)))?.FirstOrDefault(x => x.TurmaId == turma.CodigoTurma && 
+            var disciplinaCJ = (await mediator.Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.CodigoRf)))?.FirstOrDefault(x => x.TurmaId == turma.CodigoTurma &&
                                                                                                                                                             x.DisciplinaId.ToString() == disciplinaCodigo);
             if (componentesCurriculares.EhNulo())
                 componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(turmaCodigo, usuarioLogado.Login, usuarioLogado.PerfilAtual, true, false));
@@ -119,7 +119,7 @@ namespace SME.SGP.Aplicacao
                                 })
                                 .FirstOrDefault();
 
-            if(dadosDisciplina != null && disciplinaCJ != null)
+            if (dadosDisciplina != null && disciplinaCJ != null)
                 return await ObterAulasNosPeriodos(periodosEscolares, anoLetivo, turmaCodigo, disciplinaCJ.DisciplinaId.ToString(), usuarioLogado, usuarioRF);
             else
                 return await ObterAulasNosPeriodos(periodosEscolares, anoLetivo, turmaCodigo, dadosDisciplina?.CodigoComponenteCurricular, usuarioLogado, usuarioRF);
@@ -260,7 +260,7 @@ namespace SME.SGP.Aplicacao
 
         private int ObterBimestre(List<PeriodoEscolarDto> periodos, Aula aula)
         {
-            return periodos.FirstOrDefault(w=> w.PeriodoInicio <= aula.DataAula && w.PeriodoFim>= aula.DataAula).Bimestre;
+            return periodos.FirstOrDefault(w => w.PeriodoInicio <= aula.DataAula && w.PeriodoFim >= aula.DataAula).Bimestre;
         }
 
         private async Task<string> ObterDisciplinaIdAulaEOL(Usuario usuarioLogado, Aula aula, bool ehCJ)

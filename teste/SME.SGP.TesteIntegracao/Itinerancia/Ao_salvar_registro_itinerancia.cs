@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Nest;
 using Shouldly;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Itinerancia.Base;
 using SME.SGP.TesteIntegracao.Itinerancia.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Itinerancia
@@ -25,7 +22,7 @@ namespace SME.SGP.TesteIntegracao.Itinerancia
         protected const string RESPOSTA_ACOMPANHAMENTO_SITUACAO_ALUNO = "Teste Acompanhamento da situação Aluno";
         protected const string RESPOSTA_ENCAMINHAMENTOS_ALUNO = "Teste Encaminhamentos Aluno";
         protected const string RESPOSTA_DESCRITIVO_ESTUDANTE = "Teste Descritivo do estudante";
-        
+
 
         public Ao_salvar_registro_itinerancia(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -34,7 +31,7 @@ namespace SME.SGP.TesteIntegracao.Itinerancia
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ArmazenarArquivoFisicoCommand, string>),typeof(ArmazenarArquivoFisicoCommandHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ArmazenarArquivoFisicoCommand, string>), typeof(ArmazenarArquivoFisicoCommandHandlerFake), ServiceLifetime.Scoped));
         }
 
 
@@ -44,7 +41,7 @@ namespace SME.SGP.TesteIntegracao.Itinerancia
             await CriarDadosBase(new FiltroItineranciaDto() { AnoTurma = "5", ConsiderarAnoAnterior = false, Modalidade = Modalidade.Fundamental, Perfil = ObterPerfilCoordenadorCefai() });
 
             var useCase = SalvarItineranciaUseCase();
-            var retorno =  await useCase.Executar(ObterItineranciaDTO(ObterObjetivosVisita(), ObterQuestoesItinerancia()));
+            var retorno = await useCase.Executar(ObterItineranciaDTO(ObterObjetivosVisita(), ObterQuestoesItinerancia()));
             retorno.ShouldNotBeNull("Itinerância não persistida ao salvar");
             retorno.Id.ShouldBe(1, "Id da itinerância persistida deveria ser 1");
 
@@ -156,7 +153,7 @@ namespace SME.SGP.TesteIntegracao.Itinerancia
             questoesItinerancia.ShouldNotBe(null, "Questões/Repostas da Itinerância não persistidas ao salvar");
             questoesItinerancia.Where(q => !q.Excluido).Count().ShouldBe(2, "Quantidade de questões na itinerância persistida ao salvar incorreta");
             questoesItinerancia.Where(resposta => string.IsNullOrEmpty(resposta.Resposta) && !resposta.Excluido).Count().ShouldBe(2, $"Quantidade de Respostas vazias incorreta para questão");
-            
+
             var itineranciasAluno = ObterTodos<Dominio.ItineranciaAluno>();
             itineranciasAluno.ShouldNotBe(null, "Itinerância por alunos da Itinerância não persistidas ao salvar");
             itineranciasAluno.Where(q => !q.Excluido).Count().ShouldBe(2, "Quantidade de Itinerâncias por aluno na itinerância persistida ao salvar incorreta");
@@ -274,7 +271,7 @@ namespace SME.SGP.TesteIntegracao.Itinerancia
             };
         }
 
-        private ItineranciaDto ObterItineranciaDTO(List<ItineranciaObjetivoDto> ObjetivosVisita = null, List<ItineranciaQuestaoDto> Questoes = null, 
+        private ItineranciaDto ObterItineranciaDTO(List<ItineranciaObjetivoDto> ObjetivosVisita = null, List<ItineranciaQuestaoDto> Questoes = null,
                                                    List<ItineranciaAlunoDto> Alunos = null)
         {
             var itinerancia = new ItineranciaDto
@@ -286,7 +283,7 @@ namespace SME.SGP.TesteIntegracao.Itinerancia
                 DreId = DRE_ID_1,
                 UeId = UE_ID_1,
                 AnoLetivo = 2023
-            } ;
+            };
 
             if (ObjetivosVisita.NaoEhNulo())
                 itinerancia.ObjetivosVisita = ObjetivosVisita;
@@ -300,4 +297,4 @@ namespace SME.SGP.TesteIntegracao.Itinerancia
 
 
     }
-    }
+}

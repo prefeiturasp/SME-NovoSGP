@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         private const string DescricaoBase = "As crianças abaixo estão sem registro individual a mais de 15 dias:";
 
         public GerarPendenciaAusenciaRegistroIndividualTurmaCommandHandler(IRepositorioPendencia repositorioPendencia, IRepositorioPendenciaUsuario repositorioPendenciaUsuario,
-            IRepositorioPendenciaRegistroIndividual repositorioPendenciaRegistroIndividual, IRepositorioPendenciaRegistroIndividualAluno repositorioPendenciaRegistroIndividualAluno, 
+            IRepositorioPendenciaRegistroIndividual repositorioPendenciaRegistroIndividual, IRepositorioPendenciaRegistroIndividualAluno repositorioPendenciaRegistroIndividualAluno,
             IMediator mediator, IUnitOfWork unitOfWork)
         {
             this.repositorioPendencia = repositorioPendencia ?? throw new ArgumentNullException(nameof(repositorioPendencia));

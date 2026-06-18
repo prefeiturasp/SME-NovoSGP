@@ -27,7 +27,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             base.RegistrarFakes(services);
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosEolPorCodigosQuery, IEnumerable<TurmasDoAlunoDto>>), typeof(ObterAlunosEolPorCodigosQueryHandlerFake_AnoPosterior), ServiceLifetime.Scoped));
         }
-        
+
         [Fact(DisplayName = "Plano AEE - Não deve atualizar Plano AEE para aluno com situação ativa para ano posterior")]
         public async Task Nao_deve_atualizar_plano_aee_para_aluno_situacao_turma_com_ano_posterior()
         {

@@ -1,13 +1,13 @@
-﻿using System;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Aplicacao
 {
@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IMediator mediator;
 
-        public ObterFiltroRelatoriosModalidadesPorUeQueryHandler(IRepositorioAbrangencia repositorioAbrangencia,IMediator mediator)
+        public ObterFiltroRelatoriosModalidadesPorUeQueryHandler(IRepositorioAbrangencia repositorioAbrangencia, IMediator mediator)
         {
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new System.ArgumentNullException(nameof(repositorioAbrangencia));
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));

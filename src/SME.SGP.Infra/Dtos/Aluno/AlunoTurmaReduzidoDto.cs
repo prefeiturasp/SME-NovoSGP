@@ -1,14 +1,12 @@
 ﻿using SME.SGP.Dominio;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Infra.Dtos
 {
     public class AlunoTurmaReduzidoDto
     {
         public string CodigoAluno { get; set; }
-        public string Nome { get; set; }        
+        public string Nome { get; set; }
         public int NumeroAlunoChamada { get; set; }
         public DateTime DataNascimento { get; set; }
         public DateTime DataSituacao { get; set; }

@@ -13,7 +13,7 @@ namespace SME.SGP.Infra
         {
             PlanoId = planoId;
             Situacao = situacao;
-            SituacaoDescricao = situacao.Name(); 
+            SituacaoDescricao = situacao.Name();
         }
     }
 

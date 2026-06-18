@@ -5,8 +5,8 @@ namespace SME.SGP.Infra.Dtos.PainelEducacional.IndicadoresPap
     public class IndicadoresPapQuantidadesPorTipoDto
     {
         public TipoPap TipoPap { get; set; }
-        public string TipoPapNome => TipoPap switch 
-        { 
+        public string TipoPapNome => TipoPap switch
+        {
             TipoPap.PapColaborativo => "PAP Colaborativo",
             TipoPap.RecuperacaoAprendizagens => "Recuperação de Aprendizagens",
             TipoPap.Pap2Ano => "PAP 2º Ano",

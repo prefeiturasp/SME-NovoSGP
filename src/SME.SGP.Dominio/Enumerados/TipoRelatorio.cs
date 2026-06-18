@@ -1,6 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Security.Cryptography.X509Certificates;
-using System.Xml.Linq;
 
 namespace SME.SGP.Dominio
 {
@@ -122,25 +120,25 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "relatorios/frequencia-global", ShortName = "RelatorioFrequenciaMensal", Description = "Relatório de frequência mensal")]
         FrequenciaMensal = 40,
-        
+
         [Display(Name = "relatorios/planoaee", ShortName = "PlanoAEE", Description = "Plano AEE")]
         PlanoAee = 41,
-        
+
         [Display(Name = "relatorios/planosaee", ShortName = "PlanoAEE", Description = "Plano AEE")]
         RelatorioPlanosAee = 42,
 
         [Display(Name = "relatorios/encaminhamentosaee", ShortName = "EncaminhamentoAEE", Description = "Encaminhamento AEE")]
         RelatorioEncaminhamentosAee = 43,
-        
+
         [Display(Name = "relatorios/encaminhamentoaeedetalhado", ShortName = "EncaminhamentoAEE", Description = "Encaminhamento AEE")]
         RelatorioEncaminhamentoAeeDetalhado = 44,
 
         [Display(Name = "relatorios/encaminhamentosnaapa", ShortName = "EncaminhamentoNAAPA", Description = "Relatório de Encaminhamento NAAPA")]
         RelatorioEncaminhamentosNAAPA = 45,
-        
+
         [Display(Name = "relatorios/historicoescolarfundamental", ShortName = "HistoricoEscolar", Description = "Histórico Escolar")]
         HistoricoEscolarFundamentalRazor = 46,
-        
+
         [Display(Name = "relatorios/encaminhamentonaapadetalhado", ShortName = "EncaminhamentoNAAPA", Description = "Relatório do Encaminhamento NAAPA")]
         RelatorioEncaminhamentoNaapaDetalhado = 47,
 
@@ -158,7 +156,7 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "relatorios/listagem-ocorrencias", ShortName = "ListagemOcorrencia", Description = "Relatório de Ocorrências")]
         ListagemOcorrencias = 52,
-            
+
         [Display(Name = "relatorios/plano-anual", ShortName = "Plano Anual", Description = "Relatório Plano Anual")]
         RelatorioPlanoAnual = 53,
 
@@ -173,7 +171,7 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "relatorios/frequencia-global-todos", ShortName = "RelatorioFrequenciaMensalTodosDreUe", Description = "Relatório de frequência mensal filtro todos dre ou ue")]
         FrequenciaMensalTodosDreUe = 57,
-       
+
         [Display(Name = "relatorios/sondagem-por-turma", ShortName = "RelatorioSondagemPorTurma", Description = "Relatório de sondagem por turma")]
         SondagemPorTurma = 58,
 

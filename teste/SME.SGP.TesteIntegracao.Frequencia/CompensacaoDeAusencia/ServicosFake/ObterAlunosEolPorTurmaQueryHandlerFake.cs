@@ -111,5 +111,5 @@ namespace SME.SGP.TesteIntegracao.Frequencia.CompensacaoDeAusencia.ServicosFake
             return Task.FromResult(alunos.Where(x => x.CodigoTurma == turmaCodigo));
         }
     }
-    
+
 }

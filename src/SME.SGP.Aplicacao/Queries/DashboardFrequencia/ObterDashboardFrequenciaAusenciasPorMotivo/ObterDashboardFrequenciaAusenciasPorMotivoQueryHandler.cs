@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<GraficoBaseDto>> Handle(ObterDashboardFrequenciaAusenciasPorMotivoQuery request, CancellationToken cancellationToken)
         {
-            var resultadosAusenciasPorMotivo =  await repositorio.ObterDashboardFrequenciaAusenciasPorMotivo(request.AnoLetivo, request.DreId, request.UeId, request.Modalidade, request.Ano, request.TurmaId, request.Semestre);
+            var resultadosAusenciasPorMotivo = await repositorio.ObterDashboardFrequenciaAusenciasPorMotivo(request.AnoLetivo, request.DreId, request.UeId, request.Modalidade, request.Ano, request.TurmaId, request.Semestre);
             return resultadosAusenciasPorMotivo
                 .Select(ausenciasPorMotivo =>
                 {

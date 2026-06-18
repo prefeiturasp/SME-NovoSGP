@@ -1,15 +1,10 @@
 ﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
-using Org.BouncyCastle.Asn1.Ocsp;
 using Shouldly;
 using SME.SGP.Aplicacao;
-using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.Dominio;
-using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.PendenciaFechamento.Base;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -31,7 +26,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 ComponenteCurricularCodigo = COMPONENTE_LINGUA_PORTUGUESA_ID_138
             };
-            
+
             await CriarDadosBasicos(dto);
             var mediator = ServiceProvider.GetService<IMediator>();
 
@@ -46,7 +41,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
             aulasSemTurmaFechamento.ShouldBeEmpty();
         }
 
-        [Fact]    
+        [Fact]
         public async Task Nao_ignorar_aulas_turma_sem_fechamento_geracao_pendencia_diario_classe()
         {
             var dto = new FiltroPendenciaFechamentoDto()

@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Linq;
@@ -12,7 +11,7 @@ namespace SME.SGP.Aplicacao.Commands
     {
         private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
         private readonly IMediator mediator;
-        public ExcluirDiarioBordoDaAulaCommandHandler(IRepositorioDiarioBordo repositorioDiarioBordo, 
+        public ExcluirDiarioBordoDaAulaCommandHandler(IRepositorioDiarioBordo repositorioDiarioBordo,
                                                       IRepositorioDiarioBordoObservacao repositorioDiarioBordoObservacao, IMediator mediator)
         {
             this.repositorioDiarioBordo = repositorioDiarioBordo ?? throw new ArgumentNullException(nameof(repositorioDiarioBordo));

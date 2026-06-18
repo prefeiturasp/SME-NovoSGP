@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterFrequenciaDiaria
                 return NivelFrequenciaEnum.Alta.GetEnumDisplayName();
 
             return nomeNivelFrequencia;
-        }   
+        }
 
         public class PainelEducacionalRegistroFrequenciaDiariaUeQueryValidator : AbstractValidator<PainelEducacionalRegistroFrequenciaDiariaUeQuery>
         {

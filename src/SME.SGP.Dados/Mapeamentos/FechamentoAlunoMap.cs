@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class FechamentoAlunoMap: BaseMap<FechamentoAluno>
+    public class FechamentoAlunoMap : BaseMap<FechamentoAluno>
     {
         public FechamentoAlunoMap()
         {

@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Microsoft.Extensions.Configuration;
 using Moq;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
@@ -35,7 +34,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             mediator = new Mock<IMediator>();
 
             comandosUsuario = new ComandosUsuario(servicoAutenticacao.Object, servicoUsuario.Object, servicoPerfil.Object,
-                repositorioCache.Object, servicoAbrangencia.Object, repositorioHistoricoEmailUsuario.Object, 
+                repositorioCache.Object, servicoAbrangencia.Object, repositorioHistoricoEmailUsuario.Object,
                 repositorioSuporteUsuario.Object, mediator.Object);
         }
 

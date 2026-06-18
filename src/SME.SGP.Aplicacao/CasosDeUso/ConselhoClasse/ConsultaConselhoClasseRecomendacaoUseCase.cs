@@ -116,9 +116,9 @@ namespace SME.SGP.Aplicacao
                 {
                     var validacaoConselhoFinal = await mediator.Send(new ObterUltimoBimestreTurmaQuery(turma));
                     var conselhoClasseAlunoUltimoBim = await mediator.Send(new ObterPorConselhoClasseAlunoPorTurmaAlunoBimestreQuery(turma.CodigoTurma, recomendacaoDto.AlunoCodigo, turma.EhCELP() || turma.EhEJA() ? 2 : 4, false));
-                   
+
                     if (!validacaoConselhoFinal.possuiConselho || conselhoClasseAlunoUltimoBim.EhNulo())
-                      throw new NegocioException(string.Format(MensagemNegocioConselhoClasse.PARA_ACESSAR_ESTA_ABA_E_PRECISO_REGISTRAR_O_CONSELHO_DE_CLASSE_DO_X_BIMESTRE, validacaoConselhoFinal.bimestre));
+                        throw new NegocioException(string.Format(MensagemNegocioConselhoClasse.PARA_ACESSAR_ESTA_ABA_E_PRECISO_REGISTRAR_O_CONSELHO_DE_CLASSE_DO_X_BIMESTRE, validacaoConselhoFinal.bimestre));
                 }
 
                 emFechamento = await mediator.Send(new ObterTurmaEmPeriodoDeFechamentoQuery(turma, DateTime.Today));

@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private MapeamentoEstudante MapearParaEntidade(RegistrarMapeamentoEstudanteCommand request)
-            => new ()
+            => new()
             {
                 TurmaId = request.TurmaId,
                 AlunoCodigo = request.AlunoCodigo,

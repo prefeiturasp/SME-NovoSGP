@@ -28,8 +28,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Dashboard.ObterDadosDeLeituraD
                                                                                                       filtroDadosDeLeituraDeComunicadosPorModalidadeDto.CodigosTurmas,
                                                                                                       filtroDadosDeLeituraDeComunicadosPorModalidadeDto.ModoVisualizacao));
 
-            
-            var dadosLeituraComunicadoPorTurma =  await ObterSiglaModalidade(dadosLeituraComunicadoPorModalidadeETurma);
+
+            var dadosLeituraComunicadoPorTurma = await ObterSiglaModalidade(dadosLeituraComunicadoPorModalidadeETurma);
 
             return dadosLeituraComunicadoPorTurma;
         }

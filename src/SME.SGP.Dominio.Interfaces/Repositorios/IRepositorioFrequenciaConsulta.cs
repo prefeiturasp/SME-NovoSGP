@@ -23,7 +23,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<AlunosFaltososDto>> ObterAlunosFaltosos(DateTime dataReferencia, long tipoCalendarioId, long ueId);
         Task<IEnumerable<AusenciaMotivoDto>> ObterAusenciaMotivoPorAlunoTurmaBimestreAno(string codigoAluno, string turma, short bimestre, short anoLetivo);
         Task<IEnumerable<GraficoBaseDto>> ObterDashboardFrequenciaAusenciasPorMotivo(int anoLetivo, long dreId, long ueId, Modalidade? modalidade, string ano, long turmaId, int semestre);
-        Task<IEnumerable<string>> ObterTurmasCodigosFrequenciasExistentesPorAnoAsync(int[] anosLetivos);        
+        Task<IEnumerable<string>> ObterTurmasCodigosFrequenciasExistentesPorAnoAsync(int[] anosLetivos);
         Task<IEnumerable<RegistroFrequencia>> ObterRegistroFrequenciaPorDataEAulaId(string disciplina, string turmaId, DateTime dataInicio, DateTime dataFim);
         Task<IEnumerable<RegistroFrequenciaAlunoPorAulaDto>> ObterFrequenciasDetalhadasPorData(string turmaCodigo, string[] componentesCurricularesId, string[] codigosAlunos, DateTime dataInicio, DateTime dataFim);
         Task<bool> RegistraFrequencia(long componenteCurricularId, long? codigoTerritorioSaber = null);

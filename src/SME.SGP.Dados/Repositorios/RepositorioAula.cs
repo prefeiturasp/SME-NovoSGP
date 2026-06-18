@@ -44,7 +44,7 @@ namespace SME.SGP.Dados.Repositorios
                 sqlAtualizacao = ObterConsultaAtualizacaoPlanoAula(aulas, sqlAtualizacao);
             }
 
-            if (!string.IsNullOrEmpty(sqlInsercao) || !string.IsNullOrEmpty(sqlAtualizacao))                
+            if (!string.IsNullOrEmpty(sqlInsercao) || !string.IsNullOrEmpty(sqlAtualizacao))
             {
                 unitOfWork.IniciarTransacao();
 
@@ -55,8 +55,8 @@ namespace SME.SGP.Dados.Repositorios
                     await database.Conexao.ExecuteAsync(sqlAtualizacao, new { sistema = NOME_USUARIO_SISTEMA, idsAulas = idsAulasAtualizacao });
 
                 unitOfWork.PersistirTransacao();
-            }            
-        }       
+            }
+        }
 
         public async Task<IEnumerable<DiarioBordoPorPeriodoDto>> ObterDatasAulaDiarioBordoPorPeriodo(string turmaCodigo, long componenteCurricularId, DateTime dataInicio, DateTime dataFim)
         {
@@ -125,7 +125,7 @@ namespace SME.SGP.Dados.Repositorios
                                                                criado_em,
                                                                criado_por,
                                                                criado_rf) 
-                                             values ", string.Join(",", aulas.Select(a => $"('{a.DataAula:yyyy-MM-dd}', '{a.DisciplinaId}', {a.Quantidade}, {(int)a.RecorrenciaAula}, {(int)a.TipoAula}, {a.TipoCalendarioId}, '{a.TurmaId}', '{a.UeId}', '{a.ProfessorRf}', '{a.CriadoEm:yyyy-MM-dd HH:mm:ss}', '{a.CriadoPor}', '{a.CriadoRF}')")),";") : string.Empty;
+                                             values ", string.Join(",", aulas.Select(a => $"('{a.DataAula:yyyy-MM-dd}', '{a.DisciplinaId}', {a.Quantidade}, {(int)a.RecorrenciaAula}, {(int)a.TipoAula}, {a.TipoCalendarioId}, '{a.TurmaId}', '{a.UeId}', '{a.ProfessorRf}', '{a.CriadoEm:yyyy-MM-dd HH:mm:ss}', '{a.CriadoPor}', '{a.CriadoRF}')")), ";") : string.Empty;
 
         private static string ObterConsultaAtualizacaoAulaEReferencias()
             => @"update aula 

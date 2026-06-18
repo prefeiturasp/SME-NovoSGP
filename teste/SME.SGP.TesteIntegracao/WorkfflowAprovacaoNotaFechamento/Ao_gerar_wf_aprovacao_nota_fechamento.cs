@@ -102,7 +102,7 @@ namespace SME.SGP.TesteIntegracao.WorkFlowAprovacaoNotaFechamento
             validaFila.ShouldBeTrue();
             wfAprovacao.ShouldNotBeEmpty();
         }
-        
+
         [Fact(DisplayName = "WorkFlow Aprovação - Deve consumir a fila sgp.fechamento.nota.aprovacao.notificar.turma")]
         public async Task Deve_consumir_segunda_fila_wf_notificacao_nota_fechamento_turma_com_sucesso()
         {
@@ -129,17 +129,17 @@ namespace SME.SGP.TesteIntegracao.WorkFlowAprovacaoNotaFechamento
             var jsonMensagem = JsonSerializer.Serialize(new WfAprovacaoNotaFechamentoTurmaDto() { TurmaId = 1 });
             bool validaFila = await useCase.Executar(new MensagemRabbit(jsonMensagem));
             validaFila.ShouldBeTrue();
-            
+
             var wfAprovacao = ObterTodos<WfAprovacaoNotaFechamento>();
             wfAprovacao.ShouldNotBeEmpty();
-            
+
             var useCaseTurma = ServiceProvider.GetService<INotificarAlteracaoNotaFechamentoAgrupadaTurmaUseCase>();
             jsonMensagem = JsonSerializer.Serialize(ObterMensagem());
             validaFila = await useCaseTurma.Executar(new MensagemRabbit(jsonMensagem));
             validaFila.ShouldBeTrue();
 
             var notificacoes = ObterTodos<Notificacao>();
-            notificacoes.All(c=> c.Mensagem.Contains("<mensagemDinamicaTabelaPorAluno>")).ShouldBeTrue();
+            notificacoes.All(c => c.Mensagem.Contains("<mensagemDinamicaTabelaPorAluno>")).ShouldBeTrue();
         }
 
         [Fact]
@@ -563,7 +563,7 @@ namespace SME.SGP.TesteIntegracao.WorkFlowAprovacaoNotaFechamento
             await InserirNaBase("componente_curricular_grupo_matriz", "1", "'Grupo matriz 1'");
             await InserirNaBase("componente_curricular", "1", "512", "1", "1", "'MAT'", "false", "false", "true", "false", "false", "true", "'MATEMATICA'", "'MATEMATICA'");
         }
-        
+
         private static List<WfAprovacaoNotaFechamentoTurmaDto> ObterMensagem()
         {
             return new List<WfAprovacaoNotaFechamentoTurmaDto>()
@@ -576,9 +576,9 @@ namespace SME.SGP.TesteIntegracao.WorkFlowAprovacaoNotaFechamento
                     ComponenteCurricularDescricao = "MATEMATICA",
                     FechamentoNota = null,
                     FechamentoTurmaDisciplinaId = 1,
-                    LancaNota = false,                   
+                    LancaNota = false,
                     TurmaId = 1,
-                    WfAprovacao = new WfAprovacaoNotaFechamento() 
+                    WfAprovacao = new WfAprovacaoNotaFechamento()
                     {
                         CriadoEm = DateTimeExtension.HorarioBrasilia(),
                         CriadoPor = SISTEMA,

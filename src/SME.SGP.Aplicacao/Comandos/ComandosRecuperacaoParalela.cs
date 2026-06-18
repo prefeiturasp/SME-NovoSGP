@@ -1,13 +1,11 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -38,7 +36,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<RecuperacaoParalelaListagemDto> Salvar(RecuperacaoParalelaDto recuperacaoParalelaDto)
         {
-            var usuarioLogin =  servicoUsuario.ObterLoginAtual();
+            var usuarioLogin = servicoUsuario.ObterLoginAtual();
             var usuarioPerfil = servicoUsuario.ObterPerfilAtual();
 
             var turmaRecuperacaoParalelaId = recuperacaoParalelaDto.Periodo.Alunos.FirstOrDefault().TurmaRecuperacaoParalelaId;

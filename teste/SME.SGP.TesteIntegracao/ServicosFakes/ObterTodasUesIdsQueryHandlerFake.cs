@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using MediatR;
+using SME.SGP.Aplicacao;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Aplicacao;
 
 namespace SME.SGP.TesteIntegracao.ServicosFake
 {

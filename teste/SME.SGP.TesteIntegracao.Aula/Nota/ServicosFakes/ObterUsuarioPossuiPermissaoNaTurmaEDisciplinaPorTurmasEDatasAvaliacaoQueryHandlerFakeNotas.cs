@@ -15,9 +15,9 @@ namespace SME.SGP.TesteIntegracao.Nota.ServicosFakes
         public ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaPorTurmasEDatasAvaliacaoQueryHandlerFakeNotas()
         { }
 
-            public Task<IEnumerable<UsuarioPossuiAtribuicaoEolDto>> Handle(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaPorTurmasEDatasAvaliacaoQuery request, CancellationToken cancellationToken)
-            {
-                var usariosAtribuicao = new List<UsuarioPossuiAtribuicaoEolDto>()
+        public Task<IEnumerable<UsuarioPossuiAtribuicaoEolDto>> Handle(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaPorTurmasEDatasAvaliacaoQuery request, CancellationToken cancellationToken)
+        {
+            var usariosAtribuicao = new List<UsuarioPossuiAtribuicaoEolDto>()
                 {
                     new UsuarioPossuiAtribuicaoEolDto()
                     {
@@ -27,7 +27,7 @@ namespace SME.SGP.TesteIntegracao.Nota.ServicosFakes
                     },
                 };
 
-                return Task.FromResult<IEnumerable<UsuarioPossuiAtribuicaoEolDto>>(usariosAtribuicao);
-            }
+            return Task.FromResult<IEnumerable<UsuarioPossuiAtribuicaoEolDto>>(usariosAtribuicao);
         }
     }
+}

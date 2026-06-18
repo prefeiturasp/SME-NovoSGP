@@ -2,7 +2,7 @@
 
 namespace SME.Pedagogico.Interface.DTO.Turma
 {
-    public class AlunoMatriculaTurmaEscolaDto 
+    public class AlunoMatriculaTurmaEscolaDto
     {
         public long CodigoAluno { get; set; }
         public DateTime DataNascimentoAluno { get; set; }

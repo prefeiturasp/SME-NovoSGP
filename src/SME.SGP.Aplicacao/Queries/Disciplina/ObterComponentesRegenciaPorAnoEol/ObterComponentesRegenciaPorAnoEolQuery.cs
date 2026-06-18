@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
         }
         public int AnoTurma { get; set; }
     }
-    
+
     public class ObterComponentesRegenciaPorAnoEolQueryValidator : AbstractValidator<ObterComponentesRegenciaPorAnoEolQuery>
     {
         public ObterComponentesRegenciaPorAnoEolQueryValidator()

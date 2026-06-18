@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao
     {
         public SalvarAtividadeInfantilCommand(long aulaId, AtividadeGsaDto atividade)
         {
-            AulaId = aulaId; 
+            AulaId = aulaId;
             UsuarioRf = atividade.UsuarioRf;
             Titulo = atividade.Titulo;
             Mensagem = atividade.Descricao;

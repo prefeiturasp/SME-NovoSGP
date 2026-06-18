@@ -10,7 +10,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 {
     public class RepositorioRegistroFrequenciaDuplicado : RepositorioElasticBase<RegistroFrequenciaDuplicado>, IRepositorioRegistroFrequenciaDuplicado
     {
-        public RepositorioRegistroFrequenciaDuplicado(IElasticClient elasticClient, IServicoTelemetria servicoTelemetria, IOptions<ElasticOptions> elasticOptions) 
+        public RepositorioRegistroFrequenciaDuplicado(IElasticClient elasticClient, IServicoTelemetria servicoTelemetria, IOptions<ElasticOptions> elasticOptions)
             : base(elasticClient, servicoTelemetria, elasticOptions, "metricas_sgp_registro_frequencia_duplicado")
         {
         }

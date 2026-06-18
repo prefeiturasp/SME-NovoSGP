@@ -1,17 +1,17 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System.Text.Json;
-using SME.SGP.Aplicacao;
-using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.Setup;
-using System.Threading.Tasks;
-using Xunit;
-using SME.SGP.Dominio;
-using System.Linq;
-using MediatR;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using System.Collections.Generic;
+using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ConsolidacaoConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
+using SME.SGP.TesteIntegracao.Setup;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace SME.SGP.TesteIntegracao.ConsolidacaoConselhoDeClasse
 {
@@ -52,7 +52,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoConselhoDeClasse
                 CriadoPor = "1",
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             var mensagemRabbit = new MensagemConsolidacaoConselhoClasseAlunoDto()
             {
                 AlunoCodigo = alunoCodigo,

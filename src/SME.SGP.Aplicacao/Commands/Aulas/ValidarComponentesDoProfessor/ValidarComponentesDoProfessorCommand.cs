@@ -2,12 +2,10 @@
 using MediatR;
 using SME.SGP.Dominio;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ValidarComponentesDoProfessorCommand: IRequest<(bool resultado, string mensagem)>
+    public class ValidarComponentesDoProfessorCommand : IRequest<(bool resultado, string mensagem)>
     {
         public ValidarComponentesDoProfessorCommand(Usuario usuario,
                                                     string turmaCodigo,
@@ -29,7 +27,7 @@ namespace SME.SGP.Aplicacao
         public long? CodigoTerritorioSaber { get; set; }
     }
 
-    public class ValidarComponentesDoProfessorCommandValidator: AbstractValidator<ValidarComponentesDoProfessorCommand>
+    public class ValidarComponentesDoProfessorCommandValidator : AbstractValidator<ValidarComponentesDoProfessorCommand>
     {
         public ValidarComponentesDoProfessorCommandValidator()
         {

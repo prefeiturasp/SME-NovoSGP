@@ -1,12 +1,12 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -150,15 +150,15 @@ namespace SME.SGP.Aplicacao
 
             var disciplinaId = long.Parse(atividadeDisciplinas.FirstOrDefault().DisciplinaId);
 
-            var regenteAtual  = !usuario.EhProfessorCj() && !usuario.EhGestorEscolar()
+            var regenteAtual = !usuario.EhProfessorCj() && !usuario.EhGestorEscolar()
                 ? await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(disciplinaId, turma.CodigoTurma, DateTime.Now.Date, usuario))
                 : true;
-            
-            var aula = await repositorioAula.ObterAulas(turma.CodigoTurma, atividadeAvaliativa.UeId, regenteAtual  ? string.Empty : usuario.CodigoRf, atividadeAvaliativa.DataAvaliacao, atividadeDisciplinas.Select(s=> s.DisciplinaId).ToArray(), usuario.EhProfessorCj());
+
+            var aula = await repositorioAula.ObterAulas(turma.CodigoTurma, atividadeAvaliativa.UeId, regenteAtual ? string.Empty : usuario.CodigoRf, atividadeAvaliativa.DataAvaliacao, atividadeDisciplinas.Select(s => s.DisciplinaId).ToArray(), usuario.EhProfessorCj());
 
             if (!aula.Any())
-                throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data );
-            
+                throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
+
             var periodoEscolar = await repositorioTipoCalendario.ObterPeriodoEscolarPorCalendarioEData(aula.FirstOrDefault().TipoCalendarioId, atividadeAvaliativa.DataAvaliacao.Date);
 
             var mesmoAnoLetivo = DateTime.Today.Year == atividadeAvaliativa.DataAvaliacao.Year;
@@ -387,7 +387,7 @@ namespace SME.SGP.Aplicacao
                 if (dto.DisciplinasId.Any())
                     verificaSeEhRegencia = await mediator.Send(new VerificarComponenteCurriculareSeERegenciaPorIdQuery(Convert.ToInt64(dto.DisciplinasId.FirstOrDefault())));
 
-                if(!verificaSeEhRegencia)
+                if (!verificaSeEhRegencia)
                     throw new NegocioException("Para categoria Interdisciplinar informe mais que um componente curricular.");
             }
         }

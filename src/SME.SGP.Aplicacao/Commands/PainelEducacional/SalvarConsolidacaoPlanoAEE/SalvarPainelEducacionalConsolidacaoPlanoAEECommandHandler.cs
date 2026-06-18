@@ -15,14 +15,14 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarConsolidacaoPlanoAE
 
         public SalvarPainelEducacionalConsolidacaoPlanoAEECommandHandler(IRepositorioPainelEducacionalConsolidacaoPlanoAEE repositorio)
         {
-            this.repositorio= repositorio;
+            this.repositorio = repositorio;
         }
 
         public async Task<bool> Handle(SalvarPainelEducacionalConsolidacaoPlanoAEECommand request, CancellationToken cancellationToken)
         {
             if (request.Indicadores?.Any() != true)
                 return false;
-            
+
             await repositorio.LimparConsolidacao();
 
             await repositorio.BulkInsertAsync(MapearParaEntidade(request.Indicadores));
@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarConsolidacaoPlanoAE
                     AnoLetivo = dto.AnoLetivo,
                     CodigoDre = dto.CodigoDre,
                     CodigoUe = dto.CodigoUe,
-                    SituacaoPlano = dto.SituacaoPlano,                    
+                    SituacaoPlano = dto.SituacaoPlano,
                     QuantidadeSituacaoPlano = dto.QuantidadeSituacaoPlano,
                 })
                 .ToList();

@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using FluentValidation;
+﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dto;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
                 .WithMessage("O Código da UE deve ser Informado para Consultar as Turmas Regulares");
 
             RuleFor(x => x.Modalidade).NotNull().WithMessage("A Modalidade deve ser Informada para Consultar as Turmas Regulares");
-            
+
         }
     }
 }

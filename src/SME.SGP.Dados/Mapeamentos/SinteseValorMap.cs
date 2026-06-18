@@ -1,11 +1,8 @@
 ﻿using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-   public class SinteseValorMap : BaseMap<Sintese>
+    public class SinteseValorMap : BaseMap<Sintese>
     {
         public SinteseValorMap()
         {

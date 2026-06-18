@@ -1,5 +1,4 @@
-﻿using Dapper;
-using Dommel;
+﻿using Dommel;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -92,7 +91,7 @@ namespace SME.SGP.Dados.Repositorios
             if (paginacao.QuantidadeRegistros != 0)
                 query.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY ", paginacao.QuantidadeRegistrosIgnorados, paginacao.QuantidadeRegistros);
 
-            await database.Conexao.QueryAsync<FechamentoReabertura, Ue, Dre, TipoCalendario, Usuario, FechamentoReabertura>(query.ToString(), (fechamento, ue, dre,tipoCalendario, aprovador) =>
+            await database.Conexao.QueryAsync<FechamentoReabertura, Ue, Dre, TipoCalendario, Usuario, FechamentoReabertura>(query.ToString(), (fechamento, ue, dre, tipoCalendario, aprovador) =>
             {
                 FechamentoReabertura fechamentoReabertura;
                 if (!lookup.TryGetValue(fechamento.Id, out fechamentoReabertura))
@@ -153,7 +152,7 @@ namespace SME.SGP.Dados.Repositorios
                    lookup.Add(fechamento.Id, fechamentoReabertura);
                }
                fechamentoReabertura.AtualizarDre(dre);
-               fechamentoReabertura.AtualizarUe(ue);               
+               fechamentoReabertura.AtualizarUe(ue);
                fechamentoReabertura.AtualizarTipoCalendario(tipoCalendario);
                fechamentoReabertura.AtualizarAprovador(aprovador);
                fechamentoReabertura.Adicionar(bimestre);

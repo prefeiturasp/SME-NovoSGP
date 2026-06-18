@@ -20,7 +20,7 @@ namespace SME.SGP.Infra
         public string ObtemTituloRudizoParaCaixaNotificacao()
         {
             if (Titulo.Length > 26)
-                return $"{Titulo.Substring(0,26)}...";
+                return $"{Titulo.Substring(0, 26)}...";
             else return Titulo;
         }
 

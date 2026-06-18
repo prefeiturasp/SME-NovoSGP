@@ -32,6 +32,6 @@ namespace SME.SGP.Aplicacao
         public DateTime? DataEnvioFinal { get; set; }
         public string Descricao { get; set; }
 
-        
+
     }
 }

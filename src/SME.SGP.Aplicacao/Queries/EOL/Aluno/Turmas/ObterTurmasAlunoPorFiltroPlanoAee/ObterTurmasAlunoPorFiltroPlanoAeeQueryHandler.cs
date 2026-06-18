@@ -1,13 +1,13 @@
-﻿using System;
+﻿using MediatR;
+using Newtonsoft.Json;
+using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using Newtonsoft.Json;
-using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
                     return JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(json);
                 }
 
-                var erro = $"Não foi possível obter os dados do aluno no EOL - HttpCode {(int) resposta.StatusCode} - erro: {JsonConvert.SerializeObject(resposta.RequestMessage)}";
+                var erro = $"Não foi possível obter os dados do aluno no EOL - HttpCode {(int)resposta.StatusCode} - erro: {JsonConvert.SerializeObject(resposta.RequestMessage)}";
                 var respostaErro = (await resposta?.Content?.ReadAsStringAsync(cancellationToken))?.ToString();
 
                 await mediator.Send(new SalvarLogViaRabbitCommand(erro, LogNivel.Negocio, LogContexto.Turma, respostaErro), cancellationToken);

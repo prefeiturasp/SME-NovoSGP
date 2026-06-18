@@ -1,5 +1,4 @@
-﻿using Dapper;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
@@ -19,7 +18,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select obrigatorio from questao where id = @questaoId";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new {questaoId});
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { questaoId });
         }
 
         public async Task<IEnumerable<Questao>> ObterQuestoesPorIds(long[] questaoIds)

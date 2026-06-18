@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
                 var aulasAgrupadas = request.Aulas.GroupBy(x => new { x.TurmaId, x.DisciplinaId });
                 var turmasDreUe = await mediator.Send(new ObterTurmasDreUePorCodigosQuery(request.Aulas.Select(s => s.TurmaId).Distinct().ToArray()));
 
-                var componentesCurriculares = await ObterTurmasDisciplinas(aulasAgrupadas.Select(x => new TurmaDisciplina { TurmaId = x.Key.TurmaId, DisciplinaId = x.Key.DisciplinaId } ));
+                var componentesCurriculares = await ObterTurmasDisciplinas(aulasAgrupadas.Select(x => new TurmaDisciplina { TurmaId = x.Key.TurmaId, DisciplinaId = x.Key.DisciplinaId }));
                 foreach (var item in aulasAgrupadas)
                 {
                     var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorCalendarioEDataQuery(item.First().TipoCalendarioId, item.First().DataAula));
@@ -74,17 +74,17 @@ namespace SME.SGP.Aplicacao
                                     var professorTitularTurma = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(item.First().TurmaId, item.First().DisciplinaId));
 
                                     if (professorTitularTurma.NaoEhNulo() &&
-                                        periodoEscolar.NaoEhNulo() && 
+                                        periodoEscolar.NaoEhNulo() &&
                                         !string.IsNullOrEmpty(professorTitularTurma.ProfessorRf))
                                         await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, professorTitularTurma.ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula, aulasNormais.Select(x => x.Id), descricaoComponenteCurricular, turmaComDreUe);
                                 }
                                 else
                                 {
                                     var listaProfessoresTitularesDaTurma = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(item.First().TurmaId));
-                                
+
                                     var professoresTitularesDaTurma =
                                         listaProfessoresTitularesDaTurma?.Select(x => x.ProfessorRf);
-                                
+
                                     if (professoresTitularesDaTurma.NaoEhNulo())
                                     {
                                         string[] professoresSeparados = professoresTitularesDaTurma.FirstOrDefault().Split(',');
@@ -114,17 +114,17 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao Salvar Pendencia Aulas Por Tipo.", LogNivel.Critico, LogContexto.Aula, ex.Message,innerException: ex.InnerException.ToString(),rastreamento:ex.StackTrace), cancellationToken);
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao Salvar Pendencia Aulas Por Tipo.", LogNivel.Critico, LogContexto.Aula, ex.Message, innerException: ex.InnerException.ToString(), rastreamento: ex.StackTrace), cancellationToken);
                 throw;
             }
         }
 
         private async Task SalvarPendenciaAulaUsuario(
-                                string disciplinaId, 
-                                string codigoRfProfessor, 
-                                long periodoEscolarId, 
-                                TipoPendencia tipoPendencia, 
-                                IEnumerable<long> aulasIds, 
+                                string disciplinaId,
+                                string codigoRfProfessor,
+                                long periodoEscolarId,
+                                TipoPendencia tipoPendencia,
+                                IEnumerable<long> aulasIds,
                                 string descricaoComponenteCurricular,
                                 Turma turma)
         {
@@ -153,7 +153,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao Salvar Pendencia Aulas Por Tipo.",  LogNivel.Critico, LogContexto.Aula, ex.Message,innerException: ex.InnerException.ToString(),rastreamento:ex.StackTrace));
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao Salvar Pendencia Aulas Por Tipo.", LogNivel.Critico, LogContexto.Aula, ex.Message, innerException: ex.InnerException.ToString(), rastreamento: ex.StackTrace));
                 unitOfWork.Rollback();
             }
         }

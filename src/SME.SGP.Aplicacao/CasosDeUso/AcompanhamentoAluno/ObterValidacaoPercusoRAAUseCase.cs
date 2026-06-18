@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             var percursoColetivo = await mediator.Send(new ObterApanhadoGeralPorTurmaIdESemestreQuery(param.TurmaId, param.Semestre));
 
             return string.IsNullOrEmpty(percursoColetivo?.ApanhadoGeral) ? MensagemNegocioAcomponhamentoAluno.AUSENCIA_PREENCHIMENTO_PERCUSO_COLETIVO : string.Empty;
-        } 
+        }
 
         private async Task<InconsistenciaPercursoIndividualRAADto> ObterInconsistenciaPercursoInconsistencia(FiltroInconsistenciaPercursoRAADto param)
         {
@@ -50,22 +50,22 @@ namespace SME.SGP.Aplicacao
                 return null;
             }
 
-            return new InconsistenciaPercursoIndividualRAADto() { MensagemInsconsistencia = MensagemNegocioAcomponhamentoAluno.NENHUMA_CRIANCAO_POSSUI_PERCURSO_INDIVIDUAL }; 
+            return new InconsistenciaPercursoIndividualRAADto() { MensagemInsconsistencia = MensagemNegocioAcomponhamentoAluno.NENHUMA_CRIANCAO_POSSUI_PERCURSO_INDIVIDUAL };
         }
 
         private async Task<IEnumerable<AlunosComInconsistenciaPercursoIndividualRAADto>> ObterInconsistenciaDeAlunosSemPercurso(List<AcompanhamentoAluno> acompanhamentoAlunos, FiltroInconsistenciaPercursoRAADto param)
         {
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(param.TurmaId));
-            
-            if(turma.EhNulo())
+
+            if (turma.EhNulo())
                 throw new NegocioException("Turma não encontrada.");
 
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorAnoLetivoEModalidadeQuery(turma.ModalidadeTipoCalendario, turma.AnoLetivo, turma.Semestre));
-            
-            if(tipoCalendarioId.EhNulo())
+
+            if (tipoCalendarioId.EhNulo())
                 throw new NegocioException("Tipo de calendário não encontrado para a turma informada.");
 
-            var periodoFechamento = await mediator.Send(new ObterPeriodoFechamentoPorCalendarioIdEBimestreQuery(tipoCalendarioId, false, param.Semestre * 2));          
+            var periodoFechamento = await mediator.Send(new ObterPeriodoFechamentoPorCalendarioIdEBimestreQuery(tipoCalendarioId, false, param.Semestre * 2));
             var alunos = await mediator.Send(new ObterDadosAlunosFechamentoQuery(turma.CodigoTurma, turma.AnoLetivo, param.Semestre));
             var inconsistencias = new List<AlunosComInconsistenciaPercursoIndividualRAADto>();
 

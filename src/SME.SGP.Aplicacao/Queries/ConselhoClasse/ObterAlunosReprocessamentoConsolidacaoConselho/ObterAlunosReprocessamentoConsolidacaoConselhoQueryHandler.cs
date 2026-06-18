@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<objConsolidacaoConselhoAluno>> Handle(ObterAlunosReprocessamentoConsolidacaoConselhoQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioConselhoClasse.ObterAlunosReprocessamentoConsolidacaoConselho(request.DreId);            
+            return await repositorioConselhoClasse.ObterAlunosReprocessamentoConsolidacaoConselho(request.DreId);
         }
     }
 }

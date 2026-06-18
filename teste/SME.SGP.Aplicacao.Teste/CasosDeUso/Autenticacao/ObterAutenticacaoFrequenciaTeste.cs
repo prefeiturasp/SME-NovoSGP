@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Autenticacao
                 Token = "token_teste",
                 PerfisUsuario = new PerfisPorPrioridadeDto()
             };
-        }     
+        }
 
         [Fact]
         public async Task Executar_Quando_Cache_Nulo_Ou_Vazio_Deve_Lancar_NegocioException()

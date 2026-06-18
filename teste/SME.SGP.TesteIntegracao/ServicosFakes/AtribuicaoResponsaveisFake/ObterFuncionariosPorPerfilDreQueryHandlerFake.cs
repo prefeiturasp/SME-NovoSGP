@@ -1,10 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -36,7 +33,7 @@ namespace SME.SGP.TesteIntegracao
                     CodigoFuncaoAtividade = 0,
                     CodigoRf = "3",
                     EstaAfastado = false,
-                    NomeServidor = "Jose Teste" 
+                    NomeServidor = "Jose Teste"
                 }
             };
         }

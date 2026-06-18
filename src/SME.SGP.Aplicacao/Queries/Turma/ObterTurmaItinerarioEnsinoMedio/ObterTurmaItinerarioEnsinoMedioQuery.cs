@@ -7,9 +7,9 @@ namespace SME.SGP.Aplicacao
     public class ObterTurmaItinerarioEnsinoMedioQuery : IRequest<IEnumerable<TurmaItinerarioEnsinoMedioDto>>
     {
         public ObterTurmaItinerarioEnsinoMedioQuery()
-        {}
+        { }
 
         private static ObterTurmaItinerarioEnsinoMedioQuery _instance;
         public static ObterTurmaItinerarioEnsinoMedioQuery Instance => _instance ??= new();
-    }     
+    }
 }

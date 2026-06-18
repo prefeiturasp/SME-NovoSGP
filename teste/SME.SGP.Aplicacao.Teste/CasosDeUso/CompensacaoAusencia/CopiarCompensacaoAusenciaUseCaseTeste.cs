@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.CompensacaoAusencia
             var dto = new CompensacaoAusenciaCopiaDto
             {
                 CompensacaoOrigemId = origem.Id,
-                TurmasIds = new List<string>(), 
+                TurmasIds = new List<string>(),
                 Bimestre = 1
             };
 
@@ -171,8 +171,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.CompensacaoAusencia
 
             var ex = await Assert.ThrowsAsync<SME.SGP.Dominio.NegocioException>(() => useCase.Executar(dto));
 
-            Assert.Contains("Turma OK", ex.Message);   
-            Assert.Contains("Turma ERRO", ex.Message);  
+            Assert.Contains("Turma OK", ex.Message);
+            Assert.Contains("Turma ERRO", ex.Message);
         }
 
         [Fact]

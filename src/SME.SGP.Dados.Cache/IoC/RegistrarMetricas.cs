@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Dados.Cache;
 
 namespace SME.SGP.IoC

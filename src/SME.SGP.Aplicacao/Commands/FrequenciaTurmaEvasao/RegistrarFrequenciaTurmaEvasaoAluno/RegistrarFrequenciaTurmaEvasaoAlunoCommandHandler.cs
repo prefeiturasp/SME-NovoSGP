@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
             return await repositorioFrequenciaTurmaEvasaoAluno.Inserir(new FrequenciaTurmaEvasaoAluno()
             {
                 FrequenciaTurmaEvasaoId = request.FrequenciaTurmaEvasaoId,
-                AlunoCodigo = request.AlunoCodigo,  
+                AlunoCodigo = request.AlunoCodigo,
                 AlunoNome = request.AlunoNome,
                 PercentualFrequencia = request.PercentualFrequencia,
             });

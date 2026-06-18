@@ -55,17 +55,17 @@ namespace SME.SGP.Aplicacao
             var turma = await ObterTurma(turmaId);
             var tipoCalendario = await ObterTipoCalendarioPorTurmaAnoLetivo(turma.AnoLetivo, turma.ModalidadeCodigo, semestre);
             var totalAulasPrevistas = await mediator.Send(new ObterAulasPrevistasPorCodigoUeQuery(turma.UeId));
-            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);           
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var aulaPrevista = totalAulasPrevistas.FirstOrDefault(x => x.TipoCalendarioId == tipoCalendario.Id && x.TurmaId == turma.CodigoTurma && x.DisciplinaId == disciplinaId);
-                        
+
             if (aulaPrevista.EhNulo())
             {
                 aulaPrevista = await repositorioAulaPrevistaConsulta.ObterAulaPrevistaFiltro(tipoCalendario.Id, turmaId, disciplinaId);
 
-                if(disciplinaId.Equals(CODIGO_DISCIPLINA_INGLES) && aulaPrevista.EhNulo())
+                if (disciplinaId.Equals(CODIGO_DISCIPLINA_INGLES) && aulaPrevista.EhNulo())
                     aulaPrevista = await repositorioAulaPrevistaConsulta.ObterAulaPrevistaFiltro(tipoCalendario.Id, turmaId, CODIGO_ALTERNATIVO_DISCIPLINA_INGLES);
             }
-                
+
 
             var ehAnoLetivo = turma.AnoLetivo == DateTime.Today.Year;
             var periodosAbertos = await consultasTurma

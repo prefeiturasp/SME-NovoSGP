@@ -1,7 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -34,7 +32,7 @@ namespace SME.SGP.Dominio.Servicos
             var notificacoes = await repositorioNotificacaoConsulta.ObterUsuariosNotificacoesPorIds(ids);
             await repositorioNotificacao.ExcluirPorIdsAsync(ids);
 
-            foreach(var notificacao in notificacoes)
+            foreach (var notificacao in notificacoes)
             {
                 await mediator.Send(new NotificarExclusaoNotificacaoCommand(notificacao.Codigo, notificacao.Status, notificacao.UsuarioRf));
             }
@@ -79,11 +77,11 @@ namespace SME.SGP.Dominio.Servicos
                 supervisoresEscola = repositorioSupervisorEscolaDre.ObtemSupervisoresPorUe(codigoUe).Result;
             else
                 funcionarios = mediator.Send(
-                    new ObterFuncionariosPorCargoUeQuery(codigoUe, (int) cargo)).Result;
+                    new ObterFuncionariosPorCargoUeQuery(codigoUe, (int)cargo)).Result;
 
             var funcionariosDisponiveis = funcionarios?.Where(f => !f.EstaAfastado);
 
-            if (cargo == Cargo.Supervisor ? 
+            if (cargo == Cargo.Supervisor ?
                 supervisoresEscola.EhNulo() || !supervisoresEscola.Any() :
                 funcionarios.EhNulo() || !funcionarios.Any() || (!funcionariosDisponiveis.Any() && notificacaoExigeAcao.Value))
             {
@@ -92,7 +90,7 @@ namespace SME.SGP.Dominio.Servicos
                 if (!cargoProximoNivel.HasValue)
                     return Enumerable.Empty<(Cargo?, string)>();
 
-                return  ObterFuncionariosPorNivel(codigoUe, cargoProximoNivel, false);
+                return ObterFuncionariosPorNivel(codigoUe, cargoProximoNivel, false);
             }
             else
             {
@@ -171,7 +169,7 @@ namespace SME.SGP.Dominio.Servicos
         public async Task<Notificacao> ObterPorCodigo(long codigo)
         {
             return await mediator.Send(new ObterNotificacaoPorCodigoQuery(codigo));
-        }        
+        }
 
         public async Task ExcluirPeloSistemaAsync(long[] ids)
         {

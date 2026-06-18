@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
@@ -17,7 +16,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IServicoUsuario servicoUsuario;
 
-        public ConsultasEventoTipo(IRepositorioEventoTipo repositorioEventoTipo, 
+        public ConsultasEventoTipo(IRepositorioEventoTipo repositorioEventoTipo,
                                     IContextoAplicacao contextoAplicacao,
                                     IRepositorioEvento repositorioEvento,
                                     IServicoUsuario servicoUsuario) : base(contextoAplicacao)

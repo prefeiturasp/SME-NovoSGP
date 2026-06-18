@@ -21,17 +21,17 @@ namespace SME.SGP.Aplicacao
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator)); ;
         }
-                                                                       
+
         public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery request, CancellationToken cancellationToken)
         {
             var componenteCurricularEol = new List<ComponenteCurricularEol>();
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
-            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_COMPONENTES_CURRICULARES_TURMAS_FUNCIONARIOS_PERFIS, 
-                                                                    request.CodigoTurma, 
-                                                                    request.Login, 
-                                                                    request.Perfil, 
+            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_COMPONENTES_CURRICULARES_TURMAS_FUNCIONARIOS_PERFIS,
+                                                                    request.CodigoTurma,
+                                                                    request.Login,
+                                                                    request.Perfil,
                                                                     request.RealizarAgrupamentoComponente) + $"?checaMotivoDisponibilizacao={request.ChecaMotivoDisponibilizacao}&consideraTurmaInfantil={request.ConsideraTurmaInfantil}");
-            
+
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
                 var json = await resposta.Content.ReadAsStringAsync();

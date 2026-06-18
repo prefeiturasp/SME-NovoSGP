@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
@@ -46,7 +45,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<RecuperacaoParalelaListagemDto> Listar(FiltroRecuperacaoParalelaDto filtro)
         {
-            var alunosEol = await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(filtro.TurmaCodigo, DateTimeExtension.HorarioBrasilia())); 
+            var alunosEol = await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(filtro.TurmaCodigo, DateTimeExtension.HorarioBrasilia()));
 
             if (!alunosEol.Any())
                 return null;
@@ -180,7 +179,8 @@ namespace SME.SGP.Aplicacao
                 {
                     item.Respostas.Add(new ObjetivoRespostaDto { ObjetivoId = 1, RespostaId = 2 });
                     item.Respostas.Add(new ObjetivoRespostaDto { ObjetivoId = 2, RespostaId = 2 });
-                };
+                }
+                ;
             }
 
             switch (ordenacao)

@@ -21,8 +21,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
         {
             var indicadores = new List<DadosParaConsolidarPlanosAEEDto>();
 
-           var indicadoresTemp = await ObterConsolidacaoPlanosAEE();
-           indicadores.AddRange(indicadoresTemp);
+            var indicadoresTemp = await ObterConsolidacaoPlanosAEE();
+            indicadores.AddRange(indicadoresTemp);
 
             if (indicadores == null || !indicadores.Any())
                 return false;
@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                     CodigoDre = g.Key.CodigoDre,
                     CodigoUe = g.Key.CodigoUe,
                     AnoLetivo = g.Key.AnoLetivo,
-                    SituacaoPlano = g.Key.SituacaoPlano, 
+                    SituacaoPlano = g.Key.SituacaoPlano,
                     QuantidadeSituacaoPlano = g.Count(),
                 })
                 .ToList();

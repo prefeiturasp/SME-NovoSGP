@@ -20,9 +20,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [Permissao(Permissao.DPU_C, Policy = "Bearer")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ValidacaoUsuario(long documentoId, long tipoDocumentoId, long classificacaoId, long usuarioId, long ueId,int anoLetivo, [FromServices] IVerificarUsuarioDocumentoUseCase useCase)
+        public async Task<IActionResult> ValidacaoUsuario(long documentoId, long tipoDocumentoId, long classificacaoId, long usuarioId, long ueId, int anoLetivo, [FromServices] IVerificarUsuarioDocumentoUseCase useCase)
         {
-            return Ok(await useCase.Executar(new VerificarUsuarioDocumentoDto(tipoDocumentoId, classificacaoId, usuarioId, ueId, anoLetivo,documentoId)));
+            return Ok(await useCase.Executar(new VerificarUsuarioDocumentoDto(tipoDocumentoId, classificacaoId, usuarioId, ueId, anoLetivo, documentoId)));
         }
 
         [HttpGet("tipos")]
@@ -93,7 +93,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [Permissao(Permissao.DPU_A, Policy = "Bearer")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> AtualizarDocumento(long documentoId, [FromBody] AlterarDocumentoDto dto,[FromServices] IAlterarDocumentoUseCase useCase)
+        public async Task<IActionResult> AtualizarDocumento(long documentoId, [FromBody] AlterarDocumentoDto dto, [FromServices] IAlterarDocumentoUseCase useCase)
         {
             return Ok(await useCase.Executar(new AlterarDocumentoDto { DocumentoId = documentoId, ArquivosCodigos = dto.ArquivosCodigos }));
         }

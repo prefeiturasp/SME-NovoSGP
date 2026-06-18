@@ -3,7 +3,7 @@
     public class WFAprovacaoParecerConclusivo : EntidadeBase
     {
         public WFAprovacaoParecerConclusivo()
-        {}
+        { }
 
         public long? WfAprovacaoId { get; set; }
         public WorkflowAprovacao WfAprovacao { get; set; }

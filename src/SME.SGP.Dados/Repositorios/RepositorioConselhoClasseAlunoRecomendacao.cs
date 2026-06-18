@@ -1,7 +1,5 @@
 ﻿using Dapper;
 using Npgsql;
-using SME.SGP.Dados.Repositorios;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -39,7 +37,7 @@ namespace SME.SGP.Dados.Repositorios
             if (conselhoClasseIds.Any())
                 sql.AppendLine(@" and cc.id = ANY(@conselhoClasseIds)");
 
-            return await database.Conexao.QueryAsync<RecomendacoesAlunoFamiliaDto>(sql.ToString(), new { alunoCodigo, bimestre, fechamentoTurmaId, conselhoClasseIds});
+            return await database.Conexao.QueryAsync<RecomendacoesAlunoFamiliaDto>(sql.ToString(), new { alunoCodigo, bimestre, fechamentoTurmaId, conselhoClasseIds });
         }
 
         public void InserirRecomendacaoAlunoFamilia(long[] recomendacoesId, long conselhoClasseAlunoId)

@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
             var periodosEncerrando = await mediator.Send(new ObterPeriodosFechamentoBimestrePorDataFinalQuery(modalidade, DateTime.Now.Date.AddDays(diasParaEncerramento)));
 
             var grupoPeriodosDre = periodosEncerrando.GroupBy(a => a.PeriodoFechamento.Ue.DreId);
-            foreach(var periodosDre in grupoPeriodosDre)
+            foreach (var periodosDre in grupoPeriodosDre)
                 await mediator.Send(new ExecutaNotificacaoUeFechamentoInsuficientesCommand(periodosDre, modalidade, percentualFechamentoInsuficiente));
         }
     }

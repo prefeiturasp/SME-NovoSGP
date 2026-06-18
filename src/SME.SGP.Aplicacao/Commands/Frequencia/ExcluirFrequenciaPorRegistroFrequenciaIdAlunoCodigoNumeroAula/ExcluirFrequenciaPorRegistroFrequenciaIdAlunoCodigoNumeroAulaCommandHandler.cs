@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,7 +8,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ExcluirFrequenciaPorRegistroFrequenciaIdAlunoCodigoNumeroAulaCommandHandler : IRequestHandler<ExcluirFrequenciaPorRegistroFrequenciaIdAlunoCodigoNumeroAulaCommand, bool>
     {
-       
+
         private readonly IRepositorioRegistroFrequenciaAluno repositorioRegistroFrequenciaAluno;
 
         public ExcluirFrequenciaPorRegistroFrequenciaIdAlunoCodigoNumeroAulaCommandHandler(IRepositorioRegistroFrequenciaAluno repositorioFrequencia)

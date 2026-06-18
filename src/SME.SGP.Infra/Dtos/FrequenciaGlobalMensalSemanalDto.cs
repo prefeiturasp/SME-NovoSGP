@@ -6,12 +6,12 @@ namespace SME.SGP.Infra.Dtos
     {
         public string Descricao { get { return ObterDescricao(); } }
         public string DreCodigo { get; set; }
-        
+
         public string NomeTurma { get; set; }
-        public int AnoTurma {  get; set; }
+        public int AnoTurma { get; set; }
         public Modalidade ModalidadeTurma { get; set; }
         public string AbreviacaoDre { get; set; }
-        
+
         public int QuantidadeAbaixoMinimoFrequencia { get; set; }
         public int QuantidadeAcimaMinimoFrequencia { get; set; }
         public int TotalAulas { get; set; }
@@ -25,7 +25,7 @@ namespace SME.SGP.Infra.Dtos
                 return AbreviacaoDre;
             else if (UeId == -99)
                 return $"{ModalidadeTurma.ShortName()}-{AnoTurma}";
-            
+
             return $"{ModalidadeTurma.ShortName()}-{NomeTurma}";
         }
 

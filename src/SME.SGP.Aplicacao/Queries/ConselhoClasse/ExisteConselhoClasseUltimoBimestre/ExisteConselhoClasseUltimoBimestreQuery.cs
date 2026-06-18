@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.Turma)
                 .NotNull()
                 .WithMessage("A turma deve ser informado para a busca do conselho de classe no último bimestre.");
-            
+
             RuleFor(c => c.AlunoCodigo)
                 .NotEmpty()
                 .WithMessage("O código do aluno deve ser informado para a busca do conselho de classe no último bimestre.");

@@ -6,7 +6,7 @@ using System;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AlterarAulaUnicaCommand: IRequest<RetornoBaseDto>
+    public class AlterarAulaUnicaCommand : IRequest<RetornoBaseDto>
     {
         public AlterarAulaUnicaCommand(Usuario usuario, PersistirAulaDto aulaDto)
         {

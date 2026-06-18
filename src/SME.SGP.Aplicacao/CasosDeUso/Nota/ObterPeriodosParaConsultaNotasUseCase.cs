@@ -43,5 +43,5 @@ namespace SME.SGP.Aplicacao
                 return 1;
             else return periodoEscolar.Bimestre;
         }
-    }   
+    }
 }

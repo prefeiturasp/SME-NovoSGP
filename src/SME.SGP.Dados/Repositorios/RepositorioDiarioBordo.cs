@@ -126,7 +126,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var resultado = new List<DiarioBordoDevolutivaDto>();
 
-            foreach( var itemAgrupado in diarios.GroupBy(valor => valor.Data))
+            foreach (var itemAgrupado in diarios.GroupBy(valor => valor.Data))
             {
                 var valor = itemAgrupado.FirstOrDefault();
 
@@ -187,7 +187,7 @@ namespace SME.SGP.Dados.Repositorios
 
             await database.Conexao.ExecuteAsync(query, new { devolutivaId, ids });
         }
-        
+
         public async Task<IEnumerable<long>> ObterIdsPorDevolutiva(long devolutivaId)
         {
             var query = "select id from diario_bordo where devolutiva_id = @devolutivaId and not excluido";
@@ -497,7 +497,7 @@ namespace SME.SGP.Dados.Repositorios
                         and t.modalidade_codigo = @modalidade
                     group by t.ano ";
             }
-            return await database.Conexao.QueryAsync<QuantidadeTotalDiariosPendentesPorAnoETurmaDTO>(sql, new { anoLetivo, dreId, ueId, modalidade });           
+            return await database.Conexao.QueryAsync<QuantidadeTotalDiariosPendentesPorAnoETurmaDTO>(sql, new { anoLetivo, dreId, ueId, modalidade });
         }
 
         public async Task<IEnumerable<QuantidadeTotalDiariosPendentesEPreenchidosPorAnoOuTurmaDTO>> ObterQuantidadeTotalDeDiariosPreenchidosEPendentesPorAnoTurmaAsync(int anoLetivo, long dreId, long ueId, Modalidade modalidade, bool ehPerfilSMEDRE)
@@ -509,7 +509,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (ehPerfilSMEDRE && dreId > 0 && ueId == 0)
                 sql += @" t.ano as AnoTurma,";
-            else if(dreId > 0 && ueId > 0)
+            else if (dreId > 0 && ueId > 0)
                 sql += @" t.nome as AnoTurma,";
 
             sql += @"   sum(c.quantidade_pendentes) as quantidadeTotalDiariosPendentes,
@@ -530,7 +530,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (ehPerfilSMEDRE && dreId > 0 && ueId == 0)
                 sql += @" group by t.ano ";
-            else if (dreId > 0 && ueId > 0) 
+            else if (dreId > 0 && ueId > 0)
                 sql += @" group by t.nome ";
 
             return await database.Conexao.QueryAsync<QuantidadeTotalDiariosPendentesEPreenchidosPorAnoOuTurmaDTO>(sql, new { anoLetivo, dreId, ueId, modalidade });
@@ -599,7 +599,7 @@ namespace SME.SGP.Dados.Repositorios
                         t.turma_id,
                         t.nome"
                 : @"group by
-                        t.ano";      
+                        t.ano";
 
         public async Task<IEnumerable<DiarioBordo>> ObterIdDiarioBordoAulasExcluidas(string codigoTurma, string[] codigosDisciplinas, long tipoCalendarioId, DateTime[] datasConsideradas)
         {
@@ -680,7 +680,7 @@ namespace SME.SGP.Dados.Repositorios
                         inner join componente_curricular cc on cc.id = db.componente_curricular_id
                         inner join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id and a.data_aula between pe.periodo_inicio and pe.periodo_fim
                         where db.id = @diariobordo; ";
-           
+
             return await database.Conexao.QueryFirstOrDefaultAsync<DiarioBordoDetalhesParaPendenciaDto>(sql, new { diariobordo = diarioBordoId });
         }
 

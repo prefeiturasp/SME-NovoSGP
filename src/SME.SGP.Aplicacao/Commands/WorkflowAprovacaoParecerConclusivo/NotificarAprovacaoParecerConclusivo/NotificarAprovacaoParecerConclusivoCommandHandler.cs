@@ -11,8 +11,8 @@ namespace SME.SGP.Aplicacao
         private NotificarAprovacaoParecerConclusivoCommand request;
 
         public NotificarAprovacaoParecerConclusivoCommandHandler(IMediator mediator) : base(mediator)
-        {}
-        
+        { }
+
         public override async Task<bool> Handle(NotificarAprovacaoParecerConclusivoCommand request, CancellationToken cancellationToken)
         {
             this.request = request;

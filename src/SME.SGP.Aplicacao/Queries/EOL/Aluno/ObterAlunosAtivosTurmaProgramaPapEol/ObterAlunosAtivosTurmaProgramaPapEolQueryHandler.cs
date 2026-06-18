@@ -1,17 +1,17 @@
-﻿using System;
+﻿using MediatR;
+using Newtonsoft.Json;
+using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using Newtonsoft.Json;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterAlunosAtivosTurmaProgramaPapEolQueryHandler: IRequestHandler<ObterAlunosAtivosTurmaProgramaPapEolQuery,IEnumerable<AlunosTurmaProgramaPapDto>>
+    public class ObterAlunosAtivosTurmaProgramaPapEolQueryHandler : IRequestHandler<ObterAlunosAtivosTurmaProgramaPapEolQuery, IEnumerable<AlunosTurmaProgramaPapDto>>
     {
         private readonly IHttpClientFactory httpClientFactory;
 
@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AlunosTurmaProgramaPapDto>> Handle(ObterAlunosAtivosTurmaProgramaPapEolQuery request, CancellationToken cancellationToken)
         {
-            if (request.AlunosCodigos.Length > 0 )
+            if (request.AlunosCodigos.Length > 0)
             {
                 var alunos = string.Join("&codigosAlunos=", request.AlunosCodigos);
                 var url = string.Format(ServicosEolConstants.URL_ALUNOS_ALUNOS_PAP, request.AnoLetivo) + $"?codigosAlunos={alunos}";

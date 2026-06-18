@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
-using System.Threading.Tasks;
 using SME.SGP.Infra.Dtos;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -17,10 +17,10 @@ namespace SME.SGP.Aplicacao
             var parametroQuantidadeImagemPercursoIndividual = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(Dominio.TipoParametroSistema.QuantidadeImagensPercursoIndividualCrianca, ano));
 
             var parametroQuantidadeUploadImagem = new ParametroQuantidadeUploadImagemDto();
-            
+
             parametroQuantidadeUploadImagem.AdicionarValorQuantidadeImagemPercursoColetivo(parametroQuantidadeImagemPercursoColetivo?.Valor);
             parametroQuantidadeUploadImagem.AdicionarValorQuantidadeImagemPercursoIndividual(parametroQuantidadeImagemPercursoIndividual?.Valor);
-        
+
 
             return parametroQuantidadeUploadImagem;
         }

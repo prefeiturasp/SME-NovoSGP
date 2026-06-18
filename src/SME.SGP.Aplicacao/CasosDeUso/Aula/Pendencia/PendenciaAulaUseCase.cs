@@ -16,8 +16,8 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit param)
         {
             var dadosParametroGeracaoPendencias = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.DataInicioGeracaoPendencias, DateTimeExtension.HorarioBrasilia().Year));
-            
-            if(dadosParametroGeracaoPendencias.NaoEhNulo())
+
+            if (dadosParametroGeracaoPendencias.NaoEhNulo())
             {
                 DateTime dataDefinida = Convert.ToDateTime(dadosParametroGeracaoPendencias.Valor);
 

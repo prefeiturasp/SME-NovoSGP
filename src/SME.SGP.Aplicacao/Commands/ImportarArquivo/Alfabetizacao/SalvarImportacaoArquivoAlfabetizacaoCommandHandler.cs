@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.Alfabetizacao
             if (registroAtual != null)
             {
                 registroAtual.Taxa = request.ArquivoAlfabetizacao.TaxaAlfabetizacao;
-                 await repositorioAlfabetizacao.SalvarAsync(registroAtual);
+                await repositorioAlfabetizacao.SalvarAsync(registroAtual);
                 return registroAtual;
             }
 

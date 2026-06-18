@@ -8,7 +8,7 @@
         }
         public PlanejamentoAnualObjetivoAprendizagem(long planejamentoAnualComponenteId, long objetivoAprendizagemId)
         {
-            PlanejamentoAnualComponenteId= planejamentoAnualComponenteId;
+            PlanejamentoAnualComponenteId = planejamentoAnualComponenteId;
             ObjetivoAprendizagemId = objetivoAprendizagemId;
         }
         public long PlanejamentoAnualComponenteId { get; set; }

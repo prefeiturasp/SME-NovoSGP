@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -20,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<MuralAvisosRetornoDto>> Handle(ObterMuralAvisoPorAulaIdQuery request, CancellationToken cancellationToken)
         {
-            return  await _repositorioAviso.ObterPorAulaId(request.AulaId);
+            return await _repositorioAviso.ObterPorAulaId(request.AulaId);
         }
     }
 }

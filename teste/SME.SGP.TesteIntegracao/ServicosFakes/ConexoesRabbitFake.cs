@@ -1,7 +1,7 @@
 using Microsoft.Extensions.ObjectPool;
+using RabbitMQ.Client;
 using SME.SGP.Infra.Interfaces;
 using SME.SGP.Infra.Utilitarios;
-using RabbitMQ.Client;
 
 namespace SME.SGP.TesteIntegracao.ServicosFakes
 {

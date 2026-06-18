@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
             var listaDeRegistro = mensagemRabbit.ObterObjetoMensagem<List<RegistroFrequenciaAulaParcialDto>>();
-     
+
             return await mediator.Send(new ProcessarCargaReferenciaAulaRegistroFrequenciaAlunoCommand(listaDeRegistro));
 
         }

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterAlunosSimplesDaTurmaQuery: IRequest<IEnumerable<AlunoSimplesDto>>
+    public class ObterAlunosSimplesDaTurmaQuery : IRequest<IEnumerable<AlunoSimplesDto>>
     {
         public ObterAlunosSimplesDaTurmaQuery(string turmaCodigo)
         {
@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         public string TurmaCodigo { get; set; }
     }
 
-    public class ObterAlunosSimplesDaTurmaQueryValidator: AbstractValidator<ObterAlunosSimplesDaTurmaQuery>
+    public class ObterAlunosSimplesDaTurmaQueryValidator : AbstractValidator<ObterAlunosSimplesDaTurmaQuery>
     {
         public ObterAlunosSimplesDaTurmaQueryValidator()
         {

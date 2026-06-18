@@ -19,8 +19,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AvaliacaoNotaAlunoDto>> Executar(FiltroTurmaAlunoPeriodoEscolarDto param)
         {
-            var retorno =  (await mediator.Send(new ObterAtividadesNotasAlunoPorTurmaPeriodoQuery(param.TurmaId, param.PeriodoEscolarId, param.AlunoCodigo, param.ComponenteCurricular))).ToList();
-            
+            var retorno = (await mediator.Send(new ObterAtividadesNotasAlunoPorTurmaPeriodoQuery(param.TurmaId, param.PeriodoEscolarId, param.AlunoCodigo, param.ComponenteCurricular))).ToList();
+
             await CarregarDisciplinasDeRegencia(retorno, long.Parse(param.ComponenteCurricular), param.TurmaId);
             retorno = await ObterAusencia(param, retorno);
 
@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task CarregarDisciplinasDeRegencia(
-                                    IEnumerable<AvaliacaoNotaAlunoDto> avaliacoesNotas, 
+                                    IEnumerable<AvaliacaoNotaAlunoDto> avaliacoesNotas,
                                     long codigoComponenteCurricular,
                                     long turmaId)
         {
@@ -81,8 +81,8 @@ namespace SME.SGP.Aplicacao
             var retorno = new List<AvaliacaoNotaAlunoDto>();
             var datasDasAtividadesAvaliativas = listAtividades.Select(x => x.Data).ToArray();
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
-            
-            if(turma.EhNulo())
+
+            if (turma.EhNulo())
                 throw new NegocioException("Turma não encontrada");
 
             var ausenciasDasAtividadesAvaliativas = (await mediator.Send(new ObterAusenciasDaAtividadesAvaliativasPorAlunoQuery(turma.CodigoTurma, datasDasAtividadesAvaliativas, request.ComponenteCurricular, request.AlunoCodigo))).ToList();

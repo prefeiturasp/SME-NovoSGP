@@ -5,7 +5,6 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
-using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -77,7 +76,7 @@ namespace SME.SGP.Dados
                             and ((disciplina_id = any(@disciplinaIdsConsideradas) {(!string.IsNullOrWhiteSpace(professor) ? "and (professor_rf = @professor or professor_rf is null)" : string.Empty)}) or tipo = @tipo)");
 
             if (periodoEscolarId > 0)
-                query.AppendLine("and periodo_escolar_id = @periodoEscolarId");            
+                query.AppendLine("and periodo_escolar_id = @periodoEscolarId");
 
             return await database.QueryAsync<FrequenciaAluno>(query.ToString(), new
             {
@@ -126,7 +125,7 @@ namespace SME.SGP.Dados
             query.AppendLine("and ((fa.total_ausencias::numeric - fa.total_compensacoes::numeric ) / fa.total_aulas::numeric) > (1 -(@percentualFrequenciaMinimo::numeric / 100::numeric)) ");
             query.AppendLine("and t.modalidade_codigo = any(@modalidades) ");
 
-            return database.Conexao.Query<AlunoFaltosoBimestreDto>(query.ToString(), new { bimestre, anoLetivo, percentualFrequenciaMinimo, modalidades = modalidade.ObterModalidades().Select(s=> (int)s).ToArray() });
+            return database.Conexao.Query<AlunoFaltosoBimestreDto>(query.ToString(), new { bimestre, anoLetivo, percentualFrequenciaMinimo, modalidades = modalidade.ObterModalidades().Select(s => (int)s).ToArray() });
         }
 
         public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "")
@@ -161,7 +160,7 @@ namespace SME.SGP.Dados
                 .QueryAsync<FrequenciaAluno>(query.ToString(), new
                 {
                     alunosCodigos,
-                    turmaCodigo,                   
+                    turmaCodigo,
                 });
         }
 
@@ -316,7 +315,7 @@ namespace SME.SGP.Dados
                 codigoAluno,
                 disciplinaIds,
                 periodoEscolarId,
-                turmaCodigo, 
+                turmaCodigo,
                 professor
             });
         }
@@ -451,7 +450,7 @@ namespace SME.SGP.Dados
                     tipoCalendarioId,
                     bimestre,
                     tipoTurma = (int)TipoTurma.Programa
-        });
+                });
         }
 
         public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralAlunoPorTurmas(string alunoCodigo, string[] codigosTurmas, long tipoCalendarioId)

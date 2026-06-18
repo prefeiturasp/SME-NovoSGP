@@ -25,7 +25,7 @@ namespace SME.SGP.Dados.Repositorios
 
                 return await database.Conexao.QueryAsync<ProficienciaIdep>(sql, new { anoLetivo, codigoUe });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
                 throw;

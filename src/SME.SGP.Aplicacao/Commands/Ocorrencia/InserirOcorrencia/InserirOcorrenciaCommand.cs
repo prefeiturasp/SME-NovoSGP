@@ -3,7 +3,6 @@ using MediatR;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -57,7 +56,7 @@ namespace SME.SGP.Aplicacao
             RuleFor(x => x.Titulo)
                 .NotEmpty()
                 .WithMessage("O título da ocorrência deve ser informado.");
-            
+
             RuleFor(x => x.UeId)
                 .NotEmpty()
                 .WithMessage("A Ue da ocorrência deve ser informada para inserir a ocorrência");

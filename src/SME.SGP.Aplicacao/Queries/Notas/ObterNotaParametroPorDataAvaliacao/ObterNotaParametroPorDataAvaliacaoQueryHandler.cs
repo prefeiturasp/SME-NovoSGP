@@ -1,13 +1,13 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterNotaParametroPorDataAvaliacaoQueryHandler : IRequestHandler<ObterNotaParametroPorDataAvaliacaoQuery,NotaParametro>
+    public class ObterNotaParametroPorDataAvaliacaoQueryHandler : IRequestHandler<ObterNotaParametroPorDataAvaliacaoQuery, NotaParametro>
     {
         private readonly IRepositorioNotaParametro repositorioNotaParametro;
 

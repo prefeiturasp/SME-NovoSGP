@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         private IEnumerable<GraficoBaseDto> converterParaListDto(IEnumerable<RegistroItineranciaPorAnoDto> registros)
         {
             var lista = new List<GraficoBaseDto>();
-            foreach(var registro in registros)
+            foreach (var registro in registros)
             {
                 lista.Add(new GraficoBaseDto()
                 {

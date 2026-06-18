@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Constantes;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,7 +45,7 @@ namespace SME.SGP.Aplicacao
                 TurmaCodigo = filtroAulasEventosCalendarioDto.TurmaCodigo,
                 Mes = mes,
                 AnoLetivo = filtroAulasEventosCalendarioDto.AnoLetivo
-            });            
+            });
 
             bool verificaCJPodeEditar = await VerificaCJPodeEditarRegistroTitular(filtroAulasEventosCalendarioDto.AnoLetivo);
 
@@ -93,7 +92,7 @@ namespace SME.SGP.Aplicacao
                 // códigos disciplinas normais + regência + território
                 var codigosComponentesUsuario = componentesCurricularesEolProfessor.Select(c => c.Codigo.ToString())
                     .Concat(componentesCurricularesEolProfessor.Where(c => c.Regencia && c.CodigoComponenteCurricularPai.HasValue && c.CodigoComponenteCurricularPai.Value > 0).Select(c => c.CodigoComponenteCurricularPai.Value.ToString()))
-                    .Concat(componentesCurricularesEolProfessor.Where(c => c.TerritorioSaber).Select(c => c.CodigoComponenteTerritorioSaber.ToString()))                    
+                    .Concat(componentesCurricularesEolProfessor.Where(c => c.TerritorioSaber).Select(c => c.CodigoComponenteTerritorioSaber.ToString()))
                     .ToArray();
 
                 avaliacoes = usuarioLogado

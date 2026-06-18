@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         {
             var situacaoConselhoClasse = request.SituacaoConselhoClasse;
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
-            
+
             if (turma.EhNulo())
                 throw new NegocioException("Turma não encontrada");
 
@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
             foreach (var aluno in alunosEol)
             {
                 var consolidadoConselhoClasse = consolidadoConselhosClasses.FirstOrDefault(a => a.AlunoCodigo == aluno.CodigoAluno.ToString());
-              
+
                 if (consolidadoConselhoClasse.EhNulo())
                     continue;
 

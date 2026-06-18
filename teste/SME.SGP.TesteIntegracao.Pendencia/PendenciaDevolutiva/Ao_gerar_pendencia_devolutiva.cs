@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using Shouldly;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
@@ -345,7 +344,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
                 CriadoRF = "0",
                 Excluido = false,
             });
-            await InserirNaBase(new PeriodoEscolar() 
+            await InserirNaBase(new PeriodoEscolar()
             {
                 Migrado = true,
                 Bimestre = 1,

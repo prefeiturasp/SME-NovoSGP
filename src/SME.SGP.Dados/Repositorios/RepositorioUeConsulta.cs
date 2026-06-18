@@ -383,7 +383,7 @@ namespace SME.SGP.Dados.Repositorios
                           from ue u
                          inner join dre d on d.id = u.dre_id
                          where u.ue_id  = ANY(@codigoUes)";
-            
+
             return await contexto.Conexao.QueryAsync<Ue, Dre, Ue>(query, (ue, dre) =>
             {
                 ue.Dre = dre;
@@ -409,7 +409,7 @@ namespace SME.SGP.Dados.Repositorios
                               and t.ano_letivo = @anoLetivo
                               and t.ue_id = @ueId;";
 
-            return await contexto.QueryAsync<long>(query, new {anoLetivo, tiposPendencia, situacoesPendencia, ueId }, commandTimeout: 120);
+            return await contexto.QueryAsync<long>(query, new { anoLetivo, tiposPendencia, situacoesPendencia, ueId }, commandTimeout: 120);
         }
 
         public Task<IEnumerable<long>> ObterIdsPorDre(long dreId)

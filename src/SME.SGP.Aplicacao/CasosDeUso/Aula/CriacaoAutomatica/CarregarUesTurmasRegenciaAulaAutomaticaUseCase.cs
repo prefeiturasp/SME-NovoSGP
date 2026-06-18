@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
                         await ObterDadosEJA(turma, 1, parametro.Pagina);
                         await ObterDadosEJA(turma, 2, parametro.Pagina);
                         break;
-                    default: 
+                    default:
                         executarProximaPagina = await ObterDados(modalidade, turma: turma, pagina: parametro.Pagina);
                         break;
                 }
@@ -72,7 +72,7 @@ namespace SME.SGP.Aplicacao
             var executarManutencao = await mediator.Send(ObterExecutarManutencaoAulasInfantilQuery.Instance);
             if (executarManutencao)
                 return false;
-            
+
             await mediator
                     .Send(new SalvarLogViaRabbitCommand($"{DateTimeExtension.HorarioBrasilia():dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas de regência não iniciada pois seu parâmetro está marcado como não executar", LogNivel.Negocio, LogContexto.Infantil));
             return true;
@@ -83,9 +83,9 @@ namespace SME.SGP.Aplicacao
             if (!string.IsNullOrEmpty(parametro.CodigoTurma))
             {
                 var modalidadeTurma = turma?.ModalidadeCodigo ?? 0;
-                if (turma.EhNulo() || (modalidadeTurma != Modalidade.Fundamental 
+                if (turma.EhNulo() || (modalidadeTurma != Modalidade.Fundamental
                     && modalidadeTurma != Modalidade.EJA))
-                    return new Modalidade[] {};
+                    return new Modalidade[] { };
                 else
                     return new Modalidade[] { turma?.ModalidadeCodigo ?? 0 };
             }
@@ -115,7 +115,7 @@ namespace SME.SGP.Aplicacao
             }
 
             var periodosEscolares = await mediator
-                .Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));            
+                .Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
 
             if (periodosEscolares.EhNulo() && !periodosEscolares.Any())
             {

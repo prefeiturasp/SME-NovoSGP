@@ -82,7 +82,7 @@ namespace SME.SGP.Aplicacao
                     componentesCurriculares = RemoverEdFisicaEJA(componentesCurriculares);
 
                 disciplinasDto = (await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurriculares.Select(a => a.Codigo).ToArray())))?.OrderBy(c => c.Nome)?.ToList();
-                    
+
                 disciplinasDto?.ForEach(d =>
                 {
                     var componenteEOL = componentesCurriculares.FirstOrDefault(a => a.Codigo == d.CodigoComponenteCurricular);
@@ -131,7 +131,7 @@ namespace SME.SGP.Aplicacao
                 return null;
 
             var disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray()));
-                
+
             var componenteRegencia = disciplinasEol?.FirstOrDefault(c => c.Regencia);
             if (componenteRegencia.EhNulo() || ignorarDeParaRegencia)
                 return TransformarListaDisciplinaEolParaRetornoDto(disciplinasEol);

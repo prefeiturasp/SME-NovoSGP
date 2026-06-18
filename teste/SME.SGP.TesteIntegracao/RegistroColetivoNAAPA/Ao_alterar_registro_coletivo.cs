@@ -25,7 +25,7 @@ namespace SME.SGP.TesteIntegracao.RegistroColetivoNAAPA
         {
             await CriaBase();
 
-             await InserirNaBase(new RegistroColetivo()
+            await InserirNaBase(new RegistroColetivo()
             {
                 DreId = DRE_ID_2,
                 TipoReuniaoId = TipoReuniaoConstants.ATENDIMENTO_NAO_PRESENCIAL_ID,

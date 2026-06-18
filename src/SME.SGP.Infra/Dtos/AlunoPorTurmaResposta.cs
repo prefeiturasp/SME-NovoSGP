@@ -19,10 +19,10 @@ namespace SME.SGP.Infra
         public DateTime DataMatricula { get; set; }
         public string EscolaTransferencia { get; set; }
 
-        public string NomeAluno 
-        { 
-            get => !string.IsNullOrWhiteSpace(NomeSocialAluno) ? NomeSocialAluno : nomeAluno; 
-            set { nomeAluno = value; } 
+        public string NomeAluno
+        {
+            get => !string.IsNullOrWhiteSpace(NomeSocialAluno) ? NomeSocialAluno : nomeAluno;
+            set { nomeAluno = value; }
         }
 
         public string NomeSocialAluno { get; set; }
@@ -54,12 +54,12 @@ namespace SME.SGP.Infra
 
         public bool Ativo { get => !Inativo; }
 
-        public int Idade 
-        { 
-            get 
-            { 
-                return ((int.Parse(DateTime.Now.ToString("yyyyMMdd")) - int.Parse(DataNascimento.ToString("yyyyMMdd"))) / 10000); 
-            } 
+        public int Idade
+        {
+            get
+            {
+                return ((int.Parse(DateTime.Now.ToString("yyyyMMdd")) - int.Parse(DataNascimento.ToString("yyyyMMdd"))) / 10000);
+            }
         }
 
         public bool Maioridade => Idade > 18;
@@ -106,7 +106,7 @@ namespace SME.SGP.Infra
         /// <param name="periodoFim">Data a se considerar para verificar a situação do aluno no periodo, Ex: Data do fim do bimestre</param>
         /// <returns></returns>
         public bool EstaAtivo(DateTime periodoInicio, DateTime periodoFim) => TratarExcepcionalmenteSituacaoAtivo(periodoFim) ? SituacoesAtiva.Contains(CodigoSituacaoMatricula) :
-                                                    SituacoesAtiva.Contains(CodigoSituacaoMatricula) && (DataSituacao.Date <= periodoInicio.Date || (DataSituacao.Date > periodoFim.Date && DataMatricula.Date < periodoFim.Date)) 
+                                                    SituacoesAtiva.Contains(CodigoSituacaoMatricula) && (DataSituacao.Date <= periodoInicio.Date || (DataSituacao.Date > periodoFim.Date && DataMatricula.Date < periodoFim.Date))
                                                     || (DataSituacao.Date >= periodoInicio.Date && DataSituacao.Date <= periodoFim.Date);
 
         /// <summary>

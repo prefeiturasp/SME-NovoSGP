@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarItineranciaQuestaoCommand : IRequest<AuditoriaDto>
     {
-        public SalvarItineranciaQuestaoCommand(long questaoId, long itineranciaId, string resposta,long? arquivoId)
+        public SalvarItineranciaQuestaoCommand(long questaoId, long itineranciaId, string resposta, long? arquivoId)
         {
             QuestaoId = questaoId;
             ItineranciaId = itineranciaId;

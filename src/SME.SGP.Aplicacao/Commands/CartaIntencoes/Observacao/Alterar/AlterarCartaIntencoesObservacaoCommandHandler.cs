@@ -33,11 +33,11 @@ namespace SME.SGP.Aplicacao
 
             cartaIntencoesObservacao.ValidarUsuarioAlteracao(request.UsuarioId);
 
-            cartaIntencoesObservacao.Observacao = request.Observacao;            
+            cartaIntencoesObservacao.Observacao = request.Observacao;
 
             await repositorioCartaIntencoesObservacao.SalvarAsync(cartaIntencoesObservacao);
 
-            if(request.Observacao.Length < 200)
+            if (request.Observacao.Length < 200)
             {
                 // Excluir Notificação especifica da observação 
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExcluirNotificacaoObservacaoCartaIntencoes,

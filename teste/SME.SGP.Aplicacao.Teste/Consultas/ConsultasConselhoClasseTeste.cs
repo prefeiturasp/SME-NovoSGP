@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                                                                   repositorioPeriodoEscolar.Object,
                                                                   repositorioParametrosSistema.Object,
                                                                   repositorioTipoCalendario.Object,
-                                                                  repositorioFechamentoTurma.Object,                                                                  
+                                                                  repositorioFechamentoTurma.Object,
                                                                   consultasTurma.Object,
                                                                   consultasPeriodoFechamento.Object,
                                                                   consultasFechamentoTurma.Object,
@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             consultasFechamentoTurma.Setup(f => f.ObterPorTurmaCodigoBimestreAsync(It.IsAny<string>(), It.IsAny<int>())).Returns(Task.FromResult(ObterFechamentoTurma()));
             mediator.Setup(a => a.Send(It.IsAny<ObterUltimoPeriodoEscolarPorAnoModalidadeSemestreQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(ObterPeriodoEscolar());
             servicoDeNotasConceitos.Setup(tn => tn.ObterNotaTipo(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<bool>())).Returns(Task.FromResult(new NotaTipoValor()));
-            repositorioParametrosSistema.Setup(m => m.ObterValorPorTipoEAno(It.IsAny<TipoParametroSistema>(),null)).Returns(Task.FromResult("10"));
+            repositorioParametrosSistema.Setup(m => m.ObterValorPorTipoEAno(It.IsAny<TipoParametroSistema>(), null)).Returns(Task.FromResult("10"));
             repositorioConselhoClasseAluno.Setup(c => c.ObterPorConselhoClasseAlunoCodigoAsync(It.IsAny<long>(), It.IsAny<string>())).Returns(Task.FromResult(new ConselhoClasseAluno()));
             Assert.NotNull(consultasConselhoClasse.ObterConselhoClasseTurma("", "", 0, true, false));
 
@@ -102,7 +102,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         public async Task DeveTerErroTipoCalendarioAnoAnterior()
         {
             var turma = ObterTurma();
-            turma.AnoLetivo = DateTime.Today.Year-1;
+            turma.AnoLetivo = DateTime.Today.Year - 1;
             consultasTurma.Setup(t => t.ObterComUeDrePorCodigo(It.IsAny<string>())).Returns(Task.FromResult(turma));
             consultasFechamentoTurma.Setup(f => f.ObterPorTurmaCodigoBimestreAsync(It.IsAny<string>(), It.IsAny<int>())).Returns(Task.FromResult(ObterFechamentoTurma()));
             await Assert.ThrowsAsync<NegocioException>(() => consultasConselhoClasse.ObterConselhoClasseTurma("", "", 0, true, false));
@@ -126,7 +126,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             turma.AnoLetivo = DateTime.Today.Year - 1;
             consultasTurma.Setup(t => t.ObterComUeDrePorCodigo(It.IsAny<string>())).Returns(Task.FromResult(turma));
             consultasFechamentoTurma.Setup(f => f.ObterPorTurmaCodigoBimestreAsync(It.IsAny<string>(), It.IsAny<int>())).Returns(Task.FromResult(ObterFechamentoTurma()));
-            mediator.Setup(a => a.Send(It.IsAny<ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new string[] {null});
+            mediator.Setup(a => a.Send(It.IsAny<ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new string[] { null });
             mediator.Setup(a => a.Send(It.IsAny<ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestreTipoCalendarioQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new FechamentoTurma());
             await Assert.ThrowsAsync<NegocioException>(() => consultasConselhoClasse.ObterConselhoClasseTurma("", "", 1, false, false));
         }
@@ -157,7 +157,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
 
         private Turma ObterTurmaItinerario()
         {
-            var turma = new Turma() { TipoTurma = Dominio.Enumerados.TipoTurma.Itinerarios2AAno};
+            var turma = new Turma() { TipoTurma = Dominio.Enumerados.TipoTurma.Itinerarios2AAno };
             return turma;
         }
 

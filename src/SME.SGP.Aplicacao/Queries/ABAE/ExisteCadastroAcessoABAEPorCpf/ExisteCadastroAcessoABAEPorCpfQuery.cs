@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -22,7 +21,7 @@ namespace SME.SGP.Aplicacao
             RuleFor(a => a.Cpf)
                 .NotEmpty()
                 .WithMessage("É necessário informar o cpf para a busca de cadastro de acesso ABAE");
-            
+
             RuleFor(a => a.UeId)
                 .NotEmpty()
                 .WithMessage("É necessário informar o identificador da Ue para a busca de cadastro de acesso ABAE");

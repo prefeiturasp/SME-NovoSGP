@@ -3,7 +3,7 @@ using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Aplicacao.Commands.ImportarArquivo.ProficienciaIdeb
 {
-    public class ExcluirImportacaoProficienciaIdebCommand: IRequest<bool>
+    public class ExcluirImportacaoProficienciaIdebCommand : IRequest<bool>
     {
         public ExcluirImportacaoProficienciaIdebCommand(int anoLetivo, string codigoUe, SerieAnoIndiceDesenvolvimentoEnum serieAno, ComponenteCurricularEnum componenteCurricular)
         {

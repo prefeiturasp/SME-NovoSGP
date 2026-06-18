@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao
             Filtros = filtros;
         }
         public FiltroRegistrosAcaoDto Filtros { get; set; }
-        
+
     }
 
     public class ObterRegistrosAcaoQueryValidator : AbstractValidator<ObterRegistrosAcaoQuery>

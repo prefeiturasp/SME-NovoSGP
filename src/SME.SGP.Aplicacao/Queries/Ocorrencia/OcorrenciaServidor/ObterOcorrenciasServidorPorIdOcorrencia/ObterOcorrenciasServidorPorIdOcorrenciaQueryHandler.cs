@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Dados;
 using SME.SGP.Dominio;
 using System;
 using System.Collections.Generic;
@@ -8,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterOcorrenciasServidorPorIdOcorrenciaQueryHandler : IRequestHandler<ObterOcorrenciasServidorPorIdOcorrenciaQuery,IEnumerable<Dominio.OcorrenciaServidor>>
+    public class ObterOcorrenciasServidorPorIdOcorrenciaQueryHandler : IRequestHandler<ObterOcorrenciasServidorPorIdOcorrenciaQuery, IEnumerable<Dominio.OcorrenciaServidor>>
     {
         private readonly IRepositorioOcorrenciaServidor repositorioOcorrenciaServidor;
 

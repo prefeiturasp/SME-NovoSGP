@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -16,7 +15,7 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorioParecer = repositorioParecer ?? throw new ArgumentNullException(nameof(repositorioParecer));
         }
-        public async Task<IEnumerable<ParecerConclusivoSituacaoQuantidadeDto>> Handle(ObterPendenciaParecerConclusivoSituacaoQuery request, 
+        public async Task<IEnumerable<ParecerConclusivoSituacaoQuantidadeDto>> Handle(ObterPendenciaParecerConclusivoSituacaoQuery request,
             CancellationToken cancellationToken)
         {
             return await repositorioParecer.ObterParecerConclusivoSituacao(request.UeId,

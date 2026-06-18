@@ -1,15 +1,13 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualBasic;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Listao
@@ -38,7 +36,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             await CriarDadosBasicos(filtroListao);
             await CriarAnotacoesFrequencia(CODIGO_ALUNO_1);
 
-            var useCasePeriodo = ServiceProvider.GetService<IObterPeriodosPorComponenteUseCase>(); 
+            var useCasePeriodo = ServiceProvider.GetService<IObterPeriodosPorComponenteUseCase>();
             var listaPeriodo = (await useCasePeriodo.Executar(TURMA_CODIGO_1, filtroListao.ComponenteCurricularId, false,
                 filtroListao.Bimestre, true)).ToList();
             listaPeriodo.ShouldNotBeNull();

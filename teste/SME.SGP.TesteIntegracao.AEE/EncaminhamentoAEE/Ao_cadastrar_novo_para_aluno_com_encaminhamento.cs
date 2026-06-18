@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -12,6 +8,9 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
@@ -51,7 +50,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 AlunoCodigo = ALUNO_CODIGO_1,
                 Situacao = SituacaoAEE.Deferido,
                 AlunoNome = "Nome do aluno 1",
-                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
 
             var obterServicoPodeCadastrarEncaminhamentoAee = ObterServicoPodeCadastrarEncaminhamentoAee();
@@ -65,8 +66,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             await Assert.ThrowsAsync<NegocioException>(() =>
                 obterServicoPodeCadastrarEncaminhamentoAee.Executar(filtroEncaminhamentoAeeDto));
         }
-        
-        [Fact] 
+
+        [Fact]
         public async Task Deve_permitir_cadastrar_novo_com_situacao_indeferido()
         {
             var filtroAee = new FiltroAEEDto()
@@ -85,7 +86,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 AlunoCodigo = ALUNO_CODIGO_1,
                 Situacao = SituacaoAEE.Indeferido,
                 AlunoNome = "Nome do aluno 1",
-                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
 
             var obterServicoPodeCadastrarEncaminhamentoAee = ObterServicoPodeCadastrarEncaminhamentoAee();
@@ -99,8 +102,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             var retorno = await obterServicoPodeCadastrarEncaminhamentoAee.Executar(filtroEncaminhamentoAeeDto);
             retorno.ShouldBeTrue();
         }
-        
-        [Fact] 
+
+        [Fact]
         public async Task Deve_permitir_cadastrar_novo_com_situacao_encerrado_automaticamente()
         {
             var filtroAee = new FiltroAEEDto()
@@ -119,7 +122,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 AlunoCodigo = ALUNO_CODIGO_1,
                 Situacao = SituacaoAEE.EncerradoAutomaticamente,
                 AlunoNome = "Nome do aluno 1",
-                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
 
             var obterServicoPodeCadastrarEncaminhamentoAee = ObterServicoPodeCadastrarEncaminhamentoAee();

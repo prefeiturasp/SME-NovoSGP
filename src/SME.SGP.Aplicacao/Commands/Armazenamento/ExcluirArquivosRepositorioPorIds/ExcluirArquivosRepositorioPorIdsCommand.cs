@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using FluentValidation;
+﻿using FluentValidation;
 using MediatR;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {

@@ -9,11 +9,11 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 {
     public class ObterDadosTurmaEolPorCodigoQueryHandlerFakeRegular : IRequestHandler<ObterDadosTurmaEolPorCodigoQuery, DadosTurmaEolDto>
     {
-        public ObterDadosTurmaEolPorCodigoQueryHandlerFakeRegular(){}
+        public ObterDadosTurmaEolPorCodigoQueryHandlerFakeRegular() { }
 
         public async Task<DadosTurmaEolDto> Handle(ObterDadosTurmaEolPorCodigoQuery request, CancellationToken cancellationToken)
         {
-            return await Task.FromResult(new DadosTurmaEolDto { TipoTurma = TipoTurma.Regular});
+            return await Task.FromResult(new DadosTurmaEolDto { TipoTurma = TipoTurma.Regular });
         }
     }
 }

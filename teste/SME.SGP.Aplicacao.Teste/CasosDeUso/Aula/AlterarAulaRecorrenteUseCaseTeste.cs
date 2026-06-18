@@ -1,12 +1,12 @@
-﻿using System.Threading;
-using System;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Moq;
+using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
-using Newtonsoft.Json;
 
 namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Aula
 {

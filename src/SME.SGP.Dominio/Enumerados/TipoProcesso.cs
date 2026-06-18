@@ -5,6 +5,6 @@
         CalculoFrequencia = 1,
         ManutencaoAula = 2,
         CriacaoDePendenciasGerais = 3,
-        CalculoFrequenciaFilaRabbit = 4,        
+        CalculoFrequenciaFilaRabbit = 4,
     }
 }

@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Org.BouncyCastle.Asn1;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
@@ -18,7 +17,7 @@ namespace SME.SGP.Aplicacao
         private readonly string[] ANOS_OBJETIVO_APRENDIZAGEM_ENSINO_ESPECIAL = Enumerable.Range(1, 9).Select(a => a.ToString()).ToArray();
         private readonly string[] ANOS_OBJETIVO_APRENDIZAGEM_EJA = Enumerable.Range(10, 4).Select(a => a.ToString()).ToArray();
 
-        
+
 
         public ListarObjetivoAprendizagemPorAnoEComponenteCurricularUseCase(IMediator mediator)
         {
@@ -60,7 +59,7 @@ namespace SME.SGP.Aplicacao
         private string[] ObterAnosFiltroObjetivosAprendizagem(Turma turma, bool ehEnsinoEspecial, string[] retornoDefault)
         {
             if (ehEnsinoEspecial)
-              return ANOS_OBJETIVO_APRENDIZAGEM_ENSINO_ESPECIAL;
+                return ANOS_OBJETIVO_APRENDIZAGEM_ENSINO_ESPECIAL;
             if (turma.EhEJA())
                 return ANOS_OBJETIVO_APRENDIZAGEM_EJA;
             if (turma.EhTurmaPrograma())

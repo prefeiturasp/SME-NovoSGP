@@ -1,7 +1,7 @@
-﻿using System;
+﻿using SME.SGP.Dominio;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.Infra
 {
@@ -14,7 +14,7 @@ namespace SME.SGP.Infra
             Questoes = new List<ItineranciaQuestaoDto>();
         }
         public long Id { get; set; }
-        
+
         public long DreId { get; set; }
         public long UeId { get; set; }
         public int AnoLetivo { get; set; }

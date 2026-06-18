@@ -1,12 +1,9 @@
 ﻿using FluentValidation;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AulaExisteQuery: IRequest<bool>
+    public class AulaExisteQuery : IRequest<bool>
     {
         public AulaExisteQuery(long aulaId)
         {

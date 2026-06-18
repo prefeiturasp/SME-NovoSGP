@@ -5,7 +5,6 @@ using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -24,9 +23,9 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-                var supervisoresEscolares = await mediator.Send(new ObterResponsaveisAtribuidosUeTiposQuery(new TipoResponsavelAtribuicao[] { TipoResponsavelAtribuicao.SupervisorEscolar }));               
+                var supervisoresEscolares = await mediator.Send(new ObterResponsaveisAtribuidosUeTiposQuery(new TipoResponsavelAtribuicao[] { TipoResponsavelAtribuicao.SupervisorEscolar }));
                 if (supervisoresEscolares.Any())
-                    await mediator.Send(new SalvarCachePorValorObjetoCommand(string.Format(NomeChaveCache.ATRIBUICOES_RESPONSAVEIS_ATIVAS, TipoResponsavelAtribuicao.SupervisorEscolar), 
+                    await mediator.Send(new SalvarCachePorValorObjetoCommand(string.Format(NomeChaveCache.ATRIBUICOES_RESPONSAVEIS_ATIVAS, TipoResponsavelAtribuicao.SupervisorEscolar),
                                                                              supervisoresEscolares.Select(sup => new AtribuicaoResponsavelVigenteProfDto()
                                                                              {
                                                                                  TipoAtribuicao = sup.TipoAtribuicao,

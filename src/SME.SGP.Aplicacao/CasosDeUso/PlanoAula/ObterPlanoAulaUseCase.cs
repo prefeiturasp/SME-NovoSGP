@@ -16,11 +16,11 @@ namespace SME.SGP.Aplicacao
         public async Task<PlanoAulaRetornoDto> Executar(FiltroObterPlanoAulaDto filtro)
         {
             var aulaDto = await mediator.Send(new ObterAulaPorIdQuery(filtro.AulaId));
-            
+
             var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
-            
+
             var planoAula = await mediator.Send(new ObterPlanoAulaEObjetivosAprendizagemQuery(filtro.AulaId));
-            
+
             var planoAulaDto = MapearParaDto(planoAula) ?? new PlanoAulaRetornoDto();
 
             DisciplinaDto disciplinaDto = null;
@@ -34,12 +34,12 @@ namespace SME.SGP.Aplicacao
             var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorCalendarioEDataQuery(aulaDto.TipoCalendarioId, aulaDto.DataAula.Date));
 
             if (periodoEscolar.EhNulo())
-                throw new NegocioException("Período escolar não localizado.");           
+                throw new NegocioException("Período escolar não localizado.");
 
             var planejamentoAnualPeriodoId = await mediator.Send(new ExistePlanejamentoAnualParaTurmaPeriodoEComponenteQuery(filtro.TurmaId, periodoEscolar.Id, disciplinaDto.NaoEhNulo() ? disciplinaDto?.CodigoComponenteCurricular ?? 0 : long.Parse(aulaDto.DisciplinaId)));
-            
-            if (planejamentoAnualPeriodoId == 0 
-                && periodoEscolar.TipoCalendario.AnoLetivo.Equals(DateTime.Now.Year) 
+
+            if (planejamentoAnualPeriodoId == 0
+                && periodoEscolar.TipoCalendario.AnoLetivo.Equals(DateTime.Now.Year)
                 && !usuario.PerfilAtual.Equals(Perfis.PERFIL_CJ)
                 && !(disciplinaDto != null && disciplinaDto.TerritorioSaber))
                 throw new NegocioException("Não foi possível carregar o plano de aula porque não há plano anual cadastrado");

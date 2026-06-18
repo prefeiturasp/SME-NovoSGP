@@ -1,9 +1,7 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.Relatorios.HistoricoEscolar;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -66,12 +64,13 @@ namespace SME.SGP.Aplicacao
                         // Adiciona nome do aluno no Dto de retorno
                         var alunoEol = alunos.FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
                         if (alunoEol.NaoEhNulo())
-                            compensacaoDto.Alunos.Add(new CompensacaoAusenciaListagemAlunosDto(alunoEol.NomeAluno,matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == aluno.CodigoAluno)));
+                            compensacaoDto.Alunos.Add(new CompensacaoAusenciaListagemAlunosDto(alunoEol.NomeAluno, matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == aluno.CodigoAluno)));
                     }
                 }
 
                 listaCompensacoesDto.Add(compensacaoDto);
-            };
+            }
+            ;
 
             if (!string.IsNullOrEmpty(nomeAluno))
                 listaCompensacoesDto = listaCompensacoesDto.Where(c => c.Alunos.Exists(a => a.Nome.ToLower().Contains(nomeAluno.ToLower()))).ToList();
@@ -96,7 +95,7 @@ namespace SME.SGP.Aplicacao
         {
             var compensacao = repositorioCompensacaoAusencia.ObterPorId(id);
             compensacao.LancarExcecaoNegocioSeEhNulo("Compensação de ausencia não localizada.");
-            
+
             var compensacaoDto = MapearParaDtoCompleto(compensacao);
             compensacao.Alunos = await consultasCompensacaoAusenciaAluno.ObterPorCompensacao(compensacao.Id);
 
@@ -118,7 +117,7 @@ namespace SME.SGP.Aplicacao
 
             var disciplinasEOL = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(codigosComponentesConsiderados.Select(c => long.Parse(c)).ToArray()));
             disciplinasEOL.LancarExcecaoNegocioSeNaoPossuiRegistros("Componente curricular informado na compensação não localizado.");
-            
+
             var quantidadeMaximaCompensacoes = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeMaximaCompensacaoAusencia, DateTime.Today.Year)));
             var percentualFrequenciaAlerta = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2, DateTime.Today.Year)));
             var alunosCodigos = compensacao.Alunos.Select(x => x.CodigoAluno).ToArray();
@@ -137,20 +136,20 @@ namespace SME.SGP.Aplicacao
                     alunoDto.Compensacoes = compensacoes.Where(x => x.CodigoAluno == aluno.CodigoAluno);
                     alunoDto.EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == aluno.CodigoAluno);
 
-                    await PreencherDadosFrequenciaAlunoDto(alunoDto, aluno.CodigoAluno, compensacao.Bimestre, 
+                    await PreencherDadosFrequenciaAlunoDto(alunoDto, aluno.CodigoAluno, compensacao.Bimestre,
                                                            turma.CodigoTurma, codigosComponentesConsiderados.ToArray(),
                                                            quantidadeMaximaCompensacoes, percentualFrequenciaAlerta);
                     compensacaoDto.Alunos.Add(alunoDto);
                 }
             }
-            
+
             if (disciplinasEOL.First().Regencia)
                 await TratarComponentesCurricularesRegencia(compensacao.Id, compensacaoDto);
             return compensacaoDto;
         }
 
         private async Task TratarComponentesCurricularesRegencia(long compensacaoId, CompensacaoAusenciaCompletoDto compensacaoDto)
-        {           
+        {
             var disciplinasRegencia = await consultasCompensacaoAusenciaDisciplinaRegencia.ObterPorCompensacao(compensacaoId);
             var disciplinasIds = disciplinasRegencia.Select(x => long.Parse(x.DisciplinaId));
             if (disciplinasIds.PossuiRegistros())
@@ -165,10 +164,10 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task PreencherDadosFrequenciaAlunoDto(CompensacaoAusenciaAlunoCompletoDto aluno, 
-                                                            string codigoAluno, 
-                                                            int bimestre, 
-                                                            string codigoTurma, 
+        private async Task PreencherDadosFrequenciaAlunoDto(CompensacaoAusenciaAlunoCompletoDto aluno,
+                                                            string codigoAluno,
+                                                            int bimestre,
+                                                            string codigoTurma,
                                                             string[] codigosComponentesConsiderados,
                                                             int quantidadeMaximaCompensacoes,
                                                             int percentualFrequenciaAlerta)
@@ -185,12 +184,12 @@ namespace SME.SGP.Aplicacao
             }
         }
         private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> ObterAlunosTurmaPap(string[] codigosAlunos, int anoLetivo)
-        => codigosAlunos.Any() 
+        => codigosAlunos.Any()
            ? await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, codigosAlunos))
            : Enumerable.Empty<AlunosTurmaProgramaPapDto>();
 
         private async Task<IEnumerable<CompensacaoDataAlunoDto>> ObterAusenciaParaCompensacaoPorAlunos(string[] codigosAlunos, string[] disciplinasId, int bimestre, string turmacodigo)
-         => codigosAlunos.Any() 
+         => codigosAlunos.Any()
             ? await mediator.Send(new ObterAusenciaParaCompensacaoPorAlunosQuery(codigosAlunos, disciplinasId, bimestre, turmacodigo))
             : Enumerable.Empty<CompensacaoDataAlunoDto>();
 

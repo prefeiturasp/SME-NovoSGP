@@ -34,8 +34,8 @@ namespace SME.SGP.Dados.Repositorios
                              Criado_RF as CriadoRF
                             from encaminhamento_naapa_observacao 
                         where not excluido  and encaminhamento_naapa_id = @encaminhamentoNAAPAId ";
-            
-            var observacoesConsulta = await database.Conexao.QueryAsync<EncaminhamentoNAAPAObservacoesConsultaDto>(sql,new { encaminhamentoNAAPAId, usuarioId = usuarioLogadoRf },commandTimeout: 300);
+
+            var observacoesConsulta = await database.Conexao.QueryAsync<EncaminhamentoNAAPAObservacoesConsultaDto>(sql, new { encaminhamentoNAAPAId, usuarioId = usuarioLogadoRf }, commandTimeout: 300);
             var observacoes = MapearAuditoria(observacoesConsulta);
 
             if (paginacao.EhNulo() || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
@@ -59,10 +59,10 @@ namespace SME.SGP.Dados.Repositorios
 
         private List<EncaminhamentoNAAPAObservacoesDto> MapearAuditoria(IEnumerable<EncaminhamentoNAAPAObservacoesConsultaDto> observacoes)
         {
-            var lista = new List<EncaminhamentoNAAPAObservacoesDto>(); 
+            var lista = new List<EncaminhamentoNAAPAObservacoesDto>();
             foreach (var item in observacoes)
             {
-                var obs = new EncaminhamentoNAAPAObservacoesDto 
+                var obs = new EncaminhamentoNAAPAObservacoesDto
                 {
                     Id = item.IdObservacao,
                     Observacao = item.Observacao,

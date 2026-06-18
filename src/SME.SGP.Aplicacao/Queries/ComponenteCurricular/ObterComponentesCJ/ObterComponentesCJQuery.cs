@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterComponentesCJQuery: IRequest<IEnumerable<ComponenteCurricularEol>>
+    public class ObterComponentesCJQuery : IRequest<IEnumerable<ComponenteCurricularEol>>
     {
         public ObterComponentesCJQuery(Modalidade? modalidade, string turmaCodigo, string ueCodigo, long componenteCurricular, string professorRf, bool listarComponentesPlanejamento)
         {

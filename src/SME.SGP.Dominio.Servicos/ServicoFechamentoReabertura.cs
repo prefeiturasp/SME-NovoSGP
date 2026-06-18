@@ -1,12 +1,8 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -192,7 +188,7 @@ namespace SME.SGP.Dominio.Servicos
 
             return mensagemRetorno;
         }
-        
+
         private async Task ExcluirVinculosAysnc(FechamentoReabertura fechamentoReaberturaParaExcluir)
         {
             if (fechamentoReaberturaParaExcluir.WorkflowAprovacaoId.HasValue)
@@ -235,7 +231,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 return await comandosWorkflowAprovacao.Salvar(wfAprovacaoEvento);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

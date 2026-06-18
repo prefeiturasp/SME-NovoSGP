@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public ConsultasPlanoAnualTerritorioSaber(IRepositorioPlanoAnualTerritorioSaber repositorioPlanoAnualTerritorioSaber,
                                                   IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
-                                                  IRepositorioTipoCalendarioConsulta repositorioTipoCalendario, 
+                                                  IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                                                   IMediator mediator)
         {
             this.repositorioPlanoAnualTerritorioSaber = repositorioPlanoAnualTerritorioSaber ?? throw new System.ArgumentNullException(nameof(repositorioPlanoAnualTerritorioSaber));
@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
             var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(componenteCurricularId));
             var bimestres = periodos.Select(s => s.Bimestre).Distinct();
 
-            foreach(var bimestre in periodos.Select(s => s.Bimestre).Distinct().ToList())
+            foreach (var bimestre in periodos.Select(s => s.Bimestre).Distinct().ToList())
             {
                 bimestresAbertoFechado.Add(new PeriodoEscolarPorTurmaDto()
                 {

@@ -8,7 +8,7 @@ namespace SME.SGP.TesteIntegracao
     public class VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerSemPermissaoFake : IRequestHandler<VerificaPodePersistirTurmaDisciplinaEOLQuery, bool>
     {
         public VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerSemPermissaoFake()
-        {}
+        { }
 
         public async Task<bool> Handle(VerificaPodePersistirTurmaDisciplinaEOLQuery request, CancellationToken cancellationToken)
         {

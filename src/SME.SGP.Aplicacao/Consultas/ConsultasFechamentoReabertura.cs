@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
         {
             var listaEntidades = await repositorioFechamentoReabertura.ListarPaginado(tipoCalendarioId, dreCodigo, ueCodigo, Paginacao);
 
-            foreach(var fechamentoReabertura in listaEntidades.Items)
+            foreach (var fechamentoReabertura in listaEntidades.Items)
             {
                 var bimestres = await repositorioFechamentoReaberturaBimestre.ObterPorFechamentoReaberturaIdAsync(fechamentoReabertura.Id);
                 fechamentoReabertura.AdicionarBimestres(bimestres);

@@ -28,7 +28,7 @@ namespace SME.SGP.Metrica.Worker.UseCases
 
             var conselhosClasseAlunoDuplicados = await repositorioSGP.ObterConselhosClasseAlunoDuplicados(ue.Id);
 
-            foreach(var conselhoClasseAlunoDuplicado in conselhosClasseAlunoDuplicados)
+            foreach (var conselhoClasseAlunoDuplicado in conselhosClasseAlunoDuplicados)
             {
                 await repositorioConselhoClasseAlunoDuplicado.InserirAsync(conselhoClasseAlunoDuplicado);
                 await mediator.Send(new PublicarFilaCommand(Rotas.RotasRabbitMetrica.LimpezaConselhoClasseAlunoDuplicado, conselhoClasseAlunoDuplicado));

@@ -19,10 +19,10 @@ namespace SME.SGP.Aplicacao
                                            from d in ptd.DisciplinasId()
                                            select d).ToArray();
 
-            var consolidacoes = await mediator.Send(new ObterConsolidacaoRegistrosComSeparacaoDiarioBordoQuery(filtro.TurmaCodigo, 
+            var consolidacoes = await mediator.Send(new ObterConsolidacaoRegistrosComSeparacaoDiarioBordoQuery(filtro.TurmaCodigo,
                 filtro.AnoLetivo, componentesCurriculares));
 
-            foreach(var consolidacao in consolidacoes.Distinct())
+            foreach (var consolidacao in consolidacoes.Distinct())
             {
                 if (consolidacao.ModalidadeCodigo == (int)Modalidade.EducacaoInfantil)
                 {

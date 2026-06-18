@@ -2,7 +2,6 @@
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -43,7 +42,7 @@ namespace SME.SGP.Aplicacao
 
                 return true;
             }
-            catch 
+            catch
             {
                 unitOfWork.Rollback();
                 throw;

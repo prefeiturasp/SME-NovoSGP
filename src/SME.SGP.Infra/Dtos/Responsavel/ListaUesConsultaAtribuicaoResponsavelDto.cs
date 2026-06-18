@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Infra
 {
-    public  class ListaUesConsultaAtribuicaoResponsavelDto
+    public class ListaUesConsultaAtribuicaoResponsavelDto
     {
         public long Id { get; set; }
         public string Codigo { get; set; }

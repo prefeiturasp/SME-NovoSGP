@@ -167,29 +167,29 @@ namespace SME.SGP.Infra
         }
 
 
-        public static Dictionary<Enum,string> ToDictionary<TEnum>()
+        public static Dictionary<Enum, string> ToDictionary<TEnum>()
             where TEnum : struct
         {
             if (!typeof(TEnum).IsEnum) throw new InvalidOperationException();
 
             return ((TEnum[])Enum.GetValues(typeof(TEnum))).Cast<Enum>().ToDictionary(key => key, value => value.Name());
         }
-        
+
         public static bool EhMaiorQueZero(this long valor)
         {
             return valor > 0;
         }
-        
+
         public static bool EhMaiorQueZero(this int valor)
         {
             return valor > 0;
         }
-        
+
         public static bool EhMenorQueZero(this long valor)
         {
             return valor < 0;
         }
-        
+
         public static bool EhIgualZero(this long valor)
         {
             return valor == 0;

@@ -1,6 +1,6 @@
 ﻿namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IExecutarConsolidacaoUeConselhoClasseUseCase: IRabbitUseCase
+    public interface IExecutarConsolidacaoUeConselhoClasseUseCase : IRabbitUseCase
     {
     }
 }

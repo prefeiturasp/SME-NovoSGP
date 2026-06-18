@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -69,7 +68,8 @@ namespace SME.SGP.Dominio
                 await AlterarEmail(usuario, novoEmail);
 
                 unitOfWork.PersistirTransacao();
-            } catch
+            }
+            catch
             {
                 unitOfWork.Rollback();
                 throw;
@@ -79,7 +79,7 @@ namespace SME.SGP.Dominio
         public string ObterClaim(string nomeClaim)
         {
             var claim = contextoAplicacao.ObterVariavel<IEnumerable<InternalClaim>>("Claims").FirstOrDefault(a => a.Type == nomeClaim);
-            return claim?.Value == null ? string.Empty: claim?.Value;
+            return claim?.Value == null ? string.Empty : claim?.Value;
         }
 
         public string ObterLoginAtual()
@@ -187,7 +187,7 @@ namespace SME.SGP.Dominio
         {
             var eNumero = long.TryParse(codigoRf, out long n);
             var ehCpf = codigoRf.SomenteNumeros().Length == 11;
-            
+
             codigoRf = eNumero || (!eNumero && ehCpf) ? codigoRf.SomenteNumeros() : null;
             var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(buscaLogin ? null : codigoRf, login));
 

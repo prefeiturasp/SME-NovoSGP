@@ -2,7 +2,7 @@
 {
     public class FiltroDiarioBordoPendenciaDevolutivaDto
     {
-        public FiltroDiarioBordoPendenciaDevolutivaDto(int anoLetivo,long dreId=0, string ueCodigo = "", long turmaId = 0, long ueId = 0)
+        public FiltroDiarioBordoPendenciaDevolutivaDto(int anoLetivo, long dreId = 0, string ueCodigo = "", long turmaId = 0, long ueId = 0)
         {
             DreId = dreId;
             UeCodigo = ueCodigo;

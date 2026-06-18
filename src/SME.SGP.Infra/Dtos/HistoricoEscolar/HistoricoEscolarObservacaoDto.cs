@@ -11,7 +11,7 @@ namespace SME.SGP.Infra.Dtos
             Observacao = observacao;
         }
 
-        [Required(ErrorMessage ="Código do aluno deve ser informado")]
+        [Required(ErrorMessage = "Código do aluno deve ser informado")]
         public string CodigoAluno { get; set; }
         [Required(ErrorMessage = "Observação deve ser informado")]
         [MaxLength(500)]

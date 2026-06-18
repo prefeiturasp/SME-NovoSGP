@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
             RuleFor(c => c.Ids)
                 .NotEmpty()
-                .WithMessage("Pelo menos um comunicado deve ser informado.");           
+                .WithMessage("Pelo menos um comunicado deve ser informado.");
         }
     }
 }

@@ -1,11 +1,8 @@
 ﻿using MediatR;
 using Moq;
 using SME.SGP.Dominio;
-using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -59,12 +56,12 @@ namespace SME.SGP.Aplicacao.Teste.Queries
                 .ReturnsAsync(listaTurmas);
 
 
-            var retornoConsulta = await query.Handle(new ObterTurmasConsideradasNoConselhoQuery(listaTurmas.Select(t=> t.CodigoTurma), listaTurmas.FirstOrDefault(l=> l.CodigoTurma == "1")), new CancellationToken());
+            var retornoConsulta = await query.Handle(new ObterTurmasConsideradasNoConselhoQuery(listaTurmas.Select(t => t.CodigoTurma), listaTurmas.FirstOrDefault(l => l.CodigoTurma == "1")), new CancellationToken());
 
             Assert.NotNull(retornoConsulta);
             Assert.True(retornoConsulta.Count() == 2);
             Assert.True(retornoConsulta.FirstOrDefault() == "1");
-            Assert.Contains("3",retornoConsulta);
+            Assert.Contains("3", retornoConsulta);
         }
     }
 }

@@ -58,9 +58,9 @@ namespace SME.SGP.Aplicacao
             {
                 var carta = cartas?.FirstOrDefault(a => a.PeriodoEscolarId == periodoEscolar.Id);
 
-                if(!usuarioLogado.EhProfessorCj())
+                if (!usuarioLogado.EhProfessorCj())
                     usuarioTemAtribuicao = await UsuarioTemAtribuicao(usuarioLogado, turma.CodigoTurma, componenteCurricularId, periodoEscolar);
-              
+
                 listaCartasDto.Add(new CartaIntencoesRetornoDto()
                 {
                     Id = carta?.Id ?? 0,

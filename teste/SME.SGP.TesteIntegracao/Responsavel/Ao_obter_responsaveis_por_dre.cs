@@ -19,7 +19,7 @@ namespace SME.SGP.TesteIntegracao.ResponsaveisPorDre
         private readonly Mock<IMediator> mediator;
 
         public Ao_obter_responsaveis_por_dre(CollectionFixture collectionFixture) : base(collectionFixture)
-        {            
+        {
             mediator = new Mock<IMediator>();
             obterResponsaveisPorDreUseCase = new ObterResponsaveisPorDreUseCase(mediator.Object);
         }
@@ -39,7 +39,7 @@ namespace SME.SGP.TesteIntegracao.ResponsaveisPorDre
             mediator.Setup(a => a.Send(It.IsAny<ObterSupervisoresPorDreEolQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(supervisores);
 
-            var parametro = new ObterResponsaveisPorDreDto("1", TipoResponsavelAtribuicao.SupervisorEscolar);            
+            var parametro = new ObterResponsaveisPorDreDto("1", TipoResponsavelAtribuicao.SupervisorEscolar);
             var resultados = await ObterResultados(parametro);
 
             resultados.ShouldNotBeEmpty();

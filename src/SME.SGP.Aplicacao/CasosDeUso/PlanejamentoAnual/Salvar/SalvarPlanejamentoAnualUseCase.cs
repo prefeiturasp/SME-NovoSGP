@@ -1,8 +1,5 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -16,8 +13,8 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
         public async Task<PlanejamentoAnualAuditoriaDto> Executar(long turmaId, long componenteCurricularId, SalvarPlanejamentoAnualDto dto)
-        {           
-           
+        {
+
 
             var auditoria = await mediator.Send(new SalvarPlanejamentoAnualCommand()
             {

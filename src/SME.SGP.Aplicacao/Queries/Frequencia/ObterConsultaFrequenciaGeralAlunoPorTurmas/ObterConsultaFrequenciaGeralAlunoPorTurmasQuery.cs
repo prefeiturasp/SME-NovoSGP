@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         public string AlunoCodigo { get; set; }
         public string[] TurmaCodigo { get; set; }
         public string ComponenteCurricularCodigo { get; set; }
-        public Turma TurmaConsulta { get; set; } 
+        public Turma TurmaConsulta { get; set; }
     }
 
     public class ObterConsultaFrequenciaGeralAlunoPorTurmasQueryValidator : AbstractValidator<ObterConsultaFrequenciaGeralAlunoPorTurmasQuery>

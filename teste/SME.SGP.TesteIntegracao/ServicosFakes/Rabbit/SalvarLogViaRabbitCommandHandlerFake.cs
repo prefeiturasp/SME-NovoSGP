@@ -9,13 +9,13 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes.Rabbit
     {
         public SalvarLogViaRabbitCommandHandlerFake()
         {
-            
+
         }
         public async Task<bool> Handle(SalvarLogViaRabbitCommand request, CancellationToken cancellationToken)
         {
             var retorno = false;
 
             return await Task.FromResult(retorno);
-        }       
+        }
     }
 }

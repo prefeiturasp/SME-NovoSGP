@@ -1,14 +1,10 @@
-﻿using FluentValidation;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
     public class VerificarRemoverProcessoEmExecucaoCommand : IRequest<bool>
-    {        
+    {
         public VerificarRemoverProcessoEmExecucaoCommand(string turmaId, string disciplinaId, int bimestre, TipoProcesso tipoProcesso)
         {
             TurmaId = turmaId;

@@ -1,7 +1,7 @@
-using System.Threading.Tasks;
 using RabbitMQ.Client;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.ServicosFakes
 {

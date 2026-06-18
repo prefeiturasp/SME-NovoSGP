@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         public async Task<SituacaoEncaminhamentoPorEstudanteDto> Handle(ObterSituacaoEncaminhamentoAEEPorEstudanteQuery request, CancellationToken cancellationToken)
         {
             var encaminhamento = await repositorioEncaminhamentoAEE.ObterEncaminhamentoPorEstudante(request.EstudanteCodigo, request.UeCodigo);
-            
+
             return MapearParaDto(encaminhamento);
         }
 

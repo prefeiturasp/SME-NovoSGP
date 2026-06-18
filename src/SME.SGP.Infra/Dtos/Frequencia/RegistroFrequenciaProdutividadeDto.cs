@@ -27,7 +27,7 @@ namespace SME.SGP.Infra
             => $"{Modalidade.ObterNomeCurto()}-{TurmaNome}";
 
         public string DescricaoUe()
-            =>  (TipoEscola)TipoEscola == TipoEscola.Nenhum
+            => (TipoEscola)TipoEscola == TipoEscola.Nenhum
                 ? UeNome
                 : $"{((TipoEscola)TipoEscola).ShortName()} {UeNome}";
     }

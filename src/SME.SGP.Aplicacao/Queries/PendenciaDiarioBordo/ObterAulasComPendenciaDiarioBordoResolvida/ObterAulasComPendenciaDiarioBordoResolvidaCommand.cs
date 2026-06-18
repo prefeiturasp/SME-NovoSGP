@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterAulasComPendenciaDiarioBordoResolvidaPorTurmaCommand : 
+    public class ObterAulasComPendenciaDiarioBordoResolvidaPorTurmaCommand :
         IRequest<IEnumerable<PendenciaDiarioBordoParaExcluirDto>>
     {
         public string TurmaId { get; set; }

@@ -1,8 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,7 +20,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(ExcluirRespostaMapeamentoEstudantePorQuestaoIdCommand request, CancellationToken cancellationToken)
         {
             var respostas = await repositorioResposta.ObterPorQuestaoMapeamentoEstudanteId(request.QuestaoMapeamentoEstudanteId);
-            foreach(var resposta in respostas)
+            foreach (var resposta in respostas)
                 await mediator.Send(new ExcluirRespostaMapeamentoEstudanteCommand(resposta));
             return true;
         }

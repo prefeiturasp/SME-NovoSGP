@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dominio.Entidades
 {
-    public class ProficienciaIdep: EntidadeBase
+    public class ProficienciaIdep : EntidadeBase
     {
         public string CodigoUe { get; set; }
         public SerieAnoIndiceDesenvolvimentoEnum SerieAno { get; set; }

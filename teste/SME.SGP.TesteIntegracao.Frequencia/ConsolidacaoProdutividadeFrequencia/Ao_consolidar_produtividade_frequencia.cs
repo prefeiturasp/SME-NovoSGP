@@ -6,15 +6,10 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
-using SME.SGP.TesteIntegracao.Commands;
-using SME.SGP.TesteIntegracao.Constantes;
 using SME.SGP.TesteIntegracao.Frequencia.NotificacaoFrequenciaMensalAlunoInsuficiente.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.Xml;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
@@ -37,7 +32,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia.ConsolidacaoReflexoFrequenciaBuscaA
         public async Task Ao_consolidar_produtividade_frequencia_bimestre()
         {
             await CriarTipoCalendario(ModalidadeTipoCalendario.FundamentalMedio);
-            await CriarItensComuns(true, 
+            await CriarItensComuns(true,
                              new DateTime(DateTimeExtension.HorarioBrasilia().Year, 1, 1),
                              new DateTime(DateTimeExtension.HorarioBrasilia().Year, 12, 31),
                              3,
@@ -128,7 +123,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia.ConsolidacaoReflexoFrequenciaBuscaA
                 CriadoEm = data.AddDays(diasDiferencaRegistroFrequencia),
             });
 
-            
+
         }
     }
 }

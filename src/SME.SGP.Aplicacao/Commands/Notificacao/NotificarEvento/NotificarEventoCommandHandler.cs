@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -41,7 +40,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<long>> ObterFuncionarios(Ue ue)
         {
-            var funcionarios = await mediator.Send(new ObterFuncionariosPorRfUeNomeServidorQuery(string.Empty,ue.CodigoUe, string.Empty));
+            var funcionarios = await mediator.Send(new ObterFuncionariosPorRfUeNomeServidorQuery(string.Empty, ue.CodigoUe, string.Empty));
 
             var listaUsuarios = new List<long>();
             foreach (var funcionario in funcionarios)

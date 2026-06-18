@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterNotificacoesPorAulaIdQuery: IRequest<IEnumerable<NotificacaoAula>>
+    public class ObterNotificacoesPorAulaIdQuery : IRequest<IEnumerable<NotificacaoAula>>
     {
         public ObterNotificacoesPorAulaIdQuery(long aulaId)
         {
@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         public long AulaId { get; set; }
     }
 
-    public class ObterNotificacoesPorAulaIdQueryValidator: AbstractValidator<ObterNotificacoesPorAulaIdQuery>
+    public class ObterNotificacoesPorAulaIdQueryValidator : AbstractValidator<ObterNotificacoesPorAulaIdQuery>
     {
         public ObterNotificacoesPorAulaIdQueryValidator()
         {

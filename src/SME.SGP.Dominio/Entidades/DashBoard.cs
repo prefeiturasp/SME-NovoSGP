@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace SME.SGP.Dominio
+﻿namespace SME.SGP.Dominio
 {
     public class DashBoard
     {

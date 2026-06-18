@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,6 +17,6 @@ namespace SME.SGP.Aplicacao
 
         public async Task<Pendencia> Handle(ObterUltimaPendenciaPlanoAEEQuery request, CancellationToken cancellationToken) =>
             await repositorioPlanoAEEConsulta.ObterUltimaPendenciaPlano(request.PlanoAEEId);
-            
+
     }
 }

@@ -35,9 +35,9 @@ namespace SME.SGP.Notificacoes.Hub
             RegistrarCache(services);
             RegistrarEventosNotificacao(services);
             RegistrarAutenticacao(services);
-            
+
             services.AddHealthChecks();
-            services.AddHealthChecksUiSgp();            
+            services.AddHealthChecksUiSgp();
         }
 
         private void RegistrarAutenticacao(IServiceCollection services)
@@ -81,7 +81,7 @@ namespace SME.SGP.Notificacoes.Hub
         {
             app.UseElasticApm(Configuration,
                 new HttpDiagnosticsSubscriber());
-            
+
             app.UseHealthChecksSgp();
             app.UseHealthCheckPrometheusSgp();
 

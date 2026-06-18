@@ -2,12 +2,10 @@
 using MediatR;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterDiariosDeBordoPorPeriodoQuery: IRequest<PaginacaoResultadoDto<DiarioBordoDevolutivaDto>>
+    public class ObterDiariosDeBordoPorPeriodoQuery : IRequest<PaginacaoResultadoDto<DiarioBordoDevolutivaDto>>
     {
         public ObterDiariosDeBordoPorPeriodoQuery(string turmaCodigo, long componenteCurricularCodigo, DateTime periodoInicio, DateTime periodoFim)
         {

@@ -9,7 +9,6 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.Fechamento.ConselhoDeClasse.ServicosFakes;
-using SME.SGP.TesteIntegracao.NotaFechamentoBimestre.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
@@ -59,12 +58,12 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesRegenciaPorAnoQuery, IEnumerable<DisciplinaResposta>>),
                 typeof(NotaFechamento.ServicosFakes.ObterComponentesRegenciaPorAnoQueryHandlerFake), ServiceLifetime.Scoped));
-            
+
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaItinerarioEnsinoMedioQuery, IEnumerable<TurmaItinerarioEnsinoMedioDto>>),
                 typeof(ObterTurmaItinerarioEnsinoMedioQueryHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery, string[]>), 
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery, string[]>),
                 typeof(ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQueryHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterInfoComponentesCurricularesESPorTurmasCodigoQuery, IEnumerable<InfoComponenteCurricular>>), 
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterInfoComponentesCurricularesESPorTurmasCodigoQuery, IEnumerable<InfoComponenteCurricular>>),
                 typeof(ObterInfoComponentesCurricularesESPorTurmasCodigoQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
@@ -275,7 +274,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
         private static async Task<List<FechamentoTurmaDisciplinaDto>> LancarNotasAlunosInativosDurantePeriodoFechamento(long disciplinaId)
         {
-            var alunosCodigos = new[] {CODIGO_ALUNO_8};
+            var alunosCodigos = new[] { CODIGO_ALUNO_8 };
             return await LancarNotasAlunos(alunosCodigos, disciplinaId);
         }
 

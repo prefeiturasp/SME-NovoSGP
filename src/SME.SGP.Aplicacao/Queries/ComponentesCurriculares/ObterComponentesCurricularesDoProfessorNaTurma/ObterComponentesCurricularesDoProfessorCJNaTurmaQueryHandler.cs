@@ -1,11 +1,10 @@
-﻿using System.Collections;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes;
 
 namespace SME.SGP.Aplicacao
 {

@@ -5,7 +5,6 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -38,7 +37,7 @@ namespace SME.SGP.Aplicacao
 
             var alunosAtivos = await mediator
                 .Send(new ObterAlunosDentroPeriodoQuery(turma.CodigoTurma, (periodo.PeriodoInicio, periodo.PeriodoFim)));
-            
+
             if (alunosAtivos.NaoEhNulo() && alunosAtivos.Any())
                 alunosAtivos = alunosAtivos.OrderByDescending(a => a.DataSituacao).DistinctBy(a => a.CodigoAluno);
             else
@@ -55,11 +54,11 @@ namespace SME.SGP.Aplicacao
                 .Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeMaximaCompensacaoAusencia, DateTime.Today.Year)));
 
             var percentualFrequenciaAlerta = int.Parse(await mediator
-                .Send(new ObterValorParametroSistemaTipoEAnoQuery(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2, DateTime.Today.Year)));                       
-            
+                .Send(new ObterValorParametroSistemaTipoEAnoQuery(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2, DateTime.Today.Year)));
+
             var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(alunosAtivos.Select(x => x.CodigoAluno).ToArray(), turma);
             foreach (var alunoEOL in alunosAtivos)
-            {               
+            {
                 var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo
                     .ObterPorAlunoDisciplinaPeriodo(alunoEOL.CodigoAluno, componentesCurricularesId.Select(cc => cc.ToString()).ToArray(), periodo.Id, turma.CodigoTurma);
 
@@ -85,7 +84,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, Turma turma)
         {
-            return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(turma.AnoLetivo, alunosCodigos));
+            return await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(turma.AnoLetivo, alunosCodigos));
         }
         private async Task<Turma> BuscaTurma(string turmaId)
         {

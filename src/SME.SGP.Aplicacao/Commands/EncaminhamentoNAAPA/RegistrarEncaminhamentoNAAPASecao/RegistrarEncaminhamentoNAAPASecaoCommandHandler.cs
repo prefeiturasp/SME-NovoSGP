@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao.Commands
         }
 
         private EncaminhamentoNAAPASecao MapearParaEntidade(RegistrarEncaminhamentoNAAPASecaoCommand request)
-            => new ()
+            => new()
             {
                 SecaoEncaminhamentoNAAPAId = request.SecaoId,
                 Concluido = request.Concluido,

@@ -22,7 +22,7 @@ namespace SME.SGP.Infra
         public TipoQuantidadeAusencia TipoQuantidadeAusencia { get; set; }
         public TipoFormatoRelatorio TipoFormatoRelatorio { get; set; }
         public string NomeUsuario { get; set; }
-        public string CodigoRf { get; set; }        
+        public string CodigoRf { get; set; }
     }
 
 
@@ -46,7 +46,7 @@ namespace SME.SGP.Infra
             RuleFor(c => c.Bimestres)
                 .NotEmpty()
                 .WithMessage("Os bimestres devem ser informados.")
-                .When(c => c.Modalidade != Modalidade.EJA);            
+                .When(c => c.Modalidade != Modalidade.EJA);
 
             RuleFor(c => c.TipoFormatoRelatorio)
                 .NotEmpty()

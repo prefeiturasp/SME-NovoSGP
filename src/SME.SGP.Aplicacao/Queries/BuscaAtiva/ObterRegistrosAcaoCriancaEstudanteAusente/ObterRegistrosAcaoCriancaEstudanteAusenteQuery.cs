@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
         }
         public string CodigoAluno { get; set; }
         public long TurmaId { get; set; }
-        
+
     }
 
     public class ObterRegistrosAcaoCriancaEstudanteAusenteQueryValidator : AbstractValidator<ObterRegistrosAcaoCriancaEstudanteAusenteQuery>

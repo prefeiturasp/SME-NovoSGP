@@ -1,11 +1,8 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
-using SME.SGP.Aplicacao.Queries;
-using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.Relatorios;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
 {
@@ -23,7 +20,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             filtro.Usuario = $"{usuarioLogado.Nome} ({usuarioLogado.ObterCodigoRfLogin()})";
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RelatorioPlanoAnual, filtro, usuarioLogado,rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosPlanoAnual));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RelatorioPlanoAnual, filtro, usuarioLogado, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosPlanoAnual));
         }
     }
 }

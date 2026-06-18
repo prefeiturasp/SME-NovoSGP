@@ -84,7 +84,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected const long ID_OPCAO_RESPOSTA_GRUPO_TRAB_NAAPA = 13;
         protected const long ID_OPCAO_RESPOSTA_ACOES_LUDICAS = 14;
         protected const long ID_OPCAO_RESPOSTA_OUTRO_PROCEDIMENTO = 15;
-        protected const long ID_OPCAO_RESPOSTA_SIM = 168; 
+        protected const long ID_OPCAO_RESPOSTA_SIM = 168;
         protected const long ID_OPCAO_RESPOSTA_MASCULINO = 170;
         protected const long ID_OPCAO_RESPOSTA_BRANCO = 172;
         protected const long ID_OPCAO_RESPOSTA_AGITACAO_MOTORA = 176;
@@ -111,7 +111,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected const long ID_OPCAO_RESPOSTA_PROJETO_TECER = 200;
         protected const long ID_OPCAO_RESPOSTA_VISITA_TECNICA = 201;
 
-        protected const long ID_OPCAO_RESPOSTA_SIM_ESTA_EM_SALA_HOSPITALAR = 207; 
+        protected const long ID_OPCAO_RESPOSTA_SIM_ESTA_EM_SALA_HOSPITALAR = 207;
 
         protected const long ID_SECAO_ENCAMINHAMENTO_NAAPA_INFORMACOES_ESTUDANTE = 1;
         protected const long ID_SECAO_ENCAMINHAMENTO_NAAPA_QUESTOES_APRESENTADAS_INFANTIL = 2;
@@ -120,7 +120,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected const long ID_QUESTIONARIO_INFORMACOES_ESTUDANTE = 1;
         protected const long ID_QUESTIONARIO_QUESTOES_APRESENTADAS_INFANTIL = 2;
         protected const long ID_QUESTIONARIO_NAAPA_ITINERANCIA = 3;
-        
+
         protected const long ID_ATENDIMENTO_NAO_PRESENCIAL = 12;
         protected const long ID_GRUPO_DE_TRABALHO_NAAPA = 13;
         protected const long ID_ACOES_LUDICAS = 14;
@@ -240,7 +240,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var questionarios = ObterTodos<Questionario>();
             questionarios = questionarios.Where(q => q.Tipo == TipoQuestionario.RelatorioDinamicoEncaminhamentoNAAPA).ToList();
             var secoes = ObterTodos<SecaoEncaminhamentoNAAPA>();
-            secoes = secoes.Where(s => questionarios.Any(q => q.Id == s.QuestionarioId)).ToList(); 
+            secoes = secoes.Where(s => questionarios.Any(q => q.Id == s.QuestionarioId)).ToList();
 
             var secaoPublicacaoModalidade = secoes.FirstOrDefault(s => s.NomeComponente == NOME_SECAO_ENCAMINHAMENTO_NAAPA_QUESTOES_APRESENTADAS_FUNDAMENTAL);
             await InserirNaBase(new SecaoEncaminhamentoNAAPAModalidade()
@@ -279,8 +279,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 QuestionarioId = ID_QUESTIONARIO_INFORMACOES_ESTUDANTE,
                 Nome = "Informações do Estudante",
                 NomeComponente = NOME_SECAO_ENCAMINHAMENTO_NAAPA_INFORMACOES_ESTUDANTE,
-                Etapa = 1, Ordem = 1,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+                Etapa = 1,
+                Ordem = 1,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
 
             //Id 2
@@ -295,7 +298,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now
             });
-            
+
             //Id 3
             await InserirNaBase(new SecaoEncaminhamentoNAAPA()
             {
@@ -315,8 +318,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 QuestionarioId = QUESTIONARIO_RELATORIO_DINAMICO_ENCAMINHAMENTO_NAAPA_4,
                 Nome = "Informações do Estudante",
                 NomeComponente = NOME_SECAO_ENCAMINHAMENTO_NAAPA_INFORMACOES_ESTUDANTE,
-                Etapa = 1, Ordem = 1,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+                Etapa = 1,
+                Ordem = 1,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
 
             //Id 5
@@ -325,8 +331,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 QuestionarioId = QUESTIONARIO_RELATORIO_DINAMICO_ENCAMINHAMENTO_NAAPA_INFANTIL_5,
                 Nome = "Questões apresentadas - Somente infantil",
                 NomeComponente = NOME_SECAO_ENCAMINHAMENTO_NAAPA_QUESTOES_APRESENTADAS_INFANTIL,
-                Etapa = 1, Ordem = 2,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+                Etapa = 1,
+                Ordem = 2,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
 
             //Id 6
@@ -335,8 +344,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 QuestionarioId = QUESTIONARIO_RELATORIO_DINAMICO_ENCAMINHAMENTO_NAAPA_EF_EJA_CIEJA_MOVA_CMCT_ETEC_6,
                 Nome = "Questões apresentadas - Todos exceto infantil",
                 NomeComponente = NOME_SECAO_ENCAMINHAMENTO_NAAPA_QUESTOES_APRESENTADAS_FUNDAMENTAL,
-                Etapa = 1, Ordem = 2,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+                Etapa = 1,
+                Ordem = 2,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
 
             //Id 7
@@ -518,7 +530,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             {
                 OpcaoRespostaId = ID_OPCAO_RESPOSTA_DOENCA_CRONICA_OU_EM_TRATAMENTO_DE_LONGA_DURACAO_71_1099,
                 QuestaoComplementarId = ID_QUESTAO_COMPLEMENTAR_SELECIONE_UM_FILTRO_DOENCA_CRONICA_OU_EM_TRATAMENTO_DE_LONGA_DURACAO_28_303,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
 
             //54
@@ -526,2012 +540,2322 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             {
                 OpcaoRespostaId = ID_OPCAO_RESPOSTA_DOENCA_CRONICA_OU_EM_TRATAMENTO_DE_LONGA_DURACAO_75_1103,
                 QuestaoComplementarId = ID_QUESTAO_COMPLEMENTAR_SELECIONE_UM_FILTRO_DOENCA_CRONICA_OU_EM_TRATAMENTO_DE_LONGA_DURACAO_29_304,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
         }
 
         private async Task CriarRespostas()
+        {
+            //id 1
+            await InserirNaBase(new OpcaoResposta()
             {
-                //id 1
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_PRIORIDADE,
-                    Ordem = 1,
-                    Nome = "Normal",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 2
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_PRIORIDADE,
-                    Ordem = 2,
-                    Nome = "Prioritária",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 3
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS,
-                    Ordem = 1,
-                    Nome = "Carteira de vacinas atrasada",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 4
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS,
-                    Ordem = 2,
-                    Nome = "Adoece com frequência sem receber cuidados médicos",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 5
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS,
-                    Ordem = 6,
-                    Nome = "Doença crônica ou em tratamento de longa duração",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 6
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_TIPO_ADOECE_COM_FREQUENCIA,
-                    Ordem = 1,
-                    Nome = "Assadura",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 7
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_TIPO_ADOECE_COM_FREQUENCIA,
-                    Ordem = 2,
-                    Nome = "Bronquite",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 8
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_TIPO_ADOECE_COM_FREQUENCIA,
-                    Ordem = 13,
-                    Nome = "Outras",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 9
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_TIPO_DOENCA_CRONICA,
-                    Ordem = 1,
-                    Nome = "Anemia falciforme",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 10
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_TIPO_DOENCA_CRONICA,
-                    Ordem = 2,
-                    Nome = "Asma",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 11
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_TIPO_DOENCA_CRONICA,
-                    Ordem = 14,
-                    Nome = "Outras",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 12
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
-                    Ordem = 1,
-                    Nome = "Itinerância",
-                    Excluido = true,
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 13
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
-                    Ordem = 2,
-                    Nome = "Grupo de Trabalho NAAPA",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 14
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
-                    Ordem = 1,
-                    Nome = "Ações Lúdicas",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 15
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
-                    Ordem = 2,
-                    Nome = "Análise Documental",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 16 (1043)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PRIORIDADE,
-                    Ordem = 1,
-                    Nome = "Normal",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 17 (1044)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PRIORIDADE,
-                    Ordem = 2,
-                    Nome = "Prioritária",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 18 (1045)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PORTA_ENTRADA,
-                    Ordem = 1,
-                    Nome = "Contato Telefônico",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 19 (1046)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PORTA_ENTRADA,
-                    Ordem = 2,
-                    Nome = "E-mail",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 20 (1047)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PORTA_ENTRADA,
-                    Ordem = 3,
-                    Nome = "Família",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 21 (1048)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PORTA_ENTRADA,
-                    Ordem = 4,
-                    Nome = "Grupo de Trabalho",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 22 (1049)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PORTA_ENTRADA,
-                    Ordem = 5,
-                    Nome = "Memorando / Relatório Escolar",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 23 (1050)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PORTA_ENTRADA,
-                    Ordem = 6,
-                    Nome = "Ofício / MP / Vara da Infância",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 24 (1051)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PORTA_ENTRADA,
-                    Ordem = 7,
-                    Nome = "Rede de Proteção Social",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 25 (1052)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PORTA_ENTRADA,
-                    Ordem = 8,
-                    Nome = "Supervisão Escolar / Outros Setores DRE",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 26 (1053)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PORTA_ENTRADA,
-                    Ordem = 9,
-                    Nome = "Busca Ativa Escolar (NAAPA)",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 27 (1054)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PORTA_ENTRADA,
-                    Ordem = 10,
-                    Nome = "Busca Ativa Escolar (Unicef)",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 28 (1055)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_GENERO,
-                    Ordem = 1,
-                    Nome = "Masculino",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 29 (1056)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_GENERO,
-                    Ordem = 2,
-                    Nome = "Feminino",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 30 (1057)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_GENERO,
-                    Ordem = 3,
-                    Nome = "Outro",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 31 (1058)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_GRUPO_ETNICO,
-                    Ordem = 1,
-                    Nome = "Branco",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 32 (1059)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_GRUPO_ETNICO,
-                    Ordem = 2,
-                    Nome = "Negro",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 33 (1060)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_GRUPO_ETNICO,
-                    Ordem = 3,
-                    Nome = "Pardo",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 34 (1061)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_GRUPO_ETNICO,
-                    Ordem = 4,
-                    Nome = "Amarelo",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 35 (1062)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_GRUPO_ETNICO,
-                    Ordem = 5,
-                    Nome = "Indígena",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 36 (1063)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_GRUPO_ETNICO,
-                    Ordem = 6,
-                    Nome = "Não declarado",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 37 (1064)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_ESTUDANTE_MIGRANTE,
-                    Ordem = 1,
-                    Nome = "Sim",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 38 (1065)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_ESTUDANTE_MIGRANTE,
-                    Ordem = 2,
-                    Nome = "Não",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 39 (1066)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_RESPONSAVEL_MIGRANTE,
-                    Ordem = 1,
-                    Nome = "Sim",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 40 (1067)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_RESPONSAVEL_MIGRANTE,
-                    Ordem = 2,
-                    Nome = "Não",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 41 (1068)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_FLUXO_ALERTA,
-                    Ordem = 1,
-                    Nome = "Fluxo de violência",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 42 (1069)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_FLUXO_ALERTA,
-                    Ordem = 2,
-                    Nome = "Notificação feita pelo NAAPA",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 43 (1070)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_FLUXO_ALERTA,
-                    Ordem = 3,
-                    Nome = "Notificação feita pela escola",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 44 (1071)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_FLUXO_ALERTA,
-                    Ordem = 4,
-                    Nome = "Busca ativa escolar",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 45 (1072)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_FLUXO_ALERTA,
-                    Ordem = 5,
-                    Nome = "Busca ativa escolar - Unicef",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 45 (1073)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_FLUXO_ALERTA,
-                    Ordem = 6,
-                    Nome = "Fluxo da Gravidez",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 46 (1074)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_DESENVOLVIMENTO,
-                    Ordem = 1,
-                    Nome = "Agitação motora",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 47 (1075)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_DESENVOLVIMENTO,
-                    Ordem = 2,
-                    Nome = "Aparente sofrimento diante das rotinas propostas para seu agrupamento",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 48 (1076)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_DESENVOLVIMENTO,
-                    Ordem = 3,
-                    Nome = "Dificuldades nas habilidades motoras",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 49 (1077)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_DESENVOLVIMENTO,
-                    Ordem = 4,
-                    Nome = "Dificuldades nas habilidades de comunicação",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 50 (1078)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_DESENVOLVIMENTO,
-                    Ordem = 5,
-                    Nome = "Dificuldades nas interações com os adultos",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 51 (1079)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_DESENVOLVIMENTO,
-                    Ordem = 6,
-                    Nome = "Dificuldades nas interações com outras crianças",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 52 (1080)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_DESENVOLVIMENTO,
-                    Ordem = 7,
-                    Nome = "Dificuldades no desenvolvimento da comunicação verbal",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 53 (1081)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_DESENVOLVIMENTO,
-                    Ordem = 8,
-                    Nome = "Embotamento social",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 54 (1082)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_DESENVOLVIMENTO,
-                    Ordem = 9,
-                    Nome = "Isolamento",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 55 (1083)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_DESENVOLVIMENTO,
-                    Ordem = 10,
-                    Nome = "Medo",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 56 (1084)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_DESENVOLVIMENTO,
-                    Ordem = 11,
-                    Nome = "Não brinca",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 57 (1085)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_DESENVOLVIMENTO,
-                    Ordem = 12,
-                    Nome = "Tristeza",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 58 (1086)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROTECAO,
-                    Ordem = 1,
-                    Nome = "Em situação de risco social",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 59 (1087)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROTECAO,
-                    Ordem = 2,
-                    Nome = "Em situação de rua ou na rua",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 60 (1088)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROTECAO,
-                    Ordem = 3,
-                    Nome = "Família em situação de extrema pobreza",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 61 (1089)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROTECAO,
-                    Ordem = 4,
-                    Nome = "Responsáveis com transtornos mentais",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 62 (1090)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROTECAO,
-                    Ordem = 5,
-                    Nome = "Suspeita de trabalho infantil",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 63 (1091)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROTECAO,
-                    Ordem = 6,
-                    Nome = "Suspeita de Violência Estrutural",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 64 (1092)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROTECAO,
-                    Ordem = 7,
-                    Nome = "Suspeita de violência física",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 65 (1093)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROTECAO,
-                    Ordem = 8,
-                    Nome = "Suspeita de violência institucional",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 66 (1094)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROTECAO,
-                    Ordem = 9,
-                    Nome = "Suspeita de violência negligencial",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 67 (1095)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROTECAO,
-                    Ordem = 10,
-                    Nome = "Suspeita de violência psicológica",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 68 (1096)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROTECAO,
-                    Ordem = 11,
-                    Nome = "Suspeita de Violência química",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 69 (1097)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROTECAO,
-                    Ordem = 12,
-                    Nome = "Suspeita de violência sexual",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 70 (1098)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROMOCAO_CUIDADOS,
-                    Ordem = 1,
-                    Nome = "Carteira de vacinas atrasada",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 71 (1099)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROMOCAO_CUIDADOS,
-                    Ordem = 2,
-                    Nome = "Adoece com frequência sem receber cuidados médicos",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 72 (1100)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROMOCAO_CUIDADOS,
-                    Ordem = 3,
-                    Nome = "Baixo peso",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 73 (1101)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROMOCAO_CUIDADOS,
-                    Ordem = 4,
-                    Nome = "Excesso de peso",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 74 (1102)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROMOCAO_CUIDADOS,
-                    Ordem = 5,
-                    Nome = "Rotina de sono alterada",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 75 (1103)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROMOCAO_CUIDADOS,
-                    Ordem = 6,
-                    Nome = "Doença crônica ou em tratamento de longa duração",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 76 (1104)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROMOCAO_CUIDADOS,
-                    Ordem = 7,
-                    Nome = "Frequência Irregular/excesso de faltas",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 77 (1105)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROMOCAO_CUIDADOS,
-                    Ordem = 8,
-                    Nome = "Enurese e Encoprese",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 78 (1106)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROMOCAO_CUIDADOS,
-                    Ordem = 9,
-                    Nome = "Saúde bucal comprometida",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 79 (1107)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS,
-                    Ordem = 1,
-                    Nome = "Assadura",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 80 (1108)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS,
-                    Ordem = 2,
-                    Nome = "Bronquite",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 81 (1109)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS,
-                    Ordem = 3,
-                    Nome = "Coriza",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 82 (1110)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS,
-                    Ordem = 4,
-                    Nome = "Diarreia",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 83 (1111)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS,
-                    Ordem = 5,
-                    Nome = "Doenças de pele",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 84 (1112)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS,
-                    Ordem = 6,
-                    Nome = "Dor de ouvido",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 85 (1113)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS,
-                    Ordem = 7,
-                    Nome = "Febre",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 86 (1114)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS,
-                    Ordem = 8,
-                    Nome = "Gripes",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 87 (1115)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS,
-                    Ordem = 9,
-                    Nome = "Manchas na pele",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 88 (1116)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS,
-                    Ordem = 10,
-                    Nome = "Piolho",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 89 (1117)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS,
-                    Ordem = 11,
-                    Nome = "Sarna",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 90 (1118)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS,
-                    Ordem = 12,
-                    Nome = "Vômito",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 91 (1119)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS,
-                    Ordem = 13,
-                    Nome = "Outras",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 92 (1120)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO,
-                    Ordem = 1,
-                    Nome = "Anemia falciforme",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 93 (1121)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO,
-                    Ordem = 2,
-                    Nome = "Asma",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 94 (1122)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO,
-                    Ordem = 3,
-                    Nome = "Bronquite",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 95 (1123)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO,
-                    Ordem = 4,
-                    Nome = "Câncer",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 96 (1124)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO,
-                    Ordem = 5,
-                    Nome = "Diabetes",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 97 (1125)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO,
-                    Ordem = 6,
-                    Nome = "Doença hepática",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 98 (1126)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO,
-                    Ordem = 7,
-                    Nome = "Doença renal",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 99 (1127)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO,
-                    Ordem = 8,
-                    Nome = "Doenças do aparelho digestivo",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 100 (1128)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO,
-                    Ordem = 9,
-                    Nome = "Epilepsia",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 101 (1129)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO,
-                    Ordem = 10,
-                    Nome = "Imunossuprimido",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 102 (1130)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO,
-                    Ordem = 11,
-                    Nome = "Soropositivo",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 103 (1131)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO,
-                    Ordem = 12,
-                    Nome = "Transplantados",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 104 (1132)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO,
-                    Ordem = 13,
-                    Nome = "Tuberculose",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 105 (1133)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO,
-                    Ordem = 14,
-                    Nome = "Outras",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 106 (1134)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_HIPOTESE_ESCRITA,
-                    Ordem = 1,
-                    Nome = "Pré-silábico",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 107 (1135)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_HIPOTESE_ESCRITA,
-                    Ordem = 2,
-                    Nome = "Silábico sem valor sonoro",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 108 (1136)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_HIPOTESE_ESCRITA,
-                    Ordem = 3,
-                    Nome = "Silábico com valor sonoro",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 109 (1137)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_HIPOTESE_ESCRITA,
-                    Ordem = 4,
-                    Nome = "Silábico alfabético",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 110 (1138)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_HIPOTESE_ESCRITA,
-                    Ordem = 5,
-                    Nome = "Alfabético",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 111 (1139)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_ENSINO_APRENDIZAGEM,
-                    Ordem = 1,
-                    Nome = "Alfabetização",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 112 (1140)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_ENSINO_APRENDIZAGEM,
-                    Ordem = 2,
-                    Nome = "Suspeita de Dislexia",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 113 (1141)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_ENSINO_APRENDIZAGEM,
-                    Ordem = 3,
-                    Nome = "Dificuldade de Produção Texto",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 114 (1142)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_ENSINO_APRENDIZAGEM,
-                    Ordem = 4,
-                    Nome = "Raciocínio Lógico",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 115 (1143)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_ENSINO_APRENDIZAGEM,
-                    Ordem = 5,
-                    Nome = "Dificuldade leitura/compreensão",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 116 (1144)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_ENSINO_APRENDIZAGEM,
-                    Ordem = 6,
-                    Nome = "Desatenção",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 117 (1145)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_ENSINO_APRENDIZAGEM,
-                    Ordem = 7,
-                    Nome = "Desorganização",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 118 (1146)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_ENSINO_APRENDIZAGEM,
-                    Ordem = 8,
-                    Nome = "Resistência ao registro",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 119 (1147)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_ENSINO_APRENDIZAGEM,
-                    Ordem = 9,
-                    Nome = "Problemas de memorização",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 120 (1148)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_PERMANENCIA_ESCOLAR,
-                    Ordem = 1,
-                    Nome = "Baixa frequência",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 121 (1149)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_PERMANENCIA_ESCOLAR,
-                    Ordem = 2,
-                    Nome = "Reprovação ano anterior",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 122 (1150)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_PERMANENCIA_ESCOLAR,
-                    Ordem = 3,
-                    Nome = "Evasão escolar",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 123 (1151)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_PERMANENCIA_ESCOLAR,
-                    Ordem = 4,
-                    Nome = "Defasagem idade escolar",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 124 (1152)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
-                    Ordem = 1,
-                    Nome = "Doença Crônica",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 125 (1153)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
-                    Ordem = 2,
-                    Nome = "Enurese",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 126 (1154)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
-                    Ordem = 3,
-                    Nome = "Encoprese",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 127 (1155)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
-                    Ordem = 4,
-                    Nome = "Questões fonoaudiológicas",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 128 (1156)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
-                    Ordem = 5,
-                    Nome = "Sonolência",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 129 (1157)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
-                    Ordem = 6,
-                    Nome = "Transtornos alimentares",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 130 (1158)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
-                    Ordem = 7,
-                    Nome = "Saúde - outras questões",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 131 (1159)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
-                    Ordem = 8,
-                    Nome = "Auto agressão/Auto mutilação",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 132 (1160)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
-                    Ordem = 9,
-                    Nome = "Ideação suicida",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 133 (1161)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
-                    Ordem = 10,
-                    Nome = "Mutismo seletivo",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 134 (1162)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
-                    Ordem = 11,
-                    Nome = "TDA",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 135 (1163)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
-                    Ordem = 12,
-                    Nome = "TDAH",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 136 (1164)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
-                    Ordem = 13,
-                    Nome = "TOD",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 137 (1165)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
-                    Ordem = 14,
-                    Nome = "Saúde mental - outras questões",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 138 (1166)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
-                    Ordem = 15,
-                    Nome = "Agitação",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 139 (1167)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
-                    Ordem = 16,
-                    Nome = "Agressividade",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 140 (1168)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
-                    Ordem = 17,
-                    Nome = "Apatia",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 141 (1169)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
-                    Ordem = 18,
-                    Nome = "Comportamento Infantilizado",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 142 (1170)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
-                    Ordem = 19,
-                    Nome = "Dificuldade de Interação",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 143 (1171)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
-                    Ordem = 20,
-                    Nome = "Luto",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 144 (1172)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
-                    Ordem = 21,
-                    Nome = "Medo",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 145 (1173)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
-                    Ordem = 22,
-                    Nome = "Resistência a regras",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 146 (1174)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
-                    Ordem = 23,
-                    Nome = "Timidez",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 147 (1175)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
-                    Ordem = 24,
-                    Nome = "Gravidez na adolescência",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 148 (1176)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
-                    Ordem = 25,
-                    Nome = "Comportamento - outras questões",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 149 (1177)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
-                    Ordem = 1,
-                    Nome = "Acolhimento Institucional",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 150 (1178)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
-                    Ordem = 2,
-                    Nome = "Frequenta ambientes de risco social",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 151 (1179)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
-                    Ordem = 3,
-                    Nome = "Medidas socioeducativas",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 152 (1180)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
-                    Ordem = 4,
-                    Nome = "Pobreza extrema",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 153 (1181)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
-                    Ordem = 5,
-                    Nome = "Responsável com S. Mental, Drogadição ou Deficiência",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 154 (1182)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
-                    Ordem = 6,
-                    Nome = "Suspeita de negligência",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 155 (1183)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
-                    Ordem = 7,
-                    Nome = "Suspeita de violência física",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 156 (1184)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
-                    Ordem = 8,
-                    Nome = "Suspeita de violência sexual",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 157 (1185)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
-                    Ordem = 9,
-                    Nome = "Suspeita de violência psicológica",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 158 (1186)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
-                    Ordem = 10,
-                    Nome = "Suspeita de violência institucional",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 159 (1187)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
-                    Ordem = 11,
-                    Nome = "Suspeita/Uso de substâncias psicoativas",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 160 (1188)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
-                    Ordem = 12,
-                    Nome = "Trabalho infantil",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 161 (1188)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
-                    Ordem = 12,
-                    Nome = "Trabalho infantil",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 162 (1189)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
-                    Ordem = 13,
-                    Nome = "Exploração sexual",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 163 (1190)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
-                    Ordem = 14,
-                    Nome = "Envolvimento com o tráfico de drogas",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 165 (1191)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
-                    Ordem = 15,
-                    Nome = "Responsável com problemas de saúde",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 166 (1192)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
-                    Ordem = 16,
-                    Nome = "Responsável recluso",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 167 (1193)
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
-                    Ordem = 17,
-                    Nome = "Em situação de rua ou na rua",
-                    CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-                });
-
-                //id 168
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_ESTUDANTE_MIGRANTE,
-                    Ordem = 1,
-                    Nome = "Sim",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 169
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_ESTUDANTE_MIGRANTE,
-                    Ordem = 2,
-                    Nome = "Não",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 170
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_GENERO,
-                    Ordem = 1,
-                    Nome = "Masculino",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 171
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_GENERO,
-                    Ordem = 2,
-                    Nome = "Feminino",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 172
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_GRUPO_ETNICO,
-                    Ordem = 1,
-                    Nome = "Branco",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 173
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_GRUPO_ETNICO,
-                    Ordem = 2,
-                    Nome = "Negro",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 174
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_PORTA_ENTRADA,
-                    Ordem = 1,
-                    Nome = "Contato Telefônico",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 175
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_PORTA_ENTRADA,
-                    Ordem = 1,
-                    Nome = "E-mail",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 176
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_AGRUPAMENTO_DESENVOLVIMENTO,
-                    Ordem = 1,
-                    Nome = "Agitação motora",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 177
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_AGRUPAMENTO_DESENVOLVIMENTO,
-                    Ordem = 2,
-                    Nome = "Aparente sofrimento diante das rotinas propostas para seu agrupamento",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-
-                //id 178
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_AGRUPAMENTO_PROTECAO,
-                    Ordem = 1,
-                    Nome = "Em situação de risco social",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 179
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_ENSINO_APRENDIZAGEM,
-                    Ordem = 1,
-                    Nome = "Alfabetização",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 180
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_ENSINO_APRENDIZAGEM,
-                    Ordem = 2,
-                    Nome = "Suspeita de Dislexia",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 181
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_HIPOTESE_ESCRITA,
-                    Ordem = 1,
-                    Nome = "Pré-silábico",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 182
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_HIPOTESE_ESCRITA,
-                    Ordem = 2,
-                    Nome = "Silábico sem valor sonoro",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 183
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_PERMANENCIA_ESCOLAR,
-                    Ordem = 1,
-                    Nome = "Baixa frequência",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 184
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_PERMANENCIA_ESCOLAR,
-                    Ordem = 2,
-                    Nome = "Reprovação ano anterior",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 185
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
-                    Ordem = 3,
-                    Nome = "Grupo Focal",
-                    Excluido = true,
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 186
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
-                    Ordem = 3,
-                    Nome = "Reunião compartilhada",
-                    Excluido = true,
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-
-                //id 187
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
-                    Ordem = 4,
-                    Nome = "Reunião de Rede Macro (formada pelo território)",
-                    Excluido = true,
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-
-                //id 188
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
-                    Ordem = 5,
-                    Nome = "Reunião de Rede Micro (formada pelo NAAPA)",
-                    Excluido = true,
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 189
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
-                    Ordem = 6,
-                    Nome = "Reunião de Rede Micro na UE",
-                    Excluido = true,
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 190
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
-                    Ordem = 7,
-                    Nome = "Reunião em Horários Coletivos",
-                    Excluido = true,
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 191
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
-                    Ordem = 1,
-                    Nome = "Itinerância",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 192
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
-                    Ordem = 3,
-                    Nome = "Atendimento Pedagógico Domiciliar",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 193
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
-                    Ordem = 5,
-                    Nome = "Atendimento presencial na DRE",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 194
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
-                    Ordem = 6,
-                    Nome = "Atendimento Remoto",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 195
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
-                    Ordem = 7,
-                    Nome = "Análise documental",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 196
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
-                    Ordem = 8,
-                    Nome = "Entrevista",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 197
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
-                    Ordem = 9,
-                    Nome = "Grupo focal",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 198
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
-                    Ordem = 10,
-                    Nome = "Grupo reflexivo interventivo",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 199
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
-                    Ordem = 11,
-                    Nome = "Observação",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 200
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
-                    Ordem = 12,
-                    Nome = "Projeto Tecer",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 201
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
-                    Ordem = 13,
-                    Nome = "Visita técnica",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 202
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_MES,
-                    Ordem = 1,
-                    Nome = "Janeiro",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 202
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_MES,
-                    Ordem = 2,
-                    Nome = "Fevereiro",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 203
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_MODALIDADE_ATENCAO,
-                    Ordem = 1,
-                    Nome = "Itinerância",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 204
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_MODALIDADE_ATENCAO,
-                    Ordem = 2,
-                    Nome = "Grupo de Trabalho NAAPA",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 205
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PROCEDIMENTO_TRABALHO,
-                    Ordem = 1,
-                    Nome = "Ações Lúdicas",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 206
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PROCEDIMENTO_TRABALHO,
-                    Ordem = 2,
-                    Nome = "Análise Documental",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 207
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_ESTA_EM_CLASSE_HOSPITALAR,
-                    Ordem = 1,
-                    Nome = "Sim",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
-
-                //id 208
-                await InserirNaBase(new OpcaoResposta()
-                {
-                    QuestaoId = ID_QUESTAO_ESTA_EM_CLASSE_HOSPITALAR,
-                    Ordem = 2,
-                    Nome = "Não",
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    CriadoEm = DateTime.Now
-                });
+                QuestaoId = ID_QUESTAO_PRIORIDADE,
+                Ordem = 1,
+                Nome = "Normal",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 2
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_PRIORIDADE,
+                Ordem = 2,
+                Nome = "Prioritária",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 3
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS,
+                Ordem = 1,
+                Nome = "Carteira de vacinas atrasada",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 4
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS,
+                Ordem = 2,
+                Nome = "Adoece com frequência sem receber cuidados médicos",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 5
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS,
+                Ordem = 6,
+                Nome = "Doença crônica ou em tratamento de longa duração",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 6
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_TIPO_ADOECE_COM_FREQUENCIA,
+                Ordem = 1,
+                Nome = "Assadura",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 7
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_TIPO_ADOECE_COM_FREQUENCIA,
+                Ordem = 2,
+                Nome = "Bronquite",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 8
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_TIPO_ADOECE_COM_FREQUENCIA,
+                Ordem = 13,
+                Nome = "Outras",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 9
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_TIPO_DOENCA_CRONICA,
+                Ordem = 1,
+                Nome = "Anemia falciforme",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 10
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_TIPO_DOENCA_CRONICA,
+                Ordem = 2,
+                Nome = "Asma",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 11
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_TIPO_DOENCA_CRONICA,
+                Ordem = 14,
+                Nome = "Outras",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 12
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
+                Ordem = 1,
+                Nome = "Itinerância",
+                Excluido = true,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 13
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
+                Ordem = 2,
+                Nome = "Grupo de Trabalho NAAPA",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 14
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
+                Ordem = 1,
+                Nome = "Ações Lúdicas",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 15
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
+                Ordem = 2,
+                Nome = "Análise Documental",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 16 (1043)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PRIORIDADE,
+                Ordem = 1,
+                Nome = "Normal",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 17 (1044)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PRIORIDADE,
+                Ordem = 2,
+                Nome = "Prioritária",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 18 (1045)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PORTA_ENTRADA,
+                Ordem = 1,
+                Nome = "Contato Telefônico",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 19 (1046)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PORTA_ENTRADA,
+                Ordem = 2,
+                Nome = "E-mail",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 20 (1047)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PORTA_ENTRADA,
+                Ordem = 3,
+                Nome = "Família",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 21 (1048)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PORTA_ENTRADA,
+                Ordem = 4,
+                Nome = "Grupo de Trabalho",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 22 (1049)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PORTA_ENTRADA,
+                Ordem = 5,
+                Nome = "Memorando / Relatório Escolar",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 23 (1050)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PORTA_ENTRADA,
+                Ordem = 6,
+                Nome = "Ofício / MP / Vara da Infância",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 24 (1051)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PORTA_ENTRADA,
+                Ordem = 7,
+                Nome = "Rede de Proteção Social",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 25 (1052)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PORTA_ENTRADA,
+                Ordem = 8,
+                Nome = "Supervisão Escolar / Outros Setores DRE",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 26 (1053)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PORTA_ENTRADA,
+                Ordem = 9,
+                Nome = "Busca Ativa Escolar (NAAPA)",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 27 (1054)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PORTA_ENTRADA,
+                Ordem = 10,
+                Nome = "Busca Ativa Escolar (Unicef)",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 28 (1055)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_GENERO,
+                Ordem = 1,
+                Nome = "Masculino",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 29 (1056)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_GENERO,
+                Ordem = 2,
+                Nome = "Feminino",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 30 (1057)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_GENERO,
+                Ordem = 3,
+                Nome = "Outro",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 31 (1058)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_GRUPO_ETNICO,
+                Ordem = 1,
+                Nome = "Branco",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 32 (1059)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_GRUPO_ETNICO,
+                Ordem = 2,
+                Nome = "Negro",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 33 (1060)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_GRUPO_ETNICO,
+                Ordem = 3,
+                Nome = "Pardo",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 34 (1061)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_GRUPO_ETNICO,
+                Ordem = 4,
+                Nome = "Amarelo",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 35 (1062)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_GRUPO_ETNICO,
+                Ordem = 5,
+                Nome = "Indígena",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 36 (1063)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_GRUPO_ETNICO,
+                Ordem = 6,
+                Nome = "Não declarado",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 37 (1064)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_ESTUDANTE_MIGRANTE,
+                Ordem = 1,
+                Nome = "Sim",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 38 (1065)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_ESTUDANTE_MIGRANTE,
+                Ordem = 2,
+                Nome = "Não",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 39 (1066)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_RESPONSAVEL_MIGRANTE,
+                Ordem = 1,
+                Nome = "Sim",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 40 (1067)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_RESPONSAVEL_MIGRANTE,
+                Ordem = 2,
+                Nome = "Não",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 41 (1068)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_FLUXO_ALERTA,
+                Ordem = 1,
+                Nome = "Fluxo de violência",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 42 (1069)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_FLUXO_ALERTA,
+                Ordem = 2,
+                Nome = "Notificação feita pelo NAAPA",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 43 (1070)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_FLUXO_ALERTA,
+                Ordem = 3,
+                Nome = "Notificação feita pela escola",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 44 (1071)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_FLUXO_ALERTA,
+                Ordem = 4,
+                Nome = "Busca ativa escolar",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 45 (1072)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_FLUXO_ALERTA,
+                Ordem = 5,
+                Nome = "Busca ativa escolar - Unicef",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 45 (1073)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_FLUXO_ALERTA,
+                Ordem = 6,
+                Nome = "Fluxo da Gravidez",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 46 (1074)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_DESENVOLVIMENTO,
+                Ordem = 1,
+                Nome = "Agitação motora",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 47 (1075)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_DESENVOLVIMENTO,
+                Ordem = 2,
+                Nome = "Aparente sofrimento diante das rotinas propostas para seu agrupamento",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 48 (1076)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_DESENVOLVIMENTO,
+                Ordem = 3,
+                Nome = "Dificuldades nas habilidades motoras",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 49 (1077)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_DESENVOLVIMENTO,
+                Ordem = 4,
+                Nome = "Dificuldades nas habilidades de comunicação",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 50 (1078)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_DESENVOLVIMENTO,
+                Ordem = 5,
+                Nome = "Dificuldades nas interações com os adultos",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 51 (1079)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_DESENVOLVIMENTO,
+                Ordem = 6,
+                Nome = "Dificuldades nas interações com outras crianças",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 52 (1080)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_DESENVOLVIMENTO,
+                Ordem = 7,
+                Nome = "Dificuldades no desenvolvimento da comunicação verbal",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 53 (1081)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_DESENVOLVIMENTO,
+                Ordem = 8,
+                Nome = "Embotamento social",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 54 (1082)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_DESENVOLVIMENTO,
+                Ordem = 9,
+                Nome = "Isolamento",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 55 (1083)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_DESENVOLVIMENTO,
+                Ordem = 10,
+                Nome = "Medo",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 56 (1084)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_DESENVOLVIMENTO,
+                Ordem = 11,
+                Nome = "Não brinca",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 57 (1085)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_DESENVOLVIMENTO,
+                Ordem = 12,
+                Nome = "Tristeza",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 58 (1086)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROTECAO,
+                Ordem = 1,
+                Nome = "Em situação de risco social",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 59 (1087)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROTECAO,
+                Ordem = 2,
+                Nome = "Em situação de rua ou na rua",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 60 (1088)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROTECAO,
+                Ordem = 3,
+                Nome = "Família em situação de extrema pobreza",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 61 (1089)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROTECAO,
+                Ordem = 4,
+                Nome = "Responsáveis com transtornos mentais",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 62 (1090)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROTECAO,
+                Ordem = 5,
+                Nome = "Suspeita de trabalho infantil",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 63 (1091)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROTECAO,
+                Ordem = 6,
+                Nome = "Suspeita de Violência Estrutural",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 64 (1092)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROTECAO,
+                Ordem = 7,
+                Nome = "Suspeita de violência física",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 65 (1093)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROTECAO,
+                Ordem = 8,
+                Nome = "Suspeita de violência institucional",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 66 (1094)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROTECAO,
+                Ordem = 9,
+                Nome = "Suspeita de violência negligencial",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 67 (1095)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROTECAO,
+                Ordem = 10,
+                Nome = "Suspeita de violência psicológica",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 68 (1096)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROTECAO,
+                Ordem = 11,
+                Nome = "Suspeita de Violência química",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 69 (1097)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROTECAO,
+                Ordem = 12,
+                Nome = "Suspeita de violência sexual",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 70 (1098)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROMOCAO_CUIDADOS,
+                Ordem = 1,
+                Nome = "Carteira de vacinas atrasada",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 71 (1099)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROMOCAO_CUIDADOS,
+                Ordem = 2,
+                Nome = "Adoece com frequência sem receber cuidados médicos",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 72 (1100)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROMOCAO_CUIDADOS,
+                Ordem = 3,
+                Nome = "Baixo peso",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 73 (1101)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROMOCAO_CUIDADOS,
+                Ordem = 4,
+                Nome = "Excesso de peso",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 74 (1102)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROMOCAO_CUIDADOS,
+                Ordem = 5,
+                Nome = "Rotina de sono alterada",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 75 (1103)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROMOCAO_CUIDADOS,
+                Ordem = 6,
+                Nome = "Doença crônica ou em tratamento de longa duração",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 76 (1104)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROMOCAO_CUIDADOS,
+                Ordem = 7,
+                Nome = "Frequência Irregular/excesso de faltas",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 77 (1105)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROMOCAO_CUIDADOS,
+                Ordem = 8,
+                Nome = "Enurese e Encoprese",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 78 (1106)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_AGRUPAMENTO_PROMOCAO_CUIDADOS,
+                Ordem = 9,
+                Nome = "Saúde bucal comprometida",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 79 (1107)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS,
+                Ordem = 1,
+                Nome = "Assadura",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 80 (1108)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS,
+                Ordem = 2,
+                Nome = "Bronquite",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 81 (1109)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS,
+                Ordem = 3,
+                Nome = "Coriza",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 82 (1110)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS,
+                Ordem = 4,
+                Nome = "Diarreia",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 83 (1111)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS,
+                Ordem = 5,
+                Nome = "Doenças de pele",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 84 (1112)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS,
+                Ordem = 6,
+                Nome = "Dor de ouvido",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 85 (1113)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS,
+                Ordem = 7,
+                Nome = "Febre",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 86 (1114)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS,
+                Ordem = 8,
+                Nome = "Gripes",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 87 (1115)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS,
+                Ordem = 9,
+                Nome = "Manchas na pele",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 88 (1116)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS,
+                Ordem = 10,
+                Nome = "Piolho",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 89 (1117)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS,
+                Ordem = 11,
+                Nome = "Sarna",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 90 (1118)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS,
+                Ordem = 12,
+                Nome = "Vômito",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 91 (1119)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS,
+                Ordem = 13,
+                Nome = "Outras",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 92 (1120)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO,
+                Ordem = 1,
+                Nome = "Anemia falciforme",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 93 (1121)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO,
+                Ordem = 2,
+                Nome = "Asma",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 94 (1122)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO,
+                Ordem = 3,
+                Nome = "Bronquite",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 95 (1123)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO,
+                Ordem = 4,
+                Nome = "Câncer",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 96 (1124)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO,
+                Ordem = 5,
+                Nome = "Diabetes",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 97 (1125)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO,
+                Ordem = 6,
+                Nome = "Doença hepática",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 98 (1126)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO,
+                Ordem = 7,
+                Nome = "Doença renal",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 99 (1127)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO,
+                Ordem = 8,
+                Nome = "Doenças do aparelho digestivo",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 100 (1128)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO,
+                Ordem = 9,
+                Nome = "Epilepsia",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 101 (1129)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO,
+                Ordem = 10,
+                Nome = "Imunossuprimido",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 102 (1130)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO,
+                Ordem = 11,
+                Nome = "Soropositivo",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 103 (1131)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO,
+                Ordem = 12,
+                Nome = "Transplantados",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 104 (1132)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO,
+                Ordem = 13,
+                Nome = "Tuberculose",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 105 (1133)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_INFANTIL_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO,
+                Ordem = 14,
+                Nome = "Outras",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 106 (1134)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_HIPOTESE_ESCRITA,
+                Ordem = 1,
+                Nome = "Pré-silábico",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 107 (1135)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_HIPOTESE_ESCRITA,
+                Ordem = 2,
+                Nome = "Silábico sem valor sonoro",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 108 (1136)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_HIPOTESE_ESCRITA,
+                Ordem = 3,
+                Nome = "Silábico com valor sonoro",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 109 (1137)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_HIPOTESE_ESCRITA,
+                Ordem = 4,
+                Nome = "Silábico alfabético",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 110 (1138)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_HIPOTESE_ESCRITA,
+                Ordem = 5,
+                Nome = "Alfabético",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 111 (1139)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_ENSINO_APRENDIZAGEM,
+                Ordem = 1,
+                Nome = "Alfabetização",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 112 (1140)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_ENSINO_APRENDIZAGEM,
+                Ordem = 2,
+                Nome = "Suspeita de Dislexia",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 113 (1141)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_ENSINO_APRENDIZAGEM,
+                Ordem = 3,
+                Nome = "Dificuldade de Produção Texto",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 114 (1142)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_ENSINO_APRENDIZAGEM,
+                Ordem = 4,
+                Nome = "Raciocínio Lógico",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 115 (1143)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_ENSINO_APRENDIZAGEM,
+                Ordem = 5,
+                Nome = "Dificuldade leitura/compreensão",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 116 (1144)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_ENSINO_APRENDIZAGEM,
+                Ordem = 6,
+                Nome = "Desatenção",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 117 (1145)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_ENSINO_APRENDIZAGEM,
+                Ordem = 7,
+                Nome = "Desorganização",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 118 (1146)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_ENSINO_APRENDIZAGEM,
+                Ordem = 8,
+                Nome = "Resistência ao registro",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 119 (1147)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_ENSINO_APRENDIZAGEM,
+                Ordem = 9,
+                Nome = "Problemas de memorização",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 120 (1148)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_PERMANENCIA_ESCOLAR,
+                Ordem = 1,
+                Nome = "Baixa frequência",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 121 (1149)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_PERMANENCIA_ESCOLAR,
+                Ordem = 2,
+                Nome = "Reprovação ano anterior",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 122 (1150)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_PERMANENCIA_ESCOLAR,
+                Ordem = 3,
+                Nome = "Evasão escolar",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 123 (1151)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_PERMANENCIA_ESCOLAR,
+                Ordem = 4,
+                Nome = "Defasagem idade escolar",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 124 (1152)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
+                Ordem = 1,
+                Nome = "Doença Crônica",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 125 (1153)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
+                Ordem = 2,
+                Nome = "Enurese",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 126 (1154)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
+                Ordem = 3,
+                Nome = "Encoprese",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 127 (1155)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
+                Ordem = 4,
+                Nome = "Questões fonoaudiológicas",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 128 (1156)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
+                Ordem = 5,
+                Nome = "Sonolência",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 129 (1157)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
+                Ordem = 6,
+                Nome = "Transtornos alimentares",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 130 (1158)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
+                Ordem = 7,
+                Nome = "Saúde - outras questões",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 131 (1159)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
+                Ordem = 8,
+                Nome = "Auto agressão/Auto mutilação",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 132 (1160)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
+                Ordem = 9,
+                Nome = "Ideação suicida",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 133 (1161)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
+                Ordem = 10,
+                Nome = "Mutismo seletivo",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 134 (1162)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
+                Ordem = 11,
+                Nome = "TDA",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 135 (1163)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
+                Ordem = 12,
+                Nome = "TDAH",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 136 (1164)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
+                Ordem = 13,
+                Nome = "TOD",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 137 (1165)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
+                Ordem = 14,
+                Nome = "Saúde mental - outras questões",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 138 (1166)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
+                Ordem = 15,
+                Nome = "Agitação",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 139 (1167)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
+                Ordem = 16,
+                Nome = "Agressividade",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 140 (1168)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
+                Ordem = 17,
+                Nome = "Apatia",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 141 (1169)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
+                Ordem = 18,
+                Nome = "Comportamento Infantilizado",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 142 (1170)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
+                Ordem = 19,
+                Nome = "Dificuldade de Interação",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 143 (1171)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
+                Ordem = 20,
+                Nome = "Luto",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 144 (1172)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
+                Ordem = 21,
+                Nome = "Medo",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 145 (1173)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
+                Ordem = 22,
+                Nome = "Resistência a regras",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 146 (1174)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
+                Ordem = 23,
+                Nome = "Timidez",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 147 (1175)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
+                Ordem = 24,
+                Nome = "Gravidez na adolescência",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 148 (1176)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
+                Ordem = 25,
+                Nome = "Comportamento - outras questões",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 149 (1177)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
+                Ordem = 1,
+                Nome = "Acolhimento Institucional",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 150 (1178)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
+                Ordem = 2,
+                Nome = "Frequenta ambientes de risco social",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 151 (1179)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
+                Ordem = 3,
+                Nome = "Medidas socioeducativas",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 152 (1180)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
+                Ordem = 4,
+                Nome = "Pobreza extrema",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 153 (1181)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
+                Ordem = 5,
+                Nome = "Responsável com S. Mental, Drogadição ou Deficiência",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 154 (1182)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
+                Ordem = 6,
+                Nome = "Suspeita de negligência",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 155 (1183)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
+                Ordem = 7,
+                Nome = "Suspeita de violência física",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 156 (1184)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
+                Ordem = 8,
+                Nome = "Suspeita de violência sexual",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 157 (1185)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
+                Ordem = 9,
+                Nome = "Suspeita de violência psicológica",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 158 (1186)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
+                Ordem = 10,
+                Nome = "Suspeita de violência institucional",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 159 (1187)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
+                Ordem = 11,
+                Nome = "Suspeita/Uso de substâncias psicoativas",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 160 (1188)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
+                Ordem = 12,
+                Nome = "Trabalho infantil",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 161 (1188)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
+                Ordem = 12,
+                Nome = "Trabalho infantil",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 162 (1189)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
+                Ordem = 13,
+                Nome = "Exploração sexual",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 163 (1190)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
+                Ordem = 14,
+                Nome = "Envolvimento com o tráfico de drogas",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 165 (1191)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
+                Ordem = 15,
+                Nome = "Responsável com problemas de saúde",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 166 (1192)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
+                Ordem = 16,
+                Nome = "Responsável recluso",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 167 (1193)
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_EF_E_OUTROS_VULNERABILIDADE_SOCIAL,
+                Ordem = 17,
+                Nome = "Em situação de rua ou na rua",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 168
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_ESTUDANTE_MIGRANTE,
+                Ordem = 1,
+                Nome = "Sim",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 169
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_ESTUDANTE_MIGRANTE,
+                Ordem = 2,
+                Nome = "Não",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 170
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_GENERO,
+                Ordem = 1,
+                Nome = "Masculino",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 171
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_GENERO,
+                Ordem = 2,
+                Nome = "Feminino",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 172
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_GRUPO_ETNICO,
+                Ordem = 1,
+                Nome = "Branco",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 173
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_GRUPO_ETNICO,
+                Ordem = 2,
+                Nome = "Negro",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 174
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_PORTA_ENTRADA,
+                Ordem = 1,
+                Nome = "Contato Telefônico",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 175
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_PORTA_ENTRADA,
+                Ordem = 1,
+                Nome = "E-mail",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 176
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_AGRUPAMENTO_DESENVOLVIMENTO,
+                Ordem = 1,
+                Nome = "Agitação motora",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 177
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_AGRUPAMENTO_DESENVOLVIMENTO,
+                Ordem = 2,
+                Nome = "Aparente sofrimento diante das rotinas propostas para seu agrupamento",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+
+            //id 178
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_AGRUPAMENTO_PROTECAO,
+                Ordem = 1,
+                Nome = "Em situação de risco social",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 179
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_ENSINO_APRENDIZAGEM,
+                Ordem = 1,
+                Nome = "Alfabetização",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 180
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_ENSINO_APRENDIZAGEM,
+                Ordem = 2,
+                Nome = "Suspeita de Dislexia",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 181
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_HIPOTESE_ESCRITA,
+                Ordem = 1,
+                Nome = "Pré-silábico",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 182
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_HIPOTESE_ESCRITA,
+                Ordem = 2,
+                Nome = "Silábico sem valor sonoro",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 183
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_PERMANENCIA_ESCOLAR,
+                Ordem = 1,
+                Nome = "Baixa frequência",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 184
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_PERMANENCIA_ESCOLAR,
+                Ordem = 2,
+                Nome = "Reprovação ano anterior",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 185
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
+                Ordem = 3,
+                Nome = "Grupo Focal",
+                Excluido = true,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 186
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
+                Ordem = 3,
+                Nome = "Reunião compartilhada",
+                Excluido = true,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+
+            //id 187
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
+                Ordem = 4,
+                Nome = "Reunião de Rede Macro (formada pelo território)",
+                Excluido = true,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+
+            //id 188
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
+                Ordem = 5,
+                Nome = "Reunião de Rede Micro (formada pelo NAAPA)",
+                Excluido = true,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 189
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
+                Ordem = 6,
+                Nome = "Reunião de Rede Micro na UE",
+                Excluido = true,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 190
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
+                Ordem = 7,
+                Nome = "Reunião em Horários Coletivos",
+                Excluido = true,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 191
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
+                Ordem = 1,
+                Nome = "Itinerância",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 192
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
+                Ordem = 3,
+                Nome = "Atendimento Pedagógico Domiciliar",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 193
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
+                Ordem = 5,
+                Nome = "Atendimento presencial na DRE",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 194
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
+                Ordem = 6,
+                Nome = "Atendimento Remoto",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 195
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
+                Ordem = 7,
+                Nome = "Análise documental",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 196
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
+                Ordem = 8,
+                Nome = "Entrevista",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 197
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
+                Ordem = 9,
+                Nome = "Grupo focal",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 198
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
+                Ordem = 10,
+                Nome = "Grupo reflexivo interventivo",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 199
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
+                Ordem = 11,
+                Nome = "Observação",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 200
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
+                Ordem = 12,
+                Nome = "Projeto Tecer",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 201
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
+                Ordem = 13,
+                Nome = "Visita técnica",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 202
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_MES,
+                Ordem = 1,
+                Nome = "Janeiro",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 202
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_MES,
+                Ordem = 2,
+                Nome = "Fevereiro",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 203
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_MODALIDADE_ATENCAO,
+                Ordem = 1,
+                Nome = "Itinerância",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 204
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_MODALIDADE_ATENCAO,
+                Ordem = 2,
+                Nome = "Grupo de Trabalho NAAPA",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 205
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PROCEDIMENTO_TRABALHO,
+                Ordem = 1,
+                Nome = "Ações Lúdicas",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 206
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_RELATORIO_DINAMICO_NAAPA_PROCEDIMENTO_TRABALHO,
+                Ordem = 2,
+                Nome = "Análise Documental",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 207
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_ESTA_EM_CLASSE_HOSPITALAR,
+                Ordem = 1,
+                Nome = "Sim",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 208
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_ESTA_EM_CLASSE_HOSPITALAR,
+                Ordem = 2,
+                Nome = "Não",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
         }
 
 
@@ -2542,7 +2866,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             {
                 Nome = "Questionário Encaminhamento NAAPA Etapa 1 Seção 1",
                 Tipo = TipoQuestionario.EncaminhamentoNAAPA,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
 
             //2
@@ -2570,7 +2896,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             {
                 Nome = "Questionário Relatório Dinâmico Encaminhamento NAAPA",
                 Tipo = TipoQuestionario.RelatorioDinamicoEncaminhamentoNAAPA,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
 
             //5
@@ -2616,7 +2944,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Obrigatorio = true,
                 Tipo = TipoQuestao.Data,
                 NomeComponente = "DATA_ENTRADA_QUEIXA",
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
 
             //id 2
@@ -2628,7 +2958,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Obrigatorio = true,
                 Tipo = TipoQuestao.Combo,
                 NomeComponente = "PRIORIDADE",
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
 
             //id 3
@@ -2841,7 +3173,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Nome = QUESTAO_NOME_DATA_DE_ENTRADA_DA_QUEIXA,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_DATA_DE_ENTRADA_DA_QUEIXA,
                 Tipo = TipoQuestao.Periodo,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
 
             //id 18 (293)
@@ -2852,7 +3186,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Nome = QUESTAO_NOME_PRIORIDADE,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_PRIORIDADE,
                 Tipo = TipoQuestao.ComboMultiplaEscolha,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
 
             //id 19 (294)
@@ -2863,7 +3199,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Nome = QUESTAO_NOME_PORTA_ENTRADA,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_PORTA_ENTRADA,
                 Tipo = TipoQuestao.ComboMultiplaEscolha,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
 
             //id 20 (295)
@@ -2874,7 +3212,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Nome = QUESTAO_NOME_GENERO,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_GENERO,
                 Tipo = TipoQuestao.ComboMultiplaEscolha,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
 
             //id 21 (296)
@@ -2885,7 +3225,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Nome = QUESTAO_NOME_GRUPO_ETNICO,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_GRUPO_ETNICO,
                 Tipo = TipoQuestao.ComboMultiplaEscolha,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
 
             //id 22 (297)
@@ -2896,7 +3238,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Nome = QUESTAO_NOME_ESTUDANTE_MIGRANTE,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_ESTUDANTE_MIGRANTE,
                 Tipo = TipoQuestao.ComboMultiplaEscolha,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
 
             //id 23 (298)
@@ -2907,18 +3251,22 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Nome = QUESTAO_NOME_RESPONSAVEL_MIGRANTE,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_RESPONSAVEL_MIGRANTE,
                 Tipo = TipoQuestao.ComboMultiplaEscolha,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
 
             //id 24 (299)
             await InserirNaBase(new Questao()
             {
                 QuestionarioId = QUESTIONARIO_RELATORIO_DINAMICO_ENCAMINHAMENTO_NAAPA_4,
-                Ordem = 7, 
+                Ordem = 7,
                 Nome = QUESTAO_NOME_FLUXO_ALERTA,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_FLUXO_ALERTA,
                 Tipo = TipoQuestao.ComboMultiplaEscolha,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
 
             //id 25 (300)
@@ -2929,7 +3277,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Nome = QUESTAO_NOME_AGRUPAMENTO_DESENVOLVIMENTO,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_AGRUPAMENTO_DESENVOLVIMENTO,
                 Tipo = TipoQuestao.ComboMultiplaEscolha,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
 
             //id 26 (301)
@@ -2940,7 +3290,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Nome = QUESTAO_NOME_AGRUPAMENTO_PROTECAO,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_AGRUPAMENTO_PROTECAO,
                 Tipo = TipoQuestao.ComboMultiplaEscolha,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
 
             //id 27 (302)
@@ -2951,18 +3303,22 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Nome = QUESTAO_NOME_AGRUPAMENTO_PROMOCAO_CUIDADOS,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_AGRUPAMENTO_PROMOCAO_CUIDADOS,
                 Tipo = TipoQuestao.ComboMultiplaEscolha,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
 
             //id 28 (303)
             await InserirNaBase(new Questao()
             {
                 QuestionarioId = QUESTIONARIO_RELATORIO_DINAMICO_ENCAMINHAMENTO_NAAPA_INFANTIL_5,
-                Ordem = 1, 
+                Ordem = 1,
                 Nome = QUESTAO_NOME_SELECIONE_UM_TIPO,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS,
                 Tipo = TipoQuestao.ComboMultiplaEscolha,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
 
             //id 29 (304)
@@ -2973,7 +3329,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Nome = QUESTAO_NOME_SELECIONE_UM_TIPO,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO,
                 Tipo = TipoQuestao.ComboMultiplaEscolha,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
 
             //id 30 (305)
@@ -2984,7 +3342,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Nome = QUESTAO_NOME_HIPOTESE_ESCRITA,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_HIPOTESE_ESCRITA,
                 Tipo = TipoQuestao.ComboMultiplaEscolha,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
 
             //id 31 (305)
@@ -2995,7 +3355,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Nome = QUESTAO_NOME_ENSINO_APRENDIZAGEM,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_ENSINO_APRENDIZAGEM,
                 Tipo = TipoQuestao.ComboMultiplaEscolha,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
 
             //id 32 (306)
@@ -3006,7 +3368,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Nome = QUESTAO_NOME_PERMANENCIA_ESCOLAR,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_PERMANENCIA_ESCOLAR,
                 Tipo = TipoQuestao.ComboMultiplaEscolha,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
 
             //id 33 (307)
@@ -3017,7 +3381,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Nome = QUESTAO_NOME_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_SAUDE_MENTAL_DIFIC_INTERACOES_SOCIAIS,
                 Tipo = TipoQuestao.ComboMultiplaEscolha,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
 
             //id 34 (308)
@@ -3028,7 +3394,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Nome = QUESTAO_NOME_VULNERABILIDADE_SOCIAL,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_VULNERABILIDADE_SOCIAL,
                 Tipo = TipoQuestao.ComboMultiplaEscolha,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
 
             //ID 35

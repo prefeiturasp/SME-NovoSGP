@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
@@ -117,7 +116,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 
             notificacao.FirstOrDefault().CriadoRF.ShouldBe(USUARIO_PAEE_LOGIN_5555555);
         }
-        
+
         [Fact]
         public async Task Ao_editar_encaminhamento_concluindo_parecer_paai_paee_resposta_nao_para_indefirir()
         {
@@ -190,24 +189,24 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-             await CriarPendenciasEncaminhamento(PerfilUsuario.PAEE);
+            await CriarPendenciasEncaminhamento(PerfilUsuario.PAEE);
 
             var pendenciasPaee = ObterTodos<Pendencia>();
             pendenciasPaee.ShouldNotBeNull();
             (pendenciasPaee.FirstOrDefault().Tipo == TipoPendencia.AEE).ShouldBeTrue();
-            
+
             var pendenciasEncaminhamentosPaee = ObterTodos<PendenciaEncaminhamentoAEE>();
             pendenciasEncaminhamentosPaee.ShouldNotBeNull();
             pendenciasEncaminhamentosPaee.Count.ShouldBe(1);
-            
+
             var pendenciaPerfils = ObterTodos<PendenciaPerfil>();
             pendenciaPerfils.ShouldNotBeNull();
             pendenciaPerfils.Count.ShouldBe(1);
-            
+
             var pendenciaPerfilUsuarios = ObterTodos<PendenciaPerfilUsuario>();
             pendenciaPerfilUsuarios.ShouldNotBeNull();
             pendenciaPerfilUsuarios.Count.ShouldBe(1);
-            
+
             var useCase = ObterUseCaseConcluirEncaminhamento();
             await useCase.Executar(1);
 
@@ -217,20 +216,20 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             var notificacao = ObterTodos<Notificacao>();
             notificacao.ShouldNotBeNull();
             notificacao.FirstOrDefault().CriadoRF.ShouldBe(USUARIO_PAEE_LOGIN_5555555);
-            
+
             pendenciasPaee = ObterTodos<Pendencia>();
             pendenciasPaee.ShouldNotBeNull();
             (pendenciasPaee.FirstOrDefault().Tipo == TipoPendencia.AEE).ShouldBeTrue();
             pendenciasPaee.FirstOrDefault().Excluido.ShouldBeTrue();
-            
+
             pendenciasEncaminhamentosPaee = ObterTodos<PendenciaEncaminhamentoAEE>();
             pendenciasEncaminhamentosPaee.ShouldNotBeNull();
             pendenciasEncaminhamentosPaee.Count.ShouldBe(0);
-            
+
             pendenciaPerfils = ObterTodos<PendenciaPerfil>();
             pendenciaPerfils.ShouldNotBeNull();
             pendenciaPerfils.Count.ShouldBe(0);
-            
+
             pendenciaPerfilUsuarios = ObterTodos<PendenciaPerfilUsuario>();
             pendenciaPerfilUsuarios.ShouldNotBeNull();
             pendenciaPerfilUsuarios.Count.ShouldBe(0);
@@ -266,7 +265,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
-            
+
             await InserirNaBase(new PendenciaPerfilUsuario()
             {
                 PendenciaPerfilId = 1,
@@ -277,7 +276,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 CriadoRF = SISTEMA_CODIGO_RF
             });
         }
-        
+
         private FiltroAEEDto ObterFiltro(string perfil)
         {
             return new FiltroAEEDto()

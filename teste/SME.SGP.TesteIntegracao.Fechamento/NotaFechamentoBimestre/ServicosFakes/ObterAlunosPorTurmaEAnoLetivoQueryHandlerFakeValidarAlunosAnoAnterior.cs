@@ -1,16 +1,16 @@
+using MediatR;
+using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Aplicacao;
-using SME.SGP.Dominio;
-using SME.SGP.Infra;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre.ServicosFakes
 {
-    public class ObterAlunosPorTurmaEAnoLetivoQueryHandlerFakeValidarAlunosAnoAnterior: IRequestHandler<ObterAlunosPorTurmaEAnoLetivoQuery, IEnumerable<AlunoPorTurmaResposta>>
+    public class ObterAlunosPorTurmaEAnoLetivoQueryHandlerFakeValidarAlunosAnoAnterior : IRequestHandler<ObterAlunosPorTurmaEAnoLetivoQuery, IEnumerable<AlunoPorTurmaResposta>>
     {
         private const string ALUNO_CODIGO_1 = "1";
         private const string ALUNO_CODIGO_2 = "2";

@@ -111,16 +111,16 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("bimestres/modalidades/{modalidade}")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterBimestres([FromQuery]  bool opcaoTodos, [FromQuery]  bool opcaoFinal, Modalidade modalidade, [FromServices] IObterBimestrePorModalidadeUseCase obterBimestrePorModalidadeUseCase)
+        public async Task<IActionResult> ObterBimestres([FromQuery] bool opcaoTodos, [FromQuery] bool opcaoFinal, Modalidade modalidade, [FromServices] IObterBimestrePorModalidadeUseCase obterBimestrePorModalidadeUseCase)
         {
-            return Ok(await (obterBimestrePorModalidadeUseCase.Executar( opcaoTodos, opcaoFinal, modalidade)));
+            return Ok(await (obterBimestrePorModalidadeUseCase.Executar(opcaoTodos, opcaoFinal, modalidade)));
         }
 
-        
+
         [HttpGet("acompanhamento-fechamento/fechamentos/situacoes")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterSituacoesFechamento ([FromQuery] bool unificarNaoIniciado, [FromServices] IObterSituacoesFechamentoUseCase obterSituacoesFechamentoUseCase)
+        public async Task<IActionResult> ObterSituacoesFechamento([FromQuery] bool unificarNaoIniciado, [FromServices] IObterSituacoesFechamentoUseCase obterSituacoesFechamentoUseCase)
         {
             return Ok(await (obterSituacoesFechamentoUseCase.Executar(unificarNaoIniciado)));
         }

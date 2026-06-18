@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            foreach(var atualizar in listaAtualizacao)
+            foreach (var atualizar in listaAtualizacao)
                 await repositorio.AtualizarLinkImagem(atualizar.id, atualizar.nomeAnterior, atualizar.nomeAtual);
 
             return true;

@@ -1,15 +1,13 @@
 ﻿using MediatR;
+using Npgsql;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio;
-using SME.SGP.Infra;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
-using Npgsql;
-using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Aplicacao
 {
@@ -20,7 +18,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioConselhoClasse repositorioConselhoClasse;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
 
-        public SalvarConselhoClasseAlunoCommandHandler(IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,IMediator mediator,IRepositorioConselhoClasse repositorioConselhoClasse,
+        public SalvarConselhoClasseAlunoCommandHandler(IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno, IMediator mediator, IRepositorioConselhoClasse repositorioConselhoClasse,
             IConsultasPeriodoFechamento consultasPeriodoFechamento)
         {
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
@@ -29,7 +27,7 @@ namespace SME.SGP.Aplicacao
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
         }
 
-        public async Task<long> Handle(SalvarConselhoClasseAlunoCommand request,CancellationToken cancellationToken)
+        public async Task<long> Handle(SalvarConselhoClasseAlunoCommand request, CancellationToken cancellationToken)
         {
             var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(request.ConselhoClasseAluno.ConselhoClasse.FechamentoTurmaId, request.ConselhoClasseAluno.AlunoCodigo), cancellationToken);
 
@@ -74,7 +72,7 @@ namespace SME.SGP.Aplicacao
             var conselhoClasseExistente = await mediator.Send(new ObterConselhoClassePorTurmaEPeriodoQuery(fechamentoTurma.TurmaId, fechamentoTurma.PeriodoEscolarId));
 
             if (conselhoClasseExistente.NaoEhNulo())
-               throw new NegocioException(string.Format(MensagemNegocioConselhoClasse.JA_EXISTE_CONSELHO_CLASSE_GERADO_PARA_TURMA, fechamentoTurma.Turma.Nome));
+                throw new NegocioException(string.Format(MensagemNegocioConselhoClasse.JA_EXISTE_CONSELHO_CLASSE_GERADO_PARA_TURMA, fechamentoTurma.Turma.Nome));
 
             if (fechamentoTurma.PeriodoEscolarId.HasValue)
             {

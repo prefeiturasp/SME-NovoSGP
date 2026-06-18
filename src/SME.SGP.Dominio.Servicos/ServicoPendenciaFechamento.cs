@@ -1,7 +1,5 @@
 ﻿using MediatR;
-using Minio.DataModel;
 using SME.SGP.Aplicacao;
-using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -59,10 +57,10 @@ namespace SME.SGP.Dominio.Servicos
             if (aulasPendentes.NaoEhNulo() && aulasPendentes.Any())
             {
                 var aulasId = aulasPendentes.Select(a => a.Id).ToArray();
-                
+
                 var aulasIdComPendenciaCriada = await mediator
                     .Send(new ObterAulasReposicaoComPendenciaCriadaQuery(aulasId));
-                
+
                 aulasPendentes = aulasPendentes.Where(a => !aulasIdComPendenciaCriada.Contains(a.Id));
 
                 if (aulasPendentes.Any())
@@ -156,7 +154,7 @@ namespace SME.SGP.Dominio.Servicos
                         {
                             CodigoRf = professorTitularAtualDaTurma.ProfessorRf,
                             Nome = professorTitularAtualDaTurma.ProfessorNome
-                        } 
+                        }
                         : professor;
 
                     mensagem.AppendLine($"Professor {professor.CodigoRf} - {professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")} {(aula.EhReposicao() ? " - Reposição" : String.Empty)}.<br>");
@@ -205,7 +203,7 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     var professor = usuariosPendencias
                         .FirstOrDefault(c => c.usuario.CodigoRf == atividade.ProfessorRf && professoresTitularesDaTurma.Any(p => p.ProfessorRf == c.usuario.CodigoRf)).usuario ??
-                                                  usuariosPendencias.First(up => up.turmaCodigo.Equals(atividade.TurmaId) && 
+                                                  usuariosPendencias.First(up => up.turmaCodigo.Equals(atividade.TurmaId) &&
                                                                            (atividade.Disciplinas.Any() ? up.disciplinaId == atividade.Disciplinas.First().DisciplinaId : true)).usuario;
 
 
@@ -230,7 +228,7 @@ namespace SME.SGP.Dominio.Servicos
             var registrosAulas = repositorioAula
                 .ObterAulasSemFrequenciaRegistrada(turmaCodigo, disciplinaId.ToString(), inicioPeriodo, fimPeriodo)
                 .Where(a => a.PermiteRegistroFrequencia());
-                
+
             var registrosAulasSemFrequencia = (await ObterAulasValidasParaPendencia(registrosAulas, fechamentoId, TipoPendencia.AulasSemFrequenciaNaDataDoFechamento)).ToList();
 
             if (registrosAulasSemFrequencia.NaoEhNulo() && registrosAulasSemFrequencia.Any())
@@ -241,7 +239,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 var aulasNormais = registrosAulasSemFrequencia.Where(w => !w.AulaCJ);
                 var aulasCJ = registrosAulasSemFrequencia.Where(w => w.AulaCJ);
-                
+
                 var mensagem = new StringBuilder($"A aulas de {componenteCurricular.Nome} da turma {turmaNome} a seguir estão sem frequência:<br>");
                 var mensagemHtml = new StringBuilder($"<table><tr class=\"nao-exibir\"><td colspan=\"2\">A aulas de {componenteCurricular.Nome} da turma {turmaNome} a seguir estão sem frequência:</td></tr>");
                 mensagemHtml.Append("<tr class=\"cabecalho\"><td>Data da aula</td><td>Professor</td></tr>");
@@ -368,7 +366,7 @@ namespace SME.SGP.Dominio.Servicos
                     rfProfTitularTurma = professoresTitularesDaTurma.FirstOrDefault(professor => professor.DisciplinasId().Contains(long.Parse(professorRF.disciplnaId)))?.ProfessorRf;
                 else
                     rfProfTitularTurma = professoresTitularesDaTurma.FirstOrDefault()?.ProfessorRf;
-                
+
                 var rfConsiderado = !string.IsNullOrWhiteSpace(professorRF.rf) ? professorRF.rf : rfProfTitularTurma;
                 if (!string.IsNullOrWhiteSpace(rfConsiderado))
                 {
@@ -397,13 +395,13 @@ namespace SME.SGP.Dominio.Servicos
         }
 
         private async Task GerarPendencia(
-                                        long fechamentoId, 
-                                        TipoPendencia tipoPendencia, 
-                                        string mensagem, 
-                                        string professorRf, 
-                                        string descricaoHtml, 
-                                        int bimestre, 
-                                        long turmaId, 
+                                        long fechamentoId,
+                                        TipoPendencia tipoPendencia,
+                                        string mensagem,
+                                        string professorRf,
+                                        string descricaoHtml,
+                                        int bimestre,
+                                        long turmaId,
                                         IEnumerable<long> idsAula = null,
                                         IEnumerable<long> idsAtividadeAvaliativa = null,
                                         bool IgnorarExclusaoPendencia = false)
@@ -437,7 +435,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             if (pendenciaFechamentoId > 0 && idsAula.NaoEhNulo() && idsAula.Any())
             {
-                foreach(var idAula in idsAula)
+                foreach (var idAula in idsAula)
                 {
                     await mediator.Send(new SalvarPendenciaFechamentoAulaCommand(idAula, pendenciaFechamentoId));
                 }
@@ -472,7 +470,7 @@ namespace SME.SGP.Dominio.Servicos
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.VerificaPendenciasFechamentoTurma,
                                                            new VerificaPendenciasFechamentoCommand(pendenciaFechamento.FechamentoId, pendenciaFechamento.Bimestre, pendenciaFechamento.TurmaId),
                                                            Guid.NewGuid(),
-                                                           null, 
+                                                           null,
                                                            false));
             return auditoriaDto;
         }

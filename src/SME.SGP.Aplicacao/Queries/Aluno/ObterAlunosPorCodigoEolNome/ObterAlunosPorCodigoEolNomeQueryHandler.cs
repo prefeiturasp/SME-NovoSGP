@@ -1,6 +1,7 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
+using Newtonsoft.Json;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -9,8 +10,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
 {
@@ -48,7 +47,7 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
             }
 
             return alunoSimplesDto;
-            
+
         }
 
         private string OberterNomeTurmaFormatado(Turma turma)
@@ -61,7 +60,7 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
         private string OberterNomeTurma(Turma turma)
         {
             if (turma.NaoEhNulo())
-                return $"- {turma.Nome}"; 
+                return $"- {turma.Nome}";
             return string.Empty;
         }
 
@@ -77,11 +76,11 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
                                       + (somenteAtivos == true ? $"&somenteAtivos={somenteAtivos}" : "");
 
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
-            
-            var resposta = await httpClient.GetAsync(string.Concat(url,urlComplementar));
+
+            var resposta = await httpClient.GetAsync(string.Concat(url, urlComplementar));
 
             if (!resposta.IsSuccessStatusCode)
-                throw new NegocioException(string.Format(MensagemNegocioComuns.NAO_FORAM_ENCONTRADOS_ALUNOS_ATIVOS_PARA_UE ,codigoUe));
+                throw new NegocioException(string.Format(MensagemNegocioComuns.NAO_FORAM_ENCONTRADOS_ALUNOS_ATIVOS_PARA_UE, codigoUe));
 
             if (resposta.StatusCode == HttpStatusCode.NoContent)
                 return alunos;

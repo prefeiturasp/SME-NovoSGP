@@ -18,7 +18,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(PaginacaoResultadoDto<PendenciaFechamentoResumoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PF_C, Policy = "Bearer")]
-        public async Task<IActionResult> Listar([FromQuery]FiltroPendenciasFechamentosDto filtro, [FromServices]IConsultasPendenciaFechamento consultasPendenciaFechamento)
+        public async Task<IActionResult> Listar([FromQuery] FiltroPendenciasFechamentosDto filtro, [FromServices] IConsultasPendenciaFechamento consultasPendenciaFechamento)
         {
             return Ok(await consultasPendenciaFechamento.Listar(filtro));
         }
@@ -27,7 +27,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(PendenciaFechamentoCompletoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PF_C, Policy = "Bearer")]
-        public async Task<IActionResult> Get(long pendenciaId, [FromServices]IConsultasPendenciaFechamento consultasPendenciaFechamento)
+        public async Task<IActionResult> Get(long pendenciaId, [FromServices] IConsultasPendenciaFechamento consultasPendenciaFechamento)
         {
             return Ok(await consultasPendenciaFechamento.ObterPorPendenciaId(pendenciaId));
         }
@@ -36,7 +36,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<AuditoriaPersistenciaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PF_A, Policy = "Bearer")]
-        public async Task<IActionResult> Aprovar([FromBody] IEnumerable<long> pendenciasIds, [FromServices]IComandosPendenciaFechamento comandosPendenciaFechamento)
+        public async Task<IActionResult> Aprovar([FromBody] IEnumerable<long> pendenciasIds, [FromServices] IComandosPendenciaFechamento comandosPendenciaFechamento)
         {
             return Ok(await comandosPendenciaFechamento.Aprovar(pendenciasIds));
         }

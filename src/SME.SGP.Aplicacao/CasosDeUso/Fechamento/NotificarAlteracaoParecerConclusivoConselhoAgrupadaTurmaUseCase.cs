@@ -7,7 +7,7 @@ namespace SME.SGP.Aplicacao
     public class NotificarAlteracaoParecerConclusivoConselhoAgrupadaTurmaUseCase : AbstractUseCase, INotificarAlteracaoParecerConclusivoConselhoAgrupadaTurmaUseCase
     {
         public NotificarAlteracaoParecerConclusivoConselhoAgrupadaTurmaUseCase(IMediator mediator) : base(mediator)
-        { 
+        {
         }
 
         public async Task<bool> Executar(MensagemRabbit param)

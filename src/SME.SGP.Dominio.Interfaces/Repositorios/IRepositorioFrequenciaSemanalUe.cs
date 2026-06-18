@@ -6,6 +6,6 @@ namespace SME.SGP.Dominio.Interfaces.Repositorios
 {
     public interface IRepositorioFrequenciaSemanalUe
     {
-        Task<IEnumerable<PainelEducacionalFrequenciaSemanalUeDto>> ObterFrequenciaSemanalUe(string codigoDre, int anoLetivo);       
+        Task<IEnumerable<PainelEducacionalFrequenciaSemanalUeDto>> ObterFrequenciaSemanalUe(string codigoDre, int anoLetivo);
     }
 }

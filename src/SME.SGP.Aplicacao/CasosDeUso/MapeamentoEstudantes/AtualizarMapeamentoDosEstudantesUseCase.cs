@@ -17,11 +17,11 @@ namespace SME.SGP.Aplicacao
         {
             DateTime.TryParse(param.Mensagem?.ToString() ?? string.Empty, out DateTime dataBase);
             var identificadores = await mediator.Send(new ObterIdentificadoresDosMapeamentosDoBimestreAtualQuery(
-                                                                                            dataBase.Equals(DateTime.MinValue) 
+                                                                                            dataBase.Equals(DateTime.MinValue)
                                                                                             ? DateTimeExtension.HorarioBrasilia().Date
                                                                                             : dataBase));
-           
-            foreach(var identificador in identificadores)
+
+            foreach (var identificador in identificadores)
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ExecutarAtualizacaoMapeamentoEstudantesBimestre, identificador, Guid.NewGuid(), null));
 
             return true;

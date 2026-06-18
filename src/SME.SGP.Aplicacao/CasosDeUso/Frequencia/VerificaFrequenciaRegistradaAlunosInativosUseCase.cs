@@ -1,9 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -18,8 +15,8 @@ namespace SME.SGP.Aplicacao
             bool validaTurma = !String.IsNullOrEmpty(param.Mensagem.ToString());
 
             if (validaTurma)
-                 return await mediator.Send(new VerificaFrequenciaRegistradaParaAlunosInativosCommand() { TurmaCodigo = param.Mensagem.ToString() });
-            
+                return await mediator.Send(new VerificaFrequenciaRegistradaParaAlunosInativosCommand() { TurmaCodigo = param.Mensagem.ToString() });
+
             return false;
         }
     }

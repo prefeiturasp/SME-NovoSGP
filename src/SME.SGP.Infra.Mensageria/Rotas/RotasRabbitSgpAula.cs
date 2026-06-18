@@ -30,7 +30,7 @@
         public const string RotaNotificacaoAlunosFaltososDre = "sgp.aulas.alunos.faltosos.Dre.notificar";
         public const string RotaNotificacaoAlunosFaltososDreUe = "sgp.aulas.alunos.faltosos.Dre.Ue.notificar";
         public const string RotaNotificacaoAlunosFaltosos = "sgp.aulas.alunos.faltosos.notificar";
-        public const string RotaNotificacaoAulasPrevistasSync = "sgp.aulas.previstas.notificacao.sync"; 
+        public const string RotaNotificacaoAulasPrevistasSync = "sgp.aulas.previstas.notificacao.sync";
         public const string RotaNotificacaoAulasPrevistas = "sgp.aulas.previstas.notificacao";
         public const string RotaMuralAvisosSync = "sgp.mural.avisos.sync";
         public const string NotificacoesDaAulaExcluir = "sgp.notificacoes.aula.excluir";

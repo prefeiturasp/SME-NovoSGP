@@ -100,7 +100,7 @@ namespace SME.SGP.Aplicacao
             var ue = await mediator.Send(new ObterUePorIdQuery(ueId));
             if (ue.EhNulo())
                 throw new NegocioException("Não foi possível encrontra a UE!");
-            
+
             return $"{ue.TipoEscola.ShortName()} {ue.Nome}";
         }
 

@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
                                        string ueCodigo = "",
                                        string turmaCodigo = "",
                                        int ano = 0,
-                                       long codigo = 0, 
+                                       long codigo = 0,
                                        DateTime? criadoEm = null,
                                        string nomeUsuario = "",
                                        long usuarioId = 0)

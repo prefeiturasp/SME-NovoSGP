@@ -4,7 +4,7 @@ namespace SME.SGP.Infra
 {
     public class ArquivoArmazenadoItineranciaDto
     {
-        public ArquivoArmazenadoItineranciaDto(long id, Guid codigo,string path)
+        public ArquivoArmazenadoItineranciaDto(long id, Guid codigo, string path)
         {
             Id = id;
             Codigo = codigo;

@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao.Commands.PendenciaCalendarioUe.ExcluirPendenciaCalen
         public async Task<bool> Handle(ExcluirPendenciaCalendarioUeCommand request, CancellationToken cancellationToken)
         {
             var pendenciasCalendario = await repositorioPendenciaCalendarioUe.ObterPendenciasPorCalendarioUe(request.TipoCalendarioId, request.UeId, request.TipoPendencia);
-            foreach(var pendenciaCalendario in pendenciasCalendario)
+            foreach (var pendenciaCalendario in pendenciasCalendario)
             {
                 repositorioPendenciaCalendarioUe.Remover(pendenciaCalendario);
 

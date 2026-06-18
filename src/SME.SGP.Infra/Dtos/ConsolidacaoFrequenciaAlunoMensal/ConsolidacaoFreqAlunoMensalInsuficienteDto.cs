@@ -14,6 +14,6 @@ namespace SME.SGP.Infra
         public int Mes { get; set; }
         public int AnoLetivo { get; set; }
         public decimal Frequencia { get; set; }
-        
+
     }
 }

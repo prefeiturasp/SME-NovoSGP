@@ -17,7 +17,6 @@ using SME.SGP.TesteIntegracao.MapeamentoEstudantes.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -26,7 +25,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
     public class Ao_executar_atualizacao_informacoes_mapeamento_estudante : MapeamentoBase
     {
         public Ao_executar_atualizacao_informacoes_mapeamento_estudante(CollectionFixture collectionFixture) : base(collectionFixture)
-        {}
+        { }
 
         protected override void RegistrarFakes(IServiceCollection services)
         {
@@ -46,7 +45,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
             CarregarDadosBase();
         }
 
-        
+
         [Fact(DisplayName = "Mapeamento Estudante - Atualizar informações")]
         public async Task Ao_atualizar_informacoes_mapeamento_estudante()
         {
@@ -59,7 +58,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
 
             var questaoMapeamento = ObterTodos<QuestaoMapeamentoEstudante>();
             var respostaMapeamento = ObterTodos<RespostaMapeamentoEstudante>();
-            
+
             respostaMapeamento.Any(a => a.QuestaoMapeamentoEstudanteId == questaoMapeamento.Where(q => q.QuestaoId ==
                                                                                                        Questoes.FirstOrDefault(q => q.NomeComponente.Equals(NomesComponentesMapeamentoEstudante.PARECER_CONCLUSIVO_ANO_ANTERIOR)).Id).FirstOrDefault().Id
                                           && a.Texto.Equals("{\"index\":\"3\",\"value\":\"Continuidade dos estudos\"}")).ShouldBeTrue();

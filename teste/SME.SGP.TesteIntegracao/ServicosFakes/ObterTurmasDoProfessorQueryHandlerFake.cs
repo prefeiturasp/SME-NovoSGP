@@ -1,13 +1,10 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
-using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Aplicacao.Integracoes.Respostas;
 
 namespace SME.SGP.TesteIntegracao.ServicosFakes
 {
@@ -31,7 +28,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
         private const string UE_ABREVIACAO_1 = "UE-1";
         private const string TIPO_ESCOLA_CEU_EMEF = "CEU EMEF";
         private const string TIPO_ESCOLA_CODIGO_16 = "16";
-        
+
         public async Task<IEnumerable<ProfessorTurmaReposta>> Handle(ObterTurmasDoProfessorQuery request, CancellationToken cancellationToken)
         {
             return await Task.FromResult(new List<ProfessorTurmaReposta>()

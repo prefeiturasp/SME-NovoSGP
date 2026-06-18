@@ -186,7 +186,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PeriodosEscolares
                 Id = 1,
                 Bimestre = bimestre,
                 PeriodoInicio = new DateTime(2025, 3, 3),
-                PeriodoFim = new DateTime(2025, 3, 21), 
+                PeriodoFim = new DateTime(2025, 3, 21),
                 AulaCj = false
             };
 
@@ -245,8 +245,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PeriodosEscolares
             {
                 Id = 1,
                 Bimestre = bimestre,
-                PeriodoInicio = DateTime.Now.AddDays(-14), 
-                PeriodoFim = dataFutura, 
+                PeriodoInicio = DateTime.Now.AddDays(-14),
+                PeriodoFim = dataFutura,
                 AulaCj = false
             };
 
@@ -263,7 +263,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PeriodosEscolares
 
             foreach (var periodo in result)
             {
-                Assert.True(periodo.DataFim <= DateTime.Now.Date.AddDays(1)); 
+                Assert.True(periodo.DataFim <= DateTime.Now.Date.AddDays(1));
             }
 
             _mediatorMock.Verify(m => m.Send(ObterUsuarioLogadoQuery.Instance, It.IsAny<CancellationToken>()), Times.Once);
@@ -293,11 +293,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PeriodosEscolares
             var dataAtual = DateTime.Now;
             var periodosAulasMock = new List<PeriodoEscolarVerificaRegenciaDto>
             {
-                new PeriodoEscolarVerificaRegenciaDto { DataAula = dataAtual.AddDays(-5), AulaCj = false }, 
-                new PeriodoEscolarVerificaRegenciaDto { DataAula = dataAtual.AddDays(-4), AulaCj = false }, 
-                new PeriodoEscolarVerificaRegenciaDto { DataAula = dataAtual.AddDays(-3), AulaCj = false }, 
-                new PeriodoEscolarVerificaRegenciaDto { DataAula = dataAtual.AddDays(1), AulaCj = false },  
-                new PeriodoEscolarVerificaRegenciaDto { DataAula = dataAtual.AddDays(2), AulaCj = false },  
+                new PeriodoEscolarVerificaRegenciaDto { DataAula = dataAtual.AddDays(-5), AulaCj = false },
+                new PeriodoEscolarVerificaRegenciaDto { DataAula = dataAtual.AddDays(-4), AulaCj = false },
+                new PeriodoEscolarVerificaRegenciaDto { DataAula = dataAtual.AddDays(-3), AulaCj = false },
+                new PeriodoEscolarVerificaRegenciaDto { DataAula = dataAtual.AddDays(1), AulaCj = false },
+                new PeriodoEscolarVerificaRegenciaDto { DataAula = dataAtual.AddDays(2), AulaCj = false },
             };
 
             _mediatorMock.Setup(m => m.Send(It.Is<ObterPeriodosEscolaresPorComponenteBimestreTurmaQuery>(q =>
@@ -308,7 +308,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PeriodosEscolares
             var result = await _useCase.Executar(turmaCodigo, componenteCodigo, ehRegencia, bimestre, exibirDataFutura);
 
             Assert.NotNull(result);
-            Assert.Single(result); 
+            Assert.Single(result);
 
             Assert.Equal(dataAtual.AddDays(-5).Date, result.First().DataInicio.Date);
             Assert.Equal(dataAtual.AddDays(-3).Date, result.First().DataFim.Date);
@@ -355,7 +355,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PeriodosEscolares
             var result = await _useCase.Executar(turmaCodigo, componenteCodigo, ehRegencia, bimestre, exibirDataFutura);
 
             Assert.NotNull(result);
-            Assert.Equal(2, result.Count()); 
+            Assert.Equal(2, result.Count());
 
             Assert.Equal(new DateTime(2025, 6, 2), result.ElementAt(0).DataInicio);
             Assert.Equal(new DateTime(2025, 6, 6), result.ElementAt(0).DataFim);

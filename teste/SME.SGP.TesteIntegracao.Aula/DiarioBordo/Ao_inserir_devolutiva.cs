@@ -10,7 +10,6 @@ using SME.SGP.TesteIntegracao.Aula.DiarioBordo.ServicosFakes;
 using SME.SGP.TesteIntegracao.DiarioBordo;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
-using System;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -78,7 +77,8 @@ namespace SME.SGP.TesteIntegracao.Aula.DiarioBordo
             });
 
             var useCase = ServiceProvider.GetService<IInserirDevolutivaUseCase>();
-            var parametro = new InserirDevolutivaDto() { 
+            var parametro = new InserirDevolutivaDto()
+            {
                 CodigoComponenteCurricular = COMPONENTE_CURRICULAR_512,
                 Descricao = @"xxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxx 
                               xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxx 

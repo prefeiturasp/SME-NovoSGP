@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
@@ -17,8 +16,8 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<long> Handle(SalvarConsolidacaoProdutividadeFrequenciaCommand request, CancellationToken cancellationToken)
-        {               
-            return await repositorioConsolidacao.SalvarAsync(request.Consolidacao);           
+        {
+            return await repositorioConsolidacao.SalvarAsync(request.Consolidacao);
         }
     }
 }

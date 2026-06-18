@@ -1,8 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,8 +20,8 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(ExcluirSecoesRegistroAcaoPorRegistroAcaoIdCommand request, CancellationToken cancellationToken)
         {
             var secoesIds = await repositorioRegistroAcaoSecao.ObterIdsSecoesPorRegistroAcaoId(request.RegistroAcaoId);
-            foreach(var secaoId in secoesIds)
-                await mediator.Send(new ExcluirRegistroAcaoPorSecaoIdCommand(secaoId));          
+            foreach (var secaoId in secoesIds)
+                await mediator.Send(new ExcluirRegistroAcaoPorSecaoIdCommand(secaoId));
             await repositorioRegistroAcaoSecao.RemoverLogico(request.RegistroAcaoId, "registro_acao_busca_ativa_id");
             return true;
         }

@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         {
 
             var pendenciasId = await mediator.Send(new ObterPendenciasAulaPorAulaIdTipoQuery(request.AulaId, request.TipoPendenciaAula));
-            
+
             foreach (var pendenciaId in pendenciasId)
             {
                 await repositorioPendenciaAula.Excluir(pendenciaId, request.AulaId);

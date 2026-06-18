@@ -1,9 +1,9 @@
 ﻿using MediatR;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.Relatorios;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {

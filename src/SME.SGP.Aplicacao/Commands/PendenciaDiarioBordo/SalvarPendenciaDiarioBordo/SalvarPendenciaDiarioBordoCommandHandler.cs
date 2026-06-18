@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
             {
                 var existePendenciaUsuario = await mediator.Send(new ObterPendenciasUsuarioPorPendenciaUsuarioIdQuery(request.PendenciaId, usuarioId));
 
-                unitOfWork.IniciarTransacao();                
+                unitOfWork.IniciarTransacao();
 
                 if (!existePendenciaUsuario)
                     await mediator.Send(new SalvarPendenciaUsuarioCommand(request.PendenciaId, usuarioId));

@@ -1,5 +1,4 @@
 ﻿using SME.SGP.Dominio;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -22,9 +21,9 @@ namespace SME.SGP.Infra
             foreach (var aula in aulas.OrderBy(a => a.DataAula))
             {
                 bool podeEditar = false;
-                if (!aula.AulaCJ && !professorCj) 
+                if (!aula.AulaCJ && !professorCj)
                     podeEditar = true;
-                else if (aula.AulaCJ && (professorCj || ehGestor)) 
+                else if (aula.AulaCJ && (professorCj || ehGestor))
                     podeEditar = true;
                 else podeEditar = false;
 

@@ -72,8 +72,8 @@ namespace SME.SGP.Dados.Repositorios
                 writer.StartRow();
                 escreverCampos(writer, item);
             }
-            
-            await writer.CompleteAsync();            
+
+            await writer.CompleteAsync();
         }
 
         private static void EscreverDadosBase(NpgsqlBinaryImporter writer, PainelEducacionalConsolidacaoNotaBase item)

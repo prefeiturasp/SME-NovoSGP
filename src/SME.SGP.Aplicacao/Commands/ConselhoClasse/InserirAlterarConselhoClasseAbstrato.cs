@@ -28,10 +28,10 @@ namespace SME.SGP.Aplicacao
                 ComponenteCurricularCodigo = conselhoClasseNotaDto.CodigoComponenteCurricular,
                 Justificativa = conselhoClasseNotaDto.Justificativa,
             };
-            
+
             if (conselhoClasseNotaDto.Nota.HasValue)
                 conselhoClasseNota.Nota = conselhoClasseNotaDto.Nota.Value;
-            
+
             if (conselhoClasseNotaDto.Conceito.HasValue)
                 conselhoClasseNota.ConceitoId = conselhoClasseNotaDto.Conceito.Value;
 
@@ -48,18 +48,18 @@ namespace SME.SGP.Aplicacao
 
         protected async Task<bool> EnviarParaAprovacao(Turma turma, Usuario usuarioLogado)
         {
-           return turma.AnoLetivo < DateTime.Today.Year
-                && !usuarioLogado.EhGestorEscolar()
-                && await ParametroAprovacaoAtivo(turma.AnoLetivo);
+            return turma.AnoLetivo < DateTime.Today.Year
+                 && !usuarioLogado.EhGestorEscolar()
+                 && await ParametroAprovacaoAtivo(turma.AnoLetivo);
         }
 
         protected async Task GerarWFAprovacao(
-                                ConselhoClasseNota conselhoClasseNota, 
-                                Turma turma, 
-                                int? bimestre, 
-                                Usuario usuarioLogado, 
-                                string alunoCodigo, 
-                                double? notaAnterior, 
+                                ConselhoClasseNota conselhoClasseNota,
+                                Turma turma,
+                                int? bimestre,
+                                Usuario usuarioLogado,
+                                string alunoCodigo,
+                                double? notaAnterior,
                                 long? conceitoIdAnterior)
         {
             if (conselhoClasseNota.Id == 0)

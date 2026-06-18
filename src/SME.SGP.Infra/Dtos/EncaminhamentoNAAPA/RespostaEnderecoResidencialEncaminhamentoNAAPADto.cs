@@ -13,7 +13,7 @@
             if (!(o is RespostaEnderecoResidencialEncaminhamentoNAAPADto)) return false;
 
             RespostaEnderecoResidencialEncaminhamentoNAAPADto resposta = (RespostaEnderecoResidencialEncaminhamentoNAAPADto)o;
-            return (this.numero == resposta.numero 
+            return (this.numero == resposta.numero
                 && this.complemento == resposta.complemento
                 && this.bairro == resposta.bairro
                 && this.tipoLogradouro == resposta.tipoLogradouro

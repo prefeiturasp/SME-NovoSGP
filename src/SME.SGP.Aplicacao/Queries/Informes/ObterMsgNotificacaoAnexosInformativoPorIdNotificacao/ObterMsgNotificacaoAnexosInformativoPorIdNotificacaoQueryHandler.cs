@@ -43,8 +43,8 @@ namespace SME.SGP.Aplicacao
                                                             </ul>
                                                         </div>
                                                     </div>";
-            /*@$"<p style=""display: flex; justify-content: space-between; align-items: center;""><strong>Anexo(s):</strong> 
-                                                        <a href="""">Baixar todos os anexos</a></p>";*/
+        /*@$"<p style=""display: flex; justify-content: space-between; align-items: center;""><strong>Anexo(s):</strong> 
+                                                    <a href="""">Baixar todos os anexos</a></p>";*/
 
         public ObterMsgNotificacaoAnexosInformativoPorIdNotificacaoQueryHandler(IRepositorioInformativo repositorio, IMediator mediator)
         {

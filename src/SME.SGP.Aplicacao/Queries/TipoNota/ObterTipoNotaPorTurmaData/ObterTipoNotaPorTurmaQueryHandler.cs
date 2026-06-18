@@ -1,8 +1,6 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Threading;
@@ -33,7 +31,7 @@ namespace SME.SGP.Aplicacao
 
             var anoCicloModalidade = string.Empty;
             if (request.Turma.NaoEhNulo())
-                anoCicloModalidade = request.Turma.Ano == AnoCiclo.Alfabetizacao.Name() ? AnoCiclo.Alfabetizacao.Description() : request.Turma.Ano;            
+                anoCicloModalidade = request.Turma.Ano == AnoCiclo.Alfabetizacao.Name() ? AnoCiclo.Alfabetizacao.Description() : request.Turma.Ano;
 
             var ciclo = await mediator.Send(new ObterCicloPorAnoModalidadeQuery(anoCicloModalidade, request.Turma.ModalidadeCodigo));
 
@@ -41,7 +39,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi encontrado o ciclo da turma informada");
 
             var retorno = await mediator.Send(new ObterNotaTipoPorCicloIdDataAvalicacaoQuery(ciclo.Id, request.DataReferencia));
-            return retorno?.TipoNota ?? TipoNota.Nota;            
+            return retorno?.TipoNota ?? TipoNota.Nota;
         }
     }
 }

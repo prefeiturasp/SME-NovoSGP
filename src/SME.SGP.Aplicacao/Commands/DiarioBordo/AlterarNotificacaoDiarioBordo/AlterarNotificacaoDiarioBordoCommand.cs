@@ -13,6 +13,6 @@ namespace SME.SGP.Aplicacao
 
         public long ObservacaoId { get; set; }
         public long UsuarioId { get; set; }
-        
+
     }
 }

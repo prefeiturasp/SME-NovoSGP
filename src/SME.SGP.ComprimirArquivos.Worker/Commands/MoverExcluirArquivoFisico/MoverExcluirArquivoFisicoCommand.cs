@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using MediatR;
-using System.IO;
 
 namespace SME.SGP.ComprimirArquivos.Worker
 {
@@ -10,7 +9,7 @@ namespace SME.SGP.ComprimirArquivos.Worker
         {
             NomeArquivoOrigem = nomeArquivoOrigem;
             NomeArquivoDestino = nomeArquivoDestino;
-        } 
+        }
 
         public string NomeArquivoOrigem { get; set; }
         public string NomeArquivoDestino { get; set; }
@@ -23,7 +22,7 @@ namespace SME.SGP.ComprimirArquivos.Worker
             RuleFor(c => c.NomeArquivoOrigem)
             .NotEmpty()
             .WithMessage("O nome do arquivo de origem deve ser informado para exclusão/remoção do arquivo.");
-            
+
             RuleFor(c => c.NomeArquivoDestino)
                 .NotEmpty()
                 .WithMessage("O nome do arquivo de destino deve ser informado para exclusão/remoção do arquivo");

@@ -28,5 +28,5 @@ namespace SME.SGP.Aplicacao
             .NotEmpty()
             .WithMessage("O ano deve ser informado para consulta dos parâmetros do sistema.");
         }
-    }    
+    }
 }

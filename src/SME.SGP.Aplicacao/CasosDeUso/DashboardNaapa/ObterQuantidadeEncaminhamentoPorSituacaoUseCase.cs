@@ -23,14 +23,14 @@ namespace SME.SGP.Aplicacao
             var consultaDados = await repositorio.ObterDadosGraficoSituacaoPorUeAnoLetivo(param.AnoLetivo, param.UeId, param.DreId, (int?)param.Modalidade);
 
             graficos.DataUltimaConsolidacao = await mediator.Send(new ObterDataUltimaConsolicacaoDashboardNaapaQuery(TipoParametroSistema.GerarConsolidadoEncaminhamentoNAAPA, param.AnoLetivo));
-            
+
             foreach (var grafico in consultaDados)
             {
                 var item = new GraficoBaseDto
                 {
                     Quantidade = grafico.Quantidade,
                     Descricao = grafico.Situacao.Name()
-                    
+
                 };
                 graficos.Graficos.Add(item);
             }

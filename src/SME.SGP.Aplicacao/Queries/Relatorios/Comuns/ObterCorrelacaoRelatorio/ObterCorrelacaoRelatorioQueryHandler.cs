@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         {
             var relatorio = await repositorioCorrelacaoRelatorio.ObterCorrelacaoJasperPorCodigoAsync(request.CodigoCorrelacao);
 
-            if ( relatorio == null)
+            if (relatorio == null)
             {
                 return await repositorioCorrelacaoRelatorio.ObterPorCodigoCorrelacaoAsync(request.CodigoCorrelacao);
             }

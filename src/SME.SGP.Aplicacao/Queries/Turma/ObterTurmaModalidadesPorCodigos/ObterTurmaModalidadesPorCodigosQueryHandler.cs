@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<TurmaModalidadeCodigoDto>> Handle(ObterTurmaModalidadesPorCodigosQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioTurma.ObterModalidadePorCodigos(request.TurmasCodigo);            
+            return await repositorioTurma.ObterModalidadePorCodigos(request.TurmasCodigo);
         }
     }
 }

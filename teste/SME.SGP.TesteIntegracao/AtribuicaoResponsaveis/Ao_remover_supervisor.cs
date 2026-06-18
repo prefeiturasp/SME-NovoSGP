@@ -39,7 +39,7 @@ namespace SME.SGP.TesteIntegracao.AtribuicaoResponsavel
             var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisSupervisorPorDreUseCase>();
 
             //Act
-           var retorno = await useCase.Executar(new MensagemRabbit(DRE_CODIGO_1));
+            var retorno = await useCase.Executar(new MensagemRabbit(DRE_CODIGO_1));
 
             var registrosAposuseCase = ObterTodos<SupervisorEscolaDre>();
 

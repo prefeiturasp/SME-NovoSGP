@@ -138,7 +138,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             encaminhamentoAEE.Situacao = encaminhamentoAEEDto.Situacao;
             await mediator.Send(new SalvarEncaminhamentoAEECommand(encaminhamentoAEE));
             await ExcluirPendenciasEncaminhamentoAEE(encaminhamentoAEEDto.Situacao, encaminhamentoAEE);
-            
+
             foreach (var secao in encaminhamentoAEEDto.Secoes)
             {
                 if (!secao.Questoes.Any())
@@ -263,16 +263,16 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 if (EhQuestaoObrigatoriaNaoRespondida(questao))
                     questoesObrigatoriasNaoRespondidas.Add(new { Secao = secao, Ordem = ordem });
                 else if (QuestaoRespondida(questao))
+                {
+                    foreach (var resposta in questao.Resposta)
                     {
-                        foreach (var resposta in questao.Resposta)
+                        var opcao = questao.OpcaoResposta.FirstOrDefault(opcao => opcao.Id == Convert.ToInt64(resposta.Texto));
+                        if (opcao?.QuestoesComplementares.Any() ?? false)
                         {
-                            var opcao = questao.OpcaoResposta.FirstOrDefault(opcao => opcao.Id == Convert.ToInt64(resposta.Texto));
-                            if (opcao?.QuestoesComplementares.Any() ?? false)
-                            {
-                                ValidaRecursivo(secao, ordem, opcao.QuestoesComplementares, questoesObrigatoriasNaoRespondidas);
-                            }
+                            ValidaRecursivo(secao, ordem, opcao.QuestoesComplementares, questoesObrigatoriasNaoRespondidas);
                         }
                     }
+                }
             }
         }
 

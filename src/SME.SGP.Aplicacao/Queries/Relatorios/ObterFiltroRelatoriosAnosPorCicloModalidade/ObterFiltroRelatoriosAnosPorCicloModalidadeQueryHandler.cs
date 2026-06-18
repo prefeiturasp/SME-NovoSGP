@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAnoEscolar repositorioAnoEscolar;
         private readonly IMediator mediator;
 
-        public ObterFiltroRelatoriosAnosPorCicloModalidadeQueryHandler(IRepositorioAnoEscolar  repositorioAnoEscolar, IMediator mediator)
+        public ObterFiltroRelatoriosAnosPorCicloModalidadeQueryHandler(IRepositorioAnoEscolar repositorioAnoEscolar, IMediator mediator)
         {
             this.repositorioAnoEscolar = repositorioAnoEscolar ?? throw new System.ArgumentNullException(nameof(repositorioAnoEscolar));
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
@@ -30,9 +30,9 @@ namespace SME.SGP.Aplicacao
             if (!listaRetorno.Any())
                 throw new NegocioException("Não foi possível localizar Anos escolares.");
 
-            return listaRetorno.Select(a => new OpcaoDropdownDto(a.Ano.ToString(), $"{a.Ano}º ano - {a.Modalidade.Name()} ") );
+            return listaRetorno.Select(a => new OpcaoDropdownDto(a.Ano.ToString(), $"{a.Ano}º ano - {a.Modalidade.Name()} "));
         }
 
-    
+
     }
 }

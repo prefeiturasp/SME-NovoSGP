@@ -4,7 +4,7 @@ namespace SME.SGP.Infra.Dtos
 {
     public class FiltroDataMetricasDto
     {
-        public FiltroDataMetricasDto(DateTime data, bool ignorarRecheckCargaMetricas = false) 
+        public FiltroDataMetricasDto(DateTime data, bool ignorarRecheckCargaMetricas = false)
         {
             Data = data;
             IgnorarRecheckCargaMetricas = ignorarRecheckCargaMetricas;

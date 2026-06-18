@@ -5,12 +5,10 @@ using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
-using SME.SGP.Infra.Dtos;
 using SME.SGP.TesteIntegracao.Informe.Base;
 using SME.SGP.TesteIntegracao.Informe.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -120,7 +118,7 @@ namespace SME.SGP.TesteIntegracao.Informe
 
             var informesNotificacao = ObterTodos<InformativoNotificacao>();
             informesNotificacao.All(informe => informe.Excluido).ShouldBeTrue();
-            
+
             var notificacoes = ObterTodos<Notificacao>();
             notificacoes.All(notificacao => notificacao.Excluida).ShouldBeTrue();
 

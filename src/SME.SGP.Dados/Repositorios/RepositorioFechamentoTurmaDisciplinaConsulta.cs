@@ -6,7 +6,6 @@ using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -767,7 +766,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (bimestre > 0)
                 query += " and p.bimestre = @bimestre";
-            
+
             query += " ) t Where sequencia = 1";
 
             return database.Conexao.QueryAsync<FechamentoNotaAlunoAprovacaoDto>(query.ToString(), new { turmasCodigos, bimestre, alunoCodigo });

@@ -4,6 +4,6 @@
     {
         public long ResponsavelId { get; set; }
         public string ResponsavelRF { get; set; }
-        public string ResponsavelNome {  get; set; }
+        public string ResponsavelNome { get; set; }
     }
 }

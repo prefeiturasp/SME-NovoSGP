@@ -82,8 +82,8 @@ namespace SME.SGP.Dados.Repositorios
             ? (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros)
             : 1;
 
-            retorno.PaginaAtual = paginacao.QuantidadeRegistros > 0 
-                ? (paginacao.QuantidadeRegistrosIgnorados / paginacao.QuantidadeRegistros) + 1 
+            retorno.PaginaAtual = paginacao.QuantidadeRegistros > 0
+                ? (paginacao.QuantidadeRegistrosIgnorados / paginacao.QuantidadeRegistros) + 1
                 : 1;
 
             retorno.RegistrosPorPagina = paginacao.QuantidadeRegistros;

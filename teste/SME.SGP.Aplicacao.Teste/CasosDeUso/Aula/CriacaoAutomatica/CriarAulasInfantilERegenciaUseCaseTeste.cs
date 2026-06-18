@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Moq;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dominio;
-using SME.SGP.Infra;
-using Xunit;
-using System.Threading;
 using Newtonsoft.Json;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Aula.CriacaoAutomatica
 {
@@ -76,7 +76,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Aula.CriacaoAutomatica
 
             // Act
             var resultado = await _useCase.Executar(mensagem);
-                        
+
             // Assert
             Assert.True(resultado);
             _repositorioCacheMock.Verify(r => r.ObterAsync(chaveCache, false), Times.Once);
@@ -91,7 +91,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Aula.CriacaoAutomatica
             // Arrange
             var mensagemKey = "chave-invalida";
             var mensagem = new MensagemRabbit(mensagemKey);
-                        
+
             _repositorioCacheMock.Setup(r => r.Obter(mensagemKey, It.IsAny<bool>())).Returns((string)null);
 
             // Act

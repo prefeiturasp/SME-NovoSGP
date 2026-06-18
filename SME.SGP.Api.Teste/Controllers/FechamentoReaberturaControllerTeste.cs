@@ -145,7 +145,7 @@ namespace SME.SGP.Api.Teste.Controllers
             Assert.Equal(retornoEsperado.TotalRegistros, retorno.TotalRegistros);
             _consultasFechamentoReabertura.Verify(x => x.Listar(filtroDto.TipoCalendarioId, filtroDto.DreCodigo, filtroDto.UeCodigo), Times.Once);
         }
-        
+
         [Fact]
         public async Task Executar_Quando_Listar_Com_Lista_Vazia_Deve_Retornar_Ok()
         {
@@ -304,7 +304,7 @@ namespace SME.SGP.Api.Teste.Controllers
                 DreCodigo = null,
                 UeCodigo = null
             };
-            
+
             var retornoEsperado = new PaginacaoResultadoDto<FechamentoReaberturaListagemDto>
             {
                 Items = new List<FechamentoReaberturaListagemDto>(),

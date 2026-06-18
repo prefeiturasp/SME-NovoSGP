@@ -10,24 +10,24 @@ using System.Threading.Tasks;
 namespace SME.SGP.Aplicacao
 {
     public class ObterTurmaItinerarioEnsinoMedioQueryHandler : IRequestHandler<ObterTurmaItinerarioEnsinoMedioQuery, IEnumerable<TurmaItinerarioEnsinoMedioDto>>
+    {
+        private readonly IHttpClientFactory httpClientFactory;
+
+        public ObterTurmaItinerarioEnsinoMedioQueryHandler(IHttpClientFactory httpClientFactory)
         {
-            private readonly IHttpClientFactory httpClientFactory;
+            this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+        }
 
-            public ObterTurmaItinerarioEnsinoMedioQueryHandler(IHttpClientFactory httpClientFactory)
+        public async Task<IEnumerable<TurmaItinerarioEnsinoMedioDto>> Handle(ObterTurmaItinerarioEnsinoMedioQuery request, CancellationToken cancellationToken)
+        {
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var resposta = await httpClient.GetAsync(ServicosEolConstants.URL_TURMAS_ITINERARIO_ENSINO_MEDIO);
+            if (resposta.IsSuccessStatusCode)
             {
-                this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<IEnumerable<TurmaItinerarioEnsinoMedioDto>>(json);
             }
-
-            public async Task<IEnumerable<TurmaItinerarioEnsinoMedioDto>> Handle(ObterTurmaItinerarioEnsinoMedioQuery request, CancellationToken cancellationToken)
-            {
-                var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
-                var resposta = await httpClient.GetAsync(ServicosEolConstants.URL_TURMAS_ITINERARIO_ENSINO_MEDIO);
-                if (resposta.IsSuccessStatusCode)
-                {
-                    var json = await resposta.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<IEnumerable<TurmaItinerarioEnsinoMedioDto>>(json);
-                }
-                return default;
-            }
+            return default;
         }
     }
+}

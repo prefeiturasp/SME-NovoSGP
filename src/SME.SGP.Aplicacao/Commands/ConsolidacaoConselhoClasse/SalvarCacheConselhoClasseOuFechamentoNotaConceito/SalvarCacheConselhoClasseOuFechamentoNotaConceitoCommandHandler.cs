@@ -1,14 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Elasticsearch.Net;
 using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -34,10 +31,12 @@ namespace SME.SGP.Aplicacao
                     "Obter nota/conceito cache consolidação conselho classe turma/componente/bimestre/aluno");
 
             if (retornoCacheMapeado.EhNulo())
-                retornoCacheMapeado = new ConsolidadoConselhoClasseAlunoNotaCacheDto() { AlunoCodigo = request.AlunoCodigo,
-                                                                                    TurmaId = request.TurmaId,
-                                                                                    ComponenteCurricularId = request.ComponenteCurricularId,
-                                                                                    Bimestre = request.Bimestre
+                retornoCacheMapeado = new ConsolidadoConselhoClasseAlunoNotaCacheDto()
+                {
+                    AlunoCodigo = request.AlunoCodigo,
+                    TurmaId = request.TurmaId,
+                    ComponenteCurricularId = request.ComponenteCurricularId,
+                    Bimestre = request.Bimestre
                 };
 
             if (request.TipoAlteracao == TipoAlteracao.FechamentoNota)

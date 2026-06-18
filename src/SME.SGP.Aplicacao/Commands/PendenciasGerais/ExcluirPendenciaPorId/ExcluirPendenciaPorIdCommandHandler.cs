@@ -21,8 +21,8 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(ExcluirPendenciaPorIdCommand request, CancellationToken cancellationToken)
         {
             var pendencia = await repositorioPendencia.ObterPorIdAsync(request.PendenciaId);
-           
-            if(pendencia.NaoEhNulo())
+
+            if (pendencia.NaoEhNulo())
             {
                 pendencia.Excluido = true;
                 await repositorioPendencia.SalvarAsync(pendencia);
@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
                 return true;
             }
 
-            return false;         
+            return false;
         }
     }
 }

@@ -28,7 +28,7 @@ namespace SME.SGP.Metrica.Worker.UseCases
 
             var fechamentosTurmaDisciplinaDuplicados = await repositorioSGP.ObterFechamentosTurmaDisciplinaDuplicados();
 
-            foreach(var fechamentoTurmaDisciplinaDuplicados in fechamentosTurmaDisciplinaDuplicados)
+            foreach (var fechamentoTurmaDisciplinaDuplicados in fechamentosTurmaDisciplinaDuplicados)
             {
                 await repositorioFechamentoTurmaDisciplinaDuplicado.InserirAsync(fechamentoTurmaDisciplinaDuplicados);
                 await mediator.Send(new PublicarFilaCommand(Rotas.RotasRabbitMetrica.LimpezaFechamentoTurmaDisciplinaDuplicado, fechamentoTurmaDisciplinaDuplicados));

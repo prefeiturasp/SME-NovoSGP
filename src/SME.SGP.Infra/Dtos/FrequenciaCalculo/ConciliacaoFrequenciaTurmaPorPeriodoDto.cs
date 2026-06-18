@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Infra
 {
-    public class ConciliacaoFrequenciaTurmaPorPeriodoDto 
+    public class ConciliacaoFrequenciaTurmaPorPeriodoDto
     {
         public ConciliacaoFrequenciaTurmaPorPeriodoDto(List<string> turmasDaModalidade, int bimestre, DateTime dataInicio, DateTime dataFim, string componenteCurricularId)
         {

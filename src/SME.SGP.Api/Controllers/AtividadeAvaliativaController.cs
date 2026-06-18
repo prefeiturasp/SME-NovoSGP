@@ -27,7 +27,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CP_A, Policy = "Bearer")]
-        public async Task<IActionResult> Alterar([FromBody]AtividadeAvaliativaDto atividadeAvaliativaDto, long id)
+        public async Task<IActionResult> Alterar([FromBody] AtividadeAvaliativaDto atividadeAvaliativaDto, long id)
         {
             return Ok(await comandoAtividadeAvaliativa.Alterar(atividadeAvaliativaDto, id));
         }
@@ -47,7 +47,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(PaginacaoResultadoDto<AtividadeAvaliativaCompletaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.TE_C, Permissao.E_C, Policy = "Bearer")]
-        public async Task<IActionResult> Listar([FromQuery]FiltroAtividadeAvaliativaDto filtro)
+        public async Task<IActionResult> Listar([FromQuery] FiltroAtividadeAvaliativaDto filtro)
         {
             var listaAtividadeAvaliativa = await consultaAtividadeAvaliativa.ListarPaginado(filtro);
             return Ok(listaAtividadeAvaliativa);
@@ -67,7 +67,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CP_I, Policy = "Bearer")]
-        public async Task<IActionResult> PostAsync([FromBody]AtividadeAvaliativaDto atividadeAvaliativaDto)
+        public async Task<IActionResult> PostAsync([FromBody] AtividadeAvaliativaDto atividadeAvaliativaDto)
         {
             return Ok(await comandoAtividadeAvaliativa.Inserir(atividadeAvaliativaDto));
         }
@@ -76,7 +76,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CP_I, Policy = "Bearer")]
-        public async Task<IActionResult> Validar([FromBody]FiltroAtividadeAvaliativaDto filtro)
+        public async Task<IActionResult> Validar([FromBody] FiltroAtividadeAvaliativaDto filtro)
         {
             await comandoAtividadeAvaliativa.Validar(filtro);
             return Ok();
@@ -86,7 +86,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<AtividadeAvaliativaExistenteRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CP_I, Policy = "Bearer")]
-        public async Task<IActionResult> ValidarAtividadeAvaliativaExistente([FromBody]FiltroAtividadeAvaliativaExistenteDto filtro)
+        public async Task<IActionResult> ValidarAtividadeAvaliativaExistente([FromBody] FiltroAtividadeAvaliativaExistenteDto filtro)
         {
             return Ok(await consultaAtividadeAvaliativa.ValidarAtividadeAvaliativaExistente(filtro));
         }

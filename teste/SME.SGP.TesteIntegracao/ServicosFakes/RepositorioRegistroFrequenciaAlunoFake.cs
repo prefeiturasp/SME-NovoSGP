@@ -1,17 +1,17 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using SME.SGP.Dados;
+﻿using SME.SGP.Dados;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.ServicosFakes
 {
     public class RepositorioRegistroFrequenciaAlunoFake : RepositorioBase<RegistroFrequenciaAluno>, IRepositorioRegistroFrequenciaAluno
     {
-        public RepositorioRegistroFrequenciaAlunoFake(ISgpContext sgpContext,IServicoAuditoria servicoAuditoria) : base(sgpContext, servicoAuditoria)
-        {}
+        public RepositorioRegistroFrequenciaAlunoFake(ISgpContext sgpContext, IServicoAuditoria servicoAuditoria) : base(sgpContext, servicoAuditoria)
+        { }
 
         public async Task RemoverPorRegistroFrequenciaId(long registroFrequenciaId, string[] alunosComFrequenciaRegistrada)
         {
@@ -54,7 +54,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             foreach (var entidade in registros)
             {
                 if (entidade.Id > 0)
-                {                
+                {
                     entidade.AlteradoEm = DateTimeExtension.HorarioBrasilia();
                     entidade.AlteradoPor = database.UsuarioLogadoNomeCompleto;
                     entidade.AlteradoRF = database.UsuarioLogadoRF;
@@ -70,7 +70,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                 }
             }
 
-            return true; 
+            return true;
         }
 
         public async Task ExcluirVariosLogicamente(long[] idsParaExcluir)

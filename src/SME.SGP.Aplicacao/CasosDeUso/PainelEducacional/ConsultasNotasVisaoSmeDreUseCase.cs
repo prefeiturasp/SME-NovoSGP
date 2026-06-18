@@ -86,6 +86,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                     Modalidades = modalidades
                 }
             };
-        }       
+        }
     }
 }

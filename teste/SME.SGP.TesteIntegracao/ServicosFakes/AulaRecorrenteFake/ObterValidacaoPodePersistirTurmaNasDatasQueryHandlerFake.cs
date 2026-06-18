@@ -11,16 +11,16 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
     public class ObterValidacaoPodePersistirTurmaNasDatasQueryHandlerFake : IRequestHandler<ObterValidacaoPodePersistirTurmaNasDatasQuery, List<PodePersistirNaDataRetornoEolDto>>
     {
         public ObterValidacaoPodePersistirTurmaNasDatasQueryHandlerFake()
-        {}
+        { }
 
         public async Task<List<PodePersistirNaDataRetornoEolDto>> Handle(ObterValidacaoPodePersistirTurmaNasDatasQuery request, CancellationToken cancellationToken)
         {
-            return request.DateTimes.ToList().Select(s=> new PodePersistirNaDataRetornoEolDto() 
+            return request.DateTimes.ToList().Select(s => new PodePersistirNaDataRetornoEolDto()
             {
                 Data = s,
                 PodePersistir = true
             }).ToList();
-                
+
         }
     }
 }

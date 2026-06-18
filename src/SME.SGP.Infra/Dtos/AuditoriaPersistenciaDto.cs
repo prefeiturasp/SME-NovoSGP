@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Infra
 {
-    public class AuditoriaPersistenciaDto: AuditoriaDto
+    public class AuditoriaPersistenciaDto : AuditoriaDto
     {
         public AuditoriaPersistenciaDto()
         {

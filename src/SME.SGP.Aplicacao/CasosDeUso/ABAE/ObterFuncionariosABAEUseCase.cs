@@ -9,7 +9,7 @@ namespace SME.SGP.Aplicacao
     {
 
         public ObterFuncionariosABAEUseCase(IMediator mediator) : base(mediator)
-        {}
+        { }
 
         public Task<IEnumerable<NomeCpfABAEDto>> Executar(FiltroFuncionarioDto filtro)
         => mediator.Send(new ObterCadastroAcessoABAEPorDreQuery(filtro.CodigoRF,

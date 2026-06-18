@@ -1,12 +1,11 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
+using Newtonsoft.Json;
+using SME.SGP.Infra;
 using System;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -22,16 +21,16 @@ namespace SME.SGP.Aplicacao
         public async Task<AutenticacaoApiEolDto> Handle(AutenticarQuery request, CancellationToken cancellationToken)
         {
             var parametros = JsonConvert.SerializeObject(new { request.Login, request.Senha });
-            
+
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
-            
-            var resposta = await httpClient.PostAsync(ServicosEolConstants.URL_AUTENTICACAO,new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
+
+            var resposta = await httpClient.PostAsync(ServicosEolConstants.URL_AUTENTICACAO, new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
 
             if (!resposta.IsSuccessStatusCode)
                 return default; //Aqui antes estava retornando null
 
             var json = await resposta.Content.ReadAsStringAsync();
-            
+
             return JsonConvert.DeserializeObject<AutenticacaoApiEolDto>(json);
         }
     }

@@ -32,9 +32,9 @@ namespace SME.SGP.Aplicacao
             if (!String.IsNullOrEmpty(request.Resposta) && EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Radio, TipoQuestao.Combo, TipoQuestao.Checkbox, TipoQuestao.ComboMultiplaEscolha }))
                 resposta.RespostaId = long.Parse(request.Resposta);
 
-            if (EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Frase, TipoQuestao.Texto, TipoQuestao.EditorTexto, 
+            if (EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Frase, TipoQuestao.Texto, TipoQuestao.EditorTexto,
                                                                                TipoQuestao.Data, TipoQuestao.Numerico, TipoQuestao.Endereco,
-                                                                               TipoQuestao.ContatoResponsaveis, TipoQuestao.AtividadesContraturno, 
+                                                                               TipoQuestao.ContatoResponsaveis, TipoQuestao.AtividadesContraturno,
                                                                                TipoQuestao.TurmasPrograma, TipoQuestao.ProfissionaisEnvolvidos }))
                 resposta.Texto = request.Resposta;
 

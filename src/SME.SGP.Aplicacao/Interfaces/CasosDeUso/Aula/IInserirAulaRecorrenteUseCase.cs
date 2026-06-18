@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IInserirAulaRecorrenteUseCase: IRabbitUseCase
+    public interface IInserirAulaRecorrenteUseCase : IRabbitUseCase
     {
     }
 }

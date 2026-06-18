@@ -27,7 +27,7 @@ namespace SME.SGP.Dados.Repositorios
         }
         public async Task<bool> SalvarNotaConceito(NotaConceito entidade)
         {
-           var retorno = await SalvarAsync(entidade);
+            var retorno = await SalvarAsync(entidade);
             return retorno != 0;
         }
     }

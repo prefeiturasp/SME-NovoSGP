@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.Informes
             if (!existeInformes)
                 throw new NegocioException(MensagemNegocioInformes.INFORMES_NAO_ENCONTRADO);
 
-            return await mediator.Send(new ExcluirInformesCommand(param)); 
+            return await mediator.Send(new ExcluirInformesCommand(param));
         }
     }
 }

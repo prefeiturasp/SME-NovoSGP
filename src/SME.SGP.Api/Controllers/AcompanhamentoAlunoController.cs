@@ -18,7 +18,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("semestres")]
         [ProducesResponseType(typeof(IEnumerable<AcompanhamentoAlunoSemestreAuditoriaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.AFQ_C,Policy = "Bearer")]
+        [Permissao(Permissao.AFQ_C, Policy = "Bearer")]
         public async Task<IActionResult> Salvar([FromServices] ISalvarAcompanhamentoAlunoUseCase useCase, [FromBody] AcompanhamentoAlunoDto dto)
         {
             return Ok(await useCase.Executar(dto));

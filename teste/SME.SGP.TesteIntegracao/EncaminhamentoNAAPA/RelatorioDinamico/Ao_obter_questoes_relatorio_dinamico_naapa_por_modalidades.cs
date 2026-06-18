@@ -1,13 +1,12 @@
-﻿using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dominio;
-using SME.SGP.TesteIntegracao.Setup;
-using System.Threading.Tasks;
-using Xunit;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
-using System.Collections.Generic;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
+using SME.SGP.TesteIntegracao.Setup;
 using System.Linq;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
 {

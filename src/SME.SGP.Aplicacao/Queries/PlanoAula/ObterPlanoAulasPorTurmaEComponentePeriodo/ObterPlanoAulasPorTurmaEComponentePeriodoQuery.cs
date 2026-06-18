@@ -4,7 +4,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 
-namespace SME.SGP.Aplicacao 
+namespace SME.SGP.Aplicacao
 {
     public class ObterPlanoAulasPorTurmaEComponentePeriodoQuery : IRequest<IEnumerable<PlanoAulaRetornoDto>>
     {

@@ -6,13 +6,13 @@ namespace SME.SGP.Aplicacao
 {
     public class TurmaEmPeriodoAbertoQuery : IRequest<bool>
     {
-        public TurmaEmPeriodoAbertoQuery(Turma turma, DateTime dataReferencia, int bimestre, bool ehAnoLetivo,long tipoCalendarioId = 0)
+        public TurmaEmPeriodoAbertoQuery(Turma turma, DateTime dataReferencia, int bimestre, bool ehAnoLetivo, long tipoCalendarioId = 0)
         {
             Turma = turma;
             DataReferencia = dataReferencia;
             Bimestre = bimestre;
             EhAnoLetivo = ehAnoLetivo;
-            TipoCalendarioId = tipoCalendarioId; 
+            TipoCalendarioId = tipoCalendarioId;
         }
 
         public Turma Turma { get; set; }

@@ -12,7 +12,7 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class RelatorioRecuperacaoParalelaController : ControllerBase
     {
-        [HttpPost]        
+        [HttpPost]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]

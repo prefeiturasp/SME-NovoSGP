@@ -4,7 +4,6 @@ using SME.SGP.Infra;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {

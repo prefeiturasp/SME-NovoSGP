@@ -10,7 +10,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPendenciaPlanoAEE repositorioPendenciaPlano;
         private readonly IRepositorioPendenciaUsuario repositorioPendenciaUsuario;
 
-        public TransferirPendenciaParaNovoResponsavelCommandHandler(IRepositorioPendenciaPlanoAEE repositorioPendenciaPlano, 
+        public TransferirPendenciaParaNovoResponsavelCommandHandler(IRepositorioPendenciaPlanoAEE repositorioPendenciaPlano,
                                                 IRepositorioPendenciaUsuario repositorioPendenciaUsuario)
         {
             this.repositorioPendenciaPlano = repositorioPendenciaPlano;

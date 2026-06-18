@@ -6,11 +6,11 @@ namespace SME.SGP.Infra
     public class NotificarCompensacaoDto
     {
         public NotificarCompensacaoDto(
-                            MeusDadosDto professor, 
-                            string disciplina, 
-                            Turma turma, 
+                            MeusDadosDto professor,
+                            string disciplina,
+                            Turma turma,
                             CompensacaoAusencia compensacao,
-                            List<CompensacaoAusenciaAlunoQtdDto> alunos, 
+                            List<CompensacaoAusenciaAlunoQtdDto> alunos,
                             Cargo[] cargos)
         {
             Professor = professor.Nome;

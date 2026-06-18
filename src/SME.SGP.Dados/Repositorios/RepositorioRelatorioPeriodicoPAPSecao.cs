@@ -33,10 +33,10 @@ namespace SME.SGP.Dados.Repositorios
                            and not rppq.excluido 
                            and not rppr.excluido";
 
-            await database.Conexao.QueryAsync<RelatorioPeriodicoPAPSecao, 
-                                              RelatorioPeriodicoPAPResposta, 
+            await database.Conexao.QueryAsync<RelatorioPeriodicoPAPSecao,
+                                              RelatorioPeriodicoPAPResposta,
                                               RelatorioPeriodicoPAPQuestao,
-                                              Questao, 
+                                              Questao,
                                               OpcaoResposta,
                                               RelatorioPeriodicoPAPSecao>(query,
                 (secao, relatorioResposta, relatorioQuestao, questao, opcaoResposta) =>

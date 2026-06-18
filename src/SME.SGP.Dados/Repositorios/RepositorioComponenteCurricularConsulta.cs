@@ -1,5 +1,4 @@
-﻿using Dapper;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
@@ -147,7 +146,7 @@ namespace SME.SGP.Dados.Repositorios
                         from
                             componente_curricular WHERE id = @id;";
             return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { id }));
-        }        
+        }
         public async Task<bool> LancaNota(long id)
         {
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>("select permite_lancamento_nota from componente_curricular where id = @id", new { id });
@@ -226,7 +225,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select id, coalesce(descricao_sgp, descricao) as descricao, descricao_infantil as descricaoinfantil from componente_curricular where id = Any(@ids)";
 
-            return await database.Conexao.QueryAsync<ComponenteCurricularDescricaoDto>(query, new { ids },queryName: "ObterDescricaoPorIds");
+            return await database.Conexao.QueryAsync<ComponenteCurricularDescricaoDto>(query, new { ids }, queryName: "ObterDescricaoPorIds");
         }
 
         public async Task<string> ObterCodigoComponentePai(long componenteCurricularId)
@@ -278,7 +277,7 @@ namespace SME.SGP.Dados.Repositorios
                            from componente_curricular cc 
                            left join componente_curricular_grupo_matriz ccgm on ccgm.id = cc.grupo_matriz_id
                            left join componente_curricular_area_conhecimento ccac on ccac.id = cc.area_conhecimento_id";
-            
+
             return await database.Conexao.QueryAsync<InfoComponenteCurricular>(query);
         }
     }

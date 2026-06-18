@@ -1,12 +1,12 @@
-﻿using System;
+﻿using MediatR;
+using SME.SGP.Dominio;
+using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dominio;
-using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Aplicacao
 {
@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
                 DataSituacao = alunoPorTurmaResposta.DataSituacao,
                 CodigoAluno = alunoPorTurmaResposta.CodigoAluno,
                 CodigoSituacaoMatricula = alunoPorTurmaResposta.CodigoSituacaoMatricula,
-                Situacao = alunoPorTurmaResposta.SituacaoMatricula,               
+                Situacao = alunoPorTurmaResposta.SituacaoMatricula,
                 TurmaEscola = await ObterNomeTurmaFormatado(alunoPorTurmaResposta.CodigoTurma.ToString()),
                 CodigoTurma = alunoPorTurmaResposta.CodigoTurma.ToString(),
                 CelularResponsavel = alunoPorTurmaResposta.CelularResponsavel,
@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
             return alunoReduzido;
 
         }
-        
+
         private async Task<string> ObterNomeTurmaFormatado(string turmaCodigo)
         {
             var turmaNome = string.Empty;

@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
             if (dadosResponsaveis.EhNulo() || !dadosResponsaveis.Any())
                 return false;
 
-            foreach(var dadosResponsavel in dadosResponsaveis) 
+            foreach (var dadosResponsavel in dadosResponsaveis)
             {
                 await mediator.Send(new AtualizarDadosResponsavelAlunoEolCommand(new DadosResponsavelAlunoBuscaAtivaDto(dadosResponsavel, param)));
                 await mediator.Send(new AtualizarDadosResponsavelAlunoProdamCommand(new DadosResponsavelAlunoProdamDto(dadosResponsavel, param)));

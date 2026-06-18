@@ -5,9 +5,7 @@ using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -45,9 +43,9 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNumeroAlunos
 
                 numeroAlunos.Add(new PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoDto
                 {
-                    CodigoNivelAlfabetizacao = (int)nivelAlfabetizacaoEnum, 
-                    NivelAlfabetizacao = nomeNivel, 
-                    NivelAlfabetizacaoDescricao = descricaoNivel, 
+                    CodigoNivelAlfabetizacao = (int)nivelAlfabetizacaoEnum,
+                    NivelAlfabetizacao = nomeNivel,
+                    NivelAlfabetizacaoDescricao = descricaoNivel,
                     Dre = item.DreCodigo,
                     Ue = item.UeCodigo,
                     Ano = item.AnoLetivo,
@@ -60,16 +58,16 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNumeroAlunos
                 .GroupBy(p => p.CodigoNivelAlfabetizacao)
                 .Select(g => new PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoDto
                 {
-                    CodigoNivelAlfabetizacao = g.Key, 
+                    CodigoNivelAlfabetizacao = g.Key,
                     NivelAlfabetizacao = g.First().NivelAlfabetizacao,
-                    NivelAlfabetizacaoDescricao = g.First().NivelAlfabetizacaoDescricao, 
+                    NivelAlfabetizacaoDescricao = g.First().NivelAlfabetizacaoDescricao,
                     Dre = g.First().Dre,
                     Ue = g.First().Ue,
                     Ano = g.First().Ano,
                     Periodo = g.First().Periodo,
                     TotalAlunos = g.Sum(x => x.TotalAlunos)
                 })
-                .OrderBy(x => x.CodigoNivelAlfabetizacao) 
+                .OrderBy(x => x.CodigoNivelAlfabetizacao)
                 .ToList();
 
             return agrupados;

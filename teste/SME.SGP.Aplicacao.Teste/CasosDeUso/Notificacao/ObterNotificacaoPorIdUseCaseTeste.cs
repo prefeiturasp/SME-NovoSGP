@@ -1,9 +1,9 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Moq;
 using SME.SGP.Dominio;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.CasosDeUso

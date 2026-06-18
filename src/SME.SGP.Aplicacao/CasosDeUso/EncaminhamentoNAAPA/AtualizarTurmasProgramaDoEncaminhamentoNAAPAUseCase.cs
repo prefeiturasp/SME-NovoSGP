@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
     public class AtualizarTurmasProgramaDoEncaminhamentoNAAPAUseCase : AbstractUseCase, IAtualizarTurmasProgramaDoEncaminhamentoNAAPAUseCase
     {
         public AtualizarTurmasProgramaDoEncaminhamentoNAAPAUseCase(IMediator mediator) : base(mediator)
-        {}
+        { }
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             {
                 var turmasProgramaNaapa = JsonConvert.DeserializeObject<List<RespostaTurmaProgramaEncaminhamentoNAAPADto>>(respostaTurmasProgramaNAAPA?.Texto);
                 if (turmasProgramaAluno.Count == turmasProgramaNaapa?.Count &&
-                    turmasProgramaAluno.All(turmaProgramaAluno => turmasProgramaNaapa.NaoEhNulo() && turmasProgramaNaapa.Any(x => x.EhIgual(turmaProgramaAluno)))) 
+                    turmasProgramaAluno.All(turmaProgramaAluno => turmasProgramaNaapa.NaoEhNulo() && turmasProgramaNaapa.Any(x => x.EhIgual(turmaProgramaAluno))))
                     return false;
 
                 var respostaEnderecoAtualizado = MapearDTO(questaoTurmasProgramaNAAPA.QuestaoId, respostaTurmasProgramaNAAPA?.Id ?? 0, turmasProgramaAluno);
@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
             }
             else
                 return (await mediator.Send(new RegistrarEncaminhamentoNAAPASecaoQuestaoRespostaCommand(JsonConvert.SerializeObject(turmasProgramaAluno),
-                                                                                                      questaoTurmasProgramaNAAPA.QuestaoId, TipoQuestao.TurmasPrograma))) != 0;  
+                                                                                                      questaoTurmasProgramaNAAPA.QuestaoId, TipoQuestao.TurmasPrograma))) != 0;
         }
 
         private RespostaTurmaProgramaEncaminhamentoNAAPADto MapearDTO(AlunoTurmaProgramaDto? turmaPrograma)

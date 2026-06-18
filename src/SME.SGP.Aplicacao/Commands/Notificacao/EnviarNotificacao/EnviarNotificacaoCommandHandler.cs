@@ -2,8 +2,6 @@
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -34,7 +32,7 @@ namespace SME.SGP.Aplicacao
                 EntidadeParaAprovarId = request.EntidadeId
             };
 
-            foreach(var cargo in request.Cargos)
+            foreach (var cargo in request.Cargos)
             {
                 if (request.CategoriaNotificacao == NotificacaoCategoria.Workflow_Aprovacao)
                     wf.AdicionarNivel(cargo);
