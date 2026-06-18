@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
 using System.Linq;
-using System.Threading;
 using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Aplicacao

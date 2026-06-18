@@ -5,8 +5,6 @@ using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
-using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
-using SME.SGP.TesteIntegracao.Ocorrencia.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;

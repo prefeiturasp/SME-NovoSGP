@@ -1,5 +1,4 @@
-﻿using System;
-using MediatR;
+﻿using MediatR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using SME.SGP.Dominio.Enumerados;

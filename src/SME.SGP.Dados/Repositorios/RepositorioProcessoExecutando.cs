@@ -1,11 +1,9 @@
-﻿using Dapper;
-using Dommel;
+﻿using Dommel;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

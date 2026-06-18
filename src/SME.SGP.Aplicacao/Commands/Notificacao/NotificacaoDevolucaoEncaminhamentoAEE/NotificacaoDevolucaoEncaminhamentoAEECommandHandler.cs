@@ -1,11 +1,9 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 

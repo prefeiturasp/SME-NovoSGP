@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.Aplicacao

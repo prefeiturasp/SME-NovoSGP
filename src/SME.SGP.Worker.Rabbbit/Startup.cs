@@ -8,7 +8,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SME.SGP.IoC;
-using SME.SGP.Worker.RabbitMQ;
 using System;
 using SME.SGP.Infra;
 using SME.SGP.IoC.Extensions;

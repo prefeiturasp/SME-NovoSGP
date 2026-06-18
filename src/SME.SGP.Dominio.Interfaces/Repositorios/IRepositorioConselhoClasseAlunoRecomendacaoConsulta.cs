@@ -1,9 +1,5 @@
-﻿using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
-using System;
+﻿using SME.SGP.Infra;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces

@@ -1,6 +1,4 @@
-﻿using SME.SGP.Dominio;
-
-namespace SME.SGP.Infra.Dtos
+﻿namespace SME.SGP.Infra.Dtos
 {
     public class NotificacaoAndamentoFechamentoPorUeDto
     {

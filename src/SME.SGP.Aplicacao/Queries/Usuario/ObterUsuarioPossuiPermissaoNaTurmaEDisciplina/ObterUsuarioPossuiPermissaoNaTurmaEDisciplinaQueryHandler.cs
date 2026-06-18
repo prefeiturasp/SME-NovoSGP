@@ -1,6 +1,4 @@
-﻿using Elasticsearch.Net;
-using MediatR;
-using SME.SGP.Dominio.Enumerados;
+﻿using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
 

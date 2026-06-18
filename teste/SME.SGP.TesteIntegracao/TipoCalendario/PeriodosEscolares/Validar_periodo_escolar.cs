@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Shouldly;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao;

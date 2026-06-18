@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Shouldly;
 using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Setup;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 

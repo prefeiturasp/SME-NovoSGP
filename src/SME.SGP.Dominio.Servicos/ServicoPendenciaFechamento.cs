@@ -1,7 +1,5 @@
 ﻿using MediatR;
-using Minio.DataModel;
 using SME.SGP.Aplicacao;
-using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;

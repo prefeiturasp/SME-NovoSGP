@@ -1,5 +1,4 @@
-﻿using Elastic.Apm.Api;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
@@ -7,11 +6,8 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.Nota.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes.AulaRecorrenteFake;
-using SME.SGP.TesteIntegracao.ServicosFakes.Query;
-using SME.SGP.TesteIntegracao.ServicosFakes.Rabbit;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;

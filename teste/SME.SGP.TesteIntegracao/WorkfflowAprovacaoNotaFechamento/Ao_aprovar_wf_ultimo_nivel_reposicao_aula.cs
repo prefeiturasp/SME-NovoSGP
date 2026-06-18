@@ -1,21 +1,9 @@
-﻿using Elastic.Apm.Api;
-using EmptyFiles;
-using MediatR;
-using Microsoft.Extensions.DependencyInjection;
-using Nest;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
-using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dominio.Servicos;
-using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
-using StackExchange.Redis;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 

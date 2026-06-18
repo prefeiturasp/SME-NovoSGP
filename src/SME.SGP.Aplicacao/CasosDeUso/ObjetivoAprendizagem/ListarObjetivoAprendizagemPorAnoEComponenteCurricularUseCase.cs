@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Org.BouncyCastle.Asn1;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;

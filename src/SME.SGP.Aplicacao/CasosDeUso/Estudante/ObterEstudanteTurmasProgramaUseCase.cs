@@ -1,12 +1,7 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
-using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Aplicacao

@@ -1,6 +1,4 @@
-﻿using Elastic.Apm.Api;
-using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Infra;
+﻿using SME.SGP.Infra;
 using System.Threading.Tasks;
 using System;
 
