@@ -508,7 +508,7 @@ namespace SME.SGP.Dados.Repositorios
                 }
             }
 
-            return retorno;
+            return retorno.DistinctBy(u => u.Codigo);
         }
 
         public async Task<IEnumerable<AbrangenciaUeComDreRetorno>> ObterUesPorListaDres(string[] codigosDres, string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, int[] ignorarTiposUE = null)

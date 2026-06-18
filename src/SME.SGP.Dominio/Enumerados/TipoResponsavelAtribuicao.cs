@@ -20,6 +20,9 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "Assistente Social")]
         AssistenteSocial = 5,
+
+        [Display(Name = "Fonoaudiólogo")]
+        Fonoaudiologo = 6
     }
 
     public static class TipoResponsavelAtribuicaoExtension
@@ -38,6 +41,8 @@ namespace SME.SGP.Dominio
                     return Perfis.PERFIL_SUPERVISOR;
                 case TipoResponsavelAtribuicao.PAAI:
                     return Perfis.PERFIL_PAAI;
+                case TipoResponsavelAtribuicao.Fonoaudiologo:
+                    return Perfis.PERFIL_FONOAUDIOLOGO;
                 default: throw new NotImplementedException();
             }
         }
