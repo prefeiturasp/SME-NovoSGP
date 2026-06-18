@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using Polly;
 using Polly.Registry;
 using SME.SGP.Dominio;

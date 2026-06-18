@@ -1,15 +1,12 @@
 ﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Moq;
 using Newtonsoft.Json;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Aula.ServicosFake;
 using SME.SGP.TesteIntegracao.ServicosFakes;

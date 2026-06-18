@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dto;
-using SME.SGP.Infra;
 using System;
 using System.Net.Http;
 using System.Text;

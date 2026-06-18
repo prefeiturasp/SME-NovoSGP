@@ -9,7 +9,6 @@ using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.ImportarArquivo;
-using SME.SGP.Infra.Dtos.PainelEducacional.ProficienciaIdeb;
 using SME.SGP.Infra.Enumerados;
 using System;
 using System.Collections.Generic;

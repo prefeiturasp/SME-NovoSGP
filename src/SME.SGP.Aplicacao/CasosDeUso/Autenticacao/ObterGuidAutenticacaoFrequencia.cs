@@ -1,7 +1,5 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Commands.Autenticacao.DeslogarSuporteUsuario;
 using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;

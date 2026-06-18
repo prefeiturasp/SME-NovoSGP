@@ -1,7 +1,4 @@
-﻿using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
-
-namespace SME.SGP.Infra.Dtos
+﻿namespace SME.SGP.Infra.Dtos
 {
     public class NotificacaoEncaminhamentoAEEDto
     {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Dominio.Constantes.MensagensNegocio
+﻿namespace SME.SGP.Dominio.Constantes.MensagensNegocio
 {
     public static class MensagensNegocioFrequencia
     {

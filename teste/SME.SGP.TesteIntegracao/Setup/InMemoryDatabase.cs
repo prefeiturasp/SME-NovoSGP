@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dommel;
 using Npgsql;
 using Postgres2Go;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.TesteIntegracao.Setup
 {

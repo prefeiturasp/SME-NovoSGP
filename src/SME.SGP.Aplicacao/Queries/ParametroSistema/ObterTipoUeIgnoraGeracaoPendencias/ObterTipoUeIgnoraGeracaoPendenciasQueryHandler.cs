@@ -1,6 +1,4 @@
 ﻿using MediatR;
-using Minio.DataModel;
-using Org.BouncyCastle.Asn1.Ocsp;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System.Linq;

@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Queries.Github.ObterVersaoRelease;
-using SME.SGP.Dominio;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao

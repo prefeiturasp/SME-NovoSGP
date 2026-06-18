@@ -1,17 +1,11 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Constantes;
 using SME.SGP.Aplicacao.Queries;
-using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.MapeamentoEstudantes;
-using SME.SGP.Infra.Dtos.Sondagem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Intrinsics.X86;
 using System.Threading;
 using System.Threading.Tasks;
 

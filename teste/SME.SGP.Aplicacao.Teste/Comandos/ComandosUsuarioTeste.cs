@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Microsoft.Extensions.Configuration;
 using Moq;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;

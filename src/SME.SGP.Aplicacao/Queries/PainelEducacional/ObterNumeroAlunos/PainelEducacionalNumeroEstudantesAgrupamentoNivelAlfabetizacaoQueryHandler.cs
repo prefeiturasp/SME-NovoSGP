@@ -5,9 +5,7 @@ using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 

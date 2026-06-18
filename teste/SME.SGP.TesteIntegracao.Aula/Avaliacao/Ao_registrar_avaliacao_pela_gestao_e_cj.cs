@@ -1,7 +1,6 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;

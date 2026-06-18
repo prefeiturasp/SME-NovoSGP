@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Dominio.Entidades
+﻿namespace SME.SGP.Dominio.Entidades
 {
     public class EventoBimestre : EntidadeBase
     {

@@ -1,6 +1,5 @@
 using MediatR;
 using SME.SGP.Infra.Dtos.EscolaAqui.DadosDeLeituraDeComunicados;
-using SME.SGP.Infra.Enumerados;
 using System.Collections.Generic;
 
 

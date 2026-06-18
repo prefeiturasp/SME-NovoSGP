@@ -5,7 +5,6 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System;
 using System.Text;
 
 namespace SME.SGP.Dados

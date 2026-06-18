@@ -1,5 +1,4 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Dominio.Interfaces;
+﻿using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
 using MediatR;

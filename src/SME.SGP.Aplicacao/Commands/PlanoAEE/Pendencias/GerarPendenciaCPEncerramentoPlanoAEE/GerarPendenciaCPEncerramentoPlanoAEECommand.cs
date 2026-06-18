@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Aplicacao
 {

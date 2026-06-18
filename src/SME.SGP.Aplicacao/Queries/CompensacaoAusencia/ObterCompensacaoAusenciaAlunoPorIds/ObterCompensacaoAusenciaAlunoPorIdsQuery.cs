@@ -1,7 +1,4 @@
 ﻿using MediatR;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using SME.SGP.Dominio;
 using System.Collections.Generic;
 using FluentValidation;

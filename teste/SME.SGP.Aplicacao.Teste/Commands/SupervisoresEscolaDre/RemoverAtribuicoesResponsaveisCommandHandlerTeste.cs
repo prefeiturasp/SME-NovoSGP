@@ -1,5 +1,4 @@
-﻿using MediatR;
-using Moq;
+﻿using Moq;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;

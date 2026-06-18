@@ -1,12 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using SME.SGP.Dados;
-using SME.SGP.Infra;
-using System;
-using System.Data;
-using System.Text;
-using Microsoft.Extensions.Configuration;
-using SME.SGP.Dados.Contexto;
+﻿using System;
 
 namespace SME.SGP.TesteIntegracao.Setup
 {

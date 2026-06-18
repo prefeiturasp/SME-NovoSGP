@@ -6,8 +6,6 @@ using System;
 using System.Threading.Tasks;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra.Interface;
-using SME.SGP.Dados;
-using Prometheus;
 using SME.SGP.Dados.Cache;
 
 namespace SME.SGP.Dados.Repositorios
