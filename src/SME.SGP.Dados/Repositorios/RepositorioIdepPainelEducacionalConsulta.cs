@@ -102,7 +102,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<PainelEducacionalIdepDto>> ObterIdepPorAnoEtapa(int anoLetivo, int etapa, string codigoDre)
         {
-                var query = @"SELECT 
+            var query = @"SELECT 
                                   peci.ano_letivo,
                                   peci.codigo_dre,
                                   peci.etapa,
@@ -114,15 +114,15 @@ namespace SME.SGP.Dados.Repositorios
                               WHERE peci.ano_letivo = @anoLetivo
                               AND peci.etapa = @etapa";
 
-                if (!string.IsNullOrWhiteSpace(codigoDre))
-                    query += " AND peci.codigo_dre = @codigoDre ";
+            if (!string.IsNullOrWhiteSpace(codigoDre))
+                query += " AND peci.codigo_dre = @codigoDre ";
 
-                query += @" ORDER BY 
+            query += @" ORDER BY 
                                   peci.ano_letivo DESC,
                                   peci.codigo_dre,
                                   peci.faixa;";
 
-                return await database.Conexao.QueryAsync<PainelEducacionalIdepDto>(query, new { anoLetivo, etapa, codigoDre });
+            return await database.Conexao.QueryAsync<PainelEducacionalIdepDto>(query, new { anoLetivo, etapa, codigoDre });
         }
     }
 }

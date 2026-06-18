@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         {
             var listaEtapas = new List<int>() { (int)EtapaEncaminhamentoAEE.PrimeiraEtapa };
 
-            if(encaminhamentoAeeId > 0)
+            if (encaminhamentoAeeId > 0)
             {
                 var situacaoEncaminhamento = await mediator.Send(new ObterSituacaoEncaminhamentoAEEPorIdQuery(encaminhamentoAeeId));
 

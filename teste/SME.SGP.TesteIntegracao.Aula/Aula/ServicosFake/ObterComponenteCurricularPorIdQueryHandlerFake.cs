@@ -12,7 +12,7 @@ namespace SME.SGP.TesteIntegracao.Aula.ServicosFake
         {
             return await Task.FromResult(new DisciplinaDto()
             {
-                CodigoComponenteCurricular = 1                
+                CodigoComponenteCurricular = 1
             });
         }
     }

@@ -11,7 +11,7 @@ namespace SME.SGP.Infra
 
         public string TagTotalFrequencia { get; set; }
 
-        public string TotalFrequenciaFormatado { get; set; }        
+        public string TotalFrequenciaFormatado { get; set; }
 
         public IEnumerable<DadosRetornoFrequenciaAlunoDashboardDto> DadosFrequenciaDashboard { get; set; }
     }

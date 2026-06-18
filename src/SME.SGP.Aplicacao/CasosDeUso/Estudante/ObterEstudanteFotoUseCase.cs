@@ -1,12 +1,8 @@
-﻿using System;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Aplicacao
 {
@@ -33,8 +29,8 @@ namespace SME.SGP.Aplicacao
         {
             var arquivoFisico = await mediator.Send(new DownloadArquivoCommand(miniatura.Codigo, miniatura.Nome, miniatura.Tipo));
 
-            if(arquivoFisico?.Length <= 0)
-                return null;          
+            if (arquivoFisico?.Length <= 0)
+                return null;
 
             return new ArquivoDto()
             {

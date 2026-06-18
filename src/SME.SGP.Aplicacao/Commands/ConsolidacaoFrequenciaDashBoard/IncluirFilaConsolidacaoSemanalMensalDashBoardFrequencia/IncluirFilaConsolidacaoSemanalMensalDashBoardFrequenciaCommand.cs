@@ -1,7 +1,6 @@
-﻿using MediatR;
-using SME.SGP.Dominio.Enumerados;
+﻿using FluentValidation;
+using MediatR;
 using System;
-using FluentValidation;
 
 namespace SME.SGP.Aplicacao
 {
@@ -15,14 +14,14 @@ namespace SME.SGP.Aplicacao
             CodigoTurma = codigoTurma;
             AnoLetivo = anoLetivo;
         }
-        
+
         public long TurmaId { get; set; }
         public DateTime DataAula { get; set; }
         public bool EhModalidadeInfantil { get; set; }
         public string CodigoTurma { get; set; }
         public int AnoLetivo { get; set; }
     }
-    
+
     public class IncluirFilaConsolidacaoSemanalMensalDashBoardFrequenciaCommandValidator : AbstractValidator<IncluirFilaConsolidacaoSemanalMensalDashBoardFrequenciaCommand>
     {
         public IncluirFilaConsolidacaoSemanalMensalDashBoardFrequenciaCommandValidator()
@@ -34,11 +33,11 @@ namespace SME.SGP.Aplicacao
             RuleFor(a => a.DataAula)
                 .NotEmpty()
                 .WithMessage("A data da aula deve ser informada para a consolidação semanal do dashboard frequência");
-            
+
             RuleFor(a => a.CodigoTurma)
                 .NotEmpty()
                 .WithMessage("O código da turma deve ser informado para a consolidação semanal do dashboard frequência");
-            
+
             RuleFor(a => a.AnoLetivo)
                 .NotEmpty()
                 .WithMessage("O ano letivo deve ser informado para a consolidação semanal do dashboard frequência");

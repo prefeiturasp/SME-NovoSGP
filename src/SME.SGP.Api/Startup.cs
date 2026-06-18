@@ -52,9 +52,9 @@ namespace SME.SGP.Api
             app.UseRouting();
             app.UseAuthorization();
 
-            app.UseSwagger();                                         
-            app.UseSwaggerUI(c =>                                         
-            {                                                             
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "SGP Api");
             });
 
@@ -77,7 +77,7 @@ namespace SME.SGP.Api
             });
 
             RegistrarConfigsThreads.Registrar(Configuration);
-     
+
             app.UseHealthChecksSgp();
             app.UseHealthCheckPrometheusSgp();
         }
@@ -109,7 +109,7 @@ namespace SME.SGP.Api
             registraDependencias.RegistrarPolicies(services);
 
             RegistraAutenticacao.Registrar(services, Configuration);
-            RegistrarMvc.Registrar(services); 
+            RegistrarMvc.Registrar(services);
             RegistraDocumentacaoSwagger.Registrar(services);
 
             DefaultTypeMap.MatchNamesWithUnderscores = true;
@@ -125,10 +125,10 @@ namespace SME.SGP.Api
                 options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("pt-BR");
                 options.SupportedCultures = new List<CultureInfo> { new("pt-BR") };
             });
-            
+
             services.AddHealthChecksUiSgp()
                 .AddPostgreSqlStorageSgp(Configuration);
-            
+
             services.AddCors();
             services.AddControllers();
         }

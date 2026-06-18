@@ -1,13 +1,12 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -30,7 +29,7 @@ namespace SME.SGP.Aplicacao
 
             var disciplinasIds = anotacoesDto.Select(a => long.Parse(a.DisciplinaId)).ToArray();
 
-            var disciplinas = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(disciplinasIds));  
+            var disciplinas = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(disciplinasIds));
 
             foreach (var anotacao in anotacoesDto)
             {
@@ -40,6 +39,6 @@ namespace SME.SGP.Aplicacao
             }
 
             return anotacoesDto;
-        }	
+        }
     }
 }

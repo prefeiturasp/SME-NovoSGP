@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<string>> Handle(ObterAlunosComNotaLancadaPorConselhoClasseIdQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioConselhoClasse.ObterAlunosComNotaLancadaPorConselhoClasseId(request.ConselhoClasseId);            
+            return await repositorioConselhoClasse.ObterAlunosComNotaLancadaPorConselhoClasseId(request.ConselhoClasseId);
         }
     }
 }

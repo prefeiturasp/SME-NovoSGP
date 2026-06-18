@@ -1,15 +1,10 @@
-﻿using Dapper;
-using Dommel;
-using Microsoft.Extensions.Configuration;
-using Npgsql;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
+﻿using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -18,7 +13,7 @@ namespace SME.SGP.Dados.Repositorios
         private readonly ISgpContextConsultas contextoConsulta;
         public RepositorioObjetivoAprendizagemConsulta(ISgpContextConsultas contextoConsulta)
         {
-            this.contextoConsulta = contextoConsulta ?? throw new ArgumentNullException(nameof(contextoConsulta)); 
+            this.contextoConsulta = contextoConsulta ?? throw new ArgumentNullException(nameof(contextoConsulta));
         }
 
         public async Task<IEnumerable<ObjetivoAprendizagemDto>> ObterPorAnoEComponenteCurricularJuremaIds(AnoTurma? ano, long[] juremaIds)

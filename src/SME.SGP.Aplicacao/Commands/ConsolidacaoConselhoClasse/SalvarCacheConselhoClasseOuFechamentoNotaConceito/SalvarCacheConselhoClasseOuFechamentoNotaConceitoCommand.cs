@@ -1,24 +1,20 @@
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Xml.Linq;
 using FluentValidation;
 using MediatR;
-using SME.SGP.Dominio;
-using SME.SGP.Infra;
+using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Aplicacao
 {
     public class SalvarCacheConselhoClasseOuFechamentoNotaConceitoCommand : IRequest<bool>
     {
-        public SalvarCacheConselhoClasseOuFechamentoNotaConceitoCommand(string alunoCodigo, 
-                                                                        int bimestre, 
-                                                                        long turmaId, 
-                                                                        long componenteCurricularId, 
-                                                                        double? nota, 
+        public SalvarCacheConselhoClasseOuFechamentoNotaConceitoCommand(string alunoCodigo,
+                                                                        int bimestre,
+                                                                        long turmaId,
+                                                                        long componenteCurricularId,
+                                                                        double? nota,
                                                                         long? conceitoId,
                                                                         TipoAlteracao tipoAlteracao)
         {
-             AlunoCodigo = alunoCodigo;
+            AlunoCodigo = alunoCodigo;
             Bimestre = bimestre;
             TurmaId = turmaId;
             ComponenteCurricularId = componenteCurricularId;

@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
 {
@@ -27,7 +27,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
                     Semestre = 1
                 }
             };
-           return await Task.FromResult(lista);
+            return await Task.FromResult(lista);
         }
     }
 }

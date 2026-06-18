@@ -1,6 +1,6 @@
 ﻿namespace SME.SGP.Dominio.Interfaces
 {
-    public interface IRepositorioSuporteUsuario 
+    public interface IRepositorioSuporteUsuario
     {
         long Salvar(SuporteUsuario entidade);
     }

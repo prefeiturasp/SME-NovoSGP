@@ -13,9 +13,9 @@ namespace SME.SGP.TesteIntegracao
         public readonly IMediator mediator;
         private readonly IConsolidarFrequenciaAlunoPorTurmaEMesUseCase consolidarFrequenciaAlunoPorTurmaEMesUseCase;
         private readonly ICalculoFrequenciaTurmaDisciplinaUseCase calculoFrequenciaTurmaDisciplinaUseCase;
-        
 
-        public IncluirFilaCalcularFrequenciaPorTurmaCommandHandlerFake(IMediator mediator,IConsolidarFrequenciaAlunoPorTurmaEMesUseCase consolidarFrequenciaAlunoPorTurmaEMesUseCase, ICalculoFrequenciaTurmaDisciplinaUseCase calculoFrequenciaTurmaDisciplinaUseCase)  
+
+        public IncluirFilaCalcularFrequenciaPorTurmaCommandHandlerFake(IMediator mediator, IConsolidarFrequenciaAlunoPorTurmaEMesUseCase consolidarFrequenciaAlunoPorTurmaEMesUseCase, ICalculoFrequenciaTurmaDisciplinaUseCase calculoFrequenciaTurmaDisciplinaUseCase)
         {
             this.calculoFrequenciaTurmaDisciplinaUseCase = calculoFrequenciaTurmaDisciplinaUseCase ?? throw new ArgumentNullException(nameof(calculoFrequenciaTurmaDisciplinaUseCase));
             this.consolidarFrequenciaAlunoPorTurmaEMesUseCase = consolidarFrequenciaAlunoPorTurmaEMesUseCase ?? throw new ArgumentNullException(nameof(consolidarFrequenciaAlunoPorTurmaEMesUseCase));

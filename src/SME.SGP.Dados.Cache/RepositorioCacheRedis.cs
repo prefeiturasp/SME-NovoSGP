@@ -90,7 +90,7 @@ namespace SME.SGP.Dados.Repositorios
 
                 _servicoMensageriaLogs.Publicar(mensagem, RotasRabbitLogs.RotaLogs, ExchangeSgpRabbit.SgpLogs, "PublicarFilaLog").Wait();
 
-                return null; 
+                return null;
             }
             catch (Exception ex)
             {

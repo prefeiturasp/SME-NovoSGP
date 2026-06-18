@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.Turma;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso.Turma;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -29,7 +29,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.RPAP_I, Policy = "Bearer")]
-        public async Task<IActionResult> Copiar([FromBody] CopiarPapDto copiarPapDto,[FromServices] ICopiarRelatorioPAPUseCase useCase)
+        public async Task<IActionResult> Copiar([FromBody] CopiarPapDto copiarPapDto, [FromServices] ICopiarRelatorioPAPUseCase useCase)
         {
             return Ok(await useCase.Executar(copiarPapDto));
         }
@@ -99,9 +99,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterTurmasPapPorAnoLetivo([FromRoute] long anoLetivo, string codigoUe,[FromServices] IObterTurmasPapPorAnoLetivoUseCase usecase)
+        public async Task<IActionResult> ObterTurmasPapPorAnoLetivo([FromRoute] long anoLetivo, string codigoUe, [FromServices] IObterTurmasPapPorAnoLetivoUseCase usecase)
         {
-            return Ok(await usecase.Executar(anoLetivo,codigoUe));
+            return Ok(await usecase.Executar(anoLetivo, codigoUe));
         }
     }
 }

@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Shouldly;
@@ -7,6 +5,8 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.DiarioBordo
@@ -21,18 +21,18 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo
         public async Task Deve_excluir_diario_bordo()
         {
             var filtroDiarioBordo = new FiltroDiarioBordoDto
-            { 
-                ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138, 
+            {
+                ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
                 ContemObservacoes = false,
                 ContemDevolutiva = false
             };
-            
+
             await CriarDadosBasicos(filtroDiarioBordo);
 
             //-> Avalidar dados criados
             var diariosBordos = ObterTodos<Dominio.DiarioBordo>();
             diariosBordos.ShouldNotBeNull();
-            
+
             var diarioBordo = diariosBordos.FirstOrDefault();
             diarioBordo.ShouldNotBeNull();
 
@@ -41,7 +41,7 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo
             msgRabbit.ShouldNotBeNull();
             var useCase = ObterExcluirAulaUseCase();
             await useCase.Executar(msgRabbit);
-            
+
             //-> Avaliar pós executar
             diariosBordos = ObterTodos<Dominio.DiarioBordo>();
             diarioBordo.ShouldNotBeNull();
@@ -49,17 +49,17 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo
             foreach (var item in diariosBordos)
                 item.Excluido.ShouldBeTrue();
         }
-        
+
         [Fact]
         public async Task Deve_excluir_diario_bordo_e_observacoes()
         {
             var filtroDiarioBordo = new FiltroDiarioBordoDto
-            { 
-                ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138, 
+            {
+                ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
                 ContemObservacoes = true,
                 ContemDevolutiva = false
             };
-            
+
             await CriarDadosBasicos(filtroDiarioBordo);
 
             //-> Avalidar dados criados
@@ -78,7 +78,7 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo
             msgRabbit.ShouldNotBeNull();
             var useCase = ObterExcluirAulaUseCase();
             await useCase.Executar(msgRabbit);
-            
+
             //-> Avaliar pós executar
             diariosBordos = ObterTodos<Dominio.DiarioBordo>();
             diariosBordos.ShouldNotBeNull();
@@ -86,24 +86,24 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo
             foreach (var item in diariosBordos)
             {
                 item.Excluido.ShouldBeTrue();
-                
+
                 observacoes = ObterTodos<DiarioBordoObservacao>().Where(c => c.DiarioBordoId == item.Id).ToList();
                 observacoes.ShouldNotBeNull();
 
                 foreach (var obs in observacoes)
-                    obs.Excluido.ShouldBeTrue();                
+                    obs.Excluido.ShouldBeTrue();
             }
-        }        
+        }
 
         private IExcluirDiarioBordoPorAulaIdUseCase ObterExcluirAulaUseCase()
         {
             return ServiceProvider.GetService<IExcluirDiarioBordoPorAulaIdUseCase>();
         }
-        
+
         private static MensagemRabbit MontarMensagemRabbit(long id)
         {
             var msg = JsonConvert.SerializeObject(new FiltroIdDto(id));
             return new MensagemRabbit(msg);
-        }        
+        }
     }
 }

@@ -1,12 +1,10 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class PodeCadastrarAulaNoDiaQuery: IRequest<bool>
+    public class PodeCadastrarAulaNoDiaQuery : IRequest<bool>
     {
         public PodeCadastrarAulaNoDiaQuery(DateTime dataAula, string turmaCodigo, long[] componentesCurriculares, TipoAula tipoAula, string professorRf = null)
         {

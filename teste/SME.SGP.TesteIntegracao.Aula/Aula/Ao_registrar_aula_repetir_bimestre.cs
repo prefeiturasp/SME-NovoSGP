@@ -6,7 +6,6 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,7 +29,7 @@ namespace SME.SGP.TesteIntegracao.CadastrarAulaRepetirBimestre
         [Fact]
         public async Task Deve_permitir_cadastrar_aula_normal_bimestral_professor_especialista_fundamental()
         {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_03_01, DATA_28_04, BIMESTRE_1,false);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_03_01, DATA_28_04, BIMESTRE_1, false);
 
             await CriarPeriodoEscolarEPeriodoReabertura();
 
@@ -40,7 +39,7 @@ namespace SME.SGP.TesteIntegracao.CadastrarAulaRepetirBimestre
 
             aulasCadastradas.Count().ShouldBeEquivalentTo(17);
 
-            aulasCadastradas.Where(w=> !w.Excluido).Count().ShouldBeEquivalentTo(17);
+            aulasCadastradas.Where(w => !w.Excluido).Count().ShouldBeEquivalentTo(17);
 
             aulasCadastradas.Where(w => w.DisciplinaId == COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString()).Count().ShouldBeEquivalentTo(17);
         }

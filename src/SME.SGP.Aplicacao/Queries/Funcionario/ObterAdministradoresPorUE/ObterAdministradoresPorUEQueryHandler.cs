@@ -1,11 +1,10 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
+using Newtonsoft.Json;
+using SME.SGP.Infra;
 using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -21,8 +20,8 @@ namespace SME.SGP.Aplicacao
         public async Task<string[]> Handle(ObterAdministradoresPorUEQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
-            
-            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_ESCOLAS_ADMINISTRADOR_SGP,request.CodigoUe));
+
+            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_ESCOLAS_ADMINISTRADOR_SGP, request.CodigoUe));
 
             if (resposta.IsSuccessStatusCode)
             {

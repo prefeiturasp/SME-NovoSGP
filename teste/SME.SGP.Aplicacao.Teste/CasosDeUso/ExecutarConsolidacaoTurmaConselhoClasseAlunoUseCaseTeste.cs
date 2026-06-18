@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             var inativo = false;
             var componenteCurricularId = 2;
 
-            var mensagemConsolidacaoConselhoClasseAlunoDto = ObterMensagemConsolidacaoConselhoClasseAlunoDto(alunoCodigo, turmaId, inativo,bimestre, componenteCurricularId);
+            var mensagemConsolidacaoConselhoClasseAlunoDto = ObterMensagemConsolidacaoConselhoClasseAlunoDto(alunoCodigo, turmaId, inativo, bimestre, componenteCurricularId);
 
             var jsonMensagem = JsonSerializer.Serialize(mensagemConsolidacaoConselhoClasseAlunoDto);
 
@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             Assert.True(retorno);
         }
 
-        
+
 
         [Fact]
         public async Task Deve_Salvar_Nota_Ativo_Bimestre_1_Consolidado_Conselho_Classe_Aluno_Turma()
@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             var inativo = false;
             var componenteCurricularId = 2;
 
-            var mensagemConsolidacaoConselhoClasseAlunoDto = ObterMensagemConsolidacaoConselhoClasseAlunoDto(alunoCodigo, turmaId, inativo,bimestre, componenteCurricularId);
+            var mensagemConsolidacaoConselhoClasseAlunoDto = ObterMensagemConsolidacaoConselhoClasseAlunoDto(alunoCodigo, turmaId, inativo, bimestre, componenteCurricularId);
 
             var jsonMensagem = JsonSerializer.Serialize(mensagemConsolidacaoConselhoClasseAlunoDto);
 
@@ -171,7 +171,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             //Asert
             Assert.True(retorno);
         }
-        
+
         private void MediatorRepositorioSetup(string alunoCodigo, int turmaId)
         {
             mediator.Setup(a => a.Send(It.IsAny<ObterComponentesParaFechamentoAcompanhamentoCCAlunoQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new List<long>() { 1000 });
@@ -206,7 +206,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             };
         }
 
-        private static MensagemConsolidacaoConselhoClasseAlunoDto ObterMensagemConsolidacaoConselhoClasseAlunoDto(string alunoCodigo, int turmaId, bool inativo, int? bimestre =0, long? componenteCurricularId = null)
+        private static MensagemConsolidacaoConselhoClasseAlunoDto ObterMensagemConsolidacaoConselhoClasseAlunoDto(string alunoCodigo, int turmaId, bool inativo, int? bimestre = 0, long? componenteCurricularId = null)
         {
             return new MensagemConsolidacaoConselhoClasseAlunoDto()
             {

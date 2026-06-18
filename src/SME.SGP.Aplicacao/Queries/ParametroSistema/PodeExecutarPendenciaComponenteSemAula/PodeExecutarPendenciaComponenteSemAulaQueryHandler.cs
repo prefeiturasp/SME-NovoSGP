@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         {
             var dadosParametro = await repositorioParametrosSistema.ObterParametroPorTipoEAno(TipoParametroSistema.ExecutaPendenciaComponenteSemAula, DateTimeExtension.HorarioBrasilia().Year);
 
-            return dadosParametro?.Ativo ?? false; 
+            return dadosParametro?.Ativo ?? false;
         }
     }
 }

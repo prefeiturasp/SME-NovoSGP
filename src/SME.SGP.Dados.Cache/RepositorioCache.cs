@@ -1,14 +1,12 @@
 ﻿using Newtonsoft.Json;
+using SME.SGP.Dados.Cache;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Infra.Interface;
-using SME.SGP.Dados;
-using Prometheus;
-using SME.SGP.Dados.Cache;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -45,8 +43,8 @@ namespace SME.SGP.Dados.Repositorios
                     NomeChave = nomeChave,
                     UtilizarGZip = utilizarGZip
                 };
-                
-                var cacheParaRetorno = servicoTelemetria.RegistrarComRetorno<string>(() => ObterValor(nomeChave), 
+
+                var cacheParaRetorno = servicoTelemetria.RegistrarComRetorno<string>(() => ObterValor(nomeChave),
                     NomeServicoCache, $"{NomeServicoCache}: {telemetriaNome}", "", param.ToString());
 
                 if (utilizarGZip)
@@ -57,7 +55,7 @@ namespace SME.SGP.Dados.Repositorios
                 else
                     metricasCache.Miss(nomeChave);
 
-                return cacheParaRetorno;    
+                return cacheParaRetorno;
             }
             catch (Exception e)
             {
@@ -73,15 +71,15 @@ namespace SME.SGP.Dados.Repositorios
                     e.InnerException?.ToString());
 
                 servicoMensageriaLogs.Publicar(mensagem, RotasRabbitLogs.RotaLogs, ExchangeSgpRabbit.SgpLogs, "PublicarFilaLog").Wait();
-                
+
                 return string.Empty;
             }
         }
-        
+
         public string Obter(string nomeChave, bool utilizarGZip = false)
         {
             return Obter(nomeChave, $"{NomeServicoCache} Obter", utilizarGZip);
-        }        
+        }
 
         public async Task<string> ObterAsync(string nomeChave, string telemetriaNome, bool utilizarGZip = false)
         {
@@ -92,7 +90,7 @@ namespace SME.SGP.Dados.Repositorios
                     NomeChave = nomeChave,
                     UtilizarGZip = utilizarGZip
                 };
-                    
+
                 var stringCache = servicoTelemetria.RegistrarComRetorno<string>(() => ObterValor(nomeChave),
                     NomeServicoCache, $"{NomeServicoCache}: {telemetriaNome}", "", param.ToString());
 
@@ -101,7 +99,7 @@ namespace SME.SGP.Dados.Repositorios
                     metricasCache.Miss(nomeChave);
                     return await Task.FromResult(string.Empty);
                 }
-                
+
                 if (utilizarGZip)
                     stringCache = UtilGZip.Descomprimir(Convert.FromBase64String(stringCache));
 
@@ -121,7 +119,7 @@ namespace SME.SGP.Dados.Repositorios
                     e.InnerException?.ToString());
 
                 await servicoMensageriaLogs.Publicar(mensagem, RotasRabbitLogs.RotaLogs, ExchangeSgpRabbit.SgpLogs, "PublicarFilaLog");
-                    
+
                 return string.Empty;
             }
         }
@@ -142,7 +140,7 @@ namespace SME.SGP.Dados.Repositorios
                     MinutosParaExpirar = minutosParaExpirar,
                     UtilizarGZip = utilizarGZip
                 };
-            
+
                 var stringCache = servicoTelemetria.RegistrarComRetorno<string>(() => ObterValor(nomeChave),
                     NomeServicoCache, $"{NomeServicoCache}: {telemetriaNome}", "", param.ToString());
 
@@ -174,7 +172,7 @@ namespace SME.SGP.Dados.Repositorios
                     e.InnerException?.ToString());
 
                 await servicoMensageriaLogs.Publicar(mensagem, RotasRabbitLogs.RotaLogs, ExchangeSgpRabbit.SgpLogs, "PublicarFilaLog");
-                
+
                 return await buscarDados();
             }
         }
@@ -184,7 +182,7 @@ namespace SME.SGP.Dados.Repositorios
             return await ObterObjetoAsync<T>(nomeChave, $"{NomeServicoCache} Obter objeto async<string>", utilizarGZip);
         }
 
-        public async Task<T> ObterObjetoAsync<T>(string nomeChave, string telemetriaNome, bool utilizarGZip = false) where T : new() 
+        public async Task<T> ObterObjetoAsync<T>(string nomeChave, string telemetriaNome, bool utilizarGZip = false) where T : new()
         {
             var param = new
             {
@@ -242,7 +240,7 @@ namespace SME.SGP.Dados.Repositorios
             {
                 NomeChave = nomeChave
             };
-            
+
             try
             {
                 await servicoTelemetria.RegistrarAsync(async () => await RemoverValor(nomeChave),
@@ -261,7 +259,7 @@ namespace SME.SGP.Dados.Repositorios
                     e.StackTrace,
                     e.InnerException?.Message,
                     e.InnerException?.ToString());
-                
+
                 await servicoMensageriaLogs.Publicar(mensagem, RotasRabbitLogs.RotaLogs, ExchangeSgpRabbit.SgpLogs, "PublicarFilaLog");
             }
         }
@@ -274,7 +272,7 @@ namespace SME.SGP.Dados.Repositorios
                 MinutosParaExpirar = minutosParaExpirar,
                 UtilizarGZip = utilizarGZip
             };
-            
+
             try
             {
                 if (!string.IsNullOrWhiteSpace(valor) && valor != "[]" && valor != "null")
@@ -302,7 +300,7 @@ namespace SME.SGP.Dados.Repositorios
                     e.StackTrace,
                     e.InnerException?.Message,
                     e.InnerException?.ToString());
-                
+
                 await servicoMensageriaLogs.Publicar(mensagem, RotasRabbitLogs.RotaLogs, ExchangeSgpRabbit.SgpLogs, "PublicarFilaLog");
             }
         }

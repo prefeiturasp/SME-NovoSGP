@@ -47,7 +47,7 @@ namespace SME.SGP.ComprimirArquivos.Worker
 
             canalRabbit.QueueDeclare(RotasRabbitOtimizarArquivos.OtimizarArquivoImagem, true, false, false, args);
             canalRabbit.QueueBind(RotasRabbitOtimizarArquivos.OtimizarArquivoImagem, RotasRabbitOtimizarArquivos.ExchangeSgp, RotasRabbitOtimizarArquivos.OtimizarArquivoImagem, null);
-            
+
             canalRabbit.QueueDeclare(RotasRabbitOtimizarArquivos.OtimizarArquivoVideo, true, false, false, args);
             canalRabbit.QueueBind(RotasRabbitOtimizarArquivos.OtimizarArquivoVideo, RotasRabbitOtimizarArquivos.ExchangeSgp, RotasRabbitOtimizarArquivos.OtimizarArquivoVideo, null);
 
@@ -68,7 +68,7 @@ namespace SME.SGP.ComprimirArquivos.Worker
 
             canalRabbit.QueueDeclare(filaDeadLetterImagem, true, false, false, argsDlq);
             canalRabbit.QueueBind(filaDeadLetterImagem, RotasRabbitOtimizarArquivos.ExchangeSgpDeadLetter, RotasRabbitOtimizarArquivos.OtimizarArquivoImagem, null);
-            
+
             canalRabbit.QueueDeclare(filaDeadLetterVideo, true, false, false, argsDlq);
             canalRabbit.QueueBind(filaDeadLetterVideo, RotasRabbitOtimizarArquivos.ExchangeSgpDeadLetter, RotasRabbitOtimizarArquivos.OtimizarArquivoVideo, null);
 
@@ -84,7 +84,7 @@ namespace SME.SGP.ComprimirArquivos.Worker
 
             canalRabbit.QueueDeclare(filaLimboImagem, true, false, false, argsLimbo);
             canalRabbit.QueueBind(filaLimboImagem, RotasRabbitOtimizarArquivos.ExchangeSgpDeadLetter, filaDeadLetterImagem);
-            
+
             canalRabbit.QueueDeclare(filaLimboVideo, true, false, false, argsLimbo);
             canalRabbit.QueueBind(filaLimboVideo, RotasRabbitOtimizarArquivos.ExchangeSgpDeadLetter, filaDeadLetterImagem, null);
 
@@ -103,7 +103,7 @@ namespace SME.SGP.ComprimirArquivos.Worker
                 {
                     await TratarMensagem(ea);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     canalRabbit.BasicReject(ea.DeliveryTag, false);
                 }
@@ -135,15 +135,15 @@ namespace SME.SGP.ComprimirArquivos.Worker
             var rota = ea.RoutingKey;
 
             var mensagemRabbit = JsonConvert.DeserializeObject<MensagemRabbit>(mensagem);
-            
+
             var transacao = telemetriaOptions.Apm ? Agent.Tracer.StartTransaction(rota, "WorkerRabbitComprimirArquivos") : null;
 
             try
             {
                 var useCase = ObterUseCases(rota);
-                
+
                 if (telemetriaOptions.Apm)
-                    transacao?.CaptureSpan("RegistrarComprimirArquivos", "RabbitMQ", () =>useCase.Executar(mensagemRabbit)).Wait();
+                    transacao?.CaptureSpan("RegistrarComprimirArquivos", "RabbitMQ", () => useCase.Executar(mensagemRabbit)).Wait();
                 else
                     useCase.Executar(mensagemRabbit).Wait();
 
@@ -159,10 +159,10 @@ namespace SME.SGP.ComprimirArquivos.Worker
                     canalRabbit.BasicAck(ea.DeliveryTag, false);
 
                     var filaLimbo = $"{ea.RoutingKey}.limbo";
-                    await PublicarMensagem(filaLimbo, mensagemRabbit,  RotasRabbitOtimizarArquivos.ExchangeSgpDeadLetter);
+                    await PublicarMensagem(filaLimbo, mensagemRabbit, RotasRabbitOtimizarArquivos.ExchangeSgpDeadLetter);
                 }
                 else canalRabbit.BasicReject(ea.DeliveryTag, false);
-                
+
             }
             finally
             {
@@ -173,7 +173,7 @@ namespace SME.SGP.ComprimirArquivos.Worker
         private IComprimirUseCase ObterUseCases(string rota)
         {
             var scope = serviceScopeFactory.CreateScope();
-            
+
             return rota switch
             {
                 RotasRabbitOtimizarArquivos.OtimizarArquivoImagem => scope.ServiceProvider
@@ -181,11 +181,11 @@ namespace SME.SGP.ComprimirArquivos.Worker
                 RotasRabbitOtimizarArquivos.OtimizarArquivoVideo => scope.ServiceProvider
                     .GetService<IComprimirVideoUseCase>(),
                 RotasRabbitOtimizarArquivos.OtimizarArquivoPdf => scope.ServiceProvider
-                    .GetService<IComprimirPdfUsecase>(),    
+                    .GetService<IComprimirPdfUsecase>(),
                 _ => null
             };
         }
-        
+
         private ulong GetRetryCount(IBasicProperties properties)
         {
             if (properties.Headers.NaoEhNulo() && properties.Headers.ContainsKey("x-death"))
@@ -193,25 +193,25 @@ namespace SME.SGP.ComprimirArquivos.Worker
                 var deathProperties = (List<object>)properties.Headers["x-death"];
                 var lastRetry = (Dictionary<string, object>)deathProperties[0];
                 var count = lastRetry["count"];
-                return (ulong) Convert.ToInt64(count);
+                return (ulong)Convert.ToInt64(count);
             }
             else
             {
                 return 0;
             }
         }
-        
+
         private Task PublicarMensagem(string rota, object request, string exchange = null)
         {
             var mensagem = JsonConvert.SerializeObject(request, new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore
             });
-            
+
             var body = Encoding.UTF8.GetBytes(mensagem);
-            
+
             var props = canalRabbit.CreateBasicProperties();
-            
+
             props.Persistent = true;
 
             canalRabbit.BasicPublish(exchange, rota, true, props, body);

@@ -1,11 +1,12 @@
 ﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using Moq.Protected;
 using Moq;
+using Moq.Protected;
+using Newtonsoft.Json;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.TesteIntegracao.Commands;
 using SME.SGP.TesteIntegracao.Constantes;
@@ -14,15 +15,12 @@ using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Net;
-using System.Security.Cryptography.Xml;
+using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
-using System.Text;
-using Newtonsoft.Json;
-using SME.SGP.Dominio.Constantes;
 
 namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
 {
@@ -47,7 +45,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
             await CriarDadosBase();
             await CriarDadosAtualizacaoMapeamentoEstudante(4, DateTimeExtension.HorarioBrasilia().Year);
             var mediator = ServiceProvider.GetService<IMediator>();
-            var retorno = await mediator.Send(new ObterInformacoesAtualizadasAlunoMapeamentoEstudanteQuery(ALUNO_CODIGO_1, 
+            var retorno = await mediator.Send(new ObterInformacoesAtualizadasAlunoMapeamentoEstudanteQuery(ALUNO_CODIGO_1,
                                                                                                      DateTimeExtension.HorarioBrasilia().Year,
                                                                                                      4));
             retorno.ShouldNotBeNull();
@@ -87,7 +85,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
                 });
 
             var httpClient = new HttpClient(mockHttpMessageHandler.Object)
-                                    {BaseAddress = new Uri("https://api.eol.com.br/somefakeurl")}; 
+            { BaseAddress = new Uri("https://api.eol.com.br/somefakeurl") };
             mockHttpClientFactory.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(httpClient);
 
             var _obterInformacoesTurmasProgramaAlunoMapeamentoEstudanteQueryHandler = new ObterInformacoesTurmasProgramaAlunoMapeamentoEstudanteQueryHandler(mockHttpClientFactory.Object);
@@ -107,18 +105,18 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
             var idParecerPromovido = await InserirNaBaseAsync(new ConselhoClasseParecerConclusivo { Nome = "Promovido", Aprovado = true, Nota = true, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
             await InserirNaBase(new ConselhoClasseConsolidadoTurmaAluno
             {
-                AlunoCodigo = ALUNO_CODIGO_1,  
+                AlunoCodigo = ALUNO_CODIGO_1,
                 TurmaId = await InserirNaBaseAsync(new Dominio.Turma
-                            {
-                                UeId = 1,
-                                Ano = "1",
-                                CodigoTurma = TURMA_CODIGO_4,
-                                ModalidadeCodigo = Modalidade.Fundamental,
-                                AnoLetivo = anoLetivo - 1,
-                                Semestre = 0,
-                                Nome = TURMA_NOME_4,
-                                TipoTurma = TipoTurma.Regular,
-                                TipoTurno = (int)TipoTurnoEOL.Tarde
+                {
+                    UeId = 1,
+                    Ano = "1",
+                    CodigoTurma = TURMA_CODIGO_4,
+                    ModalidadeCodigo = Modalidade.Fundamental,
+                    AnoLetivo = anoLetivo - 1,
+                    Semestre = 0,
+                    Nome = TURMA_NOME_4,
+                    TipoTurma = TipoTurma.Regular,
+                    TipoTurno = (int)TipoTurnoEOL.Tarde
                 }),
                 Status = SituacaoConselhoClasse.Concluido,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
@@ -154,7 +152,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes
 
             var idFechamento = await InserirNaBaseAsync(new FechamentoTurma()
             {
-                PeriodoEscolarId = ObterTodos<PeriodoEscolar>().FirstOrDefault(p => p.Bimestre == bimestre-1).Id,
+                PeriodoEscolarId = ObterTodos<PeriodoEscolar>().FirstOrDefault(p => p.Bimestre == bimestre - 1).Id,
                 TurmaId = ObterTodos<Dominio.Turma>().FirstOrDefault(t => t.CodigoTurma == TURMA_CODIGO_1).Id,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = "Sistema",

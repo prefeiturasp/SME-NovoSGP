@@ -105,8 +105,8 @@ namespace SME.SGP.TesteIntegracao.RegistroColetivoNAAPA
                 QuantidadeParticipantes = 4,
                 Descricao = "Registro coletivo",
                 Observacao = "Observação",
-                Anexos = new List<AnexoDto>() 
-                { 
+                Anexos = new List<AnexoDto>()
+                {
                     new AnexoDto(){ AnexoId = codigoArquivo1 },
                     new AnexoDto(){ AnexoId = codigoArquivo2 }
                 }

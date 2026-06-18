@@ -1,12 +1,9 @@
-﻿using System;
-using MediatR;
-using Newtonsoft.Json;
+﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System.Linq;
+using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -16,7 +13,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioConselhoClasseConsolidadoConsulta repositorioConselhoClasseConsolidadoConsulta;
         private readonly IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado;
 
-        public ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoUseCase(IMediator mediator, 
+        public ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoUseCase(IMediator mediator,
                                                                               IRepositorioConselhoClasseConsolidadoConsulta repositorioConselhoClasseConsolidadoConsulta,
                                                                               IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado) : base(mediator)
         {
@@ -57,7 +54,7 @@ namespace SME.SGP.Aplicacao
                     };
                     await mediator.Send(migracaoConsolidacaoTurmaCommand);
                 }
-                
+
                 return true;
             }
             catch (System.Exception ex)

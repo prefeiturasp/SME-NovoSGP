@@ -45,9 +45,9 @@ namespace SME.SGP.Dados.Repositorios
                                     quantidade_remotos = @quantidadeRemoto
                                     where id = @id";
 
-            await database.Conexao.ExecuteAsync(query, new { id, quantidadePresente, quantidadeAusente, quantidadeRemoto});
+            await database.Conexao.ExecuteAsync(query, new { id, quantidadePresente, quantidadeAusente, quantidadeRemoto });
         }
-        
+
         public async Task<ConsolidacaoDashBoardFrequencia> ObterConsolidacaoDashboardPorTurmaAulaModalidadeAnoLetivoDreUeTipo(long turmaId, DateTime dataAula, Modalidade modalidadeCodigo, int anoLetivo, long dreId, long ueId, TipoPeriodoDashboardFrequencia tipo)
         {
             var query = new StringBuilder(@"SELECT id, 
@@ -79,9 +79,9 @@ namespace SME.SGP.Dados.Repositorios
                                        and ue_id = @ueId
                                        and tipo = @tipo ");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<ConsolidacaoDashBoardFrequencia>(query.ToString(), new { turmaId, dataAula, modalidadeCodigo = (int)modalidadeCodigo, anoLetivo, dreId, ueId, tipo = (int)tipo});
+            return await database.Conexao.QueryFirstOrDefaultAsync<ConsolidacaoDashBoardFrequencia>(query.ToString(), new { turmaId, dataAula, modalidadeCodigo = (int)modalidadeCodigo, anoLetivo, dreId, ueId, tipo = (int)tipo });
         }
-        
+
         public async Task<long> SalvarConsolidacaoDashBoardFrequencia(ConsolidacaoDashBoardFrequencia consolidacaoDashBoardFrequencia)
         {
             if (consolidacaoDashBoardFrequencia.Id > 0)
@@ -91,7 +91,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return consolidacaoDashBoardFrequencia.Id;
         }
-        
+
         public async Task<long> SalvarConsolidacaoFrequenciaTurma(ConsolidacaoFrequenciaTurma consolidacaoFrequenciaTurma)
         {
             if (consolidacaoFrequenciaTurma.Id > 0)

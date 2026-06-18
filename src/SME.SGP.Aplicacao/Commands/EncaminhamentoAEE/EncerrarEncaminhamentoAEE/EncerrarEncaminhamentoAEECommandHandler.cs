@@ -37,9 +37,9 @@ namespace SME.SGP.Aplicacao
             var idEntidadeEncaminhamento = await repositorioEncaminhamentoAEE.SalvarAsync(encaminhamentoAEE);
 
             await mediator.Send(new ExecutaNotificacaoEncerramentoEncaminhamentoAEECommand(encaminhamentoAEE.Id, usuarioLogado.CodigoRf, usuarioLogado.Nome));
-            
+
             return idEntidadeEncaminhamento != 0;
 
-        }        
+        }
     }
 }

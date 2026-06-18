@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace SME.SGP.Dominio
 {
@@ -12,7 +10,7 @@ namespace SME.SGP.Dominio
         }
 
         public long FechamentoTurmaDisciplinaId { get; set; }
-        public FechamentoTurmaDisciplina FechamentoTurmaDisciplina { get; set; }   
+        public FechamentoTurmaDisciplina FechamentoTurmaDisciplina { get; set; }
         public string AlunoCodigo { get; set; }
 
         public AnotacaoFechamentoAluno AnotacaoFechamentoAluno { get; set; }

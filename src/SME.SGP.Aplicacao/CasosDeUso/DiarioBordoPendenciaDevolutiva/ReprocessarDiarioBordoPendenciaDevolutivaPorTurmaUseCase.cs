@@ -1,10 +1,10 @@
-﻿using SME.SGP.Aplicacao.Interfaces;
-using MediatR;
-using System;
-using System.Threading.Tasks;
-using SME.SGP.Infra;
+﻿using MediatR;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Infra;
+using System;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var turmaId in turmas)
                 {
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaReprocessarDiarioBordoPendenciaDevolutivaPorComponente,
-                        new FiltroDiarioBordoPendenciaDevolutivaDto(anoLetivo: filtro.AnoLetivo, dreId: filtro.DreId, ueCodigo: filtro.UeCodigo, turmaId: turmaId, ueId:filtro.UeId), Guid.NewGuid(), null));
+                        new FiltroDiarioBordoPendenciaDevolutivaDto(anoLetivo: filtro.AnoLetivo, dreId: filtro.DreId, ueCodigo: filtro.UeCodigo, turmaId: turmaId, ueId: filtro.UeId), Guid.NewGuid(), null));
                 }
 
                 return true;

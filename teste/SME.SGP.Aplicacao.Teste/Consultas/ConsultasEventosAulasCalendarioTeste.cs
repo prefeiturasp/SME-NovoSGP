@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using MediatR;
 using Moq;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using MediatR;
 
 namespace SME.SGP.Aplicacao.Teste.Consultas
 {
@@ -26,7 +24,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IRepositorioFechamentoReabertura> repositorioFechamentoReabertura;
         private readonly Mock<IRepositorioPeriodoEscolarConsulta> repositorioPeriodoEscolar;
         private readonly Mock<IServicoUsuario> servicoUsuario;
-        private readonly Mock<IMediator> mediator;      
+        private readonly Mock<IMediator> mediator;
 
         public ConsultasEventosAulasCalendarioTeste()
         {

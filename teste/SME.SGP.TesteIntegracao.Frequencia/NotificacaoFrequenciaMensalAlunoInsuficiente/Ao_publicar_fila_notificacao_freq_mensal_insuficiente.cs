@@ -10,13 +10,11 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.TesteIntegracao.Commands;
 using SME.SGP.TesteIntegracao.Constantes;
-using SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFakes;
 using SME.SGP.TesteIntegracao.Frequencia.NotificacaoFrequenciaMensalAlunoInsuficiente.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.Xml;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
@@ -27,7 +25,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia.NotificacaoFrequenciaMensalAlunoIns
     {
         public Ao_publicar_fila_notificacao_freq_mensal_insuficiente(CollectionFixture collectionFixture) : base(collectionFixture)
         {
-            
+
         }
         protected override void RegistrarFakes(IServiceCollection services)
         {

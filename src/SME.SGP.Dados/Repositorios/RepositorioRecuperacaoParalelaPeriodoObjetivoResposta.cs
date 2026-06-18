@@ -27,14 +27,14 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select * from recuperacao_paralela_periodo_objetivo_resposta rppor 
                             where rppor.recuperacao_paralela_id = @recuperacaoParalelId
                         and rppor.objetivo_id = @objetivoId and rppor.periodo_recuperacao_paralela_id = @periodoRecuperacaoParalelaId";
-            
+
             var parametros = new
             {
                 recuperacaoParalelId,
                 objetivoId,
                 periodoRecuperacaoParalelaId
             };
-           
+
             return await database.Conexao.QueryFirstOrDefaultAsync<RecuperacaoParalelaPeriodoObjetivoResposta>(query, parametros);
         }
     }

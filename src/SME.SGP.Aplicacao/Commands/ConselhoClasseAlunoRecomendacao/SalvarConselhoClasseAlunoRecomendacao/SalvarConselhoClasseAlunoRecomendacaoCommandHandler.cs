@@ -1,10 +1,8 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
             var recomendacoesAssociadas = await repositorioConselhoClasseAlunoRecomendacao.ObterRecomendacoesDoAlunoPorConselhoAlunoId(request.ConselhoClasseAlunoId);
 
-            foreach(var recomendacao in recomendacoesAssociadas)
+            foreach (var recomendacao in recomendacoesAssociadas)
             {
                 bool verificacao = recomendacoesAlunoFamilia.Contains(recomendacao);
                 if (verificacao)
@@ -39,9 +37,9 @@ namespace SME.SGP.Aplicacao
             }
 
             if (listaRecomendacoesExcluidas.Any())
-                await repositorioConselhoClasseAlunoRecomendacao.ExcluirRecomendacoesPorConselhoAlunoIdRecomendacaoId(request.ConselhoClasseAlunoId, listaRecomendacoesExcluidas.ToArray());          
+                await repositorioConselhoClasseAlunoRecomendacao.ExcluirRecomendacoesPorConselhoAlunoIdRecomendacaoId(request.ConselhoClasseAlunoId, listaRecomendacoesExcluidas.ToArray());
 
-            if(recomendacoesAlunoFamilia.Any())
+            if (recomendacoesAlunoFamilia.Any())
                 repositorioConselhoClasseAlunoRecomendacao.InserirRecomendacaoAlunoFamilia(recomendacoesAlunoFamilia.ToArray(), request.ConselhoClasseAlunoId);
         }
     }

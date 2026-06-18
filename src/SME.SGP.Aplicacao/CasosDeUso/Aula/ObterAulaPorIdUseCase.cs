@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException($"Aula de id {aulaId} não encontrada");
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aula.TurmaId));
-            
+
             var eventosDaUeSME = await mediator.Send(new ObterEventosCalendarioProfessorPorMesDiaQuery()
             {
                 UeCodigo = turma.Ue.CodigoUe,
@@ -100,7 +100,7 @@ namespace SME.SGP.Aplicacao
 
                 return disciplinas.Any(d => d.CodigoComponenteCurricular == long.Parse(aula.DisciplinaId)) ||
                        disciplinas.Any(d => d.CodigoComponenteCurricularTerritorioSaber == long.Parse(aula.DisciplinaId)) ||
-                       disciplinas.Any(d => d.CdComponenteCurricularPai == long.Parse(aula.DisciplinaId));                
+                       disciplinas.Any(d => d.CdComponenteCurricularPai == long.Parse(aula.DisciplinaId));
             }
 
             var disciplina = componentesUsuario?.FirstOrDefault(x => x.Codigo.ToString().Equals(aula.DisciplinaId));
@@ -153,7 +153,7 @@ namespace SME.SGP.Aplicacao
                 .ObterComponentesCurricularesPorProfessorETurma(codigoTurma, false);
 
             return componentesCurricularesTurma
-                .Any(cc => cc.CodigoComponenteCurricular.ToString().Equals(disciplinasInglesAtualizacao.codigoAntiga)) ? 
+                .Any(cc => cc.CodigoComponenteCurricular.ToString().Equals(disciplinasInglesAtualizacao.codigoAntiga)) ?
                     disciplinasInglesAtualizacao.codigoAntiga : disciplinasInglesAtualizacao.codigoNova;
         }
     }

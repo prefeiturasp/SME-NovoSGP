@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao.Commands.ImportarArquivo
         {
             var importacaoLog = MapearParaEntidade(request);
 
-            await repositorioImportacaoLog.SalvarAsync(importacaoLog);     
+            await repositorioImportacaoLog.SalvarAsync(importacaoLog);
 
             return importacaoLog;
         }

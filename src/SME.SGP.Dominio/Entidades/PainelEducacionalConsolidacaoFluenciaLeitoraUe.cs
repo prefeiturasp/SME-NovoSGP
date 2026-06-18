@@ -1,5 +1,5 @@
-﻿using System;
-using SME.SGP.Dominio.Enumerados;
+﻿using SME.SGP.Dominio.Enumerados;
+using System;
 
 namespace SME.SGP.Dominio.Entidades
 {

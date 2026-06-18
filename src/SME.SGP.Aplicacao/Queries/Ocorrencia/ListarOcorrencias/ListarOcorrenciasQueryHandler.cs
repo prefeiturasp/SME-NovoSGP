@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
 using System;
@@ -7,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Aplicacao
 {
@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
             {
                 long[] idUes = Array.Empty<long>();
 
-                if(request.Filtro.UeId == TODAS_UES)
+                if (request.Filtro.UeId == TODAS_UES)
                     idUes = await ObterIdUesAbrangencia(request);
 
                 var lstOcorrencias = await repositorioOcorrencia.ListarPaginado(request.Filtro, Paginacao, idUes);
@@ -98,7 +98,7 @@ namespace SME.SGP.Aplicacao
                 {
                     Items = ocorrenciasServidores.ToList(),
                     TotalRegistros = ocorrenciasServidores.Count(),
-                    TotalPaginas = (int) Math.Ceiling((double) ocorrenciasServidores.Count() / Paginacao.QuantidadeRegistros)
+                    TotalPaginas = (int)Math.Ceiling((double)ocorrenciasServidores.Count() / Paginacao.QuantidadeRegistros)
                 };
             }
 
@@ -127,7 +127,7 @@ namespace SME.SGP.Aplicacao
                 {
                     Items = ocorrenciasAluno.ToList(),
                     TotalRegistros = ocorrenciasAluno.Count(),
-                    TotalPaginas = (int) Math.Ceiling((double) ocorrenciasAluno.Count() / Paginacao.QuantidadeRegistros)
+                    TotalPaginas = (int)Math.Ceiling((double)ocorrenciasAluno.Count() / Paginacao.QuantidadeRegistros)
                 };
             }
 

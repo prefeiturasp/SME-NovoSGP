@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Dominio.Enumerados
 {
@@ -12,25 +9,25 @@ namespace SME.SGP.Dominio.Enumerados
 
         [Display(Name = "PAP")]
         PAP = 2,
-            
+
         [Display(Name = "POA")]
         POA = 3,
-        
+
         [Display(Name = "POED")]
         POED = 4,
 
         [Display(Name = "POEI")]
         POEI = 5,
-        
+
         [Display(Name = "POSL")]
         POSL = 6,
-        
+
         [Display(Name = "PEA")]
         PEA = 7,
-        
+
         [Display(Name = "PPP")]
         PPP = 8,
-        
+
         [Display(Name = "Carta Pedagógica")]
         CartaPedagogica = 9,
 

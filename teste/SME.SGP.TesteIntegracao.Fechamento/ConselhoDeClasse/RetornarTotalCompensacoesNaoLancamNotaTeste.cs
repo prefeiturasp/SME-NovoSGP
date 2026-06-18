@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
-using SME.SGP.Api.Controllers;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra.Contexto;
@@ -121,7 +120,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoClasseController
                 CodigoAluno = "123123",
                 TurmaId = "111",
                 Tipo = TipoFrequenciaAluno.PorDisciplina
-                
+
             });
         }
 

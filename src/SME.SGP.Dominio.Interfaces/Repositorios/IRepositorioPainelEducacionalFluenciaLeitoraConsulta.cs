@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces.Repositorios
 {
-    public interface IRepositorioPainelEducacionalFluenciaLeitoraConsulta 
+    public interface IRepositorioPainelEducacionalFluenciaLeitoraConsulta
     {
         Task<IEnumerable<PainelEducacionalFluenciaLeitoraDto>> ObterFluenciaLeitora(int periodo, int anoLetivo, string codigoDre);
     }

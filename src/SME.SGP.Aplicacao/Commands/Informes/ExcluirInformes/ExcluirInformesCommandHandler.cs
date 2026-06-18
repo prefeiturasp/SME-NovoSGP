@@ -15,8 +15,8 @@ namespace SME.SGP.Aplicacao
         public IUnitOfWork unitOfWork { get; }
 
         public ExcluirInformesCommandHandler(
-                                IMediator mediator, 
-                                IRepositorioInformativo repositorio, 
+                                IMediator mediator,
+                                IRepositorioInformativo repositorio,
                                 IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -32,13 +32,13 @@ namespace SME.SGP.Aplicacao
                 {
                     await mediator.Send(new ExcluirInformesPerfilsPorIdInformesCommad(request.Id));
                     await mediator.Send(new ExcluirInformativosNotificacaoPorIdInformativoCommad(request.Id));
-                    await mediator.Send(new ExcluirAnexosInformativoPorIdInformativoCommad(request.Id)); 
+                    await mediator.Send(new ExcluirAnexosInformativoPorIdInformativoCommad(request.Id));
                     await repositorio.RemoverLogico(request.Id);
 
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExcluirNotificacaoInformativo, request.Id, Guid.NewGuid()));
                     unitOfWork.PersistirTransacao();
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     unitOfWork.Rollback();
                     throw;

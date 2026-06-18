@@ -16,9 +16,9 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 {
-    public class Ao_cadastrar_editar_encaminhamento_naapa_rascunho: EncaminhamentoNAAPATesteBase
+    public class Ao_cadastrar_editar_encaminhamento_naapa_rascunho : EncaminhamentoNAAPATesteBase
     {
-        
+
         private const string RESPOSTA_TURMAS_PROGRAMA_ALUNO_EOL_INCLUSAO = "[{\"dreUe\":\"DRE - EMEF TESTE 01, TESTE.\", \"turma\":\"EF - XX - Tarde\", \"componenteCurricular\":\"XYZ - RECUPERACAO DE APRENDIZAGENS\", \"id\":\"sB5UHnGT6Vh\"}]";
         private const string RESPOSTA_TURMAS_PROGRAMA_ALUNO_EOL_EDICAO = "[{\"dreUe\":\"DRE - EMEF TESTE 01, TESTE.\", \"turma\":\"EF - XX - Tarde\", \"componenteCurricular\":\"XYZ - RECUPERACAO DE APRENDIZAGENS\", \"id\":\"sB5UHnGT6Vh\"}, {\"dreUe\":\"DRE - EMEF TESTE 02, TESTE 02.\", \"turma\":\"EF - XX - Noite\", \"componenteCurricular\":\"ABC - RECUPERACAO DE APRENDIZAGENS\", \"id\":\"sB5UHnGH9Xy\"}]";
         private const SituacaoMatriculaAluno SITUACAO_MATRICULA_ALUNO_FIXA = SituacaoMatriculaAluno.Concluido;
@@ -57,7 +57,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var registrarEncaminhamentoNaapaUseCase = ObterServicoRegistrarEncaminhamento();
 
             var dataQueixa = DateTimeExtension.HorarioBrasilia().Date;
-            
+
             var encaminhamentosNaapaDto = new EncaminhamentoNAAPADto()
             {
                 TurmaId = TURMA_ID_1,
@@ -100,7 +100,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             retorno.Auditoria.ShouldNotBeNull();
             retorno.Auditoria.AlteradoEm.HasValue.ShouldBeFalse();
             (retorno.Auditoria.CriadoEm.Year == dataQueixa.Year).ShouldBeTrue();
-            
+
             var encaminhamentoNAAPA = ObterTodos<Dominio.EncaminhamentoNAAPA>();
             encaminhamentoNAAPA.FirstOrDefault()?.Situacao.Equals(SituacaoNAAPA.Rascunho).ShouldBeTrue();
             encaminhamentoNAAPA.Count.ShouldBe(1);
@@ -110,7 +110,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             encaminhamentoNAAPASecao.ShouldNotBeNull();
             encaminhamentoNAAPASecao.FirstOrDefault()?.SecaoEncaminhamentoNAAPAId.ShouldBe(1);
             encaminhamentoNAAPASecao.FirstOrDefault()?.Concluido.ShouldBeTrue();
-            
+
             var questaoEncaminhamentoNAAPA = ObterTodos<QuestaoEncaminhamentoNAAPA>();
             questaoEncaminhamentoNAAPA.ShouldNotBeNull();
             questaoEncaminhamentoNAAPA.Count.ShouldBe(3);
@@ -124,7 +124,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             respostaEncaminhamentoNAAPA.Any(a => a.RespostaId == 1).ShouldBeTrue();
             respostaEncaminhamentoNAAPA.Any(a => a.Texto.Equals(dataQueixa.ToString("dd/MM/yyyy"))).ShouldBeTrue();
         }
-        
+
         [Fact(DisplayName = "Encaminhamento NAAPA - Cadastrar encaminhamento NAAPA - Parcialmente concluído")]
         public async Task Ao_cadastrar_encaminhamento_rascunho_parcialmente_concluido()
         {
@@ -146,7 +146,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var registrarEncaminhamentoNaapaUseCase = ObterServicoRegistrarEncaminhamento();
 
             var dataQueixa = DateTimeExtension.HorarioBrasilia().Date;
-            
+
             var encaminhamentosNaapaDto = new EncaminhamentoNAAPADto()
             {
                 TurmaId = TURMA_ID_1,
@@ -183,34 +183,34 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             retorno.Auditoria.ShouldNotBeNull();
             retorno.Auditoria.AlteradoEm.HasValue.ShouldBeFalse();
             (retorno.Auditoria.CriadoEm.Year == dataQueixa.Year).ShouldBeTrue();
-            
+
             var encaminhamentoNAAPA = ObterTodos<Dominio.EncaminhamentoNAAPA>();
             encaminhamentoNAAPA.FirstOrDefault()?.Situacao.Equals(SituacaoNAAPA.Rascunho).ShouldBeTrue();
             encaminhamentoNAAPA.Count.ShouldBe(1);
-            
+
             var encaminhamentoNAAPASecao = ObterTodos<EncaminhamentoNAAPASecao>();
             encaminhamentoNAAPASecao.ShouldNotBeNull();
             encaminhamentoNAAPASecao.FirstOrDefault()?.SecaoEncaminhamentoNAAPAId.ShouldBe(1);
             encaminhamentoNAAPASecao.FirstOrDefault()?.Concluido.ShouldBeFalse();
-            
+
             var questaoEncaminhamentoNAAPA = ObterTodos<QuestaoEncaminhamentoNAAPA>();
             questaoEncaminhamentoNAAPA.ShouldNotBeNull();
             questaoEncaminhamentoNAAPA.Count.ShouldBe(2);
             questaoEncaminhamentoNAAPA.Any(a => a.QuestaoId == 1).ShouldBeTrue();
             questaoEncaminhamentoNAAPA.Any(a => a.QuestaoId == 2).ShouldBeTrue();
-            
+
             var respostaEncaminhamentoNAAPA = ObterTodos<RespostaEncaminhamentoNAAPA>();
             respostaEncaminhamentoNAAPA.ShouldNotBeNull();
             respostaEncaminhamentoNAAPA.Count.ShouldBe(2);
             respostaEncaminhamentoNAAPA.Any(a => a.QuestaoEncaminhamentoId == 1).ShouldBeTrue();
-            
+
             respostaEncaminhamentoNAAPA.Where(c => c.QuestaoEncaminhamentoId == 1)
-                .Any(a => a.Texto.Equals(dataQueixa.ToString("dd/MM/yyyy"))).ShouldBeTrue(); 
-            
+                .Any(a => a.Texto.Equals(dataQueixa.ToString("dd/MM/yyyy"))).ShouldBeTrue();
+
             respostaEncaminhamentoNAAPA.Where(c => c.QuestaoEncaminhamentoId == 2)
-                .Any(a => a.Texto.EhNulo()).ShouldBeTrue();            
-        }        
-        
+                .Any(a => a.Texto.EhNulo()).ShouldBeTrue();
+        }
+
         [Fact(DisplayName = "Encaminhamento NAAPA - Alterar encaminhamento NAAPA")]
         public async Task Ao_editar_encaminhamento_rascunho()
         {
@@ -233,11 +233,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var dataQueixa = DateTimeExtension.HorarioBrasilia().Date;
             dataQueixa.AddDays(-10);
-            
+
             await GerarDadosEncaminhamentoNAAPA(dataQueixa);
 
             dataQueixa.AddDays(4);
-            
+
             var encaminhamentosNaapaDto = new EncaminhamentoNAAPADto()
             {
                 Id = 1,
@@ -258,7 +258,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                                 QuestaoId = 1,
                                 Resposta = dataQueixa.ToString("dd/MM/yyyy"),
                                 TipoQuestao = TipoQuestao.Data,
-                                
+
                             },
                             new ()
                             {
@@ -266,7 +266,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                                 QuestaoId = 2,
                                 Resposta = "2",
                                 TipoQuestao = TipoQuestao.Combo,
-                                
+
                             }
                         }
                     }
@@ -274,11 +274,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             };
 
             var encaminhamento = ObterTodos<Dominio.EncaminhamentoNAAPA>();
-            
+
             var retorno = await registrarEncaminhamentoNaapaUseCase.Executar(encaminhamentosNaapaDto);
             retorno.ShouldNotBeNull();
             retorno.Id.ShouldBe(1);
-            
+
             var encaminhamentoNAAPA = ObterTodos<Dominio.EncaminhamentoNAAPA>();
             encaminhamentoNAAPA.FirstOrDefault()?.Situacao.Equals(SituacaoNAAPA.Rascunho).ShouldBeTrue();
             encaminhamentoNAAPA.Count.ShouldBe(1);
@@ -287,18 +287,18 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var encaminhamentoNAAPASecao = ObterTodos<EncaminhamentoNAAPASecao>();
             encaminhamentoNAAPASecao.ShouldNotBeNull();
             encaminhamentoNAAPASecao.FirstOrDefault().SecaoEncaminhamentoNAAPAId.ShouldBe(1);
-            
+
             var questaoEncaminhamentoNAAPA = ObterTodos<QuestaoEncaminhamentoNAAPA>();
             questaoEncaminhamentoNAAPA.ShouldNotBeNull();
             questaoEncaminhamentoNAAPA.Count.ShouldBe(2);
-            questaoEncaminhamentoNAAPA.Any(a=> a.QuestaoId == 1).ShouldBeTrue();
-            questaoEncaminhamentoNAAPA.Any(a=> a.QuestaoId == 2).ShouldBeTrue();
-            
+            questaoEncaminhamentoNAAPA.Any(a => a.QuestaoId == 1).ShouldBeTrue();
+            questaoEncaminhamentoNAAPA.Any(a => a.QuestaoId == 2).ShouldBeTrue();
+
             var respostaEncaminhamentoNAAPA = ObterTodos<RespostaEncaminhamentoNAAPA>();
             respostaEncaminhamentoNAAPA.ShouldNotBeNull();
             respostaEncaminhamentoNAAPA.Count.ShouldBe(2);
-            respostaEncaminhamentoNAAPA.Any(a=> a.RespostaId == 2).ShouldBeTrue();
-            respostaEncaminhamentoNAAPA.Any(a=> a.Texto.Equals(dataQueixa.ToString("dd/MM/yyyy"))).ShouldBeTrue();
+            respostaEncaminhamentoNAAPA.Any(a => a.RespostaId == 2).ShouldBeTrue();
+            respostaEncaminhamentoNAAPA.Any(a => a.Texto.Equals(dataQueixa.ToString("dd/MM/yyyy"))).ShouldBeTrue();
         }
 
         [Fact(DisplayName = "Encaminhamento NAAPA - Alterar encaminhamento NAAPA em rascunho persistindo respostas (observação obrigatória não preenchida)")]
@@ -324,7 +324,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var dataQueixa = DateTimeExtension.HorarioBrasilia().Date;
             dataQueixa.AddDays(-10);
             await GerarDadosEncaminhamentoNAAPA(dataQueixa);
-            
+
             dataQueixa.AddDays(4);
 
             var encaminhamentosNaapaDto = new EncaminhamentoNAAPADto()

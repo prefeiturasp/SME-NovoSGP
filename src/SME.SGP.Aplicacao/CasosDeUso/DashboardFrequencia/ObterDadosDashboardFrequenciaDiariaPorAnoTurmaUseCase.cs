@@ -17,12 +17,12 @@ namespace SME.SGP.Aplicacao
         public async Task<GraficoFrequenciaAlunoDto> Executar(FrequenciasConsolidadacaoPorTurmaEAnoDto frequenciaDto)
         {
             var dadosFrequenciaAlunos = Enumerable.Empty<FrequenciaAlunoDashboardDto>();
-            
+
             dadosFrequenciaAlunos = await mediator.Send(new ObterDadosDashboardFrequenciaDiariaPorAnoTurmaQuery(frequenciaDto));
 
             if (dadosFrequenciaAlunos.EhNulo() || !dadosFrequenciaAlunos.Any())
                 return null;
-            
+
             return MapearParaDto(dadosFrequenciaAlunos, frequenciaDto.Modalidade);
         }
 
@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
                     Quantidade = totalPresentes + totalAusentes + totalRemotos
                 });
             }
-            
+
             var dadosTotal = new TotalFrequenciaEAulasPorPeriodoDto()
             {
                 TotalAulas = frequenciasAlunos.Select(a => a.TotalAulas).Sum(),

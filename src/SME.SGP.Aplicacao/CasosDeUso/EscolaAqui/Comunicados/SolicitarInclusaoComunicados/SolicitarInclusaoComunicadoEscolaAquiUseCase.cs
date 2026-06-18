@@ -17,27 +17,27 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<string> Executar(ComunicadoInserirDto comunicado)
-        {            
-                await ValidarInsercao(comunicado);
+        {
+            await ValidarInsercao(comunicado);
 
-                if (comunicado.Modalidades.Any() && comunicado.Modalidades.Any(c => c == -99))
-                    comunicado.Modalidades = Enum.GetValues(typeof(Modalidade))
-                            .Cast<Modalidade>()
-                            .Select(d => (int)d)
-                            .ToArray();
+            if (comunicado.Modalidades.Any() && comunicado.Modalidades.Any(c => c == -99))
+                comunicado.Modalidades = Enum.GetValues(typeof(Modalidade))
+                        .Cast<Modalidade>()
+                        .Select(d => (int)d)
+                        .ToArray();
 
-                if (comunicado.TiposEscolas.Any() && comunicado.TiposEscolas.Any(c => c == -99))
-                    comunicado.TiposEscolas = Enum.GetValues(typeof(TipoEscola))
-                            .Cast<TipoEscola>()
-                            .Select(d => (int)d)
-                            .ToArray();
+            if (comunicado.TiposEscolas.Any() && comunicado.TiposEscolas.Any(c => c == -99))
+                comunicado.TiposEscolas = Enum.GetValues(typeof(TipoEscola))
+                        .Cast<TipoEscola>()
+                        .Select(d => (int)d)
+                        .ToArray();
 
-                var retorno = await mediator.Send(new InserirComunicadoCommand(comunicado));
+            var retorno = await mediator.Send(new InserirComunicadoCommand(comunicado));
 
-                if (!retorno)
-                    throw new NegocioException("Erro ao criar o comunicado");
+            if (!retorno)
+                throw new NegocioException("Erro ao criar o comunicado");
 
-                return "Comunicado criado com sucesso!";                       
+            return "Comunicado criado com sucesso!";
         }
 
         private async Task ValidarInsercao(ComunicadoInserirDto comunicado)

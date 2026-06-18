@@ -13,9 +13,9 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioGrade repositorioGrade;
         private readonly IRepositorioUeConsulta repositorioUe;
         private readonly IServicoUsuario servicoUsuario;
-        private readonly IMediator mediator;      
+        private readonly IMediator mediator;
 
-        public ConsultasGrade(IRepositorioGrade repositorioGrade,IConsultasAula consultasAula, IServicoUsuario servicoUsuario, IRepositorioUeConsulta repositorioUe, IMediator mediator)
+        public ConsultasGrade(IRepositorioGrade repositorioGrade, IConsultasAula consultasAula, IServicoUsuario servicoUsuario, IRepositorioUeConsulta repositorioUe, IMediator mediator)
         {
             this.repositorioGrade = repositorioGrade ?? throw new System.ArgumentNullException(nameof(repositorioGrade));
             this.consultasAula = consultasAula ?? throw new System.ArgumentNullException(nameof(consultasAula));

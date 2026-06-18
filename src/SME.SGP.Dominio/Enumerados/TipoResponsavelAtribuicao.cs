@@ -29,11 +29,11 @@ namespace SME.SGP.Dominio
             switch (tipo)
             {
                 case TipoResponsavelAtribuicao.Psicopedagogo:
-                        return Perfis.PERFIL_PSICOPEDAGOGO;
+                    return Perfis.PERFIL_PSICOPEDAGOGO;
                 case TipoResponsavelAtribuicao.PsicologoEscolar:
-                        return Perfis.PERFIL_PSICOLOGO_ESCOLAR;
+                    return Perfis.PERFIL_PSICOLOGO_ESCOLAR;
                 case TipoResponsavelAtribuicao.AssistenteSocial:
-                        return Perfis.PERFIL_ASSISTENTE_SOCIAL;
+                    return Perfis.PERFIL_ASSISTENTE_SOCIAL;
                 case TipoResponsavelAtribuicao.SupervisorEscolar:
                     return Perfis.PERFIL_SUPERVISOR;
                 case TipoResponsavelAtribuicao.PAAI:

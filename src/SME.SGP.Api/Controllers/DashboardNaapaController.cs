@@ -42,7 +42,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(IEnumerable<GraficoEncaminhamentoNAAPADto>), 200)]
         [Permissao(Permissao.DNA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterQuantidadeEncaminhamentoPorSituacao([FromQuery] FiltroGraficoEncaminhamentoPorSituacaoDto filtro,[FromServices] IObterQuantidadeEncaminhamentoPorSituacaoUseCase useCase)
+        public async Task<IActionResult> ObterQuantidadeEncaminhamentoPorSituacao([FromQuery] FiltroGraficoEncaminhamentoPorSituacaoDto filtro, [FromServices] IObterQuantidadeEncaminhamentoPorSituacaoUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
         }

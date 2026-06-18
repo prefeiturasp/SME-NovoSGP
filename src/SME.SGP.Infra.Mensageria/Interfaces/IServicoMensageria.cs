@@ -1,5 +1,4 @@
-﻿using System;
-using RabbitMQ.Client;
+﻿using RabbitMQ.Client;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Infra.Interface
@@ -12,7 +11,7 @@ namespace SME.SGP.Infra.Interface
 
     public interface IServicoMensageriaSGP : IServicoMensageria<MensagemRabbit> { }
     public interface IServicoMensageriaLogs : IServicoMensageria<LogMensagem> { }
-    public interface IServicoMensageriaMetricas : IServicoMensageria<MetricaMensageria> 
+    public interface IServicoMensageriaMetricas : IServicoMensageria<MetricaMensageria>
     {
         Task Publicado(string rota);
         Task Obtido(string rota);

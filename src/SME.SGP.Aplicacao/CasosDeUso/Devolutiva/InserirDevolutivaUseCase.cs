@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             var turma = await ObterTurma(param.TurmaCodigo);
             var componentes = await ObterComponentes(turma, param.CodigoComponenteCurricular);
 
-            IEnumerable <(long Id, DateTime DataAula)> dados = await mediator.Send(new ObterDatasEfetivasDiariosQuery(param.TurmaCodigo, componentes.ToArray(), param.PeriodoInicio.Date, param.PeriodoFim.Date));
+            IEnumerable<(long Id, DateTime DataAula)> dados = await mediator.Send(new ObterDatasEfetivasDiariosQuery(param.TurmaCodigo, componentes.ToArray(), param.PeriodoInicio.Date, param.PeriodoFim.Date));
 
             if (!dados.Any())
                 throw new NegocioException("Diários de bordo não encontrados para aplicar Devolutiva.");
@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new AtualizarDiarioBordoComDevolutivaCommand(idsDiarios, auditoria.Id));
 
             var filtro = new FiltroExclusaoPendenciasDevolutivaDto()
-            { 
+            {
                 TurmaId = turma.Id,
                 ComponenteId = param.CodigoComponenteCurricular
             };
@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao
             return disciplinas.FindAll(item => item.CdComponenteCurricularPai == componentePai);
         }
 
-        private async  Task MoverRemoverExcluidos(InserirDevolutivaDto devolutiva)
+        private async Task MoverRemoverExcluidos(InserirDevolutivaDto devolutiva)
         {
             if (!string.IsNullOrEmpty(devolutiva.Descricao))
             {

@@ -7,7 +7,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake;
 using SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
@@ -24,7 +23,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
         private const string RESPOSTA_COMBO_ESCRITA = "8";
         private const string RESPOSTA_COMBO_PAP = "17";
         private const string RESPOSTA_COMBO_SRM = "18";
-            
+
         public Ao_cadastrar_encaminhamento_sim(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -44,23 +43,23 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             var encaminhamentoAeeDto = ObterPreenchimentoQuestionarioEncaminhamento();
 
             var useCase = ObterRegistrarEncaminhamentoAee();
-            var retorno  = await useCase.Executar(encaminhamentoAeeDto);
+            var retorno = await useCase.Executar(encaminhamentoAeeDto);
             retorno.ShouldNotBeNull();
             retorno.Id.ShouldBeGreaterThan(0);
 
             var encaminhamentoAeeSecao = ObterTodos<EncaminhamentoAEESecao>();
             encaminhamentoAeeSecao.ShouldNotBeNull();
             encaminhamentoAeeSecao.Count.ShouldBe(2);
-            
+
             var questaoEncaminhamentoAee = ObterTodos<QuestaoEncaminhamentoAEE>();
             questaoEncaminhamentoAee.ShouldNotBeNull();
             questaoEncaminhamentoAee.Count.ShouldBe(17);
-            
+
             var respostaEncaminhamentoAee = ObterTodos<RespostaEncaminhamentoAEE>();
             respostaEncaminhamentoAee.ShouldNotBeNull();
             respostaEncaminhamentoAee.Count.ShouldBe(22);
         }
-        
+
         [Fact(DisplayName = "Encaminhamento AEE - (Sim) - Professor deve cadastrar encaminhamento com preenchimento correto dos campos obrigatórios e omissão de campos não obrigatórios")]
         public async Task Deve_cadastrar_com_campos_obrigatorios_preenchidos_campos_nao_obrigatorios()
         {
@@ -70,27 +69,27 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             var questaoObrigatoria21Secao2 = encaminhamentoAeeDto.Secoes.LastOrDefault().Questoes.FirstOrDefault(w => w.QuestaoId == 21);
             var questaoObrigatoria22Secao2 = encaminhamentoAeeDto.Secoes.LastOrDefault().Questoes.FirstOrDefault(w => w.QuestaoId == 22);
 
-            encaminhamentoAeeDto.Secoes.LastOrDefault().Questoes.Remove(questaoObrigatoria21Secao2); 
+            encaminhamentoAeeDto.Secoes.LastOrDefault().Questoes.Remove(questaoObrigatoria21Secao2);
             encaminhamentoAeeDto.Secoes.LastOrDefault().Questoes.Remove(questaoObrigatoria22Secao2);
 
             var useCase = ObterRegistrarEncaminhamentoAee();
-            var retorno  = await useCase.Executar(encaminhamentoAeeDto);
+            var retorno = await useCase.Executar(encaminhamentoAeeDto);
             retorno.ShouldNotBeNull();
             retorno.Id.ShouldBeGreaterThan(0);
 
             var encaminhamentoAeeSecao = ObterTodos<EncaminhamentoAEESecao>();
             encaminhamentoAeeSecao.ShouldNotBeNull();
             encaminhamentoAeeSecao.Count.ShouldBe(2);
-            
+
             var questaoEncaminhamentoAee = ObterTodos<QuestaoEncaminhamentoAEE>();
             questaoEncaminhamentoAee.ShouldNotBeNull();
             questaoEncaminhamentoAee.Count.ShouldBe(16);
-            
+
             var respostaEncaminhamentoAee = ObterTodos<RespostaEncaminhamentoAEE>();
             respostaEncaminhamentoAee.ShouldNotBeNull();
             respostaEncaminhamentoAee.Count.ShouldBe(20);
         }
-        
+
         [Fact(DisplayName = "Encaminhamento AEE - (Sim) - Professor não deve cadastrar encaminhamento quando não preencher campos obrigatórios")]
         public async Task Nao_deve_cadastrar_com_campos_obrigatorios_nao_preenchidos()
         {
@@ -101,10 +100,10 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             var questaoObrigatoria7Secao2 = encaminhamentoAeeDto.Secoes.LastOrDefault().Questoes.FirstOrDefault(w => w.QuestaoId == 7);
             var questaoObrigatoria9Secao2 = encaminhamentoAeeDto.Secoes.LastOrDefault().Questoes.FirstOrDefault(w => w.QuestaoId == 9);
 
-            encaminhamentoAeeDto.Secoes.FirstOrDefault().Questoes.Remove(questaoObrigatoria3_1Secao1); 
-            encaminhamentoAeeDto.Secoes.LastOrDefault().Questoes.Remove(questaoObrigatoria7Secao2); 
-            encaminhamentoAeeDto.Secoes.LastOrDefault().Questoes.Remove(questaoObrigatoria9Secao2); 
-                
+            encaminhamentoAeeDto.Secoes.FirstOrDefault().Questoes.Remove(questaoObrigatoria3_1Secao1);
+            encaminhamentoAeeDto.Secoes.LastOrDefault().Questoes.Remove(questaoObrigatoria7Secao2);
+            encaminhamentoAeeDto.Secoes.LastOrDefault().Questoes.Remove(questaoObrigatoria9Secao2);
+
             var useCase = ObterRegistrarEncaminhamentoAee();
             var exceptionAEE = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(encaminhamentoAeeDto));
             Assert.Equal(string.Format(MensagemNegocioEncaminhamentoAee.EXISTEM_QUESTOES_OBRIGATORIAS_NAO_PREENCHIDAS,
@@ -141,7 +140,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                             },
                             new ()
                             {
-                                QuestaoId = 4, 
+                                QuestaoId = 4,
                                 Resposta = $"{RESPOSTA_TEXTO} - SIM na anterior - Questão 4",
                                 TipoQuestao = TipoQuestao.Texto,
                             }

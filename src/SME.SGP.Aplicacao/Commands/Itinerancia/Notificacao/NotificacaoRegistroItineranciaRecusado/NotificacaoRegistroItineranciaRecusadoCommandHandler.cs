@@ -28,9 +28,9 @@ namespace SME.SGP.Aplicacao
             var ue = await mediator.Send(new ObterUeComDrePorIdQuery(itinerancia.UeId));
             if (ue.EhNulo())
                 throw new NegocioException("Não foi possível encontrar a UE informada");
-            
+
             await NotificarItineranciaRecusada(ue, itinerancia.CriadoRF, itinerancia.DataVisita, itinerancia.Alunos, request.Observacoes);
-            
+
             return true;
         }
 
@@ -46,9 +46,9 @@ namespace SME.SGP.Aplicacao
             mensagem.AppendLine($"<br><br>Motivo: {observacao}");
 
             var funcionarios = await ObtemUsuariosCEFAIDRE(ue.Dre.CodigoDre);
-            
+
             funcionarios.Add(criadoRF);
-            var usuarios = await ObterUsuariosId(funcionarios) ;
+            var usuarios = await ObterUsuariosId(funcionarios);
 
             await mediator.Send(new EnviarNotificacaoUsuariosCommand(titulo, mensagem.ToString(), NotificacaoCategoria.Aviso, NotificacaoTipo.AEE, usuarios));
         }
@@ -98,7 +98,7 @@ namespace SME.SGP.Aplicacao
 
             var estudantesEol = await mediator.Send(new ObterAlunosEolPorCodigosEAnoQuery(estudantes.Select(a => Convert.ToInt64(a.CodigoAluno)).ToArray(), dataVisita.Year));
 
-            foreach(var estudante in estudantes)
+            foreach (var estudante in estudantes)
             {
                 itineranciaAlunos.Add(new ItineranciaAlunoDto()
                 {

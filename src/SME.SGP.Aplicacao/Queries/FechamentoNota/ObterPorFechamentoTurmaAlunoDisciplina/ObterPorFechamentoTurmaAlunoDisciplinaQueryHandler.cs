@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes;
 
 namespace SME.SGP.Aplicacao
 {

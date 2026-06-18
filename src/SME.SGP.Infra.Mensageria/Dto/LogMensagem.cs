@@ -4,7 +4,7 @@ namespace SME.SGP.Infra
 {
     public class LogMensagem
     {
-        public LogMensagem(string mensagem, string nivel, string contexto, string observacao, string projeto, string rastreamento, string excecaoInterna,string innerException)
+        public LogMensagem(string mensagem, string nivel, string contexto, string observacao, string projeto, string rastreamento, string excecaoInterna, string innerException)
         {
             Mensagem = mensagem;
             Nivel = nivel;

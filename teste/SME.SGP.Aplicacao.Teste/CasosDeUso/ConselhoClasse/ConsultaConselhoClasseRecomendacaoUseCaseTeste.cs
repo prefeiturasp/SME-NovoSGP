@@ -97,7 +97,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
         {
             var recomendacaoDtoFinal = new ConselhoClasseRecomendacaoDto
             {
-                Bimestre = 0, 
+                Bimestre = 0,
                 AlunoCodigo = "123",
                 CodigoTurma = "T1",
                 FechamentoTurmaId = 9,
@@ -110,7 +110,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
                 Historica = false,
                 CodigoTurma = "T1",
                 Id = 99,
-                TipoTurma = TipoTurma.Regular, 
+                TipoTurma = TipoTurma.Regular,
                 ModalidadeCodigo = Modalidade.Fundamental
             };
 

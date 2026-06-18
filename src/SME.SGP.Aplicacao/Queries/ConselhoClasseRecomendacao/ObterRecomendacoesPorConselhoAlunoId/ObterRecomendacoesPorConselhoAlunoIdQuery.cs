@@ -1,14 +1,9 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao 
-{ 
+namespace SME.SGP.Aplicacao
+{
     public class ObterRecomendacoesPorConselhoAlunoIdQuery : IRequest<IEnumerable<long>>
     {
         public long ConselhoClasseAlunoId { get; set; }

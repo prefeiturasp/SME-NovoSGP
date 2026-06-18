@@ -98,7 +98,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new WFAprovacaoParecerConclusivoMap());
                config.AddMap(new ComunicadoMap());
                config.AddMap(new ComunicadoAlunoMap());
-               config.AddMap(new ComunicadoTurmaMap());               
+               config.AddMap(new ComunicadoTurmaMap());
                config.AddMap(new ConselhoClasseRecomendacaoMap());
                config.AddMap(new TipoEscolaMap());
                config.AddMap(new CicloEnsinoMap());
@@ -164,8 +164,8 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new PlanoAEEQuestaoMap());
                config.AddMap(new PlanoAEERespostaMap());
                config.AddMap(new PlanoAEEReestruturacaoMap());
-               config.AddMap(new PendenciaEncaminhamentoAEEMap());               
-               config.AddMap(new PendenciaPlanoAEEMap());               
+               config.AddMap(new PendenciaEncaminhamentoAEEMap());
+               config.AddMap(new PendenciaPlanoAEEMap());
                config.AddMap(new NotificacaoPlanoAEEMap());
                config.AddMap(new OcorrenciaTipoMap());
                config.AddMap(new OcorrenciaMap());
@@ -185,8 +185,8 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ConsolidacaoDevolutivasMap());
                config.AddMap(new ParametrosSistemaMap());
                config.AddMap(new FechamentoConsolidadoComponenteTurmaMap());
-               config.AddMap(new ConselhoClasseConsolidadoTurmaAlunoMap());              
-               config.AddMap(new ConselhoClasseConsolidadoTurmaAlunoNotaMap());              
+               config.AddMap(new ConselhoClasseConsolidadoTurmaAlunoMap());
+               config.AddMap(new ConselhoClasseConsolidadoTurmaAlunoNotaMap());
                config.AddMap(new ConsolidacaoMatriculaTurmaMap());
                config.AddMap(new FrequenciaPreDefinidaMap());
                config.AddMap(new RegistroFrequenciaAlunoMap());
@@ -194,7 +194,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ConsolidacaoRegistroIndividualMediaMap());
                config.AddMap(new ComunicadoModalidadeMap());
                config.AddMap(new ComunicadoTipoEscolaMap());
-               config.AddMap(new ComunicadoAnoEscolarMap());               
+               config.AddMap(new ComunicadoAnoEscolarMap());
                config.AddMap(new ConsolidacaoAcompanhamentoAprendizagemAlunoMap());
                config.AddMap(new ConsolidacaoDiariosBordoMap());
                config.AddMap(new AvisoMap());

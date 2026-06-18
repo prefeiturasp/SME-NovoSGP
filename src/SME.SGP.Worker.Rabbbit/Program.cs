@@ -7,7 +7,8 @@ using SME.SGP.Worker.RabbitMQ;
 
 namespace SME.SGP.Worker.Rabbbit
 {
-    public class Program {
+    public class Program
+    {
 
         protected Program() { }
 

@@ -17,8 +17,8 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<MotivoAusencia> Handle(ObterMotivoAusenciaPorIdQuery request, CancellationToken cancellationToken)
         {
-            var motivoAusencia =  await repositorioMotivoAusencia.ObterPorIdAsync(request.Id);
-         
+            var motivoAusencia = await repositorioMotivoAusencia.ObterPorIdAsync(request.Id);
+
             return motivoAusencia;
         }
     }

@@ -6,7 +6,7 @@ namespace SME.SGP.Infra
     {
         public long? Conceito { get; set; }
         public double? Nota { get; set; }
-        
+
         [Required(ErrorMessage = "A justificativa é obrigatória")]
         public string Justificativa { get; set; }
 

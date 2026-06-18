@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
                         if (!componenteListaProfessor)
                         {
                             codigoComponenteEquivalente = ccj.Modalidade == Modalidade.EducacaoInfantil ?
-                                    (mediator.Send(new ObterComponenteCurricularPorIdQuery(ccj.DisciplinaId)).Result)?.CdComponenteCurricularPai : null;                               
+                                    (mediator.Send(new ObterComponenteCurricularPorIdQuery(ccj.DisciplinaId)).Result)?.CdComponenteCurricularPai : null;
                         }
 
                         componentesCurricularesEolProfessor.Add(new ComponenteCurricularEol()

@@ -41,9 +41,9 @@ namespace SME.SGP.Aplicacao
                 .WithMessage("O Id da UE deve ser informado!");
 
             RuleFor(x => x.DataRetornoVerificacao.Value.Date)
-                .GreaterThan( a => a.DataVisita.Date)
+                .GreaterThan(a => a.DataVisita.Date)
                 .WithMessage("A data de retorno/verificação não pode ser menor ou igual que a data de visita")
-                .When( a => a.DataRetornoVerificacao.HasValue);
+                .When(a => a.DataRetornoVerificacao.HasValue);
         }
     }
 }

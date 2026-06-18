@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
@@ -24,7 +23,7 @@ namespace SME.SGP.Aplicacao
         {
             var query = await repositorio.ObterQuantidadeAcessibilidades(request.Ano, request.DreId, request.UeId);
 
-            if(query.Any())
+            if (query.Any())
             {
                 List<AEEAcessibilidadeRetornoDto> retorno = new List<AEEAcessibilidadeRetornoDto>();
 

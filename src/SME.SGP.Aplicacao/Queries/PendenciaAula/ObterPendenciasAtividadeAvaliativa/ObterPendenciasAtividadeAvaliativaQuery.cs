@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPendenciasAtividadeAvaliativaQuery : IRequest<IEnumerable<Aula>>
     {
-        public ObterPendenciasAtividadeAvaliativaQuery(long dreId, long ueId,bool exibirRegistroSemPendencia = true, int? anoLetivo = null, TipoAvaliacaoCodigo tipoAtividadeAvaliativaIgnorada = TipoAvaliacaoCodigo.AtividadeClassroom)
+        public ObterPendenciasAtividadeAvaliativaQuery(long dreId, long ueId, bool exibirRegistroSemPendencia = true, int? anoLetivo = null, TipoAvaliacaoCodigo tipoAtividadeAvaliativaIgnorada = TipoAvaliacaoCodigo.AtividadeClassroom)
         {
             DreId = dreId;
             UeId = ueId;

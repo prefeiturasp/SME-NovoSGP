@@ -1,18 +1,10 @@
-﻿using Dapper;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
-using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.EscolaAqui.ComunicadosFiltro;
-using SME.SGP.Infra.Dtos.EscolaAqui.Dashboard;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -20,7 +12,7 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioComunicadoConsulta : RepositorioBase<Comunicado>, IRepositorioComunicadoConsulta
     {
         public RepositorioComunicadoConsulta(ISgpContextConsultas conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
-        {}
+        { }
 
         public async Task<IEnumerable<ComunicadoTurmaAlunoDto>> ObterComunicadosAnoAtual()
         {

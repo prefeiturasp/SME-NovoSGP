@@ -1,13 +1,11 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPeriodosEscolaresPorTipoCalendarioQuery: IRequest<IEnumerable<PeriodoEscolar>>
+    public class ObterPeriodosEscolaresPorTipoCalendarioQuery : IRequest<IEnumerable<PeriodoEscolar>>
     {
         public ObterPeriodosEscolaresPorTipoCalendarioQuery(long tipoCalendarioId)
         {
@@ -17,7 +15,7 @@ namespace SME.SGP.Aplicacao
         public long TipoCalendarioId { get; set; }
     }
 
-    public class ObterPeriodosEscolaresPorTipoCalendarioQueryValidator: AbstractValidator<ObterPeriodosEscolaresPorTipoCalendarioQuery>
+    public class ObterPeriodosEscolaresPorTipoCalendarioQueryValidator : AbstractValidator<ObterPeriodosEscolaresPorTipoCalendarioQuery>
     {
         public ObterPeriodosEscolaresPorTipoCalendarioQueryValidator()
         {

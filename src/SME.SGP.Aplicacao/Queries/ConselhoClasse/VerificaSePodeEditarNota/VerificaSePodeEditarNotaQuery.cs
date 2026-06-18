@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
             PeriodoEscolar = periodoEscolar;
         }
 
-        public string AlunoCodigo { get; set; } 
+        public string AlunoCodigo { get; set; }
         public Turma Turma { get; set; }
         public PeriodoEscolar PeriodoEscolar { get; set; }
     }

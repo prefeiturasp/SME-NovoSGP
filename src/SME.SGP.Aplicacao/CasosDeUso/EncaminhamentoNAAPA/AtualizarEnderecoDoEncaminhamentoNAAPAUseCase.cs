@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
             }
             else
                 return (await mediator.Send(new RegistrarEncaminhamentoNAAPASecaoQuestaoRespostaCommand(JsonConvert.SerializeObject(new[] { enderecoResidencialAluno }),
-                                                                                                      questaoEnderecoResidencialNAAPA.QuestaoId, TipoQuestao.Endereco))) != 0;  
+                                                                                                      questaoEnderecoResidencialNAAPA.QuestaoId, TipoQuestao.Endereco))) != 0;
         }
 
         private RespostaEnderecoResidencialEncaminhamentoNAAPADto MapearDTO(EnderecoRespostaDto? endereco)

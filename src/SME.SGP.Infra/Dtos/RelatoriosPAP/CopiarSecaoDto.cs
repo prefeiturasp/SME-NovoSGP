@@ -2,7 +2,7 @@
 {
     public class CopiarSecaoDto
     {
-        public long SecaoId { get; set; } 
-        public long[] QuestoesIds { get; set; } 
+        public long SecaoId { get; set; }
+        public long[] QuestoesIds { get; set; }
     }
 }

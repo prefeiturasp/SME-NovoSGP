@@ -7,7 +7,7 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioSuporteUsuario : IRepositorioSuporteUsuario
     {
         private ISgpContext database;
-        public RepositorioSuporteUsuario(ISgpContext conexao) 
+        public RepositorioSuporteUsuario(ISgpContext conexao)
         {
             database = conexao;
         }

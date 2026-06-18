@@ -7,7 +7,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterComponentesCurricularesPorProfessorETurmaParaPlanejamentoQuery : IRequest<IEnumerable<DisciplinaDto>>
     {
-        public long CodigoDisciplina { get; set; } 
+        public long CodigoDisciplina { get; set; }
         public string CodigoTurma { get; set; }
         public bool TurmaPrograma { get; set; }
         public bool Regencia { get; set; }

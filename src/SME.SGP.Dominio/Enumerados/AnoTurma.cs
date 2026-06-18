@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Dominio.Enumerados
 {
@@ -21,17 +18,17 @@ namespace SME.SGP.Dominio.Enumerados
         [Display(Name = "sixth")]
         sixth = 6,
         [Display(Name = "seventh")]
-        seventh = 7, 
+        seventh = 7,
         [Display(Name = "eighth")]
-        eighth = 8, 
+        eighth = 8,
         [Display(Name = "nineth")]
         nineth = 9,
         [Display(Name = "tenth")]
-        tenth = 10, 
+        tenth = 10,
         [Display(Name = "eleventh")]
-        eleventh = 11, 
+        eleventh = 11,
         [Display(Name = "twelfth")]
-        twelfth = 12, 
+        twelfth = 12,
         [Display(Name = "thirteenth")]
         thirteenth = 13,
         [Display(Name = "fourteenth")]

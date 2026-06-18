@@ -24,7 +24,7 @@ namespace SME.SGP.Dados
             var lookup = new Dictionary<long, PendenciaPerfil>();
 
             await database.Conexao.QueryAsync<PendenciaPerfil, PendenciaPerfilUsuario, PendenciaPerfil>(query
-                , (perfil, usuario) => 
+                , (perfil, usuario) =>
                 {
                     PendenciaPerfil perfilRetorno;
                     if (!lookup.TryGetValue(perfil.Id, out perfilRetorno))

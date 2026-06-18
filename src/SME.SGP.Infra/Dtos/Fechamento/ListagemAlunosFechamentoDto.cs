@@ -5,12 +5,12 @@ namespace SME.SGP.Infra
 {
     public class ListagemAlunosFechamentoDto
     {
-        public ListagemAlunosFechamentoDto(IEnumerable<FechamentoTurmaDisciplina> fechamentosTurma, 
-                                           Turma turma, 
+        public ListagemAlunosFechamentoDto(IEnumerable<FechamentoTurmaDisciplina> fechamentosTurma,
+                                           Turma turma,
                                            string componenteCurricularCodigo,
-                                           DisciplinaDto disciplina, 
+                                           DisciplinaDto disciplina,
                                            IEnumerable<PeriodoEscolar> periodosEscolares,
-                                           Usuario usuarioAtual, 
+                                           Usuario usuarioAtual,
                                            IEnumerable<string> alunosComAnotacao)
         {
             FechamentosTurma = fechamentosTurma;
@@ -22,7 +22,7 @@ namespace SME.SGP.Infra
             AlunosComAnotacao = alunosComAnotacao;
         }
 
-        public IEnumerable< FechamentoTurmaDisciplina> FechamentosTurma { get; set; }
+        public IEnumerable<FechamentoTurmaDisciplina> FechamentosTurma { get; set; }
         public Turma Turma { get; set; }
         public string ComponenteCurricularCodigo { get; set; }
         public DisciplinaDto Disciplina { get; set; }

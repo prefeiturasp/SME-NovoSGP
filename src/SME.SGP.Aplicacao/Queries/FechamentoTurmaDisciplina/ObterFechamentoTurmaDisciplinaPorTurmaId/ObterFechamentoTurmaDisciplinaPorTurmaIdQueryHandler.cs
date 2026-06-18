@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorioFechamentoTurmaDisciplina = repositorio;
         }
-        public async  Task<IEnumerable<TurmaFechamentoDisciplinaSituacaoDto>> Handle(ObterFechamentoTurmaDisciplinaPorTurmaIdQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<TurmaFechamentoDisciplinaSituacaoDto>> Handle(ObterFechamentoTurmaDisciplinaPorTurmaIdQuery request, CancellationToken cancellationToken)
             => await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaPorTurmaId(request.TurmaId);
     }
 }

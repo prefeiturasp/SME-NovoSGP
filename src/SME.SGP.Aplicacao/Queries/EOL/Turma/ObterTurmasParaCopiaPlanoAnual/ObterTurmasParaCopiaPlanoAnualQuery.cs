@@ -26,11 +26,11 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.CodigoRf)
             .NotEmpty()
             .WithMessage("O código Rf deve ser informado para copiar plano anual.");
-            
+
             RuleFor(c => c.ComponenteCurricular)
                 .GreaterThan(0)
                 .WithMessage("O código do componente curricular deve ser informado para para copiar plano anual.");
-            
+
             RuleFor(c => c.TurmaId)
                 .GreaterThan(0)
                 .WithMessage("O código da turma deve ser informado para copiar plano anual.");

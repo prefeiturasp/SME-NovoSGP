@@ -207,7 +207,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             await CriarParametrosNotas();
 
             await CriarAbrangencia(filtroNota.Perfil);
-            
+
             await CriarCiclo();
 
             await CriarNotasTipoEParametros(filtroNota.ConsiderarAnoAnterior);

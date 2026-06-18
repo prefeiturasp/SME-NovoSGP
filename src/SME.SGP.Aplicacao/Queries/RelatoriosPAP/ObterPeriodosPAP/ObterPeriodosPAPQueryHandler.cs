@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -26,7 +25,7 @@ namespace SME.SGP.Aplicacao
 
             var periodos = await repositorio.ObterPeriodos(turma.AnoLetivo);
 
-            foreach(var periodo in periodos)
+            foreach (var periodo in periodos)
             {
                 periodo.PeriodoAberto = await mediator.Send(new PeriodoEstaEmAbertoPAPQuery(periodo.PeriodoRelatorioPAPId, turma));
             }

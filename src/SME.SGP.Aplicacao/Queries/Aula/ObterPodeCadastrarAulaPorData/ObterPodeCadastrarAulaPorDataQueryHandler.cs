@@ -30,10 +30,10 @@ namespace SME.SGP.Aplicacao
 
             // Periodo Escolar
             var periodoEscolar = await repositorioTipoCalendario.ObterPeriodoEscolarPorCalendarioEData(request.TipoCalendarioId, request.DataAula.Date);
-            var eventoReposicao = new PodeCadastrarAulaPorDataRetornoDto(false,"");
+            var eventoReposicao = new PodeCadastrarAulaPorDataRetornoDto(false, "");
             if (periodoEscolar.EhNulo())
             {
-               eventoReposicao = await EventoReposicao(request.DataAula, request.TipoCalendarioId, turma.Ue.CodigoUe);
+                eventoReposicao = await EventoReposicao(request.DataAula, request.TipoCalendarioId, turma.Ue.CodigoUe);
                 if (eventoReposicao.NaoEhNulo())
                 {
                     return eventoReposicao;
@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
             {
                 var temEventoLetivoDeLiberacao = await repositorioEvento.DataPossuiEventoDeLiberacaoEoutroEventoLetivo(request.TipoCalendarioId, request.DataAula, request.UeCodigo);
 
-                 eventoReposicao = await EventoReposicao(request.DataAula, request.TipoCalendarioId, turma.Ue.CodigoUe);
+                eventoReposicao = await EventoReposicao(request.DataAula, request.TipoCalendarioId, turma.Ue.CodigoUe);
 
                 if (!temEventoLetivoDeLiberacao && (eventoReposicao.NaoEhNulo()))
                     return new PodeCadastrarAulaPorDataRetornoDto(false, "Não é possível cadastrar aula no final de semana");
@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
 
             var mesmoAnoLetivo = DateTime.Today.Year == request.DataAula.Year;
 
-            var temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, periodoEscolar.Bimestre, mesmoAnoLetivo, request.TipoCalendarioId), cancellationToken);;
+            var temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, periodoEscolar.Bimestre, mesmoAnoLetivo, request.TipoCalendarioId), cancellationToken); ;
 
             return temPeriodoAberto
                 ? new PodeCadastrarAulaPorDataRetornoDto(true)

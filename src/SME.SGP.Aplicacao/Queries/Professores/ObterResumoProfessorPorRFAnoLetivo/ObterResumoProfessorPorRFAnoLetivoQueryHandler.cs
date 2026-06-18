@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,7 +22,7 @@ namespace SME.SGP.Aplicacao
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
 
             var url = string.Format(ServicosEolConstants.URL_PROFESSORES_BUSCAR_RF, request.CodigoRF, request.AnoLetivo) + $"?buscarOutrosCargos={request.BuscarOutrosCargos}";
-            
+
             var resposta = await httpClient.GetAsync(url);
 
             if (resposta.IsSuccessStatusCode)

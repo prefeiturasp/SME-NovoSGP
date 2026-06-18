@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -80,7 +80,7 @@ namespace SME.SGP.Api.Controllers
         [FromServices] IObterPendenciaParecerConclusivoUseCases useCase)
         {
             return Ok(await useCase.Executar(filtroDashboardFechamentoDto));
-        }        
+        }
     }
 
 

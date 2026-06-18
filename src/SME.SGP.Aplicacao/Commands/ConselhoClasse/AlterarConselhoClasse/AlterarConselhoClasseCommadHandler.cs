@@ -5,7 +5,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -111,10 +110,10 @@ namespace SME.SGP.Aplicacao
             {
                 unitOfWork.Rollback();
             }
-            
+
             await RemoverCache(string.Format(NomeChaveCache.NOTA_CONCEITO_FECHAMENTO_TURMA_ALUNO_BIMESTRES_E_FINAL, request.Turma.CodigoTurma, request.CodigoAluno), cancellationToken);
             await RemoverCache(string.Format(NomeChaveCache.NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE_ALUNO, request.Turma.CodigoTurma, request.Bimestre, request.CodigoAluno), cancellationToken);
-                        
+
             //Tratar após o fechamento da transação - ano letivo e turmaId
             if (!enviarAprovacao)
             {
@@ -135,7 +134,7 @@ namespace SME.SGP.Aplicacao
                     Inativo = aluno.Inativo,
                     ConselhoClasse = true
                 };
-                
+
                 await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto), cancellationToken);
             }
 
@@ -150,11 +149,11 @@ namespace SME.SGP.Aplicacao
 
             return conselhoClasseNotaRetorno;
         }
-        
+
         private async Task RemoverCache(string nomeChave, CancellationToken cancellationToken)
         {
             await mediator.Send(new RemoverChaveCacheCommand(nomeChave), cancellationToken);
-        }        
+        }
 
         private async Task<long> SalvarConselhoClasseAlunoResumido(long conselhoClasseId, string alunoCodigo)
         {

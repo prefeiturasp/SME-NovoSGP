@@ -1,6 +1,4 @@
 ﻿using FluentValidation;
-using SME.SGP.Dominio;
-using System.Linq;
 
 namespace SME.SGP.Aplicacao.Queries.EscolaAqui.ObterComunicadosParaFiltro
 {
@@ -15,8 +13,8 @@ namespace SME.SGP.Aplicacao.Queries.EscolaAqui.ObterComunicadosParaFiltro
                 .WithMessage("O ano letivo informado é inválido.");
 
             RuleFor(x => x.Modalidades)
-                .NotNull()                
-                .WithMessage("Pelo menos uma modalidade deve ser informada.");            
+                .NotNull()
+                .WithMessage("Pelo menos uma modalidade deve ser informada.");
         }
     }
 }

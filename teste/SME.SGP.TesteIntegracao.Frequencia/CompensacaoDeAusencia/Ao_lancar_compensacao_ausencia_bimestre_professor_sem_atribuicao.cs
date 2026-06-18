@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -8,6 +7,7 @@ using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
@@ -40,10 +40,10 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                 true,
                 true,
                 false);
-            
+
             var casoDeUso = ServiceProvider.GetService<ISalvarCompensacaoAusenciaUseCase>();
-            casoDeUso.ShouldNotBeNull();            
-            
+            casoDeUso.ShouldNotBeNull();
+
             var compensacaoAusenciaDosAlunos = await LancarCompensacaoAusenciasAlunos(compensacaoDeAusencia);
 
             async Task DoExecutarInserir()
@@ -51,7 +51,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                 await casoDeUso.Executar(0, compensacaoAusenciaDosAlunos);
             }
 
-            await Should.ThrowAsync<NegocioException>(DoExecutarInserir);       
+            await Should.ThrowAsync<NegocioException>(DoExecutarInserir);
         }
     }
 }

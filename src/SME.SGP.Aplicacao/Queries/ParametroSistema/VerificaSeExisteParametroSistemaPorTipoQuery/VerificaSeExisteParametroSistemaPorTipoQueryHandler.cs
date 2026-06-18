@@ -1,12 +1,12 @@
-﻿using System;
+﻿using MediatR;
+using SME.SGP.Dominio.Interfaces;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.Aplicacao
 {
-    public class VerificaSeExisteParametroSistemaPorTipoQueryHandler : IRequestHandler<VerificaSeExisteParametroSistemaPorTipoQuery,bool>
+    public class VerificaSeExisteParametroSistemaPorTipoQueryHandler : IRequestHandler<VerificaSeExisteParametroSistemaPorTipoQuery, bool>
     {
         private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;
 

@@ -18,7 +18,7 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "Excluído")]
         Excluido = 5,
-        
+
         [Display(Name = "Substituido")]
         Substituido = 6
     }

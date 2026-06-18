@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using Nest;
 using Newtonsoft.Json;
 using SME.Pedagogico.Interface;
 using SME.SGP.Infra;
 using SME.SGP.Infra.ElasticSearch;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.ElasticSearch
 {
@@ -22,7 +22,7 @@ namespace SME.SGP.Dados.ElasticSearch
 
         protected RepositorioElasticBase(IElasticClient elasticClient,
                                          IServicoTelemetria servicoTelemetria,
-                                         IOptions<ElasticOptions> elasticOptions, 
+                                         IOptions<ElasticOptions> elasticOptions,
                                          string indicePadraoRepositorio = "")
         {
             _elasticClient = elasticClient;
@@ -167,7 +167,7 @@ namespace SME.SGP.Dados.ElasticSearch
             if (string.IsNullOrEmpty(indice))
                 nomeIndice = string.IsNullOrEmpty(indicePadraoRepositorio) ?
                     elasticOptions.IndicePadrao : indicePadraoRepositorio;
-            
+
             return $"{elasticOptions.Prefixo}{nomeIndice}";
         }
 

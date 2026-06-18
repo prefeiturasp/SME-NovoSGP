@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         }
 
 
-        public async Task<PendenciaEncaminhamentoAEE> Handle(ObterPendenciaEncaminhamentoAEEPorIdQuery request, CancellationToken cancellationToken)        
+        public async Task<PendenciaEncaminhamentoAEE> Handle(ObterPendenciaEncaminhamentoAEEPorIdQuery request, CancellationToken cancellationToken)
             => await repositorioPendenciaEncaminhamentoAEE.ObterPorEncaminhamentoAEEId(request.EncaminhamentoAEEId);
 
     }

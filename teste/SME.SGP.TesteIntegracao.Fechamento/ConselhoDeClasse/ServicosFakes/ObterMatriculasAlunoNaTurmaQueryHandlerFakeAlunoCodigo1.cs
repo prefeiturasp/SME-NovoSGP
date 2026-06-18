@@ -1,12 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
 {
@@ -18,9 +17,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
         private const string ATIVO = "ATIVO";
         private const string NOME_RESPONSAVEL_ALUNO_CODIGO_1 = "NOME_RESPONSAVEL_ALUNO_CODIGO_1";
         private const string TIPO_RESPONSAVEL_1 = "TIPO_RESPONSAVEL_1";
-        
+
         public ObterMatriculasAlunoNaTurmaQueryHandlerFakeAlunoCodigo1()
-        {}
+        { }
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterMatriculasAlunoNaTurmaQuery request, CancellationToken cancellationToken)
         {
@@ -32,7 +31,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
                     CodigoTurma = CODIGO_TURMA_1,
                     NomeAluno = NOME_ALUNO_CODIGO_1,
                     DataNascimento = DateTime.Now.AddYears(-15).Date,
-                    CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo, 
+                    CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
                     SituacaoMatricula = ATIVO,
                     DataSituacao = DateTime.Now.AddMonths(-5).Date,
                     DataMatricula = DateTime.Now.AddMonths(-10).Date,

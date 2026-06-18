@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
             {
                 var periodoFinal = MontaPeriodoEscolarFinalParaMarcador(periodosEscolares, turma.ModalidadeCodigo);
 
-                if(periodoFinal != null)
+                if (periodoFinal != null)
                 {
                     periodoInicio = periodoFinal.PeriodoInicio;
                     periodoFim = periodoFinal.PeriodoFim;
@@ -149,7 +149,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, int anoLetivo)
         {
-            return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
+            return await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
         }
         private async Task<DisciplinaDto> ObterComponenteCurricularAsync(long componenteCurricularId, string codigoTurma = null)
         {
@@ -188,7 +188,7 @@ namespace SME.SGP.Aplicacao
         private PeriodoEscolar MontaPeriodoEscolarFinalParaMarcador(IEnumerable<PeriodoEscolar> periodos, Modalidade modalidadeTurma)
          => new PeriodoEscolar()
          {
-             PeriodoInicio = periodos.FirstOrDefault(p=> p.Bimestre == 1).PeriodoInicio,
+             PeriodoInicio = periodos.FirstOrDefault(p => p.Bimestre == 1).PeriodoInicio,
              PeriodoFim = periodos.FirstOrDefault(p => modalidadeTurma.EhSemestral() ? p.Bimestre == 2 : p.Bimestre == 4).PeriodoFim
          };
 

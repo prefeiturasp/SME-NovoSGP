@@ -1,9 +1,9 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
 {
@@ -13,7 +13,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
         {
             return Task.FromResult(new PlanoAEEResumoDto()
             {
-                Id =1,
+                Id = 1,
                 Numero = 1,
                 Turma = "1A",
                 PossuiEncaminhamentoAEE = false,

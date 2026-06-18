@@ -1,19 +1,19 @@
-﻿using MediatR;
-using Moq.Protected;
-using Moq;
-using SME.SGP.Aplicacao.Queries.Sondagem.ObterConsolidacaoNivelEscritaAlfabetizacao;
-using SME.SGP.Infra.Dtos.Sondagem;
-using System.Net.Http;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading;
-using Xunit;
-using Bogus;
+﻿using Bogus;
 using FluentAssertions;
-using SME.SGP.Infra.Consts;
+using MediatR;
+using Moq;
+using Moq.Protected;
 using Newtonsoft.Json;
+using SME.SGP.Aplicacao.Queries.Sondagem.ObterConsolidacaoNivelEscritaAlfabetizacao;
+using SME.SGP.Infra.Consts;
+using SME.SGP.Infra.Dtos.Sondagem;
 using System;
+using System.Net;
+using System.Net.Http;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.Queries.Sondagem
 {

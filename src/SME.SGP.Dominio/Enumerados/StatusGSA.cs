@@ -11,7 +11,7 @@ namespace SME.SGP.Dominio
         [Display(Name = "CREATED")]
         Criado = 2,
         [Display(Name = "TURNED_IN", Description = "Atividade entregue no Google Sala de Aula")]
-        Entregue = 3  ,  
+        Entregue = 3,
         [Display(Name = "RETURNED")]
         Devolvido = 4,
         [Display(Name = "RECLAIMED_BY_STUDENT")]

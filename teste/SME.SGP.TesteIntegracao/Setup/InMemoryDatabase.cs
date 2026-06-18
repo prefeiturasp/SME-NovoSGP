@@ -1,13 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Dommel;
 using Npgsql;
 using Postgres2Go;
-using SME.SGP.Dominio;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.Setup
 {
@@ -38,7 +36,7 @@ namespace SME.SGP.TesteIntegracao.Setup
                 Conexao.Insert(objeto);
             }
         }
-        
+
         public void Inserir<T>(T objeto) where T : class, new()
         {
             Conexao.Insert(objeto);
@@ -99,7 +97,7 @@ namespace SME.SGP.TesteIntegracao.Setup
                 cmd.ExecuteNonQuery();
             }
         }
-        
+
         public void Inserir(string tabela, string[] campos, string[] valores)
         {
             var builder = new StringBuilder();

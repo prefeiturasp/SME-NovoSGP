@@ -28,6 +28,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.CodigoAluno)
             .NotEmpty()
             .WithMessage("O código do aluno deve ser informado.");
-        }        
+        }
     }
 }

@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
 
             var comunicadosFiltrados = await repositorioComunicado.ObterComunicadosParaFiltroDaDashboard(filtro);
 
-            return await ObterTurmasAssociadas(comunicadosFiltrados);            
+            return await ObterTurmasAssociadas(comunicadosFiltrados);
         }
 
         private async Task<List<ComunicadoParaFiltroDaDashboardDto>> ObterTurmasAssociadas(IEnumerable<ComunicadoParaFiltroDaDashboardDto> comunicadosFiltrados)

@@ -206,7 +206,7 @@ namespace SME.SGP.Dados
                                     where a.ModalidadeCodigo <> 1
                                     group by a.PeriodoEscolarId, a.Bimestre, a.TurmaId, a.TurmaCodigo, a.AnoLetivo,
                                         a.DisciplinaId, a.RFProfessor, a.NomeProfessor, a.ModalidadeCodigo ";
-                
+
             return await database.Conexao.QueryAsync<ConsolidacaoRegistrosPedagogicosDto>(query, new { turmaCodigo, anoLetivo, componentesCurricularesIds });
         }
     }

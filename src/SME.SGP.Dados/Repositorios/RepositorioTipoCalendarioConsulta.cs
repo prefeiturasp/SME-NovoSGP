@@ -59,13 +59,13 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<TipoCalendario>(query, new { anoLetivo, modalidade = (int)modalidade, semestre });
         }
 
-        private string IncluirFiltroSemestrePorModalidade(ModalidadeTipoCalendario modalidade,int semestre)
+        private string IncluirFiltroSemestrePorModalidade(ModalidadeTipoCalendario modalidade, int semestre)
         {
-            return modalidade.EhEjaOuCelp() && semestre.EhMaiorQueZero() 
-                ? ObterFiltroSemestre() 
+            return modalidade.EhEjaOuCelp() && semestre.EhMaiorQueZero()
+                ? ObterFiltroSemestre()
                 : string.Empty;
         }
-        
+
         private string IncluirFiltroSemestre(int semestre)
         {
             return semestre.EhMaiorQueZero() ? ObterFiltroSemestre() : string.Empty;
@@ -117,7 +117,7 @@ namespace SME.SGP.Dados.Repositorios
                         from tipo_calendario 
                         where not excluido";
 
-            var retorno =  await database.Conexao.QueryAsync<TipoCalendario>(query);
+            var retorno = await database.Conexao.QueryAsync<TipoCalendario>(query);
             return retorno;
         }
 
@@ -129,7 +129,7 @@ namespace SME.SGP.Dados.Repositorios
                           and not excluido
                           {IncluirFiltroPorId(id)}";
 
-            return (await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { id, nomeMaiusculo =  nome.ToUpper().Trim()})).EhMaiorQueZero();
+            return (await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { id, nomeMaiusculo = nome.ToUpper().Trim() })).EhMaiorQueZero();
         }
 
         private string IncluirFiltroPorId(long id)

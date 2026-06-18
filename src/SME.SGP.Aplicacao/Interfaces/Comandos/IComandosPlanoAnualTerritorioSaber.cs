@@ -7,6 +7,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IComandosPlanoAnualTerritorioSaber
     {
-       Task<IEnumerable<EntidadeBase>> Salvar(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto);
+        Task<IEnumerable<EntidadeBase>> Salvar(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto);
     }
 }

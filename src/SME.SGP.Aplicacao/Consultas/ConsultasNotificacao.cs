@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -34,20 +33,20 @@ namespace SME.SGP.Aplicacao
                 TotalPaginas = retorno.TotalPaginas,
 
                 Items = from r in retorno.Items
-                    select new NotificacaoBasicaDto()
-                    {
-                        Id = r.Id,
-                        Titulo = r.Titulo,
-                        Data = r.CriadoEm,
-                        DescricaoStatus = r.Status.GetAttribute<DisplayAttribute>().Name,
-                        Status = r.Status,
-                        Categoria = r.Categoria,
-                        DescricaoCategoria = r.Categoria.GetAttribute<DisplayAttribute>().Name,
-                        Tipo = r.Tipo.GetAttribute<DisplayAttribute>().Name,
-                        Codigo = r.Codigo,
-                        PodeRemover = r.PodeRemover,
-                        PodeMarcarComoLida = r.Status == NotificacaoStatus.Pendente
-                    }
+                        select new NotificacaoBasicaDto()
+                        {
+                            Id = r.Id,
+                            Titulo = r.Titulo,
+                            Data = r.CriadoEm,
+                            DescricaoStatus = r.Status.GetAttribute<DisplayAttribute>().Name,
+                            Status = r.Status,
+                            Categoria = r.Categoria,
+                            DescricaoCategoria = r.Categoria.GetAttribute<DisplayAttribute>().Name,
+                            Tipo = r.Tipo.GetAttribute<DisplayAttribute>().Name,
+                            Codigo = r.Codigo,
+                            PodeRemover = r.PodeRemover,
+                            PodeMarcarComoLida = r.Status == NotificacaoStatus.Pendente
+                        }
             };
 
             return retornoPaginadoDto;

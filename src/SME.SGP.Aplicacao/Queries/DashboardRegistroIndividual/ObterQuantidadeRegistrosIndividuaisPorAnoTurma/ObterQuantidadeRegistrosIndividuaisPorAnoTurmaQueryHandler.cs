@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,22 +21,22 @@ namespace SME.SGP.Aplicacao
         {
             var retornoConsulta = await repositorio.ObterQuantidadeRegistrosIndividuaisPorAnoTurmaAsync(request.AnoLetivo, request.DreId, request.UeId, request.Modalidade);
 
-            if(retornoConsulta.NaoEhNulo() && retornoConsulta.Any())
+            if (retornoConsulta.NaoEhNulo() && retornoConsulta.Any())
                 return MontarDto(retornoConsulta, request);
 
             return default;
         }
 
         private IEnumerable<GraficoBaseDto> MontarDto(IEnumerable<QuantidadeRegistrosIndividuaisPorAnoTurmaDTO> retornoConsulta, ObterQuantidadeRegistrosIndividuaisPorAnoTurmaQuery request)
-        {            
+        {
             foreach (var item in retornoConsulta)
             {
                 yield return new GraficoBaseDto()
                 {
-                    Descricao =  item.ObterDescricaoTurmaAno(request.UeId > 0, string.IsNullOrEmpty(item.Ano) ? item.Turma : item.Ano.ToString(), request.Modalidade),
+                    Descricao = item.ObterDescricaoTurmaAno(request.UeId > 0, string.IsNullOrEmpty(item.Ano) ? item.Turma : item.Ano.ToString(), request.Modalidade),
                     Quantidade = item.QuantidadeRegistrosIndividuais
                 };
-            }            
-        }       
+            }
+        }
     }
 }

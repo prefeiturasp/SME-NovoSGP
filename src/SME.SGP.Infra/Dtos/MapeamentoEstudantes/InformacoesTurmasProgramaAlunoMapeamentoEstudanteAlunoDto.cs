@@ -1,9 +1,4 @@
-﻿using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace SME.SGP.Infra.Dtos.MapeamentoEstudantes
 {
@@ -16,7 +11,7 @@ namespace SME.SGP.Infra.Dtos.MapeamentoEstudantes
             ComponentesMaisEducacao = new();
             ComponentesFortalecimentoAprendizagens = new();
         }
-        
+
         public List<ComponenteCurricularSimplificadoDto> ComponentesSRMCEFAI { get; set; }
         public List<ComponenteCurricularSimplificadoDto> ComponentesPAP { get; set; }
         public List<ComponenteCurricularSimplificadoDto> ComponentesMaisEducacao { get; set; }

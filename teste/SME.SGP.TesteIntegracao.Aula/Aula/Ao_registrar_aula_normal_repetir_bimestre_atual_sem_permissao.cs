@@ -4,12 +4,11 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.AulaBimestreAtual
@@ -17,7 +16,7 @@ namespace SME.SGP.TesteIntegracao.AulaBimestreAtual
     public class Ao_registrar_aula_normal_repetir_bimestre_atual_sem_permissao : AulaTeste
     {
         public Ao_registrar_aula_normal_repetir_bimestre_atual_sem_permissao(CollectionFixture collectionFixture) : base(collectionFixture)
-        {}
+        { }
 
         protected override void RegistrarFakes(IServiceCollection services)
         {

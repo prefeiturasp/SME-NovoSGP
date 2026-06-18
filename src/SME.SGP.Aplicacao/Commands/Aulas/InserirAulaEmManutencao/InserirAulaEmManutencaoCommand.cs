@@ -1,13 +1,11 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class InserirAulaEmManutencaoCommand: IRequest<IEnumerable<ProcessoExecutando>>
+    public class InserirAulaEmManutencaoCommand : IRequest<IEnumerable<ProcessoExecutando>>
     {
         public InserirAulaEmManutencaoCommand(IEnumerable<long> aulasIds)
         {
@@ -17,7 +15,7 @@ namespace SME.SGP.Aplicacao
         public IEnumerable<long> AulasIds { get; set; }
     }
 
-    public class InserirAulaEmManutencaoCommandValidator: AbstractValidator<InserirAulaEmManutencaoCommand>
+    public class InserirAulaEmManutencaoCommandValidator : AbstractValidator<InserirAulaEmManutencaoCommand>
     {
         public InserirAulaEmManutencaoCommandValidator()
         {

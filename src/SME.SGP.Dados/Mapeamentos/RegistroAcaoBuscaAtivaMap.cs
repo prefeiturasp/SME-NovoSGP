@@ -1,7 +1,7 @@
 ﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados
-{ 
+{
     public class RegistroAcaoBuscaAtivaMap : BaseMap<RegistroAcaoBuscaAtiva>
     {
         public RegistroAcaoBuscaAtivaMap()

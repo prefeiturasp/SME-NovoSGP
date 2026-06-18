@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             IRepositorioTurmaConsulta repositorioTurmaConsulta,
             IRepositorioTipoEscola repositorioTipoEscola,
             IRepositorioPainelEducacionalConsolidacaoInformacoesEducacionais repositorio)
-            : base(mediator) 
+            : base(mediator)
         {
             this.repositorioTurmaConsulta = repositorioTurmaConsulta;
             this.repositorioTipoEscola = repositorioTipoEscola;
@@ -89,18 +89,18 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                         CodigoUe = r.CodigoUe,
                         Ue = $"{(string.IsNullOrEmpty(te.Descricao) ? "" : te.Descricao + " ")}{u.Nome}",
                         IdepAnosIniciais = r.IdepAnosIniciais,
-                        IdepAnosFinais = r.IdepAnosFinais,                        
+                        IdepAnosFinais = r.IdepAnosFinais,
                         IdebAnosIniciais = r.IdebAnosIniciais,
                         IdebAnosFinais = r.IdebAnosFinais,
-                        IdebEnsinoMedio = r.IdebEnsinoMedio,                        
+                        IdebEnsinoMedio = r.IdebEnsinoMedio,
                         PercentualFrequenciaGlobal = r.PercentualFrequenciaGlobal,
                         QuantidadeAlunosPap = r.QuantidadeAlunosPap,
                         QuantidadeTurmasPap = r.QuantidadeTurmasPap,
-                        PercentualFrequenciaAlunosPap = r.PercentualFrequenciaAlunosPap,                        
+                        PercentualFrequenciaAlunosPap = r.PercentualFrequenciaAlunosPap,
                         QuantidadeAlunosDesistentesAbandono = r.QuantidadeAlunosDesistentesAbandono,
                         QuantidadePromocoes = r.QuantidadePromocoes,
                         QuantidadeRetencoesFrequencia = r.QuantidadeRetencoesFrequencia,
-                        QuantidadeRetencoesNota = r.QuantidadeRetencoesNota,                        
+                        QuantidadeRetencoesNota = r.QuantidadeRetencoesNota,
                         QuantidadeNotasAbaixoMedia = r.QuantidadeNotasAbaixoMedia,
                         QuantidadeNotasAcimaMedia = r.QuantidadeNotasAcimaMedia
                     }).ToList();

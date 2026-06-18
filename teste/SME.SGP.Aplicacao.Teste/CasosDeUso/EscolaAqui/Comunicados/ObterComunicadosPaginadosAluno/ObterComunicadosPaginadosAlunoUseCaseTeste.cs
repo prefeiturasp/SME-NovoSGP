@@ -112,7 +112,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.EscolaAqui.Comunicados.ObterComunic
             var filtro = new FiltroTurmaAlunoSemestreDto(1, 123, 1);
 
             mediatorMock.Setup(m => m.Send(It.IsAny<ObterTurmaComUeEDrePorIdQuery>(), default))
-                .ReturnsAsync((Turma)null); 
+                .ReturnsAsync((Turma)null);
 
             var ex = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(filtro));
             Assert.Equal("A Turma informada não foi encontrada", ex.Message);
@@ -139,7 +139,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.EscolaAqui.Comunicados.ObterComunic
                 .ReturnsAsync(turma);
 
             mediatorMock.Setup(m => m.Send(It.IsAny<ObterAlunoPorCodigoEAnoQuery>(), default))
-                .ReturnsAsync((AlunoReduzidoDto)null); 
+                .ReturnsAsync((AlunoReduzidoDto)null);
 
             var ex = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(filtro));
             Assert.Equal("O Aluno informado não foi encontrado", ex.Message);
@@ -171,7 +171,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.EscolaAqui.Comunicados.ObterComunic
                 .ReturnsAsync(aluno);
 
             mediatorMock.Setup(m => m.Send(It.IsAny<ObterTipoCalendarioIdPorTurmaQuery>(), default))
-                .ReturnsAsync(0L); 
+                .ReturnsAsync(0L);
 
             var ex = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(filtro));
             Assert.Equal("O tipo de calendário da turma não foi encontrado.", ex.Message);

@@ -4,9 +4,8 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
 {

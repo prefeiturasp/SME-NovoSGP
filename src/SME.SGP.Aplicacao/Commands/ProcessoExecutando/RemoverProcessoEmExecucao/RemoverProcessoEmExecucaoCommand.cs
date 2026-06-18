@@ -1,13 +1,9 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class RemoverProcessoEmExecucaoCommand: IRequest<bool>
+    public class RemoverProcessoEmExecucaoCommand : IRequest<bool>
     {
         public RemoverProcessoEmExecucaoCommand(long[] processosExecutandoIds)
         {
@@ -17,7 +13,7 @@ namespace SME.SGP.Aplicacao
         public long[] ProcessosExecutandoIds { get; set; }
     }
 
-    public class RemoverProcessoEmExecucaoCommandValidator: AbstractValidator<RemoverProcessoEmExecucaoCommand>
+    public class RemoverProcessoEmExecucaoCommandValidator : AbstractValidator<RemoverProcessoEmExecucaoCommand>
     {
         public RemoverProcessoEmExecucaoCommandValidator()
         {

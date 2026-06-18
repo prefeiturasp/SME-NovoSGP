@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Minio.DataModel;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
@@ -12,7 +11,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
         private readonly IMediator mediator;
-        
+
         public SalvarPendenciaAoExcluirDiarioBordoCommandHandler(IRepositorioDiarioBordo repositorioDiarioBordo, IMediator mediator)
         {
             this.repositorioDiarioBordo = repositorioDiarioBordo ?? throw new ArgumentNullException(nameof(repositorioDiarioBordo));

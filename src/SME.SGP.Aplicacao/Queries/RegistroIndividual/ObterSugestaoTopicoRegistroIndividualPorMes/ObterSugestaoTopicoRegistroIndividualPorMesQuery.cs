@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(a => a.Mes)
                 .NotEmpty()
-                .WithMessage("O mês deve ser informado.");            
+                .WithMessage("O mês deve ser informado.");
         }
     }
 }

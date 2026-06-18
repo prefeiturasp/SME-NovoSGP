@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             mediator.Verify(x => x.Send(It.IsAny<ObterUltimaVersaoQuery>(), It.IsAny<CancellationToken>()), Times.Once);
             Assert.True(versao == "v1");
 
-            
+
         }
     }
 }

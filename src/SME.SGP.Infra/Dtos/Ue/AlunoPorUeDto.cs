@@ -9,7 +9,8 @@ namespace SME.SGP.Infra
 
         public string CodigoAluno { get; set; }
 
-        public string NomeAluno {
+        public string NomeAluno
+        {
             get => !string.IsNullOrWhiteSpace(NomeSocialAluno) ? NomeSocialAluno : _nomeAluno;
             set => _nomeAluno = value;
         }

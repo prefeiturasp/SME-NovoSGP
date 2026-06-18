@@ -24,7 +24,7 @@ namespace SME.SGP.Metrica.Worker.UseCases
             var parametro = mensagem.EhNulo() || mensagem.Mensagem.EhNulo()
                             ? new FiltroDataDto(DateTime.Now.Date.AddDays(-1))
                             : mensagem.ObterObjetoMensagem<FiltroDataDto>();
-            
+
             var quantidadeRegistros = await repositorioSGP.ObterQuantidadeDevolutivasDiarioBordoMes(parametro.Data);
             if (quantidadeRegistros > 0)
                 await repositorioDevolutivas.InserirAsync(new Entidade.DevolutivasDiarioBordoMensal(parametro.Data, quantidadeRegistros));

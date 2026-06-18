@@ -34,7 +34,7 @@ namespace SME.SGP.Dados.Repositorios
             }
         }
 
-        public async Task<bool> ExistePorCodigoCompletoEAnoTurmaAsync(long id,string codigoCompleto, string anoTurma)
+        public async Task<bool> ExistePorCodigoCompletoEAnoTurmaAsync(long id, string codigoCompleto, string anoTurma)
         {
             using (var conexao = new NpgsqlConnection(connectionString))
             {
@@ -43,7 +43,7 @@ namespace SME.SGP.Dados.Repositorios
                     await conexao.OpenAsync();
                     var existe = await conexao.QueryFirstOrDefaultAsync<bool>(
                         "SELECT EXISTS(SELECT 1 FROM objetivo_aprendizagem WHERE codigo = @codigoCompleto AND ano_turma = @anoTurma and id = @id)",
-                        new { codigoCompleto, anoTurma,id });
+                        new { codigoCompleto, anoTurma, id });
 
                     return existe;
                 }
@@ -135,7 +135,7 @@ namespace SME.SGP.Dados.Repositorios
             }
         }
 
-        public async Task<ObjetivoAprendizagem> ObterPorCodigoAnoComponente(string codigo, string anoTurma,long componenteId)
+        public async Task<ObjetivoAprendizagem> ObterPorCodigoAnoComponente(string codigo, string anoTurma, long componenteId)
         {
             using (var conexao = new NpgsqlConnection(connectionString))
             {

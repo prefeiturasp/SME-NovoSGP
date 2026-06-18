@@ -24,8 +24,8 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.CodigoTurma));
             var componentesCurricularesUsuarioTurma = await mediator
-                                                            .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.CodigoTurma, 
-                                                                                                                          usuarioLogado.Login, 
+                                                            .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.CodigoTurma,
+                                                                                                                          usuarioLogado.Login,
                                                                                                                           usuarioLogado.PerfilAtual,
                                                                                                                           turma.EhTurmaInfantil));
             var disciplinasPorIds = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(request.Ids));
@@ -37,11 +37,11 @@ namespace SME.SGP.Aplicacao
 
             foreach (var id in request.Ids)
             {
-                var componenteUsuarioTurma = componentesCurricularesUsuarioTurma.FirstOrDefault(d => d.Codigo.Equals(id) || 
+                var componenteUsuarioTurma = componentesCurricularesUsuarioTurma.FirstOrDefault(d => d.Codigo.Equals(id) ||
                                                                                  d.CodigoComponenteTerritorioSaber.Equals(id));
 
                 if (componenteUsuarioTurma.EhNulo())
-                { 
+                {
                     if (usuarioLogado.EhProfessorCjInfantil() &&
                         !componentesCurricularesDoProfessorCJInfantil.Any(c => c.DisciplinaId == id))
                         continue;

@@ -1,12 +1,10 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Sentry;
 
 namespace SME.SGP.Aplicacao
 {
@@ -15,7 +13,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
         private readonly IRepositorioCache repositorioCache;
 
-        public ObterTurmaComUeEDrePorIdQueryHandler(IRepositorioTurmaConsulta repositorioTurmaConsulta, IRepositorioCache repositorioCache) 
+        public ObterTurmaComUeEDrePorIdQueryHandler(IRepositorioTurmaConsulta repositorioTurmaConsulta, IRepositorioCache repositorioCache)
         {
             this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
@@ -28,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
         private string ObterChave(long turmaId)
         {
-            return string.Format(NomeChaveCache.TURMA_UE_DRE_ID, turmaId); 
+            return string.Format(NomeChaveCache.TURMA_UE_DRE_ID, turmaId);
         }
     }
 }

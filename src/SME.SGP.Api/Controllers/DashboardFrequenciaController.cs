@@ -103,14 +103,14 @@ namespace SME.SGP.Api.Controllers
             };
 
             return Ok(await useCase.Executar(dto));
-        }       
-        
+        }
+
         [HttpGet("anos/{anoLetivo}/dres/{dreId}/ues/{ueId}/modalidades/{modalidade}/anoTurma/{anoTurma}/consolidado-semanal-mensal")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(GraficoFrequenciaAlunoDto), 200)]
         [Permissao(Permissao.DF_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterFrequenciasConsolidacaoSemanalMensalPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, TipoConsolidadoFrequencia tipoConsolidadoFrequencia, string anoTurma, [FromQuery] int semestre,DateTime? dataInicio, DateTime? datafim, int? mes, bool visaoDre, [FromServices] IObterDadosDashboardFrequenciaSemanalMensalPorAnoTurmaUseCase useCase)
+        public async Task<IActionResult> ObterFrequenciasConsolidacaoSemanalMensalPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, TipoConsolidadoFrequencia tipoConsolidadoFrequencia, string anoTurma, [FromQuery] int semestre, DateTime? dataInicio, DateTime? datafim, int? mes, bool visaoDre, [FromServices] IObterDadosDashboardFrequenciaSemanalMensalPorAnoTurmaUseCase useCase)
         {
             var dto = new FrequenciasConsolidadacaoPorTurmaEAnoDto()
             {
@@ -123,8 +123,8 @@ namespace SME.SGP.Api.Controllers
                 VisaoDre = visaoDre
             };
 
-            return Ok(await useCase.Executar(dto, dataInicio, datafim,mes, tipoConsolidadoFrequencia));
-        }    
+            return Ok(await useCase.Executar(dto, dataInicio, datafim, mes, tipoConsolidadoFrequencia));
+        }
 
         [HttpGet("filtro/anos/{anoLetivo}/semanas")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

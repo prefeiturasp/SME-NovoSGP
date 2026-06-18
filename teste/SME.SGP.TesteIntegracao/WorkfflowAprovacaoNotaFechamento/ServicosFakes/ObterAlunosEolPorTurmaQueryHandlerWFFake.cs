@@ -9,27 +9,27 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.WorkFlowAprovacaoNotaFechamento.ServicosFakes
+{
+    public class ObterAlunosEolPorTurmaQueryHandlerWFFake : IRequestHandler<ObterAlunosEolPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>
     {
-        public class ObterAlunosEolPorTurmaQueryHandlerWFFake : IRequestHandler<ObterAlunosEolPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>
-        {
-            private readonly string ALUNO_CODIGO_1 = "1";
-            private readonly string ALUNO_CODIGO_2 = "2";
-            private readonly string ALUNO_CODIGO_3 = "3";
-            private readonly string ALUNO_CODIGO_4 = "4";
-            private readonly string ALUNO_CODIGO_5 = "5";
-            private readonly string ALUNO_CODIGO_6 = "6";
-            private readonly string ALUNO_CODIGO_7 = "7";
-            private readonly string ALUNO_CODIGO_8 = "8";
-            private readonly string ALUNO_CODIGO_9 = "9";
-            private readonly string ALUNO_CODIGO_10 = "10";
+        private readonly string ALUNO_CODIGO_1 = "1";
+        private readonly string ALUNO_CODIGO_2 = "2";
+        private readonly string ALUNO_CODIGO_3 = "3";
+        private readonly string ALUNO_CODIGO_4 = "4";
+        private readonly string ALUNO_CODIGO_5 = "5";
+        private readonly string ALUNO_CODIGO_6 = "6";
+        private readonly string ALUNO_CODIGO_7 = "7";
+        private readonly string ALUNO_CODIGO_8 = "8";
+        private readonly string ALUNO_CODIGO_9 = "9";
+        private readonly string ALUNO_CODIGO_10 = "10";
 
-            private readonly string ATIVO = "Ativo";
-            private readonly string RESPONSAVEL = "RESPONSAVEL";
-            private readonly string TIPO_RESPONSAVEL_4 = "4";
-            private readonly string CELULAR_RESPONSAVEL = "11111111111";
-            public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosEolPorTurmaQuery request, CancellationToken cancellationToken)
-            {
-                var alunos = new List<AlunoPorTurmaResposta> {
+        private readonly string ATIVO = "Ativo";
+        private readonly string RESPONSAVEL = "RESPONSAVEL";
+        private readonly string TIPO_RESPONSAVEL_4 = "4";
+        private readonly string CELULAR_RESPONSAVEL = "11111111111";
+        public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosEolPorTurmaQuery request, CancellationToken cancellationToken)
+        {
+            var alunos = new List<AlunoPorTurmaResposta> {
 
                 new AlunoPorTurmaResposta
                 {
@@ -213,7 +213,7 @@ namespace SME.SGP.TesteIntegracao.WorkFlowAprovacaoNotaFechamento.ServicosFakes
                 }
             };
 
-                return alunos.Where(x => x.CodigoTurma.ToString() == request.TurmaId);
-            }
+            return alunos.Where(x => x.CodigoTurma.ToString() == request.TurmaId);
         }
     }
+}

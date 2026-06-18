@@ -1,11 +1,10 @@
-﻿using SME.SGP.Dominio;
-using System;
+﻿using System;
 
 namespace SME.SGP.Infra
 {
     public class FiltroFechamentoReaberturaNotificacaoDto
     {
-        public FiltroFechamentoReaberturaNotificacaoDto(string dreCodigo, string ueCodigo, long id, string codigoRf, string tipoCalendarioNome, string ueNome, string dreAbreviacao, 
+        public FiltroFechamentoReaberturaNotificacaoDto(string dreCodigo, string ueCodigo, long id, string codigoRf, string tipoCalendarioNome, string ueNome, string dreAbreviacao,
                                                         DateTime inicio, DateTime fim, string bimestreNome, bool ehParaUe, int anoLetivo, int[] modalidades)
         {
             DreCodigo = dreCodigo;

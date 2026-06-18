@@ -4,7 +4,6 @@ using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,7 +25,7 @@ namespace SME.SGP.Aplicacao
         {
             var frequenciaAlunoPeriodos = new List<FrequenciaAluno>();
             frequenciaAlunoPeriodos.AddRange(await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaComponentesAlunoPorTurmas(request.CodigoAluno, request.CodigosTurmas, request.TipoCalendarioId, request.Bimestre));
-           
+
             var bimestres = request.Bimestre > 0 ?
                 new int[] { request.Bimestre } :
                 await mediator.Send(new ObterBimestresPorTipoCalendarioQuery(request.TipoCalendarioId));

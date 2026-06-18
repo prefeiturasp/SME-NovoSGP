@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -12,7 +11,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAlunosSimplesDaTurmaQueryHandler : IRequestHandler<ObterAlunosSimplesDaTurmaQuery, IEnumerable<AlunoSimplesDto>>
     {
-        
+
         private readonly IMediator mediator;
 
         public ObterAlunosSimplesDaTurmaQueryHandler(IMediator mediator)
@@ -22,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AlunoSimplesDto>> Handle(ObterAlunosSimplesDaTurmaQuery request, CancellationToken cancellationToken)
         {
-            var alunosEOL =  await mediator.Send(new ObterAlunosEolPorTurmaQuery(request.TurmaCodigo));
+            var alunosEOL = await mediator.Send(new ObterAlunosEolPorTurmaQuery(request.TurmaCodigo));
             alunosEOL = alunosEOL.OrderBy(a => a.NomeAluno);
 
             return MapearParaDto(alunosEOL);

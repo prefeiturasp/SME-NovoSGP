@@ -47,5 +47,5 @@ namespace SME.SGP.Api.Controllers
             return Ok(retornoAutenticacao);
         }
     }
-    
+
 }

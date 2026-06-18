@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao
     public class RemoverAtribuicaoPendenciasUsuariosUeFuncionarioUseCase : AbstractUseCase, IRemoverAtribuicaoPendenciasUsuariosUeFuncionarioUseCase
     {
         public RemoverAtribuicaoPendenciasUsuariosUeFuncionarioUseCase(IMediator mediator) : base(mediator)
-        {}
+        { }
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {

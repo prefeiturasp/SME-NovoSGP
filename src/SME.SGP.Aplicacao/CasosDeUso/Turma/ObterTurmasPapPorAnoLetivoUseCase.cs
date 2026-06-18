@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.Turma;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso.Turma
 {
@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.Turma
 
         public async Task<IEnumerable<TurmasPapDto>> Executar(long anoLetivo, string codigoUe)
         {
-            return await mediator.Send(new ObterTurmasPapPorAnoLetivoQuery(anoLetivo,codigoUe));
+            return await mediator.Send(new ObterTurmasPapPorAnoLetivoQuery(anoLetivo, codigoUe));
         }
     }
 }

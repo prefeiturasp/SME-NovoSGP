@@ -42,12 +42,12 @@ namespace SME.SGP.Aplicacao
 
             var registroFrequencia = await mediator.Send(new ObterRegistroFrequenciaPorAulaIdQuery(aula.Id), cancellationToken);
             var alteracaoRegistro = registroFrequencia.NaoEhNulo();
-            
+
             registroFrequencia ??= new RegistroFrequencia(aula);
             registroFrequencia.Id = await mediator.Send(new PersistirRegistroFrequenciaCommand(registroFrequencia), cancellationToken);
 
             var registrouComSucesso = await mediator.Send(new InserirRegistrosFrequenciasAlunosCommand(request.Frequencia.ListaFrequencia, registroFrequencia.Id, turma.Id,
-                long.Parse(aula.DisciplinaId),aula.Id, aula.DataAula), cancellationToken);
+                long.Parse(aula.DisciplinaId), aula.Id, aula.DataAula), cancellationToken);
 
             if (registrouComSucesso)
             {
@@ -57,9 +57,9 @@ namespace SME.SGP.Aplicacao
 
                 if (request.CalcularFrequencia)
                     await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(CodigosAlunos, aula.DataAula, aula.TurmaId, aula.DisciplinaId), cancellationToken);
-                
+
                 await mediator.Send(new ExcluirPendenciaAulaCommand(aula.Id, TipoPendencia.Frequencia), cancellationToken);
-                await mediator.Send(new IncluirFilaConsolidacaoDiariaDashBoardFrequenciaCommand(turma.Id, aula.DataAula), cancellationToken);              
+                await mediator.Send(new IncluirFilaConsolidacaoDiariaDashBoardFrequenciaCommand(turma.Id, aula.DataAula), cancellationToken);
                 await mediator.Send(new IncluirFilaConsolidacaoSemanalMensalDashBoardFrequenciaCommand(turma.Id, turma.CodigoTurma, turma.ModalidadeCodigo == Modalidade.EducacaoInfantil, turma.AnoLetivo, aula.DataAula), cancellationToken);
 
                 return new FrequenciaAuditoriaAulaDto() { Auditoria = (AuditoriaDto)registroFrequencia, DataAula = aula.DataAula, TurmaId = aula.TurmaId, DisciplinaId = aula.DisciplinaId };
@@ -112,8 +112,8 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task<Usuario> ObterUsuario(CancellationToken cancellationToken)
-            => !string.IsNullOrWhiteSpace(requestParams.UsuarioLogin) ? 
-                await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(null, requestParams.UsuarioLogin), cancellationToken) : 
+            => !string.IsNullOrWhiteSpace(requestParams.UsuarioLogin) ?
+                await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(null, requestParams.UsuarioLogin), cancellationToken) :
                 await mediator.Send(ObterUsuarioLogadoQuery.Instance, cancellationToken);
         private static void ValidaSeUsuarioPodeCriarAula(Aula aula, Usuario usuario)
         {

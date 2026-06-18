@@ -134,7 +134,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Nota
         [Fact]
         public async Task Executar_Com_Lista_Vazia_De_Atividades_Nao_Deve_Publicar_Mensagens()
         {
-            var atividadesIds = new List<long>(); 
+            var atividadesIds = new List<long>();
             var alunosIds = new List<string> { "A1", "A2" };
             var usuario = new Usuario { Nome = "Usuário Teste", CodigoRf = "RF123", CriadoEm = DateTime.Now };
 
@@ -156,7 +156,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Nota
 
             _mediatorMock
                 .Setup(m => m.Send(It.IsAny<ObterNotasPorAlunosAtividadesAvaliativasQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<NotaConceito>()); 
+                .ReturnsAsync(new List<NotaConceito>());
 
             _repositorioMock
                 .Setup(r => r.ListarPorIds(It.IsAny<IEnumerable<long>>()))

@@ -22,7 +22,8 @@ namespace SME.SGP.Dominio
         public long ResponsavelId { get; set; }
         public List<PlanoAEEQuestao> Questoes { get; set; }
 
-        public void EncerrarPlanoAEE() {
+        public void EncerrarPlanoAEE()
+        {
             Situacao = SituacaoPlanoAEE.ParecerCP;
         }
 
@@ -37,7 +38,7 @@ namespace SME.SGP.Dominio
             || Situacao == SituacaoPlanoAEE.AtribuicaoPAAI;
 
         public bool EhSituacaoExpiradoValidado()
-            => Situacao.EhUmDosValores(SituacaoPlanoAEE.Expirado, 
+            => Situacao.EhUmDosValores(SituacaoPlanoAEE.Expirado,
                                         SituacaoPlanoAEE.Validado);
 
         public SituacaoPlanoAEE ObterSituacaoAoRemoverResponsavelPAAI()

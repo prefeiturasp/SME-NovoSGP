@@ -24,7 +24,7 @@ namespace SME.SGP.ComprimirArquivos.Worker
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                }).ConfigureServices(services=>
+                }).ConfigureServices(services =>
                     services.AddHostedService<WorkerRabbitComprimirArquivos>()
                 );
     }

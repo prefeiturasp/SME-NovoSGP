@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
-{ 
+{
     public class ObterFechamentoTurmaDisciplinaPorIdQueryHandler : IRequestHandler<ObterFechamentoTurmaDisciplinaPorIdQuery, FechamentoTurmaDisciplina>
     {
         private readonly IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina;

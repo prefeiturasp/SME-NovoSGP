@@ -1,12 +1,12 @@
-﻿using SME.SGP.Dados.Repositorios;
+﻿using Npgsql;
+using NpgsqlTypes;
+using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Npgsql;
-using NpgsqlTypes;
 
 namespace SME.SGP.Dados
 {
@@ -22,8 +22,8 @@ namespace SME.SGP.Dados
 
             return await database.Conexao.QueryAsync<CompensacaoAusenciaDisciplinaRegencia>(query, new { compensacaoId });
         }
-        
-        public async Task<bool> InserirVarios(IEnumerable<CompensacaoAusenciaDisciplinaRegencia> registros,Usuario usuarioLogado)
+
+        public async Task<bool> InserirVarios(IEnumerable<CompensacaoAusenciaDisciplinaRegencia> registros, Usuario usuarioLogado)
         {
             var sql = @"copy compensacao_ausencia_disciplina_regencia (                                         
                                         compensacao_ausencia_id, 
@@ -47,7 +47,7 @@ namespace SME.SGP.Dados
                 }
                 writer.Complete();
             }
-            
+
             return await Task.FromResult(true);
         }
     }

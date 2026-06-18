@@ -14,11 +14,11 @@ namespace SME.SGP.Aplicacao
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IMediator mediator;
 
-        public ObterFuncionariosPorDreEFuncaoExternaQueryHandler(IHttpClientFactory httpClientFactory, 
+        public ObterFuncionariosPorDreEFuncaoExternaQueryHandler(IHttpClientFactory httpClientFactory,
             IMediator mediator)
         {
             this.httpClientFactory = httpClientFactory ?? throw new System.ArgumentNullException(nameof(httpClientFactory));
-            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));            
+            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
         public async Task<IEnumerable<UsuarioEolRetornoDto>> Handle(ObterFuncionariosPorDreEFuncaoExternaQuery request, CancellationToken cancellationToken)

@@ -305,7 +305,7 @@ namespace SME.SGP.Dados.Repositorios
 
             MontaQueryObterComunicados(paginacao, sql, true);
 
-            var parametros = new { dreCodigo, ueCodigo, turmaCodigo, alunoCodigo , tipoComunicado = TipoComunicado.MENSAGEM_AUTOMATICA };
+            var parametros = new { dreCodigo, ueCodigo, turmaCodigo, alunoCodigo, tipoComunicado = TipoComunicado.MENSAGEM_AUTOMATICA };
 
             var retorno = new PaginacaoResultadoDto<ComunicadoAlunoReduzidoDto>();
 
@@ -405,7 +405,7 @@ namespace SME.SGP.Dados.Repositorios
                           from comunicado 
                          where id = ANY(@ids)
                            and not excluido and tipo_comunicado <> @tipoComunicado ";
-            var parametros = new { ids , tipoComunicado = TipoComunicado.MENSAGEM_AUTOMATICA };
+            var parametros = new { ids, tipoComunicado = TipoComunicado.MENSAGEM_AUTOMATICA };
             return await database.QueryAsync<Comunicado>(sql, parametros);
         }
         public async Task<IEnumerable<int>> ObterAnosLetivosComHistoricoDeComunicados(DateTime? dataInicio, DateTime dataAtual)
@@ -465,7 +465,7 @@ namespace SME.SGP.Dados.Repositorios
             var retorno = new PaginacaoResultadoDto<ComunicadoListaPaginadaDto>();
 
             var parametros = new
-            {   
+            {
                 paginacao.QuantidadeRegistrosIgnorados,
                 paginacao.QuantidadeRegistros,
                 anoLetivo,

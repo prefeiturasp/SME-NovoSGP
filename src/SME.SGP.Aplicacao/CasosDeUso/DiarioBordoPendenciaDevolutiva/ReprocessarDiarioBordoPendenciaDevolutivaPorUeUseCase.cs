@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
             try
             {
                 var filtro = param.ObterObjetoMensagem<FiltroDiarioBordoPendenciaDevolutivaDto>();
-                var ues =  (await repositorioUeConsulta.ObterPorDre(filtro.DreId)).ToList();
+                var ues = (await repositorioUeConsulta.ObterPorDre(filtro.DreId)).ToList();
 
                 foreach (var tipoEscola in ues.GroupBy(ue => ue.TipoEscola))
                 {

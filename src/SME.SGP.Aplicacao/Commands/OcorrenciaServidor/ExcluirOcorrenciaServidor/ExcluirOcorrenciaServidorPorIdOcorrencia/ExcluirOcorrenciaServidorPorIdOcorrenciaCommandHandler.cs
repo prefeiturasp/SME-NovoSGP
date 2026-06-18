@@ -1,12 +1,12 @@
-﻿using System;
+﻿using MediatR;
+using SME.SGP.Dominio;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirOcorrenciaServidorPorIdOcorrenciaCommandHandler : IRequestHandler<ExcluirOcorrenciaServidorPorIdOcorrenciaCommand,bool>
+    public class ExcluirOcorrenciaServidorPorIdOcorrenciaCommandHandler : IRequestHandler<ExcluirOcorrenciaServidorPorIdOcorrenciaCommand, bool>
     {
         private readonly IRepositorioOcorrenciaServidor _repositorioOcorrenciaServidor;
 
@@ -17,8 +17,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExcluirOcorrenciaServidorPorIdOcorrenciaCommand request, CancellationToken cancellationToken)
         {
-           await _repositorioOcorrenciaServidor.ExcluirPorOcorrenciaAsync(request.IdOcorrencia);
-           return true;
+            await _repositorioOcorrenciaServidor.ExcluirPorOcorrenciaAsync(request.IdOcorrencia);
+            return true;
         }
     }
 }

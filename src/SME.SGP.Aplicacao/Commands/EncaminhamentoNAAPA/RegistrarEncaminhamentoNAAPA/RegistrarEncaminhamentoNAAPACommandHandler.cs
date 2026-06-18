@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private EncaminhamentoNAAPA MapearParaEntidade(RegistrarEncaminhamentoNAAPACommand request, SituacaoMatriculaAluno? situacaoAluno)
-            => new ()
+            => new()
             {
                 TurmaId = request.TurmaId,
                 Situacao = request.Situacao,

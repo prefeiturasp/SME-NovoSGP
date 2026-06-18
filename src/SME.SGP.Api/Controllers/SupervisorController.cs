@@ -94,7 +94,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<UnidadeEscolarResponsavelDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ARP_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterUesAtribuidasAoResponsavel(string supervisoresId, string dreId,int tipoResponsavel)
+        public async Task<IActionResult> ObterUesAtribuidasAoResponsavel(string supervisoresId, string dreId, int tipoResponsavel)
         {
             var listaretorno = await consultasSupervisor.ObterUesAtribuidasAoResponsavelPorSupervisorIdeDre(supervisoresId, dreId, tipoResponsavel);
 

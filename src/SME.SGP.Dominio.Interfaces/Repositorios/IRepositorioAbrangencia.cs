@@ -32,7 +32,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<int>> ObterAnosLetivos(string login, Guid perfil, bool consideraHistorico, int anoMinimo);
 
-        Task<IEnumerable<string>> ObterAnosTurmasPorCodigoUeModalidade(string login, Guid perfil, string codigoUe, Modalidade modalidade, bool consideraHistorico,int? anoLetivo);
+        Task<IEnumerable<string>> ObterAnosTurmasPorCodigoUeModalidade(string login, Guid perfil, string codigoUe, Modalidade modalidade, bool consideraHistorico, int? anoLetivo);
 
         Task<AbrangenciaDreRetornoDto> ObterDre(string dreCodigo, string ueCodigo, string login, Guid perfil);
 
@@ -64,7 +64,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<Modalidade>> ObterModalidadesPorUe(string codigoUe);
         Task<IEnumerable<Modalidade>> ObterModalidadesPorCodigosUe(string[] codigosUe);
 
-        Task<IEnumerable<OpcaoDropdownDto>> ObterDropDownTurmasPorUeAnoLetivoModalidadeSemestre(string codigoUe, int anoLetivo, Modalidade? modalidade, int semestre, string[] anosInfantilDesconsiderar=null);
+        Task<IEnumerable<OpcaoDropdownDto>> ObterDropDownTurmasPorUeAnoLetivoModalidadeSemestre(string codigoUe, int anoLetivo, Modalidade? modalidade, int semestre, string[] anosInfantilDesconsiderar = null);
 
         Task<IEnumerable<OpcaoDropdownDto>> ObterDropDownTurmasPorUeAnoLetivoModalidadeSemestreAnos(string codigoUe, int anoLetivo, Modalidade? modalidade, int semestre, IList<string> anos);
         Task<IEnumerable<Abrangencia>> ObterAbrangenciaGeralPorUsuarioId(long usuarioId);
@@ -73,7 +73,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<string>> ObterLoginsAbrangenciaUePorPerfil(long ueId, Guid perfil, bool historica = false);
         Task<IEnumerable<string>> ObterProfessoresTurmaPorAbrangencia(string turmaCodigo);
         Task<IEnumerable<Turma>> ObterTurmasPorAbrangenciaCPParaCopiaAvaliacao(int anoLetivo, string codigoRf, int modalidadeTurma, string anoTurma, long turmaIdReferencia);
-        Task<bool> VerificarUsuarioLogadoPertenceMesmaUE(string codigoUe, string login, Guid perfil,Modalidade modalidade, int anoLetivo, int periodo, bool consideraHistorico = false);
+        Task<bool> VerificarUsuarioLogadoPertenceMesmaUE(string codigoUe, string login, Guid perfil, Modalidade modalidade, int anoLetivo, int periodo, bool consideraHistorico = false);
         Task<bool> VerificaSeUsuarioPossuiAbrangencia(string usuarioRf, Guid perfil);
     }
 }

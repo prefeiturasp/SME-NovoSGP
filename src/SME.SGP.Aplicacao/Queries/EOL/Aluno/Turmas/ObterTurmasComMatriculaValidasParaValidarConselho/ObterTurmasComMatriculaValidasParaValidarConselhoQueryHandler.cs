@@ -23,14 +23,14 @@ namespace SME.SGP.Aplicacao
         {
             var turmasCodigosComMatriculasValidas = new List<string>();
 
-            foreach(var turmaCodigo in request.TurmasCodigos)
+            foreach (var turmaCodigo in request.TurmasCodigos)
             {
                 var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
-                
+
                 if (turma.NaoEhNulo())
                 {
                     var matriculasAluno = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(turmaCodigo, request.AlunoCodigo));
-                    
+
                     if (PodeAdicionarTurma(matriculasAluno, turma, request))
                         turmasCodigosComMatriculasValidas.Add(turma.CodigoTurma);
                 }

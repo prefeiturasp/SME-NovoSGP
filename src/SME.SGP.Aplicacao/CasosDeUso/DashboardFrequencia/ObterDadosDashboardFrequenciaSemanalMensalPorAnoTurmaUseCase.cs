@@ -18,9 +18,9 @@ namespace SME.SGP.Aplicacao
         public async Task<GraficoFrequenciaAlunoDto> Executar(FrequenciasConsolidadacaoPorTurmaEAnoDto frequenciaDto, DateTime? dataInicio, DateTime? datafim, int? mes, TipoConsolidadoFrequencia tipoConsolidadoFrequencia)
         {
             var dadosFrequenciaDashboard = new List<DadosRetornoFrequenciaAlunoDashboardDto>();
-            
+
             var tipoConsolidado = (int)TipoConsolidadoFrequencia.Semanal;
-                
+
             if (tipoConsolidadoFrequencia == TipoConsolidadoFrequencia.Mensal)
             {
                 tipoConsolidado = (int)TipoConsolidadoFrequencia.Mensal;
@@ -33,11 +33,11 @@ namespace SME.SGP.Aplicacao
 
             if (frequenciaSemanalMensalDtos.EhNulo() || !frequenciaSemanalMensalDtos.Any())
                 return null;
-            
+
             foreach (var frequenciasGroup in frequenciaSemanalMensalDtos.GroupBy(f => f.Descricao))
             {
                 var frequenciaDescricao = frequenciasGroup.FirstOrDefault();
-                
+
                 dadosFrequenciaDashboard.Add(new DadosRetornoFrequenciaAlunoDashboardDto()
                 {
                     Descricao = DashboardFrequenciaConstants.QuantidadeAbaixoMinimoFrequenciaDescricao,
@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
                     TurmaAno = frequenciaDescricao.Descricao,
                     Quantidade = frequenciaDescricao.QuantidadeAcimaMinimoFrequencia
                 });
-                
+
                 dadosFrequenciaDashboard.Add(new DadosRetornoFrequenciaAlunoDashboardDto()
                 {
                     Descricao = frequenciaDto.Modalidade == (int)Modalidade.EducacaoInfantil ? TipoFrequenciaDashboard.TotalCriancas.Name() : TipoFrequenciaDashboard.TotalEstudantes.Name(),
@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao
                     Quantidade = frequenciaDescricao.TotalAlunos
                 });
             }
-            
+
             var dadosTotal = new TotalFrequenciaEAulasPorPeriodoDto()
             {
                 TotalAulas = frequenciaSemanalMensalDtos.FirstOrDefault().TotalAulas,

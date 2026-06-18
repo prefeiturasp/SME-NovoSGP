@@ -21,7 +21,7 @@ namespace SME.SGP.Dados.Repositorios
         private const string NOME_COMPONENTE_QUESTAO_ANEXOS = "ANEXO_ITINERANCIA";
         public RepositorioSecaoEncaminhamentoNAAPA(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
-            
+
         }
 
         public async Task<IEnumerable<SecaoQuestionarioDto>> ObterSecoesQuestionarioDto(int modalidade, long? encaminhamentoNAAPAId = null)
@@ -68,7 +68,7 @@ namespace SME.SGP.Dados.Repositorios
                         secaoEncaminhamento.EncaminhamentoNAAPASecao = encaminhamentoSecao;
                         secaoEncaminhamento.Questionario = questionario;
                         return secaoEncaminhamento;
-                    }, new { encaminhamentoNAAPAId = encaminhamentoNAAPAId ?? 0, modalidade },splitOn: "id");
+                    }, new { encaminhamentoNAAPAId = encaminhamentoNAAPAId ?? 0, modalidade }, splitOn: "id");
         }
 
         public async Task<IEnumerable<EncaminhamentoNAAPASecaoItineranciaDto>> ObterSecoesItineranciaDto(long encaminhamentoNAAPAId)
@@ -142,7 +142,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = new StringBuilder();
             MontaQueryConsulta(paginacao, sql, contador: false);
-            
+
             var retorno = new PaginacaoResultadoDto<EncaminhamentoNAAPASecaoItineranciaDto>();
 
             var secoes = (await database.Conexao
@@ -257,7 +257,7 @@ namespace SME.SGP.Dados.Repositorios
                         )
                         select ens.id SecaoItineranciaId, 
                                arquivo.CodigoArquivo, arquivo.NomeArquivo  ");
-        
+
             sql.AppendLine(@"from encaminhamento_naapa en
                             inner join encaminhamento_naapa_secao ens on ens.encaminhamento_naapa_id = en.id
                             inner join secao_encaminhamento_naapa secao on secao.id = ens.secao_encaminhamento_id 
@@ -329,7 +329,7 @@ namespace SME.SGP.Dados.Repositorios
                                                  $@" and exists (select seaAux.id from secao_encaminhamento_naapa seaAux 
     	                                                         left join secao_encaminhamento_naapa_modalidade senm on senm.secao_encaminhamento_id = seaAux.id 
     	                                                         where seaAux.id = sea.id and
-                  	                                                  ((senm.modalidade_codigo = any(@modalidades)) or (senm.modalidade_codigo is null)))" : string.Empty) }  
+                  	                                                  ((senm.modalidade_codigo = any(@modalidades)) or (senm.modalidade_codigo is null)))" : string.Empty)}  
 	                                        GROUP BY
     	                                        sea.id, sea.nome, q.id, sea.etapa, sea.nome_componente, sea.ordem, q.tipo
 	                                        ORDER BY 
@@ -340,7 +340,7 @@ namespace SME.SGP.Dados.Repositorios
                     {
                         tipoQuestionario = (int)tipoQuestionario,
                         modalidades
-                    });           
+                    });
         }
     }
 }

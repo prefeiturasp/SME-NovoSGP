@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
                 .ReturnsAsync(new Aula { Id = 1 });
 
             mediator.Setup(a => a.Send(It.IsAny<ObterTurmaComUeEDrePorCodigoQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new Turma { Id = 1 , Ue = new Ue { Id = 1, CodigoUe = "101011", Dre = new Dre { Id = 1, CodigoDre = "101100" } } });
+                .ReturnsAsync(new Turma { Id = 1, Ue = new Ue { Id = 1, CodigoUe = "101011", Dre = new Dre { Id = 1, CodigoDre = "101100" } } });
 
             mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new Usuario { CodigoRf = "123", PerfilAtual = Dominio.Perfis.PERFIL_PROFESSOR });
@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             repositorioDiarioBordo.Setup(a => a.SalvarAsync(It.IsAny<Dominio.DiarioBordo>()))
                 .ReturnsAsync(1);
             // Act
-            var auditoriaDto = inserirDiarioBordoCommandHandler.Handle(new AlterarDiarioBordoCommand(1, 1, "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",1), new System.Threading.CancellationToken());
+            var auditoriaDto = inserirDiarioBordoCommandHandler.Handle(new AlterarDiarioBordoCommand(1, 1, "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111", 1), new System.Threading.CancellationToken());
 
             // Assert
             repositorioDiarioBordo.Verify(x => x.SalvarAsync(It.IsAny<Dominio.DiarioBordo>()), Times.Once);
@@ -92,7 +92,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
         [Fact]
         public Task Deve_Obrigar_Id()
         {
-            var command = new AlterarDiarioBordoCommand(0, 1, "",1);
+            var command = new AlterarDiarioBordoCommand(0, 1, "", 1);
             var result = ValidarCommand(command);
 
             result.ShouldHaveValidationErrorFor(a => a.Id);

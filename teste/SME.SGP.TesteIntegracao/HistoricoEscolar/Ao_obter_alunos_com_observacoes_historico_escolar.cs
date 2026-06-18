@@ -40,9 +40,9 @@ namespace SME.SGP.TesteIntegracao.HistoricoEscolar
             var useCase = ServiceProvider.GetService<IObterObservacoesDosAlunosNoHistoricoEscolarUseCase>();
             var paginacaoResultado = await useCase.Executar(CODIGO_TURMA);
 
-            foreach(var item in paginacaoResultado.Items) 
+            foreach (var item in paginacaoResultado.Items)
             {
-                item.Observacao.ShouldNotBeEmpty();    
+                item.Observacao.ShouldNotBeEmpty();
             }
         }
 

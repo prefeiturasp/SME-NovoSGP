@@ -1,13 +1,10 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AulaPossuiAvaliacaoQuery: IRequest<bool>
+    public class AulaPossuiAvaliacaoQuery : IRequest<bool>
     {
         public AulaPossuiAvaliacaoQuery(Aula aula, string codigoRf)
         {
@@ -19,7 +16,7 @@ namespace SME.SGP.Aplicacao
         public string CodigoRf { get; set; }
     }
 
-    public class AulaPossuiAvaliacaoQueryValidator: AbstractValidator<AulaPossuiAvaliacaoQuery>
+    public class AulaPossuiAvaliacaoQueryValidator : AbstractValidator<AulaPossuiAvaliacaoQuery>
     {
         public AulaPossuiAvaliacaoQueryValidator()
         {

@@ -1,10 +1,7 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,7 +19,7 @@ namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepci
         public async Task<PaginacaoResultadoDto<EncaminhamentoNAAPASecaoItineranciaDto>> Handle(ObterSecoesItineranciaDeEncaminhamentoNAAPAQuery request, CancellationToken cancellationToken)
         {
             return await repositorioSecaoEncaminhamentoNAPPA.ObterSecoesItineranciaDtoPaginado(request.EncaminhamentoNAAPAId, Paginacao);
-        }     
+        }
 
     }
 }

@@ -2,8 +2,6 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -37,7 +35,7 @@ namespace SME.SGP.Aplicacao
                     await repositorioPendencia.AtualizarStatusPendenciasPorIds(ids, SituacaoPendencia.Resolvida);
                     unitOfWork.PersistirTransacao();
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     unitOfWork.Rollback();
                     throw;

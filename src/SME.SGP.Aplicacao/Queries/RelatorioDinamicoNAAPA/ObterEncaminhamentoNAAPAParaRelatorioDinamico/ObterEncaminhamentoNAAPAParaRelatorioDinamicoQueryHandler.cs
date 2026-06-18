@@ -4,7 +4,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,7 +13,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioRelatorioDinamicoNAAPA repositorio;
         private readonly IRepositorioQuestionario repositorioQuestionario;
-        
+
 
         public ObterEncaminhamentoNAAPAParaRelatorioDinamicoQueryHandler(
                             IContextoAplicacao contextoAplicacao,
@@ -29,7 +28,7 @@ namespace SME.SGP.Aplicacao
         {
             string[] nomesComponentesTotalizadoresAtendimento = { "PROCEDIMENTO_DE_TRABALHO", "TIPO_DO_ATENDIMENTO" };
             var questoesParaTotalizadoresAtendimento = await repositorioQuestionario.ObterQuestoesPorNomesComponentes(nomesComponentesTotalizadoresAtendimento, TipoQuestionario.EncaminhamentoNAAPA);
-            
+
 
             return await repositorio.ObterRelatorioDinamicoNAAPA(request.Filtro, Paginacao, questoesParaTotalizadoresAtendimento);
         }

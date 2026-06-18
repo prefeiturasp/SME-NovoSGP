@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         private static readonly long[] componentesQueNaoPodemSerSubstituidos = { 1033, 1051, 1052, 1053, 1054, 1030 };
 
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
-        private readonly IRepositorioAbrangencia repositorioAbrangencia;      
+        private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IRepositorioAulaConsulta repositorioAula;
         private readonly IMediator mediator;
 
@@ -95,7 +95,7 @@ namespace SME.SGP.Aplicacao
                 else if (excluiAbrangencia)
                     await repositorioAbrangencia.ExcluirAbrangencias(abrangenciasAtuais.Select(a => a.Id).ToArray());
 
-                if(!atribuicoesAtuais.Any(a => a.Id != atribuicaoCJ.Id && a.Substituir))
+                if (!atribuicoesAtuais.Any(a => a.Id != atribuicaoCJ.Id && a.Substituir))
                     await repositorioAtribuicaoCJ.RemoverRegistros(atribuicaoCJ.DreId, atribuicaoCJ.UeId, atribuicaoCJ.TurmaId, atribuicaoCJ.ProfessorRf, atribuicaoCJ.DisciplinaId);
 
             }

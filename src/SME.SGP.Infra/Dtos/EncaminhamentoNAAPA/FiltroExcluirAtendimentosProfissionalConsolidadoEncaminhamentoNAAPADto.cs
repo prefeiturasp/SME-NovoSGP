@@ -13,6 +13,6 @@
         public int Mes { get; set; }
         public int AnoLetivo { get; set; }
         public long UeId { get; set; }
-        public string [] RfsProfissionaisIgnorados { get; set; }
+        public string[] RfsProfissionaisIgnorados { get; set; }
     }
 }

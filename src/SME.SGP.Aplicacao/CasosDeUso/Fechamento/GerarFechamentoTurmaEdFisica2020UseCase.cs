@@ -37,8 +37,11 @@ namespace SME.SGP.Aplicacao
             {
                 var dadosTurma = await mediator.Send(new ObterTurmaPorCodigoQuery() { TurmaCodigo = fechamentosAlunoTurma.CodigoTurma.ToString() });
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaGeracaoFechamentoEdFisica2020AlunosTurma,
-                                                                new { TurmaId = dadosTurma.Id, 
-                                                                      CodigoAlunos = new long[] { fechamentosAlunoTurma.CodigoAluno } }, 
+                                                                new
+                                                                {
+                                                                    TurmaId = dadosTurma.Id,
+                                                                    CodigoAlunos = new long[] { fechamentosAlunoTurma.CodigoAluno }
+                                                                },
                                                                       Guid.NewGuid(), null));
             }
             return true;
@@ -53,8 +56,11 @@ namespace SME.SGP.Aplicacao
                 var dadosTurma = await mediator.Send(new ObterTurmaPorCodigoQuery() { TurmaCodigo = alunosTurma.Key.ToString() });
                 if (dadosTurma.NaoEhNulo() && dadosTurma.TipoTurma == TipoTurma.EdFisica && dadosTurma.AnoLetivo == ANO_LETIVO_TURMAS_ED_FISICA)
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaGeracaoFechamentoEdFisica2020AlunosTurma,
-                                                                    new { TurmaId = dadosTurma.Id, 
-                                                                          CodigoAlunos = alunosTurma.Select(a => a.CodigoAluno).ToArray() }, 
+                                                                    new
+                                                                    {
+                                                                        TurmaId = dadosTurma.Id,
+                                                                        CodigoAlunos = alunosTurma.Select(a => a.CodigoAluno).ToArray()
+                                                                    },
                                                                           Guid.NewGuid(), null));
             }
 

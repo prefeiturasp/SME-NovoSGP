@@ -1,14 +1,14 @@
-﻿using System;
-using MediatR;
+﻿using MediatR;
+using Newtonsoft.Json;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IMediator mediator;
-        
+
         public ObterComponentesCurricularesPorUeModalidadeAnoQueryHandler(IHttpClientFactory httpClientFactory, IMediator mediator)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
@@ -26,9 +26,9 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesPorUeModalidadeAnoQuery request, CancellationToken cancellationToken)
         {
             var url = string.Empty;
-            
+
             if (request.AnosEscolares.EhNulo() || !request.AnosEscolares.Any())
-                url = string.Format(ServicosEolConstants.URL_COMPONENTES_CURRICULARES_UES_MODALIDADES_ANOS,request.CodigoUe,(int)request.Modalidade,request.AnoLetivo);
+                url = string.Format(ServicosEolConstants.URL_COMPONENTES_CURRICULARES_UES_MODALIDADES_ANOS, request.CodigoUe, (int)request.Modalidade, request.AnoLetivo);
             else
             {
                 url = string.Format(ServicosEolConstants.URL_COMPONENTES_CURRICULARES_UES_MODALIDADES_ANOS_ANOS_ESCOLARES, request.CodigoUe, (int)request.Modalidade, request.AnoLetivo);
@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
             }
 
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
-            
+
             var resposta = await httpClient.GetAsync(url);
 
             if (!resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)

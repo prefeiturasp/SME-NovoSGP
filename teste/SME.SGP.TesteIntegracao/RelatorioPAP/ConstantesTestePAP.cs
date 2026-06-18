@@ -47,20 +47,20 @@
         public const int ORDEM_2 = 2;
         public const int ORDEM_3 = 3;
         public const int ORDEM_4 = 4;
-        
+
         public const int ETAPA_1 = 1;
-        
+
         public const string TABELA_SECAO_CONFIG_RELATORIO_PERIODICO_PAP = "secao_config_relatorio_periodico_pap";
-        
+
         public const string CAMPO_SECAO_RELATORIO_PERIODICO_PAP_ID = "secao_relatorio_periodico_pap_id";
         public const string CAMPO_CONFIGURACAO_RELATORIO_PAP_ID = "configuracao_relatorio_pap_id";
         public const string CAMPO_CRIADO_EM = "criado_em";
         public const string CAMPO_CRIADO_POR = "criado_por";
         public const string CAMPO_CRIADO_RF = "criado_rf";
-        
+
         public const int DIMENSAO_6 = 6;
         public const int DIMENSAO_12 = 12;
-        
+
         public const string NOME_COMPONENTE_SECAO_FREQUENCIA = "SECAO_FREQUENCIA";
         public const string NOME_COMPONENTE_INFO_FREQ_TURMA_PAP = "INFO_FREQ_TURMA_PAP";
         public const string NOME_COMPONENTE_SECAO_DIFIC_APRES = "SECAO_DIFIC_APRES";
@@ -74,13 +74,13 @@
         public const string DIFICULDADES_APRESENTADAS = "Dificuldades apresentadas";
         public const string AVANÇOS_NA_APRENDIZAGEM_DURANTE_O_BIMESTRE = "Avanços na aprendizagem durante o bimestre";
         public const string OBSERVACOES = "Observações";
-        
+
         public const long QUESTAO_ID_1 = 1;
         public const long QUESTAO_DIFICULDADES_APRESENTADAS_ID_2 = 2;
         public const long QUESTAO_OBSERVACAO_ID_3 = 3;
         public const long QUESTAO_AVANÇOS_NA_APRENDIZAGEM_DURANTE_O_BIMESTRE_ID_4 = 4;
         public const long QUESTAO_OBSERVACOES_ID_5 = 5;
-        
+
         public const long SECAO_RELATORIO_PERIODICO_PAP_FREQUENCIA_NA_TURMA_PAP_ID_1 = 1;
         public const long SECAO_RELATORIO_PERIODICO_PAP_DIFICULDADES_APRESENTADAS_ID_2 = 2;
         public const long SECAO_RELATORIO_PERIODICO_PAP_SECAO_AVANC_APREND_BIMES_ID_3 = 3;

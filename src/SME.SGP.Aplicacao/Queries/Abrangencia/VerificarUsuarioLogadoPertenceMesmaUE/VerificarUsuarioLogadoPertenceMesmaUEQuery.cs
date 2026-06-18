@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
             Login = usuario.Login;
             Perfil = usuario.PerfilAtual;
         }
-        
+
         public Guid Perfil { get; set; }
         public string Login { get; set; }
         public string CodigoUe { get; set; }
@@ -35,11 +35,11 @@ namespace SME.SGP.Aplicacao
             RuleFor(x => x.Login)
                 .NotEmpty()
                 .WithMessage("O login deve ser informado para a verificação se está na mesma Ue.");
-            
+
             RuleFor(x => x.Perfil)
                 .NotNull()
                 .WithMessage("O perfil do usuário deve ser informado para a verificação se está na mesma Ue.");
-            
+
             RuleFor(x => x.CodigoUe)
                 .NotEmpty()
                 .WithMessage("O código da UE deve ser informado para a verificação se está na mesma Ue.");
@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
             RuleFor(x => x.AnoLetivo)
                 .NotEmpty()
                 .WithMessage("O ano letivo deve ser informado para a verificação se está na mesma Ue.");
-            
+
             RuleFor(x => x.Modalidade)
                 .NotNull()
                 .WithMessage("A modalidade deve ser informado para a verificação se está na mesma Ue.");

@@ -1,16 +1,12 @@
-﻿using MediatR;
-using Microsoft.Extensions.DependencyInjection;
-using SME.SGP.Dominio.Enumerados;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Shouldly;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using SME.SGP.Aplicacao;
-using Shouldly;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 {
@@ -47,10 +43,10 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CamposAlterados = "",
                 CamposInseridos = "Data de entrada da queixa | Prioridade",
                 DataHistorico = DateTimeExtension.HorarioBrasilia(),
-                EncaminhamentoNAAPAId= 1,
-                SecaoEncaminhamentoNAAPAId= 1,
+                EncaminhamentoNAAPAId = 1,
+                SecaoEncaminhamentoNAAPAId = 1,
                 TipoHistorico = TipoHistoricoAlteracoesEncaminhamentoNAAPA.Inserido,
-                UsuarioId= 1
+                UsuarioId = 1
             });
 
             var useCase = ServiceProvider.GetService<IObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAUseCase>();

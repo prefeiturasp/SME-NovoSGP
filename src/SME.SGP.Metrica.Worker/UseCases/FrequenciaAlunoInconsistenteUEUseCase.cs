@@ -23,7 +23,7 @@ namespace SME.SGP.Metrica.Worker.UseCases
             var ue = mensagem.ObterObjetoMensagem<FiltroIdDto>();
             var turmas = await repositorioSGP.ObterTurmasIdsPorUE(ue.Id);
 
-            foreach(var turma in turmas)
+            foreach (var turma in turmas)
                 await mediator.Send(new PublicarFilaCommand(Rotas.RotasRabbitMetrica.FrequenciaAlunoInconsistenteTurma, new FiltroIdDto(turma)));
 
             return true;

@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExecutarBuscarUesConsolidadoEncaminhamentoNAAPAUseCase: AbstractUseCase,IExecutarBuscarUesConsolidadoEncaminhamentoNAAPAUseCase
+    public class ExecutarBuscarUesConsolidadoEncaminhamentoNAAPAUseCase : AbstractUseCase, IExecutarBuscarUesConsolidadoEncaminhamentoNAAPAUseCase
     {
         public ExecutarBuscarUesConsolidadoEncaminhamentoNAAPAUseCase(IMediator mediator) : base(mediator)
         {
@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit param)
         {
             var filtro = param.ObterObjetoMensagem<FiltroBuscarUesConsolidadoEncaminhamentoNAAPADto>();
-            var encaminhamentos = await mediator.Send(new ObterEncaminhamentosNAAPAConsolidadoCargaQuery(filtro.UeId,filtro.AnoLetivo));
+            var encaminhamentos = await mediator.Send(new ObterEncaminhamentosNAAPAConsolidadoCargaQuery(filtro.UeId, filtro.AnoLetivo));
             foreach (var encaminhamento in encaminhamentos)
             {
                 var entidade = new ConsolidadoEncaminhamentoNAAPA
@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
                 };
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpNAAPA.ExecutarInserirConsolidadoEncaminhamentoNAAPA, entidade, Guid.NewGuid()));
             }
-            await PublicarExclusaoConsolidacao(filtro.UeId, filtro.AnoLetivo, encaminhamentos);         
+            await PublicarExclusaoConsolidacao(filtro.UeId, filtro.AnoLetivo, encaminhamentos);
             return true;
         }
 

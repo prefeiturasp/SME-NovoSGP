@@ -1,4 +1,6 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using System;
@@ -6,8 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 
 
 namespace SME.SGP.Aplicacao
@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<AbrangenciaTurmaRetorno>> Handle(ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery request,CancellationToken cancellationToken)
+        public async Task<IEnumerable<AbrangenciaTurmaRetorno>> Handle(ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery request, CancellationToken cancellationToken)
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
@@ -87,9 +87,9 @@ namespace SME.SGP.Aplicacao
                 .ToList();
 
             //return OrdernarTurmasItinerario(result);
-            return OrdernarTurmasItinerario(resultatualizado);            
-        }  
- 
+            return OrdernarTurmasItinerario(resultatualizado);
+        }
+
         private IEnumerable<AbrangenciaTurmaRetorno> OrdernarTurmasItinerario(IEnumerable<AbrangenciaTurmaRetorno> result)
         {
             List<AbrangenciaTurmaRetorno> turmasOrdenadas = new List<AbrangenciaTurmaRetorno>();

@@ -117,6 +117,6 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private Cargo[] ObterCargosGestaoEscola() => new [] { Cargo.CP, Cargo.Diretor };
+        private Cargo[] ObterCargosGestaoEscola() => new[] { Cargo.CP, Cargo.Diretor };
     }
 }

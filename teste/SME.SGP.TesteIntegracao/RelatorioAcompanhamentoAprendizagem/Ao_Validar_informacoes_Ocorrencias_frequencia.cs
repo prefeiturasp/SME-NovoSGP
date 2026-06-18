@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -12,17 +8,21 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
 {
-    public class Ao_Validar_informacoes_Ocorrencias_frequencia :  RelatorioAcompanhamentoAprendizagemTesteBase
+    public class Ao_Validar_informacoes_Ocorrencias_frequencia : RelatorioAcompanhamentoAprendizagemTesteBase
     {
         private const string OCORRENCIA = "Ocorrencia";
         private const int OCORRENCIA_TIPO_INCIDENTE = 1;
         private const string TITULO_OCORRENCIA = "Titulo da Ocorrencia";
         private const string HORARIO_OCORRENCIA = "17:37";
-        
+
         public Ao_Validar_informacoes_Ocorrencias_frequencia(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -34,20 +34,20 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterPeriodosFechamentoTurmaInfantilCalendarioIdBimestreQuery, IEnumerable<PeriodoFechamentoBimestre>>), typeof(ObterPeriodosFechamentoTurmaInfantilCalendarioIdBimestreQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTipoCalendarioIdPorTurmaQuery, long>), typeof(ObterTipoCalendarioIdPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFrequenciaBimestresQuery, IEnumerable<FrequenciaBimestreAlunoDto>>), typeof(ObterFrequenciaBimestresQueryHandlerFake), ServiceLifetime.Scoped));
-            
+
         }
         [Fact(DisplayName = "Relatório do Acompanhamento da Aprendizagem - Validar informações de frequência da criança")]
         public async Task Validar_Informações_de_frequencia_da_crianca()
         {
             await CriarDadosBasicos();
             var informacoesDeFrequenciaAlunoPorSemestreUseCase = ObterInformacoesDeFrequenciaAlunoPorSemestreUseCase();
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),DateTimeExtension.HorarioBrasilia().Date, RecorrenciaAula.AulaUnica);
+            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DateTimeExtension.HorarioBrasilia().Date, RecorrenciaAula.AulaUnica);
 
-            var obterFrequenciaAluno = await informacoesDeFrequenciaAlunoPorSemestreUseCase.Executar(new FiltroTurmaAlunoSemestreDto(1,1,2,138));
+            var obterFrequenciaAluno = await informacoesDeFrequenciaAlunoPorSemestreUseCase.Executar(new FiltroTurmaAlunoSemestreDto(1, 1, 2, 138));
             obterFrequenciaAluno.ShouldNotBeNull();
             obterFrequenciaAluno.Count().ShouldBeGreaterThan(0);
         }
-        
+
         [Fact(DisplayName = "Relatório do Acompanhamento da Aprendizagem - Validar as ocorrências da criança")]
         public async Task Validar_as_ocorrencias_da_crianca()
         {
@@ -65,10 +65,10 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
                 HoraOcorrencia = HORARIO_OCORRENCIA,
                 TurmaId = TURMA_ID_1,
                 UeId = UE_ID_1,
-                CodigosAlunos = new List<long>{1}
+                CodigosAlunos = new List<long> { 1 }
             };
             await useCaseOcorrencia.Executar(dtoOcorrencia);
-            
+
             var obeterOcorrencias = ObterTodos<Dominio.Ocorrencia>();
             obeterOcorrencias.Count.ShouldBeEquivalentTo(1);
             obeterOcorrencias.FirstOrDefault()?.DataOcorrencia.ShouldBeEquivalentTo(dtoOcorrencia.DataOcorrencia);
@@ -85,7 +85,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             await CriarDadosBasicos();
             var obterAcompanhamentoAlunoUseCase = ObterAcompanhamentoAlunoUseCase();
 
-            var obterSugestao = await obterAcompanhamentoAlunoUseCase.Executar(new FiltroAcompanhamentoTurmaAlunoSemestreDto(1,"1",2,138));
+            var obterSugestao = await obterAcompanhamentoAlunoUseCase.Executar(new FiltroAcompanhamentoTurmaAlunoSemestreDto(1, "1", 2, 138));
             obterSugestao.ShouldNotBeNull();
             obterSugestao.PercursoIndividual.ShouldNotBeNull();
             obterSugestao.Auditoria.Id.ShouldBeEquivalentTo((long)0);

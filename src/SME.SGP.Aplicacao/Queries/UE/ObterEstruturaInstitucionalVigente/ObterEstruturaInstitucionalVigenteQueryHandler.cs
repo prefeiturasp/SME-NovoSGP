@@ -1,11 +1,6 @@
 ﻿using MediatR;
-using Newtonsoft.Json;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dto;
-using SME.SGP.Infra;
-using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,7 +20,7 @@ namespace SME.SGP.Aplicacao
             EstruturaInstitucionalRetornoEolDTO resultado = default;
 
             var codigosDres = await mediator.Send(ObterCodigosDresQuery.Instance);
-            
+
             if (codigosDres.NaoEhNulo() && codigosDres.Length > 0)
             {
                 resultado = new EstruturaInstitucionalRetornoEolDTO();

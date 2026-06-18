@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
                 var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<IEnumerable<TotaisAdesaoAgrupadoProDreResultado>>(json);
             }
-            
+
             throw new NegocioException("Não foi possível obter dados de adesão do aplicativo.");
         }
     }

@@ -47,7 +47,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaDiaria
 
             var controller = new FrequenciaAcompanhamentoController();
 
-            var retorno = await controller.ObterFrequenciaDiariaAluno(1, 138, 1, 2,1, useCase);
+            var retorno = await controller.ObterFrequenciaDiariaAluno(1, 138, 1, 2, 1, useCase);
 
             retorno.ShouldNotBeNull();
 
@@ -141,7 +141,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaDiaria
                 TipoCalendarioId = 1,
                 DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 26),
                 Quantidade = 1,
-                
+
             });
             await InserirNaBase(new RegistroFrequencia
             {

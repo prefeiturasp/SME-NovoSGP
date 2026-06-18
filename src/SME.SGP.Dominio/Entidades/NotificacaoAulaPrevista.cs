@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Dominio
+﻿namespace SME.SGP.Dominio
 {
-   public class NotificacaoAulaPrevista :EntidadeBase
+    public class NotificacaoAulaPrevista : EntidadeBase
     {
         public long NotificacaoCodigo { get; set; }
         public string DisciplinaId { get; set; }

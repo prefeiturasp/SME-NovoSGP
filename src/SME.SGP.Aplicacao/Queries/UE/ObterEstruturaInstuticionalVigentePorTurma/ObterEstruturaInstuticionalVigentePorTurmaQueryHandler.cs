@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System.Net.Http;
@@ -14,7 +13,7 @@ namespace SME.SGP.Aplicacao
     public class ObterEstruturaInstuticionalVigentePorTurmaQueryHandler : IRequestHandler<ObterEstruturaInstuticionalVigentePorTurmaQuery, EstruturaInstitucionalRetornoEolDTO>
     {
         private readonly IHttpClientFactory httpClientFactory;
-        
+
         public ObterEstruturaInstuticionalVigentePorTurmaQueryHandler(IHttpClientFactory httpClientFactory)
         {
             this.httpClientFactory = httpClientFactory ?? throw new System.ArgumentNullException(nameof(httpClientFactory));

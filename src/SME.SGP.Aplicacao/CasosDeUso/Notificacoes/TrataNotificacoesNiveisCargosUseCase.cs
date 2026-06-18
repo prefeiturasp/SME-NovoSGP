@@ -16,9 +16,9 @@ namespace SME.SGP.Aplicacao
         {
             var dres = await mediator.Send(ObterTodasDresQuery.Instance);
 
-            foreach(var dre in dres) 
+            foreach (var dre in dres)
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.TratarNotificacoesNiveisCargosDre, dre.Id, Guid.NewGuid(), null));
-            
+
             return true;
         }
 

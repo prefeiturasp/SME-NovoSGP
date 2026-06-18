@@ -1,11 +1,9 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
+using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
-using SME.SGP.Aplicacao.Queries;
-using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.Relatorios;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
 {
@@ -30,7 +28,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             await mediator.Send(new ValidaSeExistePlanoAulaPorIdQuery(filtro.PlanoAulaId));
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.PlanoAula, filtro, usuarioLogado,rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosPlanoDeAula));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.PlanoAula, filtro, usuarioLogado, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosPlanoDeAula));
         }
     }
 }

@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConsolidacaoAcompanhamentoAprendiza
 
             Assert.True(result);
             _mediatorMock.Verify(m => m.Send(It.Is<ObterUEPorTurmaIdQuery>(q => q.TurmaId == filtro.TurmaId), It.IsAny<CancellationToken>()), Times.Once);
-            _mediatorMock.VerifyNoOtherCalls(); 
+            _mediatorMock.VerifyNoOtherCalls();
         }
 
         [Fact]

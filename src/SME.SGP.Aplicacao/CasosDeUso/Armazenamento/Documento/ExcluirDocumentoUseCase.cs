@@ -1,19 +1,19 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Dominio;
-using System.Threading.Tasks;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
     public class ExcluirDocumentoUseCase : AbstractUseCase, IExcluirDocumentoUseCase
     {
         private readonly IUnitOfWork unitOfWork;
-        
-        public ExcluirDocumentoUseCase(IMediator mediator,IUnitOfWork unitOfWork) : base(mediator)
+
+        public ExcluirDocumentoUseCase(IMediator mediator, IUnitOfWork unitOfWork) : base(mediator)
         {
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
@@ -40,10 +40,10 @@ namespace SME.SGP.Aplicacao
                     {
                         await mediator.Send(new ExcluirReferenciaArquivoDocumentoPorArquivoIdCommand(documentoId, arquivoAntigo.Id));
                         await mediator.Send(new ExcluirArquivoRepositorioPorIdCommand(arquivoAntigo.Id));
-                            
+
                         var extencao = Path.GetExtension(arquivoAntigo.Nome);
-                            
-                        var filtro = new FiltroExcluirArquivoArmazenamentoDto {ArquivoNome = $"{arquivoAntigo.Codigo}{extencao}"};
+
+                        var filtro = new FiltroExcluirArquivoArmazenamentoDto { ArquivoNome = $"{arquivoAntigo.Codigo}{extencao}" };
                         await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RemoverArquivoArmazenamento, filtro, Guid.NewGuid()));
                     }
                 }
@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new ExcluirDocumentoPorIdCommand(documentoId));
 
                 unitOfWork.PersistirTransacao();
-                
+
                 return true;
             }
             catch

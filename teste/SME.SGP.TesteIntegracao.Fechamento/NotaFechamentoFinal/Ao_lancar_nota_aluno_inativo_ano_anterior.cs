@@ -46,7 +46,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
         {
             await CriarDadosBase(ObterFiltroNotas(ObterPerfilProfessor(), ANO_3, COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), TipoNota.Conceito, Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, false));
             await CriaFechamento();
-            
+
             var consulta = ServiceProvider.GetService<IConsultasFechamentoFinal>();
             var filtro = new FechamentoFinalConsultaFiltroDto()
             {

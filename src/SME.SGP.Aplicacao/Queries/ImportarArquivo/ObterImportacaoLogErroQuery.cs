@@ -7,7 +7,7 @@ namespace SME.SGP.Aplicacao.Queries.ImportarArquivo
 {
     public class ObterImportacaoLogErroQuery : IRequest<PaginacaoResultadoDto<ImportacaoLogErroQueryRetornoDto>>
     {
-        public ObterImportacaoLogErroQuery(Paginacao paginacao, FiltroPesquisaImportacaoDto filtros) 
+        public ObterImportacaoLogErroQuery(Paginacao paginacao, FiltroPesquisaImportacaoDto filtros)
         {
             NumeroPagina = paginacao.QuantidadeRegistrosIgnorados;
             NumeroRegistros = paginacao.QuantidadeRegistros;

@@ -1,11 +1,11 @@
-﻿using Moq;
+﻿using MediatR;
+using Moq;
 using SME.SGP.Aplicacao.Consultas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MediatR;
 using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.Consultas

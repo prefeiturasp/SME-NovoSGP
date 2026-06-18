@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         {
             var anoLetivo = DateTime.Now.Year;
 
-            if (!await ExecutarConsolidacao(anoLetivo)) 
+            if (!await ExecutarConsolidacao(anoLetivo))
                 return true;
 
             await LimparConsolidacoes(anoLetivo);

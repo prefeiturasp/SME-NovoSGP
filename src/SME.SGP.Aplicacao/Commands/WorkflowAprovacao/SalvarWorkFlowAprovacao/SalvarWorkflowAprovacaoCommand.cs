@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -15,7 +14,7 @@ namespace SME.SGP.Aplicacao
         public WorkflowAprovacao WorkflowAprovacao { get; set; }
     }
 
-    public  class SalvarWorkflowAprovacaoCommandValidator : AbstractValidator<SalvarWorkflowAprovacaoCommand>
+    public class SalvarWorkflowAprovacaoCommandValidator : AbstractValidator<SalvarWorkflowAprovacaoCommand>
     {
         public SalvarWorkflowAprovacaoCommandValidator()
         {

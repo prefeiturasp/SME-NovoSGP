@@ -54,7 +54,7 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrWhiteSpace(professor))
                 query.AppendLine("and pa.criado_rf = @professor");
             query.AppendLine("group by");
-            query.AppendLine("    pa.id ) as planos");            
+            query.AppendLine("    pa.id ) as planos");
             query.AppendLine(" where sequencia = 1");
 
             return await database.Conexao.QueryAsync<PlanoAnualTerritorioSaberCompletoDto>(query.ToString(), new { ano, ueId, turmaId = int.Parse(turmaId), territorioExperienciaId, professor });

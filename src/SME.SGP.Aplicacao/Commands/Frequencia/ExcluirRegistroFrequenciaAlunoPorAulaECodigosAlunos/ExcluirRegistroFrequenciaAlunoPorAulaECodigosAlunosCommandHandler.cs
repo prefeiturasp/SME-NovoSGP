@@ -1,9 +1,9 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Aplicacao
 {
@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
                 await repositorioRegistroFrequenciaAluno.ExcluirRegistroFrequenciaAlunoPorAulaECodigosAlunos(request.AulaId, request.CodigosAlunos);
                 return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao excluir registro de frequência da aula = {request.AulaId} / Motivo: {ex.Message}", LogNivel.Critico, LogContexto.Frequencia));
                 return false;

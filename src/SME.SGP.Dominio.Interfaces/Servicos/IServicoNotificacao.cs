@@ -1,7 +1,5 @@
-﻿using System.Threading.Tasks;
-
-using System.Collections.Generic;
-using SME.SGP.Dominio.Enumerados;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -21,7 +19,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Cargo? ObterProximoNivel(Cargo? cargo, bool primeiroNivel);
 
-        Task<Notificacao> ObterPorCodigo(long codigo);        
+        Task<Notificacao> ObterPorCodigo(long codigo);
 
         Task ExcluirPeloSistemaAsync(long[] ids);
 

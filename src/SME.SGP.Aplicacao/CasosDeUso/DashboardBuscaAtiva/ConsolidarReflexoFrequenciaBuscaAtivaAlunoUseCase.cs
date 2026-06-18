@@ -1,10 +1,8 @@
 ﻿using MediatR;
-using Minio.DataModel;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -69,17 +67,17 @@ namespace SME.SGP.Aplicacao
 
 
             await mediator.Send(new SalvarConsolidacaoReflexoFrequenciaBuscaAtivaCommand(new ConsolidacaoReflexoFrequenciaBuscaAtivaAluno()
-                {
-                    AlunoCodigo = registrosBuscaAtiva.AlunoCodigo,
-                    AlunoNome = registrosBuscaAtiva.AlunoNome,
-                    AnoLetivo = registrosBuscaAtiva.AnoLetivo,
-                    DataBuscaAtiva = registrosBuscaAtiva.DataBuscaAtiva,
-                    Modalidade = registrosBuscaAtiva.Modalidade,
-                    TurmaCodigo = registrosBuscaAtiva.TurmaCodigo,
-                    UeCodigo = registrosBuscaAtiva.UeCodigo,
-                    Mes = ANUAL,
-                    PercFrequenciaAntesAcao = freqGeralAntesRegistroAcao?.Percentual ?? 0,
-                    PercFrequenciaAposAcao = freqGeralAtual?.Percentual ?? 0
+            {
+                AlunoCodigo = registrosBuscaAtiva.AlunoCodigo,
+                AlunoNome = registrosBuscaAtiva.AlunoNome,
+                AnoLetivo = registrosBuscaAtiva.AnoLetivo,
+                DataBuscaAtiva = registrosBuscaAtiva.DataBuscaAtiva,
+                Modalidade = registrosBuscaAtiva.Modalidade,
+                TurmaCodigo = registrosBuscaAtiva.TurmaCodigo,
+                UeCodigo = registrosBuscaAtiva.UeCodigo,
+                Mes = ANUAL,
+                PercFrequenciaAntesAcao = freqGeralAntesRegistroAcao?.Percentual ?? 0,
+                PercFrequenciaAposAcao = freqGeralAtual?.Percentual ?? 0
             }));
         }
     }

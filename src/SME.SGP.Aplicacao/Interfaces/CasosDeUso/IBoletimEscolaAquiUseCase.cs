@@ -5,6 +5,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IBoletimEscolaAquiUseCase
     {
-      Task<bool> Executar(FiltroRelatorioEscolaAquiDto relatorioBoletimEscolaAquiDto);
+        Task<bool> Executar(FiltroRelatorioEscolaAquiDto relatorioBoletimEscolaAquiDto);
     }
 }

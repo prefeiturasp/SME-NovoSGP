@@ -36,7 +36,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine(" , nivel_frequencia AS NivelFrequencia");
             query.AppendLine("FROM painel_educacional_consolidacao_frequencia_diaria");
             query.AppendLine("WHERE codigo_dre = @codigoDre AND ano_letivo = @anoLetivo");
-            
+
             if (!string.IsNullOrEmpty(filtro.DataFrequencia))
             {
                 query.AppendLine(" AND DATE(data_aula) = @dataFrequencia");
@@ -49,9 +49,9 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine("; SELECT COUNT(id) FROM painel_educacional_consolidacao_frequencia_diaria WHERE 1=1");
             query.AppendLine(" AND codigo_dre = @codigoDre AND ano_letivo = @anoLetivo");
-            
+
             if (!string.IsNullOrEmpty(filtro.DataFrequencia))
-            {                
+            {
                 query.AppendLine(" AND DATE(data_aula) = @dataFrequencia");
             }
 
@@ -65,7 +65,7 @@ namespace SME.SGP.Dados.Repositorios
 
             retorno.TotalPaginas = paginacao.QuantidadeRegistros > 0
                 ? (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros)
-                : 1; 
+                : 1;
 
             return retorno;
         }
@@ -106,7 +106,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var retorno = new PaginacaoResultadoDto<RegistroFrequenciaDiariaTurmaDto>();
 
-            using (var multi = await contextoConsulta.Conexao.QueryMultipleAsync(query.ToString(), new { codigoUe = filtro.CodigoUe, anoLetivo =  filtro.AnoLetivo, dataFrequencia }))
+            using (var multi = await contextoConsulta.Conexao.QueryMultipleAsync(query.ToString(), new { codigoUe = filtro.CodigoUe, anoLetivo = filtro.AnoLetivo, dataFrequencia }))
             {
                 retorno.Items = (await multi.ReadAsync<RegistroFrequenciaDiariaTurmaDto>()).ToList();
                 retorno.TotalRegistros = paginacao.QuantidadeRegistros <= 1 ? 1 : multi.ReadFirst<int>();

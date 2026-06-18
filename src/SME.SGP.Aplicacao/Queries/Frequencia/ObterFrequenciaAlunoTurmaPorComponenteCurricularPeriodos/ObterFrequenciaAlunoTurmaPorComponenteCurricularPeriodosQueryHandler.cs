@@ -18,10 +18,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<FrequenciaAluno>> Handle(ObterFrequenciaAlunoTurmaPorComponenteCurricularPeriodosQuery request, CancellationToken cancellationToken)
         {
-           return await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoTurmaComponenteBimestres(request.AlunoCodigo,
-                                                                                 TipoFrequenciaAluno.PorDisciplina,
-                                                                                 request.ComponenteCurricularId,
-                                                                                 request.TurmaCodigo, request.Bimestres);
+            return await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoTurmaComponenteBimestres(request.AlunoCodigo,
+                                                                                  TipoFrequenciaAluno.PorDisciplina,
+                                                                                  request.ComponenteCurricularId,
+                                                                                  request.TurmaCodigo, request.Bimestres);
         }
     }
 }

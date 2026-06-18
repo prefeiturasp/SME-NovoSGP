@@ -1,25 +1,20 @@
-﻿using MediatR;
-using SME.SGP.Dominio;
+﻿using FluentValidation;
+using MediatR;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentValidation;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterWorkflowAprovacaoNotaFechamentoComAprovacaoIdQuery : IRequest<IEnumerable<WfAprovacaoNotaFechamentoTurmaDto>>
     {
-        public ObterWorkflowAprovacaoNotaFechamentoComAprovacaoIdQuery(long workflowId) 
+        public ObterWorkflowAprovacaoNotaFechamentoComAprovacaoIdQuery(long workflowId)
         {
             WorkflowId = workflowId;
         }
 
         public long WorkflowId { get; }
     }
-    
+
     public class ObterWorkflowAprovacaoNotaFechamentoComAprovacaoIdQueryValidator : AbstractValidator<ObterWorkflowAprovacaoNotaFechamentoComAprovacaoIdQuery>
     {
         public ObterWorkflowAprovacaoNotaFechamentoComAprovacaoIdQueryValidator()

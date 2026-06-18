@@ -30,11 +30,11 @@ namespace SME.SGP.Api.Middlewares
                     context.Result = new ResultadoBaseResult(context.Exception.Message, negocioException.StatusCode);
                     break;
                 case ValidacaoException validacaoException:
-                    await SalvaLogAsync(LogNivel.Negocio, context.Exception.Message, internalIP, context.Exception.StackTrace,context.Exception.InnerException?.ToString());
+                    await SalvaLogAsync(LogNivel.Negocio, context.Exception.Message, internalIP, context.Exception.StackTrace, context.Exception.InnerException?.ToString());
                     context.Result = new ResultadoBaseResult(new RetornoBaseDto(validacaoException.Erros));
                     break;
                 default:
-                    await SalvaLogAsync(LogNivel.Critico, context.Exception.Message, internalIP, context.Exception.StackTrace,context.Exception.InnerException?.ToString());
+                    await SalvaLogAsync(LogNivel.Critico, context.Exception.Message, internalIP, context.Exception.StackTrace, context.Exception.InnerException?.ToString());
                     context.Result = new ResultadoBaseResult("Ocorreu um erro interno. Favor contatar o suporte.", 500);
                     break;
             }
@@ -44,7 +44,7 @@ namespace SME.SGP.Api.Middlewares
 
         public async Task SalvaLogAsync(LogNivel nivel, string erro, string observacoes, string stackTrace, string innerException)
         {
-            await mediator.Send(new SalvarLogViaRabbitCommand(erro, nivel, LogContexto.Geral, observacoes, rastreamento: stackTrace,innerException:innerException));
+            await mediator.Send(new SalvarLogViaRabbitCommand(erro, nivel, LogContexto.Geral, observacoes, rastreamento: stackTrace, innerException: innerException));
         }
     }
 }

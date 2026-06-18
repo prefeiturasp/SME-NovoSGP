@@ -26,11 +26,11 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.RfProfessor)
             .NotEmpty()
             .WithMessage("O Rf do professor deve ser informado para a busca de turmas atribuídas ao professor.");
-            
+
             RuleFor(c => c.CodigoEscola)
                 .NotEmpty()
                 .WithMessage("O código da escola deve ser informado para a busca de turmas atribuídas ao professor.");
-            
+
             RuleFor(c => c.AnoLetivo)
                 .GreaterThan(0)
                 .WithMessage("O ano letivo deve ser informado para a busca de turmas atribuídas ao professor.");

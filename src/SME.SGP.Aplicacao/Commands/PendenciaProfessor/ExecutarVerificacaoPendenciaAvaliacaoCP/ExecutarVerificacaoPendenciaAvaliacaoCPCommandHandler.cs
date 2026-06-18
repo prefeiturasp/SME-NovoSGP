@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(ExecutarVerificacaoPendenciaAvaliacaoCPCommand request, CancellationToken cancellationToken)
         {
             var periodosEncerrando = await mediator.Send(new ObterPeriodosFechamentoEscolasPorDataFinalQuery(DateTime.Now.Date.AddDays(request.DiasParaGeracaoDePendencia)));
-            foreach (var periodoEncerrando in periodosEncerrando.Where(w=> w.PeriodoEscolar.TipoCalendario.Modalidade.NaoEhEducacaoInfantil()))
+            foreach (var periodoEncerrando in periodosEncerrando.Where(w => w.PeriodoEscolar.TipoCalendario.Modalidade.NaoEhEducacaoInfantil()))
             {
                 try
                 {
@@ -71,8 +71,8 @@ namespace SME.SGP.Aplicacao
                 var professorComponente = professoresTurma.FirstOrDefault(c => c.DisciplinasId().Contains(componenteCurricularNaTurma.ComponenteCurricularId));
                 var componenteCurricular = componentesCurriculares.FirstOrDefault(c => c.Codigo == componenteCurricularNaTurma.ComponenteCurricularId.ToString());
 
-                if (!fechamentosDaTurma.Any(a=> a.DisciplinaId == componenteCurricularNaTurma.ComponenteCurricularId && a.PeriodoEscolarId == periodoEncerrando.PeriodoEscolarId) &&
-                    professorComponente.NaoEhNulo() && 
+                if (!fechamentosDaTurma.Any(a => a.DisciplinaId == componenteCurricularNaTurma.ComponenteCurricularId && a.PeriodoEscolarId == periodoEncerrando.PeriodoEscolarId) &&
+                    professorComponente.NaoEhNulo() &&
                     !await ExistePendenciaProfessor(pendenciaId, turma.Id, componenteCurricular.Codigo, professorComponente.ProfessorRf, periodoEncerrando.PeriodoEscolar.Id))
                     gerarPendenciasCP.Add((long.Parse(componenteCurricular.Codigo), professorComponente.ProfessorRf));
             }

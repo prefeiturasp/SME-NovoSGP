@@ -1,11 +1,9 @@
 ﻿using MediatR;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao.Queries.PeriodoEscolar.PeriodoEscolarEmAberto
 {
-    public class PeriodoEscolarEmAbertoQuery: IRequest<bool>
+    public class PeriodoEscolarEmAbertoQuery : IRequest<bool>
     {
         public PeriodoEscolarEmAbertoQuery(long tipoCalendarioId, DateTime dataReferencia, int bimestre = 0, bool ehAnoLetivo = false)
         {

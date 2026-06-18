@@ -1,11 +1,9 @@
 ﻿using MediatR;
-using Microsoft.Win32;
 using Moq;
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,12 +32,12 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PlanoAEE
             mediator.Setup(x => x.Send(It.Is<ObterMatriculasAlunoPorCodigoEAnoQuery>(y => y.CodigoAluno == "1" && y.AnoLetivo == anoLetivo && y.FiltrarSituacao == false), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<AlunoPorTurmaResposta>()
                 {
-                    new() 
-                    { 
-                        DataSituacao = DateTimeExtension.HorarioBrasilia(), 
-                        NumeroAlunoChamada = 1, 
-                        CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo, 
-                        CodigoTurma = 1 
+                    new()
+                    {
+                        DataSituacao = DateTimeExtension.HorarioBrasilia(),
+                        NumeroAlunoChamada = 1,
+                        CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
+                        CodigoTurma = 1
                     }
                 });
 
@@ -49,18 +47,18 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PlanoAEE
             mediator.Setup(x => x.Send(It.Is<ObterTurmaComUeEDrePorCodigoQuery>(y => y.TurmaCodigo == "1"), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new Turma() { Ue = new Ue() { CodigoUe = "1" } });
 
-            var planoAee = new Dominio.PlanoAEE() 
-            { 
+            var planoAee = new Dominio.PlanoAEE()
+            {
                 Id = 1,
-                Situacao = SituacaoPlanoAEE.EncerradoAutomaticamente, 
-                TurmaId = 1, 
-                AlunoCodigo = "1"                
+                Situacao = SituacaoPlanoAEE.EncerradoAutomaticamente,
+                TurmaId = 1,
+                AlunoCodigo = "1"
             };
 
             var mensagemRabbit = new MensagemRabbit(JsonConvert.SerializeObject(planoAee));
             var resultado = await useCase.Executar(mensagemRabbit);
 
-            mediator.Verify(x => 
+            mediator.Verify(x =>
                 x.Send(It.Is<PersistirPlanoAEECommand>(y => y.PlanoAEE.Id == planoAee.Id && y.PlanoAEE.Situacao == Dominio.Enumerados.SituacaoPlanoAEE.ParecerCP), It.IsAny<CancellationToken>()), Times.Once);
 
             mediator.Verify(x =>
@@ -102,10 +100,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PlanoAEE
 
             Assert.True(resultado);
 
-            mediator.Verify(x => 
+            mediator.Verify(x =>
                 x.Send(It.Is<PersistirPlanoAEECommand>(y => y.PlanoAEE.Id == 1 && y.PlanoAEE.AlunoCodigo == "1" && y.PlanoAEE.TurmaId == 1), It.IsAny<CancellationToken>()), Times.Once);
 
-            mediator.Verify(x => 
+            mediator.Verify(x =>
                 x.Send(It.Is<ResolverPendenciaPlanoAEECommand>(y => y.PlanoAEEId == 1), It.IsAny<CancellationToken>()), Times.Once);
         }
     }

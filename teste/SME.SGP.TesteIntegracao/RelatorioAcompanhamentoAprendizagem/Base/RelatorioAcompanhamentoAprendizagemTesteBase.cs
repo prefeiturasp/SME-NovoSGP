@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -10,6 +7,9 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake = SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem.ServicosFake.ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake;
 
 namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
@@ -20,7 +20,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
         private const string PARAMETRO_QUANTIDADE_IMAGENS_PERCURSO_TURMA_DESCRICAO = "Quantidade de Imagens Permitidas na Seção Percurso Coletivo da Turma";
         private const string PARAMETRO_QUANTIDADE_IMAGENS_PERCURSO_TURMA_VALOR = "2";
         private const int QUANTIDADE_3 = 3;
-        
+
         private const string PARAMETRO_QUANTIDADE_IMAGENS_PERCURSO_INDIVIDUAL_CRIANCA_NOME = "QuantidadeImagensPercursoIndividualCrianca";
         private const string PARAMETRO_QUANTIDADE_IMAGENS_PERCURSO_INDIVIDUAL_CRIANCA_DESCRICAO = "Quantidade de Imagens permitiras no percurso individual da criança";
         private const string PARAMETRO_QUANTIDADE_IMAGENS_PERCURSO_INDIVIDUAL_CRIANCA_VALOR = "3";
@@ -29,10 +29,10 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
         protected const string TEXTO_PADRAO_PERCURSO_INDIVIDUAL = "<html><body>Texto padrão do percurso individual</body><html/>";
         protected const string TEXTO_PADRAO_COM_2_IMAGENS = "<html><body>Texto padrão com 2 imagens <img src='http://www.localhost.com.br/imagem.png'> <img src='http://www.localhost.com.br/imagem.png'></body><html/>";
         protected const string TEXTO_PADRAO_COM_4_IMAGENS = "<html><body>Texto padrão com 4 imagens <img src='http://www.localhost.com.br/imagem.png'> <img src='http://www.localhost.com.br/imagem.png'> <img src='http://www.localhost.com.br/imagem.png'> <img src='http://www.localhost.com.br/imagem.png'></body><html/>";
-        
+
         protected const int PRIMEIRO_SEMESTRE = 1;
         protected const int SEGUNDO_SEMESTRE = 2;
-        
+
         public RelatorioAcompanhamentoAprendizagemTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -40,13 +40,13 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
-            
+
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery, IEnumerable<ComponenteCurricularEol>>),
                 typeof(ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQueryHandlerFakeOutras), ServiceLifetime.Scoped));
-            
+
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>),
                 typeof(ObterAlunosPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
-            
+
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>),
                 typeof(ObterAlunoPorCodigoEolQueryHandlerAluno1AtivoFake), ServiceLifetime.Scoped));
 
@@ -57,15 +57,15 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
         protected ISalvarAcompanhamentoTurmaUseCase SalvarAcompanhamentoTurmaUseCase()
         {
             return ServiceProvider.GetService<ISalvarAcompanhamentoTurmaUseCase>();
-        }        
+        }
         protected IObterOcorrenciasPorAlunoUseCase ObterOcorrenciasPorAlunoUseCase()
         {
             return ServiceProvider.GetService<IObterOcorrenciasPorAlunoUseCase>();
-        }        
+        }
         protected IObterAcompanhamentoAlunoUseCase ObterAcompanhamentoAlunoUseCase()
         {
             return ServiceProvider.GetService<IObterAcompanhamentoAlunoUseCase>();
-        }        
+        }
         protected IObterInformacoesDeFrequenciaAlunoPorSemestreUseCase ObterInformacoesDeFrequenciaAlunoPorSemestreUseCase()
         {
             return ServiceProvider.GetService<IObterInformacoesDeFrequenciaAlunoPorSemestreUseCase>();
@@ -104,8 +104,8 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
         {
             await CriarDreUePerfil();
             await CriarComponenteCurricular();
-            if(abrirPeriodos)
-              await CriarPeriodoEscolarTodosBimestres();
+            if (abrirPeriodos)
+                await CriarPeriodoEscolarTodosBimestres();
             await CriarTipoCalendario(ModalidadeTipoCalendario.Infantil);
             CriarClaimUsuario(ObterPerfilProfessorInfantil());
             await CriarUsuarios();
@@ -139,7 +139,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
                 CriadoRF = "1"
             });
         }
-        
+
         private async Task CriarParametrosSistema()
         {
             await InserirNaBase(new ParametrosSistema
@@ -154,7 +154,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
                 CriadoRF = SISTEMA_CODIGO_RF,
                 Ativo = true
             });
-            
+
             await InserirNaBase(new ParametrosSistema
             {
                 Nome = PARAMETRO_QUANTIDADE_IMAGENS_PERCURSO_INDIVIDUAL_CRIANCA_NOME,
@@ -167,7 +167,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
                 CriadoRF = SISTEMA_CODIGO_RF,
                 Ativo = true
             });
-            
+
             await InserirNaBase(new ParametrosSistema
             {
                 Nome = DATA_INICIO_SGP,
@@ -179,14 +179,14 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 Ativo = true
-            });            
-        }  
-        
+            });
+        }
+
         protected ISalvarAcompanhamentoAlunoUseCase ObterServicoSalvarAcompanhamentoAlunoUseCase()
         {
             return ServiceProvider.GetService<ISalvarAcompanhamentoAlunoUseCase>();
         }
-        
+
         protected async Task CriarPeriodoEscolarCustomizadoSegundoBimestre(bool periodoValido = false)
         {
             var dataReferencia = DateTimeExtension.HorarioBrasilia();

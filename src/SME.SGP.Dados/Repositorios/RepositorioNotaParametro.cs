@@ -1,10 +1,10 @@
 ﻿using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using System;
 using SME.SGP.Infra;
-using System.Threading.Tasks;
 using SME.SGP.Infra.Interface;
+using System;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
 {

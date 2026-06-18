@@ -10,7 +10,7 @@ namespace SME.SGP.Aplicacao
             ArquivoId = arquivoId;
         }
 
-        public  long ArquivoId { get; set; }
+        public long ArquivoId { get; set; }
     }
     public class ExcluirItineranciaQuestaoPorArquivoCommandValidator : AbstractValidator<ExcluirItineranciaQuestaoPorArquivoCommand>
     {

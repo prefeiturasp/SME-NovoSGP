@@ -83,7 +83,7 @@ namespace SME.SGP.Aplicacao
             IEnumerable<AusenciaAlunoDto> ausenciasDasAtividadesAvaliativas = null;
 
             long[] atividadesAvaliativasId = atividadesAvaliativasdoBimestre.Select(a => a.Id)?.Distinct().ToArray() ?? new long[0];
-            notas = await mediator.Send(new ObterNotasPorAlunosAtividadesAvaliativasQuery(atividadesAvaliativasId, alunosIds, filtro.DisciplinaCodigo.ToString(),turmaCompleta.CodigoTurma));
+            notas = await mediator.Send(new ObterNotasPorAlunosAtividadesAvaliativasQuery(atividadesAvaliativasId, alunosIds, filtro.DisciplinaCodigo.ToString(), turmaCompleta.CodigoTurma));
             var datasDasAtividadesAvaliativas = atividadesAvaliativasdoBimestre.Select(a => a.DataAvaliacao).Distinct().ToArray();
             ausenciasDasAtividadesAvaliativas = await mediator.Send(new ObterAusenciasDaAtividadesAvaliativasQuery(filtro.TurmaCodigo, datasDasAtividadesAvaliativas, filtro.DisciplinaCodigo.ToString(), alunosIds));
 
@@ -135,7 +135,7 @@ namespace SME.SGP.Aplicacao
             }
 
             var alunosAtivosCodigos = alunosAtivos.Select(a => a.CodigoAluno).Distinct().ToArray();
-            
+
             var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(alunosAtivos.Select(x => x.CodigoAluno).ToArray(), turmaCompleta.AnoLetivo);
             foreach (var aluno in alunosAtivos)
             {
@@ -174,7 +174,7 @@ namespace SME.SGP.Aplicacao
 
                     var ausente = ausenciasDasAtividadesAvaliativas
                         .Any(a => a.AlunoCodigo == aluno.CodigoAluno && a.AulaData.Date == atividadeAvaliativa.DataAvaliacao.Date);
-                    
+
 
                     var notaAvaliacao = new NotasConceitosNotaAvaliacaoListaoRetornoDto()
                     {
@@ -268,7 +268,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, int anoLetivo)
         {
-            return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
+            return await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
         }
         private IEnumerable<DisciplinaResposta> MapearParaDto(IEnumerable<ComponenteCurricularEol> disciplinasRegenciaEol)
         {

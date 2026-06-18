@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
             TurmaId = turmaId;
         }
 
-        public SalvarPendenciaCommand(){}
+        public SalvarPendenciaCommand() { }
 
         public TipoPendencia TipoPendencia { get; set; }
         public string Titulo { get; set; }

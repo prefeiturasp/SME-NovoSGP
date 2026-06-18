@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                 .Distinct();
 
             var todasConsolidacoes = new List<PainelEducacionalRegistroFluenciaLeitoraAgrupamentoFluenciaDto>();
-            
+
             foreach (var item in anosEPeriodos)
             {
                 var consolidacoesPorAnoEPeriodo = ObterConsolidacoesPorAnoEPeriodo(registrosFluenciaLeitora, item.AnoLetivo, item.Periodo);
@@ -50,11 +50,11 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
             }
 
             return true;
-        }       
+        }
 
         private static List<PainelEducacionalRegistroFluenciaLeitoraAgrupamentoFluenciaDto> ObterConsolidacoesPorAnoEPeriodo(
-            IEnumerable<PainelEducacionalRegistroFluenciaLeitoraDto> registrosFluenciaLeitora, 
-            int anoLetivo, 
+            IEnumerable<PainelEducacionalRegistroFluenciaLeitoraDto> registrosFluenciaLeitora,
+            int anoLetivo,
             int periodo)
         {
             var registrosFiltrados = registrosFluenciaLeitora.Where(r => r.AnoLetivo == anoLetivo && r.Periodo == periodo);
@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
 
             var consolidacaoPorDreEFluencia = registrosFiltrados
                 .GroupBy(f => new { f.DreCodigo, f.DreNome, f.CodigoFluencia })
-                .Select(g => 
+                .Select(g =>
                 {
                     var totalAlunosPorDre = registrosFiltrados.Count(r => r.DreCodigo == g.Key.DreCodigo);
                     return new PainelEducacionalRegistroFluenciaLeitoraAgrupamentoFluenciaDto
@@ -76,7 +76,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                         QuantidadeAluno = g.Count(),
                         Percentual = totalAlunosPorDre > 0 ? Math.Round((decimal)g.Count() / totalAlunosPorDre * 100, 2) : 0,
                         AnoLetivo = anoLetivo,
-                        Periodo = periodo, 
+                        Periodo = periodo,
                         UeCodigo = null,
                         UeNome = null
                     };

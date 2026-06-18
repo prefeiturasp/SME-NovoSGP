@@ -54,7 +54,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             const string comando = @"delete from public.painel_educacional_registro_frequencia_agrupamento_escola where ano_letivo = @anoLetivo";
 
-            await database.Conexao.ExecuteAsync(comando, new {anoLetivo});
+            await database.Conexao.ExecuteAsync(comando, new { anoLetivo });
         }
 
         public async Task<IEnumerable<PainelEducacionalRegistroFrequenciaAgrupamentoEscola>> ObterFrequenciaGlobal(int anoLetivo, string codigoDre, string codigoUe)
@@ -72,7 +72,7 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrWhiteSpace(codigoUe))
                 sql += " AND p.codigo_ue = @codigoUe";
 
-            return await database.QueryAsync<PainelEducacionalRegistroFrequenciaAgrupamentoEscola>(sql, new {anoLetivo, codigoDre, codigoUe });
+            return await database.QueryAsync<PainelEducacionalRegistroFrequenciaAgrupamentoEscola>(sql, new { anoLetivo, codigoDre, codigoUe });
         }
 
         public async Task<bool> SalvarFrequenciaGlobal(IEnumerable<PainelEducacionalRegistroFrequenciaAgrupamentoEscola> consolidacoes)

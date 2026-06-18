@@ -27,8 +27,8 @@ namespace SME.SGP.Metrica.Worker.UseCases
 
             var quantidadeRegistrosBimestrais = await repositorioSGP.ObterQuantidadeFechamentosTurmaDisciplinaDia(parametro.Data);
             foreach (var qdadePorBimestre in quantidadeRegistrosBimestrais)
-                await repositorioFechamentosTurmaDisciplina.InserirAsync(new Entidade.FechamentosTurmaDisciplinaDiario(parametro.Data, 
-                                                                                                                       qdadePorBimestre.Quantidade, 
+                await repositorioFechamentosTurmaDisciplina.InserirAsync(new Entidade.FechamentosTurmaDisciplinaDiario(parametro.Data,
+                                                                                                                       qdadePorBimestre.Quantidade,
                                                                                                                        qdadePorBimestre.Bimestre));
             return true;
         }

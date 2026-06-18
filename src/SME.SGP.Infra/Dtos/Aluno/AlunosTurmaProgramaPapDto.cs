@@ -5,6 +5,6 @@
         public int CodigoAluno { get; set; }
         public int CodigoTurma { get; set; }
         public int CodigoComponente { get; set; }
-        public string Descricao { get; set; }   
+        public string Descricao { get; set; }
     }
 }

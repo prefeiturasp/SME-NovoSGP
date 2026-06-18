@@ -1,12 +1,12 @@
-﻿using System;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Aplicacao
 {
@@ -25,23 +25,23 @@ namespace SME.SGP.Aplicacao
                 List<Aula> aulasComPendenciaDiarioClasse = new List<Aula>();
                 await PreencherAulasComPendenciaDiarioClasse(filtro, aulasComPendenciaDiarioClasse);
 
-                var agrupamentoTurmaDisciplina = aulasComPendenciaDiarioClasse.GroupBy(aula => new {TurmaCodigo = aula.TurmaId, aula.DisciplinaId, TurmaId = aula.Turma.Id, ModalidadeTipoCalendario = aula.Turma.ModalidadeTipoCalendario});
+                var agrupamentoTurmaDisciplina = aulasComPendenciaDiarioClasse.GroupBy(aula => new { TurmaCodigo = aula.TurmaId, aula.DisciplinaId, TurmaId = aula.Turma.Id, ModalidadeTipoCalendario = aula.Turma.ModalidadeTipoCalendario });
                 var agrupamentoTurma = agrupamentoTurmaDisciplina.GroupBy(turmaDisciplina => turmaDisciplina.Key.TurmaCodigo);
                 foreach (var turma in agrupamentoTurma)
                     await mediator.Send(new ExcluirNotificacaoPendenciasFechamentoCommand(turma.Key, DateTimeExtension.HorarioBrasilia().Year));
 
                 foreach (var turmaDisciplina in agrupamentoTurmaDisciplina)
                 {
-                    
-                  var periodoEscolarFechamentoEmAberto = (await mediator.Send(new ObterPeriodoEscolarFechamentoEmAbertoQuery(turmaDisciplina.Key.TurmaCodigo, turmaDisciplina.Key.ModalidadeTipoCalendario, DateTimeExtension.HorarioBrasilia().Date)));
-                  if (periodoEscolarFechamentoEmAberto.Any())
-                      foreach (var periodo in periodoEscolarFechamentoEmAberto)
+
+                    var periodoEscolarFechamentoEmAberto = (await mediator.Send(new ObterPeriodoEscolarFechamentoEmAbertoQuery(turmaDisciplina.Key.TurmaCodigo, turmaDisciplina.Key.ModalidadeTipoCalendario, DateTimeExtension.HorarioBrasilia().Date)));
+                    if (periodoEscolarFechamentoEmAberto.Any())
+                        foreach (var periodo in periodoEscolarFechamentoEmAberto)
                         {
                             var id = await GerarPendenciasFechamento(turmaDisciplina.Key.TurmaCodigo, long.Parse(turmaDisciplina.Key.DisciplinaId), periodo);
                             if (id != 0)
                                 fechamentosTurmaDisciplinaReprocessados.Add(id);
-                        }      
-                            
+                        }
+
 
                 }
 
@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task RegerarPendenciasFechamento(long idUe, long[]  idsFechamentosTurmaDisciplinaJaReprocessados)
+        private async Task RegerarPendenciasFechamento(long idUe, long[] idsFechamentosTurmaDisciplinaJaReprocessados)
         {
             var situacoesFechamento = new SituacaoFechamento[] { SituacaoFechamento.ProcessadoComPendencias, SituacaoFechamento.ProcessadoComErro };
             var fechamentoTurmaDisciplina = await mediator.Send(new ObterFechamentoTurmaDisciplinaAnoAtualDTOPorUeSituacaoQuery(idUe, situacoesFechamento, idsFechamentosTurmaDisciplinaJaReprocessados));
@@ -106,18 +106,18 @@ namespace SME.SGP.Aplicacao
         private async Task PreencherAulasComPendenciaDiarioClasse(DreUeDto filtro, List<Aula> retorno)
         {
             var aulas = (await mediator.Send(new ObterPendenciasAulasPorTipoQuery(TipoPendencia.PlanoAula,
-                "plano_aula",new long[] {(int) Modalidade.Fundamental, (int) Modalidade.EJA, (int) Modalidade.Medio},
-                filtro.DreId, filtro.UeId,false)));
+                "plano_aula", new long[] { (int)Modalidade.Fundamental, (int)Modalidade.EJA, (int)Modalidade.Medio },
+                filtro.DreId, filtro.UeId, false)));
             if (aulas.NaoEhNulo())
                 retorno.AddRange(aulas);
 
-            aulas = await mediator.Send(new ObterPendenciasAtividadeAvaliativaQuery(filtro.DreId, filtro.UeId,false));
+            aulas = await mediator.Send(new ObterPendenciasAtividadeAvaliativaQuery(filtro.DreId, filtro.UeId, false));
             if (aulas.NaoEhNulo())
                 retorno.AddRange(aulas);
 
             aulas = await mediator.Send(new ObterPendenciasAulasPorTipoQuery(TipoPendencia.Frequencia,
-                "registro_frequencia", new long[] {(int) Modalidade.EducacaoInfantil, (int) Modalidade.Fundamental, (int) Modalidade.EJA, (int) Modalidade.Medio},
-                filtro.DreId, filtro.UeId,false));
+                "registro_frequencia", new long[] { (int)Modalidade.EducacaoInfantil, (int)Modalidade.Fundamental, (int)Modalidade.EJA, (int)Modalidade.Medio },
+                filtro.DreId, filtro.UeId, false));
             if (aulas.NaoEhNulo())
                 retorno.AddRange(aulas);
         }

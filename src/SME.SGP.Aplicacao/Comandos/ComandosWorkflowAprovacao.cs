@@ -1,10 +1,10 @@
-﻿using SME.SGP.Dominio;
+﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
@@ -50,18 +50,18 @@ namespace SME.SGP.Aplicacao
         {
             var workflow = await mediator.Send(new ObterWorkflowAprovacaoPorNotificacaoIdQuery(notificacaoId));
 
-            if (workflow.Tipo != WorkflowAprovacaoTipo.ReposicaoAula) 
+            if (workflow.Tipo != WorkflowAprovacaoTipo.ReposicaoAula)
                 return null;
-            
+
             var nivel = workflow.ObterNivelPorNotificacaoId(notificacaoId);
 
             var notificacao = nivel.Notificacoes.FirstOrDefault(a => a.Id == notificacaoId);
 
             if (notificacao.EhNulo())
                 return null;
-            
+
             var codigoDaNotificacao = notificacao.Codigo;
-            
+
             return await servicoWorkflowAprovacao.VerificaAulaReposicao(workflow.Id, codigoDaNotificacao);
         }
 

@@ -2,9 +2,6 @@
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,7 +25,7 @@ namespace SME.SGP.Aplicacao
                 await repositorioPendencia.ExclusaoLogicaPendenciaIds(request.PendenciasIds);
                 return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao excluir as pendências informadas", LogNivel.Critico, LogContexto.Pendencia, ex.Message));
                 return false;

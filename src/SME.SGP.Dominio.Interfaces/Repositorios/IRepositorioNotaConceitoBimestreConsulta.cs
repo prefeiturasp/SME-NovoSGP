@@ -14,10 +14,10 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasFinaisAlunoAsync(string[] turmasCodigos, string alunoCodigo);
         Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoAnoAsync(string turmaCodigo, string alunoCodigo);
         Task<IEnumerable<AlunosFechamentoNotaDto>> ObterComNotaLancadaPorPeriodoEscolarUE(long ueId, long periodoEscolarId);
-        Task<IEnumerable<FechamentoNotaAprovacaoDto>> ObterNotasEmAprovacaoPorIdsFechamento(IEnumerable<long> Ids);        
+        Task<IEnumerable<FechamentoNotaAprovacaoDto>> ObterNotasEmAprovacaoPorIdsFechamento(IEnumerable<long> Ids);
         Task<IEnumerable<FechamentoNotaAlunoAprovacaoDto>> ObterPorFechamentosTurmaAlunoCodigo(long[] fechamentosTurmaDisciplinaId, string alunoCodigo);
         Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasPorTurmaCodigoEBimestreAsync(string turmaCodigo, int bimestre, DateTime? dataMatricula = null,
-            DateTime? dataSituacao = null, int? anoLetivo = null, long? tipoCalendario = null);        
+            DateTime? dataSituacao = null, int? anoLetivo = null, long? tipoCalendario = null);
         Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterPorFechamentoTurmaAlunoEDisciplinaAsync(long fechamentoTurmaId, string alunoCodigo, long componenteCurricularId);
     }
 }

@@ -10,6 +10,6 @@ namespace SME.SGP.Infra
         }
 
         public string AlunoCodigo { get; set; }
-        public List<FechamentoNotaPorTurmaPeriodoCCDto> FechamentoNotas { get; }        
+        public List<FechamentoNotaPorTurmaPeriodoCCDto> FechamentoNotas { get; }
     }
 }

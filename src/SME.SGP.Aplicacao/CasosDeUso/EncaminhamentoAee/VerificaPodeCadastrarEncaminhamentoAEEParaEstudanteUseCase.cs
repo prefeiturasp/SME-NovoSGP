@@ -1,10 +1,10 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
 {
@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         private static bool SituacaoDiferenteIndeferidoOuEncerradoAutomaticamente(EncaminhamentoAEEResumoDto encaminhamentoAEE)
         {
-            return !(encaminhamentoAEE.SituacaoTipo == SituacaoAEE.Indeferido 
+            return !(encaminhamentoAEE.SituacaoTipo == SituacaoAEE.Indeferido
                      || encaminhamentoAEE.SituacaoTipo == SituacaoAEE.EncerradoAutomaticamente);
         }
     }

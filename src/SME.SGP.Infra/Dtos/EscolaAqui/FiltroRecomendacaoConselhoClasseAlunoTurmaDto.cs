@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Infra
+﻿namespace SME.SGP.Infra
 {
     public class FiltroRecomendacaoConselhoClasseAlunoTurmaDto
     {
-        public FiltroRecomendacaoConselhoClasseAlunoTurmaDto() {}
+        public FiltroRecomendacaoConselhoClasseAlunoTurmaDto() { }
 
         public FiltroRecomendacaoConselhoClasseAlunoTurmaDto(string codigoAluno, string codigoTurma, int anoLetivo, int? modalidade, int semestre)
         {

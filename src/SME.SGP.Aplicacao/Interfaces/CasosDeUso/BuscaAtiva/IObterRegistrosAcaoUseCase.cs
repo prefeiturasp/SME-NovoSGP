@@ -4,6 +4,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterRegistrosAcaoUseCase : IUseCase<FiltroRegistrosAcaoDto, PaginacaoResultadoDto<RegistroAcaoBuscaAtivaListagemDto>>
     {
-        
+
     }
 }

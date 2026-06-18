@@ -1,10 +1,10 @@
 ﻿using SME.SGP.Dominio;
-using System;
 using System.Collections.Generic;
 
 namespace SME.SGP.Infra
 {
-    public class PlanoAEEObservacaoDto {
+    public class PlanoAEEObservacaoDto
+    {
         public PlanoAEEObservacaoDto(long id, string observacao, bool proprietario)
         {
             Id = id;

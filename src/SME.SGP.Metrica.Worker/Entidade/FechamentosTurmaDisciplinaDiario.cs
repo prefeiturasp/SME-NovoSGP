@@ -4,7 +4,7 @@ namespace SME.SGP.Metrica.Worker.Entidade
 {
     public class FechamentosTurmaDisciplinaDiario : EntidadeElasticBase
     {
-        public FechamentosTurmaDisciplinaDiario(DateTime data, int quantidade, int bimestre): base($"{data.ToString("yyyyMMdd")}-{bimestre}")
+        public FechamentosTurmaDisciplinaDiario(DateTime data, int quantidade, int bimestre) : base($"{data.ToString("yyyyMMdd")}-{bimestre}")
         {
             Data = data.Date.ToUniversalTime();
             Quantidade = quantidade;

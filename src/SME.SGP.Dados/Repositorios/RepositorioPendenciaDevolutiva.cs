@@ -52,7 +52,7 @@ namespace SME.SGP.Dados
                         WHERE
                             pd.pendencia_Id = @pendenciaId ";
 
-            return await database.Conexao.QueryAsync<PendenciaDevolutiva>(query, new { pendenciaId});
+            return await database.Conexao.QueryAsync<PendenciaDevolutiva>(query, new { pendenciaId });
         }
 
         public async Task<IEnumerable<PendenciaDevolutiva>> ObterPendenciasDevolutivaPorTurmaComponente(long turmaId, long componenteId)
@@ -74,7 +74,7 @@ namespace SME.SGP.Dados
                         AND pd.turma_id  = @turmaId
                         AND NOT p.excluido";
 
-            return await database.Conexao.QueryAsync<PendenciaDevolutiva>(query,new { turmaId, componenteId });
+            return await database.Conexao.QueryAsync<PendenciaDevolutiva>(query, new { turmaId, componenteId });
         }
 
         public async Task<IEnumerable<string>> ObterCodigoComponenteComDiarioBordoSemDevolutiva(long turmaId, string ueId)

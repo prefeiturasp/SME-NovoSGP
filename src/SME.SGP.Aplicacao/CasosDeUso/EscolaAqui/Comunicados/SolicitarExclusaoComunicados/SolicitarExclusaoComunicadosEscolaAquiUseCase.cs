@@ -10,6 +10,6 @@ namespace SME.SGP.Aplicacao
         {
         }
         public async Task<bool> Executar(long[] ids)
-            => await mediator.Send(new ExcluirComunicadoCommand(ids));       
+            => await mediator.Send(new ExcluirComunicadoCommand(ids));
     }
 }

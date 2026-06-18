@@ -20,9 +20,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<OcorrenciasPorAlunoDto>> Handle(ObterOcorrenciasPorAlunoQuery request, CancellationToken cancellationToken)
         {
-            return MapearParaDto(await repositorioOcorrencia.ObterOcorrenciasPorTurmaAlunoEPeriodoPaginadas(request.TurmaId, 
-                                                                                                                  request.AlunoCodigo, 
-                                                                                                                  request.PeriodoInicio, 
+            return MapearParaDto(await repositorioOcorrencia.ObterOcorrenciasPorTurmaAlunoEPeriodoPaginadas(request.TurmaId,
+                                                                                                                  request.AlunoCodigo,
+                                                                                                                  request.PeriodoInicio,
                                                                                                                   request.PeriodoFim,
                                                                                                                   Paginacao));
         }
@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
                         Titulo = ocorrencia.Titulo
                     });
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     throw;
                 }

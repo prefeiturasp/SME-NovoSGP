@@ -8,11 +8,11 @@ namespace SME.SGP.Aplicacao
         public long TipoCalendarioId { get; set; }
         public string NomeTipoCalendario { get; set; }
 
-        public VerificarRegistroExistenteTipoCalendarioQuery(long tipoCalendarioId,string nomeTipoCalendario)
+        public VerificarRegistroExistenteTipoCalendarioQuery(long tipoCalendarioId, string nomeTipoCalendario)
         {
             TipoCalendarioId = tipoCalendarioId;
             NomeTipoCalendario = nomeTipoCalendario;
-        }        
+        }
     }
 
     public class VerificarRegistroExistenteTipoCalendarioQueryValidator : AbstractValidator<VerificarRegistroExistenteTipoCalendarioQuery>

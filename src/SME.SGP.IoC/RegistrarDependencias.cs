@@ -695,17 +695,17 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoPlanoAEE, RepositorioPainelEducacionalConsolidacaoPlanoAEE>();
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoFrequenciaDiaria, RepositorioPainelEducacionalConsolidacaoFrequenciaDiaria>();
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoFrequenciaDiariaDre, RepositorioPainelEducacionalConsolidacaoFrequenciaDiariaDre>();
-            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoFluenciaLeitoraUe, RepositorioPainelEducacionalConsolidacaoFluenciaLeitoraUe>();            
-            services.TryAddScoped<IRepositorioConsultaFluenciaLeitoraUe, RepositorioConsultaFluenciaLeitoraUe>();            
+            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoFluenciaLeitoraUe, RepositorioPainelEducacionalConsolidacaoFluenciaLeitoraUe>();
+            services.TryAddScoped<IRepositorioConsultaFluenciaLeitoraUe, RepositorioConsultaFluenciaLeitoraUe>();
             services.TryAddScoped<IRepositorioEducacaoIntegralConsulta, RepositorioEducacaoIntegralConsulta>();
-            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoEducacaoIntegral, RepositorioPainelEducacionalConsolidacaoEducacaoIntegral>();            
-            services.TryAddScoped<IRepositorioPainelEducacionalInformacoesEducacionaisConsulta, RepositorioPainelEducacionalInformacoesEducacionaisConsulta>();            
-            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoInformacoesEducacionais, RepositorioPainelEducacionalConsolidacaoInformacoesEducacionais>();            
+            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoEducacaoIntegral, RepositorioPainelEducacionalConsolidacaoEducacaoIntegral>();
+            services.TryAddScoped<IRepositorioPainelEducacionalInformacoesEducacionaisConsulta, RepositorioPainelEducacionalInformacoesEducacionaisConsulta>();
+            services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoInformacoesEducacionais, RepositorioPainelEducacionalConsolidacaoInformacoesEducacionais>();
 
             services.TryAddScoped<IRepositorioConsolidacaoFluenciaLeitora, RepositorioConsolidacaoFluenciaLeitora>();
             services.TryAddScoped<IRepositorioPainelEducacionalAbandono, RepositorioPainelEducacionalAbandono>();
             services.TryAddScoped<IRepositorioPainelEducacionalAbandonoUe, RepositorioPainelEducacionalAbandonoUe>();
-          
+
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoNota, RepositorioPainelEducacionalConsolidacaoNota>();
             services.TryAddScoped<IRepositorioPainelEducacionalConsolidacaoNotaConsulta, RepositorioPainelEducacionalConsolidacaoNotaConsulta>();
             services.TryAddScoped<IRepositorioDistorcaoIdade, RepositorioDistorcaoIdade>();

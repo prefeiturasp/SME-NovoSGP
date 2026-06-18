@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados
 {
-    public class DiarioBordoMap: BaseMap<DiarioBordo>
+    public class DiarioBordoMap : BaseMap<DiarioBordo>
     {
         public DiarioBordoMap()
         {

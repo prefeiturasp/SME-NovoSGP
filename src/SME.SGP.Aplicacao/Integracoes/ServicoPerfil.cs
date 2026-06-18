@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
                 if (lstTurmasAtribuidasInfantil.NaoEhNulo() && lstTurmasAtribuidasInfantil.Any() && lstTurmasAtribuidasInfantil.Any(a => a.AnoLetivo == DateTime.Now.Year))
                     return Perfis.PERFIL_PROFESSOR_INFANTIL;
-                else 
+                else
                     return Perfis.PERFIL_CJ_INFANTIL;
             }
 
@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                     return Perfis.PERFIL_PROFESSOR;
                 else
                     return Perfis.PERFIL_CJ;
-            }            
+            }
 
             return Guid.Empty;
 
@@ -58,8 +58,8 @@ namespace SME.SGP.Aplicacao.Integracoes
             usuario.DefinirPerfis(perfisUsuario);
 
             var perfilProfCJSemTurmaTitular = await ObterPerfilPrioritarioCJSemTurmaTitular(
-                    usuario.Login, 
-                    (usuario.PossuiPerfilCJPrioritario() || (!possuiTurmaAtiva && possuiTurmaCjAtiva)), 
+                    usuario.Login,
+                    (usuario.PossuiPerfilCJPrioritario() || (!possuiTurmaAtiva && possuiTurmaCjAtiva)),
                     (usuario.PossuiPerfilCJInfantilPrioritario() || (!possuiTurmaInfantilAtiva && possuiTurmaCjInfantilAtiva)));
             usuario.DefinirPerfilAtual(usuario.ObterPerfilPrioritario(possuiTurmaAtiva, possuiTurmaInfantilAtiva, perfilProfCJSemTurmaTitular));
 

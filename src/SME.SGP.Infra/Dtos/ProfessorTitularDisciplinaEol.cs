@@ -21,6 +21,6 @@ namespace SME.SGP.Infra
         public string ProfessorRf { get; set; }
 
         [JsonProperty("turma_id")]
-        public long TurmaId { get; set; }      
+        public long TurmaId { get; set; }
     }
 }

@@ -1,11 +1,8 @@
-﻿using Dapper;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,7 +18,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<TurmaAlunoBimestreFechamentoDto>> ObterAlunosComFechamento(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre)
         {
-        
+
             var sqlQuery = new StringBuilder(@"select
                                 t.id as TurmaId,
                                 fa.aluno_codigo as AlunoCodigo,

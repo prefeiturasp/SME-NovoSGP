@@ -21,10 +21,10 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(AlterarEncaminhamentoNAAPASecaoQuestaoCommand request, CancellationToken cancellationToken)
         {
             var questoesExistentes = request.EncaminhamentoNAAPASecaoObj.Questoes;
-            
-            var questoesRespondidas = request.EncaminhamentoNAAPASecaoDto.Questoes; 
+
+            var questoesRespondidas = request.EncaminhamentoNAAPASecaoDto.Questoes;
             var questoesRespondidasAgrupadas = questoesRespondidas.GroupBy(q => q.QuestaoId);
-            
+
             foreach (var questoes in questoesRespondidasAgrupadas)
             {
                 var questaoExistente = questoesExistentes.FirstOrDefault(q => q.QuestaoId == questoes.FirstOrDefault().QuestaoId);
@@ -33,14 +33,14 @@ namespace SME.SGP.Aplicacao
                     var resultadoEncaminhamentoQuestao = await mediator.Send(
                         new RegistrarEncaminhamentoNAAPASecaoQuestaoCommand(request.EncaminhamentoNAAPASecaoObj.Id,
                             questoes.Key), cancellationToken);
-                    
+
                     await RegistrarRespostaEncaminhamento(questoes, resultadoEncaminhamentoQuestao);
                 }
                 else
                     await AlterarQuestoesExistentes(questaoExistente, questoes);
             }
             await ExcluirQuestoesExistentes(questoesExistentes.Where(x => questoesRespondidas.All(s => s.QuestaoId != x.QuestaoId)));
-            
+
             return true;
         }
 

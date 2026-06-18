@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.EscolaAqui.ComunicadosFiltro;
 using System;
 using System.Collections.Generic;
 
@@ -15,7 +14,7 @@ namespace SME.SGP.Aplicacao
             Ue_id = ue_id;
             Turma_id = turma_id;
             ModalidadeCalendario = modalidadeCalendario;
-            MesAno = mesAno;    
+            MesAno = mesAno;
         }
 
         public string Dre_id { get; set; }

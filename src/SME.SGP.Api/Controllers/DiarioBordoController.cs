@@ -27,8 +27,8 @@ namespace SME.SGP.Api.Controllers
             var result = await useCase.Executar(aulaId, componenteCurricularId);
             if (result.EhNulo())
                 return NoContent();
-				
-			return Ok(result);
+
+            return Ok(result);
         }
 
         [HttpGet("detalhes/{id}")]

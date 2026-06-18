@@ -1,14 +1,13 @@
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
@@ -22,18 +21,18 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<TurmaEmPeriodoAbertoQuery,bool>),typeof(TurmaEmPeriodoAbertoQueryHandlerFake),ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<TurmaEmPeriodoAbertoQuery, bool>), typeof(TurmaEmPeriodoAbertoQueryHandlerFake), ServiceLifetime.Scoped));
         }
-        
+
 
         [Fact(DisplayName = "Relatório do Acompanhamento da Aprendizagem - Deve Registrar o percurso coletivo inserindo duas imagens")]
         public async Task Registrar_o_percurso_coletivo_inserindo_duas_imagens()
         {
             await CriarDadosBasicos();
             var useCase = ObterSalvarAcompanhamentoUseCase();
-            
+
             await CriarPeriodoEscolarCustomizadoSegundoBimestre(true);
-            
+
             var dto = new AcompanhamentoTurmaDto
             {
                 TurmaId = 1,
@@ -46,7 +45,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             };
             var salvar = await useCase.Executar(dto);
             salvar.Id.ShouldBeEquivalentTo((long)1);
-            
+
             var obterTodos = ObterTodos<AcompanhamentoTurma>();
             obterTodos.ShouldNotBeNull();
             obterTodos.Count.ShouldBeEquivalentTo(1);
@@ -56,9 +55,9 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
         {
             await CriarDadosBasicos();
             var useCase = ObterSalvarAcompanhamentoUseCase();
-            
+
             await CriarPeriodoEscolarCustomizadoSegundoBimestre(true);
-            
+
             var dto = new AcompanhamentoTurmaDto
             {
                 TurmaId = TURMA_ID_1,
@@ -67,7 +66,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             };
             var ex = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
             ex.ShouldNotBeNull();
-            
+
             var obterTodos = ObterTodos<AcompanhamentoTurma>();
             obterTodos.ShouldNotBeNull();
             obterTodos.Count.ShouldBeEquivalentTo(0);

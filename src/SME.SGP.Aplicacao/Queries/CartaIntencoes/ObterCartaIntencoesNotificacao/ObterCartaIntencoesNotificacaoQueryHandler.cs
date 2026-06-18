@@ -1,6 +1,4 @@
 ﻿using MediatR;
-using Minio.DataModel;
-using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
@@ -73,11 +71,11 @@ namespace SME.SGP.Aplicacao
             {
                 return await mediator.Send(new ObterUsuariosNotificarCartaIntencoesObservacaoQuery(ObterProfessorTitular(professorTitular.ProfessorRf, professorTitular.ProfessorNome)));
             }
-            else if(professoresDaTurma.NaoEhNulo() && professoresDaTurma.Any(p=> p.Equals(usuarioLogado.CodigoRf)))
+            else if (professoresDaTurma.NaoEhNulo() && professoresDaTurma.Any(p => p.Equals(usuarioLogado.CodigoRf)))
             {
                 return await mediator.Send(new ObterUsuariosNotificarCartaIntencoesObservacaoQuery(ObterProfessorTitular(usuarioLogado.CodigoRf, usuarioLogado.Nome)));
             }
-               
+
             return default;
         }
 

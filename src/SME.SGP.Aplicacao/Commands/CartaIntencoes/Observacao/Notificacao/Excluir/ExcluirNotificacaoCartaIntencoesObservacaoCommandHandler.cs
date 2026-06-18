@@ -1,8 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -43,7 +41,7 @@ namespace SME.SGP.Aplicacao
             {
                 unitOfWork.Rollback();
                 throw;
-            }      
+            }
 
             return true;
         }

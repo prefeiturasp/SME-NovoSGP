@@ -30,5 +30,5 @@ namespace SME.SGP.Aplicacao
             return servicoMensageria.Publicar(mensagem, RotasRabbitLogs.RotaLogs, ExchangeSgpRabbit.SgpLogs, "PublicarFilaLog");
         }
     }
-    
+
 }

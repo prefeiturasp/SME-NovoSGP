@@ -2,7 +2,6 @@
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Constantes;
 using SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva;
@@ -39,15 +38,19 @@ namespace SME.SGP.TesteIntegracao.DashboardBuscaAtiva
             await InserirRegistrosAcao(new int[] { 6, 7 });
 
             var useCase = ServiceProvider.GetService<IObterQuantidadeBuscaAtivaPorMotivosAusenciaUseCase>();
-            var dto = new FiltroGraficoBuscaAtivaDto() { AnoLetivo = DateTimeExtension.HorarioBrasilia().Year, 
-                                                         Modalidade = Modalidade.Fundamental };
+            var dto = new FiltroGraficoBuscaAtivaDto()
+            {
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                Modalidade = Modalidade.Fundamental
+            };
             var retorno = await useCase.Executar(dto);
             Validar(retorno);
             dto = new FiltroGraficoBuscaAtivaDto()
             {
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Modalidade = Modalidade.Fundamental,
-                DreId = 1, UeId = 1
+                DreId = 1,
+                UeId = 1
             };
             retorno = await useCase.Executar(dto);
             Validar(retorno);

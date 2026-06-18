@@ -1,19 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using SME.SGP.Dominio;
-using SME.SGP.TesteIntegracao.Setup;
-using System.Threading.Tasks;
-using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base;
-using Xunit;
-using System.Linq;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.NotaFechamento.ServicosFakes;
+using SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base;
+using SME.SGP.TesteIntegracao.Setup;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 {
@@ -21,11 +21,11 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
     {
         public Ao_validar_exibicao_alunos(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
-        
+
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
-            
+
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaEAnoLetivoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosPorTurmaEAnoLetivoQueryHandlerFakeValidarAlunos), ServiceLifetime.Scoped));
         }
 
@@ -41,10 +41,10 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 
             var retorno = await ExecutarTeste(filtroNotaFechamento);
 
-            retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_1)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_NOVO).ShouldBeTrue();      
-            retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_2)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_NOVO).ShouldBeTrue();
-            (retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_3)).Informacao.EhNulo()).ShouldBeTrue();
-            (retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_4)).Informacao.EhNulo()).ShouldBeTrue();
+            retorno.Alunos.FirstOrDefault(f => f.CodigoAluno.Equals(ALUNO_CODIGO_1)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_NOVO).ShouldBeTrue();
+            retorno.Alunos.FirstOrDefault(f => f.CodigoAluno.Equals(ALUNO_CODIGO_2)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_NOVO).ShouldBeTrue();
+            (retorno.Alunos.FirstOrDefault(f => f.CodigoAluno.Equals(ALUNO_CODIGO_3)).Informacao.EhNulo()).ShouldBeTrue();
+            (retorno.Alunos.FirstOrDefault(f => f.CodigoAluno.Equals(ALUNO_CODIGO_4)).Informacao.EhNulo()).ShouldBeTrue();
         }
 
         [Fact]
@@ -59,15 +59,15 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 
             var retorno = await ExecutarTeste(filtroNotaFechamento);
 
-            retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_5)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();
-            retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_6)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();
-            retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_7)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();
-            retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_8)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();
-            retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_8)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();
-            retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_10)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();
-            retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_11)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();
+            retorno.Alunos.FirstOrDefault(f => f.CodigoAluno.Equals(ALUNO_CODIGO_5)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();
+            retorno.Alunos.FirstOrDefault(f => f.CodigoAluno.Equals(ALUNO_CODIGO_6)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();
+            retorno.Alunos.FirstOrDefault(f => f.CodigoAluno.Equals(ALUNO_CODIGO_7)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();
+            retorno.Alunos.FirstOrDefault(f => f.CodigoAluno.Equals(ALUNO_CODIGO_8)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();
+            retorno.Alunos.FirstOrDefault(f => f.CodigoAluno.Equals(ALUNO_CODIGO_8)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();
+            retorno.Alunos.FirstOrDefault(f => f.CodigoAluno.Equals(ALUNO_CODIGO_10)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();
+            retorno.Alunos.FirstOrDefault(f => f.CodigoAluno.Equals(ALUNO_CODIGO_11)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();
         }
-        
+
         [Fact]
         public async Task Nao_deve_exibir_alunos_inativos_antes_do_comeco_do_ano_ou_bimestre()
         {
@@ -80,31 +80,31 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 
             var retorno = await ExecutarTeste(filtroNotaFechamento);
 
-            (retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_12)).EhNulo()).ShouldBeTrue();
-            (retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_13)).EhNulo()).ShouldBeTrue();
+            (retorno.Alunos.FirstOrDefault(f => f.CodigoAluno.Equals(ALUNO_CODIGO_12)).EhNulo()).ShouldBeTrue();
+            (retorno.Alunos.FirstOrDefault(f => f.CodigoAluno.Equals(ALUNO_CODIGO_13)).EhNulo()).ShouldBeTrue();
         }
-        
+
         private async Task<FechamentoTurmaDisciplinaBimestreDto> ExecutarTeste(FiltroNotaFechamentoDto filtroNotaFechamentoDto)
         {
             filtroNotaFechamentoDto.CriarPeriodoEscolar = false;
-            
+
             filtroNotaFechamentoDto.CriarPeriodoAbertura = false;
-            
+
             await CriarDadosBase(filtroNotaFechamentoDto);
-            
+
             await InserirPeriodoEscolarCustomizado();
 
             await InserirFechamentoAluno(filtroNotaFechamentoDto);
 
-            var filtroNotaFechamentoAluno = ObterFiltroNotasFechamentoAlunos(TURMA_CODIGO_1,COMPONENTE_CURRICULAR_PORTUGUES_ID_138,BIMESTRE_1, SEMESTRE_0);
-            
+            var filtroNotaFechamentoAluno = ObterFiltroNotasFechamentoAlunos(TURMA_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, BIMESTRE_1, SEMESTRE_0);
+
             return await ExecutarConsultasFechamentoTurmaDisciplinaComValidacaoAluno(filtroNotaFechamentoAluno);
         }
 
         private async Task InserirPeriodoEscolarCustomizado()
         {
             var dataReferencia = DateTimeExtension.HorarioBrasilia();
-            
+
             await CriarPeriodoEscolar(dataReferencia.AddDays(-45), dataReferencia.AddDays(+30), BIMESTRE_1, TIPO_CALENDARIO_1);
 
             await CriarPeriodoEscolar(dataReferencia.AddDays(40), dataReferencia.AddDays(115), BIMESTRE_2, TIPO_CALENDARIO_1);
@@ -230,7 +230,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             });
         }
 
-        private FiltroNotaFechamentoAlunosDto ObterFiltroNotasFechamentoAlunos(string turmaCodigo,long disciplinaCodigo, int bimestre, int semestre)
+        private FiltroNotaFechamentoAlunosDto ObterFiltroNotasFechamentoAlunos(string turmaCodigo, long disciplinaCodigo, int bimestre, int semestre)
         {
             return new FiltroNotaFechamentoAlunosDto()
             {
@@ -240,8 +240,8 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
                 Semestre = semestre
             };
         }
-        
-        private static new FiltroNotaFechamentoDto ObterFiltroNotasFechamento(string perfil, TipoNota tipoNota, string anoTurma,Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, string componenteCurricular , bool considerarAnoAnterior = false, bool ehRegencia = false)
+
+        private static new FiltroNotaFechamentoDto ObterFiltroNotasFechamento(string perfil, TipoNota tipoNota, string anoTurma, Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, string componenteCurricular, bool considerarAnoAnterior = false, bool ehRegencia = false)
         {
             return new FiltroNotaFechamentoDto()
             {

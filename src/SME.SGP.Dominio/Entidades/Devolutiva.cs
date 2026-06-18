@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Dominio
 {
-    public class Devolutiva: EntidadeBase
+    public class Devolutiva : EntidadeBase
     {
         public Devolutiva()
         {

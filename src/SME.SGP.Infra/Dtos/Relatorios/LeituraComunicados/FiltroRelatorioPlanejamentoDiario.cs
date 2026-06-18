@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Infra
 {
-    public class FiltroRelatorioPlanejamentoDiario 
+    public class FiltroRelatorioPlanejamentoDiario
     {
         public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }

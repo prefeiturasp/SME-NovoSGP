@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
 
         public Itinerancia itinerancia { get; set; }
 
-        
+
     }
     public class AlterarItineranciaCommandValidator : AbstractValidator<AlterarItineranciaCommand>
     {

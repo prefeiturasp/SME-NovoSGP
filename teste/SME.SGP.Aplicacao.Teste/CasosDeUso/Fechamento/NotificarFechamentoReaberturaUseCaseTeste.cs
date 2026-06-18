@@ -76,7 +76,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Fechamento
             Assert.True(resultado);
             _mediatorMock.Verify(m => m.Send(It.Is<PublicarFilaSgpCommand>(
                 cmd => cmd.Rota == RotasRabbitSgpFechamento.RotaNotificacaoFechamentoReaberturaDRE
-            ), It.IsAny<CancellationToken>()), Times.Exactly(2)); 
+            ), It.IsAny<CancellationToken>()), Times.Exactly(2));
         }
 
         private FiltroFechamentoReaberturaNotificacaoDto CriarFiltro(bool ehParaUe)
@@ -97,5 +97,5 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Fechamento
                 modalidades: new int[] { 1, 2 }
             );
         }
-    }  
+    }
 }

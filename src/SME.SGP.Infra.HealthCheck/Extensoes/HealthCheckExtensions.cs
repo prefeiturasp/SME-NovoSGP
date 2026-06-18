@@ -1,11 +1,11 @@
-using System.Net;
-using System.Web;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using System.Net;
+using System.Web;
 
 namespace SME.SGP.Infra
 {
@@ -14,7 +14,7 @@ namespace SME.SGP.Infra
         public static IHealthChecksBuilder AddPostgreSqlSgp(this IHealthChecksBuilder builder, IConfiguration configuration)
         {
             var connectionString = configuration.GetConnectionString("SGP_Postgres");
-            return builder.AddNpgSql(connectionString, name: "Postgres");            
+            return builder.AddNpgSql(connectionString, name: "Postgres");
         }
 
         public static IHealthChecksBuilder AddRedisSgp(this IHealthChecksBuilder builder)
@@ -28,13 +28,13 @@ namespace SME.SGP.Infra
             return builder.AddRabbitMQ(ObterStringConexaoRabbit(configuration, configurationSection), name: "RabbitMQ",
                 failureStatus: HealthStatus.Unhealthy);
         }
-        
+
         public static IHealthChecksBuilder AddRabbitMqLogSgp(this IHealthChecksBuilder builder, IConfiguration configuration)
         {
             const string configurationSection = "ConfiguracaoRabbitLog";
             return builder.AddRabbitMQ(ObterStringConexaoRabbit(configuration, configurationSection), name: "RabbitMQLog",
                 failureStatus: HealthStatus.Unhealthy);
-        }        
+        }
 
         private static string ObterStringConexaoRabbit(IConfiguration configuration, string configurationSection)
         {
@@ -42,7 +42,7 @@ namespace SME.SGP.Infra
             var password = HttpUtility.UrlEncode(configuration.GetSection($"{configurationSection}:Password").Value);
             var hostName = configuration.GetSection($"{configurationSection}:Hostname").Value;
             var vHost = HttpUtility.UrlEncode(configuration.GetSection($"{configurationSection}:Virtualhost").Value);
-            
+
             return $"amqp://{userName}:{password}@{hostName}/{vHost}";
         }
 

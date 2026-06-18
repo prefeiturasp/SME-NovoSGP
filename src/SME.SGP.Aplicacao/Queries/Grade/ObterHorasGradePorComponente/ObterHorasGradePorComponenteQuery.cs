@@ -1,11 +1,8 @@
 ﻿using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterHorasGradePorComponenteQuery: IRequest<int>
+    public class ObterHorasGradePorComponenteQuery : IRequest<int>
     {
         public ObterHorasGradePorComponenteQuery(long gradeId, long componenteCurricular, int ano)
         {

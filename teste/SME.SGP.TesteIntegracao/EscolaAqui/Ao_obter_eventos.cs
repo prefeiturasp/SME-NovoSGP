@@ -1,29 +1,25 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using Moq;
 using Shouldly;
-using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.EscolaAqui
 {
     public class Ao_obter_eventos : TesteBaseComuns
     {
-        
+
         public Ao_obter_eventos(CollectionFixture collectionFixture) : base(collectionFixture)
-        {}
+        { }
 
         protected override void RegistrarFakes(IServiceCollection services)
         {
-            base.RegistrarFakes(services);     
+            base.RegistrarFakes(services);
         }
 
         [Fact(DisplayName = "Retornar eventos dre/ue/turma de Escola Aqui e Atividades Avaliativas")]
@@ -35,7 +31,7 @@ namespace SME.SGP.TesteIntegracao.EscolaAqui
             await CriarAtividadeAvaliativaFundamental(DateTime.Now.Date);
             await CriarEvento(EventoLetivo.Opcional, DateTime.Now.Date, DateTime.Now.Date, true, 1);
             await CriarEvento(EventoLetivo.Sim, DateTime.Now.Date, DateTime.Now.Date, false, 2);
-            
+
             var evento = ObterTodos<Evento>();
             var eventoTipo = ObterTodos<EventoTipo>();
             var eventoTipoEscolaAqui = eventoTipo.Where(et => et.EventoEscolaAqui).FirstOrDefault();
@@ -43,9 +39,14 @@ namespace SME.SGP.TesteIntegracao.EscolaAqui
 
             var useCase = ServiceProvider.GetService<IObterEventosEscolaAquiPorDreUeTurmaMesUseCase>();
 
-            var retorno = await useCase.Executar(new Infra.FiltroEventosEscolaAquiDto() { CodigoDre = DRE_CODIGO_1, CodigoUe = UE_CODIGO_1, 
-                                                                                          CodigoTurma = TURMA_CODIGO_1, MesAno = DateTime.Now.Date, 
-                                                                                          ModalidadeCalendario = (int)ModalidadeTipoCalendario.FundamentalMedio });
+            var retorno = await useCase.Executar(new Infra.FiltroEventosEscolaAquiDto()
+            {
+                CodigoDre = DRE_CODIGO_1,
+                CodigoUe = UE_CODIGO_1,
+                CodigoTurma = TURMA_CODIGO_1,
+                MesAno = DateTime.Now.Date,
+                ModalidadeCalendario = (int)ModalidadeTipoCalendario.FundamentalMedio
+            });
             retorno.ShouldNotBeEmpty();
             retorno.Count().ShouldBe(2);
             retorno.Where(e => !String.IsNullOrEmpty(e.componente_curricular)).Count().ShouldBe(1);

@@ -2,7 +2,6 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,19 +17,19 @@ namespace SME.SGP.Aplicacao
         {
             var plano = param.ObterObjetoMensagem<PlanoAEETurmaDto>();
             var alunosEol = await mediator.Send(new ObterAlunosEolPorCodigosQuery(long.Parse(plano.AlunoCodigo), true));
-            var alunoTurma = alunosEol.Where(turma => turma.CodigoTipoTurma == (int)TipoTurma.Regular 
+            var alunoTurma = alunosEol.Where(turma => turma.CodigoTipoTurma == (int)TipoTurma.Regular
                                                       && turma.AnoLetivo <= DateTimeExtension.HorarioBrasilia().Year
                                                       && turma.DataSituacao.Date <= DateTimeExtension.HorarioBrasilia().Date)
                                       .OrderByDescending(turma => turma.AnoLetivo)
                                       .ThenByDescending(turma => (turma.DataAtualizacaoTabela, turma.DataSituacao))
-                                      .FirstOrDefault(); 
+                                      .FirstOrDefault();
 
-            if (alunoTurma.NaoEhNulo()) 
-               return await AtualizarTurmaDoEncaminhamento(plano, alunoTurma);
-            
+            if (alunoTurma.NaoEhNulo())
+                return await AtualizarTurmaDoEncaminhamento(plano, alunoTurma);
+
             return false;
         }
-        
+
         private async Task<bool> AtualizarTurmaDoEncaminhamento(PlanoAEETurmaDto plano, TurmasDoAlunoDto alunoTurma)
         {
             var turmaNova = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(alunoTurma.CodigoTurma.ToString()));

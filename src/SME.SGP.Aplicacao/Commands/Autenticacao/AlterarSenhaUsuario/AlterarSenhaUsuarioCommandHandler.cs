@@ -1,7 +1,4 @@
 ﻿using MediatR;
-using Newtonsoft.Json;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -11,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AlterarSenhaUsuarioCommandHandler : IRequestHandler<AlterarSenhaUsuarioCommand,AlterarSenhaRespostaDto>
+    public class AlterarSenhaUsuarioCommandHandler : IRequestHandler<AlterarSenhaUsuarioCommand, AlterarSenhaRespostaDto>
     {
         private readonly IHttpClientFactory httpClientFactory;
 
@@ -22,10 +19,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AlterarSenhaRespostaDto> Handle(AlterarSenhaUsuarioCommand request, CancellationToken cancellationToken)
         {
-            var valoresParaEnvio = new List<KeyValuePair<string, string>> { new ("usuario", request.Login), new ("senha", request.Senha)};
+            var valoresParaEnvio = new List<KeyValuePair<string, string>> { new("usuario", request.Login), new("senha", request.Senha) };
 
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
-            
+
             var resposta = await httpClient.PostAsync(ServicosEolConstants.URL_AUTENTICACAO_SGP_ALTERAR_SENHA, new FormUrlEncodedContent(valoresParaEnvio));
 
             return new AlterarSenhaRespostaDto

@@ -1,16 +1,15 @@
-﻿using System;
+﻿using MediatR;
+using SME.SGP.Dominio;
+using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AlterarRelatorioPAPCommandHandler : IRequestHandler<AlterarRelatorioPAPCommand,ResultadoRelatorioPAPDto>
+    public class AlterarRelatorioPAPCommandHandler : IRequestHandler<AlterarRelatorioPAPCommand, ResultadoRelatorioPAPDto>
     {
         private readonly IMediator mediator;
 
@@ -38,7 +37,7 @@ namespace SME.SGP.Aplicacao
         private async Task<ResultadoRelatorioPAPSecaoDto> AlterarSecao(RelatorioPAPSecaoDto secao, long relatorioAlunoId)
         {
             var relatorioSecao = await mediator.Send(new PersistirRelatorioSecaoCommand(secao, relatorioAlunoId));
-            
+
             foreach (var questaoRespostas in secao.Respostas.GroupBy(q => q.QuestaoId))
             {
                 var questaoExistente = relatorioSecao.Questoes.FirstOrDefault(q => q.QuestaoId == questaoRespostas.Key);
@@ -62,10 +61,10 @@ namespace SME.SGP.Aplicacao
                     AlteradoPor = relatorioSecao.AlteradoPor,
                     AlteradoRF = relatorioSecao.AlteradoRF
                 }
-            }; 
+            };
         }
-        
-          private async Task AlterarQuestao(RelatorioPeriodicoPAPQuestao questaoExistente, IEnumerable<RelatorioPAPRespostaDto> respostas)
+
+        private async Task AlterarQuestao(RelatorioPeriodicoPAPQuestao questaoExistente, IEnumerable<RelatorioPAPRespostaDto> respostas)
         {
             if (questaoExistente.Excluido)
                 await AlterarQuestaoExcluida(questaoExistente);
@@ -86,7 +85,7 @@ namespace SME.SGP.Aplicacao
         private async Task AlterarRespostasEncaminhamento(RelatorioPeriodicoPAPQuestao questaoExistente, IEnumerable<RelatorioPAPRespostaDto> respostas)
         {
             var repostasAlteradas = questaoExistente.Respostas.Where(s => respostas.Any(c => c.RelatorioRespostaId == s.Id));
-            
+
             foreach (var respostaAlterar in repostasAlteradas)
                 await mediator.Send(new AlterarRelatorioPeriodicoRespostaPAPCommand(respostaAlterar, respostas.FirstOrDefault(c => c.RelatorioRespostaId == respostaAlterar.Id)));
         }

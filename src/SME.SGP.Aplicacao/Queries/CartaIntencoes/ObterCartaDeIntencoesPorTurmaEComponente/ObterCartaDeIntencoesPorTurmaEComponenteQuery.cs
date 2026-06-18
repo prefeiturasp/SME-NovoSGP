@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterCartaDeIntencoesPorTurmaEComponenteQuery: IRequest<IEnumerable<CartaIntencoes>>
+    public class ObterCartaDeIntencoesPorTurmaEComponenteQuery : IRequest<IEnumerable<CartaIntencoes>>
     {
         public ObterCartaDeIntencoesPorTurmaEComponenteQuery(string turmaCodigo, long componenteCurricularId)
         {

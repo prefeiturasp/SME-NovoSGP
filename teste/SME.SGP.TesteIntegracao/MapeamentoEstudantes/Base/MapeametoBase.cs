@@ -1,9 +1,6 @@
-﻿using Nest;
-using SME.SGP.Aplicacao.Constantes;
+﻿using SME.SGP.Aplicacao.Constantes;
 using SME.SGP.Dominio;
-using SME.SGP.TesteIntegracao.Constantes;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,11 +17,11 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
         protected Dictionary<string, long> IdsQuestoesPorNomeComponente = new();
 
         public MapeamentoBase(CollectionFixture collectionFixture) : base(collectionFixture)
-        {}
+        { }
 
         protected virtual async Task CriarDadosBase()
         {
-            ExecutarScripts(new List<ScriptCarga> { ScriptCarga.CARGA_QUESTIONARIO_MAPEAMENTO_ESTUDANTE, 
+            ExecutarScripts(new List<ScriptCarga> { ScriptCarga.CARGA_QUESTIONARIO_MAPEAMENTO_ESTUDANTE,
                                                     ScriptCarga.ALTERAR_QUESTAO_MIGRANTE_MAPEAMENTO_ESTUDANTE });
 
             await CriarDreUePerfilComponenteCurricular();
@@ -602,25 +599,25 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.Base
 
         private async Task<long> CriarMapeamentoEstudanteSecao(long idMapeamento = 1)
         => await InserirNaBaseAsync(new Dominio.MapeamentoEstudanteSecao()
-            {
-                MapeamentoEstudanteId = idMapeamento,
-                SecaoMapeamentoEstudanteId = SECAO_MAPEAMENTO_ESTUDANTE_ID_1,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                Concluido = false
-            });
+        {
+            MapeamentoEstudanteId = idMapeamento,
+            SecaoMapeamentoEstudanteId = SECAO_MAPEAMENTO_ESTUDANTE_ID_1,
+            CriadoEm = DateTimeExtension.HorarioBrasilia(),
+            CriadoPor = SISTEMA_NOME,
+            CriadoRF = SISTEMA_CODIGO_RF,
+            Concluido = false
+        });
 
         private async Task<long> CriarMapeamentoEstudante(int bimestre)
         => await InserirNaBaseAsync(new Dominio.MapeamentoEstudante()
-            {
-                TurmaId = TURMA_ID_1,
-                AlunoCodigo = ALUNO_CODIGO_1,
-                AlunoNome = "Nome do aluno 1",
-                Bimestre = bimestre,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
+        {
+            TurmaId = TURMA_ID_1,
+            AlunoCodigo = ALUNO_CODIGO_1,
+            AlunoNome = "Nome do aluno 1",
+            Bimestre = bimestre,
+            CriadoEm = DateTimeExtension.HorarioBrasilia(),
+            CriadoPor = SISTEMA_NOME,
+            CriadoRF = SISTEMA_CODIGO_RF
+        });
     }
 }

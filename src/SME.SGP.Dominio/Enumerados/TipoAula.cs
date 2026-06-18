@@ -8,6 +8,6 @@ namespace SME.SGP.Dominio
         Normal = 1,
 
         [Display(Name = "Reposição")]
-        Reposicao =2
+        Reposicao = 2
     }
 }

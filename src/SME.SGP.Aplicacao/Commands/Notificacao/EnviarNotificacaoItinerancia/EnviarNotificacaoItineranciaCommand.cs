@@ -1,9 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
@@ -41,7 +38,7 @@ namespace SME.SGP.Aplicacao
                .NotEmpty()
                .WithMessage("O título deve ser informado para gerar notificação.");
 
-            RuleFor(c => c.Mensagem )
+            RuleFor(c => c.Mensagem)
                .NotEmpty()
                .WithMessage("A mensagem deve ser informada para gerar notificação.");
 

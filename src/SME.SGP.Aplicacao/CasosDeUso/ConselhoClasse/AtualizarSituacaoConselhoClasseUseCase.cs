@@ -14,8 +14,8 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
             var command = mensagem.ObterObjetoMensagem<AtualizaSituacaoConselhoClasseCommand>();
-                        
-            await mediator.Send(command);            
+
+            await mediator.Send(command);
 
             return true;
         }

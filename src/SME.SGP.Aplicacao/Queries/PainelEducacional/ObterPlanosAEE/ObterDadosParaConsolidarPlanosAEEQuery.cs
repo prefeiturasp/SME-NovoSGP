@@ -10,6 +10,6 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterConsolidacaoPlanosAEE
         {
             AnoLetivo = anoLetivo;
         }
-        public int AnoLetivo { get; set; }  
+        public int AnoLetivo { get; set; }
     }
 }

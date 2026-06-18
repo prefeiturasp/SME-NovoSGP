@@ -1,12 +1,10 @@
-﻿using Dapper;
-using Dommel;
+﻿using Dommel;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -34,7 +32,7 @@ namespace SME.SGP.Dados.Repositorios
                 var armazenados = await contexto.Conexao.QueryAsync<Ue>(QuerySincronizacao.Replace("#ids", string.Join(",", iteracao.Select(x => $"'{x.CodigoUe}'"))));
 
                 var novos = iteracao.Where(x => !armazenados.Select(y => y.CodigoUe).Contains(x.CodigoUe));
-                
+
                 await PersisteNovosRegistros(dres, resultado, novos);
 
                 var modificados = from c in iteracao

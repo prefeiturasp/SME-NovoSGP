@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterIdepPorAnoEtapa
         public async Task<IEnumerable<PainelEducacionalIdepDto>> Handle(ObterIdepPorAnoEtapaQuery request, CancellationToken cancellationToken)
         {
             var dadosIdep = await repositorioIdepConsulta.ObterIdepPorAnoEtapa(request.AnoLetivo, request.Etapa, request.CodigoDre);
-            
+
             var dadosAgrupados = dadosIdep
                 .GroupBy(x => new { x.AnoLetivo, x.Etapa, x.Faixa })
                 .Select(g => new PainelEducacionalIdepDto

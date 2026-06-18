@@ -24,7 +24,7 @@ namespace SME.SGP.Dominio
         public DateTime DataEnvio { get; set; }
         public DateTime? DataExpiracao { get; set; }
         public string Descricao { get; set; }
-        public bool Excluido { get; set; }        
+        public bool Excluido { get; set; }
         public int[] Modalidades { get; set; }
         public int[] TiposEscolas { get; set; }
         public string[] AnosEscolares { get; set; }
@@ -82,11 +82,11 @@ namespace SME.SGP.Dominio
                 return TipoComunicado.ALUNO;
 
             if (Turmas.NaoEhNulo() && Turmas.Any())
-                return TipoComunicado.TURMA;            
+                return TipoComunicado.TURMA;
 
             if (Modalidades.NaoEhNulo() && Modalidades.Length == 1 && CodigoUe.NaoEhNulo() && CodigoUe != "-99" && !string.IsNullOrEmpty(SeriesResumidas))
-                return TipoComunicado.UEMOD;            
-            
+                return TipoComunicado.UEMOD;
+
             if (Modalidades.NaoEhNulo() && Modalidades.Length == 1 && CodigoUe.NaoEhNulo() && CodigoUe != "-99")
                 return TipoComunicado.UEMOD;
 

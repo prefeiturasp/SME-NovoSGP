@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
     public class GerarParecerConclusivoAlunoCommandHandler : IRequestHandler<GerarParecerConclusivoAlunoCommand, ParecerConclusivoDto>
     {
         private readonly IMediator mediator;
-        
+
         public GerarParecerConclusivoAlunoCommandHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
             var emAprovacao = await EnviarParaAprovacao(turma);
 
             // Se não possui notas de fechamento nem de conselho retorna um Dto vazio
-            if (turma.EhCELP() || 
+            if (turma.EhCELP() ||
                 !await VerificaNotasTodosComponentesCurriculares(conselhoClasseAluno.AlunoCodigo, turma, null))
                 return new ParecerConclusivoDto();
 

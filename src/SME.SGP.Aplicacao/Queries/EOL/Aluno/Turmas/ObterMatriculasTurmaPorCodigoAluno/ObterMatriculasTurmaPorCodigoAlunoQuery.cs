@@ -1,10 +1,8 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
@@ -29,6 +27,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.CodigoAluno)
             .NotEmpty()
             .WithMessage("O código do aluno deve ser informado para busca de matrículas/turma no EOL.");
-        }        
+        }
     }
 }

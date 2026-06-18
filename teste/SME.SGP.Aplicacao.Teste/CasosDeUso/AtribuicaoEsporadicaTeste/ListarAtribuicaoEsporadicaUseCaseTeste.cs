@@ -94,7 +94,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ExcluirAtribuicaoEsporadicaTeste
                 q.ProfessorRF == filtro.ProfessorRF), It.IsAny<CancellationToken>()), Times.Once);
 
             _mediatorMock.Verify(m => m.Send(It.IsAny<ObterFuncionariosPorRFsQuery>(), It.IsAny<CancellationToken>()), Times.Once);
-            _mediatorMock.Verify(m => m.Send(It.IsAny<ObterResumoProfessorPorRFAnoLetivoQuery>(), It.IsAny<CancellationToken>()), Times.Never); 
+            _mediatorMock.Verify(m => m.Send(It.IsAny<ObterResumoProfessorPorRFAnoLetivoQuery>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Fact]
@@ -175,7 +175,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ExcluirAtribuicaoEsporadicaTeste
             Assert.Null(result.Items);
 
             _mediatorMock.Verify(m => m.Send(It.IsAny<ListarAtribuicaoEsporadicaPorFiltrosQuery>(), It.IsAny<CancellationToken>()), Times.Once);
-            _mediatorMock.Verify(m => m.Send(It.IsAny<ObterFuncionariosPorRFsQuery>(), It.IsAny<CancellationToken>()), Times.Never); 
+            _mediatorMock.Verify(m => m.Send(It.IsAny<ObterFuncionariosPorRFsQuery>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Fact]
@@ -213,7 +213,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ExcluirAtribuicaoEsporadicaTeste
             Assert.Null(result.Items);
 
             _mediatorMock.Verify(m => m.Send(It.IsAny<ListarAtribuicaoEsporadicaPorFiltrosQuery>(), It.IsAny<CancellationToken>()), Times.Once);
-            _mediatorMock.Verify(m => m.Send(It.IsAny<ObterFuncionariosPorRFsQuery>(), It.IsAny<CancellationToken>()), Times.Never); 
+            _mediatorMock.Verify(m => m.Send(It.IsAny<ObterFuncionariosPorRFsQuery>(), It.IsAny<CancellationToken>()), Times.Never);
         }
     }
 }

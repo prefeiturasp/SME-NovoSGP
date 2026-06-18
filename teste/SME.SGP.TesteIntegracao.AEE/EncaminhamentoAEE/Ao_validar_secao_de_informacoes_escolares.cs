@@ -108,7 +108,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 
             var useCase = ObterUseCaseInformacoesEscolares();
             var informacoes = await useCase.Executar(ALUNO_CODIGO_1, TURMA_CODIGO_1);
-            
+
             informacoes.ShouldNotBeNull();
             informacoes.CodigoAluno.ShouldBe(CODIGO_ALUNO_1);
             informacoes.DescricaoNecessidadeEspecial.ShouldBe("Cego");
@@ -119,7 +119,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             frenquenciaBimestre.QuantidadeCompensacoes.ShouldBe(1);
             frenquenciaBimestre.QuantidadeCompensacoes.ShouldBe(1);
         }
-        
+
         [Fact(DisplayName = "Encaminhamento AEE - Deve permitir alteração de encaminhamento devolvido quando perfil professor")]
         public async Task Deve_permitir_alterar_encaminhamento_devolvido_quando_perfil_professor()
         {
@@ -150,7 +150,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             informacoes.ShouldNotBeNull();
             informacoes.PodeEditar.ShouldBeTrue();
         }
-        
+
         [Fact(DisplayName = "Encaminhamento AEE - Deve permitir alteração de encaminhamento rascunho quando perfil professor")]
         public async Task Deve_permitir_alterar_encaminhamento_rascunho_quando_perfil_professor()
         {
@@ -181,7 +181,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             informacoes.ShouldNotBeNull();
             informacoes.PodeEditar.ShouldBeTrue();
         }
-        
+
         [Fact(DisplayName = "Encaminhamento AEE - Não deve permitir alteração de encaminhamento diferente de rascunho ou devolvido quando perfil professor")]
         public async Task Nao_deve_permitir_alterar_encaminhamento_diferente_rascunho_ou_devolvido_quando_perfil_professor()
         {
@@ -212,7 +212,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             informacoes.ShouldNotBeNull();
             informacoes.PodeEditar.ShouldBeFalse();
         }
-        
+
         [Fact(DisplayName = "Encaminhamento AEE - Deve permitir alteração de encaminhamento devolvido quando perfil professor infantil")]
         public async Task Deve_permitir_alterar_encaminhamento_devolvido_quando_perfil_professor_infantil()
         {
@@ -243,7 +243,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             informacoes.ShouldNotBeNull();
             informacoes.PodeEditar.ShouldBeTrue();
         }
-        
+
         [Fact(DisplayName = "Encaminhamento AEE - Deve permitir alteração de encaminhamento rascunho quando perfil professor infantil")]
         public async Task Deve_permitir_alterar_encaminhamento_rascunho_quando_perfil_professor_infantil()
         {
@@ -274,7 +274,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             informacoes.ShouldNotBeNull();
             informacoes.PodeEditar.ShouldBeTrue();
         }
-        
+
         [Fact(DisplayName = "Encaminhamento AEE - Não deve permitir alteração de encaminhamento diferente de rascunho ou devolvido quando perfil professor infantil")]
         public async Task Nao_deve_permitir_alterar_encaminhamento_diferente_rascunho_ou_devolvido_quando_perfil_professor_infantil()
         {
@@ -305,7 +305,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             informacoes.ShouldNotBeNull();
             informacoes.PodeEditar.ShouldBeFalse();
         }
-        
+
         [Fact(DisplayName = "Encaminhamento AEE - Deve permitir alteração de encaminhamento aguardando parecer da coordenação quando perfil gestor escolar")]
         public async Task Deve_permitir_alterar_encaminhamento_aguardando_parecer_coordenacao_quando_perfil_gestor_escolar()
         {
@@ -336,7 +336,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             informacoes.ShouldNotBeNull();
             informacoes.PodeEditar.ShouldBeTrue();
         }
-        
+
         [Fact(DisplayName = "Encaminhamento AEE - Deve permitir alteração de encaminhamento devolvido quando perfil gestor escolar")]
         public async Task Deve_permitir_alterar_encaminhamento_devolvido_quando_perfil_gestor_escolar()
         {
@@ -347,9 +347,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 Modalidade = Modalidade.Fundamental,
                 AnoTurma = "8"
             };
-        
+
             await CriarDadosBase(filtroAee);
-        
+
             await InserirNaBase(new Dominio.EncaminhamentoAEE()
             {
                 TurmaId = TURMA_ID_1,
@@ -361,13 +361,13 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
-        
+
             var useCase = ObterUseCaseObterEncaminhamentoPorId();
             var informacoes = await useCase.Executar(1);
             informacoes.ShouldNotBeNull();
             informacoes.PodeEditar.ShouldBeTrue();
         }
-        
+
         [Fact(DisplayName = "Encaminhamento AEE - Não deve permitir alteração de encaminhamento diferente de encaminhado ou devolvido quando perfil gestor escolar")]
         public async Task Nao_deve_permitir_alterar_encaminhamento_diferente_encaminhado_ou_devolvido_quando_perfil_gestor_escolar()
         {
@@ -378,9 +378,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 Modalidade = Modalidade.Fundamental,
                 AnoTurma = "8"
             };
-        
+
             await CriarDadosBase(filtroAee);
-        
+
             await InserirNaBase(new Dominio.EncaminhamentoAEE()
             {
                 TurmaId = TURMA_ID_1,
@@ -392,13 +392,13 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
-        
+
             var useCase = ObterUseCaseObterEncaminhamentoPorId();
             var informacoes = await useCase.Executar(1);
             informacoes.ShouldNotBeNull();
             informacoes.PodeEditar.ShouldBeFalse();
         }
-        
+
         [Fact(DisplayName = "Encaminhamento AEE - Deve permitir alteração de encaminhamento aguardando atribuição de PAAI quando perfil coordenador CEFAI")]
         public async Task Deve_permitir_alterar_encaminhamento_aguardando_atribuicao_paai_quando_perfil_cefai()
         {
@@ -429,7 +429,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             informacoes.ShouldNotBeNull();
             informacoes.PodeEditar.ShouldBeTrue();
         }
-        
+
         [Fact(DisplayName = "Encaminhamento AEE - Não deve permitir alteração de encaminhamento diferente de aguardando atribuição de PAAI quando perfil coordenador CEFAI")]
         public async Task Nao_deve_permitir_alterar_encaminhamento_diferente_aguardando_atribuicao_de_paai_quando_perfil_gestor_escolar()
         {
@@ -440,9 +440,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 Modalidade = Modalidade.Fundamental,
                 AnoTurma = "8"
             };
-        
+
             await CriarDadosBase(filtroAee);
-        
+
             await InserirNaBase(new Dominio.EncaminhamentoAEE()
             {
                 TurmaId = TURMA_ID_1,
@@ -454,13 +454,13 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
-        
+
             var useCase = ObterUseCaseObterEncaminhamentoPorId();
             var informacoes = await useCase.Executar(1);
             informacoes.ShouldNotBeNull();
             informacoes.PodeEditar.ShouldBeFalse();
         }
-        
+
         [Fact(DisplayName = "Encaminhamento AEE - Deve permitir alteração de encaminhamento aguardando análise do AEE quando perfil PAEE")]
         public async Task Deve_permitir_alterar_encaminhamento_aguardando_analise_do_aee_quando_perfil_paee()
         {
@@ -491,7 +491,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             informacoes.ShouldNotBeNull();
             informacoes.PodeEditar.ShouldBeTrue();
         }
-        
+
         [Fact(DisplayName = "Encaminhamento AEE - Não deve permitir alteração de encaminhamento diferente de aguardando análise do AEE quando perfil PAEE")]
         public async Task Nao_deve_permitir_alterar_encaminhamento_diferente_aguardando_analise_paee_quando_perfil_paee()
         {
@@ -502,9 +502,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 Modalidade = Modalidade.Fundamental,
                 AnoTurma = "8"
             };
-        
+
             await CriarDadosBase(filtroAee);
-        
+
             await InserirNaBase(new Dominio.EncaminhamentoAEE()
             {
                 TurmaId = TURMA_ID_1,
@@ -516,13 +516,13 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
-        
+
             var useCase = ObterUseCaseObterEncaminhamentoPorId();
             var informacoes = await useCase.Executar(1);
             informacoes.ShouldNotBeNull();
             informacoes.PodeEditar.ShouldBeFalse();
         }
-        
+
         [Fact(DisplayName = "Encaminhamento AEE - Deve permitir alteração de encaminhamento aguardando análise do AEE quando perfil PAAI")]
         public async Task Deve_permitir_alterar_encaminhamento_aguardando_analise_do_aee_quando_perfil_paai()
         {
@@ -553,7 +553,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             informacoes.ShouldNotBeNull();
             informacoes.PodeEditar.ShouldBeTrue();
         }
-        
+
         [Fact(DisplayName = "Encaminhamento AEE - Não deve permitir alteração de encaminhamento diferente de aguardando análise do AEE quando perfil PAAI")]
         public async Task Nao_deve_permitir_alterar_encaminhamento_diferente_aguardando_analise_paee_quando_perfil_paai()
         {
@@ -564,9 +564,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 Modalidade = Modalidade.Fundamental,
                 AnoTurma = "8"
             };
-        
+
             await CriarDadosBase(filtroAee);
-        
+
             await InserirNaBase(new Dominio.EncaminhamentoAEE()
             {
                 TurmaId = TURMA_ID_1,
@@ -578,7 +578,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
-        
+
             var useCase = ObterUseCaseObterEncaminhamentoPorId();
             var informacoes = await useCase.Executar(1);
             informacoes.ShouldNotBeNull();

@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
         public SolicitarInclusaoComunicadoEscolaAquiCommandHandler(
               IRepositorioComunicado repositorioComunicado
             , IUnitOfWork unitOfWork
-              ,IMediator mediator
+              , IMediator mediator
             , IRepositorioComunicadoTurma repositorioComunicadoTurma
             , IRepositorioComunicadoAluno repositorioComunicadoAluno
             , IServicoAcompanhamentoEscolar servicoAcompanhamentoEscolar
@@ -173,7 +173,7 @@ namespace SME.SGP.Aplicacao
                 request.Turmas.ToList().ForEach(x => comunicado.AdicionarTurma(x));
 
             if (request.Modalidades.Any())
-                comunicado.Modalidades = request.Modalidades;            
+                comunicado.Modalidades = request.Modalidades;
 
             if (request.AlunosEspecificados)
                 request.Alunos.ToList().ForEach(x => comunicado.AdicionarAluno(x));
@@ -193,7 +193,7 @@ namespace SME.SGP.Aplicacao
             comunicadoServico.DataEnvio = comunicado.DataEnvio;
             comunicadoServico.DataExpiracao = comunicado.DataExpiracao;
             comunicadoServico.Mensagem = comunicado.Descricao;
-            comunicadoServico.Titulo = comunicado.Titulo;            
+            comunicadoServico.Titulo = comunicado.Titulo;
             comunicadoServico.CriadoEm = comunicado.CriadoEm;
             comunicadoServico.CriadoPor = comunicado.CriadoPor;
             comunicadoServico.CriadoRF = comunicado.CriadoRF;

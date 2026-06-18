@@ -1,11 +1,9 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -20,6 +18,6 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ConsolidacaoDashBoardFrequencia> Handle(ObterConsolidacaoDashboardPorTurmaAulaModalidadeAnoLetivoDreUeTipoQuery request, CancellationToken cancellationToken)
             => await repositorioConsolidacaoFrequenciaTurma.ObterConsolidacaoDashboardPorTurmaAulaModalidadeAnoLetivoDreUeTipo(request.TurmaId,
-                request.DataAula,request.Modalidade,request.AnoLetivo, request.DreId, request.UeId, request.Tipo);
+                request.DataAula, request.Modalidade, request.AnoLetivo, request.DreId, request.UeId, request.Tipo);
     }
 }

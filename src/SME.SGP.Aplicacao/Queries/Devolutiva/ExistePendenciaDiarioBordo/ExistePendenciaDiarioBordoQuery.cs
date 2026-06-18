@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao
             ComponenteCodigo = componenteCodigo;
         }
 
-        public long TurmaId { get; set;}
+        public long TurmaId { get; set; }
         public string ComponenteCodigo { get; set; }
     }
     public class ExistePendenciaDiarioBordoQueryValidator : AbstractValidator<ExistePendenciaDiarioBordoQuery>

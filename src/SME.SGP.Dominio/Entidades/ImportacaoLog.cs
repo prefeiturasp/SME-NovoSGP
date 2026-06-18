@@ -6,7 +6,7 @@ namespace SME.SGP.Dominio
     [ExcludeFromCodeCoverage]
     public class ImportacaoLog : EntidadeBase
     {
-        public string NomeArquivo {  get; set; }
+        public string NomeArquivo { get; set; }
         public string TipoArquivoImportacao { get; set; }
         public DateTime DataInicioProcessamento { get; set; }
         public string StatusImportacao { get; set; }

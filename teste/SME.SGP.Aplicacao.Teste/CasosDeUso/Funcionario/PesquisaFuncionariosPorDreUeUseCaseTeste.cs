@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Funcionario
         [Fact]
         public async Task Executar_Quando_Limite_Nao_Informado_E_Resultados_Menores_Deve_Retornar_Paginado_Corretamente()
         {
-            var request = new FiltroPesquisaFuncionarioDto { Limite = 0 }; 
+            var request = new FiltroPesquisaFuncionarioDto { Limite = 0 };
             var funcionarios = new List<UsuarioEolRetornoDto>
             {
                 new UsuarioEolRetornoDto { NomeServidor = "Marcos" },

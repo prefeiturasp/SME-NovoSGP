@@ -19,7 +19,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 {
     public class Ao_registrar_conselho_classe_aluno_nota : ConselhoDeClasseTesteBase
     {
-        
+
         public Ao_registrar_conselho_classe_aluno_nota(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -111,7 +111,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             var listaConselho = ObterTodos<ConselhoClasse>();
             listaConselho.ShouldNotBeNull();
-            listaConselho.Any(a=> a.FechamentoTurmaId == 1).ShouldBeTrue();
+            listaConselho.Any(a => a.FechamentoTurmaId == 1).ShouldBeTrue();
             var conselhoClasse = listaConselho.FirstOrDefault(f => f.FechamentoTurmaId == 1);
             conselhoClasse.ShouldNotBeNull();
 
@@ -122,7 +122,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             var listaConselhoNota = ObterTodos<ConselhoClasseNota>();
             listaConselhoNota.ShouldNotBeNull();
-            var conselhoNota = listaConselhoNota.FirstOrDefault(nota => nota.ConselhoClasseAlunoId == conselhoAluno.Id && 
+            var conselhoNota = listaConselhoNota.FirstOrDefault(nota => nota.ConselhoClasseAlunoId == conselhoAluno.Id &&
                                                                         nota.ComponenteCurricularCodigo == dtoNota.CodigoComponenteCurricular);
             conselhoNota.ShouldNotBeNull();
             conselhoNota.Justificativa.ShouldBe(JUSTIFICATIVA);
@@ -144,19 +144,19 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 AnoTurma = tipoNota == TipoNota.Conceito ? ANO_1 : ANO_7,
                 CriarFechamentoDisciplinaAlunoNota = true
             };
-            
+
             await CriarDadosBase(filtro);
 
             if (ehAlterar)
                 await InserirConselhoClassePadrao(filtro);
         }
-        
+
         private new async Task InserirConselhoClassePadrao(FiltroConselhoClasseDto filtroConselhoClasseDto)
         {
             var fechamentoTurmas = ObterTodos<FechamentoTurma>();
 
             long conselhoClasseId = 1;
-	
+
             long conselhoClasseAlunoId = 1;
 
             foreach (var fechamentoTurma in fechamentoTurmas)
@@ -165,16 +165,20 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 {
                     FechamentoTurmaId = fechamentoTurma.Id,
                     Situacao = filtroConselhoClasseDto.SituacaoConselhoClasse,
-                    CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF
+                    CriadoEm = DateTime.Now,
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
                 });
-		
+
                 foreach (var alunoCodigo in ObterAlunos())
                 {
                     await InserirNaBase(new ConselhoClasseAluno()
                     {
                         ConselhoClasseId = conselhoClasseId,
                         AlunoCodigo = alunoCodigo,
-                        CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF
+                        CriadoEm = DateTime.Now,
+                        CriadoPor = SISTEMA_NOME,
+                        CriadoRF = SISTEMA_CODIGO_RF
                     });
 
                     foreach (var componenteCurricular in ObterComponentesCurriculares())
@@ -186,8 +190,10 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                             Justificativa = JUSTIFICATIVA,
                             Nota = filtroConselhoClasseDto.TipoNota == TipoNota.Nota ? new Random().Next(0, 10) : null,
                             ConceitoId = filtroConselhoClasseDto.TipoNota == TipoNota.Conceito ? new Random().Next(1, 3) : null,
-                            CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF
-                        });    
+                            CriadoEm = DateTime.Now,
+                            CriadoPor = SISTEMA_NOME,
+                            CriadoRF = SISTEMA_CODIGO_RF
+                        });
                     }
                     conselhoClasseAlunoId++;
                 }

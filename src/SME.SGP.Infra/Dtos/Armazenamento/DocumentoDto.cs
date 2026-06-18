@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.Infra
 {
     public class DocumentoDto
     {
         public DocumentoDto()
-        {}
+        { }
 
         public DocumentoDto(string tipoDocumento, string classificacao, string usuario, DateTime dataUpload)
         {

@@ -47,9 +47,9 @@ namespace SME.SGP.Aplicacao
                 }
                 catch (Exception ex)
                 {
-                    await mediator.Send(new SalvarLogViaRabbitCommand("Carregar Dres Consolidacao Matricula UseCase", LogNivel.Critico, LogContexto.ConsolidacaoMatricula, ex.Message));                    
+                    await mediator.Send(new SalvarLogViaRabbitCommand("Carregar Dres Consolidacao Matricula UseCase", LogNivel.Critico, LogContexto.ConsolidacaoMatricula, ex.Message));
                 }
-                
+
 
             }
             return true;

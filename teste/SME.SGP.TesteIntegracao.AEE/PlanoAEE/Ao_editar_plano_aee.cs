@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Elastic.Apm.Api;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
@@ -14,6 +9,10 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.PlanoAEE
@@ -57,23 +56,23 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
                 TurmaCodigo = TURMA_CODIGO_1,
                 ResponsavelRF = USUARIO_CP_LOGIN_3333333,
             };
-            
+
             var planoAeeDto = await salvarPlanoAeeUseCase.Executar(planoAeePersistenciaDto);
-            
-            var filtroObter = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(planoAeeDto.PlanoId,TURMA_CODIGO_1,1);
-            
-            var obterPlanoAeeUseCase =  ObterServicoObterPlanoAEEPorIdUseCase();
+
+            var filtroObter = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(planoAeeDto.PlanoId, TURMA_CODIGO_1, 1);
+
+            var obterPlanoAeeUseCase = ObterServicoObterPlanoAEEPorIdUseCase();
             var retornoObter = await obterPlanoAeeUseCase.Executar(filtroObter);
             retornoObter.ShouldNotBeNull();
             retornoObter.Situacao.ShouldBeEquivalentTo(SituacaoPlanoAEE.ParecerCP);
 
             var servicoAlterarResponsavelPlano = ObterServicoAtribuirResponsavelGeralDoPlanoUseCase();
-            var alterarResponsavel = await servicoAlterarResponsavelPlano.Executar(planoAeeDto.PlanoId,USUARIO_PROFESSOR_LOGIN_2222222,USUARIO_PROFESSOR_LOGIN_2222222);
+            var alterarResponsavel = await servicoAlterarResponsavelPlano.Executar(planoAeeDto.PlanoId, USUARIO_PROFESSOR_LOGIN_2222222, USUARIO_PROFESSOR_LOGIN_2222222);
             alterarResponsavel.ShouldBeTrue();
-            
+
             var retornoObterPlanoAlterado = await obterPlanoAeeUseCase.Executar(filtroObter);
             retornoObterPlanoAlterado.ShouldNotBeNull();
-            
+
             retornoObterPlanoAlterado.Responsavel.ResponsavelNome.ShouldContain(USUARIO_PROFESSOR_LOGIN_2222222);
             retornoObterPlanoAlterado.Responsavel.ResponsavelRF.ShouldContain(USUARIO_PROFESSOR_LOGIN_2222222);
 
@@ -92,14 +91,14 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             var obterTodos = ObterTodos<Dominio.PlanoAEE>();
             obterTodos.ShouldNotBeNull();
             obterTodos.FirstOrDefault()!.Situacao.ShouldBeEquivalentTo(SituacaoPlanoAEE.Expirado);
-            
-            var filtroObter = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(1,TURMA_CODIGO_1,1);
-            var obterPlanoAeeUseCase =  ObterServicoObterPlanoAEEPorIdUseCase();
+
+            var filtroObter = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(1, TURMA_CODIGO_1, 1);
+            var obterPlanoAeeUseCase = ObterServicoObterPlanoAEEPorIdUseCase();
             var retornoObter = await obterPlanoAeeUseCase.Executar(filtroObter);
             retornoObter.ShouldNotBeNull();
             retornoObter.Situacao.ShouldBeEquivalentTo(SituacaoPlanoAEE.Expirado);
 
-            
+
             var planoAeeEditado = new PlanoAEEPersistenciaDto()
             {
                 Questoes = ObterQuestoes(),
@@ -118,7 +117,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             var obterTodosPendenciasAee = ObterTodos<Dominio.Pendencia>();
             obterTodosPendenciasAee.ShouldNotBeNull();
             obterTodosPendenciasAee.Count(x => x.Tipo == TipoPendencia.AEE).ShouldBeEquivalentTo(2);
-            
+
             obterTodosPendenciasAee.Count(x => x.Situacao == SituacaoPendencia.Resolvida).ShouldBeEquivalentTo(1);
             obterTodosPendenciasAee.Count(x => x.Situacao == SituacaoPendencia.Pendente).ShouldBeEquivalentTo(1);
         }
@@ -136,13 +135,13 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             var obterTodos = ObterTodos<Dominio.PlanoAEE>();
             obterTodos.ShouldNotBeNull();
             obterTodos.FirstOrDefault()!.Situacao.ShouldBeEquivalentTo(SituacaoPlanoAEE.Devolvido);
-            
-            var filtroObter = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(1,TURMA_CODIGO_1,1);
-            var obterPlanoAeeUseCase =  ObterServicoObterPlanoAEEPorIdUseCase();
+
+            var filtroObter = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(1, TURMA_CODIGO_1, 1);
+            var obterPlanoAeeUseCase = ObterServicoObterPlanoAEEPorIdUseCase();
             var retornoObter = await obterPlanoAeeUseCase.Executar(filtroObter);
             retornoObter.ShouldNotBeNull();
             retornoObter.Situacao.ShouldBeEquivalentTo(SituacaoPlanoAEE.Devolvido);
-            
+
             var planoAeeEditado = new PlanoAEEPersistenciaDto()
             {
                 Questoes = ObterQuestoes(),
@@ -161,7 +160,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             var obterTodosPendenciasAee = ObterTodos<Dominio.Pendencia>();
             obterTodosPendenciasAee.ShouldNotBeNull();
             obterTodosPendenciasAee.Count(x => x.Tipo == TipoPendencia.AEE).ShouldBeEquivalentTo(2);
-            
+
             obterTodosPendenciasAee.Count(x => x.Situacao == SituacaoPendencia.Resolvida).ShouldBeEquivalentTo(1);
             obterTodosPendenciasAee.Count(x => x.Situacao == SituacaoPendencia.Pendente).ShouldBeEquivalentTo(1);
         }
@@ -227,16 +226,16 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
                 TurmaCodigo = TURMA_CODIGO_1,
                 ResponsavelRF = USUARIO_CP_LOGIN_3333333,
             };
-            
+
             var planoAeeDto = await salvarPlanoAeeUseCase.Executar(planoAeePersistenciaDto);
-            
-            var filtroObter = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(planoAeeDto.PlanoId,TURMA_CODIGO_1,1);
-            
-            var obterPlanoAeeUseCase =  ObterServicoObterPlanoAEEPorIdUseCase();
+
+            var filtroObter = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(planoAeeDto.PlanoId, TURMA_CODIGO_1, 1);
+
+            var obterPlanoAeeUseCase = ObterServicoObterPlanoAEEPorIdUseCase();
             var retornoObter = await obterPlanoAeeUseCase.Executar(filtroObter);
             retornoObter.ShouldNotBeNull();
             retornoObter.Situacao.ShouldBeEquivalentTo(SituacaoPlanoAEE.ParecerCP);
-            
+
             var planoAeeEditado = new PlanoAEEPersistenciaDto()
             {
                 Questoes = ObterQuestoes(),
@@ -249,11 +248,11 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
 
             var planos = ObterTodos<Dominio.PlanoAEE>();
             planos.FirstOrDefault()!.Situacao.ShouldBeEquivalentTo(SituacaoPlanoAEE.ParecerCP);
-            
+
             var obterTodosPendenciasAee = ObterTodos<Dominio.Pendencia>();
             obterTodosPendenciasAee.ShouldNotBeNull();
             obterTodosPendenciasAee.Count(x => x.Tipo == TipoPendencia.AEE).ShouldBeEquivalentTo(2);
-            
+
             obterTodosPendenciasAee.Count(x => x.Situacao == SituacaoPendencia.Resolvida).ShouldBeEquivalentTo(1);
             obterTodosPendenciasAee.Count(x => x.Situacao == SituacaoPendencia.Pendente).ShouldBeEquivalentTo(1);
         }
@@ -262,91 +261,91 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             return new List<PlanoAEEQuestaoDto>()
             {
                 new PlanoAEEQuestaoDto()
-                { 
+                {
                     QuestaoId   = 1,
                     Resposta = "1",
                     TipoQuestao = TipoQuestao.PeriodoEscolar
                 },
                 new PlanoAEEQuestaoDto()
-                { 
+                {
                     QuestaoId   = 2,
                     Resposta = "4",
                     TipoQuestao = TipoQuestao.Radio
                 },
                 new PlanoAEEQuestaoDto()
-                { 
+                {
                     QuestaoId   = 3,
                     Resposta = "[{\"diaSemana\":\"Segunda\",\"horarioInicio\":\"2022-09-14T08:00:38\",\"horarioTermino\":\"2022-09-14T17:30:38\",\"id\":2},{\"diaSemana\":\"Terça\",\"horarioInicio\":\"2022-09-14T09:00:00\",\"horarioTermino\":\"2022-09-14T18:30:00\",\"id\":2},{\"diaSemana\":\"Quarta\",\"horarioInicio\":\"2022-09-14T12:00:00\",\"horarioTermino\":\"2022-09-14T18:30:00\",\"id\":3},{\"diaSemana\":\"Quinta\",\"horarioInicio\":\"2022-09-14T07:35:00\",\"horarioTermino\":\"2022-09-14T16:45:00\",\"id\":4},{\"diaSemana\":\"Sexta\",\"horarioInicio\":\"2022-09-14T08:45:00\",\"horarioTermino\":\"2022-09-14T16:00:00\",\"id\":5}]",
                     TipoQuestao = TipoQuestao.FrequenciaEstudanteAEE
                 },
                 new PlanoAEEQuestaoDto()
-                { 
+                {
                     QuestaoId   = 4,
                     Resposta = "3",
                     TipoQuestao = TipoQuestao.Radio
                 },
                 new PlanoAEEQuestaoDto()
-                { 
+                {
                     QuestaoId   = 5,
                     Resposta = "4 - Forma de atendimento educacional especializado do estudante",
                     TipoQuestao = TipoQuestao.Texto
                 },
                 new PlanoAEEQuestaoDto()
-                { 
+                {
                     QuestaoId   = 6,
                     Resposta = "5 - Objetivos do AEE",
                     TipoQuestao = TipoQuestao.Texto
                 },
                 new PlanoAEEQuestaoDto()
-                { 
+                {
                     QuestaoId   = 7,
                     Resposta = "6 - Orientações e ações para o desenvolvimento/atividades do AEE",
                     TipoQuestao = TipoQuestao.Texto
                 },
                 new PlanoAEEQuestaoDto()
-                { 
+                {
                     QuestaoId   = 8,
                     Resposta = "14",
                     TipoQuestao = TipoQuestao.Radio
                 },
                 new PlanoAEEQuestaoDto()
-                { 
+                {
                     QuestaoId   = 9,
                     Resposta = "7 - Tem necessidade de recursos de Acessibilidade/Materiais para eliminação de barreiras para a sala regular (Seleção de materiais, equipamentos e mobiliário)",
                     TipoQuestao = TipoQuestao.Texto
                 },
                 new PlanoAEEQuestaoDto()
-                { 
+                {
                     QuestaoId   = 10,
                     Resposta = "1",
                     TipoQuestao = TipoQuestao.Radio
                 },
                 new PlanoAEEQuestaoDto()
-                { 
+                {
                     QuestaoId   = 11,
                     Resposta = "8 - Tem necessidade de recursos de Acessibilidade/Materiais para eliminação de barreiras para a sala de recursos multifuncionais (Seleção de materiais, equipamentos e mobiliário)",
                     TipoQuestao = TipoQuestao.Texto
                 },
                 new PlanoAEEQuestaoDto()
-                { 
+                {
                     QuestaoId   = 12,
                     Resposta = "2",
                     TipoQuestao = TipoQuestao.Radio
                 },
                 new PlanoAEEQuestaoDto()
-                { 
+                {
                     QuestaoId   = 13,
                     Resposta = "9 - Mobilização dos Recursos Humanos da U.E. ou parcerias na unidade educacional",
                     TipoQuestao = TipoQuestao.Texto
                 },
                 new PlanoAEEQuestaoDto()
-                { 
+                {
                     QuestaoId   = 14,
                     Resposta = "6",
                     TipoQuestao = TipoQuestao.Radio
                 },
                 new PlanoAEEQuestaoDto()
-                { 
+                {
                     QuestaoId   = 15,
                     Resposta = "10 - Mobilização dos Recursos Humanos com profissionais externos à unidade educacional",
                     TipoQuestao = TipoQuestao.Texto
@@ -367,7 +366,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
                 TurmaCodigo = TURMA_CODIGO_1,
                 ResponsavelRF = USUARIO_CP_LOGIN_3333333,
             };
-            
+
             //Inserindo
             var salvar = await salvarPlanoAeeUseCase.Executar(planoAeePersistenciaDto);
             //Atualizando
@@ -384,8 +383,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
                 CriadoEm = DateTime.Now,
                 CriadoRF = "1"
             };
-            await AtualizarNaBase(plano);;
+            await AtualizarNaBase(plano); ;
         }
-        
+
     }
 }

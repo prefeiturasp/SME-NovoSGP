@@ -20,9 +20,9 @@ namespace SME.SGP.Aplicacao
         public ObterComponentesTerritorioAgrupamentoCorrelacionadosQueryHandler(IHttpClientFactory httpClientFactory, IMediator mediator)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator)); 
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
-                                                                       
+
         public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesTerritorioAgrupamentoCorrelacionadosQuery request, CancellationToken cancellationToken)
         {
             var componenteCurricularEol = new List<ComponenteCurricularEol>();

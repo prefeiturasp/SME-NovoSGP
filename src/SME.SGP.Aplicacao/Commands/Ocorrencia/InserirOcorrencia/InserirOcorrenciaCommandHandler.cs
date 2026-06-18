@@ -23,8 +23,8 @@ namespace SME.SGP.Aplicacao
         private readonly IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions;
 
         public InserirOcorrenciaCommandHandler(IRepositorioOcorrencia repositorioOcorrencia, IRepositorioOcorrenciaTipo repositorioOcorrenciaTipo,
-            IRepositorioOcorrenciaAluno repositorioOcorrenciaAluno,IRepositorioOcorrenciaServidor ocorrenciaServidor, 
-            IMediator mediator, IUnitOfWork unitOfWork,IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
+            IRepositorioOcorrenciaAluno repositorioOcorrenciaAluno, IRepositorioOcorrenciaServidor ocorrenciaServidor,
+            IMediator mediator, IUnitOfWork unitOfWork, IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
         {
             this.repositorioOcorrencia = repositorioOcorrencia ?? throw new ArgumentNullException(nameof(repositorioOcorrencia));
             this.repositorioOcorrenciaTipo = repositorioOcorrenciaTipo ?? throw new ArgumentNullException(nameof(repositorioOcorrenciaTipo));
@@ -63,13 +63,13 @@ namespace SME.SGP.Aplicacao
                     {
                         await repositorioOcorrenciaAluno.SalvarAsync(ocorrenciaAluno);
                     }
-                    
+
                     ocorrencia.AdicionarServidores(request.CodigosServidores);
                     foreach (var ocorrenciaServidor in ocorrencia.Servidores)
                     {
                         await repositorioOcorrenciaServidor.SalvarAsync(ocorrenciaServidor);
                     }
-                    
+
                     unitOfWork.PersistirTransacao();
                     await MoverArquivos(request);
                     return (AuditoriaDto)ocorrencia;

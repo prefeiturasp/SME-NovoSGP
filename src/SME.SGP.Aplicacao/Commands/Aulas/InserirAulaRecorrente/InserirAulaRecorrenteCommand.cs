@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
         public TipoAula TipoAula { get; set; }
         public string CodigoUe { get; set; }
         public bool EhRegencia { get; set; }
-        public RecorrenciaAula RecorrenciaAula  { get; set; }
+        public RecorrenciaAula RecorrenciaAula { get; set; }
     }
 
     public class InserirAulaRecorrenteCommandValidator : AbstractValidator<InserirAulaRecorrenteCommand>

@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Dominio
 {
@@ -55,7 +54,7 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "Ausência de registro individual", GroupName = "Diario de Classe")]
         AusenciaDeRegistroIndividual = 17,
-        
+
         [Display(Name = "AEE", GroupName = "AEE")]
         AEE = 18,
 

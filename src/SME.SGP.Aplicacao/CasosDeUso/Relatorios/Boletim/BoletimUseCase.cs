@@ -1,12 +1,11 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
 {
@@ -24,7 +23,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         {
             if (filtroRelatorioBoletimDto.QuantidadeBoletimPorPagina <= 0)
                 throw new NegocioException(MensagemNegocioBoletim.QUANTIDADE_BOLETIM_POR_PAGINAS);
-            
+
             bool existeUe = await mediator
                 .Send(new ValidaSeExisteUePorCodigoQuery(filtroRelatorioBoletimDto.UeCodigo));
 

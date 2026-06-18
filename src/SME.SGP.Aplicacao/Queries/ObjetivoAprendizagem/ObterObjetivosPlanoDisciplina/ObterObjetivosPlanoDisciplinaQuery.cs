@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
                 .WithMessage("O id da turma precisa ser informado.");
             RuleFor(a => a.ComponenteCurricularId)
                 .NotEmpty()
-                .WithMessage("O id do componente curricular precisa ser informado.");       
+                .WithMessage("O id do componente curricular precisa ser informado.");
         }
     }
 }

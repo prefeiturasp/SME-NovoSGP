@@ -27,9 +27,10 @@ namespace SME.SGP.Aplicacao
         private IEnumerable<GraficoBaseQuantidadeDoubleDto> ObterDadosDto(IEnumerable<RegistroIndividualMediaPorAnoDto> dadosPorAno)
         {
             var listaDto = new List<GraficoBaseQuantidadeDoubleDto>();
-            foreach(var registro in dadosPorAno)
+            foreach (var registro in dadosPorAno)
             {
-                listaDto.Add(new GraficoBaseQuantidadeDoubleDto() {
+                listaDto.Add(new GraficoBaseQuantidadeDoubleDto()
+                {
                     Quantidade = Math.Round(registro.Quantidade),
                     Descricao = $"{registro.Modalidade.ShortName()}-{registro.Ano}"
                 }

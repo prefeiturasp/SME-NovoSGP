@@ -1,16 +1,16 @@
-﻿using System;
+﻿using MediatR;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPeriodoEscolarListaPorTipoCalendarioQueryHandler: IRequestHandler<ObterPeriodoEscolarListaPorTipoCalendarioQuery,PeriodoEscolarListaDto>
+    public class ObterPeriodoEscolarListaPorTipoCalendarioQueryHandler : IRequestHandler<ObterPeriodoEscolarListaPorTipoCalendarioQuery, PeriodoEscolarListaDto>
     {
         private readonly IRepositorioPeriodoEscolarConsulta repositorio;
 
@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             var lista = await repositorio.ObterPorTipoCalendario(request.TipoCalendarioId);
             if (lista.EhNulo() || !lista.Any())
                 return null;
-            
+
             return EntidadeParaDto(lista);
         }
         private static PeriodoEscolarListaDto EntidadeParaDto(IEnumerable<PeriodoEscolar> lista)
@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
                     PeriodoInicio = x.PeriodoInicio,
                     PeriodoFim = x.PeriodoFim,
                     Migrado = x.Migrado,
-                    Id = x.Id                    
+                    Id = x.Id
                 }).ToList()
             };
         }

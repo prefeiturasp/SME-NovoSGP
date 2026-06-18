@@ -1,12 +1,12 @@
-﻿using System;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using System;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterQuantidadeAulaDiaPendenciaPorUeUseCase : AbstractUseCase,IObterQuantidadeAulaDiaPendenciaPorUeUseCase
+    public class ObterQuantidadeAulaDiaPendenciaPorUeUseCase : AbstractUseCase, IObterQuantidadeAulaDiaPendenciaPorUeUseCase
     {
         public ObterQuantidadeAulaDiaPendenciaPorUeUseCase(IMediator mediator) : base(mediator)
         {
@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
             try
             {
                 var filtro = param.ObterObjetoMensagem<ObterQuantidadeAulaDiaPendenciaDto>();
-                var pendencias = await mediator.Send(new ObterPendenciasParaInserirAulasEDiasQuery(filtro.AnoLetivo,filtro.UeId));
+                var pendencias = await mediator.Send(new ObterPendenciasParaInserirAulasEDiasQuery(filtro.AnoLetivo, filtro.UeId));
                 foreach (var pendencia in pendencias)
                 {
                     var dto = new AulasDiasPendenciaDto
@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao realizar a carga de dias e aulas  na pendencia", LogNivel.Negocio, LogContexto.Pendencia, ex.Message,innerException:ex.InnerException?.ToString()));
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao realizar a carga de dias e aulas  na pendencia", LogNivel.Negocio, LogContexto.Pendencia, ex.Message, innerException: ex.InnerException?.ToString()));
                 return false;
             }
         }

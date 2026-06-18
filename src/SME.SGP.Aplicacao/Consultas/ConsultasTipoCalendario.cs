@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorio = repositorio ?? throw new System.ArgumentNullException(nameof(repositorio));
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
-            this.repositorioAbrangencia = repositorioAbrangencia?? throw new System.ArgumentNullException(nameof(repositorioAbrangencia));
+            this.repositorioAbrangencia = repositorioAbrangencia ?? throw new System.ArgumentNullException(nameof(repositorioAbrangencia));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(repositorioPeriodoEscolar));
         }
@@ -99,18 +99,19 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<TipoCalendarioDto>> ListarPorAnoLetivo(int anoLetivo, int? modalidade)
         {
             int[] modalidades;
-            
-            if(modalidade.EhNulo() || !modalidade.HasValue){
+
+            if (modalidade.EhNulo() || !modalidade.HasValue)
+            {
                 var login = servicoUsuario.ObterLoginAtual();
                 var perfil = servicoUsuario.ObterPerfilAtual();
 
                 var modalidadesUsuario = await repositorioAbrangencia.ObterModalidades(login, perfil, anoLetivo, false, null);
                 var modalidadesTipoCalendario = MapearModalidadesUsuario(modalidadesUsuario.Select(s => (Modalidade)s));
-                modalidades = modalidadesTipoCalendario.Select(a => (int) a).ToArray();
+                modalidades = modalidadesTipoCalendario.Select(a => (int)a).ToArray();
             }
             else
             {
-                modalidades = new []{modalidade.Value};
+                modalidades = new[] { modalidade.Value };
             }
 
             var retorno = await repositorio.ListarPorAnoLetivoEModalidades(anoLetivo, modalidades);
@@ -167,7 +168,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> PeriodoEmAberto(TipoCalendario tipoCalendario, DateTime dataReferencia, int bimestre = 0, bool ehAnoLetivo = false)
             => await repositorio.PeriodoEmAberto(tipoCalendario.Id, dataReferencia, bimestre, ehAnoLetivo);
-        
+
         public TipoCalendario ObterPorId(long id)
         {
             return repositorio.ObterPorId(id);

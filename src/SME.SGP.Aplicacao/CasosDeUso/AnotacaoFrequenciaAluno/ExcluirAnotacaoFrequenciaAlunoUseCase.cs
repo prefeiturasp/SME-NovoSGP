@@ -24,10 +24,10 @@ namespace SME.SGP.Aplicacao
                 await ValidarAtribuicaoUsuario(long.Parse(aula.DisciplinaId), aula.TurmaId, aula.DataAula, usuario);
 
             await mediator.Send(new ExcluirAnotacaoFrequenciaAlunoCommand(anotacao));
-            
+
             if (!string.IsNullOrEmpty(anotacao?.Anotacao?.Trim()))
                 await mediator.Send(new DeletarArquivoDeRegistroExcluidoCommand(anotacao.Anotacao, TipoArquivo.FrequenciaAnotacaoEstudante.Name()));
-            
+
             return true;
         }
 

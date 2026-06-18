@@ -22,6 +22,6 @@ namespace SME.SGP.Aplicacao
             var tiposEscola = await repositorioTipoEscola.ObterTipoEscolaPorDreEUe(request.DreCodigo, request.UeCodigo, request.Modalidades);
 
             return tiposEscola.OrderBy(c => c.CodTipoEscola);
-        }            
+        }
     }
 }

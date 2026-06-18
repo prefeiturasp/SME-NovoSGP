@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             var modalidadesPorAnoRetornoDto = new List<RetornoModalidadesPorAnoDto>();
             var modalidades = await mediator.Send(new ObterModalidadesPorAnosQuery(anoLetivo, dreId, ueId, modalidade, semestre));
-            foreach (var item in modalidades.GroupBy(s=> new {s.Modalidade, s.Ano}))
+            foreach (var item in modalidades.GroupBy(s => new { s.Modalidade, s.Ano }))
             {
                 modalidadesPorAnoRetornoDto.Add(new RetornoModalidadesPorAnoDto()
                 {

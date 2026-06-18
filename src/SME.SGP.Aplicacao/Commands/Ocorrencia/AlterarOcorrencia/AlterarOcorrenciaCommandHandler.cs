@@ -1,15 +1,14 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Options;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Utilitarios;
 using System;
-using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
-using SME.SGP.Infra.Utilitarios;
-using System.Text.RegularExpressions;
 
 namespace SME.SGP.Aplicacao
 {
@@ -57,7 +56,7 @@ namespace SME.SGP.Aplicacao
 
                     var alunosParaSeremDeletados = ocorrencia.Alunos.Where(x => !request.CodigosAlunos.Contains(x.CodigoAluno)).Select(x => x.Id);
                     await repositorioOcorrenciaAluno.ExcluirAsync(alunosParaSeremDeletados);
-                    
+
                     var novosAlunos = request.CodigosAlunos.Where(x => !ocorrencia.Alunos.Any(y => y.CodigoAluno == x)).ToList();
                     ocorrencia.AdiconarAlunos(novosAlunos);
                     foreach (var novoAluno in novosAlunos)
@@ -68,7 +67,7 @@ namespace SME.SGP.Aplicacao
 
                     var servidoresParaSeremDeletados = ocorrencia.Servidores.Where(s => !request.CodigosServidores.Contains(s.CodigoServidor)).Select(d => d.Id);
                     await repositorioOcorrenciaServidor.ExcluirPoIds(servidoresParaSeremDeletados);
-                    
+
                     var novosServidores = request.CodigosServidores.Where(x => !ocorrencia.Servidores.Any(y => y.CodigoServidor == x)).ToList();
                     ocorrencia.AdicionarServidores(novosServidores);
                     foreach (var novoServidor in novosServidores)
@@ -76,8 +75,8 @@ namespace SME.SGP.Aplicacao
                         var ocorrenciaServidor = ocorrencia.Servidores.FirstOrDefault(x => x.CodigoServidor == novoServidor);
                         await repositorioOcorrenciaServidor.SalvarAsync(ocorrenciaServidor);
                     }
-                    
-                    
+
+
                     unitOfWork.PersistirTransacao();
                     await MoverRemoverExcluidos(request.Descricao, descricaoAtual);
                     return (AuditoriaDto)ocorrencia;

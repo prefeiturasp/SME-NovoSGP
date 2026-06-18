@@ -1,6 +1,6 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using System.Collections.Generic;
-using FluentValidation;
 
 namespace SME.SGP.Aplicacao
 {
@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         public int AnoLetivo { get; set; }
         public int Semestre { get; set; }
     }
-    
+
     public class ObterRelatorioSemestralTurmaPAPPorAnoSemestreQueryValidator : AbstractValidator<ObterRelatorioSemestralAlunoPAPPorAnoSemestreQuery>
     {
         public ObterRelatorioSemestralTurmaPAPPorAnoSemestreQueryValidator()

@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Frequencia
             var turma = new Turma
             {
                 Id = 1,
-                CodigoTurma = "12345",                
+                CodigoTurma = "12345",
                 AnoLetivo = DateTime.Today.Year,
                 TipoTurma = TipoTurma.Regular
             };

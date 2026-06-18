@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
 
         public ObterAtividadesInfantilPorAulaIdQuery(long aulaId)
         {
-            AulaId=aulaId;
+            AulaId = aulaId;
         }
     }
 

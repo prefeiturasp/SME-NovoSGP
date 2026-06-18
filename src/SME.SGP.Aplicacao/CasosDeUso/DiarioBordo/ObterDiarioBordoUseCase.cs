@@ -28,14 +28,14 @@ namespace SME.SGP.Aplicacao
             var aberto = await AulaDentroDoPeriodo(mediator, aula.TurmaId, aula.DataAula);
 
             IEnumerable<DiarioBordo> diariosBordos = await mediator.Send(new ObterDiariosDeBordosPorAulaQuery(aulaId));
-            
+
             var componenteCurricularIdPrincipal = await RetornaComponenteCurricularIdPrincipalDoProfessor(aula.TurmaId, componenteCurricularId);
-            if(componenteCurricularIdPrincipal == 0)
+            if (componenteCurricularIdPrincipal == 0)
                 throw new NegocioException($"Componente Curricular não encontrado");
 
             var diarioBordo = diariosBordos.FirstOrDefault(diario => diario.ComponenteCurricularId == componenteCurricularIdPrincipal);
             var diarioBordoIrmao = diariosBordos.FirstOrDefault(diario => diario.ComponenteCurricularId != componenteCurricularIdPrincipal);
-            
+
             var codigosComponentes = diariosBordos.Select(diario => diario.ComponenteCurricularId).ToList();
             codigosComponentes.Add(componenteCurricularIdPrincipal);
             var componentes = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(codigosComponentes.Distinct().ToArray()));
@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
 
             if (diarioBordo.EhNulo())
                 return MapearParaDto(new DiarioBordo() { AulaId = aulaId, ComponenteCurricularId = componenteCurricularIdPrincipal }, aberto, diarioBordoIrmao, componentes);
-            
+
             if (diarioBordo.DevolutivaId.NaoEhNulo())
                 diarioBordo.Devolutiva = await mediator.Send(new ObterDevolutivaPorIdQuery(diarioBordo.DevolutivaId.GetValueOrDefault()));
 
@@ -68,11 +68,11 @@ namespace SME.SGP.Aplicacao
             var disciplinas = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(turmaCodigo, false, false, false);
             if (disciplinas != null && disciplinas.Any())
             {
-                if(disciplinas.Count > 1)
+                if (disciplinas.Count > 1)
                 {
                     var disciplina = disciplinas.Where(b => b.CodigoComponenteCurricular == componenteCurricularId);
 
-                    if(disciplina == null)
+                    if (disciplina == null)
                         return 0;
 
                     if (disciplina.Any())
@@ -101,7 +101,7 @@ namespace SME.SGP.Aplicacao
         private DiarioBordoDto MapearParaDto(DiarioBordo diarioBordo, bool aberto, DiarioBordo diarioBordoIrmao, IEnumerable<DisciplinaDto> disciplinas)
         {
             return new DiarioBordoDto
-        {
+            {
                 AulaId = diarioBordo.AulaId,
                 DevolutivaId = diarioBordo.DevolutivaId,
                 Devolutivas = diarioBordo.Devolutiva?.Descricao,

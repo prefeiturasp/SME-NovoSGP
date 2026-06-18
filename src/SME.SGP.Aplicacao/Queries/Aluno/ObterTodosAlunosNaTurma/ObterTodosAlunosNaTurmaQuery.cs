@@ -6,10 +6,10 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTodosAlunosNaTurmaQuery : IRequest<IEnumerable<AlunoPorTurmaResposta>>
     {
-        public ObterTodosAlunosNaTurmaQuery(int codigoTurma, int? codigoAluno = null, int tempoArmazenamentoCache = 720 )
+        public ObterTodosAlunosNaTurmaQuery(int codigoTurma, int? codigoAluno = null, int tempoArmazenamentoCache = 720)
         {
             CodigoTurma = codigoTurma;
-            CodigoAluno= codigoAluno;
+            CodigoAluno = codigoAluno;
             TempoArmazenamentoCache = tempoArmazenamentoCache;
         }
 

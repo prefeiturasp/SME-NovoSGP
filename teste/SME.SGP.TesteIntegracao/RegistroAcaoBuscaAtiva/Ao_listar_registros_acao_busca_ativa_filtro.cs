@@ -16,8 +16,8 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
 {
     public class Ao_listar_registros_acao_busca_ativa_filtro : RegistroAcaoBuscaAtivaTesteBase
     {
-        
-   
+
+
         public Ao_listar_registros_acao_busca_ativa_filtro(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
 
@@ -103,7 +103,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             await GerarDadosRegistroAcao_2PrimeirasQuestoes(dataRegistro, true, TURMA_ID_3);
             await GerarDadosRegistroAcao_2PrimeirasQuestoes(dataRegistro.AddMonths(1), true, TURMA_ID_3);
             var useCase = ObterUseCaseListagemRegistrosAcao();
-            
+
             var retorno = await useCase.Executar(new FiltroRegistrosAcaoDto()
             {
                 AnoLetivo = dataRegistro.Year,

@@ -1,17 +1,13 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Metrica.Worker.Commands;
 using SME.SGP.Metrica.Worker.Queries;
 using SME.SGP.Metrica.Worker.Repositorios.Interfaces;
 using SME.SGP.Metrica.Worker.UseCases.Interfaces;
 using System;
-using System.Threading.Tasks;
 using System.Linq;
-using SME.SGP.Dados.Repositorios;
-using SME.SGP.Dominio;
-using Nest;
-using SME.SGP.Infra.Utilitarios;
-using SME.SGP.Metrica.Worker.Commands;
-using SME.SGP.Dominio.Interfaces;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Metrica.Worker.UseCases
 {
@@ -35,13 +31,13 @@ namespace SME.SGP.Metrica.Worker.UseCases
             var filtroTurma = mensagem.ObterObjetoMensagem<FiltroCodigoDataMetricasDto>();
             var turma = await repositorioSGP.ObterTurmaComUeEDrePorCodigo(filtroTurma.Codigo);
             await TratarAtualizacaoMetricasAnteriores(filtroTurma.IgnorarRecheckCargaMetricas, turma, filtroTurma.Data);
-            
+
             if (filtroTurma.Data.FimDeSemana())
                 return false;
             if (!await PossuiPeriodoLetivo(turma, filtroTurma.Data))
                 return false;
 
-            var codigosComponentesCurricularesTurmaSemAtribuicao = await mediator.Send(new ObterComponentesCurricularesSemAtribuicaoPorTurmaDataQuery(filtroTurma.Codigo, filtroTurma.Data));  
+            var codigosComponentesCurricularesTurmaSemAtribuicao = await mediator.Send(new ObterComponentesCurricularesSemAtribuicaoPorTurmaDataQuery(filtroTurma.Codigo, filtroTurma.Data));
             foreach (var codigoComponente in codigosComponentesCurricularesTurmaSemAtribuicao)
                 await mediator.Send(new PublicarFilaCommand(Rotas.RotasRabbitMetrica.AulasSemAtribuicaoSubstituicaoComponenteMensais, new FiltroComponenteCodigoDataMetricasDto(codigoComponente, filtroTurma.Data, filtroTurma.Codigo)));
 
@@ -103,7 +99,7 @@ namespace SME.SGP.Metrica.Worker.UseCases
                         await mediator.Send(new PublicarFilaCommand(Rotas.RotasRabbitMetrica.AulasSemAtribuicaoSubstituicaoTurmaMensais, new FiltroCodigoDataMetricasDto(turma.CodigoTurma, dataAtual, true)));
                 return true;
             }
-            return false;               
+            return false;
         }
 
         private async Task<bool> PossuiPeriodoLetivo(Turma turma, DateTime data)

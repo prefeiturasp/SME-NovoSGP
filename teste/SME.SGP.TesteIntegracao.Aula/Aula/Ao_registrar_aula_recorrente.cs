@@ -5,7 +5,6 @@ using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes.Query;
 using SME.SGP.TesteIntegracao.Setup;
@@ -88,9 +87,9 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrente
             var useCase = ServiceProvider.GetService<IInserirAulaRecorrenteUseCase>();
 
             var usuario = await ServiceProvider.GetService<IMediator>().Send(ObterUsuarioLogadoQuery.Instance);
-            var aulaRecorrente = new IncluirFilaInserirAulaRecorrenteCommand(usuario, 
-                new PersistirAulaDto() 
-                {  
+            var aulaRecorrente = new IncluirFilaInserirAulaRecorrenteCommand(usuario,
+                new PersistirAulaDto()
+                {
                     DataAula = dataAtual,
                     Quantidade = 1,
                     CodigoTurma = "1",
@@ -118,7 +117,7 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrente
             if (data.DayOfWeek == DayOfWeek.Sunday || data.DayOfWeek == DayOfWeek.Saturday)
                 return DefinirDataConsiderandoDiaSemana(data.AddDays(1));
 
-            return data;                
+            return data;
         }
     }
 }

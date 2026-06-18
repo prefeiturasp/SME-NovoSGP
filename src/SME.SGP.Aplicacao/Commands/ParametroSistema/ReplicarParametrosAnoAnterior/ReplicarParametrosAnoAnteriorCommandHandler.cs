@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         {
             var anoLetivoAnterior = await mediator
                 .Send(new ObterAnoLetivoUltimoTipoCalendarioPorAnoReferenciaQuery(request.AnoLetivo, request.ModalidadeTipoCalendario));
-            
+
             var inseriuRegistro = await repositorioParametrosSistema
                 .ReplicarParametrosAnoAnteriorAsync(request.AnoLetivo, anoLetivoAnterior);
 

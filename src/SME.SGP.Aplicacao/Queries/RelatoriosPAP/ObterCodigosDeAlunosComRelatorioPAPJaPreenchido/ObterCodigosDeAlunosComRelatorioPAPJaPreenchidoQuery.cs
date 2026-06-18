@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
             PeriodoRelatorioPAPId = periodoRelatorioPAPId;
         }
 
-        public long TurmaId {  get; set; }
+        public long TurmaId { get; set; }
         public long PeriodoRelatorioPAPId { get; set; }
     }
 

@@ -84,7 +84,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
             mediatorMock.Setup(m => m.Send(It.IsAny<ObterAlunosPorTurmaEAnoLetivoQuery>(), default))
                         .ReturnsAsync(new List<AlunoPorTurmaResposta> { aluno });
             mediatorMock.Setup(m => m.Send(It.IsAny<VerificaNotasTodosComponentesCurricularesQuery>(), default))
-                        .ReturnsAsync(true); 
+                        .ReturnsAsync(true);
             mediatorMock.Setup(m => m.Send(It.IsAny<SalvarConselhoClasseAlunoCommand>(), default))
                         .ReturnsAsync(1L);
 

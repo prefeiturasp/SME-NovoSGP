@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarConsolidacaoDistorc
 
         public SalvarPainelEducacionalConsolidacaoDistorcaoIdadeCommandHandler(IRepositorioPainelEducacionalConsolidacaoDistorcaoIdade repositorio)
         {
-            this.repositorio= repositorio;
+            this.repositorio = repositorio;
         }
 
         public async Task<bool> Handle(SalvarPainelEducacionalConsolidacaoDistorcaoIdadeCommand request, CancellationToken cancellationToken)

@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Infra
-{ 
+{
     public class FiltroDasboardDiarioBordoDto
     {
         [Required]

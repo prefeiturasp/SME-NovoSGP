@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         }
     }
 
-    public class ObterAlunosPorTurmaEDataMatriculaQueryValidator: AbstractValidator<ObterAlunosPorTurmaEDataMatriculaQuery>
+    public class ObterAlunosPorTurmaEDataMatriculaQueryValidator : AbstractValidator<ObterAlunosPorTurmaEDataMatriculaQuery>
     {
         public ObterAlunosPorTurmaEDataMatriculaQueryValidator()
         {

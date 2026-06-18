@@ -35,7 +35,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarTurma(Modalidade.Medio);
             await CriarConselhoClasseConsolidadoTurmaAlunos();
             await CriarTipoCalendario(ModalidadeTipoCalendario.FundamentalMedio);
-            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_3,DATA_FIM_BIMESTRE_3,BIMESTRE_3,TIPO_CALENDARIO_1);
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_3, DATA_FIM_BIMESTRE_3, BIMESTRE_3, TIPO_CALENDARIO_1);
 
             var filtro = new FiltroConselhoClasseConsolidadoTurmaBimestreDto(TURMA_ID_1, BIMESTRE_3, -99);
 
@@ -43,7 +43,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             var obterConselhoClasseConsolidado = new ObterConselhoClasseConsolidadoPorTurmaBimestreUseCase(mediator);
             var resultado = await obterConselhoClasseConsolidado.Executar(filtro);
-           
+
             var conselhoClasseConsolidadoTurmaAluno = ObterTodos<ConselhoClasseConsolidadoTurmaAluno>();
             var conselhoClasseConsolidadoTurmaAlunoAgrupado = conselhoClasseConsolidadoTurmaAluno.GroupBy(x => x.Status);
             var qtdeNaoIniciado = conselhoClasseConsolidadoTurmaAlunoAgrupado.First(x => x.Key == SituacaoConselhoClasse.NaoIniciado);
@@ -55,6 +55,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             Assert.Equal(qtdeConcluido.Count(), resultado.First(x => x.Status == 2).Quantidade);
         }
 
-     
+
     }
 }

@@ -1,8 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using System;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         {
             this.mediator = mediator;
         }
-        
+
         public async Task<bool> Executar(MensagemRabbit param)
         {
             var filtro = new FiltroExcluirArquivoArmazenamentoDto();
@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-               await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível Excluir o Arquivo {filtro.ArquivoNome} no armazenamento do Minio", LogNivel.Critico, LogContexto.Geral, ex.Message,rastreamento:ex.StackTrace,excecaoInterna:ex.InnerException?.ToString()));
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível Excluir o Arquivo {filtro.ArquivoNome} no armazenamento do Minio", LogNivel.Critico, LogContexto.Geral, ex.Message, rastreamento: ex.StackTrace, excecaoInterna: ex.InnerException?.ToString()));
                 throw;
             }
         }

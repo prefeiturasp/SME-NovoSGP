@@ -1,13 +1,12 @@
-﻿using System;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Enumerados;
-using System.Threading;
 
 namespace SME.SGP.Aplicacao
 {
@@ -31,14 +30,14 @@ namespace SME.SGP.Aplicacao
                 aulas = await RemoverAulasComFechamentoTurmaDisciplinaProcessado(aulas);
                 if (aulas.NaoEhNulo() && aulas.Any())
                     await RegistraPendencia(aulas, TipoPendencia.PlanoAula);
-             
+
                 await VerificaPendenciaAulaGeradaParaInfantil(filtro.DreId, filtro.UeId);
 
                 return true;
             }
             catch (Exception ex)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao Registrar Pendencia Aula do Plano Aula.",  LogNivel.Critico, LogContexto.Aula, ex.Message,innerException: ex.InnerException.ToString(),rastreamento:ex.StackTrace));
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao Registrar Pendencia Aula do Plano Aula.", LogNivel.Critico, LogContexto.Aula, ex.Message, innerException: ex.InnerException.ToString(), rastreamento: ex.StackTrace));
                 throw;
             }
         }
@@ -54,7 +53,7 @@ namespace SME.SGP.Aplicacao
 
             if (pendenciasId.Any())
             {
-                await mediator.Send(new ExcluirPendenciasPorIdsCommand() { PendenciasIds = pendenciasId.ToArray()});
+                await mediator.Send(new ExcluirPendenciasPorIdsCommand() { PendenciasIds = pendenciasId.ToArray() });
             }
         }
 

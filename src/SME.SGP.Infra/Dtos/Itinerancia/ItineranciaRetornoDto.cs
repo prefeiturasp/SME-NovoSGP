@@ -12,7 +12,7 @@ namespace SME.SGP.Infra
         public long UeId { get; set; }
         public SituacaoItinerancia? Situacao { get; set; }
         public string UeNome { get; set; }
-        public TipoEscola TipoEscola { get; set; }        
+        public TipoEscola TipoEscola { get; set; }
     }
 
 }

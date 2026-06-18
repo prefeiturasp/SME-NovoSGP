@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional.Frequencia
                         AnoLetivo = primeiro.AnoLetivo,
                         DataAula = g.Key.DataAula,
                         TotalEstudantes = totalEstudantes,
-                        TotalPresentes  = totalPresentes,
+                        TotalPresentes = totalPresentes,
                         PercentualFrequencia = Math.Round(percentualFrequencia, 2)
                     };
                 })

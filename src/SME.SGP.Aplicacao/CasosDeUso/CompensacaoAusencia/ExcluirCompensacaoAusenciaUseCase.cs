@@ -45,11 +45,11 @@ namespace SME.SGP.Aplicacao
                                                         await ObterCompensacoesAusenciaAlunoAula(compensacaoId)));
             }
 
-            var idsComErroAoExcluir = await ExcluirCompensacoes(compensacoesExcluir, 
-                                                                compensacoesAlunosExcluir, 
-                                                                compensacoesAlunoAulasExcluir, 
+            var idsComErroAoExcluir = await ExcluirCompensacoes(compensacoesExcluir,
+                                                                compensacoesAlunosExcluir,
+                                                                compensacoesAlunoAulasExcluir,
                                                                 compensacoesDisciplinasExcluir);
-            
+
             if (listaCompensacaoDescricao.NaoEhNulo() && listaCompensacaoDescricao.Any())
             {
                 foreach (var item in listaCompensacaoDescricao)
@@ -107,7 +107,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<List<long>> ExcluirCompensacoes(List<CompensacaoAusencia> compensacoes, 
+        private async Task<List<long>> ExcluirCompensacoes(List<CompensacaoAusencia> compensacoes,
                                                List<CompensacaoAusenciaAluno> compensacoesAlunos,
                                                List<CompensacaoAusenciaAlunoAula> compensacoesAlunoAulas,
                                                 List<CompensacaoAusenciaDisciplinaRegencia> compensacoesDisciplinas)

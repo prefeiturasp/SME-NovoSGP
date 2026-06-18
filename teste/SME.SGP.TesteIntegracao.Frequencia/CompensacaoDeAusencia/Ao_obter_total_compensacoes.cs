@@ -47,7 +47,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia.CompensacaoDeAusencia
                                 int totalAusencia)
         {
             await CriaFrequenciaAluno(
-                        dtoDadoBase.First(x=>x.Bimestre == BIMESTRE_2),
+                        dtoDadoBase.First(x => x.Bimestre == BIMESTRE_2),
                         DATA_INICIO_BIMESTRE_2,
                         DATA_FIM_BIMESTRE_2,
                         codigoAluno,
@@ -67,7 +67,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia.CompensacaoDeAusencia
         }
         private List<CompensacaoDeAusenciaDBDto> CriaCompensacoesAsusencias(string perfil, string componente)
         {
-           return new List<CompensacaoDeAusenciaDBDto>() {
+            return new List<CompensacaoDeAusenciaDBDto>() {
                 new CompensacaoDeAusenciaDBDto()
                 {
                     Perfil = perfil,

@@ -4,7 +4,7 @@
     {
         public FiltroInconsistenciasAlunoFamiliaDto()
         {
-            
+
         }
         public FiltroInconsistenciasAlunoFamiliaDto(long turmaId, int bimestre)
         {
@@ -12,7 +12,7 @@
             Bimestre = bimestre;
         }
 
-        public  long TurmaId { get; set; }
-        public  int Bimestre { get; set; }
+        public long TurmaId { get; set; }
+        public int Bimestre { get; set; }
     }
 }

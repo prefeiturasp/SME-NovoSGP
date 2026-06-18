@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
         {
             //-> Arrange
             var encaminhamentoAEE = new EncaminhamentoAEE
-            { 
+            {
                 Id = 1,
                 TurmaId = 111,
                 AlunoCodigo = "123",

@@ -5,14 +5,12 @@ using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
+using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.Infra.Dtos;
-using SME.SGP.TesteIntegracao.Nota.ServicosFakes;
-using Xunit;
-using SME.SGP.TesteIntegracao.ServicosFakes;
 
 namespace SME.SGP.TesteIntegracao.Nota
 {
@@ -130,9 +128,12 @@ namespace SME.SGP.TesteIntegracao.Nota
             notas.Exists(nota => nota.TipoNota == tipoNota).ShouldBe(true);
             var nota = notas.FirstOrDefault(nota => nota.AlunoId == ALUNO_CODIGO_1);
             nota.ShouldNotBeNull();
-            if (tipoNota == TipoNota.Nota) { 
+            if (tipoNota == TipoNota.Nota)
+            {
                 nota.Nota.ShouldBe(7);
-            } else {
+            }
+            else
+            {
                 nota.ConceitoId.ShouldBe(1);
             }
         }

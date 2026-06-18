@@ -11,7 +11,7 @@ namespace SME.SGP.Infra.Dtos
             FuncaoExternaId = funcaoExternaId;
         }
 
-        public string FuncionarioCpf { get; set; }        
+        public string FuncionarioCpf { get; set; }
         public FuncaoExterna FuncaoExternaId { get; set; }
     }
 }

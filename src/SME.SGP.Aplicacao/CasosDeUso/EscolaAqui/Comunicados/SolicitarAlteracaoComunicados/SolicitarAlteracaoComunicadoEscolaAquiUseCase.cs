@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
 
             var retorno = await mediator.Send(new AlterarComunicadoCommand(id, comunicado));
 
-            if(retorno)
+            if (retorno)
                 return "Comunicado alterado com sucesso";
             else
                 return "Erro na alteração do Comunicado";
@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
             if (usuarioLogado.EhPerfilUE() && !comunicado.CodigoUe.Equals(TODAS))
                 await ValidarAbrangenciaUE(comunicado, usuarioLogado);
         }
-        
+
         private async Task ValidarAbrangenciaUE(ComunicadoAlterarDto comunicado, Usuario usuarioLogado)
         {
             var abrangenciaUes = await mediator.Send(new ObterAbrangenciaUesPorLoginEPerfilQuery(comunicado.CodigoDre, usuarioLogado.Login, usuarioLogado.PerfilAtual));

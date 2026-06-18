@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using Minio.DataModel;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -8,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -30,13 +28,13 @@ namespace SME.SGP.Dados.Repositorios
                                                                                  IEnumerable<Questao> questoesParaTotalizadores)
         {
             TotalDeAtendimentoDto totalDeAtendimento = null;
- 
+
             var queryTabelaResposta = await ObterTabelaRespostaPadrao();
             var queryFiltro = ObterFiltro(filtro);
             var sqlPaginada = ObterQueryPaginada(queryFiltro, paginacao, queryTabelaResposta);
             var sqlTotalDeRegistros = ObterQueryTotalDeRegistros(queryFiltro, queryTabelaResposta, filtro);
             var sql = string.Concat(sqlPaginada, ";", sqlTotalDeRegistros);
-            
+
             var retornoPaginado = new PaginacaoResultadoDto<EncaminhamentoNAAPARelatorioDinamico>();
             IEnumerable<TotalRegistroPorModalidadeRelatorioDinamicoNAAPA> retornoTotalDeRegitros = null;
 
@@ -92,7 +90,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = new StringBuilder();
             var condicaoAtendimento = apenasAtendimento ? $"AND sen.nome_componente = '{EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA}'" : string.Empty;
-            
+
             sql.AppendLine(@$"SELECT DISTINCT questao.nome_componente
                              FROM questionario q
                              JOIN secao_encaminhamento_naapa sen on sen.questionario_id = q.id
@@ -391,7 +389,7 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         private async Task<TotalDeAtendimentoDto> ObterTotalDeAtendimento(
-                                                                    long[] encaminhamentosIds, 
+                                                                    long[] encaminhamentosIds,
                                                                     IEnumerable<Questao> questoesParaTotalizadores,
                                                                     FiltroRelatorioDinamicoNAAPADto filtro)
         {
@@ -411,7 +409,7 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         private TotalDeAtendimentoDto ObterTotalDeAtendimento(
-                                                            int TotalAtendimento, 
+                                                            int TotalAtendimento,
                                                             IEnumerable<TotalComponenteValorDto> totalComponentesValores,
                                                             IEnumerable<Questao> questoes)
         {
@@ -428,7 +426,7 @@ namespace SME.SGP.Dados.Repositorios
                 totalAtendimentoQuestao.Descricao = questao?.Nome;
                 totalAtendimentoQuestao.TotalAtendimentoQuestaoPorRespostas = new List<TotalDeAtendimentoQuestaoPorRespostaDto>();
 
-                foreach(var questaoValor in componenteValor.Where(x => x.Valor.HasValue).ToList())
+                foreach (var questaoValor in componenteValor.Where(x => x.Valor.HasValue).ToList())
                 {
                     var totalQuestaoResposta = new TotalDeAtendimentoQuestaoPorRespostaDto();
                     var resposta = questao?.OpcoesRespostas.FirstOrDefault(or => or.Ordem == questaoValor.Valor);

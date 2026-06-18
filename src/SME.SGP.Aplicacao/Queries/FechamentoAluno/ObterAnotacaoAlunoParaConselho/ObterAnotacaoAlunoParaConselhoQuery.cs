@@ -1,10 +1,7 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
@@ -16,7 +13,7 @@ namespace SME.SGP.Aplicacao
             TurmasCodigos = turmasCodigos;
             PeriodoId = periodoId;
         }
-        
+
         public long PeriodoId { get; set; }
         public string AlunoCodigo { get; set; }
         public string[] TurmasCodigos { get; set; }
@@ -29,11 +26,11 @@ namespace SME.SGP.Aplicacao
             RuleFor(a => a.PeriodoId)
                 .NotEmpty()
                 .WithMessage("O identificador do período deve ser informado para a busca de anotações do aluno para o conselho");
-            
+
             RuleFor(a => a.AlunoCodigo)
              .NotEmpty()
              .WithMessage("O código do aluno deve ser informado para a busca de anotações do aluno para o conselho");
-            
+
             RuleFor(a => a.TurmasCodigos)
                 .NotNull()
                 .WithMessage("Os códigos das turmas devem ser informados para a busca de anotações do aluno para o conselho");

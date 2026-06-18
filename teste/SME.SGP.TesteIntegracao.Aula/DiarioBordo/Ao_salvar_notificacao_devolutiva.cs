@@ -27,7 +27,7 @@ namespace SME.SGP.TesteIntegracao.Aula.DiarioBordo
         }
 
         protected override void RegistrarFakes(IServiceCollection services)
-        { 
+        {
             base.RegistrarFakes(services);
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<SolicitaRelatorioDevolutivasCommand, Guid>),
@@ -95,7 +95,7 @@ namespace SME.SGP.TesteIntegracao.Aula.DiarioBordo
                 CriadoRF = USUARIO_PROFESSOR_CODIGO_RF_1111111
             });
 
-            var dto = new SalvarNotificacaoDevolutivaDto(TURMA_ID_1, USUARIO_CP_NOME_3333333, USUARIO_CP_CODIGO_RF_3333333, 1); 
+            var dto = new SalvarNotificacaoDevolutivaDto(TURMA_ID_1, USUARIO_CP_NOME_3333333, USUARIO_CP_CODIGO_RF_3333333, 1);
             var mensagem = new MensagemRabbit(JsonSerializer.Serialize(dto));
             var useCase = ServiceProvider.GetService<ISalvarNotificacaoDevolutivaUseCase>();
 
@@ -106,7 +106,7 @@ namespace SME.SGP.TesteIntegracao.Aula.DiarioBordo
             notificacoes.Count.ShouldBe(2);
             var notificacao1 = notificacoes.Find(item => item.UsuarioId == USUARIO_ID_1);
             notificacao1.ShouldNotBeNull();
-            notificacao1.Titulo.ShouldBe("Devolutiva do Diário de bordo da turma Turma Nome 1 - REGÊNCIA INFANTIL EMEI 2H"); 
+            notificacao1.Titulo.ShouldBe("Devolutiva do Diário de bordo da turma Turma Nome 1 - REGÊNCIA INFANTIL EMEI 2H");
             var notificacao2 = notificacoes.Find(item => item.UsuarioId == USUARIO_ID_2);
             notificacao2.ShouldNotBeNull();
             notificacao2.Titulo.ShouldBe("Devolutiva do Diário de bordo da turma Turma Nome 1 - REGÊNCIA INFANTIL EMEI 4H");

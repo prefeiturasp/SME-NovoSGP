@@ -17,7 +17,7 @@ namespace SME.SGP.Infra
         {
             if (frequenciaAuditoriaAulaDto.Auditoria.NaoEhNulo())
                 Auditoria = frequenciaAuditoriaAulaDto.Auditoria;
-            
+
             if (frequenciaAuditoriaAulaDto.AulaIdComErro.HasValue)
                 AulasIDsComErros.Add(frequenciaAuditoriaAulaDto.AulaIdComErro.Value);
         }

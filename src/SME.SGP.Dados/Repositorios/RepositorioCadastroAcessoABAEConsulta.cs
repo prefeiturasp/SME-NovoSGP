@@ -1,14 +1,11 @@
 ﻿using Dapper;
-using Dommel;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,19 +14,19 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioCadastroAcessoABAEConsulta : RepositorioBase<CadastroAcessoABAE>, IRepositorioCadastroAcessoABAEConsulta
     {
         public RepositorioCadastroAcessoABAEConsulta(ISgpContextConsultas conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
-        {}
+        { }
 
         public Task<bool> ExisteCadastroAcessoABAEPorCpf(string cpf, long ueId)
         {
-            return database.Conexao.QueryFirstOrDefaultAsync<bool>("select 1 from cadastro_acesso_abae where cpf = @cpf and not excluido and ue_id = @ueId", new {cpf, ueId });
+            return database.Conexao.QueryFirstOrDefaultAsync<bool>("select 1 from cadastro_acesso_abae where cpf = @cpf and not excluido and ue_id = @ueId", new { cpf, ueId });
         }
 
         public async Task<PaginacaoResultadoDto<DreUeNomeSituacaoTipoEscolaDataABAEDto>> ObterPaginado(FiltroDreIdUeIdNomeSituacaoABAEDto filtro, Paginacao paginacao)
         {
             var query = MontaQueryCompleta(paginacao, filtro);
 
-            var parametros = new {dreId = filtro.DreId, ueId = filtro.UeId, nome = filtro.Nome, situacao = filtro.Situacao};
-            
+            var parametros = new { dreId = filtro.DreId, ueId = filtro.UeId, nome = filtro.Nome, situacao = filtro.Situacao };
+
             var retorno = new PaginacaoResultadoDto<DreUeNomeSituacaoTipoEscolaDataABAEDto>();
 
             using (var multi = await database.Conexao.QueryMultipleAsync(query, parametros))
@@ -38,7 +35,7 @@ namespace SME.SGP.Dados.Repositorios
                 retorno.TotalRegistros = multi.ReadFirst<int>();
             }
 
-            retorno.TotalPaginas = (int) Math.Ceiling((double) retorno.TotalRegistros / paginacao.QuantidadeRegistros);
+            retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
 
             return retorno;
         }
@@ -80,21 +77,21 @@ namespace SME.SGP.Dados.Repositorios
 
         private static void ObterCabecalho(StringBuilder sql, bool EhContador)
         {
-            var query = EhContador 
-                            ? "select distinct count(a.id) " 
+            var query = EhContador
+                            ? "select distinct count(a.id) "
                             : @"select a.id, dre.nome as dre,
                               ue.tipo_escola tipoEscola,
                               ue.nome as Ue,
                               a.nome,
                               a.situacao,
                               coalesce(a.alterado_em, a.criado_em) as Data ";
-                
+
             sql.AppendLine(query);
 
             query = @"from cadastro_acesso_abae a
                         join ue on ue.id = a.ue_id
                         join dre on dre.id = ue.dre_id ";
-            
+
             sql.AppendLine(query);
         }
 

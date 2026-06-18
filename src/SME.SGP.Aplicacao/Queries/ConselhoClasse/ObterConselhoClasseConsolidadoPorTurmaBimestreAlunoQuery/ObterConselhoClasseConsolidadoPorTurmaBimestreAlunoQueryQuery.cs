@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.TurmaId)
                 .NotEmpty()
                 .WithMessage("O identificador da turma deve ser informado para a busca do conselho de classe consolidado.");
-            
+
             RuleFor(c => c.AlunoCodigo)
                 .NotEmpty()
                 .WithMessage("O código do aluno deve ser informado para a busca do conselho de classe consolidado.");

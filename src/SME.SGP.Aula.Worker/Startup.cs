@@ -36,7 +36,7 @@ namespace SME.SGP.Aula.Worker
             app.UseElasticApm(Configuration,
                 new SqlClientDiagnosticSubscriber(),
                 new HttpDiagnosticsSubscriber());
-            
+
             app.UseHealthChecksSgp();
             app.UseHealthCheckPrometheusSgp();
 

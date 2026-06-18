@@ -1,15 +1,13 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
-using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -38,7 +36,7 @@ namespace SME.SGP.Aplicacao
         {
             var dicionarioFrequenciaAlunoECompensacoesAusencias = await ObterDicionarioFrequenciaAlunoParaPersistirECompensacoesParaExcluir(request);
             var dicionarioPreDefinida = await ObterDicionarioFrequenciaPreDefinidaParaPersistir(request);
-            
+
             var informacoesFrequencia = FormatarInformacoesFrequencia(dicionarioFrequenciaAlunoECompensacoesAusencias, request.RegistroFrequenciaId, request.TurmaId, request.AulaId);
 
             unitOfWork.IniciarTransacao();
@@ -60,12 +58,12 @@ namespace SME.SGP.Aplicacao
 
         private static string FormatarInformacoesFrequencia(Dictionary<int, List<RegistroFrequenciaAluno>> dicionarioFrequenciaAluno, long registroFrequenciaId, long turmaId, long aulaId)
         {
-            var alunosValores = dicionarioFrequenciaAluno.SelectMany(s => s.Value.Select(a => new {a.CodigoAluno, a.Valor}).ToList()).ToList();
+            var alunosValores = dicionarioFrequenciaAluno.SelectMany(s => s.Value.Select(a => new { a.CodigoAluno, a.Valor }).ToList()).ToList();
 
             var informacoesFrequencia = new { registroFrequenciaId, turmaId, aulaId, alunosValores };
-            
+
             var json = JsonConvert.SerializeObject(informacoesFrequencia, Formatting.Indented);
-            
+
             return json;
         }
 

@@ -69,11 +69,11 @@ namespace SME.SGP.TesteIntegracao.ConsolidadoPedagogico
             await InserirNaBase(new ConsolidacaoRegistrosPedagogicos
             {
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().AddYears(-1).Year,
-                TurmaId= 1,
+                TurmaId = 1,
                 ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
-                PeriodoEscolarId= 1,
-                QuantidadeAulas= 2,
-                FrequenciasPendentes= 1
+                PeriodoEscolarId = 1,
+                QuantidadeAulas = 2,
+                FrequenciasPendentes = 1
             });
         }
 

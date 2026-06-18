@@ -31,7 +31,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> AlterarSenha([FromBody]AlterarSenhaDto alterarSenhaDto)
+        public async Task<IActionResult> AlterarSenha([FromBody] AlterarSenhaDto alterarSenhaDto)
         {
             await comandosUsuario.AlterarSenha(alterarSenhaDto);
             return Ok();
@@ -71,8 +71,8 @@ namespace SME.SGP.Api.Controllers
 
         [HttpGet("{login}/perfis/listar")]
         [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(IEnumerable<PrioridadePerfil>), 500)]        
-        public async Task<IActionResult> ListarPerfisUsuario(string login, [FromServices]IServicoUsuario servicoUsuario)
+        [ProducesResponseType(typeof(IEnumerable<PrioridadePerfil>), 500)]
+        public async Task<IActionResult> ListarPerfisUsuario(string login, [FromServices] IServicoUsuario servicoUsuario)
         {
             var retorno = await servicoUsuario.ObterPerfisUsuario(login);
 
@@ -105,9 +105,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [AllowAnonymous]
-        public async Task<IActionResult> RecuperarSenha([FromForm]RecuperacaoSenhaDto recuperacaoSenhaDto)
+        public async Task<IActionResult> RecuperarSenha([FromForm] RecuperacaoSenhaDto recuperacaoSenhaDto)
         {
-           var retorno = await comandosUsuario.AlterarSenhaComTokenRecuperacao(recuperacaoSenhaDto);
+            var retorno = await comandosUsuario.AlterarSenhaComTokenRecuperacao(recuperacaoSenhaDto);
             if (!retorno.Autenticado)
                 return StatusCode(401);
 

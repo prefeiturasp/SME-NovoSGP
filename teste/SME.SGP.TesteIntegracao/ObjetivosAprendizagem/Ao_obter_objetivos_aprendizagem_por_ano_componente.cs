@@ -17,7 +17,7 @@ namespace SME.SGP.TesteIntegracao.ObjetivosAprendizagem
     {
         private const long ID_JUREMA_COMPONENTE_CURRICULAR_ARTE = 1;
         public Ao_obter_objetivos_aprendizagem_por_ano_componente(CollectionFixture collectionFixture) : base(collectionFixture)
-        {}
+        { }
 
         protected override void RegistrarFakes(IServiceCollection services)
         {
@@ -72,7 +72,7 @@ namespace SME.SGP.TesteIntegracao.ObjetivosAprendizagem
 
         private async Task CriarObjetivosAprendizagem()
         {
-            await InserirNaBase("objetivo_aprendizagem", new string[] { "id", "descricao", "codigo", "ano_turma", "componente_curricular_id", "criado_em", "atualizado_em", "excluido" }, 
+            await InserirNaBase("objetivo_aprendizagem", new string[] { "id", "descricao", "codigo", "ano_turma", "componente_curricular_id", "criado_em", "atualizado_em", "excluido" },
                                 new string[] { "1", "'Descricao 01 EF 5º ano'", "'(EF05A01)'", "'fifth'", ID_JUREMA_COMPONENTE_CURRICULAR_ARTE.ToString(), "'2024-01-01'", "'2024-01-03'", "false" });
             await InserirNaBase("objetivo_aprendizagem", new string[] { "id", "descricao", "codigo", "ano_turma", "componente_curricular_id", "criado_em", "atualizado_em", "excluido" },
                                 new string[] { "2", "'Descricao 02 EF 5º ano'", "'(EF05A02)'", "'fifth'", ID_JUREMA_COMPONENTE_CURRICULAR_ARTE.ToString(), "'2024-01-01'", "'2024-01-03'", "false" });

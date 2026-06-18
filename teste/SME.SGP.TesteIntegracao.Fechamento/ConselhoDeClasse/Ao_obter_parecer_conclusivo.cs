@@ -27,7 +27,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 DataAula = DateTimeExtension.HorarioBrasilia().AddDays(-1),
                 CriarPeriodoReabertura = false,
             };
-            
+
             await CriarDadosBase(filtroNota);
 
             var obterPareceresConclusivosUseCase = ServiceProvider.GetService<IObterPareceresConclusivosUseCase>();

@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Microsoft.Extensions.Logging;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
@@ -134,7 +133,7 @@ namespace SME.SGP.Aplicacao
                 return (fechamentoNota.ConceitoId, fechamentoNota.Nota);
             }
 
-            return (null,null);
+            return (null, null);
         }
 
         private async Task<WFAprovacaoNotaPosConselhoAlunoComponenteTurmaDto> MapearParaDTO(WFAprovacaoNotaConselho aprovacao, Turma turma)
@@ -143,7 +142,8 @@ namespace SME.SGP.Aplicacao
             var componenteCurricular = ComponentesCurriculares.Find(componente => componente.Id == aprovacao.ConselhoClasseNota.ComponenteCurricularCodigo);
             var usuario = Usuarios.Find(usuario => usuario.Id == aprovacao.UsuarioSolicitanteId);
 
-            var retorno = new WFAprovacaoNotaPosConselhoAlunoComponenteTurmaDto {
+            var retorno = new WFAprovacaoNotaPosConselhoAlunoComponenteTurmaDto
+            {
                 CriadoEm = aprovacao.CriadoEm,
                 UsuarioSolicitanteId = aprovacao.UsuarioSolicitanteId,
                 NomeUsuarioSolicitante = usuario.Nome,

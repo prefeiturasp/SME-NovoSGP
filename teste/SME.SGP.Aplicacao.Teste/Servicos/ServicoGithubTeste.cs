@@ -1,9 +1,4 @@
-﻿using MediatR;
-using SME.SGP.Aplicacao.Queries.Github.ObterVersaoRelease;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace SME.SGP.Aplicacao.Teste.Servicos
+﻿namespace SME.SGP.Aplicacao.Teste.Servicos
 {
     //public class ServicoGithubTeste
     //{

@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         public string[] ComponentesCurricularesId { get; set; }
         public int[] Bimestres { get; set; }
 
-     
+
     }
 
     public class ObterAulasDadasTurmaEBimestreEComponenteCurricularQueryValidator : AbstractValidator<ObterAulasDadasTurmaEBimestreEComponenteCurricularQuery>

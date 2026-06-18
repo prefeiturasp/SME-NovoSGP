@@ -20,7 +20,7 @@ namespace SME.SGP.Infra
         {
             get
             {
-                return  AulaCj ? Data.ToString("dd/MM/yyyy") + " Aula CJ" : Data.ToString("dd/MM/yyyy");
+                return AulaCj ? Data.ToString("dd/MM/yyyy") + " Aula CJ" : Data.ToString("dd/MM/yyyy");
             }
         }
         public DateTime Data { get; }

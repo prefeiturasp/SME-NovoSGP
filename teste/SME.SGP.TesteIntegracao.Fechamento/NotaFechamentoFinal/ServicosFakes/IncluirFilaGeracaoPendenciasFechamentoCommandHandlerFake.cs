@@ -1,13 +1,12 @@
+using MediatR;
+using SME.SGP.Aplicacao;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Aplicacao;
-using SME.SGP.Infra;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamento.ServicosFakes
 {
-    public class IncluirFilaGeracaoPendenciasFechamentoCommandHandlerFake: IRequestHandler<IncluirFilaGeracaoPendenciasFechamentoCommand, bool>
+    public class IncluirFilaGeracaoPendenciasFechamentoCommandHandlerFake : IRequestHandler<IncluirFilaGeracaoPendenciasFechamentoCommand, bool>
     {
         private readonly IMediator mediator;
 
@@ -33,7 +32,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.ServicosFakes
                 , request.Usuario.PerfilAtual.ToString()
                 , request.ComponenteSemNota
                 , request.RegistraFrequencia));
-            
+
             return true;
         }
     }

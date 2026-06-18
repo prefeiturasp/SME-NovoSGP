@@ -1,7 +1,5 @@
 ﻿using SME.SGP.Dominio;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Infra
 {
@@ -18,7 +16,7 @@ namespace SME.SGP.Infra
         public bool InseridoCJ { get; set; }
         public int Tipo { get; set; }
         public string DescricaoComNome => string.IsNullOrEmpty(Nome) ? $"{DataAula:dd/MM/yyyy}" : $"{DataAula:dd/MM/yyyy} - {Nome} ({CodigoRf})";
-        public string DescricaoCJ => InseridoCJ ? $"{DescricaoComNome} - CJ" : DescricaoComNome; 
+        public string DescricaoCJ => InseridoCJ ? $"{DescricaoComNome} - CJ" : DescricaoComNome;
 
         public string Titulo => Tipo == (int)TipoAula.Reposicao ? $"{DescricaoCJ} - Reposição" : DescricaoCJ;
     }

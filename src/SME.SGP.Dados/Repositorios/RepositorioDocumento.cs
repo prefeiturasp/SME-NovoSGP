@@ -25,7 +25,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.ExecuteScalarAsync<bool>(query, new { id });
         }
 
-        public async Task<PaginacaoResultadoDto<DocumentoResumidoDto>> ObterPorDreUeTipoEClassificacaoPaginada(long? dreId, long? ueId, long tipoDocumentoId, 
+        public async Task<PaginacaoResultadoDto<DocumentoResumidoDto>> ObterPorDreUeTipoEClassificacaoPaginada(long? dreId, long? ueId, long tipoDocumentoId,
             long classificacaoId, int? anoLetivo, Paginacao paginacao)
         {
             var sql = MontaQueryCompleta(dreId, ueId, tipoDocumentoId, classificacaoId, anoLetivo);
@@ -33,9 +33,9 @@ namespace SME.SGP.Dados.Repositorios
             var parametros = new { dreId, ueId, tipoDocumentoId, classificacaoId, anoLetivo };
 
             var documentos = await database.Conexao.QueryAsync<DocumentoCompletoDto>(sql, parametros);
-            
+
             var documentosAgrupados = documentos.GroupBy(g => new
-            { 
+            {
                 g.DocumentoId,
                 g.Classificacao,
                 g.TipoDocumento,
@@ -50,15 +50,16 @@ namespace SME.SGP.Dados.Repositorios
                 g.CodigoUe,
                 g.NomeUe,
                 g.TipoEscola
-            }, (key, group) => 
-                new DocumentoResumidoDto { 
+            }, (key, group) =>
+                new DocumentoResumidoDto
+                {
                     DocumentoId = key.DocumentoId,
                     Classificacao = key.Classificacao,
                     TipoDocumento = key.TipoDocumento,
                     Usuario = key.Usuario,
                     Data = key.Data,
                     TurmaComponenteCurricular = ObterTurmaComponenteCurricular(key.TurmaNome, key.ComponenteCurricularNome, key.Modalidade),
-                    Arquivos = group.Select(s=>
+                    Arquivos = group.Select(s =>
                         new ArquivoResumidoDto
                         {
                             Codigo = s.CodigoArquivo,
@@ -89,7 +90,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             if (!string.IsNullOrEmpty(turmaNome) && !string.IsNullOrEmpty(componenteCurricularNome))
                 return $"{((Modalidade)modalidade).ShortName()} - {turmaNome} - {componenteCurricularNome}";
-                
+
             return string.Empty;
         }
 
@@ -158,7 +159,7 @@ namespace SME.SGP.Dados.Repositorios
             return true;
         }
 
-        public async Task<bool> ValidarUsuarioPossuiDocumento(long tipoDocumentoId, long classificacaoId, long usuarioId, long ueId, long anoLetivo,long documentoId)
+        public async Task<bool> ValidarUsuarioPossuiDocumento(long tipoDocumentoId, long classificacaoId, long usuarioId, long ueId, long anoLetivo, long documentoId)
         {
             const string query = @"select distinct 1 from documento 
                                         inner join classificacao_documento cd on documento.classificacao_documento_id = cd.id
@@ -172,7 +173,7 @@ namespace SME.SGP.Dados.Repositorios
                                     not cd.ehregistromultiplo";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query,
-                new { tipoDocumentoId, classificacaoId, usuarioId, ueId, anoLetivo,documentoId });
+                new { tipoDocumentoId, classificacaoId, usuarioId, ueId, anoLetivo, documentoId });
         }
 
         public async Task<ObterDocumentoResumidoDto> ObterPorIdCompleto(long documentoId)
@@ -216,7 +217,7 @@ namespace SME.SGP.Dados.Repositorios
                                         left join componente_curricular cc on cc.id = d.componente_curricular_id
                                         inner join tipo_documento td on td.id = cd.tipo_documento_id
                                     WHERE d.id = @documentoId";
-            
+
             var documentosCompleto = (await database.Conexao.QueryAsync<ObterDocumentoCompletoDto>(query, new { documentoId })).ToList();
 
             var documentoCompleto = documentosCompleto.FirstOrDefault();

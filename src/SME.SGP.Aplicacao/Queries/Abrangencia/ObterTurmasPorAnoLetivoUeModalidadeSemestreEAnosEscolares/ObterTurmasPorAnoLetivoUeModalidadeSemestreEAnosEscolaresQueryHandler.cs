@@ -24,6 +24,6 @@ namespace SME.SGP.Aplicacao
 
             return turmas.OrderBy(x => x.Modalidade.ShortName()).ThenBy(y => y.Descricao);
         }
-           
+
     }
 }

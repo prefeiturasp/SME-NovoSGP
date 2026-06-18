@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Aplicacao
 {
-    public interface ISalvarDocumentoUseCase: IUseCase<SalvarDocumentoDto, bool>
+    public interface ISalvarDocumentoUseCase : IUseCase<SalvarDocumentoDto, bool>
     {
     }
 }

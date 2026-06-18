@@ -32,11 +32,11 @@ namespace SME.SGP.Infra
         public IList<FrequenciaAulaDetalheDto> Aulas { get; set; }
 
         public void CarregarAulas(
-            IEnumerable<Aula> aulas, 
+            IEnumerable<Aula> aulas,
             IEnumerable<RegistroFrequenciaAlunoPorAulaDto> registrosFrequenciaAlunos,
             IEnumerable<CompensacaoAusenciaAlunoAulaSimplificadoDto> compensacaoAusenciaAlunoAula,
-            AlunoPorTurmaResposta aluno, 
-            IEnumerable<AnotacaoAlunoAulaDto> anotacoesTurma, 
+            AlunoPorTurmaResposta aluno,
+            IEnumerable<AnotacaoAlunoAulaDto> anotacoesTurma,
             FrequenciaPreDefinidaDto frequenciaPreDefinida,
             TipoFrequencia? frequenciaSugerida)
         {
@@ -54,7 +54,7 @@ namespace SME.SGP.Infra
             foreach (var aula in aulas.OrderBy(a => a.DataAula))
             {
                 Aulas.Add(new FrequenciaAulaDetalheDto(aula, aluno, Enumerable.Empty<RegistroFrequenciaAlunoPorAulaDto>(),
-                                                       Enumerable.Empty<CompensacaoAusenciaAlunoAulaSimplificadoDto>(), anotacoesTurma, 
+                                                       Enumerable.Empty<CompensacaoAusenciaAlunoAulaSimplificadoDto>(), anotacoesTurma,
                                                        null));
             }
         }

@@ -1,13 +1,13 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterUsuarioPorCodigoRfLoginOuAdicionaQueryHandler : IRequestHandler<ObterUsuarioPorCodigoRfLoginOuAdicionaQuery,Usuario>
+    public class ObterUsuarioPorCodigoRfLoginOuAdicionaQueryHandler : IRequestHandler<ObterUsuarioPorCodigoRfLoginOuAdicionaQuery, Usuario>
     {
         private readonly IServicoUsuario repositorioUsuario;
 
@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<Usuario> Handle(ObterUsuarioPorCodigoRfLoginOuAdicionaQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(request.CodigoRf,request.Login,request.Nome,request.Email,request.BuscaLogin);
+            return await repositorioUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(request.CodigoRf, request.Login, request.Nome, request.Email, request.BuscaLogin);
         }
     }
 }

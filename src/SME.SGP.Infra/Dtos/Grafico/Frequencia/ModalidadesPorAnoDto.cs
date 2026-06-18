@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Infra
 {
-    public class ModalidadesPorAnoDto 
+    public class ModalidadesPorAnoDto
     {
         public Modalidade Modalidade { get; set; }
         public int Ano { get; set; }

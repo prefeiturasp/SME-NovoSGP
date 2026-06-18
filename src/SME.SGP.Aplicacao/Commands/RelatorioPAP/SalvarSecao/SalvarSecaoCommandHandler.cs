@@ -1,13 +1,13 @@
-﻿using System;
+﻿using MediatR;
+using SME.SGP.Infra;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarSecaoCommandHandler : IRequestHandler<SalvarSecaoCommand,ResultadoRelatorioPAPSecaoDto>
+    public class SalvarSecaoCommandHandler : IRequestHandler<SalvarSecaoCommand, ResultadoRelatorioPAPSecaoDto>
     {
         private readonly IMediator mediator;
 
@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
                     AlteradoPor = relatorioSecao.AlteradoPor,
                     AlteradoRF = relatorioSecao.AlteradoRF
                 }
-            }; 
+            };
         }
     }
 }

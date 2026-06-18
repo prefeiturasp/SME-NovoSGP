@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -37,11 +36,11 @@ namespace SME.SGP.Aplicacao
             {
                 //Obter a turma do tipo 1 do aluno
                 var tiposParaConsulta = new List<int>();
-                
+
                 tiposParaConsulta.AddRange(fechamentoTurma.Turma.ObterTiposRegularesDiferentes());
-                
+
                 var turmasRegularesDoAluno = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(fechamentoTurma.Turma.AnoLetivo, request.AlunoCodigo, tiposParaConsulta, semestre: fechamentoTurma.Turma.Semestre != 0 ? fechamentoTurma.Turma.Semestre : null), cancellationToken);
-                
+
                 if (turmasRegularesDoAluno.EhNulo())
                     throw new NegocioException($"Não foi possível obter a turma Regular do aluno {request.AlunoCodigo}");
 
@@ -65,7 +64,7 @@ namespace SME.SGP.Aplicacao
 
                     fechamentoTurma = await repositorioFechamentoTurma.ObterCompletoPorIdAsync(fechamentoParaUtilizarId);
                 }
-                else 
+                else
                     fechamentoTurma = await repositorioFechamentoTurma.ObterCompletoPorIdAsync(fechamentoDaTurmaRegular.Id);
             }
 

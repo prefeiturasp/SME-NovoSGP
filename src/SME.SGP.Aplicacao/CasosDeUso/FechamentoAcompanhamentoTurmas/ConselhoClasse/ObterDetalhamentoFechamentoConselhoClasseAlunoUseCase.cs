@@ -248,8 +248,8 @@ namespace SME.SGP.Aplicacao
             var notaFechamento = parecerFinal?.Valor;
 
             if (componenteCurricular.LancaNota)
-               notaFechamento = notasFechamento.NaoEhNulo() && notasFechamento.Any() &&
-                                 notasFechamento.FirstOrDefault().NotaConceito.NaoEhNulo() ? String.Format("{0:0.0}", notasFechamento.FirstOrDefault().NotaConceito) : null;
+                notaFechamento = notasFechamento.NaoEhNulo() && notasFechamento.Any() &&
+                                  notasFechamento.FirstOrDefault().NotaConceito.NaoEhNulo() ? String.Format("{0:0.0}", notasFechamento.FirstOrDefault().NotaConceito) : null;
 
             var conselhoClasseComponente = new DetalhamentoComponentesCurricularesAlunoDto()
             {
@@ -266,10 +266,10 @@ namespace SME.SGP.Aplicacao
         }
 
         private DetalhamentoComponentesCurricularesAlunoDto ObterNotasRegencia(
-                                                                    ComponenteCurricularEol componenteCurricular, 
-                                                                    PeriodoEscolar periodoEscolar, 
-                                                                    IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno, 
-                                                                    IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, 
+                                                                    ComponenteCurricularEol componenteCurricular,
+                                                                    PeriodoEscolar periodoEscolar,
+                                                                    IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno,
+                                                                    IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno,
                                                                     FrequenciaAluno frequenciaAluno,
                                                                     string percentualFrequencia)
         {

@@ -13,18 +13,18 @@ namespace SME.SGP.Dominio.Servicos
         private const string RecuperacaoParalelaFrequente = "RecuperacaoParalelaFrequente";
         private const string RecuperacaoParalelaNaoComparece = "RecuperacaoParalelaNaoComparece";
         private const string RecuperacaoParalelaPoucoFrequente = "RecuperacaoParalelaPoucoFrequente";
-        private readonly IRepositorioFrequenciaConsulta repositorioFrequencia;        
+        private readonly IRepositorioFrequenciaConsulta repositorioFrequencia;
         private readonly IMediator mediator;
 
         public ServicoRecuperacaoParalela(IRepositorioFrequenciaConsulta repositorioFrequencia, IMediator mediator)
         {
-            this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));            
+            this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<IEnumerable<KeyValuePair<string, int>>> ObterFrequencias(string[] CodigoAlunos, string CodigoDisciplina, int Ano, PeriodoRecuperacaoParalela Periodo)
         {
-            var retorno = new List<KeyValuePair<string, int>>();            
+            var retorno = new List<KeyValuePair<string, int>>();
             var parametrosFrequencia = await mediator.Send(new ObterChaveEValorPorTipoEAnoQuery(TipoParametroSistema.RecuperacaoParalelaFrequencia, DateTime.Today.Year));
             var frequente = double.Parse(parametrosFrequencia.FirstOrDefault(w => w.Nome == RecuperacaoParalelaFrequente).Valor);
             var poucoFrequente = double.Parse(parametrosFrequencia.FirstOrDefault(w => w.Nome == RecuperacaoParalelaPoucoFrequente).Valor);

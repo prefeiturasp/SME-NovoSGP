@@ -2,7 +2,6 @@
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +28,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 var listaQuestoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(secao.QuestionarioId));
                 secao.Concluido = !listaQuestoes.Any(c => c.Obrigatorio);
             }
-            
+
             return secoes;
         }
     }

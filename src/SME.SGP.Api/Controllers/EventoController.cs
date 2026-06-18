@@ -18,7 +18,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.E_A, Policy = "Bearer")]
-        public async Task<IActionResult> Alterar(long id, [FromBody]EventoDto eventoDto, [FromServices]IComandosEvento comandosEvento)
+        public async Task<IActionResult> Alterar(long id, [FromBody] EventoDto eventoDto, [FromServices] IComandosEvento comandosEvento)
         {
             return Ok(await comandosEvento.Alterar(id, eventoDto));
         }
@@ -27,7 +27,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.E_I, Policy = "Bearer")]
-        public async Task<IActionResult> Criar([FromServices]IComandosEvento comandosEvento, [FromBody]EventoDto eventoDto)
+        public async Task<IActionResult> Criar([FromServices] IComandosEvento comandosEvento, [FromBody] EventoDto eventoDto)
         {
             return Ok(await comandosEvento.Criar(eventoDto));
         }
@@ -37,7 +37,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.E_E, Policy = "Bearer")]
-        public async Task<IActionResult> Excluir(long[] eventosId, [FromServices]IComandosEvento comandosEvento)
+        public async Task<IActionResult> Excluir(long[] eventosId, [FromServices] IComandosEvento comandosEvento)
         {
             await comandosEvento.Excluir(eventosId);
             return Ok();
@@ -47,7 +47,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.E_C, Policy = "Bearer")]
-        public async Task<IActionResult> Listar([FromQuery]FiltroEventosDto filtroEventosDto, [FromServices] IConsultasEvento consultasEvento)
+        public async Task<IActionResult> Listar([FromQuery] FiltroEventosDto filtroEventosDto, [FromServices] IConsultasEvento consultasEvento)
         {
             return Ok(await consultasEvento.Listar(filtroEventosDto));
         }
@@ -67,7 +67,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.E_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterMeses([FromServices] IConsultasEvento consultasEvento,
-                            [FromQuery]CalendarioEventosFiltroDto calendarioEventoMesesFiltro)
+                            [FromQuery] CalendarioEventosFiltroDto calendarioEventoMesesFiltro)
 
         {
             var retorno = await consultasEvento.ObterQuantidadeDeEventosPorMeses(calendarioEventoMesesFiltro);
@@ -81,7 +81,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<CalendarioEventosNoDiaRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.E_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterPorDia(int dia, int mes, [FromQuery]CalendarioEventosFiltroDto filtro, [FromServices] IConsultasEvento consultasEvento)
+        public async Task<IActionResult> ObterPorDia(int dia, int mes, [FromQuery] CalendarioEventosFiltroDto filtro, [FromServices] IConsultasEvento consultasEvento)
         {
             var retorno = await consultasEvento.ObterEventosPorDia(filtro, mes, dia, filtro.AnoLetivo);
             if (retorno.Any())
@@ -104,7 +104,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<CalendarioTipoEventoPorDiaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.E_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterPorMes([FromQuery]CalendarioEventosFiltroDto filtro, int mes, [FromServices]IConsultasEvento consultasEvento)
+        public async Task<IActionResult> ObterPorMes([FromQuery] CalendarioEventosFiltroDto filtro, int mes, [FromServices] IConsultasEvento consultasEvento)
         {
             var listaRetorno = await consultasEvento.ObterQuantidadeDeEventosPorDia(filtro, mes);
 

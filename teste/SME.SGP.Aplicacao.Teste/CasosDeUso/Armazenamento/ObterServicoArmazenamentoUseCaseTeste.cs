@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Armazenamento
         [InlineData("arquivo2.pdf", false, "conteudo-normal")]
         public void Executar_Deve_Chamar_Servico_Armazenamento_E_Retornar_Valor(string nomeArquivo, bool ehPastaTemporaria, string retornoEsperado)
         {
-            var mockServicoArmazenamento = new Mock<SME.SGP.Infra.Interface.IServicoArmazenamento>(); 
+            var mockServicoArmazenamento = new Mock<SME.SGP.Infra.Interface.IServicoArmazenamento>();
             var mockMediator = new Mock<IMediator>();
 
             mockServicoArmazenamento

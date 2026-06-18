@@ -12,7 +12,6 @@ using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.Dados;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.PendenciaGeral
@@ -114,7 +113,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaGeral
 
             pendencias.FirstOrDefault().Excluido.ShouldBeTrue();
         }
-        
+
         [Fact(DisplayName = "Pendência Devolutivas - Deve permitir excluir logicamente a pendência ao final do ano letivo")]
         public async Task Ao_remover_criancas_com_devolutivas_final_do_ano_letivo()
         {
@@ -131,7 +130,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaGeral
 
             pendencias.FirstOrDefault().Excluido.ShouldBeTrue();
         }
-        
+
         [Fact(DisplayName = "Pendência Geral - Não deve permitir excluir logicamente as pendências em função do ano ser abaixo de 2014")]
         public async Task Ao_remover_pendencia_no_final_do_ano_com_ano_abaixo_2014()
         {
@@ -139,7 +138,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaGeral
             var retorno = await useCase.Executar(new MensagemRabbit(2010));
             retorno.ShouldBeFalse();
         }
-        
+
         [Fact(DisplayName = "Pendência Geral - Deve permitir excluir logicamente as pendências em função do ano ser válido >= 2014 e < atual")]
         public async Task Ao_remover_pendencia_no_final_do_ano_com_ano_2014()
         {
@@ -147,7 +146,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaGeral
             var retorno = await useCase.Executar(new MensagemRabbit(2014));
             retorno.ShouldBeTrue();
         }
-        
+
         [Fact(DisplayName = "Pendência Geral - Deve permitir excluir logicamente as pendências em função do ano ser válido >= 2014 e < atual")]
         public async Task Ao_remover_pendencia_no_final_do_ano_com_ano_anterior_ao_atual()
         {
@@ -155,7 +154,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaGeral
             var retorno = await useCase.Executar(new MensagemRabbit(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year));
             retorno.ShouldBeTrue();
         }
-        
+
         [Fact(DisplayName = "Pendência Geral - Não deve permitir excluir logicamente as pendências do ano atual")]
         public async Task Ao_remover_pendencia_no_final_do_ano_com_ano_atual()
         {
@@ -246,7 +245,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaGeral
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 03, 01)
             });
         }
-        
+
         private async Task CriaPendenciaDevolutiva()
         {
             await InserirNaBase(new Dominio.PendenciaDevolutiva()

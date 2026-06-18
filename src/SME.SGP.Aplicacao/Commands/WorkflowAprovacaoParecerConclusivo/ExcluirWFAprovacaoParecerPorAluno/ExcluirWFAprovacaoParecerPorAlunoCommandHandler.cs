@@ -1,9 +1,6 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,7 +20,7 @@ namespace SME.SGP.Aplicacao
         public async Task Handle(ExcluirWFAprovacaoParecerPorAlunoCommand request, CancellationToken cancellationToken)
         {
             var wfAprovacaoPareceres = await repositorioWFAprovacaoParecerConclusivo.ObterPorConselhoClasseAlunoId(request.ConselhoClasseAlunoId);
-            
+
             foreach (var wfAprovacaoParecer in wfAprovacaoPareceres)
             {
                 await repositorioWFAprovacaoParecerConclusivo.Excluir(wfAprovacaoParecer.Id);

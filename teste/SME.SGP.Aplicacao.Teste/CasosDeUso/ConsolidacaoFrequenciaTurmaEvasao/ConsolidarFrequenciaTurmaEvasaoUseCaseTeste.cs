@@ -37,10 +37,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConsolidacaoFrequenciaTurmaEvasao
             var consolidacoesMensaisMock = new List<ConsolidacaoFrequenciaAlunoMensalDto>
         {
             new ConsolidacaoFrequenciaAlunoMensalDto { AlunoCodigo = "A001", Percentual = 75.0M, TurmaId = turmaId, Mes = mes },
-            new ConsolidacaoFrequenciaAlunoMensalDto { AlunoCodigo = "A002", Percentual = 40.0M, TurmaId = turmaId, Mes = mes }, 
-            new ConsolidacaoFrequenciaAlunoMensalDto { AlunoCodigo = "A003", Percentual = 0.0M, TurmaId = turmaId, Mes = mes }, 
-            new ConsolidacaoFrequenciaAlunoMensalDto { AlunoCodigo = "A004", Percentual = 49.9M, TurmaId = turmaId, Mes = mes }, 
-            new ConsolidacaoFrequenciaAlunoMensalDto { AlunoCodigo = "A001", Percentual = 75.0M, TurmaId = turmaId, Mes = mes } 
+            new ConsolidacaoFrequenciaAlunoMensalDto { AlunoCodigo = "A002", Percentual = 40.0M, TurmaId = turmaId, Mes = mes },
+            new ConsolidacaoFrequenciaAlunoMensalDto { AlunoCodigo = "A003", Percentual = 0.0M, TurmaId = turmaId, Mes = mes },
+            new ConsolidacaoFrequenciaAlunoMensalDto { AlunoCodigo = "A004", Percentual = 49.9M, TurmaId = turmaId, Mes = mes },
+            new ConsolidacaoFrequenciaAlunoMensalDto { AlunoCodigo = "A001", Percentual = 75.0M, TurmaId = turmaId, Mes = mes }
         };
 
             var alunosEolMock = new List<AlunoPorTurmaResposta>
@@ -83,7 +83,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConsolidacaoFrequenciaTurmaEvasao
                 c.TurmaId == turmaId &&
                 c.Mes == mes &&
                 c.QuantidadeAlunosAbaixo50Porcento == 2 &&
-                c.QuantidadeAlunox0Porcento == 1), 
+                c.QuantidadeAlunox0Porcento == 1),
                 It.IsAny<CancellationToken>()), Times.Once);
 
             _mediatorMock.Verify(m => m.Send(It.Is<RegistrarFrequenciaTurmaEvasaoAlunoCommand>(c =>
@@ -229,13 +229,13 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConsolidacaoFrequenciaTurmaEvasao
 
             // Assert
             _mediatorMock.Verify(m => m.Send(It.Is<RegistrarFrequenciaTurmaEvasaoCommand>(c =>
-                c.QuantidadeAlunosAbaixo50Porcento == 1 && 
-                c.QuantidadeAlunox0Porcento == 1), 
+                c.QuantidadeAlunosAbaixo50Porcento == 1 &&
+                c.QuantidadeAlunox0Porcento == 1),
                 It.IsAny<CancellationToken>()), Times.Once);
 
             _mediatorMock.Verify(m => m.Send(It.Is<RegistrarFrequenciaTurmaEvasaoAlunoCommand>(c =>
                 c.AlunoCodigo == "A005" &&
-                (c.PercentualFrequencia == 30.0 || c.PercentualFrequencia == 20.0)), 
+                (c.PercentualFrequencia == 30.0 || c.PercentualFrequencia == 20.0)),
                 It.IsAny<CancellationToken>()), Times.Once);
         }
     }

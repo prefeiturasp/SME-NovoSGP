@@ -1,5 +1,4 @@
-﻿using Dapper;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
@@ -30,7 +29,7 @@ namespace SME.SGP.Dados.Repositorios
                               pe.bimestre = @bimestre and 
                               pac.componente_curricular_id = @componenteCurricularId and                                 
                               pac.excluido = false;";
-            return  await database.Conexao.QueryAsync<PlanejamentoAnualComponente>(sql, new { turmaId, bimestre, componenteCurricularId });
+            return await database.Conexao.QueryAsync<PlanejamentoAnualComponente>(sql, new { turmaId, bimestre, componenteCurricularId });
         }
 
         public async Task<PlanejamentoAnualComponente> ObterPorPlanejamentoAnualPeriodoEscolarId(long componenteCurricularId, long id, bool consideraExcluido = false)
@@ -38,7 +37,7 @@ namespace SME.SGP.Dados.Repositorios
             var sql = $@"select * 
                             from planejamento_anual_componente 
                          where planejamento_anual_periodo_escolar_id = @id and 
-                               componente_curricular_id = @componenteCurricularId {(!consideraExcluido ? " and not excluido" : string.Empty )}
+                               componente_curricular_id = @componenteCurricularId {(!consideraExcluido ? " and not excluido" : string.Empty)}
                          order by id desc;";
 
             var planejamento = await database.Conexao
@@ -55,7 +54,8 @@ namespace SME.SGP.Dados.Repositorios
                                  , alterado_rf = @alteradoRF
                                  , alterado_em = @alteradoEm 
                               WHERE ID = any(@ids)";
-            await database.Conexao.ExecuteAsync(sql, new { 
+            await database.Conexao.ExecuteAsync(sql, new
+            {
                 ids,
                 alteradoPor = database.UsuarioLogadoNomeCompleto,
                 alteradoRF = database.UsuarioLogadoRF,

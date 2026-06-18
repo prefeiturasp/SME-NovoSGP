@@ -17,9 +17,9 @@ namespace SME.SGP.Aplicacao
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
         }
 
-        public async Task<IEnumerable<EventoNomeDto>> Handle(ObterEventosItineranciaPAAIQuery request, CancellationToken cancellationToken) 
+        public async Task<IEnumerable<EventoNomeDto>> Handle(ObterEventosItineranciaPAAIQuery request, CancellationToken cancellationToken)
             => MapearParaDto(await repositorioEvento
-                .ListarEventosItinerancia(request.TipoCalendarioId, request.ItineranciaId, request.CodigoUE ,request.Login, request.Perfil));
+                .ListarEventosItinerancia(request.TipoCalendarioId, request.ItineranciaId, request.CodigoUE, request.Login, request.Perfil));
 
         private IEnumerable<EventoNomeDto> MapearParaDto(IEnumerable<EventoDataDto> eventos)
         {

@@ -52,15 +52,15 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConsolidacaoMediaRegistrosIndividua
 
         [Fact]
         public async Task Executar_Quando_Nao_Houver_Turmas_Deve_Executar_Sem_Publicar_Mensagens()
-        {          
+        {
             var parametroAtivo = new ParametrosSistema { Ativo = true, Valor = "" };
 
             _mediatorMock.SetupSequence(m => m.Send(It.IsAny<ObterParametroSistemaPorTipoEAnoQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(parametroAtivo) 
-                .ReturnsAsync(parametroAtivo); 
+                .ReturnsAsync(parametroAtivo)
+                .ReturnsAsync(parametroAtivo);
 
             _mediatorMock.Setup(m => m.Send(It.IsAny<ObterTurmasComRegistrosIndividuaisPorModalidadeEAnoQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(Enumerable.Empty<RegistroIndividualDTO>()); 
+                .ReturnsAsync(Enumerable.Empty<RegistroIndividualDTO>());
 
             var resultado = await _useCase.Executar(new MensagemRabbit());
 
@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConsolidacaoMediaRegistrosIndividua
 
             _mediatorMock.Verify(m => m.Send(It.IsAny<LimparConsolidacaoMediaRegistroIndividualCommand>(), It.IsAny<CancellationToken>()), Times.Once);
             _mediatorMock.Verify(m => m.Send(It.IsAny<PublicarFilaSgpCommand>(), It.IsAny<CancellationToken>()), Times.Never);
-            _mediatorMock.Verify(m => m.Send(It.IsAny<AtualizarParametroSistemaCommand>(), It.IsAny<CancellationToken>()), Times.Once); 
+            _mediatorMock.Verify(m => m.Send(It.IsAny<AtualizarParametroSistemaCommand>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -83,8 +83,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConsolidacaoMediaRegistrosIndividua
         };
 
             _mediatorMock.SetupSequence(m => m.Send(It.IsAny<ObterParametroSistemaPorTipoEAnoQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(parametroAtivo) 
-                .ReturnsAsync(parametroAtivo); 
+                .ReturnsAsync(parametroAtivo)
+                .ReturnsAsync(parametroAtivo);
 
             _mediatorMock.Setup(m => m.Send(It.Is<ObterTurmasComRegistrosIndividuaisPorModalidadeEAnoQuery>(q => q.AnoLetivo == anoAtual), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(turmas);
@@ -104,8 +104,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConsolidacaoMediaRegistrosIndividua
             var parametroAtivo = new ParametrosSistema { Ativo = true, Valor = "" };
             var turmas = new List<RegistroIndividualDTO>
     {
-        new RegistroIndividualDTO { TurmaId = 1, AnoLetivo = anoAtual }, 
-        new RegistroIndividualDTO { TurmaId = 2, AnoLetivo = anoAtual }  
+        new RegistroIndividualDTO { TurmaId = 1, AnoLetivo = anoAtual },
+        new RegistroIndividualDTO { TurmaId = 2, AnoLetivo = anoAtual }
     };
 
             _mediatorMock.SetupSequence(m => m.Send(It.IsAny<ObterParametroSistemaPorTipoEAnoQuery>(), It.IsAny<CancellationToken>()))
@@ -120,7 +120,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConsolidacaoMediaRegistrosIndividua
 
             var resultado = await _useCase.Executar(new MensagemRabbit());
 
-            Assert.True(resultado); 
+            Assert.True(resultado);
 
             _mediatorMock.Verify(m => m.Send(It.Is<PublicarFilaSgpCommand>(c => c.Rota == RotasRabbitSgp.ConsolidarMediaRegistrosIndividuais), It.IsAny<CancellationToken>()), Times.Exactly(turmas.Count));
 
@@ -140,8 +140,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConsolidacaoMediaRegistrosIndividua
         };
 
             _mediatorMock.SetupSequence(m => m.Send(It.IsAny<ObterParametroSistemaPorTipoEAnoQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(parametroAtivo) 
-                .ReturnsAsync((ParametrosSistema)null); 
+                .ReturnsAsync(parametroAtivo)
+                .ReturnsAsync((ParametrosSistema)null);
 
             _mediatorMock.Setup(m => m.Send(It.IsAny<ObterTurmasComRegistrosIndividuaisPorModalidadeEAnoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(turmas);

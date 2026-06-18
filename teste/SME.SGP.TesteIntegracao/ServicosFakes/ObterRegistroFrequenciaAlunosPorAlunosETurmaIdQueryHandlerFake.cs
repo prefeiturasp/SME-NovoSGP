@@ -13,7 +13,7 @@ namespace SME.SGP.TesteIntegracao
         {
             return await Task.FromResult(new List<RegistroFrequenciaPorDisciplinaAlunoDto>()
             {
-                new RegistroFrequenciaPorDisciplinaAlunoDto() 
+                new RegistroFrequenciaPorDisciplinaAlunoDto()
                 {
                     Bimestre = 1,
                     AlunoCodigo = "1",

@@ -85,9 +85,9 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task<IEnumerable<PlanoAulaRetornoDto>> MapearParaDto(
-                                                        IEnumerable<Aula> aulas, 
+                                                        IEnumerable<Aula> aulas,
                                                         bool temPlanoAnual,
-                                                        bool validaObjetivos, 
+                                                        bool validaObjetivos,
                                                         int bimestre,
                                                         ObterPlanoAulasPorTurmaEComponentePeriodoQuery filtro,
                                                         Turma turma)

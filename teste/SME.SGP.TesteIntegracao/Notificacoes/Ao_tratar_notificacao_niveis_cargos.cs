@@ -11,8 +11,6 @@ using SME.SGP.TesteIntegracao.Notificacoes.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -86,7 +84,7 @@ namespace SME.SGP.TesteIntegracao.Notificacoes
                 NotificacaoId = 1,
                 WorkflowAprovacaoNivelId = 1
             });
-            
+
             var useCase = ServiceProvider.GetService<ITrataNotificacoesNiveisCargosUseCase>();
 
             await useCase.Executar(new MensagemRabbit());

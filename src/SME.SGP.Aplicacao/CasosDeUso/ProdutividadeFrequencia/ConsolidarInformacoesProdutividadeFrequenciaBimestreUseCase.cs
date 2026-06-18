@@ -1,9 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -14,7 +12,7 @@ namespace SME.SGP.Aplicacao
 
         public ConsolidarInformacoesProdutividadeFrequenciaBimestreUseCase(IMediator mediator, IRepositorioFrequenciaConsulta repositorioFrequencia) : base(mediator)
         {
-            this.repositorioFrequencia = repositorioFrequencia ?? throw new System.ArgumentNullException(nameof(repositorioFrequencia)); 
+            this.repositorioFrequencia = repositorioFrequencia ?? throw new System.ArgumentNullException(nameof(repositorioFrequencia));
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagem)

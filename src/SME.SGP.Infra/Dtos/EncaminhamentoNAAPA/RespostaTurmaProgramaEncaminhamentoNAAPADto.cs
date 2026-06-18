@@ -5,7 +5,7 @@
         public string dreUe { get; set; }
         public string turma { get; set; }
         public string componenteCurricular { get; set; }
-        
+
         public bool EhIgual(object o)
         {
             if (!(o is RespostaTurmaProgramaEncaminhamentoNAAPADto)) return false;

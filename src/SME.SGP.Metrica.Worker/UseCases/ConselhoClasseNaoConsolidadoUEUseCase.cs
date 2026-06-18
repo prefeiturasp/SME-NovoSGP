@@ -3,7 +3,6 @@ using SME.SGP.Infra;
 using SME.SGP.Metrica.Worker.Commands;
 using SME.SGP.Metrica.Worker.Repositorios.Interfaces;
 using SME.SGP.Metrica.Worker.UseCases.Interfaces;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -40,7 +39,7 @@ namespace SME.SGP.Metrica.Worker.UseCases
                                                                                                          false);
 
                 await mediator.Send(new PublicarFilaCommand(RotasRabbitSgpFechamento.ConsolidarTurmaConselhoClasseAlunoTratar, mensagemConsolidacaoConselhoClasseAluno));
-            }    
+            }
 
 
             return true;

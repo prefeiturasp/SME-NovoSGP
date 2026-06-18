@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public  class ObterUsuariosPorRfOuCriaQuery : IRequest<IEnumerable<Usuario>>
+    public class ObterUsuariosPorRfOuCriaQuery : IRequest<IEnumerable<Usuario>>
     {
         public ObterUsuariosPorRfOuCriaQuery(IList<string> codigosRf, bool obterPerfis = false)
         {

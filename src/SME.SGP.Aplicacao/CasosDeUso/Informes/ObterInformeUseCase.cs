@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             if (informe.EhNulo())
                 throw new NegocioException(MensagemNegocioInformes.INFORMES_NAO_ENCONTRADO);
 
-            var anexos = await mediator.Send(new ObterAnexosPorInformativoIdQuery(informeId)); 
+            var anexos = await mediator.Send(new ObterAnexosPorInformativoIdQuery(informeId));
 
             var perfils = await mediator.Send(new ObterGruposDeUsuariosQuery((int)TipoPerfil.SME));
 
@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
                 DreId = informe.DreId,
                 DreNome = informe.Dre.NaoEhNulo() ? informe.Dre.Abreviacao : TODAS,
                 UeId = informe.UeId,
-                UeNome = informe.Ue.NaoEhNulo() ? $"{ informe.Ue.TipoEscola.ShortName() } { informe.Ue.Nome }" : TODAS,
+                UeNome = informe.Ue.NaoEhNulo() ? $"{informe.Ue.TipoEscola.ShortName()} {informe.Ue.Nome}" : TODAS,
                 Texto = informe.Texto,
                 Titulo = informe.Titulo,
                 Perfis = ObterPerfils(perfils, informe.Perfis),
@@ -59,13 +59,15 @@ namespace SME.SGP.Aplicacao
 
         private IEnumerable<ModalidadeRetornoDto> ObterModalidades(List<InformativoModalidade> modalidades)
         {
-            return modalidades.Select(modalidade => new ModalidadeRetornoDto() { 
-                                                        Id = (int)modalidade.Modalidade, 
-                                                        Nome = modalidade.Modalidade.GetAttribute<DisplayAttribute>()?.GetName() });
+            return modalidades.Select(modalidade => new ModalidadeRetornoDto()
+            {
+                Id = (int)modalidade.Modalidade,
+                Nome = modalidade.Modalidade.GetAttribute<DisplayAttribute>()?.GetName()
+            });
         }
 
         private List<GruposDeUsuariosDto> ObterPerfils(
-                                            IEnumerable<GruposDeUsuariosDto> perfils, 
+                                            IEnumerable<GruposDeUsuariosDto> perfils,
                                             IEnumerable<InformativoPerfil> informativoPerfis)
         {
             var codigoPerfis = informativoPerfis.Select(ip => ip.CodigoPerfil);

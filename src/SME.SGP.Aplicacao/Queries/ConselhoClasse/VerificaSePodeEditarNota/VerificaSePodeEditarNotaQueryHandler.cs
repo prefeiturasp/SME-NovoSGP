@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(VerificaSePodeEditarNotaQuery request, CancellationToken cancellationToken)
         {
-            var turmaFechamento = await this.mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(request.Turma.CodigoTurma, DateTimeExtension.HorarioBrasilia())); 
+            var turmaFechamento = await this.mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(request.Turma.CodigoTurma, DateTimeExtension.HorarioBrasilia()));
 
             if (turmaFechamento.EhNulo() || !turmaFechamento.Any())
                 throw new NegocioException($"Não foi possível obter os dados da turma {request.Turma.CodigoTurma}");
@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
 
                 var periodoFechamentoOriginal = await mediator.Send(new ObterPeriodoFechamentoPorCalendarioIdEBimestreQuery(request.PeriodoEscolar.TipoCalendarioId, request.Turma.EhTurmaInfantil, request.PeriodoEscolar.Bimestre));
 
-                if(periodoFechamentoOriginal.NaoEhNulo())
+                if (periodoFechamentoOriginal.NaoEhNulo())
                 {
                     temPeriodoAberto = aluno.PodeEditarNotaConceito() ? temPeriodoAberto : (aluno.DataSituacao >= periodoFechamentoOriginal.InicioDoFechamento && temPeriodoAberto);
                 }

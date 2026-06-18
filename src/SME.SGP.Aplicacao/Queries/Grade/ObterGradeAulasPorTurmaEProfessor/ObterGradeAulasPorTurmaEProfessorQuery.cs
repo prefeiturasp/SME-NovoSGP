@@ -1,12 +1,10 @@
 ﻿using MediatR;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterGradeAulasPorTurmaEProfessorQuery: IRequest<GradeComponenteTurmaAulasDto>
+    public class ObterGradeAulasPorTurmaEProfessorQuery : IRequest<GradeComponenteTurmaAulasDto>
     {
         public ObterGradeAulasPorTurmaEProfessorQuery(string turmaCodigo, long[] componentesCurriculares, DateTime dataAula, string codigoRf = null, bool ehRegencia = false, bool ehGestor = false)
         {

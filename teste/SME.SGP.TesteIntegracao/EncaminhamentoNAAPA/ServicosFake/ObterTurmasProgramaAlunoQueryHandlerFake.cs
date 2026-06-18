@@ -1,14 +1,9 @@
-﻿using System;
+﻿using MediatR;
+using SME.SGP.Aplicacao;
+using SME.SGP.Infra.Dtos;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Aplicacao;
-using SME.SGP.Dominio;
-using SME.SGP.Dto;
-using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFake
 {

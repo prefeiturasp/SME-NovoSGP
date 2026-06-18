@@ -23,10 +23,10 @@ namespace SME.SGP.Dados.Repositorios
 
             StringBuilder sql = MontaQueryCompleta(eventoLocalOcorrencia, eventoLetivo, descricao, paginacao);
 
-            var parametros = new 
-            { 
-                local_ocorrencia = eventoLocalOcorrencia, 
-                letivo = eventoLetivo, 
+            var parametros = new
+            {
+                local_ocorrencia = eventoLocalOcorrencia,
+                letivo = eventoLetivo,
                 descricao = $"%{descricao?.ToLowerInvariant()}%",
                 perfilCodigo
             };
@@ -54,7 +54,7 @@ namespace SME.SGP.Dados.Repositorios
             var sql = "select * from evento_tipo where codigo = @tipoEvento";
 
             return database.Conexao.QuerySingleOrDefault<EventoTipo>(sql, new { tipoEvento });
-            
+
         }
 
         public EventoTipo ObterPorCodigo(long id)

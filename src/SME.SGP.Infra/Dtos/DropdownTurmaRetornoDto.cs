@@ -7,7 +7,7 @@ namespace SME.SGP.Infra
         public string Valor { get; set; }
         public string Descricao { get; set; }
         public Modalidade Modalidade { get; set; }
-        public string DescricaoTurma 
+        public string DescricaoTurma
         {
             get => $"{Modalidade.ShortName()} - {Descricao}";
         }

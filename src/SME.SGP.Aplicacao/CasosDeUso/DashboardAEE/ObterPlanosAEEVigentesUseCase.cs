@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
         {
             List<AEETurmaDto> retorno = new List<AEETurmaDto>();
 
-            foreach(var plano in planos.GroupBy(a=> $"{a.Modalidade.ShortName()} - {a.AnoTurma}"))
+            foreach (var plano in planos.GroupBy(a => $"{a.Modalidade.ShortName()} - {a.AnoTurma}"))
             {
                 retorno.Add(new AEETurmaDto()
                 {

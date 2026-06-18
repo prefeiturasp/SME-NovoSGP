@@ -1,12 +1,12 @@
-﻿using System;
+﻿using MediatR;
+using SME.SGP.Dominio;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarConsolidadoEncaminhamentoNAAPACommandHandler : IRequestHandler<SalvarConsolidadoEncaminhamentoNAAPACommand,bool>
+    public class SalvarConsolidadoEncaminhamentoNAAPACommandHandler : IRequestHandler<SalvarConsolidadoEncaminhamentoNAAPACommand, bool>
     {
         private readonly IRepositorioConsolidadoEncaminhamentoNAAPA repositorio;
 
@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(SalvarConsolidadoEncaminhamentoNAAPACommand request, CancellationToken cancellationToken)
         {
-            var entidade = await repositorio.ObterPorUeIdAnoLetivoSituacao(request.Consolidado.UeId,request.Consolidado.AnoLetivo,(int)request.Consolidado.Situacao, (int)request.Consolidado.Modalidade);
+            var entidade = await repositorio.ObterPorUeIdAnoLetivoSituacao(request.Consolidado.UeId, request.Consolidado.AnoLetivo, (int)request.Consolidado.Situacao, (int)request.Consolidado.Modalidade);
             if (entidade.NaoEhNulo())
             {
                 request.Consolidado.Id = entidade.Id;

@@ -44,13 +44,13 @@ namespace SME.SGP.Aplicacao
 
             return professorResumo;
         }
-        
+
         private async Task<Usuario> ObterProfessorSGPConsultaPorNome(string codigoRF)
         {
             var usuarioSgp = await mediator.Send(new ObterUsuarioPorRfQuery(codigoRF));
             return usuarioSgp;
         }
-        
+
         private async Task<ProfessorResumoDto> ObterProfessorUeRFEOL(string codigoRF, int anoLetivo, string dreId, string ueId, bool buscarOutrosCargos = false, bool buscarPorTodasDre = false)
         {
             var professorResumo = await mediator.Send(new ObterProfessorPorRFUeDreAnoLetivoQuery(codigoRF, anoLetivo, dreId, ueId, buscarOutrosCargos, buscarPorTodasDre));

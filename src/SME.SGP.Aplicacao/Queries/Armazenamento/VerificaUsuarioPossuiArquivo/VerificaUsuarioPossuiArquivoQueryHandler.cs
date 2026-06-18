@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
@@ -17,6 +16,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<bool> Handle(VerificaUsuarioPossuiArquivoQuery request, CancellationToken cancellationToken)
-            => await repositorioDocumento.ValidarUsuarioPossuiDocumento(request.TipoDocumentoId, request.ClassificacaoId, request.UsuarioId, request.UeId, request.AnoLetivo,request.DocumentoId);
+            => await repositorioDocumento.ValidarUsuarioPossuiDocumento(request.TipoDocumentoId, request.ClassificacaoId, request.UsuarioId, request.UeId, request.AnoLetivo, request.DocumentoId);
     }
 }

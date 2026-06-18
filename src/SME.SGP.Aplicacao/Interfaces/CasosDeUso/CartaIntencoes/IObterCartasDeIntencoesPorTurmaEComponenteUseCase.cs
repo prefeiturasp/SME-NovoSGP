@@ -1,12 +1,9 @@
-﻿using System;
+﻿using SME.SGP.Infra;
 using System.Collections.Generic;
-using System.Text;
-using SME.SGP.Aplicacao;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IObterCartasDeIntencoesPorTurmaEComponenteUseCase: IUseCase<ObterCartaIntencoesDto, IEnumerable<CartaIntencoesRetornoDto>>
+    public interface IObterCartasDeIntencoesPorTurmaEComponenteUseCase : IUseCase<ObterCartaIntencoesDto, IEnumerable<CartaIntencoesRetornoDto>>
     {
     }
 }

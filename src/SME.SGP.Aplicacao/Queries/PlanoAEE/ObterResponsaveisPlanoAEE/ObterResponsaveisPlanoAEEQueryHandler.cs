@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioPlanoAEEConsulta repositorioPlanoAEE;
 
-        public ObterResponsaveisPlanoAEEQueryHandler(IRepositorioPlanoAEEConsulta repositorioPlanoAEE) 
+        public ObterResponsaveisPlanoAEEQueryHandler(IRepositorioPlanoAEEConsulta repositorioPlanoAEE)
         {
             this.repositorioPlanoAEE = repositorioPlanoAEE ?? throw new ArgumentNullException(nameof(repositorioPlanoAEE));
         }

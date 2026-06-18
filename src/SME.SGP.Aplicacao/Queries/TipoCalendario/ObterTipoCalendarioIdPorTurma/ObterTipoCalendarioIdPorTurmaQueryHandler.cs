@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterTipoCalendarioIdPorTurmaQueryHandler: IRequestHandler<ObterTipoCalendarioIdPorTurmaQuery, long>
+    public class ObterTipoCalendarioIdPorTurmaQueryHandler : IRequestHandler<ObterTipoCalendarioIdPorTurmaQuery, long>
     {
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         public ObterTipoCalendarioIdPorTurmaQueryHandler(IRepositorioTipoCalendarioConsulta repositorioTipoCalendario)

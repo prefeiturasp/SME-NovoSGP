@@ -4,7 +4,7 @@ namespace SME.SGP.Infra.Dtos
 {
     public class UEsPorDreDto
     {
-        public string CodigoDre { get; set; } 
+        public string CodigoDre { get; set; }
         public Modalidade? Modalidade { get; set; }
         public int Periodo { get; set; }
         public bool ConsideraHistorico { get; set; }

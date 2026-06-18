@@ -1,7 +1,5 @@
-﻿using MediatR;
-using SME.SGP.Dominio.Enumerados;
-using System;
-using FluentValidation;
+﻿using FluentValidation;
+using MediatR;
 using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
@@ -15,7 +13,7 @@ namespace SME.SGP.Aplicacao
 
         public ConsolidacaoDashBoardFrequencia ConsolidacaoDashBoardFrequencia { get; set; }
     }
-    
+
     public class SalvarConsolidacaoDashBoardFrequenciaCommandValidator : AbstractValidator<SalvarConsolidacaoDashBoardFrequenciaCommand>
     {
         public SalvarConsolidacaoDashBoardFrequenciaCommandValidator()

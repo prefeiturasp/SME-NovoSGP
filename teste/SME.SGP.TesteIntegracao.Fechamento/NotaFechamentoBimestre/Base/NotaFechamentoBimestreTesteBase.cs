@@ -6,6 +6,8 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
+using SME.SGP.TesteIntegracao.NotaFechamentoBimestre.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
@@ -13,8 +15,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
-using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
-using SME.SGP.TesteIntegracao.NotaFechamentoBimestre.ServicosFakes;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 {
@@ -106,11 +106,11 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             await CriarSintese();
             await CrieConceitoValores();
-            
+
             await CriarCiclo();
             await CriarNotasTipoEParametros(filtroFechamentoNota.ConsiderarAnoAnterior);
         }
-        
+
         private async Task CriarNotasTipoEParametros(bool consideraAnoAnterior = false)
         {
             var dataBase = consideraAnoAnterior ? new DateTime(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 01, 01) : new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
@@ -136,7 +136,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
-            
+
             await InserirNaBase(new NotaConceitoCicloParametro()
             {
                 CicloId = 1,

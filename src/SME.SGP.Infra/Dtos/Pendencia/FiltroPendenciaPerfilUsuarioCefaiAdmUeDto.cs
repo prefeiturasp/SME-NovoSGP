@@ -1,5 +1,4 @@
 ﻿using SME.SGP.Infra.Dtos;
-using System.Collections.Generic;
 
 namespace SME.SGP.Infra
 {
@@ -10,7 +9,7 @@ namespace SME.SGP.Infra
             FuncionarioAtual = funcionarioAtual;
             EraAdmUe = eraAdmUe;
             EraCefai = eraCefai;
-            PendenciaFuncionario = pendenciaFuncionario;            
+            PendenciaFuncionario = pendenciaFuncionario;
         }
 
         public FuncionarioCargoDTO FuncionarioAtual { get; set; }

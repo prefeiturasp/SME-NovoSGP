@@ -4,7 +4,7 @@
     {
         public MensagemLeituraNotificacaoDto() { }
         public MensagemLeituraNotificacaoDto(long codigo, string usuarioRf, bool anoAnterior = false)
-        { 
+        {
             Codigo = codigo;
             UsuarioRf = usuarioRf;
             AnoAnterior = anoAnterior;

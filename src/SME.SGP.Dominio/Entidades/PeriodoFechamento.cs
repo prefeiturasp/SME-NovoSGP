@@ -44,7 +44,7 @@ namespace SME.SGP.Dominio
 
             ValidarPeriodoInicioFim(fechamentoBimestre);
             ValidarPeriodoConcomitante(fechamentoBimestre);
- 
+
             FechamentosBimestre.Add(fechamentoBimestre);
         }
 
@@ -81,7 +81,7 @@ namespace SME.SGP.Dominio
 
         public bool ExisteFechamentoEmAberto(DateTime hoje)
         {
-            return FechamentosBimestre.Any(a => a.DataDentroPeriodo(hoje));            
+            return FechamentosBimestre.Any(a => a.DataDentroPeriodo(hoje));
         }
     }
 }

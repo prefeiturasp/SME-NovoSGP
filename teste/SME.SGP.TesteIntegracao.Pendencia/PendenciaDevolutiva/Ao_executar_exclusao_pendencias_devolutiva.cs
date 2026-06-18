@@ -27,7 +27,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
             var useCase = ServiceProvider.GetService<IExecutarExclusaoPendenciasDevolutivaUseCase>();
 
             var json = JsonConvert.SerializeObject(new FiltroExclusaoPendenciasDevolutivaDto
-            { 
+            {
                 TurmaId = 1,
                 ComponenteId = 512
             });

@@ -14,8 +14,8 @@ namespace SME.SGP.Aplicacao
             Bimestre = bimestre;
         }
 
-        public string TurmaId { get; set; } 
-        public string DisciplinaId { get; set; }  
+        public string TurmaId { get; set; }
+        public string DisciplinaId { get; set; }
         public int Bimestre { get; set; }
     }
 

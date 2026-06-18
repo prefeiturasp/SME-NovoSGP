@@ -1,15 +1,7 @@
 ﻿using MediatR;
-using Nest;
-using Newtonsoft.Json;
-using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using SME.SGP.Metrica.Worker.Repositorios.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,7 +22,7 @@ namespace SME.SGP.Metrica.Worker.Queries
             if (request.EhRegencia)
                 return request.Turma.ObterHorasGradeRegencia();
 
-            if (request.ComponenteCurricularCodigo.Equals(ComponenteCurricularSRM)) 
+            if (request.ComponenteCurricularCodigo.Equals(ComponenteCurricularSRM))
                 return 4;
 
             int.TryParse(request.Turma.Ano, out int ano);

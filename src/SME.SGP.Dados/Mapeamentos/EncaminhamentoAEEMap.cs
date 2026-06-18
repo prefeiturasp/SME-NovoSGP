@@ -1,7 +1,7 @@
 ﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados
-{ 
+{
     public class EncaminhamentoAEEMap : BaseMap<EncaminhamentoAEE>
     {
         public EncaminhamentoAEEMap()

@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
@@ -11,7 +10,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioConsolidacaoReflexoFrequenciaBuscaAtiva repositorioConsolidacaoReflexoFrequencia;
 
-        public ExcluirConsolidacoesReflexoFrequenciaBuscaAtivaUeMesCommandHandler (IRepositorioConsolidacaoReflexoFrequenciaBuscaAtiva repositorioConsolidacaoReflexoFrequencia)
+        public ExcluirConsolidacoesReflexoFrequenciaBuscaAtivaUeMesCommandHandler(IRepositorioConsolidacaoReflexoFrequenciaBuscaAtiva repositorioConsolidacaoReflexoFrequencia)
         {
             this.repositorioConsolidacaoReflexoFrequencia = repositorioConsolidacaoReflexoFrequencia ?? throw new ArgumentNullException(nameof(repositorioConsolidacaoReflexoFrequencia));
         }

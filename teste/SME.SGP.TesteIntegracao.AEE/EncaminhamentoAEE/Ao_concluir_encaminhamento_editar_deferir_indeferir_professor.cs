@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -13,11 +10,14 @@ using SME.SGP.Infra.Dtos;
 using SME.SGP.TesteIntegracao.EncaminhamentoAee.ServicosFake;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 {
-    public class Ao_concluir_encaminhamento_editar_deferir_indeferir_professor: EncaminhamentoAEETesteBase
+    public class Ao_concluir_encaminhamento_editar_deferir_indeferir_professor : EncaminhamentoAEETesteBase
     {
         public Ao_concluir_encaminhamento_editar_deferir_indeferir_professor(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -140,7 +140,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
-            
+
             await InserirNaBase(new PendenciaPerfilUsuario()
             {
                 PendenciaPerfilId = 1,
@@ -151,7 +151,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 CriadoRF = SISTEMA_CODIGO_RF
             });
         }
-        
+
         private FiltroAEEDto ObterFiltro(string perfil)
         {
             return new FiltroAEEDto()

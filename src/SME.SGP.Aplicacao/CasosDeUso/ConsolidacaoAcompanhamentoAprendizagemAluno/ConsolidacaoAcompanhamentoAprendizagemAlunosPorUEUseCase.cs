@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
             var filtro = mensagem.ObterObjetoMensagem<FiltroUEDto>();
-            
+
             int anoAtual = filtro.AnoLetivo > 0 ? filtro.AnoLetivo : DateTimeExtension.HorarioBrasilia().Year;
 
             var turmas = await ObterTurmasInfantil(filtro.UeCodigo, anoAtual);
@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
                 }
                 catch (Exception ex)
                 {
-                    await mediator.Send(new SalvarLogViaRabbitCommand("Consolidação Acompanhamento Aprendizagem", LogNivel.Critico, LogContexto.Aula, ex.Message));    
+                    await mediator.Send(new SalvarLogViaRabbitCommand("Consolidação Acompanhamento Aprendizagem", LogNivel.Critico, LogContexto.Aula, ex.Message));
                 }
             }
         }

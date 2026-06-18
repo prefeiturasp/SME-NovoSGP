@@ -24,18 +24,18 @@ namespace SME.SGP.Aplicacao
                 ?
                 ModalidadeTipoCalendario.FundamentalMedio
                 :
-                ModalidadeTipoCalendario.EJA;    
+                ModalidadeTipoCalendario.EJA;
 
             var diasLetivos = new List<DiaLetivoSimplesDto>();
             long tipoCalendarioId = 0;
             var semestre = 0;
-            var anoLetivo = param.DataInicio.Year;            
+            var anoLetivo = param.DataInicio.Year;
 
             if (modalidadeCalendario.EhEjaOuCelp())
                 tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorAnoLetivoModalidadeEDataReferenciaQuery(anoLetivo, modalidadeCalendario, param.DataInicio));
             else
                 tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorAnoLetivoEModalidadeQuery(modalidadeCalendario, anoLetivo, semestre));
-            
+
             if (tipoCalendarioId == 0)
                 throw new NegocioException("Tipo calendário não encontrado");
 

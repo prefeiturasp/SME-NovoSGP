@@ -1,6 +1,4 @@
 ﻿
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -9,6 +7,8 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
 {
@@ -21,10 +21,10 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
-            
+
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosDentroPeriodoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosDentroPeriodoQueryHandlerFake), ServiceLifetime.Scoped));
-        }    
-        
+        }
+
         protected async Task CriarItensBasicos()
         {
             await InserirNaBase(new Dre

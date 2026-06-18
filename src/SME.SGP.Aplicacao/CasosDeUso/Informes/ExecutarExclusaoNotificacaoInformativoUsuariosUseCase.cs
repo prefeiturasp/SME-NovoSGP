@@ -1,9 +1,7 @@
 ﻿using MediatR;
-using Minio.DataModel;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
 using System;
 using System.Threading.Tasks;
 
@@ -27,7 +25,7 @@ namespace SME.SGP.Aplicacao
 
             var idsNotificacao = await mediator.Send(new ObterIdsNotificacaoPorInformativoIdQuery(informativoId));
             foreach (var id in idsNotificacao)
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExcluirNotificacaoInformativoUsuario, id, Guid.NewGuid(), null));  
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExcluirNotificacaoInformativoUsuario, id, Guid.NewGuid(), null));
             return true;
         }
     }

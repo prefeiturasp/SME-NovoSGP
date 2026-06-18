@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
 
         public long TurmaId { get; set; }
         public int Mes { get; set; }
-        public int QuantidadeAlunosAbaixo50Porcento { get; set;  }
+        public int QuantidadeAlunosAbaixo50Porcento { get; set; }
         public int QuantidadeAlunox0Porcento { get; set; }
     }
 }

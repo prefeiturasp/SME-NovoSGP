@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Moq;
 using SME.SGP.Aplicacao.Consultas;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra.Interfaces;
@@ -24,7 +23,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             servicoAtribuicaoEsporadica = new Mock<IServicoAtribuicaoEsporadica>();
             mediator = new Mock<IMediator>();
             contextoAplicacao = new Mock<IContextoAplicacao>();
-            consultasAtribuicaoEsporadica = new ConsultasAtribuicaoEsporadica(repositorioAtribuicaoEsporadica.Object, contextoAplicacao.Object,mediator.Object);
+            consultasAtribuicaoEsporadica = new ConsultasAtribuicaoEsporadica(repositorioAtribuicaoEsporadica.Object, contextoAplicacao.Object, mediator.Object);
         }
 
         [Fact(DisplayName = "Deve Consultar Atribuicao")]

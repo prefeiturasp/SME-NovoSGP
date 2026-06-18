@@ -19,7 +19,7 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioPeriodoFechamento(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
-         
+
         public PeriodoFechamento ObterPorFiltros(long? tipoCalendarioId, long? turmaId, Dominio.Aplicacao aplicacao)
         {
             var query = new StringBuilder("select f.*,fb.*,p.*, t.*");
@@ -37,7 +37,7 @@ namespace SME.SGP.Dados.Repositorios
                                                                          when tu.modalidade_codigo = 3 then 2
                                                                          when tu.modalidade_codigo = 1 then 3
                                                                     end)");
-           
+
             query.AppendLine("where 1=1");
 
             if (tipoCalendarioId.HasValue)
@@ -46,7 +46,7 @@ namespace SME.SGP.Dados.Repositorios
             if (turmaId.HasValue)
                 query.AppendLine("and tu.id = @turmaId");
 
-                query.AppendLine("AND COALESCE(f.aplicacao, 1) = @aplicacao");
+            query.AppendLine("AND COALESCE(f.aplicacao, 1) = @aplicacao");
 
             var lookup = new Dictionary<long, PeriodoFechamento>();
 
@@ -219,7 +219,7 @@ namespace SME.SGP.Dados.Repositorios
                            and tc.modalidade = @modalidade";
 
             return await database.Conexao.QueryAsync<PeriodoFechamento, PeriodoFechamentoBimestre, PeriodoEscolar, PeriodoFechamentoBimestre>(query,
-                (periodoFechamento,periodoFechamentoBimestre, periodoEscolar) =>
+                (periodoFechamento, periodoFechamentoBimestre, periodoEscolar) =>
                 {
                     periodoFechamentoBimestre.PeriodoFechamento = periodoFechamento;
                     periodoFechamentoBimestre.PeriodoEscolar = periodoEscolar;

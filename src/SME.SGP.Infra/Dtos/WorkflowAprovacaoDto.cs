@@ -43,7 +43,7 @@ namespace SME.SGP.Infra
                 Niveis.Count(a => a.Cargo.HasValue) > 0 &&
                 string.IsNullOrEmpty(UeId))
                 yield return new ValidationResult("Este workflow possui níveis com cargo e é necessário informar a Ue.");
-                
+
             if (Tipo != WorkflowAprovacaoTipo.Basica)
             {
                 yield return new ValidationResult("Para este tipo de workflow, é necessário informar um Id de entidade para aprovar.");

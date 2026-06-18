@@ -24,7 +24,7 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await salvarCadastroAcessoAbaeUse.Executar(cadastroAcessoAbaeDto));
         }
-        
+
         [HttpPut]
         [ProducesResponseType(204)]
         [ProducesResponseType(401)]
@@ -35,7 +35,7 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await salvarCadastroAcessoAbaeUse.Executar(cadastroAcessoAbaeDto));
         }
-        
+
         [HttpGet("{id}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(401)]
@@ -47,7 +47,7 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await obterCadastroAcessoAbaeUse.Executar(id));
         }
-        
+
         [HttpDelete("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -56,7 +56,7 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await excluirCadastroAcessoABAEUseCase.Executar(id));
         }
-        
+
         [HttpGet]
         [ProducesResponseType(204)]
         [ProducesResponseType(401)]
@@ -74,7 +74,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ABA_C, Permissao.RBA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterFuncionarios(string codigoDre, string codigoUe, 
+        public async Task<IActionResult> ObterFuncionarios(string codigoDre, string codigoUe,
                                                             [FromQuery] string codigoRf, [FromQuery] string nomeServidor,
                                                            [FromServices] IObterFuncionariosABAEUseCase obterFuncionariosUseCase)
         {

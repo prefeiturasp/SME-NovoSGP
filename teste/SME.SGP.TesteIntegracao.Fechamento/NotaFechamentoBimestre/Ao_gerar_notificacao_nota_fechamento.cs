@@ -5,25 +5,24 @@ using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.NotaFechamentoBimestre.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
-using SME.SGP.TesteIntegracao.NotaFechamentoBimestre.ServicosFakes;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 {
     public class Ao_gerar_notificacao_nota_fechamento : NotaFechamentoBimestreTesteBase
     {
-        public Ao_gerar_notificacao_nota_fechamento(CollectionFixture collectionFixture) : base(collectionFixture) {}
+        public Ao_gerar_notificacao_nota_fechamento(CollectionFixture collectionFixture) : base(collectionFixture) { }
 
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
-        
+
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosEolPorCodigosEAnoQuery, IEnumerable<TurmasDoAlunoDto>>), typeof(ObterAlunosEolPorCodigosEAnoQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
@@ -36,15 +35,15 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             await CriarDadosBase(filtroFechamentoNota);
 
             await CriarFechamentoTurma();
-            
+
             await CriarFechamentoTurmaDisciplina(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
-            
+
             await CriarFechamentoAlunoNota(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
-            
+
             var mensagemOriginal = ObterMensagemDeNotificacaoAntiga();
-            
+
             await CriarNotificacao(mensagemOriginal);
-            
+
             await InserirNaBase(new WorkflowAprovacao()
             {
                 UeId = "1",
@@ -54,25 +53,29 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 NotifacaoTitulo = "Alteração em nota(s) final - ESCOLA - TURMA (ano anterior)",
                 NotificacaoTipo = NotificacaoTipo.Notas,
                 NotificacaoCategoria = NotificacaoCategoria.Workflow_Aprovacao,
-                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
                 Tipo = WorkflowAprovacaoTipo.AlteracaoNotaFechamento
             });
-            
+
             await InserirNaBase(new WorkflowAprovacaoNivel()
             {
-               Status = WorkflowAprovacaoNivelStatus.SemStatus,
-               Cargo = Cargo.CP,
-               Nivel = 1,
-               CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF,
-               WorkflowId = 1
+                Status = WorkflowAprovacaoNivelStatus.SemStatus,
+                Cargo = Cargo.CP,
+                Nivel = 1,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                WorkflowId = 1
             });
-            
+
             await InserirNaBase(new WorkflowAprovacaoNivelNotificacao()
             {
                 WorkflowAprovacaoNivelId = 1,
                 NotificacaoId = 1
             });
-                
+
             await InserirNaBase(new WfAprovacaoNotaFechamento()
             {
                 FechamentoNotaId = 1,
@@ -99,7 +102,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             notificaoDetalhe.Mensagem.Contains("<mensagemDinamicaTabelaPorAluno>").ShouldBeFalse("Não pode existir o termo mensagemDinamicaTabelaPorAluno para mensagens antigas");
             notificaoDetalhe.Mensagem.Equals(mensagemOriginal).ShouldBeTrue("A mensagem não pode sofrer alteração");
         }
-        
+
         [Fact(DisplayName = "Fechamento Nota - Deve exibir a notificação dinâmica, com status Pendente")]
         public async Task Deve_exibir_notificaco_dinamica_status_pendente_para_atualizacao_de_notificacao()
         {
@@ -108,15 +111,15 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             await CriarDadosBase(filtroFechamentoNota);
 
             await CriarFechamentoTurma();
-            
+
             await CriarFechamentoTurmaDisciplina(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
-            
+
             await CriarFechamentoAlunoNota(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
 
             var mensagemOriginal = ObterMensagemComTagDinamicaTabelaPorAluno();
-            
+
             await CriarNotificacao(mensagemOriginal);
-            
+
             await InserirNaBase(new WorkflowAprovacao()
             {
                 UeId = "1",
@@ -126,37 +129,41 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 NotifacaoTitulo = "Alteração em nota(s) final - ESCOLA - TURMA (ano anterior)",
                 NotificacaoTipo = NotificacaoTipo.Notas,
                 NotificacaoCategoria = NotificacaoCategoria.Workflow_Aprovacao,
-                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
                 Tipo = WorkflowAprovacaoTipo.AlteracaoNotaFechamento
             });
-            
+
             await InserirNaBase(new WorkflowAprovacaoNivel()
             {
-               Status = WorkflowAprovacaoNivelStatus.SemStatus,
-               Cargo = Cargo.CP,
-               Nivel = 1,
-               CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF,
-               WorkflowId = 1
+                Status = WorkflowAprovacaoNivelStatus.SemStatus,
+                Cargo = Cargo.CP,
+                Nivel = 1,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                WorkflowId = 1
             });
-            
+
             await InserirNaBase(new WorkflowAprovacaoNivelNotificacao()
             {
                 WorkflowAprovacaoNivelId = 1,
                 NotificacaoId = 1
             });
-            
+
             await InserirNaBase(new WorkflowAprovacaoNivelNotificacao()
             {
                 WorkflowAprovacaoNivelId = 1,
                 NotificacaoId = 2
             });
-            
+
             await InserirNaBase(new WorkflowAprovacaoNivelNotificacao()
             {
                 WorkflowAprovacaoNivelId = 1,
                 NotificacaoId = 3
             });
-                
+
             await InserirNaBase(new WfAprovacaoNotaFechamento()
             {
                 FechamentoNotaId = 1,
@@ -182,13 +189,13 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             notificaoDetalhe.ShouldNotBeNull();
             notificaoDetalhe.Mensagem.Contains("<mensagemDinamicaTabelaPorAluno>").ShouldBeFalse("Deve ser removido o termo mensagemDinamicaTabelaPorAluno");
             notificaoDetalhe.Mensagem.Equals(mensagemOriginal).ShouldBeFalse("A mensagem tem que ser atualizada ");
-            
+
             var notificacoes = ObterTodos<Notificacao>();
             notificacoes.ShouldNotBeNull();
             notificacoes.Count().ShouldBe(3);
             notificacoes.All(c => c.Mensagem.Equals(mensagemOriginal)).ShouldBeTrue("As notificações do mesmo workFlowAprovação devem se manter com o termo mensagemDinamicaTabelaPorAluno");
         }
-        
+
         private static string ObterMensagemComTagDinamicaTabelaPorAluno()
         {
             return "<p>A(s) nota(s) do Xº bimestre de ANO da turma X da ESCOLA foram alteradas <mensagemDinamicaTabelaPorAluno>";
@@ -213,7 +220,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 <p>Você precisa aceitar esta notificação para que a alteração seja considerada válida.</p>
                 ";
         }
-      
+
         private async Task CriarNotificacao(string mensagemOriginal, NotificacaoStatus status = NotificacaoStatus.Pendente)
         {
             for (int i = 0; i < 3; i++)
@@ -268,7 +275,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 CriadoRF = SISTEMA_CODIGO_RF,
                 FechamentoAlunoId = 1
             });
-            
+
             await InserirNaBase(new FechamentoAluno()
             {
                 FechamentoTurmaDisciplinaId = 1,
@@ -352,8 +359,8 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             });
         }
 
-        private static async Task<FiltroFechamentoNotaDto> ObterFiltroFechamentoNota(string perfil, 
-            ModalidadeTipoCalendario tipoCalendario, bool considerarAnoAnterior, Modalidade modalidade, string anoTurma, 
+        private static async Task<FiltroFechamentoNotaDto> ObterFiltroFechamentoNota(string perfil,
+            ModalidadeTipoCalendario tipoCalendario, bool considerarAnoAnterior, Modalidade modalidade, string anoTurma,
             TipoFrequenciaAluno tipoFrequenciaAluno, string componenteCurricular)
         {
             return await Task.FromResult(new FiltroFechamentoNotaDto

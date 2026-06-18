@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using FluentValidation;
+﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public long RelatorioSecaoId { get; set; }
-        public long QuestaoId { get; set; } 
+        public long QuestaoId { get; set; }
         public IEnumerable<RelatorioPAPRespostaDto> Respostas { get; set; }
     }
 

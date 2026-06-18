@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao
             RelatorioSecaoId = relatorioSecaoId;
         }
 
-        public long RelatorioSecaoId {  get; set; }
+        public long RelatorioSecaoId { get; set; }
     }
 
     public class ObterRelatorioPeriodicoSecaoPAPQueryValidator : AbstractValidator<ObterRelatorioPeriodicoSecaoPAPQuery>

@@ -1,11 +1,10 @@
 using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -15,7 +14,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPlanoAEE repositorioPlanoAee;
         private readonly IUnitOfWork unitOfWork;
 
-        public RemoverResponsavelPlanoAEECommandHandler(IMediator mediator, IRepositorioPlanoAEE repositorioPlanoAEE,IUnitOfWork unitOfWork)
+        public RemoverResponsavelPlanoAEECommandHandler(IMediator mediator, IRepositorioPlanoAEE repositorioPlanoAEE, IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioPlanoAee = repositorioPlanoAEE ?? throw new ArgumentNullException(nameof(repositorioPlanoAEE));
@@ -35,11 +34,11 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
             planoAee.Situacao = planoAee.ObterSituacaoAoRemoverResponsavelPAAI();
-            
+
             planoAee.ResponsavelPaaiId = null;
-                        
+
             unitOfWork.IniciarTransacao();
-            
+
             try
             {
                 await repositorioPlanoAee.SalvarAsync(planoAee);

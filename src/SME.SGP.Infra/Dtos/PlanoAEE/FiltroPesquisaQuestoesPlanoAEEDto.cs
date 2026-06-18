@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Infra
+﻿namespace SME.SGP.Infra
 {
     public class FiltroPesquisaQuestoesPorPlanoAEEIdDto
     {
-        public FiltroPesquisaQuestoesPorPlanoAEEIdDto(long? planoAEEId,string turmaCodigo,long codigoAluno)
+        public FiltroPesquisaQuestoesPorPlanoAEEIdDto(long? planoAEEId, string turmaCodigo, long codigoAluno)
         {
             PlanoAEEId = planoAEEId;
             TurmaCodigo = turmaCodigo;

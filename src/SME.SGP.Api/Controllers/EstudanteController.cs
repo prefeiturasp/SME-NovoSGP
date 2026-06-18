@@ -114,9 +114,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<AlunoTurmaProgramaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterTurmasProgramaAluno([FromQuery]string codigoAluno, [FromQuery] int? anoLetivo, [FromServices] IObterEstudanteTurmasProgramaUseCase useCase, [FromQuery] bool filtrarSituacaoMatricula = true)
+        public async Task<IActionResult> ObterTurmasProgramaAluno([FromQuery] string codigoAluno, [FromQuery] int? anoLetivo, [FromServices] IObterEstudanteTurmasProgramaUseCase useCase, [FromQuery] bool filtrarSituacaoMatricula = true)
         {
             return Ok(await useCase.Executar(codigoAluno, anoLetivo, filtrarSituacaoMatricula));
-        }      
+        }
     }
 }

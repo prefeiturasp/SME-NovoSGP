@@ -17,10 +17,10 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAnotacaoFrequenciaAlunoConsulta repositorioAnotacaoFrequenciaAluno;
         private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
         private readonly IRepositorioPlanoAula repositorioPlanoAula;
-        
+
         public ExcluirAulaUnicaCommandHandler(IMediator mediator,
-                                              IRepositorioAula repositorioAula,IRepositorioAnotacaoFrequenciaAlunoConsulta repositorioAnotacaoFrequenciaAluno,IRepositorioDiarioBordo repositorioDiarioBordo
-                                              ,IRepositorioPlanoAula repositorioPlanoAula)
+                                              IRepositorioAula repositorioAula, IRepositorioAnotacaoFrequenciaAlunoConsulta repositorioAnotacaoFrequenciaAluno, IRepositorioDiarioBordo repositorioDiarioBordo
+                                              , IRepositorioPlanoAula repositorioPlanoAula)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
             var aula = request.Aula;
 
             if (await mediator.Send(new AulaPossuiAvaliacaoQuery(aula, request.Usuario.CodigoRf), cancellationToken))
-                throw new NegocioException("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");            
+                throw new NegocioException("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");
 
             if (!request.Usuario.EhGestorEscolar())
                 await ValidarComponentesDoProfessor(aula.TurmaId, long.Parse(aula.DisciplinaId), aula.DataAula, request.Usuario);
@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
             if (aula.WorkflowAprovacaoId.HasValue)
                 await PulicaFilaSgp(RotasRabbitSgp.WorkflowAprovacaoExcluir, aula.WorkflowAprovacaoId.Value, request.Usuario);
 
-            var filas = new []
+            var filas = new[]
             {
                 RotasRabbitSgpAula.NotificacoesDaAulaExcluir,
                 RotasRabbitSgpFrequencia.FrequenciaDaAulaExcluir,
@@ -58,8 +58,8 @@ namespace SME.SGP.Aplicacao
             aula.Excluido = true;
             await repositorioAula.SalvarAsync(aula);
 
-            await mediator.Send(new ExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdCommand(aula.Id),cancellationToken);
-            
+            await mediator.Send(new ExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdCommand(aula.Id), cancellationToken);
+
             await mediator.Send(new RecalcularFrequenciaPorTurmaCommand(aula.TurmaId, aula.DisciplinaId, aula.Id), cancellationToken);
 
             await ExcluirArquivoAnotacaoFrequencia(request.Aula.Id);
@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao
             {
                 await ExcluirArquivo(plano.Descricao, TipoArquivo.PlanoAula);
                 await ExcluirArquivo(plano.RecuperacaoAula, TipoArquivo.PlanoAulaRecuperacao);
-                await ExcluirArquivo(plano.LicaoCasa, TipoArquivo.PlanoAulaLicaoCasa); 
+                await ExcluirArquivo(plano.LicaoCasa, TipoArquivo.PlanoAulaLicaoCasa);
             }
         }
 
@@ -90,20 +90,20 @@ namespace SME.SGP.Aplicacao
 
             foreach (var diarioDeBordo in diariosDeBordos)
             {
-                if((diarioDeBordo?.Planejamento).NaoEhNulo())
-                    await ExcluirArquivo(diarioDeBordo?.Planejamento,TipoArquivo.DiarioBordo);
+                if ((diarioDeBordo?.Planejamento).NaoEhNulo())
+                    await ExcluirArquivo(diarioDeBordo?.Planejamento, TipoArquivo.DiarioBordo);
             }
         }
-        
+
         private async Task ExcluirArquivoAnotacaoFrequencia(long aulaId)
         {
             var anotacaoFrequencia = await repositorioAnotacaoFrequenciaAluno.ObterPorAulaIdRegistroExcluido(aulaId);
             foreach (var item in anotacaoFrequencia)
             {
-                await ExcluirArquivo(item.Anotacao,TipoArquivo.FrequenciaAnotacaoEstudante);
+                await ExcluirArquivo(item.Anotacao, TipoArquivo.FrequenciaAnotacaoEstudante);
             }
         }
-        private async Task ExcluirArquivo(string mensagem,TipoArquivo tipo)
+        private async Task ExcluirArquivo(string mensagem, TipoArquivo tipo)
         {
             if (!string.IsNullOrEmpty(mensagem))
             {

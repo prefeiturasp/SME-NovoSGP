@@ -2,9 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,8 +19,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<GraficoTotalDiariosPreenchidosEPendentesDTO>> Handle(ObterQuantidadeTotalDeDiariosPreenchidosEPendentesPorAnoTurmaQuery request, CancellationToken cancellationToken)
         {
-           var retornoConsulta = await repositorioDiarioBordo.ObterQuantidadeTotalDeDiariosPreenchidosEPendentesPorAnoTurmaAsync(request.AnoLetivo, request.DreId, request.UeId, request.Modalidade, request.EhPerfilSMEDRE);
-           return MontarDto(retornoConsulta);
+            var retornoConsulta = await repositorioDiarioBordo.ObterQuantidadeTotalDeDiariosPreenchidosEPendentesPorAnoTurmaAsync(request.AnoLetivo, request.DreId, request.UeId, request.Modalidade, request.EhPerfilSMEDRE);
+            return MontarDto(retornoConsulta);
         }
 
         private IEnumerable<GraficoTotalDiariosPreenchidosEPendentesDTO> MontarDto(IEnumerable<QuantidadeTotalDiariosPendentesEPreenchidosPorAnoOuTurmaDTO> retornoConsulta)

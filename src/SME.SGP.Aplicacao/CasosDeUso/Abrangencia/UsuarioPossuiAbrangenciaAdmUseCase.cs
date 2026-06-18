@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao
 {
     public class UsuarioPossuiAbrangenciaAdmUseCase : AbstractUseCase, IUsuarioPossuiAbrangenciaAdmUseCase
     {
-        public UsuarioPossuiAbrangenciaAdmUseCase(IMediator mediator): base(mediator)
+        public UsuarioPossuiAbrangenciaAdmUseCase(IMediator mediator) : base(mediator)
         {
         }
 

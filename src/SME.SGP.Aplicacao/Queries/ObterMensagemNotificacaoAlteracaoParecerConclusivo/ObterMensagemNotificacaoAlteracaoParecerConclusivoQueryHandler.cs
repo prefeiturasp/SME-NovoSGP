@@ -1,8 +1,8 @@
-﻿using System.Linq;
+﻿using MediatR;
+using SME.SGP.Dominio;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
 
             if (notificacao.EhNulo())
                 return string.Empty;
-            
+
             var mensagem = notificacao.Mensagem;
 
             var pareceresConclusivos =
@@ -37,11 +37,11 @@ namespace SME.SGP.Aplicacao
 
             var ehMensagemDinamica = mensagem.Contains(MENSAGEM_DINAMICA_TABELA_POR_ALUNO);
 
-            if (!ehMensagemDinamica) 
+            if (!ehMensagemDinamica)
                 return mensagem;
-            
+
             await CarregarInformacoesParaNotificacao(pareceresConclusivos);
-                
+
             var turma = await ObterTurma(parecerConclusivo.TurmaId);
 
             mensagem = mensagem.Replace(MENSAGEM_DINAMICA_TABELA_POR_ALUNO, ObterTabelaPareceresAlterados(pareceresConclusivos, turma));

@@ -22,7 +22,7 @@ namespace SME.SGP.Dados
                                 and pendencia_id = @pendenciaId";
 
             var retorno = await database.Conexao.QueryAsync<int>(query, new { usuarioId, pendenciaId });
-            
+
             return retorno.Any();
         }
     }

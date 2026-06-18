@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Shouldly;
+﻿using Shouldly;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Ocorrencia.Base;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Ocorrencia
@@ -70,7 +70,7 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             };
             var useCaseIncluir = InserirOcorrenciaUseCase();
             await useCaseIncluir.Executar(dtoIncluir);
-            
+
             var obterTodasOcorrencias = ObterTodos<Dominio.Ocorrencia>();
             var useCaseExcluir = ExcluirOcorrenciaUseCase();
             await useCaseExcluir.Executar(obterTodasOcorrencias.Select(x => x.Id));
@@ -97,11 +97,11 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
                 Descricao = "Lorem Ipsum é simplesmente uma simulação de texto da",
                 OcorrenciaTipoId = 1,
                 HoraOcorrencia = "17:34",
-                CodigosAlunos = new List<long>(){1,2}
+                CodigosAlunos = new List<long>() { 1, 2 }
             };
             var useCaseIncluir = InserirOcorrenciaUseCase();
             await useCaseIncluir.Executar(dtoIncluir);
-            
+
             var obterTodasOcorrencias = ObterTodos<Dominio.Ocorrencia>();
             var useCaseExcluir = ExcluirOcorrenciaUseCase();
             await useCaseExcluir.Executar(obterTodasOcorrencias.Select(x => x.Id));
@@ -110,8 +110,8 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             obterTodasOcorrenciasAposExcluir.ShouldNotBeNull();
             obterTodasOcorrenciasAposExcluir.Count(x => !x.Excluido).ShouldBeEquivalentTo(0);
         }
-        
-        
+
+
         [Fact(DisplayName = "Ocorrencia - Excluir Ocorrencia Com Ue e Servidor")]
         public async Task ExcluirOcorrenciaComUeEServidor()
         {
@@ -129,11 +129,11 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
                 Descricao = "Lorem Ipsum é simplesmente uma simulação de texto da",
                 OcorrenciaTipoId = 1,
                 HoraOcorrencia = "17:34",
-                CodigosServidores = new List<string>(){"rf1","rf2"}
+                CodigosServidores = new List<string>() { "rf1", "rf2" }
             };
             var useCaseIncluir = InserirOcorrenciaUseCase();
             await useCaseIncluir.Executar(dtoIncluir);
-            
+
             var obterTodasOcorrencias = ObterTodos<Dominio.Ocorrencia>();
             var useCaseExcluir = ExcluirOcorrenciaUseCase();
             await useCaseExcluir.Executar(obterTodasOcorrencias.Select(x => x.Id));
@@ -142,7 +142,7 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             obterTodasOcorrenciasAposExcluir.ShouldNotBeNull();
             obterTodasOcorrenciasAposExcluir.Count(x => !x.Excluido).ShouldBeEquivalentTo(0);
         }
-        
+
         [Fact(DisplayName = "Ocorrencia - Excluir Ocorrencia Com Turma, Aluno e Servidor")]
         public async Task ExcluirOcorrenciaComTurmaAlunoEServidor()
         {
@@ -160,12 +160,12 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
                 Descricao = "Lorem Ipsum é simplesmente uma simulação de texto da",
                 OcorrenciaTipoId = 1,
                 HoraOcorrencia = "17:34",
-                CodigosServidores = new List<string>(){"rf1","rf2"},
-                CodigosAlunos = new List<long>(){1,2}
+                CodigosServidores = new List<string>() { "rf1", "rf2" },
+                CodigosAlunos = new List<long>() { 1, 2 }
             };
             var useCaseIncluir = InserirOcorrenciaUseCase();
             await useCaseIncluir.Executar(dtoIncluir);
-            
+
             var obterTodasOcorrencias = ObterTodos<Dominio.Ocorrencia>();
             var useCaseExcluir = ExcluirOcorrenciaUseCase();
             await useCaseExcluir.Executar(obterTodasOcorrencias.Select(x => x.Id));

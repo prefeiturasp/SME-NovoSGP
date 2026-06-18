@@ -1,11 +1,11 @@
-﻿using System;
+﻿using MediatR;
+using SME.SGP.Dominio;
+using SME.SGP.Infra;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dominio;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -115,7 +115,7 @@ namespace SME.SGP.Aplicacao
                 case WorkflowAprovacaoTipo.Evento_Liberacao_Excepcional:
                 case WorkflowAprovacaoTipo.ReposicaoAula:
                 case WorkflowAprovacaoTipo.Evento_Data_Passada:
-                case WorkflowAprovacaoTipo.Fechamento_Reabertura:                
+                case WorkflowAprovacaoTipo.Fechamento_Reabertura:
                 case WorkflowAprovacaoTipo.RegistroItinerancia:
                 default:
                     return notificacao.Mensagem;
@@ -125,7 +125,7 @@ namespace SME.SGP.Aplicacao
         private async Task<string> ObterMensagemInformativo(Notificacao notificacao)
         => notificacao.Mensagem
            + await mediator.Send(new ObterMsgNotificacaoAnexosInformativoPorIdNotificacaoQuery(notificacao.Id));
-           
+
 
         private static string ObterCodigoArquivo(string mensagem)
         {

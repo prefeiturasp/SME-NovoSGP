@@ -7,7 +7,7 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "Unidade Escolar (UE)")]
         UE = 1,
-        
+
         [Display(Name = "Criança/Estudante")]
         Estudante = 2,
 
@@ -19,7 +19,7 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "Criança/Estudante decrescente")]
         EstudanteDesc = -2,
-        
+
         [Display(Name = "Data da entrada da queixa decrescente")]
         DataEntradaQueixaDesc = -3,
     }

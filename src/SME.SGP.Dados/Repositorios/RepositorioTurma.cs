@@ -40,7 +40,7 @@ namespace SME.SGP.Dados.Repositorios
             codigosNaoEncontrados = naoEncontrados.ToArray();
 
             return resultado;
-        }         
+        }
 
         public async Task<IEnumerable<Turma>> SincronizarAsync(IEnumerable<Turma> entidades, IEnumerable<Ue> ues)
         {
@@ -183,7 +183,7 @@ namespace SME.SGP.Dados.Repositorios
             try
             {
                 var codigosTurmasParaHistorico = await ObterCodigosTurmasParaQueryAtualizarTurmasComoHistoricas(anoLetivo, true, listaTurmas, transacao);
-                
+
                 if (codigosTurmasParaHistorico.Any())
                 {
                     var sqlQueryAtualizarTurmasComoHistoricas = QueryDefinirTurmaHistorica
@@ -193,7 +193,7 @@ namespace SME.SGP.Dados.Repositorios
                 }
 
                 var codigosTurmasARemover = await ObterCodigosTurmasParaQueryAtualizarTurmasComoHistoricas(anoLetivo, false, listaTurmas, transacao);
-                
+
                 if (codigosTurmasARemover.Any())
                 {
                     var sqlExcluirTurmas = Delete.Replace("#queryIdsConselhoClasseTurmasForaListaCodigos", QueryIdsConselhoClasseTurmasForaListaCodigos)
@@ -220,7 +220,7 @@ namespace SME.SGP.Dados.Repositorios
             string[] arrCodigos = codigos.Select(x => $"'{x}'").ToArray();
             return string.Join(",", arrCodigos);
         }
-                
+
         public async Task<bool> AtualizarTurmaParaHistorica(string turmaId, int? semestre = null)
         {
             var query = $@"update public.turma 
@@ -244,7 +244,7 @@ namespace SME.SGP.Dados.Repositorios
                                  {(semestre.HasValue ? ", semestre = @semestre " : string.Empty)}
                            where turma_id = @turmaId";
 
-            var retorno = await contexto.Conexao.ExecuteAsync(query, new { turmaId, modalidadeEol , dataAtualizacao = DateTime.Now, semestre });
+            var retorno = await contexto.Conexao.ExecuteAsync(query, new { turmaId, modalidadeEol, dataAtualizacao = DateTime.Now, semestre });
 
             return retorno != 0;
 
@@ -301,12 +301,12 @@ namespace SME.SGP.Dados.Repositorios
                                     delete from frequencia_turma_evasao_aluno where frequencia_turma_evasao_id in (select id from frequencia_turma_evasao where turma_id = @turmaId);
                                     delete from frequencia_turma_evasao where turma_id = @turmaId;
                                     delete from turma where id = @turmaId;";
-            
+
             var parametros = new { turmaId };
             await servicoTelemetria.RegistrarAsync(async () =>
-                        await SqlMapper.ExecuteScalarAsync(contexto.Conexao, sqlExcluirTurma, parametros), "query", "Excluir Turma Extinta", 
+                        await SqlMapper.ExecuteScalarAsync(contexto.Conexao, sqlExcluirTurma, parametros), "query", "Excluir Turma Extinta",
                                                             sqlExcluirTurma, parametros.ToString());
-            
+
         }
 
         public async Task<bool> AtualizarTurmaSincronizacaoInstitucionalAsync(TurmaParaSyncInstitucionalDto turma, bool deveMarcarHistorica = false, long? ueId = null)
@@ -484,7 +484,7 @@ namespace SME.SGP.Dados.Repositorios
 
         private const string QueryAulasTurmasForaListaCodigos = @"select id from public.aula where turma_id in (#turmaId)";
 
-        
+
         private const string QueryDefinirTurmaHistorica = "update public.turma set historica = true where turma_id in (#turmaId);";
     }
 }

@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
             var acompanhamentoSemestre = request.Acompanhamento.AcompanhamentoAlunoSemestreId > 0 ?
                 await ObterAcompanhametnoSemestre(request.Acompanhamento.AcompanhamentoAlunoSemestreId) :
                 await GerarAcompanhamentoSemestre(request.Acompanhamento);
-            
+
             return await GerarFotosSemestre(acompanhamentoSemestre, request.Acompanhamento.File, AuditarSemestre(request.Acompanhamento.AcompanhamentoAlunoSemestreId));
         }
 
@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao
 
                     return (AuditoriaDto)acompanhamentoSemestre;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     unitOfWork.Rollback();
                     throw;

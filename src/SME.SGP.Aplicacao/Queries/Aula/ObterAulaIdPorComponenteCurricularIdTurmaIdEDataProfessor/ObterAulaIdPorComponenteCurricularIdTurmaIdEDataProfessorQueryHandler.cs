@@ -14,6 +14,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
         }
         public async Task<long?> Handle(ObterAulaIdPorComponenteCurricularIdTurmaIdEDataProfessorQuery request, CancellationToken cancellationToken)
-            => await repositorioAula.ObterAulaIdPorComponenteCurricularIdTurmaIdEDataProfessor(request.ComponenteCurricularId, request.TurmaId, request.Data,request.ProfessorRf);
+            => await repositorioAula.ObterAulaIdPorComponenteCurricularIdTurmaIdEDataProfessor(request.ComponenteCurricularId, request.TurmaId, request.Data, request.ProfessorRf);
     }
 }

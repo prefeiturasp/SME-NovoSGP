@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using FluentValidation;
+﻿using FluentValidation;
 using MediatR;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterTurmasRegularesQuery: IRequest<IEnumerable<string>>
+    public class ObterTurmasRegularesQuery : IRequest<IEnumerable<string>>
     {
         public ObterTurmasRegularesQuery(string[] codigosTurmas)
         {
@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         public string[] CodigosTurmas { get; set; }
     }
 
-    public class ObterTurmasRegularesQueryValidator: AbstractValidator<ObterTurmasRegularesQuery>
+    public class ObterTurmasRegularesQueryValidator : AbstractValidator<ObterTurmasRegularesQuery>
     {
         public ObterTurmasRegularesQueryValidator()
         {

@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Elastic.Apm.Api;
-using SME.SGP.Infra;
+﻿using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -8,11 +6,13 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 {
-    public class Ao_lancar_nota_bimestre_encerrado: NotaFechamentoBimestreTesteBase
+    public class Ao_lancar_nota_bimestre_encerrado : NotaFechamentoBimestreTesteBase
     {
         public Ao_lancar_nota_bimestre_encerrado(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
@@ -28,13 +28,13 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         public async Task Nao_deve_permitir_lancamento_nota_com_periodo_escolar_no_4_bimestre_encerrada_sem_periodo_reabertura()
         {
             var filtroFechamentoNota = ObterFiltroFechamentoNotaDtoFundamental(ObterPerfilProfessor(), ANO_7);
-        
+
             filtroFechamentoNota.CriarPeriodoEscolar = false;
-        
+
             filtroFechamentoNota.CriarPeriodoAbertura = false;
-        
+
             await InserirPeriodoEscolarCustomizado();
-        
+
             await ExecutarComandoConceitoComExcecao();
         }
 
@@ -42,15 +42,15 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         public async Task Deve_permitir_lancamento_nota_com_periodo_escolar_no_4_bimestre_encerrada_com_periodo_abertura()
         {
             var filtroFechamentoNota = ObterFiltroFechamentoNotaDtoFundamental(ObterPerfilProfessor(), ANO_7);
-        
+
             filtroFechamentoNota.CriarPeriodoEscolar = false;
-        
+
             filtroFechamentoNota.CriarPeriodoAbertura = false;
-        
+
             await InserirPeriodoEscolarCustomizado();
-        
+
             await InserirPeriodoAberturaCustomizado();
-        
+
             await ExecutarComandoConceitoComExcecao();
         }
 
@@ -58,13 +58,13 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         public async Task Deve_permitir_lancamento_nota_com_periodo_escolar_no_4_bimestre_encerrada_com_periodo_reabertura()
         {
             var filtroFechamentoNota = ObterFiltroFechamentoNotaDtoFundamental(ObterPerfilProfessor(), ANO_7);
-        
+
             filtroFechamentoNota.CriarPeriodoEscolar = false;
-        
+
             filtroFechamentoNota.CriarPeriodoAbertura = false;
-        
+
             await InserirPeriodoEscolarCustomizado();
-        
+
             await ExecutarComandoConceitoComExcecao();
         }
 
@@ -74,7 +74,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             await ExecutarTeste(fechamentoTurmaDisciplinaDto);
         }
-        
+
         private async Task ExecutarComandoConceitoComExcecao()
         {
             var fechamentoTurmaDisciplinaDto = ObterFechamentoTurmaDisciplinaDto();
@@ -153,4 +153,4 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             };
         }
     }
-} 
+}

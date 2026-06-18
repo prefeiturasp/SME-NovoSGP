@@ -128,7 +128,7 @@ namespace SME.SGP.Dominio.Servicos
 
             // Envia para workflow apenas na Inclusão ou alteração apos aprovado
             var enviarParaWorkflow = !string.IsNullOrWhiteSpace(evento.UeId) && devePassarPorWorkflowLiberacaoExcepcional;
-            
+
             if ((!ehAlteracao || (evento.Status == EntidadeStatus.Aprovado)) && enviarParaWorkflow)
                 await PersistirWorkflowEvento(evento, devePassarPorWorkflowLiberacaoExcepcional);
 
@@ -320,7 +320,7 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     notificacoesFalha.Add($"{novoEvento.DataInicio.ToShortDateString()} - {nex.Message}");
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     notificacoesFalha.Add($"{novoEvento.DataInicio.ToShortDateString()} - Ocorreu um erro interno.");
                 }
@@ -336,7 +336,7 @@ namespace SME.SGP.Dominio.Servicos
                 return false;
 
             if (ehLetivo && tipoEventoId != (int)TipoEvento.LiberacaoExcepcional)
-              return ValidaSeEhFinalSemana(dataInicio, dataInicio);
+                return ValidaSeEhFinalSemana(dataInicio, dataInicio);
 
             return true;
         }
@@ -444,15 +444,15 @@ namespace SME.SGP.Dominio.Servicos
         private IEnumerable<FeriadoCalendario> ObterEValidarFeriados(int anoReferencia)
         {
             var feriadosMoveis = repositorioFeriadoCalendario
-                .ObterFeriadosCalendario(new FiltroFeriadoCalendarioDto 
-                { 
-                    Ano = anoReferencia, 
-                    Tipo = TipoFeriadoCalendario.Movel 
+                .ObterFeriadosCalendario(new FiltroFeriadoCalendarioDto
+                {
+                    Ano = anoReferencia,
+                    Tipo = TipoFeriadoCalendario.Movel
                 }).Result;
-            
+
             var feriadosFixos = repositorioFeriadoCalendario
-                .ObterFeriadosCalendario(new FiltroFeriadoCalendarioDto 
-                { 
+                .ObterFeriadosCalendario(new FiltroFeriadoCalendarioDto
+                {
                     Tipo = TipoFeriadoCalendario.Fixo
                 }).Result;
 
@@ -599,7 +599,7 @@ namespace SME.SGP.Dominio.Servicos
                                     if (temEventoFeriado)
                                         throw new NegocioException("Não é possível cadastrar o evento pois há feriado na data selecionada.");
                                     else if (temEventoSuspensaoAtividades)
-                                        throw new NegocioException("Não é possível cadastrar o evento pois há evento de suspensão de atividades na data informada.");                                    
+                                        throw new NegocioException("Não é possível cadastrar o evento pois há evento de suspensão de atividades na data informada.");
                                 }
                             }
                         }

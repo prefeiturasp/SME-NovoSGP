@@ -1,7 +1,6 @@
-﻿using MediatR;
-using SME.SGP.Dominio.Enumerados;
+﻿using FluentValidation;
+using MediatR;
 using System;
-using FluentValidation;
 
 namespace SME.SGP.Aplicacao
 {
@@ -16,7 +15,7 @@ namespace SME.SGP.Aplicacao
         public long TurmaId { get; set; }
         public DateTime DataAula { get; set; }
     }
-    
+
     public class IncluirFilaConsolidacaoDiariaDashBoardFrequenciaCommandValidator : AbstractValidator<IncluirFilaConsolidacaoDiariaDashBoardFrequenciaCommand>
     {
         public IncluirFilaConsolidacaoDiariaDashBoardFrequenciaCommandValidator()

@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.Relatorios.SolicitacaoRelatorio
             if (solicitacaoRelatorio == null) return;
 
             await mediator.Send(new FinalizarSolicitacaoRelatorioCommand(solicitacaoRelatorio));
-            var relatorioCorrelacao = await mediator.Send(new ObterCorrelacaoRelatorioQuery (finalizarSolicitacaoRelatorioDto.CodigoCorrelacao));
+            var relatorioCorrelacao = await mediator.Send(new ObterCorrelacaoRelatorioQuery(finalizarSolicitacaoRelatorioDto.CodigoCorrelacao));
 
             if (relatorioCorrelacao == null) return;
 

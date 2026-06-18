@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace SME.SGP.Infra
+﻿namespace SME.SGP.Infra
 {
-    public class AlunoFrequenciaTurmaEvasaoDto 
+    public class AlunoFrequenciaTurmaEvasaoDto
     {
         public string Dre { get; set; }
         public string Ue { get; set; }

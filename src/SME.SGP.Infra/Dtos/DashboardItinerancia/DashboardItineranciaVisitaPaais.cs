@@ -5,6 +5,6 @@ namespace SME.SGP.Infra.Dtos
     public class DashboardItineranciaVisitaPaais
     {
         public long TotalRegistro { get; set; }
-        public IEnumerable<DashboardItineranciaDto> DashboardItinerancias {  get; set; }
+        public IEnumerable<DashboardItineranciaDto> DashboardItinerancias { get; set; }
     }
 }

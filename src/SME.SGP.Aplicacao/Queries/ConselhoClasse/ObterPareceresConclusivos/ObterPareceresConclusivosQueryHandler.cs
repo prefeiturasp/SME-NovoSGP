@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             if (pareceresConclusivos.EhNulo() || !pareceresConclusivos.Any())
                 throw new NegocioException("Não foi possível obter os pareceres conclusivos");
 
-            var listaPareceres =  MapearListaEntidadeParaDto(pareceresConclusivos);
+            var listaPareceres = MapearListaEntidadeParaDto(pareceresConclusivos);
 
             listaPareceres = listaPareceres.Append(AdicionarSemParecer());
 
@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
 
         private ConselhoClasseParecerConclusivoDto AdicionarSemParecer()
         {
-             return new ConselhoClasseParecerConclusivoDto()
+            return new ConselhoClasseParecerConclusivoDto()
             {
                 Id = -1,
                 Nome = "Sem Parecer",

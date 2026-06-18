@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
                 .NotEmpty()
                 .GreaterThan(0)
                 .WithMessage("O código deve ser informado.");
-           
+
         }
     }
 }

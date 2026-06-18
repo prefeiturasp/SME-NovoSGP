@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
     {
 
         public ObterProfessoresTitularesECjsUseCase(IMediator mediator) : base(mediator)
-        {}
+        { }
 
         public async Task<AtribuicaoCJTitularesRetornoDto> Executar(string ueId, string turmaId,
                     string professorRf, Modalidade modalidadeId, int anoLetivo)
@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao
                     DisciplinaId = disciplinaProfessorTitular.DisciplinasId().First(),
                     ProfessorTitular = disciplinaProfessorTitular.ProfessorNome,
                     ProfessorTitularRf = disciplinaProfessorTitular.ProfessorRf,
-                    Substituir = atribuicao is {Substituir: true}
+                    Substituir = atribuicao is { Substituir: true }
                 });
             }
 

@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IRemoverPendenciasCalendarioNoFinalDoAnoLetivoUseCase:IRabbitUseCase
+    public interface IRemoverPendenciasCalendarioNoFinalDoAnoLetivoUseCase : IRabbitUseCase
     {
     }
 }

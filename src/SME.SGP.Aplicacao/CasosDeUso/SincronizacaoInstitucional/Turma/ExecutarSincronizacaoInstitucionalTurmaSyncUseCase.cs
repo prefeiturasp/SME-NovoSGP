@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
             var codigosTurma = await mediator
                 .Send(new ObterCodigosTurmasEOLPorUeIdParaSyncEstruturaInstitucionalQuery(ueId, anosComTurmasVigentes.ToArray()));
 
-            if (!codigosTurma?.Any() ?? true) 
+            if (!codigosTurma?.Any() ?? true)
                 return true;
 
             var usuarioSistema = await mediator.Send(new ObterUsuarioPorRfQuery("Sistema"));

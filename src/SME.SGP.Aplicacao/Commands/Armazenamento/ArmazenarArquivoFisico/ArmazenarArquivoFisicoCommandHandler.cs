@@ -1,10 +1,10 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
+using SME.SGP.Infra.Interface;
 using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio;
-using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.Aplicacao
 {
@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
             var enderecoArquivo = string.Empty;
 
             var stream = request.Arquivo.OpenReadStream();
-            
+
             var nomeArquivo = $"{request.NomeFisico}{Path.GetExtension(request.Arquivo.FileName)}";
 
             if (request.TipoArquivo == TipoArquivo.temp || request.TipoArquivo == TipoArquivo.Editor)
@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
                     await servicoArmazenamento.ArmazenarTemporaria(nomeArquivo, stream, request.Arquivo.ContentType);
             else
                 enderecoArquivo = await servicoArmazenamento.Armazenar(nomeArquivo, stream, request.Arquivo.ContentType);
-             
+
             return enderecoArquivo;
         }
     }

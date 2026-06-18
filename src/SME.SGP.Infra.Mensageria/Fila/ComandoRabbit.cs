@@ -17,7 +17,7 @@ namespace SME.SGP.Infra
             ModeLazy = modeLazy;
         }
 
-        public ComandoRabbit(string nomeProcesso, Type tipoCasoUso, bool modeLazy, ulong quantidadeReprocessamentoDeadLetter, int ttl) 
+        public ComandoRabbit(string nomeProcesso, Type tipoCasoUso, bool modeLazy, ulong quantidadeReprocessamentoDeadLetter, int ttl)
             : this(nomeProcesso, tipoCasoUso, quantidadeReprocessamentoDeadLetter, ttl)
         {
             ModeLazy = modeLazy;

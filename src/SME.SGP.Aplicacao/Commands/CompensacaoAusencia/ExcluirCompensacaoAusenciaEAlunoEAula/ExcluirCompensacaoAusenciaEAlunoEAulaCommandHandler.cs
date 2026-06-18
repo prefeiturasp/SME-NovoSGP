@@ -1,9 +1,9 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Linq;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {

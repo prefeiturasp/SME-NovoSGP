@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
         {
             var dados = param.ObterObjetoMensagem<AlterarRecorrenciaEventosParametro>();
             servicoEvento.AlterarRecorrenciaEventos(dados.Evento, dados.AlterarRecorrenciaCompleta);
-            
+
             return Task.FromResult(true);
         }
     }

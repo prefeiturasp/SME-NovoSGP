@@ -6,7 +6,6 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,7 +28,7 @@ namespace SME.SGP.Aplicacao
                 await repositorioQuestaoEncaminhamento.ObterRespostasEncaminhamento(request.EncaminhamentoId.Value) :
                 Enumerable.Empty<RespostaQuestaoEncaminhamentoAEEDto>();
 
-            var questoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(request.QuestionarioId , questaoId =>
+            var questoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(request.QuestionarioId, questaoId =>
                 respostasEncaminhamento.Where(c => c.QuestaoId == questaoId)
                 .Select(respostaEncaminhamento =>
                 {
@@ -55,7 +54,8 @@ namespace SME.SGP.Aplicacao
                 {
                     var questaoJustificativa = ObterQuestaoJustificativa(questoes);
                     questaoJustificativa.Obrigatorio = true;
-                } else
+                }
+                else
                     return RemoverQuestaoJustificativa(questoes);
             }
 
@@ -85,8 +85,8 @@ namespace SME.SGP.Aplicacao
 
         private async Task<TipoParametroSistema> ObterTipoParametroFrequenciaMinima(string codigoTurma)
         {
-            return await mediator.Send(new ObterModalidadeTurmaPorCodigoQuery(codigoTurma)) == Modalidade.EducacaoInfantil ? 
-                TipoParametroSistema.PercentualFrequenciaMinimaInfantil : 
+            return await mediator.Send(new ObterModalidadeTurmaPorCodigoQuery(codigoTurma)) == Modalidade.EducacaoInfantil ?
+                TipoParametroSistema.PercentualFrequenciaMinimaInfantil :
                 TipoParametroSistema.PercentualFrequenciaCritico;
         }
 

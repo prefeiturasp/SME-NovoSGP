@@ -1,10 +1,8 @@
 ﻿using FluentValidation;
-using MediatR;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
-     public class ObterWorkflowItineranciaPorItineranciaIdQueryValidator : AbstractValidator<ObterWorkflowItineranciaPorItineranciaIdQuery>
+    public class ObterWorkflowItineranciaPorItineranciaIdQueryValidator : AbstractValidator<ObterWorkflowItineranciaPorItineranciaIdQuery>
     {
         public ObterWorkflowItineranciaPorItineranciaIdQueryValidator()
         {

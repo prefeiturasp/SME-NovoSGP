@@ -6,7 +6,6 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.ServicosFakes.Query;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -18,7 +17,7 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
         private const string DESCRICAO = "OUTRA DESCRICAO";
 
         public Ao_alterar_avaliacao_pela_gestao(CollectionFixture collectionFixture) : base(collectionFixture)
-        {}
+        { }
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
@@ -74,7 +73,7 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
 
             atividadeAvaliativa.Descricao = DESCRICAO;
 
-            await Validar(comando, atividadeAvaliativa,1);
+            await Validar(comando, atividadeAvaliativa, 1);
 
             var retorno = await comando.Alterar(atividadeAvaliativa, 1);
 

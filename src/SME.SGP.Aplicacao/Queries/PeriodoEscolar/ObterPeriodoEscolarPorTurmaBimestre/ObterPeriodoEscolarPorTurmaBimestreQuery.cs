@@ -1,13 +1,12 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterPeriodoEscolarPorTurmaBimestreQuery : IRequest<PeriodoEscolar>
     {
-        public ObterPeriodoEscolarPorTurmaBimestreQuery(Turma turma, int bimestre, bool aulaCj=false)
+        public ObterPeriodoEscolarPorTurmaBimestreQuery(Turma turma, int bimestre, bool aulaCj = false)
         {
             Turma = turma;
             Bimestre = bimestre;
@@ -26,7 +25,7 @@ namespace SME.SGP.Aplicacao
                .WithMessage("A turma deve ser informada para consulta do periodo escolar.");
 
             RuleFor(c => c.Bimestre)
-               .InclusiveBetween(0,4)
+               .InclusiveBetween(0, 4)
                .WithMessage("O bimestre deve ser informado para consulta do periodo escolar.");
         }
     }

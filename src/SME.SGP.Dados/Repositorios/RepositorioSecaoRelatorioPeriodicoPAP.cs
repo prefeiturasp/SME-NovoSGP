@@ -81,7 +81,7 @@ namespace SME.SGP.Dados.Repositorios
                         secao.PAPTurmaId = secaoPAP.PAPTurmaId.GetValueOrDefault();
 
                     return secaoPAP;
-                }, 
+                },
                 new { codigoTurma, codigoAluno, pAPPeriodoId });
 
             secao.Secoes.AddRange(secoes);

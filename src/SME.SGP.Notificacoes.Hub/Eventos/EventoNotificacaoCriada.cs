@@ -7,7 +7,7 @@ namespace SME.SGP.Notificacoes.Hub
 {
     public class EventoNotificacaoCriada : EventoNotificacao<MensagemCriacaoNotificacaoDto>, IEventoNotificacaoCriada
     {
-        public EventoNotificacaoCriada(IServicoTelemetria servicoTelemetria) 
+        public EventoNotificacaoCriada(IServicoTelemetria servicoTelemetria)
             : base(servicoTelemetria, "Criada")
         {
         }

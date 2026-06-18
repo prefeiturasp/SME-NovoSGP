@@ -41,10 +41,10 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             var dto = ObterListaFechamentoTurma(ObterListaDeFechamentoNumerica(COMPONENTE_CURRICULAR_PORTUGUES_ID_138), COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
             var retorno = await ExecutarTesteComValidacaoNota(dto, TipoNota.Nota);
             var fechamento = dto.FirstOrDefault();
-            
+
             var historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(4);
-            
+
             var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(4);
 
@@ -56,25 +56,25 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             fechamento.NotaConceitoAlunos.FirstOrDefault(aluno => aluno.CodigoAluno == CODIGO_ALUNO_4).Nota = NOTA_6;
 
             await ExecutarTesteComValidacaoNota(dto, TipoNota.Nota);
-            
+
             historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(8);
-            
+
             historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(8);
 
-            historicoNotas.Count(w=> !w.NotaAnterior.HasValue).ShouldBe(4);
-            historicoNotas.Count(w=> w.NotaAnterior.HasValue).ShouldBe(4);
-            
-            historicoNotas.Any(w=> w.Id == 1 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_6).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 2 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_7).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 3 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_8).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 4 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_9).ShouldBeTrue();
-            
-            historicoNotas.Any(w=> w.Id == 5 && w.NotaAnterior == NOTA_6 && w.NotaNova == NOTA_9).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 6 && w.NotaAnterior == NOTA_7 && w.NotaNova == NOTA_8).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 7 && w.NotaAnterior == NOTA_8 && w.NotaNova == NOTA_7).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 8 && w.NotaAnterior == NOTA_9 && w.NotaNova == NOTA_6).ShouldBeTrue();
+            historicoNotas.Count(w => !w.NotaAnterior.HasValue).ShouldBe(4);
+            historicoNotas.Count(w => w.NotaAnterior.HasValue).ShouldBe(4);
+
+            historicoNotas.Any(w => w.Id == 1 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_6).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 2 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_7).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 3 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_8).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 4 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_9).ShouldBeTrue();
+
+            historicoNotas.Any(w => w.Id == 5 && w.NotaAnterior == NOTA_6 && w.NotaNova == NOTA_9).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 6 && w.NotaAnterior == NOTA_7 && w.NotaNova == NOTA_8).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 7 && w.NotaAnterior == NOTA_8 && w.NotaNova == NOTA_7).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 8 && w.NotaAnterior == NOTA_9 && w.NotaNova == NOTA_6).ShouldBeTrue();
         }
 
         [Fact(DisplayName = "Fechamento Bimestre - Deve alterar nota numérica lançada pelo CP em ano atual")]
@@ -85,10 +85,10 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             var dto = ObterListaFechamentoTurma(ObterListaDeFechamentoNumerica(COMPONENTE_CURRICULAR_PORTUGUES_ID_138), COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
             var retorno = await ExecutarTesteComValidacaoNota(dto, TipoNota.Nota);
             var fechamento = dto.FirstOrDefault();
-            
+
             var historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(4);
-            
+
             var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(4);
 
@@ -100,25 +100,25 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             fechamento.NotaConceitoAlunos.FirstOrDefault(aluno => aluno.CodigoAluno == CODIGO_ALUNO_4).Nota = NOTA_6;
 
             await ExecutarTesteComValidacaoNota(dto, TipoNota.Nota);
-            
+
             historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(8);
-            
+
             historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(8);
 
-            historicoNotas.Count(w=> !w.NotaAnterior.HasValue).ShouldBe(4);
-            historicoNotas.Count(w=> w.NotaAnterior.HasValue).ShouldBe(4);
-            
-            historicoNotas.Any(w=> w.Id == 1 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_6).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 2 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_7).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 3 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_8).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 4 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_9).ShouldBeTrue();
-            
-            historicoNotas.Any(w=> w.Id == 5 && w.NotaAnterior == NOTA_6 && w.NotaNova == NOTA_9).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 6 && w.NotaAnterior == NOTA_7 && w.NotaNova == NOTA_8).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 7 && w.NotaAnterior == NOTA_8 && w.NotaNova == NOTA_7).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 8 && w.NotaAnterior == NOTA_9 && w.NotaNova == NOTA_6).ShouldBeTrue();
+            historicoNotas.Count(w => !w.NotaAnterior.HasValue).ShouldBe(4);
+            historicoNotas.Count(w => w.NotaAnterior.HasValue).ShouldBe(4);
+
+            historicoNotas.Any(w => w.Id == 1 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_6).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 2 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_7).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 3 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_8).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 4 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_9).ShouldBeTrue();
+
+            historicoNotas.Any(w => w.Id == 5 && w.NotaAnterior == NOTA_6 && w.NotaNova == NOTA_9).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 6 && w.NotaAnterior == NOTA_7 && w.NotaNova == NOTA_8).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 7 && w.NotaAnterior == NOTA_8 && w.NotaNova == NOTA_7).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 8 && w.NotaAnterior == NOTA_9 && w.NotaNova == NOTA_6).ShouldBeTrue();
         }
 
         [Fact(DisplayName = "Fechamento Bimestre - Deve alterar nota numérica lançada pelo DIRETOR em ano atual")]
@@ -129,10 +129,10 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             var dto = ObterListaFechamentoTurma(ObterListaDeFechamentoNumerica(COMPONENTE_CURRICULAR_PORTUGUES_ID_138), COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
             var retorno = await ExecutarTesteComValidacaoNota(dto, TipoNota.Nota);
             var fechamento = dto.FirstOrDefault();
-            
+
             var historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(4);
-            
+
             var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(4);
 
@@ -144,32 +144,32 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             fechamento.NotaConceitoAlunos.FirstOrDefault(aluno => aluno.CodigoAluno == CODIGO_ALUNO_4).Nota = NOTA_6;
 
             await ExecutarTesteComValidacaoNota(dto, TipoNota.Nota);
-            
+
             historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(8);
-            
+
             historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(8);
 
-            historicoNotas.Count(w=> !w.NotaAnterior.HasValue).ShouldBe(4);
-            historicoNotas.Count(w=> w.NotaAnterior.HasValue).ShouldBe(4);
-            
-            historicoNotas.Any(w=> w.Id == 1 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_6).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 2 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_7).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 3 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_8).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 4 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_9).ShouldBeTrue();
-            
-            historicoNotas.Any(w=> w.Id == 5 && w.NotaAnterior == NOTA_6 && w.NotaNova == NOTA_9).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 6 && w.NotaAnterior == NOTA_7 && w.NotaNova == NOTA_8).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 7 && w.NotaAnterior == NOTA_8 && w.NotaNova == NOTA_7).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 8 && w.NotaAnterior == NOTA_9 && w.NotaNova == NOTA_6).ShouldBeTrue();
+            historicoNotas.Count(w => !w.NotaAnterior.HasValue).ShouldBe(4);
+            historicoNotas.Count(w => w.NotaAnterior.HasValue).ShouldBe(4);
+
+            historicoNotas.Any(w => w.Id == 1 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_6).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 2 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_7).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 3 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_8).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 4 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_9).ShouldBeTrue();
+
+            historicoNotas.Any(w => w.Id == 5 && w.NotaAnterior == NOTA_6 && w.NotaNova == NOTA_9).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 6 && w.NotaAnterior == NOTA_7 && w.NotaNova == NOTA_8).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 7 && w.NotaAnterior == NOTA_8 && w.NotaNova == NOTA_7).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 8 && w.NotaAnterior == NOTA_9 && w.NotaNova == NOTA_6).ShouldBeTrue();
         }
 
         [Fact(DisplayName = "Fechamento Bimestre - Deve alterar nota numérica em turma de ano anterior com WorkFlow")]
         public async Task Deve_alterar_nota_numerico_em_turma_do_ano_anterior()
         {
             await CriarDadosBase(ObterFiltroFechamentoNotaDto(ObterPerfilProfessor(), ANO_7, true));
-            
+
             var comando = ServiceProvider.GetService<IComandosFechamentoTurmaDisciplina>();
             var dto = ObterListaFechamentoTurma(ObterListaDeFechamentoNumerica(COMPONENTE_CURRICULAR_PORTUGUES_ID_138), COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
             var retorno = await comando.Salvar(dto);
@@ -185,20 +185,20 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                                                             }
                                                         };
 
-            
+
             var retornoAlteracao = await comando.Salvar(dto);
             retornoAlteracao.ShouldNotBeNull();
-            
+
             var alunoFechamento = ObterTodos<FechamentoAluno>();
             alunoFechamento.ShouldNotBeNull();
             var aluno = alunoFechamento.LastOrDefault(aluno => aluno.AlunoCodigo == CODIGO_ALUNO_1);
             aluno.ShouldNotBeNull();
-            
+
             var notas = ObterTodos<FechamentoNota>();
             notas.ShouldNotBeNull();
             var nota = notas.FirstOrDefault(nota => nota.FechamentoAlunoId == aluno.Id);
             nota.ShouldNotBeNull();
-            
+
             var listaAprovacao = ObterTodos<WfAprovacaoNotaFechamento>();
             var aprovacao = listaAprovacao.FirstOrDefault(wf => wf.FechamentoNotaId == nota.Id);
             aprovacao.ShouldNotBeNull();
@@ -206,7 +206,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             var historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(0);
-            
+
             var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(0);
 

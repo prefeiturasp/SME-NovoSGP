@@ -1,10 +1,10 @@
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.Listao
 {
@@ -13,10 +13,10 @@ namespace SME.SGP.TesteIntegracao.Listao
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosPorTurmaEDataMatriculaQuery request, CancellationToken cancellationToken)
         {
             var dataRefencia = DateTimeExtension.HorarioBrasilia();
-              
+
             return await Task.FromResult(new List<AlunoPorTurmaResposta>()
-            { 
-                new() { 
+            {
+                new() {
                     Ano = DateTimeExtension.HorarioBrasilia().Year,
                     DataSituacao = dataRefencia.AddDays(-5),
                     CodigoAluno = "1",
@@ -42,7 +42,7 @@ namespace SME.SGP.TesteIntegracao.Listao
                     CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
                     SituacaoMatricula = "ATIVO",
                     NomeAluno = "NOME ALUNO 3"
-                },   
+                },
                 new() {
                     Ano = DateTimeExtension.HorarioBrasilia().Year,
                     DataSituacao = dataRefencia.AddDays(-20),
@@ -101,7 +101,7 @@ namespace SME.SGP.TesteIntegracao.Listao
                     CodigoSituacaoMatricula= SituacaoMatriculaAluno.Deslocamento,
                     SituacaoMatricula = "DESLOCAMENTO",
                     NomeAluno = "NOME ALUNO 9"
-                },  
+                },
                 new() {
                     Ano = DateTimeExtension.HorarioBrasilia().Year,
                     DataSituacao = dataRefencia.AddDays(10),
@@ -131,8 +131,8 @@ namespace SME.SGP.TesteIntegracao.Listao
                     CodigoSituacaoMatricula= SituacaoMatriculaAluno.Desistente,
                     SituacaoMatricula = "DESISTENTE",
                     NomeAluno = "NOME ALUNO 12"
-                }, 
-                new() { 
+                },
+                new() {
                     Ano = DateTimeExtension.HorarioBrasilia().Year,
                     DataSituacao = dataRefencia.AddDays(-55),
                     DataMatricula = dataRefencia.AddDays(-130),
@@ -153,7 +153,7 @@ namespace SME.SGP.TesteIntegracao.Listao
                     NomeAluno = "NOME ALUNO 14",
                     NomeResponsavel = "Responsavel 14"
                 }
-            }); 
+            });
         }
     }
 }

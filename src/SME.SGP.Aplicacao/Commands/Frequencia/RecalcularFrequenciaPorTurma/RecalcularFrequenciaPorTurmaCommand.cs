@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using MediatR;
-using System;
 
 namespace SME.SGP.Aplicacao
 {
@@ -18,7 +17,7 @@ namespace SME.SGP.Aplicacao
         public string ComponenteCurricularId { get; }
         public long AulaId { get; }
         public int[] Meses { get; set; }
-}
+    }
 
     public class RecalcularFrequenciaPorTurmaCommandValidator : AbstractValidator<RecalcularFrequenciaPorTurmaCommand>
     {

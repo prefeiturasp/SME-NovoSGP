@@ -1,20 +1,17 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQueryHandler :  IRequestHandler<ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQuery, IEnumerable<OpcaoDropdownDto>>
+    public class ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQueryHandler : IRequestHandler<ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQuery, IEnumerable<OpcaoDropdownDto>>
     {
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
@@ -31,7 +28,8 @@ namespace SME.SGP.Aplicacao
             {
                 var todasAsModalidades = EnumExtensao.ListarDto<Modalidade>();
 
-                if (request.ModalidadesQueSeraoIgnoradas.NaoEhNulo() && request.ModalidadesQueSeraoIgnoradas.Any()) {
+                if (request.ModalidadesQueSeraoIgnoradas.NaoEhNulo() && request.ModalidadesQueSeraoIgnoradas.Any())
+                {
                     var idsIgnoradas = request.ModalidadesQueSeraoIgnoradas.Select(a => (int)a);
                     var listaTratada = todasAsModalidades.Where(m => !idsIgnoradas.Contains(m.Id));
                     return listaTratada.Select(c => new OpcaoDropdownDto(c.Id.ToString(), c.Descricao));
@@ -65,5 +63,5 @@ namespace SME.SGP.Aplicacao
             return lista;
         }
     }
-  
+
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
 {
-   public class RepositorioComponenteCurricularGrupoAreaOrdenacao : IRepositorioComponenteCurricularGrupoAreaOrdenacao
+    public class RepositorioComponenteCurricularGrupoAreaOrdenacao : IRepositorioComponenteCurricularGrupoAreaOrdenacao
     {
         private readonly ISgpContext database;
 

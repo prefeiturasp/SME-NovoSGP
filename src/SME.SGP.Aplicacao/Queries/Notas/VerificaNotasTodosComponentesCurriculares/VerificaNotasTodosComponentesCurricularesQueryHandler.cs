@@ -1,13 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Queries
 {
@@ -51,7 +50,7 @@ namespace SME.SGP.Aplicacao.Queries
                 throw new NegocioException(MensagemNegocioTipoCalendario.TIPO_CALENDARIO_NAO_ENCONTRADO);
             var periodosLetivos = (await mediator
                 .Send(new ObterPeriodosEscolaresPorTipoCalendarioQuery(tipoCalendario.Id))).ToList();
-                        
+
 
             if (periodosLetivos.EhNulo() || !periodosLetivos.Any())
                 throw new NegocioException(MensagemNegocioPeriodo.NAO_FORAM_ENCONTRADOS_PERIODOS_TIPO_CALENDARIO);
@@ -69,7 +68,7 @@ namespace SME.SGP.Aplicacao.Queries
                                                                                                                     periodoFim));
             if (turmasComMatriculasValidas.Any())
                 turmasCodigos = turmasComMatriculasValidas.ToArray();
-            
+
             var componentesCurriculares = await ObterComponentesTurmas(turmasCodigos, request.Turma.EnsinoEspecial, request.Turma.TurnoParaComponentesCurriculares);
             var disciplinasDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(componentesCurriculares.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray(), codigoTurma: request.Turma.CodigoTurma), cancellationToken);
 
@@ -82,7 +81,7 @@ namespace SME.SGP.Aplicacao.Queries
         {
             string[] turmasCodigos = new[] { request.Turma.CodigoTurma };
             var turmasItinerarioEnsinoMedio = (await mediator.Send(ObterTurmaItinerarioEnsinoMedioQuery.Instance, cancellationToken)).ToList();
-            if (request.Turma.DeveVerificarRegraRegulares() 
+            if (request.Turma.DeveVerificarRegraRegulares()
                 || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)request.Turma.TipoTurma))
             {
                 var tiposTurmas = new List<int> { (int)request.Turma.TipoTurma };
@@ -107,13 +106,14 @@ namespace SME.SGP.Aplicacao.Queries
                 if (turmasCodigos.Any())
                 {
                     var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigos.ToArray()));
-                    if (turmas.Select(t => t.TipoTurma).Distinct().Count() == 1 
+                    if (turmas.Select(t => t.TipoTurma).Distinct().Count() == 1
                         && request.Turma.ModalidadeCodigo != Modalidade.Medio)
                         turmasCodigos = new string[] { request.Turma.CodigoTurma };
                     else if (ValidaPossibilidadeMatricula2TurmasRegularesNovoEM(turmas, request.Turma))
                         turmasCodigos = new string[] { request.Turma.CodigoTurma };
                 }
-            };
+            }
+            ;
             return turmasCodigos;
         }
 

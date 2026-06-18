@@ -10,69 +10,69 @@ namespace SME.SGP.Aplicacao.Queries.Bimestre.ObterPorModalidade
     public class ObterBimestrePorModalidadeQueryHandler : IRequestHandler<ObterBimestrePorModalidadeQuery, List<FiltroBimestreDto>>
     {
 
-            public ObterBimestrePorModalidadeQueryHandler()
-            {
+        public ObterBimestrePorModalidadeQueryHandler()
+        {
 
+        }
+        public Task<List<FiltroBimestreDto>> Handle(ObterBimestrePorModalidadeQuery request, CancellationToken cancellationToken)
+        {
+            var listaBimestres = new List<FiltroBimestreDto>();
+
+            if (request.OpcaoTodos)
+            {
+                var bimestre = new FiltroBimestreDto();
+                bimestre.Valor = (int)SME.SGP.Dominio.Bimestre.Todos;
+                bimestre.Descricao = SME.SGP.Dominio.Bimestre.Todos.ObterNome();
+                listaBimestres.Add(bimestre);
             }
-            public Task<List<FiltroBimestreDto>> Handle(ObterBimestrePorModalidadeQuery request, CancellationToken cancellationToken)
+
+            var primeiro = new FiltroBimestreDto()
             {
-                var listaBimestres = new List<FiltroBimestreDto>();
+                Valor = (int)SME.SGP.Dominio.Bimestre.Primeiro,
+                Descricao = SME.SGP.Dominio.Bimestre.Primeiro.ObterNome()
+            };
 
-                if (request.OpcaoTodos)
-                {
-                    var bimestre = new FiltroBimestreDto();
-                    bimestre.Valor = (int)SME.SGP.Dominio.Bimestre.Todos;
-                    bimestre.Descricao = SME.SGP.Dominio.Bimestre.Todos.ObterNome();
-                    listaBimestres.Add(bimestre);
-                }
+            var segundoBimestre = new FiltroBimestreDto()
+            {
+                Valor = (int)SME.SGP.Dominio.Bimestre.Segundo,
+                Descricao = SME.SGP.Dominio.Bimestre.Segundo.ObterNome()
+            };
 
-                var primeiro = new FiltroBimestreDto()
+            listaBimestres.Add(primeiro);
+            listaBimestres.Add(segundoBimestre);
+
+            if (request.Modalidade.NaoEhSemestral())
+            {
+                var terceiroBimestre = new FiltroBimestreDto()
                 {
-                    Valor = (int)SME.SGP.Dominio.Bimestre.Primeiro,
-                    Descricao = SME.SGP.Dominio.Bimestre.Primeiro.ObterNome()
+                    Valor = (int)SME.SGP.Dominio.Bimestre.Terceiro,
+                    Descricao = SME.SGP.Dominio.Bimestre.Terceiro.ObterNome()
                 };
 
-                var segundoBimestre = new FiltroBimestreDto()
+                var quartoBimestre = new FiltroBimestreDto()
                 {
-                    Valor = (int)SME.SGP.Dominio.Bimestre.Segundo,
-                    Descricao = SME.SGP.Dominio.Bimestre.Segundo.ObterNome()
+                    Valor = (int)SME.SGP.Dominio.Bimestre.Quarto,
+                    Descricao = SME.SGP.Dominio.Bimestre.Quarto.ObterNome()
                 };
 
-                listaBimestres.Add(primeiro);
-                listaBimestres.Add(segundoBimestre);
-
-                if (request.Modalidade.NaoEhSemestral())
-                {
-                    var terceiroBimestre = new FiltroBimestreDto()
-                    {
-                        Valor = (int)SME.SGP.Dominio.Bimestre.Terceiro,
-                        Descricao = SME.SGP.Dominio.Bimestre.Terceiro.ObterNome()
-                    };
-
-                    var quartoBimestre = new FiltroBimestreDto()
-                    {
-                        Valor = (int)SME.SGP.Dominio.Bimestre.Quarto,
-                        Descricao = SME.SGP.Dominio.Bimestre.Quarto.ObterNome()
-                    };
-
-                    listaBimestres.Add(terceiroBimestre);
-                    listaBimestres.Add(quartoBimestre);
-                }
-
-                if (request.OpcaoFinal)
-                {
-                    var bimestreFinal = new FiltroBimestreDto()
-                    {
-                        Valor = (int)SME.SGP.Dominio.Bimestre.Final,
-                        Descricao = SME.SGP.Dominio.Bimestre.Final.ObterNome()
-                    };
-
-                    listaBimestres.Add(bimestreFinal);
-                }
-
-                return Task.FromResult(listaBimestres);
-
+                listaBimestres.Add(terceiroBimestre);
+                listaBimestres.Add(quartoBimestre);
             }
+
+            if (request.OpcaoFinal)
+            {
+                var bimestreFinal = new FiltroBimestreDto()
+                {
+                    Valor = (int)SME.SGP.Dominio.Bimestre.Final,
+                    Descricao = SME.SGP.Dominio.Bimestre.Final.ObterNome()
+                };
+
+                listaBimestres.Add(bimestreFinal);
+            }
+
+            return Task.FromResult(listaBimestres);
+
         }
     }
+}
 

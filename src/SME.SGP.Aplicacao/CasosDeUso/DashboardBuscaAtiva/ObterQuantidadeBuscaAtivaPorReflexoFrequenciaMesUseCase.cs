@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -24,9 +22,9 @@ namespace SME.SGP.Aplicacao
         {
             var graficos = new GraficoBuscaAtivaDto();
             var consultaDados = await repositorio.ObterDadosGraficoReflexoFrequencia(param.Mes,
-                                                                                  param.AnoLetivo, 
-                                                                                  param.Modalidade, 
-                                                                                  param.UeId, 
+                                                                                  param.AnoLetivo,
+                                                                                  param.Modalidade,
+                                                                                  param.UeId,
                                                                                   param.DreId,
                                                                                   param.Semestre);
             graficos.DataUltimaConsolidacao = await repositorio.ObterDataUltimaConsolidacaoReflexoFrequencia();

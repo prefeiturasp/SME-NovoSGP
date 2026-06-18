@@ -6,12 +6,9 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.ConsultaDisciplina.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -56,7 +53,7 @@ namespace SME.SGP.TesteIntegracao.Autenticar
         private async Task CriaItens()
         {
             await InserirNaBase(new Usuario()
-            {   
+            {
                 Id = 1,
                 CodigoRf = "PROFINF1",
                 Login = "PROFINF1",

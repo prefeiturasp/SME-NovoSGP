@@ -46,7 +46,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("bimestres/{bimestre}/turmas/{turmaCodigo}/aberto")]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(bool), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]        
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> PeriodoEmAberto(string turmaCodigo, int bimestre, [FromQuery] DateTime dataReferencia, [FromServices] IConsultasTurma consultas)
         {
             var dataConsulta = dataReferencia == DateTime.MinValue ? DateTime.Today : dataReferencia;
@@ -56,7 +56,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("turmas/{turmaCodigo}/bimestres/aberto")]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(IEnumerable<PeriodoEscolarAbertoDto>), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]        
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> PeriodosEmAberto(string turmaCodigo, [FromQuery] DateTime dataReferencia, [FromServices] IConsultasTurma consultas)
         {
             var dataConsulta = dataReferencia == DateTime.MinValue ? DateTime.Today : dataReferencia;
@@ -116,7 +116,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(IEnumerable<PeriodoEscolarComponenteDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterPeriodoPorComponente(string turmaCodigo, long componenteCurricularId, bool ehRegencia, int bimestre,[FromServices] IObterPeriodosPorComponenteUseCase useCase, [FromQuery] bool exibirDataFutura = false)
+        public async Task<IActionResult> ObterPeriodoPorComponente(string turmaCodigo, long componenteCurricularId, bool ehRegencia, int bimestre, [FromServices] IObterPeriodosPorComponenteUseCase useCase, [FromQuery] bool exibirDataFutura = false)
         {
             return Ok(await useCase.Executar(turmaCodigo, componenteCurricularId, ehRegencia, bimestre, exibirDataFutura));
         }

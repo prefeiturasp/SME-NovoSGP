@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Bimestre
             var turma = new Turma
             {
                 Id = 10,
-                AnoLetivo = DateTime.Today.Year - 1 
+                AnoLetivo = DateTime.Today.Year - 1
             };
 
             mockMediator
@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Bimestre
             var turma = new Turma
             {
                 Id = 20,
-                AnoLetivo = DateTime.Today.Year 
+                AnoLetivo = DateTime.Today.Year
             };
 
             mockMediator
@@ -105,7 +105,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Bimestre
                 Bimestre = 3,
                 PeriodoInicio = DateTime.Today.AddDays(-10),
                 PeriodoFim = DateTime.Today.AddDays(10),
-                TipoCalendarioId = 1 
+                TipoCalendarioId = 1
             };
 
             mockMediator

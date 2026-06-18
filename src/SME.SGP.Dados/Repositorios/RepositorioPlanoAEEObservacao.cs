@@ -27,7 +27,7 @@ namespace SME.SGP.Dados
                           and pao.plano_aee_id = @planoId";
 
             var lookup = new Dictionary<long, PlanoAEEObservacaoDto>();
-            await database.Conexao.QueryAsync<PlanoAEEObservacao, UsuarioNomeDto, PlanoAEEObservacaoDto>(query, 
+            await database.Conexao.QueryAsync<PlanoAEEObservacao, UsuarioNomeDto, PlanoAEEObservacaoDto>(query,
                 (planoAEE, usuario) =>
             {
                 PlanoAEEObservacaoDto planoDto = null;

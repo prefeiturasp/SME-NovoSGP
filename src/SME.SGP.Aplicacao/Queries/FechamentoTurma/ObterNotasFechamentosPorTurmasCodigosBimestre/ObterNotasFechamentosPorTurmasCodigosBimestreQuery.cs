@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
             AnoLetivo = anoLetivo;
             TipoCalendario = tipoCalendario;
         }
-        
+
         public string[] TurmasCodigos { get; }
         public string AlunoCodigo { get; }
         public int Bimestre { get; }
@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
         public int? AnoLetivo { get; }
         public long? TipoCalendario { get; set; }
     }
-    
+
     public class ObterNotasFechamentosPorTurmasCodigosBimestreQueryValidator : AbstractValidator<ObterNotasFechamentosPorTurmasCodigosBimestreQuery>
     {
         public ObterNotasFechamentosPorTurmasCodigosBimestreQueryValidator()
@@ -47,5 +47,5 @@ namespace SME.SGP.Aplicacao
                 .GreaterThanOrEqualTo(0)
                 .WithMessage("Necessário informar o bimestre para obter as notas de fechamento");
         }
-    }    
+    }
 }

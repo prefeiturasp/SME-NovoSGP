@@ -1,13 +1,8 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dto;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Aplicacao
 {
@@ -20,10 +15,10 @@ namespace SME.SGP.Aplicacao
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
         }
 
-        public async Task<bool> Handle(VerificarUsuarioLogadoPertenceMesmaUEQuery request,CancellationToken cancellationToken)
+        public async Task<bool> Handle(VerificarUsuarioLogadoPertenceMesmaUEQuery request, CancellationToken cancellationToken)
         {
-           return await repositorioAbrangencia.VerificarUsuarioLogadoPertenceMesmaUE(request.CodigoUe, request.Login, request.Perfil,
-                request.Modalidade, request.AnoLetivo, request.Periodo,request.ConsideraHistorico);
+            return await repositorioAbrangencia.VerificarUsuarioLogadoPertenceMesmaUE(request.CodigoUe, request.Login, request.Perfil,
+                 request.Modalidade, request.AnoLetivo, request.Periodo, request.ConsideraHistorico);
         }
     }
 }

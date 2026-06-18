@@ -1,17 +1,16 @@
 ﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Newtonsoft.Json;
 using Shouldly;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using SME.SGP.Infra;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Aula
@@ -33,11 +32,11 @@ namespace SME.SGP.TesteIntegracao.Aula
         [Fact(DisplayName = "Aula - Deve permitir excluir aula futura com componente curricular território disponibilizado")]
         public async Task Exclui_aula_futura_com_plano()
         {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, 
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio,
                                         DateTimeExtension.HorarioBrasilia().Date,
                                         DateTimeExtension.HorarioBrasilia().Date.AddDays(30), BIMESTRE_2, false);
             await CriarAula(COMPONENTE_CURRICULAR_TERRITORIO_SABER_1_ID_1214.ToString(), DateTimeExtension.HorarioBrasilia().Date.AddDays(15), RecorrenciaAula.AulaUnica);
-          
+
             var excluirAulaUseCase = ServiceProvider.GetService<IExcluirAulasRecorrentesTerritorioSaberUseCase>();
             var excluirAulaDto = ObterExcluirAularFuturaTerritorioSaberDto(DateTimeExtension.HorarioBrasilia().Date,
                                                                           TURMA_CODIGO_1, COMPONENTE_CURRICULAR_TERRITORIO_SABER_1_ID_1214.ToString());

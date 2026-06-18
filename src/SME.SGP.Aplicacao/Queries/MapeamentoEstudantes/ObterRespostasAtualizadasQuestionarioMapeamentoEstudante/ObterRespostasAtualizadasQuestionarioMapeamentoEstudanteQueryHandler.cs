@@ -3,15 +3,12 @@ using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Constantes;
 using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.MapeamentoEstudantes;
 using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,7 +20,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioQuestaoMapeamentoEstudante repositorioQuestao;
         private readonly IRepositorioRespostaMapeamentoEstudante repositorioResposta;
 
-        public ObterRespostasAtualizadasQuestionarioMapeamentoEstudanteQueryHandler(IMediator mediator,         
+        public ObterRespostasAtualizadasQuestionarioMapeamentoEstudanteQueryHandler(IMediator mediator,
                                                                                     IRepositorioQuestaoMapeamentoEstudante repositorioQuestao,
                                                                                     IRepositorioRespostaMapeamentoEstudante repositorioResposta)
         {
@@ -44,17 +41,20 @@ namespace SME.SGP.Aplicacao
                 retorno.Add(new RespostaQuestaoMapeamentoEstudanteDto()
                 {
                     QuestaoId = questao,
-                    Texto = JsonConvert.SerializeObject(new { index = informacoesSGP.IdParecerConclusivoAnoAnterior.ToString(), 
-                                                              value = informacoesSGP.DescricaoParecerConclusivoAnoAnterior })
+                    Texto = JsonConvert.SerializeObject(new
+                    {
+                        index = informacoesSGP.IdParecerConclusivoAnoAnterior.ToString(),
+                        value = informacoesSGP.DescricaoParecerConclusivoAnoAnterior
+                    })
                 });
-            
+
             questao = await repositorioQuestao.ObterIdQuestaoPorNomeComponenteQuestionario(request.QuestionarioId, NomesComponentesMapeamentoEstudante.TURMA_ANO_ANTERIOR);
             if (!string.IsNullOrEmpty(informacoesSGP.TurmaAnoAnterior))
                 retorno.Add(new RespostaQuestaoMapeamentoEstudanteDto()
-                    {
-                        QuestaoId = questao,
-                        Texto = informacoesSGP.TurmaAnoAnterior
-                    });
+                {
+                    QuestaoId = questao,
+                    Texto = informacoesSGP.TurmaAnoAnterior
+                });
 
             questao = await repositorioQuestao.ObterIdQuestaoPorNomeComponenteQuestionario(request.QuestionarioId, NomesComponentesMapeamentoEstudante.ANOTACOES_PEDAG_BIMESTRE_ANTERIOR);
             retorno.Add(new RespostaQuestaoMapeamentoEstudanteDto()
@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao
                 Texto = UtilRegex.AdicionarEspacos(
                             UtilRegex.RemoverTagsHtml(
                                 UtilRegex.RemoverTagsHtmlMidia(
-                                    informacoesSGP.AnotacoesPedagogicasBimestreAnterior??string.Empty)))
+                                    informacoesSGP.AnotacoesPedagogicasBimestreAnterior ?? string.Empty)))
             });
 
             var dadosEstudante = await mediator.Send(new ObterAlunoEnderecoEolQuery(request.CodigoAluno));
@@ -79,7 +79,7 @@ namespace SME.SGP.Aplicacao
             {
                 QuestaoId = questao,
                 RespostaId = informacoesTurmasPrograma.ComponentesSRMCEFAI.PossuiRegistros()
-                             ? (await repositorioResposta.ObterIdOpcaoRespostaPorNomeComponenteQuestao(NomesComponentesMapeamentoEstudante.ACOMPANHADO_SRM_CEFAI, "Sim")) 
+                             ? (await repositorioResposta.ObterIdOpcaoRespostaPorNomeComponenteQuestao(NomesComponentesMapeamentoEstudante.ACOMPANHADO_SRM_CEFAI, "Sim"))
                              : (await repositorioResposta.ObterIdOpcaoRespostaPorNomeComponenteQuestao(NomesComponentesMapeamentoEstudante.ACOMPANHADO_SRM_CEFAI, "Não"))
             });
 
@@ -139,7 +139,7 @@ namespace SME.SGP.Aplicacao
                 Texto = sondagem.ObterTextoHipoteseEscrita(request.Bimestre)
             });
 
-            var avaliacoesExternasProvaSP = await mediator.Send(new ObterAvaliacoesExternasProvaSPAlunoQuery(request.CodigoAluno, turma.AnoLetivo-1)); 
+            var avaliacoesExternasProvaSP = await mediator.Send(new ObterAvaliacoesExternasProvaSPAlunoQuery(request.CodigoAluno, turma.AnoLetivo - 1));
             questao = await repositorioQuestao.ObterIdQuestaoPorNomeComponenteQuestionario(request.QuestionarioId, NomesComponentesMapeamentoEstudante.AVALIACOES_EXTERNAS_PROVA_SP);
             retorno.Add(new RespostaQuestaoMapeamentoEstudanteDto()
             {
@@ -164,7 +164,7 @@ namespace SME.SGP.Aplicacao
             {
                 QuestaoId = questao,
                 Texto = informacoesSGP.QdadeBuscasAtivasBimestre.ToString()
-            });        
+            });
 
             return retorno;
         }

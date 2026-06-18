@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public string AlunoCodigo { get; set; }
-        public string AlunoNome {  get; set; }
+        public string AlunoNome { get; set; }
         public long RelatorioPeriodicoTurmaPAPId { get; set; }
     }
 

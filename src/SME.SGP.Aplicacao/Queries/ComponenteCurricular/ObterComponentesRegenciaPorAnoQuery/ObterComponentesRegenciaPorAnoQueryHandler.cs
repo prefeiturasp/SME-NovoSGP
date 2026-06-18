@@ -1,13 +1,11 @@
 ﻿using MediatR;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
+using SME.SGP.Aplicacao.Integracoes.Respostas;
+using SME.SGP.Dominio;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Aplicacao.Integracoes.Respostas;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -27,7 +25,7 @@ namespace SME.SGP.Aplicacao
 
             return MapearComponentes(componentesCurriculares.OrderBy(c => c.Descricao));
         }
-        
+
         private IEnumerable<DisciplinaResposta> MapearComponentes(IEnumerable<ComponenteCurricularEol> componentesCurriculares)
         {
             foreach (var componenteCurricular in componentesCurriculares)

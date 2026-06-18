@@ -1,13 +1,12 @@
-﻿using System;
+﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
-using FluentValidation;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterTurmasComMatriculasValidasQuery : IRequest<IEnumerable<string>>
-    {    
+    {
         public string[] TurmasCodigos { get; set; }
         public string AlunoCodigo { get; set; }
         public DateTime PeriodoInicio { get; set; }
@@ -21,7 +20,7 @@ namespace SME.SGP.Aplicacao
             PeriodoFim = periodoFim;
         }
     }
-    
+
     public class ObterTurmasComMatriculasValidasQueryValidator : AbstractValidator<ObterTurmasComMatriculasValidasQuery>
     {
         public ObterTurmasComMatriculasValidasQueryValidator()
@@ -29,18 +28,18 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.AlunoCodigo)
                 .NotEmpty()
                 .WithMessage("O código do aluno deve ser informado para busca de matrículas/turma no EOL.");
-            
+
             RuleFor(c => c.TurmasCodigos)
                 .NotEmpty()
                 .WithMessage("Os códigos das turmas devem ser informados para busca de matrículas/turma no EOL.");
-            
+
             RuleFor(c => c.PeriodoInicio)
                 .NotEmpty()
                 .WithMessage("O período início deve ser informado para tratamento da busca de matrículas/turma no EOL.");
-            
+
             RuleFor(c => c.PeriodoFim)
                 .NotEmpty()
                 .WithMessage("O período final deve ser informado para tratamento da busca de matrículas/turma no EOL.");
-        }        
+        }
     }
 }

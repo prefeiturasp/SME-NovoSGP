@@ -51,37 +51,37 @@ namespace SME.SGP.Dominio
                     return ModalidadeTipoCalendario.FundamentalMedio;
             }
         }
-        
+
         public static bool EhSemestral(this Modalidade modalidade)
         {
             return modalidade.EhUmDosValores(Modalidade.EJA, Modalidade.CELP);
         }
-        
+
         public static bool NaoEhSemestral(this Modalidade modalidade)
         {
             return !EhSemestral(modalidade);
         }
-        
+
         public static bool EhEJA(this Modalidade modalidade)
         {
             return modalidade.EhUmDosValores(Modalidade.EJA);
         }
-        
+
         public static bool EhCELP(this Modalidade modalidade)
         {
             return modalidade.EhUmDosValores(Modalidade.CELP);
         }
-        
+
         public static bool EhEducacaoInfantil(this Modalidade modalidade)
         {
             return modalidade.EhUmDosValores(Modalidade.EducacaoInfantil);
         }
-        
+
         public static bool EhFundamental(this Modalidade modalidade)
         {
             return modalidade.EhUmDosValores(Modalidade.Fundamental);
         }
-        
+
         public static bool EhMedio(this Modalidade modalidade)
         {
             return modalidade.EhUmDosValores(Modalidade.Medio);

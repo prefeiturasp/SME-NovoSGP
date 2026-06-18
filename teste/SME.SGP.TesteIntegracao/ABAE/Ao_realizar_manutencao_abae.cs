@@ -1,11 +1,11 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Shouldly;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ABAE.Base;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Ocorrencia
@@ -13,7 +13,7 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
     public class Ao_realizar_manutencao_abae : ABAETesteBase
     {
         public Ao_realizar_manutencao_abae(CollectionFixture collectionFixture) : base(collectionFixture)
-        {}
+        { }
 
         [Fact(DisplayName = "ABAE - Inserir")]
         public async Task Ao_inserir_cadastro_acesso_ABAE()
@@ -21,9 +21,9 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             await CriarDadosBasicos();
 
             var useCase = ObterServicoSalvarCadastroAcessoABAEUseCase();
-            
+
             var dtoIncluir = GerarCadastroAcessoABAEDto().Generate();
-            
+
             var retorno = await useCase.Executar(dtoIncluir);
             retorno.ShouldNotBeNull();
             retorno.Id.ShouldBe(1);
@@ -40,20 +40,20 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             retorno.Cidade.ShouldBe(dtoIncluir.Cidade);
             retorno.Estado.ShouldBe(dtoIncluir.Estado);
         }
-        
+
         [Fact(DisplayName = "ABAE - Pode inserir com cpf duplicado em Ues diferentes")]
         public async Task Ao_inserir_com_cpf_duplicado_deve_gerar_excecao()
         {
             await CriarDadosBasicos(true);
-            
+
             var useCase = ObterServicoSalvarCadastroAcessoABAEUseCase();
 
             var cadastros = ObterTodos<CadastroAcessoABAE>();
-            
+
             var dtoIncluir = GerarCadastroAcessoABAEDto().Generate();
             dtoIncluir.Cpf = cadastros.FirstOrDefault().Cpf;
             dtoIncluir.UeId = UE_ID_2;
-            
+
             var retorno = await useCase.Executar(dtoIncluir);
             retorno.ShouldNotBeNull();
             retorno.Id.ShouldBe(UE_ID_2);
@@ -70,58 +70,58 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             retorno.Cidade.ShouldBe(dtoIncluir.Cidade);
             retorno.Estado.ShouldBe(dtoIncluir.Estado);
         }
-        
+
         [Fact(DisplayName = "ABAE - Não pode inserir com cpf duplicado em mesmas UEs")]
         public async Task Ao_inserir_com_cpf_duplicado_em_mesma_ues_deve_gerar_excecao()
         {
             await CriarDadosBasicos(true);
-            
+
             var useCase = ObterServicoSalvarCadastroAcessoABAEUseCase();
 
             var cadastros = ObterTodos<CadastroAcessoABAE>();
-            
+
             var dtoIncluir = GerarCadastroAcessoABAEDto().Generate();
             dtoIncluir.Cpf = cadastros.FirstOrDefault().Cpf;
-            
+
             await useCase.Executar(dtoIncluir).ShouldThrowAsync<NegocioException>();
         }
-        
+
         [Fact(DisplayName = "ABAE - Não pode alterar o cpf")]
         public async Task Ao_alterar_o_cpf_deve_gerar_excecao()
         {
             await CriarDadosBasicos(true);
-            
+
             var dtoAlterar = GerarCadastroAcessoABAEDto().Generate();
             dtoAlterar.Id = 1;
 
             var useCase = ObterServicoSalvarCadastroAcessoABAEUseCase();
-            
+
             await useCase.Executar(dtoAlterar).ShouldThrowAsync<NegocioException>();
         }
-        
+
         [Fact(DisplayName = "ABAE - Não pode alterar a UE")]
         public async Task Ao_alterar_o_ue_deve_gerar_excecao()
         {
             await CriarDadosBasicos(true);
-            
+
             var dtoAlterar = GerarCadastroAcessoABAEDto().Generate();
             dtoAlterar.Id = 1;
             dtoAlterar.UeId = 2;
-            
+
             var useCase = ObterServicoSalvarCadastroAcessoABAEUseCase();
-            
+
             await useCase.Executar(dtoAlterar).ShouldThrowAsync<NegocioException>();
         }
-        
+
         [Fact(DisplayName = "ABAE - Alterar")]
         public async Task Ao_alterar()
         {
             await CriarDadosBasicos(true);
 
             var useCase = ObterServicoSalvarCadastroAcessoABAEUseCase();
-            
+
             var dtoAlterar = GerarCadastroAcessoABAEDto().Generate();
-            
+
             var retorno = await useCase.Executar(dtoAlterar);
             retorno.ShouldNotBeNull();
             retorno.Id.ShouldBe(dtoAlterar.Id);
@@ -138,7 +138,7 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             retorno.Cidade.ShouldBe(dtoAlterar.Cidade);
             retorno.Estado.ShouldBe(dtoAlterar.Estado);
         }
-        
+
         [Fact(DisplayName = "ABAE - Excluir logicamente")]
         public async Task Ao_excluir_logicamente()
         {
@@ -148,32 +148,32 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
 
             var retorno = await useCase.Executar(1);
             retorno.ShouldBeTrue();
-            
+
             var cadastros = ObterTodos<CadastroAcessoABAE>();
             cadastros.Count.ShouldBe(1);
-            cadastros.Any(a=> a.Excluido).ShouldBeTrue();
+            cadastros.Any(a => a.Excluido).ShouldBeTrue();
         }
-        
+
         [Fact(DisplayName = "ABAE - Não deve excluir cadastros inexistentes")]
         public async Task Ao_excluir_cadastro_inexistentes()
         {
             await CriarDadosBasicos(true);
 
             var useCase = ObterServicoExcluirCadastroAcessoABAEUseCase();
-            
+
             await useCase.Executar(100).ShouldThrowAsync<NegocioException>();
         }
-        
+
         [Fact(DisplayName = "ABAE - Obter por Id")]
         public async Task Ao_obter_por_id()
         {
             await CriarDadosBasicos();
-            
+
             var dtoInserir = GerarCadastroAcessoABAE().Generate();
             await InserirNaBase(dtoInserir);
 
             var useCase = ObterServicoObterCadastroAcessoABAEUseCase();
-            
+
             var retorno = await useCase.Executar(1);
             retorno.ShouldNotBeNull();
             retorno.UeId.ShouldBe(dtoInserir.UeId);
@@ -204,7 +204,7 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             "(11) 41515-1212".EhTelefoneValido().ShouldBeTrue();
             "abab.com".EhTelefoneValido().ShouldBeFalse();
         }
-        
+
         [Fact(DisplayName = "ABAE - Validar e-mail")]
         public async Task Ao_validar_email()
         {
@@ -215,7 +215,7 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             "@abab.com".EhEmailValido().ShouldBeFalse();
             "@abab.net".EhEmailValido().ShouldBeFalse();
         }
-        
+
         [Fact(DisplayName = "ABAE - Obter paginado")]
         public async Task Ao_obter_paginado()
         {
@@ -230,7 +230,7 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
                 UeId = 1,
                 Situacao = true,
             };
-            
+
             var retorno = await useCase.Executar(filtro);
             retorno.ShouldNotBeNull();
             retorno.TotalRegistros.ShouldBe(22);

@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -15,7 +14,7 @@ namespace SME.SGP.Aplicacao
         private IRepositorioConselhoClasseRecomendacao repositorioConselhoClasseRecomendacao;
         private readonly IRepositorioCache repositorioCache;
 
-        public ObterRecomendacoesAlunoFamiliaQueryHandler(IRepositorioConselhoClasseRecomendacao repositorioConselhoClasseRecomendacao, IRepositorioCache repositorioCache) 
+        public ObterRecomendacoesAlunoFamiliaQueryHandler(IRepositorioConselhoClasseRecomendacao repositorioConselhoClasseRecomendacao, IRepositorioCache repositorioCache)
         {
             this.repositorioConselhoClasseRecomendacao = repositorioConselhoClasseRecomendacao ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseRecomendacao));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));

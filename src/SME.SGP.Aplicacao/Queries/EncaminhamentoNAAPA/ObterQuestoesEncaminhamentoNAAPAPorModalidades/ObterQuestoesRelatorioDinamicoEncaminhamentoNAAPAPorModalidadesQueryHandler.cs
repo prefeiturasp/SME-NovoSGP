@@ -1,13 +1,11 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
-using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.Questionario;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Aplicacao.Queries;
-using SME.SGP.Infra.Dtos.Questionario;
 
 namespace SME.SGP.Aplicacao
 {
@@ -22,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<SecaoQuestoesDTO>> Handle(ObterQuestoesRelatorioDinamicoEncaminhamentoNAAPAPorModalidadesQuery request, CancellationToken cancellationToken)
         {
-            var secoesQuestionario = await mediator.Send(new ObterSecoesEncaminhamentoNAAPAPorModalidadesQuery(TipoQuestionario.RelatorioDinamicoEncaminhamentoNAAPA, 
+            var secoesQuestionario = await mediator.Send(new ObterSecoesEncaminhamentoNAAPAPorModalidadesQuery(TipoQuestionario.RelatorioDinamicoEncaminhamentoNAAPA,
                                                                                                                request.ModalidadesId));
 
             var secoesQuestoesRetorno = new List<SecaoQuestoesDTO>();
@@ -41,7 +39,7 @@ namespace SME.SGP.Aplicacao
                     ModalidadesCodigo = secaoQuestionario.ModalidadesCodigo
                 });
             }
-                
+
 
             return secoesQuestoesRetorno;
         }

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ValidarGradeAulaCommand: IRequest<(bool resultado, string mensagem)>
+    public class ValidarGradeAulaCommand : IRequest<(bool resultado, string mensagem)>
     {
         public ValidarGradeAulaCommand(Turma turma,
                                        long[] componentesCurricularesCodigo,
@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
         public IEnumerable<AulaConsultaDto> AulasExistentes { get; set; }
     }
 
-    public class ValidarGradeAulaCommandValidator: AbstractValidator<ValidarGradeAulaCommand>
+    public class ValidarGradeAulaCommandValidator : AbstractValidator<ValidarGradeAulaCommand>
     {
         public ValidarGradeAulaCommandValidator()
         {

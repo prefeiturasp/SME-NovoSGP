@@ -16,7 +16,7 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioConselhoClasseAlunoConsulta(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
-        
+
         public async Task<ConselhoClasseAluno> ObterPorConselhoClasseAlunoCodigoAsync(long conselhoClasseId, string alunoCodigo)
         {
             var query = @"select cca.*, cc.*, pc.*
@@ -102,7 +102,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<NotaConceitoFechamentoConselhoFinalDto>(query, new { alunoCodigo, turmasCodigos, periodoEscolarId });
         }
-        
+
         public async Task<IEnumerable<NotaConceitoFechamentoConselhoFinalDto>> ObterNotasFinaisAlunoAsync(string[] turmasCodigos, string alunoCodigo)
         {
             var query = $@"select distinct * from (SELECT 0                AS ConselhoClasseAlunoId,

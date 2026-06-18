@@ -5,7 +5,6 @@ using RabbitMQ.Client;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +12,7 @@ using System.Threading.Tasks;
 namespace SME.SGP.Infra
 {
     public abstract class ServicoMensageria<T> : IServicoMensageria<T>
-        where T : class 
+        where T : class
     {
         private readonly IConexoesRabbit conexaoRabbit;
         private readonly IServicoTelemetria servicoTelemetria;
@@ -36,7 +35,7 @@ namespace SME.SGP.Infra
 
             if (!ValidarPublicacao(request))
                 return true;
- 
+
             Func<Task> fnTaskPublicarMensagem = async () => await PublicarMensagem(rota, body, exchange, canalRabbit);
             Func<Task> fnTaskPolicy = async () => await policy.ExecuteAsync(fnTaskPublicarMensagem);
             await servicoTelemetria.RegistrarAsync(fnTaskPolicy, "RabbitMQ", nomeAcao,
@@ -67,20 +66,20 @@ namespace SME.SGP.Infra
             }
         }
 
-        
+
         public virtual string ObterParametrosMensagem(T mensagemRabbit)
             => String.Empty;
     }
 
     public class ServicoMensageriaSGP : ServicoMensageria<MensagemRabbit>, IServicoMensageriaSGP
     {
-        public ServicoMensageriaSGP(IConexoesRabbitFilasSGP conexaoRabbit, IServicoTelemetria servicoTelemetria, IReadOnlyPolicyRegistry<string> registry) 
+        public ServicoMensageriaSGP(IConexoesRabbitFilasSGP conexaoRabbit, IServicoTelemetria servicoTelemetria, IReadOnlyPolicyRegistry<string> registry)
             : base(conexaoRabbit, servicoTelemetria, registry) { }
     }
 
     public class ServicoMensageriaLogs : ServicoMensageria<LogMensagem>, IServicoMensageriaLogs
     {
-        public ServicoMensageriaLogs(IConexoesRabbitFilasLog conexaoRabbit, IServicoTelemetria servicoTelemetria, IReadOnlyPolicyRegistry<string> registry) 
+        public ServicoMensageriaLogs(IConexoesRabbitFilasLog conexaoRabbit, IServicoTelemetria servicoTelemetria, IReadOnlyPolicyRegistry<string> registry)
             : base(conexaoRabbit, servicoTelemetria, registry) { }
 
         public override string ObterParametrosMensagem(LogMensagem mensagemLog)
@@ -125,7 +124,7 @@ namespace SME.SGP.Infra
     }
     public class ServicoMensageriaApiEOL : ServicoMensageria<object>, IServicoMensageriaApiEOL
     {
-        public ServicoMensageriaApiEOL(IConexoesRabbitFilasSGP conexaoRabbit, IServicoTelemetria servicoTelemetria, IReadOnlyPolicyRegistry<string> registry) 
+        public ServicoMensageriaApiEOL(IConexoesRabbitFilasSGP conexaoRabbit, IServicoTelemetria servicoTelemetria, IReadOnlyPolicyRegistry<string> registry)
             : base(conexaoRabbit, servicoTelemetria, registry) { }
     }
 }

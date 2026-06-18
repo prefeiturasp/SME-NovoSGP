@@ -19,7 +19,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
         public Ao_realizar_consolidacao_diaria_dashboard_frequencia(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
-        
+
         [Fact(DisplayName = "Consolidação Dashboard - Deve gerar a consolidação diaria com data")]
         public async Task Deve_gerar_consolidacao_diaria_com_data()
         {
@@ -32,16 +32,16 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             await CriarRegistroFrequencia();
 
             await CriarRegistroFrequenciaAluno();
-            
+
             var useCase = ServiceProvider.GetService<IExecutaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase>();
             var mensagem = new ConsolidacaoPorTurmaDashBoardFrequencia()
             {
-                AnoLetivo = dataReferencia.Year, 
+                AnoLetivo = dataReferencia.Year,
                 TurmaId = ConstantesTeste.TURMA_ID_1,
-                Mes = dataReferencia.Month, 
+                Mes = dataReferencia.Month,
                 DataAula = dataReferencia
             };
-            
+
             var jsonMensagem = JsonSerializer.Serialize(mensagem);
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
@@ -51,10 +51,10 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             consolidacoes.Count.ShouldBe(1);
             consolidacoes.FirstOrDefault().DataAula.ShouldBe(dataReferencia);
             consolidacoes.FirstOrDefault(c => c.TurmaId == ConstantesTeste.TURMA_ID_1).QuantidadeAusentes.ShouldBe(1);
-            consolidacoes.FirstOrDefault(c=> c.TurmaId == ConstantesTeste.TURMA_ID_1).QuantidadePresencas.ShouldBe(2);
+            consolidacoes.FirstOrDefault(c => c.TurmaId == ConstantesTeste.TURMA_ID_1).QuantidadePresencas.ShouldBe(2);
             consolidacoes.FirstOrDefault(c => c.TurmaId == ConstantesTeste.TURMA_ID_1).QuantidadeRemotos.ShouldBe(1);
         }
-       
+
         [Fact(DisplayName = "Consolidação Dashboard - Deve atualizar a consolidação diaria com data")]
         public async Task Deve_atualizar_consolidacao_diaria_com_data()
         {
@@ -67,7 +67,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             await CriarRegistroFrequencia();
 
             await CriarRegistroFrequenciaAluno();
-            
+
             await InserirNaBase(new ConsolidacaoDashBoardFrequencia
             {
                 CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
@@ -88,21 +88,21 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
                 Tipo = (int)TipoPeriodoDashboardFrequencia.Diario,
                 semestre = 0
             });
-            
+
             var consolidacoes = ObterTodos<ConsolidacaoDashBoardFrequencia>();
             consolidacoes.FirstOrDefault(c => c.TurmaId == ConstantesTeste.TURMA_ID_1).QuantidadeAusentes.ShouldBe(2);
-            consolidacoes.FirstOrDefault(c=> c.TurmaId == ConstantesTeste.TURMA_ID_1).QuantidadePresencas.ShouldBe(1);
+            consolidacoes.FirstOrDefault(c => c.TurmaId == ConstantesTeste.TURMA_ID_1).QuantidadePresencas.ShouldBe(1);
             consolidacoes.FirstOrDefault(c => c.TurmaId == ConstantesTeste.TURMA_ID_1).QuantidadeRemotos.ShouldBe(2);
-            
+
             var useCase = ServiceProvider.GetService<IExecutaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase>();
             var mensagem = new ConsolidacaoPorTurmaDashBoardFrequencia()
             {
-                AnoLetivo = dataReferencia.Year, 
-                Mes = dataReferencia.Month, 
+                AnoLetivo = dataReferencia.Year,
+                Mes = dataReferencia.Month,
                 TurmaId = ConstantesTeste.TURMA_ID_1,
                 DataAula = dataReferencia
             };
-            
+
             var jsonMensagem = JsonSerializer.Serialize(mensagem);
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
@@ -112,17 +112,18 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             consolidacoes.Count.ShouldBe(1);
             consolidacoes.FirstOrDefault().DataAula.ShouldBe(dataReferencia);
             consolidacoes.FirstOrDefault(c => c.TurmaId == ConstantesTeste.TURMA_ID_1).QuantidadeAusentes.ShouldBe(1);
-            consolidacoes.FirstOrDefault(c=> c.TurmaId == ConstantesTeste.TURMA_ID_1).QuantidadePresencas.ShouldBe(2);
+            consolidacoes.FirstOrDefault(c => c.TurmaId == ConstantesTeste.TURMA_ID_1).QuantidadePresencas.ShouldBe(2);
             consolidacoes.FirstOrDefault(c => c.TurmaId == ConstantesTeste.TURMA_ID_1).QuantidadeRemotos.ShouldBe(1);
         }
-        
+
         private async Task CriarRegistroFrequenciaAluno()
         {
             await InserirNaBase(new RegistroFrequenciaAluno
             {
                 CodigoAluno = ConstantesTeste.ALUNO_CODIGO_1,
                 RegistroFrequenciaId = ConstantesTeste.REGISTRO_FREQUENCIA_ID_1,
-                CriadoPor = ConstantesTeste.SISTEMA_NOME, CriadoRF = ConstantesTeste.SISTEMA_RF,
+                CriadoPor = ConstantesTeste.SISTEMA_NOME,
+                CriadoRF = ConstantesTeste.SISTEMA_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
                 Valor = ConstantesTeste.COMPARECEU_ID_1,
                 NumeroAula = ConstantesTeste.QUANTIDADE_AULAS_1,
@@ -133,7 +134,8 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             {
                 CodigoAluno = ConstantesTeste.ALUNO_CODIGO_2,
                 RegistroFrequenciaId = ConstantesTeste.REGISTRO_FREQUENCIA_ID_1,
-                CriadoPor = ConstantesTeste.SISTEMA_NOME, CriadoRF = ConstantesTeste.SISTEMA_RF,
+                CriadoPor = ConstantesTeste.SISTEMA_NOME,
+                CriadoRF = ConstantesTeste.SISTEMA_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
                 Valor = ConstantesTeste.FALTOU_ID_2,
                 NumeroAula = ConstantesTeste.QUANTIDADE_AULAS_1,
@@ -144,7 +146,8 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             {
                 CodigoAluno = ConstantesTeste.ALUNO_CODIGO_3,
                 RegistroFrequenciaId = ConstantesTeste.REGISTRO_FREQUENCIA_ID_1,
-                CriadoPor = ConstantesTeste.SISTEMA_NOME, CriadoRF = ConstantesTeste.SISTEMA_RF,
+                CriadoPor = ConstantesTeste.SISTEMA_NOME,
+                CriadoRF = ConstantesTeste.SISTEMA_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
                 Valor = ConstantesTeste.COMPARECEU_ID_1,
                 NumeroAula = ConstantesTeste.QUANTIDADE_AULAS_1,
@@ -155,7 +158,8 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             {
                 CodigoAluno = ConstantesTeste.ALUNO_CODIGO_4,
                 RegistroFrequenciaId = ConstantesTeste.REGISTRO_FREQUENCIA_ID_1,
-                CriadoPor = ConstantesTeste.SISTEMA_NOME, CriadoRF = ConstantesTeste.SISTEMA_RF,
+                CriadoPor = ConstantesTeste.SISTEMA_NOME,
+                CriadoRF = ConstantesTeste.SISTEMA_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
                 Valor = ConstantesTeste.FALTOU_ID_2,
                 NumeroAula = ConstantesTeste.QUANTIDADE_AULAS_1,
@@ -166,7 +170,8 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             {
                 CodigoAluno = ConstantesTeste.ALUNO_CODIGO_1,
                 RegistroFrequenciaId = ConstantesTeste.REGISTRO_FREQUENCIA_ID_2,
-                CriadoPor = ConstantesTeste.SISTEMA_NOME, CriadoRF = ConstantesTeste.SISTEMA_RF,
+                CriadoPor = ConstantesTeste.SISTEMA_NOME,
+                CriadoRF = ConstantesTeste.SISTEMA_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
                 Valor = ConstantesTeste.FALTOU_ID_2,
                 NumeroAula = ConstantesTeste.QUANTIDADE_AULAS_1,
@@ -177,7 +182,8 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             {
                 CodigoAluno = ConstantesTeste.ALUNO_CODIGO_2,
                 RegistroFrequenciaId = ConstantesTeste.REGISTRO_FREQUENCIA_ID_2,
-                CriadoPor = ConstantesTeste.SISTEMA_NOME, CriadoRF = ConstantesTeste.SISTEMA_RF,
+                CriadoPor = ConstantesTeste.SISTEMA_NOME,
+                CriadoRF = ConstantesTeste.SISTEMA_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
                 Valor = ConstantesTeste.REMOTO_ID_3,
                 NumeroAula = ConstantesTeste.QUANTIDADE_AULAS_1,
@@ -188,7 +194,8 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             {
                 CodigoAluno = ConstantesTeste.ALUNO_CODIGO_3,
                 RegistroFrequenciaId = ConstantesTeste.REGISTRO_FREQUENCIA_ID_2,
-                CriadoPor = ConstantesTeste.SISTEMA_NOME, CriadoRF = ConstantesTeste.SISTEMA_RF,
+                CriadoPor = ConstantesTeste.SISTEMA_NOME,
+                CriadoRF = ConstantesTeste.SISTEMA_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
                 Valor = ConstantesTeste.FALTOU_ID_2,
                 NumeroAula = ConstantesTeste.QUANTIDADE_AULAS_1,
@@ -199,7 +206,8 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             {
                 CodigoAluno = ConstantesTeste.ALUNO_CODIGO_4,
                 RegistroFrequenciaId = ConstantesTeste.REGISTRO_FREQUENCIA_ID_2,
-                CriadoPor = ConstantesTeste.SISTEMA_NOME, CriadoRF = ConstantesTeste.SISTEMA_RF,
+                CriadoPor = ConstantesTeste.SISTEMA_NOME,
+                CriadoRF = ConstantesTeste.SISTEMA_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
                 Valor = ConstantesTeste.FALTOU_ID_2,
                 NumeroAula = ConstantesTeste.QUANTIDADE_AULAS_1,
@@ -210,7 +218,8 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             {
                 CodigoAluno = ConstantesTeste.ALUNO_CODIGO_1,
                 RegistroFrequenciaId = ConstantesTeste.REGISTRO_FREQUENCIA_ID_3,
-                CriadoPor = ConstantesTeste.SISTEMA_NOME, CriadoRF = ConstantesTeste.SISTEMA_RF,
+                CriadoPor = ConstantesTeste.SISTEMA_NOME,
+                CriadoRF = ConstantesTeste.SISTEMA_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
                 Valor = ConstantesTeste.REMOTO_ID_3,
                 NumeroAula = ConstantesTeste.QUANTIDADE_AULAS_1,
@@ -221,7 +230,8 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             {
                 CodigoAluno = ConstantesTeste.ALUNO_CODIGO_2,
                 RegistroFrequenciaId = ConstantesTeste.REGISTRO_FREQUENCIA_ID_3,
-                CriadoPor = ConstantesTeste.SISTEMA_NOME, CriadoRF = ConstantesTeste.SISTEMA_RF,
+                CriadoPor = ConstantesTeste.SISTEMA_NOME,
+                CriadoRF = ConstantesTeste.SISTEMA_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
                 Valor = ConstantesTeste.REMOTO_ID_3,
                 NumeroAula = ConstantesTeste.QUANTIDADE_AULAS_1,
@@ -232,7 +242,8 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             {
                 CodigoAluno = ConstantesTeste.ALUNO_CODIGO_3,
                 RegistroFrequenciaId = ConstantesTeste.REGISTRO_FREQUENCIA_ID_3,
-                CriadoPor = ConstantesTeste.SISTEMA_NOME, CriadoRF = ConstantesTeste.SISTEMA_RF,
+                CriadoPor = ConstantesTeste.SISTEMA_NOME,
+                CriadoRF = ConstantesTeste.SISTEMA_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
                 Valor = ConstantesTeste.COMPARECEU_ID_1,
                 NumeroAula = ConstantesTeste.QUANTIDADE_AULAS_1,
@@ -243,7 +254,8 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             {
                 CodigoAluno = ConstantesTeste.ALUNO_CODIGO_4,
                 RegistroFrequenciaId = ConstantesTeste.REGISTRO_FREQUENCIA_ID_3,
-                CriadoPor = ConstantesTeste.SISTEMA_NOME, CriadoRF = ConstantesTeste.SISTEMA_RF,
+                CriadoPor = ConstantesTeste.SISTEMA_NOME,
+                CriadoRF = ConstantesTeste.SISTEMA_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
                 Valor = ConstantesTeste.FALTOU_ID_2,
                 NumeroAula = ConstantesTeste.QUANTIDADE_AULAS_1,
@@ -256,21 +268,24 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             await InserirNaBase(new RegistroFrequencia
             {
                 AulaId = ConstantesTeste.AULA_ID_1,
-                CriadoPor = ConstantesTeste.SISTEMA_NOME, CriadoRF = ConstantesTeste.SISTEMA_RF,
+                CriadoPor = ConstantesTeste.SISTEMA_NOME,
+                CriadoRF = ConstantesTeste.SISTEMA_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia().Date
             });
 
             await InserirNaBase(new RegistroFrequencia
             {
                 AulaId = ConstantesTeste.AULA_ID_2,
-                CriadoPor = ConstantesTeste.SISTEMA_NOME, CriadoRF = ConstantesTeste.SISTEMA_RF,
+                CriadoPor = ConstantesTeste.SISTEMA_NOME,
+                CriadoRF = ConstantesTeste.SISTEMA_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia().Date
             });
 
             await InserirNaBase(new RegistroFrequencia
             {
                 AulaId = ConstantesTeste.AULA_ID_3,
-                CriadoPor = ConstantesTeste.SISTEMA_NOME, CriadoRF = ConstantesTeste.SISTEMA_RF,
+                CriadoPor = ConstantesTeste.SISTEMA_NOME,
+                CriadoRF = ConstantesTeste.SISTEMA_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia().Date
             });
         }
@@ -279,7 +294,8 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
         {
             await InserirNaBase(new Dominio.Aula
             {
-                CriadoPor = ConstantesTeste.SISTEMA_NOME, CriadoRF = ConstantesTeste.SISTEMA_RF,
+                CriadoPor = ConstantesTeste.SISTEMA_NOME,
+                CriadoRF = ConstantesTeste.SISTEMA_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
                 UeId = ConstantesTeste.UE_1_CODIGO,
                 DisciplinaId = ConstantesTeste.COMPONENTE_CURRICULAR_ARTE_139,
@@ -292,7 +308,8 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
 
             await InserirNaBase(new Dominio.Aula
             {
-                CriadoPor = ConstantesTeste.SISTEMA_NOME, CriadoRF = ConstantesTeste.SISTEMA_RF,
+                CriadoPor = ConstantesTeste.SISTEMA_NOME,
+                CriadoRF = ConstantesTeste.SISTEMA_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
                 UeId = ConstantesTeste.UE_1_CODIGO,
                 DisciplinaId = ConstantesTeste.COMPONENTE_CURRICULAR_MATEMATICA_2,
@@ -305,7 +322,8 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
 
             await InserirNaBase(new Dominio.Aula
             {
-                CriadoPor = ConstantesTeste.SISTEMA_NOME, CriadoRF = ConstantesTeste.SISTEMA_RF,
+                CriadoPor = ConstantesTeste.SISTEMA_NOME,
+                CriadoRF = ConstantesTeste.SISTEMA_RF,
                 CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
                 UeId = ConstantesTeste.UE_1_CODIGO,
                 DisciplinaId = ConstantesTeste.COMPONENTE_CURRICULAR_ARTE_139,

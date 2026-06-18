@@ -1,9 +1,4 @@
 ﻿using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SME.SGP.Infra.Dtos.MapeamentoEstudantes
 {
@@ -18,7 +13,7 @@ namespace SME.SGP.Infra.Dtos.MapeamentoEstudantes
 
     public static class ClassExtensions
     {
-        public static MapeamentoEstudanteSecaoQuestaoDto ToMapeamentoEstudanteSecaoQuestaoDto(this RespostaQuestaoMapeamentoEstudanteDto source, 
+        public static MapeamentoEstudanteSecaoQuestaoDto ToMapeamentoEstudanteSecaoQuestaoDto(this RespostaQuestaoMapeamentoEstudanteDto source,
                                                                                               TipoQuestao tipoQuestao,
                                                                                               long respostaMapeamentoEstudanteId)
         => new MapeamentoEstudanteSecaoQuestaoDto()

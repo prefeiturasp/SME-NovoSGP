@@ -2,8 +2,8 @@
 
 namespace SME.SGP.Aplicacao
 {
-    public interface ICopiarCompensacaoAusenciaUseCase : IUseCase<CompensacaoAusenciaCopiaDto,string>
+    public interface ICopiarCompensacaoAusenciaUseCase : IUseCase<CompensacaoAusenciaCopiaDto, string>
     {
-    
+
     }
 }

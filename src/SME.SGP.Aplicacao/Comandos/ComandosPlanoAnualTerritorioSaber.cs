@@ -1,15 +1,14 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Options;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
-using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao
 {
@@ -52,7 +51,7 @@ namespace SME.SGP.Aplicacao
                 bool deveVerificarProfessor = usuarioAtual.EhProfessor() && professorTitular.NaoEhNulo() && (!string.IsNullOrEmpty(professorTitular.ProfessorRf) && professorTitular.ProfessorRf != usuarioAtual.CodigoRf);
 
                 foreach (var bimestrePlanoAnual in planoAnualTerritorioSaberDto.Bimestres)
-                {                 
+                {
                     PlanoAnualTerritorioSaber planoAnualTerritorioSaber = await ObterPlanoAnualTerritorioSaberSimplificado(planoAnualTerritorioSaberDto, bimestrePlanoAnual.Bimestre.Value, deveVerificarProfessor ? usuarioAtual.CodigoRf : null);
                     await ValidarPermissaoPersistenciaTurmaDisciplina(planoAnualTerritorioSaber, usuarioAtual, planoAnualTerritorioSaberDto.TurmaId.ToString(), planoAnualTerritorioSaberDto.TerritorioExperienciaId.ToString());
                     listaDescricao.Add(ObterPlanoAnualTerritorioSaberResumidoDto(planoAnualTerritorioSaber, bimestrePlanoAnual));

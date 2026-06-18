@@ -25,13 +25,13 @@ namespace SME.SGP.Aplicacao.Commands
         public async Task<RetornoEncerramentoPlanoAEEDto> Handle(EncerrarPlanoAeeCommand request, CancellationToken cancellationToken)
         {
             var planoAEE = await mediator.Send(new ObterPlanoAEEPorIdQuery(request.PlanoId));
-            
+
             planoAEE.EncerrarPlanoAEE();
-            
+
             var planoId = await repositorioPlanoAEE.SalvarAsync(planoAEE);
 
             await ExcluirPendenciasPlano(planoId);
-            if(await ParametroGeracaoPendenciaAtivo())
+            if (await ParametroGeracaoPendenciaAtivo())
                 await mediator.Send(new GerarPendenciaCPEncerramentoPlanoAEECommand(planoAEE.Id));
 
             return new RetornoEncerramentoPlanoAEEDto(planoId, planoAEE.Situacao);

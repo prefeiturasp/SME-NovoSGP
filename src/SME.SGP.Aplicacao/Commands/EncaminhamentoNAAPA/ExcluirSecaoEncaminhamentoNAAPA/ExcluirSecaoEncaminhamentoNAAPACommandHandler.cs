@@ -2,8 +2,6 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,11 +28,11 @@ namespace SME.SGP.Aplicacao
                 {
                     await mediator.Send(new ExcluirQuestaoEncaminhamentoNAAPAPorSecaoIdCommand(request.EncaminhamentoNAAPASecaoId));
                     await repositorioEncaminhamentoNAAPASecao.RemoverLogico(request.EncaminhamentoNAAPASecaoId);
-                   
+
                     unitOfWork.PersistirTransacao();
                     return true;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     unitOfWork.Rollback();
                     throw;

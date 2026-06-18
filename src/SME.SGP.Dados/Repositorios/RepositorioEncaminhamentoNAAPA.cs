@@ -26,23 +26,33 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>> ListarPaginado(int anoLetivo, long dreId, 
-            string codigoUe, string codigoNomeAluno, DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, 
+        public async Task<PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>> ListarPaginado(int anoLetivo, long dreId,
+            string codigoUe, string codigoNomeAluno, DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim,
             int situacao, long prioridade, long[] turmasIds, Paginacao paginacao, bool exibirEncerrados, OrdenacaoListagemPaginadaEncaminhamentoNAAPA[] ordenacao)
         {
-            var query = MontaQueryCompleta(paginacao, codigoUe, codigoNomeAluno, dataAberturaQueixaInicio, 
-                dataAberturaQueixaFim, situacao,prioridade , turmasIds, exibirEncerrados, ordenacao);
-            var situacoesEncerrado = (int)SituacaoNAAPA.Encerrado ;
+            var query = MontaQueryCompleta(paginacao, codigoUe, codigoNomeAluno, dataAberturaQueixaInicio,
+                dataAberturaQueixaFim, situacao, prioridade, turmasIds, exibirEncerrados, ordenacao);
+            var situacoesEncerrado = (int)SituacaoNAAPA.Encerrado;
 
             if (!string.IsNullOrWhiteSpace(codigoNomeAluno))
                 codigoNomeAluno = $"%{codigoNomeAluno.ToLower()}%";
-            
-            var parametros = new { anoLetivo, codigoUe, dreId, codigoNomeAluno,
-                turmasIds, situacao, prioridade, dataAberturaQueixaInicio, 
-                dataAberturaQueixaFim, situacoesEncerrado };
+
+            var parametros = new
+            {
+                anoLetivo,
+                codigoUe,
+                dreId,
+                codigoNomeAluno,
+                turmasIds,
+                situacao,
+                prioridade,
+                dataAberturaQueixaInicio,
+                dataAberturaQueixaFim,
+                situacoesEncerrado
+            };
 
             var retorno = new PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>();
-            
+
             using (var encaminhamentosNAAPA = await database.Conexao.QueryMultipleAsync(query, parametros))
             {
                 retorno.Items = encaminhamentosNAAPA.Read<EncaminhamentoNAAPAResumoDto>();
@@ -54,30 +64,30 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
-        private string MontaQueryCompleta(Paginacao paginacao, string codigoUe, string codigoNomeAluno, 
+        private string MontaQueryCompleta(Paginacao paginacao, string codigoUe, string codigoNomeAluno,
             DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, int situacao, long prioridade, long[] turmasIds, bool exibirEncerrados, OrdenacaoListagemPaginadaEncaminhamentoNAAPA[] ordenacao)
         {
             var sql = new StringBuilder();
 
             MontaQueryConsulta(paginacao, sql, contador: false, codigoNomeAluno, dataAberturaQueixaInicio,
-                dataAberturaQueixaFim,situacao, prioridade, turmasIds, codigoUe, exibirEncerrados, ordenacao);
-            
+                dataAberturaQueixaFim, situacao, prioridade, turmasIds, codigoUe, exibirEncerrados, ordenacao);
+
             sql.AppendLine(";");
 
             MontaQueryConsulta(paginacao, sql, contador: true, codigoNomeAluno, dataAberturaQueixaInicio,
-                dataAberturaQueixaFim,situacao, prioridade, turmasIds, codigoUe, exibirEncerrados);
+                dataAberturaQueixaFim, situacao, prioridade, turmasIds, codigoUe, exibirEncerrados);
 
             return sql.ToString();
         }
 
-        private void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, string codigoNomeAluno, 
-            DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, int situacao, long prioridade, 
+        private void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, string codigoNomeAluno,
+            DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, int situacao, long prioridade,
             long[] turmasIds, string codigoUe, bool exibirEncerrados, OrdenacaoListagemPaginadaEncaminhamentoNAAPA[] ordenacao = null)
         {
             ObterCabecalho(sql, contador);
 
-            ObterFiltro(sql, codigoNomeAluno, dataAberturaQueixaInicio, dataAberturaQueixaFim,situacao, prioridade, turmasIds, codigoUe, exibirEncerrados);
-            
+            ObterFiltro(sql, codigoNomeAluno, dataAberturaQueixaInicio, dataAberturaQueixaFim, situacao, prioridade, turmasIds, codigoUe, exibirEncerrados);
+
             ObterOrdenacaoConsulta(sql, ordenacao);
 
             if (paginacao.QuantidadeRegistros > 0 && !contador)
@@ -192,25 +202,25 @@ namespace SME.SGP.Dados.Repositorios
             ");
         }
 
-        private void ObterFiltro(StringBuilder sql, string codigoNomeAluno, DateTime? dataAberturaQueixaInicio, 
+        private void ObterFiltro(StringBuilder sql, string codigoNomeAluno, DateTime? dataAberturaQueixaInicio,
             DateTime? dataAberturaQueixaFim, int situacao, long prioridade, long[] turmasIds, string codigoUe, bool exibirEncerrados)
         {
             sql.AppendLine(@" where not np.excluido 
                                     and t.ano_letivo = @anoLetivo
-                                    and ue.dre_Id = @dreId"); 
+                                    and ue.dre_Id = @dreId");
 
             if (!string.IsNullOrEmpty(codigoUe))
                 sql.AppendLine(@" and ue.ue_id = @codigoUe ");
 
             if (!string.IsNullOrEmpty(codigoNomeAluno))
                 sql.AppendLine(" and (lower(np.aluno_nome) like @codigoNomeAluno or np.aluno_codigo like @codigoNomeAluno)");
-            
+
             if (turmasIds.Any())
                 sql.AppendLine(" and t.id = ANY(@turmasIds) ");
-            
+
             if (situacao > 0)
                 sql.AppendLine(" and np.situacao = @situacao ");
-            
+
             if (prioridade > 0)
                 sql.AppendLine(" and qPrioridade.PrioridadeId = @prioridade ");
 
@@ -221,12 +231,12 @@ namespace SME.SGP.Dados.Repositorios
             {
                 if (dataAberturaQueixaInicio.HasValue)
                     sql.AppendLine(" and to_date(qdata.DataAberturaQueixaInicio,'yyyy-mm-dd') >= @dataAberturaQueixaInicio ");
-                
+
                 if (dataAberturaQueixaFim.HasValue)
                     sql.AppendLine(" and to_date(qdata.DataAberturaQueixaInicio,'yyyy-mm-dd') <= @dataAberturaQueixaFim");
             }
         }
-        
+
         public async Task<EncaminhamentoNAAPA> ObterEncaminhamentoPorId(long id)
         {
             const string query = @"select ea.*, eas.*, qea.*, rea.*, sea.*, q.*, op.*
@@ -258,7 +268,7 @@ namespace SME.SGP.Dados.Repositorios
                             encaminhamento = encaminhamentoNAAPA;
 
                         var secao = encaminhamento.Secoes.FirstOrDefault(c => c.Id == encaminhamentoSecao.Id);
-                        
+
                         if (secao.EhNulo())
                         {
                             encaminhamentoSecao.SecaoEncaminhamentoNAAPA = secaoEncaminhamento;
@@ -267,7 +277,7 @@ namespace SME.SGP.Dados.Repositorios
                         }
 
                         var questaoEncaminhamento = secao.Questoes.FirstOrDefault(c => c.Id == questaoEncaminhamentoNAAPA.Id);
-                        
+
                         if (questaoEncaminhamento.EhNulo())
                         {
                             questaoEncaminhamento = questaoEncaminhamentoNAAPA;
@@ -276,7 +286,7 @@ namespace SME.SGP.Dados.Repositorios
                         }
 
                         var resposta = questaoEncaminhamento.Respostas.FirstOrDefault(c => c.Id == respostaEncaminhamento.Id);
-                        
+
                         if (resposta.EhNulo())
                         {
                             resposta = respostaEncaminhamento;
@@ -322,7 +332,7 @@ namespace SME.SGP.Dados.Repositorios
                             encaminhamento = encaminhamentoNAAPA;
 
                         var secao = encaminhamento.Secoes.FirstOrDefault(c => c.Id == encaminhamentoSecao.Id);
-                        
+
                         if (secao.EhNulo())
                         {
                             encaminhamentoSecao.SecaoEncaminhamentoNAAPA = secaoEncaminhamento;
@@ -331,7 +341,7 @@ namespace SME.SGP.Dados.Repositorios
                         }
 
                         var questaoEncaminhamento = secao.Questoes.FirstOrDefault(c => c.Id == questaoEncaminhamentoNAAPA.Id);
-                        
+
                         if (questaoEncaminhamento.EhNulo())
                         {
                             questaoEncaminhamento = questaoEncaminhamentoNAAPA;
@@ -341,9 +351,9 @@ namespace SME.SGP.Dados.Repositorios
 
                         var resposta = questaoEncaminhamento.Respostas.FirstOrDefault(c => c.Id == respostaEncaminhamento.Id);
 
-                        if (resposta.NaoEhNulo()) 
+                        if (resposta.NaoEhNulo())
                             return encaminhamento;
-                        
+
                         resposta = respostaEncaminhamento;
                         resposta.Resposta = opcaoResposta;
                         questaoEncaminhamento.Respostas.Add(resposta);
@@ -372,8 +382,8 @@ namespace SME.SGP.Dados.Repositorios
                             ea.id = @encaminhamentoId";
 
             return await database.Conexao.QueryAsync<EncaminhamentoNAAPACodigoArquivoDto>(sql.ToString(), new { encaminhamentoId });
-        }   
-        
+        }
+
         public async Task<EncaminhamentoNAAPA> ObterEncaminhamentoComTurmaPorId(long encaminhamentoId)
         {
             var query = @" select ea.*, t.*, ue.*, dre.*
@@ -383,13 +393,13 @@ namespace SME.SGP.Dados.Repositorios
                             join dre on dre.id = ue.dre_id  
                            where ea.id = @encaminhamentoId";
 
-            return (await database.Conexao.QueryAsync<EncaminhamentoNAAPA, Turma, Ue, Dre,EncaminhamentoNAAPA>(query,
+            return (await database.Conexao.QueryAsync<EncaminhamentoNAAPA, Turma, Ue, Dre, EncaminhamentoNAAPA>(query,
                 (encaminhamentoNAAPA, turma, ue, dre) =>
                 {
                     encaminhamentoNAAPA.Turma = turma;
                     encaminhamentoNAAPA.Turma.Ue = ue;
                     encaminhamentoNAAPA.Turma.Ue.Dre = dre;
-                    
+
                     return encaminhamentoNAAPA;
                 }, new { encaminhamentoId })).FirstOrDefault();
         }
@@ -402,12 +412,12 @@ namespace SME.SGP.Dados.Repositorios
                         WHERE NOT ens.excluido and sen.nome_componente = @secaoNome
                                 and ens.encaminhamento_naapa_id = @id";
 
-            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { id = encaminhamentoId, secaoNome = EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA }));           
+            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { id = encaminhamentoId, secaoNome = EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA }));
         }
 
         public async Task<IEnumerable<EncaminhamentosNAAPAConsolidadoDto>> ObterQuantidadeSituacaoEncaminhamentosPorUeAnoLetivo(long ueId, int anoLetivo)
         {
-           var query = @"select 
+            var query = @"select 
                             t.ue_id UeId,
                             t.ano_letivo AnoLetivo, 
                             en.situacao,
@@ -419,8 +429,8 @@ namespace SME.SGP.Dados.Repositorios
                         and t.ue_id = @ueId
                         and t.ano_letivo = @anoLetivo
                         group by t.ue_id,t.ano_letivo ,en.situacao, t.modalidade_codigo ";
-           
-           return await database.Conexao.QueryAsync<EncaminhamentosNAAPAConsolidadoDto>(query, new {ueId, anoLetivo});
+
+            return await database.Conexao.QueryAsync<EncaminhamentosNAAPAConsolidadoDto>(query, new { ueId, anoLetivo });
         }
 
         public async Task<SituacaoDto> ObterSituacao(long id)

@@ -19,7 +19,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> Obter([FromQuery]FechamentoFinalConsultaFiltroDto filtroFechamentoFinalConsultDto, [FromServices] IConsultasFechamentoFinal consultasFechamentoFinal)
+        public async Task<IActionResult> Obter([FromQuery] FechamentoFinalConsultaFiltroDto filtroFechamentoFinalConsultDto, [FromServices] IConsultasFechamentoFinal consultasFechamentoFinal)
         {
             return Ok(await consultasFechamentoFinal.ObterFechamentos(filtroFechamentoFinalConsultDto));
         }
@@ -29,7 +29,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.FB_I, Policy = "Bearer")]
-        public async Task<IActionResult> Salvar([FromBody]FechamentoFinalSalvarDto fechamentoFinalSalvarDto, [FromServices]IComandosFechamentoFinal comandosFechamentoFinal)
+        public async Task<IActionResult> Salvar([FromBody] FechamentoFinalSalvarDto fechamentoFinalSalvarDto, [FromServices] IComandosFechamentoFinal comandosFechamentoFinal)
         {
             var auditoria = await comandosFechamentoFinal.SalvarAsync(fechamentoFinalSalvarDto);
             if (auditoria.NaoEhNulo() && auditoria.Mensagens.Any())

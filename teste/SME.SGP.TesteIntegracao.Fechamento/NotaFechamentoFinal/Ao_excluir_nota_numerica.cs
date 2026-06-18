@@ -1,20 +1,20 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using SME.SGP.Dominio;
-using SME.SGP.TesteIntegracao.Setup;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base;
-using SME.SGP.TesteIntegracao.ServicosFakes;
-using Xunit;
 using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.Fechamento.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.Fechamento.NotaFechamentoBimestre.ServicosFakes;
+using SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base;
+using SME.SGP.TesteIntegracao.ServicosFakes;
+using SME.SGP.TesteIntegracao.Setup;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 {
@@ -40,7 +40,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterConselhoClassePorFechamentoIdQuery, ConselhoClasse>),
                   typeof(ObterConselhoClassePorFechamentoIdQueryHandlerFake), ServiceLifetime.Scoped));
         }
-        
+
         [Fact(DisplayName = "Fechamento Bimestre Final - Deve permitir excluir nota numérica com professor titular no ensino fundamental")]
         public async Task Deve_permitir_excluir_nota_numerica_titular_fundamental()
         {
@@ -50,46 +50,46 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
                 Modalidade.Fundamental,
                 ModalidadeTipoCalendario.FundamentalMedio,
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
-            
+
             await CriarDadosBase(filtroNotaFechamento);
 
             var fechamentoFinalSalvarParaInserir = ObterFechamentoNotaFinalNumericaParaSalvar(filtroNotaFechamento);
-            
+
             await ExecutarComandosFechamentoFinalComValidacaoNota(fechamentoFinalSalvarParaInserir);
-            
+
             var historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(5);
-            
+
             var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(5);
-            
-            historicoNotas.Count(w=> !w.NotaAnterior.HasValue).ShouldBe(5);
-            historicoNotas.Count(w=> w.NotaNova.HasValue).ShouldBe(5);
-            
-            historicoNotas.Any(w=> w.Id == 1 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_6).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 2 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_5).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 3 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_8).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 4 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_10).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 5 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_2).ShouldBeTrue();
-            
+
+            historicoNotas.Count(w => !w.NotaAnterior.HasValue).ShouldBe(5);
+            historicoNotas.Count(w => w.NotaNova.HasValue).ShouldBe(5);
+
+            historicoNotas.Any(w => w.Id == 1 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_6).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 2 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_5).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 3 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_8).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 4 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_10).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 5 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_2).ShouldBeTrue();
+
             var fechamentoFinalSalvarParaExcluir = ObterFechamentoNotaFinalNumericaParaExcluir(filtroNotaFechamento);
-            
+
             await ExecutarComandosFechamentoFinalComValidacaoNota(fechamentoFinalSalvarParaExcluir);
-            
+
             historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(10);
-            
+
             historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(10);
-            
-            historicoNotas.Count(w=> w.NotaAnterior.HasValue).ShouldBe(5);
-            historicoNotas.Count(w=> w.NotaNova.HasValue).ShouldBe(5);
-            
-            historicoNotas.Any(w=> w.Id == 6 && w.NotaAnterior == NOTA_6 && !w.NotaNova.HasValue).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 7 && w.NotaAnterior == NOTA_5 && !w.NotaNova.HasValue).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 8 && w.NotaAnterior == NOTA_8 && !w.NotaNova.HasValue).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 9 && w.NotaAnterior == NOTA_10 && !w.NotaNova.HasValue).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 10 && w.NotaAnterior == NOTA_2 && !w.NotaNova.HasValue).ShouldBeTrue();
+
+            historicoNotas.Count(w => w.NotaAnterior.HasValue).ShouldBe(5);
+            historicoNotas.Count(w => w.NotaNova.HasValue).ShouldBe(5);
+
+            historicoNotas.Any(w => w.Id == 6 && w.NotaAnterior == NOTA_6 && !w.NotaNova.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 7 && w.NotaAnterior == NOTA_5 && !w.NotaNova.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 8 && w.NotaAnterior == NOTA_8 && !w.NotaNova.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 9 && w.NotaAnterior == NOTA_10 && !w.NotaNova.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 10 && w.NotaAnterior == NOTA_2 && !w.NotaNova.HasValue).ShouldBeTrue();
         }
 
         [Fact(DisplayName = "Fechamento Bimestre Final - Deve permitir excluir nota numérica com professor titular no ensino médio")]
@@ -101,48 +101,48 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
                 Modalidade.Medio,
                 ModalidadeTipoCalendario.FundamentalMedio,
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
-            
+
             await CriarDadosBase(filtroNotaFechamento);
 
             var fechamentoFinalSalvarParaInserir = ObterFechamentoNotaFinalNumericaParaSalvar(filtroNotaFechamento);
-            
+
             await ExecutarComandosFechamentoFinalComValidacaoNota(fechamentoFinalSalvarParaInserir);
-            
+
             var historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(5);
-            
+
             var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(5);
-            
-            historicoNotas.Count(w=> !w.NotaAnterior.HasValue).ShouldBe(5);
-            historicoNotas.Count(w=> w.NotaNova.HasValue).ShouldBe(5);
-            
-            historicoNotas.Any(w=> w.Id == 1 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_6).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 2 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_5).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 3 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_8).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 4 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_10).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 5 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_2).ShouldBeTrue();
-            
+
+            historicoNotas.Count(w => !w.NotaAnterior.HasValue).ShouldBe(5);
+            historicoNotas.Count(w => w.NotaNova.HasValue).ShouldBe(5);
+
+            historicoNotas.Any(w => w.Id == 1 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_6).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 2 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_5).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 3 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_8).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 4 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_10).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 5 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_2).ShouldBeTrue();
+
             var fechamentoFinalSalvarParaExcluir = ObterFechamentoNotaFinalNumericaParaExcluir(filtroNotaFechamento);
-            
+
             await ExecutarComandosFechamentoFinalComValidacaoNota(fechamentoFinalSalvarParaExcluir);
-            
+
             historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(10);
-            
+
             historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(10);
-            
-            historicoNotas.Count(w=> w.NotaAnterior.HasValue).ShouldBe(5);
-            historicoNotas.Count(w=> w.NotaNova.HasValue).ShouldBe(5);
-            
-            historicoNotas.Any(w=> w.Id == 6 && w.NotaAnterior == NOTA_6 && !w.NotaNova.HasValue).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 7 && w.NotaAnterior == NOTA_5 && !w.NotaNova.HasValue).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 8 && w.NotaAnterior == NOTA_8 && !w.NotaNova.HasValue).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 9 && w.NotaAnterior == NOTA_10 && !w.NotaNova.HasValue).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 10 && w.NotaAnterior == NOTA_2 && !w.NotaNova.HasValue).ShouldBeTrue();
+
+            historicoNotas.Count(w => w.NotaAnterior.HasValue).ShouldBe(5);
+            historicoNotas.Count(w => w.NotaNova.HasValue).ShouldBe(5);
+
+            historicoNotas.Any(w => w.Id == 6 && w.NotaAnterior == NOTA_6 && !w.NotaNova.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 7 && w.NotaAnterior == NOTA_5 && !w.NotaNova.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 8 && w.NotaAnterior == NOTA_8 && !w.NotaNova.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 9 && w.NotaAnterior == NOTA_10 && !w.NotaNova.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 10 && w.NotaAnterior == NOTA_2 && !w.NotaNova.HasValue).ShouldBeTrue();
         }
-        
+
         [Fact(DisplayName = "Fechamento Bimestre Final - Deve permitir excluir nota numérica com professor titular no EJA")]
         public async Task Deve_permitir_excluir_nota_numerica_titular_eja()
         {
@@ -152,46 +152,46 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
                 Modalidade.EJA,
                 ModalidadeTipoCalendario.EJA,
                 COMPONENTE_HISTORIA_ID_7);
-            
+
             await CriarDadosBase(filtroNotaFechamento);
 
             var fechamentoFinalSalvarParaInserir = ObterFechamentoNotaFinalNumericaParaSalvar(filtroNotaFechamento);
-            
+
             await ExecutarComandosFechamentoFinalComValidacaoNota(fechamentoFinalSalvarParaInserir);
-            
+
             var historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(5);
-            
+
             var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(5);
-            
-            historicoNotas.Count(w=> !w.NotaAnterior.HasValue).ShouldBe(5);
-            historicoNotas.Count(w=> w.NotaNova.HasValue).ShouldBe(5);
-            
-            historicoNotas.Any(w=> w.Id == 1 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_6).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 2 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_5).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 3 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_8).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 4 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_10).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 5 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_2).ShouldBeTrue();
-            
+
+            historicoNotas.Count(w => !w.NotaAnterior.HasValue).ShouldBe(5);
+            historicoNotas.Count(w => w.NotaNova.HasValue).ShouldBe(5);
+
+            historicoNotas.Any(w => w.Id == 1 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_6).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 2 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_5).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 3 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_8).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 4 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_10).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 5 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_2).ShouldBeTrue();
+
             var fechamentoFinalSalvarParaExcluir = ObterFechamentoNotaFinalNumericaParaExcluir(filtroNotaFechamento);
-            
+
             await ExecutarComandosFechamentoFinalComValidacaoNota(fechamentoFinalSalvarParaExcluir);
-            
+
             historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(10);
-            
+
             historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(10);
-            
-            historicoNotas.Count(w=> w.NotaAnterior.HasValue).ShouldBe(5);
-            historicoNotas.Count(w=> w.NotaNova.HasValue).ShouldBe(5);
-            
-            historicoNotas.Any(w=> w.Id == 6 && w.NotaAnterior == NOTA_6 && !w.NotaNova.HasValue).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 7 && w.NotaAnterior == NOTA_5 && !w.NotaNova.HasValue).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 8 && w.NotaAnterior == NOTA_8 && !w.NotaNova.HasValue).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 9 && w.NotaAnterior == NOTA_10 && !w.NotaNova.HasValue).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 10 && w.NotaAnterior == NOTA_2 && !w.NotaNova.HasValue).ShouldBeTrue();
+
+            historicoNotas.Count(w => w.NotaAnterior.HasValue).ShouldBe(5);
+            historicoNotas.Count(w => w.NotaNova.HasValue).ShouldBe(5);
+
+            historicoNotas.Any(w => w.Id == 6 && w.NotaAnterior == NOTA_6 && !w.NotaNova.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 7 && w.NotaAnterior == NOTA_5 && !w.NotaNova.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 8 && w.NotaAnterior == NOTA_8 && !w.NotaNova.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 9 && w.NotaAnterior == NOTA_10 && !w.NotaNova.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 10 && w.NotaAnterior == NOTA_2 && !w.NotaNova.HasValue).ShouldBeTrue();
         }
 
         [Fact(DisplayName = "Fechamento Bimestre Final - Deve permitir excluir nota numérica com CP - Fundamental")]
@@ -203,46 +203,46 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
                 Modalidade.Fundamental,
                 ModalidadeTipoCalendario.FundamentalMedio,
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
-            
+
             await CriarDadosBase(filtroNotaFechamento);
 
             var fechamentoFinalSalvarParaInserir = ObterFechamentoNotaFinalNumericaParaSalvar(filtroNotaFechamento);
-            
+
             await ExecutarComandosFechamentoFinalComValidacaoNota(fechamentoFinalSalvarParaInserir);
-            
+
             var historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(5);
-            
+
             var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(5);
-            
-            historicoNotas.Count(w=> !w.NotaAnterior.HasValue).ShouldBe(5);
-            historicoNotas.Count(w=> w.NotaNova.HasValue).ShouldBe(5);
-            
-            historicoNotas.Any(w=> w.Id == 1 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_6).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 2 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_5).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 3 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_8).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 4 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_10).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 5 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_2).ShouldBeTrue();
-            
+
+            historicoNotas.Count(w => !w.NotaAnterior.HasValue).ShouldBe(5);
+            historicoNotas.Count(w => w.NotaNova.HasValue).ShouldBe(5);
+
+            historicoNotas.Any(w => w.Id == 1 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_6).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 2 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_5).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 3 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_8).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 4 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_10).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 5 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_2).ShouldBeTrue();
+
             var fechamentoFinalSalvarParaExcluir = ObterFechamentoNotaFinalNumericaParaExcluir(filtroNotaFechamento);
-            
+
             await ExecutarComandosFechamentoFinalComValidacaoNota(fechamentoFinalSalvarParaExcluir);
-            
+
             historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(10);
-            
+
             historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(10);
-            
-            historicoNotas.Count(w=> w.NotaAnterior.HasValue).ShouldBe(5);
-            historicoNotas.Count(w=> w.NotaNova.HasValue).ShouldBe(5);
-            
-            historicoNotas.Any(w=> w.Id == 6 && w.NotaAnterior == NOTA_6 && !w.NotaNova.HasValue).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 7 && w.NotaAnterior == NOTA_5 && !w.NotaNova.HasValue).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 8 && w.NotaAnterior == NOTA_8 && !w.NotaNova.HasValue).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 9 && w.NotaAnterior == NOTA_10 && !w.NotaNova.HasValue).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 10 && w.NotaAnterior == NOTA_2 && !w.NotaNova.HasValue).ShouldBeTrue();
+
+            historicoNotas.Count(w => w.NotaAnterior.HasValue).ShouldBe(5);
+            historicoNotas.Count(w => w.NotaNova.HasValue).ShouldBe(5);
+
+            historicoNotas.Any(w => w.Id == 6 && w.NotaAnterior == NOTA_6 && !w.NotaNova.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 7 && w.NotaAnterior == NOTA_5 && !w.NotaNova.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 8 && w.NotaAnterior == NOTA_8 && !w.NotaNova.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 9 && w.NotaAnterior == NOTA_10 && !w.NotaNova.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 10 && w.NotaAnterior == NOTA_2 && !w.NotaNova.HasValue).ShouldBeTrue();
         }
 
         [Fact(DisplayName = "Fechamento Bimestre Final - Deve permitir excluir nota numérica com Diretor - Fundamental")]
@@ -254,48 +254,48 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
                 Modalidade.Fundamental,
                 ModalidadeTipoCalendario.FundamentalMedio,
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
-            
+
             await CriarDadosBase(filtroNotaFechamento);
 
             var fechamentoFinalSalvarParaInserir = ObterFechamentoNotaFinalNumericaParaSalvar(filtroNotaFechamento);
-            
+
             await ExecutarComandosFechamentoFinalComValidacaoNota(fechamentoFinalSalvarParaInserir);
-            
+
             var historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(5);
-            
+
             var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(5);
-            
-            historicoNotas.Count(w=> !w.NotaAnterior.HasValue).ShouldBe(5);
-            historicoNotas.Count(w=> w.NotaNova.HasValue).ShouldBe(5);
-            
-            historicoNotas.Any(w=> w.Id == 1 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_6).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 2 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_5).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 3 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_8).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 4 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_10).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 5 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_2).ShouldBeTrue();
-            
+
+            historicoNotas.Count(w => !w.NotaAnterior.HasValue).ShouldBe(5);
+            historicoNotas.Count(w => w.NotaNova.HasValue).ShouldBe(5);
+
+            historicoNotas.Any(w => w.Id == 1 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_6).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 2 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_5).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 3 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_8).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 4 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_10).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 5 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_2).ShouldBeTrue();
+
             var fechamentoFinalSalvarParaExcluir = ObterFechamentoNotaFinalNumericaParaExcluir(filtroNotaFechamento);
-            
+
             await ExecutarComandosFechamentoFinalComValidacaoNota(fechamentoFinalSalvarParaExcluir);
-            
+
             historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(10);
-            
+
             historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(10);
-            
-            historicoNotas.Count(w=> w.NotaAnterior.HasValue).ShouldBe(5);
-            historicoNotas.Count(w=> w.NotaNova.HasValue).ShouldBe(5);
-            
-            historicoNotas.Any(w=> w.Id == 6 && w.NotaAnterior == NOTA_6 && !w.NotaNova.HasValue).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 7 && w.NotaAnterior == NOTA_5 && !w.NotaNova.HasValue).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 8 && w.NotaAnterior == NOTA_8 && !w.NotaNova.HasValue).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 9 && w.NotaAnterior == NOTA_10 && !w.NotaNova.HasValue).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 10 && w.NotaAnterior == NOTA_2 && !w.NotaNova.HasValue).ShouldBeTrue();
+
+            historicoNotas.Count(w => w.NotaAnterior.HasValue).ShouldBe(5);
+            historicoNotas.Count(w => w.NotaNova.HasValue).ShouldBe(5);
+
+            historicoNotas.Any(w => w.Id == 6 && w.NotaAnterior == NOTA_6 && !w.NotaNova.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 7 && w.NotaAnterior == NOTA_5 && !w.NotaNova.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 8 && w.NotaAnterior == NOTA_8 && !w.NotaNova.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 9 && w.NotaAnterior == NOTA_10 && !w.NotaNova.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 10 && w.NotaAnterior == NOTA_2 && !w.NotaNova.HasValue).ShouldBeTrue();
         }
-        
+
         [Fact(DisplayName = "Fechamento Bimestre Final - Deve permitir excluir nota numérica com Professor Titular - Regência")]
         public async Task Deve_permitir_excluir_nota_numerica_titular_regencia_classe_fundamental()
         {
@@ -305,46 +305,46 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
                 Modalidade.Fundamental,
                 ModalidadeTipoCalendario.FundamentalMedio,
                 COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString(), false, true);
-            
+
             await CriarDadosBase(filtroNotaFechamento);
 
             var fechamentoFinalSalvarParaInserir = ObterFechamentoNotaFinalNumericaParaSalvar(filtroNotaFechamento);
-            
+
             await ExecutarComandosFechamentoFinalComValidacaoNota(fechamentoFinalSalvarParaInserir);
-            
+
             var historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(5);
-            
+
             var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(5);
-            
-            historicoNotas.Count(w=> !w.NotaAnterior.HasValue).ShouldBe(5);
-            historicoNotas.Count(w=> w.NotaNova.HasValue).ShouldBe(5);
-            
-            historicoNotas.Any(w=> w.Id == 1 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_6).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 2 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_5).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 3 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_8).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 4 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_10).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 5 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_2).ShouldBeTrue();
-            
+
+            historicoNotas.Count(w => !w.NotaAnterior.HasValue).ShouldBe(5);
+            historicoNotas.Count(w => w.NotaNova.HasValue).ShouldBe(5);
+
+            historicoNotas.Any(w => w.Id == 1 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_6).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 2 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_5).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 3 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_8).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 4 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_10).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 5 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_2).ShouldBeTrue();
+
             var fechamentoFinalSalvarParaExcluir = ObterFechamentoNotaFinalNumericaParaExcluir(filtroNotaFechamento);
-            
+
             await ExecutarComandosFechamentoFinalComValidacaoNota(fechamentoFinalSalvarParaExcluir);
-            
+
             historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(10);
-            
+
             historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(10);
-            
-            historicoNotas.Count(w=> w.NotaAnterior.HasValue).ShouldBe(5);
-            historicoNotas.Count(w=> w.NotaNova.HasValue).ShouldBe(5);
-            
-            historicoNotas.Any(w=> w.Id == 6 && w.NotaAnterior == NOTA_6 && !w.NotaNova.HasValue).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 7 && w.NotaAnterior == NOTA_5 && !w.NotaNova.HasValue).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 8 && w.NotaAnterior == NOTA_8 && !w.NotaNova.HasValue).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 9 && w.NotaAnterior == NOTA_10 && !w.NotaNova.HasValue).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 10 && w.NotaAnterior == NOTA_2 && !w.NotaNova.HasValue).ShouldBeTrue();
+
+            historicoNotas.Count(w => w.NotaAnterior.HasValue).ShouldBe(5);
+            historicoNotas.Count(w => w.NotaNova.HasValue).ShouldBe(5);
+
+            historicoNotas.Any(w => w.Id == 6 && w.NotaAnterior == NOTA_6 && !w.NotaNova.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 7 && w.NotaAnterior == NOTA_5 && !w.NotaNova.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 8 && w.NotaAnterior == NOTA_8 && !w.NotaNova.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 9 && w.NotaAnterior == NOTA_10 && !w.NotaNova.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 10 && w.NotaAnterior == NOTA_2 && !w.NotaNova.HasValue).ShouldBeTrue();
         }
 
         private FechamentoFinalSalvarDto ObterFechamentoNotaFinalNumericaParaExcluir(FiltroNotaFechamentoDto filtroNotaFechamento)
@@ -371,7 +371,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 
             return fechamentoNotaFinalNumericaParaExcluir;
         }
-        
+
         private FechamentoFinalSalvarDto ObterFechamentoNotaFinalNumericaParaSalvar(FiltroNotaFechamentoDto filtroNotaFechamento)
         {
             return new FechamentoFinalSalvarDto()

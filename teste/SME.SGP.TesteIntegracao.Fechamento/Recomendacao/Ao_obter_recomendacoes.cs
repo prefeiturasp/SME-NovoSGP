@@ -31,7 +31,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoClasseRecomendacao
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
                 CriadoPor = "",
                 CriadoRF = ""
-            }) ;
+            });
 
             await InserirNaBase(new Dominio.ConselhoClasseRecomendacao()
             {
@@ -92,7 +92,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoClasseRecomendacao
             retorno.ShouldNotBeEmpty();
             retorno.First().Tipo.ShouldBe((int)ConselhoClasseRecomendacaoTipo.Aluno);
         }
-  
+
         public async Task Deve_inserir_recomendacao_aluno()
         {
             var mediator = ServiceProvider.GetService<IMediator>();
@@ -259,7 +259,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoClasseRecomendacao
                 CriadoPor = "",
                 CriadoRF = ""
             });
-           
+
         }
 
 

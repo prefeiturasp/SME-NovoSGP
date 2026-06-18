@@ -84,7 +84,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.PDA_C, Permissao.PDA_I, Permissao.PDA_A, Permissao.PDA_E, Policy = "Bearer")]
         public async Task<IActionResult> ListarMotivos([FromServices] IObterMotivosAusenciaUseCase useCase)
         {
-            var motivsoAusencia = await useCase.Executar();            
+            var motivsoAusencia = await useCase.Executar();
 
             return Ok(motivsoAusencia);
         }

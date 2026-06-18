@@ -1,10 +1,8 @@
-﻿using Dapper;
-using SME.SGP.Dados.Repositorios;
+﻿using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
@@ -29,7 +27,7 @@ namespace SME.SGP.Dados
 
         public Task<IEnumerable<ConsolidacaoConselhoClasseAlunoMigracaoDto>> ObterFechamentoNotaAlunoOuConselhoClasseAsync(long turmaId)
         {
-           
+
             var query = @";with FechamentoConselhoBase as 
                             (
                               SELECT fa.aluno_codigo AlunoCodigo,
@@ -131,7 +129,7 @@ namespace SME.SGP.Dados
                             select DISTINCT * from UnionQueries ORDER BY AlunoCodigo asc ,bimestre asc ,criadoEm desc";
 
             return (database.Conexao.QueryAsync<ConsolidacaoConselhoClasseAlunoMigracaoDto>(query, new { turmaId }));
-            
+
         }
 
         public async Task<long> ObterConselhoClasseConsolidadoPorTurmaAlunoAsync(long turmaId, string alunoCodigo)

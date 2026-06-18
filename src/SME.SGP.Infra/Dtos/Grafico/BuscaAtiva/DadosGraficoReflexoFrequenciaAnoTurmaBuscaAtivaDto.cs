@@ -1,6 +1,4 @@
-﻿using System;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
+﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Infra
 {
@@ -9,7 +7,7 @@ namespace SME.SGP.Infra
         public string Ano { get; set; }
         public string Turma { get; set; }
         public string ReflexoFrequencia { get; set; }
-        public int Quantidade { get; set; }   
+        public int Quantidade { get; set; }
         public Modalidade Modalidade { get; set; }
     }
 }

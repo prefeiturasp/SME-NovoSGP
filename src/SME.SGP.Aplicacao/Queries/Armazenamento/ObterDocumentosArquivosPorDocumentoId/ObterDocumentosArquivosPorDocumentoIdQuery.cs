@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using MediatR;
-using SME.SGP.Dominio;
+﻿using MediatR;
 using SME.SGP.Infra.Dtos;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {

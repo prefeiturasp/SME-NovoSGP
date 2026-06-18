@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Moq;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.Queries
@@ -29,9 +29,9 @@ namespace SME.SGP.Aplicacao.Teste.Queries
             var listaTurmasAlunoPorFiltroPlanoAee = new List<AlunoPorTurmaResposta>()
             {
                 new AlunoPorTurmaResposta()
-                    { 
+                    {
                         NomeAluno = "Aluno teste 1",
-                        Ano = ano, 
+                        Ano = ano,
                         CodigoAluno = "1",
                         CodigoComponenteCurricular = 138,
                         CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
@@ -55,21 +55,21 @@ namespace SME.SGP.Aplicacao.Teste.Queries
                 CodigoTurma = "1",
                 Historica = false,
                 ModalidadeCodigo = Modalidade.Fundamental,
-                AnoLetivo =  DateTimeExtension.HorarioBrasilia().Year,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Semestre = 1,
                 Nome = "Turma de teste 1",
                 TipoTurma = TipoTurma.Regular
             };
 
-            
-            mediator.Setup(x => x.Send(It.IsAny<ObterTurmasAlunoPorFiltroPlanoAeeQuery>(),It.IsAny<CancellationToken>()))
+
+            mediator.Setup(x => x.Send(It.IsAny<ObterTurmasAlunoPorFiltroPlanoAeeQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(listaTurmasAlunoPorFiltroPlanoAee);
 
             mediator.Setup(x => x.Send(It.IsAny<ObterTurmaPorCodigoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(turma);
 
 
-            var retornoConsulta = await query.Handle(new ObterAlunoPorCodigoEAnoPlanoAeeQuery("1",ano),new CancellationToken());
+            var retornoConsulta = await query.Handle(new ObterAlunoPorCodigoEAnoPlanoAeeQuery("1", ano), new CancellationToken());
 
             Assert.NotNull(retornoConsulta);
             Assert.NotNull(retornoConsulta.Nome);

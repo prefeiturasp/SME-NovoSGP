@@ -36,7 +36,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<RetornoRecuperacaoParalelaTotalAlunosAnoDto>> ListarTotalAlunosSeries(FiltroRecuperacaoParalelaResumoDto filtro)
         {
-            
+
             var query = new StringBuilder();
             query.Append(@" select
                                 count ( distinct aluno_id) as total,
@@ -143,14 +143,15 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("rpr.ordem;");
             query.AppendLine("select max(pagina) from recuperacao_paralela_objetivo;");
 
-            var parametros = new { 
-                dreId = filtro.DreId,            
-                ueId = filtro.UeId,                 
-                cicloId = filtro.CicloId,                   
-                turmaId = filtro.TurmaId,                
-                ano = filtro.Ano, 
-                periodoId = filtro.Periodo, 
-                pagina = filtro.NumeroPagina, 
+            var parametros = new
+            {
+                dreId = filtro.DreId,
+                ueId = filtro.UeId,
+                cicloId = filtro.CicloId,
+                turmaId = filtro.TurmaId,
+                ano = filtro.Ano,
+                periodoId = filtro.Periodo,
+                pagina = filtro.NumeroPagina,
                 anoLetivo = filtro.AnoLetivo
             };
             var retorno = new PaginacaoResultadoDto<RetornoRecuperacaoParalelaTotalResultadoDto>();

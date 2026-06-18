@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using MediatR;
-using SME.SGP.Infra;
-using System.Threading.Tasks;
+﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Infra;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
-        
+
         public async Task<IEnumerable<RetornoCicloDto>> Executar(FiltroCicloPorModalidadeECodigoUeDto filtro)
         {
             return await mediator.Send(new ObterCiclosPorModalidadeECodigoUeQuery(filtro.Modalidade, filtro.CodigoUe, filtro.ConsideraAbrangencia));

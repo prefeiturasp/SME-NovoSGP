@@ -2,7 +2,6 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,7 +25,7 @@ namespace SME.SGP.Aplicacao
 
         private void TratarDescricaoDados(IEnumerable<GraficoBaseDto> dadosGrafico, long dreId)
         {
-            foreach(var itemGrafico in dadosGrafico)
+            foreach (var itemGrafico in dadosGrafico)
             {
                 if (dreId > 0)
                 {
@@ -46,6 +45,6 @@ namespace SME.SGP.Aplicacao
         private static string FormatarAbreviacaoDre(string abreviacaoDre)
             => abreviacaoDre.Replace(DashboardConstants.PrefixoDreParaSerRemovido, string.Empty).Trim();
 
-        
+
     }
 }

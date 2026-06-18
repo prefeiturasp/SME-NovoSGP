@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
         public ObterUsuariosNotificarCartaIntencoesObservacaoQuery(IEnumerable<ProfessorTitularDisciplinaEol> professoresDaTurma)
         {
             ProfessoresDaTurma = professoresDaTurma;
-        }        
+        }
     }
     public class ObterUsuarioNotificarCartaIntencoesObservacaoQueryValidator : AbstractValidator<ObterUsuariosNotificarCartaIntencoesObservacaoQuery>
     {

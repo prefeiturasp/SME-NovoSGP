@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao
         public int EtapaEJA { get; set; }
         public long[] ComponentesId { get; set; }
 
-        public ObterPendenciasAulaPorAulaIdsQuery(long[] aulasId, Modalidade modalidade, int etapaEja, long [] componentesId)
+        public ObterPendenciasAulaPorAulaIdsQuery(long[] aulasId, Modalidade modalidade, int etapaEja, long[] componentesId)
         {
             AulasId = aulasId;
             EhModalidadeInfantil = modalidade == Modalidade.EducacaoInfantil;

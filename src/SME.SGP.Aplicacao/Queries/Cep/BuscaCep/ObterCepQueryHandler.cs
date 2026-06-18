@@ -1,9 +1,9 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
+using SME.SGP.Infra;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         {
             this.httpClient = httpClient;
         }
-        
+
         public async Task<CepDto> Handle(ObterCepQuery request, CancellationToken cancellationToken)
         {
             var resposta = await httpClient.GetAsync($"https://opencep.com/v1/{request.Cep}");

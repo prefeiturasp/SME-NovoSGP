@@ -4,7 +4,6 @@ using SME.SGP.Dominio;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -29,7 +28,7 @@ namespace SME.SGP.Aplicacao
                 if (perfil.EhNulo())
                     throw new NegocioException("Perfil do usuário não localizado na base de dados do SGP");
 
-                return new[] { new KeyValuePair<Guid, string>( perfil.CodigoPerfil, perfil.NomePerfil) };
+                return new[] { new KeyValuePair<Guid, string>(perfil.CodigoPerfil, perfil.NomePerfil) };
             }
 
             var perfis = await mediator.Send(new ObterHierarquiaPerfisPorPerfilQuery(perfilUsuario));

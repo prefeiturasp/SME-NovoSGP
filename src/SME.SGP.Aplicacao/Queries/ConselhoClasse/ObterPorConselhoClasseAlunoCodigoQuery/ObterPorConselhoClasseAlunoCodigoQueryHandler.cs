@@ -19,6 +19,6 @@ namespace SME.SGP.Aplicacao
         public async Task<ConselhoClasseAluno> Handle(ObterPorConselhoClasseAlunoCodigoQuery request, CancellationToken cancellationToken)
         {
             return await repositorio.ObterPorConselhoClasseAlunoCodigoAsync(request.ConselhoClasseId, request.AlunoCodigo);
-        }        
+        }
     }
 }

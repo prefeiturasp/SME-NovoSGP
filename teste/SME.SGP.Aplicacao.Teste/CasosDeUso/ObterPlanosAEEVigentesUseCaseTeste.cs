@@ -2,9 +2,7 @@
 using MediatR;
 using Moq;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra.Dtos;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -44,7 +42,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                 {
                     Quantidade = _faker.Random.Int(1, 30),
                     Modalidade = _faker.PickRandom<Modalidade>(),
-                    AnoTurma = $"{_faker.Random.Int(1,9)}º",
+                    AnoTurma = $"{_faker.Random.Int(1, 9)}º",
                     Nome = _faker.Name.FullName(),
                     Descricao = _faker.Lorem.Sentence()
                 });

@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao.Queries.ImportarArquivo
 {
     public class ObterImportacaoLogQuery : IRequest<PaginacaoResultadoDto<ImportacaoLogQueryRetornoDto>>
     {
-        public ObterImportacaoLogQuery(Paginacao paginacao, FiltroPesquisaImportacaoDto filtros) 
+        public ObterImportacaoLogQuery(Paginacao paginacao, FiltroPesquisaImportacaoDto filtros)
         {
             Paginacao = paginacao;
             Filtros = filtros;

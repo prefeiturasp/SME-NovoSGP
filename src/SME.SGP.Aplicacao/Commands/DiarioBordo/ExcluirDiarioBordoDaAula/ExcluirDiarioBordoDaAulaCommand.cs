@@ -1,12 +1,9 @@
 ﻿using FluentValidation;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirDiarioBordoDaAulaCommand: IRequest<bool>
+    public class ExcluirDiarioBordoDaAulaCommand : IRequest<bool>
     {
         public ExcluirDiarioBordoDaAulaCommand(long aulaId)
         {
@@ -16,7 +13,7 @@ namespace SME.SGP.Aplicacao
         public long AulaId { get; set; }
     }
 
-    public class ExcluirDiarioBordoDaAulaCommandValidator: AbstractValidator<ExcluirDiarioBordoDaAulaCommand>
+    public class ExcluirDiarioBordoDaAulaCommandValidator : AbstractValidator<ExcluirDiarioBordoDaAulaCommand>
     {
         public ExcluirDiarioBordoDaAulaCommandValidator()
         {

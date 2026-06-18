@@ -1,17 +1,17 @@
-﻿using System;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.Setup;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes;
+using SME.SGP.TesteIntegracao.Setup;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.PlanoAEE
@@ -27,7 +27,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterParametroSistemaPorTipoEAnoQuery, ParametrosSistema>), typeof(ObterParametroSistemaPorTipoEAnoQueryHanlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaRegularESrmPorAlunoQuery, IEnumerable<TurmasDoAlunoDto>>), typeof(ObterTurmaRegularESrmPorAlunoQueryHandlerFake), ServiceLifetime.Scoped));
         }
-        
+
         [Fact(DisplayName = "Plano AEE -  Todos os planos que estiverem Validado deverão ser alterados para Expirado e deverá ser gerada pendência para os responsáveis pelo plano.")]
         public async Task Deve_alterar_status_validado_para_expirado()
         {
@@ -40,23 +40,23 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
 
             await CriarPlanoAeePorSituacao();
             await CriarPlanoAeePorSituacao();
-            await CriarPlanoAeePorSituacao(SituacaoPlanoAEE.Validado, true,true);
+            await CriarPlanoAeePorSituacao(SituacaoPlanoAEE.Validado, true, true);
             await CriarPlanoAeePorSituacao(SituacaoPlanoAEE.Devolvido, true);
             await CriarPlanoAeePorSituacao(SituacaoPlanoAEE.AtribuicaoPAAI, true);
-            
+
             var pendencias = ObterTodos<Pendencia>();
             pendencias.Count().ShouldBeEquivalentTo(5);
-            
+
             var pendenciasPlanoAee = ObterTodos<PendenciaPlanoAEE>();
             pendenciasPlanoAee.Count().ShouldBeEquivalentTo(5);
-            
+
             var obterPlanosVersoes = ObterTodos<PlanoAEEVersao>();
             obterPlanosVersoes.Count().ShouldBeEquivalentTo(5);
-            
+
             var servicoExpirarPlano = ObterServicoGerarPendenciaValidadePlanoAEEUseCase();
             var retornoExpirarPlanos = await servicoExpirarPlano.Executar(new MensagemRabbit());
             retornoExpirarPlanos.ShouldBeTrue();
-            
+
             var obterTodosOsPlanos = ObterTodos<Dominio.PlanoAEE>();
             obterTodosOsPlanos.ShouldNotBeNull();
 
@@ -69,14 +69,14 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
 
             var obterTodasPendenciasPlanoAee = ObterTodos<PendenciaPlanoAEE>();
             obterTodasPendenciasPlanoAee.Count().ShouldBeEquivalentTo(6);
-            
+
             var obterTodasPendencias = ObterTodos<Pendencia>();
             obterTodasPendencias.Count().ShouldBeEquivalentTo(6);
             obterTodasPendencias.Count(x => x.Situacao == SituacaoPendencia.Resolvida).ShouldBeEquivalentTo(1);
             obterTodasPendencias.Count(x => x.Situacao == SituacaoPendencia.Pendente).ShouldBeEquivalentTo(5);
         }
 
-        private async Task CriarPlanoAeePorSituacao(SituacaoPlanoAEE situacaoPlanoAee = SituacaoPlanoAEE.ParecerCP, bool alterarSitacao = false,bool resolverPendencia = false)
+        private async Task CriarPlanoAeePorSituacao(SituacaoPlanoAEE situacaoPlanoAee = SituacaoPlanoAEE.ParecerCP, bool alterarSitacao = false, bool resolverPendencia = false)
         {
             var salvarPlanoAeeUseCase = ObterServicoSalvarPlanoAEEUseCase();
 

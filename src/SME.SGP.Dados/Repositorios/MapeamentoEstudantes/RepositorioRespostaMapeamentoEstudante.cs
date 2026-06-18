@@ -1,9 +1,7 @@
-﻿using Elastic.Apm.Api;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -12,7 +10,7 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioRespostaMapeamentoEstudante : RepositorioBase<RespostaMapeamentoEstudante>, IRepositorioRespostaMapeamentoEstudante
     {
         public RepositorioRespostaMapeamentoEstudante(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
-        {}
+        { }
 
         public async Task<IEnumerable<RespostaMapeamentoEstudante>> ObterPorQuestaoMapeamentoEstudanteId(long questaoMapeamentoEstudanteId)
         {
@@ -29,11 +27,12 @@ namespace SME.SGP.Dados.Repositorios
                                                                     and q.nome_componente = @nomeComponente
                                                                     {(!string.IsNullOrEmpty(descricaoOpcaoResposta) ? "and or2.nome = @descricaoOpcaoResposta" : string.Empty)}
                                                                     {(ordemOpcaoResposta.HasValue ? "and or2.ordem = @ordemOpcaoResposta" : string.Empty)}",
-                                                           new {
-                                                                 nomeComponente = nomeComponenteQuestao, 
-                                                                 descricaoOpcaoResposta, 
-                                                                 ordemOpcaoResposta,
-                                                                 tipoQuestionario = (int)TipoQuestionario.MapeamentoEstudante
+                                                           new
+                                                           {
+                                                               nomeComponente = nomeComponenteQuestao,
+                                                               descricaoOpcaoResposta,
+                                                               ordemOpcaoResposta,
+                                                               tipoQuestionario = (int)TipoQuestionario.MapeamentoEstudante
                                                            });
     }
 }

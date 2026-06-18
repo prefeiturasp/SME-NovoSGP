@@ -1,9 +1,9 @@
-﻿using SME.SGP.Dominio.Interfaces;
+﻿using SME.SGP.Dados;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SME.SGP.Dados;
-using SME.SGP.Dominio;
-using SME.SGP.Infra;
 
 namespace SME.SGP.TesteIntegracao.ServicosFakes
 {
@@ -20,7 +20,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
         {
             await database.Conexao.ExecuteAsync("DELETE FROM frequencia_pre_definida " +
             "WHERE turma_id = @turmaId AND componente_curricular_id = @componenteCurricularId and codigo_aluno = any(@alunosComFrequenciaRegistrada);",
-            new { turmaId, componenteCurricularId, alunosComFrequenciaRegistrada });            
+            new { turmaId, componenteCurricularId, alunosComFrequenciaRegistrada });
         }
 
         public async Task Salvar(FrequenciaPreDefinida frequenciaPreDefinida)
@@ -54,13 +54,13 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                    tipoFrequencia = frequenciaPreDefinida.TipoFrequencia
                });
         }
-        
+
         public async Task<bool> InserirVarios(IEnumerable<FrequenciaPreDefinida> registros)
         {
             foreach (var entidade in registros)
             {
                 if (entidade.Id > 0)
-                {                
+                {
                     await database.Conexao.UpdateAsync(entidade);
                 }
                 else
@@ -69,7 +69,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                 }
             }
 
-            return true; 
+            return true;
         }
     }
 }

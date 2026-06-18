@@ -1,6 +1,6 @@
 ﻿namespace SME.SGP.Dominio
 {
-    public class DiarioBordo: EntidadeBase
+    public class DiarioBordo : EntidadeBase
     {
         public long AulaId { get; set; }
         public long ComponenteCurricularId { get; set; }
@@ -22,5 +22,5 @@
         }
     }
 
-    
+
 }

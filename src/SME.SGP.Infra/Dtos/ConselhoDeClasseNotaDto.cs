@@ -1,7 +1,4 @@
 ﻿using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Infra
 {
@@ -17,7 +14,7 @@ namespace SME.SGP.Infra
 
         public bool Excluido { get; set; }
         public bool Migrado { get; set; }
-        
+
         public AuditoriaDto Auditoria { get; set; }
 
         public static explicit operator ConselhoDeClasseNotaDto(ConselhoClasseNota conselhoClasseNota)

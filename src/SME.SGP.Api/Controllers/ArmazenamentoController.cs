@@ -47,12 +47,12 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(codigoArquivo));
         }
-        
+
         [HttpDelete()]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ExcluirArquivos([FromBody]IEnumerable<Guid> codigos,[FromServices] IExcluirArquivosUseCase useCase)
+        public async Task<IActionResult> ExcluirArquivos([FromBody] IEnumerable<Guid> codigos, [FromServices] IExcluirArquivosUseCase useCase)
         {
             return Ok(await useCase.Executar(codigos));
         }

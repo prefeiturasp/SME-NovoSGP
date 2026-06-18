@@ -1,13 +1,13 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using SME.SGP.Infra;
 using System.Collections.Generic;
-using FluentValidation;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterFuncionariosPorRfUeNomeServidorQuery : IRequest<IEnumerable<UsuarioEolRetornoDto>>
     {
-        public ObterFuncionariosPorRfUeNomeServidorQuery(string codigoRF,string codigoUE,string nomeServidor)
+        public ObterFuncionariosPorRfUeNomeServidorQuery(string codigoRF, string codigoUE, string nomeServidor)
         {
             CodigoRF = codigoRF;
             CodigoUE = codigoUE;
@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         public string CodigoUE { get; set; }
         public string NomeServidor { get; set; }
     }
-    
+
     public class ObterFuncionariosPorRfUeNomeServidorQueryValidator : AbstractValidator<ObterFuncionariosPorRfUeNomeServidorQuery>
     {
         public ObterFuncionariosPorRfUeNomeServidorQueryValidator()

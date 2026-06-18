@@ -1,12 +1,12 @@
-﻿using System;
+﻿using MediatR;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         private readonly ISalvarCompensacaoAusenciaUseCase salvarCompensasaoAusenciaUseCase;
 
         public CopiarCompensacaoAusenciaUseCase(IMediator mediator, IRepositorioCompensacaoAusencia compensacaoAusencia,
-            IRepositorioCompensacaoAusenciaDisciplinaRegencia compensacaoAusenciaDisciplinaRegencia            ,
+            IRepositorioCompensacaoAusenciaDisciplinaRegencia compensacaoAusenciaDisciplinaRegencia,
             ISalvarCompensacaoAusenciaUseCase salvarCompensasaoAusencia
             ) : base(mediator)
         {

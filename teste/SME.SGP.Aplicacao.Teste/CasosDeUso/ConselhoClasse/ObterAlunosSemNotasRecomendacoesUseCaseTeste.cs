@@ -75,7 +75,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
         public async Task Executar_Quando_FechamentoTurmaNaoEncontrado_TurmaAnoCorrente_Deve_LancarNegocioException()
         {
             var anoAtual = DateTimeExtension.HorarioBrasilia().Year;
-            
+
             mediator.Setup(x => x.Send(It.IsAny<ObterTurmaPorIdQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new Turma { CodigoTurma = "1", ModalidadeCodigo = Modalidade.Fundamental, AnoLetivo = anoAtual });
 
@@ -117,7 +117,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
         public async Task Executar_Quando_FechamentoTurmaNaoEncontrado_TurmaAnoAnterior_Deve_LancarNegocioException()
         {
             var anoAnterior = DateTimeExtension.HorarioBrasilia().Year - 1;
-            
+
             mediator.Setup(x => x.Send(It.IsAny<ObterTurmaPorIdQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new Turma { CodigoTurma = "1", ModalidadeCodigo = Modalidade.Fundamental, AnoLetivo = anoAnterior });
 
@@ -159,7 +159,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
         public async Task Executar_Quando_NaoExisteConselhoClasseParaTurma_Deve_LancarNegocioException()
         {
             var anoAtual = DateTimeExtension.HorarioBrasilia().Year;
-            
+
             mediator.Setup(x => x.Send(It.IsAny<ObterTurmaPorIdQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new Turma { CodigoTurma = "1", ModalidadeCodigo = Modalidade.Fundamental, AnoLetivo = anoAtual });
 
@@ -204,7 +204,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
         public async Task Executar_Quando_TurmaEnsinoMedio_SemTurmasAluno_Deve_LancarNegocioException()
         {
             var anoAtual = DateTimeExtension.HorarioBrasilia().Year;
-            
+
             mediator.Setup(x => x.Send(It.IsAny<ObterTurmaPorIdQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new Turma { CodigoTurma = "1", ModalidadeCodigo = Modalidade.Medio, AnoLetivo = anoAtual });
 
@@ -300,7 +300,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
         public async Task Executar_Quando_BimestreZero_TurmaRegular_Deve_UsarBimestre4()
         {
             var anoAtual = DateTimeExtension.HorarioBrasilia().Year;
-            
+
             mediator.Setup(x => x.Send(It.IsAny<ObterTurmaPorIdQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new Turma { CodigoTurma = "1", ModalidadeCodigo = Modalidade.Fundamental, AnoLetivo = anoAtual });
 
@@ -402,7 +402,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
         public async Task Executar_Quando_ComTurmasComplementares_Deve_IncluirTurmasComplementares()
         {
             var anoAtual = DateTimeExtension.HorarioBrasilia().Year;
-            
+
             mediator.Setup(x => x.Send(It.IsAny<ObterTurmaPorIdQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new Turma { CodigoTurma = "1", ModalidadeCodigo = Modalidade.Fundamental, AnoLetivo = anoAtual, Semestre = 1 });
 
@@ -509,7 +509,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
         public async Task Executar_Quando_AlunoComRecomendacao_Deve_NaoAdicionarInconsistenciaRecomendacao()
         {
             var anoAtual = DateTimeExtension.HorarioBrasilia().Year;
-            
+
             mediator.Setup(x => x.Send(It.IsAny<ObterTurmaPorIdQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new Turma { CodigoTurma = "1", ModalidadeCodigo = Modalidade.Fundamental, AnoLetivo = anoAtual });
 
@@ -656,7 +656,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
                 .ReturnsAsync(Guid.NewGuid());
 
             mediator.Setup(x => x.Send(It.Is<ObterComponentesCurricularesPorTurmasCodigoQuery>(y => y.TurmasCodigo.Single() == "1"), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new DisciplinaDto[] { new() { LancaNota = true } });            
+                .ReturnsAsync(new DisciplinaDto[] { new() { LancaNota = true } });
 
             mediator.Setup(x => x.Send(It.Is<ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestreTipoCalendarioQuery>(y => y.Bimestre == 1 &&
                                                                                                                                     y.CodigoTurma == "1" &&

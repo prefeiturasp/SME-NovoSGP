@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
@@ -17,6 +16,6 @@ namespace SME.SGP.Aplicacao
 
         public string TurmaCodigo { get; set; }
         public DateTime DataReferencia { get; set; }
-        
+
     }
 }

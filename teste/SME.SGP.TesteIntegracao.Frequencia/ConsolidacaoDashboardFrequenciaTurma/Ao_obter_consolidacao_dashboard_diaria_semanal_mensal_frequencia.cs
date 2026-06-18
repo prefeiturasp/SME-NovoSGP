@@ -17,7 +17,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
         public Ao_obter_consolidacao_dashboard_diaria_semanal_mensal_frequencia(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
-        
+
         [Fact(DisplayName = "Consolidação Dashboard - Deve obter a consolidação semanal da primeira semana")]
         public async Task Deve_obter_consolidacao_semanal_da_primeira_semana()
         {
@@ -27,12 +27,12 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             var inicioMesReferencia = new DateTime(dataReferencia.Year, dataReferencia.Month, 1);
             var fimMesReferencia = inicioMesReferencia.AddMonths(1).AddDays(-1);
             var inicioSemanaReferencia = inicioMesReferencia;
-            
-            while(inicioSemanaReferencia.DayOfWeek != DayOfWeek.Monday)
+
+            while (inicioSemanaReferencia.DayOfWeek != DayOfWeek.Monday)
                 inicioSemanaReferencia = inicioSemanaReferencia.AddDays(-1);
 
             var frequenciasSemanais = new[]
-            { 
+            {
                 new { Maximo = 20, Minimo = 10 },
                 new { Maximo = 25, Minimo = 5 },
                 new { Maximo = 28, Minimo = 2 },
@@ -43,11 +43,11 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
 
             var inicioSemana = inicioSemanaReferencia;
             int contagem = 0;
-            
+
             while (inicioSemana < fimMesReferencia)
             {
                 var fimSemanaReferencia = inicioSemana.AddDays(6);
-                
+
                 await InserirNaBase(new ConsolidacaoFrequenciaTurma()
                 {
                     TurmaId = ConstantesTeste.TURMA_ID_1,
@@ -60,7 +60,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
                 inicioSemana = inicioSemana.AddDays(7);
                 contagem++;
             }
-            
+
             await InserirNaBase(new ConsolidacaoFrequenciaTurma()
             {
                 TurmaId = ConstantesTeste.TURMA_ID_1,
@@ -83,15 +83,15 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             };
 
             var useCase = ServiceProvider.GetService<IObterDadosDashboardFrequenciaSemanalMensalPorAnoTurmaUseCase>();
-            
+
             var retornoSemanal = await useCase.Executar(dto,
-                inicioSemanaReferencia,inicioSemanaReferencia.AddDays(6),null, TipoConsolidadoFrequencia.Semanal);
-            
+                inicioSemanaReferencia, inicioSemanaReferencia.AddDays(6), null, TipoConsolidadoFrequencia.Semanal);
+
             retornoSemanal.ShouldNotBeNull();
             retornoSemanal.DadosFrequenciaDashboard.ElementAt(0).Quantidade.ShouldBeEquivalentTo(10); //Mínimo
             retornoSemanal.DadosFrequenciaDashboard.ElementAt(1).Quantidade.ShouldBeEquivalentTo(20); //Maximo
         }
-        
+
         [Fact(DisplayName = "Consolidação Dashboard - Deve obter a consolidação mensal")]
         public async Task Deve_obter_consolidacao_mensal()
         {
@@ -101,12 +101,12 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             var inicioMesReferencia = new DateTime(dataReferencia.Year, dataReferencia.Month, 1);
             var fimMesReferencia = inicioMesReferencia.AddMonths(1).AddDays(-1);
             var inicioSemanaReferencia = inicioMesReferencia;
-            
-            while(inicioSemanaReferencia.DayOfWeek != DayOfWeek.Monday)
+
+            while (inicioSemanaReferencia.DayOfWeek != DayOfWeek.Monday)
                 inicioSemanaReferencia = inicioSemanaReferencia.AddDays(-1);
 
             var frequenciasSemanais = new[]
-            { 
+            {
                 new { Maximo = 20, Minimo = 10 },
                 new { Maximo = 25, Minimo = 5 },
                 new { Maximo = 28, Minimo = 2 },
@@ -117,11 +117,11 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
 
             var inicioSemana = inicioSemanaReferencia;
             int contagem = 0;
-            
+
             while (inicioSemana < fimMesReferencia)
             {
                 var fimSemanaReferencia = inicioSemana.AddDays(6);
-                
+
                 await InserirNaBase(new ConsolidacaoFrequenciaTurma()
                 {
                     TurmaId = ConstantesTeste.TURMA_ID_1,
@@ -134,7 +134,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
                 inicioSemana = inicioSemana.AddDays(7);
                 contagem++;
             }
-            
+
             await InserirNaBase(new ConsolidacaoFrequenciaTurma()
             {
                 TurmaId = ConstantesTeste.TURMA_ID_1,
@@ -155,10 +155,10 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             };
 
             var useCase = ServiceProvider.GetService<IObterDadosDashboardFrequenciaSemanalMensalPorAnoTurmaUseCase>();
-            
+
             var retornoMensal = await useCase.Executar(dto,
-                null,null,dataReferencia.Month, TipoConsolidadoFrequencia.Mensal);
-            
+                null, null, dataReferencia.Month, TipoConsolidadoFrequencia.Mensal);
+
             retornoMensal.ShouldNotBeNull();
             retornoMensal.DadosFrequenciaDashboard.ElementAt(0).Quantidade.ShouldBeEquivalentTo(25);
             retornoMensal.DadosFrequenciaDashboard.ElementAt(1).Quantidade.ShouldBeEquivalentTo(5);

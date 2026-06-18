@@ -4,7 +4,7 @@
     {
         public long RelatorioPeriodicoQuestaoId { get; set; }
         public RelatorioPeriodicoPAPQuestao RelatorioPeriodicoQuestao { get; set; }
-	    public long? RespostaId { get; set; }
+        public long? RespostaId { get; set; }
         public OpcaoResposta Resposta { get; set; }
         public long? ArquivoId { get; set; }
         public Arquivo Arquivo { get; set; }

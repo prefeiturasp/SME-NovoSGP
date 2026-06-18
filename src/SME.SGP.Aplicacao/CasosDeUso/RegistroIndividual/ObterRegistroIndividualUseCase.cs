@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
         public async Task<RegistroIndividualDto> Executar(long id)
         {
             var registroIndividual = await mediator.Send(new ObterRegistroIndividualPorIdQuery(id));
-          
+
             return registroIndividual;
         }
     }

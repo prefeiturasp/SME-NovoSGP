@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
             if (consolidacaoTurma.TurmaId == 0)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand("Não foi possível iniciar a consolidação das turmas. O id da turma não foi informado.", LogNivel.Negocio, LogContexto.Turma));                
+                await mediator.Send(new SalvarLogViaRabbitCommand("Não foi possível iniciar a consolidação das turmas. O id da turma não foi informado.", LogNivel.Negocio, LogContexto.Turma));
                 return false;
             }
 

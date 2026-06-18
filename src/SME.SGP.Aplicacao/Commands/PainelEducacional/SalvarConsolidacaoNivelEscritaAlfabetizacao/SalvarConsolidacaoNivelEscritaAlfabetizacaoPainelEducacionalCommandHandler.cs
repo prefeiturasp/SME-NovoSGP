@@ -37,15 +37,15 @@ namespace SME.SGP.Aplicacao.Commands.PainelEducacional.SalvarConsolidacaoNivelEs
             }
         }
 
-        private static ConsolidacaoAlfabetizacaoNivelEscrita MapearDtoParaEntidade(SondagemConsolidacaoNivelEscritaAlfabetizacaoDto dto) => 
+        private static ConsolidacaoAlfabetizacaoNivelEscrita MapearDtoParaEntidade(SondagemConsolidacaoNivelEscritaAlfabetizacaoDto dto) =>
             new ConsolidacaoAlfabetizacaoNivelEscrita
-        {
-            DreCodigo = dto.DreCodigo,
-            NivelEscrita = dto.NivelEscrita,
-            Periodo = dto.Periodo,
-            Quantidade = dto.QuantidadeAlunos,
-            UeCodigo = dto.UeCodigo,
-            AnoLetivo = short.Parse(dto.AnoLetivo)
-        };
+            {
+                DreCodigo = dto.DreCodigo,
+                NivelEscrita = dto.NivelEscrita,
+                Periodo = dto.Periodo,
+                Quantidade = dto.QuantidadeAlunos,
+                UeCodigo = dto.UeCodigo,
+                AnoLetivo = short.Parse(dto.AnoLetivo)
+            };
     }
 }

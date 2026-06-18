@@ -29,7 +29,7 @@ namespace SME.SGP.IoC
                 c.BaseAddress = new Uri(configuration.GetSection("UrlApiEOL").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
                 c.DefaultRequestHeaders.Add("x-api-eol-key", configuration.GetSection("ApiKeyEolApi").Value);
-                
+
                 if (configuration.GetSection("HttpClientTimeoutSecond").Value.NaoEhNulo())
                     c.Timeout = TimeSpan.FromSeconds(double.Parse(configuration.GetSection("HttpClientTimeoutSecond").Value));
             });
@@ -39,7 +39,7 @@ namespace SME.SGP.IoC
                 c.BaseAddress = new Uri(configuration.GetSection("UrlApiSondagem").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
                 c.DefaultRequestHeaders.Add("x-sondagem-api-key", configuration.GetSection("ChaveIntegracaoSondagemApi").Value);
-                
+
                 if (configuration.GetSection("HttpClientTimeoutSecond").Value.NaoEhNulo())
                     c.Timeout = TimeSpan.FromSeconds(double.Parse(configuration.GetSection("HttpClientTimeoutSecond").Value));
             }).AddPolicyHandler(GetRetryPolicy());

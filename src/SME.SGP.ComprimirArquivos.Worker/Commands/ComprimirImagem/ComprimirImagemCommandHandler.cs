@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Options;
 using SkiaSharp;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
@@ -8,7 +9,6 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 
 namespace SME.SGP.ComprimirArquivos.Worker
 {

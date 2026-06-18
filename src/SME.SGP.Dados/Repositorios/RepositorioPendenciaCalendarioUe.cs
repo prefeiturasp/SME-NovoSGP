@@ -42,7 +42,7 @@ namespace SME.SGP.Dados.Repositorios
                               AND p.situacao = any(@situacao)
                               AND t.ano_letivo = @anoLetivo
                               AND t.ue_id = @idUe ";
-                                        
+
             return await database.Conexao.QueryAsync<long>(query, new
             {
                 tipoPendencia = tipoPendencia.ToArray(),

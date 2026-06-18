@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
-             var param = mensagem.ObterObjetoMensagem<string>();
+            var param = mensagem.ObterObjetoMensagem<string>();
             if (string.IsNullOrEmpty(param)) return false;
             var informativoId = long.Parse(param);
 
@@ -27,9 +27,9 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi possível encontrar o Informativo informado");
 
             var guidPerfis = await ObterPerfisPorCodigos(informativo.Perfis.Select(perfil => perfil.CodigoPerfil));
-            var usuariosPerfils = await ObterUsuarios(informativo, guidPerfis); 
-            var rfUsuarios = await ObterRfUsuarios(usuariosPerfils, informativo, guidPerfis); 
-            
+            var usuariosPerfils = await ObterUsuarios(informativo, guidPerfis);
+            var rfUsuarios = await ObterRfUsuarios(usuariosPerfils, informativo, guidPerfis);
+
             foreach (var usuario in rfUsuarios.Distinct().ToList())
             {
                 var notificacaoInformativoUsuario = new NotificacaoInformativoUsuarioFiltro()
@@ -41,8 +41,8 @@ namespace SME.SGP.Aplicacao
                     DreCodigo = informativo.Dre?.CodigoDre,
                     UeCodigo = informativo.Ue?.CodigoUe
                 };
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoInformativoUsuario, notificacaoInformativoUsuario, Guid.NewGuid(), null));  
-            }               
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoInformativoUsuario, notificacaoInformativoUsuario, Guid.NewGuid(), null));
+            }
             return true;
         }
 
@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
                 var results = await Task.WhenAll(tasks);
                 foreach (var result in results)
                     usuarios.AddRange(result);
-                
+
             }
             else
                 usuarios.AddRange(await mediator.Send(new ObterRfsUsuariosPorPerfisDreUeQuery(informativo.Ue?.CodigoUe, informativo.Dre?.CodigoDre, guidPerfis)));
@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
             if (informativo.Modalidades.Any())
                 return await ObterRfUsuarioPorPerfilModalidade(usuariosPerfils, informativo.Modalidades, perfis);
 
-           return usuariosPerfils.Select(up => up.UsuarioRf).Distinct();
+            return usuariosPerfils.Select(up => up.UsuarioRf).Distinct();
         }
 
         private async Task<IEnumerable<string>> ObterRfUsuarioPorPerfilModalidade(IEnumerable<UsuarioPerfilsAbrangenciaDto> usuariosPerfils, IEnumerable<InformativoModalidade> informativoModalidades, string[] perfis)
@@ -98,7 +98,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<string>> ObterUsuariosUesModalidade(
                                                         IEnumerable<UsuarioPerfilsAbrangenciaDto> usuariosPerfils,
-                                                        IEnumerable<PerfilsAbrangenciaDto> perfisUe, 
+                                                        IEnumerable<PerfilsAbrangenciaDto> perfisUe,
                                                         IEnumerable<InformativoModalidade> informativoModalidades)
         {
             var ues = perfisUe.Where(perfil => !(perfil.Ues is null))

@@ -12,13 +12,13 @@ namespace SME.SGP.Auditoria.Worker.Repositorio
     {
         public RepositorioAuditoria(IElasticClient elasticClient,
                                     IServicoTelemetria servicoTelemetria,
-                                    IOptions<ElasticOptions> elasticOptions) 
+                                    IOptions<ElasticOptions> elasticOptions)
             : base(elasticClient, servicoTelemetria, elasticOptions)
         {
         }
-        
+
         public Task Salvar(Entidade.Auditoria auditoria)
             => InserirAsync(auditoria);
-        
+
     }
 }

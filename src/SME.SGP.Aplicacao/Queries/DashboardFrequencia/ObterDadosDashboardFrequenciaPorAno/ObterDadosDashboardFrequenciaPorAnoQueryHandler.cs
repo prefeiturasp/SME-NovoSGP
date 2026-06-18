@@ -3,7 +3,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,8 +25,8 @@ namespace SME.SGP.Aplicacao
 
         private IEnumerable<GraficoFrequenciaGlobalPorAnoDto> MontarDto(IEnumerable<FrequenciaGlobalPorAnoDto> listaFrequencia)
         {
-            var dto =  new List<GraficoFrequenciaGlobalPorAnoDto>();
-            foreach(var frequencia in listaFrequencia)
+            var dto = new List<GraficoFrequenciaGlobalPorAnoDto>();
+            foreach (var frequencia in listaFrequencia)
             {
                 if (frequencia.QuantidadeAcimaMinimoFrequencia > 0)
                 {
@@ -35,7 +34,7 @@ namespace SME.SGP.Aplicacao
                     {
                         Descricao = DashboardConstants.QuantidadeAcimaMinimoFrequenciaDescricao,
                         Quantidade = frequencia.QuantidadeAcimaMinimoFrequencia,
-                        Turma = !string.IsNullOrEmpty(frequencia.NomeTurma) ? frequencia.NomeTurma: frequencia.Modalidade.ShortName() + " - " + frequencia.Ano
+                        Turma = !string.IsNullOrEmpty(frequencia.NomeTurma) ? frequencia.NomeTurma : frequencia.Modalidade.ShortName() + " - " + frequencia.Ano
                     });
                 }
                 if (frequencia.QuantidadeAbaixoMinimoFrequencia > 0)

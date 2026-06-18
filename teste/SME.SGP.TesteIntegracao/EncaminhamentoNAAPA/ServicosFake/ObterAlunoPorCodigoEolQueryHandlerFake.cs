@@ -1,21 +1,19 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
     public class
         ObterAlunoPorCodigoEolQueryHandlerFakeNAAPA : IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>
     {
-        
+
         public ObterAlunoPorCodigoEolQueryHandlerFakeNAAPA()
-        {}
+        { }
 
         public async Task<AlunoPorTurmaResposta> Handle(ObterAlunoPorCodigoEolQuery request,
             CancellationToken cancellationToken)

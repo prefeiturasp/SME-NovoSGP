@@ -2,7 +2,6 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional.Frequencia;
-using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -39,7 +38,7 @@ namespace SME.SGP.Dados.Repositorios
                 selectSQL = "select turma_nome as Descricao, ";
                 groupBySQL = "group by turma_nome, tipo, dre_codigo ";
             }
-                
+
             groupBySQL += ", total_aulas, total_frequencias ";
 
             selectSQL += @"    dre_codigo as DreCodigo,
@@ -86,7 +85,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<DadosParaConsolidacaoDashBoardFrequenciaDto>> ObterDadosParaConsolidacao(int anoLetivo, long turmaId, int modalidade, DateTime dataAula)
         {
-           var query = new StringBuilder($@"with totalAulas as (
+            var query = new StringBuilder($@"with totalAulas as (
                                                 select
                                                     t.id as TurmaId,
                                                     a.data_aula as DataAula, 

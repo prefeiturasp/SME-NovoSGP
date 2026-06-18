@@ -89,7 +89,7 @@ namespace SME.SGP.Dados.Repositorios
             query.Append("select id from usuario ");
             query.Append("where rf_codigo in ");
             query.Append("(");
-            foreach(var rf in codigoRf)
+            foreach (var rf in codigoRf)
             {
                 query.Append($"'{rf}',");
             }

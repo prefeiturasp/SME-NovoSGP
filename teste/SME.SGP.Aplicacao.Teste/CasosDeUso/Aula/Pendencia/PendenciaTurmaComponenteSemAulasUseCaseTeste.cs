@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Moq;
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Aula.Pendencia
@@ -97,7 +95,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Aula.Pendencia
 
             mediatorMock.Setup(m => m.Send(It.IsAny<ExistePendenciaProfessorPorTurmaEComponenteQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(false);
-            
+
             mediatorMock.Setup(m => m.Send(It.Is<SalvarPendenciaCommand>(cmd =>
                 cmd.TipoPendencia == TipoPendencia.ComponenteSemAula &&
                 cmd.Titulo.Contains("Português")
@@ -111,7 +109,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Aula.Pendencia
                 .ReturnsAsync(true);
 
             var useCase = new PendenciaTurmaComponenteSemAulasUseCase(mediatorMock.Object, unitOfWorkMock.Object);
-                        
+
             // Act
             var resultado = await useCase.Executar(mensagemRabbit);
 

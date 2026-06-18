@@ -28,9 +28,9 @@ namespace SME.SGP.Aplicacao
 
             if (request.UeSGP.EhNulo())
             {
-                var dreDaUe = await ObterDadosDre(request) ?? 
+                var dreDaUe = await ObterDadosDre(request) ??
                     throw new NegocioException($"Não foi possível localizar a Dre da Ue {request.UeEOL.UeCodigo}");
-                
+
                 var ueParaIncluir = new Ue()
                 {
                     CodigoUe = request.UeEOL.UeCodigo,

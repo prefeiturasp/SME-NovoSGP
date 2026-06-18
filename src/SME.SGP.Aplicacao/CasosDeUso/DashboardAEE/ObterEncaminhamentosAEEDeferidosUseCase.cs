@@ -4,7 +4,6 @@ using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -19,8 +18,8 @@ namespace SME.SGP.Aplicacao
         {
             if (param.AnoLetivo == 0)
                 param.AnoLetivo = DateTime.Now.Year;
-            var encaminhamentos =  await mediator.Send(new ObterEncaminhamentosAEEDeferidosQuery(param.AnoLetivo, param.DreId, param.UeId));
-           
+            var encaminhamentos = await mediator.Send(new ObterEncaminhamentosAEEDeferidosQuery(param.AnoLetivo, param.DreId, param.UeId));
+
             var lista = param.UeId > 0 ? MapearParaDtoTurmas(encaminhamentos) : MapearParaDto(encaminhamentos);
             return lista.OrderBy(a => a.Ordem)
                 .ThenBy(a => a.Descricao);

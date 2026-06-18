@@ -8,10 +8,8 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static SME.SGP.Infra.Dtos.PainelEducacional.PainelEducacionalAprovacaoUeDto;
 
 
 

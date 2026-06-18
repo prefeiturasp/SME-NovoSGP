@@ -6,5 +6,5 @@ namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso
     public interface IImpressaoConselhoClasseAlunoUseCase
     {
         Task<bool> Executar(FiltroRelatorioConselhoClasseAlunoDto filtroRelatorioConselhoClasseAlunoDto);
-      }
+    }
 }

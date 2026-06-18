@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -19,7 +18,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno;
         private readonly IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia;
         private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
-        
+
         public NotificarCompensacaoAusenciaUseCase(IMediator mediator,
                                                    IRepositorioCompensacaoAusenciaAlunoConsulta repositorioCompensacaoAusenciaAlunoConsulta,
                                                    IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno,

@@ -1,6 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
@@ -109,15 +107,15 @@ namespace SME.SGP.Aplicacao
 
             var dadosAlunosFiltrados = dadosAlunos.Where(d => !d.EstaInativo() || d.EstaInativo() && d.DataSituacao >= primeiroPeriodoDoCalendario).OrderBy(d => d.Nome);
             var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(dadosAlunosFiltrados.Select(x => x.CodigoEOL).ToArray(), anoLetivo);
-            
+
             var listaRetorno = dadosAlunosFiltrados.OrderBy(aluno => aluno.CodigoEOL)
                                        .ThenByDescending(aluno => aluno.DataSituacao)
                                        .GroupBy(aluno => aluno.CodigoEOL)
                                        .Select(aluno => aluno.First())
                                        .OrderBy(aluno => aluno.Nome)
                                        .ToList();
-            
-            return MapearAlunoPap(listaRetorno,matriculadosTurmaPAP);
+
+            return MapearAlunoPap(listaRetorno, matriculadosTurmaPAP);
         }
 
         private IEnumerable<AlunoDadosBasicosDto> MapearAlunoPap(List<AlunoDadosBasicosDto> listaAlunos, IEnumerable<AlunosTurmaProgramaPapDto> matriculadosTurmaPAP)
@@ -259,7 +257,7 @@ namespace SME.SGP.Aplicacao
                     var marcador = servicoAluno.ObterMarcadorAluno(aluno, bimestreDoPeriodo);
 
                     if (marcador.NaoEhNulo())
-                        alunoDto.Informacao = marcador.Descricao;                    
+                        alunoDto.Informacao = marcador.Descricao;
 
                     var frequenciaAluno = await mediator
                         .Send(new ObterPorAlunoDisciplinaDataQuery(aluno.CodigoAluno, codigosDisciplinas.ToArray(), periodoAtual.PeriodoFim, turmaId));
@@ -285,7 +283,7 @@ namespace SME.SGP.Aplicacao
                             if (!turmaPossuiFrequenciaRegistrada)
                                 throw new NegocioException("Não é possível registrar fechamento pois não há registros de frequência no bimestre.");
 
-                            if(frequenciaAluno.NaoEhNulo())
+                            if (frequenciaAluno.NaoEhNulo())
                             {
                                 var sinteseDto = await mediator.Send(new ObterSinteseAlunoQuery(frequenciaAluno.PercentualFrequencia, disciplina, turma.AnoLetivo));
 
@@ -296,7 +294,7 @@ namespace SME.SGP.Aplicacao
                             {
                                 alunoDto.Sintese = String.Empty;
                                 alunoDto.SinteseId = null;
-                            }                       
+                            }
                         }
                         else
                         {
@@ -310,7 +308,7 @@ namespace SME.SGP.Aplicacao
                             if (turma.EhEJA() && notasConceitoBimestre.NaoEhNulo() && !turma.EhTurmaEdFisica())
                                 notasConceitoBimestre = notasConceitoBimestre.Where(n => n.DisciplinaId != MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_ED_FISICA);
 
-                            if(turma.Ue.TipoEscola != TipoEscola.EMEBS && (TipoTurnoEOL)turma.TipoTurno != TipoTurnoEOL.Integral)
+                            if (turma.Ue.TipoEscola != TipoEscola.EMEBS && (TipoTurnoEOL)turma.TipoTurno != TipoTurnoEOL.Integral)
                                 notasConceitoBimestre = notasConceitoBimestre.Where(n => n.DisciplinaId != MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_LIBRAS);
 
                             if (fechamentoBimestre.EhSintese)
@@ -357,7 +355,7 @@ namespace SME.SGP.Aplicacao
             var aulasDadas = await mediator.Send(new ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(turma.CodigoTurma, codigosDisciplinasArray, tipoCalendario.Id, periodoAtual.Id, usuarioRF));
 
             var periodoAberto = await mediator.Send(new ObterTurmaEmPeriodoDeFechamentoQuery(turma, DateTimeExtension.HorarioBrasilia().Date, bimestreAtual.Value));
-            
+
             fechamentoBimestre.Bimestre = bimestreAtual.Value;
             fechamentoBimestre.TotalAulasDadas = aulasDadas;
             fechamentoBimestre.TotalAulasPrevistas = aulasPrevistas;

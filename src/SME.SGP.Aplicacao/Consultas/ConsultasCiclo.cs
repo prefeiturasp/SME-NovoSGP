@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public IEnumerable<CicloDto> Listar(FiltroCicloDto filtroCicloDto)
         {
-            var lista = repositorioCiclo.ObterCiclosPorAnoModalidade(filtroCicloDto);            
+            var lista = repositorioCiclo.ObterCiclosPorAnoModalidade(filtroCicloDto);
 
             if (!lista.Any())
                 throw new NegocioException("Não foi possível localizar o ciclo da turma selecionada");

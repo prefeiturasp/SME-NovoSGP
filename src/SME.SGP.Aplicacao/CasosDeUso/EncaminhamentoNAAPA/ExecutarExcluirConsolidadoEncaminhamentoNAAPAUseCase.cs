@@ -1,9 +1,9 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
             var filtroExclusao = param.ObterObjetoMensagem<FiltroExcluirUesConsolidadoEncaminhamentoNAAPADto>();
             var idsExclusao = await mediator.Send(new ObterEncaminhamentosNAAPAIdConsolidadoExclusaoQuery(filtroExclusao.UeId, filtroExclusao.AnoLetivo, filtroExclusao.SituacoesIgnoradas));
             if (idsExclusao.NaoEhNulo() && idsExclusao.Any())
-                foreach(var id in idsExclusao)
+                foreach (var id in idsExclusao)
                     await mediator.Send(new ExcluirConsolidadoEncaminhamentoNAAPAPorIdCommand(id));
             return true;
         }

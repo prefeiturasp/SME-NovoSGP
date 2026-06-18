@@ -8,8 +8,8 @@ namespace SME.SGP.Aplicacao
     public class AtualizarCacheFechamentoNotaCommand : IRequest<bool>
     {
         public AtualizarCacheFechamentoNotaCommand(
-                            FechamentoNota fechamentoNota, 
-                            string codigoAluno, 
+                            FechamentoNota fechamentoNota,
+                            string codigoAluno,
                             string codigoTurma,
                             long disciplinaId,
                             bool emAprovacao = false,

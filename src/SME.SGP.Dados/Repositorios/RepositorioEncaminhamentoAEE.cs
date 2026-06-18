@@ -261,10 +261,10 @@ namespace SME.SGP.Dados.Repositorios
 
             if (dreId > 0)
                 where.Append(" and ue.dre_id = @dreId");
-            
+
             if (ueId > 0)
                 where.Append(" and ue.id = @ueId");
-            
+
             sql.Append(where.ToString());
 
             sql.Append(" group by ea.situacao; ");
@@ -272,11 +272,11 @@ namespace SME.SGP.Dados.Repositorios
             sql.Append(ObterQueryTotalEncaminhamento(where.ToString(), false));
             sql.Append(ObterQueryTotalEncaminhamento(where.ToString(), true));
 
-            var situacaoEmAnalise = new int[] 
-            { 
-                (int)SituacaoAEE.AtribuicaoPAAI, 
-                (int)SituacaoAEE.Encaminhado, 
-                (int)SituacaoAEE.Analise 
+            var situacaoEmAnalise = new int[]
+            {
+                (int)SituacaoAEE.AtribuicaoPAAI,
+                (int)SituacaoAEE.Encaminhado,
+                (int)SituacaoAEE.Analise
             };
 
             var retorno = new DashboardAEEEncaminhamentosDto();

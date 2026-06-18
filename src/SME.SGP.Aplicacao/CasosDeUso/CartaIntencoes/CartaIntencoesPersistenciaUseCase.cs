@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 if (carta.Id == 0)
                 {
                     auditoria = await mediator.Send(new InserirCartaIntencoesCommand(carta, turmaId, param.ComponenteCurricularId));
-                    await MoverRemoverExcluidos(carta, new CartaIntencoes() { Planejamento = string.Empty});
+                    await MoverRemoverExcluidos(carta, new CartaIntencoes() { Planejamento = string.Empty });
                 }
                 else
                 {
@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             if (turma.EhNulo())
                 throw new NegocioException($"Turma de codigo [{turmaCodigo}] não localizada!");
 
-            var bimestreAula = await mediator.Send(new ObterBimestreAtualQuery(dataAula,turma));
+            var bimestreAula = await mediator.Send(new ObterBimestreAtualQuery(dataAula, turma));
 
             var mesmoAnoLetivo = DateTime.Today.Year == dataAula.Year;
             return await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestreAula, mesmoAnoLetivo));

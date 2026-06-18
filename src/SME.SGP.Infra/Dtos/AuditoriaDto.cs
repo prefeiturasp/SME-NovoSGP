@@ -21,7 +21,7 @@ namespace SME.SGP.Infra
                 CriadoEm = entidade.CriadoEm,
                 CriadoPor = entidade.CriadoPor,
                 CriadoRF = entidade.CriadoRF,
-                AlteradoEm = entidade.AlteradoEm, 
+                AlteradoEm = entidade.AlteradoEm,
                 AlteradoPor = entidade.AlteradoPor,
                 AlteradoRF = entidade.AlteradoRF
             };

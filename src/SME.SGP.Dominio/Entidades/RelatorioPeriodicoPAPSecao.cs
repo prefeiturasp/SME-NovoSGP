@@ -10,7 +10,7 @@ namespace SME.SGP.Dominio
         }
         public long RelatorioPeriodicoAlunoId { get; set; }
         public RelatorioPeriodicoPAPAluno RelatorioPeriodicoAluno { get; set; }
-	    public long SecaoRelatorioPeriodicoId { get; set; }
+        public long SecaoRelatorioPeriodicoId { get; set; }
         public SecaoRelatorioPeriodicoPAP SecaoRelatorioPeriodico { get; set; }
         public bool Concluido { get; set; }
         public bool Excluido { get; set; }

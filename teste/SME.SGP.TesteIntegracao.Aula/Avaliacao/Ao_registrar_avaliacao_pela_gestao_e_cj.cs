@@ -1,7 +1,6 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
@@ -61,12 +60,12 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
 
             await CriarPeriodoEscolarEAbertura();
 
-            await CriarAula(DATA_02_05, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), TIPO_CALENDARIO_1,ehCJ);
+            await CriarAula(DATA_02_05, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), TIPO_CALENDARIO_1, ehCJ);
 
             var dto = ObterAtividadeAvaliativaDto(
-                        COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), 
-                        CategoriaAtividadeAvaliativa.Normal, 
-                        DATA_02_05, 
+                        COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(),
+                        CategoriaAtividadeAvaliativa.Normal,
+                        DATA_02_05,
                         TipoAvaliacaoCodigo.AvaliacaoBimestral);
             dto.DisciplinaContidaRegenciaId = new string[] { COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString() };
 
@@ -104,9 +103,9 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
             await CriarAula(DATA_02_05, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), TIPO_CALENDARIO_1, ehCJ);
 
             var dto = ObterAtividadeAvaliativaDto(
-                            COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), 
-                            CategoriaAtividadeAvaliativa.Normal, 
-                            DATA_02_05, 
+                            COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
+                            CategoriaAtividadeAvaliativa.Normal,
+                            DATA_02_05,
                             TipoAvaliacaoCodigo.AvaliacaoBimestral);
 
             await ExecuteTesteResgistrarAvaliacaoPorPerfil(dto);

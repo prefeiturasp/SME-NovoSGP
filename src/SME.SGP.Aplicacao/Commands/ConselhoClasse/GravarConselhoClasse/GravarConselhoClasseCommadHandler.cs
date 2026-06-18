@@ -1,16 +1,14 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Threading;
-using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
-using SME.SGP.Dados.Repositorios;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -63,15 +61,15 @@ namespace SME.SGP.Aplicacao
 
         private async Task AtualizarCache(ConselhoClasseNotaDto conselhoClasseNota, Turma turma, FechamentoTurma fechamentoTurma, string codigoAluno, int? bimestre)
         {
-            var nomeChaveCache = ObterChaveNotaConceitoConselhoClasseTurmaBimestre(turma.CodigoTurma,(int)Bimestre.Final,codigoAluno);
+            var nomeChaveCache = ObterChaveNotaConceitoConselhoClasseTurmaBimestre(turma.CodigoTurma, (int)Bimestre.Final, codigoAluno);
 
             var notasConceitosFechamento = await repositorioCache.ObterObjetoAsync<List<NotaConceitoBimestreComponenteDto>>(nomeChaveCache);
             if (notasConceitosFechamento.NaoEhNulo())
-                await PersistirNotaConceitoConselhoClasseBimestreNoCache(notasConceitosFechamento, conselhoClasseNota, codigoAluno, turma.CodigoTurma, fechamentoTurma, bimestre);  
+                await PersistirNotaConceitoConselhoClasseBimestreNoCache(notasConceitosFechamento, conselhoClasseNota, codigoAluno, turma.CodigoTurma, fechamentoTurma, bimestre);
         }
         private static string ObterChaveNotaConceitoConselhoClasseTurmaBimestre(string codigoTurma, int bimestre, string alunoCodigo)
         {
-            return string.Format(NomeChaveCache.NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE_ALUNO,codigoTurma, bimestre,alunoCodigo);
+            return string.Format(NomeChaveCache.NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE_ALUNO, codigoTurma, bimestre, alunoCodigo);
         }
 
         private async Task PersistirNotaConceitoConselhoClasseBimestreNoCache(List<NotaConceitoBimestreComponenteDto> notasConceitosFechamento,
@@ -81,14 +79,14 @@ namespace SME.SGP.Aplicacao
                 c.ComponenteCurricularCodigo == conselhoClasseNota.CodigoComponenteCurricular && c.Bimestre == bimestre);
 
             if (notaConceitoFechamentoAluno.EhNulo())
-                notasConceitosFechamento.Add( await ObterNotaConceitoBimestreAluno(codigoAluno, conselhoClasseNota.CodigoComponenteCurricular, codigoTurma, conselhoClasseNota, fechamentoTurma, bimestre));
+                notasConceitosFechamento.Add(await ObterNotaConceitoBimestreAluno(codigoAluno, conselhoClasseNota.CodigoComponenteCurricular, codigoTurma, conselhoClasseNota, fechamentoTurma, bimestre));
             else
             {
                 notaConceitoFechamentoAluno.Nota = conselhoClasseNota.Nota;
                 notaConceitoFechamentoAluno.ConceitoId = conselhoClasseNota.Conceito;
             }
 
-            await mediator.Send(new SalvarCachePorValorObjetoCommand(ObterChaveNotaConceitoConselhoClasseTurmaBimestre(codigoTurma,(int)Bimestre.Final,codigoAluno), notasConceitosFechamento));
+            await mediator.Send(new SalvarCachePorValorObjetoCommand(ObterChaveNotaConceitoConselhoClasseTurmaBimestre(codigoTurma, (int)Bimestre.Final, codigoAluno), notasConceitosFechamento));
         }
 
         private async Task<NotaConceitoBimestreComponenteDto> ObterNotaConceitoBimestreAluno(string codigoAluno,
@@ -98,7 +96,7 @@ namespace SME.SGP.Aplicacao
                                                                                  FechamentoTurma fechamentoTurma,
                                                                                  int? bimestre)
         {
-           var conselhosClasseAlunos = await mediator.Send(new ObterConselhoClasseAlunosNotaPorFechamentoIdQuery(fechamentoTurma.Id));
+            var conselhosClasseAlunos = await mediator.Send(new ObterConselhoClasseAlunosNotaPorFechamentoIdQuery(fechamentoTurma.Id));
             var conselho = conselhosClasseAlunos.ToList().Find(ca => ca.AlunoCodigo == codigoAluno &&
                                                                ca.ComponenteCurricularCodigo == codigoDisciplina);
             return new NotaConceitoBimestreComponenteDto

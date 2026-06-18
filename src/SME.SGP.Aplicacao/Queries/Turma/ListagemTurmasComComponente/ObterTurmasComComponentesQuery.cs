@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         public int AnoLetivo { get; set; }
         public int QtdeRegistros { get; set; }
         public int QtdeRegistrosIgnorados { get; set; }
-        public Modalidade? Modalidade{ get; set; }
+        public Modalidade? Modalidade { get; set; }
         public int? Semestre { get; set; }
         public bool EhProfessor { get; set; }
         public string CodigoRf { get; set; }

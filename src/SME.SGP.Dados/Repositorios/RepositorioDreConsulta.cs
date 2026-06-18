@@ -35,7 +35,7 @@ namespace SME.SGP.Dados.Repositorios
             return await contexto.Conexao.QueryAsync<Dre>(query, new { dresCodigos });
         }
 
-        public (IEnumerable<Dre> Dres,string[] CodigosDresNaoEncontrados) MaterializarCodigosDre(string[] idDres)
+        public (IEnumerable<Dre> Dres, string[] CodigosDresNaoEncontrados) MaterializarCodigosDre(string[] idDres)
         {
             string[] naoEncontradas;
 

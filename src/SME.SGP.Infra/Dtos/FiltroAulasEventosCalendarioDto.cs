@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Infra
 {
     public class FiltroAulasEventosCalendarioDto
     {
-        [Required(ErrorMessage = "A Dre é obrigatória.", AllowEmptyStrings =false)]
+        [Required(ErrorMessage = "A Dre é obrigatória.", AllowEmptyStrings = false)]
         public string DreCodigo { get; set; }
 
         [Required(ErrorMessage = "A Ue é obrigatória.", AllowEmptyStrings = false)]

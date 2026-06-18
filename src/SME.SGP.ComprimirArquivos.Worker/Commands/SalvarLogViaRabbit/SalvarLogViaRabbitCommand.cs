@@ -1,5 +1,4 @@
-﻿using System;
-using MediatR;
+﻿using MediatR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using SME.SGP.Dominio.Enumerados;
@@ -8,7 +7,7 @@ namespace SME.SGP.ComprimirArquivos.Worker
 {
     public class SalvarLogViaRabbitCommand : IRequest<bool>
     {
-        public SalvarLogViaRabbitCommand(string mensagem, LogNivel nivel, LogContexto contexto, string observacao = "", string projeto = "SGP", string rastreamento = "", string excecaoInterna = "",string innerException ="")
+        public SalvarLogViaRabbitCommand(string mensagem, LogNivel nivel, LogContexto contexto, string observacao = "", string projeto = "SGP", string rastreamento = "", string excecaoInterna = "", string innerException = "")
         {
             Mensagem = mensagem;
             Nivel = nivel;

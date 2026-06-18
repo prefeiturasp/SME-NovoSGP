@@ -27,7 +27,7 @@ namespace SME.SGP.Metrica.Worker.UseCases
             var ue = mensagem.ObterObjetoMensagem<FiltroIdDto>();
 
             var registrosDuplicados = await repositorioSGP.ObterFrequenciaAlunoDuplicados(ue.Id);
-            foreach(var registroDuplicado in registrosDuplicados)
+            foreach (var registroDuplicado in registrosDuplicados)
             {
                 await repositorioDuplicados.InserirAsync(registroDuplicado);
                 await mediator.Send(new PublicarFilaCommand(Rotas.RotasRabbitMetrica.LimpezaFrequenciaAlunoDuplicado, registroDuplicado));

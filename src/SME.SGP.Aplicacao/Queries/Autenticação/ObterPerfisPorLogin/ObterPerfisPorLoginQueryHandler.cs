@@ -1,10 +1,10 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
+using SME.SGP.Infra;
 using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -20,8 +20,8 @@ namespace SME.SGP.Aplicacao
         public async Task<PerfisApiEolDto> Handle(ObterPerfisPorLoginQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
-            
-            var url = string.Format(ServicosEolConstants.URL_AUTENTICACAO_SGP_CARREGAR_PERFIS_POR_LOGIN,request.Login);
+
+            var url = string.Format(ServicosEolConstants.URL_AUTENTICACAO_SGP_CARREGAR_PERFIS_POR_LOGIN, request.Login);
 
             var resposta = await httpClient.GetAsync(url);
 

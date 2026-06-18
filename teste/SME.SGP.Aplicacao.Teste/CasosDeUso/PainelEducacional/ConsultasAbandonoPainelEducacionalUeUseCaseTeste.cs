@@ -1,11 +1,11 @@
-using System.Threading;
-using System.Threading.Tasks;
+using MediatR;
 using Moq;
-using Xunit;
 using SME.SGP.Aplicacao.CasosDeUso.PainelEducacional;
 using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAbandono;
 using SME.SGP.Infra.Dtos.PainelEducacional;
-using MediatR;
+using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PainelEducacional
 {

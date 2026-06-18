@@ -1,12 +1,12 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Infra;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using SME.SGP.Dominio;
-using System.Linq;
-using SME.SGP.Infra.Enumerados;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Enumerados;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao
                 }
                 texto += @$"  </tbody>
                             </table>";
-            } 
+            }
 
             return texto;
         }

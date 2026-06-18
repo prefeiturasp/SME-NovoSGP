@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Configuration;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
@@ -20,7 +19,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioObjetivoAprendizagemPlano repositorioObjetivosPlano;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IConsultasTurma consultasTurma;
-        
+
         public ConsultasObjetivoAprendizagem(IRepositorioCache repositorioCache,
                                                      IRepositorioComponenteCurricularJurema repositorioComponenteCurricular,
                                                      IRepositorioObjetivoAprendizagemPlano repositorioObjetivosPlano,

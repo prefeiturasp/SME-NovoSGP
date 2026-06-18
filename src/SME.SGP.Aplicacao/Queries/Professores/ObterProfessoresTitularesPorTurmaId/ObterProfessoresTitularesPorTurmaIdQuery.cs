@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-   public class ObterProfessoresTitularesPorTurmaIdQuery : IRequest<IEnumerable<ProfessorTitularDisciplinaEol>>
+    public class ObterProfessoresTitularesPorTurmaIdQuery : IRequest<IEnumerable<ProfessorTitularDisciplinaEol>>
     {
         public ObterProfessoresTitularesPorTurmaIdQuery(long turmaId, string professorRf = null)
         {

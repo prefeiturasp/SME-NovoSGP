@@ -25,7 +25,7 @@ namespace SME.SGP.Dados
         {
             var sql = $@"update compensacao_ausencia_aluno_aula set excluido = true where id = ANY(@ids)";
 
-            return await database.Conexao.ExecuteScalarAsync<bool>(sql, new { ids});
+            return await database.Conexao.ExecuteScalarAsync<bool>(sql, new { ids });
         }
     }
 }

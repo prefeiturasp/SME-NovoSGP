@@ -19,11 +19,11 @@ namespace SME.SGP.Aplicacao
         public async Task<ArquivoArmazenadoDto> Handle(UploadImagemCommand request, CancellationToken cancellationToken)
         {
             var arquivo = await mediator.Send(new SalvarArquivoRepositorioCommand(request.NomeArquivo, request.TipoArquivo, request.Formato));
-            
+
             var extensao = Path.GetExtension(request.NomeArquivo);
-	
+
             var nomeArquivoComExtensao = $"{arquivo.Codigo.ToString()}{extensao}";
-            
+
             await mediator.Send(new ArmazenarImagemFisicaCommand(request.ImagemBytes, nomeArquivoComExtensao, request.NomeArquivo, request.TipoArquivo, request.Formato));
 
             return arquivo;

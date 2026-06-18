@@ -28,7 +28,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [AllowAnonymous] //ainda nao existe perfil pra essa função
-        public async Task<IActionResult> Alterar([FromBody]TipoAvaliacaoDto dto, long id)
+        public async Task<IActionResult> Alterar([FromBody] TipoAvaliacaoDto dto, long id)
         {
             await comandoTipoAvaliacao.Alterar(dto, id);
             return Ok();
@@ -38,7 +38,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<TipoAvaliacaoCompletaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [AllowAnonymous] //ainda nao existe perfil pra essa função
-        public async Task<IActionResult> BuscarTodosAsync([FromQuery]string nome, string descricao, bool? situacao)
+        public async Task<IActionResult> BuscarTodosAsync([FromQuery] string nome, string descricao, bool? situacao)
         {
             return Ok(await consultaTipoAvaliacao.ListarPaginado(nome, descricao, situacao));
         }
@@ -48,7 +48,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [AllowAnonymous] //ainda nao existe perfil pra essa função
-        public async Task<IActionResult> Excluir([FromBody]long[] tiposAvaliacaoId)
+        public async Task<IActionResult> Excluir([FromBody] long[] tiposAvaliacaoId)
         {
             await comandoTipoAvaliacao.Excluir(tiposAvaliacaoId);
             return Ok();
@@ -58,7 +58,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [AllowAnonymous] //ainda nao existe perfil pra essa função
-        public async Task<IActionResult> Incluir([FromBody]TipoAvaliacaoDto dto)
+        public async Task<IActionResult> Incluir([FromBody] TipoAvaliacaoDto dto)
         {
             await comandoTipoAvaliacao.Inserir(dto);
             return Ok();

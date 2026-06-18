@@ -16,7 +16,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<SondagemEscritaDto>> ObterSondagemEscritaAsync(string codigoDre, string codigoUe, int anoLetivo, int bimestre, int serieAno)
         {
-             string query = @"select codigo_dre,
+            string query = @"select codigo_dre,
                                      codigo_ue,
                                      pre_silabico,
                                      silabico_sem_valor,
@@ -54,6 +54,6 @@ namespace SME.SGP.Dados.Repositorios
                 bimestre,
                 serieAno
             });
-        }       
+        }
     }
 }

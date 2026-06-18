@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public  class FechamentoConsolidadoComponenteTurmaMap : BaseMap<FechamentoConsolidadoComponenteTurma>
+    public class FechamentoConsolidadoComponenteTurmaMap : BaseMap<FechamentoConsolidadoComponenteTurma>
     {
         public FechamentoConsolidadoComponenteTurmaMap()
         {

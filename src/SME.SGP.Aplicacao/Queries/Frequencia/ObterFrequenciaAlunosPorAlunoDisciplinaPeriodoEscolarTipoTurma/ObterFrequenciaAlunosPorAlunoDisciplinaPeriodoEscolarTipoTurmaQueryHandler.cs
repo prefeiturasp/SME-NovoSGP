@@ -9,7 +9,7 @@ namespace SME.SGP.Aplicacao
     public class ObterFrequenciaAlunosPorAlunoDisciplinaPeriodoEscolarTipoTurmaQueryHandler : IRequestHandler<ObterFrequenciaAlunosPorAlunoDisciplinaPeriodoEscolarTipoTurmaQuery, FrequenciaAluno>
     {
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo;
-        
+
         public ObterFrequenciaAlunosPorAlunoDisciplinaPeriodoEscolarTipoTurmaQueryHandler(IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo)
         {
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo;

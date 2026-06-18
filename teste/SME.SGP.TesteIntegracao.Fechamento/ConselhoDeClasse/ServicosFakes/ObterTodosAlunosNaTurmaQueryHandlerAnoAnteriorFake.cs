@@ -185,7 +185,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
                 CodigoSituacaoMatricula = SituacaoMatriculaAluno.Falecido,
                 CodigoTurma = request.CodigoTurma,
                 DataNascimento = new DateTime(1959, 01, 16, 00, 00, 00),
-                DataSituacao = new DateTime(dataReferencia.Year, 08,1),
+                DataSituacao = new DateTime(dataReferencia.Year, 08, 1),
                 DataMatricula = new DateTime(dataReferencia.Year, 04, 1),
                 NomeAluno = ALUNO_CODIGO_8,
                 NumeroAlunoChamada = 0,

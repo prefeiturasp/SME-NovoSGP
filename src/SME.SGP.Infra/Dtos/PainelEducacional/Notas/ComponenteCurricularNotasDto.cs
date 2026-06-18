@@ -2,8 +2,8 @@
 {
     public class ComponenteCurricularNotasDto
     {
-       public string Nome { get; set; }
-        public int AbaixoDaMedia {  get; set; }
-        public int AcimaDaMedia {  get; set; }
+        public string Nome { get; set; }
+        public int AbaixoDaMedia { get; set; }
+        public int AcimaDaMedia { get; set; }
     }
 }

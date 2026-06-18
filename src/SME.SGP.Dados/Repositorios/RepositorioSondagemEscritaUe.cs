@@ -1,7 +1,7 @@
-﻿using Npgsql;
+﻿using Microsoft.Extensions.Configuration;
+using Npgsql;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra.Dtos.PainelEducacional.SondagemEscrita;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -22,7 +22,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             string anoMinimo = "2019";
 
-                string query = @"SELECT 
+            string query = @"SELECT 
                                 pp.""schoolCodeEol"" AS CodigoUe,
                                 pp.""dreCodeEol"" AS CodigoDre,
                                 pp.""yearClassroom"" AS SerieAno,
@@ -51,9 +51,9 @@ namespace SME.SGP.Dados.Repositorios
                             ORDER BY 
                                 pp.""schoolCodeEol"" ASC, unpivoted.periodo ASC;";
 
-                using var connection = new NpgsqlConnection(sondagemConnectionString);
-                await connection.OpenAsync();
-                return await connection.QueryAsync<SondagemEscritaUeDto>(query, new { anoMinimo });
+            using var connection = new NpgsqlConnection(sondagemConnectionString);
+            await connection.OpenAsync();
+            return await connection.QueryAsync<SondagemEscritaUeDto>(query, new { anoMinimo });
         }
     }
 }

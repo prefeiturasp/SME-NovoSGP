@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
@@ -8,10 +6,12 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Ocorrencia.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.Ocorrencia.Base
 {
-    public  abstract class OcorrenciaTesteBase : TesteBaseComuns
+    public abstract class OcorrenciaTesteBase : TesteBaseComuns
     {
         protected const int ID_TIPO_INCIDENTE = 1;
         protected const long ALUNO_1 = 1;
@@ -30,10 +30,10 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia.Base
         {
             base.RegistrarFakes(services);
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<DeletarArquivoDeRegistroExcluidoCommand, bool>), typeof(DeletarArquivoDeRegistroExcluidoCommandHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<MoverArquivosTemporariosCommand,string>), typeof(MoverArquivosTemporariosCommandHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<RemoverArquivosExcluidosCommand,bool>), typeof(RemoverArquivosExcluidosCommandHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosEolPorCodigosQuery,IEnumerable<TurmasDoAlunoDto>>), typeof(ObterAlunosEolPorCodigosQueryFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorUeQuery,IEnumerable<UsuarioEolRetornoDto>>), typeof(ObterFuncionariosPorUeQueryFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<MoverArquivosTemporariosCommand, string>), typeof(MoverArquivosTemporariosCommandHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<RemoverArquivosExcluidosCommand, bool>), typeof(RemoverArquivosExcluidosCommandHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosEolPorCodigosQuery, IEnumerable<TurmasDoAlunoDto>>), typeof(ObterAlunosEolPorCodigosQueryFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorUeQuery, IEnumerable<UsuarioEolRetornoDto>>), typeof(ObterFuncionariosPorUeQueryFake), ServiceLifetime.Scoped));
         }
 
         protected async Task CriarDadosBasicos(Modalidade modalidade = Modalidade.EducacaoInfantil,
@@ -54,7 +54,7 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia.Base
             await CriarTurma(modalidade);
             await CriarTipoOcorrencia();
         }
-        
+
         private async Task CriarPeriodoEscolarTodosBimestres()
         {
             await CriarPeriodoEscolar(DATA_01_02_INICIO_BIMESTRE_1, DATA_25_04_FIM_BIMESTRE_1, BIMESTRE_1);
@@ -94,28 +94,28 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia.Base
         protected IExcluirOcorrenciaUseCase ExcluirOcorrenciaUseCase()
         {
             return ServiceProvider.GetService<IExcluirOcorrenciaUseCase>();
-        }        
-        
+        }
+
         protected IAlterarOcorrenciaUseCase AlterarOcorrenciaUseCase()
         {
             return ServiceProvider.GetService<IAlterarOcorrenciaUseCase>();
         }
-        
+
         protected IInserirOcorrenciaUseCase InserirOcorrenciaUseCase()
         {
             return ServiceProvider.GetService<IInserirOcorrenciaUseCase>();
-        }        
-        
+        }
+
         protected IListarOcorrenciasUseCase ListarOcorrenciasUseCase()
         {
             return ServiceProvider.GetService<IListarOcorrenciasUseCase>();
-        }        
-        
+        }
+
         protected IObterOcorrenciaUseCase ObterOcorrenciaUseCase()
         {
             return ServiceProvider.GetService<IObterOcorrenciaUseCase>();
-        }        
-        
+        }
+
         protected IObterOcorrenciasPorAlunoUseCase ObterOcorrenciasPorAlunoUseCase()
         {
             return ServiceProvider.GetService<IObterOcorrenciasPorAlunoUseCase>();

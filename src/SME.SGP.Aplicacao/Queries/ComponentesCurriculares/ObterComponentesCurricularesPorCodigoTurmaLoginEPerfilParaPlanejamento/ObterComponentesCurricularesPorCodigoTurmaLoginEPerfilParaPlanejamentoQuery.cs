@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-   public class ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamentoQuery : IRequest<IEnumerable<ComponenteCurricularEol>>
+    public class ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamentoQuery : IRequest<IEnumerable<ComponenteCurricularEol>>
     {
         public ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamentoQuery(string codigoTurma, string login, Guid perfil)
         {

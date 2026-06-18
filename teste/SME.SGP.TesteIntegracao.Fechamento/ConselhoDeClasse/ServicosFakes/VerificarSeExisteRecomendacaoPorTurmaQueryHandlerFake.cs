@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
 {
-    public class VerificarSeExisteRecomendacaoPorTurmaQueryHandlerFake : IRequestHandler<VerificarSeExisteRecomendacaoPorTurmaQuery,IEnumerable<AlunoTemRecomandacaoDto>>
+    public class VerificarSeExisteRecomendacaoPorTurmaQueryHandlerFake : IRequestHandler<VerificarSeExisteRecomendacaoPorTurmaQuery, IEnumerable<AlunoTemRecomandacaoDto>>
     {
         public async Task<IEnumerable<AlunoTemRecomandacaoDto>> Handle(VerificarSeExisteRecomendacaoPorTurmaQuery request, CancellationToken cancellationToken)
         {
@@ -34,7 +34,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
                     TemRecomendacao = false
                 }
             };
-           return await Task.FromResult(lista);
+            return await Task.FromResult(lista);
         }
     }
 }

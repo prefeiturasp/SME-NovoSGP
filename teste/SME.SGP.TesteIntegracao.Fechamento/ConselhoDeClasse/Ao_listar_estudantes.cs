@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -10,6 +7,9 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
@@ -42,10 +42,10 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 SituacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado,
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio
             });
-            
+
             var consulta = ServiceProvider.GetService<IConsultasFechamentoTurmaDisciplina>();
             consulta.ShouldNotBeNull();
-            
+
             var turmas = ObterTodos<Dominio.Turma>();
             var turma = turmas.FirstOrDefault(c => c.CodigoTurma == TURMA_CODIGO_1);
 

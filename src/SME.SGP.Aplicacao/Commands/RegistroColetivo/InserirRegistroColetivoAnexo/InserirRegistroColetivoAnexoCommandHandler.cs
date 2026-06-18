@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             var arquivos = await mediator.Send(new ObterArquivosPorCodigosQuery(codigosArquivos));
             var registros = ObterRegistro(request.RegistroColetivoId, arquivos);
 
-            foreach(var registro in registros)
+            foreach (var registro in registros)
             {
                 await repositorio.SalvarAsync(registro);
             }

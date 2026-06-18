@@ -51,7 +51,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             const string comando = @"delete from public.painel_educacional_registro_frequencia_agrupamento_global where ano_letivo = @anoLetivo";
 
-            await database.Conexao.ExecuteAsync(comando, new {anoLetivo});
+            await database.Conexao.ExecuteAsync(comando, new { anoLetivo });
         }
 
         public async Task<IEnumerable<PainelEducacionalRegistroFrequenciaAgrupamentoGlobal>> ObterFrequenciaGlobal(int anoLetivo, string codigoDre, string codigoUe)

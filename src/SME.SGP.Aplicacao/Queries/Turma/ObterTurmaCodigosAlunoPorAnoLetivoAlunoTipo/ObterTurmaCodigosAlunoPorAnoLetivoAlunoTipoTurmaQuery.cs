@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
             CodigoAluno = codigoAluno;
             TiposTurmas = tiposTurmas;
             DataReferencia = dataReferencia;
-            UeCodigo = ueCodigo;      
+            UeCodigo = ueCodigo;
             Semestre = semestre;
         }
         public int AnoLetivo { get; set; }

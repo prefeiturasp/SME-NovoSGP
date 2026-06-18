@@ -1,18 +1,18 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.ExcluirTurmaExtinta.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using MediatR;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using SME.SGP.Aplicacao;
-using SME.SGP.TesteIntegracao.ExcluirTurmaExtinta.ServicosFakes;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao
@@ -54,14 +54,14 @@ namespace SME.SGP.TesteIntegracao
         public Excluir_turma_extinta(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
-        
+
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
-            
+
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQuery, TurmaParaSyncInstitucionalDto>), typeof(ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQueryFake), ServiceLifetime.Scoped));
         }
-        
+
         [Fact]
         public async Task Deve_retornar_false_se_nao_informado_turma()
         {
@@ -100,10 +100,10 @@ namespace SME.SGP.TesteIntegracao
             var retornoTurma = ObterTodos<Dominio.Turma>();
 
             retornoTurma.ShouldNotBeEmpty();
-            
-            retornoTurma.Any(a=> a.CodigoTurma.Equals(Turma_4A_ANO4_Codigo)).ShouldBeFalse();
 
-            retornoTurma.Any(a=> a.CodigoTurma.Equals(Turma_5B_ANO5_Codigo)).ShouldBeTrue();
+            retornoTurma.Any(a => a.CodigoTurma.Equals(Turma_4A_ANO4_Codigo)).ShouldBeFalse();
+
+            retornoTurma.Any(a => a.CodigoTurma.Equals(Turma_5B_ANO5_Codigo)).ShouldBeTrue();
 
             retornoTurma.Count().ShouldBe(5);
         }
@@ -132,7 +132,7 @@ namespace SME.SGP.TesteIntegracao
                 var filtro = new FiltroTurmaCodigoTurmaIdDto() { TurmaCodigo = item, TurmaId = turmaId };
 
                 var retorno = await useCase.Executar(new MensagemRabbit(JsonSerializer.Serialize(filtro)));
-    
+
                 retorno.ShouldBeTrue();
 
                 turmaId++;
@@ -180,7 +180,7 @@ namespace SME.SGP.TesteIntegracao
                 Nome = Ue_Maximo_Moura_Nome,
                 TipoEscola = TipoEscola.EMEF
             });
-            
+
             await InserirNaBase(new Dominio.Turma
             {
                 UeId = 1,
@@ -264,6 +264,6 @@ namespace SME.SGP.TesteIntegracao
                 CriadoPor = "",
                 CriadoRF = ""
             });
-        }        
+        }
     }
 }

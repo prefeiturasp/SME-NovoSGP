@@ -1,12 +1,12 @@
-﻿using SME.SGP.Dominio;
+﻿using MediatR;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Linq;
-using MediatR;
-using SME.SGP.Dominio.Constantes;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
 
             if (dto.BimestresQuantidade.Count() > 4)
                 throw new NegocioException("O número de bimestres passou do limite padrão. Favor entrar em contato com o suporte.");
-            
+
             unitOfWork.IniciarTransacao();
             try
             {
@@ -146,7 +146,7 @@ namespace SME.SGP.Aplicacao
                         Cumpridas = x.LancaFrequencia || x.Cumpridas > 0 ? x.Cumpridas : x.CumpridasSemFrequencia,
                         Inicio = x.Inicio,
                         Fim = x.Fim,
-                        Previstas = new AulasPrevistasDto() { Quantidade = x.Previstas, Mensagens = MapearMensagens(x)},
+                        Previstas = new AulasPrevistasDto() { Quantidade = x.Previstas, Mensagens = MapearMensagens(x) },
                         Reposicoes = x.LancaFrequencia || x.Reposicoes != 0 ? x.Reposicoes : x.ReposicoesSemFrequencia,
                         PodeEditar = true
                     }).ToList()
@@ -166,7 +166,7 @@ namespace SME.SGP.Aplicacao
 
                 int aulaCumprida = aula.LancaFrequencia || aula.Cumpridas > 0 ? aula.Cumpridas : aula.CumpridasSemFrequencia;
 
-                if(aula.Previstas != (aulaCumprida + aula.Reposicoes) && aula.Fim.Date < DateTime.Today)
+                if (aula.Previstas != (aulaCumprida + aula.Reposicoes) && aula.Fim.Date < DateTime.Today)
                     mensagens.Add("Quantidade de aulas previstas diferente do somatório de aulas dadas + aulas repostas, após o final do bimestre.");
             }
 

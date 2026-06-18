@@ -1,21 +1,16 @@
 ﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
+using SME.SGP.TesteIntegracao.Aula.Evento.ServicosFakes;
+using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using SME.SGP.TesteIntegracao.Setup;
-using SME.SGP.Dominio.Entidades;
-using Shouldly;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using SME.SGP.TesteIntegracao.Aula.Evento.ServicosFakes;
-using SME.SGP.Infra.Dtos;
-using SME.SGP.Infra;
-using System.Collections.Generic;
-using Elastic.Apm.Api;
 
 namespace SME.SGP.TesteIntegracao.Evento
 {

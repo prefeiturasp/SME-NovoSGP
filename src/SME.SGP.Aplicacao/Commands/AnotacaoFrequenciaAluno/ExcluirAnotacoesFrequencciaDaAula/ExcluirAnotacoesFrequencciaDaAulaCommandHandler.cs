@@ -1,7 +1,5 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,6 +18,6 @@ namespace SME.SGP.Aplicacao
         {
             return await repositorioAnotacaoFrequenciaAluno.ExcluirAnotacoesDaAula(request.AulaId);
         }
-        
+
     }
 }

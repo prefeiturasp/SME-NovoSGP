@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
             var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(codigoTurma));
 
             if (alunos.Any())
-                return alunos.Where(a => a.CodigoSituacaoMatricula == Dominio.SituacaoMatriculaAluno.Ativo || 
+                return alunos.Where(a => a.CodigoSituacaoMatricula == Dominio.SituacaoMatriculaAluno.Ativo ||
                 a.CodigoSituacaoMatricula == Dominio.SituacaoMatriculaAluno.Concluido ||
                 a.CodigoSituacaoMatricula == Dominio.SituacaoMatriculaAluno.PendenteRematricula ||
                 a.CodigoSituacaoMatricula == Dominio.SituacaoMatriculaAluno.Rematriculado ||

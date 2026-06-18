@@ -27,7 +27,7 @@ namespace SME.SGP.Metrica.Worker.UseCases
             await repositorioDuplicados.ExcluirTodos();
 
             var ues = await repositorioSGP.ObterUesIds();
-            foreach(var ue in ues)
+            foreach (var ue in ues)
                 await mediator.Send(new PublicarFilaCommand(Rotas.RotasRabbitMetrica.DuplicacaoFrequenciaAlunoUE, new FiltroIdDto(ue)));
 
             return true;

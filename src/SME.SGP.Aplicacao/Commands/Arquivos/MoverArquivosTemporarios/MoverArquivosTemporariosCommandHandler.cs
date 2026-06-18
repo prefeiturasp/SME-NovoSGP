@@ -1,13 +1,12 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Options;
+using SME.SGP.Infra.Utilitarios;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Linq;
-using System;
-using System.Collections.Generic;
-using Microsoft.Extensions.Options;
-using SME.SGP.Infra;
-using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao
 {
@@ -15,8 +14,8 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions;
-        
-        public MoverArquivosTemporariosCommandHandler(IMediator mediator,IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
+
+        public MoverArquivosTemporariosCommandHandler(IMediator mediator, IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions?.Value ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
@@ -36,7 +35,7 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new MoverArquivoCommand(item, request.TipoArquivo));
                 request.TextoEditorNovo = request.TextoEditorNovo.Replace(configuracaoArmazenamentoOptions.BucketTemp, configuracaoArmazenamentoOptions.BucketArquivos);
             }
-            
+
             return request.TextoEditorNovo;
         }
 
@@ -44,7 +43,7 @@ namespace SME.SGP.Aplicacao
         {
             var imagensParaMover = new List<string>();
 
-            foreach(var arquivo in novosArquivosTextoNovo)
+            foreach (var arquivo in novosArquivosTextoNovo)
             {
                 bool jaExisteImagem = arquivo.Contains($@"/{configuracaoArmazenamentoOptions.BucketArquivos}/");
 
@@ -52,9 +51,9 @@ namespace SME.SGP.Aplicacao
                 {
                     var separaArquivoParaMover = arquivo.Split('/');
 
-                    if(separaArquivoParaMover.Length == 3)
+                    if (separaArquivoParaMover.Length == 3)
                         imagensParaMover.Add(separaArquivoParaMover[2]);
-                }                  
+                }
             }
 
             return imagensParaMover;

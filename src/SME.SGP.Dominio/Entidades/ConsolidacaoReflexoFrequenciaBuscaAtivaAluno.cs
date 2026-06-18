@@ -8,7 +8,7 @@ namespace SME.SGP.Dominio
         public string UeCodigo { get; set; }
         public int AnoLetivo { get; set; }
         public Modalidade Modalidade { get; set; }
-        public string AlunoCodigo  { get; set; }
+        public string AlunoCodigo { get; set; }
         public string AlunoNome { get; set; }
         public DateTime DataBuscaAtiva { get; set; }
         public int Mes { get; set; }

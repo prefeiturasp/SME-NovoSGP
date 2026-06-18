@@ -1,9 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
@@ -22,7 +19,7 @@ namespace SME.SGP.Aplicacao
         public AlterarAnotacaoFrequenciaAlunoCommandValidator()
         {
             RuleFor(c => c.Anotacao)
-            .NotEmpty() 
+            .NotEmpty()
             .WithMessage("A anotação deve ser informada para atualização");
 
         }

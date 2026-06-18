@@ -30,13 +30,13 @@ namespace SME.SGP.Aplicacao
                     return false;
                 }
 
-                var turmaSGP = await mediator.Send(new ObterTurmaPorCodigoQuery(filtro.CodigoTurma.ToString(),true));
+                var turmaSGP = await mediator.Send(new ObterTurmaPorCodigoQuery(filtro.CodigoTurma.ToString(), true));
 
                 var turmaTratada = await mediator.Send(new TrataSincronizacaoInstitucionalTurmaCommand(turmaEOL, turmaSGP));
 
                 if (!turmaTratada)
                     throw new NegocioException($"Não foi possível realizar o tratamento da turma id {filtro.CodigoTurma}.");
-                
+
             }
             catch (Exception ex)
             {

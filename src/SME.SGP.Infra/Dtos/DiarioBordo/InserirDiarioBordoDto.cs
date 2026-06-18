@@ -9,7 +9,7 @@ namespace SME.SGP.Infra
         public long ComponenteCurricularId { get; set; }
     }
 
-    public class InserirDiarioBordoDtoValidator: AbstractValidator<InserirDiarioBordoDto>
+    public class InserirDiarioBordoDtoValidator : AbstractValidator<InserirDiarioBordoDto>
     {
         public InserirDiarioBordoDtoValidator()
         {

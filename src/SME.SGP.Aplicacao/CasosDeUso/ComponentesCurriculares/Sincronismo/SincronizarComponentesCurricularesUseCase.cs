@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
             var componentesSGP = await mediator.Send(ObterComponentesCurricularesQuery.Instance);
 
             var inserirComponentes = componentesEol.Where(c => !componentesSGP.Any(x => x.Codigo == c.Codigo));
-            
+
             var atualizarComponentes = componentesEol.Where(c => componentesSGP.Any(x => x.Codigo == c.Codigo && !c.Descricao.Equals(x.DescricaoEol)));
 
             if (inserirComponentes.Any())

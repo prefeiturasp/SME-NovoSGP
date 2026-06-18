@@ -12,12 +12,12 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
     public class ImportacaoLogUseCase : ConsultasBase, IImportacaoLogUseCase
     {
         private readonly IMediator mediator;
-        
+
         public ImportacaoLogUseCase(IContextoAplicacao contextoAplicacao, IMediator mediator) : base(contextoAplicacao)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
-        
+
         public Task<PaginacaoResultadoDto<ImportacaoLogQueryRetornoDto>> Executar(FiltroPesquisaImportacaoDto filtro)
         {
             return mediator.Send(new ObterImportacaoLogQuery(this.Paginacao, filtro));

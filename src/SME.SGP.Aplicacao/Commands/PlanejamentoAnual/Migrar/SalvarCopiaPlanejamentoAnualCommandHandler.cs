@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -105,8 +104,8 @@ namespace SME.SGP.Aplicacao
             return planejamentoAnualPeriodoEscolar;
         }
 
-        private async Task<PlanejamentoAnualComponente> ObterPlanejamentoAnualComponenteCurricular(long componenteCurricularId, 
-                                                                                                   long planejamentoAnualPeriodoEscolarId, 
+        private async Task<PlanejamentoAnualComponente> ObterPlanejamentoAnualComponenteCurricular(long componenteCurricularId,
+                                                                                                   long planejamentoAnualPeriodoEscolarId,
                                                                                                    string componenteCurricularDescricao)
         {
             var planejamentoAnualComponente = await repositorioPlanejamentoAnualComponente

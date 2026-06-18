@@ -9,7 +9,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
     public class ObterFrequenciaPorAulaUeUseCaseTeste
     {
         public ObterFrequenciaPorAulaUeUseCaseTeste()
-        {}
+        { }
 
         [Fact]
         public async Task Deve_Exibir_Aluno_Ativo_Bimestre()
@@ -22,9 +22,9 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                 DataSituacao = DateTime.Parse("2022-01-01"),
             };
 
-            var naoExibirAlunoFrequencia  = aluno.DeveMostrarNaChamada(DateTime.Parse("2022-01-02"), DateTime.Parse("2021-12-31"));
+            var naoExibirAlunoFrequencia = aluno.DeveMostrarNaChamada(DateTime.Parse("2022-01-02"), DateTime.Parse("2021-12-31"));
 
-            Assert.True(naoExibirAlunoFrequencia,"Aluno não está ativo dentro do Bimestre");
+            Assert.True(naoExibirAlunoFrequencia, "Aluno não está ativo dentro do Bimestre");
         }
 
         [Fact]
@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             var naoExibirAlunoFrequencia = aluno.DeveMostrarNaChamada(DateTime.Parse("2022-01-22"), DateTime.Parse("2021-12-31"));
 
             Assert.True(naoExibirAlunoFrequencia, "Aluno ativo dentro do Bimestre entrou antes da aula");
-            
+
             return Task.CompletedTask;
         }
 
@@ -127,7 +127,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                 DataSituacao = DateTime.Parse("2022-01-31"),
             };
 
-            var naoExibirAlunoFrequencia = aluno.DeveMostrarNaChamada(DateTime.Parse("2022-01-06"),DateTime.Parse("2022-01-01"));
+            var naoExibirAlunoFrequencia = aluno.DeveMostrarNaChamada(DateTime.Parse("2022-01-06"), DateTime.Parse("2022-01-01"));
 
             Assert.True(naoExibirAlunoFrequencia, "Aluno está Ativo depois do inicio do bimestre e depois da data da aula");
 

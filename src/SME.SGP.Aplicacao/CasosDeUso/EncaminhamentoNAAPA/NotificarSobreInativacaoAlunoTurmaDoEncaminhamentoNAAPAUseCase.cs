@@ -1,12 +1,8 @@
 ﻿using MediatR;
-using Microsoft.Extensions.Caching.Memory;
-using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,12 +19,12 @@ namespace SME.SGP.Aplicacao
         {
             var encaminhamentoNAAPADto = param.ObterObjetoMensagem<EncaminhamentoNAAPADto>();
             var notificacoesEnviadas = false;
-            
+
             var alunosEol = (await mediator.Send(new ObterAlunosEolPorCodigosQuery(long.Parse(encaminhamentoNAAPADto.AlunoCodigo), true))).ToList();
             var matriculaVigenteAluno = FiltrarMatriculaVigenteAluno(alunosEol);
             var ultimaMatriculaAluno = FiltrarUltimaMatriculaAluno(alunosEol);
 
-            if ((int)(encaminhamentoNAAPADto.SituacaoMatriculaAluno ?? 0) != 
+            if ((int)(encaminhamentoNAAPADto.SituacaoMatriculaAluno ?? 0) !=
                 matriculaVigenteAluno.CodigoSituacaoMatricula)
             {
                 if (UltimaMatriculaAlunoInativa(ultimaMatriculaAluno))
@@ -38,7 +34,7 @@ namespace SME.SGP.Aplicacao
                                                                     turma, ultimaMatriculaAluno.SituacaoMatricula);
                     notificacoesEnviadas = true;
                 }
-             
+
                 await AtualizarEncaminhamento(encaminhamentoNAAPADto.Id ?? 0, matriculaVigenteAluno.CodigoSituacaoMatricula);
             }
             return notificacoesEnviadas;
@@ -99,7 +95,7 @@ namespace SME.SGP.Aplicacao
 
         }
 
-        private async Task<IEnumerable<FuncionarioUnidadeDto>> RetornarReponsaveisDreUe(string codigoDre, string codigoUe) 
+        private async Task<IEnumerable<FuncionarioUnidadeDto>> RetornarReponsaveisDreUe(string codigoDre, string codigoUe)
         {
             var perfisDre = new Guid[] { Perfis.PERFIL_COORDENADOR_NAAPA };
             var tiposAtribuicaoUe = new TipoResponsavelAtribuicao[] { TipoResponsavelAtribuicao.Psicopedagogo,

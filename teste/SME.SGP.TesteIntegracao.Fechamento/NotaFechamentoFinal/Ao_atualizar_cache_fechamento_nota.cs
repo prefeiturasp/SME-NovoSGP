@@ -26,7 +26,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
         {
             base.RegistrarFakes(services);
 
-            services.Replace(new ServiceDescriptor(typeof(IRepositorioCache), typeof(RepositorioCacheMemoria), ServiceLifetime.Scoped));   
+            services.Replace(new ServiceDescriptor(typeof(IRepositorioCache), typeof(RepositorioCacheMemoria), ServiceLifetime.Scoped));
         }
 
         [Fact]

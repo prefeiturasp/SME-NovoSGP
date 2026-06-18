@@ -50,9 +50,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 }
                 catch (Exception ex)
                 {
-                    await mediator.Send(new SalvarLogViaRabbitCommand("Consolidacao Media Registros Individuais Turma UseCase", LogNivel.Critico, LogContexto.ConsolidacaoMatricula, ex.Message));                    
+                    await mediator.Send(new SalvarLogViaRabbitCommand("Consolidacao Media Registros Individuais Turma UseCase", LogNivel.Critico, LogContexto.ConsolidacaoMatricula, ex.Message));
                 }
-                
+
             }
         }
 

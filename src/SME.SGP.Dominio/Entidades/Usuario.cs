@@ -272,8 +272,8 @@ namespace SME.SGP.Dominio
         }
         private void ConsistirEdicaoEventoSME(Evento evento)
         {
-            if (string.IsNullOrEmpty(evento.DreId) 
-                && string.IsNullOrEmpty(evento.UeId) 
+            if (string.IsNullOrEmpty(evento.DreId)
+                && string.IsNullOrEmpty(evento.UeId)
                 && !PossuiPerfilSme())
                 throw new NegocioException("Evento da SME só pode ser editado por usuario com perfil SME.");
         }
@@ -334,9 +334,9 @@ namespace SME.SGP.Dominio
             var perfilAtual = Perfis.FirstOrDefault(a => a.CodigoPerfil == PerfilAtual);
 
             if (perfilAtual.NaoEhNulo() && perfilAtual.Tipo == TipoPerfil.UE)
-                return (PerfilAtual == Dominio.Perfis.PERFIL_DIRETOR 
-                                        || PerfilAtual == Dominio.Perfis.PERFIL_AD 
-                                        || PerfilAtual == Dominio.Perfis.PERFIL_CP 
+                return (PerfilAtual == Dominio.Perfis.PERFIL_DIRETOR
+                                        || PerfilAtual == Dominio.Perfis.PERFIL_AD
+                                        || PerfilAtual == Dominio.Perfis.PERFIL_CP
                                         || PerfilAtual == Dominio.Perfis.PERFIL_COORDENADOR_POLO_FORMACAO
                                         || PerfilAtual == Dominio.Perfis.PERFIL_SECRETARIO);
 

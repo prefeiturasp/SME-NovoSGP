@@ -53,13 +53,13 @@ namespace SME.SGP.Teste.Aplicacao.CasosDeUso.PainelEducacional
                         }
                     }
                 },
-                            TotalPaginas = 1,
-                            TotalRegistros = 1
-                        };
+                TotalPaginas = 1,
+                TotalRegistros = 1
+            };
 
-                        mediatorMock
-                            .Setup(m => m.Send(It.IsAny<PainelEducacionalAprovacaoUeQuery>(), It.IsAny<CancellationToken>()))
-                            .ReturnsAsync(registrosEsperados);
+            mediatorMock
+                .Setup(m => m.Send(It.IsAny<PainelEducacionalAprovacaoUeQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(registrosEsperados);
 
             // Act
             var resultado = await useCase.ObterAprovacao(filtro);

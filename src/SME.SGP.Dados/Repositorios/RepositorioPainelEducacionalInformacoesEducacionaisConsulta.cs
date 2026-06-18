@@ -61,7 +61,7 @@ namespace SME.SGP.Dados.Repositorios
 
             retorno.TotalPaginas = paginacao.QuantidadeRegistros > 0
                 ? (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros)
-                : 1; 
+                : 1;
 
             return retorno;
         }

@@ -1,13 +1,10 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Infra;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -31,16 +28,16 @@ namespace SME.SGP.Aplicacao
 
             if (componenteCurricular.EhNulo() || !componenteCurricular.Any())
                 throw new NegocioException(MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_NAO_ENCONTRADO);
-            
+
             var registroExistente = await repositorioRegistroIndividual.ObterPorAlunoData(request.TurmaId, request.ComponenteCurricularId, request.AlunoCodigo, request.DataRegistro);
 
             if (registroExistente.NaoEhNulo())
                 throw new NegocioException(MensagemNegocioRegistroIndividual.JA_EXISTE_REGISTRO_PARA_ALUNO_DA_TURMA_NESTA_DATA);
-            
+
             await MoverArquivos(request);
-            
+
             var registroIndividual = MapearParaEntidade(request);
-            
+
             await repositorioRegistroIndividual.SalvarAsync(registroIndividual);
 
             return registroIndividual;

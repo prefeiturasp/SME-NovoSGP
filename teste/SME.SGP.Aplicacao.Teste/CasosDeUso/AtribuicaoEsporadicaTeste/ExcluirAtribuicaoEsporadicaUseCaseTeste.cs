@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ExcluirAtribuicaoEsporadicaTeste
                 .ReturnsAsync(atribuicaoEsporadica);
 
             _mediatorMock.Setup(m => m.Send(It.IsAny<ObterAtribuicoesPorTurmaEProfessorQuery>(), default))
-                .ReturnsAsync(new List<Dominio.AtribuicaoCJ>()); 
+                .ReturnsAsync(new List<Dominio.AtribuicaoCJ>());
 
             _mediatorMock.Setup(m => m.Send(It.IsAny<SalvarAtribuicaoEsporadicaCommand>(), default))
                 .ReturnsAsync(1L);

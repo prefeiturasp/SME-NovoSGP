@@ -23,14 +23,14 @@ namespace SME.SGP.Aplicacao
             {
                 var informes = await mediator.Send(new SalvarInformesCommand(informesDto));
 
-                foreach (var perfil in informesDto.Perfis) 
+                foreach (var perfil in informesDto.Perfis)
                     await mediator.Send(new SalvarInformesPerfilsCommand(informes.Id, perfil.Id));
 
                 await CadastrarModalidades(informes.Id, informesDto);
 
                 if (informesDto.Arquivos.PossuiRegistros())
                     await mediator.Send(new SalvarInformesAnexosCommand(informes.Id, informesDto.Arquivos));
-                
+
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoInformativo, informes.Id, Guid.NewGuid()));
                 unitOfWork.PersistirTransacao();
 

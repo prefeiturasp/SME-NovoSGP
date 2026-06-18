@@ -20,6 +20,6 @@ namespace SME.SGP.Aplicacao
         {
             return Task.FromResult(repositorioDre.MaterializarCodigosDre(request.IdDres));
         }
-            
+
     }
 }

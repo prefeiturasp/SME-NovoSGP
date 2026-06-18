@@ -1,5 +1,4 @@
-﻿using Dapper;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
@@ -88,8 +87,9 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.QueryAsync(query, (Func<PlanoAulaObjetivosAprendizagemDto, long?, ObjetivoAprendizagemDto, PlanoAulaObjetivosAprendizagemDto>)((planoAulaObjetivosAprendizagemDto, componenteId, objetivoAprendizagemDto) =>
             {
                 var retorno = ObterDependenciasPlanoAula(planoAulaObjetivosAprendizagemDto, componenteId, objetivoAprendizagemDto, lookup);
-                                
-                return retorno;}), 
+
+                return retorno;
+            }),
             param: new { aulaId });
 
             return lookup.Values.FirstOrDefault();
@@ -147,7 +147,7 @@ namespace SME.SGP.Dados.Repositorios
                 retorno.Adicionar(objetivoComponente);
             }
 
-            if (objetivoComponente.NaoEhNulo() && objetivoAprendizagemDto.NaoEhNulo() && !objetivoComponente.ObjetivosAprendizagem.Any(ob=> ob.Id == objetivoAprendizagemDto.Id))
+            if (objetivoComponente.NaoEhNulo() && objetivoAprendizagemDto.NaoEhNulo() && !objetivoComponente.ObjetivosAprendizagem.Any(ob => ob.Id == objetivoAprendizagemDto.Id))
             {
                 objetivoComponente.ObjetivosAprendizagem.Add(objetivoAprendizagemDto);
             }

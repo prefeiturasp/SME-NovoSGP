@@ -15,7 +15,7 @@
         {
             if (Modalidade.EhEjaOuCelp() && AnoLetivo > 2021)
                 return 2;
- 
+
             return 4;
         }
     }

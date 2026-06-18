@@ -44,7 +44,7 @@
         public const string RotaTratarCargaRegistroFrequenciaAlunoAula = "sgp.frequencia.tratar.carga.referencia.registro.aluno.aula";
         public const string RotaTratarCargaRegistroFrequenciaAlunoProcessamento = "sgp.frequencia.tratar.carga.referencia.registro.aluno.processa";
         public const string RotaTratarFrequenciaRegistradaAlunosInativos = "sgp.frequencia.tratar.frequencia.registrada.alunos.inativos";
-        
+
         public const string RotaFrequenciaLancamentoAulaSync = "sgp.frequencia.lancamento.aula.sync";
         public const string IdentificarFrequenciaAlunoPresencasMaiorTotalAulas = "sgp.frequencia.aluno.identificar.presencas.maior.total.aulas";
         public const string IdentificarFrequenciaAlunoPresencasMaiorTotalAulasPorUe = "sgp.frequencia.aluno.identificar.presencas.maior.total.aulas.ue";

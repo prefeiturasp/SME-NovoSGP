@@ -32,7 +32,7 @@ namespace SME.SGP.Dominio
 
         private bool AdministradorPossuiApenasAdmDRE()
         {
-            return Administrador.Perfis.ToList().Exists(perfil => perfil.CodigoPerfil == Perfis.PERFIL_ADMDRE) && 
+            return Administrador.Perfis.ToList().Exists(perfil => perfil.CodigoPerfil == Perfis.PERFIL_ADMDRE) &&
                 !Administrador.Perfis.ToList().Exists(perfil => perfil.CodigoPerfil == Perfis.PERFIL_ADMSME || perfil.CodigoPerfil == Perfis.PERFIL_ADMCOTIC);
         }
 

@@ -37,6 +37,6 @@ namespace SME.SGP.Api.Controllers
             return Ok(await obterListaAlunosDaTurmaUseCase.Executar(turmaCodigo));
         }
 
-        
+
     }
 }

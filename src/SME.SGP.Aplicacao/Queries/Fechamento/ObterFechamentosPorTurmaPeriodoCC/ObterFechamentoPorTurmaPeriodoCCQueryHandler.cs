@@ -1,14 +1,13 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Constantes;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -30,7 +29,7 @@ namespace SME.SGP.Aplicacao
                 return null;
 
             var dadosCache = new List<FechamentoPorTurmaPeriodoCCDto>();
-            
+
             foreach (var fechamentoTurmaDisciplina in dadosBd)
             {
                 var cacheFechamentoTurmaDisciplina = new FechamentoPorTurmaPeriodoCCDto
@@ -48,27 +47,27 @@ namespace SME.SGP.Aplicacao
                     {
                         AlunoCodigo = fechamentoAluno.AlunoCodigo
                     };
-                    
+
                     foreach (var cacheFechamentoNota in fechamentoAluno.FechamentoNotas.Select(fechamentoAlunoFechamentoNota => new FechamentoNotaPorTurmaPeriodoCCDto
-                        {
-                            Id = fechamentoAlunoFechamentoNota.Id,
-                            Nota = fechamentoAlunoFechamentoNota.Nota,
-                            AlteradoEm = fechamentoAlunoFechamentoNota.AlteradoEm,
-                            AlteradoPor = fechamentoAlunoFechamentoNota.AlteradoPor,
-                            ConceitoId = fechamentoAlunoFechamentoNota.ConceitoId,
-                            CriadoEm = fechamentoAlunoFechamentoNota.CriadoEm,
-                            CriadoPor = fechamentoAlunoFechamentoNota.CriadoPor,
-                            DisciplinaId = fechamentoAlunoFechamentoNota.DisciplinaId,
-                            AlteradoRF = fechamentoAlunoFechamentoNota.AlteradoRF,
-                            CriadoRF = fechamentoAlunoFechamentoNota.CriadoRF
-                        }))
+                    {
+                        Id = fechamentoAlunoFechamentoNota.Id,
+                        Nota = fechamentoAlunoFechamentoNota.Nota,
+                        AlteradoEm = fechamentoAlunoFechamentoNota.AlteradoEm,
+                        AlteradoPor = fechamentoAlunoFechamentoNota.AlteradoPor,
+                        ConceitoId = fechamentoAlunoFechamentoNota.ConceitoId,
+                        CriadoEm = fechamentoAlunoFechamentoNota.CriadoEm,
+                        CriadoPor = fechamentoAlunoFechamentoNota.CriadoPor,
+                        DisciplinaId = fechamentoAlunoFechamentoNota.DisciplinaId,
+                        AlteradoRF = fechamentoAlunoFechamentoNota.AlteradoRF,
+                        CriadoRF = fechamentoAlunoFechamentoNota.CriadoRF
+                    }))
                     {
                         cacheFechamentoAluno.FechamentoNotas.Add(cacheFechamentoNota);
                     }
-                    
+
                     cacheFechamentoTurmaDisciplina.FechamentoAlunos.Add(cacheFechamentoAluno);
                 }
-                
+
                 dadosCache.Add(cacheFechamentoTurmaDisciplina);
             }
 
@@ -82,10 +81,10 @@ namespace SME.SGP.Aplicacao
 
             var retornoCache = await repositorioCache.ObterObjetoAsync<List<FechamentoPorTurmaPeriodoCCDto>>(nomeChave,
                 "Obter fechamento por turma, período e conselho de classe");
-            
-            if (retornoCache.NaoEhNulo()) 
+
+            if (retornoCache.NaoEhNulo())
                 return retornoCache;
-            
+
             var dadosBd = await repositorioFechamentoTurma.ObterPorTurmaPeriodoCCAsync(request.TurmaId,
                 request.PeriodoEscolarId, request.ComponenteCurricularId, request.EhRegencia);
 

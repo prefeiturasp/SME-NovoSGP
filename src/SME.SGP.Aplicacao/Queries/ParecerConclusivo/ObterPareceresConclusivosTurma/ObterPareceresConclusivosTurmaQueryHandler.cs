@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao
     public class ObterPareceresConclusivosTurmaQueryHandler : IRequestHandler<ObterPareceresConclusivosTurmaQuery, IEnumerable<ParecerConclusivoDto>>
     {
         private readonly IRepositorioConselhoClasseParecerConclusivo repositorio;
-        
+
         public ObterPareceresConclusivosTurmaQueryHandler(IRepositorioConselhoClasseParecerConclusivo repositorio)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));

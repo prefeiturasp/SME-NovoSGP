@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
+using SME.SGP.Dados.Cache;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using System;
 using System.Threading.Tasks;
-using SME.SGP.Infra.Interface;
-using SME.SGP.Dados.Cache;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -11,7 +11,7 @@ namespace SME.SGP.Dados.Repositorios
     {
         private readonly IMemoryCache memoryCache;
 
-        public RepositorioCacheMemoria(IMemoryCache memoryCache, IServicoTelemetria servicoTelemetria, IServicoMensageriaLogs servicoMensageriaLogs, IMetricasCache metricasCache) 
+        public RepositorioCacheMemoria(IMemoryCache memoryCache, IServicoTelemetria servicoTelemetria, IServicoMensageriaLogs servicoMensageriaLogs, IMetricasCache metricasCache)
             : base(servicoTelemetria, servicoMensageriaLogs, metricasCache)
         {
             this.memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));

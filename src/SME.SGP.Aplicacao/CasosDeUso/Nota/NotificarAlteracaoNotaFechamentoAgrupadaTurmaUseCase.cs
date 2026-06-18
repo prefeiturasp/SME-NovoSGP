@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
     {
         protected const string MENSAGEM_DINAMICA_TABELA_POR_ALUNO = "<mensagemDinamicaTabelaPorAluno>";
 
-        public NotificarAlteracaoNotaFechamentoAgrupadaTurmaUseCase(IMediator mediator) : base(mediator) {}
+        public NotificarAlteracaoNotaFechamentoAgrupadaTurmaUseCase(IMediator mediator) : base(mediator) { }
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao
         {
             int? bimestreNota = notasAprovacao.FirstOrDefault().Bimestre;
             var bimestre = (bimestreNota ?? 0) == 0 ? "bimestre final" : $"{bimestreNota}º bimestre";
-            
+
             var notaConceitoMensagem = lancaNota ? "A(s) nota(s)" : "O(s) conceito(s)";
 
             var mensagem = new StringBuilder();

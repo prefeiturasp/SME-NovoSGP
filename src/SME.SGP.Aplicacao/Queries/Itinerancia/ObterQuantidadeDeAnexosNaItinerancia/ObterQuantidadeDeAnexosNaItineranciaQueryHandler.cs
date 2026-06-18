@@ -1,12 +1,12 @@
+using MediatR;
+using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterQuantidadeDeAnexosNaItineranciaQueryHandler: IRequestHandler<ObterQuantidadeDeAnexosNaItineranciaQuery,int>
+    public class ObterQuantidadeDeAnexosNaItineranciaQueryHandler : IRequestHandler<ObterQuantidadeDeAnexosNaItineranciaQuery, int>
 
     {
         private readonly IRepositorioItinerancia repositorioItinerancia;

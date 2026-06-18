@@ -22,7 +22,7 @@ namespace SME.SGP.Metrica.Worker.UseCases
 
             var registrosDuplicados = await repositorioSGP.ObterDiariosBordoDuplicados();
 
-            foreach(var registroDuplicado in registrosDuplicados)
+            foreach (var registroDuplicado in registrosDuplicados)
                 await repositorioDuplicados.InserirAsync(registroDuplicado);
 
             return true;

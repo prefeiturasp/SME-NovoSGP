@@ -96,7 +96,7 @@ namespace SME.SGP.Api.Controllers
         [Route("anos-letivos")]
         [ProducesResponseType(typeof(IEnumerable<TipoCalendarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.TCE_C, Permissao.PFA_C, Permissao.PFR_C, Permissao.CO_C,Permissao.E_A, Permissao.E_C, Policy = "Bearer")]
+        [Permissao(Permissao.TCE_C, Permissao.PFA_C, Permissao.PFR_C, Permissao.CO_C, Permissao.E_A, Permissao.E_C, Policy = "Bearer")]
         public async Task<IActionResult> BuscarPorDescricao([FromQuery] string descricao, [FromServices] IBuscarTiposCalendarioPorDescricaoUseCase buscarTiposCalendarioPorDescricaoUseCase)
         {
             return Ok(await buscarTiposCalendarioPorDescricaoUseCase.Executar(descricao));
@@ -107,7 +107,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<TipoCalendarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.TCE_C, Permissao.E_C, Policy = "Bearer")]
-        public async Task<IActionResult> BuscarPorAnoLetivoModalidade(int anoLetivo, string modalidades, [FromQuery] int semestre,[FromServices] IObterTiposCalendarioPorAnoLetivoModalidadeUseCase obterTiposCalendarioPorAnoLetivoModalidadeoUseCase)
+        public async Task<IActionResult> BuscarPorAnoLetivoModalidade(int anoLetivo, string modalidades, [FromQuery] int semestre, [FromServices] IObterTiposCalendarioPorAnoLetivoModalidadeUseCase obterTiposCalendarioPorAnoLetivoModalidadeoUseCase)
         {
             return Ok(await obterTiposCalendarioPorAnoLetivoModalidadeoUseCase.Executar(anoLetivo, modalidades, semestre));
         }

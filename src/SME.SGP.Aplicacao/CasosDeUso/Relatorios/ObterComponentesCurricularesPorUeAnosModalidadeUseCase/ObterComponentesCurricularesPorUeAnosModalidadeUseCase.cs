@@ -35,17 +35,17 @@ namespace SME.SGP.Aplicacao
             else
             {
                 ueCodigo = string.IsNullOrEmpty(ueCodigo) ? "-99" : ueCodigo;
-                anos = !anos.Any() ? new string[] { "-99" } : anos; 
+                anos = !anos.Any() ? new string[] { "-99" } : anos;
                 listaComponentes = (await mediator.Send(new ObterComponentesCurricularesPorAnosEModalidadeQuery(ueCodigo, modalidade, anos, anoLetivo))).ToList();
             }
-                
+
             if (listaComponentes.NaoEhNulo() && listaComponentes.Any())
                 await TratarNomeComponentes(listaComponentes);
 
-            if(listaComponentes?.Count > 1)
+            if (listaComponentes?.Count > 1)
                 listaComponentes.Insert(0, new ComponenteCurricularEol() { Codigo = -99, Descricao = "Todos" });
 
-            return listaComponentes.GroupBy(x => x.Codigo).SelectMany(y => y.OrderBy(a => a.Descricao).Take(1));            
+            return listaComponentes.GroupBy(x => x.Codigo).SelectMany(y => y.OrderBy(a => a.Descricao).Take(1));
         }
 
         private async Task TratarNomeComponentes(List<ComponenteCurricularEol> listaComponentes)

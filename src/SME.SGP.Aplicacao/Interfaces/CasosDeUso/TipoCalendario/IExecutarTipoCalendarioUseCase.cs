@@ -1,6 +1,6 @@
 ﻿namespace SME.SGP.Aplicacao.Interfaces
-{ 
-    public interface IExecutarTipoCalendarioUseCase :IRabbitUseCase
+{
+    public interface IExecutarTipoCalendarioUseCase : IRabbitUseCase
     {
     }
 }

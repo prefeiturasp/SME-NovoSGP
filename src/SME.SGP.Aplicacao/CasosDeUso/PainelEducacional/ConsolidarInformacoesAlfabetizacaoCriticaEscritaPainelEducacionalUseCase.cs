@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
 {
-    public class ConsolidarInformacoesAlfabetizacaoCriticaEscritaPainelEducacionalUseCase: AbstractUseCase, IConsolidarInformacoesAlfabetizacaoCriticaEscritaPainelEducacionalUseCase
+    public class ConsolidarInformacoesAlfabetizacaoCriticaEscritaPainelEducacionalUseCase : AbstractUseCase, IConsolidarInformacoesAlfabetizacaoCriticaEscritaPainelEducacionalUseCase
     {
         public ConsolidarInformacoesAlfabetizacaoCriticaEscritaPainelEducacionalUseCase(IMediator mediator) : base(mediator)
         {

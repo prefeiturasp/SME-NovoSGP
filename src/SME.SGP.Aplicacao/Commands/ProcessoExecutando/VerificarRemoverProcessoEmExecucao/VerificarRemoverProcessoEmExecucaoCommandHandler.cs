@@ -21,11 +21,11 @@ namespace SME.SGP.Aplicacao
         {
             var processosEmExecucao = await repositorio.ObterProcessosEmExecucaoAsync(request.TurmaId, request.DisciplinaId, request.Bimestre, request.TipoProcesso);
             bool processoExecutando = false;
-            foreach(ProcessoExecutando pro in processosEmExecucao)
+            foreach (ProcessoExecutando pro in processosEmExecucao)
             {
                 var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaId));
                 var paramTempoLimiteExecucao = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.TempoValidadeProcessoExecutandoEmSegundos, turma.AnoLetivo));
-                if(paramTempoLimiteExecucao.NaoEhNulo())
+                if (paramTempoLimiteExecucao.NaoEhNulo())
                 {
                     var tempo = int.Parse(paramTempoLimiteExecucao.Valor);
                     if (pro.CriadoEm.AddSeconds(tempo) < HorarioBrasilia())

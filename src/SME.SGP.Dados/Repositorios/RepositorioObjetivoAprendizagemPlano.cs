@@ -60,8 +60,8 @@ namespace SME.SGP.Dados.Repositorios
             StringBuilder query = new StringBuilder();
             query.AppendLine("select oa.*");
             query.AppendLine(" from plano_anual pa");
-            query.AppendLine("inner join objetivo_aprendizagem_plano o on o.plano_id = pa.id");            
-            query.AppendLine("inner join componente_curricular cc on cc.id = o.componente_curricular_id");            
+            query.AppendLine("inner join objetivo_aprendizagem_plano o on o.plano_id = pa.id");
+            query.AppendLine("inner join componente_curricular cc on cc.id = o.componente_curricular_id");
             query.AppendLine("inner join objetivo_aprendizagem oa on o.objetivo_aprendizagem_jurema_id = oa.id ");
             query.AppendLine("where pa.ano = @ano");
             query.AppendLine("and pa.bimestre = @bimestre");
@@ -109,7 +109,7 @@ namespace SME.SGP.Dados.Repositorios
                         lookup.Add(componenteId, retorno);
                     }
 
-                    if(!retorno.ObjetivosAprendizagem.Any(ob=> ob.Id == objetivoAprendizagem.Id))
+                    if (!retorno.ObjetivosAprendizagem.Any(ob => ob.Id == objetivoAprendizagem.Id))
                         retorno.ObjetivosAprendizagem.Add(new ObjetivoAprendizagemDto()
                         {
                             Id = objetivoAprendizagem.Id,

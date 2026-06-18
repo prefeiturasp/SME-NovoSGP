@@ -2,7 +2,6 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,7 +11,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual;
 
-        public ObterTurmasParaCopiaPlanejamentoAnualUsuarioCPQueryHandler(IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual, IMediator mediator):base(mediator)
+        public ObterTurmasParaCopiaPlanejamentoAnualUsuarioCPQueryHandler(IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual, IMediator mediator) : base(mediator)
         {
             this.repositorioPlanejamentoAnual = repositorioPlanejamentoAnual ?? throw new System.ArgumentNullException(nameof(repositorioPlanejamentoAnual));
         }

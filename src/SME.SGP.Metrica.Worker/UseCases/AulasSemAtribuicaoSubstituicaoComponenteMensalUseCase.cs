@@ -5,12 +5,6 @@ using SME.SGP.Metrica.Worker.Repositorios.Interfaces;
 using SME.SGP.Metrica.Worker.UseCases.Interfaces;
 using System;
 using System.Threading.Tasks;
-using System.Linq;
-using SME.SGP.Dados.Repositorios;
-using SME.SGP.Dominio;
-using Nest;
-using SME.SGP.Infra.Utilitarios;
-using SME.SGP.Metrica.Worker.Commands;
 
 namespace SME.SGP.Metrica.Worker.UseCases
 {
@@ -20,7 +14,7 @@ namespace SME.SGP.Metrica.Worker.UseCases
         private readonly IRepositorioAulasSemAtribuicaoSubstituicaoMensal repositorioAulas;
         private readonly IMediator mediator;
 
-        public AulasSemAtribuicaoSubstituicaoComponenteMensalUseCase(IRepositorioSGPConsulta repositorioSGP, 
+        public AulasSemAtribuicaoSubstituicaoComponenteMensalUseCase(IRepositorioSGPConsulta repositorioSGP,
                                                                 IRepositorioAulasSemAtribuicaoSubstituicaoMensal repositorioAulas,
                                                                 IMediator mediator)
         {

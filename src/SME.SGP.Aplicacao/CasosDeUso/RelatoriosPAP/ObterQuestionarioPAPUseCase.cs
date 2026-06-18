@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<QuestaoDto>> Executar(string codigoTurma, string codigoAluno, long periodoIdPAP, long questionarioId, long? papSecaoId)
         {
-            return await mediator.Send(new ObterQuestionarioPAPPorPeriodoQuery(codigoTurma,codigoAluno,periodoIdPAP,questionarioId,papSecaoId));
+            return await mediator.Send(new ObterQuestionarioPAPPorPeriodoQuery(codigoTurma, codigoAluno, periodoIdPAP, questionarioId, papSecaoId));
         }
     }
 }

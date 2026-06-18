@@ -1,5 +1,4 @@
-﻿using Dapper;
-using Dommel;
+﻿using Dommel;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -24,7 +23,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<Dre>> SincronizarAsync(IEnumerable<Dre> entidades)
         {
-            List<Dre> resultado = new List<Dre>();           
+            List<Dre> resultado = new List<Dre>();
 
             var armazenados = await contexto.Conexao.QueryAsync<Dre>(QuerySincronizacao.Replace("#ids", string.Join(",", entidades.Select(x => $"'{x.CodigoDre}'"))));
 
@@ -33,7 +32,7 @@ namespace SME.SGP.Dados.Repositorios
             foreach (var item in novos)
             {
                 item.DataAtualizacao = DateTime.Today;
-                item.Id = (long) await contexto.Conexao.InsertAsync(item);
+                item.Id = (long)await contexto.Conexao.InsertAsync(item);
 
                 resultado.Add(item);
             }

@@ -1,5 +1,5 @@
 ﻿namespace SME.SGP.Infra
-{ 
+{
     public class QuantidadeDevolutivasEstimadasEConfirmadasPorTurmaAnoDto
     {
         public string TurmaAno { get; set; }

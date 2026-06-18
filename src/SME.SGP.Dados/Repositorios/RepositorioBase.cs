@@ -53,7 +53,7 @@ namespace SME.SGP.Dados.Repositorios
             database.Conexao.Delete(entidade);
             AuditarAsync(entidade.Id, "E").Wait();
         }
-        
+
         public virtual async Task RemoverAsync(T entidade)
         {
             await database.Conexao.DeleteAsync(entidade);
@@ -84,7 +84,7 @@ namespace SME.SGP.Dados.Repositorios
         public virtual async Task<long> SalvarAsync(T entidade)
         {
             if (entidade.Id > 0)
-            {                
+            {
                 entidade.AlteradoEm = DateTimeExtension.HorarioBrasilia();
                 entidade.AlteradoPor = database.UsuarioLogadoNomeCompleto;
                 entidade.AlteradoRF = database.UsuarioLogadoRF;
@@ -130,7 +130,7 @@ namespace SME.SGP.Dados.Repositorios
                     alteradoEm = DateTimeExtension.HorarioBrasilia()
                 });
         }
-        
+
         public virtual async Task<bool> RemoverLogico(long[] ids, string coluna = null)
         {
             var tableName = Resolvers.Table(typeof(T), database.Conexao);

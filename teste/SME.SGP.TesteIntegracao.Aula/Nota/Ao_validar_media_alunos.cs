@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Shouldly;
 using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Setup;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -39,7 +37,7 @@ namespace SME.SGP.TesteIntegracao.CadastrarAulaRepetirTodosBimestres
         {
             //FiltroValidarMediaAlunosDto
 
-            await InserirNaBase(new ParametrosSistema() 
+            await InserirNaBase(new ParametrosSistema()
             {
                 Nome = PARAMETRO_PERCENTUAL_ALUNOS_INSUFICIENTES_TIPO_15_NOME,
                 Tipo = TipoParametroSistema.PercentualAlunosInsuficientes,
@@ -52,7 +50,7 @@ namespace SME.SGP.TesteIntegracao.CadastrarAulaRepetirTodosBimestres
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            
+
 
             //await CriarPeriodoEscolarEPeriodoReabertura();
 

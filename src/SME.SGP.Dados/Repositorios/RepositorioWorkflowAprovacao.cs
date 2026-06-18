@@ -71,14 +71,14 @@ namespace SME.SGP.Dados.Repositorios
                     workflowAprovacao.Adicionar(workflowNivel);
 
                     if (notificacao.NaoEhNulo())
-                        workflowAprovacao.Adicionar(workflowNivel.Id, notificacao, usuario);                    
+                        workflowAprovacao.Adicionar(workflowNivel.Id, notificacao, usuario);
 
                     return workflowAprovacao;
                 }, param: new { workflowId, notificacaoId });
 
             return lookup.Values.FirstOrDefault();
         }
-        
+
         public async Task<WorkflowAprovacao> ObterEntidadeCompletaPorId(long workflowId)
         {
             var query = new StringBuilder();
@@ -125,7 +125,7 @@ namespace SME.SGP.Dados.Repositorios
             var sql = @$"select wa2.id from wf_aprovacao wa 
                         inner join {tabelaVinculada} wa2 on wa2.wf_aprovacao_id = wa.id
                         where wa.id = @id ";
-            return await database.Conexao.QueryAsync<long>(sql, new { id });            
+            return await database.Conexao.QueryAsync<long>(sql, new { id });
         }
 
         public IEnumerable<WorkflowAprovacao> ObterNiveisPorCodigo(string codigo)

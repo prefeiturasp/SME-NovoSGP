@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
@@ -41,7 +40,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var codigosTurmasPorUe = await ObterCodigosTurmas(ue, ehAdmin);
 
-                    if(codigosTurmasPorUe.NaoEhNulo() && codigosTurmasPorUe.Any())
+                    if (codigosTurmasPorUe.NaoEhNulo() && codigosTurmasPorUe.Any())
                     {
                         foreach (var codigoTurmaPorUe in codigosTurmasPorUe)
                         {
@@ -71,7 +70,7 @@ namespace SME.SGP.Aplicacao
                                                                           request.ResponsavelRf,
                                                                           request.PaaiReponsavelRf), anoLetivoConsultaPap);
         }
-        
+
         private async Task<long[]> ObterUesPorUsuario(long dreId, int anoLetivo, bool consideraHistorico, Usuario usuario)
         {
             var dre = await mediator.Send(new ObterDREPorIdQuery(dreId));
@@ -97,7 +96,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, int anoLetivo)
         {
-            return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
+            return await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
         }
 
         private async Task<string[]> ObterCodigosTurmas(long ueId, bool ehAdmin)
@@ -131,7 +130,7 @@ namespace SME.SGP.Aplicacao
             {
                 TotalPaginas = resultadoDto.TotalPaginas,
                 TotalRegistros = resultadoDto.TotalRegistros,
-                Items = await MapearParaDto(resultadoDto.Items,anoLetivoConsultaPap)
+                Items = await MapearParaDto(resultadoDto.Items, anoLetivoConsultaPap)
             };
         }
 
@@ -139,9 +138,9 @@ namespace SME.SGP.Aplicacao
         {
             var retorno = new List<PlanoAEEResumoDto>();
             IEnumerable<AlunosTurmaProgramaPapDto> matriculadosTurmaPAP = new List<AlunosTurmaProgramaPapDto>();
-            if(planosAEE.NaoEhNulo() && planosAEE.Any())
+            if (planosAEE.NaoEhNulo() && planosAEE.Any())
                 matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(planosAEE.Select(x => x.AlunoCodigo).ToArray(), anoLetivoConsultaPap);
-            
+
             foreach (var planoAEE in planosAEE)
             {
                 retorno.Add(new PlanoAEEResumoDto()

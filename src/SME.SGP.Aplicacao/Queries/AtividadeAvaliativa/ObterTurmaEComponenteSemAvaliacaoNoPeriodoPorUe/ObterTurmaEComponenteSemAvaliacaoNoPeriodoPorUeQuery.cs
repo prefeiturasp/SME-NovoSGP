@@ -3,7 +3,6 @@ using MediatR;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
@@ -24,7 +23,7 @@ namespace SME.SGP.Aplicacao
     public class ObterTurmaEComponenteSemAvaliacaoNoPeriodoPorUeQueryValidator : AbstractValidator<ObterTurmaEComponenteSemAvaliacaoNoPeriodoPorUeQuery>
     {
         public ObterTurmaEComponenteSemAvaliacaoNoPeriodoPorUeQueryValidator()
-        {           
+        {
             RuleFor(c => c.TipoCalendarioId)
                .NotEmpty()
                .WithMessage("O id do tipo de calendario deve ser informado para busca de turmas sem avaliação.");

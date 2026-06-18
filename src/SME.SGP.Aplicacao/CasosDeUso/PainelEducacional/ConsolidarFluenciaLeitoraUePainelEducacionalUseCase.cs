@@ -133,9 +133,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                 var tiposAvaliacao = dadosFluencia
                     .Where(f => f.CodigoTurma == codigoTurma)
                     .Select(f => f.TipoAvaliacao)
-                    .Union(new[] { 
-                        (int)FluenciaLeitoraTipoAvaliacaoEnum.AvaliacaoEntrada, 
-                        (int)FluenciaLeitoraTipoAvaliacaoEnum.AvaliacaoSaida 
+                    .Union(new[] {
+                        (int)FluenciaLeitoraTipoAvaliacaoEnum.AvaliacaoEntrada,
+                        (int)FluenciaLeitoraTipoAvaliacaoEnum.AvaliacaoSaida
                     })
                     .Distinct()
                     .ToList();

@@ -4,8 +4,6 @@ using SME.SGP.Dto;
 using SME.SGP.Infra.Enumerados;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,7 +26,7 @@ namespace SME.SGP.TesteIntegracao.Autenticar
                     Grupo = GruposSGP.Professor,
                     Abrangencia = Infra.Enumerados.Abrangencia.Professor,
                 },
-                IdTurmas = new List<string> { "1111111","2222222","3333333" }.ToArray(),
+                IdTurmas = new List<string> { "1111111", "2222222", "3333333" }.ToArray(),
             };
         }
     }

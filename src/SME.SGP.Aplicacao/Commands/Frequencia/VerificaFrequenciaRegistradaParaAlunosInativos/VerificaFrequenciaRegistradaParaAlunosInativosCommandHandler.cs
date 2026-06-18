@@ -5,8 +5,6 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.Xml;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -50,15 +48,15 @@ namespace SME.SGP.Aplicacao
 
                 return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao recalcular frequência da turma de código {request.TurmaCodigo}", LogNivel.Critico, LogContexto.Frequencia, ex.Message));
                 return false;
             }
-            
+
         }
 
-        private async Task<IEnumerable<FrequenciaAulaARecalcularDto>> ExcluirRegistroFrequenciaAluno(IEnumerable<FrequenciaAlunoTurmaDto> registroFrequenciaAluno, 
+        private async Task<IEnumerable<FrequenciaAulaARecalcularDto>> ExcluirRegistroFrequenciaAluno(IEnumerable<FrequenciaAlunoTurmaDto> registroFrequenciaAluno,
                                                                                                      DateTime dataReferencia, string codigoAluno, string codigoTurma,
                                                                                                      IEnumerable<PeriodoEscolar> periodosEscolaresTurma)
         {
@@ -90,26 +88,26 @@ namespace SME.SGP.Aplicacao
         }
 
         private DateTime? ObterDataReferencia(AlunoPorTurmaResposta aluno, Turma turma) =>
-            !aluno.PossuiSituacaoAtiva() 
+            !aluno.PossuiSituacaoAtiva()
                 ? aluno.DataSituacao.Year == turma.AnoLetivo ? aluno.DataSituacao : new DateTime(turma.AnoLetivo, 01, 01)
                 : null;
 
         public async Task VerificaCompensacoesDeAlunosInativos(IEnumerable<FrequenciaAlunoTurmaDto> frequenciasAluno, IEnumerable<PeriodoEscolar> periodosEscolares, string codigoAluno, string turmaCodigo)
         {
-            foreach(var frequencias in frequenciasAluno.GroupBy(f=> f.DisciplinaCodigo))
+            foreach (var frequencias in frequenciasAluno.GroupBy(f => f.DisciplinaCodigo))
             {
                 foreach (var periodo in periodosEscolares)
                 {
                     var quantidade = frequencias.Count(f => f.DataAula >= periodo.PeriodoInicio && f.DataAula <= periodo.PeriodoFim && f.Valor == (int)TipoFrequencia.F);
                     var compensacaoAluno = await mediator.Send(new ObterCompensacoesPorAlunoETurmaQuery(periodo.Bimestre, codigoAluno, frequencias.Key, turmaCodigo));
 
-                    if(compensacaoAluno.NaoEhNulo())
+                    if (compensacaoAluno.NaoEhNulo())
                     {
                         if (compensacaoAluno.Quantidade > quantidade && quantidade > 0)
                             await mediator.Send(new AlterarTotalCompensacoesPorCompensacaoAlunoIdCommand() { CompensacaoAlunoId = compensacaoAluno.CompensacaoAlunoId, Quantidade = quantidade });
                         else if (compensacaoAluno.Quantidade > 0 && quantidade == 0)
                             await mediator.Send(new ExcluiCompensacaoAlunoPorCompensacaoAlunoIdCommand() { CompensacaoAlunoId = compensacaoAluno.CompensacaoAlunoId });
-                    }     
+                    }
                 }
             }
         }

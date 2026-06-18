@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -10,6 +7,9 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Listao
@@ -72,7 +72,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             listaAulaId.ShouldNotBeNull();
 
             var frequenciasSalvar = listaAulaId.Select(aulaId => new FrequenciaSalvarAulaAlunosDto
-                { AulaId = aulaId, Alunos = ObterListaFrequenciaSalvarAlunoComAusencia() }).ToList();
+            { AulaId = aulaId, Alunos = ObterListaFrequenciaSalvarAlunoComAusencia() }).ToList();
 
             //-> Salvar a frequencia
             var useCaseSalvar = ServiceProvider.GetService<IInserirFrequenciaListaoUseCase>();
@@ -80,12 +80,12 @@ namespace SME.SGP.TesteIntegracao.Listao
             var retorno = await useCaseSalvar.Executar(frequenciasSalvar);
             retorno.Auditoria.ShouldNotBeNull();
             retorno.AulasIDsComErros.Any().ShouldBeFalse();
-            
+
             //-> Obter os períodos de filtro
             var useCasePeriodos = ServiceProvider.GetService<IObterPeriodosPorComponenteUseCase>();
             useCasePeriodos.ShouldNotBeNull();
             var listaPeriodo = (await useCasePeriodos.Executar(TURMA_CODIGO_1, filtroListao.ComponenteCurricularId, false,
-                filtroListao.Bimestre, true)).ToList();            
+                filtroListao.Bimestre, true)).ToList();
 
             //-> Obter retorno dos dados salvos e validar por período
             var useCaseObterFrequencia = ServiceProvider.GetService<IObterFrequenciasPorPeriodoUseCase>();
@@ -121,7 +121,7 @@ namespace SME.SGP.TesteIntegracao.Listao
                     listaTipoFrequenciaLancada.Add(detalheFrequencia.TipoFrequencia);
                 }
             }
-            
+
             listaTipoFrequenciaLancada.Distinct().Intersect(TIPOS_FREQUENCIAS_SIGLA).Count()
                 .ShouldBe(TIPOS_FREQUENCIAS_SIGLA.Length);
         }

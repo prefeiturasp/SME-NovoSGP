@@ -67,8 +67,8 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
                 EnsinoEspecial = false,
                 SerieEnsino = "TESTE II",
                 DataInicio = DateTime.Parse("2021-02-10"),
-                Extinta = false,               
-                DataAtualizacao = DateTime.Parse("2021-02-10"),                
+                Extinta = false,
+                DataAtualizacao = DateTime.Parse("2021-02-10"),
             };
 
             //Act  
@@ -102,7 +102,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
                 UeCodigo = "222",
                 DataAtualizacao = DateTime.Parse("2021-02-10"),
                 DataStatusTurmaEscola = DateTime.Parse("2021-02-10"),
-            };            
+            };
 
             mediator.Setup(a => a.Send(It.IsAny<ObterUeComDrePorCodigoQuery>(), It.IsAny<CancellationToken>()))
                .ReturnsAsync(new Ue() { Id = 1 });
@@ -141,7 +141,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             };
 
             mediator.Setup(a => a.Send(It.IsAny<ObterUeComDrePorCodigoQuery>(), It.IsAny<CancellationToken>()))
-               .ReturnsAsync(new Ue() { Id = 1 });           
+               .ReturnsAsync(new Ue() { Id = 1 });
 
             var turmaSgp = new Turma()
             {
@@ -313,14 +313,14 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
                 Ano = "4",
                 AnoLetivo = 2021,
                 Codigo = 1,
-                TipoTurma = 1,                
+                TipoTurma = 1,
                 CodigoModalidade = Dominio.Modalidade.EducacaoInfantil,
                 NomeTurma = "X",
                 Semestre = 0,
                 DuracaoTurno = 10,
                 TipoTurno = 6,
                 DataFim = null,
-                EnsinoEspecial = false,                
+                EnsinoEspecial = false,
                 SerieEnsino = "TESTE II",
                 DataInicioTurma = DateTime.Parse("2021-02-10"),
                 Extinta = true,

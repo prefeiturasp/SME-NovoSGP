@@ -2,7 +2,7 @@
 using MediatR;
 using SME.SGP.Dominio;
 
-namespace SME.SGP.Aplicacao 
+namespace SME.SGP.Aplicacao
 {
     public class ObterNotificacaoPorCodigoQuery : IRequest<Notificacao>
     {

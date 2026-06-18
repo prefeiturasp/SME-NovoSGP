@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterDiariosDeBordoPorPeriodoUseCase : AbstractUseCase, IObterDiariosDeBordoPorPeriodoUseCase
     {
-        public ObterDiariosDeBordoPorPeriodoUseCase(IMediator mediator): base(mediator)
+        public ObterDiariosDeBordoPorPeriodoUseCase(IMediator mediator) : base(mediator)
         {
         }
 

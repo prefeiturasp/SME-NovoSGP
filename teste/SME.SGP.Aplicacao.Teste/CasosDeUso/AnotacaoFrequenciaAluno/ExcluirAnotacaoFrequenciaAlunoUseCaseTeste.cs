@@ -33,9 +33,9 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.AnotacaoFrequenciaAluno
         private Usuario ObterUsuarioMock(bool ehProfessorCj = false, bool ehGestorEscolar = false)
         {
             var usuario = new Usuario();
-            
+
             var perfis = new List<PrioridadePerfil>();
-            
+
             if (ehProfessorCj)
             {
                 perfis.Add(new PrioridadePerfil { CodigoPerfil = Dominio.Perfis.PERFIL_CJ, Tipo = TipoPerfil.UE });
@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.AnotacaoFrequenciaAluno
                 perfis.Add(new PrioridadePerfil { CodigoPerfil = Dominio.Perfis.PERFIL_PROFESSOR, Tipo = TipoPerfil.UE });
                 usuario.DefinirPerfilAtual(Dominio.Perfis.PERFIL_PROFESSOR);
             }
-            
+
             usuario.DefinirPerfis(perfis);
             return usuario;
         }
@@ -168,7 +168,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.AnotacaoFrequenciaAluno
         {
             long anotacaoId = 1;
             long aulaId = 10;
-            var anotacao = ObterAnotacaoMock(aulaId, ""); 
+            var anotacao = ObterAnotacaoMock(aulaId, "");
             var aula = ObterAulaMock("100", "T1");
             var usuario = ObterUsuarioMock();
 

@@ -5,12 +5,10 @@ using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Fechamento.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -41,13 +39,13 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             await CriarDadosBase(ObterFiltroFechamentoNotaDto(ObterPerfilProfessor(), ANO_1, false));
 
             var conceitosParaPersistir = ObterListaFechamentoTurma(ObterListaDeFechamentoConceito(COMPONENTE_CURRICULAR_ARTES_ID_139), COMPONENTE_CURRICULAR_ARTES_ID_139);
-            
+
             var retorno = await ExecutarTesteComValidacaoNota(conceitosParaPersistir, TipoNota.Nota);
             retorno.ShouldNotBeNull();
 
             var historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(4);
-            
+
             var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(4);
 
@@ -59,25 +57,25 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             fechamento.NotaConceitoAlunos.FirstOrDefault(aluno => aluno.CodigoAluno == CODIGO_ALUNO_4).ConceitoId = (long)ConceitoValores.P;
 
             await ExecutarTesteComValidacaoNota(conceitosParaPersistir, TipoNota.Conceito);
-            
+
             historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(8);
-            
+
             historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(8);
 
-            historicoNotas.Count(w=> !w.ConceitoAnteriorId.HasValue).ShouldBe(4);
-            historicoNotas.Count(w=> w.ConceitoAnteriorId.HasValue).ShouldBe(4);
-            
-            historicoNotas.Any(w=> w.Id == 1 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.P).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 2 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.NS).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 3 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.NS).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 4 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.S).ShouldBeTrue();
-            
-            historicoNotas.Any(w=> w.Id == 5 && w.ConceitoAnteriorId == (long)ConceitoValores.P && w.ConceitoNovoId == (long)ConceitoValores.NS).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 6 && w.ConceitoAnteriorId == (long)ConceitoValores.NS && w.ConceitoNovoId == (long)ConceitoValores.S).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 7 && w.ConceitoAnteriorId == (long)ConceitoValores.NS && w.ConceitoNovoId == (long)ConceitoValores.S).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 8 && w.ConceitoAnteriorId == (long)ConceitoValores.S && w.ConceitoNovoId == (long)ConceitoValores.P).ShouldBeTrue();
+            historicoNotas.Count(w => !w.ConceitoAnteriorId.HasValue).ShouldBe(4);
+            historicoNotas.Count(w => w.ConceitoAnteriorId.HasValue).ShouldBe(4);
+
+            historicoNotas.Any(w => w.Id == 1 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.P).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 2 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.NS).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 3 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.NS).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 4 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.S).ShouldBeTrue();
+
+            historicoNotas.Any(w => w.Id == 5 && w.ConceitoAnteriorId == (long)ConceitoValores.P && w.ConceitoNovoId == (long)ConceitoValores.NS).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 6 && w.ConceitoAnteriorId == (long)ConceitoValores.NS && w.ConceitoNovoId == (long)ConceitoValores.S).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 7 && w.ConceitoAnteriorId == (long)ConceitoValores.NS && w.ConceitoNovoId == (long)ConceitoValores.S).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 8 && w.ConceitoAnteriorId == (long)ConceitoValores.S && w.ConceitoNovoId == (long)ConceitoValores.P).ShouldBeTrue();
         }
 
         [Fact(DisplayName = "Fechamento Bimestre - Deve alterar nota conceito lançada pelo CP em ano atual")]
@@ -86,13 +84,13 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             await CriarDadosBase(ObterFiltroFechamentoNotaDto(ObterPerfilCP(), ANO_1, false));
 
             var conceitosParaPersistir = ObterListaFechamentoTurma(ObterListaDeFechamentoConceito(COMPONENTE_CURRICULAR_ARTES_ID_139), COMPONENTE_CURRICULAR_ARTES_ID_139);
-            
+
             var retorno = await ExecutarTesteComValidacaoNota(conceitosParaPersistir, TipoNota.Nota);
             retorno.ShouldNotBeNull();
 
             var historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(4);
-            
+
             var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(4);
 
@@ -104,25 +102,25 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             fechamento.NotaConceitoAlunos.FirstOrDefault(aluno => aluno.CodigoAluno == CODIGO_ALUNO_4).ConceitoId = (long)ConceitoValores.P;
 
             await ExecutarTesteComValidacaoNota(conceitosParaPersistir, TipoNota.Conceito);
-            
+
             historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(8);
-            
+
             historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(8);
 
-            historicoNotas.Count(w=> !w.ConceitoAnteriorId.HasValue).ShouldBe(4);
-            historicoNotas.Count(w=> w.ConceitoAnteriorId.HasValue).ShouldBe(4);
-            
-            historicoNotas.Any(w=> w.Id == 1 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.P).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 2 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.NS).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 3 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.NS).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 4 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.S).ShouldBeTrue();
-            
-            historicoNotas.Any(w=> w.Id == 5 && w.ConceitoAnteriorId == (long)ConceitoValores.P && w.ConceitoNovoId == (long)ConceitoValores.NS).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 6 && w.ConceitoAnteriorId == (long)ConceitoValores.NS && w.ConceitoNovoId == (long)ConceitoValores.S).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 7 && w.ConceitoAnteriorId == (long)ConceitoValores.NS && w.ConceitoNovoId == (long)ConceitoValores.S).ShouldBeTrue();
-            historicoNotas.Any(w=> w.Id == 8 && w.ConceitoAnteriorId == (long)ConceitoValores.S && w.ConceitoNovoId == (long)ConceitoValores.P).ShouldBeTrue();
+            historicoNotas.Count(w => !w.ConceitoAnteriorId.HasValue).ShouldBe(4);
+            historicoNotas.Count(w => w.ConceitoAnteriorId.HasValue).ShouldBe(4);
+
+            historicoNotas.Any(w => w.Id == 1 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.P).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 2 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.NS).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 3 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.NS).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 4 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.S).ShouldBeTrue();
+
+            historicoNotas.Any(w => w.Id == 5 && w.ConceitoAnteriorId == (long)ConceitoValores.P && w.ConceitoNovoId == (long)ConceitoValores.NS).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 6 && w.ConceitoAnteriorId == (long)ConceitoValores.NS && w.ConceitoNovoId == (long)ConceitoValores.S).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 7 && w.ConceitoAnteriorId == (long)ConceitoValores.NS && w.ConceitoNovoId == (long)ConceitoValores.S).ShouldBeTrue();
+            historicoNotas.Any(w => w.Id == 8 && w.ConceitoAnteriorId == (long)ConceitoValores.S && w.ConceitoNovoId == (long)ConceitoValores.P).ShouldBeTrue();
         }
 
         [Fact(DisplayName = "Fechamento Bimestre - Deve alterar nota conceito lançada pelo DIRETOR em ano atual")]
@@ -131,13 +129,13 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             await CriarDadosBase(ObterFiltroFechamentoNotaDto(ObterPerfilDiretor(), ANO_1, false));
 
             var conceitosParaPersistir = ObterListaFechamentoTurma(ObterListaDeFechamentoConceito(COMPONENTE_CURRICULAR_ARTES_ID_139), COMPONENTE_CURRICULAR_ARTES_ID_139);
-            
+
             var retorno = await ExecutarTesteComValidacaoNota(conceitosParaPersistir, TipoNota.Nota);
             retorno.ShouldNotBeNull();
 
             var historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(4);
-            
+
             var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(4);
 
@@ -149,15 +147,15 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             fechamento.NotaConceitoAlunos.FirstOrDefault(aluno => aluno.CodigoAluno == CODIGO_ALUNO_4).ConceitoId = (long)ConceitoValores.P;
 
             await ExecutarTesteComValidacaoNota(conceitosParaPersistir, TipoNota.Conceito);
-            
+
             historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(8);
-            
+
             historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(8);
 
-            historicoNotas.Count(w=> !w.ConceitoAnteriorId.HasValue).ShouldBe(4);
-            historicoNotas.Count(w=> w.ConceitoAnteriorId.HasValue).ShouldBe(4);
+            historicoNotas.Count(w => !w.ConceitoAnteriorId.HasValue).ShouldBe(4);
+            historicoNotas.Count(w => w.ConceitoAnteriorId.HasValue).ShouldBe(4);
         }
 
         [Fact(DisplayName = "Fechamento Bimestre - Deve alterar nota conceito em turma de ano anterior com WorkFlow")]
@@ -182,24 +180,24 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             var retornoAlteracao = await comando.Salvar(dto);
             retornoAlteracao.ShouldNotBeNull();
             var alunoFechamento = ObterTodos<FechamentoAluno>();
-            
+
             alunoFechamento.ShouldNotBeNull();
             var aluno = alunoFechamento.LastOrDefault(aluno => aluno.AlunoCodigo == CODIGO_ALUNO_1);
             aluno.ShouldNotBeNull();
-            
+
             var notas = ObterTodos<FechamentoNota>();
             notas.ShouldNotBeNull();
             var nota = notas.FirstOrDefault(nota => nota.FechamentoAlunoId == aluno.Id);
             nota.ShouldNotBeNull();
-            
+
             var listaAprovacao = ObterTodos<WfAprovacaoNotaFechamento>();
             var aprovacao = listaAprovacao.FirstOrDefault(wf => wf.FechamentoNotaId == nota.Id);
             aprovacao.ShouldNotBeNull();
             aprovacao.ConceitoId.ShouldBe((int)ConceitoValores.NS);
-            
+
             var historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(0);
-            
+
             var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(0);
 

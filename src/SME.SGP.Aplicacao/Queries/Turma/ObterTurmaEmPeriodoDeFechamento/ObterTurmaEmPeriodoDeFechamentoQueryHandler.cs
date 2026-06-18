@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioEventoFechamentoConsulta repositorioEventoFechamento;
 
         public ObterTurmaEmPeriodoDeFechamentoQueryHandler(IRepositorioFechamentoReabertura repositorioFechamentoReabertura,
-            IConsultasTipoCalendario consultasTipoCalendario,IRepositorioEventoFechamentoConsulta repositorioEventoFechamento)
+            IConsultasTipoCalendario consultasTipoCalendario, IRepositorioEventoFechamentoConsulta repositorioEventoFechamento)
         {
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new ArgumentNullException(nameof(repositorioFechamentoReabertura));
             this.consultasTipoCalendario = consultasTipoCalendario ?? throw new System.ArgumentNullException(nameof(consultasTipoCalendario));
@@ -29,18 +29,18 @@ namespace SME.SGP.Aplicacao
 
             return ueEmFechamento || await UeEmReaberturaDeFechamento(tipoCalendario, request.Turma.Ue.CodigoUe, request.Turma.Ue.Dre.CodigoDre, request.Bimestre, request.DataReferencia);
         }
-        
+
         private async Task<bool> UeEmReaberturaDeFechamento(TipoCalendario tipoCalendario, string ueCodigo, string dreCodigo, int bimestre, DateTime dataReferencia)
         {
             var reaberturaPeriodo = await UeEmReaberturaDeFechamentoVigente(tipoCalendario, ueCodigo, dreCodigo, bimestre, dataReferencia);
             return reaberturaPeriodo.NaoEhNulo();
         }
-        
+
         private async Task<bool> UeEmFechamento(TipoCalendario tipoCalendario, bool modalidadeEhInfantil, int bimestre, DateTime dataReferencia)
         {
             return await repositorioEventoFechamento.UeEmFechamento(dataReferencia, tipoCalendario.Id, modalidadeEhInfantil, bimestre);
         }
-        
+
         private async Task<FechamentoReabertura> UeEmReaberturaDeFechamentoVigente(TipoCalendario tipoCalendario, string ueCodigo, string dreCodigo, int bimestre, DateTime dataReferencia)
         {
             return await repositorioFechamentoReabertura.ObterReaberturaFechamentoBimestrePorDataReferencia(

@@ -5,7 +5,7 @@ namespace SME.SGP.Dominio
 {
     public class FechamentoTurmaDisciplina : EntidadeBase
     {
-        public FechamentoTurmaDisciplina() 
+        public FechamentoTurmaDisciplina()
         {
             FechamentoAlunos = new List<FechamentoAluno>();
         }
@@ -35,9 +35,9 @@ namespace SME.SGP.Dominio
 
         public void AdicionarNota(FechamentoNota fechamentoNota)
         {
-            if (fechamentoNota.EhNulo()) 
+            if (fechamentoNota.EhNulo())
                 return;
-            
+
             var fechamentoAluno = FechamentoAlunos.FirstOrDefault(a => a.Id == fechamentoNota.FechamentoAlunoId);
             fechamentoAluno?.AdicionarNota(fechamentoNota);
         }

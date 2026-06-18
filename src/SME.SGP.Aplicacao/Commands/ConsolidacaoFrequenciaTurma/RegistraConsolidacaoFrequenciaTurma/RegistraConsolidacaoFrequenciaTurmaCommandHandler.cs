@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
                 consolidacaoFrequenciaTurma.TipoConsolidacao = request.TipoConsolidacao;
                 consolidacaoFrequenciaTurma.TotalAulas = request.TotalAulas;
                 consolidacaoFrequenciaTurma.TotalFrequencias = request.TotalFrequencias;
-                
+
                 var id = await repositorio.SalvarConsolidacaoFrequenciaTurma(consolidacaoFrequenciaTurma);
 
                 unitOfWork.PersistirTransacao();
@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
             {
                 unitOfWork.Rollback();
                 throw;
-            }            
+            }
         }
     }
 }

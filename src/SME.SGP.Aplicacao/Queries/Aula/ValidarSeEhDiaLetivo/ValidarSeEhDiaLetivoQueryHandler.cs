@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
         {
             DateTime dataInicial = request.DataInicio.Date;
             DateTime dataFinal = request.DataInicio.Date;
-            
+
             var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioData(request.TipoCalendarioId, dataInicial, dataFinal);
             if (periodoEscolar.EhNulo())
                 return false;
@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
             var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeDia(request.TipoCalendarioId, request.DreId, request.UeId, request.DataInicio, true, true);
 
             var eventoLetivoDia = eventos.Count() > 0 ? ExisteEventoLetivoNoDia(eventos) : false;
-            var existeSomenteEventosNaoLetivos = eventos.Count() > 0 ? ExisteSomenteEventoNaoLetivoNoDia(eventos): false;
+            var existeSomenteEventosNaoLetivos = eventos.Count() > 0 ? ExisteSomenteEventoNaoLetivoNoDia(eventos) : false;
 
             // Se eh dia da semana e não existe evento não letivo no dia 
             if (ValidaSeEhFinalSemana(dataInicial, dataFinal) == false && eventoLetivoDia == true)

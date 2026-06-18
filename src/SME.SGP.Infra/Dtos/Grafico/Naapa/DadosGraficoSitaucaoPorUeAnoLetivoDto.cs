@@ -1,5 +1,5 @@
-﻿using System;
-using SME.SGP.Dominio.Enumerados;
+﻿using SME.SGP.Dominio.Enumerados;
+using System;
 
 namespace SME.SGP.Infra
 {
@@ -8,6 +8,6 @@ namespace SME.SGP.Infra
         public SituacaoNAAPA Situacao { get; set; }
         public int Quantidade { get; set; }
         public DateTime DataUltimaConsolidacao { get; set; }
-        
+
     }
 }

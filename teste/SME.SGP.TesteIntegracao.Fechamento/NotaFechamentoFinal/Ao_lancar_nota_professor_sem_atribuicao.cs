@@ -1,18 +1,18 @@
-﻿using System.Collections.Generic;
-using SME.SGP.Dominio;
-using SME.SGP.TesteIntegracao.Setup;
-using System.Threading.Tasks;
-using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base;
-using Xunit;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
-using SME.SGP.TesteIntegracao.ServicosFakes;
+using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
+using SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base;
+using SME.SGP.TesteIntegracao.ServicosFakes;
+using SME.SGP.TesteIntegracao.Setup;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 {
@@ -20,7 +20,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
     {
         public Ao_lancar_nota_professor_sem_atribuicao(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
-        
+
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
@@ -38,9 +38,9 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
                 Modalidade.Fundamental,
                 ModalidadeTipoCalendario.FundamentalMedio,
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
-            
+
             var excecao = await ExecutarTesteComExcecao(filtroNotaFechamento);
-            
+
             excecao.Message.ShouldBe(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
         }
         private async Task<NegocioException> ExecutarTesteComExcecao(FiltroNotaFechamentoDto filtroNotaFechamentoDto)
@@ -48,10 +48,10 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             await CriarDadosBase(filtroNotaFechamentoDto);
 
             var fechamentoFinalSalvarDto = ObterFechamentoFinalSalvar(filtroNotaFechamentoDto);
-            
+
             return await ExecutarComandosFechamentoFinalComExcecao(fechamentoFinalSalvarDto);
         }
-        
+
         private FechamentoFinalSalvarDto ObterFechamentoFinalSalvar(FiltroNotaFechamentoDto filtroNotaFechamento)
         {
             return new FechamentoFinalSalvarDto()
@@ -95,7 +95,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             };
         }
 
-        private static new FiltroNotaFechamentoDto ObterFiltroNotasFechamento(string perfil, TipoNota tipoNota, string anoTurma,Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, string componenteCurricular , bool considerarAnoAnterior = false, bool ehRegencia = false)
+        private static new FiltroNotaFechamentoDto ObterFiltroNotasFechamento(string perfil, TipoNota tipoNota, string anoTurma, Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, string componenteCurricular, bool considerarAnoAnterior = false, bool ehRegencia = false)
         {
             return new FiltroNotaFechamentoDto()
             {

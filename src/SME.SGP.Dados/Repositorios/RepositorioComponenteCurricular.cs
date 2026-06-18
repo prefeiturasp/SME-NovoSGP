@@ -50,7 +50,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = @"UPDATE componente_curricular SET descricao = @descricao WHERE id = @id";
 
-            await database.Conexao.QueryAsync<string>(sql.ToString(), new { descricao = componenteCurricular.Descricao, id = long.Parse(componenteCurricular.Codigo) });       
+            await database.Conexao.QueryAsync<string>(sql.ToString(), new { descricao = componenteCurricular.Descricao, id = long.Parse(componenteCurricular.Codigo) });
         }
 
         public async Task<string> ObterCodigoComponentePai(long componenteCurricularId)
@@ -60,6 +60,6 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { componenteCurricularId });
         }
     }
-    
+
 }
 

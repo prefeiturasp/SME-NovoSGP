@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,7 +15,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task Handle(RegistraConsolidacaoDevolutivasTurmaCommand request, CancellationToken cancellationToken)
-        { 
+        {
             await repositorio.Salvar(request.ConsolidacaoDevolutivas);
         }
     }

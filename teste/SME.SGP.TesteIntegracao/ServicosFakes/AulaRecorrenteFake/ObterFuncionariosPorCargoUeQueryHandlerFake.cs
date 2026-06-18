@@ -9,7 +9,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 {
     public class ObterFuncionariosPorCargoUeQueryHandlerFake : IRequestHandler<ObterFuncionariosPorCargoUeQuery, IEnumerable<UsuarioEolRetornoDto>>
     {
-        public ObterFuncionariosPorCargoUeQueryHandlerFake(){}
+        public ObterFuncionariosPorCargoUeQueryHandlerFake() { }
 
         public async Task<IEnumerable<UsuarioEolRetornoDto>> Handle(ObterFuncionariosPorCargoUeQuery request, CancellationToken cancellationToken)
         {

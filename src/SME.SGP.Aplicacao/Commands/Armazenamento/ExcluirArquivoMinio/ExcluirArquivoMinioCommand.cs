@@ -3,9 +3,9 @@ using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirArquivoMinioCommand  : IRequest<bool>
+    public class ExcluirArquivoMinioCommand : IRequest<bool>
     {
-        public ExcluirArquivoMinioCommand(string arquivoNome,string bucketNome = "")
+        public ExcluirArquivoMinioCommand(string arquivoNome, string bucketNome = "")
         {
             ArquivoNome = arquivoNome;
             BucketNome = bucketNome;

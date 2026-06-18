@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
 
             var consulta = new ConsultasAulaPrevista(repositorioAulaPrevistaConsulta.Object,
                                                      repositorioBimestre.Object,
-                                                     repositorioPeriodoEscolar.Object,                                                                                                          
+                                                     repositorioPeriodoEscolar.Object,
                                                      repositorioTipoCalendario.Object,
                                                      consultasTurma.Object,
                                                      mediator.Object);

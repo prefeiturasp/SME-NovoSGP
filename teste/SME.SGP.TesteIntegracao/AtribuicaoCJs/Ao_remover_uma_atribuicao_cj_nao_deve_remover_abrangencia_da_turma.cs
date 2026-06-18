@@ -23,7 +23,7 @@ namespace SME.SGP.TesteIntegracao.AtribuicaoCJs
         {
             base.RegistrarFakes(services);
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterProfessoresTitularesPorTurmaIdQuery, IEnumerable<ProfessorTitularDisciplinaEol>>), typeof(ObterProfessoresTitularesPorTurmaIdQueryHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAtribuicoesPorTurmaEProfessorQuery, IEnumerable<AtribuicaoCJ>>),typeof(ObterAtribuicoesPorTurmaEProfessorQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAtribuicoesPorTurmaEProfessorQuery, IEnumerable<AtribuicaoCJ>>), typeof(ObterAtribuicoesPorTurmaEProfessorQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<AtribuirPerfilCommand>), typeof(AtribuirPerfilCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<RemoverPerfisUsuarioAtualCommand>), typeof(RemoverPerfisUsuarioAtualCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaGoogleClassroomCommand, bool>), typeof(PublicarFilaGoogleClassroomCommandHandlerFake), ServiceLifetime.Scoped));

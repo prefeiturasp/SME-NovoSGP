@@ -15,6 +15,6 @@ namespace SME.SGP.Dados.Repositorios
         public Task ExcluirConsolidacoes(string ueCodigo, int anoLetivo)
             => database.Conexao.ExecuteAsync("delete from consolidacao_produtividade_frequencia where ue_id = @ueCodigo and ano_letivo = @anoLetivo",
                                                 new { ueCodigo, anoLetivo });
-        
+
     }
 }

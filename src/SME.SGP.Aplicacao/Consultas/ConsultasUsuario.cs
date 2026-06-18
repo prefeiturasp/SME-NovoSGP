@@ -1,8 +1,7 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
-using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
@@ -11,7 +10,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
 
-        public ConsultasUsuario(IServicoUsuario servicoUsuario,IMediator mediator)
+        public ConsultasUsuario(IServicoUsuario servicoUsuario, IMediator mediator)
         {
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));

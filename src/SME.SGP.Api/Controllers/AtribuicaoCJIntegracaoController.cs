@@ -17,9 +17,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<AtribuicaoCJListaRetornoDto>), 200)]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> Get(string ueCodigo,int anoLetivo, [FromServices] IListarAtribuicoesCJPorFiltroUseCase useCase)
+        public async Task<IActionResult> Get(string ueCodigo, int anoLetivo, [FromServices] IListarAtribuicoesCJPorFiltroUseCase useCase)
         {
-            var retorno =  (await useCase.Executar(new AtribuicaoCJListaFiltroDto{UeId = ueCodigo,AnoLetivo = anoLetivo}));
+            var retorno = (await useCase.Executar(new AtribuicaoCJListaFiltroDto { UeId = ueCodigo, AnoLetivo = anoLetivo }));
             if (!retorno.Any())
                 return NoContent();
 

@@ -1,5 +1,4 @@
 ﻿using SME.SGP.Dominio;
-using System.Runtime;
 
 namespace SME.SGP.Infra
 {

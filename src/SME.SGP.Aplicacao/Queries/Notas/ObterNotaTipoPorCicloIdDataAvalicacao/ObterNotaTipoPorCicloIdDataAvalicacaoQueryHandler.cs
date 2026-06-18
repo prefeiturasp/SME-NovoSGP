@@ -1,13 +1,13 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterNotaTipoPorCicloIdDataAvalicacaoQueryHandler : IRequestHandler<ObterNotaTipoPorCicloIdDataAvalicacaoQuery,NotaTipoValor>
+    public class ObterNotaTipoPorCicloIdDataAvalicacaoQueryHandler : IRequestHandler<ObterNotaTipoPorCicloIdDataAvalicacaoQuery, NotaTipoValor>
     {
         private readonly IRepositorioNotaTipoValorConsulta repositorioConsulta;
 
@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<NotaTipoValor> Handle(ObterNotaTipoPorCicloIdDataAvalicacaoQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioConsulta.ObterPorCicloIdDataAvalicacao(request.CicloId,request.DataAvalicao);
+            return await repositorioConsulta.ObterPorCicloIdDataAvalicacao(request.CicloId, request.DataAvalicao);
         }
     }
 }

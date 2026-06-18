@@ -63,13 +63,13 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RegistroFaltasNaoCompensadaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterDatasFaltasNaoCompensadas([FromQuery]FiltroFaltasNaoCompensadasDto filtro,[FromServices]IObterFaltasNaoCompensadaUseCase useCase)
+        public async Task<IActionResult> ObterDatasFaltasNaoCompensadas([FromQuery] FiltroFaltasNaoCompensadasDto filtro, [FromServices] IObterFaltasNaoCompensadaUseCase useCase)
         {
-            var consulta = await  useCase.Executar(filtro);
+            var consulta = await useCase.Executar(filtro);
 
             if (consulta.EhNulo())
                 return NoContent();
-            
+
             return Ok(consulta);
         }
     }

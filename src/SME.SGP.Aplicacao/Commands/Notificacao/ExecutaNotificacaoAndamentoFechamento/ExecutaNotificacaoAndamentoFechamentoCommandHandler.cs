@@ -5,7 +5,6 @@ using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -43,7 +42,7 @@ namespace SME.SGP.Aplicacao
                 ues.Add(ue);
             else
             {
-                foreach(var ueId in turmas.Select(t => t.UeId).Distinct().ToList())
+                foreach (var ueId in turmas.Select(t => t.UeId).Distinct().ToList())
                 {
                     var ueLocalizada = await mediator.Send(new ObterUePorIdQuery(ueId));
                     ues.Add(ueLocalizada);

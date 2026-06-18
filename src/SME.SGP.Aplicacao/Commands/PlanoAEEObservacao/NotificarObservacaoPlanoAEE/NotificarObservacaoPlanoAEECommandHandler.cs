@@ -1,9 +1,9 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.Configuration;
 using SME.SGP.Dominio.Interfaces;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
                 Observação: {request.Observacao} <br/> {GerarBotao(hostAplicacao, request.PlanoAEEId)}";
 
             var notificacoes = await mediator.Send(new EnviarNotificacaoUsuariosCommand(titulo, mensagem, Dominio.NotificacaoCategoria.Alerta, Dominio.NotificacaoTipo.AEE, request.Usuarios));
-            foreach(var notificacaoId in notificacoes)
+            foreach (var notificacaoId in notificacoes)
                 await repositorioNotificacaoPlanoAEEObservacao.SalvarAsync(new Dominio.NotificacaoPlanoAEEObservacao(notificacaoId, request.PlanoAEEObservacaoId));
 
             return true;

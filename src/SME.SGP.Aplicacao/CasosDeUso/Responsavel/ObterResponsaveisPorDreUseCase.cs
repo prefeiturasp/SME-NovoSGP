@@ -70,9 +70,9 @@ namespace SME.SGP.Aplicacao
             switch (tipoResponsavelAtribuicao)
             {
                 case TipoResponsavelAtribuicao.PAAI:
-                        return (await ObterFuncionariosDreCargo(dreCodigo, 29));   
+                    return (await ObterFuncionariosDreCargo(dreCodigo, 29));
                 case TipoResponsavelAtribuicao.PsicologoEscolar:
-                        return (await ObterFuncionariosDrePerfis(dreCodigo, Perfis.PERFIL_PSICOLOGO_ESCOLAR));
+                    return (await ObterFuncionariosDrePerfis(dreCodigo, Perfis.PERFIL_PSICOLOGO_ESCOLAR));
                 case TipoResponsavelAtribuicao.Psicopedagogo:
                     return (await ObterFuncionariosDrePerfis(dreCodigo, Perfis.PERFIL_PSICOPEDAGOGO));
                 case TipoResponsavelAtribuicao.AssistenteSocial:

@@ -5,7 +5,6 @@ using SME.SGP.Infra.Interfaces;
 using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,9 +24,9 @@ namespace SME.SGP.Aplicacao
         {
             return MapearParaDto(await repositorioAnotacaoFrequenciaAluno.ObterPorTurmaAlunoComponenteCurricularBimestrePaginado(
                 request.TurmaId,
-                request.AlunoCodigo, 
-                request.ComponenteCurricularId, 
-                request.Bimestre, 
+                request.AlunoCodigo,
+                request.ComponenteCurricularId,
+                request.Bimestre,
                 Paginacao,
                 request.Semestre));
         }

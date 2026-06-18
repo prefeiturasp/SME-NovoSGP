@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         public WorkflowAprovacaoDto WorkflowAprovacao { get; set; }
     }
 
-    public  class SalvarWorkflowAprovacaoNivelUsuarioCommandValidator : AbstractValidator<SalvarWorkflowAprovacaoNivelUsuarioCommand>
+    public class SalvarWorkflowAprovacaoNivelUsuarioCommandValidator : AbstractValidator<SalvarWorkflowAprovacaoNivelUsuarioCommand>
     {
         public SalvarWorkflowAprovacaoNivelUsuarioCommandValidator()
         {

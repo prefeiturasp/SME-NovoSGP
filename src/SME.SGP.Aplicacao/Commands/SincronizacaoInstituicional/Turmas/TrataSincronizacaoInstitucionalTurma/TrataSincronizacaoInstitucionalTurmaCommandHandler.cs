@@ -1,5 +1,4 @@
 using MediatR;
-using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -42,7 +41,7 @@ namespace SME.SGP.Aplicacao
                     return await IncluirTurmaAsync(turmaEOL, turmaSGP);
                 default:
                     return true;
-            }            
+            }
         }
 
         private async Task<bool> AtualizarTurmaHistoricaAsync(TurmaParaSyncInstitucionalDto turmaEol, Turma turmaSgp)
@@ -53,7 +52,7 @@ namespace SME.SGP.Aplicacao
 
             if (!turmaAtualizadaComSucesso)
                 return false;
-            
+
             var professoresComAbragenciaTurma = await mediator.Send(new ObterProfessoresTurmaAbrangenciaQuery(turmaSgp.CodigoTurma));
             if (professoresComAbragenciaTurma.Any())
                 foreach (var professorRf in professoresComAbragenciaTurma)
@@ -62,7 +61,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task<bool> VerificarTurmaExtintaAsync(TurmaParaSyncInstitucionalDto turma, long turmaSgpId)
-        {            
+        {
             var tipoCalendarioId = await mediator
                 .Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(turma.CodigoModalidade, turma.AnoLetivo, turma.Semestre));
 

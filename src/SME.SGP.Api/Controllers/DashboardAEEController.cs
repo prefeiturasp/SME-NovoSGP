@@ -18,9 +18,12 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ObterSituacoesEncaminhamentos([FromQuery] int anoLetivo, [FromQuery] long dreId, long ueId, [FromServices] IObterEncaminhamentoAEESituacoesUseCase useCase)
         {
-            return Ok(await useCase.Executar(new FiltroDashboardAEEDto() { AnoLetivo = anoLetivo, 
-                DreId = dreId, 
-                UeId = ueId}));
+            return Ok(await useCase.Executar(new FiltroDashboardAEEDto()
+            {
+                AnoLetivo = anoLetivo,
+                DreId = dreId,
+                UeId = ueId
+            }));
         }
 
         [HttpGet("encaminhamentos/deferidos")]

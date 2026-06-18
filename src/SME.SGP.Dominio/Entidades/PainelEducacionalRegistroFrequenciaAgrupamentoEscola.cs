@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dominio.Entidades
 {
-   public class PainelEducacionalRegistroFrequenciaAgrupamentoEscola
+    public class PainelEducacionalRegistroFrequenciaAgrupamentoEscola
     {
         public int TotalAulas { get; set; }
         public int TotalAusencias { get; set; }

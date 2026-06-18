@@ -13,7 +13,7 @@ namespace SME.SGP.Infra
         public int AreaConnhecimentoId { get; set; }
         public string SituacaoFechamentoNome
         {
-            get => SituacaoFechamentoCodigo == SituacaoFechamento.EmProcessamento ? 
+            get => SituacaoFechamentoCodigo == SituacaoFechamento.EmProcessamento ?
                 SituacaoFechamento.NaoIniciado.Name() :
                 SituacaoFechamentoCodigo.Name();
         }
@@ -22,6 +22,6 @@ namespace SME.SGP.Infra
             get => string.IsNullOrEmpty(ProfessorNome) ?
                 "Sem Titular" :
                 $"{ProfessorNome} ({ProfessorRf})";
-        }        
+        }
     }
 }

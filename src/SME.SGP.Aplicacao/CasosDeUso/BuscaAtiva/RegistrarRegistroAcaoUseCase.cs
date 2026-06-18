@@ -3,7 +3,6 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -23,11 +22,11 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ResultadoRegistroAcaoBuscaAtivaDto> Executar(RegistroAcaoBuscaAtivaDto registroAcaoDto)
         {
-            var dadosAluno = await ValidarRegras(registroAcaoDto);           
+            var dadosAluno = await ValidarRegras(registroAcaoDto);
             List<QuestaoObrigatoriaNaoRespondidaDto> questoesObrigatoriasAConsistir = await ObterQuestoesObrigatoriasNaoPreechidas(registroAcaoDto);
             ConsistirQuestoesObrigatoriasNaoPreenchidas(questoesObrigatoriasAConsistir);
             PreencherConclusaoSecoes(questoesObrigatoriasAConsistir, registroAcaoDto);
-            
+
             if (registroAcaoDto.Id.GetValueOrDefault() > 0)
             {
                 var registroAcao = await mediator.Send(new ObterRegistroAcaoPorIdQuery(registroAcaoDto.Id.GetValueOrDefault()));
@@ -36,7 +35,7 @@ namespace SME.SGP.Aplicacao
                     await AlterarRegistroAcao(registroAcaoDto, registroAcao);
                     await RemoverArquivosNaoUtilizados(registroAcaoDto.Secoes);
                     return new ResultadoRegistroAcaoBuscaAtivaDto
-                        { Id = registroAcao.Id, Auditoria = (AuditoriaDto)registroAcao };
+                    { Id = registroAcao.Id, Auditoria = (AuditoriaDto)registroAcao };
                 }
             }
 
@@ -44,7 +43,7 @@ namespace SME.SGP.Aplicacao
             await SalvarRegistroAcao(registroAcaoDto, resultadoRegistroAcao);
             return resultadoRegistroAcao;
         }
-      
+
         private async Task<(string CodigoAluno, string NomeAluno)> ValidarRegras(RegistroAcaoBuscaAtivaDto registroAcaoDto)
         {
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(registroAcaoDto.TurmaId));
@@ -88,7 +87,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var q in s.Questoes)
                     if (string.IsNullOrEmpty(q.Resposta) && q.TipoQuestao == TipoQuestao.Upload)
                         resposta.Add(q);
-            
+
             if (resposta.Any())
                 foreach (var item in resposta)
                 {
@@ -102,7 +101,7 @@ namespace SME.SGP.Aplicacao
             foreach (var secao in registroAcaoDto.Secoes)
             {
                 if (!secao.Questoes.Any())
-                    throw new NegocioException(string.Format(MensagemNegocioComuns.NENHUMA_QUESTAO_FOI_ENCONTRADA_NA_SECAO_X,secao.SecaoId));
+                    throw new NegocioException(string.Format(MensagemNegocioComuns.NENHUMA_QUESTAO_FOI_ENCONTRADA_NA_SECAO_X, secao.SecaoId));
 
                 var secaoExistente = registroAcao.Secoes.FirstOrDefault(s => s.SecaoRegistroAcaoBuscaAtivaId == secao.SecaoId);
                 if (secaoExistente.EhNulo())
@@ -118,7 +117,7 @@ namespace SME.SGP.Aplicacao
                     var questaoExistente = secaoExistente.Questoes.FirstOrDefault(q => q.QuestaoId == questoes.FirstOrDefault().QuestaoId);
 
                     if (questaoExistente.EhNulo())
-                    {   
+                    {
                         var resultadoRegistroAcaoQuestao = await mediator.Send(new RegistrarRegistroAcaoSecaoQuestaoCommand(secaoExistente.Id, questoes.FirstOrDefault().QuestaoId));
                         await RegistrarRespostaRegistroAcao(questoes, resultadoRegistroAcaoQuestao);
                     }
@@ -176,7 +175,7 @@ namespace SME.SGP.Aplicacao
             foreach (var secao in registroAcaoDto.Secoes)
             {
                 if (!secao.Questoes.Any())
-                    throw new NegocioException(string.Format(MensagemNegocioComuns.NENHUMA_QUESTAO_FOI_ENCONTRADA_NA_SECAO_X,secao.SecaoId));
+                    throw new NegocioException(string.Format(MensagemNegocioComuns.NENHUMA_QUESTAO_FOI_ENCONTRADA_NA_SECAO_X, secao.SecaoId));
 
                 var secaoRegistroAcao = await mediator.Send(new RegistrarRegistroAcaoSecaoCommand(resultadoRegistroAcao.Id, secao.SecaoId, secao.Concluido));
                 foreach (var questoes in secao.Questoes.GroupBy(q => q.QuestaoId))
@@ -238,9 +237,9 @@ namespace SME.SGP.Aplicacao
         private IEnumerable<RegistroAcaoBuscaAtivaSecaoQuestaoDto> ObterRespostasAIncluir(IGrouping<long, RegistroAcaoBuscaAtivaSecaoQuestaoDto> respostas)
             => respostas.Where(c => c.RespostaRegistroAcaoId == 0);
 
-        private IEnumerable<RespostaRegistroAcaoBuscaAtiva> ObterRespostasAExcluir(QuestaoRegistroAcaoBuscaAtiva questaoExistente, IGrouping<long, RegistroAcaoBuscaAtivaSecaoQuestaoDto> respostas) 
+        private IEnumerable<RespostaRegistroAcaoBuscaAtiva> ObterRespostasAExcluir(QuestaoRegistroAcaoBuscaAtiva questaoExistente, IGrouping<long, RegistroAcaoBuscaAtivaSecaoQuestaoDto> respostas)
             => questaoExistente.Respostas.Where(s => !respostas.Any(c => c.RespostaRegistroAcaoId == s.Id));
-            
+
         private IEnumerable<RespostaRegistroAcaoBuscaAtiva> ObterRespostasAAlterar(QuestaoRegistroAcaoBuscaAtiva questaoExistente, IGrouping<long, RegistroAcaoBuscaAtivaSecaoQuestaoDto> respostas)
             => questaoExistente.Respostas.Where(s => respostas.Any(c => c.RespostaRegistroAcaoId == s.Id));
 

@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         public string CodigoTurma { get; set; }
         public string CodigoAluno { get; set; }
         public PeriodoRelatorioPAP PeriodoRelatorio { get; set; }
-        public long QuestionarioId { get; set; } 
+        public long QuestionarioId { get; set; }
         public long? PAPSecaoId { get; set; }
     }
 

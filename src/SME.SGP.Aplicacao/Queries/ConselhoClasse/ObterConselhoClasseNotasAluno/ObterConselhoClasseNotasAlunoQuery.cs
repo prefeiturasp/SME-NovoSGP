@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
             AlunoCodigo = alunoCodigo;
             Bimestre = bimestre;
             ComponenteCurricularId = componenteCurricularId;
-            TipoCalendario = tipoCalendario;    
+            TipoCalendario = tipoCalendario;
         }
 
         public long ConselhoClasseId { get; set; }

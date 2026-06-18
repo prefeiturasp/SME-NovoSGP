@@ -1,6 +1,4 @@
-﻿using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SME.SGP.Infra
 {
@@ -14,6 +12,6 @@ namespace SME.SGP.Infra
         public long TurmaId { get; set; }
         public string AlunoCodigo { get; set; }
         public string AlunoNome { get; set; }
-      public List<RegistroAcaoBuscaAtivaSecaoDto> Secoes { get; set; }
+        public List<RegistroAcaoBuscaAtivaSecaoDto> Secoes { get; set; }
     }
 }

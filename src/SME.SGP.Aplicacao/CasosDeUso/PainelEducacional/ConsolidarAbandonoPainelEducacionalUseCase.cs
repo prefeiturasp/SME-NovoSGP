@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
         }
 
         private async Task<(IEnumerable<ConsolidacaoAbandonoDto> indicadoresDre,
-                            IEnumerable<ConsolidacaoAbandonoUeDto> indicadoresUe)> 
+                            IEnumerable<ConsolidacaoAbandonoUeDto> indicadoresUe)>
             ObterConsolidacaoAlunosTurmas(int anoUtilizado)
         {
             const int situacaoMatriculaAbandono = (int)SituacaoMatriculaAluno.Desistente;

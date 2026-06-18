@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Humanizer;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -14,13 +9,17 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 {
     public class Ao_cadastrar_editar_encaminhamento_naapa_aguardandoatendimento : EncaminhamentoNAAPATesteBase
     {
-        
+
         public Ao_cadastrar_editar_encaminhamento_naapa_aguardandoatendimento(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
 
@@ -56,11 +55,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var dataQueixa = DateTimeExtension.HorarioBrasilia().Date;
             dataQueixa.AddDays(-10);
-            
+
             await GerarDadosEncaminhamentoNAAPA(dataQueixa);
 
             dataQueixa.AddDays(4);
-            
+
             var encaminhamentosNaapaDto = new EncaminhamentoNAAPADto()
             {
                 Id = 1,
@@ -194,12 +193,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 }
             };
             var retorno = await registrarEncaminhamentoNaapaUseCase.Executar(encaminhamentosNaapaDto);
-            
+
             retorno.ShouldNotBeNull("Nenhum ResultadoEncaminhamentoNAAPADto obtido ao registrar Encaminhamento NAAPA");
             retorno.Id.ShouldBe(1, "Id inválido obtido ao registrar Encaminhamento NAAPA");
             retorno.Auditoria.ShouldNotBeNull("Nenhum registro de Auditoria obtido ao registrar Encaminhamento NAAPA");
             retorno.Auditoria.AlteradoEm.HasValue.ShouldBeTrue("Auditoria obtida não contém data/hora alteração");
-            
+
             var encaminhamentoNAAPA = ObterTodos<Dominio.EncaminhamentoNAAPA>();
             encaminhamentoNAAPA.FirstOrDefault().Situacao.Equals(SituacaoNAAPA.AguardandoAtendimento).ShouldBeTrue("Após registrar Encaminhamento NAAPA o status não foi alterado");
             encaminhamentoNAAPA.Count().ShouldBe(1, "Qdade registros Encaminhamento NAAPA inválidos");
@@ -312,7 +311,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var dataQueixa = DateTimeExtension.HorarioBrasilia().Date;
             dataQueixa.AddDays(-10);
-            
+
             await GerarDadosEncaminhamentoNAAPA(dataQueixa);
 
             dataQueixa.AddDays(4);
@@ -482,7 +481,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var encaminhamentoNAAPA = ObterTodos<Dominio.EncaminhamentoNAAPA>();
             encaminhamentoNAAPA.Any(en => en.Situacao.Equals(SituacaoNAAPA.EmAtendimento)).ShouldBeTrue();
-            
+
         }
 
         private async Task GerarDadosEncaminhamentoNAAPA(DateTime dataQueixa, bool situacaoEmAtendimento = false)
@@ -503,14 +502,18 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             {
                 QuestaoEncaminhamentoId = 1,
                 Texto = dataQueixa.ToString("dd/MM/yyyy"),
-                CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
 
             await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
             {
                 QuestaoEncaminhamentoId = 2,
                 Texto = "1",
-                CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
 
             await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
@@ -529,17 +532,21 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             {
                 EncaminhamentoNAAPASecaoId = 1,
                 QuestaoId = 1,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
 
             await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
             {
                 EncaminhamentoNAAPASecaoId = 1,
                 QuestaoId = 2,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
 
-           await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
+            await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
             {
                 EncaminhamentoNAAPASecaoId = 1,
                 QuestaoId = ID_QUESTAO_ESTA_EM_CLASSE_HOSPITALAR,
@@ -555,7 +562,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             {
                 EncaminhamentoNAAPAId = 1,
                 SecaoEncaminhamentoNAAPAId = 1,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
         }
 
@@ -567,7 +576,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 AlunoCodigo = ALUNO_CODIGO_1,
                 Situacao = SituacaoNAAPA.Rascunho,
                 AlunoNome = "Nome do aluno 1",
-                CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
         }
 

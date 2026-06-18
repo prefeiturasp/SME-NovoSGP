@@ -22,9 +22,9 @@ namespace SME.SGP.Aplicacao
         {
             var aulasComPendenciaDiario = await repositorioPendenciaAula.TrazerAulasComPendenciasDiarioBordo(request.DisciplinaId, request.ProfessorRf,
                 request.EhGestor, request.TurmaId, request.AnoLetivo);
-            
+
             var pendenciasDiarioBordo = await repositorioPendenciaAula.TurmasPendenciaDiarioBordo(aulasComPendenciaDiario, request.TurmaId, request.Bimestre);
-            
+
             if (request.ProfessorNaoCj)
                 pendenciasDiarioBordo = pendenciasDiarioBordo.Where(p => !p.AulaCJ);
 

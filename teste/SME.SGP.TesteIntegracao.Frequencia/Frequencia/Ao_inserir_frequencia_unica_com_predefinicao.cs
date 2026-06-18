@@ -5,7 +5,6 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
@@ -31,7 +30,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         {
             await CriarDadosBasicosVigenciaRelativa(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, BIMESTRE_2, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), false, TIPO_CALENDARIO_1, true, NUMERO_AULAS_1);
 
-            await CriarPredefinicaoAluno(CODIGO_ALUNO_99999, TipoFrequencia.C, COMPONENTE_CURRICULAR_PORTUGUES_ID_138,TURMA_ID_1);
+            await CriarPredefinicaoAluno(CODIGO_ALUNO_99999, TipoFrequencia.C, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TURMA_ID_1);
 
             var frequencia = new FrequenciaDto()
             {
@@ -48,7 +47,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
 
             await InserirFrequenciaUseCaseComValidacaoCompleta(frequencia, TipoFrequencia.C, TipoFrequencia.F, PERCENTUAL_ZERO, NUMERO_AULAS_1, QTDE_1, ZERO);
         }
-        
+
         [Fact(DisplayName = "Frequência - Deve permitir inserir frequencia com remoto com predefinicao compareceu modificando pre definicao para remoto")]
         public async Task Deve_permitir_inserir_frequencia_com_remoto_com_predefinicao_compareceu_modificando_pre_definicao_para_remoto()
         {

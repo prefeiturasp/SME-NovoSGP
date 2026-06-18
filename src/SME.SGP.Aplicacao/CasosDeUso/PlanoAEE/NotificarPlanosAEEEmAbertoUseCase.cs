@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Microsoft.Extensions.Configuration;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -49,14 +48,14 @@ namespace SME.SGP.Aplicacao
                 CarregarPlanosPorSupervisor(supervisoresPlanos, supervisores, planosUe);
             }
 
-            foreach(var supervisor in supervisoresPlanos)
+            foreach (var supervisor in supervisoresPlanos)
                 await NotificarPlanoEmAberto(supervisor);
 
         }
 
         private void CarregarPlanosPorSupervisor(List<PlanosAEEPorSupervisorDto> supervisoresPlanos, List<string> supervisores, IGrouping<string, PlanoAEEReduzidoDto> planosUe)
         {
-            foreach(var supervisor in supervisores)
+            foreach (var supervisor in supervisores)
             {
                 var supervisorPlanos = ObterSupervisorComPlanos(supervisoresPlanos, supervisor);
 

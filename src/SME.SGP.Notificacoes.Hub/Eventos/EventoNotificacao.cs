@@ -33,7 +33,7 @@ namespace SME.SGP.Notificacoes.Hub
 
             return Task.CompletedTask;
         }
-        protected virtual Task DispararAsync(IHubCallerClients clients,T mensagem)
+        protected virtual Task DispararAsync(IHubCallerClients clients, T mensagem)
             => throw new NotImplementedException("Disparo do evento de notificação não implementado");
     }
 }

@@ -1,18 +1,17 @@
-﻿using System;
+﻿using MediatR;
+using Newtonsoft.Json;
+using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using Newtonsoft.Json;
-using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterProfessoresTitularesDisciplinasEolQueryHandler : IRequestHandler<ObterProfessoresTitularesDisciplinasEolQuery,IEnumerable<ProfessorTitularDisciplinaEol>>
+    public class ObterProfessoresTitularesDisciplinasEolQueryHandler : IRequestHandler<ObterProfessoresTitularesDisciplinasEolQuery, IEnumerable<ProfessorTitularDisciplinaEol>>
     {
         private readonly IHttpClientFactory httpClientFactory;
 
@@ -51,6 +50,6 @@ namespace SME.SGP.Aplicacao
             var json = await resposta.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<IEnumerable<ProfessorTitularDisciplinaEol>>(json);
         }
-        
+
     }
 }

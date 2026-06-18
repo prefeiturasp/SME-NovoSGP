@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Infra
+﻿namespace SME.SGP.Infra
 {
     public class VerificarUsuarioDocumentoDto
     {
@@ -11,7 +7,7 @@ namespace SME.SGP.Infra
 
         }
 
-        public VerificarUsuarioDocumentoDto(long tipoDocumentoId, long classificacaoId, long usuarioId, long ueId,int anoLetivo ,long documentoId)
+        public VerificarUsuarioDocumentoDto(long tipoDocumentoId, long classificacaoId, long usuarioId, long ueId, int anoLetivo, long documentoId)
         {
             TipoDocumentoId = tipoDocumentoId;
             ClassificacaoId = classificacaoId;

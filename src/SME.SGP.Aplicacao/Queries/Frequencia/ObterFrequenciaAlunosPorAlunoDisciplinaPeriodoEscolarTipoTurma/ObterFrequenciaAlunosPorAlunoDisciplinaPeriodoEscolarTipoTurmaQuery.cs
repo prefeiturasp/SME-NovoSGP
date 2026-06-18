@@ -47,4 +47,4 @@ namespace SME.SGP.Aplicacao
                 .WithMessage("a turma deve ser informado.");
         }
     }
-} 
+}

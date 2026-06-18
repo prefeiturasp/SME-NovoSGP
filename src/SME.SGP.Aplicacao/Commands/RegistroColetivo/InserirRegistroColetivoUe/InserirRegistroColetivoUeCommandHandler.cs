@@ -21,11 +21,11 @@ namespace SME.SGP.Aplicacao
         {
             var registros = ObterRegistro(request.RegistroColetivoId, request.UeIds);
 
-            foreach(var registro in registros)
+            foreach (var registro in registros)
             {
                 await repositorio.SalvarAsync(registro);
             }
-             
+
             return true;
         }
 

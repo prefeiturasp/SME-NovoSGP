@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery : IRequest<bool>
     {
-        public ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(long componenteCurricularId,string codigoTurma, DateTime data, Dominio.Usuario usuario)
+        public ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(long componenteCurricularId, string codigoTurma, DateTime data, Dominio.Usuario usuario)
         {
             ComponenteCurricularId = componenteCurricularId;
             CodigoTurma = codigoTurma;

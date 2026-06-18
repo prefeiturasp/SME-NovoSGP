@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioDocumento repositorioDocumento;
 
-        public ObterDocumentosPorDreUeETipoEClassificacaoQueryHandler(IContextoAplicacao contextoAplicacao, 
+        public ObterDocumentosPorDreUeETipoEClassificacaoQueryHandler(IContextoAplicacao contextoAplicacao,
             IRepositorioDocumento repositorioDocumento) : base(contextoAplicacao)
         {
             this.repositorioDocumento = repositorioDocumento ?? throw new ArgumentNullException(nameof(repositorioDocumento));

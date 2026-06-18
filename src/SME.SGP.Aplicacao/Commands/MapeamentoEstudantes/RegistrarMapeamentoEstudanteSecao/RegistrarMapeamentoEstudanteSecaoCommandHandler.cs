@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao.Commands
         }
 
         private MapeamentoEstudanteSecao MapearParaEntidade(RegistrarMapeamentoEstudanteSecaoCommand request)
-            => new ()
+            => new()
             {
                 SecaoMapeamentoEstudanteId = request.SecaoId,
                 Concluido = request.Concluido,

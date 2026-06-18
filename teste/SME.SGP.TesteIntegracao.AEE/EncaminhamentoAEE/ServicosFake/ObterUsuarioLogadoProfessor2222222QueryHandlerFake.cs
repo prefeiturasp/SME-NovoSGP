@@ -1,14 +1,14 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake
 {
-    public class ObterUsuarioLogadoProfessor2222222QueryHandlerFake: IRequestHandler<ObterUsuarioLogadoQuery, Usuario>
+    public class ObterUsuarioLogadoProfessor2222222QueryHandlerFake : IRequestHandler<ObterUsuarioLogadoQuery, Usuario>
     {
         public Task<Usuario> Handle(ObterUsuarioLogadoQuery request, CancellationToken cancellationToken)
         {

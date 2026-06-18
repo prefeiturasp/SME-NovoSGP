@@ -1,11 +1,10 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
 
-    public interface IObterNotasFrequenciaUseCase 
+    public interface IObterNotasFrequenciaUseCase
     {
         Task<ConselhoClasseAlunoNotasConceitosRetornoDto> Executar(ConselhoClasseNotasFrequenciaDto notasFrequenciaDto);
     }

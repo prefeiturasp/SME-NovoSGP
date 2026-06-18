@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
@@ -10,6 +7,8 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Listao
@@ -22,11 +21,11 @@ namespace SME.SGP.TesteIntegracao.Listao
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
-            
+
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<VerificaPodePersistirTurmaDisciplinaEOLQuery, bool>),
-                typeof(VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));            
+                typeof(VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
         }
-        
+
         [Fact(DisplayName = "Frequência Listão - Alteração de frequência pelo professor titular")]
         public async Task Alteracao_de_frequencia_pelo_professor_titular()
         {
@@ -42,8 +41,8 @@ namespace SME.SGP.TesteIntegracao.Listao
                 ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138
             };
             await ExecutarTeste(filtroListao);
-        } 
-        
+        }
+
         [Fact(DisplayName = "Frequência Listão - Alteração de frequência pelo professor CJ")]
         public async Task Alteracao_de_frequencia_pelo_professor_cj()
         {
@@ -77,7 +76,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             };
             await ExecutarTeste(filtroListao);
         }
-        
+
         [Fact(DisplayName = "Frequência Listão - Alteração de frequência pelo Diretor")]
         public async Task Alteracao_de_frequencia_pelo_diretor()
         {
@@ -98,17 +97,17 @@ namespace SME.SGP.TesteIntegracao.Listao
         private async Task ExecutarTeste(FiltroListao filtroListao)
         {
             await CriarDadosBasicos(filtroListao);
-            await CriarRegistroFrenquenciaTodasAulas(filtroListao.Bimestre,COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
-            
+            await CriarRegistroFrenquenciaTodasAulas(filtroListao.Bimestre, COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+
             var listaAulaId = ObterTodos<Dominio.Aula>().Select(c => c.Id).Distinct().ToList();
             listaAulaId.ShouldNotBeNull();
 
             var registroFrequenciaId = (ObterTodos<RegistroFrequencia>().FirstOrDefault()?.Id).GetValueOrDefault();
             registroFrequenciaId.ShouldBeGreaterThan(0);
-            
+
             var frequenciasSalvar = listaAulaId.Select(aulaId => new FrequenciaSalvarAulaAlunosDto
-                {FrequenciaId = registroFrequenciaId,AulaId = aulaId, Alunos = ObterListaFrequenciaSalvarAlunoComAusencia() }).ToList();
-            
+            { FrequenciaId = registroFrequenciaId, AulaId = aulaId, Alunos = ObterListaFrequenciaSalvarAlunoComAusencia() }).ToList();
+
             var useCaseSalvar = InserirFrequenciaListaoUseCase();
             useCaseSalvar.ShouldNotBeNull();
             var retornoSalvar = await useCaseSalvar.Executar(frequenciasSalvar);

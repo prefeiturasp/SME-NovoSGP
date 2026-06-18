@@ -16,6 +16,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<long> Handle(ObterTipoCalendarioIdPorAnoLetivoModalidadeEDataReferenciaQuery request, CancellationToken cancellationToken)
-            => await repositorioTipoCalendario.ObterTipoCalendarioIdPorAnoLetivoModalidadeEDataReferencia(request.AnoLetivo, request.Modalidade, request.DataReferencia);        
+            => await repositorioTipoCalendario.ObterTipoCalendarioIdPorAnoLetivoModalidadeEDataReferencia(request.AnoLetivo, request.Modalidade, request.DataReferencia);
     }
 }

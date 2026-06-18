@@ -7,7 +7,7 @@ namespace SME.SGP.Infra
         public FiltroFechamentoPeriodoAberturaDto(PeriodoFechamentoBimestre periodoFechamentoBimestre, ModalidadeTipoCalendario modalidadeTipoCalendarioo)
         {
             PeriodoFechamentoBimestre = periodoFechamentoBimestre;
-            ModalidadeTipoCalendario = modalidadeTipoCalendarioo; 
+            ModalidadeTipoCalendario = modalidadeTipoCalendarioo;
         }
 
         public ModalidadeTipoCalendario ModalidadeTipoCalendario { get; set; }

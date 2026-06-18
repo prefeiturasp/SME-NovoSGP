@@ -47,7 +47,7 @@ namespace SME.SGP.TesteIntegracao.Commands
         {
             var opcoesResposta = _teste.ObterTodos<OpcaoResposta>();
 
-            var opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP 
+            var opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP
                                                          && q.Nome == ConstantesQuestionarioBuscaAtiva.QUESTAO_OPCAO_RESPOSTA_SIM).FirstOrDefault();
 
             await _teste.InserirNaBase(new OpcaoQuestaoComplementar()
@@ -60,7 +60,7 @@ namespace SME.SGP.TesteIntegracao.Commands
             });
 
 
-            opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_3_ID_JUSTIFICATIVA_MOTIVO_FALTA 
+            opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_3_ID_JUSTIFICATIVA_MOTIVO_FALTA
                                                      && q.Nome == ConstantesQuestionarioBuscaAtiva.QUESTAO_JUSTIFICATIVA_MOTIVO_FALTA_RESPOSTA_OUTROS).FirstOrDefault();
             await _teste.InserirNaBase(new OpcaoQuestaoComplementar()
             {
@@ -71,7 +71,7 @@ namespace SME.SGP.TesteIntegracao.Commands
                 CriadoEm = DateTime.Now
             });
 
-            opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_4_ID_PROCEDIMENTO_REALIZADO 
+            opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_4_ID_PROCEDIMENTO_REALIZADO
                                                      && q.Nome == ConstantesQuestionarioBuscaAtiva.QUESTAO_PROCEDIMENTO_REALIZADO_RESPOSTA_VISITA_DOMICILIAR).FirstOrDefault();
             await _teste.InserirNaBase(new OpcaoQuestaoComplementar()
             {
@@ -82,7 +82,7 @@ namespace SME.SGP.TesteIntegracao.Commands
                 CriadoEm = DateTime.Now
             });
 
-            opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP 
+            opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP
                                                      && q.Nome == ConstantesQuestionarioBuscaAtiva.QUESTAO_OPCAO_RESPOSTA_SIM).FirstOrDefault();
             await _teste.InserirNaBase(new OpcaoQuestaoComplementar()
             {
@@ -93,7 +93,7 @@ namespace SME.SGP.TesteIntegracao.Commands
                 CriadoEm = DateTime.Now
             });
 
-            opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP 
+            opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP
                                                      && q.Nome == ConstantesQuestionarioBuscaAtiva.QUESTAO_OPCAO_RESPOSTA_NAO).FirstOrDefault();
             await _teste.InserirNaBase(new OpcaoQuestaoComplementar()
             {

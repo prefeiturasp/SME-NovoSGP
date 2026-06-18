@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
             if (comando.EhNulo())
                 return false;
 
-            comando.UsuarioConsiderado = !string.IsNullOrWhiteSpace(mensagemRabbit.UsuarioLogadoRF) ? 
+            comando.UsuarioConsiderado = !string.IsNullOrWhiteSpace(mensagemRabbit.UsuarioLogadoRF) ?
                 (mensagemRabbit.UsuarioLogadoRF, mensagemRabbit.PerfilUsuario) : default;
 
             await mediator.Send(comando);

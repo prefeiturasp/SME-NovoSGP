@@ -41,7 +41,7 @@ namespace SME.SGP.Dados
 
         public async Task<long> SalvarAsync(ConselhoClasseConsolidadoTurmaAlunoNota consolidadoNota)
         {
-            
+
             if (consolidadoNota.Id > 0)
             {
                 var sucesso = await database.Conexao.UpdateAsync(consolidadoNota);
@@ -55,7 +55,7 @@ namespace SME.SGP.Dados
         {
             var query = $@"delete from consolidado_conselho_classe_aluno_turma_nota where id = ANY(@idsConsolidacao)";
 
-            return await database.Conexao.ExecuteScalarAsync<bool>(query, new { idsConsolidacao});
+            return await database.Conexao.ExecuteScalarAsync<bool>(query, new { idsConsolidacao });
         }
 
         public async Task<IEnumerable<long>> ObterConsolidacoesConselhoClasseNotaIdsPorConsolidacoesAlunoTurmaIds(long[] consolidacoesAlunoTurmaIds, int bimestre = 0)

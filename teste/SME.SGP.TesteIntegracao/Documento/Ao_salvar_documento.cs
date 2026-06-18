@@ -1,9 +1,9 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Shouldly;
+﻿using Shouldly;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Documento
@@ -23,7 +23,7 @@ namespace SME.SGP.TesteIntegracao.Documento
                 Perfil = ObterPerfilCP(),
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio
             };
-            
+
             await CriarDadosBasicos(filtro);
 
             var useCase = ObterServicoSalvarDocumentoUseCase();
@@ -45,7 +45,7 @@ namespace SME.SGP.TesteIntegracao.Documento
 
             var arquivos = ObterTodos<Arquivo>();
             arquivos.ShouldNotBeNull();
-            
+
             var arquivosCodigos = arquivos.Select(c => c.Codigo).ToArray();
             arquivosCodigos.Any().ShouldBeTrue();
             arquivosCodigos.Length.ShouldBeGreaterThan(1);
@@ -86,7 +86,7 @@ namespace SME.SGP.TesteIntegracao.Documento
             arquivosDoDocumento.ShouldNotBeNull();
             arquivosDoDocumento.Count.ShouldBe(10);
         }
-        
+
         [Fact(DisplayName = "Documento - Deve falhar ao salvar com mais de um arquivo para a classificacao de documento que não permite múltiplos arquivos")]
         public async Task Deve_falhar_salvar_com_mais_de_um_arquivo_classificacao_documento_nao_permite_multiplos_arquivos()
         {
@@ -96,7 +96,7 @@ namespace SME.SGP.TesteIntegracao.Documento
                 Perfil = ObterPerfilCP(),
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio
             };
-            
+
             await CriarDadosBasicos(filtro);
 
             var useCase = ObterServicoSalvarDocumentoUseCase();
@@ -143,15 +143,15 @@ namespace SME.SGP.TesteIntegracao.Documento
                 TurmaId = turmaId,
                 ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138
             };
-            
+
             async Task DoExecutarSalvar()
             {
                 await useCase.Executar(salvarDocumento);
             }
 
-            await Should.ThrowAsync<NegocioException>(DoExecutarSalvar);            
+            await Should.ThrowAsync<NegocioException>(DoExecutarSalvar);
         }
-        
+
         [Fact(DisplayName = "Documento - Deve salvar com um arquivo para a classificacao de documento que não permite múltiplos arquivos")]
         public async Task Deve_salvar_com_um_arquivo_classificacao_documento_nao_permite_multiplos_arquivos()
         {
@@ -161,7 +161,7 @@ namespace SME.SGP.TesteIntegracao.Documento
                 Perfil = ObterPerfilCP(),
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio
             };
-            
+
             await CriarDadosBasicos(filtro);
 
             var useCase = ObterServicoSalvarDocumentoUseCase();
@@ -209,9 +209,9 @@ namespace SME.SGP.TesteIntegracao.Documento
                 TurmaId = turmaId,
                 ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138
             };
-            
+
             (await useCase.Executar(salvarDocumento)).ShouldBeTrue();
-            
+
             var documentos = ObterTodos<Dominio.Documento>();
             documentos.ShouldNotBeNull();
 
@@ -223,7 +223,7 @@ namespace SME.SGP.TesteIntegracao.Documento
 
             var arquivosDoDocumento = documentosArquivos.Where(c => c.DocumentoId == documentoSalvo.Id).ToList();
             arquivosDoDocumento.ShouldNotBeNull();
-            arquivosDoDocumento.Count.ShouldBe(1);            
-        }        
+            arquivosDoDocumento.Count.ShouldBe(1);
+        }
     }
 }

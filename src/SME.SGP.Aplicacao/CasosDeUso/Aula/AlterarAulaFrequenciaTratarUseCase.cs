@@ -21,13 +21,13 @@ namespace SME.SGP.Aplicacao
             if (aulaParaTratar.NaoEhNulo())
             {
                 var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(aulaParaTratar.TurmaId));
-                
+
                 await mediator.Send(new AlterarAulaFrequenciaTratarCommand(aulaParaTratar, filtro.QuantidadeAnterior));
-                
+
                 await mediator.Send(new RecalcularFrequenciaPorTurmaCommand(aulaParaTratar.TurmaId, aulaParaTratar.DisciplinaId, aulaParaTratar.Id));
-                
+
                 await mediator.Send(new IncluirFilaConsolidacaoDiariaDashBoardFrequenciaCommand(turma.Id, aulaParaTratar.DataAula));
-                
+
                 await mediator.Send(new IncluirFilaConsolidacaoSemanalMensalDashBoardFrequenciaCommand(turma.Id, turma.CodigoTurma, turma.ModalidadeCodigo == Modalidade.EducacaoInfantil, turma.AnoLetivo, aulaParaTratar.DataAula));
             }
 

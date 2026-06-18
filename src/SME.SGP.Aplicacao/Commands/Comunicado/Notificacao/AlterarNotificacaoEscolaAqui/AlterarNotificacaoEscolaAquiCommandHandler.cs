@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
             comunicadoServico.CodigoDre = comunicado.CodigoDre;
             comunicadoServico.CodigoUe = comunicado.CodigoUe;
             comunicadoServico.Turmas = comunicado.Turmas.Select(x => x.CodigoTurma);
-            comunicadoServico.TipoComunicado = comunicado.TipoComunicado;            
+            comunicadoServico.TipoComunicado = comunicado.TipoComunicado;
         }
     }
 }

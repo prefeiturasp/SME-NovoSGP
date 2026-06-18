@@ -63,7 +63,7 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
 
             var atividadeAvaliativa = ObterAtividadeAvaliativaDto(COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString(), CategoriaAtividadeAvaliativa.Normal, DATA_02_05, TipoAvaliacaoCodigo.AvaliacaoBimestral);
 
-            await CriarAula(DATA_02_05, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString(), TIPO_CALENDARIO_1,true);
+            await CriarAula(DATA_02_05, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString(), TIPO_CALENDARIO_1, true);
 
             await CriarPeriodoEscolarEAbertura();
 
@@ -113,7 +113,7 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
 
             await CriarPeriodoEscolarEAbertura();
 
-            var filtroAtividadeAvaliativa = ObterFiltroAtividadeAvaliativa(atividadeAvaliativa,1);
+            var filtroAtividadeAvaliativa = ObterFiltroAtividadeAvaliativa(atividadeAvaliativa, 1);
 
             async Task doExecutar() { await comando.Validar(filtroAtividadeAvaliativa); }
 

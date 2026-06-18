@@ -1,5 +1,4 @@
-﻿using Dapper;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
@@ -27,7 +26,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanejamentoAnualPeriodoEscolar>(sql, new { id });
         }
 
-        private static void PreencherComponentesPlanejamentoAnualPeriodoEscolar(PlanejamentoAnualPeriodoEscolar periodoEscolar, 
+        private static void PreencherComponentesPlanejamentoAnualPeriodoEscolar(PlanejamentoAnualPeriodoEscolar periodoEscolar,
                                                                          long componenteCurricularId,
                                                                          PlanejamentoAnualObjetivoAprendizagem objetivo)
         {
@@ -231,7 +230,7 @@ namespace SME.SGP.Dados.Repositorios
                             {(!ensinoEspecial || !turma.EnsinoEspecial ? " and t.ano = @ano " : "")}  
                         group by t.id order by t.nome  ";
 
-            return await database.Conexao.QueryAsync<TurmaParaCopiaPlanoAnualDto>(query, new { turmaId = turma.Id, ueId = turma.UeId, ano, anoLetivo = turma.AnoLetivo});
+            return await database.Conexao.QueryAsync<TurmaParaCopiaPlanoAnualDto>(query, new { turmaId = turma.Id, ueId = turma.UeId, ano, anoLetivo = turma.AnoLetivo });
         }
 
         public async Task<PlanejamentoAnual> ObterPlanejamentoAnualPorAnoEscolaBimestreETurma(long turmaId, long periodoEscolarId, long componenteCurricularId)

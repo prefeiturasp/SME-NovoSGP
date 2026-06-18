@@ -1,16 +1,9 @@
-﻿using Dapper;
-using Microsoft.Extensions.Primitives;
-using Pipelines.Sockets.Unofficial.Arenas;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using StackExchange.Redis;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using SME.SGP.Infra.Interface;
-using SME.SGP.Infra.Interfaces;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -60,7 +53,7 @@ namespace SME.SGP.Dados.Repositorios
             {
                 query.AppendLine("         sum(quantidade_estimada_devolutivas) DevolutivasEstimadas,");
                 query.AppendLine("         sum(quantidade_registrada_devolutivas) DevolutivasRegistradas");
-            }            
+            }
 
             query.AppendLine("  from lista");
             query.AppendLine("where sequencia = 1");

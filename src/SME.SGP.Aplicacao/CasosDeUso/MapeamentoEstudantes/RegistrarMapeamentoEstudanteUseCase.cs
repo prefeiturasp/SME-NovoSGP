@@ -4,7 +4,6 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.MapeamentoEstudantes;
 using System;
@@ -27,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ResultadoMapeamentoEstudanteDto> Executar(MapeamentoEstudanteDto mapeamentoDto)
         {
-            var dadosAluno = await ValidarRegras(mapeamentoDto);           
+            var dadosAluno = await ValidarRegras(mapeamentoDto);
             List<QuestaoObrigatoriaNaoRespondidaDto> questoesObrigatoriasAConsistir = await ObterQuestoesObrigatoriasNaoPreechidas(mapeamentoDto);
             ConsistirQuestoesObrigatoriasNaoPreenchidas(questoesObrigatoriasAConsistir, dadosAluno.MapeamentoPrimeiroAnoEF);
             PreencherConclusaoSecoes(questoesObrigatoriasAConsistir, mapeamentoDto);
@@ -40,7 +39,7 @@ namespace SME.SGP.Aplicacao
                     await AlterarMapeamentoEstudante(mapeamentoDto, mapeamentoEstudante);
                     await RemoverArquivosNaoUtilizados(mapeamentoDto.Secoes);
                     return new ResultadoMapeamentoEstudanteDto
-                        { Id = mapeamentoEstudante.Id, Auditoria = (AuditoriaDto)mapeamentoEstudante };
+                    { Id = mapeamentoEstudante.Id, Auditoria = (AuditoriaDto)mapeamentoEstudante };
                 }
             }
 
@@ -48,7 +47,7 @@ namespace SME.SGP.Aplicacao
             await SalvarMapeamentoEstudante(mapeamentoDto, resultadoMapeamento);
             return resultadoMapeamento;
         }
-      
+
         private async Task<(string CodigoAluno, string NomeAluno, bool MapeamentoPrimeiroAnoEF)> ValidarRegras(MapeamentoEstudanteDto mapeamento)
         {
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(mapeamento.TurmaId));
@@ -101,7 +100,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var q in s.Questoes)
                     if (string.IsNullOrEmpty(q.Resposta) && q.TipoQuestao == TipoQuestao.Upload)
                         resposta.Add(q);
-            
+
             if (resposta.Any())
                 foreach (var item in resposta)
                 {
@@ -115,7 +114,7 @@ namespace SME.SGP.Aplicacao
             foreach (var secao in mapeamentoEstudanteDto.Secoes)
             {
                 if (!secao.Questoes.Any())
-                    throw new NegocioException(string.Format(MensagemNegocioComuns.NENHUMA_QUESTAO_FOI_ENCONTRADA_NA_SECAO_X,secao.SecaoId));
+                    throw new NegocioException(string.Format(MensagemNegocioComuns.NENHUMA_QUESTAO_FOI_ENCONTRADA_NA_SECAO_X, secao.SecaoId));
 
                 var secaoExistente = mapeamentoEstudante.Secoes.FirstOrDefault(s => s.SecaoMapeamentoEstudanteId == secao.SecaoId);
                 if (secaoExistente.EhNulo())
@@ -131,7 +130,7 @@ namespace SME.SGP.Aplicacao
                     var questaoExistente = secaoExistente.Questoes.FirstOrDefault(q => q.QuestaoId == questoes.FirstOrDefault().QuestaoId);
 
                     if (questaoExistente.EhNulo())
-                    {   
+                    {
                         var resultadoMapeamentoQuestao = await mediator.Send(new RegistrarMapeamentoEstudanteSecaoQuestaoCommand(secaoExistente.Id, questoes.FirstOrDefault().QuestaoId));
                         await RegistrarRespostaMapeamento(questoes, resultadoMapeamentoQuestao);
                     }
@@ -189,7 +188,7 @@ namespace SME.SGP.Aplicacao
             foreach (var secao in mapeamentoEstudanteDto.Secoes)
             {
                 if (!secao.Questoes.Any())
-                    throw new NegocioException(string.Format(MensagemNegocioComuns.NENHUMA_QUESTAO_FOI_ENCONTRADA_NA_SECAO_X,secao.SecaoId));
+                    throw new NegocioException(string.Format(MensagemNegocioComuns.NENHUMA_QUESTAO_FOI_ENCONTRADA_NA_SECAO_X, secao.SecaoId));
 
                 var secaoMapeamentoEstudante = await mediator.Send(new RegistrarMapeamentoEstudanteSecaoCommand(resultadoMapeamentoEstudante.Id, secao.SecaoId, secao.Concluido));
                 foreach (var questoes in secao.Questoes.GroupBy(q => q.QuestaoId))
@@ -215,7 +214,7 @@ namespace SME.SGP.Aplicacao
 
             return Enumerable.Empty<RespostaQuestaoObrigatoriaDto>();
         }
-        
+
         private async Task<List<QuestaoObrigatoriaNaoRespondidaDto>> ObterQuestoesObrigatoriasNaoPreechidas(MapeamentoEstudanteDto mapeamentoDto)
         {
             List<QuestaoObrigatoriaNaoRespondidaDto> questoesObrigatoriasAConsistir = new List<QuestaoObrigatoriaNaoRespondidaDto>();
@@ -251,9 +250,9 @@ namespace SME.SGP.Aplicacao
         private IEnumerable<MapeamentoEstudanteSecaoQuestaoDto> ObterRespostasAIncluir(IGrouping<long, MapeamentoEstudanteSecaoQuestaoDto> respostas)
             => respostas.Where(c => c.RespostaMapeamentoEstudanteId == 0);
 
-        private IEnumerable<RespostaMapeamentoEstudante> ObterRespostasAExcluir(QuestaoMapeamentoEstudante questaoExistente, IGrouping<long, MapeamentoEstudanteSecaoQuestaoDto> respostas) 
+        private IEnumerable<RespostaMapeamentoEstudante> ObterRespostasAExcluir(QuestaoMapeamentoEstudante questaoExistente, IGrouping<long, MapeamentoEstudanteSecaoQuestaoDto> respostas)
             => questaoExistente.Respostas.Where(s => !respostas.Any(c => c.RespostaMapeamentoEstudanteId == s.Id));
-            
+
         private IEnumerable<RespostaMapeamentoEstudante> ObterRespostasAAlterar(QuestaoMapeamentoEstudante questaoExistente, IGrouping<long, MapeamentoEstudanteSecaoQuestaoDto> respostas)
             => questaoExistente.Respostas.Where(s => respostas.Any(c => c.RespostaMapeamentoEstudanteId == s.Id));
 

@@ -9,7 +9,7 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioWorkflowAprovacaoNivel(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
-                
+
         }
     }
 }

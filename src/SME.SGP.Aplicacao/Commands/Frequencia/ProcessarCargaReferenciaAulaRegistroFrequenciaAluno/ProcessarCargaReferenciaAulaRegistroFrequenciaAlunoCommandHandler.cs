@@ -17,9 +17,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ProcessarCargaReferenciaAulaRegistroFrequenciaAlunoCommand request, CancellationToken cancellationToken)
         {
-            foreach(var dto in request.ListaDeRegistroAula)
+            foreach (var dto in request.ListaDeRegistroAula)
             {
-               await this.repositorioRegistroFrequenciaAluno.AlterarRegistroAdicionandoAula(dto.RegistroFrequenciaId, dto.AulaId);
+                await this.repositorioRegistroFrequenciaAluno.AlterarRegistroAdicionandoAula(dto.RegistroFrequenciaId, dto.AulaId);
             }
 
             return true;

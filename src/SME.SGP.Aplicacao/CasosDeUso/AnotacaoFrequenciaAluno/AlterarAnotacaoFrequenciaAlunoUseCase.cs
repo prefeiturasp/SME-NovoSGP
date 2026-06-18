@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
             if (!usuario.EhProfessorCj() && !usuario.EhGestorEscolar())
                 await ValidarAtribuicaoUsuario(long.Parse(aula.DisciplinaId), aula.TurmaId, aula.DataAula, usuario);
 
-            await MoverRemoverExcluidos(param,anotacao);
+            await MoverRemoverExcluidos(param, anotacao);
             return await AtualizarAnotacaoFrequenciaAluno(anotacao, param);
         }
         private async Task MoverRemoverExcluidos(AlterarAnotacaoFrequenciaAlunoDto anotacaoAluno, AnotacaoFrequenciaAluno anotacao)
@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
                 anotacaoAluno.Anotacao = moverArquivo;
             }
             if (!string.IsNullOrEmpty(anotacao.Anotacao?.Trim()))
-                  await mediator.Send(new RemoverArquivosExcluidosCommand(anotacao.Anotacao, anotacaoAluno.Anotacao, TipoArquivo.FrequenciaAnotacaoEstudante.Name()));
+                await mediator.Send(new RemoverArquivosExcluidosCommand(anotacao.Anotacao, anotacaoAluno.Anotacao, TipoArquivo.FrequenciaAnotacaoEstudante.Name()));
         }
         private async Task<bool> AtualizarAnotacaoFrequenciaAluno(AnotacaoFrequenciaAluno anotacao, AlterarAnotacaoFrequenciaAlunoDto param)
         {

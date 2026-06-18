@@ -1,6 +1,6 @@
 ﻿namespace SME.SGP.Infra.Dtos
 {
-    public class FiltroNotificacaoCompensacaoAusenciaDto 
+    public class FiltroNotificacaoCompensacaoAusenciaDto
     {
         public FiltroNotificacaoCompensacaoAusenciaDto(long compensacaoId)
         {

@@ -1,8 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
@@ -16,7 +14,7 @@ namespace SME.SGP.Aplicacao
         public long DevolutivaId { get; set; }
     }
 
-    public  class ObterIdsDiariosBordoPorDevolutivaQueryValidator : AbstractValidator<ObterIdsDiariosBordoPorDevolutivaQuery>
+    public class ObterIdsDiariosBordoPorDevolutivaQueryValidator : AbstractValidator<ObterIdsDiariosBordoPorDevolutivaQuery>
     {
         public ObterIdsDiariosBordoPorDevolutivaQueryValidator()
         {

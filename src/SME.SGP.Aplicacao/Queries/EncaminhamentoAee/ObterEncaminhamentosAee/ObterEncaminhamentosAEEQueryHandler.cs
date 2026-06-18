@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
@@ -7,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
                                                                      request.AnoLetivo,
                                                                      turmasCodigos,
                                                                      Paginacao,
-                                                                     request.ExibirEncerrados),anoLetivoConsultaPap);
+                                                                     request.ExibirEncerrados), anoLetivoConsultaPap);
         }
 
         private async Task<string[]> ObterTurmasCodigos(long ueId, int anoLetivo)
@@ -67,25 +67,25 @@ namespace SME.SGP.Aplicacao
             {
                 TotalPaginas = resultadoDto.TotalPaginas,
                 TotalRegistros = resultadoDto.TotalRegistros,
-                Items = await MapearParaDto(resultadoDto.Items,anoLetivoConsultaPap)
+                Items = await MapearParaDto(resultadoDto.Items, anoLetivoConsultaPap)
             };
         }
         private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, int anoLetivo)
         {
-            return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
+            return await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
         }
-        private async Task<IEnumerable<EncaminhamentoAEEResumoDto>> MapearParaDto(IEnumerable<EncaminhamentoAEEAlunoTurmaDto> encaminhamentos,int anoLetivoConsultaPap)
+        private async Task<IEnumerable<EncaminhamentoAEEResumoDto>> MapearParaDto(IEnumerable<EncaminhamentoAEEAlunoTurmaDto> encaminhamentos, int anoLetivoConsultaPap)
         {
             var listaEncaminhamentos = new List<EncaminhamentoAEEResumoDto>();
             IEnumerable<AlunosTurmaProgramaPapDto> matriculadosTurmaPAP = Enumerable.Empty<AlunosTurmaProgramaPapDto>();
-            
-            if(encaminhamentos.Any())
+
+            if (encaminhamentos.Any())
                 matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(encaminhamentos.Select(x => x.AlunoCodigo).ToArray(), anoLetivoConsultaPap);
-            
+
             foreach (var encaminhamento in encaminhamentos)
             {
                 var retorno = await mediator.Send(new ObterTurmasAlunoPorFiltroQuery(encaminhamento.AlunoCodigo, encaminhamento.TurmaAno, false));
-                var aluno = retorno.OrderByDescending(a => a.DataSituacao)?.FirstOrDefault();                
+                var aluno = retorno.OrderByDescending(a => a.DataSituacao)?.FirstOrDefault();
 
                 var ehAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, encaminhamento.TurmaAno));
                 listaEncaminhamentos.Add(new EncaminhamentoAEEResumoDto()

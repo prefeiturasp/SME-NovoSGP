@@ -40,7 +40,7 @@ namespace SME.SGP.Dados.Repositorios
                            where iaq.itinerancia_aluno_id = @id
                              and not iaq.excluido ";
 
-            return await database.Conexao.QueryAsync<ItineranciaAlunoQuestaoDto>(query, new {id});
+            return await database.Conexao.QueryAsync<ItineranciaAlunoQuestaoDto>(query, new { id });
         }
 
         public async Task<IEnumerable<ItineranciaQuestaoBaseDto>> ObterItineranciaQuestaoBase(long[] tiposQuestionario)
@@ -51,7 +51,7 @@ namespace SME.SGP.Dados.Repositorios
                            where q1.tipo = ANY(@tiposQuestionario)
                              and not q.excluido";
 
-            return await database.Conexao.QueryAsync<ItineranciaQuestaoBaseDto>(query, new {tiposQuestionario});
+            return await database.Conexao.QueryAsync<ItineranciaQuestaoBaseDto>(query, new { tiposQuestionario });
         }
 
         public async Task<ItineranciaDto> ObterItineranciaPorId(long id)
@@ -63,7 +63,7 @@ namespace SME.SGP.Dados.Repositorios
                            where id = @id
                              and not excluido";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<ItineranciaDto>(query, new {id});
+            return await database.Conexao.QueryFirstOrDefaultAsync<ItineranciaDto>(query, new { id });
         }
 
         public async Task<IEnumerable<ItineranciaAlunoDto>> ObterItineranciaAlunoPorId(long id)
@@ -75,7 +75,7 @@ namespace SME.SGP.Dados.Repositorios
                             where itinerancia_id = @id
                               and not excluido ";
 
-            return await database.Conexao.QueryAsync<ItineranciaAlunoDto>(query, new {id});
+            return await database.Conexao.QueryAsync<ItineranciaAlunoDto>(query, new { id });
         }
 
         public async Task<IEnumerable<ItineranciaObjetivoDto>> ObterObjetivosItineranciaPorId(long id)
@@ -90,7 +90,7 @@ namespace SME.SGP.Dados.Repositorios
                              and not io.excluido 
                            order by iob.ordem";
 
-            return await database.Conexao.QueryAsync<ItineranciaObjetivoDto>(query, new {id});
+            return await database.Conexao.QueryAsync<ItineranciaObjetivoDto>(query, new { id });
         }
 
         public async Task<IEnumerable<ItineranciaQuestaoDto>> ObterQuestoesItineranciaPorId(long id, long tipoQuestionario)
@@ -109,7 +109,7 @@ namespace SME.SGP.Dados.Repositorios
                              and not q.excluido
                            order by q.ordem";
 
-            return await database.Conexao.QueryAsync<ItineranciaQuestaoDto>(query, new {id, tipoQuestionario});
+            return await database.Conexao.QueryAsync<ItineranciaQuestaoDto>(query, new { id, tipoQuestionario });
         }
 
         public async Task<IEnumerable<int>> ObterAnosLetivosItinerancia()
@@ -162,7 +162,7 @@ namespace SME.SGP.Dados.Repositorios
                         itinerancia.AdicionarObjetivoBase(itineranciaObjetivoBase);
 
                     return itinerancia;
-                }, param: new {id});
+                }, param: new { id });
 
             return lookup.Values.FirstOrDefault();
         }
@@ -171,7 +171,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = MontaQueryCompleta(paginacao, dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo, dataInicio, dataFim, criadoRf);
 
-            var parametros = new {dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo, dataInicio, dataFim, criadoRf};
+            var parametros = new { dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo, dataInicio, dataFim, criadoRf };
             var retorno = new PaginacaoResultadoDto<ItineranciaRetornoQueryDto>();
 
             using (var multi = await database.Conexao.QueryMultipleAsync(query, parametros))
@@ -180,7 +180,7 @@ namespace SME.SGP.Dados.Repositorios
                 retorno.TotalRegistros = multi.ReadFirst<int>();
             }
 
-            retorno.TotalPaginas = (int) Math.Ceiling((double) retorno.TotalRegistros / paginacao.QuantidadeRegistros);
+            retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
 
             return retorno;
         }
@@ -227,7 +227,7 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             sql.AppendLine(" from itinerancia i ");
-            
+
             if (dreId > 0 || ueId > 0)
             {
                 sql.AppendLine(@" inner join ue  on i.ue_id  = ue.id 
@@ -274,7 +274,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select codigo_aluno as alunoCodigo, itinerancia_id as ItineranciaId, turma_id as turmaId from itinerancia_aluno ia 
                             where ia.itinerancia_id = ANY(@itineranciasIds)";
 
-            return await database.Conexao.QueryAsync<ItineranciaCodigoAlunoDto>(query, new {itineranciasIds});
+            return await database.Conexao.QueryAsync<ItineranciaCodigoAlunoDto>(query, new { itineranciasIds });
         }
 
         public async Task<IEnumerable<ItineranciaIdUeInfosDto>> ObterUesItineranciaPorIds(long[] itineranciaIds)
@@ -283,7 +283,7 @@ namespace SME.SGP.Dados.Repositorios
                             inner join ue on ue.id = iu.ue_id 
                             where iu.itinerancia_id  = ANY(@itineranciaIds)";
 
-            return await database.Conexao.QueryAsync<ItineranciaIdUeInfosDto>(query, new {itineranciaIds});
+            return await database.Conexao.QueryAsync<ItineranciaIdUeInfosDto>(query, new { itineranciaIds });
         }
 
         public async Task<IEnumerable<ItineranciaNomeRfCriadorRetornoDto>> ObterRfsCriadoresPorNome(string nomeParaBusca)
@@ -370,7 +370,7 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(" group by iob.nome order by 1;");
 
 
-            return await database.Conexao.QueryAsync<DashboardItineranciaDto>(sql.ToString(), new {ano, dreId, ueId, mes, codigoRF});
+            return await database.Conexao.QueryAsync<DashboardItineranciaDto>(sql.ToString(), new { ano, dreId, ueId, mes, codigoRF });
         }
 
         public async Task<Itinerancia> ObterComUesPorId(long id)
@@ -392,7 +392,7 @@ namespace SME.SGP.Dados.Repositorios
                     registroItinerancia.Ue = ue;
                     registroItinerancia.Dre = dre;
                     return registroItinerancia;
-                }, new {id});
+                }, new { id });
 
             return registroItinerancia;
         }
@@ -404,14 +404,14 @@ namespace SME.SGP.Dados.Repositorios
                          inner join itinerancia_objetivo_base iob on iob.id = io.itinerancia_base_id
                          where io.itinerancia_id = @itineranciaId";
 
-            return await database.Conexao.QueryAsync<ItineranciaNomeDescricaoDto>(query, new {itineranciaId});
+            return await database.Conexao.QueryAsync<ItineranciaNomeDescricaoDto>(query, new { itineranciaId });
         }
 
         public async Task<int> AtualizarStatusItinerancia(long itineranciaId, int situacao)
         {
             var query = @"update itinerancia set situacao = @situacao where id = @itineranciaId ";
 
-            return await database.Conexao.ExecuteAsync(query, new {itineranciaId, situacao});
+            return await database.Conexao.ExecuteAsync(query, new { itineranciaId, situacao });
         }
 
         public async Task<List<QuestaoTipoDto>> ObterTipoDaQuestaoItinerancia(long itineranciaId)
@@ -427,7 +427,7 @@ namespace SME.SGP.Dados.Repositorios
                         left join arquivo a on iq.arquivo_id  = a.id
                         where iq.itinerancia_id  = @itineranciaId ";
 
-            var retorno = await database.Conexao.QueryAsync<QuestaoTipoDto>(query, new {itineranciaId});
+            var retorno = await database.Conexao.QueryAsync<QuestaoTipoDto>(query, new { itineranciaId });
             return retorno.ToList();
         }
 

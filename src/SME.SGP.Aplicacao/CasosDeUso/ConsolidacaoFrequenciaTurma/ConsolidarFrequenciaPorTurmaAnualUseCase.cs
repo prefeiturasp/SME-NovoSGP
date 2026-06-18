@@ -29,9 +29,9 @@ namespace SME.SGP
             return from ft in frequenciaTurma
                    join a in alunos
                     on ft.AlunoCodigo equals a.CodigoAluno
-                    where (AnoAnterior && !a.Inativo && a.DataMatricula.Date <= ft.PeriodoFim.Date) ||
-                        (!AnoAnterior && a.DataMatricula.Date <= ft.PeriodoFim.Date)
-                    select ft;
+                   where (AnoAnterior && !a.Inativo && a.DataMatricula.Date <= ft.PeriodoFim.Date) ||
+                       (!AnoAnterior && a.DataMatricula.Date <= ft.PeriodoFim.Date)
+                   select ft;
         }
     }
 }

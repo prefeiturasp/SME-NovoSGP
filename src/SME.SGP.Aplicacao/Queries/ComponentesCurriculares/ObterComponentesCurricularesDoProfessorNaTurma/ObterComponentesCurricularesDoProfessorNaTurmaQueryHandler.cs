@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
                                                   request.ChecaMotivoDisponibilizacao,
                                                   request.RealizarAgrupamentoComponente);
 
-            var resultado = await repositorioCache.ObterAsync(nomechavecache, 
+            var resultado = await repositorioCache.ObterAsync(nomechavecache,
                 async () => await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(request.CodigoTurma, request.Login,
                                                                request.PerfilUsuario,
                                                                request.RealizarAgrupamentoComponente,

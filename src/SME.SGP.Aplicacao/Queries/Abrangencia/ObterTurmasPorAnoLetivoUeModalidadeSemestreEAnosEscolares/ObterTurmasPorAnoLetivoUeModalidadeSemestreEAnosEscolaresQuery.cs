@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         public int[] Modalidades { get; set; }
         public int Semestre { get; set; }
         public string[] Anos { get; set; }
-        public  bool Historico { get; set; }
+        public bool Historico { get; set; }
     }
     public class ObterTurmasPorAnoLetivoUeModalidadeSemestreEAnosEscolaresQueryValidator : AbstractValidator<ObterTurmasPorAnoLetivoUeModalidadeSemestreEAnosEscolaresQuery>
     {
@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
 
             RuleFor(x => x.CodigoUe)
                 .NotEmpty()
-                .WithMessage("O código da Ue deve ser informado.");            
+                .WithMessage("O código da Ue deve ser informado.");
         }
     }
 }

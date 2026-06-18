@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         {
             var dto = mensagem.ObterObjetoMensagem<ConciliacaoFrequenciaTurmaPorPeriodoDto>();
 
-            foreach (var turma in  dto.TurmasDaModalidade)
+            foreach (var turma in dto.TurmasDaModalidade)
                 await mediator.Send(new IncluirFilaConciliacaoFrequenciaTurmaCommand(turma, dto.Bimestre, dto.ComponenteCurricularId, dto.DataInicio, dto.DataFim));
 
             return true;

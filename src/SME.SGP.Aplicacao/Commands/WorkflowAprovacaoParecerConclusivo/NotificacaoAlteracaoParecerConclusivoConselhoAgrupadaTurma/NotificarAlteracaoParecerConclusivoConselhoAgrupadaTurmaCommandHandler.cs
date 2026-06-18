@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class NotificarAlteracaoParecerConclusivoConselhoAgrupadaTurmaCommandHandler : NotificacaoParecerConclusivoConselhoClasseCommandBase<NotificarAlteracaoParecerConclusivoConselhoAgrupadaTurmaCommand, bool>  
+    public class NotificarAlteracaoParecerConclusivoConselhoAgrupadaTurmaCommandHandler : NotificacaoParecerConclusivoConselhoClasseCommandBase<NotificarAlteracaoParecerConclusivoConselhoAgrupadaTurmaCommand, bool>
     {
         private readonly IRepositorioWFAprovacaoParecerConclusivo repositorioWFAprovacao;
 
         public NotificarAlteracaoParecerConclusivoConselhoAgrupadaTurmaCommandHandler(IMediator mediator, IRepositorioWFAprovacaoParecerConclusivo repositorioWFAprovacao) : base(mediator)
-    {
+        {
             this.repositorioWFAprovacao = repositorioWFAprovacao ?? throw new ArgumentNullException(nameof(repositorioWFAprovacao));
         }
 
@@ -28,14 +28,14 @@ namespace SME.SGP.Aplicacao
             CancellationToken cancellationToken)
         {
             var wfAprovacoes = await repositorioWFAprovacao.ObterPareceresAguardandoAprovacaoSemWorkflow();
-            
+
             if (wfAprovacoes.EhNulo() || !wfAprovacoes.Any())
                 return false;
 
             await CarregarInformacoesParaNotificacao(wfAprovacoes);
-            
+
             var agrupamentoPorTurma = wfAprovacoes.GroupBy(wf => wf.TurmaId);
-            
+
             foreach (var grupoTurma in agrupamentoPorTurma)
             {
                 var idAprovacao = await EnviarNotificacao(grupoTurma.ToList());
@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
 
             return true;
         }
-        
+
         private async Task ExecuteAlteracoesDasAprovacoes(List<WFAprovacaoParecerConclusivoDto> aprovacoesPorTurma, long idAprovacao)
         {
             foreach (var aprovacao in aprovacoesPorTurma)
@@ -62,9 +62,9 @@ namespace SME.SGP.Aplicacao
 
             if (aprovacaoParecerConclusivo.EhNulo())
                 return 0;
-            
+
             var turma = await ObterTurma(aprovacaoParecerConclusivo.TurmaId);
-            
+
             var mensagem = ObterMensagem(turma, aprovacoesPorTurma);
             var conselhoClasseAlunoId = aprovacaoParecerConclusivo.ConselhoClasseAlunoId;
 

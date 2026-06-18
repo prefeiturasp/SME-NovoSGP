@@ -32,8 +32,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
                 return new PaginacaoNotaResultadoDto<TurmaNotasVisaoUeDto>
                 {
                     Items = Enumerable.Empty<TurmaNotasVisaoUeDto>(),
-                    PaginaAtual = this.Paginacao.QuantidadeRegistros > 0 
-                        ? (this.Paginacao.QuantidadeRegistrosIgnorados / this.Paginacao.QuantidadeRegistros) + 1 
+                    PaginaAtual = this.Paginacao.QuantidadeRegistros > 0
+                        ? (this.Paginacao.QuantidadeRegistrosIgnorados / this.Paginacao.QuantidadeRegistros) + 1
                         : 1,
                     RegistrosPorPagina = this.Paginacao.QuantidadeRegistros,
                     TotalPaginas = 0,
@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
         private IEnumerable<TurmaNotasVisaoUeDto> ConverterParaTurmas(List<PainelEducacionalNotasVisaoUeRetornoSelectDto> dadosBrutos)
         {
             return dadosBrutos
-                .GroupBy(d => new { d.AnoTurma, d.Modalidade})
+                .GroupBy(d => new { d.AnoTurma, d.Modalidade })
                 .Select(turmaGrupo => new TurmaNotasVisaoUeDto
                 {
                     Nome = turmaGrupo.Key.AnoTurma,

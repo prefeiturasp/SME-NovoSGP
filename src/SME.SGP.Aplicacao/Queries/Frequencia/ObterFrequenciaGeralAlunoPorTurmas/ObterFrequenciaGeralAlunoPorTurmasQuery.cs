@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         public string[] CodigosTurmas { get; }
         public long TipoCalendarioId { get; }
         public string[] CodigosDisciplinasTurma { get; set; }
-        public IEnumerable<(DateTime? dataMatricula, DateTime? dataSituacao, bool inativo)> MatriculasAlunoNaTurma { get; set; }        
+        public IEnumerable<(DateTime? dataMatricula, DateTime? dataSituacao, bool inativo)> MatriculasAlunoNaTurma { get; set; }
     }
 
     public class ObterFrequenciaGeralAlunoPorTurmasQueryValidator : AbstractValidator<ObterFrequenciaGeralAlunoPorTurmasQuery>

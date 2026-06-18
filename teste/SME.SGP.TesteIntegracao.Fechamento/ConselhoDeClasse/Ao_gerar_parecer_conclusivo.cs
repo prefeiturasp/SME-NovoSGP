@@ -31,9 +31,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
-        
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorTurmaAlunoCodigoQuery, AlunoPorTurmaResposta>),typeof(ObterAlunoPorTurmaAlunoCodigoQueryHandlerFake),ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery, string[]>),typeof(ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQueryHandlerFake),ServiceLifetime.Scoped));
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorTurmaAlunoCodigoQuery, AlunoPorTurmaResposta>), typeof(ObterAlunoPorTurmaAlunoCodigoQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery, string[]>), typeof(ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaItinerarioEnsinoMedioQuery, IEnumerable<TurmaItinerarioEnsinoMedioDto>>), typeof(ObterTurmaItinerarioEnsinoMedioQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesPorTurmasCodigoQuery, IEnumerable<DisciplinaDto>>), typeof(ObterComponentesCurricularesPorTurmasCodigoQueryFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEOLPorTurmasCodigoQuery, IEnumerable<ComponenteCurricularEol>>), typeof(ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake), ServiceLifetime.Scoped));
@@ -56,10 +56,10 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ANO_7,
                 Modalidade.Fundamental,
                 ModalidadeTipoCalendario.FundamentalMedio,
-                false, 
+                false,
                 SituacaoConselhoClasse.EmAndamento,
                 true);
-            
+
             await CriarConselhoClasseTodosBimestres(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota, true);
             await CriarConselhoClasseTodosBimestres(long.Parse(COMPONENTE_MATEMATICA_ID_2), TipoNota.Nota, true);
             await CriarConselhoClasseTodosBimestres(long.Parse(COMPONENTE_HISTORIA_ID_7), TipoNota.Nota, true);
@@ -79,8 +79,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ConselhoClasseId = CONSELHO_CLASSE_ID_1,
                 FechamentoTurmaId = FECHAMENTO_TURMA_ID_1
             };
-            
-            var gerarParecerConclusivoUseCase = ServiceProvider.GetService<IGerarParecerConclusivoUseCase>();;
+
+            var gerarParecerConclusivoUseCase = ServiceProvider.GetService<IGerarParecerConclusivoUseCase>(); ;
 
             var retorno = await gerarParecerConclusivoUseCase.Executar(conselhoClasseFechamentoAluno);
 
@@ -88,7 +88,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             retorno.Id.ShouldBeGreaterThan(0);
             retorno.Nome.ShouldNotBeEmpty();
         }
-        
+
         [Fact]
         public async Task Ao_reprocessar_parecer_conclusivo_aluno()
         {
@@ -98,10 +98,10 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ANO_6,
                 Modalidade.Fundamental,
                 ModalidadeTipoCalendario.FundamentalMedio,
-                false, 
+                false,
                 SituacaoConselhoClasse.EmAndamento,
                 true);
-            
+
             await CriarConselhoClasseTodosBimestres(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota, true);
             await CriarConselhoClasseTodosBimestres(long.Parse(COMPONENTE_MATEMATICA_ID_2), TipoNota.Nota, true);
             await CriarConselhoClasseTodosBimestres(long.Parse(COMPONENTE_HISTORIA_ID_7), TipoNota.Nota, true);
@@ -120,18 +120,18 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ConselhoClasseId = CONSELHO_CLASSE_ID_1,
                 FechamentoTurmaId = FECHAMENTO_TURMA_ID_1
             };
-            
+
             var reprocessarParecerConclusivoAlunoUseCase = ServiceProvider.GetService<IReprocessarParecerConclusivoAlunoUseCase>();
-            
+
             var retorno = await reprocessarParecerConclusivoAlunoUseCase.Executar(new MensagemRabbit(JsonConvert.SerializeObject(conselhoClasseFechamentoAluno)));
-            
+
             retorno.ShouldBeTrue();
-            
+
             var parecerConclusivo = ObterTodos<ConselhoClasseAluno>();
-            parecerConclusivo.Any(f=> f.ConselhoClasseParecerId > 0).ShouldBeTrue();
+            parecerConclusivo.Any(f => f.ConselhoClasseParecerId > 0).ShouldBeTrue();
             parecerConclusivo.Exists(p => p.ParecerAlteradoManual).ShouldBeFalse();
         }
-        
+
         private async Task CriarDados(string perfil, long componente, TipoNota tipo, string anoTurma, Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, bool anoAnterior, SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado, bool criarFechamentoDisciplinaAlunoNota = false)
         {
             var dataAula = anoAnterior ? DATA_02_05_INICIO_BIMESTRE_2.AddYears(-1) : DATA_02_05_INICIO_BIMESTRE_2;

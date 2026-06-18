@@ -1,7 +1,5 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
-using SME.SGP.Dominio;
-using SME.SGP.Infra.Dtos;
 using System;
 using System.Net;
 using System.Net.Http;
@@ -24,7 +22,7 @@ namespace SME.SGP.Aplicacao
         {
             var httpClient = httpClientFactory.CreateClient("servicoAcompanhamentoEscolar");
             var url = new StringBuilder(@"/api/v1/dashboard/adesao/usuarios/validos");
-            
+
             if (!String.IsNullOrEmpty(request.CodigoDre))
                 url.Append(@"?codigoDre=" + request.CodigoDre);
 

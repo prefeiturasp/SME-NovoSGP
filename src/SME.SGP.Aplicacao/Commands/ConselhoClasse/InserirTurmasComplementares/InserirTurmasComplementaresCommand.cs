@@ -3,7 +3,7 @@ using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
-    public  class InserirTurmasComplementaresCommand : IRequest<bool>
+    public class InserirTurmasComplementaresCommand : IRequest<bool>
     {
         public InserirTurmasComplementaresCommand(long turmaId, long conselhoClasseAlunoId, string alunoCodigo)
         {

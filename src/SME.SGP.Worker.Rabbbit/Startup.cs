@@ -7,11 +7,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using SME.SGP.IoC;
-using SME.SGP.Worker.RabbitMQ;
-using System;
 using SME.SGP.Infra;
+using SME.SGP.IoC;
 using SME.SGP.IoC.Extensions;
+using System;
 
 namespace SME.SGP.Worker.Rabbbit
 {
@@ -39,7 +38,7 @@ namespace SME.SGP.Worker.Rabbbit
             app.UseElasticApm(Configuration,
                 new SqlClientDiagnosticSubscriber(),
                 new HttpDiagnosticsSubscriber());
-            
+
             app.UseHealthChecksSgp();
             app.UseHealthCheckPrometheusSgp();
 

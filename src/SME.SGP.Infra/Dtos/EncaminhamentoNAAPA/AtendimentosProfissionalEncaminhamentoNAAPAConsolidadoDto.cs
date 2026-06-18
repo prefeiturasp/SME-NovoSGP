@@ -7,8 +7,8 @@ namespace SME.SGP.Infra
         public AtendimentosProfissionalEncaminhamentoNAAPAConsolidadoDto(long ueId, int anoLetivo, int mes, string nomeProfissional, string rfProfissional, long quantidade, Modalidade modalidade)
         {
             UeId = ueId;
-            AnoLetivo = anoLetivo;  
-            Mes = mes;  
+            AnoLetivo = anoLetivo;
+            Mes = mes;
             NomeProfissional = nomeProfissional;
             RfProfissional = rfProfissional;
             Quantidade = quantidade;

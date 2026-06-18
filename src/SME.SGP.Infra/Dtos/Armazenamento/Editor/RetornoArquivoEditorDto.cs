@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Infra
+﻿namespace SME.SGP.Infra
 {
     public class RetornoArquivoEditorDto
     {
@@ -10,6 +6,6 @@ namespace SME.SGP.Infra
 
         public bool Success { get; set; }
 
-        public ArquivoEditorDto Data {get;set;}
+        public ArquivoEditorDto Data { get; set; }
     }
 }

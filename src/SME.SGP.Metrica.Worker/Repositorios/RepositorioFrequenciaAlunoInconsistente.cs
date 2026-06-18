@@ -10,7 +10,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 {
     public class RepositorioFrequenciaAlunoInconsistente : RepositorioElasticBase<FrequenciaAlunoInconsistente>, IRepositorioFrequenciaAlunoInconsistente
     {
-        public RepositorioFrequenciaAlunoInconsistente(IElasticClient elasticClient, IServicoTelemetria servicoTelemetria, IOptions<ElasticOptions> elasticOptions) 
+        public RepositorioFrequenciaAlunoInconsistente(IElasticClient elasticClient, IServicoTelemetria servicoTelemetria, IOptions<ElasticOptions> elasticOptions)
             : base(elasticClient, servicoTelemetria, elasticOptions, "metricas_sgp_frequencia_inconsistente")
         {
         }

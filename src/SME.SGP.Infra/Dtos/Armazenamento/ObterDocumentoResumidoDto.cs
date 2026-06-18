@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace SME.SGP.Infra
 {
@@ -14,7 +12,7 @@ namespace SME.SGP.Infra
         public long ClassificacaoId { get; set; }
         public string ClassificacaoDescricao { get; set; }
         public long TipoDocumentoId { get; set; }
-        public string TipoDocumentoDescricao { get; set; }        
+        public string TipoDocumentoDescricao { get; set; }
         public string UeId { get; set; }
         public string UeNome { get; set; }
         public string DreId { get; set; }

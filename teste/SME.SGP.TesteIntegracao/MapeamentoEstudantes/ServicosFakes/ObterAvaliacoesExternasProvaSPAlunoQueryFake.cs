@@ -11,7 +11,7 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.ServicosFakes
     {
         private const string CODIGO_ALUNO_AVALIACAO_PROVA_SP_ABAIXO_BASICO = "4";
         public ObterAvaliacoesExternasProvaSPAlunoQueryFake()
-        {}
+        { }
 
         public Task<IEnumerable<AvaliacaoExternaProvaSPDto>> Handle(ObterAvaliacoesExternasProvaSPAlunoQuery request, CancellationToken cancellationToken)
         => Task.Run<IEnumerable<AvaliacaoExternaProvaSPDto>>(
@@ -20,6 +20,6 @@ namespace SME.SGP.TesteIntegracao.MapeamentoEstudantes.ServicosFakes
                             new() { AreaConhecimento = "CIENCIAS DA NATUREZA", Proficiencia = 90.5, Nivel = request.AlunoCodigo.Equals(CODIGO_ALUNO_AVALIACAO_PROVA_SP_ABAIXO_BASICO) ? "ABAIXO DO BÁSICO" : "BÁSICO"},
                             new() { AreaConhecimento = "LINGUA PORTUGUES", Proficiencia = 179.5, Nivel = "BÁSICO"}
                           });
-           
+
     }
 }

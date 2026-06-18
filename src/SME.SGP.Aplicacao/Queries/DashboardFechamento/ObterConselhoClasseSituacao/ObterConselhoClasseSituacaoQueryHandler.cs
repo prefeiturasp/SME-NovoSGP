@@ -18,12 +18,12 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<ConselhoClasseSituacaoQuantidadeDto>> Handle(ObterConselhoClasseSituacaoQuery request, CancellationToken cancellationToken)
         {
-           return await repositorioConselhoClasseConsulta.ObterConselhoClasseSituacao(request.UeId,
-                                                                request.Ano, 
-                                                                request.DreId,
-                                                                request.Modalidade,
-                                                                request.Semestre,   
-                                                                request.Bimestre);
+            return await repositorioConselhoClasseConsulta.ObterConselhoClasseSituacao(request.UeId,
+                                                                 request.Ano,
+                                                                 request.DreId,
+                                                                 request.Modalidade,
+                                                                 request.Semestre,
+                                                                 request.Bimestre);
         }
     }
 }

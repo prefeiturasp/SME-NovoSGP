@@ -3,7 +3,6 @@ using Moq;
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -39,7 +38,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Pendencias
             var param = new MensagemRabbit(JsonConvert.SerializeObject(dto));
             var retorno = await useCase.Executar(param);
 
-            Assert.True(retorno);            
+            Assert.True(retorno);
 
             mediator.Verify(x => x.Send(It.Is<PublicarFilaSgpCommand>(y => y.Rota == RotasRabbitSgpPendencias.RotaExcluirPendenciaCalendarioAnoAnteriorCalendarioUe &&
                 ((ExcluirPendenciaCalendarioAnoAnteriorPorUeDto)y.Filtros).Equals(mensagemEsperadaProximaFila)), It.IsAny<CancellationToken>()), Times.Once);
@@ -98,7 +97,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Pendencias
             var dto = new ExcluirPendenciaCalendarioAnoAnteriorBuscarPorUeDto(null, 1);
             var param = new MensagemRabbit(JsonConvert.SerializeObject(dto));
 
-            await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(param));            
+            await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(param));
 
             mediator.Verify(x => x.Send(It.Is<PublicarFilaSgpCommand>(y => y.Rota == RotasRabbitSgpPendencias.RotaExcluirPendenciaCalendarioAnoAnteriorCalendarioUe &&
                 ((ExcluirPendenciaCalendarioAnoAnteriorPorUeDto)y.Filtros).Equals(mensagemEsperadaProximaFila)), It.IsAny<CancellationToken>()), Times.Never);

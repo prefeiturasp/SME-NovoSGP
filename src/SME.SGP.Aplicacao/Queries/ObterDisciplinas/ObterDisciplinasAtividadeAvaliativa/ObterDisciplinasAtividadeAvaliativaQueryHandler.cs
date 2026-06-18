@@ -10,11 +10,11 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterDisciplinasAtividadeAvaliativaQueryHandler : IRequestHandler<ObterDisciplinasAtividadeAvaliativaQuery, IEnumerable<AtividadeAvaliativaDisciplina>>
     {
-        private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;        
+        private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
 
         public ObterDisciplinasAtividadeAvaliativaQueryHandler(IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina)
         {
-            this.repositorioAtividadeAvaliativaDisciplina = repositorioAtividadeAvaliativaDisciplina ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativaDisciplina));            
+            this.repositorioAtividadeAvaliativaDisciplina = repositorioAtividadeAvaliativaDisciplina ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativaDisciplina));
         }
 
         public async Task<IEnumerable<AtividadeAvaliativaDisciplina>> Handle(ObterDisciplinasAtividadeAvaliativaQuery request, CancellationToken cancellationToken)

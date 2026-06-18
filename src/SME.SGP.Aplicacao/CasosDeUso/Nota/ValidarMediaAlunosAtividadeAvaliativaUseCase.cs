@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioCiclo repositorioCiclo;
         private readonly IServicoUsuario servicoUsuario;
 
-        public ValidarMediaAlunosAtividadeAvaliativaUseCase(IMediator mediator, IRepositorioConceitoConsulta repositorioConceito, 
+        public ValidarMediaAlunosAtividadeAvaliativaUseCase(IMediator mediator, IRepositorioConceitoConsulta repositorioConceito,
                                                             IRepositorioNotaParametro repositorioNotaParametro, IRepositorioAulaConsulta repositorioAula,
                                                             IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor, IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
                                                             IRepositorioCiclo repositorioCiclo, IServicoUsuario servicoUsuario) : base(mediator)
@@ -42,13 +42,13 @@ namespace SME.SGP.Aplicacao
         {
             var filtro = mensagem.ObterObjetoMensagem<FiltroValidarMediaAlunosAtividadeAvaliativaDto>();
             var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
-            var atividadeAvaliativa = filtro.AtividadesAvaliativas.FirstOrDefault(x => x.Id == filtro.ChaveNotasPorAvaliacao);          
+            var atividadeAvaliativa = filtro.AtividadesAvaliativas.FirstOrDefault(x => x.Id == filtro.ChaveNotasPorAvaliacao);
             var valoresConceito = await repositorioConceito.ObterPorData(atividadeAvaliativa.DataAvaliacao);
-            var abrangenciaTurma = await mediator.Send(new ObterAbrangenciaTurmaQuery(atividadeAvaliativa.TurmaId, filtro.Usuario.Login, filtro.Usuario.PerfilAtual, filtro.ConsideraHistorico, filtro.TemAbrangenciaUeOuDreOuSme));              
+            var abrangenciaTurma = await mediator.Send(new ObterAbrangenciaTurmaQuery(atividadeAvaliativa.TurmaId, filtro.Usuario.Login, filtro.Usuario.PerfilAtual, filtro.ConsideraHistorico, filtro.TemAbrangenciaUeOuDreOuSme));
             var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, filtro.Usuario, abrangenciaTurma, abrangenciaTurma.NaoEhNulo());
-            var notaParametro = await repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);          
+            var notaParametro = await repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
             var quantidadeAlunos = filtro.NotasPorAvaliacao.Count();
-            
+
             var quantidadeAlunosSuficientes = ObterQuantidadeAlunosSuficientes(filtro.NotasPorAvaliacao, tipoNota.TipoNota, valoresConceito, notaParametro);
             var periodosEscolares = await BuscarPeriodosEscolaresDaAtividade(atividadeAvaliativa);
             var periodoAtividade = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= atividadeAvaliativa.DataAvaliacao.Date && x.PeriodoFim.Date >= atividadeAvaliativa.DataAvaliacao.Date);
@@ -72,7 +72,7 @@ namespace SME.SGP.Aplicacao
                         atividadeAvaliativa.UeId,
                         atividadeAvaliativa.TurmaId,
                         DateTimeExtension.HorarioBrasilia().Year,
-                        usuarioId: usuarioCP.Id ));
+                        usuarioId: usuarioCP.Id));
             }
 
             return true;
@@ -83,8 +83,8 @@ namespace SME.SGP.Aplicacao
             return (quantidadeAlunosSuficientes < (quantidadeAlunos * percentualAlunosInsuficientes / 100));
         }
 
-        private int ObterQuantidadeAlunosSuficientes(IEnumerable<NotaConceito> notasPorAvaliacao, 
-                                                     TipoNota tipoNota, 
+        private int ObterQuantidadeAlunosSuficientes(IEnumerable<NotaConceito> notasPorAvaliacao,
+                                                     TipoNota tipoNota,
                                                      IEnumerable<Conceito> valoresConceito,
                                                      NotaParametro notaParametro)
         {
@@ -98,7 +98,8 @@ namespace SME.SGP.Aplicacao
                 {
                     if (nota.Nota >= notaParametro.Media)
                         retorno++;
-                } else if (valorConceito != null && valorConceito.Aprovado)
+                }
+                else if (valorConceito != null && valorConceito.Aprovado)
                     retorno++;
 
             }

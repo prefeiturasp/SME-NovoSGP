@@ -1,12 +1,9 @@
 ﻿using FluentValidation;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirFrequenciaDaAulaCommand: IRequest<bool>
+    public class ExcluirFrequenciaDaAulaCommand : IRequest<bool>
     {
         public ExcluirFrequenciaDaAulaCommand(long aulaId)
         {
@@ -16,7 +13,7 @@ namespace SME.SGP.Aplicacao
         public long AulaId { get; set; }
     }
 
-    public class ExcluirFrequenciaDaAulaCommandValidator: AbstractValidator<ExcluirFrequenciaDaAulaCommand>
+    public class ExcluirFrequenciaDaAulaCommandValidator : AbstractValidator<ExcluirFrequenciaDaAulaCommand>
     {
         public ExcluirFrequenciaDaAulaCommandValidator()
         {

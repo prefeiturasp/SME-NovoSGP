@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -24,7 +23,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi possível localizar o parâmetro do sistema de início de ano letivo PAP.");
 
             var anoInicial = int.Parse(parametroAnoInicial.FirstOrDefault().Valor);
-         
+
             var retorno = new List<ObterAnoLetivoPAPRetornoDto>();
 
             while (anoInicial <= request.AnoAtual)

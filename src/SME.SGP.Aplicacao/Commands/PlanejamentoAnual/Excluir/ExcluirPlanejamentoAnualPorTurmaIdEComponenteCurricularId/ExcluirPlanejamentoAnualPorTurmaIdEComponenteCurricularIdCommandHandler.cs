@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +20,7 @@ namespace SME.SGP.Aplicacao
         public ExcluirPlanejamentoAnualPorTurmaIdEComponenteCurricularIdCommandHandler(IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual,
                                                      IRepositorioPlanejamentoAnualPeriodoEscolar repositorioPlanejamentoAnualPeriodoEscolar,
                                                      IRepositorioPlanejamentoAnualComponente repositorioPlanejamentoAnualComponente,
-                                                     IRepositorioPlanejamentoAnualObjetivosAprendizagem repositorioPlanejamentoAnualObjetivosAprendizagem, 
+                                                     IRepositorioPlanejamentoAnualObjetivosAprendizagem repositorioPlanejamentoAnualObjetivosAprendizagem,
                                                      IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                                                      IMediator mediator) : base(mediator)
         {
@@ -38,7 +37,7 @@ namespace SME.SGP.Aplicacao
                 return true;
 
             IList<PlanejamentoAnualPeriodoEscolar> listaPlanejamentoAnualPeriodoEscolarOrigem = new List<PlanejamentoAnualPeriodoEscolar>();
-            comando.IdsPlanejamentoAnualPeriodoEscolarSelecionados.ToList().ForEach(id => 
+            comando.IdsPlanejamentoAnualPeriodoEscolarSelecionados.ToList().ForEach(id =>
             {
                 listaPlanejamentoAnualPeriodoEscolarOrigem.Add(repositorioPlanejamentoAnualPeriodoEscolar.ObterPorId(id));
             });

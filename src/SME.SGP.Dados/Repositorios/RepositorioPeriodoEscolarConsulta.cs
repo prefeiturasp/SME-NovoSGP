@@ -108,11 +108,11 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolar>(query, new { anoLetivo, modalidade = (int)modalidade, semestre });
         }
-        
+
         private string IncluirFiltroSemestrePorModalidade(ModalidadeTipoCalendario modalidade, int semestre)
         {
             return modalidade.EhEjaOuCelp() && semestre.EhMaiorQueZero()
-                ? ObterFiltroSemestre() 
+                ? ObterFiltroSemestre()
                 : string.Empty;
         }
 
@@ -218,7 +218,7 @@ namespace SME.SGP.Dados.Repositorios
                                 and not tc.excluido
                                 {IncluirFiltroSemestrePorModalidade(modalidadeTipoCalendario, semestre)}";
 
-            return await database.Conexao.QueryAsync<PeriodoEscolar>(query, new { modalidadeTipoCalendario, anoLetivo, semestre },queryName: "ObterPorAnoLetivoEModalidadeTurma");
+            return await database.Conexao.QueryAsync<PeriodoEscolar>(query, new { modalidadeTipoCalendario, anoLetivo, semestre }, queryName: "ObterPorAnoLetivoEModalidadeTurma");
         }
 
         public async Task<long> ObterPeriodoEscolarIdPorTurma(string codigoTurma, ModalidadeTipoCalendario modalidade, DateTime dataReferencia)

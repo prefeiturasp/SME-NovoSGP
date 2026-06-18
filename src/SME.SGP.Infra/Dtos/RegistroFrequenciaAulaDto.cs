@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Infra
 {
@@ -15,6 +13,6 @@ namespace SME.SGP.Infra
         public string CodigoDisciplina { get; set; }
         public string ProfessorRf { get; set; }
         public DateTime DataAula { get; set; }
-        public string NomeTipoEscola { get; set; }        
+        public string NomeTipoEscola { get; set; }
     }
 }

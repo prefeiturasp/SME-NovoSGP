@@ -1,18 +1,18 @@
-﻿using System;
+﻿using MediatR;
+using Newtonsoft.Json;
+using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using Newtonsoft.Json;
-using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterTurmasPapPorAnoLetivoQueryHandler : IRequestHandler<ObterTurmasPapPorAnoLetivoQuery,IEnumerable<TurmasPapDto>>
+    public class ObterTurmasPapPorAnoLetivoQueryHandler : IRequestHandler<ObterTurmasPapPorAnoLetivoQuery, IEnumerable<TurmasPapDto>>
     {
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IMediator mediator;
@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<TurmasPapDto>> Handle(ObterTurmasPapPorAnoLetivoQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
-            var url = string.Format(ServicosEolConstants.URL_TURMAS_TURMAS_PAP,request.AnoLetivo,request.CodigoUe);
+            var url = string.Format(ServicosEolConstants.URL_TURMAS_TURMAS_PAP, request.AnoLetivo, request.CodigoUe);
 
             try
             {
@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
                 if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
                     return Enumerable.Empty<TurmasPapDto>();
                 var json = await resposta.Content.ReadAsStringAsync(cancellationToken);
-                return  JsonConvert.DeserializeObject<List<TurmasPapDto>>(json);
+                return JsonConvert.DeserializeObject<List<TurmasPapDto>>(json);
             }
             catch (Exception e)
             {

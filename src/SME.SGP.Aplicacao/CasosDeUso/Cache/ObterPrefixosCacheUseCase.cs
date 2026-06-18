@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public IEnumerable<string> Executar()
         {
-            foreach(var chave in typeof(NomeChaveCache).ObterConstantesPublicas<string>())
+            foreach (var chave in typeof(NomeChaveCache).ObterConstantesPublicas<string>())
             {
                 yield return $"{config.Prefixo}{chave.Split(':')[0]}";
             }

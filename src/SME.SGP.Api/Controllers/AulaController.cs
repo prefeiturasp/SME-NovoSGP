@@ -44,7 +44,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await excluirAulaUseCase.Executar(new ExcluirAulaDto()
             {
                 AulaId = id,
-                RecorrenciaAula = recorrencia                
+                RecorrenciaAula = recorrencia
             }));
         }
 
@@ -65,13 +65,13 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterRecorrenciaDaSerie(long aulaId, [FromServices] IConsultasAula consultas, [FromServices] IObterFrequenciaOuPlanoNaRecorrenciaUseCase obterFrequenciaOuPlanoNaRecorrenciaUseCase)
         {
             var recorrencia = consultas.ObterRecorrenciaDaSerie(aulaId);
-            
-            var quantidadeAulas = recorrencia == (int)RecorrenciaAula.AulaUnica 
+
+            var quantidadeAulas = recorrencia == (int)RecorrenciaAula.AulaUnica
                                                ? 1
                                                : await consultas
-                                                       .ObterQuantidadeAulasRecorrentes(aulaId, 
+                                                       .ObterQuantidadeAulasRecorrentes(aulaId,
                                                                                         RecorrenciaAula.RepetirTodosBimestres);
-                
+
             var existeFrequenciaPlanoAula = await obterFrequenciaOuPlanoNaRecorrenciaUseCase.Executar(aulaId);
 
             var retorno = new AulaRecorrenciaDto()

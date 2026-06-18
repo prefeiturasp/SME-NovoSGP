@@ -1,11 +1,11 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PlanoAEE;
-using SME.SGP.Infra.Dtos.PlanoAEE;
 using SME.SGP.Aplicacao.Queries.PlanoAEE.VerificarExistenciaPlanoAEEPorTurma;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Infra.Dtos.PlanoAEE;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {

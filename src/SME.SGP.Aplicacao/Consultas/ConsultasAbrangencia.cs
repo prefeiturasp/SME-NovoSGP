@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
 
             return await repositorioAbrangencia.ObterAbrangenciaTurma(turma, login, perfil, consideraHistorico, abrangenciaPermitida);
         }
-        
+
         public async Task<IEnumerable<int>> ObterAnosLetivos(bool consideraHistorico, int anoMinimo)
         {
             var login = servicoUsuario.ObterLoginAtual();
@@ -73,12 +73,12 @@ namespace SME.SGP.Aplicacao
             return anosLetivos.Distinct().OrderByDescending(a => a).ToList();
         }
 
-        public async Task<IEnumerable<OpcaoDropdownDto>> ObterAnosTurmasPorUeModalidade(string codigoUe, Modalidade modalidade, bool consideraHistorico,int? anoLetivo)
+        public async Task<IEnumerable<OpcaoDropdownDto>> ObterAnosTurmasPorUeModalidade(string codigoUe, Modalidade modalidade, bool consideraHistorico, int? anoLetivo)
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
 
-            var retorno = await repositorioAbrangencia.ObterAnosTurmasPorCodigoUeModalidade(login, perfil, codigoUe, modalidade, consideraHistorico,anoLetivo);
+            var retorno = await repositorioAbrangencia.ObterAnosTurmasPorCodigoUeModalidade(login, perfil, codigoUe, modalidade, consideraHistorico, anoLetivo);
 
             if (retorno.NaoEhNulo() && retorno.Any())
                 return TransformarAnosEmOpcoesDropdownDto(retorno.OrderBy(q => q), modalidade);
@@ -197,11 +197,11 @@ namespace SME.SGP.Aplicacao
             List<AbrangenciaTurmaRetorno> turmasMesmoComponente = new List<AbrangenciaTurmaRetorno>();
             var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(long.Parse(codigoComponente)));
 
-            foreach(var turma in turmas)
+            foreach (var turma in turmas)
             {
                 var disciplinasTurma = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(turma.Codigo));
-                bool possuiMesmoComponente = disciplinasTurma.Any(d => d.CodigoComponenteCurricular.ToString() == codigoComponente  || 
-                                                                  ((componenteCurricular?.TerritorioSaber ?? false) && 
+                bool possuiMesmoComponente = disciplinasTurma.Any(d => d.CodigoComponenteCurricular.ToString() == codigoComponente ||
+                                                                  ((componenteCurricular?.TerritorioSaber ?? false) &&
                                                                    d.CodigoComponenteTerritorioSaber == componenteCurricular.CodigoComponenteCurricularTerritorioSaber));
 
                 if (possuiMesmoComponente)

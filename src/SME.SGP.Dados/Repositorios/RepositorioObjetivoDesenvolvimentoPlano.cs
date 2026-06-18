@@ -1,10 +1,8 @@
-﻿using Dapper;
-using SME.SGP.Dados.Contexto;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using System.Collections.Generic;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
+using System.Collections.Generic;
 
 namespace SME.SGP.Dados.Repositorios
 {

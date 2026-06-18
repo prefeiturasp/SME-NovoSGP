@@ -2,7 +2,6 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,16 +27,16 @@ namespace SME.SGP.Aplicacao
                 try
                 {
                     await repositorioPendenciaEncaminhamentoAEE.Excluir(request.PendenciaId);
-                    
+
                     await mediator.Send(new ExcluirPendenciaPorIdCommand(request.PendenciaId));
-                    
+
                     await mediator.Send(new ExcluirPendenciaPerfilCommand(request.PendenciaId));
-                    
+
                     unitOfWork.PersistirTransacao();
 
                     return true;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     unitOfWork.Rollback();
                     throw;

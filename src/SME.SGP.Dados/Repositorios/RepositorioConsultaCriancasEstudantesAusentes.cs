@@ -63,7 +63,7 @@ namespace SME.SGP.Dados.Repositorios
                                                    and extract(year from a_ext.data_aula) = @AnoLetivo
                                                    and not rfa.excluido
                                                    and rfa_ext.valor <> @tipoFalta)
-                                   { ObterQueryUltimasAulas(filtro.Ausencias) }
+                                   {ObterQueryUltimasAulas(filtro.Ausencias)}
                                    order by rfa.codigo_aluno, a.data_aula)");
 
             sql.AppendLine(ObterQueryResultadoAlunosAusentes(filtro.Ausencias));
@@ -93,7 +93,7 @@ namespace SME.SGP.Dados.Repositorios
                                    linha - row_number() over(partition by codigo_aluno order by linha) as sequencia_frequencia
                                    from ausencias) tab
                             group by codigo_aluno, sequencia_frequencia
-                            { ObterHavingAusencia(ausencias) }) tab
+                            {ObterHavingAusencia(ausencias)}) tab
                      group by CodigoEol";
         }
 

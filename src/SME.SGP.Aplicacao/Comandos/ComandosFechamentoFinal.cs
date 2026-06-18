@@ -11,8 +11,8 @@ namespace SME.SGP.Aplicacao
     public class ComandosFechamentoFinal : IComandosFechamentoFinal
     {
         private readonly IRepositorioFechamentoAlunoConsulta repositorioFechamentoAluno;
-        private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;        
-        private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;        
+        private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
         private readonly IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina;
         private readonly IServicoFechamentoFinal servicoFechamentoFinal;
         private readonly IMediator mediator;
@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
             IServicoFechamentoFinal servicoFechamentoFinal,
             IRepositorioTurmaConsulta repositorioTurmaConsulta,
             IRepositorioFechamentoAlunoConsulta repositorioFechamentoAluno,
-            IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma,            
+            IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma,
             IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina,
             IMediator mediator)
         {
@@ -60,10 +60,10 @@ namespace SME.SGP.Aplicacao
         private async Task<Turma> ObterTurma(string turmaCodigo)
         {
             var turma = await repositorioTurmaConsulta.ObterTurmaComUeEDrePorCodigo(turmaCodigo);
-            
+
             if (turma.EhNulo())
                 throw new NegocioException("Não foi possível localizar a turma.");
-            
+
             return turma;
         }
 
@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> ParametroAprovacaoAtivo(int anoLetivo)
         {
             var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.AprovacaoAlteracaoNotaFechamento, anoLetivo));
-            
+
             if (parametro.EhNulo())
                 throw new NegocioException($"Não foi possível localizar o parametro 'AprovacaoAlteracaoNotaFechamento' para o ano {anoLetivo}");
 

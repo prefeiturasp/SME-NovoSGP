@@ -1,19 +1,11 @@
-﻿using MediatR;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ABAE.Base;
-using SME.SGP.TesteIntegracao.AtribuicaoCJs.ServicosFake;
-using SME.SGP.TesteIntegracao.ServicosFake;
-using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -34,7 +26,7 @@ namespace SME.SGP.TesteIntegracao.ABAE
         public async Task Ao_obter_funcionarios_ABAE_por_dre()
         {
             await CriarDadosBasicos(true);
-          
+
             var useCase = ServiceProvider.GetService<IObterFuncionariosABAEUseCase>();
 
             var funcionarios = await useCase.Executar(new FiltroFuncionarioDto() { CodigoDRE = DRE_CODIGO_1 });

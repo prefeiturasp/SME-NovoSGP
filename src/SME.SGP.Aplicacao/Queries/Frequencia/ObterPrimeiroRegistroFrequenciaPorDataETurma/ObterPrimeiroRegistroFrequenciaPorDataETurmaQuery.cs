@@ -2,7 +2,6 @@
 using MediatR;
 using SME.SGP.Infra.Dtos.Frequencia;
 using System;
-using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {

@@ -36,10 +36,10 @@ namespace SME.SGP.Aplicacao
                 NotificacaoTipo = NotificacaoTipo.Calendario,
                 NotificacaoMensagem = $"Foram criadas {request.Quantidade} aula(s) de reposição de {request.ComponenteCurricularNome} na turma {request.TurmaNome} da {request.UeNome} ({request.DreNome}). Para que esta aula seja considerada válida você precisa aceitar esta notificação. Para visualizar a aula clique  <a href='{linkParaReposicaoAula}'>aqui</a>."
             };
-            
+
             wfAprovacaoAula.AdicionarNivel(Cargo.Diretor);
 
-            var wfAprovacaoId =  await comandosWorkflowAprovacao.Salvar(wfAprovacaoAula);
+            var wfAprovacaoId = await comandosWorkflowAprovacao.Salvar(wfAprovacaoAula);
 
             return wfAprovacaoId;
         }

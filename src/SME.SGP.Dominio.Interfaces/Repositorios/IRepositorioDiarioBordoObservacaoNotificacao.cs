@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
-    public interface IRepositorioDiarioBordoObservacaoNotificacao   
+    public interface IRepositorioDiarioBordoObservacaoNotificacao
     {
         Task<IEnumerable<DiarioBordoObservacaoNotificacaoUsuarioDto>> ObterPorDiarioBordoObservacaoId(long diarioBordoObservacaoId);
         Task<IEnumerable<long>> ObterObservacaoPorId(long diarioBordoId);

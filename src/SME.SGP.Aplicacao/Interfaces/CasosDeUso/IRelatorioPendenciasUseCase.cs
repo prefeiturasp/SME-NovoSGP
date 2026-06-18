@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using SME.SGP.Infra;
+﻿using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.Relatorios;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso
 {

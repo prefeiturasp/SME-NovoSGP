@@ -1,13 +1,11 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao 
-{ 
+namespace SME.SGP.Aplicacao
+{
     public class ObterNotaConselhoEmAprovacaoQueryHandler : IRequestHandler<ObterNotaConselhoEmAprovacaoQuery, double?>
     {
         private readonly IRepositorioConselhoClasseNotaConsulta repositorioConselhoClasseNota;
@@ -19,6 +17,6 @@ namespace SME.SGP.Aplicacao
 
         public async Task<double?> Handle(ObterNotaConselhoEmAprovacaoQuery request, CancellationToken cancellationToken)
             => await repositorioConselhoClasseNota.VerificaNotaConselhoEmAprovacao(request.ConselhoClasseNotaId);
-    
+
     }
 }

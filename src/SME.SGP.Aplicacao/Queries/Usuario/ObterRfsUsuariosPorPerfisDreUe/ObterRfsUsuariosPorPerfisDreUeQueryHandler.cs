@@ -1,19 +1,14 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
+using Newtonsoft.Json;
 using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Constantes;
 
 namespace SME.SGP.Aplicacao
 {
@@ -40,7 +35,7 @@ namespace SME.SGP.Aplicacao
             {
                 var mensagem = await resposta.Content.ReadAsStringAsync();
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro ao obter os usuários por perfil/ue/dre no EOL, código de erro: {resposta.StatusCode}, mensagem: {mensagem ?? "Sem mensagem"},Parametros:{parametros}, Request: {JsonConvert.SerializeObject(resposta.RequestMessage)}, ", LogNivel.Negocio, LogContexto.ApiEol, string.Empty));
-                
+
                 return Enumerable.Empty<UsuarioPerfilsAbrangenciaDto>();
             }
 

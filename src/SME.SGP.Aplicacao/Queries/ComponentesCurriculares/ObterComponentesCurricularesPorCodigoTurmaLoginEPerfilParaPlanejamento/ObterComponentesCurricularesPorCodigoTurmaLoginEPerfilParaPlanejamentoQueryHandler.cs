@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
-                                                                       
+
         public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamentoQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
 
             var componentesCurricularesSgp = await mediator.Send(new ObterInfoPedagogicasComponentesCurricularesPorIdsQuery(retorno.ObterCodigos()));
             retorno.PreencherInformacoesPegagogicasSgp(componentesCurricularesSgp);
-            return retorno;   
+            return retorno;
         }
     }
 }

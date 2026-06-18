@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFake
 {
-    public class ObterTurmasAlunoPorFiltroQueryHandlerFake  : IRequestHandler<ObterTurmasAlunoPorFiltroQuery, IEnumerable<AlunoPorTurmaResposta>>
+    public class ObterTurmasAlunoPorFiltroQueryHandlerFake : IRequestHandler<ObterTurmasAlunoPorFiltroQuery, IEnumerable<AlunoPorTurmaResposta>>
     {
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterTurmasAlunoPorFiltroQuery request, CancellationToken cancellationToken)
@@ -157,8 +157,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFake
                       SituacaoMatricula = "NÃO COMPARECEU",
                       NomeAluno = "NOME ALUNO 13",
                       CodigoTurma = 1
-                  },  
-              }); 
+                  },
+              });
         }
     }
 }

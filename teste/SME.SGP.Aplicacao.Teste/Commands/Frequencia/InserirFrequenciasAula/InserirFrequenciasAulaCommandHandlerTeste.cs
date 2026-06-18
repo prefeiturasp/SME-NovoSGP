@@ -1,12 +1,12 @@
 ﻿using MediatR;
 using Moq;
 using SME.SGP.Dominio;
-using System.Threading;
+using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
-using System.Collections.Generic;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao.Teste.Commands.Frequencia.InserirFrequenciasAula
 {

@@ -36,7 +36,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaCargaAulas
             var retorno = await useCase.Executar(new MensagemRabbit(""));
             retorno.ShouldBeTrue();
         }
-        
+
         [Fact(DisplayName = "Deve Executar a Rotina de Carga de Aulas e Dias ,informando o Ano Letivo")]
         public async Task Deve_retornar_true_informando_o_ano_letivo()
         {
@@ -44,23 +44,23 @@ namespace SME.SGP.TesteIntegracao.PendenciaCargaAulas
             var retorno = await useCase.Executar(new MensagemRabbit("2023"));
             retorno.ShouldBeTrue();
         }
-        
+
         [Fact(DisplayName = "Deve Obter Pendencia Por Ue para Realizar a Carga, sem informar o ano")]
         public async Task Deve_Obter_Pendencia_Por_Ue_para_Realizar_a_Carga_sem_ano()
         {
             await CriarDadosBasicos();
             var useCase = ServiceProvider.GetService<IObterQuantidadeAulaDiaPendenciaPorUeUseCase>();
-            var filtro = new ObterQuantidadeAulaDiaPendenciaDto {AnoLetivo = null, UeId = 1};
+            var filtro = new ObterQuantidadeAulaDiaPendenciaDto { AnoLetivo = null, UeId = 1 };
             var retornoUsecase = await useCase.Executar(new MensagemRabbit(JsonConvert.SerializeObject(filtro)));
             retornoUsecase.ShouldBeTrue();
         }
-        
+
         [Fact(DisplayName = "Deve Obter Pendencia Por Ue para Realizar a Carga, informando o ano")]
         public async Task Deve_Obter_Pendencia_Por_Ue_para_Realizar_a_Carga_informando_ano()
         {
             await CriarDadosBasicos();
             var useCase = ServiceProvider.GetService<IObterQuantidadeAulaDiaPendenciaPorUeUseCase>();
-            var filtro = new ObterQuantidadeAulaDiaPendenciaDto {AnoLetivo = 2023, UeId = 1};
+            var filtro = new ObterQuantidadeAulaDiaPendenciaDto { AnoLetivo = 2023, UeId = 1 };
             var retornoUsecase = await useCase.Executar(new MensagemRabbit(JsonConvert.SerializeObject(filtro)));
             retornoUsecase.ShouldBeTrue();
         }
@@ -70,14 +70,14 @@ namespace SME.SGP.TesteIntegracao.PendenciaCargaAulas
         {
             await CriarDadosBasicos();
             var useCase = ServiceProvider.GetService<ICargaQuantidadeAulaDiaPendenciaUseCase>();
-            
+
             var pendenciasExistentesNaBase = ObterTodos<Pendencia>();
             pendenciasExistentesNaBase.Count(x => x.QuantidadeDias.EhNulo() && x.QuantidadeAulas.EhNulo()).ShouldBeEquivalentTo(2);
-            
-            var carga = new AulasDiasPendenciaDto {PendenciaId = 1, QuantidadeAulas = 1, QuantidadeDias = 1};
+
+            var carga = new AulasDiasPendenciaDto { PendenciaId = 1, QuantidadeAulas = 1, QuantidadeDias = 1 };
             var retornoUsecase = await useCase.Executar(new MensagemRabbit(JsonConvert.SerializeObject(carga)));
             retornoUsecase.ShouldBeTrue();
-            
+
             var pendenciasNaBaseAposAtualizacao = ObterTodos<Pendencia>();
             pendenciasNaBaseAposAtualizacao.Count(x => x.QuantidadeDias.EhNulo() && x.QuantidadeAulas.EhNulo()).ShouldBeEquivalentTo(1);
             pendenciasNaBaseAposAtualizacao.Count(x => x.QuantidadeDias == 1 && x.QuantidadeAulas == 1).ShouldBeEquivalentTo(1);
@@ -89,7 +89,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaCargaAulas
             await InserirNaBase(new Pendencia()
             {
                 Titulo = "Pendencia de Teste 1",
-                Descricao =  "Desc Pendencia de Teste 1",
+                Descricao = "Desc Pendencia de Teste 1",
                 Situacao = SituacaoPendencia.Pendente,
                 Tipo = TipoPendencia.AulasSemFrequenciaNaDataDoFechamento,
                 Excluido = false,
@@ -100,7 +100,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaCargaAulas
             await InserirNaBase(new Pendencia()
             {
                 Titulo = "Pendencia de Teste 2",
-                Descricao =  "Desc Pendencia de Teste 2",
+                Descricao = "Desc Pendencia de Teste 2",
                 Situacao = SituacaoPendencia.Pendente,
                 Tipo = TipoPendencia.ResultadosFinaisAbaixoDaMedia,
                 Excluido = false,

@@ -10,7 +10,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 {
     public class RepositorioConsolidacaoConselhoClasseNotaNulos : RepositorioElasticBase<ConsolidacaoConselhoClasseNotaNulos>, IRepositorioConsolidacaoConselhoClasseNotaNulos
     {
-        public RepositorioConsolidacaoConselhoClasseNotaNulos(IElasticClient elasticClient, IServicoTelemetria servicoTelemetria, IOptions<ElasticOptions> elasticOptions) 
+        public RepositorioConsolidacaoConselhoClasseNotaNulos(IElasticClient elasticClient, IServicoTelemetria servicoTelemetria, IOptions<ElasticOptions> elasticOptions)
             : base(elasticClient, servicoTelemetria, elasticOptions, "metricas_sgp_consolidacao_cc_nota_nulos")
         {
         }

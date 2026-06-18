@@ -39,7 +39,7 @@ namespace SME.SGP.Dados.Repositorios
                           from plano_aee_versao pav                         
                          order by pav.numero desc";
             }
-            
+
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanoAEEVersaoDto>(query, new { planoId });
         }

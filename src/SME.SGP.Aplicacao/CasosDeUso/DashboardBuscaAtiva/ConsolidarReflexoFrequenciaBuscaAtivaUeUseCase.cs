@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
 
         public ConsolidarReflexoFrequenciaBuscaAtivaUeUseCase(IMediator mediator, IRepositorioRegistroAcaoBuscaAtiva repositorioBuscaAtiva) : base(mediator)
         {
-            this.repositorioBuscaAtiva = repositorioBuscaAtiva ?? throw new System.ArgumentNullException(nameof(repositorioBuscaAtiva)); 
+            this.repositorioBuscaAtiva = repositorioBuscaAtiva ?? throw new System.ArgumentNullException(nameof(repositorioBuscaAtiva));
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagem)

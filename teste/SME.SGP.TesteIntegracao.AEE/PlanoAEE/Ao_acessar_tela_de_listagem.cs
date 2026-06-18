@@ -37,7 +37,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
         {
             var servicoCadastrarPlanoAee = ObterServicoSalvarPlanoAEEUseCase();
             var servicoObterPlanoAEE = ObterServicoObterPlanosAEEUseCase();
-            
+
             await CriarDadosBasicos(new FiltroPlanoAee()
             {
                 Modalidade = Modalidade.Fundamental,
@@ -46,7 +46,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             });
 
             await CriarTurma(Modalidade.Fundamental, TURMA_ANO_4, TURMA_CODIGO_4, TipoTurma.Regular, true);
-            
+
             var planoAEEPersistenciaDto = new PlanoAEEPersistenciaDto()
             {
                 AlunoCodigo = CODIGO_ALUNO_1,
@@ -66,7 +66,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
                 TurmaId = TURMA_ID_4,
                 UeId = UE_ID_1
             };
-            
+
             var retorno = await servicoObterPlanoAEE.Executar(filtroPlanoAeeDto);
             retorno.ShouldNotBeNull();
             var planoAee = retorno.Items.FirstOrDefault();
@@ -78,16 +78,16 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
         {
             var servicoCadastrarPlanoAee = ObterServicoSalvarPlanoAEEUseCase();
             var servicoObterPlanoAEE = ObterServicoObterPlanosAEEUseCase();
-            
+
             await CriarDadosBasicos(new FiltroPlanoAee()
             {
                 Modalidade = Modalidade.Fundamental,
                 Perfil = ObterPerfilProfessor(),
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio
             });
-            
+
             await CriarTurma(Modalidade.Fundamental, TURMA_ANO_4, TURMA_CODIGO_4, TipoTurma.Regular, true);
-            
+
             var planoAEEPersistenciaDto = new PlanoAEEPersistenciaDto()
             {
                 AlunoCodigo = CODIGO_ALUNO_1,
@@ -100,7 +100,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
 
             await servicoCadastrarPlanoAee.Executar(planoAEEPersistenciaDto);
             var opa = ObterTodos<SME.SGP.Dominio.PlanoAEE>();
-            
+
             var filtroPlanoAeeDto = new FiltroPlanosAEEDto()
             {
                 AlunoCodigo = CODIGO_ALUNO_1,
@@ -111,7 +111,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             };
             var retorno = await servicoObterPlanoAEE.Executar(filtroPlanoAeeDto);
             retorno.ShouldNotBeNull();
-            
+
             retorno.Items.Count().ShouldBeGreaterThan(0);
         }
 
@@ -150,7 +150,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
                 UeId = UE_ID_1,
                 Situacao = null
             };
-            
+
             var retorno = await servicoObterPlanoAEE.Executar(filtroPlanoAeeDto);
             retorno.ShouldNotBeNull();
             retorno.Items.Count().ShouldBeGreaterThan(0);
@@ -161,14 +161,14 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
         {
             var servicoCadastrarPlanoAee = ObterServicoSalvarPlanoAEEUseCase();
             var servicoObterPlanoAEE = ObterServicoObterPlanosAEEUseCase();
-            
+
             await CriarDadosBasicos(new FiltroPlanoAee()
             {
                 Modalidade = Modalidade.Fundamental,
                 Perfil = ObterPerfilProfessor(),
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio
             });
-            
+
             var planoAEEPersistenciaDto = new PlanoAEEPersistenciaDto()
             {
                 AlunoCodigo = CODIGO_ALUNO_1,
@@ -189,7 +189,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
                 UeId = UE_ID_1,
                 Situacao = null
             };
-            
+
             var retorno = await servicoObterPlanoAEE.Executar(filtroPlanoAeeDto);
             retorno.ShouldNotBeNull();
             retorno.Items.Count().ShouldBeGreaterThan(0);
@@ -200,14 +200,14 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
         {
             var servicoCadastrarPlanoAee = ObterServicoSalvarPlanoAEEUseCase();
             var servicoObterPlanoAEE = ObterServicoObterPlanosAEEUseCase();
-            
+
             await CriarDadosBasicos(new FiltroPlanoAee()
             {
                 Modalidade = Modalidade.Fundamental,
                 Perfil = ObterPerfilProfessor(),
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio
             });
-           
+
             var planoAEEPersistenciaDto = new PlanoAEEPersistenciaDto()
             {
                 AlunoCodigo = CODIGO_ALUNO_1,

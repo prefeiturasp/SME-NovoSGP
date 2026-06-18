@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterInformacoesEducaciona
         {
             var registros = await repositorio.ObterInformacoesEducacionais(request.Filtro);
 
-            return new InformacoesEducacionaisRetornoDto 
+            return new InformacoesEducacionaisRetornoDto
             {
                 Ues = registros.Items,
                 TotalPaginas = registros.TotalPaginas,

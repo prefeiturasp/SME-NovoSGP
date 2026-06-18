@@ -43,7 +43,7 @@ namespace SME.SGP.Dados.Repositorios
                                 and ens.encaminhamento_naapa_id  = @encaminhamentoNAAPAId";
 
             QuestaoEncaminhamentoNAAPA retorno = null;
-            await database.Conexao.QueryAsync< QuestaoEncaminhamentoNAAPA, RespostaEncaminhamentoNAAPA, QuestaoEncaminhamentoNAAPA> (query,
+            await database.Conexao.QueryAsync<QuestaoEncaminhamentoNAAPA, RespostaEncaminhamentoNAAPA, QuestaoEncaminhamentoNAAPA>(query,
                                         (questaoNAAPA, respostaNAAPA) =>
                                         {
                                             if (retorno.EhNulo()) retorno = questaoNAAPA;

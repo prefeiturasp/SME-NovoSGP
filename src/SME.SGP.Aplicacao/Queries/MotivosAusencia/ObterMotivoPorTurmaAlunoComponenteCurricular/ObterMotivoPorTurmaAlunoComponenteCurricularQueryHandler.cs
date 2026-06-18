@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao.Queries.MotivosAusencia.ObterMotivosPorTurmaAlunoCom
         public async Task<IEnumerable<JustificativaAlunoDto>> Handle(ObterMotivoPorTurmaAlunoComponenteCurricularQuery request, CancellationToken cancellationToken)
         {
             var motivosAusencia = await repositorioAnotacaoFrequenciaAluno.ObterPorTurmaAlunoComponenteCurricular(request.TurmaId, request.AlunoCodigo, request.ComponenteCurricularId);
-           
+
             return motivosAusencia;
         }
     }

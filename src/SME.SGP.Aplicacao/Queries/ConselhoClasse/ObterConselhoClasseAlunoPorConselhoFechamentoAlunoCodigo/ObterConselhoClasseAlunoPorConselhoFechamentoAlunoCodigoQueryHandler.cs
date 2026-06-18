@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
                 conselhoClasseAluno = new ConselhoClasseAluno() { AlunoCodigo = request.AlunoCodigo, ConselhoClasse = conselhoClasse, ConselhoClasseId = conselhoClasse.Id };
                 await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
             }
-            conselhoClasseAluno.ConselhoClasse.FechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(request.FechamentoTurmaId , request.AlunoCodigo));
+            conselhoClasseAluno.ConselhoClasse.FechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(request.FechamentoTurmaId, request.AlunoCodigo));
 
             return conselhoClasseAluno;
         }

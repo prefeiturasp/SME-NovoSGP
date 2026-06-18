@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
 
             if (!alunos?.Any() != true)
             {
-                foreach(var componenteCurricularId in await ObterComponentesCurriculares(request.TurmaCodigo, request.ComponenteCurricularId))
+                foreach (var componenteCurricularId in await ObterComponentesCurriculares(request.TurmaCodigo, request.ComponenteCurricularId))
                 {
                     var alunosCodigo = alunos.Select(a => a.CodigoAluno);
 

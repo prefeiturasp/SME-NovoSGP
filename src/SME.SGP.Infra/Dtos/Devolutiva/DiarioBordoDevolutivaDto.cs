@@ -17,14 +17,14 @@ namespace SME.SGP.Infra
         public DateTime Data { get; set; }
         public string DescricaoPlanejamento { get; set; }
         public bool InseridoCJ { get; set; }
-        public string Descricao { get; set; }  
+        public string Descricao { get; set; }
         public string Componente { get; set; }
         public string Planejamento
         {
             get
             {
                 var descricao = ObterPlanejamento();
-                
+
                 return descricao;
             }
         }
@@ -44,7 +44,7 @@ namespace SME.SGP.Infra
             ComponentesDescricoesPlanejamento.Add((componente, planejamento));
         }
 
-        private List<(string componente,string planejamento)> ComponentesDescricoesPlanejamento { get; set; }
+        private List<(string componente, string planejamento)> ComponentesDescricoesPlanejamento { get; set; }
 
         private string ObterPlanejamento(bool textoFormatado = true)
         {
@@ -63,7 +63,7 @@ namespace SME.SGP.Infra
                 descricao.AppendLine(ObterPlanejamentoFormatado(textoFormatado, item.planejamento, item.componente));
             }
 
-            return descricao.ToString();    
+            return descricao.ToString();
         }
 
         private string ObterPlanejamentoFormatado(bool textoFormatado, string descricaoPlanejamento, string componente)

@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using Polly;
 using Polly.Registry;
 using SME.SGP.Dominio;
@@ -57,7 +56,7 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(componenteCurricularId))
                 query.AppendLine("and a.disciplina_id = @componenteCurricularId");
 
-            return await database.Conexao.QueryAsync<AlunoComponenteCurricularDto>(query.ToString(), new { turmaCodigo, dataInicio, dataFim, componenteCurricularId,tipoFrequencia = (int)TipoFrequencia.F });
+            return await database.Conexao.QueryAsync<AlunoComponenteCurricularDto>(query.ToString(), new { turmaCodigo, dataInicio, dataFim, componenteCurricularId, tipoFrequencia = (int)TipoFrequencia.F });
         }
 
         public async Task<IEnumerable<AlunosFaltososDto>> ObterAlunosFaltosos(DateTime dataReferencia, long tipoCalendarioId, long ueId)
@@ -96,7 +95,9 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<AlunosFaltososDto>(query,
                 new
                 {
-                    dataReferencia, tipoCalendarioId, ueId,
+                    dataReferencia,
+                    tipoCalendarioId,
+                    ueId,
                     tipoFrequencia = (int)TipoFrequencia.F
                 });
         }
@@ -174,9 +175,9 @@ namespace SME.SGP.Dados.Repositorios
                                       a.data_aula) a
                           WHERE a.quantidade = a.faltas";
 
-            return await database.Conexao.QueryAsync<AusenciaAlunoDto>(query, new { turmaCodigo, disciplinaCodigo, datas, alunoCodigos,tipoFrequencia = (int)TipoFrequencia.F });
+            return await database.Conexao.QueryAsync<AusenciaAlunoDto>(query, new { turmaCodigo, disciplinaCodigo, datas, alunoCodigos, tipoFrequencia = (int)TipoFrequencia.F });
         }
-        
+
         public async Task<IEnumerable<AusenciaAlunoDto>> ObterAusenciasPorAluno(string turmaCodigo, string disciplinaCodigo, DateTime[] datas, string alunoCodigo)
         {
             var query = @"SELECT a.codigo_aluno AS AlunoCodigo,
@@ -197,7 +198,7 @@ namespace SME.SGP.Dados.Repositorios
                                       a.data_aula) a
                           WHERE a.quantidade = a.faltas";
 
-            return await database.Conexao.QueryAsync<AusenciaAlunoDto>(query, new { turmaCodigo, disciplinaCodigo, datas, alunoCodigo,tipoFrequencia = (int)TipoFrequencia.F });
+            return await database.Conexao.QueryAsync<AusenciaAlunoDto>(query, new { turmaCodigo, disciplinaCodigo, datas, alunoCodigo, tipoFrequencia = (int)TipoFrequencia.F });
         }
 
         public async Task<IEnumerable<RecuperacaoParalelaFrequenciaDto>> ObterFrequenciaAusencias(string[] CodigoAlunos, string CodigoDisciplina, int Ano, PeriodoRecuperacaoParalela Periodo)
@@ -239,7 +240,7 @@ namespace SME.SGP.Dados.Repositorios
                             WHERE ra.excluido = FALSE
                               AND a.id = @aulaId";
 
-            return database.Conexao.QueryAsync<RegistroAusenciaAluno>(query, new { aulaId,tipoFrequencia = (int)TipoFrequencia.F });
+            return database.Conexao.QueryAsync<RegistroAusenciaAluno>(query, new { aulaId, tipoFrequencia = (int)TipoFrequencia.F });
         }
 
         public async Task<RegistroFrequencia> ObterRegistroFrequenciaPorAulaId(long aulaId)
@@ -571,7 +572,7 @@ namespace SME.SGP.Dados.Repositorios
                             from frequencia_turma_evasao fte
                                 inner join turma t on t.id = fte.turma_id 
                                 inner join ue u on u.id = t.ue_id 
-                                inner join dre d on d.id = u.dre_id"; 
+                                inner join dre d on d.id = u.dre_id";
             var where = @" where t.modalidade_codigo = @modalidade
                             and (fte.quantidade_alunos_0_porcento > 0)
                             and t.ano_letivo = @anoLetivo
@@ -779,7 +780,7 @@ namespace SME.SGP.Dados.Repositorios
                 filtroAbrangencia.Semestre,
                 mes
             };
-            
+
             var retorno = new PaginacaoResultadoDto<AlunoFrequenciaTurmaEvasaoDto>();
 
             using (var multi = await database.Conexao.QueryMultipleAsync(sql.ToString(), parametros))

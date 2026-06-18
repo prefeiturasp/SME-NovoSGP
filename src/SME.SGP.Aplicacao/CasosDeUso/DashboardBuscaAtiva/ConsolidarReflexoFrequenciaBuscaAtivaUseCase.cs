@@ -2,7 +2,6 @@
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,7 +21,7 @@ namespace SME.SGP.Aplicacao
                             : mensagemRabbit.ObterObjetoMensagem<FiltroIdAnoLetivoDto>();
 
             var dres = await mediator.Send(ObterIdsDresQuery.Instance);
-            foreach (long dreId in dres.Where(dreId => filtro.Id.Equals(0) 
+            foreach (long dreId in dres.Where(dreId => filtro.Id.Equals(0)
                                                        || dreId.Equals(filtro.Id)).ToList())
             {
                 filtro.Id = dreId;

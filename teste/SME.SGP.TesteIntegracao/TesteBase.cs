@@ -51,23 +51,23 @@ namespace SME.SGP.TesteIntegracao
         {
             RegistrarCommandFakes(services);
             RegistrarQueryFakes(services);
-            
+
             services.Replace(new ServiceDescriptor(typeof(IRepositorioCache),
-                typeof(RepositorioCacheFake), ServiceLifetime.Scoped));            
+                typeof(RepositorioCacheFake), ServiceLifetime.Scoped));
         }
 
         protected virtual void RegistrarCommandFakes(IServiceCollection services)
         {
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaSgpCommand, bool>),typeof(PublicarFilaSgpCommandHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaApiEOLCommand, bool>),typeof(PublicarFilaApiEOLCommandHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaEmLoteSgpCommand, bool>),typeof(PublicarFilaEmLoteSgpCommandHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<SalvarLogViaRabbitCommand, bool>),typeof(SalvarLogViaRabbitCommandHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosPorTurmaQueryHandlerComRegistroFake), ServiceLifetime.Scoped));            
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaSgpCommand, bool>), typeof(PublicarFilaSgpCommandHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaApiEOLCommand, bool>), typeof(PublicarFilaApiEOLCommandHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaEmLoteSgpCommand, bool>), typeof(PublicarFilaEmLoteSgpCommandHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<SalvarLogViaRabbitCommand, bool>), typeof(SalvarLogViaRabbitCommandHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosPorTurmaQueryHandlerComRegistroFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRepositorioCache), typeof(RepositorioCacheFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IServicoAuditoria),typeof(ServicoAuditoriaFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IServicoArmazenamento),typeof(ServicoArmazenamentoFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRepositorioRegistroFrequenciaAluno),typeof(RepositorioRegistroFrequenciaAlunoFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRepositorioFrequenciaPreDefinida),typeof(RepositorioFrequenciaPreDefinidaFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IServicoAuditoria), typeof(ServicoAuditoriaFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IServicoArmazenamento), typeof(ServicoArmazenamentoFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRepositorioRegistroFrequenciaAluno), typeof(RepositorioRegistroFrequenciaAlunoFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRepositorioFrequenciaPreDefinida), typeof(RepositorioFrequenciaPreDefinidaFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosTurmaProgramaPapEolQuery, IEnumerable<AlunosTurmaProgramaPapDto>>), typeof(ObterAlunosAtivosTurmaProgramaPapEolQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterPerfisPorLoginQuery, PerfisApiEolDto>), typeof(ObterPerfisPorLoginQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorCargoUeQuery, IEnumerable<UsuarioEolRetornoDto>>), typeof(ObterFuncionariosPorCargoUeQueryHandlerFake), ServiceLifetime.Scoped));
@@ -77,7 +77,7 @@ namespace SME.SGP.TesteIntegracao
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>), typeof(ObterAlunoPorCodigoEolQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery, IEnumerable<ComponenteCurricularEol>>), typeof(ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQueryHandlerFakeServicoEol), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterDadosTurmaEolPorCodigoQuery,DadosTurmaEolDto>), typeof(ObterDadosTurmaEolPorCodigoQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterDadosTurmaEolPorCodigoQuery, DadosTurmaEolDto>), typeof(ObterDadosTurmaEolPorCodigoQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PodePersistirTurmaDisciplinaQuery, bool>), typeof(PodePersistirTurmaDisciplinaQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioCoreSSOQuery, MeusDadosDto>), typeof(ObterUsuarioCoreSSOQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioFuncionarioQuery, IEnumerable<UsuarioEolRetornoDto>>), typeof(ObterUsuarioFuncionarioQueryHandlerFake), ServiceLifetime.Scoped));
@@ -122,7 +122,7 @@ namespace SME.SGP.TesteIntegracao
             _collectionFixture.Database.Inserir(nomeTabela, campos);
             return Task.CompletedTask;
         }
-        
+
         public Task InserirNaBase(string nomeTabela, string[] campos, string[] valores)
         {
             _collectionFixture.Database.Inserir(nomeTabela, campos, valores);

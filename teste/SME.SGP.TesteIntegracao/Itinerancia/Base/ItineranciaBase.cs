@@ -1,17 +1,17 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.Itinerancia.Base
 {
-    public class ItineranciaBase  : TesteBaseComuns
+    public class ItineranciaBase : TesteBaseComuns
     {
         protected const long ID_QUESTIONARIO_ITINERANCIA = 1;
         protected const long ID_QUESTIONARIO_ITINERANCIA_ALUNO = 2;
@@ -40,16 +40,16 @@ namespace SME.SGP.TesteIntegracao.Itinerancia.Base
         public ItineranciaBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
-        
+
         protected IExcluirArquivoItineranciaUseCase ExcluirArquivoItineranciaUseCase()
         {
             return ServiceProvider.GetService<IExcluirArquivoItineranciaUseCase>();
         }
-        
+
         protected IUploadDeArquivoItineranciaUseCase UploadDeArquivoItineranciaUseCase()
         {
             return ServiceProvider.GetService<IUploadDeArquivoItineranciaUseCase>();
-        }        
+        }
         protected IExcluirArmazenamentoPorAquivoUseCase ExcluirArmazenamentoPorAquivoUseCase()
         {
             return ServiceProvider.GetService<IExcluirArmazenamentoPorAquivoUseCase>();
@@ -64,8 +64,8 @@ namespace SME.SGP.TesteIntegracao.Itinerancia.Base
         {
             return ServiceProvider.GetService<IAlterarItineranciaUseCase>();
         }
-        
-        protected async Task<IFormFile> GerarAquivoFakeParaUpload(string nomeArquivo = "arquivo.png",string extensaoArquivo = "image/png")
+
+        protected async Task<IFormFile> GerarAquivoFakeParaUpload(string nomeArquivo = "arquivo.png", string extensaoArquivo = "image/png")
         {
             var fileMock = new Mock<IFormFile>();
             var content = "Fake File";
@@ -75,7 +75,7 @@ namespace SME.SGP.TesteIntegracao.Itinerancia.Base
             var writer = new StreamWriter(ms);
             await writer.WriteAsync(content);
             await writer.FlushAsync();
-            
+
             ms.Position = 0;
             fileMock.Setup(_ => _.OpenReadStream()).Returns(ms);
             fileMock.Setup(_ => _.FileName).Returns(fileName);
@@ -107,7 +107,7 @@ namespace SME.SGP.TesteIntegracao.Itinerancia.Base
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now,
                 Id = ID_QUESTIONARIO_ITINERANCIA
-                });
+            });
             await InserirNaBase(new Questionario()
             {
                 Nome = "Questionário Registro Itinerância do Aluno",
@@ -257,7 +257,7 @@ namespace SME.SGP.TesteIntegracao.Itinerancia.Base
         protected class FiltroItineranciaDto
         {
             public FiltroItineranciaDto()
-            {}
+            { }
             public string Perfil { get; set; }
             public Modalidade Modalidade { get; set; }
             public string AnoTurma { get; set; }

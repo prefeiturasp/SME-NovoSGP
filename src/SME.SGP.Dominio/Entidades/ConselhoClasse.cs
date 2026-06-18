@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Dominio
+﻿namespace SME.SGP.Dominio
 {
-    public class ConselhoClasse: EntidadeBase
+    public class ConselhoClasse : EntidadeBase
     {
         public ConselhoClasse()
         {

@@ -4,7 +4,6 @@ using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -43,8 +42,8 @@ namespace SME.SGP.Aplicacao
                                                                                                                         request.Usuario.EhProfessorInfantilOuCjInfantil());
 
                 componentesCurricularesDoProfessor.LancarExcecaoNegocioSeEhNulo(MensagemNegocioComponentesCurriculares.NAO_FORAM_ENCONTRADOS_COMPONENTES_CURRICULARES_PARA_O_PROFESSOR);
-                
-                if(componentesCurricularesDoProfessor.NaoEhNulo() && componentesCurricularesDoProfessor.Any())
+
+                if (componentesCurricularesDoProfessor.NaoEhNulo() && componentesCurricularesDoProfessor.Any())
                 {
                     var componenteCurricularFiltrado = componentesCurricularesDoProfessor.FirstOrDefault(x => x.Codigo == request.ComponenteCurricularCodigo);
                     if (componenteCurricularFiltrado.NaoEhNulo())

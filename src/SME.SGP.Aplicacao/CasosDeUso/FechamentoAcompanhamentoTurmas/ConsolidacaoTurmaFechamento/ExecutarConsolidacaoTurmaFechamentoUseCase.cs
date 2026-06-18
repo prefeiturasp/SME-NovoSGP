@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
-        private async Task<(ConsolidacaoTurmaDto parametroConsolidacaoTurma, IEnumerable<ComponenteCurricularDto> componentesCurriculares, 
+        private async Task<(ConsolidacaoTurmaDto parametroConsolidacaoTurma, IEnumerable<ComponenteCurricularDto> componentesCurriculares,
                             DadosTurmaEolDto dadosTurma, bool parametrosValidos)> ValidarParametros(MensagemRabbit mensagemRabbit)
         {
             var consolidacaoTurma = mensagemRabbit.ObterObjetoMensagem<ConsolidacaoTurmaDto>();

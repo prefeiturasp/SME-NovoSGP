@@ -94,7 +94,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return (await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { tipoCalendarioId, tipoEvento = (int)TipoEvento.LiberacaoBoletim, data = dataReferencia.Date }) > 0);
 
-            }
         }
     }
+}
 

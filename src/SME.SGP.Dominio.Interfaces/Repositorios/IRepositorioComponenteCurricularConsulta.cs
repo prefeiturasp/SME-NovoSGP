@@ -8,7 +8,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<IEnumerable<ComponenteCurricularDto>> ListarComponentesCurriculares();
         Task<bool> VerificarComponenteCurriculareSeERegenciaPorId(long id);
-        Task<IEnumerable<DisciplinaDto>> ObterComponentesCurricularesRegenciaPorAnoETurno(long ano, long turno);        
+        Task<IEnumerable<DisciplinaDto>> ObterComponentesCurricularesRegenciaPorAnoETurno(long ano, long turno);
         Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIds(long[] ids);
         Task<long[]> ListarCodigosJuremaPorComponenteCurricularId(long id);
         Task<bool> VerificaPossuiObjetivosAprendizagemPorComponenteCurricularId(long id);

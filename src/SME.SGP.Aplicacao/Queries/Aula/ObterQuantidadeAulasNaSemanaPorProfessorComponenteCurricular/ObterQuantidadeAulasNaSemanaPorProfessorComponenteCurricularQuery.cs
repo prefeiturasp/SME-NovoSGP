@@ -1,11 +1,9 @@
 ﻿using MediatR;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterQuantidadeAulasNaSemanaPorProfessorComponenteCurricularQuery: IRequest<int>
+    public class ObterQuantidadeAulasNaSemanaPorProfessorComponenteCurricularQuery : IRequest<int>
     {
         public ObterQuantidadeAulasNaSemanaPorProfessorComponenteCurricularQuery(string turmaCodigo, long componenteCurricular, int semana, string professorRf, bool experienciaPedagogica, DateTime dataExcecao, bool ehGestor = false)
         {

@@ -1,9 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
@@ -16,7 +13,7 @@ namespace SME.SGP.Aplicacao
         public long Id { get; set; }
     }
 
-    public class ObterAnotacaoFrequenciaAlunoPorIdQueryValidator: AbstractValidator<ObterAnotacaoFrequenciaAlunoPorIdQuery>
+    public class ObterAnotacaoFrequenciaAlunoPorIdQueryValidator : AbstractValidator<ObterAnotacaoFrequenciaAlunoPorIdQuery>
     {
         public ObterAnotacaoFrequenciaAlunoPorIdQueryValidator()
         {

@@ -1,17 +1,11 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Constantes;
 using SME.SGP.Aplicacao.Queries;
-using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.MapeamentoEstudantes;
-using SME.SGP.Infra.Dtos.Sondagem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Intrinsics.X86;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,7 +20,7 @@ namespace SME.SGP.Aplicacao
         private readonly string[] HIPOTESES_ESCRITA_NAO_ALFABETICAS = new string[] { "PS", "SSV", "SCV", "SA" };
         private const string RESULTADO_ABAIXO_BASICO_PROVA_SP = "Abaixo do básico";
 
-        public ObterCodigosAlunosSinalizadosPrioridadeMapeamentoEstudanteQueryHandler(IRepositorioPlanoAEE repositorioPlanoAEE, 
+        public ObterCodigosAlunosSinalizadosPrioridadeMapeamentoEstudanteQueryHandler(IRepositorioPlanoAEE repositorioPlanoAEE,
                                                                                       IMediator mediator,
                                                                                       IRepositorioMapeamentoEstudante repositorioMapeamento)
         {
@@ -56,7 +50,7 @@ namespace SME.SGP.Aplicacao
                 .Select(async aluno =>
                 {
                     var sondagem = await mediator.Send(new ObterSondagemLPAlunoQuery(turma.CodigoTurma, aluno.CodigoAluno));
-                    var avaliacoesExternasProvaSP = await mediator.Send(new ObterAvaliacoesExternasProvaSPAlunoQuery(aluno.CodigoAluno, turma.AnoLetivo-1));
+                    var avaliacoesExternasProvaSP = await mediator.Send(new ObterAvaliacoesExternasProvaSPAlunoQuery(aluno.CodigoAluno, turma.AnoLetivo - 1));
                     if (HIPOTESES_ESCRITA_NAO_ALFABETICAS.Contains(sondagem.ObterHipoteseEscrita(request.Bimestre)))
                         alunosSondagemInsuficiente.Add(aluno.CodigoAluno);
                     if (avaliacoesExternasProvaSP.Any(psp => psp.Nivel.ToUpper() == RESULTADO_ABAIXO_BASICO_PROVA_SP.ToUpper()))
@@ -75,10 +69,10 @@ namespace SME.SGP.Aplicacao
                 var alertaVermelho = alunosSondagemInsuficiente.Contains(aluno.CodigoAluno);
 
 
-                if (alertaLaranja || alertaVermelho) 
+                if (alertaLaranja || alertaVermelho)
                     retorno.Add(new AlunoSinalizadoPrioridadeMapeamentoEstudanteDto(aluno.CodigoAluno, alertaLaranja, alertaVermelho));
             }
-            
+
             foreach (var alunoMapeado in alunosComMapeamento)
             {
                 var alunoAlerta = retorno.FirstOrDefault(r => r.CodigoAluno.Equals(alunoMapeado));
@@ -86,7 +80,7 @@ namespace SME.SGP.Aplicacao
                     alunoAlerta.PossuiMapeamentoEstudante = true;
                 else
                     retorno.Add(new AlunoSinalizadoPrioridadeMapeamentoEstudanteDto(alunoMapeado, possuiMapeamentoEstudante: true));
-            } 
+            }
 
             return retorno.ToArray();
         }

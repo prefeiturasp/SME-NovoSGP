@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao.Queries.Sondagem.ObterConsolidacaoNivelEscritaAlfabe
             this.httpClientFactory = httpClientFactory;
             this.mediator = mediator;
         }
-        public async Task<IEnumerable<SondagemConsolidacaoNivelEscritaAlfabetizacaoDto>> 
+        public async Task<IEnumerable<SondagemConsolidacaoNivelEscritaAlfabetizacaoDto>>
             Handle(ObterConsolidacaoNivelEscritaAlfabetizacaoQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient(ServicoSondagemConstants.Servico);

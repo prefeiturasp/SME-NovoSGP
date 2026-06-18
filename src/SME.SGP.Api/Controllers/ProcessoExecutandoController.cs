@@ -1,11 +1,11 @@
-﻿using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -27,6 +27,6 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await mediator.Send(new VerificarRemoverProcessoEmExecucaoCommand(turmaId, disciplinaId, bimestre, TipoProcesso.CalculoFrequencia)));
         }
-            
+
     }
 }

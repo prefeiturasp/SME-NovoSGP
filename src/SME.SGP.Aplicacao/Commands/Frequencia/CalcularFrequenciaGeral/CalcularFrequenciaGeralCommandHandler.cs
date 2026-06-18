@@ -1,9 +1,7 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,14 +23,15 @@ namespace SME.SGP.Aplicacao
             {
                 var registroFrequenciaAlunos = await mediator.Send(new ObterFrequenciaAlunosGeralPorAnoQuery(request.Ano));
 
-                var alunosEmTurmasDisciplinasData = registroFrequenciaAlunos.GroupBy(g => new { g.DisciplinaId, g.TurmaId, g.DataAula }, (key, group) => 
-                new { key.DisciplinaId, key.TurmaId, key.DataAula, Alunos = group.Select(s=> s.AlunoCodigo).ToList()});                
+                var alunosEmTurmasDisciplinasData = registroFrequenciaAlunos.GroupBy(g => new { g.DisciplinaId, g.TurmaId, g.DataAula }, (key, group) =>
+                new { key.DisciplinaId, key.TurmaId, key.DataAula, Alunos = group.Select(s => s.AlunoCodigo).ToList() });
 
                 foreach (var alunoEmTurmaDisciplinaData in alunosEmTurmasDisciplinasData)
                 {
                     var comando = new CalcularFrequenciaPorTurmaCommand(alunoEmTurmaDisciplinaData.Alunos, alunoEmTurmaDisciplinaData.DataAula, alunoEmTurmaDisciplinaData.TurmaId.ToString(), alunoEmTurmaDisciplinaData.DisciplinaId);
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaCalculoFrequenciaPorTurmaComponente, comando, Guid.NewGuid(), null));
-                };
+                }
+                ;
 
                 return true;
             }
@@ -41,6 +40,6 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Erro no Calculo Geral de Frequência.", LogNivel.Critico, LogContexto.Frequencia, ex.Message));
                 throw;
             }
-        } 
+        }
     }
 }

@@ -42,13 +42,13 @@ namespace SME.SGP.Aplicacao
                             {
                                 var existeFechamento = await mediator.Send(new VerificaFechamentoTurmaDisciplinaPorIdCCEPeriodoEscolarQuery(turma.Id, long.Parse(obterComponenteCurricular.Codigo), periodoFechamentoBimestre.PeriodoEscolar.Id));
 
-                                if (!existeFechamento &&!await ExistePendenciaProfessor(turma.Id, long.Parse(obterComponenteCurricular.Codigo), professorTurma.ProfessorRf, periodoFechamentoBimestre.PeriodoEscolar.Id))
+                                if (!existeFechamento && !await ExistePendenciaProfessor(turma.Id, long.Parse(obterComponenteCurricular.Codigo), professorTurma.ProfessorRf, periodoFechamentoBimestre.PeriodoEscolar.Id))
                                     await IncluirPendenciaAusenciaFechamento(turma.Id, long.Parse(obterComponenteCurricular.Codigo), professorTurma.ProfessorRf, periodoFechamentoBimestre.PeriodoEscolar.Bimestre, obterComponenteCurricular.Descricao, obterComponenteCurricular.LancaNota, periodoFechamentoBimestre.PeriodoEscolar.Id);
-                                
+
                                 if (EhBimestreFinal(request.ModalidadeTipoCalendario, periodoFechamentoBimestre.PeriodoEscolar.Bimestre))
                                 {
                                     existeFechamento = await mediator.Send(new VerificaFechamentoTurmaDisciplinaPorIdCCEPeriodoEscolarQuery(turma.Id, long.Parse(obterComponenteCurricular.Codigo), null));
-                                    
+
                                     if (!existeFechamento && !await ExistePendenciaProfessor(turma.Id, long.Parse(obterComponenteCurricular.Codigo), professorTurma.ProfessorRf, null))
                                         await IncluirPendenciaAusenciaFechamento(turma.Id, long.Parse(obterComponenteCurricular.Codigo), professorTurma.ProfessorRf, periodoFechamentoBimestre.PeriodoEscolar.Bimestre, obterComponenteCurricular.Descricao, obterComponenteCurricular.LancaNota, null);
                                 }

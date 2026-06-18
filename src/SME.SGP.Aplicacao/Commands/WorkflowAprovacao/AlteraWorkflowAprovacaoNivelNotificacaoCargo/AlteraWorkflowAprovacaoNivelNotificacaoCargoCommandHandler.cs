@@ -72,7 +72,7 @@ namespace SME.SGP.Aplicacao.Commands
                 var adicionouNivelAd = await VerificaSeExisteNivelEadiciona(wfAprovacao, nivelParaModificar, Cargo.AD, funcionariosCargosDaUe);
                 if (!adicionouNivelAd)
                     await TrataSupervisoresDiretor(funcionariosCargosDaUe, wfAprovacao, nivelParaModificar);
-            }                
+            }
             else
             {
                 await TrataSupervisoresDiretor(funcionariosCargosDaUe, wfAprovacao, nivelParaModificar);
@@ -163,7 +163,7 @@ namespace SME.SGP.Aplicacao.Commands
             }
 
             await TrataModificacaoDosNiveis(funcionariosCargosDaUe, wfAprovacao, nivelParaModificar, true, nivelDoCargo, modificaNiveisPosteriores);
-            
+
             return true;
         }
 

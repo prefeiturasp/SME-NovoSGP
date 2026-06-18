@@ -22,8 +22,8 @@ namespace SME.SGP.Aplicacao
             var modalidades = await mediator.Send(new ObterModalidadesAnosItineranciaProgramaQuery(anoLetivo, dreId, ueId, modalidade, semestre));
             foreach (var item in modalidades)
             {
-                var prefixoModalidade = (item.Ano == AnoItinerarioPrograma.EducacaoFisica || 
-                    item.Ano == AnoItinerarioPrograma.Itinerario || 
+                var prefixoModalidade = (item.Ano == AnoItinerarioPrograma.EducacaoFisica ||
+                    item.Ano == AnoItinerarioPrograma.Itinerario ||
                     item.Ano == AnoItinerarioPrograma.Programa) ? "" : $"{item.Modalidade.ShortName()}-";
                 modalidadesPorAnoRetornoDto.Add(new RetornoModalidadesPorAnoItineranciaProgramaDto()
                 {

@@ -48,7 +48,8 @@ namespace SME.SGP.Dominio
                     }
 
                     unitOfWork.PersistirTransacao();
-                } catch
+                }
+                catch
                 {
                     unitOfWork.Rollback();
                     throw;

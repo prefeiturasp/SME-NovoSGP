@@ -1,10 +1,5 @@
 ﻿using FluentValidation;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -12,7 +7,7 @@ namespace SME.SGP.Aplicacao
     {
         public long[] Ids { get; set; }
 
-        public ExcluirRegistroFrequenciaAlunoPorIdCommand(long [] ids)
+        public ExcluirRegistroFrequenciaAlunoPorIdCommand(long[] ids)
         {
             Ids = ids;
         }

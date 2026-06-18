@@ -1,11 +1,10 @@
-﻿using System.Threading;
+﻿using MediatR;
 using Moq;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
 using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.Servicos
@@ -24,14 +23,14 @@ namespace SME.SGP.Aplicacao.Teste.Servicos
         [Fact]
         public async Task DeveAlterarSenhaComSucesso()
         {
-            mediator.Setup(x => x.Send(It.IsAny<AutenticarQuery>(),It.IsAny<CancellationToken>()))
+            mediator.Setup(x => x.Send(It.IsAny<AutenticarQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new AutenticacaoApiEolDto
                 {
                     CodigoRf = "123",
                     Status = AutenticacaoStatusEol.Ok
                 });
-            
-            mediator.Setup(x => x.Send(It.IsAny<AlterarSenhaUsuarioCommand>(),It.IsAny<CancellationToken>()))
+
+            mediator.Setup(x => x.Send(It.IsAny<AlterarSenhaUsuarioCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new AlterarSenhaRespostaDto
                 {
                     StatusRetorno = 200,
@@ -45,14 +44,14 @@ namespace SME.SGP.Aplicacao.Teste.Servicos
         [Fact]
         public async Task NaoDeveAlterarSenhaComSenhaAnteriorReutilizada()
         {
-            mediator.Setup(x => x.Send(It.IsAny<AutenticarQuery>(),It.IsAny<CancellationToken>()))
+            mediator.Setup(x => x.Send(It.IsAny<AutenticarQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new AutenticacaoApiEolDto
                 {
                     CodigoRf = "123",
                     Status = AutenticacaoStatusEol.Ok,
                 });
 
-            mediator.Setup(x => x.Send(It.IsAny<AlterarSenhaUsuarioCommand>(),It.IsAny<CancellationToken>()))
+            mediator.Setup(x => x.Send(It.IsAny<AlterarSenhaUsuarioCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new AlterarSenhaRespostaDto
                 {
                     StatusRetorno = 200,
@@ -67,14 +66,14 @@ namespace SME.SGP.Aplicacao.Teste.Servicos
         [Fact]
         public async Task NaoDeveAlterarSenhaComSenhaAtualIncorreta()
         {
-            mediator.Setup(x => x.Send(It.IsAny<AutenticarQuery>(),It.IsAny<CancellationToken>()))
+            mediator.Setup(x => x.Send(It.IsAny<AutenticarQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new AutenticacaoApiEolDto
                 {
                     CodigoRf = "123",
                     Status = AutenticacaoStatusEol.SenhaPadrao,
                 });
 
-            mediator.Setup(x => x.Send(It.IsAny<AlterarSenhaUsuarioCommand>(),It.IsAny<CancellationToken>()))
+            mediator.Setup(x => x.Send(It.IsAny<AlterarSenhaUsuarioCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new AlterarSenhaRespostaDto
                 {
                     StatusRetorno = 200,

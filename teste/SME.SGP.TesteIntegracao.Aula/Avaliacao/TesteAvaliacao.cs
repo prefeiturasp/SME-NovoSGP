@@ -8,7 +8,6 @@ using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ServicosFakes.Query;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,7 +23,7 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
         protected const string NOME_ATIVIDADE_AVALIATIVA_2 = "Nome atividade avaliativa 2";
 
         protected TesteAvaliacao(CollectionFixture collectionFixture) : base(collectionFixture)
-        {}
+        { }
 
         protected override void RegistrarFakes(IServiceCollection services)
         {
@@ -127,7 +126,7 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
                 DisciplinasId = new string[] { componente },
                 Descricao = "",
                 Nome = nome,
-                CategoriaId = categoria,    
+                CategoriaId = categoria,
                 DataAvaliacao = dataAvaliacao,
                 TipoAvaliacaoId = (long)tipoAvaliacao
             };

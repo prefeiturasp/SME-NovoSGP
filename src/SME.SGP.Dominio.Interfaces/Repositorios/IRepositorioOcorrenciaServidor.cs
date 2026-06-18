@@ -1,6 +1,6 @@
 ﻿using SME.SGP.Dominio.Interfaces;
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio
 {

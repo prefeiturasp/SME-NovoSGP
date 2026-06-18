@@ -1,10 +1,8 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
@@ -51,7 +49,7 @@ namespace SME.SGP.Aplicacao
             RuleFor(x => x.DataAula)
                 .NotEmpty()
                 .WithMessage("A data da aula precisa ser informada para a adição de registro frequência alunos");
-           
+
         }
     }
 }

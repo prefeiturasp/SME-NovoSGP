@@ -2,13 +2,10 @@
 using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AlterarDevolutivaCommand: IRequest<AuditoriaDto>
+    public class AlterarDevolutivaCommand : IRequest<AuditoriaDto>
     {
         public Devolutiva Devolutiva { get; set; }
 
@@ -18,7 +15,7 @@ namespace SME.SGP.Aplicacao
         }
     }
 
-    public class AlterarDevolutivaCommandValidator: AbstractValidator<AlterarDevolutivaCommand>
+    public class AlterarDevolutivaCommandValidator : AbstractValidator<AlterarDevolutivaCommand>
     {
         public AlterarDevolutivaCommandValidator()
         {

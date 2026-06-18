@@ -1,21 +1,19 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using k8s.Models;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
-using SME.SGP.Infra;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
 {
     public class ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake : IRequestHandler<ObterComponentesCurricularesEOLPorTurmasCodigoQuery, IEnumerable<ComponenteCurricularEol>>
     {
-      public ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake(){}
+        public ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake() { }
 
-      public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesEOLPorTurmasCodigoQuery request, CancellationToken cancellationToken)
-      {
-        return await Task.FromResult(new List<ComponenteCurricularEol>()
+        public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesEOLPorTurmasCodigoQuery request, CancellationToken cancellationToken)
+        {
+            return await Task.FromResult(new List<ComponenteCurricularEol>()
         {
           new ComponenteCurricularEol()
           {
@@ -105,6 +103,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
               Regencia = true
           }
         });
-      }
+        }
     }
 }

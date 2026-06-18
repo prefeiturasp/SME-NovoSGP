@@ -2,8 +2,8 @@
 {
     public class EncaminhamentoNAAPAItineranciaDto
     {
-       public long EncaminhamentoId { get; set; }
-       public long? EncaminhamentoNAAPASecaoId { get; set; }
-       public EncaminhamentoNAAPASecaoDto EncaminhamentoNAAPASecao { get; set; }
+        public long EncaminhamentoId { get; set; }
+        public long? EncaminhamentoNAAPASecaoId { get; set; }
+        public EncaminhamentoNAAPASecaoDto EncaminhamentoNAAPASecao { get; set; }
     }
 }

@@ -1,6 +1,4 @@
 ﻿using MediatR;
-using Minio.DataModel;
-using Org.BouncyCastle.Asn1.Ocsp;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System.Linq;
@@ -24,12 +22,12 @@ namespace SME.SGP.Aplicacao
         {
             var dadosParametro = await repositorioParametrosSistema.ObterParametroPorTipoEAno(TipoParametroSistema.TiposUEIgnorarGeracaoPendencia, DateTimeExtension.HorarioBrasilia().Year);
             if (dadosParametro.EhNulo() || !dadosParametro.Ativo) return false;
-            
+
             TipoEscola? tipoUe = request.TipoUe;
             if (tipoUe.EhNulo())
-               tipoUe = await mediator.Send(new ObterTipoEscolaPorCodigoUEQuery(request.CodigoUe));
-            return dadosParametro.NaoEhNulo() ? dadosParametro.Valor.Split(',').Contains(((int)tipoUe).ToString()) : false;           
+                tipoUe = await mediator.Send(new ObterTipoEscolaPorCodigoUEQuery(request.CodigoUe));
+            return dadosParametro.NaoEhNulo() ? dadosParametro.Valor.Split(',').Contains(((int)tipoUe).ToString()) : false;
         }
-            
+
     }
 }

@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -86,7 +86,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { fechamentoTurmaId, alunoCodigo, componenteCurricularId });
         }
-        
+
 
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoPorTurmasCodigosBimestreAsync(string[] turmasCodigos, string alunoCodigo, int bimestre, DateTime? dataMatricula = null, DateTime? dataSituacao = null, int? anoLetivo = null)
         {
@@ -202,7 +202,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = $@"{queryNotasFechamento} 
                             and t.turma_id = @turmaCodigo
                             and pe.bimestre = @bimestre";
-            if(tipoCalendario.HasValue)
+            if (tipoCalendario.HasValue)
                 query += " and pe.tipo_calendario_id = @tipoCalendario ";
             if (dataMatricula.HasValue && (anoLetivo.NaoEhNulo() || anoLetivo == DateTime.Now.Year))
                 query += " and @dataMatricula <= pe.periodo_fim";

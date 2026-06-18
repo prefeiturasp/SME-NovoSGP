@@ -46,10 +46,10 @@ namespace SME.SGP.ComprimirArquivos.Worker
             RegistrarRabbitMQLog(services);
             RegistrarTelemetria(services);
             services.AddHealthChecks();
-            
+
             services.AddHealthChecksUiSgp();
         }
-        
+
         private void RegistrarTelemetria(IServiceCollection services)
         {
             services.AddOptions<TelemetriaOptions>()
@@ -79,12 +79,12 @@ namespace SME.SGP.ComprimirArquivos.Worker
                 return factory;
             });
         }
-        
+
         private void RegistrarRabbitMQLog(IServiceCollection services)
         {
             services.AddOptions<ConfiguracaoRabbitLogOptions>()
                 .Bind(Configuration.GetSection(ConfiguracaoRabbitLogOptions.Secao), c => c.BindNonPublicProperties = true);
-           
+
             services.AddSingleton<ConfiguracaoRabbitLogOptions>();
             services.AddSingleton<IConexoesRabbitFilasLog>(serviceProvider =>
             {

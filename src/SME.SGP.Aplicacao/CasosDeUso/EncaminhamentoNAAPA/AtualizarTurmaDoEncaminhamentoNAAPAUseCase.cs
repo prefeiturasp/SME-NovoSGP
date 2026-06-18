@@ -3,7 +3,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,13 +19,13 @@ namespace SME.SGP.Aplicacao
             var situacaoMatriculaAtiva = SituacaoMatriculaAluno.Ativo;
             var encaminhamento = param.ObterObjetoMensagem<EncaminhamentoNAAPADto>();
             var alunosEol = await mediator.Send(new ObterAlunosEolPorCodigosQuery(long.Parse(encaminhamento.AlunoCodigo), true));
-            var alunoTurma = alunosEol?.FirstOrDefault(turma => turma.CodigoTipoTurma == (int)TipoTurma.Regular 
+            var alunoTurma = alunosEol?.FirstOrDefault(turma => turma.CodigoTipoTurma == (int)TipoTurma.Regular
                                                       && turma.AnoLetivo <= DateTimeExtension.HorarioBrasilia().Year
                                                       && turma.DataSituacao.Date <= DateTimeExtension.HorarioBrasilia().Date
                                                       && (int)situacaoMatriculaAtiva == turma.CodigoSituacaoMatricula);
 
-            if (alunoTurma.NaoEhNulo()) 
-               await AtualizarTurmaDoEncaminhamento(encaminhamento, alunoTurma);
+            if (alunoTurma.NaoEhNulo())
+                await AtualizarTurmaDoEncaminhamento(encaminhamento, alunoTurma);
 
             return true;
         }
@@ -50,7 +49,7 @@ namespace SME.SGP.Aplicacao
         private async Task AtualizarEncaminhamento(long encaminhamentoNAAPAId, long turmaId)
         {
             var encaminhamentoNAAPA = await mediator.Send(new ObterEncaminhamentoNAAPAComTurmaPorIdQuery(encaminhamentoNAAPAId));
-            if(encaminhamentoNAAPA.NaoEhNulo())
+            if (encaminhamentoNAAPA.NaoEhNulo())
             {
                 var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
 

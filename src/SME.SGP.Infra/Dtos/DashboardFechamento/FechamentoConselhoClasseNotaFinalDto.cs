@@ -1,7 +1,5 @@
-﻿using SME.SGP.Dominio;
-
-namespace SME.SGP.Infra
-{ 
+﻿namespace SME.SGP.Infra
+{
     public class FechamentoConselhoClasseNotaFinalDto
     {
         public long TurmaId { get; set; }

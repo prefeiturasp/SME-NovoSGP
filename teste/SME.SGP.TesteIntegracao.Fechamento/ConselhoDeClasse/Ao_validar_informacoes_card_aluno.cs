@@ -16,9 +16,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 {
     public class Ao_validar_informacoes_card_aluno : ConselhoDeClasseTesteBase
     {
-        public Ao_validar_informacoes_card_aluno(CollectionFixture collectionFixture): base(collectionFixture)
+        public Ao_validar_informacoes_card_aluno(CollectionFixture collectionFixture) : base(collectionFixture)
         {
-            
+
         }
 
         protected override void RegistrarFakes(IServiceCollection services)
@@ -43,16 +43,16 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 SituacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado,
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio
             });
-            
+
             var consulta = ServiceProvider.GetService<IConsultasFechamentoTurmaDisciplina>();
             consulta.ShouldNotBeNull();
-            
+
             var turmas = ObterTodos<Dominio.Turma>();
             var turma = turmas.FirstOrDefault(c => c.CodigoTurma == TURMA_CODIGO_1);
-            
+
             var obterDadosAlunos = await consulta!.ObterDadosAlunos(turma.CodigoTurma, turma.AnoLetivo, turma.Semestre);
-            
-            
+
+
             obterDadosAlunos.ShouldNotBeNull();
             obterDadosAlunos.ShouldNotBeNull().Any();
             obterDadosAlunos.FirstOrDefault().Nome.ShouldNotBeNull();

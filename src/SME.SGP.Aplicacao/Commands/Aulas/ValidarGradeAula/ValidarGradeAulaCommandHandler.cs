@@ -2,13 +2,12 @@
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ValidarGradeAulaCommandHandler: IRequestHandler<ValidarGradeAulaCommand, (bool resultado, string mensagem)>
+    public class ValidarGradeAulaCommandHandler : IRequestHandler<ValidarGradeAulaCommand, (bool resultado, string mensagem)>
     {
         private readonly IMediator mediator;
 
@@ -21,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             if (request.EhRegencia)
                 return await ValidarGradeAulaRegencia(request);
-            
+
             var gradeAulas = await mediator.Send(new ObterGradeAulasPorTurmaEProfessorQuery(request.TurmaCodigo, request.ComponenteCurricularesCodigo, request.Data, request.UsuarioRf, request.EhRegencia, request.EhGestor));
             return ValidarGradeAula(gradeAulas, request.Quantidade);
         }
@@ -41,7 +40,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<(bool resultado, string mensagem)> ValidarGradeAulaRegencia(ValidarGradeAulaCommand request)
         {
-            if (request.AulasExistentes.PossuiRegistros(c => c.TipoAula != TipoAula.Reposicao) 
+            if (request.AulasExistentes.PossuiRegistros(c => c.TipoAula != TipoAula.Reposicao)
                 && await UsuarioLogadoNaoEhProfCJ())
                 return (false, ObterMsgQdadeAulasGradeRegencia(request.TurmaModalidade));
             return (true, string.Empty);

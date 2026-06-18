@@ -29,16 +29,16 @@ namespace SME.SGP.Api.Controllers
 
             return File(relatorio, contentType, nomeArquivo);
         }
-        
+
         [HttpPost("conselhos-classe/atas-finais")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.AFR_C,Policy = "Bearer")]
-        public async Task<IActionResult> ConselhoClasseAtaFinal([FromBody]FiltroRelatorioConselhoClasseAtaFinalDto filtroRelatorioConselhoClasseAtaFinalDto, [FromServices] IRelatorioConselhoClasseAtaFinalUseCase relatorioConselhoClasseAtaFinalUseCase)
+        [Permissao(Permissao.AFR_C, Policy = "Bearer")]
+        public async Task<IActionResult> ConselhoClasseAtaFinal([FromBody] FiltroRelatorioConselhoClasseAtaFinalDto filtroRelatorioConselhoClasseAtaFinalDto, [FromServices] IRelatorioConselhoClasseAtaFinalUseCase relatorioConselhoClasseAtaFinalUseCase)
         {
             return Ok(await relatorioConselhoClasseAtaFinalUseCase.Executar(filtroRelatorioConselhoClasseAtaFinalDto));
         }
-     
+
         [HttpPost("faltas-frequencia")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -83,7 +83,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await relatorioUseCase.Executar(filtro));
         }
 
-        
+
         [HttpPost("notificacoes/impressao")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -111,7 +111,7 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await relatorioAtribuicaoCJUseCase.Executar(filtros));
         }
-        
+
         [HttpPost("historico-alteracao-notas")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -137,7 +137,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.RDE_C, Policy = "Bearer")]
         public async Task<IActionResult> LeituraComunicados([FromBody] FiltroRelatorioLeituraComunicados filtro, [FromServices] IRelatorioLeituraComunicadosUseCase relatorioUseCase)
-        {            
+        {
             return Ok(await relatorioUseCase.Executar(filtro));
         }
 
@@ -237,7 +237,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.AFQ_C, Policy = "Bearer")]
-        public async Task<IActionResult> ImprimirAcompanhamentoFrequencia(FiltroAcompanhamentoFrequenciaJustificativaDto filtro,[FromServices] IRelatorioAcompanhamentoDeFrequênciaUseCase useCase)
+        public async Task<IActionResult> ImprimirAcompanhamentoFrequencia(FiltroAcompanhamentoFrequenciaJustificativaDto filtro, [FromServices] IRelatorioAcompanhamentoDeFrequênciaUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
         }
@@ -250,7 +250,7 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(filtro));
         }
-        
+
         [HttpPost("planos-aee")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -273,7 +273,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
-        public async Task<IActionResult> EncaminhamentoNAAPA([FromBody] FiltroRelatorioEncaminhamentoNAAPADto filtroRelatorioEncaminhamentoNAAPADto, 
+        public async Task<IActionResult> EncaminhamentoNAAPA([FromBody] FiltroRelatorioEncaminhamentoNAAPADto filtroRelatorioEncaminhamentoNAAPADto,
                                                              [FromServices] IRelatorioEncaminhamentoNAAPAUseCase relatorioEncaminhamentoNAAPAUseCase)
         {
             return Ok(await relatorioEncaminhamentoNAAPAUseCase.Executar(filtroRelatorioEncaminhamentoNAAPADto));
@@ -325,7 +325,7 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(filtro));
         }
-        
+
         [HttpPost("plano-anual")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

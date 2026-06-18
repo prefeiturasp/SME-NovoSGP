@@ -4,7 +4,7 @@ using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
-    public class VerificaSeExisteParametroSistemaPorTipoQuery :IRequest<bool>
+    public class VerificaSeExisteParametroSistemaPorTipoQuery : IRequest<bool>
     {
         public VerificaSeExisteParametroSistemaPorTipoQuery(TipoParametroSistema tipo)
         {
@@ -13,8 +13,8 @@ namespace SME.SGP.Aplicacao
 
         public TipoParametroSistema Tipo { get; set; }
     }
-    
-    public class VerificaSeExisteParametroSistemaPorTipoQueryValidator: AbstractValidator<VerificaSeExisteParametroSistemaPorTipoQuery>
+
+    public class VerificaSeExisteParametroSistemaPorTipoQueryValidator : AbstractValidator<VerificaSeExisteParametroSistemaPorTipoQuery>
     {
         public VerificaSeExisteParametroSistemaPorTipoQueryValidator()
         {

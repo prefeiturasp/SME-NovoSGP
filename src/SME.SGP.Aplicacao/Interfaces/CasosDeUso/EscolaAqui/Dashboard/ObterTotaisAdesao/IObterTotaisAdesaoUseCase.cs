@@ -8,5 +8,5 @@ namespace SME.SGP.Aplicacao
     {
         Task<IEnumerable<TotaisAdesaoResultado>> Executar(string codigoDre, string codigoUe);
     }
-    
+
 }

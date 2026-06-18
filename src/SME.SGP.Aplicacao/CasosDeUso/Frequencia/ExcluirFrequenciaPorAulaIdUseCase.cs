@@ -1,11 +1,8 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
-using System.Threading;
-using System;
 
 namespace SME.SGP.Aplicacao
 {
@@ -22,13 +19,13 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new ExcluirFrequenciaDaAulaCommand(filtro.Id));
 
             var aula = await mediator.Send(new ObterAulaPorIdQuery(filtro.Id));
-            
+
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(aula.TurmaId));
-            
+
             await mediator.Send(new IncluirFilaConsolidacaoDiariaDashBoardFrequenciaCommand(turma.Id, aula.DataAula));
-            
+
             await mediator.Send(new IncluirFilaConsolidacaoSemanalMensalDashBoardFrequenciaCommand(turma.Id, turma.CodigoTurma, turma.ModalidadeCodigo == Modalidade.EducacaoInfantil, turma.AnoLetivo, aula.DataAula));
-            
+
             return true;
         }
     }

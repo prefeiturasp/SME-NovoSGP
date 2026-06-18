@@ -16,6 +16,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<bool> Handle(ExcluirTodosAlunosComunicadoCommand request, CancellationToken cancellationToken)
-            => await repositorioComunicadoAluno.RemoverTodosAlunosComunicado(request.Id);        
+            => await repositorioComunicadoAluno.RemoverTodosAlunosComunicado(request.Id);
     }
 }

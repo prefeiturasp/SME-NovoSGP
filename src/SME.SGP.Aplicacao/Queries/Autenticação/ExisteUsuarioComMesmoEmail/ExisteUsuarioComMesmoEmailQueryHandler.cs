@@ -1,13 +1,10 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
+using Newtonsoft.Json;
+using SME.SGP.Infra;
 using System;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using SME.SGP.Dto;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -23,8 +20,8 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(ExisteUsuarioComMesmoEmailQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
-            
-            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_AUTENTICACAO_SGP_VALIDA_EMAIL_EXISTENTE,request.Login, request.Email));
+
+            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_AUTENTICACAO_SGP_VALIDA_EMAIL_EXISTENTE, request.Login, request.Email));
 
             if (resposta.IsSuccessStatusCode)
             {

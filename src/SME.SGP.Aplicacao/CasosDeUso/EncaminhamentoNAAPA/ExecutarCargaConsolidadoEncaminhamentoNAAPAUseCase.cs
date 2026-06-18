@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
 
             await AtualizarDataExecucao(ConsolidarEncaminhamento);
             await AtualizarDataExecucao(ConsolidarAtendimento);
-            
+
             return true;
         }
 

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.PlanoAula.ServicosFakes
 {
-    public class ObterTurmasRegularesPorUeModalidadePeriodoAnoLetivoQueryHandlerFake  : IRequestHandler<ObterTurmasRegularesPorUeModalidadePeriodoAnoLetivoQuery,IEnumerable<AbrangenciaTurmaRetorno>>
+    public class ObterTurmasRegularesPorUeModalidadePeriodoAnoLetivoQueryHandlerFake : IRequestHandler<ObterTurmasRegularesPorUeModalidadePeriodoAnoLetivoQuery, IEnumerable<AbrangenciaTurmaRetorno>>
     {
         public Task<IEnumerable<AbrangenciaTurmaRetorno>> Handle(ObterTurmasRegularesPorUeModalidadePeriodoAnoLetivoQuery request, CancellationToken cancellationToken)
         {

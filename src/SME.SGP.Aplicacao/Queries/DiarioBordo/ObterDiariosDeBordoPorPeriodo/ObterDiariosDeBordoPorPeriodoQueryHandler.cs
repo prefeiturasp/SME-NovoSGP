@@ -26,6 +26,6 @@ namespace SME.SGP.Aplicacao.Queries.DiarioBordo.ObterDiariosDeBordoPorPeriodo
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo));
 
             return await repositorioDiarioBordo.ObterDiariosBordoPorPeriodoPaginado(request.TurmaCodigo, turma.AnoLetivo, request.ComponenteCurricularCodigo, request.PeriodoInicio, request.PeriodoFim, Paginacao);
-        } 
+        }
     }
 }

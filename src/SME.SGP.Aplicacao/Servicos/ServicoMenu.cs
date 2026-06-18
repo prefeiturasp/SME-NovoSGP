@@ -1,10 +1,10 @@
-﻿using SME.SGP.Dominio.Interfaces;
+﻿using MediatR;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
                                                                                item.GetAttribute<PermissaoMenuAttribute>().OrdemMenu)).OrderBy(a => a.Key.Ordem).ToList();
 
                 AdicionarPermissoesMenu(menuRetornoDto, permissoesMenu, ajudas);
-                
+
                 menuRetornoDto.Menus = menuRetornoDto.Menus.OrderBy(a => a.Ordem).ToList();
                 listaRetorno.Add(menuRetornoDto);
             }

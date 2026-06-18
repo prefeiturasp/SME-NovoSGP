@@ -1,15 +1,15 @@
 using MediatR;
+using Microsoft.Extensions.Options;
 using Moq;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using Microsoft.Extensions.Options;
-using SME.SGP.Infra.Utilitarios;
-using Xunit;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.Comandos
 {

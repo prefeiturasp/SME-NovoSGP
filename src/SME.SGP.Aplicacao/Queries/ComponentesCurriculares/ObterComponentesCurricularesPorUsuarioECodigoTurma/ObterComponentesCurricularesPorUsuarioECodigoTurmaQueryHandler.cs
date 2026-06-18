@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
     public class ObterComponentesCurricularesPorUsuarioECodigoTurmaQueryHandler : IRequestHandler<ObterComponentesCurricularesPorUsuarioECodigoTurmaQuery, IEnumerable<DisciplinaNomeDto>>
     {
         private readonly IMediator mediator;
-        
+
         public ObterComponentesCurricularesPorUsuarioECodigoTurmaQueryHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
             return componentesCurricularesEol.Select(cc => new DisciplinaNomeDto()
             {
                 Codigo = cc.Codigo.ToString(),
-                Nome = cc.ExibirComponenteEOL && 
+                Nome = cc.ExibirComponenteEOL &&
                        obterTurma.ModalidadeCodigo == Modalidade.EducacaoInfantil ? cc.DescricaoComponenteInfantil : cc.Descricao
             }).OrderBy(c => c.Nome)?.ToList();
 

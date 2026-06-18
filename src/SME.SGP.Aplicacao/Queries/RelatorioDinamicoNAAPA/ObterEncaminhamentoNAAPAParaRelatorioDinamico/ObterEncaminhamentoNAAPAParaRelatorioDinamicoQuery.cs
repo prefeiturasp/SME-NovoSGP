@@ -10,6 +10,6 @@ namespace SME.SGP.Aplicacao
             Filtro = filtro;
         }
 
-        public FiltroRelatorioDinamicoNAAPADto Filtro {  get; set; }
+        public FiltroRelatorioDinamicoNAAPADto Filtro { get; set; }
     }
 }

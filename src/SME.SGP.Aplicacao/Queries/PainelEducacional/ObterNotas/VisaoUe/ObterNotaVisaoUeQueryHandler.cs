@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNotas.VisaoUe
     {
         private readonly IRepositorioNotaConsulta repositorio;
 
-        public ObterNotaVisaoUeQueryHandler(IRepositorioNotaConsulta repositorio) 
+        public ObterNotaVisaoUeQueryHandler(IRepositorioNotaConsulta repositorio)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }

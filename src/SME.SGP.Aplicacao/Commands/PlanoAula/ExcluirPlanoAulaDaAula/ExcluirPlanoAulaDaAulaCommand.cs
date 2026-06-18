@@ -3,7 +3,7 @@ using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirPlanoAulaDaAulaCommand: IRequest<bool>
+    public class ExcluirPlanoAulaDaAulaCommand : IRequest<bool>
     {
         public ExcluirPlanoAulaDaAulaCommand(long aulaId)
         {
@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
         public long AulaId { get; set; }
     }
 
-    public class ExcluirPlanoAulaDaAulaCommandValidator: AbstractValidator<ExcluirPlanoAulaDaAulaCommand>
+    public class ExcluirPlanoAulaDaAulaCommandValidator : AbstractValidator<ExcluirPlanoAulaDaAulaCommand>
     {
         public ExcluirPlanoAulaDaAulaCommandValidator()
         {

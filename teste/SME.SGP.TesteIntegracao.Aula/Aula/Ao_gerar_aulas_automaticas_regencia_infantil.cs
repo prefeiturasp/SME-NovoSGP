@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using MongoDB.Bson.IO;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
@@ -148,7 +147,7 @@ namespace SME.SGP.TesteIntegracao.Aula.Aula
                 TurmaId = 1
             });
 
-           var resultado = await useCase.Executar(new MensagemRabbit());
+            var resultado = await useCase.Executar(new MensagemRabbit());
 
             resultado.ShouldBeTrue();
 
@@ -424,7 +423,7 @@ namespace SME.SGP.TesteIntegracao.Aula.Aula
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
-                Codigo = 1                
+                Codigo = 1
             });
 
             await InserirNaBase(new Dominio.Evento()
@@ -445,7 +444,7 @@ namespace SME.SGP.TesteIntegracao.Aula.Aula
 
             resultado.ShouldBeTrue();
 
-            var aulasCriadas = ObterTodos<Dominio.Aula>();            
+            var aulasCriadas = ObterTodos<Dominio.Aula>();
 
             aulasCriadas.Any().ShouldBeTrue();
             aulasCriadas.Count(a => a.CriadoPor

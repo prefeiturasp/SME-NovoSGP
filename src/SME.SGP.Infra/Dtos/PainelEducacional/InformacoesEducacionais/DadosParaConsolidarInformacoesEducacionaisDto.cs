@@ -14,7 +14,7 @@
         public decimal PercentualFrequenciaGlobal { get; set; }
         public int QuantidadeAlunosPap { get; set; }
         public int QuantidadeTurmasPap { get; set; }
-        public decimal PercentualFrequenciaAlunosPap { get; set; }        
+        public decimal PercentualFrequenciaAlunosPap { get; set; }
         public int QuantidadeAlunosDesistentesAbandono { get; set; }
         public int QuantidadePromocoes { get; set; }
         public int QuantidadeRetencoesFrequencia { get; set; }

@@ -1,13 +1,13 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterCicloPorAnoModalidadeQueryHandler : IRequestHandler<ObterCicloPorAnoModalidadeQuery,CicloDto>
+    public class ObterCicloPorAnoModalidadeQueryHandler : IRequestHandler<ObterCicloPorAnoModalidadeQuery, CicloDto>
     {
         private readonly IRepositorioCiclo repositorioCiclo;
 
@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<CicloDto> Handle(ObterCicloPorAnoModalidadeQuery request, CancellationToken cancellationToken)
         {
-            return  await repositorioCiclo.ObterCicloPorAnoModalidade(request.Ano, request.Modalidade);
+            return await repositorioCiclo.ObterCicloPorAnoModalidade(request.Ano, request.Modalidade);
         }
     }
 }

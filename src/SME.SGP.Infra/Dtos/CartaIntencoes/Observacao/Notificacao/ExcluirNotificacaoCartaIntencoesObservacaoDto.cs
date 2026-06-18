@@ -10,7 +10,7 @@ namespace SME.SGP.Infra.Dtos
         }
 
         public long CartaIntencoesObservacaoId { get; set; }
-        
+
     }
 
     public class NotificarExcluirCartaIntencoesObservacaoDtoValidator : AbstractValidator<ExcluirNotificacaoCartaIntencoesObservacaoDto>

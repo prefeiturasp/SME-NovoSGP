@@ -135,7 +135,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Autenticacao
         [Fact]
         public void Executar_Quando_Construtor_ServicoAutenticacao_Nulo_Deve_Lancar_ArgumentNullException()
         {
-           Assert.Throws<ArgumentNullException>(() => new ObterGuidAutenticacaoFrequencia(_mediatorMock.Object, null));
+            Assert.Throws<ArgumentNullException>(() => new ObterGuidAutenticacaoFrequencia(_mediatorMock.Object, null));
         }
 
         [Fact]

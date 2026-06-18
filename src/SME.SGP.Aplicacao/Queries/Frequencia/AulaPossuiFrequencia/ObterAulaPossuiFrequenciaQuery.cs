@@ -1,7 +1,5 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Dominio;
-using System;
 
 namespace SME.SGP.Aplicacao
 {
@@ -15,7 +13,7 @@ namespace SME.SGP.Aplicacao
         public long AulaId { get; set; }
     }
 
-    public class ObterAulaPossuiFrequenciaQueryValidator: AbstractValidator<ObterAulaPossuiFrequenciaQuery>
+    public class ObterAulaPossuiFrequenciaQueryValidator : AbstractValidator<ObterAulaPossuiFrequenciaQuery>
     {
         public ObterAulaPossuiFrequenciaQueryValidator()
         {

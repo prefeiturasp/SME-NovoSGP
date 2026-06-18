@@ -37,7 +37,7 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
 
         [Fact]
         public async Task Deve_permitir_excluir_avaliacao_pelo_professor_bimestre_passado()
-        {            
+        {
             await ExecuteExclusaoComData(ObterPerfilProfessor(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_10_01);
         }
 
@@ -71,7 +71,7 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
         public async Task Nao_foi_possivel_localizar_avaliacao()
         {
             await CriarDadosBasicos(ObterCriacaoDeDadosDto(ObterPerfilDiretor()));
-            
+
             var comando = ServiceProvider.GetService<IComandosAtividadeAvaliativa>();
 
             await CriarPeriodoEscolarEAbertura();

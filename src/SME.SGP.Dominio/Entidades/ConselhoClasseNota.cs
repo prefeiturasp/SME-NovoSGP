@@ -1,6 +1,6 @@
 ﻿namespace SME.SGP.Dominio
 {
-    public class ConselhoClasseNota: EntidadeBase
+    public class ConselhoClasseNota : EntidadeBase
     {
         public ConselhoClasseAluno ConselhoClasseAluno { get; set; }
         public long ConselhoClasseAlunoId { get; set; }

@@ -1,15 +1,11 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
-using SME.SGP.Aplicacao.Commands.Autenticacao.DeslogarSuporteUsuario;
 using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Aplicacao.Servicos;
-using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao

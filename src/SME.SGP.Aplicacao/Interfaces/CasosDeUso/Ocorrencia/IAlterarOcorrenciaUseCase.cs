@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Aplicacao
 {
-   public interface IAlterarOcorrenciaUseCase : IUseCase<AlterarOcorrenciaDto, AuditoriaDto>
+    public interface IAlterarOcorrenciaUseCase : IUseCase<AlterarOcorrenciaDto, AuditoriaDto>
     {
     }
 }

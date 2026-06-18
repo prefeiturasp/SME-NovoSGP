@@ -1,11 +1,9 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -19,9 +17,9 @@ namespace SME.SGP.Aplicacao
         {
             if (param.AnoLetivo == 0)
                 param.AnoLetivo = DateTime.Now.Year;
-            
+
             var alunosMatriculadosEol = await mediator.Send(new ObterAlunosMatriculadosPorAnoLetivoECCEolQuery(param.AnoLetivo, param.DreCodigo, param.UeCodigo, new int[] { 1030, 1310 }));
-            if(alunosMatriculadosEol.Any())
+            if (alunosMatriculadosEol.Any())
             {
                 return param.UeCodigo.NaoEhNulo() ? MapearParaDtoTurmas(alunosMatriculadosEol.GroupBy(a => $"{a.Modalidade} - {a.Turma}")) : MapearParaDto(alunosMatriculadosEol.GroupBy(a => $"{a.Modalidade} - {a.Ano}"));
             }

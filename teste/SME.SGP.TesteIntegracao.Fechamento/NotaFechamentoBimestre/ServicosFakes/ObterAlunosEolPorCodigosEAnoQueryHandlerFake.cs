@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre.ServicosFakes
 {
-    public class ObterAlunosEolPorCodigosEAnoQueryHandlerFake: IRequestHandler<ObterAlunosEolPorCodigosEAnoQuery, IEnumerable<TurmasDoAlunoDto>>
+    public class ObterAlunosEolPorCodigosEAnoQueryHandlerFake : IRequestHandler<ObterAlunosEolPorCodigosEAnoQuery, IEnumerable<TurmasDoAlunoDto>>
     {
         public async Task<IEnumerable<TurmasDoAlunoDto>> Handle(ObterAlunosEolPorCodigosEAnoQuery request, CancellationToken cancellationToken)
         {

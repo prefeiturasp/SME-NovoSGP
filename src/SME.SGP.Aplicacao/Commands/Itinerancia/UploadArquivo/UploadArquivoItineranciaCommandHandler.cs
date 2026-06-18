@@ -1,14 +1,14 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class UploadArquivoItineranciaCommandHandler : IRequestHandler<UploadArquivoItineranciaCommand,ArquivoArmazenadoItineranciaDto>
+    public class UploadArquivoItineranciaCommandHandler : IRequestHandler<UploadArquivoItineranciaCommand, ArquivoArmazenadoItineranciaDto>
     {
         private readonly IMediator mediator;
 
@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
             if (request.TipoConteudo != TipoConteudoArquivo.Indefinido &&
                 request.Arquivo.ContentType != request.TipoConteudo.Name())
                 throw new NegocioException(MensagemNegocioComuns.FORMATO_ARQUIVO_NAO_ACEITO);
-            
+
             var nomeArquivo = request.Arquivo.FileName;
             var arquivo = await mediator.Send(new SalvarArquivoRepositorioCommand(nomeArquivo, TipoArquivo.Itinerancia, request.Arquivo.ContentType));
             arquivo.Path = await mediator.Send(new ArmazenarArquivoFisicoCommand(request.Arquivo, arquivo.Codigo.ToString(), TipoArquivo.Itinerancia));
@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
 
         private ArquivoArmazenadoItineranciaDto MapearDto(ArquivoArmazenadoDto armazenadoDto)
         {
-            return new ArquivoArmazenadoItineranciaDto(armazenadoDto.Id,armazenadoDto.Codigo,armazenadoDto.Path);
+            return new ArquivoArmazenadoItineranciaDto(armazenadoDto.Id, armazenadoDto.Codigo, armazenadoDto.Path);
         }
     }
 }

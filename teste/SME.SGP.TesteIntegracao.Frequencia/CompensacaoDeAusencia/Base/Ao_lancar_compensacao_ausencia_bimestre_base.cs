@@ -1,10 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
 {
@@ -15,7 +14,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
         public Ao_lancar_compensacao_ausencia_bimestre_base(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
-        
+
         protected static async Task<List<(string CodigoAluno, int QdadeAula)>> ObterCompensacaoAusenciasAlunos()
         {
             //-> Item1 = Código do aluno
@@ -25,8 +24,8 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
                 (CODIGO_ALUNO_1, QUANTIDADE_AULA),
                 (CODIGO_ALUNO_4, QUANTIDADE_AULA)
             });
-        }        
-        
+        }
+
         protected async Task<CompensacaoAusenciaDto> LancarCompensacaoAusenciasAlunos(CompensacaoDeAusenciaDBDto compensacaoDeAusencia)
         {
             await CriarDadosBase(compensacaoDeAusencia);
@@ -44,8 +43,9 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
                     Id = compensacaoAusenciaAluno.CodigoAluno,
                     QtdFaltasCompensadas = compensacaoAusenciaAluno.QdadeAula
                 });
-            };
-            
+            }
+            ;
+
             return await Task.FromResult(new CompensacaoAusenciaDto
             {
                 TurmaId = TURMA_CODIGO_1,
@@ -56,8 +56,8 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
                 DisciplinaId = compensacaoDeAusencia.ComponenteCurricular,
                 DisciplinasRegenciaIds = null
             });
-        }   
-        
+        }
+
         protected async Task CriarRegistroFrequencia()
         {
             await InserirNaBase(new RegistroFrequencia
@@ -67,7 +67,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
-            
+
             //-> Item1 = Código do aluno
             //   Item2 = Quantidade de aulas
             //   Item3 = Tipo da frequência
@@ -84,8 +84,8 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
                 await CriarRegistrosFrequenciasAlunos(registroFrequenciaAluno.CodigoAluno, registroFrequenciaAluno.QdadeAula,
                     registroFrequenciaAluno.TipoFrequencia);
             }
-        }        
-        
+        }
+
         protected async Task CriarRegistrosFrequenciasAlunos(string codigoAluno, int numeroAula,
             TipoFrequencia tipoFrequencia)
         {
@@ -99,14 +99,14 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
-            });            
-        }     
-        
+            });
+        }
+
         protected async Task CriarFrequenciasAlunos(int bimestre, string disciplinaId)
         {
             var periodosEscolares = ObterTodos<PeriodoEscolar>();
             var periodoEscolar = periodosEscolares.FirstOrDefault(c => c.Bimestre == bimestre);
-            
+
             if (periodoEscolar.EhNulo())
                 return;
 
@@ -148,10 +148,10 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
                 });
             }
         }
-        
+
         protected static async Task<CompensacaoDeAusenciaDBDto> ObterCompensacaoDeAusencia(string perfil, int bimestre,
             Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, string componenteCurricular,
-            string anoTurma, int quantidadeAulas, bool criarPeriodoEscolar, bool criarPeriodoAbertura, 
+            string anoTurma, int quantidadeAulas, bool criarPeriodoEscolar, bool criarPeriodoAbertura,
             bool permiteCompensacaoForaPeriodoAtivo, bool considerarAnoAnterior)
         {
             return await Task.FromResult(new CompensacaoDeAusenciaDBDto
@@ -169,6 +169,6 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
                 PermiteCompensacaoForaPeriodoAtivo = permiteCompensacaoForaPeriodoAtivo,
                 ConsiderarAnoAnterior = considerarAnoAnterior
             });
-        }        
+        }
     }
 }

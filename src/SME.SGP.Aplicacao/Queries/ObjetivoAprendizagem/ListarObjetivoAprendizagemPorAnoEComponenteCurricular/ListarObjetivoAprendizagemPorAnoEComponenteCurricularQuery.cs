@@ -7,7 +7,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ListarObjetivoAprendizagemPorAnoEComponenteCurricularQuery : IRequest<IEnumerable<ObjetivoAprendizagemDto>>
     {
-    
+
         public ListarObjetivoAprendizagemPorAnoEComponenteCurricularQuery(string[] anos, long[] juremaIds)
         {
             Anos = anos;
@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
 
         public string[] Anos { get; set; }
         public long[] JuremaIds { get; set; }
-        
+
     }
 
     public class ObterObjetivoAprendizagemPorAnoEComponenteCurricularQueryValidator : AbstractValidator<ListarObjetivoAprendizagemPorAnoEComponenteCurricularQuery>

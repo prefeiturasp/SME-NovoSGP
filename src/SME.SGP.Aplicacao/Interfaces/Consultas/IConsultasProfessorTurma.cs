@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao
     {
         Task<IEnumerable<ProfessorTurmaDto>> Listar(string codigoRf);
 
-        Task<IEnumerable<ProfessorResumoDto>> ObterResumoAutoComplete(int anoLetivo, string dreId, string ueId,string nomeProfessor);
+        Task<IEnumerable<ProfessorResumoDto>> ObterResumoAutoComplete(int anoLetivo, string dreId, string ueId, string nomeProfessor);
 
         Task<ProfessorResumoDto> ObterResumoPorRFUeDreAnoLetivo(string codigoRF, int anoLetivo, string dreId, string ueId, bool buscarOutrosCargos = false, bool buscarPorTodasDre = false);
 

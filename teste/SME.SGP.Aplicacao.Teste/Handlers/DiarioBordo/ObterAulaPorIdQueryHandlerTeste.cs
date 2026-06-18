@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Moq;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Moq;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dominio;
 using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.Handlers.DiarioBordo

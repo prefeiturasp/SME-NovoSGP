@@ -24,7 +24,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         public Ao_salvar_consolidado_encaminhamento_naapa(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
-        
+
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
@@ -39,7 +39,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var retorno = await useCase.Executar(new MensagemRabbit(""));
             retorno.ShouldBeTrue();
         }
-        
+
         [Fact(DisplayName = "Deve Retornar True ao Executar Rotina de Consolidação informando o ano")]
         public async Task Deve_retornar_true_ao_executar_rotina_com_ano()
         {
@@ -109,7 +109,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         }
 
         private async Task CriarDadosBasicos()
-        {  
+        {
             await InserirNaBase(new Dre()
             {
                 Id = 1,
@@ -142,7 +142,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                     AlunoCodigo = i.ToString(),
                     Situacao = SituacaoNAAPA.Rascunho,
                     AlunoNome = $"Nome do aluno ${i}",
-                    CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
                 });
             }
 
@@ -153,8 +155,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Quantidade = 10,
                 Situacao = SituacaoNAAPA.Encerrado,
                 Modalidade = Modalidade.Fundamental,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(), 
-                CriadoPor = SISTEMA_NOME, 
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
             });
             await InserirNaBase(new ParametrosSistema()

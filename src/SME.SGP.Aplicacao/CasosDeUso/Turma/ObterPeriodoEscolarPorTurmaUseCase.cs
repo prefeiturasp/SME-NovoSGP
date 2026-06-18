@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
             if (periodos.Any())
                 periodosEscolares = FiltrarPeriodosCorretos(periodos.ToList());
-           
+
             return periodosEscolares?.Select(async c => new PeriodoEscolarPorTurmaDto
             {
                 Bimestre = c.Bimestre,
@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
 
         public List<PeriodoEscolar> FiltrarPeriodosCorretos(List<PeriodoEscolar> periodos)
         {
-            var periodosAgrupados = periodos.GroupBy(p => p.TipoCalendarioId).Select(p=> new
+            var periodosAgrupados = periodos.GroupBy(p => p.TipoCalendarioId).Select(p => new
             {
                 TipoCalendarioId = p.Key,
                 QuantidadePeriodos = p.Count()

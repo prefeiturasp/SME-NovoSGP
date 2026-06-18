@@ -40,13 +40,13 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         public async Task Deve_obter_frequencia_geral_de_aluno_com_ausencia()
         {
             await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), false, NUMERO_AULAS_1);
-            await CriarDadosFrenqueciaAluno(CODIGO_ALUNO_1,TipoFrequenciaAluno.Geral);
+            await CriarDadosFrenqueciaAluno(CODIGO_ALUNO_1, TipoFrequenciaAluno.Geral);
 
             await CrieRegistroDeFrenquencia();
 
             var mediator = ServiceProvider.GetService<IMediator>();
             var valor = await mediator.Send(new ObterConsultaFrequenciaGeralAlunoQuery(CODIGO_ALUNO_1, TURMA_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString()));
-            
+
             valor.ShouldNotBeEmpty();
             valor.ShouldBe(VALOR_8333);
         }
@@ -55,7 +55,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         public async Task Deve_obter_frequencia_geral_de_aluno_sem_ausencia()
         {
             await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), true, NUMERO_AULAS_1);
-            await CriarDadosFrenqueciaAluno(CODIGO_ALUNO_2, TipoFrequenciaAluno.Geral,0);
+            await CriarDadosFrenqueciaAluno(CODIGO_ALUNO_2, TipoFrequenciaAluno.Geral, 0);
             await CrieRegistroDeFrenquencia();
 
             var mediator = ServiceProvider.GetService<IMediator>();

@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Infra
 {
     public class FiltroEventosEscolaAquiDto
     {
-        public FiltroEventosEscolaAquiDto() {}
+        public FiltroEventosEscolaAquiDto() { }
 
         public FiltroEventosEscolaAquiDto(string codigoDre, string codigoUe, string codigoTurma, int modalidadeCalendario, DateTime mesAno)
         {

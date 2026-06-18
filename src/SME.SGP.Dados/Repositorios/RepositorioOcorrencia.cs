@@ -26,9 +26,9 @@ namespace SME.SGP.Dados
 
             var gerador = new GeradorDeCondicoes(" where not o.excluido and extract(year from o.data_ocorrencia) = @anoLetivo ");
 
-            var filtrarPorUe = (filtro.UeId == TODAS_UES); 
-            
-            gerador.AdicioneCondicao(!filtrarPorUe,"and o.ue_id = @ueId ");
+            var filtrarPorUe = (filtro.UeId == TODAS_UES);
+
+            gerador.AdicioneCondicao(!filtrarPorUe, "and o.ue_id = @ueId ");
             gerador.AdicioneCondicao(filtrarPorUe, " and o.ue_id = any(@ueIds) ");
             gerador.AdicioneCondicao(filtro.TurmaId.HasValue, "and tu.id = @turmaId ");
             gerador.AdicioneCondicao(filtro.Modalidade.HasValue, "and tu.modalidade_codigo = @modalidade ");
@@ -119,7 +119,7 @@ namespace SME.SGP.Dados
 
             return new PaginacaoResultadoDto<Ocorrencia>()
             {
-                Items = lstOcorrencias.Values.OrderByDescending(x=>x.DataOcorrencia),
+                Items = lstOcorrencias.Values.OrderByDescending(x => x.DataOcorrencia),
                 TotalRegistros = lstOcorrencias.Values.Count,
                 TotalPaginas = (int)Math.Ceiling((double)lstOcorrencias.Values.Count / paginacao.QuantidadeRegistros)
             };
@@ -159,8 +159,8 @@ namespace SME.SGP.Dados
                                     AND not o.excluido;";
 
             Ocorrencia resultado = null;
-            await database.Conexao.QueryAsync<Ocorrencia, OcorrenciaAluno,OcorrenciaServidor,Ue,Turma,Ocorrencia>(sql,
-                (ocorrencia, ocorrenciaAluno,ocorrenciaServidor,ue,turma) =>
+            await database.Conexao.QueryAsync<Ocorrencia, OcorrenciaAluno, OcorrenciaServidor, Ue, Turma, Ocorrencia>(sql,
+                (ocorrencia, ocorrenciaAluno, ocorrenciaServidor, ue, turma) =>
                 {
                     if (resultado is null)
                     {
@@ -169,17 +169,17 @@ namespace SME.SGP.Dados
 
                     if (turma.NaoEhNulo()) resultado.Turma = turma;
                     if (ue.NaoEhNulo()) resultado.Ue = ue;
-                    
+
                     resultado.Alunos = resultado?.Alunos ?? new List<OcorrenciaAluno>();
-                    if(ocorrenciaAluno.NaoEhNulo() && 
-                        !resultado.Alunos.ToList().Exists(aluno => aluno.CodigoAluno == ocorrenciaAluno.CodigoAluno)) 
+                    if (ocorrenciaAluno.NaoEhNulo() &&
+                        !resultado.Alunos.ToList().Exists(aluno => aluno.CodigoAluno == ocorrenciaAluno.CodigoAluno))
                         resultado.Alunos.Add(ocorrenciaAluno);
-                    
+
                     resultado.Servidores = resultado?.Servidores ?? new List<OcorrenciaServidor>();
-                    if(ocorrenciaServidor.NaoEhNulo() && 
-                       !resultado.Servidores.ToList().Exists(servidor => servidor.CodigoServidor == ocorrenciaServidor.CodigoServidor)) 
+                    if (ocorrenciaServidor.NaoEhNulo() &&
+                       !resultado.Servidores.ToList().Exists(servidor => servidor.CodigoServidor == ocorrenciaServidor.CodigoServidor))
                         resultado.Servidores.Add(ocorrenciaServidor);
-                    
+
                     return resultado;
                 },
                 new { id });

@@ -1,14 +1,14 @@
-﻿using Moq;
-using Xunit;
+﻿using MediatR;
+using Moq;
+using Newtonsoft.Json;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using Newtonsoft.Json;
-using SME.SGP.Infra;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dominio;
+using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DashboardFrequencia
 {
@@ -108,7 +108,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DashboardFrequencia
             // Mock do comando de salvar consolidação
             ConsolidacaoDashBoardFrequencia consolidacaoSalva = null;
             _mediatorMock.Setup(m => m.Send(
-                It.IsAny<SalvarConsolidacaoDashBoardFrequenciaCommand>(), 
+                It.IsAny<SalvarConsolidacaoDashBoardFrequenciaCommand>(),
                 It.IsAny<CancellationToken>()))
                 .Callback<IRequest<bool>, CancellationToken>((cmd, token) =>
                 {

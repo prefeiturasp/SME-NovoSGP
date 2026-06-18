@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<RegistroFrequenciaAlunoBimestreDto>> Handle(ObterFrequenciasRegistradasPorTurmasComponentesCurricularesQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciasRegistradasPorTurmasComponentesCurriculares(request.CodigoAluno, request.CodigosTurma, request.ComponentesCurricularesId, request.PeriodoEscolarId);;
+            return await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciasRegistradasPorTurmasComponentesCurriculares(request.CodigoAluno, request.CodigosTurma, request.ComponentesCurricularesId, request.PeriodoEscolarId); ;
         }
     }
 }

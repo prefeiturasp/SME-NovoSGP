@@ -2,8 +2,8 @@
 {
     public class PainelEducacionalSondagemEscritaDto
     {
-        public string CodigoDre {  get; set; }
-        public string CodigoUe {  get; set; }
+        public string CodigoDre { get; set; }
+        public string CodigoUe { get; set; }
         public int PreSilabico { get; set; }
         public int SilabicoSemValor { get; set; }
         public int SilabicoComValor { get; set; }

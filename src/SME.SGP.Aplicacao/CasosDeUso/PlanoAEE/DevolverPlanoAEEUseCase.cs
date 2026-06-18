@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
             await mediator.Send(new ResolverPendenciaPlanoAEECommand(planoAEE.Id));
 
-            if( await ParametroGeracaoPendenciaAtivo())            
+            if (await ParametroGeracaoPendenciaAtivo())
                 await mediator.Send(new GerarPendenciaDevolucaoPlanoAEECommand(param.PlanoAEEId, param.Motivo));
 
             return true;

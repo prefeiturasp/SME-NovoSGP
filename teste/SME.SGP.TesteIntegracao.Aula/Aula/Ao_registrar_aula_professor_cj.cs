@@ -5,11 +5,10 @@ using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.AulaUnica
@@ -45,13 +44,13 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
             await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, false);
 
             await CriarAtribuicaoCJ(Modalidade.Fundamental, COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
-            
+
             await CriarAtribuicaoEsporadica(new(DateTimeExtension.HorarioBrasilia().Year, 01, 10), new(DateTimeExtension.HorarioBrasilia().Year, 01, 10));
 
             await CriarPeriodoEscolarEAbertura();
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            
+
             var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_02_05);
 
             await CriarPeriodoEscolarEAbertura();

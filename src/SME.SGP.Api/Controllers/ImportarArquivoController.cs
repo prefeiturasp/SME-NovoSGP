@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Nest;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ImportarArquivo.Boletim;

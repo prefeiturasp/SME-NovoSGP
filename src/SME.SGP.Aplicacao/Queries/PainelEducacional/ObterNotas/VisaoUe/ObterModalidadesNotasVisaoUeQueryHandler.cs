@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterNotas.VisaoUe
 
         public async Task<IEnumerable<IdentificacaoInfo>> Handle(ObterModalidadesNotasVisaoUeQuery request, CancellationToken cancellationToken)
         {
-            return await repositorio.ObterModalidadesNotasVisaoUe(request.AnoLetivo, request.CodigoUe,  request.Bimestre);
+            return await repositorio.ObterModalidadesNotasVisaoUe(request.AnoLetivo, request.CodigoUe, request.Bimestre);
         }
     }
 }

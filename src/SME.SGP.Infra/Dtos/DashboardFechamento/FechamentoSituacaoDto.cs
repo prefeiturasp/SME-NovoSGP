@@ -2,14 +2,14 @@
 {
     public class FechamentoSituacaoDto
     {
-        public int Ordem { get;  set; }
+        public int Ordem { get; set; }
         public string Descricao { get; private set; }
         public string LegendaProcessadoPendencia { get; private set; }
         public int QuantidadeProcessadoPendencia { get; private set; }
         public string LegendaProcessadoSucesso { get; private set; }
         public int QuantidadeProcessadoSucesso { get; private set; }
 
-        public string LegendaNaoIniciado  { get; private set; }
+        public string LegendaNaoIniciado { get; private set; }
 
         public FechamentoSituacaoDto()
         {

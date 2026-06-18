@@ -46,7 +46,7 @@ namespace SME.SGP.Notificacoes.Worker
         {
             app.UseElasticApm(Configuration,
                 new HttpDiagnosticsSubscriber());
-            
+
             app.UseHealthChecksSgp();
             app.UseHealthCheckPrometheusSgp();
 

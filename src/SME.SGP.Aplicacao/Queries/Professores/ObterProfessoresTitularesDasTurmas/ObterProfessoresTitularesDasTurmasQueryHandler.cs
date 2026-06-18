@@ -1,15 +1,12 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SME.SGP.Infra;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -25,11 +22,11 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> Handle(ObterProfessoresTitularesDasTurmasQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
-            
+
             var url = $"{ServicosEolConstants.URL_PROFESSORES_TITULARES}?codigosTurmas={string.Join("&codigosTurmas=", request.CodigosTurmas)}";
 
             var resposta = await httpClient.GetAsync(url);
-            
+
             if (!resposta.IsSuccessStatusCode)
                 return default;
 

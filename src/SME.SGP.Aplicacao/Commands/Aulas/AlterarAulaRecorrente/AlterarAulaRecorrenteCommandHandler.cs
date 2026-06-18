@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -10,7 +11,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -146,7 +146,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task TrataAlteracaoDeFrequencia(Usuario usuarioLogado, List<(long Id, DateTime Data, int QdadeAnterior)> listaAlteracoesFrequencia)
         {
-            foreach(var aula in listaAlteracoesFrequencia)
+            foreach (var aula in listaAlteracoesFrequencia)
             {
                 var trataFrequenciaAulaModificada = new AulaAlterarFrequenciaRequestDto(aula.Id, aula.QdadeAnterior);
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaAlterarAulaFrequenciaTratar, trataFrequenciaAulaModificada, Guid.NewGuid(), usuarioLogado));

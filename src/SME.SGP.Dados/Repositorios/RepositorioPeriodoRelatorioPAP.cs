@@ -75,7 +75,7 @@ namespace SME.SGP.Dados.Repositorios
                           and prp.periodo = @semestre
                           and crp.tipo_periodicidade = @tipoPeriodo";
 
-             return await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { anoLetivo, semestre, tipoPeriodo });
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { anoLetivo, semestre, tipoPeriodo });
         }
 
         public async Task<bool> PeriodoEmAberto(long periodoRelatorioId, DateTime dataReferencia)

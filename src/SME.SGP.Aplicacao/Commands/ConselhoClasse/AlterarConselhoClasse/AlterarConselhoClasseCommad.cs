@@ -7,7 +7,7 @@ namespace SME.SGP.Aplicacao
 {
     public class AlterarConselhoClasseCommad : IRequest<ConselhoClasseNotaRetornoDto>
     {
-        public long ConselhoClasseId { get; set; } 
+        public long ConselhoClasseId { get; set; }
         public long FechamentoTurmaId { get; set; }
         public string CodigoAluno { get; set; }
         public Turma Turma { get; set; }
@@ -16,12 +16,12 @@ namespace SME.SGP.Aplicacao
         public Usuario UsuarioLogado { get; set; }
 
         public AlterarConselhoClasseCommad(
-                long conselhoClasseId, 
-                long fechamentoTurmaId, 
-                string codigoAluno, 
-                Turma turma, 
-                ConselhoClasseNotaDto conselhoClasseNotaDto, 
-                int? bimestre, 
+                long conselhoClasseId,
+                long fechamentoTurmaId,
+                string codigoAluno,
+                Turma turma,
+                ConselhoClasseNotaDto conselhoClasseNotaDto,
+                int? bimestre,
                 Usuario usuarioLogado)
         {
             ConselhoClasseId = conselhoClasseId;

@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
                 Id = request.ParecerConclusivoId ?? 0,
                 Nome = ObterNomeParecer(request.ParecerConclusivoId, pareceresDaTurma),
                 EmAprovacao = emAprovacao
-            }; 
+            };
         }
 
         private string ObterNomeParecer(long? parecerId, IEnumerable<ConselhoClasseParecerConclusivo> pareceresDaTurma)

@@ -9,5 +9,5 @@ namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui
         Task<IEnumerable<AlunoPorTurmaResposta>> Executar(string codigoTurma, int anoLetivo);
     }
 
-    
+
 }

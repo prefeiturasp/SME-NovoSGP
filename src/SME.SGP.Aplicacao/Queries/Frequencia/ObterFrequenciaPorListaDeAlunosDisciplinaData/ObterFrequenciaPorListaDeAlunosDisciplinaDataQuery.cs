@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using FluentValidation;
+﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
@@ -18,7 +17,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public string[] CodigosAlunos { get; set; }
-        public string[] DisciplinaId{ get; set; }
+        public string[] DisciplinaId { get; set; }
         public long PeriodoEscolarId { get; set; }
         public string TurmaCodigo { get; set; }
         public string Professor { get; set; }

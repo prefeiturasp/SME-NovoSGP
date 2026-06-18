@@ -1,18 +1,11 @@
 ﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
-using SME.SGP.Dto;
-using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.PlanoAula.Base;
-using SME.SGP.TesteIntegracao.PlanoAula.ServicosFakes;
-using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -66,7 +59,7 @@ namespace SME.SGP.TesteIntegracao.Aula.PlanoAula
             {
                 TipoCalendarioId = 1,
                 Bimestre = 1,
-                PeriodoInicio = new DateTime(DateTime.Now.Year, 1,1),
+                PeriodoInicio = new DateTime(DateTime.Now.Year, 1, 1),
                 PeriodoFim = new DateTime(DateTime.Now.Year, 1, 31),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
@@ -160,7 +153,7 @@ namespace SME.SGP.TesteIntegracao.Aula.PlanoAula
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            await InserirNaBase("objetivo_aprendizagem", new string [] { "id", "descricao", "codigo", "ano_turma", "componente_curricular_id", "criado_em", "atualizado_em" }, new string [] { "1", "'Objetivo'", "1", "1", "1", "'2024-01-01'", "'2024-01-03'" });
+            await InserirNaBase("objetivo_aprendizagem", new string[] { "id", "descricao", "codigo", "ano_turma", "componente_curricular_id", "criado_em", "atualizado_em" }, new string[] { "1", "'Objetivo'", "1", "1", "1", "'2024-01-01'", "'2024-01-03'" });
 
             await InserirNaBase(new PlanejamentoAnualObjetivoAprendizagem
             {

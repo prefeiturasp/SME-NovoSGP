@@ -1,11 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -76,9 +76,9 @@ namespace SME.SGP.Aplicacao
 
             var matriculasDoAlunoNaTurma = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(Convert.ToInt32(turma.CodigoTurma), Convert.ToInt32(dto.CodigoAluno)));
 
-            var alunoConselho = matriculasDoAlunoNaTurma?.OrderByDescending(m=> m.DataSituacao)?.FirstOrDefault(t => t.DataMatricula < periodoEscolarValidacao.PeriodoFim) ?? matriculasDoAlunoNaTurma.FirstOrDefault();
+            var alunoConselho = matriculasDoAlunoNaTurma?.OrderByDescending(m => m.DataSituacao)?.FirstOrDefault(t => t.DataMatricula < periodoEscolarValidacao.PeriodoFim) ?? matriculasDoAlunoNaTurma.FirstOrDefault();
 
-            if(alunoConselho.EhNulo())
+            if (alunoConselho.EhNulo())
                 throw new NegocioException("Não foi possível encontrar a(s) matrícula(s) do(a) aluno(a) na turma");
 
             await VerificaSePodeEditarNota(periodoEscolarValidacao, turma, alunoConselho, dto.Bimestre);

@@ -6,14 +6,10 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ABAE.Base;
-using SME.SGP.TesteIntegracao.AtribuicaoCJs.ServicosFake;
-using SME.SGP.TesteIntegracao.ServicosFake;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -36,7 +32,7 @@ namespace SME.SGP.TesteIntegracao.ABAE
         public async Task Ao_obter_funcionarios_com_acesso_ABAE_por_dre()
         {
             await CriarDadosBasicos(true);
-          
+
             var useCase = ServiceProvider.GetService<IObterFuncionariosUseCase>();
 
             var funcionarios = await useCase.Executar(new FiltroFuncionarioDto() { CodigoDRE = DRE_CODIGO_1 });
@@ -136,7 +132,7 @@ namespace SME.SGP.TesteIntegracao.ABAE
             var resultado = await useCase.Executar(new FiltroFuncionarioDto()
             {
                 CodigoDRE = "1",
-                CodigoUE = "1"                
+                CodigoUE = "1"
             });
 
             resultado.ShouldNotBeNull();

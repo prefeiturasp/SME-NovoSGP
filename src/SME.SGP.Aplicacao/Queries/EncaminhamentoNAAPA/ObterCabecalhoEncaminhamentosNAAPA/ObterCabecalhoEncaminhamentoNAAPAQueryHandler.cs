@@ -1,15 +1,9 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
-using SME.SGP.Infra.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dto;
 
 namespace SME.SGP.Aplicacao
 {
@@ -18,7 +12,7 @@ namespace SME.SGP.Aplicacao
         public IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA { get; }
 
 
-        public ObterCabecalhoEncaminhamentoNAAPAQueryHandler(IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA) 
+        public ObterCabecalhoEncaminhamentoNAAPAQueryHandler(IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA)
         {
             this.repositorioEncaminhamentoNAAPA = repositorioEncaminhamentoNAAPA ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoNAAPA));
         }

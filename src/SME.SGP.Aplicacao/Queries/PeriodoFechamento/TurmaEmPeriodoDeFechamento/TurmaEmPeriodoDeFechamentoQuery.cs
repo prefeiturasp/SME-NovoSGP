@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao
     public class TurmaEmPeriodoDeFechamentoQuery : IRequest<bool>
     {
         public Turma Turma { get; set; }
-        public DateTime Data {  get; set; }
+        public DateTime Data { get; set; }
         public int Bimestre { get; set; }
 
         public TurmaEmPeriodoDeFechamentoQuery(Turma turma, DateTime data, int bimestre)

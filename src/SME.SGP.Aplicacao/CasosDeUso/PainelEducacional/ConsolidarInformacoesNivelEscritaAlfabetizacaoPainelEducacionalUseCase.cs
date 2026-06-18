@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PainelEducacional
     {
         public ConsolidarInformacoesNivelEscritaAlfabetizacaoPainelEducacionalUseCase(IMediator mediator) : base(mediator)
         {
-            
+
         }
 
         public async Task<bool> Executar(MensagemRabbit param)

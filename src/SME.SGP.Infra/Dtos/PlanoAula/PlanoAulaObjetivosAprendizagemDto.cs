@@ -39,6 +39,6 @@ namespace SME.SGP.Infra
         {
             if (objetivoAprendizagemComponente.NaoEhNulo())
                 ObjetivosAprendizagemComponente.Add(objetivoAprendizagemComponente);
-        } 
+        }
     }
 }

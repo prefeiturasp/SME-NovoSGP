@@ -6,7 +6,6 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,7 +28,7 @@ namespace SME.SGP.Aplicacao
                 await repositorioQuestaoRegistroAcao.ObterRespostasRegistroAcao(request.RegistroAcaoId.Value) :
                 Enumerable.Empty<RespostaQuestaoRegistroAcaoBuscaAtivaDto>();
 
-            var questoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(request.QuestionarioId , questaoId =>
+            var questoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(request.QuestionarioId, questaoId =>
                 respostasRegistroAcao.Where(c => c.QuestaoId == questaoId)
                 .Select(respostaRegistroAcao =>
                 {

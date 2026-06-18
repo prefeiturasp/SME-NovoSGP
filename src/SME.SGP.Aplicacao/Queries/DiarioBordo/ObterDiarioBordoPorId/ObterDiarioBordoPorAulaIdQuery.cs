@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao
     public class ObterDiarioBordoPorAulaIdQuery : IRequest<DiarioBordo>
     {
 
-        public ObterDiarioBordoPorAulaIdQuery(long aulaId,long componenteCurricularId)
+        public ObterDiarioBordoPorAulaIdQuery(long aulaId, long componenteCurricularId)
         {
             AulaId = aulaId;
             ComponenteCurricularId = componenteCurricularId;

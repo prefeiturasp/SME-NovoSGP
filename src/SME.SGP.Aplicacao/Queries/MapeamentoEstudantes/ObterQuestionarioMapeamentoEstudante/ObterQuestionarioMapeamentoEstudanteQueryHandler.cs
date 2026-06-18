@@ -1,14 +1,10 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Constantes;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.MapeamentoEstudantes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,7 +18,7 @@ namespace SME.SGP.Aplicacao
         private const string PRIMEIRO_ANO_ENSINO_FUNDAMENTAL = "1";
         private readonly string[] ANOS_TURMA_SONDAGEM_INTERAUTORAL = new string[] { "4", "5", "6", "7", "8", "9" };
 
-        public ObterQuestionarioMapeamentoEstudanteQueryHandler(IMediator mediator, 
+        public ObterQuestionarioMapeamentoEstudanteQueryHandler(IMediator mediator,
                                                                 IRepositorioQuestaoMapeamentoEstudante repositorioQuestao,
                                                                 IRepositorioMapeamentoEstudante repositorioMapeamento)
         {
@@ -33,14 +29,14 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<QuestaoDto>> Handle(ObterQuestionarioMapeamentoEstudanteQuery request, CancellationToken cancellationToken)
         {
-            var mapeamentoEstudante = request.MapeamentoEstudanteId.HasValue 
+            var mapeamentoEstudante = request.MapeamentoEstudanteId.HasValue
                                         ? await repositorioQuestao.ObterRespostasMapeamentoEstudante(request.MapeamentoEstudanteId.Value)
                                         : await mediator.Send(new ObterRespostasAtualizadasQuestionarioMapeamentoEstudanteQuery(request.QuestionarioId,
                                                                                                                                 request.TurmaId.Value,
                                                                                                                                 request.CodigoAluno,
                                                                                                                                 request.Bimestre.Value));
 
-            var questoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(request.QuestionarioId , questaoId =>
+            var questoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(request.QuestionarioId, questaoId =>
                 mapeamentoEstudante.Where(c => c.QuestaoId == questaoId)
                 .Select(mapeamento =>
                 {
@@ -53,7 +49,7 @@ namespace SME.SGP.Aplicacao
                     };
                 })));
 
-            var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId ?? 
+            var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId ??
                                                                      await repositorioMapeamento
                                                                                 .ObterTurmaIdMapeamentoEstudante(request.MapeamentoEstudanteId.Value)));
 
@@ -71,7 +67,7 @@ namespace SME.SGP.Aplicacao
             questao = questoes.FirstOrDefault(q => q.NomeComponente == NomesComponentesMapeamentoEstudante.HIPOTESE_ESCRITA);
             if (ANOS_TURMA_SONDAGEM_INTERAUTORAL.Contains(turma.Ano))
                 questao.SomenteLeitura = false;
-            
+
             return questoes;
         }
 

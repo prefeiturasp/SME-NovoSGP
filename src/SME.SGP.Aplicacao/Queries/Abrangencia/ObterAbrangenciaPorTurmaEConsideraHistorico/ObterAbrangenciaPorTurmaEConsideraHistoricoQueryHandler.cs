@@ -1,12 +1,12 @@
-﻿using System;
+﻿using MediatR;
+using SME.SGP.Dto;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dto;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterAbrangenciaPorTurmaEConsideraHistoricoQueryHandler: IRequestHandler<ObterAbrangenciaPorTurmaEConsideraHistoricoQuery,AbrangenciaFiltroRetorno>
+    public class ObterAbrangenciaPorTurmaEConsideraHistoricoQueryHandler : IRequestHandler<ObterAbrangenciaPorTurmaEConsideraHistoricoQuery, AbrangenciaFiltroRetorno>
     {
         private readonly IConsultasAbrangencia consultasAbrangencia;
 

@@ -1,10 +1,9 @@
 ﻿using MediatR;
-using SME.SGP.Infra.Dtos.Relatorios;
+using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SME.SGP.Infra;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -20,8 +19,8 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<DisciplinaDto>> Executar(long turmaId)
         {
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(turmaId));
-            
-            if(turma.EhNulo())
+
+            if (turma.EhNulo())
                 throw new NegocioException("Turma não encontrada.");
 
             var turno = turma.ModalidadeCodigo == Modalidade.Fundamental ? turma.QuantidadeDuracaoAula : 0;

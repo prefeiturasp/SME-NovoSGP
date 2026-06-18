@@ -80,7 +80,7 @@ namespace SME.SGP.TesteIntegracao.Fechamento.ConselhoDeClasse
                 CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
-            }); 
+            });
 
             await InserirNaBase(new ConselhoClasseNota()
             {

@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
     public class ObterSecoesRegistroAcaoSecaoUseCase : IObterSecoesRegistroAcaoSecaoUseCase
     {
         private readonly IMediator mediator;
-        
+
         public ObterSecoesRegistroAcaoSecaoUseCase(IMediator mediator)
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 var listaQuestoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(secao.QuestionarioId));
                 secao.Concluido = !listaQuestoes.Any(c => c.Obrigatorio);
             }
-            
+
             return secoesQuestionario;
         }
     }

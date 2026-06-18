@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -27,14 +26,15 @@ namespace SME.SGP.Aplicacao
 
             var resposta = await httpClient.GetAsync(
                 string.Format(ServicosEolConstants.URL_ALUNOS_TURMAS_ANOS_LETIVOS_HISTORICO_FILTRAR_SITUACAO, request.CodigoAluno, request.AnoLetivo, request.Historico, request.FiltrarSituacao, request.TipoTurma), cancellationToken);
-            
+
             var json = await resposta.Content.ReadAsStringAsync(cancellationToken);
 
             if (resposta.IsSuccessStatusCode)
             {
                 return JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(json);
 
-            } else if (resposta.StatusCode == HttpStatusCode.NotFound || resposta.StatusCode == HttpStatusCode.NoContent)
+            }
+            else if (resposta.StatusCode == HttpStatusCode.NotFound || resposta.StatusCode == HttpStatusCode.NoContent)
             {
                 return Enumerable.Empty<AlunoPorTurmaResposta>();
             }

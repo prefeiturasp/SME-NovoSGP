@@ -1,14 +1,14 @@
-﻿using System;
+﻿using MediatR;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
-    public class PersistirRelatorioSecaoCommandHandler : IRequestHandler<PersistirRelatorioSecaoCommand,RelatorioPeriodicoPAPSecao>
+    public class PersistirRelatorioSecaoCommandHandler : IRequestHandler<PersistirRelatorioSecaoCommand, RelatorioPeriodicoPAPSecao>
     {
         private readonly IMediator mediator;
 

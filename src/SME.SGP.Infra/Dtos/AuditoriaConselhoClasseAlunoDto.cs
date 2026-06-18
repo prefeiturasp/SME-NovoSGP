@@ -1,11 +1,8 @@
 ﻿using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Infra
 {
-    public class AuditoriaConselhoClasseAlunoDto: AuditoriaDto
+    public class AuditoriaConselhoClasseAlunoDto : AuditoriaDto
     {
         public long ConselhoClasseId { get; set; }
 

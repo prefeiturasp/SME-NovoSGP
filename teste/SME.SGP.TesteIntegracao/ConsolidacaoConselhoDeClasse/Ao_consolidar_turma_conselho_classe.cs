@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Nest;
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
@@ -41,16 +40,16 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoConselhoDeClasse
             await CriarDreUePerfilComponenteCurricular();
             await CriarTurma(Modalidade.Fundamental);
             await InserirNaBase(
-                new TipoCalendario() 
-                { 
-                    Id = tipoCalendarioId, 
-                    Modalidade = ModalidadeTipoCalendario.FundamentalMedio, 
-                    Nome = "1", 
-                    Situacao = true, 
-                    AnoLetivo = ANO_ATUAL, 
-                    CriadoPor = "sistema", 
-                    CriadoRF = "sistema", 
-                    CriadoEm = DateTimeExtension.HorarioBrasilia() 
+                new TipoCalendario()
+                {
+                    Id = tipoCalendarioId,
+                    Modalidade = ModalidadeTipoCalendario.FundamentalMedio,
+                    Nome = "1",
+                    Situacao = true,
+                    AnoLetivo = ANO_ATUAL,
+                    CriadoPor = "sistema",
+                    CriadoRF = "sistema",
+                    CriadoEm = DateTimeExtension.HorarioBrasilia()
                 });
             await CriarPeriodosEscolares(tipoCalendarioId);
             await CriarConsolidacaoTurmaAluno(turmaId);

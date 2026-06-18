@@ -1,12 +1,9 @@
-﻿using Dapper;
-using SME.SGP.Dados.Contexto;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -33,7 +30,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<ObjetivoAprendizagemComponenteDto>(query, new { planoAulaId });
         }
-        
+
         public async Task<IEnumerable<ObjetivoAprendizagemAula>> ObterObjetivosAprendizagemAulaPorPlanoAulaId(long planoAulaId)
         {
             var query = @"select id, plano_aula_id, criado_em, criado_por, alterado_em, alterado_por, criado_rf, 

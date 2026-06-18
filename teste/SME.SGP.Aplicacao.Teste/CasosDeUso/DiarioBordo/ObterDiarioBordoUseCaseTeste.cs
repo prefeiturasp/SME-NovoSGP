@@ -1,12 +1,12 @@
-﻿using Xunit;
+﻿using MediatR;
 using Moq;
-using System.Threading;
-using System.Threading.Tasks;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using MediatR;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DiarioBordo
 {

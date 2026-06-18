@@ -10,7 +10,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 {
     public class RepositorioDiariosBordoDiario : RepositorioElasticBase<DiariosBordoDiario>, IRepositorioDiariosBordoDiario
     {
-        public RepositorioDiariosBordoDiario(IElasticClient elasticClient, IServicoTelemetria servicoTelemetria, IOptions<ElasticOptions> elasticOptions) 
+        public RepositorioDiariosBordoDiario(IElasticClient elasticClient, IServicoTelemetria servicoTelemetria, IOptions<ElasticOptions> elasticOptions)
             : base(elasticClient, servicoTelemetria, elasticOptions, "metricas_sgp_diarios_bordo_diario")
         {
         }

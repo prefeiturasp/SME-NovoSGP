@@ -6,5 +6,5 @@ namespace SME.SGP.Aplicacao.Integracoes
     {
         Task<string> RecuperarUltimaVersao();
 
-   }
+    }
 }

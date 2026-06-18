@@ -18,8 +18,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 {
     public class Ao_obter_sintese : ConselhoDeClasseTesteBase
     {
-        private const string BASE_NACIONAL_COMUM = "Base Nacional Comum"; 
-            
+        private const string BASE_NACIONAL_COMUM = "Base Nacional Comum";
+
         public Ao_obter_sintese(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -27,7 +27,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
-        
+
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosEolPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosEolPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterDisciplinasPorCodigoTurmaQuery, IEnumerable<DisciplinaResposta>>), typeof(ObterDisciplinasPorCodigoTurmaQueryHandlerComponente512Fake), ServiceLifetime.Scoped));
         }
@@ -45,22 +45,22 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 DataAula = DateTimeExtension.HorarioBrasilia().AddDays(-1),
                 CriarPeriodoReabertura = true,
             };
-            
+
             await CriarDadosBase(filtroNota);
 
             var obterSinteseConselhoDeClasseUseCase = ServiceProvider.GetService<IObterSinteseConselhoDeClasseUseCase>();
 
             var conselhoClasseFechamentoAluno = new ConselhoClasseSinteseDto(0, FECHAMENTO_TURMA_ID_1, ALUNO_CODIGO_1, TURMA_CODIGO_1, BIMESTRE_4);
-            
+
             var retorno = await obterSinteseConselhoDeClasseUseCase.Executar(conselhoClasseFechamentoAluno);
             retorno.ShouldNotBeNull();
             retorno.Count().ShouldBe(1);
             retorno.FirstOrDefault().Id.ShouldBe(1);
             retorno.FirstOrDefault().Titulo.ShouldBe(BASE_NACIONAL_COMUM);
             retorno.FirstOrDefault().ComponenteSinteses.Count().ShouldBe(1);
-            retorno.FirstOrDefault().ComponenteSinteses.Any(a=> a.Codigo == COMPONENTE_CURRICULAR_512).ShouldBeTrue();
+            retorno.FirstOrDefault().ComponenteSinteses.Any(a => a.Codigo == COMPONENTE_CURRICULAR_512).ShouldBeTrue();
         }
-        
+
         [Fact(DisplayName = "Conselho Classe - Não deve retornar a síntese quando não possui fechamento da turma")]
         public async Task Ao_obter_sintese_aluno_nao_deve_retornar_sem_fechamento_turma()
         {
@@ -74,13 +74,13 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 DataAula = DateTimeExtension.HorarioBrasilia().AddDays(-1),
                 CriarPeriodoReabertura = true,
             };
-            
+
             await CriarDadosBase(filtroNota);
 
             var obterSinteseConselhoDeClasseUseCase = ServiceProvider.GetService<IObterSinteseConselhoDeClasseUseCase>();
 
             var conselhoClasseFechamentoAluno = new ConselhoClasseSinteseDto(0, 0, ALUNO_CODIGO_1, TURMA_CODIGO_1, BIMESTRE_4);
-            
+
             await Assert.ThrowsAsync<NegocioException>(() => obterSinteseConselhoDeClasseUseCase.Executar(conselhoClasseFechamentoAluno));
         }
     }

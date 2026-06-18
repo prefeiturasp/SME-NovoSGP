@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IInserirAulaUseCase: IUseCase<PersistirAulaDto, RetornoBaseDto>
+    public interface IInserirAulaUseCase : IUseCase<PersistirAulaDto, RetornoBaseDto>
     {
     }
 }

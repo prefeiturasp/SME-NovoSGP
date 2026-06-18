@@ -1,7 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
+using System;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {

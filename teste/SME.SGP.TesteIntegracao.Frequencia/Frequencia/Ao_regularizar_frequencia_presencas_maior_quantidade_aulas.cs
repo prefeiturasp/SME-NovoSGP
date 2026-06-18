@@ -1,5 +1,4 @@
-﻿using Elastic.Apm.Api;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
@@ -47,7 +46,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         {
             var dataAtual = DateTimeExtension.HorarioBrasilia();
 
-            (DateTime inicioPeriodo, DateTime fimPeriodo) = (new DateTime(dataAtual.Year, dataAtual.Month, 1), 
+            (DateTime inicioPeriodo, DateTime fimPeriodo) = (new DateTime(dataAtual.Year, dataAtual.Month, 1),
                 new DateTime(dataAtual.Year, dataAtual.Month, DateTime.DaysInMonth(dataAtual.Year, dataAtual.Month)));
 
             await InserirNaBase(new TipoCalendario()
@@ -223,7 +222,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
 
             var commandHandler = new RegularizarFrequenciaPresencasMaiorQuantidadeAulasCommandHandler(repositorioRegistroFrequenciaAluno, repositorioCache, mediator);
 
-            var resultado =  await commandHandler
+            var resultado = await commandHandler
                 .Handle(new RegularizarFrequenciaPresencasMaiorQuantidadeAulasCommand(1), It.IsAny<CancellationToken>());
 
             resultado.ShouldBeTrue();
@@ -592,7 +591,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
                 TipoTurma = TipoTurma.Regular,
                 ModalidadeCodigo = Modalidade.Fundamental,
                 AnoLetivo = dataAtual.Year
-            });           
+            });
 
             await InserirNaBase(new Dominio.Aula()
             {
@@ -609,7 +608,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
                 CriadoEm = dataAtual,
                 CriadoPor = "Sistema",
                 CriadoRF = "1234"
-            });          
+            });
 
             await InserirNaBase(new RegistroFrequencia()
             {
@@ -618,7 +617,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
                 CriadoEm = dataAtual,
                 CriadoPor = "Sistema",
                 CriadoRF = "1234"
-            });           
+            });
 
             await InserirNaBase(new RegistroFrequenciaAluno()
             {
@@ -631,7 +630,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
                 CriadoPor = "Sistema",
                 CriadoRF = "1234",
                 AulaId = 1
-            });           
+            });
 
             var commandHandler = new RegularizarFrequenciaPresencasMaiorQuantidadeAulasCommandHandler(repositorioRegistroFrequenciaAluno, repositorioCache, mediator);
 

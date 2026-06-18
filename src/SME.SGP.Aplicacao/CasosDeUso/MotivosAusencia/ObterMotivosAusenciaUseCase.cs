@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         public ObterMotivosAusenciaUseCase(IMediator mediator) : base(mediator)
         {
 
-        }      
+        }
 
         public async Task<IEnumerable<OpcaoDropdownDto>> Executar()
             => MapearParaDto(await mediator.Send(ObterMotivosAusenciaQuery.Instance));
@@ -26,6 +26,6 @@ namespace SME.SGP.Aplicacao
 
         private OpcaoDropdownDto MapearParaDto(MotivoAusencia motivoAusencia)
             => motivoAusencia.EhNulo() ? null :
-            new OpcaoDropdownDto(motivoAusencia.Id.ToString(), motivoAusencia.Descricao);            
+            new OpcaoDropdownDto(motivoAusencia.Id.ToString(), motivoAusencia.Descricao);
     }
 }

@@ -16,8 +16,8 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
 {
     public class Ao_listar_registros_acao_busca_ativa : RegistroAcaoBuscaAtivaTesteBase
     {
-        
-   
+
+
         public Ao_listar_registros_acao_busca_ativa(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
 
@@ -70,7 +70,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
                             .Texto.ShouldBe(DateTimeExtension.HorarioBrasilia().Date.ToString("yyyy-MM-dd"));
 
             var opcoesResposta = ObterTodos<OpcaoResposta>();
-            var opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP 
+            var opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP
                                                          && q.Nome == ConstantesQuestionarioBuscaAtiva.QUESTAO_OPCAO_RESPOSTA_SIM).FirstOrDefault();
             retorno.Where(q => q.Id == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP).FirstOrDefault()
                             .Resposta.FirstOrDefault()

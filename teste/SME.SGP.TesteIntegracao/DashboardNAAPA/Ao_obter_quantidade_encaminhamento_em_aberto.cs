@@ -5,9 +5,7 @@ using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dto;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.Autenticar;
 using SME.SGP.TesteIntegracao.DashboardNAAPA.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
@@ -31,7 +29,7 @@ namespace SME.SGP.TesteIntegracao.DashboardNAAPA
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterDataUltimaConsolicacaoDashboardNaapaQuery, DateTime?>), typeof(ObterDataUltimaConsolidacaoDashboardNAAPAQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
-            [Fact]
+        [Fact]
         public async Task Ao_obter_quantidade_encaminhamento_por_dre()
         {
             await CriarDreUePerfilComponenteCurricular();

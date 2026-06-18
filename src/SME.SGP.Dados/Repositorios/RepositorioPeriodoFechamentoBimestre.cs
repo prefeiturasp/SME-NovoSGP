@@ -1,5 +1,4 @@
-﻿using Dapper;
-using Dommel;
+﻿using Dommel;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -7,12 +6,11 @@ using SME.SGP.Infra.Consts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioPeriodoFechamentoBimestre: IRepositorioPeriodoFechamentoBimestre
+    public class RepositorioPeriodoFechamentoBimestre : IRepositorioPeriodoFechamentoBimestre
     {
         protected readonly ISgpContext database;
 
@@ -73,7 +71,7 @@ namespace SME.SGP.Dados.Repositorios
                        and {filtroDre} 
                        and {filtroUe}";
 
-            return (await database.Conexao.QueryAsync<PeriodoFechamentoBimestre, PeriodoFechamento, PeriodoEscolar, PeriodoFechamentoBimestre>(query, 
+            return (await database.Conexao.QueryAsync<PeriodoFechamentoBimestre, PeriodoFechamento, PeriodoEscolar, PeriodoFechamentoBimestre>(query,
                 (periodoFechamentoBimestre, periodoFechamento, periodoEscolar) =>
                 {
                     periodoFechamentoBimestre.PeriodoFechamento = periodoFechamento;

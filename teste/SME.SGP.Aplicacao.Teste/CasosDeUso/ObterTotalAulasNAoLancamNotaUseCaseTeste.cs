@@ -1,10 +1,7 @@
 ﻿using MediatR;
 using Moq;
 using SME.SGP.Infra.Dtos;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -29,7 +26,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             mediator.Setup(x => x.Send(It.IsAny<ObterTotalAulasNaoLancamNotaQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<TotalAulasNaoLancamNotaDto>());
             //Act 
-            var totalAulas = await useCase.Executar("2370993", 1,"");
+            var totalAulas = await useCase.Executar("2370993", 1, "");
 
             //Assert
             Assert.NotNull(totalAulas);

@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
                     if (componentesRegencia.NaoEhNulo() && componentesRegencia.Any())
                         listaCodigosComponentes.AddRange(componentesRegencia.Select(cr => cr.CodigoComponenteCurricular));
                 }
-                
+
             }
         }
     }

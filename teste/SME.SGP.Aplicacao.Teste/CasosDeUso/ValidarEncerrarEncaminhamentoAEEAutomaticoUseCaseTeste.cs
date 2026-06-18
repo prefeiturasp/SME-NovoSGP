@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             var json = JsonConvert.SerializeObject(filtro);
 
             return new MensagemRabbit(json)
-            { 
+            {
                 Action = "sgp/encaminhamento/aee/encerrar/automatico/validar",
                 UsuarioLogadoNomeCompleto = "TESTE",
                 UsuarioLogadoRF = "999"

@@ -1,10 +1,9 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
-using System;
 using System.Collections.Generic;
 
-namespace SME.SGP.Aplicacao 
+namespace SME.SGP.Aplicacao
 {
     public class ObterUeMaterializarCodigosQuery : IRequest<(List<Ue> Ues, string[] CodigosUesNaoEncontradas)>
     {

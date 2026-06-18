@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
         public DateTime DataAula { get; set; }
         public bool VisaoDre { get; set; }
     }
-    
+
     public class ObterDadosDashboardFrequenciaDiariaPorAnoTurmaQueryValidator : AbstractValidator<ObterDadosDashboardFrequenciaDiariaPorAnoTurmaQuery>
     {
         public ObterDadosDashboardFrequenciaDiariaPorAnoTurmaQueryValidator()

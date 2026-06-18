@@ -1,12 +1,11 @@
-﻿using System;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Utilitarios;
+using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes;
-using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao
 {
@@ -29,7 +28,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var item in diferente)
             {
-                var filtro = new FiltroExcluirArquivoArmazenamentoDto{ArquivoNome = item};
+                var filtro = new FiltroExcluirArquivoArmazenamentoDto { ArquivoNome = item };
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RemoverArquivoArmazenamento, filtro, Guid.NewGuid(), null), cancellationToken);
             }
 

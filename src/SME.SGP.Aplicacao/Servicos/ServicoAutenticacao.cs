@@ -1,12 +1,11 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao.Servicos
 {
@@ -22,7 +21,7 @@ namespace SME.SGP.Aplicacao.Servicos
         public async Task AlterarSenha(string login, string senhaAtual, string novaSenha)
         {
             var autenticacao = await mediator.Send(new AutenticarQuery(login, senhaAtual));
-            
+
             if (autenticacao.EhNulo() || autenticacao.Status != AutenticacaoStatusEol.Ok)
                 throw new NegocioException(MensagemNegocioComuns.SENHA_ATUAL_INCORRETA, HttpStatusCode.Unauthorized);
 
@@ -47,9 +46,9 @@ namespace SME.SGP.Aplicacao.Servicos
         {
             var retornoDto = new UsuarioAutenticacaoRetornoDto();
 
-            if (retornoServicoEol.EhNulo()) 
+            if (retornoServicoEol.EhNulo())
                 return (retornoDto, "", null, false, false);
-            
+
             retornoDto.Autenticado = retornoServicoEol.Status is AutenticacaoStatusEol.Ok or AutenticacaoStatusEol.SenhaPadrao;
             retornoDto.ModificarSenha = retornoServicoEol.Status == AutenticacaoStatusEol.SenhaPadrao;
             retornoDto.UsuarioId = retornoServicoEol.UsuarioId;

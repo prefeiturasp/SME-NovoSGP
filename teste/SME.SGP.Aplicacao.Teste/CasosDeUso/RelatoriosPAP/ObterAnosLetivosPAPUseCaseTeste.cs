@@ -1,10 +1,8 @@
 ﻿using MediatR;
 using Moq;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -14,7 +12,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
     public class ObterAnosLetivosPAPUseCaseTeste
     {
 
-        private readonly ObterAnosLetivosPAPUseCase  obterAnosLetivosPAPUseCase;
+        private readonly ObterAnosLetivosPAPUseCase obterAnosLetivosPAPUseCase;
         private readonly Mock<IMediator> mediator;
         public ObterAnosLetivosPAPUseCaseTeste()
         {

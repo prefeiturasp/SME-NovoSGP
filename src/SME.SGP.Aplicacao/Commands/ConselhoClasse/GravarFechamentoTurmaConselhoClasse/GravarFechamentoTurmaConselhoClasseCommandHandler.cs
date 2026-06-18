@@ -1,12 +1,12 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes;
 
 namespace SME.SGP.Aplicacao
 {
@@ -48,25 +48,25 @@ namespace SME.SGP.Aplicacao
                         throw new NegocioException($"Para salvar a nota final você precisa registrar o conselho de classe do {validacaoConselhoFinal.bimestre}º bimestre");
                 }
             }
-            
+
             var consolidacaoTurma = new ConsolidacaoTurmaDto(request.FechamentoDeTurma.Turma.Id, request.Bimestre ?? 0);
             var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
 
             try
             {
                 unitOfWork.IniciarTransacao();
-                
+
                 if (request.FechamentoDeTurmaDisciplina.DisciplinaId > 0)
                 {
                     await repositorioFechamentoTurma.SalvarAsync(request.FechamentoDeTurma);
                     request.FechamentoDeTurmaDisciplina.FechamentoTurmaId = request.FechamentoDeTurma.Id;
                     await repositorioFechamentoTurmaDisciplina.SalvarAsync(request.FechamentoDeTurmaDisciplina);
                 }
-                
+
                 unitOfWork.PersistirTransacao();
-                
+
                 await RemoverCache(string.Format(NomeChaveCache.FECHAMENTO_NOTA_TURMA_BIMESTRE, request.FechamentoDeTurma.Turma.CodigoTurma, request.Bimestre), cancellationToken);
-                
+
                 await RemoverCache(string.Format(NomeChaveCache.FECHAMENTO_NOTA_TURMA_PERIODO_COMPONENTE,
                     request.FechamentoDeTurma.TurmaId, request.FechamentoDeTurma.PeriodoEscolarId, request.FechamentoDeTurmaDisciplina.DisciplinaId), cancellationToken);
 
@@ -80,10 +80,10 @@ namespace SME.SGP.Aplicacao
 
             return true;
         }
-        
+
         private async Task RemoverCache(string nomeChave, CancellationToken cancellationToken)
         {
             await mediator.Send(new RemoverChaveCacheCommand(nomeChave), cancellationToken);
-        }        
+        }
     }
 }

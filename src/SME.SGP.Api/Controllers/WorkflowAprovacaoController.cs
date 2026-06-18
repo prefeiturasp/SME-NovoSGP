@@ -29,14 +29,15 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> Aprovar(long notificacaoId, [FromBody] WorkflowAprovacaoAprovacaoDto workflowAprovacaoAprovacaoDto)
-        {            
+        {
             var retornoValidacao = await comandosWorkflowAprovacao.ValidarWorkflowAprovacao(notificacaoId);
-            if(retornoValidacao.EhNulo())
+            if (retornoValidacao.EhNulo())
             {
                 await comandosWorkflowAprovacao.Aprovar(workflowAprovacaoAprovacaoDto.Aprova, notificacaoId, workflowAprovacaoAprovacaoDto.Observacao);
                 return Ok();
-            }else
-                return Ok(new RetornoBaseDto(retornoValidacao));        
+            }
+            else
+                return Ok(new RetornoBaseDto(retornoValidacao));
         }
 
         [HttpGet]

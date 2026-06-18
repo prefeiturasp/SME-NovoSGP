@@ -1,15 +1,15 @@
-using System.Linq;
-using System.Threading.Tasks;
 using Shouldly;
 using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
 {
     public class Ao_excluir_registro_acao_busca_ativa : RegistroAcaoBuscaAtivaTesteBase
     {
-        
+
         public Ao_excluir_registro_acao_busca_ativa(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
 

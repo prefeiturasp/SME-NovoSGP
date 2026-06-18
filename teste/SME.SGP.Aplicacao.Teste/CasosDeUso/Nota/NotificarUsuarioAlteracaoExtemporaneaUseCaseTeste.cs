@@ -79,7 +79,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Nota
             var resultado = await useCase.Executar(mensagem);
 
             resultado.Should().BeTrue();
-            comandosEnviados.Should().HaveCount(3); 
+            comandosEnviados.Should().HaveCount(3);
             comandosEnviados.Should().OnlyContain(cmd =>
                 cmd.Titulo.Contains("Turma A") &&
                 cmd.Mensagem == "Mensagem" &&
@@ -105,7 +105,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Nota
 
             var resultado = await useCase.Executar(mensagem);
 
-            resultado.Should().BeTrue(); 
+            resultado.Should().BeTrue();
 
             mediatorMock.Verify(m => m.Send(It.IsAny<NotificarUsuarioCommand>(), It.IsAny<CancellationToken>()), Times.Never);
         }
@@ -141,7 +141,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Nota
             var resultado = await useCase.Executar(mensagem);
 
             resultado.Should().BeTrue();
-            comandos.Count.Should().Be(2); 
+            comandos.Count.Should().Be(2);
         }
 
         [Fact]
@@ -168,7 +168,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Nota
 
             servicoUsuarioMock
                 .Setup(s => s.ObterUsuarioPorCodigoRfLoginOuAdiciona("999", "", "", "", false))
-                .ReturnsAsync((Usuario)null); 
+                .ReturnsAsync((Usuario)null);
 
             var resultado = await useCase.Executar(mensagem);
 
@@ -225,7 +225,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Nota
                 })
                 .ReturnsAsync(new List<FuncionarioDTO>
                 {
-                    new FuncionarioDTO { CodigoRF = "999" } 
+                    new FuncionarioDTO { CodigoRF = "999" }
                 });
 
             servicoUsuarioMock

@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao
                 PlaceHolder = questao.PlaceHolder,
                 Mascara = questao.Mascara,
                 NomeComponente = questao.NomeComponente,
-                OpcaoResposta = questao.OpcoesRespostas.Where(opcaoResposta => !opcaoResposta.Excluido || 
+                OpcaoResposta = questao.OpcoesRespostas.Where(opcaoResposta => !opcaoResposta.Excluido ||
                                                               (obterRespostas.NaoEhNulo() && ExisteOpcaoResposta(obterRespostas(questaoId), opcaoResposta.Id)))
                                                         .Select(opcaoResposta =>
                 {

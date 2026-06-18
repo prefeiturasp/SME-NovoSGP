@@ -12,7 +12,7 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioRespostaEncaminhamentoNAAPA(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
-        
+
         public async Task<IEnumerable<RespostaEncaminhamentoNAAPA>> ObterPorQuestaoEncaminhamentoId(long questaoEncaminhamentoNAAPAId)
         {
             var query = "select * from encaminhamento_naapa_resposta where not excluido and questao_encaminhamento_id = @questaoEncaminhamentoNAAPAId";

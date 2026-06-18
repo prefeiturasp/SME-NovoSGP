@@ -52,7 +52,7 @@ namespace SME.SGP.TesteIntegracao.DashboardNAAPA
             });
 
             var useCase = ServiceProvider.GetService<IObterQuantidadeAtendimentoNAAPAPorProfissionalMesUseCase>();
-            var dto = new FiltroQuantidadeAtendimentoNAAPAPorProfissionalMesDto() { AnoLetivo = DateTimeExtension.HorarioBrasilia().Year, DreId = DRE_ID_1,UeId = UE_ID_1  };
+            var dto = new FiltroQuantidadeAtendimentoNAAPAPorProfissionalMesDto() { AnoLetivo = DateTimeExtension.HorarioBrasilia().Year, DreId = DRE_ID_1, UeId = UE_ID_1 };
             var retorno = await useCase.Executar(dto);
 
             retorno.ShouldNotBeNull();

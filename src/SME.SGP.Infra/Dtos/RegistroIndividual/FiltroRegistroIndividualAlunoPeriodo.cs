@@ -4,7 +4,7 @@ namespace SME.SGP.Infra
 {
     public class FiltroRegistroIndividualAlunoPeriodo : FiltroRegistroIndividualBase
     {
-        public FiltroRegistroIndividualAlunoPeriodo(long turmaId, long componenteCurricularId, 
+        public FiltroRegistroIndividualAlunoPeriodo(long turmaId, long componenteCurricularId,
                                                     long alunoCodigo, DateTime dataInicio, DateTime dataFim) : base(turmaId, componenteCurricularId)
         {
             AlunoCodigo = alunoCodigo;

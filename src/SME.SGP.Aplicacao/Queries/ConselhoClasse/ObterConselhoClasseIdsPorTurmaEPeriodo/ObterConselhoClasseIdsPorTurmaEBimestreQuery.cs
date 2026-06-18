@@ -1,15 +1,14 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterConselhoClasseIdsPorTurmaEBimestreQuery : IRequest<long[]>
     {
-       public ObterConselhoClasseIdsPorTurmaEBimestreQuery(string[] turmasCodigos, long? bimestre)
+        public ObterConselhoClasseIdsPorTurmaEBimestreQuery(string[] turmasCodigos, long? bimestre)
         {
-        TurmasCodigos = turmasCodigos;
-        Bimestre = bimestre;
+            TurmasCodigos = turmasCodigos;
+            Bimestre = bimestre;
         }
 
         public string[] TurmasCodigos { get; set; }

@@ -32,8 +32,8 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterDadosDashboard([FromQuery] FiltroDasboardRegistroIndividualDTO filtro, [FromServices] IObterDadosDashboardRegistrosIndividuaisUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
-        }        
-        
+        }
+
         [HttpGet("ultima-consolidacao")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
@@ -53,7 +53,7 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(filtro));
         }
-        
+
         [HttpGet("quantidade-dias-sem-registro")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
@@ -63,7 +63,7 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(anoLetivo));
         }
-        
+
         [HttpGet("dre")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]

@@ -151,7 +151,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 
         public Task<IEnumerable<ConsolidacaoConselhoClasseNotaNulos>> ObterConsolidacaoCCNotasNulos()
             => database.Conexao.QueryAsync<ConsolidacaoConselhoClasseNotaNulos>(
-				@"select cccatn.id as Id, t.turma_id as TurmaCodigo, cccatn.bimestre, cccat.aluno_codigo as AlunoCodigo, cccatn.componente_curricular_id as ComponenteCurricularId
+                @"select cccatn.id as Id, t.turma_id as TurmaCodigo, cccatn.bimestre, cccat.aluno_codigo as AlunoCodigo, cccatn.componente_curricular_id as ComponenteCurricularId
 			        from consolidado_conselho_classe_aluno_turma_nota cccatn 
 			       inner join consolidado_conselho_classe_aluno_turma cccat on cccat.id = cccatn.consolidado_conselho_classe_aluno_turma_id  
 			       inner join turma t on t.id = cccat.turma_id  
@@ -283,7 +283,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 
         public Task<IEnumerable<FrequenciaAlunoInconsistente>> ObterFrequenciaAlunoInconsistente(long turmaId)
             => database.Conexao.QueryAsync<FrequenciaAlunoInconsistente>(
-				@"with consolidado as (
+                @"with consolidado as (
 				select
 						f.codigo_aluno,
 						f.periodo_escolar_id,
@@ -362,8 +362,8 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 			or f.total_presencas > f.total_aulas;", new { turmaId });
 
         public Task<IEnumerable<FrequenciaAlunoDuplicado>> ObterFrequenciaAlunoDuplicados(long ueId)
-			=> database.Conexao.QueryAsync<FrequenciaAlunoDuplicado>(
-				@"select fa.turma_id as TurmaCodigo, fa.codigo_aluno as AlunoCodigo, 
+            => database.Conexao.QueryAsync<FrequenciaAlunoDuplicado>(
+                @"select fa.turma_id as TurmaCodigo, fa.codigo_aluno as AlunoCodigo, 
 						fa.bimestre, fa.disciplina_id as ComponenteCurricularId, 
 						fa.tipo, t.ue_id as UeId,
 						count(fa.id) Quantidade, 
@@ -380,9 +380,9 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 				having count(fa.id) > 1
 				order by t.ue_id, fa.turma_id, fa.codigo_aluno, fa.bimestre, fa.tipo, fa.disciplina_id", new { ueId });
 
-		public Task<IEnumerable<RegistroFrequenciaDuplicado>> ObterRegistroFrequenciaDuplicados(long ueId)
-			=> database.Conexao.QueryAsync<RegistroFrequenciaDuplicado>(
-				@"select rf.aula_id as AulaId, 				
+        public Task<IEnumerable<RegistroFrequenciaDuplicado>> ObterRegistroFrequenciaDuplicados(long ueId)
+            => database.Conexao.QueryAsync<RegistroFrequenciaDuplicado>(
+                @"select rf.aula_id as AulaId, 				
 						count(rf.id) as Quantidade,
 						min(rf.criado_em) as PrimeiroRegistro,
 						max(rf.criado_em) as UltimoRegistro,
@@ -396,8 +396,8 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 				having count(rf.id) > 1", new { ueId });
 
         public Task<IEnumerable<RegistroFrequenciaAlunoDuplicado>> ObterRegistroFrequenciaAlunoDuplicados(long turmaId)
-			=> database.Conexao.QueryAsync<RegistroFrequenciaAlunoDuplicado>(
-				@"select rfa.registro_frequencia_id as RegistroFrequenciaId, 
+            => database.Conexao.QueryAsync<RegistroFrequenciaAlunoDuplicado>(
+                @"select rfa.registro_frequencia_id as RegistroFrequenciaId, 
 					rfa.aula_id as AulaId,
 					rfa.numero_aula as NumeroAula,
 					rfa.codigo_aluno as AlunoCodigo,
@@ -415,9 +415,9 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 						 rfa.codigo_aluno
 				having count(rfa.id) > 1", new { turmaId });
 
-		public Task<IEnumerable<DiarioBordoDuplicado>> ObterDiariosBordoDuplicados()
-			=> database.Conexao.QueryAsync<DiarioBordoDuplicado>(
-				@"select db.aula_id as AulaId
+        public Task<IEnumerable<DiarioBordoDuplicado>> ObterDiariosBordoDuplicados()
+            => database.Conexao.QueryAsync<DiarioBordoDuplicado>(
+                @"select db.aula_id as AulaId
         			, db.componente_curricular_id as ComponenteCurricularId
         			, count(db.id) as Quantidade
         			, min(db.id) as PrimeiroId
@@ -432,7 +432,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 				having count(db.id) > 1 ");
 
         public Task<int> ObterQuantidadeRegistrosFrequenciaDia(DateTime data)
-			=> database.Conexao.QueryFirstOrDefaultAsync<int>(@"select count(rf.id) from registro_frequencia rf
+            => database.Conexao.QueryFirstOrDefaultAsync<int>(@"select count(rf.id) from registro_frequencia rf
                                                                  where not rf.excluido 
 	                                                                   and rf.criado_em between @primeiraHoraDia and @ultimaHoraDia; ",
                                                                 new { primeiraHoraDia = data.PrimeiraHoraDia(), ultimaHoraDia = data.UltimaHoraDia() });
@@ -440,14 +440,14 @@ namespace SME.SGP.Metrica.Worker.Repositorios
         public Task<int> ObterQuantidadeDiariosBordoDia(DateTime data)
         => database.Conexao.QueryFirstOrDefaultAsync<int>(@"select count(db.id) from diario_bordo db
                                                              where not db.excluido
-	                                                         and db.criado_em between @primeiraHoraDia and @ultimaHoraDia; ", 
-														new { primeiraHoraDia = data.PrimeiraHoraDia(), ultimaHoraDia = data.UltimaHoraDia() });
+	                                                         and db.criado_em between @primeiraHoraDia and @ultimaHoraDia; ",
+                                                        new { primeiraHoraDia = data.PrimeiraHoraDia(), ultimaHoraDia = data.UltimaHoraDia() });
 
         public Task<int> ObterQuantidadeDevolutivasDiarioBordoMes(DateTime data)
         => database.Conexao.QueryFirstOrDefaultAsync<int>(@"select count(d.id) from devolutiva d  
                                                                     where not d.excluido 
 	                                                                      and d.criado_em between @primeiroDiaMes and @ultimoDiaMes;",
-																		  new { primeiroDiaMes = data.PrimeiroDiaMes(), ultimoDiaMes = data.UltimoDiaMes() });
+                                                                          new { primeiroDiaMes = data.PrimeiroDiaMes(), ultimoDiaMes = data.UltimoDiaMes() });
 
         public Task<int> ObterQuantidadeAulasCJMes(DateTime data)
         => database.Conexao.QueryFirstOrDefaultAsync<int>(@"select count(a.id) from aula a
@@ -513,8 +513,8 @@ namespace SME.SGP.Metrica.Worker.Repositorios
                                                       inner join ue on ue.id = turma.ue_id
                                                     where ano_letivo = {(anoLetivo.HasValue ? "@anoLetivo" : "extract(year from NOW())")} and ue.ue_id = @ueCodigo", new { ueCodigo, anoLetivo });
 
-		public async Task<Turma> ObterTurmaComUeEDrePorCodigo(string turmaCodigo)
-		=> (await database.Conexao.QueryAsync<Turma, Ue, Dre, Turma>(@"select t.id TurmaId,
+        public async Task<Turma> ObterTurmaComUeEDrePorCodigo(string turmaCodigo)
+        => (await database.Conexao.QueryAsync<Turma, Ue, Dre, Turma>(@"select t.id TurmaId,
                         t.id,
                         t.turma_id CodigoTurma,
                         t.ue_id,
@@ -550,11 +550,11 @@ namespace SME.SGP.Metrica.Worker.Repositorios
                         u.dre_id = d.id
                     where
                         turma_id = @turmaCodigo", (turma, ue, dre) =>
-			{
-				ue.AdicionarDre(dre);
-				turma.AdicionarUe(ue);
-				return turma;
-			}, new { turmaCodigo }, splitOn: "TurmaId, UeId, DreId")).FirstOrDefault();
+            {
+                ue.AdicionarDre(dre);
+                turma.AdicionarUe(ue);
+                return turma;
+            }, new { turmaCodigo }, splitOn: "TurmaId, UeId, DreId")).FirstOrDefault();
 
         public Task<bool> ComponenteCurriculareEhRegencia(long id)
         => database.Conexao.QueryFirstOrDefaultAsync<bool>($@"select eh_regencia from componente_curricular WHERE id = @id;", new { id });
@@ -726,7 +726,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios
                                                                     where pe.id = @periodoEscolarId;", new { periodoEscolarId });
 
         public Task<IEnumerable<DevolutivaDuplicado>> ObterDevolutivaDuplicados()
-			=> database.Conexao.QueryAsync<DevolutivaDuplicado>(
+            => database.Conexao.QueryAsync<DevolutivaDuplicado>(
                 @"select count(id) Quantidade, 
                          d1.periodo_inicio, d1.periodo_fim,       
                          descricao, componente_curricular_codigo as ComponenteCurricularId, min(criado_em) as PrimeiroRegistro, 
@@ -735,7 +735,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios
                  where d1.criado_em >= @dataReferencia
                  group by descricao, componente_curricular_codigo, d1.periodo_inicio, d1.periodo_fim 
                  having count(id) > 1
-                 order by descricao, componente_curricular_codigo, d1.periodo_inicio, d1.periodo_fim;", new { dataReferencia = new DateTime(DateTime.Now.Year-1,01,01)});
+                 order by descricao, componente_curricular_codigo, d1.periodo_inicio, d1.periodo_fim;", new { dataReferencia = new DateTime(DateTime.Now.Year - 1, 01, 01) });
 
         public Task<IEnumerable<DevolutivaMaisDeUmaNoDiario>> ObterDevolutivaMaisDeUmaNoDiario()
             => database.Conexao.QueryAsync<DevolutivaMaisDeUmaNoDiario>(

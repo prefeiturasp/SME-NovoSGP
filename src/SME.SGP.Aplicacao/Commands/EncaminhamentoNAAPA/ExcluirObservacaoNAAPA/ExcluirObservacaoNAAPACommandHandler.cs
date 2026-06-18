@@ -1,13 +1,13 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirObservacaoNAAPACommandHandler : IRequestHandler<ExcluirObservacaoNAAPACommand,bool>
+    public class ExcluirObservacaoNAAPACommandHandler : IRequestHandler<ExcluirObservacaoNAAPACommand, bool>
     {
         private readonly IRepositorioObservacaoEncaminhamentoNAAPA repositorioObs;
 
@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             var observacao = await repositorioObs.ObterPorIdAsync(request.ObservacaoId);
 
-            if(observacao.EhNulo())
+            if (observacao.EhNulo())
                 throw new NegocioException("Observação não encontrada");
 
             await repositorioObs.RemoverLogico(request.ObservacaoId);

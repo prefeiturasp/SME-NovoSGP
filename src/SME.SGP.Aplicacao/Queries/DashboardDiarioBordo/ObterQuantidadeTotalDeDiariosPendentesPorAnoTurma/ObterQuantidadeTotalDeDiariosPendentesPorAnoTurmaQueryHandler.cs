@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<GraficoTotalDiariosEDevolutivasDTO>> Handle(ObterQuantidadeTotalDeDiariosPendentesPorAnoTurmaQuery request, CancellationToken cancellationToken)
         {
-            var retornoConsulta =  await repositorio.ObterQuantidadeTotalDeDiariosPendentesPorAnoTurmaAsync(request.AnoLetivo, request.DreId, request.UeId, request.Modalidade);
+            var retornoConsulta = await repositorio.ObterQuantidadeTotalDeDiariosPendentesPorAnoTurmaAsync(request.AnoLetivo, request.DreId, request.UeId, request.Modalidade);
             return MontarDto(retornoConsulta, request);
         }
 

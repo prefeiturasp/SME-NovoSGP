@@ -1,10 +1,10 @@
-﻿using System;
-using MediatR;
+﻿using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             var filtro = mensagemRabbit.ObterObjetoMensagem<MensagemConsolidarTurmaConselhoClasseAlunoPorTurmaDto>();
 
             try
-            {                
+            {
                 var alunoNotas = await repositorioConselhoClasseConsolidadoConsulta.ObterFechamentoNotaAlunoOuConselhoClasseAsync(filtro.TurmaId);
 
                 var agrupamentoPorAluno = alunoNotas.GroupBy(g => new { g.AlunoCodigo }, (key, group) =>

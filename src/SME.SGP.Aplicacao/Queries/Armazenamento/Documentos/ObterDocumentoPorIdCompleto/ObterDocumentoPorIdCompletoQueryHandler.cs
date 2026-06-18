@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioDocumento = repositorioDocumento ?? throw new ArgumentNullException(nameof(repositorioDocumento));
         }
 
-        public async Task<ObterDocumentoResumidoDto> Handle(ObterDocumentoPorIdCompletoQuery request, CancellationToken cancellationToken) 
+        public async Task<ObterDocumentoResumidoDto> Handle(ObterDocumentoPorIdCompletoQuery request, CancellationToken cancellationToken)
             => await repositorioDocumento.ObterPorIdCompleto(request.DocumentoId);
     }
 }

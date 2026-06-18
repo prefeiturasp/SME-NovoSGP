@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao.Queries.PainelEducacional.ObterFrequenciaSemanalUe
     {
         private readonly IRepositorioFrequenciaSemanalUe repositorio;
 
-        public ObterFrequenciaSemanalUeQueryHandler(IRepositorioFrequenciaSemanalUe repositorio) 
+        public ObterFrequenciaSemanalUeQueryHandler(IRepositorioFrequenciaSemanalUe repositorio)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }

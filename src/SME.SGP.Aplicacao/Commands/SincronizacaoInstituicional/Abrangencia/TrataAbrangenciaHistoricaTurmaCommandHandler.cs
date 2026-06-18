@@ -9,7 +9,7 @@ namespace SME.SGP.Aplicacao
     public class TrataAbrangenciaHistoricaTurmaCommandHandler : IRequestHandler<TrataAbrangenciaHistoricaTurmaCommand, bool>
     {
         private readonly IServicoAbrangencia servicoAbrangencia;
-        
+
         public TrataAbrangenciaHistoricaTurmaCommandHandler(IServicoAbrangencia servicoAbrangencia)
         {
             this.servicoAbrangencia = servicoAbrangencia ?? throw new ArgumentNullException(nameof(servicoAbrangencia));

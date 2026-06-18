@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public abstract class NotificacaoParecerConclusivoConselhoClasseCommandBase<TRequest, TResponse> : IRequestHandler<TRequest, TResponse> 
+    public abstract class NotificacaoParecerConclusivoConselhoClasseCommandBase<TRequest, TResponse> : IRequestHandler<TRequest, TResponse>
         where TRequest : IRequest<TResponse>
     {
         protected const string MENSAGEM_DINAMICA_TABELA_POR_ALUNO = "<mensagemDinamicaTabelaPorAluno>";
@@ -102,11 +102,11 @@ namespace SME.SGP.Aplicacao
 
             if (wfAprovacaoParecerConclusivo.EhNulo())
                 return;
-            
+
             var anoLetivo = wfAprovacaoParecerConclusivo.AnoLetivo;
             Alunos = (await ObterAlunos(codigos, anoLetivo)).ToList();
         }
-        
+
         private async Task CarregarTodosUsuarios()
         {
             var ids = WFAprovacoes.Select(wf => wf.UsuarioSolicitanteId).Distinct().ToArray();
@@ -115,8 +115,8 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<TurmasDoAlunoDto>> ObterAlunos(long[] codigos, int anoLetivo)
             => await mediator.Send(new ObterAlunosEolPorCodigosEAnoQuery(codigos, anoLetivo));
-        
+
         private async Task<IEnumerable<Usuario>> ObterUsuarios(long[] ids)
             => await mediator.Send(new ObterUsuarioPorIdsSemPerfilQuery(ids));
     }
- }
+}

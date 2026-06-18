@@ -100,14 +100,15 @@ namespace SME.SGP.Aplicacao
             else
                 return "Sem status informado";
         }
-        
+
         private async Task<long> ObterTipoCalendario(long? eventoId)
             => eventoId.HasValue ? await mediator.Send(new ObterTipoCalendarioIdPorEventoQuery(eventoId.Value)) : 0;
 
         private async Task<IEnumerable<ItineranciaQuestaoDto>> MontarQuestoesItinerancia(Itinerancia itinerancia, ItineranciaQuestoesBaseDto questoesBase)
-        {            
+        {
             var tiposQuestoes = await mediator.Send(new ObterTipoDaQuestaoItineranciaQuery(itinerancia.Id));
-            var questoesItinerancia = itinerancia.Questoes.Select(questao => {
+            var questoesItinerancia = itinerancia.Questoes.Select(questao =>
+            {
                 var questaoBase = questoesBase.ItineranciaQuestao.FirstOrDefault(q => q.QuestaoId == questao.QuestaoId);
                 var arquivo = (questaoBase?.TipoQuestao == TipoQuestao.Upload) ? tiposQuestoes.FirstOrDefault(x => x.QuestaoId == questao.Id) : null;
 
@@ -123,7 +124,7 @@ namespace SME.SGP.Aplicacao
                     TipoQuestao = (questaoBase?.TipoQuestao ?? TipoQuestao.Texto),
                     ArquivoId = arquivo?.ArquivoId,
                     ArquivoNome = arquivo?.ArquivoNome
-            };
+                };
             }).ToList();
 
             var questoesUploadNaoRespondidas = questoesBase.ItineranciaQuestao.Where(questaoBase => !itinerancia.Questoes.Any(questao => questao.QuestaoId == questaoBase.QuestaoId));

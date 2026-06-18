@@ -45,7 +45,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
                 Questoes = new List<PlanoAEEQuestaoDto>(),
                 Situacao = SituacaoPlanoAEE.ParecerCP
             };
-            
+
             var retorno = await useCase.Executar(dto);
 
             retorno.ShouldNotBeNull();

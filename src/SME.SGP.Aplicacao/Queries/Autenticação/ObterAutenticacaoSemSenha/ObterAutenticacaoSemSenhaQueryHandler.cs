@@ -1,13 +1,11 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
-using System;
-using System.Net.Http;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -23,8 +21,8 @@ namespace SME.SGP.Aplicacao
         public async Task<AutenticacaoApiEolDto> Handle(ObterAutenticacaoSemSenhaQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
-            
-            var url = string.Format(ServicosEolConstants.URL_AUTENTICACAO_AUTENTICAR_SEM_SENHA,request.Login);
+
+            var url = string.Format(ServicosEolConstants.URL_AUTENTICACAO_AUTENTICAR_SEM_SENHA, request.Login);
 
             var resposta = await httpClient.GetAsync(url);
 
@@ -32,7 +30,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException($"Não foram encontrados dados do usuário {request.Login}");
 
             var json = await resposta.Content.ReadAsStringAsync();
-            
+
             return JsonConvert.DeserializeObject<AutenticacaoApiEolDto>(json);
         }
     }

@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
         {
             var dres = await mediator.Send(ObterIdsDresQuery.Instance);
 
-            foreach(var dre in dres)
+            foreach (var dre in dres)
             {
                 var filtro = new FiltroConsolidacaoFrequenciaTurmaPorDre(filtroAno.Data, filtroAno.TipoConsolidado, dre, percentualMinimo, percentualMinimoInfantil);
 

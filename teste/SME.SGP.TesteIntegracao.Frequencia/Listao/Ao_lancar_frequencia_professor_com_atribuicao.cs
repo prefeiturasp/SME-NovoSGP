@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -9,6 +7,8 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Listao
@@ -22,10 +22,10 @@ namespace SME.SGP.TesteIntegracao.Listao
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
-            
+
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<VerificaPodePersistirTurmaDisciplinaEOLQuery, bool>),
                 typeof(VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
-            
+
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<VerificaPodePersistirTurmaDisciplinaEOLQuery, bool>),
                 typeof(VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
         }
@@ -44,14 +44,14 @@ namespace SME.SGP.TesteIntegracao.Listao
                 TurmaHistorica = false,
                 ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138
             };
-          
+
             await CriarDadosBasicos(filtroListao);
 
             var listaAulaId = ObterTodos<Dominio.Aula>().Select(c => c.Id).Distinct().ToList();
             listaAulaId.ShouldNotBeNull();
 
             var frequenciasSalvar = listaAulaId.Select(aulaId => new FrequenciaSalvarAulaAlunosDto
-                { AulaId = aulaId, Alunos = ObterListaFrequenciaSalvarAluno() }).ToList();
+            { AulaId = aulaId, Alunos = ObterListaFrequenciaSalvarAluno() }).ToList();
 
             //-> Salvar a frequencia
             var useCaseSalvar = ServiceProvider.GetService<IInserirFrequenciaListaoUseCase>();

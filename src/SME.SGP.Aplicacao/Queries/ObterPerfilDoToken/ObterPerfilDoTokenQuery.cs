@@ -1,5 +1,5 @@
-using System;
 using MediatR;
+using System;
 
 namespace SME.SGP.Aplicacao
 {
@@ -7,5 +7,5 @@ namespace SME.SGP.Aplicacao
     {
         private static ObterPerfilDoTokenQuery _instance;
         public static ObterPerfilDoTokenQuery Instance => _instance ??= new();
-    }    
+    }
 }

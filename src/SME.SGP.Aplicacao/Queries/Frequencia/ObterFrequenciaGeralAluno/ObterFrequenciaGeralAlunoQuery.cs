@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public string CodigoAluno { get; set; }
-        public string CodigoTurma { get; set; }        
+        public string CodigoTurma { get; set; }
     }
 
     public class ObterFrequenciaGeralAlunoQueryValidator : AbstractValidator<ObterFrequenciaGeralAlunoQuery>

@@ -1,6 +1,6 @@
-﻿using System;
+﻿using MediatR;
+using System;
 using System.Threading.Tasks;
-using MediatR;
 
 namespace SME.SGP.Aplicacao
 {

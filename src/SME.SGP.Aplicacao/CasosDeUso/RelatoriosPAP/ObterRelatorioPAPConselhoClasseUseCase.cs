@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
-using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.Questionario;
 using System;
 using System.Collections.Generic;
@@ -40,7 +39,7 @@ namespace SME.SGP.Aplicacao
                         NomeComponente = secao.NomeComponente,
                         Ordem = secao.Ordem,
                         QuestionarioId = secao.QuestionarioId,
-                        Questoes = questoesSecao,   
+                        Questoes = questoesSecao,
                         TipoQuestionario = TipoQuestionario.RelatorioPAP
                     }); ;
                 }

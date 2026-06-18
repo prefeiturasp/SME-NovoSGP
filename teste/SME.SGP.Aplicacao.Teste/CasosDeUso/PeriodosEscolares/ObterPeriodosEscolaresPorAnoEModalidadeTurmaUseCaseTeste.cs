@@ -110,7 +110,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PeriodosEscolares
             var semestre = 0;
 
             _mediatorMock.Setup(m => m.Send(It.IsAny<ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((IEnumerable<PeriodoEscolar>)null); 
+                .ReturnsAsync((IEnumerable<PeriodoEscolar>)null);
 
             // Act
             var result = await _useCase.Executar(modalidade, anoLetivo, semestre);

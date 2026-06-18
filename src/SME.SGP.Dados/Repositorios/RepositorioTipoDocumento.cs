@@ -1,15 +1,8 @@
-﻿using Dapper;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dto;
+﻿using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using ClassificacaoDocumento = SME.SGP.Dominio.Enumerados.ClassificacaoDocumento;
 using TipoDocumento = SME.SGP.Dominio.Enumerados.TipoDocumento;
 
 namespace SME.SGP.Dados.Repositorios
@@ -17,12 +10,12 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioTipoDocumento : IRepositorioTipoDocumento
     {
         protected readonly ISgpContext database;
-        
+
         public RepositorioTipoDocumento(ISgpContext database)
         {
             this.database = database;
         }
-        
+
         private string ConsultaTipoDocumentoClassificacao =>
             @"select distinct td.id as TipoDocumentoId, 
                                           td.descricao as TipoDocumentoNome,
@@ -38,12 +31,12 @@ namespace SME.SGP.Dados.Repositorios
             var parametros = new
             {
                 perfis,
-                planoDeTrabalho = (long)TipoDocumento.PlanoTrabalho, 
+                planoDeTrabalho = (long)TipoDocumento.PlanoTrabalho,
                 documentos = (long)TipoDocumento.Documento
             };
 
             var tipoDocumentoDtos = await database.Conexao.QueryAsync<TipoDocumentoCompletoDto>(query, parametros);
-            
+
             var tipoDocumentoAgrupados = ObterTipoDocumentoAgrupados(tipoDocumentoDtos);
 
             return tipoDocumentoAgrupados;
@@ -54,7 +47,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = ConsultaTipoDocumentoClassificacao;
 
             var tipoDocumentoDtos = await database.Conexao.QueryAsync<TipoDocumentoCompletoDto>(query);
-            
+
             var tipoDocumentoAgrupados = ObterTipoDocumentoAgrupados(tipoDocumentoDtos);
 
             return tipoDocumentoAgrupados;
@@ -63,24 +56,25 @@ namespace SME.SGP.Dados.Repositorios
         private List<TipoDocumentoDto> ObterTipoDocumentoAgrupados(IEnumerable<TipoDocumentoCompletoDto> tiposDocumentos)
         {
             return tiposDocumentos.GroupBy(g => new
-                { 
-                    g.TipoDocumentoId,
-                    g.TipoDocumentoNome
-                }, (key, group) => 
-                    new TipoDocumentoDto { 
-                        Id = key.TipoDocumentoId,
-                        TipoDocumento = key.TipoDocumentoNome,
-                        Classificacoes = group.Select(s=>
-                                new ClassificacaoDocumentoDto
-                                {
-                                    Id = s.ClassificacaoId,
-                                    Classificacao = s.ClassificacaoNome,
-                                    TipoDocumentoId = s.TipoDocumentoId
-                                })
-                            .OrderBy(o=> o.Classificacao)
-                            .ToList()
-                    })
-                .OrderBy(o=> o.TipoDocumento)
+            {
+                g.TipoDocumentoId,
+                g.TipoDocumentoNome
+            }, (key, group) =>
+                new TipoDocumentoDto
+                {
+                    Id = key.TipoDocumentoId,
+                    TipoDocumento = key.TipoDocumentoNome,
+                    Classificacoes = group.Select(s =>
+                            new ClassificacaoDocumentoDto
+                            {
+                                Id = s.ClassificacaoId,
+                                Classificacao = s.ClassificacaoNome,
+                                TipoDocumentoId = s.TipoDocumentoId
+                            })
+                        .OrderBy(o => o.Classificacao)
+                        .ToList()
+                })
+                .OrderBy(o => o.TipoDocumento)
                 .ToList();
         }
     }

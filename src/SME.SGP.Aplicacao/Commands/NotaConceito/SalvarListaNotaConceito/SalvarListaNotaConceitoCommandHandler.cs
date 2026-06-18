@@ -1,12 +1,12 @@
-﻿using System;
+﻿using MediatR;
+using SME.SGP.Dominio.Interfaces;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarListaNotaConceitoCommandHandler : IRequestHandler<SalvarListaNotaConceitoCommand,bool>
+    public class SalvarListaNotaConceitoCommandHandler : IRequestHandler<SalvarListaNotaConceitoCommand, bool>
     {
         private readonly IRepositorioNotasConceitos repositorioNotasConceitos;
 

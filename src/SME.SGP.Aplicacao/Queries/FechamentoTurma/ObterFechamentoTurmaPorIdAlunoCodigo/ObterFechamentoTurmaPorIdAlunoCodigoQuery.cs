@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         public long FechamentoTurmaId { get; }
         public string AlunoCodigo { get; }
     }
-    
+
     public class ObterFechamentoTurmaPorIdAlunoCodigoQueryValidator : AbstractValidator<ObterFechamentoTurmaPorIdAlunoCodigoQuery>
     {
         public ObterFechamentoTurmaPorIdAlunoCodigoQueryValidator()
@@ -29,5 +29,5 @@ namespace SME.SGP.Aplicacao
                 .NotEmpty()
                 .WithMessage("Necessário informar o código do aluno para obter o fechamento da turma");
         }
-    }    
+    }
 }

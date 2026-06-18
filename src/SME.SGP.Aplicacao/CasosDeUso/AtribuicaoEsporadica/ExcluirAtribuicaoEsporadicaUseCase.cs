@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(long id)
         {
-            var atribuicaoEsporadica = await mediator.Send(new ObterAtribuicaoEsporadicaPorIdQuery(id)); 
+            var atribuicaoEsporadica = await mediator.Send(new ObterAtribuicaoEsporadicaPorIdQuery(id));
             if (atribuicaoEsporadica is null)
                 throw new NegocioException("Não foi possível localizar esta atribuição esporádica.");
 

@@ -16,7 +16,7 @@ namespace SME.SGP.Infra.Utilitarios
             return ISOWeek.GetWeekOfYear(data);
         }
 
-        public static int ObterDiferencaDeMesesEntreDatas(DateTime dataInicial, DateTime dataFinal) 
+        public static int ObterDiferencaDeMesesEntreDatas(DateTime dataInicial, DateTime dataFinal)
         {
             int meses = 0;
             if ((dataInicial.Month + meses) > dataFinal.Month)

@@ -20,9 +20,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.TE_A, Policy = "Bearer")]
-        public IActionResult Alterar([FromServices]IComandosEventoTipo comandosEventoTipo,
+        public IActionResult Alterar([FromServices] IComandosEventoTipo comandosEventoTipo,
             long id,
-            [FromBody]EventoTipoInclusaoDto eventoTipo)
+            [FromBody] EventoTipoInclusaoDto eventoTipo)
         {
             comandosEventoTipo.Alterar(eventoTipo, id);
             return Ok();
@@ -33,7 +33,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(object), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.TE_E, Policy = "Bearer")]
-        public IActionResult Delete([FromBody]IEnumerable<long> codigos, [FromServices]IComandosEventoTipo comandosEventoTipo)
+        public IActionResult Delete([FromBody] IEnumerable<long> codigos, [FromServices] IComandosEventoTipo comandosEventoTipo)
         {
             comandosEventoTipo.Remover(codigos);
             return Ok();
@@ -44,7 +44,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(EventoTipoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.TE_C, Permissao.E_C, Policy = "Bearer")]
-        public IActionResult Get(long id, [FromServices]IConsultasEventoTipo consultasEventoTipo)
+        public IActionResult Get(long id, [FromServices] IConsultasEventoTipo consultasEventoTipo)
         {
             var eventoTipoDto = consultasEventoTipo.ObterPorId(id);
 
@@ -58,7 +58,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(PaginacaoResultadoDto<EventoTipoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.TE_C, Permissao.E_C, Policy = "Bearer")]
-        public async Task<IActionResult> Listar([FromQuery]FiltroEventoTipoDto filtroEventoTipoDto, [FromServices]IConsultasEventoTipo consultasEventoTipo)
+        public async Task<IActionResult> Listar([FromQuery] FiltroEventoTipoDto filtroEventoTipoDto, [FromServices] IConsultasEventoTipo consultasEventoTipo)
         {
             var listaEventoTipo = await consultasEventoTipo.Listar(filtroEventoTipoDto);
 
@@ -69,7 +69,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.TE_I, Policy = "Bearer")]
-        public IActionResult Post([FromBody]EventoTipoInclusaoDto eventoTipo, [FromServices]IComandosEventoTipo comandosEventoTipo)
+        public IActionResult Post([FromBody] EventoTipoInclusaoDto eventoTipo, [FromServices] IComandosEventoTipo comandosEventoTipo)
         {
             comandosEventoTipo.Salvar(eventoTipo);
             return Ok();

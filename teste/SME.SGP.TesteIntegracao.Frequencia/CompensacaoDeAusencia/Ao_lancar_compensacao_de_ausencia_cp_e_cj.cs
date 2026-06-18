@@ -2,13 +2,12 @@
 using SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
 {
     public class Ao_lancar_compensacao_de_ausencia_cp_e_cj : Ao_lancar_compensacao_de_ausencia_base
     {
-        
+
         public Ao_lancar_compensacao_de_ausencia_cp_e_cj(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }

@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
                 return null;
 
             var disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray()));
-            
+
             var componenteRegencia = disciplinasEol?.FirstOrDefault(c => c.Regencia);
             if (componenteRegencia.EhNulo() || ignorarDeParaRegencia)
                 return MapearDisciplinaResposta(disciplinasEol);
@@ -109,7 +109,7 @@ namespace SME.SGP.Aplicacao
                     componentesCurriculares = (await mediator
                         .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, consideraTurmaInfantil ? turma.EhTurmaInfantil || realizarAgrupamentoComponente : false))).ToList();
 
-                    componentesCurriculares =  componentesCurriculares?.Count > 0 ? componentesCurriculares : (await mediator
+                    componentesCurriculares = componentesCurriculares?.Count > 0 ? componentesCurriculares : (await mediator
                         .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, consideraTurmaInfantil ? turma.EhTurmaInfantil || realizarAgrupamentoComponente : false, false))).ToList();
                 }
                 else
@@ -138,7 +138,7 @@ namespace SME.SGP.Aplicacao
                 }
 
                 var idsDisciplinas = componentesCurriculares?.Select(a => a.Codigo).ToArray();
-                
+
                 if (usuarioLogado.TemPerfilAdmUE() || usuarioLogado.TemPerfilGestaoUes() && !usuarioLogado.EhCP())
                     idsDisciplinas = await ObterDisciplinasAtribuicaoCJParaTurma(codigoTurma, componentesCurriculares, idsDisciplinas);
 
@@ -149,7 +149,7 @@ namespace SME.SGP.Aplicacao
                 if (componentesCurricularesJurema.EhNulo())
                     throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
 
-                foreach(var d in disciplinasDto)
+                foreach (var d in disciplinasDto)
                 {
                     var componenteEOL = componentesCurriculares.FirstOrDefault(a => a.Codigo == d.CodigoComponenteCurricular);
                     d.PossuiObjetivos = PossuiObjetivos(turma, Convert.ToInt32(dataInicioNovoSGP), componenteEOL, componentesCurricularesJurema);
@@ -157,7 +157,8 @@ namespace SME.SGP.Aplicacao
                     d.Nome = componenteEOL.Descricao;
                     d.NomeComponenteInfantil = componenteEOL.DescricaoComponenteInfantil;
                     d.Professor = componenteEOL.Professor;
-                };
+                }
+                ;
 
                 if (usuarioLogado.TemPerfilGestaoUes())
                 {
@@ -214,7 +215,7 @@ namespace SME.SGP.Aplicacao
                         ComponenteCurricularEol componenteEOL,
                         IEnumerable<ComponenteCurricularJurema> componentesCurricularesJurema)
         {
-            
+
             var componentesPAPs = ComponentesCurricularesConstants.IDS_COMPONENTES_CURRICULARES_PAP_NOVO.Select(i => (long)i).ToArray();
 
             return turma.AnoLetivo >= anoInicioSgp
@@ -310,7 +311,7 @@ namespace SME.SGP.Aplicacao
                     componentesCurriculares = RemoverEdFisicaEJA(componentesCurriculares);
 
                 disciplinasDto = (await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurriculares.Select(a => a.Codigo).ToArray())))?.OrderBy(c => c.Nome)?.ToList();
-                
+
                 disciplinasDto?.ForEach(d =>
                 {
                     var componenteEOL = componentesCurriculares.FirstOrDefault(a => a.Codigo == d.CodigoComponenteCurricular);
@@ -332,7 +333,7 @@ namespace SME.SGP.Aplicacao
         public async Task<DisciplinaDto> ObterDisciplina(long disciplinaId)
         {
             var disciplina = await mediator.Send(new ObterComponenteCurricularPorIdQuery(disciplinaId));
-            if (disciplina.EhNulo()) 
+            if (disciplina.EhNulo())
                 throw new NegocioException($"Componente curricular não localizado no SGP [{disciplinaId}]");
 
             return disciplina;
@@ -375,10 +376,10 @@ namespace SME.SGP.Aplicacao
 
             foreach (var d in disciplinasEol)
             {
-                 var rfProfessor = professoresTitulares
-                    .FirstOrDefault(pt => pt.DisciplinasId().Contains(d.CodigoComponenteCurricular))?.ProfessorRf;
+                var rfProfessor = professoresTitulares
+                   .FirstOrDefault(pt => pt.DisciplinasId().Contains(d.CodigoComponenteCurricular))?.ProfessorRf;
                 await PreencherInformacoesComponenteCurricularProfessor(codigoTurma, rfProfessor, d);
-            }          
+            }
             return MapearDisciplinaResposta(disciplinasEol);
         }
 

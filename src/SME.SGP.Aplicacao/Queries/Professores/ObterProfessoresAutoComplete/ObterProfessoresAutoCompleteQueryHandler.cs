@@ -1,12 +1,12 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -25,9 +25,9 @@ namespace SME.SGP.Aplicacao
             var url = string.Format(ServicosEolConstants.URL_PROFESSORES_AUTOCOMPLETE, request.AnoLetivo, request.DreId);
 
             url += $"?nome={request.NomeProfessor}&ueId={request.UeId}";
-            
+
             var resposta = await httpClient.GetAsync(url);
-            
+
             if (!resposta.IsSuccessStatusCode)
                 return default;
 
@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
                 return default;
 
             var json = await resposta.Content.ReadAsStringAsync();
-            
+
             return JsonConvert.DeserializeObject<IEnumerable<ProfessorResumoDto>>(json);
         }
     }

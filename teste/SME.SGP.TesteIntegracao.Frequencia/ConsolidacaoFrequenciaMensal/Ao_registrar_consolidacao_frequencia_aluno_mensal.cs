@@ -265,7 +265,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             consolidacoes.ShouldNotBeEmpty();
 
             consolidacoes.Count.ShouldBe(2);
-            consolidacoes.Where(c=> c.AlunoCodigo == "2").FirstOrDefault().Mes.ShouldBe(4);
+            consolidacoes.Where(c => c.AlunoCodigo == "2").FirstOrDefault().Mes.ShouldBe(4);
             consolidacoes.Where(c => c.AlunoCodigo == "2").FirstOrDefault().Percentual.ShouldBe(50);
             consolidacoes.Where(c => c.AlunoCodigo == "2").FirstOrDefault().QuantidadeAusencias.ShouldBe(1);
             consolidacoes.Where(c => c.AlunoCodigo == "2").FirstOrDefault().QuantidadeCompensacoes.ShouldBe(0);

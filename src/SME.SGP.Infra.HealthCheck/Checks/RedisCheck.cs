@@ -1,12 +1,12 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra.Utilitarios;
 using StackExchange.Redis;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Infra
 {
@@ -28,7 +28,7 @@ namespace SME.SGP.Infra
         {
             if (!configuracaoCacheOptions.UtilizaRedis
                 || repositorioCache is not RepositorioCacheRedis repositorioCacheRedis)
-                    return HealthCheckResult.Healthy("O serviço Redis não esta ativo. A aplicação está utilizando cache em memória.");
+                return HealthCheckResult.Healthy("O serviço Redis não esta ativo. A aplicação está utilizando cache em memória.");
 
             try
             {
@@ -38,10 +38,10 @@ namespace SME.SGP.Infra
                     {
                         await repositorioCacheRedis.ConnectionMultiplexerSme.GetDatabase().PingAsync();
                     }
-                    else 
+                    else
                     {
                         var server = repositorioCacheRedis.ConnectionMultiplexerSme.GetServer(endPoint);
-                        
+
                         if (server.ServerType != ServerType.Cluster)
                         {
                             await repositorioCacheRedis.ConnectionMultiplexerSme.GetDatabase().PingAsync();
@@ -67,7 +67,7 @@ namespace SME.SGP.Infra
                         }
                     }
                 }
- 
+
                 return HealthCheckResult.Healthy("O serviço Redis está respondendo normalmente.");
             }
             catch (Exception ex)

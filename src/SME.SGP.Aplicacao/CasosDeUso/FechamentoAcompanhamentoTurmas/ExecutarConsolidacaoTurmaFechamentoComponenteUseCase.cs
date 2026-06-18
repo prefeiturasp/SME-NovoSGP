@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
 
             if (filtro.EhNulo())
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand("Não foi possível iniciar a consolidação do fechamento da turma -> componente. O id da turma bimestre componente curricular não foram informados.", LogNivel.Negocio, LogContexto.Turma));                
+                await mediator.Send(new SalvarLogViaRabbitCommand("Não foi possível iniciar a consolidação do fechamento da turma -> componente. O id da turma bimestre componente curricular não foram informados.", LogNivel.Negocio, LogContexto.Turma));
                 return false;
             }
 
@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
                     ComponenteCurricularCodigo = filtro.ComponenteCurricularId,
                     TurmaId = filtro.TurmaId,
                     ProfessorNome = professorComponente.NaoEhNulo() ? professorComponente.ProfessorNome : "Sem professor titular",
-                    ProfessorRf = professorComponente.NaoEhNulo() ? professorComponente.ProfessorRf : String.Empty,                    
+                    ProfessorRf = professorComponente.NaoEhNulo() ? professorComponente.ProfessorRf : String.Empty,
                 };
             }
 

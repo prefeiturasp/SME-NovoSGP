@@ -4,7 +4,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,7 +26,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
         private const string SITUACAO_MATRICULA_2 = "2";
         private const string SITUACAO_MATRICULA_4 = "4";
         private const string SITUACAO_MATRICULA_15 = "15";
-        
+
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosDentroPeriodoQuery request, CancellationToken cancellationToken)
         {
             var dataAtual = DateTime.Now;

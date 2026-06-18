@@ -1,10 +1,7 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -12,7 +9,7 @@ namespace SME.SGP.Aplicacao
     public class NotificarFechamentoReaberturaUEUseCase : AbstractUseCase, INotificarFechamentoReaberturaUEUseCase
     {
         public NotificarFechamentoReaberturaUEUseCase(IMediator mediator) : base(mediator)
-        {}
+        { }
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {

@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
             RuleFor(x => x.Bimestre)
                 .NotEmpty()
                 .WithMessage("O bimestre deve ser informado.");
-            
+
             RuleFor(x => x.SituacaoConselhoClasse)
                 .NotEmpty()
                 .WithMessage("A Situação do conselho de classe deve ser informada.");

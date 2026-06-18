@@ -5,7 +5,6 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -42,7 +41,7 @@ namespace SME.SGP.Dados.Repositorios
                 return new KeyValuePair<string, string>(resultado.Nome, resultado.Valor);
 
             return null;
-            
+
         }
 
         public async Task<IEnumerable<ParametrosSistema>> ObterPorTiposAsync(long[] tipos)
@@ -72,7 +71,7 @@ namespace SME.SGP.Dados.Repositorios
                           from parametros_sistema
                          where tipo = @tipoParametroSistema and ativo";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { tipoParametroSistema });            
+            return await database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { tipoParametroSistema });
         }
 
         public async Task<T> ObterValorUnicoPorTipo<T>(TipoParametroSistema tipoParametroSistema)
@@ -142,7 +141,7 @@ namespace SME.SGP.Dados.Repositorios
                             from parametros_sistema ");
 
             if (ano.HasValue)
-                query.AppendLine("where (ano = @ano or ano is null)");                             
+                query.AppendLine("where (ano = @ano or ano is null)");
             else query.AppendLine("where ano is null");
 
             query.AppendLine(" and ativo");

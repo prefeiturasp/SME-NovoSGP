@@ -1,14 +1,14 @@
-﻿using System;
-using MediatR;
+﻿using MediatR;
+using Newtonsoft.Json;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<ComponenteCurricularDto>> Handle(ObterComponentesCurricularesEolQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
-            
+
             var resposta = await httpClient.GetAsync(ServicosEolConstants.URL_COMPONENTES_CURRICULARES);
 
             if (!resposta.IsSuccessStatusCode)
@@ -33,10 +33,10 @@ namespace SME.SGP.Aplicacao
             var retorno = await resposta.Content.ReadAsStringAsync();
 
             var componentes = JsonConvert.DeserializeObject<IEnumerable<ComponenteCurricularDto>>(retorno);
-            
+
             if (componentes.EhNulo() || !componentes.Any())
                 throw new NegocioException(MensagemNegocioEOL.COMPONENTE_CURRICULAR_NAO_LOCALIZADO);
-            
+
             return componentes;
         }
     }

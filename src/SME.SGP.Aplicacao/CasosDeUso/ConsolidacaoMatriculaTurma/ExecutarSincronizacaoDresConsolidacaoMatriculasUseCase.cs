@@ -25,12 +25,12 @@ namespace SME.SGP.Aplicacao
                     if (!publicarTratamentoCiclo)
                     {
                         var mensagemLog = $"Não foi possível inserir a dre : {publicarTratamentoCiclo} na fila de sync.";
-                        await mediator.Send(new SalvarLogViaRabbitCommand(mensagemLog, LogNivel.Negocio, LogContexto.Frequencia, "Executar Sincronizacao Dres Consolidacao Matriculas UseCase"));                        
+                        await mediator.Send(new SalvarLogViaRabbitCommand(mensagemLog, LogNivel.Negocio, LogContexto.Frequencia, "Executar Sincronizacao Dres Consolidacao Matriculas UseCase"));
                     }
                 }
                 catch (Exception ex)
                 {
-                    await mediator.Send(new SalvarLogViaRabbitCommand("Executar Sincronizacao Dres Consolidacao Matriculas UseCase", LogNivel.Critico, LogContexto.ConsolidacaoMatricula, ex.Message));                    
+                    await mediator.Send(new SalvarLogViaRabbitCommand("Executar Sincronizacao Dres Consolidacao Matriculas UseCase", LogNivel.Critico, LogContexto.ConsolidacaoMatricula, ex.Message));
                 }
             }
             return true;

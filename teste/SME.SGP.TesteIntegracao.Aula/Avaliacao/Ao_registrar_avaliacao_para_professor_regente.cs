@@ -7,7 +7,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ServicosFakes.Query;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,9 +16,9 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
 {
     public class Ao_registrar_avaliacao_para_professor_regente : TesteAvaliacao
     {
-        
+
         public Ao_registrar_avaliacao_para_professor_regente(CollectionFixture collectionFixture) : base(collectionFixture)
-        {}
+        { }
 
         protected override void RegistrarFakes(IServiceCollection services)
         {
@@ -58,7 +57,7 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
 
             var atividadeAvaliativa = ObterAtividadeAvaliativaRegenciaDto(COMPONENTE_REGENCIA_CLASSE_EJA_BASICA_ID_1114.ToString(), CategoriaAtividadeAvaliativa.Normal, DATA_24_01, TipoAvaliacaoCodigo.AvaliacaoBimestral, disciplinaRegencia);
 
-            await ValidarInsercaoAvaliacao(atividadeAvaliativa, NUMERO_1, RETORNAR_4, NUMERO_1,true);
+            await ValidarInsercaoAvaliacao(atividadeAvaliativa, NUMERO_1, RETORNAR_4, NUMERO_1, true);
 
         }
 
@@ -75,7 +74,7 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
 
             var atividadeAvaliativa = ObterAtividadeAvaliativaRegenciaDto(COMPONENTE_REGENCIA_CLASSE_EJA_BASICA_ID_1114.ToString(), CategoriaAtividadeAvaliativa.Normal, DATA_24_01, TipoAvaliacaoCodigo.AvaliacaoBimestral, disciplinaRegencia);
 
-            await ValidarInsercaoAvaliacao(atividadeAvaliativa, NUMERO_1, NUMERO_2, NUMERO_1,true);
+            await ValidarInsercaoAvaliacao(atividadeAvaliativa, NUMERO_1, NUMERO_2, NUMERO_1, true);
 
             disciplinaRegencia = new string[] { COMPONENTE_LINGUA_PORTUGUESA_ID_138 };
 
@@ -127,7 +126,7 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
 
             await ValidarInsercaoAvaliacao(atividadeAvaliativa, NUMERO_1, NUMERO_0, NUMERO_1);
 
-            atividadeAvaliativa.TurmasParaCopiar = new List<CopiarAtividadeAvaliativaDto>() { new CopiarAtividadeAvaliativaDto() { TurmaId = TURMA_CODIGO_2, DataAtividadeAvaliativa = DATA_24_01}};
+            atividadeAvaliativa.TurmasParaCopiar = new List<CopiarAtividadeAvaliativaDto>() { new CopiarAtividadeAvaliativaDto() { TurmaId = TURMA_CODIGO_2, DataAtividadeAvaliativa = DATA_24_01 } };
 
             await ValidarAtualizacaoAvaliacao(atividadeAvaliativa, NUMERO_2, NUMERO_0, NUMERO_2, NUMERO_1);
         }
@@ -145,7 +144,7 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
 
         private async Task ValidarAtualizacaoAvaliacao(AtividadeAvaliativaDto atividadeAvaliativa, int qtdeAtividadeAvaliativa, int qtdeAtividadeRegencia, int qtdeAtividadeDisciplina, int avaliacaoId)
         {
-            var filtroAtividadeAvaliativa = ObterFiltroAtividadeAvaliativa(atividadeAvaliativa,avaliacaoId);
+            var filtroAtividadeAvaliativa = ObterFiltroAtividadeAvaliativa(atividadeAvaliativa, avaliacaoId);
 
             var retorno = await Alterar(atividadeAvaliativa, filtroAtividadeAvaliativa, avaliacaoId);
 

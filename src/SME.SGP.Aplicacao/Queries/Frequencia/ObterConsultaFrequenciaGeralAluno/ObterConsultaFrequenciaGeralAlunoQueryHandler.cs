@@ -35,10 +35,10 @@ namespace SME.SGP.Aplicacao
                     tiposParaConsulta.Add((int)turma.TipoTurma);
 
                 var tiposRegularesDiferentes = turma.ObterTiposRegularesDiferentes();
-                
+
                 tiposParaConsulta.AddRange(tiposRegularesDiferentes.Where(c => tiposParaConsulta.All(x => x != c)));
                 tiposParaConsulta.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id).Where(c => tiposParaConsulta.All(x => x != c)));
-                
+
                 var turmasAlunoAnoLetivo = (await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, request.AlunoCodigo, tiposParaConsulta, semestre: turma.Semestre != 0 ? turma.Semestre : null), cancellationToken))?.ToList();
 
                 if (alunoEstaAtivoNaTurma)
@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao
                     if (matriculaAlunoNaTurma != null && matriculaAlunoNaTurma.Inativo)
                         turmasDoAlunoNoAno.Remove(turma.CodigoTurma);
                 }
-            }   
+            }
         }
     }
 }

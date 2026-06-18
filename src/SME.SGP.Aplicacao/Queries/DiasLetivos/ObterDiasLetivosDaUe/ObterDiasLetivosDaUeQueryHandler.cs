@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
             var diasLetivos = diasLetivosENaoLetivosDaUe.Count(c => c.EhLetivo);
             var diasNaoLetivos = diasLetivosENaoLetivosDaUe.Count(c => c.EhNaoLetivo);
 
-            return Task.FromResult( diasLetivos - diasNaoLetivos );
+            return Task.FromResult(diasLetivos - diasNaoLetivos);
         }
     }
 }

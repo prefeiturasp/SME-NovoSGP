@@ -115,7 +115,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ExcluirAtribuicaoEsporadicaTeste
         {
             long ueId = 456;
             int anoLetivo = 2024;
-            var ueMock = new Ue { Id = ueId, TipoEscola = Dominio.TipoEscola.EMEFM }; 
+            var ueMock = new Ue { Id = ueId, TipoEscola = Dominio.TipoEscola.EMEFM };
             long tipoCalendarioIdMock = 0;
 
             _mediatorMock.Setup(m => m.Send(It.Is<ObterUePorIdQuery>(q => q.Id == ueId), It.IsAny<CancellationToken>()))

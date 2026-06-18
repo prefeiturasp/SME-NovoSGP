@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
                        select new TurmaRetornoDto()
                        {
                            Codigo = b.CodigoTurma,
-                           Nome = !string.IsNullOrEmpty(b.NomeFiltro) ? b.NomeFiltro :  b.Nome
+                           Nome = !string.IsNullOrEmpty(b.NomeFiltro) ? b.NomeFiltro : b.Nome
                        };
             }
             else return null;

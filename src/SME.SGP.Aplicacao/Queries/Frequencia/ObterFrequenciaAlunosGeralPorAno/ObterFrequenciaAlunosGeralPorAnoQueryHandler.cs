@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         public ObterFrequenciaAlunosGeralPorAnoQueryHandler(IRepositorioRegistroFrequenciaAlunoConsulta repositorioRegistroFrequenciaAluno)
         {
             this.repositorioRegistroFrequenciaAluno = repositorioRegistroFrequenciaAluno ?? throw new ArgumentNullException(nameof(repositorioRegistroFrequenciaAluno));
-        } 
+        }
 
         public Task<IEnumerable<RegistroFrequenciaGeralPorDisciplinaAlunoTurmaDataDto>> Handle(ObterFrequenciaAlunosGeralPorAnoQuery request, CancellationToken cancellationToken)
         {

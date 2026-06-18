@@ -33,7 +33,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<ConselhoClasseAlunosNotaPorFechamentoIdDto>(query, new { fechamentoTurmaId });
         }
 
-        public async Task<IEnumerable<AlunoTemRecomandacaoDto>> VerificarSeExisteRecomendacaoPorTurma(string[] turmasId,int bimestre)
+        public async Task<IEnumerable<AlunoTemRecomandacaoDto>> VerificarSeExisteRecomendacaoPorTurma(string[] turmasId, int bimestre)
         {
             var query = @"select
                             distinct cca.aluno_codigo AluncoCodigo,
@@ -52,13 +52,13 @@ namespace SME.SGP.Dados.Repositorios
                 query += " and pe.bimestre = @bimestre ";
             else
                 query += " and pe.bimestre is null ";
-     
-            return await database.Conexao.QueryAsync<AlunoTemRecomandacaoDto>(query, new { turmasId,bimestre });
+
+            return await database.Conexao.QueryAsync<AlunoTemRecomandacaoDto>(query, new { turmasId, bimestre });
         }
 
         public async Task<IEnumerable<ConselhoClasseAlunoNotaDto>> ObterConselhoClasseAlunoNota(string[] turmasCodigos, int bimestre)
         {
-            var sql = new StringBuilder(); 
+            var sql = new StringBuilder();
             sql.AppendLine(@"select distinct ");
             sql.AppendLine(@"    cccat.aluno_codigo as AlunoCodigo,");
             sql.AppendLine(@"    coalesce(cccatn.nota,cccatn.conceito_id)  as Nota,");
@@ -76,13 +76,13 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(@"    not cccat.excluido");
             sql.AppendLine(@"    and not cccat.excluido");
             sql.AppendLine(@"    and t.turma_id = any(@turmasCodigos) ");
-            
+
             if (bimestre > 0)
                 sql.AppendLine(@"    and cccatn.bimestre = @bimestre ");
             else
                 sql.AppendLine(@"    and coalesce(cccatn.bimestre, 0) = 0 ");
 
-            return await database.Conexao.QueryAsync<ConselhoClasseAlunoNotaDto>(sql.ToString(), new { turmasCodigos,bimestre });
+            return await database.Conexao.QueryAsync<ConselhoClasseAlunoNotaDto>(sql.ToString(), new { turmasCodigos, bimestre });
         }
     }
 }

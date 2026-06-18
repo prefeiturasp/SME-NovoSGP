@@ -1,10 +1,10 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -22,10 +22,10 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> BuscarCep([FromRoute] string cep, [FromServices] IBuscaCepUseCase buscaCepUseCase)
         {
             var retorno = await buscaCepUseCase.Executar(cep);
-            
+
             if (retorno.EhNulo())
                 return NoContent();
-            
+
             return Ok(retorno);
         }
     }

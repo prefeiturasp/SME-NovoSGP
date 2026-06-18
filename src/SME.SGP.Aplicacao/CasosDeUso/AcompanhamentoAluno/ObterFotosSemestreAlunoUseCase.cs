@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
 
             try
             {
-                foreach(var miniatura in miniaturas)
+                foreach (var miniatura in miniaturas)
                 {
                     var arquivoFisico = await mediator.Send(new DownloadArquivoCommand(miniatura.Codigo, miniatura.Nome, miniatura.Tipo));
 

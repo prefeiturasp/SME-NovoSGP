@@ -60,7 +60,7 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
             var atividadeAvaliativasDiciplina = ObterTodos<AtividadeAvaliativaDisciplina>();
 
             atividadeAvaliativasDiciplina.ShouldNotBeEmpty();
-            atividadeAvaliativasDiciplina.FindAll(disciplina => disciplina.DisciplinaId == COMPONENTE_GEOGRAFIA_ID_8 || 
+            atividadeAvaliativasDiciplina.FindAll(disciplina => disciplina.DisciplinaId == COMPONENTE_GEOGRAFIA_ID_8 ||
                                                                 disciplina.DisciplinaId == COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString()).Count().ShouldBe(2);
         }
 

@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
+using System;
 
 namespace SME.SGP.Infra
 {
     public class DocumentoCompletoDto
     {
-        public DocumentoCompletoDto(){}
-        
+        public DocumentoCompletoDto() { }
+
         public long DocumentoId { get; set; }
         public string Classificacao { get; set; }
         public string TurmaNome { get; set; }

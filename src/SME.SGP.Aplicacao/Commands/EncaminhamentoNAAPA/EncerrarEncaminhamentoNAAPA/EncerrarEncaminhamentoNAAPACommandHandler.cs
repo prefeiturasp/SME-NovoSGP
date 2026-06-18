@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(EncerrarEncaminhamentoNAAPACommand request, CancellationToken cancellationToken)
         {
             var encaminhamentoNAAPA = await mediator.Send(new ObterCabecalhoEncaminhamentoNAAPAQuery(request.EncaminhamentoId));
-            
+
             if (encaminhamentoNAAPA.EhNulo() || encaminhamentoNAAPA.Id == 0)
                 throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.ENCAMINHAMENTO_NAO_ENCONTRADO);
 
@@ -49,6 +49,6 @@ namespace SME.SGP.Aplicacao
             }
 
             return idEntidadeEncaminhamento != 0;
-        }        
+        }
     }
 }

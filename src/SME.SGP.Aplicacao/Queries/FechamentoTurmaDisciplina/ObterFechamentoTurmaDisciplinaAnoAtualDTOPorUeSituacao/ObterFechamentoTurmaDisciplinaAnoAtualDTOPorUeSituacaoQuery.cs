@@ -2,9 +2,7 @@
 using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
@@ -19,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public long[] IdsFechamentoTurmaDisciplinaIgnorados { get; set; }
         public SituacaoFechamento[] SituacoesFechamento { get; set; }
-        
+
         public long IdUe { get; set; }
 
     }

@@ -79,10 +79,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ImportarArquivo
         }
 
         [Theory(DisplayName = "Paginacao deve calcular corretamente QuantidadeRegistros e Ignorados")]
-        [InlineData(2, 10, 10, 10)]  
-        [InlineData(0, 5, 5, 0)]     
-        [InlineData(1, 0, 0, 0)]   
-        [InlineData(-1, -1, 0, 0)]  
+        [InlineData(2, 10, 10, 10)]
+        [InlineData(0, 5, 5, 0)]
+        [InlineData(1, 0, 0, 0)]
+        [InlineData(-1, -1, 0, 0)]
         public void Paginacao_Deve_Calcular_Corretamente(int pagina, int registros, int esperadoRegistros, int esperadoIgnorados)
         {
             var paginacao = new Paginacao(pagina, registros);

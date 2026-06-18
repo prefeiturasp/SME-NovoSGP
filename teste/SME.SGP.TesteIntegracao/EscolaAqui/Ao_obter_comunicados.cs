@@ -1,29 +1,24 @@
+using Microsoft.Extensions.DependencyInjection;
+using Shouldly;
+using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
+using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using MediatR;
-using Microsoft.Extensions.DependencyInjection;
-using Moq;
-using Shouldly;
-using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
-using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.EscolaAqui
 {
     public class Ao_obter_comunicados : TesteBaseComuns
     {
-        
+
         public Ao_obter_comunicados(CollectionFixture collectionFixture) : base(collectionFixture)
-        {}
+        { }
 
         protected override void RegistrarFakes(IServiceCollection services)
         {
-            base.RegistrarFakes(services);     
+            base.RegistrarFakes(services);
         }
 
         [Fact(DisplayName = "Retornar comunicados do ano atual")]
@@ -34,7 +29,7 @@ namespace SME.SGP.TesteIntegracao.EscolaAqui
             await CriarTurma(Modalidade.Fundamental);
             await CriarComunicadoAluno("Comunicado 2023 1", DateTime.Now.Year, DRE_CODIGO_1, UE_CODIGO_1, TURMA_CODIGO_1, CODIGO_ALUNO_1, 1);
             await CriarComunicadoAluno("Comunicado 2023 2", DateTime.Now.Year, DRE_CODIGO_2, UE_CODIGO_2, TURMA_CODIGO_2, CODIGO_ALUNO_2, 2);
-            await CriarComunicadoAluno("Comunicado 2022 1", DateTime.Now.Year-1, DRE_CODIGO_1, UE_CODIGO_1, TURMA_CODIGO_1, CODIGO_ALUNO_1, 3);
+            await CriarComunicadoAluno("Comunicado 2022 1", DateTime.Now.Year - 1, DRE_CODIGO_1, UE_CODIGO_1, TURMA_CODIGO_1, CODIGO_ALUNO_1, 3);
 
             var useCase = ServiceProvider.GetService<IObterComunicadosAnoAtualUseCase>();
 

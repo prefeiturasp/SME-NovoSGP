@@ -1,7 +1,7 @@
-﻿using SME.SGP.Infra;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
         public static async Task<TipoCalendarioSugestaoDto> Executar(IMediator mediator, ObterTipoDeCalendarioDaTurmaEntrada obterTipoDeCalendarioDaTurmaEntrada)
         {
 
-            Turma turma = await mediator.Send(new ObterTurmaPorCodigoQuery() {  TurmaCodigo = obterTipoDeCalendarioDaTurmaEntrada.TurmaCodigo }) as Turma;
+            Turma turma = await mediator.Send(new ObterTurmaPorCodigoQuery() { TurmaCodigo = obterTipoDeCalendarioDaTurmaEntrada.TurmaCodigo }) as Turma;
             if (turma.EhNulo())
                 throw new NegocioException($"Não foi encontrado a turma {obterTipoDeCalendarioDaTurmaEntrada.TurmaCodigo}.");
 
@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi encontrado tipo de calendário para esta turma.");
 
             return new TipoCalendarioSugestaoDto() { Id = tipoDeCalendario.Id, Nome = tipoDeCalendario.Nome };
-            
+
         }
 
     }

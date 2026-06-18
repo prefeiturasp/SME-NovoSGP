@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
 
-        public ObterDiariosBordoPorDevolutivaQueryHandler(IContextoAplicacao contextoAplicacao, 
+        public ObterDiariosBordoPorDevolutivaQueryHandler(IContextoAplicacao contextoAplicacao,
                                                           IRepositorioDiarioBordo repositorioDiarioBordo) : base(contextoAplicacao)
         {
             this.repositorioDiarioBordo = repositorioDiarioBordo ?? throw new ArgumentNullException(nameof(repositorioDiarioBordo));

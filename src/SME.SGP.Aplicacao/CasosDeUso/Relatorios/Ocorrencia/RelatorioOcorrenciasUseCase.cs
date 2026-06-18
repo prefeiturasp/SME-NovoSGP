@@ -7,7 +7,7 @@ namespace SME.SGP.Aplicacao
 {
     public class RelatorioOcorrenciasUseCase : AbstractUseCase, IRelatorioOcorrenciasUseCase
     {
-        public RelatorioOcorrenciasUseCase(IMediator mediator) : base(mediator){}
+        public RelatorioOcorrenciasUseCase(IMediator mediator) : base(mediator) { }
         public async Task<bool> Executar(FiltroImpressaoOcorrenciaDto filtro)
         {
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);

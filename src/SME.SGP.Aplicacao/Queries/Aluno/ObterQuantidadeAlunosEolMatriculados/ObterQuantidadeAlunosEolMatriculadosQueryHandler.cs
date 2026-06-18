@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,9 +24,9 @@ namespace SME.SGP.Aplicacao
             var quantidadeAlunosMatriculados = Enumerable.Empty<QuantidadeAlunoMatriculadoDTO>();
 
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
-            
+
             var parametros = "";
-            
+
             if (!string.IsNullOrEmpty(request.DreCodigo) && !request.DreCodigo.Contains("-99"))
                 parametros += $"dreCodigo={request.DreCodigo}";
 
@@ -44,7 +43,7 @@ namespace SME.SGP.Aplicacao
                 parametros = parametros.Substring(1);
             var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_ALUNOS_ANO_LETIVO_MATRICULADOS_QUANTIDADE, request.AnoLetivo) + (parametros.Length > 0 ? $"?{parametros}" : ""));
 
-           
+
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();

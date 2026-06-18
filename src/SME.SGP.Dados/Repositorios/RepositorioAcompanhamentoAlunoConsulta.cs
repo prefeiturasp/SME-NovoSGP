@@ -2,7 +2,6 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
-using SME.SGP.Infra.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -46,7 +45,7 @@ namespace SME.SGP.Dados.Repositorios
                                and t.id = @turmaId
                                and aa.aluno_codigo  = ANY(@codigosAlunos)";
 
-                return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { turmaId, semestre, codigosAlunos });
+            return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { turmaId, semestre, codigosAlunos });
         }
 
         public async Task<int> ObterTotalAlunosTurmaSemestre(long turmaId, int semestre)

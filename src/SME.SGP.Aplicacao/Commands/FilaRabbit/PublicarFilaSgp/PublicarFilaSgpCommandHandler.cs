@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
             try
             {
                 return await mediator.Send(ObterUsuarioLogadoQuery.Instance);
-            } 
+            }
             catch
             {
                 return new Usuario();

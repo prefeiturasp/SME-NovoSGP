@@ -18,7 +18,7 @@ namespace SME.SGP.Infra
         public int QuantidadeCuidadores { get; set; }
         public string Descricao { get; set; }
         public string Observacao { get; set; }
-        public IEnumerable<UeRegistroColetivoDto> Ues { get; set; }      
+        public IEnumerable<UeRegistroColetivoDto> Ues { get; set; }
         public IEnumerable<ArquivoAnexoRegistroColetivoDto> Anexos { get; set; }
     }
 }

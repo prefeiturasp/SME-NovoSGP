@@ -135,10 +135,10 @@ namespace SME.SGP.Aplicacao
         }
 
         private RelatorioPAPDto Converte(
-                            RelatorioSemestralPAPAluno relatorioSemestral, 
+                            RelatorioSemestralPAPAluno relatorioSemestral,
                             string nomeAluno,
-                            long  idPeriodo,
-                            IEnumerable<SecaoRelatorioSemestralPAP> secoesPAPSemestral, 
+                            long idPeriodo,
+                            IEnumerable<SecaoRelatorioSemestralPAP> secoesPAPSemestral,
                             IEnumerable<Questao> questoes,
                             RelatorioPAPSecaoDto secaoDificuldadeApresentada)
         {
@@ -161,7 +161,7 @@ namespace SME.SGP.Aplicacao
 
             return null;
         }
-        
+
         private IEnumerable<RelatorioPAPSecaoDto> Converte(List<RelatorioSemestralPAPAlunoSecao> secoesSemestral, IEnumerable<SecaoRelatorioSemestralPAP> secoesPAPSemestral, IEnumerable<Questao> questoes)
         {
             var secoes = new List<RelatorioPAPSecaoDto>();
@@ -230,7 +230,8 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            if (resposta.Length > 0) {
+            if (resposta.Length > 0)
+            {
                 var questao = questoes.FirstOrDefault(questao => questao.NomeComponente == NOME_COMPONENTE_AVANC_APREND_BIMES);
 
                 return new RelatorioPAPSecaoDto()

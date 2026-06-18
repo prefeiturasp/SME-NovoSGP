@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
             CodigoUe = codigoUe;
         }
 
-        public string CodigoDre { get; set; } 
+        public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }
     }
 

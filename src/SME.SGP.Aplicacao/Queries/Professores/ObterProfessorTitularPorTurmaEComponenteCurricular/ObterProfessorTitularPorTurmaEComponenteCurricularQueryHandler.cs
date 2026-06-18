@@ -1,11 +1,11 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Aplicacao
 {
@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IMediator mediator;
-        public ObterProfessorTitularPorTurmaEComponenteCurricularQueryHandler(IHttpClientFactory httpClientFactory,IMediator mediator)
+        public ObterProfessorTitularPorTurmaEComponenteCurricularQueryHandler(IHttpClientFactory httpClientFactory, IMediator mediator)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao Obter Professor Titular da Turma {request.TurmaCodigo} para o Componente Curricular {request.ComponenteCurricularCodigo}", LogNivel.Critico, LogContexto.Aula, ex.Message,innerException: ex.InnerException.ToString(),rastreamento:ex.StackTrace), cancellationToken);
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao Obter Professor Titular da Turma {request.TurmaCodigo} para o Componente Curricular {request.ComponenteCurricularCodigo}", LogNivel.Critico, LogContexto.Aula, ex.Message, innerException: ex.InnerException.ToString(), rastreamento: ex.StackTrace), cancellationToken);
                 throw;
             }
         }

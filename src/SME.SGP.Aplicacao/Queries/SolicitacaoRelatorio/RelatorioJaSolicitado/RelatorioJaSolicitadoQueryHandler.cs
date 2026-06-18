@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao.Queries.SolicitacaoRelatorio.RelatorioJaSolicitado
 
         public async Task<bool> Handle(RelatorioJaSolicitadoQuery request, CancellationToken cancellationToken)
         {
-            return await _repositorio.RelatorioJaSolicitadoAsync(request.FiltrosUsados, request.TipoRelatorio,request.UsuarioQueSolicitou);
+            return await _repositorio.RelatorioJaSolicitadoAsync(request.FiltrosUsados, request.TipoRelatorio, request.UsuarioQueSolicitou);
         }
     }
 }

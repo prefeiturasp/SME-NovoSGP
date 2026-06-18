@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
             var dadosParametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ExecutaPendenciaAulaDiarioBordo, DateTimeExtension.HorarioBrasilia().Year));
 
             if (dadosParametro?.Ativo == true)
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaExecutaPendenciasAulaDiarioBordo, new DreUeDto(ue.DreId, ue.Id,ue.CodigoUe)));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaExecutaPendenciasAulaDiarioBordo, new DreUeDto(ue.DreId, ue.Id, ue.CodigoUe)));
         }
 
         private async Task VerificaPendenciasAvaliacao(Ue ue)

@@ -1,21 +1,9 @@
-﻿using Elastic.Apm.Api;
-using EmptyFiles;
-using MediatR;
-using Microsoft.Extensions.DependencyInjection;
-using Nest;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
-using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dominio.Servicos;
-using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
-using StackExchange.Redis;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -40,7 +28,7 @@ namespace SME.SGP.TesteIntegracao.WorkfflowAprovacaoNotaFechamento
 
             var aula = ObterAula(Convert.ToString(COMPONENTE_CURRICULAR_PORTUGUES_ID_138), DateTime.Now, RecorrenciaAula.AulaUnica);
 
-            long workflowAprovacaoId =  aula != null && aula?.WorkflowAprovacaoId != null ? (long)aula.WorkflowAprovacaoId : 0;
+            long workflowAprovacaoId = aula != null && aula?.WorkflowAprovacaoId != null ? (long)aula.WorkflowAprovacaoId : 0;
 
             var aulaRetornoWorkflow = await comandosWorkflow.ObterPorWorkflowId(workflowAprovacaoId);
 

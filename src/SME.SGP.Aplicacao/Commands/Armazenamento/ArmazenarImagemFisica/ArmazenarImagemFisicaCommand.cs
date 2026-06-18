@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         public byte[] ImagemBytes { get; set; } = Array.Empty<byte>();
         public string NomeFisico { get; set; } = string.Empty;
         public string NomeArquivo { get; set; } = string.Empty;
-        public TipoArquivo TipoArquivo { get; set; } 
+        public TipoArquivo TipoArquivo { get; set; }
         public string Formato { get; set; } = string.Empty;
     }
 

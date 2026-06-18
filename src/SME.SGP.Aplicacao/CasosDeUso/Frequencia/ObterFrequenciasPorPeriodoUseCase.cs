@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
                 componenteCurricular.CodigoComponenteCurricular.ToString();
 
             var codigosComponentesBusca = new List<string>() { componenteCurricular.Regencia && componenteCurricular.CdComponenteCurricularPai.HasValue && componenteCurricular.CdComponenteCurricularPai.Value > 0 ? componenteCurricular.CdComponenteCurricularPai.ToString() : param.DisciplinaId };
-          
+
             var aulas = await ObterAulas(param.DataInicio, param.DataFim, param.TurmaId, codigosComponentesBusca.ToArray(), usuarioLogado.EhSomenteProfessorCj());
 
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
 
             var percentualCritico = await ObterParametro(TipoParametroSistema.PercentualFrequenciaCritico, turma.AnoLetivo);
             var percentualAlerta = await ObterParametro(TipoParametroSistema.PercentualFrequenciaAlerta, turma.AnoLetivo);
-                        
+
             var registraFrequencia = await ObterComponenteRegistraFrequencia(codigosComponentesBusca.OrderBy(c => c.Length).Last());
             var frequenciaAlunos = await mediator.Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, codigosComponentesBusca.Select(c => long.Parse(c)).ToArray(), periodoEscolar.Id));
             var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, codigosComponentesBusca.ToArray(), periodoEscolar.Id));

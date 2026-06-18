@@ -93,10 +93,10 @@ namespace SME.SGP.Aplicacao
             var arquivosIdsCadastro = anexosCadastrados.Select(anexo => anexo.ArquivoId.GetValueOrDefault()).ToList();
             var arquivosIdsRemovidos = arquivosIdsCadastro.Except(arquivosIdsAlterados);
 
-            foreach(var arquivoId in arquivosIdsRemovidos)
+            foreach (var arquivoId in arquivosIdsRemovidos)
                 await mediator.Send(new ExcluirArquivoPorIdCommand(arquivoId));
         }
-        
+
         private void CarregaAlteracoes(RegistroColetivo registro, RegistroColetivoDto registroDto)
         {
             registro.TipoReuniaoId = registroDto.TipoReuniaoId;

@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dominio.Interfaces
 {
-    public interface IRepositorioTesteLog  
+    public interface IRepositorioTesteLog
     {
         Task Gravar(string mensagem);
     }

@@ -1,13 +1,13 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Linq;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {

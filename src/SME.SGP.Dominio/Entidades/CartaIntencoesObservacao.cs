@@ -1,10 +1,8 @@
-﻿using System;
-
-namespace SME.SGP.Dominio
+﻿namespace SME.SGP.Dominio
 {
     public class CartaIntencoesObservacao : EntidadeBase
     {
-        public CartaIntencoesObservacao(string observacao, long turmaId, long componenteCurricularId, long usuarioId )
+        public CartaIntencoesObservacao(string observacao, long turmaId, long componenteCurricularId, long usuarioId)
         {
             Observacao = observacao;
             TurmaId = turmaId;

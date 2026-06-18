@@ -106,7 +106,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<RelatorioSemestralPAPAluno>(query, new { turmaId, semestre });
         }
-        
+
         public async Task<IEnumerable<long>> ObterRelatorioSemestralAlunoPAPPorAnoSemestreAsync(int anoLetivo, int semestre)
         {
             var query = @"select rspa.id

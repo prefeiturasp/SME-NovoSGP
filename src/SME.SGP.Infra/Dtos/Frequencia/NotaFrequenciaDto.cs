@@ -6,15 +6,15 @@ namespace SME.SGP.Infra
     public class NotaFrequenciaDto
     {
         public NotaFrequenciaDto(
-                                long componenteCurricularCodigo, 
-                                FrequenciaAluno frequenciaAluno, 
+                                long componenteCurricularCodigo,
+                                FrequenciaAluno frequenciaAluno,
                                 PeriodoEscolar periodoEscolar,
-                                Turma turma, 
+                                Turma turma,
                                 IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno,
-                                IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, 
-                                bool componenteLancaNota, 
-                                bool visualizaNotas, 
-                                string[] codigosTurma, 
+                                IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno,
+                                bool componenteLancaNota,
+                                bool visualizaNotas,
+                                string[] codigosTurma,
                                 FrequenciaAluno frequenciaAlunoRegenciaPai)
         {
             ComponenteCurricularCodigo = componenteCurricularCodigo;

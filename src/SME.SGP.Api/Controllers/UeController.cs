@@ -18,7 +18,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<ModalidadeRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterModalidedes([FromServices] IObterModalidadesPorUeUseCase obterModalidadesPorUeUseCase, string codigoUe, [FromQuery]int ano, [FromQuery] bool consideraNovasModalidades = false)
+        public async Task<IActionResult> ObterModalidedes([FromServices] IObterModalidadesPorUeUseCase obterModalidadesPorUeUseCase, string codigoUe, [FromQuery] int ano, [FromQuery] bool consideraNovasModalidades = false)
         {
             return Ok(await obterModalidadesPorUeUseCase.Executar(codigoUe, ano, consideraNovasModalidades));
         }
@@ -27,7 +27,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<TurmaRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterTurmas(string codigoUe, int idModalidade, [FromQuery]int ano, [FromQuery] bool historico, [FromServices]IConsultasUe consultasUe)
+        public async Task<IActionResult> ObterTurmas(string codigoUe, int idModalidade, [FromQuery] int ano, [FromQuery] bool historico, [FromServices] IConsultasUe consultasUe)
         {
             return Ok(await consultasUe.ObterTurmas(codigoUe, idModalidade, ano, historico));
         }

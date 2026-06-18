@@ -46,7 +46,7 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(filtro));
         }
-        
+
         [HttpGet("consolidacao")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(204)]

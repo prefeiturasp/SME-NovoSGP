@@ -1,4 +1,4 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MediatR;
 
 namespace SME.SGP.Aplicacao.Consultas
 {
@@ -17,7 +16,7 @@ namespace SME.SGP.Aplicacao.Consultas
         private readonly IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica;
         private readonly IMediator mediator;
 
-        public ConsultasAtribuicaoEsporadica(IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica, IContextoAplicacao contextoAplicacao,IMediator mediator) : base(contextoAplicacao)
+        public ConsultasAtribuicaoEsporadica(IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica, IContextoAplicacao contextoAplicacao, IMediator mediator) : base(contextoAplicacao)
         {
             this.repositorioAtribuicaoEsporadica = repositorioAtribuicaoEsporadica ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoEsporadica));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));

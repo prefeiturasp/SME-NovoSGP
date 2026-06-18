@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         {
             long.TryParse(param.Mensagem.ToString(), out long dreId);
 
-            if (dreId > 0) 
+            if (dreId > 0)
             {
                 var ues = await mediator.Send(new ObterUesPorDreCodigoQuery(dreId));
 

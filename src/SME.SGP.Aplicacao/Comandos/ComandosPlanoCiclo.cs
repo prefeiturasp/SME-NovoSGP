@@ -1,13 +1,12 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Options;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using Microsoft.Extensions.Options;
-using SME.SGP.Infra.Utilitarios;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -48,12 +47,13 @@ namespace SME.SGP.Aplicacao
                     AjustarMatrizes(planoCiclo, planoCicloDto);
                     AjustarObjetivos(planoCiclo, planoCicloDto);
                     unitOfWork.PersistirTransacao();
-                } catch
+                }
+                catch
                 {
                     unitOfWork.Rollback();
                     throw;
                 }
-                await MoverRemoverExcluidos(planoCicloDto,descricaoAtual);
+                await MoverRemoverExcluidos(planoCicloDto, descricaoAtual);
             }
         }
 
@@ -103,7 +103,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private PlanoCiclo MapearParaDominio(PlanoCicloDto planoCicloDto,out string descricaoAtual)
+        private PlanoCiclo MapearParaDominio(PlanoCicloDto planoCicloDto, out string descricaoAtual)
         {
             descricaoAtual = string.Empty;
             if (planoCicloDto.EhNulo())

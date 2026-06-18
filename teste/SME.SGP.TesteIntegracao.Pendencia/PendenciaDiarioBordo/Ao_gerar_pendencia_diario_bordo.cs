@@ -46,7 +46,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
 
         public Ao_gerar_pendencia_diario_bordo(CollectionFixture collectionFixture) : base(collectionFixture)
         {
-            
+
         }
         [Fact]
         public async Task Deve_gerar_pendencias_de_acordo_componente_do_professor()
@@ -66,13 +66,13 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
                 var retorno = await useCase.Executar(new MensagemRabbit(jsonMensagem));
 
                 retorno.ShouldBeTrue();
-            }           
+            }
 
             foreach (var item in filtroUseCase)
             {
                 foreach (var aulaProfessorComponente in item.AulasProfessoresComponentesCurriculares)
                 {
-                    var pendenciaRetorno = await mediator.Send(new ObterPendenciaDiarioBordoPorComponenteProfessorPeriodoEscolarQuery(aulaProfessorComponente.ComponenteCurricularId, aulaProfessorComponente.ProfessorRf,1));
+                    var pendenciaRetorno = await mediator.Send(new ObterPendenciaDiarioBordoPorComponenteProfessorPeriodoEscolarQuery(aulaProfessorComponente.ComponenteCurricularId, aulaProfessorComponente.ProfessorRf, 1));
 
                     pendenciaRetorno.ShouldBeGreaterThan(0);
 
@@ -105,7 +105,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
 
             var mediator = ServiceProvider.GetService<IMediator>();
 
-            await CriarParametroSistema_TiposUEIgnorarGeracaoPendencia(((int) TipoEscola.CEIDIRET).ToString());
+            await CriarParametroSistema_TiposUEIgnorarGeracaoPendencia(((int)TipoEscola.CEIDIRET).ToString());
             await CriarCadastrosBasicos(TipoEscola.CEIDIRET);
 
             var filtroUseCase = ObterFiltroUseCase();
@@ -467,11 +467,11 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
 
             await InserirNaBase("componente_curricular_grupo_matriz", "1", "'Grupo matriz 1'");
 
-            await InserirNaBase("componente_curricular", "512","512","1","1", "'ED.INF. EMEI 4 HS'", "false","false","true","false","false","true", "'Regência de Classe Infantil'", "'REGÊNCIA INFANTIL EMEI 4H'");
+            await InserirNaBase("componente_curricular", "512", "512", "1", "1", "'ED.INF. EMEI 4 HS'", "false", "false", "true", "false", "false", "true", "'Regência de Classe Infantil'", "'REGÊNCIA INFANTIL EMEI 4H'");
 
-            await InserirNaBase("componente_curricular", "513","512","1","1", "'ED.INF. EMEI 2 HS'", "false","false","true","false","false","true", "'Regência de Classe Infantil'", "'REGÊNCIA INFANTIL EMEI 2H'");
-            
-            await InserirNaBase("componente_curricular", "534", "512", "1","1", "'REG -EMEI -INT/MANHA'", "false","false","true","false","false","true", "'Regência de Classe Infantil'", "'REGÊNCIA INFANTIL EMEI MANHÃ'");
+            await InserirNaBase("componente_curricular", "513", "512", "1", "1", "'ED.INF. EMEI 2 HS'", "false", "false", "true", "false", "false", "true", "'Regência de Classe Infantil'", "'REGÊNCIA INFANTIL EMEI 2H'");
+
+            await InserirNaBase("componente_curricular", "534", "512", "1", "1", "'REG -EMEI -INT/MANHA'", "false", "false", "true", "false", "false", "true", "'Regência de Classe Infantil'", "'REGÊNCIA INFANTIL EMEI MANHÃ'");
 
             await InserirNaBase(new Dre()
             {
@@ -799,6 +799,6 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
                     }
                 },
             };
-        }        
+        }
     }
 }

@@ -2,7 +2,7 @@ using System;
 
 namespace SME.SGP.Dominio.Entidades
 {
-    public class ConselhoClasseParecer: EntidadeBase
+    public class ConselhoClasseParecer : EntidadeBase
     {
         public string Nome { get; set; }
         public bool Aprovado { get; set; }

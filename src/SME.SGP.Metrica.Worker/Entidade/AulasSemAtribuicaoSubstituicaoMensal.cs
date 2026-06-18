@@ -1,7 +1,5 @@
-﻿using SME.SGP.Dominio;
-using SME.SGP.Infra.Utilitarios;
+﻿using SME.SGP.Infra.Utilitarios;
 using System;
-using System.Globalization;
 
 namespace SME.SGP.Metrica.Worker.Entidade
 {

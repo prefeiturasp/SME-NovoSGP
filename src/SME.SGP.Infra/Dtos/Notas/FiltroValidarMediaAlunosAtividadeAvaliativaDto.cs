@@ -9,7 +9,7 @@ namespace SME.SGP.Infra
         {
             AtividadesAvaliativas = atividadesAvaliativas;
             PercentualAlunosInsuficientes = percentualAlunosInsuficientes;
-            NotasPorAvaliacao = notasPorAvaliacao;        
+            NotasPorAvaliacao = notasPorAvaliacao;
             Usuario = usuario;
             DisciplinaId = disciplinaId;
             HostAplicacao = hostAplicacao;

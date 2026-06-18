@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -9,16 +5,16 @@ using Newtonsoft.Json;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dto;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFake;
 using SME.SGP.TesteIntegracao.Estudante.ServicosFakes;
-using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
-using StackExchange.Redis;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
@@ -70,7 +66,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var respostaEncaminhamentoNAAPA = respostasEncaminhamentoNAAPA.FirstOrDefault();
             respostaEncaminhamentoNAAPA.Texto.ShouldBe(TURMA_PROGRAMA_ALUNO_NAAPA_DIFERENTE);
 
-            var encaminhamentoNAAPADto = new EncaminhamentoNAAPADto { Id = 1, AlunoCodigo = ALUNO_CODIGO_1, TurmaId = TURMA_ID_1, AlunoNome = "Nome do aluno 1"};
+            var encaminhamentoNAAPADto = new EncaminhamentoNAAPADto { Id = 1, AlunoCodigo = ALUNO_CODIGO_1, TurmaId = TURMA_ID_1, AlunoNome = "Nome do aluno 1" };
             var mensagem = new MensagemRabbit { Mensagem = JsonConvert.SerializeObject(encaminhamentoNAAPADto) };
             var retorno = await usecase.Executar(mensagem);
 

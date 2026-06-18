@@ -15,19 +15,19 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioComunicado _repositorioComunicado;
         private readonly IRepositorioComunicadoTurma _repositorioComunicadoTurma;
         private readonly IRepositorioComunicadoAluno _repositorioComunicadoAluno;
-        private readonly IServicoAcompanhamentoEscolar _servicoAcompanhamentoEscolar;        
+        private readonly IServicoAcompanhamentoEscolar _servicoAcompanhamentoEscolar;
 
         public SolicitarExclusaoComunicadosEscolaAquiCommandHandler(
               IRepositorioComunicado repositorioComunicado
             , IRepositorioComunicadoTurma repositorioComunicadoTurma
             , IRepositorioComunicadoAluno repositorioComunicadoAluno
-            , IServicoAcompanhamentoEscolar servicoAcompanhamentoEscolar            
+            , IServicoAcompanhamentoEscolar servicoAcompanhamentoEscolar
             )
         {
             this._repositorioComunicado = repositorioComunicado ?? throw new ArgumentNullException(nameof(repositorioComunicado));
             this._repositorioComunicadoTurma = repositorioComunicadoTurma ?? throw new ArgumentNullException(nameof(repositorioComunicadoTurma));
             this._repositorioComunicadoAluno = repositorioComunicadoAluno ?? throw new ArgumentNullException(nameof(repositorioComunicadoAluno));
-            this._servicoAcompanhamentoEscolar = servicoAcompanhamentoEscolar ?? throw new ArgumentNullException(nameof(servicoAcompanhamentoEscolar));            
+            this._servicoAcompanhamentoEscolar = servicoAcompanhamentoEscolar ?? throw new ArgumentNullException(nameof(servicoAcompanhamentoEscolar));
         }
 
         public async Task<string> Handle(SolicitarExclusaoComunicadosEscolaAquiCommand request, CancellationToken cancellationToken)

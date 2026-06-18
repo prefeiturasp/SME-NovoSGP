@@ -1,12 +1,9 @@
 ﻿using Dapper.FluentMap.Dommel.Mapping;
 using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Dados
 {
-    public class ProcessoExecutandoMap: DommelEntityMap<ProcessoExecutando>
+    public class ProcessoExecutandoMap : DommelEntityMap<ProcessoExecutando>
     {
         public ProcessoExecutandoMap()
         {

@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioOcorrencia repositorioOcorrencia;
         private readonly IMediator mediator;
 
-        public ExcluirOcorrenciaCommandHandler(IRepositorioOcorrencia repositorioOcorrencia,  IMediator mediator)
+        public ExcluirOcorrenciaCommandHandler(IRepositorioOcorrencia repositorioOcorrencia, IMediator mediator)
         {
             this.repositorioOcorrencia = repositorioOcorrencia ?? throw new ArgumentNullException(nameof(repositorioOcorrencia));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
 
                 await mediator.Send(new ExcluirOcorrenciaServidorPorIdOcorrenciaCommand(ocorrencia.Id));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 retorno.Mensagens.Add(ex.InnerException?.Message ?? ex.Message);
             }

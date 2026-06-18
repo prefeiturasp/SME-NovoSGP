@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
 
         public void MarcarExcluidos(long[] ids)
         {
-            List<string>feriadosInvalidos = new List<string>();
+            List<string> feriadosInvalidos = new List<string>();
             List<long> idsInvalidos = new List<long>();
             foreach (long id in ids)
             {

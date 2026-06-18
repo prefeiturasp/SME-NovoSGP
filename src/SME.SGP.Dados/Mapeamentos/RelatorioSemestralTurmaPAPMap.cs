@@ -3,7 +3,7 @@ using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class RelatorioSemestralTurmaPAPMap: DommelEntityMap<RelatorioSemestralTurmaPAP>
+    public class RelatorioSemestralTurmaPAPMap : DommelEntityMap<RelatorioSemestralTurmaPAP>
     {
         public RelatorioSemestralTurmaPAPMap()
         {

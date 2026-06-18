@@ -2,9 +2,7 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
-using System;
 using System.Threading.Tasks;
-using Utilities;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -17,7 +15,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task ExcluirConsolidacoes(string ueCodigo, int mes, int anoLetivo)
         {
             await database.Conexao.ExecuteAsync("delete from consolidacao_reflexo_frequencia_busca_ativa where ue_id = @ueCodigo and mes = @mes and ano_letivo = @anoLetivo",
-                                                new { ueCodigo, mes, anoLetivo } );
+                                                new { ueCodigo, mes, anoLetivo });
         }
 
         public Task<ConsolidacaoReflexoFrequenciaBuscaAtivaAluno> ObterIdConsolidacao(string turmaCodigo, string alunoCodigo, int mes, int anoLetivo)
