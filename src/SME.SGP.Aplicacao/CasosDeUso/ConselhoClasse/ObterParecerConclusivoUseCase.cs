@@ -1,20 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Aplicacao.Commands;
-using SME.SGP.Aplicacao.Integracoes.Respostas;
-using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
-using SME.SGP.Infra.Dtos.ConselhoClasse;
 
 namespace SME.SGP.Aplicacao
 {

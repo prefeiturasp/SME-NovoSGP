@@ -1,11 +1,8 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Infra;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using SME.SGP.Dominio;
-using System;
 using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao

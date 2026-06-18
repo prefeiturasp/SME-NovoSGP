@@ -1,7 +1,6 @@
 ﻿using Moq;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.Dominio.Servicos.Teste

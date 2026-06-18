@@ -2,7 +2,6 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional.Frequencia;
-using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;

@@ -1,9 +1,5 @@
-using System;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using Polly.Registry;
-using SME.SGP.Dados.Repositorios;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;

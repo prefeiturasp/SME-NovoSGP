@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using MongoDB.Bson.IO;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;

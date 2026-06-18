@@ -1,8 +1,5 @@
-﻿using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
-using System;
+﻿using SME.SGP.Dominio.Enumerados;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Infra
 {

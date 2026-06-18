@@ -1,9 +1,4 @@
-﻿using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Dto
+﻿namespace SME.SGP.Dto
 {
     public class AbrangenciaCompactaVigenteRetornoEOLDTO
     {

@@ -6,7 +6,6 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.ServicosFakes.Query;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;

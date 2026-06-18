@@ -1,8 +1,6 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Commands;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Threading;

@@ -1,6 +1,4 @@
-﻿using Microsoft.Diagnostics.Tracing.Parsers.Kernel;
-using Microsoft.Extensions.DependencyInjection;
-using Nest;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
@@ -9,7 +7,6 @@ using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.RegistroColetivoNAAPA.Base;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;

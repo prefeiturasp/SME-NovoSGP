@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SME.SGP.Metrica.Worker.Entidade
+﻿namespace SME.SGP.Metrica.Worker.Entidade
 {
     public class EntidadeElasticBase
     {

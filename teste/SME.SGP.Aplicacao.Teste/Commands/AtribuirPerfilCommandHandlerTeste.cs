@@ -1,5 +1,4 @@
-﻿using MediatR;
-using Moq;
+﻿using Moq;
 using Moq.Protected;
 using SME.SGP.Dominio;
 using System;

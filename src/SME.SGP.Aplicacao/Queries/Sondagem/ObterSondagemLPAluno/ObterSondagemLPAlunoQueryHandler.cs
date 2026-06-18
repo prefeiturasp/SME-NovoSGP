@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dominio;
 using SME.SGP.Infra.Consts;
 using SME.SGP.Infra.Dtos.Sondagem;
 using System;

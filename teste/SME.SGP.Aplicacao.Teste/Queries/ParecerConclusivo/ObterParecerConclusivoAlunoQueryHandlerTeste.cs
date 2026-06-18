@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Moq;
-using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;

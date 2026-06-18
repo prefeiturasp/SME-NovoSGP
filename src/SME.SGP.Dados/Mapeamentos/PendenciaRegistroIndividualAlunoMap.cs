@@ -1,6 +1,5 @@
 ﻿using Dapper.FluentMap.Dommel.Mapping;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
 
 namespace SME.SGP.Dados.Mapeamentos
 {

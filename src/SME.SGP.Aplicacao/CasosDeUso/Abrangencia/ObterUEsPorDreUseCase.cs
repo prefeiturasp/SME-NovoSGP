@@ -3,7 +3,6 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra.Dtos;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao

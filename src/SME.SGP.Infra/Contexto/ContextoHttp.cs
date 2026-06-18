@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
-using SME.SGP.Dominio;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;

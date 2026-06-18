@@ -1,5 +1,4 @@
 ﻿using SME.SGP.Dominio;
-using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Infra
 {
