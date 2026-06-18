@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Infra.Dtos.EscolaAqui;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao

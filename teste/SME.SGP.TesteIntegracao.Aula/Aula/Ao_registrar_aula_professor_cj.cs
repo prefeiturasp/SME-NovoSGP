@@ -7,7 +7,6 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
 using System.Threading.Tasks;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using Xunit;

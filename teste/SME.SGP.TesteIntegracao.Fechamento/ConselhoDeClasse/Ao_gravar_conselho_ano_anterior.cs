@@ -9,7 +9,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
-using Xunit;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 {

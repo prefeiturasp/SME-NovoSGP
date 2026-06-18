@@ -10,7 +10,6 @@ using Microsoft.Extensions.Hosting;
 using SME.SGP.Infra;
 using SME.SGP.IoC;
 using SME.SGP.IoC.Extensions;
-using SME.SGP.Worker.Avaliacao;
 
 namespace SME.SGP.Avaliacao.Worker
 {

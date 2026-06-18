@@ -1,6 +1,4 @@
-﻿using SME.SGP.Dominio;
-
-namespace SME.SGP.Infra.Dtos.PainelEducacional
+﻿namespace SME.SGP.Infra.Dtos.PainelEducacional
 {
     public class PainelEducacionalNumeroEstudantesAgrupamentoNivelAlfabetizacaoDto
     {

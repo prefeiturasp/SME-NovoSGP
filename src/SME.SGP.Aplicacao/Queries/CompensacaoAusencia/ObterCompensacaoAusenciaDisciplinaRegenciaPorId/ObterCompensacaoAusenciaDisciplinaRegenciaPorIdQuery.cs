@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Data;
 using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;

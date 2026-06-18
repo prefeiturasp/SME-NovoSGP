@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace SME.SGP.Dominio.Interfaces
 {

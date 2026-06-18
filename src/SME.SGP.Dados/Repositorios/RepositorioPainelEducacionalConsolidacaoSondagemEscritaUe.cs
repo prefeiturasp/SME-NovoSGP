@@ -3,7 +3,6 @@ using Npgsql;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

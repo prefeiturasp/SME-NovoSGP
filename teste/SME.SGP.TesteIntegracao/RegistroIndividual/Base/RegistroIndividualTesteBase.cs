@@ -7,11 +7,9 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.RegistroIndividual.ServicosFakes;
-using SME.SGP.TesteIntegracao.ServicosFakes;
 
 namespace SME.SGP.TesteIntegracao.RegistroIndividual
 {

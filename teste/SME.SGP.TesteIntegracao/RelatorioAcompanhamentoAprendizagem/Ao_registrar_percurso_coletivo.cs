@@ -3,7 +3,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
 using System.Threading.Tasks;
 using Xunit;
 

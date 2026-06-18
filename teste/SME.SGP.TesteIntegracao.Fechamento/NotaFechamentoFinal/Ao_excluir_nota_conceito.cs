@@ -14,7 +14,6 @@ using SME.SGP.TesteIntegracao.ServicosFakes;
 using Xunit;
 using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.Fechamento.ConselhoDeClasse.ServicosFakes;
-using System;
 using SME.SGP.TesteIntegracao.Fechamento.NotaFechamentoBimestre.ServicosFakes;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal

@@ -1,5 +1,4 @@
-﻿using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.MapeamentoEstudantes;
+﻿using SME.SGP.Infra.Dtos.MapeamentoEstudantes;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

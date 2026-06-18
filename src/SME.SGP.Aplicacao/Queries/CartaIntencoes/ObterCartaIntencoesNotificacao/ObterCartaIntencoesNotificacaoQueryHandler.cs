@@ -1,6 +1,4 @@
 ﻿using MediatR;
-using Minio.DataModel;
-using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;

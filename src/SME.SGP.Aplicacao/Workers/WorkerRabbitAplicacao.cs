@@ -1,7 +1,5 @@
-﻿using Elastic.Apm;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
@@ -10,7 +8,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
-using SME.SGP.Infra.Excecoes;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using SME.SGP.Infra.Utilitarios;
@@ -18,7 +15,6 @@ using SME.SGP.Infra.Worker;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Workers

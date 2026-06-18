@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {

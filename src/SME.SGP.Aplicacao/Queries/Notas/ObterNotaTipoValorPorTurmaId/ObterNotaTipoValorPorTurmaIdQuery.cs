@@ -1,8 +1,6 @@
-﻿using System.Data;
-using FluentValidation;
+﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Aplicacao
 {

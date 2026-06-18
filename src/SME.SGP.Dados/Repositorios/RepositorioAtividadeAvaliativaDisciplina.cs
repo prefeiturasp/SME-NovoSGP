@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Npgsql;
+﻿using Npgsql;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
