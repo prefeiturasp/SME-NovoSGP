@@ -177,98 +177,98 @@ namespace SME.SGP.Dados.Repositorios
             const string query = @" 
                             SELECT DISTINCT p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em, p.criado_por, p.alterado_em, p.alterado_por
                             FROM pendencia p 
-                                INNER JOIN pendencia_perfil pp ON pp.pendencia_id = p.id 
-                                INNER JOIN pendencia_perfil_usuario ppu ON ppu.pendencia_perfil_id = pp.id
+                                INNER JOIN pendencia_perfil pp ON pp.pendencia_id = p.id and pp.criado_em >= @dataPendencia
+                                INNER JOIN pendencia_perfil_usuario ppu ON ppu.pendencia_perfil_id = pp.id and ppu.criado_em >= @dataPendencia
                             WHERE NOT p.excluido 
                             AND ppu.usuario_id = @usuarioId 
                             AND p.situacao = @situacao
-                            AND p.Criado_em > @dataPendencia
+                            AND p.criado_em >= @dataPendencia
             
                             UNION ALL 
             
                             SELECT DISTINCT p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em, p.criado_por, p.alterado_em, p.alterado_por
                             FROM pendencia p 
-                                INNER JOIN pendencia_usuario pu ON pu.pendencia_id = p.id
+                                INNER JOIN pendencia_usuario pu ON pu.pendencia_id = p.id and pu.criado_em >= @dataPendencia
                                 INNER JOIN pendencia_aula pa ON p.id = pa.pendencia_id
                             WHERE NOT p.excluido 
                             AND pu.usuario_id = @usuarioId
                             AND p.situacao = @situacao
-                            AND p.Criado_em > @dataPendencia
+                            AND p.criado_em >= @dataPendencia
 
                             UNION ALL
             
                             SELECT DISTINCT p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em, p.criado_por, p.alterado_em, p.alterado_por
                             FROM pendencia p 
-                                INNER JOIN pendencia_usuario pu ON pu.pendencia_id = p.id
+                                INNER JOIN pendencia_usuario pu ON pu.pendencia_id = p.id and pu.criado_em >= @dataPendencia
                                 INNER JOIN pendencia_professor pp ON p.id = pp.pendencia_id
                             WHERE NOT p.excluido 
                             AND pu.usuario_id = @usuarioId
                             AND p.situacao = @situacao
-                            AND p.Criado_em > @dataPendencia  
+                            AND p.criado_em >= @dataPendencia  
             
                             UNION ALL
             
                             SELECT DISTINCT p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em, p.criado_por, p.alterado_em, p.alterado_por
                             FROM pendencia p 
-                                INNER JOIN pendencia_usuario pu ON pu.pendencia_id = p.id
-                                INNER JOIN pendencia_fechamento pf ON p.id = pf.pendencia_id
+                                INNER JOIN pendencia_usuario pu ON pu.pendencia_id = p.id and pu.criado_em >= @dataPendencia
+                                INNER JOIN pendencia_fechamento pf ON p.id = pf.pendencia_id and pf.criado_em >= @dataPendencia
                             WHERE NOT p.excluido 
                             AND pu.usuario_id = @usuarioId
                             AND p.situacao = @situacao
-                            AND p.Criado_em > @dataPendencia
+                            AND p.criado_em >= @dataPendencia
             
                             UNION ALL
             
                             SELECT DISTINCT p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em, p.criado_por, p.alterado_em, p.alterado_por
                             FROM pendencia p 
-                                INNER JOIN pendencia_usuario pu ON pu.pendencia_id = p.id
-                                INNER JOIN pendencia_diario_bordo pdb ON p.id = pdb.pendencia_id
+                                INNER JOIN pendencia_usuario pu ON pu.pendencia_id = p.id and pu.criado_em >= @dataPendencia
+                                INNER JOIN pendencia_diario_bordo pdb ON p.id = pdb.pendencia_id and pdb.criado_em >= @dataPendencia
                                 INNER JOIN aula a ON a.id = pdb.aula_id
                             WHERE NOT p.excluido 
                             AND NOT a.excluido
                             AND pu.usuario_id = @usuarioId
                             AND p.situacao = @situacao 
-                            AND p.Criado_em > @dataPendencia
+                            AND p.criado_em >= @dataPendencia
             
                             UNION ALL
             
                             SELECT DISTINCT p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em, p.criado_por, p.alterado_em, p.alterado_por
                             FROM pendencia p 
-                                INNER JOIN pendencia_usuario pu ON pu.pendencia_id = p.id
+                                INNER JOIN pendencia_usuario pu ON pu.pendencia_id = p.id and pu.criado_em >= @dataPendencia
                                 INNER JOIN pendencia_devolutiva pd ON p.id = pd.pendencia_id
                             WHERE NOT p.excluido 
                             AND pu.usuario_id = @usuarioId
                             AND p.situacao = @situacao 
-                            AND p.Criado_em > @dataPendencia
+                            AND p.criado_em >= @dataPendencia
             
                             UNION ALL
             
                             SELECT DISTINCT p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em, p.criado_por, p.alterado_em, p.alterado_por
                             FROM pendencia p                                                      
-                                INNER JOIN pendencia_encaminhamento_aee eaee ON eaee.pendencia_id = p.id
+                                INNER JOIN pendencia_encaminhamento_aee eaee ON eaee.pendencia_id = p.id and eaee.criado_em >= @dataPendencia
                                 INNER JOIN encaminhamento_aee aee ON eaee.encaminhamento_aee_id = aee.id
-                                INNER JOIN pendencia_usuario pu2 ON p.id = pu2.pendencia_id AND pu2.usuario_id = @usuarioId
+                                INNER JOIN pendencia_usuario pu2 ON p.id = pu2.pendencia_id AND pu2.usuario_id = @usuarioId and pu2.criado_em >= @dataPendencia
                             WHERE NOT p.excluido
                             AND aee.responsavel_id = @usuarioId
                             AND p.situacao = @situacao
-                            AND p.Criado_em > @dataPendencia
+                            AND p.criado_em >= @dataPendencia
             
                             UNION ALL
             
                             SELECT DISTINCT p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em, p.criado_por, p.alterado_em, p.alterado_por
                             FROM pendencia p 
-                                INNER JOIN pendencia_usuario pu ON pu.pendencia_id = p.id
-                                INNER JOIN pendencia_plano_aee ppaee ON p.id = ppaee.pendencia_id
+                                INNER JOIN pendencia_usuario pu ON pu.pendencia_id = p.id and pu.criado_em >= @dataPendencia
+                                INNER JOIN pendencia_plano_aee ppaee ON p.id = ppaee.pendencia_id and ppaee.criado_em >= @dataPendencia
                             WHERE NOT p.excluido 
                             AND pu.usuario_id = @usuarioId
                             AND p.situacao = @situacao
-                            AND p.Criado_em > @dataPendencia";
+                            AND p.criado_em >= @dataPendencia";
 
             var parametros = new
             {
                 usuarioId,
                 situacao,
-                dataPendencia = new DateTime(DateTime.Now.Year - 1, 1, 1)
+                dataPendencia = new DateTime(DateTime.Now.Year, 1, 1)
             };
 
             var resultado = await database.Conexao.QueryAsync(query, parametros);
