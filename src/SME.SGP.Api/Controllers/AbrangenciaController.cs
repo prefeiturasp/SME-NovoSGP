@@ -227,22 +227,21 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterUes([FromServices] IObterUEsPorDreUseCase useCase, string codigoDre, [FromQuery] Modalidade? modalidade, [FromQuery] int periodo = 0, [FromQuery] int anoLetivo = 0, [FromQuery] bool consideraNovasUEs = false, [FromQuery] bool filtrarTipoEscolaPorAnoLetivo = false, string filtro = "")
+        public async Task<IActionResult> ObterUes([FromServices] IObterUEsPorDreUseCase useCase, string codigoDre, [FromQuery] FiltroUEsPorDreRequestDto request)
         {
-
-            if (filtro.Length < 3)
-                filtro = "";
+            var filtro = request.Filtro?.Length < 3 ? "" : request.Filtro;
 
             var dto = new UEsPorDreDto()
             {
                 CodigoDre = codigoDre,
-                Modalidade = modalidade,
-                Periodo = periodo,
-                AnoLetivo = anoLetivo,
-                ConsideraNovasUEs = consideraNovasUEs,
-                FiltrarTipoEscolaPorAnoLetivo = filtrarTipoEscolaPorAnoLetivo,
+                Modalidade = request.Modalidade,
+                Periodo = request.Periodo,
+                AnoLetivo = request.AnoLetivo,
+                ConsideraNovasUEs = request.ConsideraNovasUEs,
+                FiltrarTipoEscolaPorAnoLetivo = request.FiltrarTipoEscolaPorAnoLetivo,
                 Filtro = filtro,
-                ConsideraHistorico = ConsideraHistorico
+                ConsideraHistorico = ConsideraHistorico,
+                AnosTurma = request.AnosTurma
             };
 
             var ues = await useCase.Executar(dto);
