@@ -5,26 +5,37 @@ using SME.SGP.Dados;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Globalization;
 using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Setup
 {
-    public class CollectionFixture : IDisposable
+    public class CollectionFixture : IAsyncLifetime, IDisposable
     {
         public IServiceCollection Services { get; set; }
-        public InMemoryDatabase Database { get; }
+        public InMemoryDatabase Database { get; private set; }
         public ServiceProvider ServiceProvider { get; set; }
 
         public CollectionFixture()
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        }
+
+        public async Task InitializeAsync()
+        {
             Database = new InMemoryDatabase();
+            await Database.InitializeAsync();
 
             IniciarServicos();
+        }
+
+        public async Task DisposeAsync()
+        {
+            if (Database != null)
+                await Database.DisposeAsync();
         }
 
         public void ExecutarScripts(List<ScriptCarga> scriptsCarga)
@@ -36,17 +47,15 @@ namespace SME.SGP.TesteIntegracao.Setup
         {
             Services = new ServiceCollection();
 
-            Services.AddScoped<IDbConnection>(x => Database.Conexao);
+            Services.AddScoped<IDbConnection>(_ => Database.Conexao);
 
             var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", false).Build();
-
             Services.AddSingleton<IConfiguration>(config);
-            Services.AddMemoryCache();
 
+            Services.AddMemoryCache();
             FluentMapper.EntityMaps.Clear();
 
             var culture = CultureInfo.CreateSpecificCulture("pt-BR");
-
             CultureInfo.CurrentCulture = culture;
             CultureInfo.DefaultThreadCurrentCulture = culture;
             CultureInfo.DefaultThreadCurrentUICulture = culture;
@@ -66,7 +75,6 @@ namespace SME.SGP.TesteIntegracao.Setup
 
         public void Dispose()
         {
-            Database.Dispose();
             GC.SuppressFinalize(this);
         }
     }

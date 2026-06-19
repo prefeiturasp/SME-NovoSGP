@@ -11,9 +11,9 @@ namespace SME.SGP.TesteIntegracao.AtribuicaoCJs.ServicosFake
         {
         }
 
-        public async Task<Unit> Handle(RemoverPerfisUsuarioAtualCommand request, CancellationToken cancellationToken)
+        public async Task Handle(RemoverPerfisUsuarioAtualCommand request, CancellationToken cancellationToken)
         {
-            return Unit.Value;
+            return;
         }
     }
 }

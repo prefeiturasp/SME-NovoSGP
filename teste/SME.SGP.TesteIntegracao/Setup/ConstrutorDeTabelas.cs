@@ -4,7 +4,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -14,6 +13,7 @@ namespace SME.SGP.TesteIntegracao.Setup
     public class ConstrutorDeTabelas
     {
         private readonly NpgsqlConnection _connection;
+
         public ConstrutorDeTabelas(NpgsqlConnection connection)
         {
             _connection = connection ?? throw new ArgumentNullException(nameof(connection));
@@ -26,118 +26,118 @@ namespace SME.SGP.TesteIntegracao.Setup
 
         public void ExecutarScripts(List<ScriptCarga> scriptsCarga = null)
         {
-            var scripts = ObterScripts();
-            DirectoryInfo d = new DirectoryInfo(scripts);
+            var scriptsPath = ObterScripts();
+            var dir = new DirectoryInfo(scriptsPath);
 
-            var files = d.GetFiles("*.sql").ToList();
+            var files = dir.GetFiles("*.sql").ToList();
 
             if (scriptsCarga.NaoEhNulo())
                 files = files.FindAll(file => scriptsCarga.Exists(script => script.Name() == file.Name));
 
-            files = files.OrderBy(a => int.Parse(CleanStringOfNonDigits_V1(a.Name.Replace("\uFEFF", "")))).ToList();
+            files = files
+                .OrderBy(a => int.Parse(CleanStringOfNonDigits_V1(a.Name.Replace("\uFEFF", ""))))
+                .ToList();
 
             foreach (var file in files)
             {
-                var b = File.ReadAllBytes(file.FullName);
+                var bytes = File.ReadAllBytes(file.FullName);
 
                 Encoding enc = null;
-                var textoComEncodeCerto = ReadFileAndGetEncoding(b, ref enc);
+                var sql = ReadFileAndGetEncoding(bytes, ref enc);
 
-                using (var cmd = new NpgsqlCommand(textoComEncodeCerto, _connection))
+                using var cmd = new NpgsqlCommand(sql, _connection);
+                try
                 {
-                    try
-                    {
-                        cmd.ExecuteNonQuery();
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new Exception($"Erro ao executar o script {file.FullName}. Erro: {ex.Message}", ex);
-                    }
-
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"Erro ao executar o script {file.FullName}. Erro: {ex.Message}", ex);
                 }
             }
         }
 
         private void MontaBaseDados()
         {
-            ExecutarPreScripts();
-            ExecutarScripts();            
+            ExecutarScripts();
         }
 
-        private string ReadFileAndGetEncoding(Byte[] docBytes, ref Encoding encoding)
+        private string ReadFileAndGetEncoding(byte[] docBytes, ref Encoding encoding)
         {
             if (encoding.EhNulo())
                 encoding = Encoding.GetEncoding(1252);
-            Int32 len = docBytes.Length;
-            // byte order mark for utf-8. Easiest way of detecting encoding.
+
+            int len = docBytes.Length;
+
             if (len > 3 && docBytes[0] == 0xEF && docBytes[1] == 0xBB && docBytes[2] == 0xBF)
             {
                 encoding = new UTF8Encoding(true);
-                // Note that even when initialising an encoding to have
-                // a BOM, it does not cut it off the front of the input.
                 return encoding.GetString(docBytes, 3, len - 3);
             }
-            Boolean isPureAscii = true;
-            Boolean isUtf8Valid = true;
-            for (Int32 i = 0; i < len; ++i)
+
+            bool isPureAscii = true;
+            bool isUtf8Valid = true;
+
+            for (int i = 0; i < len; ++i)
             {
-                Int32 skip = TestUtf8(docBytes, i);
-                if (skip == 0)
-                    continue;
-                if (isPureAscii)
-                    isPureAscii = false;
+                int skip = TestUtf8(docBytes, i);
+                if (skip == 0) continue;
+
+                if (isPureAscii) isPureAscii = false;
+
                 if (skip < 0)
                 {
                     isUtf8Valid = false;
-                    // if invalid utf8 is detected, there's no sense in going on.
                     break;
                 }
+
                 i += skip;
             }
+
             if (isPureAscii)
-                encoding = new ASCIIEncoding(); // pure 7-bit ascii.
+                encoding = new ASCIIEncoding();
             else if (isUtf8Valid)
                 encoding = new UTF8Encoding(false);
-            // else, retain given encoding. This should be an 8-bit encoding like Windows-1252.
+
             return encoding.GetString(docBytes);
         }
 
-        private Int32 TestUtf8(Byte[] binFile, Int32 offset)
+        private int TestUtf8(byte[] binFile, int offset)
         {
-            // 7 bytes (so 6 added bytes) is the maximum the UTF-8 design could support,
-            // but in reality it only goes up to 3, meaning the full amount is 4.
-            const Int32 maxUtf8Length = 4;
-            Byte current = binFile[offset];
+            const int maxUtf8Length = 4;
+            byte current = binFile[offset];
+
             if ((current & 0x80) == 0)
-                return 0; // valid 7-bit ascii. Added length is 0 bytes.
-            Int32 len = binFile.Length;
-            for (Int32 addedlength = 1; addedlength < maxUtf8Length; ++addedlength)
+                return 0;
+
+            int len = binFile.Length;
+
+            for (int addedlength = 1; addedlength < maxUtf8Length; ++addedlength)
             {
-                Int32 fullmask = 0x80;
-                Int32 testmask = 0;
-                // This code adds shifted bits to get the desired full mask.
-                // If the full mask is [111]0 0000, then test mask will be [110]0 0000. Since this is
-                // effectively always the previous step in the iteration I just store it each time.
-                for (Int32 i = 0; i <= addedlength; ++i)
+                int fullmask = 0x80;
+                int testmask = 0;
+
+                for (int i = 0; i <= addedlength; ++i)
                 {
                     testmask = fullmask;
                     fullmask += (0x80 >> (i + 1));
                 }
-                // figure out bit masks from level
+
                 if ((current & fullmask) == testmask)
                 {
                     if (offset + addedlength >= len)
                         return -1;
-                    // Lookahead. Pattern of any following bytes is always 10xxxxxx
-                    for (Int32 i = 1; i <= addedlength; ++i)
+
+                    for (int i = 1; i <= addedlength; ++i)
                     {
                         if ((binFile[offset + i] & 0xC0) != 0x80)
                             return -1;
                     }
+
                     return addedlength;
                 }
             }
-            // Value is greater than the maximum allowed for utf8. Deemed invalid.
+
             return -1;
         }
 
@@ -154,26 +154,13 @@ namespace SME.SGP.TesteIntegracao.Setup
                 Console.WriteLine(e);
                 throw;
             }
-            
         }
 
         private string ObterScripts()
         {
             var testProjectPath = PlatformServices.Default.Application.ApplicationBasePath;
             var relativePathToHostProject = @"../../../../../scripts";
-
             return Path.GetFullPath(Path.Combine(testProjectPath, relativePathToHostProject));
-        }
-
-        private void ExecutarPreScripts()
-        {
-            var builder = new StringBuilder();
-            builder.Append("CREATE USER postgres;");
-            builder.Append("SET client_encoding TO 'UTF8';");
-            using (var cmd = new NpgsqlCommand(builder.ToString(), _connection))
-            {
-                cmd.ExecuteNonQuery();
-            }
         }
     }
 }
