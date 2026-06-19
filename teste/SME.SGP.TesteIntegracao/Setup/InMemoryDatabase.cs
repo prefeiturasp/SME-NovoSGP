@@ -18,7 +18,6 @@ namespace SME.SGP.TesteIntegracao.Setup
 
         public InMemoryDatabase()
         {
-            // Ajuste a imagem conforme sua necessidade. Ex: "postgres:15-alpine" ou "postgres:16"
             _postgresContainer = new PostgreSqlBuilder()
                 .WithImage("postgres:15-alpine")
                 .WithDatabase("sgp_testes")
@@ -84,7 +83,6 @@ namespace SME.SGP.TesteIntegracao.Setup
 
         public void LimparBase()
         {
-            // Removi o filtro tableowner='Test' porque no container o owner tende a ser 'postgres'
             var builder = new StringBuilder();
             builder.Append("DO $$ DECLARE ");
             builder.Append("r RECORD; ");
@@ -130,7 +128,7 @@ namespace SME.SGP.TesteIntegracao.Setup
                 await Conexao.DisposeAsync();
             }
 
-            await _postgresContainer.DisposeAsync(); // para e remove o container
+            await _postgresContainer.DisposeAsync(); 
         }
     }
 }
