@@ -24,6 +24,7 @@ namespace SME.SGP.Aplicacao
             FiltrarTipoEscolaPorAnoLetivo = dto.FiltrarTipoEscolaPorAnoLetivo;
             Filtro = dto.Filtro;
             FiltroEhCodigo = !string.IsNullOrWhiteSpace(dto.Filtro) && dto.Filtro.All(char.IsDigit);
+            AnosTurma = dto.AnosTurma;
         }
         public ObterUEsPorDREQuery(string codigoDre, string login, Guid perfil, bool consideraHistorico, int anoLetivo)
         {
@@ -51,6 +52,7 @@ namespace SME.SGP.Aplicacao
         public bool FiltrarTipoEscolaPorAnoLetivo { get; }
         public string Filtro { get; }
         public bool FiltroEhCodigo { get; }
+        public string[] AnosTurma { get; }
     }
 
     public class ObterUEsPorDREQueryValidator : AbstractValidator<ObterUEsPorDREQuery>
