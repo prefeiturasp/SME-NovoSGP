@@ -1,7 +1,4 @@
-﻿using SME.SGP.Dominio.Enumerados;
-using System;
-
-namespace SME.SGP.Dominio
+﻿namespace SME.SGP.Dominio
 {
     public class HistoricoEmailUsuario : EntidadeBase
     {

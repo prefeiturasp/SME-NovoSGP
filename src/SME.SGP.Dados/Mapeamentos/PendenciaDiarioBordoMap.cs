@@ -1,10 +1,4 @@
-﻿using Dapper.FluentMap.Dommel.Mapping;
-using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados
 {

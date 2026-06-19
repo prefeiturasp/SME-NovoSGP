@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Interfaces;
 using System;
 using System.Text;
 using System.Threading.Tasks;

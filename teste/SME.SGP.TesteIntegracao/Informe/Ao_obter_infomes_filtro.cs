@@ -10,10 +10,8 @@ using SME.SGP.Infra.Dtos.Informes;
 using SME.SGP.TesteIntegracao.Informe.Base;
 using SME.SGP.TesteIntegracao.Informe.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 

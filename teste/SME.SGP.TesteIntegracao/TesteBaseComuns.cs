@@ -10,8 +10,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using SME.SGP.Dominio.Enumerados;
-using Sentry.Protocol;
-using Nest;
 using System.Linq;
 
 namespace SME.SGP.TesteIntegracao

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class RecusarAprovacaoNotaConselhoCommandHandler : AsyncRequestHandler<RecusarAprovacaoNotaConselhoCommand>
+    public class RecusarAprovacaoNotaConselhoCommandHandler : IRequestHandler<RecusarAprovacaoNotaConselhoCommand>
     {
         private readonly IMediator mediator;
         private readonly IRepositorioWFAprovacaoNotaConselho repositorioWFAprovacaoNotaConselho;
@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioWFAprovacaoNotaConselho = repositorioWFAprovacaoNotaConselho ?? throw new ArgumentNullException(nameof(repositorioWFAprovacaoNotaConselho));
         }
 
-        protected override async Task Handle(RecusarAprovacaoNotaConselhoCommand request, CancellationToken cancellationToken)
+        public async Task Handle(RecusarAprovacaoNotaConselhoCommand request, CancellationToken cancellationToken)
         {
             var notasEmAprovacao = await ObterNotaEmAprovacaoPosConselho(request.WorkflowId);
 

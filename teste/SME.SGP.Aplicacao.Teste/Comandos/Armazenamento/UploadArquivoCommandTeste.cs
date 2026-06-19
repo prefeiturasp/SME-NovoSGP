@@ -1,13 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
-using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.Comandos

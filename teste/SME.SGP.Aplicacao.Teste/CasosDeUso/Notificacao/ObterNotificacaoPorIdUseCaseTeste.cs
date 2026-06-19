@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                         .ReturnsAsync(123);
 
             mediatorMock.Setup(m => m.Send(It.IsAny<NotificarLeituraNotificacaoCommand>(), It.IsAny<CancellationToken>()))
-                        .ReturnsAsync(Unit.Value);
+                        .Returns(Task.CompletedTask);
 
             mediatorMock.Setup(m => m.Send(It.IsAny<ObterMsgNotificacaoAnexosInformativoPorIdNotificacaoQuery>(), It.IsAny<CancellationToken>()))
                         .ReturnsAsync(string.Empty);

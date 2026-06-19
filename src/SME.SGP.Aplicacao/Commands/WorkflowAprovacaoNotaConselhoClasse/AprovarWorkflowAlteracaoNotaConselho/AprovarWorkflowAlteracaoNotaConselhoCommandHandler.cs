@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AprovarWorkflowAlteracaoNotaConselhoCommandHandler : AsyncRequestHandler<AprovarWorkflowAlteracaoNotaConselhoCommand>
+    public class AprovarWorkflowAlteracaoNotaConselhoCommandHandler : IRequestHandler<AprovarWorkflowAlteracaoNotaConselhoCommand>
     {
         private readonly IMediator mediator;
         public readonly IUnitOfWork unitOfWork;
@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        protected override async Task Handle(AprovarWorkflowAlteracaoNotaConselhoCommand request, CancellationToken cancellationToken)
+        public async Task Handle(AprovarWorkflowAlteracaoNotaConselhoCommand request, CancellationToken cancellationToken)
         {
             var notasEmAprovacao = await ObterNotasConselhoEmAprovacao(request.WorkflowId);
             if (notasEmAprovacao.NaoEhNulo() && notasEmAprovacao.Any())

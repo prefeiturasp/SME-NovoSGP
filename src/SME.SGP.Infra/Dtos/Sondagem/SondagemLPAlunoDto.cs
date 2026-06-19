@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace SME.SGP.Infra.Dtos.Sondagem
+﻿namespace SME.SGP.Infra.Dtos.Sondagem
 {
     public class SondagemLPAlunoDto
     {

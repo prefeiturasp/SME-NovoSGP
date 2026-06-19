@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Newtonsoft.Json;
-using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;

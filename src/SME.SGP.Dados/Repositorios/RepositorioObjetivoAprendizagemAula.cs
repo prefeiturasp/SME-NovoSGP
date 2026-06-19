@@ -1,8 +1,5 @@
-﻿using Dapper;
-using SME.SGP.Dados.Contexto;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SME.SGP.Infra;

@@ -2,7 +2,6 @@
 using FluentValidation;
 using MediatR;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {

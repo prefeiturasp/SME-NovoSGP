@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao.Pipelines
             this.validadores = validadores ?? throw new System.ArgumentNullException(nameof(validadores));
         }
 
-        public Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
+        public Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
         {
             if (validadores.Any())
             {
@@ -35,5 +35,6 @@ namespace SME.SGP.Aplicacao.Pipelines
 
             return next();
         }
+
     }
 }

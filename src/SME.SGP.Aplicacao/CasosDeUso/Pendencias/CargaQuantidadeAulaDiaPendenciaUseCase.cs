@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using MediatR;
-using Newtonsoft.Json;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 

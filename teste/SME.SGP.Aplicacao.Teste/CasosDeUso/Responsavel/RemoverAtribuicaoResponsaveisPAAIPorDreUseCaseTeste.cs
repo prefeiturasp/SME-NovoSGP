@@ -30,19 +30,16 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Responsavel
             // Arrange
             var codigoDre = faker.Random.AlphaNumeric(6);
 
-            // 1. Gera dados de PAAIs que estão no SGP, mas não mais no EOL (órfãos)
             var supervisoresOrfaos = new Faker<SupervisorEscolasDreDto>()
                 .RuleFor(s => s.AtribuicaoSupervisorId, f => f.Random.Long(1, 1000))
                 .RuleFor(s => s.SupervisorId, f => f.Random.Replace("#######"))
                 .Generate(3);
 
-            // 2. Gera dados de PAAIs que estão consistentes em ambas as bases
             var supervisoresValidos = new Faker<SupervisorEscolasDreDto>()
                 .RuleFor(s => s.AtribuicaoSupervisorId, f => f.Random.Long(1001, 2000))
                 .RuleFor(s => s.SupervisorId, f => f.Random.Replace("#######"))
                 .Generate(5);
 
-            // 3. Monta as listas para os mocks
             var atribuicoesNoSgp = supervisoresValidos.Concat(supervisoresOrfaos).ToList();
             var responsaveisNoEol = supervisoresValidos.Select(s => new UsuarioEolRetornoDto { CodigoRf = s.SupervisorId }).ToList();
             var idsQueDevemSerRemovidos = supervisoresOrfaos.Select(s => s.AtribuicaoSupervisorId).ToList();
@@ -50,29 +47,25 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Responsavel
 
             var mensagem = new MensagemRabbit(JsonSerializer.Serialize(codigoDre));
 
-            // Configura os mocks do MediatR
             mediatorMock.Setup(m => m.Send(It.Is<ObterSupervisoresPorDreAsyncQuery>(q => q.CodigoDre == codigoDre), It.IsAny<CancellationToken>()))
                         .ReturnsAsync(atribuicoesNoSgp);
 
             mediatorMock.Setup(m => m.Send(It.Is<ObterFuncionariosPorPerfilDreQuery>(q => q.CodigoDre == codigoDre), It.IsAny<CancellationToken>()))
                         .ReturnsAsync(responsaveisNoEol);
 
-            // Captura os IDs enviados para o comando de remoção para verificação posterior
+            // Corrigido: use os tipos específicos no Callback
             mediatorMock.Setup(m => m.Send(It.IsAny<RemoverAtribuicoesResponsaveisCommand>(), It.IsAny<CancellationToken>()))
-                        .Callback<IRequest<Unit>, CancellationToken>((cmd, token) => {
-                            var command = cmd as RemoverAtribuicoesResponsaveisCommand;
-                            idsRemovidosCapturados = command.AtribuicoesIds;
+                        .Callback<RemoverAtribuicoesResponsaveisCommand, CancellationToken>((cmd, token) => {
+                            idsRemovidosCapturados = cmd.AtribuicoesIds;
                         })
-                        .ReturnsAsync(Unit.Value);
+                        .Returns(Task.CompletedTask);
 
             // Act
             var resultado = await useCase.Executar(mensagem);
 
             // Assert
             Assert.True(resultado);
-            // Verifica se o comando de remoção foi chamado
             mediatorMock.Verify(m => m.Send(It.IsAny<RemoverAtribuicoesResponsaveisCommand>(), It.IsAny<CancellationToken>()), Times.Once);
-            // Verifica se a lista de IDs capturada é exatamente a lista de órfãos
             Assert.NotNull(idsRemovidosCapturados);
             Assert.Equal(idsQueDevemSerRemovidos.Count, idsRemovidosCapturados.Count());
             Assert.Empty(idsQueDevemSerRemovidos.Except(idsRemovidosCapturados));

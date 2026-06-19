@@ -6,7 +6,7 @@ using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AtualizarnotificacaoMensagemPorIdsCommandHandler : AsyncRequestHandler<AtualizarNotificacaoMensagemPorIdsCommand>
+    public class AtualizarnotificacaoMensagemPorIdsCommandHandler : IRequestHandler<AtualizarNotificacaoMensagemPorIdsCommand>
     {
         private readonly IRepositorioNotificacao repositorioNotificacao;
 
@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
                                           throw new ArgumentNullException(nameof(repositorioNotificacao));
         }
 
-        protected override async Task Handle(AtualizarNotificacaoMensagemPorIdsCommand request, CancellationToken cancellationToken)
+        public async Task Handle(AtualizarNotificacaoMensagemPorIdsCommand request, CancellationToken cancellationToken)
         {
             await repositorioNotificacao.AtualizarMensagemPorWorkFlowAprovacao(request.Ids, request.Mensagem);
         }

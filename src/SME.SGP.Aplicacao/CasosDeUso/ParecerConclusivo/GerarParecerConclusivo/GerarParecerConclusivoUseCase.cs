@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Aplicacao.Commands;

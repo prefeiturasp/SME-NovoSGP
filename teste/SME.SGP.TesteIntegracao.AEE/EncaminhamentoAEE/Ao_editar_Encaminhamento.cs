@@ -6,15 +6,12 @@ using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using SME.SGP.TesteIntegracao.EncaminhamentoAEE;
 using Xunit;
 using Microsoft.Extensions.DependencyInjection;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
-using SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake;
 using SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoAee

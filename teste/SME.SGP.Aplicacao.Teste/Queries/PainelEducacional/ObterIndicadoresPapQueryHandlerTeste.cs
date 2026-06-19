@@ -5,7 +5,6 @@ using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterIndicadoresPap;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
-using SME.SGP.Infra.Consts;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
