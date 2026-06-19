@@ -1,4 +1,5 @@
 using Microsoft.Extensions.PlatformAbstractions;
+using MongoDB.Driver.Core.Configuration;
 using Npgsql;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -12,11 +13,14 @@ namespace SME.SGP.TesteIntegracao.Setup
 {
     public class ConstrutorDeTabelas
     {
-        private readonly NpgsqlConnection _connection;
+        private readonly string _connectionString;
 
-        public ConstrutorDeTabelas(NpgsqlConnection connection)
+        public ConstrutorDeTabelas(string connectionString)
         {
-            _connection = connection ?? throw new ArgumentNullException(nameof(connection));
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentNullException(nameof(connectionString));
+
+            _connectionString = connectionString;
         }
 
         public void Construir()
@@ -41,14 +45,29 @@ namespace SME.SGP.TesteIntegracao.Setup
             foreach (var file in files)
             {
                 var bytes = File.ReadAllBytes(file.FullName);
-
                 Encoding enc = null;
                 var sql = ReadFileAndGetEncoding(bytes, ref enc);
 
-                using var cmd = new NpgsqlCommand(sql, _connection);
+                using var conexaoScript = new NpgsqlConnection(_connectionString);
+                conexaoScript.Open();
+
+                // Scripts com muitas linhas executam em lotes para evitar timeout de socket
+                var linhas = sql.Count(c => c == '\n');
+                var ehScriptGrande = linhas > 5000;
+
                 try
                 {
-                    cmd.ExecuteNonQuery();
+                    if (ehScriptGrande)
+                        ExecutarScriptEmLotes(conexaoScript, sql, file.FullName);
+                    else
+                    {
+                        using var cmd = new NpgsqlCommand(sql, conexaoScript) { CommandTimeout = 300 };
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                catch (Exception ex) when (ex is not Exception { InnerException: null })
+                {
+                    throw;
                 }
                 catch (Exception ex)
                 {
@@ -59,7 +78,48 @@ namespace SME.SGP.TesteIntegracao.Setup
 
         private void MontaBaseDados()
         {
+            ExecutarPreScripts();
             ExecutarScripts();
+        }
+
+        private void ExecutarScriptEmLotes(NpgsqlConnection conexao, string sql, string caminhoArquivo, int tamanhLote = 1000)
+        {
+            var comandos = sql
+                .Split('\n', StringSplitOptions.RemoveEmptyEntries)
+                .Select(l => l.Trim())
+                .Where(l => !string.IsNullOrWhiteSpace(l) && l != ";")
+                .ToList();
+
+            var lotes = comandos
+                .Select((cmd, idx) => new { cmd, idx })
+                .GroupBy(x => x.idx / tamanhLote)
+                .Select(g => string.Join("\n", g.Select(x => x.cmd)))
+                .ToList();
+
+            foreach (var lote in lotes)
+            {
+                using var cmd = new NpgsqlCommand(lote, conexao) { CommandTimeout = 0 };
+                try
+                {
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"Erro ao executar lote do script {caminhoArquivo}. Erro: {ex.Message}", ex);
+                }
+            }
+        }
+
+        private void ExecutarPreScripts()
+        {
+            using var conexao = new NpgsqlConnection(_connectionString);
+            conexao.Open();
+
+            using var cmd = new NpgsqlCommand("SET client_encoding TO 'UTF8';", conexao)
+            {
+                CommandTimeout = 60
+            };
+            cmd.ExecuteNonQuery();
         }
 
         private string ReadFileAndGetEncoding(byte[] docBytes, ref Encoding encoding)

@@ -36,10 +36,8 @@ namespace SME.SGP.TesteIntegracao
         {
             _collectionFixture = collectionFixture;
             _collectionFixture.Database.LimparBase();
-            _collectionFixture.IniciarServicos();
 
             RegistrarFakes(_collectionFixture.Services);
-            _collectionFixture.BuildServiceProvider();
         }
 
         public void ExecutarScripts(List<ScriptCarga> scriptsCarga)

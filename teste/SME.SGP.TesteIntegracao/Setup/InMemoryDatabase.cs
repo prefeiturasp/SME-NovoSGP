@@ -11,6 +11,8 @@ namespace SME.SGP.TesteIntegracao.Setup
 {
     public class InMemoryDatabase : IAsyncDisposable
     {
+        public string ConnectionString { get; private set; }
+
         public NpgsqlConnection Conexao;
 
         private readonly PostgreSqlContainer _postgresContainer;
@@ -19,28 +21,24 @@ namespace SME.SGP.TesteIntegracao.Setup
         public InMemoryDatabase()
         {
             _postgresContainer = new PostgreSqlBuilder()
-                .WithImage("postgres:15-alpine")
-                .WithDatabase("sgp_testes")
-                .WithUsername("postgres")
-                .WithPassword("postgres")
-                .Build();
+                                .WithImage("postgres:14-alpine")
+                                .WithDatabase("sgp_testes")
+                                .WithUsername("postgres")
+                                .WithPassword("postgres")
+                                .Build();
         }
 
         public async Task InitializeAsync()
         {
             await _postgresContainer.StartAsync();
 
-            await CriarConexaoEAbrirAsync();
+            ConnectionString = $"{_postgresContainer.GetConnectionString()};Include Error Detail=true;";
 
-            _construtorDeTabelas = new ConstrutorDeTabelas(Conexao);
-            _construtorDeTabelas.Construir();
-        }
-
-        private async Task CriarConexaoEAbrirAsync()
-        {
-            var cs = _postgresContainer.GetConnectionString();
-            Conexao = new NpgsqlConnection($"{cs};Include Error Detail=true;");
+            Conexao = new NpgsqlConnection(ConnectionString);
             await Conexao.OpenAsync();
+
+            _construtorDeTabelas = new ConstrutorDeTabelas(ConnectionString);
+            _construtorDeTabelas.Construir();
         }
 
         public void Inserir<T>(IEnumerable<T> objetos) where T : class, new()

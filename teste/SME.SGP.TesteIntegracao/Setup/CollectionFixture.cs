@@ -28,8 +28,9 @@ namespace SME.SGP.TesteIntegracao.Setup
         {
             Database = new InMemoryDatabase();
             await Database.InitializeAsync();
-
+            
             IniciarServicos();
+            BuildServiceProvider();
         }
 
         public async Task DisposeAsync()
