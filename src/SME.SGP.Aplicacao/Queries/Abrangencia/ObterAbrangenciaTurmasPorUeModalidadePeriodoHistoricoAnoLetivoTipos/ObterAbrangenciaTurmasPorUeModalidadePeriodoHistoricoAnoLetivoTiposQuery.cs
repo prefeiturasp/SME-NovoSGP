@@ -9,7 +9,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery : IRequest<IEnumerable<AbrangenciaTurmaRetorno>>
     {
-        public ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(string codigoUe, Modalidade modalidade, int periodo, bool consideraHistorico, int anoLetivo, int[] tipos, bool consideraNovosAnosInfantil = false)
+        public ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(string codigoUe, Modalidade modalidade, int periodo, bool consideraHistorico, int anoLetivo, int[] tipos, bool consideraNovosAnosInfantil = false, string[] anosTurma = null)
         {
             CodigoUe = codigoUe;
             Modalidade = modalidade;
@@ -18,6 +18,7 @@ namespace SME.SGP.Aplicacao
             AnoLetivo = anoLetivo;
             Tipos = tipos;
             ConsideraNovosAnosInfantil = consideraNovosAnosInfantil;
+            AnosTurma = anosTurma;
         }
 
         public string CodigoUe { get; set; }
@@ -27,6 +28,7 @@ namespace SME.SGP.Aplicacao
         public int AnoLetivo { get; set; }
         public int[] Tipos { get; set; }
         public bool ConsideraNovosAnosInfantil { get; set; }
+        public string[] AnosTurma { get; set; }
     }
     public class ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQueryValidator : AbstractValidator<ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery>
     {

@@ -160,11 +160,20 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterTurmas([FromServices] IMediator mediator, string codigoUe, [FromQuery] Modalidade modalidade, int periodo = 0, [FromQuery] int anoLetivo = 0, [FromQuery] int[] tipos = null, [FromQuery] bool consideraNovosAnosInfantil = false)
+        public async Task<IActionResult> ObterTurmas([FromServices] IMediator mediator, string codigoUe, [FromQuery] FiltroTurmasPorUeRequestDto request)
         {
-            var turmas = await mediator.Send(
-                new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(codigoUe, modalidade,
-                    periodo, ConsideraHistorico, anoLetivo, tipos, consideraNovosAnosInfantil)); 
+            
+            var dto = new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(
+                codigoUe,
+                request.Modalidade,
+                request.Periodo, 
+                ConsideraHistorico, 
+                request.AnoLetivo, 
+                request.Tipos,
+                request.ConsideraNovosAnosInfantil, 
+                request.AnosTurma);
+            
+            var turmas = await mediator.Send(dto);
 
             if (!turmas.Any())
                 return NoContent();

@@ -848,9 +848,11 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<Abrangencia>(query, new { usuarioId });
         }
 
-        public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmasPorTipos(string codigoUe, string login, Guid perfil, Modalidade modalidade, int[] tipos, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, string[] anosInfantilDesconsiderar = null)
+        public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmasPorTipos(string codigoUe, string login, Guid perfil, Modalidade modalidade, int[] tipos, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, string[] anosInfantilDesconsiderar = null, string[] anosTurma = null)
         {
-            var query = @"select ano,
+            var temFiltroAnosTurma = anosTurma != null && anosTurma.Any();
+
+            var query = new StringBuilder(@"select ano,
                                  anoLetivo,
                                  codigo,
                                  codigoModalidade,
@@ -861,18 +863,22 @@ namespace SME.SGP.Dados.Repositorios
                                  ensinoEspecial,
                                  turma_id as id,
                                  tipoturma,
-                                 nome_filtro as nomeFiltro 
-                            from f_abrangencia_turmas_tipos(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoUe, @anoLetivo, @tipos, @anosInfantilDesconsiderar)
-                          order by 5";
+                                 nome_filtro as nomeFiltro
+                            from f_abrangencia_turmas_tipos(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoUe, @anoLetivo, @tipos, @anosInfantilDesconsiderar)");
+
+            if (temFiltroAnosTurma)
+                query.AppendLine("where ano = any(@anosTurma)");
+
+            query.AppendLine("order by 5");
 
             var resultado = await database.Conexao
-                .QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new { login, perfil, consideraHistorico, modalidade, semestre = periodo, codigoUe, anoLetivo, tipos, anosInfantilDesconsiderar });
+                .QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new { login, perfil, consideraHistorico, modalidade, semestre = periodo, codigoUe, anoLetivo, tipos, anosInfantilDesconsiderar, anosTurma });
 
             var resultadoFiltrado = resultado.GroupBy(x => x.Codigo).SelectMany(y => y.OrderBy(a => a.Codigo).Take(1));
 
             if (perfil == Perfis.PERFIL_SUPERVISOR)
             {
-                resultadoFiltrado = await AcrescentarTurmasSupervisor(login, modalidade, periodo, codigoUe, consideraHistorico, anoLetivo, resultadoFiltrado);
+                resultadoFiltrado = await AcrescentarTurmasSupervisor(login, modalidade, periodo, codigoUe, consideraHistorico, anoLetivo, resultadoFiltrado, anosTurma);
 
                 if (tipos.NaoEhNulo() && tipos.Any())
                     resultadoFiltrado = resultadoFiltrado.Where(r => tipos.Contains(r.TipoTurma));
@@ -1137,7 +1143,7 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
-        private async Task<IEnumerable<AbrangenciaTurmaRetorno>> AcrescentarTurmasSupervisor(string login, Modalidade modalidade, int semestre, string ue, bool consideraHistorico, int anoLetivo, IEnumerable<AbrangenciaTurmaRetorno> retorno)
+        private async Task<IEnumerable<AbrangenciaTurmaRetorno>> AcrescentarTurmasSupervisor(string login, Modalidade modalidade, int semestre, string ue, bool consideraHistorico, int anoLetivo, IEnumerable<AbrangenciaTurmaRetorno> retorno, string[] anosTurma = null)
         {
             var dadosAbrangenciaSupervisor =
                 await ObterDadosAbrangenciaSupervisor(login, consideraHistorico, anoLetivo);
@@ -1150,6 +1156,7 @@ namespace SME.SGP.Dados.Repositorios
                                             where (Modalidade)da.Modalidade == modalidade &&
                                                   da.CodigoUe == ue &&
                                                   (semestre == 0 || (semestre > 0 && da.Semestre == semestre)) &&
+                                                  (anosTurma == null || !anosTurma.Any() || anosTurma.Contains(da.TurmaAno)) &&
                                                   !turmas.Contains(da.TurmaId)
                                             select new AbrangenciaTurmaRetorno
                                             {
