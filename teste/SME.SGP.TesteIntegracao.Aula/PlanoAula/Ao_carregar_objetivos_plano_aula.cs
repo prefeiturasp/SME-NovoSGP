@@ -40,7 +40,7 @@ namespace SME.SGP.TesteIntegracao.Aula.PlanoAula
 
         private async Task DadosPlanoAula()
         {
-            await InserirNaBase(new TipoCalendario
+            await InserirNaBase(new Dominio.TipoCalendario
             {
                 Id = 1,
                 AnoLetivo = DateTime.Now.Year,

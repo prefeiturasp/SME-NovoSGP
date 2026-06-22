@@ -66,7 +66,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoClasseController
 
         private async Task CriarAulaQueNaoLancaNota()
         {
-            await InserirNaBase(new TipoCalendario
+            await InserirNaBase(new Dominio.TipoCalendario
             {
                 Id = 1,
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,

@@ -178,7 +178,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
 
         private async Task CriarCadastrosBasicos(TipoEscola tipoEscola = TipoEscola.EMEF)
         {
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 Situacao = true,
                 Modalidade = ModalidadeTipoCalendario.Infantil,

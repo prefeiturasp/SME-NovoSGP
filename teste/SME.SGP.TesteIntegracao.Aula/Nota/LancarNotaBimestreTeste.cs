@@ -405,7 +405,7 @@ namespace SME.SGP.TesteIntegracao.Nota
 
         private async Task CriarTipoCalendarioEja() 
         {
-            await InserirNaBase(new TipoCalendario
+            await InserirNaBase(new Dominio.TipoCalendario
             {
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Nome = "Ano Letivo Ano Atual",
@@ -421,7 +421,7 @@ namespace SME.SGP.TesteIntegracao.Nota
         }
         private async Task CriarTipoCalendarioFundamentalMedio() 
         {
-            await InserirNaBase(new TipoCalendario
+            await InserirNaBase(new Dominio.TipoCalendario
             {
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Nome = "Ano Letivo Ano Atual",
