@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Dtos;
 using Xunit;
 
 namespace SME.SGP.Api.Testes.Controllers
