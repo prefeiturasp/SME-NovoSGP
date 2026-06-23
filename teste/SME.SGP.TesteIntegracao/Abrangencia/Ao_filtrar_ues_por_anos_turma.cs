@@ -2,11 +2,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.Dto;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.TesteIntegracao.Abrangencia.Base;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -19,8 +21,8 @@ namespace SME.SGP.TesteIntegracao.Abrangencia
         {
         }
 
-        [Fact(DisplayName = "Abrangência - Obter ues filtrando por anos de turma, perfil comum")]
-        public async Task Ao_obter_ues_filtrando_por_anos_turma_perfil_comum()
+        // Cria DRE/UE/turma (turma com ano = ANO_7) e concede abrangência direta ao usuário (perfil comum).
+        private async Task CriarCenarioComTurmaAno7PerfilComum()
         {
             var filtro = new FiltroTesteDto()
             {
@@ -38,36 +40,11 @@ namespace SME.SGP.TesteIntegracao.Abrangencia
                 Perfil = Guid.Parse(PerfilUsuario.POA_LINGUA_PORTUGUESA.Name()),
                 DreId = DRE_ID_1
             });
-
-            var useCase = ServiceProvider.GetService<IObterUEsPorDreUseCase>();
-
-            var dtoSemCorrespondencia = new UEsPorDreDto()
-            {
-                CodigoDre = DRE_CODIGO_1,
-                AnoLetivo = DateTime.Now.Year,
-                Modalidade = Modalidade.Medio,
-                AnosTurma = new[] { ANO_1, ANO_2, ANO_3 }
-            };
-
-            var uesSemCorrespondencia = await useCase.Executar(dtoSemCorrespondencia);
-            uesSemCorrespondencia.ShouldBeEmpty();
-
-            var dtoComCorrespondencia = new UEsPorDreDto()
-            {
-                CodigoDre = DRE_CODIGO_1,
-                AnoLetivo = DateTime.Now.Year,
-                Modalidade = Modalidade.Medio,
-                AnosTurma = new[] { ANO_7 }
-            };
-
-            var uesComCorrespondencia = await useCase.Executar(dtoComCorrespondencia);
-            uesComCorrespondencia.ShouldNotBeNull();
-            uesComCorrespondencia.Count().ShouldBe(1);
-            uesComCorrespondencia.First().Id.ShouldBe(UE_ID_1);
         }
 
-        [Fact(DisplayName = "Abrangência - Obter ues filtrando por anos de turma, perfil supervisor")]
-        public async Task Ao_obter_ues_filtrando_por_anos_turma_perfil_supervisor()
+        // Cria DRE/UE/turma (turma com ano = ANO_7) e concede a abrangência via supervisor_escola_dre,
+        // forçando o resultado a vir pelo caminho de AcrescentarUesSupervisor (filtro em memória).
+        private async Task CriarCenarioComTurmaAno7PerfilSupervisor()
         {
             var filtro = new FiltroTesteDto()
             {
@@ -90,32 +67,63 @@ namespace SME.SGP.TesteIntegracao.Abrangencia
                 CriadoRF = USUARIO_PROFESSOR_LOGIN_2222222,
                 Excluido = false
             });
+        }
 
+        private Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string[] anosTurma)
+        {
             var useCase = ServiceProvider.GetService<IObterUEsPorDreUseCase>();
 
-            var dtoSemCorrespondencia = new UEsPorDreDto()
+            return useCase.Executar(new UEsPorDreDto()
             {
                 CodigoDre = DRE_CODIGO_1,
                 AnoLetivo = DateTime.Now.Year,
                 Modalidade = Modalidade.Medio,
-                AnosTurma = new[] { ANO_1, ANO_2, ANO_3 }
-            };
+                AnosTurma = anosTurma
+            });
+        }
 
-            var uesSemCorrespondencia = await useCase.Executar(dtoSemCorrespondencia);
-            uesSemCorrespondencia.ShouldBeEmpty();
+        [Fact(DisplayName = "Abrangência - ObterUes não deve retornar UE cuja turma não está na lista de anosTurma informada (perfil comum)")]
+        public async Task Nao_deve_retornar_ue_de_turma_fora_do_filtro_anosTurma_perfil_comum()
+        {
+            await CriarCenarioComTurmaAno7PerfilComum();
 
-            var dtoComCorrespondencia = new UEsPorDreDto()
-            {
-                CodigoDre = DRE_CODIGO_1,
-                AnoLetivo = DateTime.Now.Year,
-                Modalidade = Modalidade.Medio,
-                AnosTurma = new[] { ANO_7 }
-            };
+            var ues = await ObterUes(new[] { ANO_1, ANO_2, ANO_3 });
 
-            var uesComCorrespondencia = await useCase.Executar(dtoComCorrespondencia);
-            uesComCorrespondencia.ShouldNotBeNull();
-            uesComCorrespondencia.Count().ShouldBe(1);
-            uesComCorrespondencia.First().Id.ShouldBe(UE_ID_1);
+            ues.ShouldBeEmpty();
+        }
+
+        [Fact(DisplayName = "Abrangência - ObterUes deve retornar UE cuja turma está na lista de anosTurma informada (perfil comum)")]
+        public async Task Deve_retornar_ue_de_turma_dentro_do_filtro_anosTurma_perfil_comum()
+        {
+            await CriarCenarioComTurmaAno7PerfilComum();
+
+            var ues = await ObterUes(new[] { ANO_7 });
+
+            ues.ShouldNotBeNull();
+            ues.Count().ShouldBe(1);
+            ues.First().Id.ShouldBe(UE_ID_1);
+        }
+
+        [Fact(DisplayName = "Abrangência - ObterUes não deve retornar UE cuja turma não está na lista de anosTurma informada (perfil supervisor)")]
+        public async Task Nao_deve_retornar_ue_de_turma_fora_do_filtro_anosTurma_perfil_supervisor()
+        {
+            await CriarCenarioComTurmaAno7PerfilSupervisor();
+
+            var ues = await ObterUes(new[] { ANO_1, ANO_2, ANO_3 });
+
+            ues.ShouldBeEmpty();
+        }
+
+        [Fact(DisplayName = "Abrangência - ObterUes deve retornar UE cuja turma está na lista de anosTurma informada (perfil supervisor)")]
+        public async Task Deve_retornar_ue_de_turma_dentro_do_filtro_anosTurma_perfil_supervisor()
+        {
+            await CriarCenarioComTurmaAno7PerfilSupervisor();
+
+            var ues = await ObterUes(new[] { ANO_7 });
+
+            ues.ShouldNotBeNull();
+            ues.Count().ShouldBe(1);
+            ues.First().Id.ShouldBe(UE_ID_1);
         }
     }
 }
