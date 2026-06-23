@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
 
             var result = await repositorioAbrangencia.ObterTurmasPorTipos(request.CodigoUe, login, perfil,
                 request.Modalidade, request.Tipos.NaoEhNulo() && request.Tipos.Any() ? request.Tipos : null, request.Periodo,
-                request.ConsideraHistorico, request.AnoLetivo, anosInfantilDesconsiderar);
+                request.ConsideraHistorico, request.AnoLetivo, anosInfantilDesconsiderar, request.AnosTurma);
 
             // Com base no codigo das turmas listada, é feito uma busca na Api Eol que está atualizada. 
             var codigosTurmas = result?.Select(t => t.Codigo.ToString())?.ToList();

@@ -140,7 +140,7 @@ namespace SME.SGP.Api.Testes.Controllers
                 .ReturnsAsync(retornoMediator);
 
             // Act
-            var resultado = await _controller.ObterTurmas(mediatorMock.Object, codigoUe, Modalidade.Fundamental);
+            var resultado = await _controller.ObterTurmas(mediatorMock.Object, codigoUe, new FiltroTurmasPorUeRequestDto{Modalidade = Modalidade.Fundamental});
 
             // Assert
             Assert.IsType<OkObjectResult>(resultado);
