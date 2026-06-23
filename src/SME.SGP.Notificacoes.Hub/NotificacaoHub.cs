@@ -145,11 +145,11 @@ namespace SME.SGP.Notificacoes.Hub
                 else
                     Interlocked.Increment(ref _contagemSgp);
 
-                logger.LogWarning($"Usuário conectado. ConnectionId: {Context.ConnectionId}. Total de conexões: {listaUsuarios.Count}/{limiteConexoes}. LoginSource: {loginSource}. SGP: {_contagemSgp}. Sondagem: {_contagemSondagem}. Limite de conexões: {limiteConexoes}.");
+                logger.LogWarning("Usuário conectado. ConnectionId: {ConnectionId}. Total de conexões: {Total}/{Limite}. LoginSource: {LoginSource}. SGP: {ContagemSgp}. Sondagem: {ContagemSondagem}.", Context.ConnectionId, listaUsuarios.Count, limiteConexoes, loginSource, _contagemSgp, _contagemSondagem);
             }
             catch (Exception ex)
             {
-                logger.LogError($"Erro ao conectar usuário. ConnectionId: {Context.ConnectionId}.", ex.Message);
+                logger.LogError("Erro ao conectar usuário. ConnectionId: {ConnectionId}. {Erro}", Context.ConnectionId, ex.Message);
             }
         }
 
@@ -194,11 +194,11 @@ namespace SME.SGP.Notificacoes.Hub
                 else
                     Interlocked.Decrement(ref _contagemSgp);
 
-                logger.LogWarning($"Usuário desconectado. ConnectionId: {Context.ConnectionId}. Total de conexões: {listaUsuarios.Count}/{limiteConexoes}. LoginSource: {loginSource}. SGP: {_contagemSgp}. Sondagem: {_contagemSondagem}. Limite de conexões: {limiteConexoes}.");
+                logger.LogWarning("Usuário desconectado. ConnectionId: {ConnectionId}. Total de conexões: {Total}/{Limite}. LoginSource: {LoginSource}. SGP: {ContagemSgp}. Sondagem: {ContagemSondagem}.", Context.ConnectionId, listaUsuarios.Count, limiteConexoes, loginSource, _contagemSgp, _contagemSondagem);
             }
             catch (Exception ex)
             {
-                logger.LogError($"Erro ao desconectar usuário. ConnectionId: {Context.ConnectionId}.", ex.Message);
+                logger.LogError("Erro ao desconectar usuário. ConnectionId: {ConnectionId}. {Erro}", Context.ConnectionId, ex.Message);
             }
         }
     }
