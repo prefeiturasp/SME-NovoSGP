@@ -164,7 +164,7 @@ namespace SME.SGP.Aplicacao
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
 
-            return (await repositorioAbrangencia.ObterUes(codigoDre, login, perfil, modalidade, periodo, consideraHistorico, anoLetivo)).OrderBy(c => c.Nome).ToList();
+            return (await repositorioAbrangencia.ObterUes(codigoDre, login, perfil, new FiltroModalidade(modalidade ?? 0), new FiltroPeriodoLetivo(anoLetivo, consideraHistorico, periodo))).OrderBy(c => c.Nome).ToList();
         }
 
         public async Task<IEnumerable<long>> ObterCodigoTurmasAbrangencia(string codigoUe, Modalidade modalidade, int periodo, bool consideraHistorico, int anoLetivo, int[] tipos, bool desconsideraNovosAnosInfantil = false)
