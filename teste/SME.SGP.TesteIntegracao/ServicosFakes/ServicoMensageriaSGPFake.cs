@@ -8,9 +8,9 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
     public class ServicoMensageriaSGPFake : IServicoMensageriaSGP
     {
 
-        public async Task<bool> Publicar(MensagemRabbit mensagem, string rota, string exchange, string nomeAcao, IModel canalRabbit = null)
+        public Task<bool> Publicar(MensagemRabbit mensagem, string rota, string exchange, string nomeAcao, IModel canalRabbit = null)
         {
-            return true;
+            return Task.FromResult(true);
         }
     }
 }
