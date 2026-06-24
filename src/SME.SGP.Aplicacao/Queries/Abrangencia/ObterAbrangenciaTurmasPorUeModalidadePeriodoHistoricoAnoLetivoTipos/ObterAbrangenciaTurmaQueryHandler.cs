@@ -32,17 +32,17 @@ namespace SME.SGP.Aplicacao
             var perfil = servicoUsuario.ObterPerfilAtual();
             var anosInfantilDesconsiderar = !request.ConsideraNovosAnosInfantil
                 ? await mediator.Send(
-                    new ObterParametroTurmaFiltroPorAnoLetivoEModalidadeQuery(request.AnoLetivo,
+                    new ObterParametroTurmaFiltroPorAnoLetivoEModalidadeQuery(request.FiltroPeriodoLetivo.AnoLetivo,
                         Modalidade.EducacaoInfantil))
                 : null;
 
             var result = await repositorioAbrangencia.ObterTurmasPorTipos(
-                request.CodigoUe, 
-                login, 
+                request.CodigoUe,
+                login,
                 perfil,
-                request.FiltroModalidade, 
+                request.FiltroModalidade,
                 request.Tipos.NaoEhNulo() && request.Tipos.Any() ? request.Tipos : null,
-                new FiltroPeriodoLetivo(request.AnoLetivo, request.ConsideraHistorico, request.Periodo), 
+                request.FiltroPeriodoLetivo,
                 anosInfantilDesconsiderar);
 
             // Com base no codigo das turmas listada, é feito uma busca na Api Eol que está atualizada. 
