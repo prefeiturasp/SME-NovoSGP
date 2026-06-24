@@ -169,7 +169,7 @@ namespace SME.SGP.TesteIntegracao.EscolaAqui
                 ModalidadeCodigo = Modalidade.Fundamental,
                 AnoLetivo = ANO_ATUAL
             });
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 Id = TIPO_CALENDARIO_1,
                 AnoLetivo = ANO_ATUAL,

@@ -119,7 +119,7 @@ namespace SME.SGP.TesteIntegracao.Setup
                 TipoTurno = 2
             });
 
-            await _teste.InserirNaBase(new TipoCalendario
+            await _teste.InserirNaBase(new Dominio.TipoCalendario
             {
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Nome = "Ano Letivo Ano Atual",

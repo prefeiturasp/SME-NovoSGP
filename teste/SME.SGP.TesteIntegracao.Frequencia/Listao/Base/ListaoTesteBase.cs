@@ -146,7 +146,7 @@ namespace SME.SGP.TesteIntegracao.Listao
         
         private async Task CriarPeriodoEscolarTodosBimestres(ModalidadeTipoCalendario modalidadeTipoCalendario, bool turmaHistorica)
         {
-            var tipoCalendarioId = (ObterTodos<TipoCalendario>()
+            var tipoCalendarioId = (ObterTodos<Dominio.TipoCalendario>()
                 .FirstOrDefault(c => c.Modalidade == modalidadeTipoCalendario)?.Id).GetValueOrDefault();
             
             tipoCalendarioId.ShouldBeGreaterThan(0);
@@ -159,7 +159,7 @@ namespace SME.SGP.TesteIntegracao.Listao
 
         private async Task CriarPeriodoReaberturaTodosBimestres(ModalidadeTipoCalendario modalidadeTipoCalendario, bool turmaHistoria)
         {
-            var tipoCalendarioId = (ObterTodos<TipoCalendario>()
+            var tipoCalendarioId = (ObterTodos<Dominio.TipoCalendario>()
                 .FirstOrDefault(c => c.Modalidade == modalidadeTipoCalendario)?.Id).GetValueOrDefault();
             
             tipoCalendarioId.ShouldBeGreaterThan(0);

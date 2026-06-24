@@ -672,7 +672,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 AnoLetivo = DateTime.Now.Year
             });
 
-            await InserirNaBase(new TipoCalendario
+            await InserirNaBase(new Dominio.TipoCalendario
             {
                 Id = 1,
                 Nome = "",

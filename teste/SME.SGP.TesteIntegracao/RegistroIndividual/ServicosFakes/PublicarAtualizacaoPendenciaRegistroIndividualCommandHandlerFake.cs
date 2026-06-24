@@ -18,7 +18,7 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual.ServicosFakes
         public async Task Handle(PublicarAtualizacaoPendenciaRegistroIndividualCommand request, CancellationToken cancellationToken)
         {
             var command = new AtualizarPendenciaRegistroIndividualDto { TurmaId = request.TurmaId, CodigoAluno = request.CodigoAluno, DataRegistro = request.DataRegistro };
-            await mediator.Send(command);
+            await mediator.Send(command, cancellationToken);
         }
     }
 }

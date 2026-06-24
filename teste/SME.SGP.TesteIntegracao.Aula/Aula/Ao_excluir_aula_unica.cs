@@ -280,7 +280,7 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
                 AnoLetivo = dataAtual.Year
             });
 
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 Id = 1,
                 AnoLetivo = dataAtual.Year,

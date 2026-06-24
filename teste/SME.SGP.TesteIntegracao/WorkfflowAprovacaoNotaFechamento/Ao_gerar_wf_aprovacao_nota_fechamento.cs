@@ -440,7 +440,7 @@ namespace SME.SGP.TesteIntegracao.WorkFlowAprovacaoNotaFechamento
                 NomeFiltro = TURMA_FILTRO
             });
 
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 Situacao = true,
                 Modalidade = ModalidadeTipoCalendario.FundamentalMedio,

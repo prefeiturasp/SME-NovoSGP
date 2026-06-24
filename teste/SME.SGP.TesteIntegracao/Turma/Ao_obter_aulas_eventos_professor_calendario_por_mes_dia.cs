@@ -33,7 +33,7 @@ namespace SME.SGP.TesteIntegracao.Turma
 
             var dataAtual = DateTimeExtension.HorarioBrasilia();
 
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 Id = 1,
                 AnoLetivo = 2023,

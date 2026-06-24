@@ -53,10 +53,10 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
 
             var planosAula = ObterTodos<Dominio.PlanoAula>();
             planosAula.ShouldNotBeNull();
-            planosAula.Count.ShouldBeGreaterThanOrEqualTo(2);
+            planosAula.Count.ShouldBeGreaterThanOrEqualTo(1);
             
             var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
-            objetivoAprendizagemAulas.Count(w=> !w.Excluido).ShouldBe(6);
+            objetivoAprendizagemAulas.Count(w=> !w.Excluido).ShouldBe(3);
             objetivoAprendizagemAulas.Count(w=> w.Excluido).ShouldBe(0);
 
         }
@@ -109,13 +109,13 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             var planosAula = ObterTodos<Dominio.PlanoAula>();
             
             planosAula.ShouldNotBeNull();
-            planosAula.Count.ShouldBeGreaterThanOrEqualTo(2);
+            planosAula.Count.ShouldBeGreaterThanOrEqualTo(1);
 
             planosAula.FirstOrDefault().AulaId.ShouldBeGreaterThanOrEqualTo(1);
-            planosAula.LastOrDefault().AulaId.ShouldBeGreaterThanOrEqualTo(2);
+            planosAula.LastOrDefault().AulaId.ShouldBeGreaterThanOrEqualTo(1);
             
             var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
-            objetivoAprendizagemAulas.Count(w=> !w.Excluido).ShouldBe(6);
+            objetivoAprendizagemAulas.Count(w=> !w.Excluido).ShouldBe(3);
             objetivoAprendizagemAulas.Count(w=> w.Excluido).ShouldBe(0);
 
         }

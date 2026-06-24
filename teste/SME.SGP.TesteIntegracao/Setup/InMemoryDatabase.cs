@@ -5,42 +5,53 @@ using System.Text;
 using System.Threading.Tasks;
 using Dommel;
 using Npgsql;
-using Postgres2Go;
+using Testcontainers.PostgreSql;
 
 namespace SME.SGP.TesteIntegracao.Setup
 {
-    public class InMemoryDatabase : IDisposable
+    public class InMemoryDatabase : IAsyncDisposable
     {
+        public string ConnectionString { get; private set; }
+
         public NpgsqlConnection Conexao;
-        private readonly PostgresRunner _postgresRunner;
-        private readonly ConstrutorDeTabelas _construtorDeTabelas;
+
+        private readonly PostgreSqlContainer _postgresContainer;
+        private ConstrutorDeTabelas _construtorDeTabelas;
 
         public InMemoryDatabase()
         {
-            _postgresRunner = PostgresRunner.Start();
-            CriarConexaoEAbrir();
-            _construtorDeTabelas = new ConstrutorDeTabelas(Conexao);
-            _construtorDeTabelas.Construir();
+            _postgresContainer = new PostgreSqlBuilder()
+                                .WithImage("postgres:14-alpine")
+                                .WithDatabase("sgp_testes")
+                                .WithUsername("postgres")
+                                .WithPassword("postgres")
+                                .Build();
         }
 
-        public void CriarConexaoEAbrir()
+        public async Task InitializeAsync()
         {
-            Conexao = new NpgsqlConnection(string.Concat(_postgresRunner.GetConnectionString(), ";Include Error Detail=true;"));
-            Conexao.Open();
+            await _postgresContainer.StartAsync();
+
+            ConnectionString = $"{_postgresContainer.GetConnectionString()};Include Error Detail=true;";
+
+            Conexao = new NpgsqlConnection(ConnectionString);
+            await Conexao.OpenAsync();
+
+            _construtorDeTabelas = new ConstrutorDeTabelas(ConnectionString);
+            _construtorDeTabelas.Construir();
         }
 
         public void Inserir<T>(IEnumerable<T> objetos) where T : class, new()
         {
             foreach (var objeto in objetos)
-            {
                 Conexao.Insert(objeto);
-            }
         }
-        
+
         public void Inserir<T>(T objeto) where T : class, new()
         {
             Conexao.Insert(objeto);
         }
+
         public async Task<long> InserirAsync<T>(T objeto) where T : class, new()
         {
             return (long)(await Conexao.InsertAsync(objeto));
@@ -71,18 +82,16 @@ namespace SME.SGP.TesteIntegracao.Setup
         public void LimparBase()
         {
             var builder = new StringBuilder();
-            builder.Append(" DO $$ DECLARE ");
-            builder.Append(" r RECORD; ");
-            builder.Append(" BEGIN ");
-            builder.Append("     FOR r IN (SELECT tablename FROM pg_tables WHERE tableowner = 'Test' and schemaname='public') LOOP ");
-            builder.Append("     EXECUTE 'TRUNCATE TABLE ' || quote_ident(r.tablename) || ' RESTART IDENTITY CASCADE '; ");
-            builder.Append(" END LOOP; ");
-            builder.Append(" END $$; ");
+            builder.Append("DO $$ DECLARE ");
+            builder.Append("r RECORD; ");
+            builder.Append("BEGIN ");
+            builder.Append("  FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname='public') LOOP ");
+            builder.Append("    EXECUTE 'TRUNCATE TABLE ' || quote_ident(r.tablename) || ' RESTART IDENTITY CASCADE'; ");
+            builder.Append("  END LOOP; ");
+            builder.Append("END $$;");
 
-            using (var cmd = new NpgsqlCommand(builder.ToString(), Conexao))
-            {
-                cmd.ExecuteNonQuery();
-            }
+            using var cmd = new NpgsqlCommand(builder.ToString(), Conexao);
+            cmd.ExecuteNonQuery();
         }
 
         public void Inserir(string tabela, params string[] campos)
@@ -92,32 +101,32 @@ namespace SME.SGP.TesteIntegracao.Setup
             builder.Append(string.Join(", ", campos));
             builder.Append(")");
 
-            using (var cmd = new NpgsqlCommand(builder.ToString(), Conexao))
-            {
-                cmd.ExecuteNonQuery();
-            }
+            using var cmd = new NpgsqlCommand(builder.ToString(), Conexao);
+            cmd.ExecuteNonQuery();
         }
-        
+
         public void Inserir(string tabela, string[] campos, string[] valores)
         {
             var builder = new StringBuilder();
             builder.Append($"Insert into {tabela} (");
             builder.Append(string.Join(", ", campos));
-            builder.Append(@") Values (");
+            builder.Append(") Values (");
             builder.Append(string.Join(", ", valores));
             builder.Append(")");
 
-            using (var cmd = new NpgsqlCommand(builder.ToString(), Conexao))
-            {
-                cmd.ExecuteNonQuery();
-            }
+            using var cmd = new NpgsqlCommand(builder.ToString(), Conexao);
+            cmd.ExecuteNonQuery();
         }
 
-        public void Dispose()
+        public async ValueTask DisposeAsync()
         {
-            Conexao.Close();
-            Conexao.Dispose();
-            _postgresRunner.Dispose();
+            if (Conexao != null)
+            {
+                await Conexao.CloseAsync();
+                await Conexao.DisposeAsync();
+            }
+
+            await _postgresContainer.DisposeAsync(); 
         }
     }
 }
