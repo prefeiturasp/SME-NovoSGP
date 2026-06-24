@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +28,11 @@ namespace SME.SGP.Aplicacao.Queries.UE.ObterUEsPorDRE
             var parametroNovosTiposUE = await mediator.Send(new ObterNovosTiposUEPorAnoQuery(anoNovosTiposUE));
             var novosTiposUE = parametroNovosTiposUE?.Split(',').Select(a => int.Parse(a)).ToArray();
 
-            var ues = await repositorioAbrangencia.ObterUes(request.CodigoDre, request.Login, request.Perfil, request.Modalidade, request.Periodo, request.ConsideraHistorico, request.AnoLetivo, novosTiposUE, request.Filtro, request.FiltroEhCodigo, request.AnosTurma);
+            var ues = await repositorioAbrangencia.ObterUes(request.CodigoDre, request.Login, request.Perfil,
+                new FiltroModalidade(request.Modalidade ?? 0, request.AnosTurma),
+                new FiltroPeriodoLetivo(request.AnoLetivo, request.ConsideraHistorico, request.Periodo),
+                novosTiposUE,
+                new FiltroTexto(request.Filtro, request.FiltroEhCodigo));
 
             if (request.FiltrarTipoEscolaPorAnoLetivo && request.AnoLetivo <= 2020)
                 ues = ues.Where(u => !u.EhInfantil);

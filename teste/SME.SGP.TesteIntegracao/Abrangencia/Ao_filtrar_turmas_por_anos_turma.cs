@@ -98,7 +98,7 @@ namespace SME.SGP.TesteIntegracao.Abrangencia
 
             return mediator.Send(
                 new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(
-                    UE_CODIGO_1, Modalidade.Medio, 0, false, DateTime.Now.Year, null, false, anosTurma));
+                    UE_CODIGO_1, new FiltroModalidade(Modalidade.Medio, anosTurma), new FiltroPeriodoLetivo(DateTime.Now.Year, false), null));
         }
 
         [Fact(DisplayName = "Abrangência - ObterTurmas não deve retornar turma cujo ano não está na lista de anosTurma informada (perfil comum)")]

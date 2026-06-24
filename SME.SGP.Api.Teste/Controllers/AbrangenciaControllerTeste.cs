@@ -137,7 +137,7 @@ namespace SME.SGP.Api.Testes.Controllers
 
             var retornoMediator = new List<AbrangenciaTurmaRetorno> { new AbrangenciaTurmaRetorno() };
 
-            mediatorMock.Setup(m => m.Send(It.Is<ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery>(q => q.CodigoUe == codigoUe && q.ConsideraHistorico), It.IsAny<CancellationToken>()))
+            mediatorMock.Setup(m => m.Send(It.Is<ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery>(q => q.CodigoUe == codigoUe && q.FiltroPeriodoLetivo.ConsideraHistorico), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(retornoMediator);
 
             // Act

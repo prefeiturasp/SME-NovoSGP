@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
                 bool ehTurmaHistorica = anoLetivo < DateTime.Now.Year;
                 var tipos = new int[0];
                 var ueCodigo = await mediator.Send(new ObterUePorIdQuery(ueId));
-                var turmas = await mediator.Send(new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(ueCodigo.CodigoUe, 0, 0, ehTurmaHistorica, anoLetivo, tipos, true));
+                var turmas = await mediator.Send(new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(ueCodigo.CodigoUe, new FiltroModalidade(0), new FiltroPeriodoLetivo(anoLetivo, ehTurmaHistorica), tipos, true));
 
                 if (turmas.NaoEhNulo() || turmas.Any())
                 {
