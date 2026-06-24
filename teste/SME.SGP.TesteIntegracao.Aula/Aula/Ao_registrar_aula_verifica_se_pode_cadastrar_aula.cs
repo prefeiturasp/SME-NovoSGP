@@ -485,7 +485,7 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
                 DadosAulaCriadaAutomaticamente = dadosAulaCriadaAutomaticamente
             };
 
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 Id = 1,
                 AnoLetivo = DATA_ATUAL.Year,

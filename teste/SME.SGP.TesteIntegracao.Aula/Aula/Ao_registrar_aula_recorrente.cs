@@ -59,7 +59,7 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrente
                 AnoLetivo = dataAtual.Year
             });
 
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 Id = 1,
                 AnoLetivo = dataAtual.Year,

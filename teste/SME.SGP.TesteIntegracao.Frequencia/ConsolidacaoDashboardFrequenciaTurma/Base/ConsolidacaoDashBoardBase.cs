@@ -51,7 +51,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
                 Nome = ConstantesTeste.TURMA_NOME_1A
             });
 
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Nome = ConstantesTeste.TIPO_CALENDARIO_NOME_1,

@@ -165,7 +165,7 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
                 DataAtualizacao = dataAtual
             });
 
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 Id = 1,
                 AnoLetivo = dataAtual.Year,

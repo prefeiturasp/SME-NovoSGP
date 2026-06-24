@@ -116,7 +116,7 @@ namespace SME.SGP.TesteIntegracao.TipoCalendarioValidacoes
             
             var consultasTipoCalendario = ServiceProvider.GetService<IConsultasTipoCalendario>();
 
-            var retorno = await consultasTipoCalendario.PeriodoEmAberto(new TipoCalendario(){Id = TIPO_CALENDARIO_8},DATA_01_01_INICIO_BIMESTRE_1,BIMESTRE_1); 
+            var retorno = await consultasTipoCalendario.PeriodoEmAberto(new Dominio.TipoCalendario(){Id = TIPO_CALENDARIO_8},DATA_01_01_INICIO_BIMESTRE_1,BIMESTRE_1); 
             retorno.ShouldBeTrue();
         }
         
@@ -337,7 +337,7 @@ namespace SME.SGP.TesteIntegracao.TipoCalendarioValidacoes
                 Semestre = SEMESTRE_1,
                 AnoLetivo = ANO_LETIVO_ANO_ATUAL
             });
-            var tipoCalendario = ObterTodos<TipoCalendario>();
+            var tipoCalendario = ObterTodos<Dominio.TipoCalendario>();
             tipoCalendario.ShouldNotBeNull();
             var tipoCalendarioInserido = tipoCalendario.FirstOrDefault();
             tipoCalendarioInserido.Semestre = SEMESTRE_1;
@@ -404,7 +404,7 @@ namespace SME.SGP.TesteIntegracao.TipoCalendarioValidacoes
                 AnoLetivo = ANO_LETIVO_ANO_ATUAL,
             });
             
-            var tipoCalendario = ObterTodos<TipoCalendario>();
+            var tipoCalendario = ObterTodos<Dominio.TipoCalendario>();
             tipoCalendario.ShouldNotBeNull();
             var tipoCalendarioInserido = tipoCalendario.FirstOrDefault();
             tipoCalendarioInserido.Modalidade = ModalidadeTipoCalendario.FundamentalMedio;
@@ -433,7 +433,7 @@ namespace SME.SGP.TesteIntegracao.TipoCalendarioValidacoes
                 AnoLetivo = ANO_LETIVO_ANO_ATUAL
             },TIPO_CALENDARIO_1);
             
-            var tipoCalendarios = ObterTodos<TipoCalendario>();
+            var tipoCalendarios = ObterTodos<Dominio.TipoCalendario>();
             tipoCalendarios.ShouldNotBeNull();
             tipoCalendarios.Count().ShouldBe(1);
             var tipoCalendarioInserido = tipoCalendarios.FirstOrDefault();
