@@ -214,7 +214,7 @@ namespace SME.SGP.TesteIntegracao.Abrangencia
 
             var mediator = ServiceProvider.GetService<IMediator>();
             var turmas = await mediator.Send(new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(
-                UE_CODIGO_1, filtro.Modalidade, 0, false, DateTime.Now.Year, null));
+                UE_CODIGO_1, new FiltroModalidade(filtro.Modalidade), 0, false, DateTime.Now.Year, null));
             turmas.ShouldNotBeNull();
             turmas.Count().ShouldBe(1);
             turmas.First().Id.ShouldBe(TURMA_ID_1);
