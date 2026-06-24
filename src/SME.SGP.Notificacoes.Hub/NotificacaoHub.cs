@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Notificacoes.Hub
@@ -23,6 +24,8 @@ namespace SME.SGP.Notificacoes.Hub
         private readonly ILogger<NotificacaoHub> logger;
 
         private readonly static List<string> listaUsuarios = new List<string>();
+        private static int _contagemSgp = 0;
+        private static int _contagemSondagem = 0;
 
         public NotificacaoHub(
             IEventoNotificacaoCriada eventoCriada,
@@ -136,11 +139,17 @@ namespace SME.SGP.Notificacoes.Hub
                     await Clients.Client(Context.ConnectionId).SendAsync("BloqueioUsuario", (posicaoFila + 1) - limiteConexoes);
                 }
 
-                logger.LogWarning($"Usuário conectado. ConnectionId: {Context.ConnectionId}. Total de conexões: {listaUsuarios.Count}/{limiteConexoes}.");
+                var loginSource = Context.GetHttpContext()?.Request.Query["loginSource"].FirstOrDefault() ?? "sgp";
+                if (loginSource == "sondagem")
+                    Interlocked.Increment(ref _contagemSondagem);
+                else
+                    Interlocked.Increment(ref _contagemSgp);
+
+                logger.LogWarning("Usuário conectado. ConnectionId: {ConnectionId}. Total de conexões: {Total}/{Limite}. LoginSource: {LoginSource}. SGP: {ContagemSgp}. Sondagem: {ContagemSondagem}.", Context.ConnectionId, listaUsuarios.Count, limiteConexoes, loginSource, _contagemSgp, _contagemSondagem);
             }
             catch (Exception ex)
             {
-                logger.LogError($"Erro ao conectar usuário. ConnectionId: {Context.ConnectionId}.", ex.Message);
+                logger.LogError("Erro ao conectar usuário. ConnectionId: {ConnectionId}. {Erro}", Context.ConnectionId, ex.Message);
             }
         }
 
@@ -179,11 +188,17 @@ namespace SME.SGP.Notificacoes.Hub
                     });
                 }
 
-                logger.LogWarning($"Usuário desconectado. ConnectionId: {Context.ConnectionId}. Total de conexões: {listaUsuarios.Count}/{limiteConexoes}.");
+                var loginSource = Context.GetHttpContext()?.Request.Query["loginSource"].FirstOrDefault() ?? "sgp";
+                if (loginSource == "sondagem")
+                    Interlocked.Decrement(ref _contagemSondagem);
+                else
+                    Interlocked.Decrement(ref _contagemSgp);
+
+                logger.LogWarning("Usuário desconectado. ConnectionId: {ConnectionId}. Total de conexões: {Total}/{Limite}. LoginSource: {LoginSource}. SGP: {ContagemSgp}. Sondagem: {ContagemSondagem}.", Context.ConnectionId, listaUsuarios.Count, limiteConexoes, loginSource, _contagemSgp, _contagemSondagem);
             }
             catch (Exception ex)
             {
-                logger.LogError($"Erro ao desconectar usuário. ConnectionId: {Context.ConnectionId}.", ex.Message);
+                logger.LogError("Erro ao desconectar usuário. ConnectionId: {ConnectionId}. {Erro}", Context.ConnectionId, ex.Message);
             }
         }
     }
