@@ -878,7 +878,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (perfil == Perfis.PERFIL_SUPERVISOR)
             {
-                resultadoFiltrado = await AcrescentarTurmasSupervisor(login, modalidade, periodo, codigoUe, consideraHistorico, anoLetivo, resultadoFiltrado, anosTurma);
+                resultadoFiltrado = await AcrescentarTurmasSupervisor(login, new FiltroModalidade(modalidade, anosTurma), periodo, codigoUe, new FiltroPeriodoLetivo(anoLetivo, consideraHistorico), resultadoFiltrado);
 
                 if (tipos.NaoEhNulo() && tipos.Any())
                     resultadoFiltrado = resultadoFiltrado.Where(r => tipos.Contains(r.TipoTurma));
@@ -1145,10 +1145,12 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
-        private async Task<IEnumerable<AbrangenciaTurmaRetorno>> AcrescentarTurmasSupervisor(string login, Modalidade modalidade, int semestre, string ue, bool consideraHistorico, int anoLetivo, IEnumerable<AbrangenciaTurmaRetorno> retorno, string[] anosTurma = null)
+        private async Task<IEnumerable<AbrangenciaTurmaRetorno>> AcrescentarTurmasSupervisor(string login, FiltroModalidade filtroModalidade, int semestre, string ue, FiltroPeriodoLetivo filtroPeriodoLetivo, IEnumerable<AbrangenciaTurmaRetorno> retorno)
         {
+            var modalidade = filtroModalidade.Modalidade;
+            var anosTurma = filtroModalidade.AnosTurma;
             var dadosAbrangenciaSupervisor =
-                await ObterDadosAbrangenciaSupervisor(login, consideraHistorico, anoLetivo);
+                await ObterDadosAbrangenciaSupervisor(login, filtroPeriodoLetivo.ConsideraHistorico, filtroPeriodoLetivo.AnoLetivo);
 
             if (dadosAbrangenciaSupervisor.NaoEhNulo() && dadosAbrangenciaSupervisor.Any())
             {
