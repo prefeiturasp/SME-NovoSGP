@@ -241,7 +241,7 @@ namespace SME.SGP.TesteIntegracao
                 Nome = Turma_9B_ANO9_Nome
             });
 
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 AnoLetivo = 2022,
                 Nome = Calendario_Teste_2022,

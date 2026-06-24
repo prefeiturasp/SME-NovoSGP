@@ -50,7 +50,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             (DateTime inicioPeriodo, DateTime fimPeriodo) = (new DateTime(dataAtual.Year, dataAtual.Month, 1), 
                 new DateTime(dataAtual.Year, dataAtual.Month, DateTime.DaysInMonth(dataAtual.Year, dataAtual.Month)));
 
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 Id = 1,
                 AnoLetivo = dataAtual.Year,
@@ -256,7 +256,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             (DateTime inicioPeriodo, DateTime fimPeriodo) = (new DateTime(dataAtual.Year, dataAtual.Month, 1),
                 new DateTime(dataAtual.Year, dataAtual.Month, DateTime.DaysInMonth(dataAtual.Year, dataAtual.Month)));
 
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 Id = 1,
                 AnoLetivo = dataAtual.Year,
@@ -501,7 +501,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             (DateTime inicioPeriodo, DateTime fimPeriodo) = (new DateTime(dataAtual.Year, dataAtual.Month, 1),
                 new DateTime(dataAtual.Year, dataAtual.Month, DateTime.DaysInMonth(dataAtual.Year, dataAtual.Month)));
 
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 Id = 1,
                 AnoLetivo = dataAtual.Year,
@@ -667,7 +667,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             (DateTime inicioPeriodo, DateTime fimPeriodo) = (new DateTime(dataAtual.Year, dataAtual.Month, 1),
                 new DateTime(dataAtual.Year, dataAtual.Month, DateTime.DaysInMonth(dataAtual.Year, dataAtual.Month)));
 
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 Id = 1,
                 AnoLetivo = dataAtual.Year,
@@ -823,7 +823,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             (DateTime inicioPeriodo, DateTime fimPeriodo) = (new DateTime(dataAtual.Year, dataAtual.Month, 1),
                 new DateTime(dataAtual.Year, dataAtual.Month, DateTime.DaysInMonth(dataAtual.Year, dataAtual.Month)));
 
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 Id = 1,
                 AnoLetivo = dataAtual.Year,

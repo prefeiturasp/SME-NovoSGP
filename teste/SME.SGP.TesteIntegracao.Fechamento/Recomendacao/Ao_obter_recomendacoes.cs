@@ -126,7 +126,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoClasseRecomendacao
 
         public async Task DadosConselhoClasse()
         {
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 Id = 1,
                 Excluido = false,

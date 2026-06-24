@@ -111,7 +111,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaAula
                 UeId = 1
             });
 
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 Id = 1,
                 Situacao = true,

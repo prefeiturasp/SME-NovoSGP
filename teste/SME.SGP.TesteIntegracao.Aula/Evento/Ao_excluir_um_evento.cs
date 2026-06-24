@@ -54,7 +54,7 @@ namespace SME.SGP.TesteIntegracao.Evento
                 CriadoRF = ""
             });
 
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 Id = 1,
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,

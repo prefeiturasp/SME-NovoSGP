@@ -68,7 +68,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaGeral
         {
             var anoAnterior = DateTimeExtension.HorarioBrasilia().AddYears(-1).Year;
             var anoAtual = DateTimeExtension.HorarioBrasilia().Year;
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 AnoLetivo = anoAtual,
                 Excluido = false,

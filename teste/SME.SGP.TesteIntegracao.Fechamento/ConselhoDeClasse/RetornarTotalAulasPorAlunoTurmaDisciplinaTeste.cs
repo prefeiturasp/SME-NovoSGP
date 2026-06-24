@@ -34,7 +34,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
 
         private async Task CriarAulaComFrequencia()
         {
-            await InserirNaBase(new TipoCalendario
+            await InserirNaBase(new Dominio.TipoCalendario
             {
                 Id = 1,
                 AnoLetivo = 2020,
