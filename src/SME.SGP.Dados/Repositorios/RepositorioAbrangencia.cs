@@ -854,9 +854,11 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<Abrangencia>(query, new { usuarioId });
         }
 
-        public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmasPorTipos(string codigoUe, string login, Guid perfil, Modalidade modalidade, int[] tipos, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, string[] anosInfantilDesconsiderar = null, string[] anosTurma = null)
+        public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmasPorTipos(string codigoUe, string login, Guid perfil, FiltroModalidade filtroModalidade, int[] tipos, FiltroPeriodoLetivo filtroPeriodoLetivo = null, string[] anosInfantilDesconsiderar = null)
         {
-            var temFiltroAnosTurma = anosTurma != null && anosTurma.Any();
+            filtroPeriodoLetivo ??= new FiltroPeriodoLetivo(0);
+
+            var temFiltroAnosTurma = filtroModalidade.AnosTurma != null && filtroModalidade.AnosTurma.Any();
 
             var query = new StringBuilder(@"select ano,
                                  anoLetivo,
@@ -878,13 +880,25 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("order by 5");
 
             var resultado = await database.Conexao
-                .QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new { login, perfil, consideraHistorico, modalidade, semestre = periodo, codigoUe, anoLetivo, tipos, anosInfantilDesconsiderar, anosTurma });
+                .QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new
+                {
+                    login, 
+                    perfil, 
+                    consideraHistorico = filtroPeriodoLetivo.ConsideraHistorico, 
+                    modalidade = filtroModalidade.Modalidade, 
+                    semestre = filtroPeriodoLetivo.Periodo, 
+                    codigoUe, 
+                    anoLetivo = filtroPeriodoLetivo.AnoLetivo, 
+                    tipos, 
+                    anosInfantilDesconsiderar, 
+                    anosTurma = filtroModalidade.AnosTurma
+                });
 
             var resultadoFiltrado = resultado.GroupBy(x => x.Codigo).SelectMany(y => y.OrderBy(a => a.Codigo).Take(1));
 
             if (perfil == Perfis.PERFIL_SUPERVISOR)
             {
-                resultadoFiltrado = await AcrescentarTurmasSupervisor(login, new FiltroModalidade(modalidade, anosTurma), periodo, codigoUe, new FiltroPeriodoLetivo(anoLetivo, consideraHistorico), resultadoFiltrado);
+                resultadoFiltrado = await AcrescentarTurmasSupervisor(login, filtroModalidade, filtroPeriodoLetivo.Periodo, codigoUe, filtroPeriodoLetivo, resultadoFiltrado);
 
                 if (tipos.NaoEhNulo() && tipos.Any())
                     resultadoFiltrado = resultadoFiltrado.Where(r => tipos.Contains(r.TipoTurma));
