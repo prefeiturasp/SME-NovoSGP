@@ -1,5 +1,4 @@
 using Microsoft.Extensions.PlatformAbstractions;
-using MongoDB.Driver.Core.Configuration;
 using Npgsql;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -82,7 +81,7 @@ namespace SME.SGP.TesteIntegracao.Setup
             ExecutarScripts();
         }
 
-        private void ExecutarScriptEmLotes(NpgsqlConnection conexao, string sql, string caminhoArquivo, int tamanhLote = 1000)
+        private static void ExecutarScriptEmLotes(NpgsqlConnection conexao, string sql, string caminhoArquivo, int tamanhLote = 1000)
         {
             var comandos = sql
                 .Split('\n', StringSplitOptions.RemoveEmptyEntries)
@@ -122,7 +121,7 @@ namespace SME.SGP.TesteIntegracao.Setup
             cmd.ExecuteNonQuery();
         }
 
-        private string ReadFileAndGetEncoding(byte[] docBytes, ref Encoding encoding)
+        private static string ReadFileAndGetEncoding(byte[] docBytes, ref Encoding encoding)
         {
             if (encoding.EhNulo())
                 encoding = Encoding.GetEncoding(1252);
@@ -162,7 +161,7 @@ namespace SME.SGP.TesteIntegracao.Setup
             return encoding.GetString(docBytes);
         }
 
-        private int TestUtf8(byte[] binFile, int offset)
+        private static int TestUtf8(byte[] binFile, int offset)
         {
             const int maxUtf8Length = 4;
             byte current = binFile[offset];
@@ -201,7 +200,7 @@ namespace SME.SGP.TesteIntegracao.Setup
             return -1;
         }
 
-        private string CleanStringOfNonDigits_V1(string s)
+        private static string CleanStringOfNonDigits_V1(string s)
         {
             try
             {
@@ -216,7 +215,7 @@ namespace SME.SGP.TesteIntegracao.Setup
             }
         }
 
-        private string ObterScripts()
+        private static string ObterScripts()
         {
             var testProjectPath = PlatformServices.Default.Application.ApplicationBasePath;
             var relativePathToHostProject = @"../../../../../scripts";
