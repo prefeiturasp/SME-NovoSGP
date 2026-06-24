@@ -33,13 +33,13 @@ namespace SME.SGP.TesteIntegracao.Turma
 
             var dataAtual = DateTimeExtension.HorarioBrasilia();
 
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 Id = 1,
                 AnoLetivo = dataAtual.Year,
                 Nome = "tipo cal infantil",
                 Periodo = Periodo.Anual,
-                Modalidade = ModalidadeTipoCalendario.Infantil,
+                Modalidade = ModalidadeTipoCalendario.Infantil, 
                 Situacao = true,
                 CriadoEm = dataAtual,
                 CriadoPor = "Sistema",
@@ -125,7 +125,7 @@ namespace SME.SGP.TesteIntegracao.Turma
 
             var dataAtual = DateTimeExtension.HorarioBrasilia();
 
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 Id = 1,
                 AnoLetivo = dataAtual.Year,

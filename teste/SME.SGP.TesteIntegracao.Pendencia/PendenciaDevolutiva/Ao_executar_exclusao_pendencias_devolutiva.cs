@@ -162,7 +162,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year
             });
 
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 Id = 1,
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
