@@ -1038,59 +1038,61 @@ namespace SME.SGP.Dados.Repositorios
             if (dadosAbrangenciaSupervisor.NaoEhNulo() && dadosAbrangenciaSupervisor.Any())
             {
                 var ues = retorno.Select(u => u.Id).ToList();
-                var uesComplementares = (from da in dadosAbrangenciaSupervisor select new { da.CodigoUe, da.UeNome, da.TipoEscola, da.UeId });
-
-                if (modalidade > 0)
-                {
-                    uesComplementares = (from da in dadosAbrangenciaSupervisor
-                                         where (Modalidade)da.Modalidade == modalidade &&
-                                               da.CodigoDre == dre &&
-                                               (tiposEscolasIgnoradas == null || !tiposEscolasIgnoradas.Contains((int)da.TipoEscola)) &&
-                                               (semestre == 0 || (semestre > 0 && da.Semestre == semestre)) &&
-                                               (anosTurma == null || !anosTurma.Any() || anosTurma.Contains(da.TurmaAno)) &&
-                                               !ues.Contains(da.UeId)
-                                         select new
-                                         {
-                                             da.CodigoUe,
-                                             da.UeNome,
-                                             da.TipoEscola,
-                                             da.UeId
-                                         }).Distinct();
-                }
-                else
-                {
-                    uesComplementares = (from da in dadosAbrangenciaSupervisor
-                                         where da.CodigoDre == dre &&
-                                               (tiposEscolasIgnoradas == null || !tiposEscolasIgnoradas.Contains((int)da.TipoEscola)) &&
-                                               (semestre == 0 || (semestre > 0 && da.Semestre == semestre)) &&
-                                               (anosTurma == null || !anosTurma.Any() || anosTurma.Contains(da.TurmaAno)) &&
-                                               !ues.Contains(da.UeId)
-                                         select new
-                                         {
-                                             da.CodigoUe,
-                                             da.UeNome,
-                                             da.TipoEscola,
-                                             da.UeId
-                                         }).Distinct();
-                }
-
-                if (uesComplementares.Any())
-                {
-                    var listaDistinta = uesComplementares
-                                                      .Select(u => new AbrangenciaUeRetorno()
-                                                      {
-                                                          Codigo = u.CodigoUe,
-                                                          NomeSimples = u.UeNome,
-                                                          TipoEscola = u.TipoEscola,
-                                                          Id = u.UeId
-                                                      });
-
-                    retornoUesSupervisor.AddRange(listaDistinta);
-                }
-
+                var listaDistinta = ObterUesComplementaresSupervisor(dadosAbrangenciaSupervisor, modalidade, dre, tiposEscolasIgnoradas, semestre, anosTurma, ues);
+                retornoUesSupervisor.AddRange(listaDistinta);
             }
 
             return retornoUesSupervisor.Distinct().OrderBy(r=> r.Nome);
+        }
+
+        private static IEnumerable<AbrangenciaUeRetorno> ObterUesComplementaresSupervisor(IEnumerable<DadosAbrangenciaSupervisorDto> dadosAbrangenciaSupervisor, Modalidade modalidade, string dre, int[] tiposEscolasIgnoradas, int semestre, string[] anosTurma, List<long> ues)
+        {
+            var uesComplementares = (from da in dadosAbrangenciaSupervisor select new { da.CodigoUe, da.UeNome, da.TipoEscola, da.UeId });
+
+            if (modalidade > 0)
+            {
+                uesComplementares = (from da in dadosAbrangenciaSupervisor
+                                     where (Modalidade)da.Modalidade == modalidade &&
+                                           da.CodigoDre == dre &&
+                                           (tiposEscolasIgnoradas == null || !tiposEscolasIgnoradas.Contains((int)da.TipoEscola)) &&
+                                           (semestre == 0 || (semestre > 0 && da.Semestre == semestre)) &&
+                                           (anosTurma == null || !anosTurma.Any() || anosTurma.Contains(da.TurmaAno)) &&
+                                           !ues.Contains(da.UeId)
+                                     select new
+                                     {
+                                         da.CodigoUe,
+                                         da.UeNome,
+                                         da.TipoEscola,
+                                         da.UeId
+                                     }).Distinct();
+            }
+            else
+            {
+                uesComplementares = (from da in dadosAbrangenciaSupervisor
+                                     where da.CodigoDre == dre &&
+                                           (tiposEscolasIgnoradas == null || !tiposEscolasIgnoradas.Contains((int)da.TipoEscola)) &&
+                                           (semestre == 0 || (semestre > 0 && da.Semestre == semestre)) &&
+                                           (anosTurma == null || !anosTurma.Any() || anosTurma.Contains(da.TurmaAno)) &&
+                                           !ues.Contains(da.UeId)
+                                     select new
+                                     {
+                                         da.CodigoUe,
+                                         da.UeNome,
+                                         da.TipoEscola,
+                                         da.UeId
+                                     }).Distinct();
+            }
+
+            if (!uesComplementares.Any())
+                return Enumerable.Empty<AbrangenciaUeRetorno>();
+
+            return uesComplementares.Select(u => new AbrangenciaUeRetorno()
+            {
+                Codigo = u.CodigoUe,
+                NomeSimples = u.UeNome,
+                TipoEscola = u.TipoEscola,
+                Id = u.UeId
+            });
         }
 
         public async Task<IEnumerable<AbrangenciaTurmaComUeRetorno>> ObterTurmasPorTiposListaUes(string[] codigosUes, string login, Guid perfil, Modalidade modalidade, int[] tipos, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, string[] anosInfantilDesconsiderar = null)
