@@ -2,32 +2,29 @@
 using MediatR;
 using SME.SGP.Dto;
 using System.Collections.Generic;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery : IRequest<IEnumerable<AbrangenciaTurmaRetorno>>
     {
-        public ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(string codigoUe, Modalidade modalidade, int periodo, bool consideraHistorico, int anoLetivo, int[] tipos, bool consideraNovosAnosInfantil = false, string[] anosTurma = null)
+        public ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(string codigoUe, FiltroModalidade filtroModalidade, int periodo, bool consideraHistorico, int anoLetivo, int[] tipos, bool consideraNovosAnosInfantil = false)
         {
             CodigoUe = codigoUe;
-            Modalidade = modalidade;
+            FiltroModalidade = filtroModalidade;
             Periodo = periodo;
             ConsideraHistorico = consideraHistorico;
             AnoLetivo = anoLetivo;
             Tipos = tipos;
             ConsideraNovosAnosInfantil = consideraNovosAnosInfantil;
-            AnosTurma = anosTurma;
         }
 
         public string CodigoUe { get; set; }
-        public Modalidade Modalidade { get; set; }
+        public FiltroModalidade FiltroModalidade { get; set; }
         public int Periodo { get; set; }
         public bool ConsideraHistorico { get; set; }
         public int AnoLetivo { get; set; }
         public int[] Tipos { get; set; }
         public bool ConsideraNovosAnosInfantil { get; set; }
-        public string[] AnosTurma { get; set; }
     }
     public class ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQueryValidator : AbstractValidator<ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery>
     {

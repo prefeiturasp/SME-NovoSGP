@@ -165,13 +165,12 @@ namespace SME.SGP.Api.Controllers
             
             var dto = new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(
                 codigoUe,
-                request.Modalidade,
-                request.Periodo, 
-                ConsideraHistorico, 
-                request.AnoLetivo, 
+                new FiltroModalidade(request.Modalidade, request.AnosTurma),
+                request.Periodo,
+                ConsideraHistorico,
+                request.AnoLetivo,
                 request.Tipos,
-                request.ConsideraNovosAnosInfantil, 
-                request.AnosTurma);
+                request.ConsideraNovosAnosInfantil);
             
             var turmas = await mediator.Send(dto);
 
@@ -194,13 +193,13 @@ namespace SME.SGP.Api.Controllers
             if (!turmasRegulares)
             {
                 turmas = await mediator.Send(
-                    new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(codigoUe, modalidade,
-                        periodo, ConsideraHistorico, anoLetivo, tipos, consideraNovosAnosInfantil)); 
+                    new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(codigoUe, new FiltroModalidade(modalidade),
+                        periodo, ConsideraHistorico, anoLetivo, tipos, consideraNovosAnosInfantil));
 
                 if ((turmas.EhNulo() || !turmas.Any()) && !ConsideraHistorico)
                     turmas = await mediator.Send(
                         new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(codigoUe,
-                            modalidade, periodo, true, anoLetivo, tipos, consideraNovosAnosInfantil)); 
+                            new FiltroModalidade(modalidade), periodo, true, anoLetivo, tipos, consideraNovosAnosInfantil));
             }
             else
             {
