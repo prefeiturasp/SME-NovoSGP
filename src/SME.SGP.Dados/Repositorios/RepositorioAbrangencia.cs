@@ -455,8 +455,14 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryFirstOrDefaultAsync<AbrangenciaUeRetorno>(query.ToString(), new { codigo, login, perfil }));
         }
 
-        public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, int[] ignorarTiposUE = null, string filtro = "", bool filtroEhCodigo = false, string[] anosTurma = null)
+        public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, FiltroModalidade filtroModalidade = null, FiltroPeriodoLetivo filtroPeriodoLetivo = null, int[] ignorarTiposUE = null, FiltroTexto filtroTexto = null)
         {
+            filtroModalidade ??= new FiltroModalidade(0);
+            filtroPeriodoLetivo ??= new FiltroPeriodoLetivo(0);
+            filtroTexto ??= new FiltroTexto(string.Empty);
+
+            var filtro = filtroTexto.Filtro ?? string.Empty;
+
             var query = new StringBuilder();
 
             query.AppendLine("select distinct codigo,");
@@ -466,14 +472,14 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("from f_abrangencia_ues(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoDre, @anoLetivo, @ignorarTiposUE) f");
 
             var temFiltroTexto = !string.IsNullOrWhiteSpace(filtro);
-            var temFiltroAnosTurma = anosTurma != null && anosTurma.Any();
+            var temFiltroAnosTurma = filtroModalidade.AnosTurma != null && filtroModalidade.AnosTurma.Any();
 
             var condicoes = new List<string>();
 
             if (temFiltroTexto)
             {
                 filtro = $"%{filtro.ToUpper()}%";
-                condicoes.Add(filtroEhCodigo ? "upper(codigo) like @filtro" : "upper(nome) like @filtro");
+                condicoes.Add(filtroTexto.FiltroEhCodigo ? "upper(codigo) like @filtro" : "upper(nome) like @filtro");
             }
 
             if (temFiltroAnosTurma)
@@ -494,14 +500,14 @@ namespace SME.SGP.Dados.Repositorios
             {
                 login,
                 perfil,
-                consideraHistorico,
-                modalidade = modalidade ?? 0,
-                semestre = periodo,
+                consideraHistorico = filtroPeriodoLetivo.ConsideraHistorico,
+                modalidade = filtroModalidade.Modalidade,
+                semestre = filtroPeriodoLetivo.Periodo,
                 codigoDre,
-                anoLetivo,
+                anoLetivo = filtroPeriodoLetivo.AnoLetivo,
                 ignorarTiposUE,
                 filtro,
-                anosTurma
+                anosTurma = filtroModalidade.AnosTurma
             };
 
             var retorno = await database.Conexao
@@ -509,11 +515,11 @@ namespace SME.SGP.Dados.Repositorios
 
             if (perfil == Perfis.PERFIL_SUPERVISOR)
             {
-                retorno = await AcrescentarUesSupervisor(login, new FiltroModalidade(modalidade ?? 0, anosTurma), periodo, codigoDre, new FiltroPeriodoLetivo(anoLetivo, consideraHistorico), ignorarTiposUE, retorno);
+                retorno = await AcrescentarUesSupervisor(login, filtroModalidade, filtroPeriodoLetivo.Periodo, codigoDre, filtroPeriodoLetivo, ignorarTiposUE, retorno);
                 if (temFiltroTexto)
                 {
                     filtro = filtro.Replace("%", string.Empty);
-                    retorno = filtroEhCodigo ?
+                    retorno = filtroTexto.FiltroEhCodigo ?
                         retorno.Where(r => r.Codigo.ToUpper().Contains(filtro)).Take(10) :
                         retorno.Where(r => r.NomeSimples.ToUpper().Contains(filtro)).Take(10);
                 }
