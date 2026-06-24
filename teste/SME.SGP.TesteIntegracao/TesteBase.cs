@@ -35,9 +35,19 @@ namespace SME.SGP.TesteIntegracao
         public TesteBase(CollectionFixture collectionFixture)
         {
             _collectionFixture = collectionFixture;
+
+            // 1. Limpa o banco
             _collectionFixture.Database.LimparBase();
 
+            // 2. Reinicia os serviços (cria novo IServiceCollection)
+            _collectionFixture.IniciarServicos();
+
+            // 3. Aplica os fakes específicos deste teste (override em subclasses)
             RegistrarFakes(_collectionFixture.Services);
+
+            // 4. Compila o container com tudo registrado
+            _collectionFixture.BuildServiceProvider();
+
         }
 
         public void ExecutarScripts(List<ScriptCarga> scriptsCarga)
