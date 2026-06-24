@@ -1,6 +1,6 @@
 using SME.SGP.Dominio;
 
-namespace SME.SGP.Aplicacao
+namespace SME.SGP.Infra
 {
     public class FiltroModalidade
     {
