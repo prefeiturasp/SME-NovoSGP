@@ -509,7 +509,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (perfil == Perfis.PERFIL_SUPERVISOR)
             {
-                retorno = await AcrescentarUesSupervisor(login, modalidade ?? 0, periodo, codigoDre, consideraHistorico, anoLetivo, ignorarTiposUE, retorno, anosTurma);
+                retorno = await AcrescentarUesSupervisor(login, new FiltroModalidade(modalidade ?? 0, anosTurma), periodo, codigoDre, new FiltroPeriodoLetivo(anoLetivo, consideraHistorico), ignorarTiposUE, retorno);
                 if (temFiltroTexto)
                 {
                     filtro = filtro.Replace("%", string.Empty);
@@ -1004,11 +1004,13 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
-        private async Task<IEnumerable<AbrangenciaUeRetorno>> AcrescentarUesSupervisor(string login, Modalidade modalidade, int semestre, string dre, bool consideraHistorico, int anoLetivo, int[] tiposEscolasIgnoradas, IEnumerable<AbrangenciaUeRetorno> retorno, string[] anosTurma = null)
+        private async Task<IEnumerable<AbrangenciaUeRetorno>> AcrescentarUesSupervisor(string login, FiltroModalidade filtroModalidade, int semestre, string dre, FiltroPeriodoLetivo filtroPeriodoLetivo, int[] tiposEscolasIgnoradas, IEnumerable<AbrangenciaUeRetorno> retorno)
         {
-            var retornoUesSupervisor = new List<AbrangenciaUeRetorno>();   
+            var modalidade = filtroModalidade.Modalidade;
+            var anosTurma = filtroModalidade.AnosTurma;
+            var retornoUesSupervisor = new List<AbrangenciaUeRetorno>();
             var dadosAbrangenciaSupervisor =
-                await ObterDadosAbrangenciaSupervisor(login, consideraHistorico, anoLetivo);
+                await ObterDadosAbrangenciaSupervisor(login, filtroPeriodoLetivo.ConsideraHistorico, filtroPeriodoLetivo.AnoLetivo);
 
             if(retorno.Any())
                 retornoUesSupervisor.AddRange(retorno);
