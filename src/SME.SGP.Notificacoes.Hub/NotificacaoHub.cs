@@ -145,11 +145,12 @@ namespace SME.SGP.Notificacoes.Hub
                 else
                     Interlocked.Increment(ref _contagemSgp);
 
-                logger.LogWarning("Usuário conectado. ConnectionId: {ConnectionId}. Total de conexões: {Total}/{Limite}. LoginSource: {LoginSource}. SGP: {ContagemSgp}. Sondagem: {ContagemSondagem}.", Context.ConnectionId, listaUsuarios.Count, limiteConexoes, loginSource, _contagemSgp, _contagemSondagem);
+                logger.LogWarning("Usuário conectado. ConnectionId: {ConnectionId}. Total de conexões: {TotalConexoes}/{LimiteConexoes}. LoginSource: {LoginSource}. SGP: {ContagemSgp}. Sondagem: {ContagemSondagem}.",
+                    Context.ConnectionId, listaUsuarios.Count, limiteConexoes, loginSource, _contagemSgp, _contagemSondagem);
             }
             catch (Exception ex)
             {
-                logger.LogError("Erro ao conectar usuário. ConnectionId: {ConnectionId}. {Erro}", Context.ConnectionId, ex.Message);
+                logger.LogError(ex, "Erro ao conectar usuário. ConnectionId: {ConnectionId}.", Context.ConnectionId);
             }
         }
 
@@ -188,7 +189,14 @@ namespace SME.SGP.Notificacoes.Hub
                     });
                 }
 
-                logger.LogWarning($"Usuário desconectado. ConnectionId: {Context.ConnectionId}. Total de conexões: {listaUsuarios.Count}/{limiteConexoes}.");
+                var loginSource = Context.GetHttpContext()?.Request.Query["loginSource"].FirstOrDefault() ?? "sgp";
+                if (loginSource == "sondagem")
+                    Interlocked.Decrement(ref _contagemSondagem);
+                else
+                    Interlocked.Decrement(ref _contagemSgp);
+
+                logger.LogWarning("Usuário desconectado. ConnectionId: {ConnectionId}. Total de conexões: {TotalConexoes}/{LimiteConexoes}. LoginSource: {LoginSource}. SGP: {ContagemSgp}. Sondagem: {ContagemSondagem}.",
+                    Context.ConnectionId, listaUsuarios.Count, limiteConexoes, loginSource, _contagemSgp, _contagemSondagem);
             }
             catch (Exception ex)
             {

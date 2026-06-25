@@ -6,8 +6,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -19,6 +17,7 @@ namespace SME.SGP.TesteIntegracao.TipoCalendario.PeriodosEscolaresUnitarios
         private readonly Mock<IServicoPeriodoEscolar> servicoPeriodoEscolar;
         private readonly Mock<IMediator> mediatorMock;
         private readonly ComandosPeriodoEscolar comandosPeriodoEscolar;
+
         public Validar_periodo_escolar_Unitarios()
         {
             servicoPeriodoEscolar = new Mock<IServicoPeriodoEscolar>();
@@ -31,7 +30,6 @@ namespace SME.SGP.TesteIntegracao.TipoCalendario.PeriodosEscolaresUnitarios
                 mediatorMock.Object);
         }
 
-
         [Fact(DisplayName = "Deve_Disparar_Excecao_Ao_Instanciar_Sem_Dependencias")]
         public void Deve_Disparar_Excecao_Ao_Instanciar_Sem_Dependencias()
         {
@@ -40,13 +38,14 @@ namespace SME.SGP.TesteIntegracao.TipoCalendario.PeriodosEscolaresUnitarios
             Assert.Throws<ArgumentNullException>(() => new ComandosPeriodoEscolar(repositorioPeriodo.Object, servicoPeriodoEscolar.Object, null));
         }
 
-        [Fact(DisplayName = "Deve_Salvar_Periodo_Escolar")]
+        [Fact(DisplayName = "Deve Salvar Periodo Escolar")]
         public async Task Deve_Salvar_Periodo_Escolar()
         {
+            // Arrange
             servicoPeriodoEscolar
                 .Setup(x => x.SalvarPeriodoEscolar(It.IsAny<IEnumerable<PeriodoEscolar>>(), It.IsAny<long>()));
 
-            await comandosPeriodoEscolar.Salvar(new PeriodoEscolarListaDto
+            var dto = new PeriodoEscolarListaDto
             {
                 TipoCalendario = 1,
                 Periodos = new List<PeriodoEscolarDto>
@@ -56,15 +55,24 @@ namespace SME.SGP.TesteIntegracao.TipoCalendario.PeriodosEscolaresUnitarios
                     new PeriodoEscolarDto { Bimestre = 3, PeriodoInicio = DateTimeExtension.HorarioBrasilia().AddMinutes(4), PeriodoFim = DateTimeExtension.HorarioBrasilia().AddMinutes(5) },
                     new PeriodoEscolarDto { Bimestre = 4, PeriodoInicio = DateTimeExtension.HorarioBrasilia().AddMinutes(6), PeriodoFim = DateTimeExtension.HorarioBrasilia().AddMinutes(7) }
                 }
-            });
+            };
+
+            // Act
+            await comandosPeriodoEscolar.Salvar(dto);
+
+            // Assert
+            // Adicionando a asserção para verificar se o método SalvarPeriodoEscolar foi chamado.
+            servicoPeriodoEscolar.Verify(x => x.SalvarPeriodoEscolar(It.IsAny<IEnumerable<PeriodoEscolar>>(), It.IsAny<long>()), Times.Once);
         }
 
         [Fact(DisplayName = "Nao_Deve_Salvar_Sem_Tipo_Calendario")]
         public async Task Nao_Deve_Salvar_Sem_Tipo_Calendario()
         {
+            // Arrange
             servicoPeriodoEscolar
                 .Setup(x => x.SalvarPeriodoEscolar(It.IsAny<IEnumerable<PeriodoEscolar>>(), It.IsAny<long>()));
 
+            // Act & Assert
             await Assert.ThrowsAsync<NegocioException>(() =>
                 comandosPeriodoEscolar.Salvar(new PeriodoEscolarListaDto
                 {
