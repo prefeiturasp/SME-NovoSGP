@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             periodosEscolaresRelatorioPAP.Count().ShouldBe(0);
         }
 
-        private PeriodoEscolarListaDto MontarParametroPadrao()
+        private static PeriodoEscolarListaDto MontarParametroPadrao()
         {
             return new PeriodoEscolarListaDto
             {
