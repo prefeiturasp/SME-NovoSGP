@@ -43,6 +43,7 @@ namespace SME.SGP.Dados.Repositorios
                 inner join tipo_calendario t on t.id = e.tipo_calendario_id
                 where (inicio_fechamento < @inicioDoFechamento or final_fechamento > @finalDoFechamento)
                   and periodo_escolar_id = @periodoEscolarId
+                  and COALESCE(p.aplicacao, 1) = 1
                   {queryDre}";
 
             return await database.Conexao.QueryAsync<PeriodoFechamentoBimestre, PeriodoEscolar, PeriodoFechamento, TipoCalendario, PeriodoFechamentoBimestre>(query,
@@ -70,6 +71,7 @@ namespace SME.SGP.Dados.Repositorios
                        and e.bimestre {BimestreConstants.ObterCondicaoBimestre(bimestre, modalidadeTipoCalendario == ModalidadeTipoCalendario.Infantil)}
                        and t.modalidade = @modalidade
                        and b.inicio_fechamento = @dataInicio 
+                       and COALESCE(p.aplicacao, 1) = 1
                        and {filtroDre} 
                        and {filtroUe}";
 
@@ -105,6 +107,7 @@ namespace SME.SGP.Dados.Repositorios
                         where b.periodo_escolar_id = @periodoEscolarId
                             and b.inicio_fechamento <= @dataReferencia
                             and b.final_fechamento >= @dataReferencia 
+                            and COALESCE(p.aplicacao, 1) = 1
                         ";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { periodoEscolarId, dataReferencia });
@@ -121,7 +124,9 @@ namespace SME.SGP.Dados.Repositorios
                        and (pf.dre_id is null
                          or (pf.dre_id = @dreId
                          and (pf.ue_id is null or pf.ue_id = @ueId)
-                         ))";
+                         ))
+                       and COALESCE(pf.aplicacao, 1) = 1
+                     order by COALESCE(pf.alterado_em, pf.criado_em) desc, pf.id desc, pfb.id desc";
 
             return database.Conexao.QueryFirstOrDefaultAsync<PeriodoFechamentoBimestre>(query, new { tipoCalendarioId, bimestre, dreId, ueId });
         }
