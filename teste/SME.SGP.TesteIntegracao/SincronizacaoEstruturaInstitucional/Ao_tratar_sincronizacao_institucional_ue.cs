@@ -9,7 +9,6 @@ using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Documento;
 using SME.SGP.TesteIntegracao.Setup;
 using SME.SGP.TesteIntegracao.SincronizacaoEstruturaInstitucional.ServicosFakes;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;

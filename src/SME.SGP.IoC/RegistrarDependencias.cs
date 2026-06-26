@@ -49,6 +49,7 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso.Relatorios.SolicitacaoRelatorio;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.Turma;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.Usuarios;
 using SME.SGP.Aplicacao.Servicos;
+using SME.SGP.Aplicacao.Servicos.Interfaces;
 using SME.SGP.Dados;
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dados.Mapeamentos;
@@ -748,6 +749,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoFechamentoFinal, ServicoFechamentoFinal>();
             services.TryAddScoped<IServicoObjetivosAprendizagem, ServicoObjetivosAprendizagem>();
             services.TryAddScoped<IServicoPainelEducacionalConsolidacaoIndicadoresPap, ServicoPainelEducacionalConsolidacaoIndicadoresPap>();
+            services.TryAddScoped<IProcessadorImagens, ProcessadorImagensImageSharp>();
         }
 
         public virtual void RegistrarCasoDeUsoAEERabbitSgp(IServiceCollection services)

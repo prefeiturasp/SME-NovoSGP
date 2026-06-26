@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConsolidacaoRegistrosPedagogicos
 
             mediatorMock
                 .Setup(m => m.Send(It.IsAny<ConsolidarRegistrosPedagogicosCommand>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(Unit.Value);
+                .Returns(Task.CompletedTask);
 
             var useCase = new ConsolidarRegistrosPedagogicosPorTurmaTratarUseCase(mediatorMock.Object);
 

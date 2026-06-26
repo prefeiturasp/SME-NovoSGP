@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarAtividadeAvaliativaGsaCommandHandler : AsyncRequestHandler<SalvarAtividadeAvaliativaGsaCommand>
+    public class SalvarAtividadeAvaliativaGsaCommandHandler : IRequestHandler<SalvarAtividadeAvaliativaGsaCommand>
     {
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IMediator mediator;
@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        protected override async Task Handle(SalvarAtividadeAvaliativaGsaCommand request, CancellationToken cancellationToken)
+        public async Task Handle(SalvarAtividadeAvaliativaGsaCommand request, CancellationToken cancellationToken)
         {
             var atividadeAvaliativa = await repositorioAtividadeAvaliativa.ObterPorAtividadeClassroomId(request.AtividadeClassroomId);
 

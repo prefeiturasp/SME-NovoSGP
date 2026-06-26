@@ -3,7 +3,6 @@ using Dapper.FluentMap.Dommel;
 using Elastic.Apm.AspNetCore;
 using Elastic.Apm.DiagnosticSource;
 using Elastic.Apm.SqlClient;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -101,7 +100,7 @@ namespace SME.SGP.Metrica.Worker
         {
             services.ConfigurarTelemetria(Configuration);
             services.AddHttpContextAccessor();
-            services.AddMediatR(Assembly.GetExecutingAssembly());
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
             RegistrarRepositorio(services);
             RegistrarUseCases(services);
             AdicionarHttpClients(services);

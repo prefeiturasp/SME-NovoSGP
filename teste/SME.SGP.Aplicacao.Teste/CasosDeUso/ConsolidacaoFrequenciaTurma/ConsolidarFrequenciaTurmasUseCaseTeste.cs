@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConsolidacaoFrequenciaTurma
 
             mediatorMock
                 .Setup(m => m.Send(It.IsAny<ExecutarConsolidacaoFrequenciaNoAnoCommand>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(Unit.Value);
+                .Returns(Task.CompletedTask);
 
             var mensagem = new MensagemRabbit();
 

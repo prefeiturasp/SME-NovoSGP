@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace SME.SGP.Dominio
+﻿namespace SME.SGP.Dominio
 {
     public static class NumberExtension
     {

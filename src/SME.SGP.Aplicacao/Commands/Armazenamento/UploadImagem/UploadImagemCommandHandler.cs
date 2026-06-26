@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
 	
             var nomeArquivoComExtensao = $"{arquivo.Codigo.ToString()}{extensao}";
             
-            await mediator.Send(new ArmazenarImagemFisicaCommand(request.Imagem, nomeArquivoComExtensao, request.NomeArquivo, request.TipoArquivo, request.Formato));
+            await mediator.Send(new ArmazenarImagemFisicaCommand(request.ImagemBytes, nomeArquivoComExtensao, request.NomeArquivo, request.TipoArquivo, request.Formato));
 
             return arquivo;
         }

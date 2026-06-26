@@ -5,7 +5,6 @@ using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes.Query;
 using SME.SGP.TesteIntegracao.Setup;
@@ -34,13 +33,13 @@ namespace SME.SGP.TesteIntegracao.Turma
 
             var dataAtual = DateTimeExtension.HorarioBrasilia();
 
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 Id = 1,
                 AnoLetivo = dataAtual.Year,
                 Nome = "tipo cal infantil",
                 Periodo = Periodo.Anual,
-                Modalidade = ModalidadeTipoCalendario.Infantil,
+                Modalidade = ModalidadeTipoCalendario.Infantil, 
                 Situacao = true,
                 CriadoEm = dataAtual,
                 CriadoPor = "Sistema",
@@ -126,7 +125,7 @@ namespace SME.SGP.TesteIntegracao.Turma
 
             var dataAtual = DateTimeExtension.HorarioBrasilia();
 
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 Id = 1,
                 AnoLetivo = dataAtual.Year,

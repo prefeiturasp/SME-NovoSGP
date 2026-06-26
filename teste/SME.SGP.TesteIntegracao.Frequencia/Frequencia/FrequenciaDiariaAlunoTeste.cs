@@ -107,7 +107,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaDiaria
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year
             });
 
-            await InserirNaBase(new TipoCalendario
+            await InserirNaBase(new Dominio.TipoCalendario
             {
                 Id = 1,
                 Nome = "",

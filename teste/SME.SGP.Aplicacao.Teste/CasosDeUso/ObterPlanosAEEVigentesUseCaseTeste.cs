@@ -2,9 +2,7 @@
 using MediatR;
 using Moq;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra.Dtos;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;

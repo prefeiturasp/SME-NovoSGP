@@ -7,9 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {

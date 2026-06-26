@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao.CasosDeUso.PainelEducacional;
 using SME.SGP.Aplicacao.CasosDeUso.PainelEducacional.Frequencia;
 using SME.SGP.Aplicacao.Interfaces;

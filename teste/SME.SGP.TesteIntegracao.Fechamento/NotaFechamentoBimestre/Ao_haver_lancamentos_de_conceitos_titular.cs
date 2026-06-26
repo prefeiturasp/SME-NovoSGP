@@ -13,9 +13,6 @@ using System.Threading.Tasks;
 using SME.SGP.TesteIntegracao.NotaFechamentoBimestre.ServicosFakes;
 using Xunit;
 using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
-using System;
-using Moq;
-using System.Threading;
 using SME.SGP.TesteIntegracao.Fechamento.ConselhoDeClasse.ServicosFakes;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre

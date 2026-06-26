@@ -12,5 +12,6 @@ namespace SME.SGP.Infra.Dtos
         public bool ConsideraNovasUEs { get; set; }
         public bool FiltrarTipoEscolaPorAnoLetivo { get; set; }
         public string Filtro { get; set; }
+        public string[] AnosTurma { get; set; }
     }
 }

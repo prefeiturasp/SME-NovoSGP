@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Infra;
 using SME.SGP.Infra.Consts;
 using SME.SGP.Infra.Dtos.ProvaSP;
 using System;

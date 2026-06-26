@@ -1,16 +1,10 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using Moq;
 using Shouldly;
-using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
 using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
 
@@ -175,7 +169,7 @@ namespace SME.SGP.TesteIntegracao.EscolaAqui
                 ModalidadeCodigo = Modalidade.Fundamental,
                 AnoLetivo = ANO_ATUAL
             });
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 Id = TIPO_CALENDARIO_1,
                 AnoLetivo = ANO_ATUAL,

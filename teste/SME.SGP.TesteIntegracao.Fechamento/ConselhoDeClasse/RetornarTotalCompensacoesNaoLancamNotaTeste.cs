@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
-using SME.SGP.Api.Controllers;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra.Contexto;
@@ -67,7 +66,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoClasseController
 
         private async Task CriarCompensacaoQueNaoLancaNota()
         {
-            await InserirNaBase(new TipoCalendario
+            await InserirNaBase(new Dominio.TipoCalendario
             {
                 Id = 1,
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,

@@ -1,8 +1,5 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Constantes;
-using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Moq;
 using Moq.Protected;
 using Newtonsoft.Json;
-using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using Xunit;

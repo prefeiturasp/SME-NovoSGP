@@ -15,10 +15,9 @@ namespace SME.SGP.Aplicacao
             repositorioCache = cache ?? throw new ArgumentNullException(nameof(cache));
         }
 
-        public async Task<Unit> Handle(SalvarCachePorValorStringCommand request, CancellationToken cancellationToken)
+        public async Task Handle(SalvarCachePorValorStringCommand request, CancellationToken cancellationToken)
         {
             await repositorioCache.SalvarAsync(request.NomeChave, request.Valor,request.MinutosParaExpirar,request.UtilizarGZip);
-            return Unit.Value;
         }
     }
 }

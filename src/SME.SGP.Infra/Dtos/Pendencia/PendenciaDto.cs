@@ -1,7 +1,4 @@
-﻿using Minio.DataModel;
-using SME.SGP.Infra.Dtos;
-using StackExchange.Redis;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace SME.SGP.Infra

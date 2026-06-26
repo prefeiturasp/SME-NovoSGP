@@ -29,7 +29,7 @@ namespace SME.SGP.TesteIntegracao.TipoResponsavel
             var resultados = await useCase.Executar(true);
 
             resultados.ShouldNotBeEmpty();
-            resultados.Count().ShouldBe(5);
+            resultados.Count().ShouldBe(6);
         }
 
         private async Task CriarUsuarioLogado()
@@ -52,10 +52,10 @@ namespace SME.SGP.TesteIntegracao.TipoResponsavel
             variaveis.Add("UsuarioLogado", "1111111");
             variaveis.Add("RF", "1111111");
             variaveis.Add("login", "1111111");
-            variaveis.Add("TokenAtual", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiODg1MDk3NiIsImxvZ2luIjoiODg1MDk3NiIsIm5vbWUiOiJFTElTQSBDUklTVElOQSBERSBPTElWRUlSQSBTQUJJTk8iLCJyZiI6Ijg4NTA5NzYiLCJwZXJmaWwiOiI2NWUxZTA3NC0zN2Q2LWU5MTEtYWJkNi1mODE2NTRmZTg5NWQiLCJyb2xlcyI6WyJCX0MiLCJDX0MiLCJOQ19DIiwiUEFfQyIsIlBEQ19DIiwiTl9DIiwiTl9JIiwiTl9FIiwiTl9BIiwiNDYiLCJNX0MiLCJNX0kiLCJNX0UiLCJNX0EiLCJSUF9DIiwiQ1BfQyIsIlBFX0MiLCJQRkFfQyIsIlBGUl9DIiwiRV9DIiwiQVJQX0MiLCJBUlBfSSIsIkFSUF9FIiwiQVJQX0EiLCJBREFQX0MiLCJDQV9DIiwiUkdQX0MiLCJSUEdfQyIsIkZCX0MiLCJQVF9DIiwiQ0NfQyIsIlJQU19DIiwiUERBX0MiLCJBRlJfQyIsIkhFX0MiLCJGRl9DIiwiUlBGX0MiLCJSUENfQyIsIkREQl9DIiwiQ0lfQyIsIk9DT19DIiwiUlBPQV9DIiwiREVfQyIsIlJOQ0ZfQyIsIlJDQV9DIiwiRFBVX0MiLCJSQUNKX0MiLCJSRUlfQyIsIkFFRV9DIiwiUEFFRV9DIiwiUklfQyIsIlJBQV9DIiwiUkRfQyIsIkFGUV9DIiwiREFFRV9DIiwiRFJJX0MiLCJERl9DIiwiRElFX0MiLCJERF9DIiwiRFJJTl9DIiwiREJfQyIsIkRBQV9DIiwiUlJQX0MiLCJMX0MiLCJSRk1fQyIsIkROQV9DIl0sIm5iZiI6MTY1MzQ4NzI2MCwiZXhwIjoxNjUzNTMwNDYwLCJpc3MiOiJOb3ZvIFNHUCIsImF1ZCI6IlByZWZlaXR1cmEgZGUgU2FvIFBhdWxvIn0.es--3yRVBfuFIAf0N0U01T_TAXtjG8NqXuMNgpP9oCU");
+            variaveis.Add("TokenAtual", GerarTokenValido("48e1e074-37d6-e911-abd6-f81654fe895d"));
             variaveis.Add("Claims", new List<InternalClaim> {
                 new InternalClaim { Value = "1111111", Type = "rf" },
-                new InternalClaim { Value = "48e1e074-37d6-e911-abd6-f81654fe895d", Type = "perfil" },                
+                new InternalClaim { Value = "48e1e074-37d6-e911-abd6-f81654fe895d", Type = "perfil" },
             });
             contextoAplicacao.AdicionarVariaveis(variaveis);
         }

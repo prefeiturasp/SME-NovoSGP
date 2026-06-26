@@ -1,10 +1,8 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
-using System.Linq;
 using System.Threading.Tasks;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
-using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Aplicacao
 {

@@ -5,7 +5,6 @@ using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes.Query;
 using SME.SGP.TesteIntegracao.Setup;
@@ -60,7 +59,7 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrente
                 AnoLetivo = dataAtual.Year
             });
 
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 Id = 1,
                 AnoLetivo = dataAtual.Year,

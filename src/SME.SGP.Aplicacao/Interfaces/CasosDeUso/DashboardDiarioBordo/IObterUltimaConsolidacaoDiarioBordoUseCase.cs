@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SME.SGP.Aplicacao.Interfaces
+﻿namespace SME.SGP.Aplicacao.Interfaces
 {
     public interface IObterUltimaConsolidacaoDiarioBordoUseCase : IUseCase<int, string>
     {

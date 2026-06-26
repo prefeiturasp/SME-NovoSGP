@@ -1,6 +1,4 @@
-using System;
 using System.Linq;
-using System.Security.Cryptography.Xml;
 using System.Threading.Tasks;
 using Shouldly;
 using SME.SGP.Dominio;

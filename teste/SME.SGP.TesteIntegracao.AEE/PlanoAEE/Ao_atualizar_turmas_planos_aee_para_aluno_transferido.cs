@@ -11,7 +11,6 @@ using SME.SGP.TesteIntegracao.PlanoAEE.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 

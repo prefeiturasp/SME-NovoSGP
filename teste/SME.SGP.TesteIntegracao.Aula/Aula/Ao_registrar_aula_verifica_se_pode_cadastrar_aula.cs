@@ -1,5 +1,4 @@
-﻿using Humanizer;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Newtonsoft.Json;
@@ -486,7 +485,7 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
                 DadosAulaCriadaAutomaticamente = dadosAulaCriadaAutomaticamente
             };
 
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 Id = 1,
                 AnoLetivo = DATA_ATUAL.Year,

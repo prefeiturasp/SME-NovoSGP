@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Infra.Enumerados
+﻿namespace SME.SGP.Infra.Enumerados
 {
     public enum Abrangencia
     {

@@ -10,9 +10,9 @@ namespace SME.SGP.TesteIntegracao.AtribuicaoCJs.ServicosFake
         public AtribuirPerfilCommandHandlerFake()
         {
         }
-        public async Task<Unit> Handle(AtribuirPerfilCommand request, CancellationToken cancellationToken)
+        public async Task Handle(AtribuirPerfilCommand request, CancellationToken cancellationToken)
         {
-            return Unit.Value;
+            return;
         }
     }
 }

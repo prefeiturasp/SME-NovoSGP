@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Infra.Dtos.ProvaSP;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao.Queries

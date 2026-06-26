@@ -1,7 +1,5 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
 using SME.SGP.Metrica.Worker.Commands;
 using SME.SGP.Metrica.Worker.Repositorios.Interfaces;
 using SME.SGP.Metrica.Worker.UseCases.Interfaces;

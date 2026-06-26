@@ -1,9 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Polly;
-using Polly.Registry;
 using SME.SGP.Infra;
 using System;
-using System.Runtime.ConstrainedExecution;
 
 namespace SME.SGP.IoC
 {

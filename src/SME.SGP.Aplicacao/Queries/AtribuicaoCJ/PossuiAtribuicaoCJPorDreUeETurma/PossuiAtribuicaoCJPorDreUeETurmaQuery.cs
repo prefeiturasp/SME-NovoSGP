@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using System;
 
 namespace SME.SGP.Aplicacao
 {

@@ -1,14 +1,9 @@
 ﻿using MediatR;
-using Microsoft.Extensions.Configuration;
 using Moq;
 using Newtonsoft.Json;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;

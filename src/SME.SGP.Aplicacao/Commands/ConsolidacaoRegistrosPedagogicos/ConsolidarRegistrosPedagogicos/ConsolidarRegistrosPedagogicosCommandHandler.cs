@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ConsolidarRegistrosPedagogicosCommandHandler : AsyncRequestHandler<ConsolidarRegistrosPedagogicosCommand>
+    public class ConsolidarRegistrosPedagogicosCommandHandler : IRequestHandler<ConsolidarRegistrosPedagogicosCommand>
     {
         private readonly IRepositorioConsolidacaoRegistrosPedagogicos repositorio;
         private readonly IUnitOfWork unitOfWork;
@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        protected override async Task Handle(ConsolidarRegistrosPedagogicosCommand request, CancellationToken cancellationToken)
+        public async Task Handle(ConsolidarRegistrosPedagogicosCommand request, CancellationToken cancellationToken)
         {
             unitOfWork.IniciarTransacao();
             try

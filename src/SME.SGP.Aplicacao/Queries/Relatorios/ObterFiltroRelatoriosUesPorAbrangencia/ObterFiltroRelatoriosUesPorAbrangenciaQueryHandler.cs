@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -30,7 +31,7 @@ namespace SME.SGP.Aplicacao
                 .Select(a => int.Parse(a)).ToArray();
 
             var ues = (await repositorioAbrangencia
-                .ObterUes(request.CodigoDre, request.UsuarioLogado.Login, request.UsuarioLogado.PerfilAtual, ignorarTiposUE: novosTiposUE, consideraHistorico: request.ConsideraHistorico, anoLetivo: request.AnoLetivo))?
+                .ObterUes(request.CodigoDre, request.UsuarioLogado.Login, request.UsuarioLogado.PerfilAtual, ignorarTiposUE: novosTiposUE, filtroPeriodoLetivo: new FiltroPeriodoLetivo(request.AnoLetivo, request.ConsideraHistorico)))?
                 .ToList();
 
             var possuiAbrangenciaEmTodasAsUes = await mediator

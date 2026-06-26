@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.CasosDeUso;
 using SME.SGP.Aplicacao.Interfaces;
 
 namespace SME.SGP.IoC

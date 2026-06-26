@@ -1,9 +1,8 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
+using SME.SGP.Aplicacao.Servicos.Interfaces;
 using SME.SGP.Dominio;
 using System;
-using System.Drawing;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,11 +12,13 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IProcessadorImagens processadorImagens;
 
-        public SalvarFotoEstudanteCommandHandler(IMediator mediator, IUnitOfWork unitOfWork)
+        public SalvarFotoEstudanteCommandHandler(IMediator mediator, IUnitOfWork unitOfWork, IProcessadorImagens processadorImagens)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.processadorImagens = processadorImagens ?? throw new ArgumentNullException(nameof(processadorImagens));
         }
 
         public async Task<Guid> Handle(SalvarFotoEstudanteCommand request, CancellationToken cancellationToken)
@@ -27,16 +28,31 @@ namespace SME.SGP.Aplicacao
 
         private async Task<Guid> GerarFotoAluno(string alunoCodigo, IFormFile file)
         {
-            var imagem = ObterImagem(file);
-            var miniatura = imagem.GetThumbnailImage(88, 88, () => false, IntPtr.Zero);
-            
+            // Obtém a imagem em bytes
+            var imagemBytes = await processadorImagens.ObterImagemEmBytesAsync(file);
+
+            // Cria miniatura (88x88)
+            var miniaturaBytes = await processadorImagens.CriarMiniaturaAsync(imagemBytes, 88, 88);
+            var tipoConteudo = processadorImagens.ObterTipoConteudo(file.FileName);
+
             using (var transacao = unitOfWork.IniciarTransacao())
             {
                 try
                 {
-                    var miniaturaId = await GerarFotoMiniatura(miniatura, alunoCodigo, ObterNomeMiniatura(file.FileName), file.ContentType);
+                    // Salva miniatura
+                    var miniaturaId = await GerarFotoMiniatura(
+                        miniaturaBytes,
+                        alunoCodigo,
+                        ObterNomeMiniatura(file.FileName),
+                        tipoConteudo);
 
-                   var codigoArquivo =  await GerarFoto(imagem, alunoCodigo, file.FileName, file.ContentType, miniaturaId);
+                    // Salva imagem original
+                    var codigoArquivo = await GerarFoto(
+                        imagemBytes,
+                        alunoCodigo,
+                        file.FileName,
+                        tipoConteudo,
+                        miniaturaId);
 
                     unitOfWork.PersistirTransacao();
 
@@ -48,33 +64,22 @@ namespace SME.SGP.Aplicacao
                     throw;
                 }
             }
-
         }
 
-
-        private async Task<long> GerarFotoMiniatura(Image foto, string alunoCodigo, string nomeArquivo, string formato, long? miniaturaId = null)
+        private async Task<long> GerarFotoMiniatura(byte[] fotoBytes, string alunoCodigo, string nomeArquivo, string tipoConteudo, long? miniaturaId = null)
         {
-            var arquivo = await mediator.Send(new UploadImagemCommand(foto, Dominio.TipoArquivo.FotoAluno, nomeArquivo, formato));
+            var arquivo = await mediator.Send(new UploadImagemCommand(fotoBytes, Dominio.TipoArquivo.FotoAluno, nomeArquivo, tipoConteudo));
             return await mediator.Send(new GerarFotoEstudanteCommand(alunoCodigo, arquivo.Id, miniaturaId));
         }
 
-        private async Task<Guid> GerarFoto(Image foto, string alunoCodigo, string nomeArquivo, string formato, long? miniaturaId = null)
+        private async Task<Guid> GerarFoto(byte[] fotoBytes, string alunoCodigo, string nomeArquivo, string tipoConteudo, long? miniaturaId = null)
         {
-            var arquivo = await mediator.Send(new UploadImagemCommand(foto, Dominio.TipoArquivo.FotoAluno, nomeArquivo, formato));
+            var arquivo = await mediator.Send(new UploadImagemCommand(fotoBytes, Dominio.TipoArquivo.FotoAluno, nomeArquivo, tipoConteudo));
             await mediator.Send(new GerarFotoEstudanteCommand(alunoCodigo, arquivo.Id, miniaturaId));
             return arquivo.Codigo;
         }
 
         private string ObterNomeMiniatura(string nomeArquivo)
             => $"miniatura_{nomeArquivo}";
-
-        private Image ObterImagem(IFormFile file)
-        {
-            var stream = file.OpenReadStream();
-            
-            var image = Image.FromStream(stream);
-            
-            return image;
-        }
     }
 }

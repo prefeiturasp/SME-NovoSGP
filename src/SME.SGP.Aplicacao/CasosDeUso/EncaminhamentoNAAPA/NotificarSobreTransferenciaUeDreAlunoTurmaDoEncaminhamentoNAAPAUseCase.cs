@@ -1,12 +1,8 @@
 ﻿using MediatR;
-using Microsoft.Extensions.Caching.Memory;
-using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;

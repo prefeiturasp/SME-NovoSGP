@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirAnotacaoFechamentoAlunoCommandHandler : AsyncRequestHandler<ExcluirAnotacaoFechamentoAlunoCommand>
+    public class ExcluirAnotacaoFechamentoAlunoCommandHandler : IRequestHandler<ExcluirAnotacaoFechamentoAlunoCommand>
     {
         private readonly IRepositorioAnotacaoFechamentoAluno repositorioAnotacaoFechamentoAluno;
 
@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioAnotacaoFechamentoAluno = repositorioAnotacaoFechamentoAluno ?? throw new ArgumentNullException(nameof(repositorioAnotacaoFechamentoAluno));
         }
 
-        protected override Task Handle(ExcluirAnotacaoFechamentoAlunoCommand request, CancellationToken cancellationToken)
+        public Task Handle(ExcluirAnotacaoFechamentoAlunoCommand request, CancellationToken cancellationToken)
             => repositorioAnotacaoFechamentoAluno.RemoverAsync(request.AnotacaoFechamentoAluno);
     }
 }

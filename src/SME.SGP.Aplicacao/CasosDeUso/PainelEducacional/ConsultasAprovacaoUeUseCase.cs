@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.PainelEducacional;
 using SME.SGP.Aplicacao.Queries.PainelEducacional.ObterAprovacaoUe;
-using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional;
 using System.Threading.Tasks;
 
