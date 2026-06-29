@@ -22,7 +22,7 @@ namespace SME.SGP.Dados.Repositorios
          
         public PeriodoFechamento ObterPorFiltros(long? tipoCalendarioId, long? turmaId, Dominio.Aplicacao aplicacao)
         {
-            var query = new StringBuilder("select f.*,fb.*,p.*, t.*");
+            var query = new StringBuilder("select f.*,fb.*,p.*, t.* ");
             query.AppendLine("from");
             query.AppendLine("periodo_fechamento f");
             query.AppendLine("inner join periodo_fechamento_bimestre fb on");
@@ -46,7 +46,8 @@ namespace SME.SGP.Dados.Repositorios
             if (turmaId.HasValue)
                 query.AppendLine("and tu.id = @turmaId");
 
-                query.AppendLine("AND COALESCE(f.aplicacao, 1) = @aplicacao");
+            query.AppendLine("AND COALESCE(f.aplicacao, 1) = @aplicacao");
+            query.AppendLine("order by COALESCE(f.alterado_em, f.criado_em) desc, f.id desc, p.bimestre");
 
             var lookup = new Dictionary<long, PeriodoFechamento>();
 
@@ -69,12 +70,15 @@ namespace SME.SGP.Dados.Repositorios
                    turmaId,
                    aplicacao
                });
-            return lookup.Values.FirstOrDefault();
+            return lookup.Values
+                .OrderByDescending(periodoFechamento => periodoFechamento.AlteradoEm ?? periodoFechamento.CriadoEm)
+                .ThenByDescending(periodoFechamento => periodoFechamento.Id)
+                .FirstOrDefault();
         }
 
         public async Task<PeriodoFechamento> ObterPorFiltrosAsync(long? tipoCalendarioId, long? turmaId)
         {
-            var query = new StringBuilder("select f.*,fb.*,p.*, t.*");
+            var query = new StringBuilder("select f.*,fb.*,p.*, t.* ");
             query.AppendLine("from");
             query.AppendLine("periodo_fechamento f");
             query.AppendLine("inner join periodo_fechamento_bimestre fb on");
@@ -101,6 +105,8 @@ namespace SME.SGP.Dados.Repositorios
             if (turmaId.HasValue)
                 query.AppendLine("and tu.id = @turmaId");
 
+            query.AppendLine("order by COALESCE(f.alterado_em, f.criado_em) desc, f.id desc, p.bimestre");
+
             var lookup = new Dictionary<long, PeriodoFechamento>();
 
             var lista = await database.Conexao.QueryAsync<PeriodoFechamento, PeriodoFechamentoBimestre, PeriodoEscolar, TipoCalendario, PeriodoFechamento>(query.ToString(), (fechamento, fechamentoBimestre, periodoEscolar, tipoCalendario) =>
@@ -121,7 +127,10 @@ namespace SME.SGP.Dados.Repositorios
                 tipoCalendarioId,
                 turmaId
             });
-            return lookup.Values.FirstOrDefault();
+            return lookup.Values
+                .OrderByDescending(periodoFechamento => periodoFechamento.AlteradoEm ?? periodoFechamento.CriadoEm)
+                .ThenByDescending(periodoFechamento => periodoFechamento.Id)
+                .FirstOrDefault();
         }
 
         public Task<PeriodoFechamento> ObterPorTurma(long turmaId)
@@ -139,10 +148,25 @@ namespace SME.SGP.Dados.Repositorios
             foreach (var bimestre in fechamentosBimestre)
             {
                 bimestre.PeriodoFechamentoId = fechamentoId;
+                if (bimestre.Id == 0)
+                    bimestre.Id = ObterIdBimestreExistente(fechamentoId, bimestre.PeriodoEscolarId);
+
                 if (bimestre.Id > 0)
                     database.Conexao.Update(bimestre);
                 else bimestre.Id = (long)database.Conexao.Insert(bimestre);
             }
+        }
+
+        private long ObterIdBimestreExistente(long fechamentoId, long periodoEscolarId)
+        {
+            var query = @"select id
+                            from periodo_fechamento_bimestre
+                           where periodo_fechamento_id = @fechamentoId
+                             and periodo_escolar_id = @periodoEscolarId
+                           order by id desc
+                           limit 1";
+
+            return database.Conexao.QueryFirstOrDefault<long>(query, new { fechamentoId, periodoEscolarId });
         }
 
         public bool ValidaRegistrosForaDoPeriodo(DateTime inicioDoFechamento, DateTime finalDoFechamento, long fechamentoId, long periodoEscolarId, long? dreId)
@@ -175,7 +199,9 @@ namespace SME.SGP.Dados.Repositorios
                          inner join periodo_fechamento_bimestre pfb on pfb.periodo_fechamento_id = pf.id
                          inner join periodo_escolar pe on pe.id = pfb.periodo_escolar_id
                          inner join tipo_calendario tc on tc.id = pe.tipo_calendario_id
-                         where pfb.final_fechamento = @dataFinal ";
+                         where pfb.final_fechamento = @dataFinal
+                           and COALESCE(pf.aplicacao, 1) = 1
+                         order by COALESCE(pf.alterado_em, pf.criado_em) desc, pf.id desc, pfb.id desc ";
 
             return await database.Conexao.QueryAsync<PeriodoFechamento, PeriodoFechamentoBimestre, PeriodoEscolar, TipoCalendario, PeriodoFechamentoBimestre>(query,
                 (periodoFechamento, periodoFechamentoBimestre, periodoEscolar, tipoCalendario) =>
@@ -196,7 +222,9 @@ namespace SME.SGP.Dados.Repositorios
                          inner join periodo_escolar pe on pe.id = pfb.periodo_escolar_id
                          inner join tipo_calendario tc on tc.id = pe.tipo_calendario_id
                          where pfb.final_fechamento = @dataEncerramento
-                           and tc.modalidade = @modalidade";
+                           and tc.modalidade = @modalidade
+                           and COALESCE(pf.aplicacao, 1) = 1
+                         order by COALESCE(pf.alterado_em, pf.criado_em) desc, pf.id desc, pfb.id desc";
 
             return await database.Conexao.QueryAsync<PeriodoFechamento, PeriodoFechamentoBimestre, PeriodoEscolar, PeriodoFechamentoBimestre>(query,
                 (periodoFechamento, periodoFechamentoBimestre, periodoEscolar) =>
@@ -216,7 +244,9 @@ namespace SME.SGP.Dados.Repositorios
                          inner join periodo_escolar pe on pe.id = pfb.periodo_escolar_id
                          inner join tipo_calendario tc on tc.id = pe.tipo_calendario_id
                          where pfb.inicio_fechamento = @dataAbertura
-                           and tc.modalidade = @modalidade";
+                           and tc.modalidade = @modalidade
+                           and COALESCE(pf.aplicacao, 1) = 1
+                         order by COALESCE(pf.alterado_em, pf.criado_em) desc, pf.id desc, pfb.id desc";
 
             return await database.Conexao.QueryAsync<PeriodoFechamento, PeriodoFechamentoBimestre, PeriodoEscolar, PeriodoFechamentoBimestre>(query,
                 (periodoFechamento,periodoFechamentoBimestre, periodoEscolar) =>
@@ -245,7 +275,9 @@ namespace SME.SGP.Dados.Repositorios
                            and pf.ue_id is null
                            and tc.ano_letivo = @anoLetivo
                            and tc.modalidade = @modalidadeTipoCalendario
-                           and NOW() between pfb.inicio_fechamento and pfb.final_fechamento";
+                           and COALESCE(pf.aplicacao, 1) = 1
+                           and NOW() between pfb.inicio_fechamento and pfb.final_fechamento
+                         order by COALESCE(pf.alterado_em, pf.criado_em) desc, pf.id desc, pfb.id desc";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoFechamentoVigenteDto>(query, new { anoLetivo, modalidadeTipoCalendario });
         }
