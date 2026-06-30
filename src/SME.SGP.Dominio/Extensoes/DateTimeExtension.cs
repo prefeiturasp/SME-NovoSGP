@@ -15,7 +15,7 @@ namespace SME.SGP.Dominio
         /// <returns>Retorna data e hora aplicando GMT -3:00 de Brasília.</returns>
         public static DateTime HorarioBrasilia()
         {
-            return DateTime.UtcNow.AddHours(-3);
+            return DateTime.SpecifyKind(DateTime.UtcNow.AddHours(-3), DateTimeKind.Utc);
         }
 
         public static DateTime ObterDomingo(this DateTime data)
