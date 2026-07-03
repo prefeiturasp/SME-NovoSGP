@@ -47,7 +47,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
         [Fact(DisplayName = "Fechamento Bimestre Final - Não deve permitir lançamento de nota com período escolar no 4º bimestre encerrado e sem período de reabertura")]
         public async Task Nao_deve_permitir_lancamento_nota_com_periodo_escolar_no_4_bimestre_encerrada_sem_periodo_reabertura()
         {
-            TurmaEmPeriodoAbertoQueryFake.ShouldReturnPeriodoAberto = false;
+            TurmaEmPeriodoAbertoQueryFake.SetShouldReturnPeriodoAberto(false);
             var filtroNotaFechamento = ObterFiltroNotasFechamento(
                 ObterPerfilProfessor(),
                 TipoNota.Nota, ANO_7,
@@ -67,7 +67,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
         [Fact(DisplayName = "Fechamento Bimestre Final - Deve permitir lançamento de nota com período escolar no 4º bimestre encerrado e sem período abertura")]
         public async Task Deve_permitir_lancamento_nota_com_periodo_escolar_no_4_bimestre_encerrada_com_periodo_abertura()
         {
-            TurmaEmPeriodoAbertoQueryFake.ShouldReturnPeriodoAberto = true;
+            TurmaEmPeriodoAbertoQueryFake.SetShouldReturnPeriodoAberto(true);
             var filtroNotaFechamento = ObterFiltroNotasFechamento(
                 ObterPerfilProfessor(),
                 TipoNota.Nota, ANO_7,
