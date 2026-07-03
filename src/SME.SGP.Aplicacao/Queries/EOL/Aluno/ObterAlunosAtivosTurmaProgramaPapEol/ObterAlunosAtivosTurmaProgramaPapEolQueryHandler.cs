@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
                     return JsonConvert.DeserializeObject<IEnumerable<AlunosTurmaProgramaPapDto>>(json);
                 }
             }
-            return [];
+            return Enumerable.Empty<AlunosTurmaProgramaPapDto>();
         }
     }
 }
