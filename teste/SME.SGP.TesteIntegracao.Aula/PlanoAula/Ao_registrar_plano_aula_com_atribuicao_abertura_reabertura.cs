@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -11,8 +8,12 @@ using SME.SGP.Dto;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.PlanoAula.Base;
 using SME.SGP.TesteIntegracao.PlanoAula.ServicosFakes;
+using SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem.ServicosFake;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.PlanoAula
@@ -28,11 +29,14 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAbrangenciaPorTurmaEConsideraHistoricoQuery, AbrangenciaFiltroRetorno>), typeof(ObterAbrangenciaPorTurmaEConsideraHistoricoQueryHandlerFakeFundamental6A), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<TurmaEmPeriodoAbertoQuery, bool>),
+                    typeof(TurmaEmPeriodoAbertoQueryFake), ServiceLifetime.Scoped));
         }
 
         [Fact]
         public async Task Nao_deve_cadastrar_plano_aula_componente_diferente_regencia_sem_reabertura()
         {
+            TurmaEmPeriodoAbertoQueryFake.ShouldReturnPeriodoAberto = false;
             var planoAulaDto = ObterPlanoAula(true, long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138));
 
             var filtroPlanoAula = ObterFiltroPlanoAula(COMPONENTE_LINGUA_PORTUGUESA_ID_138,
@@ -56,6 +60,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
         [Fact]
         public async Task Deve_cadastrar_plano_aula_componente_diferente_regencia_com_reabertura()
         {
+            TurmaEmPeriodoAbertoQueryFake.ShouldReturnPeriodoAberto = true;
             var planoAulaDto = ObterPlanoAula(true, long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138));
 
             var filtroPlanoAula = ObterFiltroPlanoAula(COMPONENTE_LINGUA_PORTUGUESA_ID_138,
@@ -87,6 +92,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
         [Fact]
         public async Task Nao_deve_cadastrar_plano_aula_componente_diferente_regencia_sem_periodo_abertura()
         {
+            TurmaEmPeriodoAbertoQueryFake.ShouldReturnPeriodoAberto = false;
             var planoAulaDto = ObterPlanoAula(true, long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138));
 
             var filtroPlanoAula = ObterFiltroPlanoAula(COMPONENTE_LINGUA_PORTUGUESA_ID_138,
