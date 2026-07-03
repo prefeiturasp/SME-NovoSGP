@@ -7,8 +7,13 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem.ServicosFa
 {
     public class TurmaEmPeriodoAbertoQueryFake : IRequestHandler<TurmaEmPeriodoAbertoQuery, bool>
     {
-        public static bool ShouldReturnPeriodoAberto = true;
-        public  Task<bool> Handle(TurmaEmPeriodoAbertoQuery request, CancellationToken cancellationToken)
+        public static bool ShouldReturnPeriodoAberto { get; private set; } = true;
+        public static void SetShouldReturnPeriodoAberto(bool value)
+        {
+            ShouldReturnPeriodoAberto = value;
+        }
+
+        public Task<bool> Handle(TurmaEmPeriodoAbertoQuery request, CancellationToken cancellationToken)
         {
             return Task.FromResult(ShouldReturnPeriodoAberto);
         }
