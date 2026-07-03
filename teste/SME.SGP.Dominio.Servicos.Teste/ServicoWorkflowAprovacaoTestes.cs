@@ -437,6 +437,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             _servicoNotificacaoMock.Setup(s => s.ObterFuncionariosPorNivelFuncaoAtividadeAsync(workflow.UeId, FuncaoAtividade.COORDERNADOR_GERAL_CIEJA, true, true))
                                    .ReturnsAsync(new List<(FuncaoAtividade? FuncaoAtividade, string Id)> { (FuncaoAtividade.SECRETARIO_POLO_FORMACAO, diretorCiejaRf) });
 
+
             _servicoUsuarioMock
                 .Setup(s => s.ObterUsuarioPorCodigoRfLoginOuAdiciona(
                     It.IsAny<string>(),
@@ -450,9 +451,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             await _servico.Aprovar(workflow, true, "OK", notificacaoIdNivel1);
 
             // Assert
-            // Garante que o método específico para CIEJA foi chamado (2 vezes devido à duplicação no código-fonte)
-            _servicoNotificacaoMock.Verify(s => s.ObterFuncionariosPorNivelFuncaoAtividadeAsync(workflow.UeId, FuncaoAtividade.COORDERNADOR_GERAL_CIEJA, true, true), Times.Exactly(2));
-
+            _servicoNotificacaoMock.Verify(s => s.ObterFuncionariosPorNivelFuncaoAtividadeAsync(workflow.UeId, FuncaoAtividade.COORDERNADOR_GERAL_CIEJA, true, true), Times.Once());
             _servicoNotificacaoMock.Verify(
                 s => s.ObterFuncionariosPorNivelAsync(
                     It.IsAny<string>(),
@@ -593,7 +592,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
 
             // Assert
             // Garante que a query específica para conveniadas foi chamada (2 vezes devido à duplicação no código-fonte)
-            _mediatorMock.Verify(m => m.Send(It.IsAny<ObterFuncionariosPorUeEFuncaoExternaQuery>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+            _mediatorMock.Verify(m => m.Send(It.IsAny<ObterFuncionariosPorUeEFuncaoExternaQuery>(), It.IsAny<CancellationToken>()), Times.Once);
 
             _servicoNotificacaoMock.Verify(
                 s => s.ObterFuncionariosPorNivelFuncaoAtividadeAsync(

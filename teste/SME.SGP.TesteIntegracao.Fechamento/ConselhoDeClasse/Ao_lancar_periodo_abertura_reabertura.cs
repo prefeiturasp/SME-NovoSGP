@@ -12,6 +12,8 @@ using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
 using ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake = SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes.ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake;
+using SME.SGP.Dominio.Entidades;
+using System.Linq;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 {
@@ -83,7 +85,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         public async Task Deve_lancar_nota_numerica_pos_conselho_durante_periodo_abertura_pos_encerramento_bimestre()
         {
             var notaFixa = 7d;
-
+            var dataReferenciaTeste = DateTimeExtension.HorarioBrasilia().Date;
             var salvarConselhoClasseAlunoNotaDto = new SalvarConselhoClasseAlunoNotaDto
             {
                 ConselhoClasseNotaDto = new ConselhoClasseNotaDto()
@@ -110,6 +112,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 false);
 
             obterFiltroConselhoClasse.NotaFixa = notaFixa;
+            obterFiltroConselhoClasse.DataAula = dataReferenciaTeste;
 
             await CriarDadosBaseSemFechamentoTurmaSemAberturaReabertura(obterFiltroConselhoClasse);
 
@@ -118,6 +121,26 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarFechamentoTurmaDisciplinaAlunoNota(obterFiltroConselhoClasse);
 
             await CriarPeriodoAberturaCustomizadoQuartoBimestre();
+
+            await InserirNaBase(new FechamentoReabertura()
+            {
+                Descricao = "Período de Abertura para Lançamento de Notas",
+                Inicio = dataReferenciaTeste.AddDays(-5).Date,
+                Fim = dataReferenciaTeste.AddDays(5).Date,
+                TipoCalendarioId = TIPO_CALENDARIO_1, 
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+            var obterTodos = ObterTodos<FechamentoReabertura>();
+            await InserirNaBase(new FechamentoReaberturaBimestre()
+            {
+                FechamentoAberturaId = obterTodos.FirstOrDefault().Id,
+                Bimestre = BIMESTRE_4,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
 
             await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false, TipoNota.Nota);
         }

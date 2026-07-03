@@ -1,21 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using SME.SGP.Dominio;
-using SME.SGP.TesteIntegracao.Setup;
-using System.Threading.Tasks;
-using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base;
-using Xunit;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
-using SME.SGP.TesteIntegracao.ServicosFakes;
+using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.Fechamento.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.Fechamento.NotaFechamentoBimestre.ServicosFakes;
+using SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base;
+using SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem.ServicosFake;
+using SME.SGP.TesteIntegracao.ServicosFakes;
+using SME.SGP.TesteIntegracao.Setup;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 {
@@ -38,11 +39,15 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
               typeof(ObterConselhoClassePorFechamentoIdQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery, string[]>),
                 typeof(ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQueryHandlerFake), ServiceLifetime.Scoped));
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<TurmaEmPeriodoAbertoQuery, bool>),
+                typeof(TurmaEmPeriodoAbertoQueryFake), ServiceLifetime.Scoped));
         }
         
         [Fact(DisplayName = "Fechamento Bimestre Final - Não deve permitir lançamento de nota com período escolar no 4º bimestre encerrado e sem período de reabertura")]
         public async Task Nao_deve_permitir_lancamento_nota_com_periodo_escolar_no_4_bimestre_encerrada_sem_periodo_reabertura()
         {
+            TurmaEmPeriodoAbertoQueryFake.SetShouldReturnPeriodoAberto(false);
             var filtroNotaFechamento = ObterFiltroNotasFechamento(
                 ObterPerfilProfessor(),
                 TipoNota.Nota, ANO_7,
@@ -62,6 +67,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
         [Fact(DisplayName = "Fechamento Bimestre Final - Deve permitir lançamento de nota com período escolar no 4º bimestre encerrado e sem período abertura")]
         public async Task Deve_permitir_lancamento_nota_com_periodo_escolar_no_4_bimestre_encerrada_com_periodo_abertura()
         {
+            TurmaEmPeriodoAbertoQueryFake.SetShouldReturnPeriodoAberto(true);
             var filtroNotaFechamento = ObterFiltroNotasFechamento(
                 ObterPerfilProfessor(),
                 TipoNota.Nota, ANO_7,
@@ -72,7 +78,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             filtroNotaFechamento.CriarPeriodoEscolar = false;
             
             filtroNotaFechamento.CriarPeriodoAbertura = false;
-            
+
             await InserirPeriodoEscolarCustomizado();
 
             await InserirPeriodoAberturaCustomizado();
@@ -128,11 +134,11 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             historicoNotas.Any(w=> w.Id == 4 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_10).ShouldBeTrue();
             historicoNotas.Any(w=> w.Id == 5 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_2).ShouldBeTrue();
         }
-        
+
         private async Task InserirPeriodoEscolarCustomizado(bool periodoEscolarValido = false)
         {
             var dataReferencia = DateTimeExtension.HorarioBrasilia();
-            
+
             await CriarPeriodoEscolar(dataReferencia.AddDays(-285), dataReferencia.AddDays(-210), BIMESTRE_1, TIPO_CALENDARIO_1);
 
             await CriarPeriodoEscolar(dataReferencia.AddDays(-200), dataReferencia.AddDays(-125), BIMESTRE_2, TIPO_CALENDARIO_1);
@@ -141,7 +147,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 
             await CriarPeriodoEscolar(dataReferencia.AddDays(-20), periodoEscolarValido ? dataReferencia : dataReferencia.AddDays(-5), BIMESTRE_4, TIPO_CALENDARIO_1);
         }
-        
+
         private async Task InserirPeriodoAberturaCustomizado()
         {
             var dataReferencia = DateTimeExtension.HorarioBrasilia();

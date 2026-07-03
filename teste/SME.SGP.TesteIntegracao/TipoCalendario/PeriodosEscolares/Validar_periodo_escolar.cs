@@ -5,6 +5,7 @@ using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao;
 using SME.SGP.TesteIntegracao.RelatorioPAP;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -64,10 +65,10 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
                 TipoCalendario = 1,
                 Periodos = new List<PeriodoEscolarDto>
                 {
-                    new PeriodoEscolarDto { Bimestre = 1, PeriodoInicio = DateTimeExtension.HorarioBrasilia(), PeriodoFim = DateTimeExtension.HorarioBrasilia().AddMinutes(1) },
-                    new PeriodoEscolarDto { Bimestre = 2, PeriodoInicio = DateTimeExtension.HorarioBrasilia().AddMinutes(2), PeriodoFim = DateTimeExtension.HorarioBrasilia().AddMinutes(3) },
-                    new PeriodoEscolarDto { Bimestre = 3, PeriodoInicio = DateTimeExtension.HorarioBrasilia().AddMinutes(4), PeriodoFim = DateTimeExtension.HorarioBrasilia().AddMinutes(5) },
-                    new PeriodoEscolarDto { Bimestre = 4, PeriodoInicio = DateTimeExtension.HorarioBrasilia().AddMinutes(6), PeriodoFim = DateTimeExtension.HorarioBrasilia().AddMinutes(7) }
+                    new() { Bimestre = 1, PeriodoInicio = DateTime.SpecifyKind(DateTimeExtension.HorarioBrasilia(), DateTimeKind.Utc), PeriodoFim = DateTime.SpecifyKind(DateTimeExtension.HorarioBrasilia().AddMinutes(1), DateTimeKind.Utc) },
+                    new() { Bimestre = 2, PeriodoInicio = DateTime.SpecifyKind(DateTimeExtension.HorarioBrasilia().AddMinutes(2), DateTimeKind.Utc), PeriodoFim = DateTime.SpecifyKind(DateTimeExtension.HorarioBrasilia().AddMinutes(3), DateTimeKind.Utc) },
+                    new() { Bimestre = 3, PeriodoInicio = DateTime.SpecifyKind(DateTimeExtension.HorarioBrasilia().AddMinutes(4), DateTimeKind.Utc), PeriodoFim = DateTime.SpecifyKind(DateTimeExtension.HorarioBrasilia().AddMinutes(5), DateTimeKind.Utc) },
+                    new() { Bimestre = 4, PeriodoInicio = DateTime.SpecifyKind(DateTimeExtension.HorarioBrasilia().AddMinutes(6), DateTimeKind.Utc), PeriodoFim = DateTime.SpecifyKind(DateTimeExtension.HorarioBrasilia().AddMinutes(7), DateTimeKind.Utc) }
                 }
             };
         }
@@ -92,11 +93,12 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         protected async Task CriarConfiguracaoRelatorioPAP(bool considerarAnoAnterior = false)
         {
             var anoLetivo = considerarAnoAnterior ? ANO_LETIVO_ANO_ANTERIOR : ANO_LETIVO_ANO_ATUAL;
-
+            var inicioVigenciaUtc = new DateTime(anoLetivo, 01, 01, 0, 0, 0, DateTimeKind.Utc);
+            var fimVigenciaUtc = new DateTime(anoLetivo, 12, 31, 23, 59, 59, DateTimeKind.Utc);
             await InserirNaBase(new ConfiguracaoRelatorioPAP
             {
-                InicioVigencia = new(anoLetivo, 01, 01),
-                FimVigencia = new(anoLetivo, 12, 31),
+                InicioVigencia = inicioVigenciaUtc,
+                FimVigencia = fimVigenciaUtc,
                 TipoPeriocidade = ConstantesTestePAP.TIPO_PERIODICIDADE_BIMESTRAL,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF

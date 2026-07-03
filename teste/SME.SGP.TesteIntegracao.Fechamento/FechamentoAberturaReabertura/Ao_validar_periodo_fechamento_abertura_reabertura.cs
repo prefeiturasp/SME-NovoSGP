@@ -1,17 +1,20 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Moq;
 using Shouldly;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.ExcluirTurmaExtinta.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Threading.Tasks;
-using MediatR;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using SME.SGP.Aplicacao;
-using SME.SGP.TesteIntegracao.ExcluirTurmaExtinta.ServicosFakes;
 using Xunit;
 using PeriodoFechamentoBimestre = SME.SGP.Dominio.PeriodoFechamentoBimestre;
+using SME.SGP.Dominio.Entidades;
 
 namespace SME.SGP.TesteIntegracao
 {
@@ -31,6 +34,10 @@ namespace SME.SGP.TesteIntegracao
         [Fact(DisplayName = "Período Aberto - Deve retornar true quando estiver dentro do período de fechamento")]
         public async Task Deve_retornar_true_quando_estiver_dentro_do_periodo_de_fechamento()
         {
+            var mockRepositorioEventoFechamento = new Mock<IRepositorioEventoFechamentoConsulta>();
+            
+
+
             var dataReferencia = DateTimeExtension.HorarioBrasilia().Date;
             
             await CriarDreUe(DRE_CODIGO_1, UE_CODIGO_1);
@@ -44,7 +51,6 @@ namespace SME.SGP.TesteIntegracao
             await CriarPeriodoFechamento(dataReferencia);
             
             var useCase = ServiceProvider.GetService<IPeriodoFechamentoUseCase>();
-
             var retorno = await useCase.Executar(TURMA_CODIGO_1,dataReferencia,BIMESTRE_4);
 
             retorno.ShouldBeTrue();
@@ -125,9 +131,18 @@ namespace SME.SGP.TesteIntegracao
             {
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTimeExtension.HorarioBrasilia()
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                Aplicacao = Dominio.Aplicacao.SGP,
             });
-            
+
+            await InserirNaBase(new PeriodoFechamentoBimestre()
+            {
+                PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_4, 
+                PeriodoFechamentoId = PERIODO_FECHAMENTO_ID_1,
+                InicioDoFechamento = dataReferencia.AddDays(-10).Date,
+                FinalDoFechamento = dataReferencia.AddDays(+10).Date
+            });
+
             await InserirNaBase(new PeriodoFechamentoBimestre()
             {
                 PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_1,
@@ -151,13 +166,14 @@ namespace SME.SGP.TesteIntegracao
                 InicioDoFechamento = dataReferencia.AddDays(-20).Date,
                 FinalDoFechamento = dataReferencia.AddDays(-9).Date
             });
-            
+
             await InserirNaBase(new PeriodoFechamentoBimestre()
             {
-                PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_4,
+                PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_4, 
                 PeriodoFechamentoId = PERIODO_FECHAMENTO_ID_1,
                 InicioDoFechamento = dataReferencia.AddDays(-10).Date,
-                FinalDoFechamento = dataReferencia.AddDays(+10).Date
+                FinalDoFechamento = dataReferencia.AddDays(+10).Date,
+               
             });
         }
     }
