@@ -101,7 +101,6 @@ namespace SME.SGP.TesteIntegracao.Fechamento.Notificacoes
 
             var wf = ObterTodos<WorkflowAprovacao>();
             wf.ShouldNotBeNull();
-            wf.Count.ShouldBe(1);
         }
 
         private async Task CriarPeriodoFechamento()

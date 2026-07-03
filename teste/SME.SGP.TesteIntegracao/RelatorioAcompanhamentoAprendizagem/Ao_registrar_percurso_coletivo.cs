@@ -1,7 +1,12 @@
-﻿using Shouldly;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Shouldly;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Threading.Tasks;
 using Xunit;
@@ -14,11 +19,20 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
         {
         }
 
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<TurmaEmPeriodoAbertoQuery, bool>),
+                typeof(TurmaEmPeriodoAbertoQueryFake), ServiceLifetime.Scoped));
+        }
+
         [Theory(DisplayName= "Relatorio Acompanhamento Aprendizagem - Ao registrar percurso coletivo dos semestres")]
         [InlineData(1)]
         [InlineData(2)]
         public async Task Ao_registrar_percurso_coletivo_dos_semestres(int semestre)
         {
+            TurmaEmPeriodoAbertoQueryFake.ShouldReturnPeriodoAberto = true;
             await CriarDadosBasicos();
             await CriarPeriodoEscolar(DateTimeExtension.HorarioBrasilia().Date, DateTimeExtension.HorarioBrasilia().AddMonths(2), semestre * 2);
             var acompanhamento = $"Registro de percurso coletivo semestre {semestre}";
@@ -39,6 +53,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
         [Fact(DisplayName = "Relatorio Acompanhamento Aprendizagem -  Ao registrar percurso coletivo com período fechado")]
         public async Task Ao_registrar_percurso_coletivo_com_periodo_fechado() 
         {
+            TurmaEmPeriodoAbertoQueryFake.ShouldReturnPeriodoAberto = false;
             await CriarDadosBasicos(false);
             await CriarPeriodoEscolarCustomizadoQuartoBimestre();
 
@@ -57,6 +72,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
         [Fact(DisplayName = "Relatorio Acompanhamento Aprendizagem - Ao registrar percurso coletivo com período em reabertura")]
         public async Task Ao_registrar_percurso_coletivo_com_periodo_em_reabertura()
         {
+            TurmaEmPeriodoAbertoQueryFake.ShouldReturnPeriodoAberto = true;
             await CriarDadosBasicos(false);
             await CriarPeriodoEscolarCustomizadoQuartoBimestre();
             await CriarPeriodoAberturaCustomizadoQuartoBimestre();
