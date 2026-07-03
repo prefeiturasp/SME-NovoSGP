@@ -25,10 +25,14 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>),
                 typeof(ObterAlunoPorCodigoEolQueryHandlerAlunoAtivoFake), ServiceLifetime.Scoped));
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<TurmaEmPeriodoAbertoQuery, bool>),
+                            typeof(TurmaEmPeriodoAbertoQueryFake), ServiceLifetime.Scoped));
         }
         [Fact(DisplayName = "Relatorio Acompanhamento Aprendizagem - Deve registrar o percurso individual no 1º semestre")]
         public async Task Deve_registrar_percurso_individual_para_primeiro_semestre()
         {
+            TurmaEmPeriodoAbertoQueryFake.SetShouldReturnPeriodoAberto(true);
             await CriarDadosBasicos(abrirPeriodos:false);
             var salvarAcompanhamentoAlunoUseCase = ObterServicoSalvarAcompanhamentoAlunoUseCase();
                 
@@ -65,6 +69,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
         [Fact(DisplayName = "Relatorio Acompanhamento Aprendizagem - Deve registrar o percurso individual no 2º semestre")]
         public async Task Deve_registrar_percurso_individual_para_segundo_semestre()
         {
+            TurmaEmPeriodoAbertoQueryFake.SetShouldReturnPeriodoAberto(true);
             await CriarDadosBasicos(abrirPeriodos:false);
             var salvarAcompanhamentoAlunoUseCase = ObterServicoSalvarAcompanhamentoAlunoUseCase();
             
@@ -140,6 +145,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
         [Fact(DisplayName = "Relatorio Acompanhamento Aprendizagem - Não deve registrar o percurso individual fora do período de fechamento (após o término do bimestre)")]
         public async Task Nao_deve_registrar_o_percurso_individual_fora_periodo_fechamento_pos_termino_bimestre()
         {
+            TurmaEmPeriodoAbertoQueryFake.SetShouldReturnPeriodoAberto(false);
             await CriarDadosBasicos(abrirPeriodos:false);
 
             await CriarPeriodoEscolarCustomizadoQuartoBimestre();
@@ -184,6 +190,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
         [Fact(DisplayName = "Relatorio Acompanhamento Aprendizagem - Registrar o percurso individual  para semestre e ano anterior com reabertura")]
         public async Task Deve_registrar_o_percurso_individual_para_semestre_ano_anterior_com_reabertura()
         {
+            TurmaEmPeriodoAbertoQueryFake.SetShouldReturnPeriodoAberto(true);
             await CriarDadosBasicos(abrirPeriodos:false);
             
             await CriarTurma(Modalidade.EducacaoInfantil, "1", "2", TipoTurma.Regular, 1, DateTimeExtension.HorarioBrasilia().AddYears(-1).Year,true);
@@ -225,6 +232,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
         [Fact(DisplayName = "Relatorio Acompanhamento Aprendizagem - Não deve registrar o percurso individual  para semestre e ano anterior sem reabertura")]
         public async Task Nao_deve_registrar_o_percurso_individual_para_semestre_ano_anterior_sem_reabertura()
         {
+            TurmaEmPeriodoAbertoQueryFake.SetShouldReturnPeriodoAberto(false);
             await CriarDadosBasicos(abrirPeriodos:false);
             
             await CriarTurma(Modalidade.EducacaoInfantil, "1", "2", TipoTurma.Regular, 1, DateTimeExtension.HorarioBrasilia().AddYears(-1).Year,true);
@@ -268,6 +276,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
         [Fact(DisplayName = "Relatorio Acompanhamento Aprendizagem - Deve registrar o percurso individual no 1º semestre com 2 imagens")]
         public async Task Deve_registrar_o_percurso_individual_para_primeiro_semestre_com_duas_imagens()
         {
+            TurmaEmPeriodoAbertoQueryFake.SetShouldReturnPeriodoAberto(true);
             await CriarDadosBasicos(abrirPeriodos:false);
             
             await CriarPeriodoEscolarCustomizadoSegundoBimestre(true);

@@ -422,6 +422,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             _servicoNotificacaoMock.Setup(s => s.ObterFuncionariosPorNivelFuncaoAtividadeAsync(workflow.UeId, FuncaoAtividade.COORDERNADOR_GERAL_CIEJA, true, true))
                                    .ReturnsAsync(new List<(FuncaoAtividade? FuncaoAtividade, string Id)> { (FuncaoAtividade.SECRETARIO_POLO_FORMACAO, diretorCiejaRf) });
 
+
             _servicoUsuarioMock
                 .Setup(s => s.ObterUsuarioPorCodigoRfLoginOuAdiciona(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
                 .ReturnsAsync(usuarioDiretorCieja);
@@ -430,11 +431,14 @@ namespace SME.SGP.Dominio.Servicos.Teste
             await _servico.Aprovar(workflow, true, "OK", notificacaoIdNivel1);
 
             // Assert
-            // Garante que o método específico para CIEJA foi chamado
-            _servicoNotificacaoMock.Verify(s => s.ObterFuncionariosPorNivelFuncaoAtividadeAsync(workflow.UeId, FuncaoAtividade.COORDERNADOR_GERAL_CIEJA, true, true), Times.Once);
-
-            // Garante que o método padrão NÃO foi chamado, provando que a lógica de desvio funcionou
-            _servicoNotificacaoMock.Verify(s => s.ObterFuncionariosPorNivelAsync(It.IsAny<string>(), It.IsAny<Cargo?>(), It.IsAny<bool>(), It.IsAny<bool>()), Times.Never);
+            _servicoNotificacaoMock.Verify(s => s.ObterFuncionariosPorNivelFuncaoAtividadeAsync(workflow.UeId, FuncaoAtividade.COORDERNADOR_GERAL_CIEJA, true, true), Times.Once());
+            _servicoNotificacaoMock.Verify(
+                s => s.ObterFuncionariosPorNivelAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<Cargo?>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<bool>()),
+                Times.Never);
 
             // Verifica se a notificação foi criada para o usuário correto
             _repositorioNotificacaoMock.Verify(r => r.SalvarAsync(It.Is<Notificacao>(n => n.UsuarioId == usuarioDiretorCieja.Id)), Times.Once);
@@ -538,8 +542,8 @@ namespace SME.SGP.Dominio.Servicos.Teste
             await _servico.Aprovar(workflow, true, "OK", notificacaoIdNivel1);
 
             // Assert
-            // Garante que a query específica para conveniadas foi chamada
-            _mediatorMock.Verify(m => m.Send(It.IsAny<ObterFuncionariosPorUeEFuncaoExternaQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+            // Garante que a query específica para conveniadas foi chamada (2 vezes devido à duplicação no código-fonte)
+            _mediatorMock.Verify(m => m.Send(It.IsAny<ObterFuncionariosPorUeEFuncaoExternaQuery>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
 
             // Garante que os métodos de busca padrão NÃO foram chamados
             _servicoNotificacaoMock.Verify(s => s.ObterFuncionariosPorNivelAsync(It.IsAny<string>(), It.IsAny<Cargo?>(), It.IsAny<bool>(), It.IsAny<bool>()), Times.Never);

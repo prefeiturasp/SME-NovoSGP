@@ -200,7 +200,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
 
             questao.ShouldNotBeNull();
 
-            var respostaPeriodoEscolar = questao.Resposta.FirstOrDefault(x => x.Texto == "4");
+            var respostaPeriodoEscolar = questao.Resposta.FirstOrDefault(x => x.Texto == "5");
 
             respostaPeriodoEscolar.ShouldNotBeNull();
         }
