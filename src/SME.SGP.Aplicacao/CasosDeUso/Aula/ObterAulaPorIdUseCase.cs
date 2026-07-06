@@ -98,14 +98,62 @@ namespace SME.SGP.Aplicacao
 
                 var disciplinas = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(aula.TurmaId, turma.TipoTurma == TipoTurma.Programa);
 
-                return disciplinas.Any(d => d.CodigoComponenteCurricular == long.Parse(aula.DisciplinaId)) ||
-                       disciplinas.Any(d => d.CodigoComponenteCurricularTerritorioSaber == long.Parse(aula.DisciplinaId)) ||
-                       disciplinas.Any(d => d.CdComponenteCurricularPai == long.Parse(aula.DisciplinaId));                
+                return await PossuiDisciplinaEquivalente(disciplinas, long.Parse(aula.DisciplinaId));                
             }
 
-            var disciplina = componentesUsuario?.FirstOrDefault(x => x.Codigo.ToString().Equals(aula.DisciplinaId));
+            var disciplina = await ObterComponenteEquivalente(componentesUsuario, long.Parse(aula.DisciplinaId));
 
             return disciplina.NaoEhNulo();
+        }
+
+        private async Task<bool> PossuiDisciplinaEquivalente(IEnumerable<DisciplinaDto> disciplinas, long disciplinaId)
+        {
+            disciplinas ??= Enumerable.Empty<DisciplinaDto>();
+
+            if (disciplinas.Any(d => d.PossuiCodigoEquivalente(disciplinaId)))
+                return true;
+
+            var disciplinaPorId = (await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new[] { disciplinaId })))?.FirstOrDefault();
+
+            if (disciplinaPorId.EhNulo() || !disciplinaPorId.TerritorioSaber)
+                return false;
+
+            if (disciplinaPorId.CodigoComponenteCurricularTerritorioSaber > 0 &&
+                disciplinas.Any(d => d.PossuiCodigoEquivalente(disciplinaPorId.CodigoComponenteCurricularTerritorioSaber)))
+                return true;
+
+            return disciplinas.Count(d => d.TerritorioSaber) == 1;
+        }
+
+        private async Task<ComponenteCurricularEol> ObterComponenteEquivalente(IEnumerable<ComponenteCurricularEol> componentesUsuario, long disciplinaId)
+        {
+            componentesUsuario ??= Enumerable.Empty<ComponenteCurricularEol>();
+
+            var componente = componentesUsuario?.FirstOrDefault(x => x.PossuiCodigoEquivalente(disciplinaId));
+
+            if (componente.NaoEhNulo())
+                return componente;
+
+            var disciplinaPorId = (await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new[] { disciplinaId })))?.FirstOrDefault();
+
+            if (disciplinaPorId.EhNulo() || !disciplinaPorId.TerritorioSaber)
+                return null;
+
+            if (disciplinaPorId.CodigoComponenteCurricularTerritorioSaber > 0)
+            {
+                componente = componentesUsuario?.FirstOrDefault(x => x.PossuiCodigoEquivalente(disciplinaPorId.CodigoComponenteCurricularTerritorioSaber));
+
+                if (componente.NaoEhNulo())
+                    return componente;
+            }
+
+            var componentesTerritorioSaber = componentesUsuario?
+                .Where(c => c.TerritorioSaber)
+                .ToList();
+
+            return componentesTerritorioSaber?.Count == 1
+                ? componentesTerritorioSaber.First()
+                : null;
         }
 
         private async Task<AulaConsultaDto> MapearParaDto(Aula aula, bool aberto, bool usuarioAcessoAoComponente, bool aulaEmManutencao, bool temPeriodoAberto, bool temEventoDeRecesso, bool possuiCompensacao)
