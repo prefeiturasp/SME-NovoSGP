@@ -7,6 +7,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SME.SGP.Dominio;
 using Xunit;
 
 namespace SME.SGP.Api.Teste.Controllers
@@ -29,7 +30,7 @@ namespace SME.SGP.Api.Teste.Controllers
             // Arrange
             var turmaCodigo = "T123";
             long componenteCurricular = 456;
-            var dataAula = DateTime.Now;
+            var dataAula = DateTimeExtension.HorarioBrasilia();
             long dataAulaTicks = dataAula.Ticks;
 
             var aulasFakes = new List<AulaQuantidadeTipoDto>();

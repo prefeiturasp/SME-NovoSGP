@@ -5,6 +5,8 @@ using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using NpgsqlTypes;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -34,11 +36,11 @@ namespace SME.SGP.Dados.Repositorios
             foreach (var item in indicadores)
             {
                 await writer.StartRowAsync();
-                await writer.WriteAsync(item.CodigoDre, NpgsqlTypes.NpgsqlDbType.Varchar);
-                await writer.WriteAsync(item.CodigoUe, NpgsqlTypes.NpgsqlDbType.Varchar);
-                await writer.WriteAsync(item.AnoLetivo, NpgsqlTypes.NpgsqlDbType.Integer);
-                await writer.WriteAsync(item.TaxaAlfabetizacao, NpgsqlTypes.NpgsqlDbType.Numeric);
-                await writer.WriteAsync(item.CriadoEm, NpgsqlTypes.NpgsqlDbType.TimestampTz);
+                await writer.WriteAsync(item.CodigoDre, NpgsqlDbType.Varchar);
+                await writer.WriteAsync(item.CodigoUe, NpgsqlDbType.Varchar);
+                await writer.WriteAsync(item.AnoLetivo, NpgsqlDbType.Integer);
+                await writer.WriteAsync(item.TaxaAlfabetizacao, NpgsqlDbType.Numeric);
+                await writer.WriteAsync(DateTimeExtension.EnsureUnspecified(item.CriadoEm), NpgsqlDbType.Timestamp);
             }
 
             await writer.CompleteAsync();

@@ -59,7 +59,7 @@ namespace SME.SGP.Dominio
                 return;
 
             Status = EntidadeStatus.Aprovado;
-            AprovadoEm = DateTime.Now;
+            AprovadoEm = DateTimeExtension.HorarioBrasilia();
         }
 
         public void AtualizarDre(Dre dre)

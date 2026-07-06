@@ -7,6 +7,7 @@ using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -41,7 +42,7 @@ namespace SME.SGP.Dados.Repositorios
                 await writer.WriteAsync(item.Modalidade, NpgsqlDbType.Varchar);
                 await writer.WriteAsync(item.QuantidadeDesistencias, NpgsqlDbType.Integer);
                 await writer.WriteAsync(item.AnoLetivo, NpgsqlDbType.Integer);
-                await writer.WriteAsync(item.CriadoEm, NpgsqlDbType.TimestampTz);
+                await writer.WriteAsync(DateTimeExtension.EnsureUnspecified(item.CriadoEm), NpgsqlTypes.NpgsqlDbType.Timestamp);
             }
 
             await writer.CompleteAsync();
@@ -66,7 +67,7 @@ namespace SME.SGP.Dados.Repositorios
                 await writer.WriteAsync(item.NomeTurma, NpgsqlDbType.Varchar);
                 await writer.WriteAsync(item.Modalidade, NpgsqlDbType.Varchar);
                 await writer.WriteAsync(item.QuantidadeDesistencias, NpgsqlDbType.Integer);
-                await writer.WriteAsync(item.CriadoEm, NpgsqlDbType.TimestampTz);
+                await writer.WriteAsync(DateTimeExtension.EnsureUnspecified(item.CriadoEm), NpgsqlTypes.NpgsqlDbType.Timestamp);
             }
             await writer.CompleteAsync();
         }

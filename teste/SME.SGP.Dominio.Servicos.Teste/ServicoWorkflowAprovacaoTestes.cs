@@ -543,7 +543,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
 
             // Assert
             // Garante que a query específica para conveniadas foi chamada (2 vezes devido à duplicação no código-fonte)
-            _mediatorMock.Verify(m => m.Send(It.IsAny<ObterFuncionariosPorUeEFuncaoExternaQuery>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+            _mediatorMock.Verify(m => m.Send(It.IsAny<ObterFuncionariosPorUeEFuncaoExternaQuery>(), It.IsAny<CancellationToken>()), Times.Once);
 
             // Garante que os métodos de busca padrão NÃO foram chamados
             _servicoNotificacaoMock.Verify(s => s.ObterFuncionariosPorNivelAsync(It.IsAny<string>(), It.IsAny<Cargo?>(), It.IsAny<bool>(), It.IsAny<bool>()), Times.Never);

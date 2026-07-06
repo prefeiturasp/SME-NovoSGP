@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Dominio;
 using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Grade
@@ -25,7 +26,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Grade
         {
             var turmaCodigo = "123";
             long componenteCurricularId = 456;
-            var dataAula = DateTime.Now;
+            var dataAula = DateTimeExtension.HorarioBrasilia();
             var codigoRf = "789";
             var ehRegencia = true;
             var gradeRetorno = new GradeComponenteTurmaAulasDto { PodeEditar = true, QuantidadeAulasGrade = 2 };
