@@ -211,7 +211,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaComponenteSemAula
                 Descricao = "dias após o inicio do período para gerar pendencias de componentes sem aula"
             });
 
-            var dataReferencia = DateTime.Now;
+            var dataReferencia = DateTimeExtension.HorarioBrasilia();
             await CriarPeriodoEscolar(dataReferencia.AddDays(diasPeriodoInicial), dataReferencia.AddDays(diasPeriodoFinal), BIMESTRE_1, TIPO_CALENDARIO_1);
         }
     }

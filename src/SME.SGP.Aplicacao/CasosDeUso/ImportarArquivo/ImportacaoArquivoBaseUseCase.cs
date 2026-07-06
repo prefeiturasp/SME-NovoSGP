@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo
             importacaoLogDto.TotalRegistros = totalRegistros;
             importacaoLogDto.RegistrosProcessados = totalRegistros - processadosComFalha.Count;
             importacaoLogDto.RegistrosComFalha = processadosComFalha.Count;
-            importacaoLogDto.DataFimProcessamento = DateTime.Now;
+            importacaoLogDto.DataFimProcessamento = DateTimeExtension.HorarioBrasilia();
 
             importacaoLogDto.StatusImportacao = DefinirStatusImportacao(totalRegistros);
 
