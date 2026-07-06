@@ -1518,6 +1518,7 @@ namespace SME.SGP.TesteIntegracao
             await CriarPeriodoEscolar(dataReferencia.AddDays(-200), dataReferencia.AddDays(-125), BIMESTRE_2);
 
             await CriarPeriodoEscolar(dataReferencia.AddDays(-115), dataReferencia.AddDays(-40), BIMESTRE_3);
+            await CriarPeriodoEscolar(dataReferencia.AddDays(-125), dataReferencia.AddDays(-60), BIMESTRE_4);
 
             await CriarPeriodoEscolar(dataReferencia.AddDays(-20), periodoEscolarValido ? dataReferencia : dataReferencia.AddDays(-5), BIMESTRE_4);
         }

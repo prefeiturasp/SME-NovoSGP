@@ -488,7 +488,7 @@ namespace SME.SGP.Aplicacao
 
         private int ObterBimestreAtual(IEnumerable<PeriodoEscolar> periodosEscolares)
         {
-            var dataPesquisa = DateTime.Now;
+            var dataPesquisa = DateTimeExtension.HorarioBrasilia();
 
             var periodoEscolar = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= dataPesquisa.Date && x.PeriodoFim.Date >= dataPesquisa.Date);
 

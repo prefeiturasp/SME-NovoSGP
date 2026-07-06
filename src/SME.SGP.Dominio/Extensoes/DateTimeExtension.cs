@@ -9,20 +9,18 @@ namespace SME.SGP.Dominio
             return data;
         }
        
-        /// <summary>
-        /// Método improvisado para aplicar o GMT de Brasília manualmente, enquanto o problema de reagionalização do servidor não é resolvido;
-        /// </summary>
-        /// <returns>Retorna data e hora aplicando GMT -3:00 de Brasília.</returns>
+        private static readonly TimeZoneInfo BrasiliaTz = ResolveBrasiliaTimeZone();
         public static DateTime HorarioBrasilia()
         {
-            return DateTime.UtcNow.AddHours(-3);
+            var brasilia = TimeZoneInfo.ConvertTime(DateTimeOffset.UtcNow, BrasiliaTz).DateTime;
+            return DateTime.SpecifyKind(brasilia, DateTimeKind.Unspecified);
         }
 
         public static DateTime ObterDomingo(this DateTime data)
         {
             if (data.DayOfWeek == DayOfWeek.Sunday)
                 return data;
-            int diferenca = (7 + (data.DayOfWeek - DayOfWeek.Sunday)) % 7;
+            var diferenca = (7 + (data.DayOfWeek - DayOfWeek.Sunday)) % 7;
             return data.AddDays(-1 * diferenca).Date;
         }
 
@@ -30,7 +28,7 @@ namespace SME.SGP.Dominio
         {
             if (data.DayOfWeek == DayOfWeek.Saturday)
                 return data;
-            int diferenca = (((int)DayOfWeek.Saturday - (int)data.DayOfWeek + 7) % 7);
+            var diferenca = (((int)DayOfWeek.Saturday - (int)data.DayOfWeek + 7) % 7);
             return data.AddDays(diferenca);
         }
 
@@ -43,10 +41,13 @@ namespace SME.SGP.Dominio
         public static int Semestre(this DateTime data)
             => data.Month > 6 ? 2 : 1;
 
+       public static DateTime EnsureUnspecified(DateTime dt) =>
+            DateTime.SpecifyKind(dt, DateTimeKind.Unspecified);
+
         public static DateTime DiaRetroativo(this DateTime data, int nrDias)
         {
-            int contadorDias = nrDias;
-            DateTime dataRetorno = data;
+            var contadorDias = nrDias;
+            var dataRetorno = data;
 
             while (contadorDias > 0)
             {
@@ -62,6 +63,25 @@ namespace SME.SGP.Dominio
         public static bool EhAnoAtual(this DateTime data)
         {
             return data.Year == HorarioBrasilia().Year;
+        }
+        private static TimeZoneInfo ResolveBrasiliaTimeZone()
+        {
+            // Windows / Linux
+            var ids = new[] { "E. South America Standard Time", "America/Sao_Paulo" };
+
+            foreach (var id in ids)
+            {
+                try { return TimeZoneInfo.FindSystemTimeZoneById(id); }
+                catch(Exception ex)
+                {
+                    if (ex.InnerException != null) throw ex.InnerException;
+                }
+            }
+
+            // fallback fixo -03:00
+            return TimeZoneInfo.CreateCustomTimeZone(
+                "Brasilia_Fallback", TimeSpan.FromHours(-3),
+                "Brasilia (fallback)", "Brasilia (fallback)");
         }
     }
 }
