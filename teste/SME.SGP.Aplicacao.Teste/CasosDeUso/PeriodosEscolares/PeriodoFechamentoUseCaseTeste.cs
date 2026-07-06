@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PeriodosEscolares
         public async Task Executar_DeveRetornarTrueQuandoTurmaEstaEmPeriodoDeFechamento()
         {
             var turmaCodigo = "COD123";
-            var dataReferencia = DateTime.Now;
+            var dataReferencia = DateTimeExtension.HorarioBrasilia();
             var bimestre = 1;
 
             var turmaMock = new Turma { CodigoTurma = turmaCodigo };
@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PeriodosEscolares
         public async Task Executar_DeveRetornarFalseQuandoTurmaNaoEstaEmPeriodoDeFechamento()
         {
             var turmaCodigo = "COD456";
-            var dataReferencia = DateTime.Now;
+            var dataReferencia = DateTimeExtension.HorarioBrasilia();
             var bimestre = 2;
 
             var turmaMock = new Turma { CodigoTurma = turmaCodigo };
@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PeriodosEscolares
         public async Task Executar_DeveLancarExcecaoQuandoObterTurmaPorCodigoQueryFalha()
         {
             var turmaCodigo = "COD789";
-            var dataReferencia = DateTime.Now;
+            var dataReferencia = DateTimeExtension.HorarioBrasilia();
             var bimestre = 3;
 
             _mediatorMock.Setup(m => m.Send(It.IsAny<ObterTurmaPorCodigoQuery>(), It.IsAny<CancellationToken>()))
@@ -88,7 +88,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PeriodosEscolares
         public async Task Executar_DeveLancarExcecaoQuandoObterTurmaEmPeriodoDeFechamentoQueryFalha()
         {
             var turmaCodigo = "COD000";
-            var dataReferencia = DateTime.Now;
+            var dataReferencia = DateTimeExtension.HorarioBrasilia();
             var bimestre = 4;
 
             var turmaMock = new Turma { CodigoTurma = turmaCodigo };

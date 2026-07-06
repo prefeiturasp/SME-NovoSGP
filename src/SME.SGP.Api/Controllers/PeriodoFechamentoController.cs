@@ -6,6 +6,7 @@ using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -41,7 +42,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> PeriodoTurmaAberto(string turmaCodigo, int bimestre, [FromQuery] DateTime dataReferencia, [FromServices] IPeriodoFechamentoUseCase periodoFechamentoUseCase)
         {
             if (dataReferencia == DateTime.MinValue)
-                dataReferencia = DateTime.Now;
+                dataReferencia = DateTimeExtension.HorarioBrasilia();
             return Ok(await periodoFechamentoUseCase.Executar(turmaCodigo, dataReferencia, bimestre));
         }
 

@@ -281,10 +281,10 @@ namespace SME.SGP.Dominio
                 var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, turmaHistorica.NaoEhNulo());
                 var notaParametro =
                     await mediator.Send(new ObterNotaParametroPorDataAvaliacaoQuery(atividadeAvaliativa.DataAvaliacao));
-                var dataAtual = DateTime.Now;
+                var dataAtual = DateTimeExtension.HorarioBrasilia();
                 
                 // Verifica Bimestre Atual
-                var dataPesquisa = DateTime.Today;
+                var dataPesquisa = DateTimeExtension.HorarioBrasilia();
                 var periodosEscolares = await BuscarPeriodosEscolaresDaAtividade(atividadeAvaliativa);
                 var periodoEscolarAtual = periodosEscolares.FirstOrDefault(x =>
                     x.PeriodoInicio.Date <= dataPesquisa.Date && x.PeriodoFim.Date >= dataPesquisa.Date);

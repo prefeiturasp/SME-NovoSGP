@@ -6,7 +6,7 @@ namespace SME.SGP.Dominio
     {
         public ConselhoClasseConsolidadoTurmaAluno()
         {
-            DataAtualizacao = DateTime.Now;
+            DataAtualizacao = DateTimeExtension.HorarioBrasilia();
         }
         public DateTime DataAtualizacao { get; set; }
         public SituacaoConselhoClasse Status { get; set; }

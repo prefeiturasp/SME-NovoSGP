@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
 
             if (consulta?.Count() > 0)
             {
-                var dataAtual = DateTime.Now;
+                var dataAtual = DateTimeExtension.HorarioBrasilia();
                 int totalDeDias = 0;
                 foreach (var datas in consulta)
                 {

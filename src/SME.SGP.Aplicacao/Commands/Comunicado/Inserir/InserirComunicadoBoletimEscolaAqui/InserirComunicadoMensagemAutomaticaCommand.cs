@@ -9,8 +9,8 @@ namespace SME.SGP.Aplicacao
     {
         public InserirComunicadoMensagemAutomaticaCommand(string descricao, string titulo, MensagemRelatorioAutomaticoEscolaAquiDto relatorioDto, string urlRedirecionamentoBase, TipoRelatorio tipoRelatorio, string nomeRelatorio)
         {
-            DataEnvio = DateTime.Now;
-            DataExpiracao = DateTime.Now;
+            DataEnvio = DateTimeExtension.HorarioBrasilia();
+            DataExpiracao = DateTimeExtension.HorarioBrasilia();
             Descricao = descricao;
             Titulo = titulo;
             AnoLetivo = relatorioDto.AnoLetivo;

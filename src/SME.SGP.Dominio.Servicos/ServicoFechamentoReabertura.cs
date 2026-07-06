@@ -159,7 +159,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 if (fechamentoReaberturaBimestre.Id > 0)
                 {
-                    fechamentoReaberturaBimestre.AlteradoEm = DateTime.Now;
+                    fechamentoReaberturaBimestre.AlteradoEm = DateTimeExtension.HorarioBrasilia();
                     fechamentoReaberturaBimestre.AlteradoPor = usuarioAtual.Nome;
                     fechamentoReaberturaBimestre.AlteradoRF = usuarioAtual.CodigoRf;
                 }
