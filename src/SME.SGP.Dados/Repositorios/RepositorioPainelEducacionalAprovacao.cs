@@ -7,6 +7,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoAprovacao;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -42,7 +43,7 @@ namespace SME.SGP.Dados.Repositorios
                 await writer.WriteAsync(item.TotalRetencoesAusencias, NpgsqlDbType.Integer);
                 await writer.WriteAsync(item.TotalRetencoesNotas, NpgsqlDbType.Integer);
                 await writer.WriteAsync(item.AnoLetivo, NpgsqlDbType.Integer);
-                await writer.WriteAsync(item.CriadoEm, NpgsqlDbType.TimestampTz);
+                await writer.WriteAsync(DateTimeExtension.EnsureUnspecified(item.CriadoEm), NpgsqlDbType.Timestamp);
             }
 
             await writer.CompleteAsync();

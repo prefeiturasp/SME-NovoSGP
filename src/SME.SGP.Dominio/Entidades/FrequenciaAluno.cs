@@ -109,7 +109,7 @@ namespace SME.SGP.Dominio
             TotalAulas = totalAulas;
             TotalRemotos = totalRemotos;
             TotalPresencas = totalPresencas;
-            AlteradoEm = DateTime.Now;
+            AlteradoEm = DateTimeExtension.HorarioBrasilia();
             Professor = professor;
 
             return this;

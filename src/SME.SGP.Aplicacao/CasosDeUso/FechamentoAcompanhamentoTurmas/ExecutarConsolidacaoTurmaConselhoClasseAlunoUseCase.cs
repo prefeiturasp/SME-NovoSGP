@@ -121,7 +121,7 @@ namespace SME.SGP.Aplicacao
             }
 
             consolidadoTurmaAluno.Status = statusNovo;
-            consolidadoTurmaAluno.DataAtualizacao = DateTime.Now;
+            consolidadoTurmaAluno.DataAtualizacao = DateTimeExtension.HorarioBrasilia();
 
             try
             {

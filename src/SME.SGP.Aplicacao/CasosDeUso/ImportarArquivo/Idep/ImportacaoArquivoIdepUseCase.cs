@@ -129,7 +129,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ImportarArquivo.Idep
                 importacaoLog.StatusImportacao = ProcessadosComFalha.Count > 0
                 ? SituacaoArquivoImportacao.ProcessadoComFalhas.GetAttribute<DisplayAttribute>().Name
                 : SituacaoArquivoImportacao.ProcessadoComSucesso.GetAttribute<DisplayAttribute>().Name;
-                importacaoLog.DataFimProcessamento = DateTime.Now;
+                importacaoLog.DataFimProcessamento = DateTimeExtension.HorarioBrasilia();
                 await repositorioImportacaoLog.SalvarAsync(importacaoLog);
             }
             return true;

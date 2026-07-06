@@ -290,7 +290,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PeriodosEscolares
             _mediatorMock.Setup(m => m.Send(ObterUsuarioLogadoQuery.Instance, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(usuarioMock);
 
-            var dataAtual = DateTime.Now;
+            var dataAtual = DateTimeExtension.HorarioBrasilia();
             var periodosAulasMock = new List<PeriodoEscolarVerificaRegenciaDto>
             {
                 new PeriodoEscolarVerificaRegenciaDto { DataAula = dataAtual.AddDays(-5), AulaCj = false }, 

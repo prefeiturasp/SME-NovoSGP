@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao
                 };
             }
 
-            consolidadoTurmaComponente.DataAtualizacao = DateTime.Now;
+            consolidadoTurmaComponente.DataAtualizacao = DateTimeExtension.HorarioBrasilia();
             consolidadoTurmaComponente.Status = statusFechamento;
 
             return consolidadoTurmaComponente;
