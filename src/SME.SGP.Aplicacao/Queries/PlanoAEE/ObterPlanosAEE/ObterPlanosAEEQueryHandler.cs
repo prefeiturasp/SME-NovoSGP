@@ -110,8 +110,8 @@ namespace SME.SGP.Aplicacao
                 var ueCodigo = await mediator.Send(new ObterUePorIdQuery(ueId));
                 var turmas =
                     await mediator.Send(
-                        new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(ueCodigo.CodigoUe, 0,
-                            0, false, DateTime.Now.Year, tipos, true));
+                        new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(ueCodigo.CodigoUe, new FiltroModalidade(0),
+                            new FiltroPeriodoLetivo(DateTime.Now.Year, false), tipos, true));
 
                 if (turmas.NaoEhNulo() || turmas.Any())
                 {
