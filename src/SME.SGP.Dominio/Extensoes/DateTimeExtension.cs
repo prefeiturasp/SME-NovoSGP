@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace SME.SGP.Dominio
 {
@@ -66,19 +67,29 @@ namespace SME.SGP.Dominio
         }
         private static TimeZoneInfo ResolveBrasiliaTimeZone()
         {
-            // Windows / Linux
-            var ids = new[] { "E. South America Standard Time", "America/Sao_Paulo" };
+            var ids =
+                // Verifica se o sistema operacional é Linux para priorizar o ID IANA
+                RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? new[] { "America/Sao_Paulo", "E. South America Standard Time" } :
+                // Assume Windows ou outro OS
+                new[] { "E. South America Standard Time", "America/Sao_Paulo" };
 
             foreach (var id in ids)
             {
-                try { return TimeZoneInfo.FindSystemTimeZoneById(id); }
-                catch(Exception ex)
+                try
                 {
-                    if (ex.InnerException != null) throw ex.InnerException;
+                    return TimeZoneInfo.FindSystemTimeZoneById(id);
+                }
+                catch (TimeZoneNotFoundException)
+                {
+                    Console.WriteLine("Este fuso horário não foi encontrado, tente o próximo");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Erro ao tentar encontrar TimeZoneInfo para '{id}': {ex.Message}");
                 }
             }
 
-            // fallback fixo -03:00
+            // Fallback fixo -03:00 se nenhum fuso horário for encontrado
             return TimeZoneInfo.CreateCustomTimeZone(
                 "Brasilia_Fallback", TimeSpan.FromHours(-3),
                 "Brasilia (fallback)", "Brasilia (fallback)");
