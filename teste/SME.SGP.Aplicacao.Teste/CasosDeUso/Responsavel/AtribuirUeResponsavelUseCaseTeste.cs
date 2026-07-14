@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Responsavel
             // Assert
             Assert.True(resultado.AtribuidoComSucesso);
             repositorioMock.Verify(r => r.Salvar(It.Is<SupervisorEscolaDre>(s => s.EscolaId == "UE-C")), Times.Once);
-            repositorioMock.Verify(r => r.Remover(1), Times.Once);
+            repositorioMock.Verify(r => r.RemoverLogico(1, null), Times.Once);
             repositorioMock.Verify(r => r.SalvarAsync(It.Is<SupervisorEscolaDre>(s => s.Id == 4 && !s.Excluido)), Times.Once);
         }
 
@@ -99,7 +99,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Responsavel
 
             // Garante que nenhuma operação de escrita foi realizada
             repositorioMock.Verify(r => r.Salvar(It.IsAny<SupervisorEscolaDre>()), Times.Never);
-            repositorioMock.Verify(r => r.Remover(It.IsAny<long>()), Times.Never);
+            repositorioMock.Verify(r => r.RemoverLogico(It.IsAny<long>(), It.IsAny<string>()), Times.Never);
         }
 
         [Fact]
@@ -137,9 +137,9 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Responsavel
             // Assert
             Assert.False(resultado.AtribuidoComSucesso);
             Assert.Contains("não é valido para essa atribuição", resultado.Mensagem);
-            repositorioMock.Verify(r => r.Remover(10), Times.Once());
-            repositorioMock.Verify(r => r.Remover(11), Times.Once());
-            repositorioMock.Verify(r => r.Remover(It.IsAny<long>()), Times.Exactly(2));
+            repositorioMock.Verify(r => r.RemoverLogico(10, null), Times.Once());
+            repositorioMock.Verify(r => r.RemoverLogico(11, null), Times.Once());
+            repositorioMock.Verify(r => r.RemoverLogico(It.IsAny<long>(), It.IsAny<string>()), Times.Exactly(2));
         }
 
         #region MÉTODOS PRIVADOS DE SETUP
