@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirNotificacaoCompensacaoAusenciaCommandHandler : AsyncRequestHandler<ExcluirNotificacaoCompensacaoAusenciaCommand>
+    public class ExcluirNotificacaoCompensacaoAusenciaCommandHandler : IRequestHandler<ExcluirNotificacaoCompensacaoAusenciaCommand>
     {
         private readonly IMediator mediator;
         private readonly IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia;
@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioNotificacaoCompensacaoAusencia = repositorioNotificacaoCompensacaoAusencia ?? throw new ArgumentNullException(nameof(repositorioNotificacaoCompensacaoAusencia));
         }
 
-        protected override async Task Handle(ExcluirNotificacaoCompensacaoAusenciaCommand request, CancellationToken cancellationToken)
+        public async Task Handle(ExcluirNotificacaoCompensacaoAusenciaCommand request, CancellationToken cancellationToken)
         {
             var notificacoesCompensacao = await repositorioNotificacaoCompensacaoAusencia.ObterPorCompensacao(request.CompensacaoAusenciaId);
             foreach (var notificacaoCompensacao in notificacoesCompensacao)

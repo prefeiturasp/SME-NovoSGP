@@ -1,5 +1,3 @@
-using System;
-
 namespace SME.SGP.Infra
 {
     public class FiltroRegistrosAcaoCriancasEstudantesAusentesDto

@@ -1,6 +1,4 @@
-﻿using FluentValidation;
-using MediatR;
-using SME.SGP.Infra;
+﻿using MediatR;
 
 namespace SME.SGP.Aplicacao
 {

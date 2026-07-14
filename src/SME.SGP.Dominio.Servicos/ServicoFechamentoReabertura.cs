@@ -1,12 +1,8 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -163,7 +159,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 if (fechamentoReaberturaBimestre.Id > 0)
                 {
-                    fechamentoReaberturaBimestre.AlteradoEm = DateTime.Now;
+                    fechamentoReaberturaBimestre.AlteradoEm = DateTimeExtension.HorarioBrasilia();
                     fechamentoReaberturaBimestre.AlteradoPor = usuarioAtual.Nome;
                     fechamentoReaberturaBimestre.AlteradoRF = usuarioAtual.CodigoRf;
                 }

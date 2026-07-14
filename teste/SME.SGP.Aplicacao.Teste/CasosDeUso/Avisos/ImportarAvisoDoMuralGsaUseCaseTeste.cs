@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Avisos
 
             mediatorMock
                 .Setup(m => m.Send(It.IsAny<ImportarAvisoDoMuralGsaCommand>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(Unit.Value);
+                .Returns(Task.CompletedTask);
 
             var resultado = await useCase.Executar(mensagem);
 

@@ -5,8 +5,8 @@ using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -42,8 +42,8 @@ namespace SME.SGP.Dados.Repositorios
                 await writer.WriteAsync(item.TotalEstudantes, NpgsqlDbType.Integer);
                 await writer.WriteAsync(item.TotalPresentes, NpgsqlDbType.Integer);
                 await writer.WriteAsync(item.PercentualFrequencia, NpgsqlDbType.Numeric);
-                await writer.WriteAsync(item.DataAula, NpgsqlDbType.Timestamp);
-                await writer.WriteAsync(item.CriadoEm, NpgsqlDbType.TimestampTz);
+                await writer.WriteAsync(DateTimeExtension.EnsureUnspecified(item.DataAula), NpgsqlDbType.Timestamp);
+                await writer.WriteAsync(DateTimeExtension.EnsureUnspecified(item.CriadoEm), NpgsqlDbType.Timestamp);
             }
 
             await writer.CompleteAsync();

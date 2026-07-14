@@ -43,7 +43,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
             aulas.Count().ShouldBe(1);
 
             var aulasSemTurmaFechamento = await mediator.Send(new ObterAulasPendenciaSemFechamentoTurmaDiscplinaProcessadoQuery(aulas));
-            aulasSemTurmaFechamento.ShouldBeEmpty();
+            aulasSemTurmaFechamento.Count().ShouldBe(0);
         }
 
         [Fact]    

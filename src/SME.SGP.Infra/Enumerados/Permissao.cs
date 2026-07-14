@@ -1,5 +1,4 @@
 ﻿using SME.SGP.Infra.Constantes;
-using System.Threading.Tasks;
 
 namespace SME.SGP.Infra
 {

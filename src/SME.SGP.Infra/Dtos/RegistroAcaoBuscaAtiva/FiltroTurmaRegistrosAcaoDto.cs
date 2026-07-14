@@ -1,6 +1,3 @@
-using SME.SGP.Dominio;
-using System;
-
 namespace SME.SGP.Infra
 {
     public class FiltroTurmaRegistrosAcaoDto

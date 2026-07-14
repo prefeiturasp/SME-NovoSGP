@@ -13,6 +13,7 @@ using SME.SGP.Api.Configuracoes;
 using SME.SGP.Infra;
 using SME.SGP.IoC;
 using SME.SGP.IoC.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO.Compression;
@@ -85,6 +86,7 @@ namespace SME.SGP.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
             services.AddResponseCompression();
 
             var configTamanhoLimiteRequest = Configuration.GetSection("SGP_MaxRequestSizeBody").Value ?? "104857600";

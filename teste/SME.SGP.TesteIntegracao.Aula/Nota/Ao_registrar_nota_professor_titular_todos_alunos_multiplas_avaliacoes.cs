@@ -8,7 +8,6 @@ using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Nota
 {

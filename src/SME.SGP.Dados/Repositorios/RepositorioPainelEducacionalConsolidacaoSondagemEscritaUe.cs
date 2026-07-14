@@ -3,9 +3,9 @@ using Npgsql;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -46,7 +46,7 @@ namespace SME.SGP.Dados.Repositorios
                 await writer.WriteAsync(item.SerieAno, NpgsqlTypes.NpgsqlDbType.Integer);
                 await writer.WriteAsync(item.QuantidadeAluno, NpgsqlTypes.NpgsqlDbType.Integer);
                 await writer.WriteAsync(item.Bimestre, NpgsqlTypes.NpgsqlDbType.Integer);
-                await writer.WriteAsync(item.CriadoEm, NpgsqlTypes.NpgsqlDbType.TimestampTz);
+                await writer.WriteAsync(DateTimeExtension.EnsureUnspecified(item.CriadoEm.UtcDateTime), NpgsqlTypes.NpgsqlDbType.Timestamp);
             }
 
             await writer.CompleteAsync();

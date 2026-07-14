@@ -15,7 +15,6 @@ using System.Threading.Tasks;
 using SME.SGP.Dto;
 using Xunit;
 using OcorrenciaObj = SME.SGP.Dominio.Ocorrencia;
-using Nest;
 
 namespace SME.SGP.TesteIntegracao.Ocorrencia
 {

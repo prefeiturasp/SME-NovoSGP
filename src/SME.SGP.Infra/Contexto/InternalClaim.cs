@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Infra.Contexto
+﻿namespace SME.SGP.Infra.Contexto
 {
     public class InternalClaim
     {

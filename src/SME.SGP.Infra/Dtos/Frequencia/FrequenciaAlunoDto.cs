@@ -1,6 +1,5 @@
 ﻿using SME.SGP.Dominio;
 using System;
-using System.Globalization;
 
 namespace SME.SGP.Infra
 {

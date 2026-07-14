@@ -215,7 +215,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
         private async Task DadosInsercaoRecomendacoesConselho()
         {
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 Id = 1,
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,

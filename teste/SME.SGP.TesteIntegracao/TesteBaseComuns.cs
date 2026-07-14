@@ -10,8 +10,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using SME.SGP.Dominio.Enumerados;
-using Sentry.Protocol;
-using Nest;
 using System.Linq;
 
 namespace SME.SGP.TesteIntegracao
@@ -1265,7 +1263,7 @@ namespace SME.SGP.TesteIntegracao
 
         protected async Task CriarTipoCalendario(ModalidadeTipoCalendario tipoCalendario, bool considerarAnoAnterior = false, int semestre = SEMESTRE_1)
         {
-            await InserirNaBase(new TipoCalendario
+            await InserirNaBase(new Dominio.TipoCalendario
             {
                 AnoLetivo = considerarAnoAnterior ? ANO_LETIVO_ANO_ANTERIOR : ANO_LETIVO_ANO_ATUAL,
                 Nome = considerarAnoAnterior ? NOME_TIPO_CALENDARIO_ANO_ANTERIOR : NOME_TIPO_CALENDARIO_ANO_ATUAL,
@@ -1520,6 +1518,7 @@ namespace SME.SGP.TesteIntegracao
             await CriarPeriodoEscolar(dataReferencia.AddDays(-200), dataReferencia.AddDays(-125), BIMESTRE_2);
 
             await CriarPeriodoEscolar(dataReferencia.AddDays(-115), dataReferencia.AddDays(-40), BIMESTRE_3);
+            await CriarPeriodoEscolar(dataReferencia.AddDays(-125), dataReferencia.AddDays(-60), BIMESTRE_4);
 
             await CriarPeriodoEscolar(dataReferencia.AddDays(-20), periodoEscolarValido ? dataReferencia : dataReferencia.AddDays(-5), BIMESTRE_4);
         }

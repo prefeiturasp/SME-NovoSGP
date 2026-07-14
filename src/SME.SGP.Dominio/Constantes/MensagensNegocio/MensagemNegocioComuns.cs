@@ -1,5 +1,3 @@
-using System.Globalization;
-
 namespace SME.SGP.Dominio.Constantes.MensagensNegocio
 {
     public class MensagemNegocioComuns

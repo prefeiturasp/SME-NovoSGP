@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Elastic.Apm.Api;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -201,7 +200,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
 
             questao.ShouldNotBeNull();
 
-            var respostaPeriodoEscolar = questao.Resposta.FirstOrDefault(x => x.Texto == "4");
+            var respostaPeriodoEscolar = questao.Resposta.FirstOrDefault(x => x.Texto == "5");
 
             respostaPeriodoEscolar.ShouldNotBeNull();
         }

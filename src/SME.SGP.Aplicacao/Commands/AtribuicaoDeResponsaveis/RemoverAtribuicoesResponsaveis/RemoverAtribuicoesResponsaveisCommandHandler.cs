@@ -16,14 +16,13 @@ namespace SME.SGP.Aplicacao
             this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
         }
 
-        public async Task<Unit> Handle(RemoverAtribuicoesResponsaveisCommand request, CancellationToken cancellationToken)
+        public async Task Handle(RemoverAtribuicoesResponsaveisCommand request, CancellationToken cancellationToken)
         {
             if (request.AtribuicoesIds == null || !request.AtribuicoesIds.Any())
-                return Unit.Value;
+                return;
 
             await repositorioSupervisorEscolaDre.RemoverAtribuicoesEmLote(request.AtribuicoesIds);
 
-            return Unit.Value;
         }
     }
 }

@@ -6,7 +6,7 @@ namespace SME.SGP.Dominio
     {
         public Ue()
         {
-            DataAtualizacao = DateTime.Now;
+            DataAtualizacao = DateTimeExtension.HorarioBrasilia();
         }
         public string CodigoUe { get; set; }
         public DateTime DataAtualizacao { get; set; }

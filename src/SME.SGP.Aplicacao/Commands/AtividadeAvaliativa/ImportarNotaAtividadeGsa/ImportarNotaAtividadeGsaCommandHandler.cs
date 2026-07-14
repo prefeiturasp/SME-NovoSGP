@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ImportarNotaAtividadeGsaCommandHandler : AsyncRequestHandler<ImportarNotaAtividadeGsaCommand>
+    public class ImportarNotaAtividadeGsaCommandHandler : IRequestHandler<ImportarNotaAtividadeGsaCommand>
     {
         private readonly IMediator mediator;
 
@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        protected override async Task Handle(ImportarNotaAtividadeGsaCommand request, CancellationToken cancellationToken)
+        public async Task Handle(ImportarNotaAtividadeGsaCommand request, CancellationToken cancellationToken)
         {
             if (!await ValidarLancamentoNotaComponente(request.NotaAtividadeGsaDto.ComponenteCurricularId))
                 return;

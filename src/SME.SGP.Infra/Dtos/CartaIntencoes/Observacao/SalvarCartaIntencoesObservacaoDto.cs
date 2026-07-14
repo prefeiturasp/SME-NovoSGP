@@ -1,7 +1,4 @@
-﻿using FluentValidation;
-using System.ComponentModel.DataAnnotations;
-
-namespace SME.SGP.Infra.Dtos
+﻿namespace SME.SGP.Infra.Dtos
 {
     public class SalvarCartaIntencoesObservacaoDto
     {

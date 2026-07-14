@@ -1,38 +1,37 @@
 ﻿using FluentValidation;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
 using SME.SGP.Dominio;
+using System;
 
 namespace SME.SGP.Aplicacao
 {
     public class ArmazenarImagemFisicaCommand : IRequest<bool>
     {
-        public ArmazenarImagemFisicaCommand(Image imagem, string nomeFisico, string nomeArquivo, TipoArquivo tipoArquivo, string formato)
+        public ArmazenarImagemFisicaCommand(byte[] imagemBytes, string nomeFisico, string nomeArquivo, TipoArquivo tipoArquivo, string formato)
         {
-            Imagem = imagem;
+            ImagemBytes = imagemBytes;
             NomeFisico = nomeFisico;
             NomeArquivo = nomeArquivo;
             TipoArquivo = tipoArquivo;
             Formato = formato;
         }
 
-        public Image Imagem { get; }
-        public string NomeFisico { get; }
-        public string NomeArquivo { get; }
-        public TipoArquivo TipoArquivo { get; }
-        public string Formato { get; }
+        public byte[] ImagemBytes { get; set; } = Array.Empty<byte>();
+        public string NomeFisico { get; set; } = string.Empty;
+        public string NomeArquivo { get; set; } = string.Empty;
+        public TipoArquivo TipoArquivo { get; set; } 
+        public string Formato { get; set; } = string.Empty;
     }
 
     public class ArmazenarImagemFisicaCommandValidator : AbstractValidator<ArmazenarImagemFisicaCommand>
     {
         public ArmazenarImagemFisicaCommandValidator()
         {
-            RuleFor(a => a.Imagem)
+            RuleFor(a => a.ImagemBytes)
                 .NotEmpty()
-                .WithMessage("A imagem deve ser informada para armazenamento no servidor");
+                .WithMessage("A imagem deve ser informada para armazenamento no servidor")
+                .Must(bytes => bytes != null && bytes.Length > 0)
+                .WithMessage("A imagem não pode estar vazia");
 
             RuleFor(a => a.NomeFisico)
                 .NotEmpty()

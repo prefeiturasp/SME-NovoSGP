@@ -1,9 +1,7 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.Relatorios.HistoricoEscolar;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;

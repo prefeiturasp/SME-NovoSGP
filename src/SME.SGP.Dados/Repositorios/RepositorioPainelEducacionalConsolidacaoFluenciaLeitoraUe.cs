@@ -8,6 +8,7 @@ using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoFluenciaLeitoraUe;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -51,7 +52,7 @@ namespace SME.SGP.Dados.Repositorios
                     await writer.WriteAsync((int)item.Fluencia, NpgsqlDbType.Integer);
                     await writer.WriteAsync(item.QuantidadeAlunoFluencia, NpgsqlDbType.Integer);
                     await writer.WriteAsync(item.PercentualFluencia, NpgsqlDbType.Numeric);
-                    await writer.WriteAsync(item.CriadoEm, NpgsqlDbType.TimestampTz);
+                    await writer.WriteAsync(DateTimeExtension.EnsureUnspecified(item.CriadoEm), NpgsqlDbType.Timestamp);
                 }
                 await writer.CompleteAsync();
         }

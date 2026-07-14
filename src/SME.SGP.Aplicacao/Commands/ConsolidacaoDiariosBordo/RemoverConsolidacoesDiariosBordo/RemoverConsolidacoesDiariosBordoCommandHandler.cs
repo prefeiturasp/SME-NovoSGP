@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class RemoverConsolidacoesDiariosBordoCommandHandler : AsyncRequestHandler<RemoverConsolidacoesDiariosBordoCommand>
+    public class RemoverConsolidacoesDiariosBordoCommandHandler : IRequestHandler<RemoverConsolidacoesDiariosBordoCommand>
     {
         private readonly IRepositorioConsolidacaoDiariosBordo repositorio;
 
@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
 
-        protected override async Task Handle(RemoverConsolidacoesDiariosBordoCommand request, CancellationToken cancellationToken)
+        public async Task Handle(RemoverConsolidacoesDiariosBordoCommand request, CancellationToken cancellationToken)
         {
             await repositorio.ExcluirPorAno(request.AnoLetivo);
         }

@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using Moq;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;

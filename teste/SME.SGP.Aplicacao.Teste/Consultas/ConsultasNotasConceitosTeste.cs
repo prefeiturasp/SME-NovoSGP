@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Moq;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading.Tasks;

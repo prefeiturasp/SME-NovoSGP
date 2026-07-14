@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Minio.DataModel;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
@@ -8,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarPendenciaAoExcluirDiarioBordoCommandHandler : AsyncRequestHandler<SalvarPendenciaAoExcluirDiarioBordoCommand>
+    public class SalvarPendenciaAoExcluirDiarioBordoCommandHandler : IRequestHandler<SalvarPendenciaAoExcluirDiarioBordoCommand>
     {
         private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
         private readonly IMediator mediator;
@@ -19,7 +18,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        protected override async Task Handle(SalvarPendenciaAoExcluirDiarioBordoCommand request, CancellationToken cancellationToken)
+        public async Task Handle(SalvarPendenciaAoExcluirDiarioBordoCommand request, CancellationToken cancellationToken)
         {
             var diarioBordo = await repositorioDiarioBordo.ObterDadosDiarioBordoParaPendenciaPorid(request.DiarioBordoId);
             if (diarioBordo.NaoEhNulo() && diarioBordo.DataAula < DateTimeExtension.HorarioBrasilia().Date)

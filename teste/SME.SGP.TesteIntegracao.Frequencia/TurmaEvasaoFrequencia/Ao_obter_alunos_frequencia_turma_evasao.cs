@@ -324,7 +324,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
                 Nome = "6A"
             });
 
-            await InserirNaBase(new TipoCalendario
+            await InserirNaBase(new Dominio.TipoCalendario
             {
                 Id = 1,
                 Nome = "",

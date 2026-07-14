@@ -365,7 +365,7 @@ namespace SME.SGP.Dominio.Servicos
                     MapearParaObjetivoDominio(objetivo, objetivoBase);
                 }
 
-                objetivoBase.AtualizadoEm = DateTime.Now;
+                objetivoBase.AtualizadoEm = DateTimeExtension.HorarioBrasilia();
                 await repositorioObjetivoAprendizagem.AtualizarAsync(objetivoBase);
             }
         }

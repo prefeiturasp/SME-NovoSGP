@@ -2,17 +2,12 @@
 using Newtonsoft.Json;
 using Shouldly;
 using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.TesteIntegracao.Informe.Base;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
-using System.Collections.Generic;
-using System.Drawing.Text;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 

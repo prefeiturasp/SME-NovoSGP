@@ -1,5 +1,4 @@
-﻿using Elastic.Apm.Api;
-using SME.SGP.Infra;
+﻿using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

@@ -41,7 +41,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoConselhoDeClasse
             await CriarDreUePerfilComponenteCurricular();
             await CriarTurma(Modalidade.Fundamental);
             await InserirNaBase(
-                new TipoCalendario() 
+                new Dominio.TipoCalendario() 
                 { 
                     Id = tipoCalendarioId, 
                     Modalidade = ModalidadeTipoCalendario.FundamentalMedio, 

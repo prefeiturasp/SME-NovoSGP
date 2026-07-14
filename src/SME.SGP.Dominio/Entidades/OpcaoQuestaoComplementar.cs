@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace SME.SGP.Dominio.Entidades
+﻿namespace SME.SGP.Dominio.Entidades
 {
     public class OpcaoQuestaoComplementar : EntidadeBase
     {

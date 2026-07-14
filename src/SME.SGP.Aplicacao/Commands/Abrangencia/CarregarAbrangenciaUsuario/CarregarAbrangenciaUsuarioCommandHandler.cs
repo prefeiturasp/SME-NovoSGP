@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class CarregarAbrangenciaUsuarioCommandHandler : AsyncRequestHandler<CarregarAbrangenciaUsuarioCommand>
+    public class CarregarAbrangenciaUsuarioCommandHandler : IRequestHandler<CarregarAbrangenciaUsuarioCommand>
     {
         private readonly IServicoAbrangencia servicoAbrangencia;
 
@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
             this.servicoAbrangencia = servicoAbrangencia ?? throw new ArgumentNullException(nameof(servicoAbrangencia));
         }
 
-        protected override Task Handle(CarregarAbrangenciaUsuarioCommand request, CancellationToken cancellationToken)
+        public Task Handle(CarregarAbrangenciaUsuarioCommand request, CancellationToken cancellationToken)
         {
             return servicoAbrangencia.Salvar(request.Login, request.Perfil, true);
         }

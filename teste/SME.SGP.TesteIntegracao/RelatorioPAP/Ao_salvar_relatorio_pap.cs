@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Org.BouncyCastle.Ocsp;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
@@ -7,10 +6,8 @@ using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.RelatorioPAP.Base;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 

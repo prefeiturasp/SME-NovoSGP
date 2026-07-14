@@ -1,6 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
@@ -389,7 +387,7 @@ namespace SME.SGP.Aplicacao
 
         private int ObterBimestreAtual(IEnumerable<PeriodoEscolar> periodosEscolares)
         {
-            var dataPesquisa = DateTime.Now;
+            var dataPesquisa = DateTimeExtension.HorarioBrasilia();
 
             var periodoEscolar = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= dataPesquisa.Date && x.PeriodoFim.Date >= dataPesquisa.Date);
 

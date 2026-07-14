@@ -2,8 +2,6 @@
 using System.Net.Http;
 using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Constantes;
-using SME.SGP.Dominio.Interfaces;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;

@@ -270,7 +270,7 @@ namespace SME.SGP.Aplicacao
             if (periodo.EhNulo())
                 return false;
 
-            var dataAtual = DateTime.Now;
+            var dataAtual = DateTimeExtension.HorarioBrasilia();
 
             return periodo.PeriodoInicio <= dataAtual && periodo.PeriodoFim >= dataAtual;
         }

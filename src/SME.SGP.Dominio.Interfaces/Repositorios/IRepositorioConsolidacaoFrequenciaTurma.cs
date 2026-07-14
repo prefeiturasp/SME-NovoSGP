@@ -1,5 +1,4 @@
 ﻿using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
 

@@ -1,11 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using Shouldly;
+﻿using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Api.Controllers;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
@@ -13,7 +10,6 @@ using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Xunit;
 using TipoAvaliacao = SME.SGP.Dominio.TipoAvaliacao;
 
 namespace SME.SGP.TesteIntegracao.Nota
@@ -409,7 +405,7 @@ namespace SME.SGP.TesteIntegracao.Nota
 
         private async Task CriarTipoCalendarioEja() 
         {
-            await InserirNaBase(new TipoCalendario
+            await InserirNaBase(new Dominio.TipoCalendario
             {
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Nome = "Ano Letivo Ano Atual",
@@ -425,7 +421,7 @@ namespace SME.SGP.TesteIntegracao.Nota
         }
         private async Task CriarTipoCalendarioFundamentalMedio() 
         {
-            await InserirNaBase(new TipoCalendario
+            await InserirNaBase(new Dominio.TipoCalendario
             {
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Nome = "Ano Letivo Ano Atual",

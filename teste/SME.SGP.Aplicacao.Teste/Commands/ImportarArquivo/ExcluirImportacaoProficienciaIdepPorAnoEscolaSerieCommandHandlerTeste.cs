@@ -2,8 +2,6 @@
 using SME.SGP.Aplicacao.Commands.ImportarArquivo.ProficienciaIdep;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.Commands.ImportarArquivo.ProficienciaIdep

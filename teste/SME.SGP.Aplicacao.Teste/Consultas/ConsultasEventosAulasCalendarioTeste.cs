@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Moq;
-using SME.SGP.Aplicacao.Integracoes;
+﻿using Moq;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;

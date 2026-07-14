@@ -1,7 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Utilitarios;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao

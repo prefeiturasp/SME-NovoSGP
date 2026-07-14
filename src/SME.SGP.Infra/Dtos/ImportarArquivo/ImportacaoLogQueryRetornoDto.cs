@@ -1,6 +1,4 @@
-﻿using System;
-
-public class ImportacaoLogQueryRetornoDto
+﻿public class ImportacaoLogQueryRetornoDto
 {
 
     public long Id { get; set; }
