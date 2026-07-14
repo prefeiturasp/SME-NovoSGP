@@ -18,14 +18,14 @@ namespace SME.SGP.Dados
 
         public async Task<IEnumerable<CompensacaoAusenciaDisciplinaRegencia>> ObterPorCompensacao(long compensacaoId)
         {
-            var query = @"select * from compensacao_ausencia_disciplina_regencia where not excluido and compensacao_ausencia_id = @compensacaoId";
+            const string query = @"select * from compensacao_ausencia_disciplina_regencia where not excluido and compensacao_ausencia_id = @compensacaoId";
 
             return await database.Conexao.QueryAsync<CompensacaoAusenciaDisciplinaRegencia>(query, new { compensacaoId });
         }
-        
+
         public async Task<bool> InserirVarios(IEnumerable<CompensacaoAusenciaDisciplinaRegencia> registros,Usuario usuarioLogado)
         {
-            var sql = @"copy compensacao_ausencia_disciplina_regencia (                                         
+            const string sql = @"copy compensacao_ausencia_disciplina_regencia (                                         
                                         compensacao_ausencia_id, 
                                         disciplina_id, 
                                         criado_por,                                        
@@ -34,21 +34,20 @@ namespace SME.SGP.Dados
                             from
                             stdin (FORMAT binary)";
 
-            using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
+
+            await using var writer = await ((NpgsqlConnection)database.Conexao).BeginBinaryImportAsync(sql);
+            foreach (var compensacao in registros)
             {
-                foreach (var compensacao in registros)
-                {
-                    writer.StartRow();
-                    writer.Write(compensacao.CompensacaoAusenciaId, NpgsqlDbType.Bigint);
-                    writer.Write(compensacao.DisciplinaId, NpgsqlDbType.Varchar);
-                    writer.Write(compensacao.CriadoPor ?? usuarioLogado.Nome);
-                    writer.Write(compensacao.CriadoRF ?? usuarioLogado.Login);
-                    writer.Write(compensacao.CriadoEm);
-                }
-                writer.Complete();
+                await writer.StartRowAsync();
+                await writer.WriteAsync(compensacao.CompensacaoAusenciaId, NpgsqlDbType.Bigint);
+                await writer.WriteAsync(compensacao.DisciplinaId, NpgsqlDbType.Varchar);
+                await writer.WriteAsync(compensacao.CriadoPor ?? usuarioLogado.Nome);
+                await writer.WriteAsync(compensacao.CriadoRF ?? usuarioLogado.Login);
+                await writer.WriteAsync(compensacao.CriadoEm);
             }
-            
-            return await Task.FromResult(true);
+            await writer.CompleteAsync();
+
+            return true; 
         }
     }
 }

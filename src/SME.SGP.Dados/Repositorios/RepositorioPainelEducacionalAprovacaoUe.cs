@@ -31,7 +31,7 @@ namespace SME.SGP.Dados.Repositorios
             await using var conn = new NpgsqlConnection(configuration.GetConnectionString("SGP_Postgres"));
             await conn.OpenAsync();
 
-            await using var writer = conn.BeginBinaryImport(@"
+            await using var writer = await conn.BeginBinaryImportAsync(@"
                 COPY painel_educacional_consolidacao_aprovacao_ue 
                     (codigo_dre, codigo_ue, turma, modalidade_codigo, modalidade, total_promocoes, total_retencoes_ausencias, total_retencoes_notas, ano_letivo, criado_em)
                 FROM STDIN (FORMAT BINARY)

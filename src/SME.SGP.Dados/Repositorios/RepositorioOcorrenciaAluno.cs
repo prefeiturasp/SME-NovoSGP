@@ -1,4 +1,5 @@
 ﻿using Npgsql;
+using NpgsqlTypes; // Adicionado para NpgsqlDbType
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -7,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper; // Adicionado para ExecuteAsync e QueryAsync
 
 namespace SME.SGP.Dados
 {
@@ -25,7 +27,7 @@ namespace SME.SGP.Dados
         {
             if (!idsOcorrenciasAlunos?.Any() ?? true) return;
 
-            var sql = "delete from ocorrencia_aluno where id = any(@idsOcorrenciasAlunos)";
+            const string sql = "delete from ocorrencia_aluno where id = any(@idsOcorrenciasAlunos)";
             await database.Conexao.ExecuteAsync(sql, new { idsOcorrenciasAlunos = idsOcorrenciasAlunos.ToList() });
             await AuditarAsync(idsOcorrenciasAlunos, "E");
         }
@@ -63,7 +65,7 @@ namespace SME.SGP.Dados
         }
         public async Task<IEnumerable<string>> ObterAlunosPorOcorrencia(long ocorrenciaId)
         {
-            string query = @"select
+            const string query = @"select
                             oa.codigo_aluno
                         from
                             ocorrencia o
@@ -87,20 +89,18 @@ namespace SME.SGP.Dados
                             from
                             stdin (FORMAT binary)";
 
-            using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
+            await using var writer = await ((NpgsqlConnection)database.Conexao).BeginBinaryImportAsync(sql);
+            foreach (var identificador in identificadores)
             {
-                foreach (var identificador in identificadores)
-                {
-                    writer.StartRow();
-                    writer.Write(DateTime.Now);
-                    writer.Write(nameof(OcorrenciaAluno).ToLower());
-                    writer.Write(identificador);
-                    writer.Write(database.UsuarioLogadoNomeCompleto);
-                    writer.Write(database.UsuarioLogadoRF);
-                    writer.Write(acao);
-                }
-                await writer.CompleteAsync();
+                await writer.StartRowAsync();
+                await writer.WriteAsync(DateTime.Now, NpgsqlDbType.Timestamp);
+                await writer.WriteAsync(nameof(OcorrenciaAluno).ToLower(), NpgsqlDbType.Varchar);
+                await writer.WriteAsync(identificador, NpgsqlDbType.Bigint);
+                await writer.WriteAsync(database.UsuarioLogadoNomeCompleto, NpgsqlDbType.Varchar);
+                await writer.WriteAsync(database.UsuarioLogadoRF, NpgsqlDbType.Varchar);
+                await writer.WriteAsync(acao, NpgsqlDbType.Varchar);
             }
+            await writer.CompleteAsync();
         }
     }
 }
