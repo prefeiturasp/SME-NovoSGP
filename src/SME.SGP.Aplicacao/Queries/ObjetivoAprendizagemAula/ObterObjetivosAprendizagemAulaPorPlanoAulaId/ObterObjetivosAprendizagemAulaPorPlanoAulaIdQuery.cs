@@ -1,9 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao

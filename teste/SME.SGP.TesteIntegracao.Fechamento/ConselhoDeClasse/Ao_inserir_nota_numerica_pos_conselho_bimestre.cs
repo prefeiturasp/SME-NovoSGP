@@ -110,18 +110,36 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [Fact(DisplayName = "Conselho de Classe - Professor deve lançar nota numérica pós conselho - EJA")]
         public async Task Ao_lancar_nota_pos_conselho_bimestre_numerica_eja()
         {
-            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota, fechamentoTurma: FECHAMENTO_TURMA_ID_2, bimestre:BIMESTRE_2);
+            var notaFixa = 4d;
 
-            await CriarDados(ObterPerfilProfessor(),
-                            salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular,
-                            ANO_9,
-                            Modalidade.EJA,
-                            ModalidadeTipoCalendario.EJA,
-                            false,
-                            SituacaoConselhoClasse.EmAndamento,
-                            true);
+            var salvarConselhoClasseAlunoNotaDto = new SalvarConselhoClasseAlunoNotaDto
+            {
+                ConselhoClasseNotaDto = new ConselhoClasseNotaDto()
+                {
+                    CodigoComponenteCurricular = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+                    Justificativa = JUSTIFICATIVA,
+                    Conceito = null,
+                    Nota = notaFixa
+                },
+                CodigoAluno = ALUNO_CODIGO_1,
+                ConselhoClasseId = 0,
+                FechamentoTurmaId = FECHAMENTO_TURMA_ID_2,
+                CodigoTurma = TURMA_CODIGO_1,
+                Bimestre = BIMESTRE_2
+            };
 
-            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false, TipoNota.Nota);
+            await CriarDados(
+                ObterPerfilProfessor(),
+                salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular,
+                ANO_9,
+                Modalidade.EJA,
+                ModalidadeTipoCalendario.EJA,
+                false,
+                SituacaoConselhoClasse.EmAndamento,
+                true,
+                notaFixa);
+
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false, TipoNota.Nota, ehEja: true);
         }
 
         [Fact(DisplayName = "Conselho de Classe - Professor deve lançar nota numérica pós conselho - Regência")]
@@ -180,14 +198,15 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         }
 
         private async Task CriarDados(
-                        string perfil,
-                        long componente,
-                        string anoTurma,
-                        Modalidade modalidade,
-                        ModalidadeTipoCalendario modalidadeTipoCalendario,
-                        bool anoAnterior,
-                        SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado,
-                        bool criarFechamentoDisciplinaAlunoNota = false)
+             string perfil,
+             long componente,
+             string anoTurma,
+             Modalidade modalidade,
+             ModalidadeTipoCalendario modalidadeTipoCalendario,
+             bool anoAnterior,
+             SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado,
+             bool criarFechamentoDisciplinaAlunoNota = false,
+             double? notaFixa = null)
         {
             var dataAula = anoAnterior ? DATA_02_05_INICIO_BIMESTRE_2.AddYears(-1) : DATA_02_05_INICIO_BIMESTRE_2;
 
@@ -202,7 +221,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ConsiderarAnoAnterior = anoAnterior,
                 DataAula = dataAula,
                 CriarFechamentoDisciplinaAlunoNota = criarFechamentoDisciplinaAlunoNota,
-                SituacaoConselhoClasse = situacaoConselhoClasse
+                SituacaoConselhoClasse = situacaoConselhoClasse,
+                TipoNota = TipoNota.Nota,
+                NotaFixa = notaFixa
             };
 
             await CriarDadosBase(filtroNota);

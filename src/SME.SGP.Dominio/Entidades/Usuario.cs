@@ -28,7 +28,7 @@ namespace SME.SGP.Dominio
         private string Email { get; set; }
 
         public void AtualizaUltimoLogin()
-            => UltimoLogin = DateTime.Now;
+            => UltimoLogin = DateTimeExtension.HorarioBrasilia();
 
         public void DefinirEmail(string novoEmail)
         {
@@ -431,7 +431,7 @@ namespace SME.SGP.Dominio
          => (PerfilAtual == Dominio.Perfis.PERFIL_DIRETOR || PerfilAtual == Dominio.Perfis.PERFIL_SUPERVISOR);
 
         public bool TokenRecuperacaoSenhaEstaValido()
-         => ExpiracaoRecuperacaoSenha > DateTime.Now;
+         => ExpiracaoRecuperacaoSenha > DateTimeExtension.HorarioBrasilia();
 
         public void ValidarSenha(string novaSenha)
         {

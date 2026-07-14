@@ -2,7 +2,6 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using System;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao

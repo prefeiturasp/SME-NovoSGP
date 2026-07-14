@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class RemoverConsolidacoesRegistrosPedagogicosCommandHandler : AsyncRequestHandler<RemoverConsolidacoesRegistrosPedagogicosCommand>
+    public class RemoverConsolidacoesRegistrosPedagogicosCommandHandler : IRequestHandler<RemoverConsolidacoesRegistrosPedagogicosCommand>
     {
         private readonly IRepositorioConsolidacaoRegistrosPedagogicos repositorio;
 
@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
 
-        protected override async Task Handle(RemoverConsolidacoesRegistrosPedagogicosCommand request, CancellationToken cancellationToken)
+        public async Task Handle(RemoverConsolidacoesRegistrosPedagogicosCommand request, CancellationToken cancellationToken)
         {
             await repositorio.ExcluirPorAno(request.AnoLetivo);
         }

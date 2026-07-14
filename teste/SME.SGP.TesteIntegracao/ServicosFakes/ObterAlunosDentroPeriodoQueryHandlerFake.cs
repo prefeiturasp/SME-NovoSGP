@@ -4,7 +4,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,7 +29,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
         
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosDentroPeriodoQuery request, CancellationToken cancellationToken)
         {
-            var dataAtual = DateTime.Now;
+            var dataAtual = DateTimeExtension.HorarioBrasilia();
 
             return await Task.FromResult(new List<AlunoPorTurmaResposta>()
             {

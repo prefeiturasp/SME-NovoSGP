@@ -1,15 +1,11 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
-using System.Linq;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirWFAprovacaoNotaFechamentoPorNotaCommandHandler : AsyncRequestHandler<ExcluirWFAprovacaoNotaFechamentoPorNotaCommand>
+    public class ExcluirWFAprovacaoNotaFechamentoPorNotaCommandHandler : IRequestHandler<ExcluirWFAprovacaoNotaFechamentoPorNotaCommand>
     {
         private readonly IRepositorioWfAprovacaoNotaFechamento repositorioWfAprovacaoNotaFechamento;
         private readonly IMediator mediator;
@@ -20,7 +16,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
-        protected override async Task Handle(ExcluirWFAprovacaoNotaFechamentoPorNotaCommand request, CancellationToken cancellationToken)
+        public async Task Handle(ExcluirWFAprovacaoNotaFechamentoPorNotaCommand request, CancellationToken cancellationToken)
         {
             var wfAprovacaoNotas = await repositorioWfAprovacaoNotaFechamento.ObterPorNotaId(request.FechamentoNotaId);
 

@@ -7,7 +7,7 @@ using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarNotaAtividadeAvaliativaGsaCommandHandler : AsyncRequestHandler<SalvarNotaAtividadeAvaliativaGsaCommand>
+    public class SalvarNotaAtividadeAvaliativaGsaCommandHandler : IRequestHandler<SalvarNotaAtividadeAvaliativaGsaCommand>
     {
         private readonly IRepositorioNotasConceitos repositorioConceitos;
 
@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioConceitos = repositorioConceitos ?? throw new ArgumentNullException(nameof(repositorioConceitos));
         }
 
-        protected override async Task Handle(SalvarNotaAtividadeAvaliativaGsaCommand request, CancellationToken cancellationToken)
+        public async Task Handle(SalvarNotaAtividadeAvaliativaGsaCommand request, CancellationToken cancellationToken)
         {
             if (request.NotaConceito.NaoEhNulo())
                 await AlterarAtividade(request.NotaConceito, request);

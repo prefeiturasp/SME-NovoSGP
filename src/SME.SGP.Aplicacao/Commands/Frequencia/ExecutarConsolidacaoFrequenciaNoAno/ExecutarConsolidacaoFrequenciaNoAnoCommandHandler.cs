@@ -1,14 +1,13 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Enumerados;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExecutarConsolidacaoFrequenciaNoAnoCommandHandler : AsyncRequestHandler<ExecutarConsolidacaoFrequenciaNoAnoCommand>
+    public class ExecutarConsolidacaoFrequenciaNoAnoCommandHandler : IRequestHandler<ExecutarConsolidacaoFrequenciaNoAnoCommand>
     {
         private readonly IMediator mediator;
 
@@ -17,7 +16,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        protected override async Task Handle(ExecutarConsolidacaoFrequenciaNoAnoCommand request, CancellationToken cancellationToken)
+        public async Task Handle(ExecutarConsolidacaoFrequenciaNoAnoCommand request, CancellationToken cancellationToken)
         {
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.ConsolidarFrequenciasTurmasNoAno, new FiltroAnoDto(request.Data, TipoConsolidadoFrequencia.Anual), Guid.NewGuid(), null));
             await AtualizarDataExecucao(request.Data.Year);

@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace SME.SGP.Dominio.Interfaces
+﻿namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioAcompanhamentoAluno : IRepositorioBase<AcompanhamentoAluno>
     { }

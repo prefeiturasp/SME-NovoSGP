@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using SME.SGP.Aplicacao.Commands;
 using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.Aplicacao

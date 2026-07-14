@@ -1,5 +1,4 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Dominio.Interfaces;
+﻿using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Linq;
 using System.Threading.Tasks;

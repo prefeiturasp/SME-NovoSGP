@@ -1,5 +1,4 @@
-﻿using SME.SGP.Dominio;
-using System;
+﻿using System;
 
 namespace SME.SGP.Infra.Dtos.Relatorios
 {

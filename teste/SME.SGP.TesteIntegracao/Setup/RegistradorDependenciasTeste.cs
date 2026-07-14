@@ -98,6 +98,7 @@ namespace SME.SGP.TesteIntegracao.Setup
             services.AddSingleton<ConfiguracaoRabbitLogOptions>();
             services.TryAddScoped<ObjectPoolProvider, DefaultObjectPoolProvider>();
             services.TryAddScoped<IServicoMensageriaApiEOL, ServicoMensageriaApiEOL>();
+            services.TryAddScoped<IServicoMensageriaSGP, ServicoMensageriaSGPFake>();
             base.RegistrarServicos(services);
         }
 

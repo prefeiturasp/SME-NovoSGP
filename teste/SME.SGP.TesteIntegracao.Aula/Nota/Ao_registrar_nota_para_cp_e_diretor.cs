@@ -10,8 +10,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SME.SGP.Infra.Dtos;
-using SME.SGP.TesteIntegracao.Nota.ServicosFakes;
-using Xunit;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 
 namespace SME.SGP.TesteIntegracao.Nota

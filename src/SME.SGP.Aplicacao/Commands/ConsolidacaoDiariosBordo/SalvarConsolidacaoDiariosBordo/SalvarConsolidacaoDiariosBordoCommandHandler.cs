@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarConsolidacaoDiariosBordoCommandHandler : AsyncRequestHandler<SalvarConsolidacaoDiariosBordoCommand>
+    public class SalvarConsolidacaoDiariosBordoCommandHandler : IRequestHandler<SalvarConsolidacaoDiariosBordoCommand>
     {
         private readonly IRepositorioConsolidacaoDiariosBordo repositorio;
 
@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
 
-        protected override async Task Handle(SalvarConsolidacaoDiariosBordoCommand request, CancellationToken cancellationToken)
+        public async Task Handle(SalvarConsolidacaoDiariosBordoCommand request, CancellationToken cancellationToken)
         {
             await repositorio.Salvar(request.ConsolidacaoDiariosBordo);
         }

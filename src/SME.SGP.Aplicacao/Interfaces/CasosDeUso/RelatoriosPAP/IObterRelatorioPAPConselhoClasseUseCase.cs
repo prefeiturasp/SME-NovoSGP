@@ -1,5 +1,4 @@
-﻿using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.Questionario;
+﻿using SME.SGP.Infra.Dtos.Questionario;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

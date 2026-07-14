@@ -23,7 +23,7 @@ namespace SME.SGP.Notificacoes.Hub
         private readonly int limiteConexoes = 2;
         private readonly ILogger<NotificacaoHub> logger;
 
-        private readonly static List<string> listaUsuarios = new List<string>();
+        private static readonly List<string> listaUsuarios = new List<string>();
         private static int _contagemSgp = 0;
         private static int _contagemSondagem = 0;
 
@@ -81,7 +81,7 @@ namespace SME.SGP.Notificacoes.Hub
             }
             catch (Exception ex)
             {
-                this.logger.LogError("Erro remover usuario do armazenamento redis", ex.Message);
+                this.logger.LogError(ex, "Erro remover usuario do armazenamento redis");
                 return Task.CompletedTask;
             }
         }
@@ -94,7 +94,7 @@ namespace SME.SGP.Notificacoes.Hub
             }
             catch (Exception ex)
             {
-                this.logger.LogError("Erro armazenar usuario redis", ex.Message);
+                this.logger.LogError(ex, "Erro armazenar usuario redis");
                 return Task.CompletedTask;
             }
         }
@@ -145,11 +145,12 @@ namespace SME.SGP.Notificacoes.Hub
                 else
                     Interlocked.Increment(ref _contagemSgp);
 
-                logger.LogWarning("Usuário conectado. ConnectionId: {ConnectionId}. Total de conexões: {Total}/{Limite}. LoginSource: {LoginSource}. SGP: {ContagemSgp}. Sondagem: {ContagemSondagem}.", Context.ConnectionId, listaUsuarios.Count, limiteConexoes, loginSource, _contagemSgp, _contagemSondagem);
+                logger.LogWarning("Usuário conectado. ConnectionId: {ConnectionId}. Total de conexões: {TotalConexoes}/{LimiteConexoes}. LoginSource: {LoginSource}. SGP: {ContagemSgp}. Sondagem: {ContagemSondagem}.",
+                    Context.ConnectionId, listaUsuarios.Count, limiteConexoes, loginSource, _contagemSgp, _contagemSondagem);
             }
             catch (Exception ex)
             {
-                logger.LogError("Erro ao conectar usuário. ConnectionId: {ConnectionId}. {Erro}", Context.ConnectionId, ex.Message);
+                logger.LogError(ex, "Erro ao conectar usuário. ConnectionId: {ConnectionId}.", Context.ConnectionId);
             }
         }
 
@@ -194,11 +195,12 @@ namespace SME.SGP.Notificacoes.Hub
                 else
                     Interlocked.Decrement(ref _contagemSgp);
 
-                logger.LogWarning("Usuário desconectado. ConnectionId: {ConnectionId}. Total de conexões: {Total}/{Limite}. LoginSource: {LoginSource}. SGP: {ContagemSgp}. Sondagem: {ContagemSondagem}.", Context.ConnectionId, listaUsuarios.Count, limiteConexoes, loginSource, _contagemSgp, _contagemSondagem);
+                logger.LogWarning("Usuário desconectado. ConnectionId: {ConnectionId}. Total de conexões: {TotalConexoes}/{LimiteConexoes}. LoginSource: {LoginSource}. SGP: {ContagemSgp}. Sondagem: {ContagemSondagem}.",
+                    Context.ConnectionId, listaUsuarios.Count, limiteConexoes, loginSource, _contagemSgp, _contagemSondagem);
             }
             catch (Exception ex)
             {
-                logger.LogError("Erro ao desconectar usuário. ConnectionId: {ConnectionId}. {Erro}", Context.ConnectionId, ex.Message);
+                logger.LogError(ex, "Erro ao desconectar usuário. ConnectionId: {ConnectionId}.", Context.ConnectionId);
             }
         }
     }

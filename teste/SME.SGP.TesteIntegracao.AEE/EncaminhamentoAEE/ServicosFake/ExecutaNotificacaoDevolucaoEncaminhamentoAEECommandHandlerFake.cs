@@ -3,8 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Aplicacao;
-using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake
 {

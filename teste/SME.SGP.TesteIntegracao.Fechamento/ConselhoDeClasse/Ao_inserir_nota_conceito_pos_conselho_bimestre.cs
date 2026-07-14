@@ -38,7 +38,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
         [Theory]
         [InlineData(false)]
-        //[InlineData(true)]
         public async Task Deve_lancar_nota_conceito_pos_conselho_bimestre(bool anoAnterior)
         {
             var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Conceito);
@@ -58,7 +57,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
         [Theory]
         [InlineData(false)]
-        //[InlineData(true)]
         public async Task Deve_lancar_nota_conceito_pos_conselho_bimestre_regencia_fundamental(bool anoAnterior)
         {
             var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105, TipoNota.Conceito);
@@ -76,14 +74,31 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Conceito, componentesRegencia: COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105);
         }
 
-        [Theory]
-        [InlineData(false)]
-        //[InlineData(true)]
-        public async Task Deve_lancar_nota_conceito_pos_conselho_bimestre_regencia_EJA(bool anoAnterior)
+        [Fact]
+        public async Task Deve_lancar_nota_conceito_pos_conselho_bimestre_regencia_EJA()
         {
-            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Conceito, fechamentoTurma: FECHAMENTO_TURMA_ID_2, bimestre:BIMESTRE_2);
+            var conceitoFixo = 1;
 
-            await CriarDados(ObterPerfilProfessor(),
+            var salvarConselhoClasseAlunoNotaDto = new SalvarConselhoClasseAlunoNotaDto
+            {
+                ConselhoClasseNotaDto = new ConselhoClasseNotaDto()
+                {
+                    CodigoComponenteCurricular = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+                    Justificativa = JUSTIFICATIVA,
+                    Conceito = conceitoFixo,
+                    Nota = null
+                },
+                CodigoAluno = ALUNO_CODIGO_1,
+                ConselhoClasseId = 0,
+                FechamentoTurmaId = FECHAMENTO_TURMA_ID_2,
+                CodigoTurma = TURMA_CODIGO_1,
+                Bimestre = BIMESTRE_2
+            };
+
+            var anoAnterior = false;
+
+            await CriarDados(
+                ObterPerfilProfessor(),
                 salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular,
                 TipoNota.Conceito,
                 ANO_1,
@@ -91,7 +106,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ModalidadeTipoCalendario.EJA,
                 anoAnterior,
                 SituacaoConselhoClasse.EmAndamento,
-                true);
+                true,
+                conceitoFixo);
 
             await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Conceito);
         }
@@ -99,39 +115,71 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [Fact(DisplayName = "Conselho de classe - Deve alterar nota conceito de turma celp")]
         public async Task Deve_lancar_nota_conceito_turma_celp()
         {
-            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_INGLES_ID_9, TipoNota.Conceito, fechamentoTurma: FECHAMENTO_TURMA_ID_2, bimestre: BIMESTRE_2);
+            var conceitoFixo = 1;
 
-            await CriarDados(ObterPerfilProfessor(),
+            var salvarConselhoClasseAlunoNotaDto = new SalvarConselhoClasseAlunoNotaDto
+            {
+                ConselhoClasseNotaDto = new ConselhoClasseNotaDto()
+                {
+                    CodigoComponenteCurricular = COMPONENTE_CURRICULAR_INGLES_ID_9,
+                    Justificativa = JUSTIFICATIVA,
+                    Conceito = conceitoFixo,
+                    Nota = null
+                },
+                CodigoAluno = ALUNO_CODIGO_1,
+                ConselhoClasseId = 0,
+                FechamentoTurmaId = FECHAMENTO_TURMA_ID_2,
+                CodigoTurma = TURMA_CODIGO_1,
+                Bimestre = BIMESTRE_2
+            };
+
+            await CriarDados(
+                ObterPerfilProfessor(),
                 salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular,
                 TipoNota.Conceito,
                 ANO_1,
-                Modalidade.CELP,
-                ModalidadeTipoCalendario.CELP,
+                Modalidade.EJA, 
+                ModalidadeTipoCalendario.EJA, 
                 false,
                 SituacaoConselhoClasse.EmAndamento,
-                true);
+                true,
+                conceitoFixo);
 
             await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false, TipoNota.Conceito);
         }
 
-
-        private async Task CriarDados(string perfil, long componente, TipoNota tipo, string anoTurma, Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, bool anoAnterior, SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado, bool criarFechamentoDisciplinaAlunoNota = false)
+        private async Task CriarDados(
+            string perfil,
+            long componente,
+            TipoNota tipo,
+            string anoTurma,
+            Modalidade modalidade,
+            ModalidadeTipoCalendario modalidadeTipoCalendario,
+            bool anoAnterior,
+            SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado,
+            bool criarFechamentoDisciplinaAlunoNota = false,
+            int? conceitoFixo = null)
         {
             var dataAula = anoAnterior ? DATA_25_07_INICIO_BIMESTRE_3.AddYears(-1) : DATA_25_07_INICIO_BIMESTRE_3;
+
+            var bimestre = (modalidade == Modalidade.EJA || modalidade == Modalidade.CELP)
+                ? BIMESTRE_2
+                : BIMESTRE_3;
 
             var filtroNota = new FiltroConselhoClasseDto()
             {
                 Perfil = perfil,
                 Modalidade = modalidade,
                 TipoCalendario = modalidadeTipoCalendario,
-                Bimestre = BIMESTRE_3,
+                Bimestre = bimestre,
                 ComponenteCurricular = componente.ToString(),
                 TipoNota = tipo,
                 AnoTurma = anoTurma,
                 ConsiderarAnoAnterior = anoAnterior,
                 DataAula = dataAula,
                 CriarFechamentoDisciplinaAlunoNota = criarFechamentoDisciplinaAlunoNota,
-                SituacaoConselhoClasse = situacaoConselhoClasse
+                SituacaoConselhoClasse = situacaoConselhoClasse,
+                ConceitoFixo = conceitoFixo
             };
 
             await CriarDadosBase(filtroNota);

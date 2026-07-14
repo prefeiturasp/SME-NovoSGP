@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 
 using System.Collections.Generic;
-using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Dominio.Interfaces
 {

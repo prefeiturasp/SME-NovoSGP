@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using SME.SGP.Infra;
+﻿using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
 using System;
-using System.Linq;
 
 namespace SME.SGP.Aplicacao
 {

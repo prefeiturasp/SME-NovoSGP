@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.IdentityModel.Tokens;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
@@ -9,14 +10,18 @@ using SME.SGP.Dto;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interface;
+using SME.SGP.TesteIntegracao.Mocks;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes.Rabbit;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using SME.SGP.TesteIntegracao.Mocks;
-using Xunit;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
+using Xunit;
 
 //[assembly: CollectionBehavior(DisableTestParallelization = true)]
 namespace SME.SGP.TesteIntegracao
@@ -30,11 +35,19 @@ namespace SME.SGP.TesteIntegracao
         public TesteBase(CollectionFixture collectionFixture)
         {
             _collectionFixture = collectionFixture;
+
+            // 1. Limpa o banco
             _collectionFixture.Database.LimparBase();
+
+            // 2. Reinicia os serviços (cria novo IServiceCollection)
             _collectionFixture.IniciarServicos();
 
+            // 3. Aplica os fakes específicos deste teste (override em subclasses)
             RegistrarFakes(_collectionFixture.Services);
+
+            // 4. Compila o container com tudo registrado
             _collectionFixture.BuildServiceProvider();
+
         }
 
         public void ExecutarScripts(List<ScriptCarga> scriptsCarga)
@@ -145,6 +158,34 @@ namespace SME.SGP.TesteIntegracao
             where K : struct
         {
             return _collectionFixture.Database.ObterPorId<T, K>(id);
+        }
+
+        protected static string GerarTokenValido(string perfilId)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes("chave-super-secreta-com-32-caracteres-minimo!");
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+                {
+                    new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name", "1111111"),
+                    new Claim("login", "1111111"),
+                    new Claim("nome", "NOME DO USUARIO 1"),
+                    new Claim("rf", "1111111"),
+                    new Claim("perfil", perfilId),
+                    new Claim("roles", "B_C")
+                }),
+                Expires = DateTime.UtcNow.AddHours(1),
+                Issuer = "Novo SGP",
+                Audience = "Prefeitura de Sao Paulo",
+                SigningCredentials = new SigningCredentials(
+                    new SymmetricSecurityKey(key),
+                    SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
         }
     }
 }

@@ -1,19 +1,14 @@
 ﻿using MediatR;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats;
-using SixLabors.ImageSharp.Formats.Gif;
-using SixLabors.ImageSharp.Formats.Jpeg;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.PixelFormats;
+using SkiaSharp;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
+using SME.SGP.Infra.Utilitarios;
 using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
-using SME.SGP.Infra.Interface;
-using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.ComprimirArquivos.Worker
 {
@@ -29,16 +24,14 @@ namespace SME.SGP.ComprimirArquivos.Worker
             this.servicoArmazenamento = servicoArmazenamento ?? throw new ArgumentNullException(nameof(servicoArmazenamento));
             this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions?.Value ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
         }
-        
+
         public async Task<bool> Handle(ComprimirImagemCommand request, CancellationToken cancellationToken)
         {
-            var inputTemp = Path.Combine(Path.GetTempPath(), $"input_{request.NomeArquivo}");
-            var outputTemp = Path.Combine(Path.GetTempPath(), $"output_{request.NomeArquivo}");
             try
             {
                 if (!request.NomeArquivo.EhArquivoImagemParaOtimizar())
                     return false;
-            
+
                 var stream = await servicoArmazenamento.ObterStream(request.NomeArquivo, configuracaoArmazenamentoOptions.BucketArquivos);
                 if (stream == null)
                 {
@@ -49,32 +42,78 @@ namespace SME.SGP.ComprimirArquivos.Worker
                 }
 
                 using var outputStream = new MemoryStream();
-                using (Image image = Image.Load(stream))
+
+                // Lê os bytes da stream
+                var imagemBytes = new byte[stream.Length];
+                await stream.ReadAsync(imagemBytes, 0, (int)stream.Length, cancellationToken);
+
+                // Decodifica a imagem com SkiaSharp
+                using (var skBitmap = SKBitmap.Decode(imagemBytes))
                 {
-                    IImageEncoder imageEncoder = image switch
+                    if (skBitmap == null)
                     {
-                        Image<Rgba32> _ or Image<Bgra32> _ => new PngEncoder
+                        await mediator.Send(new SalvarLogViaRabbitCommand(
+                            $"Não foi possível decodificar a imagem '{request.NomeArquivo}'",
+                            LogNivel.Critico, LogContexto.ComprimirArquivos), cancellationToken);
+                        return false;
+                    }
+
+                    // Determina o formato baseado na extensão do arquivo
+                    var formato = DeterminarFormato(request.NomeArquivo);
+
+                    // Codifica a imagem com compressão
+                    using (var image = SKImage.FromBitmap(skBitmap))
+                    {
+                        SKData encodedData = formato switch
                         {
-                            CompressionLevel = PngCompressionLevel.BestCompression
-                        },
-                        Image<Argb32> _ => new GifEncoder(),
-                        _ => new JpegEncoder { Quality = 50 }
-                    };
-                    await image.SaveAsync(outputStream, imageEncoder, cancellationToken);
+                            SKEncodedImageFormat.Png => image.Encode(SKEncodedImageFormat.Png, 9), // Máxima compressão
+                            SKEncodedImageFormat.Gif => image.Encode(SKEncodedImageFormat.Gif, 100),
+                            _ => image.Encode(SKEncodedImageFormat.Jpeg, 50) // JPEG com qualidade 50
+                        };
+
+                        await outputStream.WriteAsync(encodedData.ToArray(), 0, encodedData.ToArray().Length, cancellationToken);
+                    }
                 }
 
                 outputStream.Position = 0;
-                await servicoArmazenamento.ArmazenarSemOtimizar(request.NomeArquivo, outputStream, ObterContentType(request.NomeArquivo));
-
+                await servicoArmazenamento.ArmazenarSemOtimizar(
+                    request.NomeArquivo,
+                    outputStream,
+                    ObterContentType(request.NomeArquivo));
 
                 return true;
             }
             catch (Exception ex)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao comprimir arquivo imagem ComprimirImagemCommandHandler", LogNivel.Critico, LogContexto.ComprimirArquivos, ex.Message,rastreamento:ex.StackTrace,excecaoInterna:ex.InnerException?.ToString()), cancellationToken);
+                await mediator.Send(new SalvarLogViaRabbitCommand(
+                    $"Erro ao comprimir arquivo imagem ComprimirImagemCommandHandler",
+                    LogNivel.Critico,
+                    LogContexto.ComprimirArquivos,
+                    ex.Message,
+                    rastreamento: ex.StackTrace,
+                    excecaoInterna: ex.InnerException?.ToString()), cancellationToken);
                 return false;
             }
         }
+
+        /// <summary>
+        /// Determina o formato de imagem baseado na extensão do arquivo
+        /// </summary>
+        private static SKEncodedImageFormat DeterminarFormato(string nomeArquivo)
+        {
+            var extensao = Path.GetExtension(nomeArquivo).ToLower();
+
+            return extensao switch
+            {
+                ".png" => SKEncodedImageFormat.Png,
+                ".gif" => SKEncodedImageFormat.Gif,
+                ".jpg" or ".jpeg" => SKEncodedImageFormat.Jpeg,
+                ".webp" => SKEncodedImageFormat.Webp,
+                ".bmp" => SKEncodedImageFormat.Bmp,
+                _ => SKEncodedImageFormat.Jpeg // Padrão
+            };
+        }
+
         private static string ObterContentType(string nomeArquivo)
         {
             var ext = Path.GetExtension(nomeArquivo).ToLower();
@@ -83,6 +122,8 @@ namespace SME.SGP.ComprimirArquivos.Worker
                 ".png" => "image/png",
                 ".gif" => "image/gif",
                 ".jpg" or ".jpeg" => "image/jpeg",
+                ".webp" => "image/webp",
+                ".bmp" => "image/bmp",
                 _ => "application/octet-stream"
             };
         }

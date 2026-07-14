@@ -1,11 +1,9 @@
 ﻿using MediatR;
-using Microsoft.Win32;
 using Moq;
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;

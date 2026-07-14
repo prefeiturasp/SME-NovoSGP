@@ -4,7 +4,6 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using System;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using SME.SGP.TesteIntegracao.Setup;
@@ -12,10 +11,6 @@ using SME.SGP.Dominio.Entidades;
 using Shouldly;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.TesteIntegracao.Aula.Evento.ServicosFakes;
-using SME.SGP.Infra.Dtos;
-using SME.SGP.Infra;
-using System.Collections.Generic;
-using Elastic.Apm.Api;
 
 namespace SME.SGP.TesteIntegracao.Evento
 {
@@ -59,7 +54,7 @@ namespace SME.SGP.TesteIntegracao.Evento
                 CriadoRF = ""
             });
 
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 Id = 1,
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,

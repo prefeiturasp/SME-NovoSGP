@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarPendenciaAulasPorTipoCommandHandler : AsyncRequestHandler<SalvarPendenciaAulasPorTipoCommand>
+    public class SalvarPendenciaAulasPorTipoCommandHandler : IRequestHandler<SalvarPendenciaAulasPorTipoCommand>
     {
         private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
             return componentesCurriculares;
         }
 
-        protected override async Task Handle(SalvarPendenciaAulasPorTipoCommand request, CancellationToken cancellationToken)
+        public async Task Handle(SalvarPendenciaAulasPorTipoCommand request, CancellationToken cancellationToken)
         {
             try
             {

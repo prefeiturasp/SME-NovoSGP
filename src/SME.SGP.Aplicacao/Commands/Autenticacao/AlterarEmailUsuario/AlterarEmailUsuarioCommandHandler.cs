@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AlterarEmailUsuarioCommandHandler : AsyncRequestHandler<AlterarEmailUsuarioCommand>
+    public class AlterarEmailUsuarioCommandHandler : IRequestHandler<AlterarEmailUsuarioCommand>
     {
         private readonly IHttpClientFactory httpClientFactory;
 
@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
-        protected override async Task Handle(AlterarEmailUsuarioCommand request, CancellationToken cancellationToken)
+        public async Task Handle(AlterarEmailUsuarioCommand request, CancellationToken cancellationToken)
         {
             var valoresParaEnvio = new List<KeyValuePair<string, string>> {
                 { new ("usuario", request.Login) },

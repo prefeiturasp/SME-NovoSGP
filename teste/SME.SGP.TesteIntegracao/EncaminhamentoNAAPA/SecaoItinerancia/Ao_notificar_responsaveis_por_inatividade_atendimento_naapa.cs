@@ -2,7 +2,6 @@
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,7 +16,6 @@ using SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFake;
 using SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFakes;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Infra.Utilitarios;
-using Minio.DataModel;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
 {

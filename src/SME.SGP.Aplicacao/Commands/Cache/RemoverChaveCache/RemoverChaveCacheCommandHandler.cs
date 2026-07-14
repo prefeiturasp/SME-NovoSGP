@@ -14,10 +14,9 @@ namespace SME.SGP.Aplicacao
             this.repositorioCache = repositorioCache ?? throw new System.ArgumentNullException(nameof(repositorioCache));
         }
 
-        public async Task<Unit> Handle(RemoverChaveCacheCommand request, CancellationToken cancellationToken)
+        public async Task Handle(RemoverChaveCacheCommand request, CancellationToken cancellationToken)
         {
             await repositorioCache.RemoverAsync(request.Chave);
-            return Unit.Value;
         }
     }
 }

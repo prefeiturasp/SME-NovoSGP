@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using MongoDB.Bson.IO;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
@@ -68,7 +67,7 @@ namespace SME.SGP.TesteIntegracao.Aula.Aula
 
             await InserirNaBase("parametros_sistema", camposTabelaParametros, valoresCamposTabelaParametros);
 
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 AnoLetivo = anoAtual,
                 Nome = "tipo cal infantil",
@@ -181,7 +180,7 @@ namespace SME.SGP.TesteIntegracao.Aula.Aula
 
             await InserirNaBase("parametros_sistema", camposTabelaParametros, valoresCamposTabelaParametros);
 
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 AnoLetivo = anoAtual,
                 Nome = "tipo cal fundametal",
@@ -193,7 +192,7 @@ namespace SME.SGP.TesteIntegracao.Aula.Aula
                 Situacao = true
             });
 
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 AnoLetivo = anoAtual,
                 Nome = "tipo cal eja",
@@ -361,7 +360,7 @@ namespace SME.SGP.TesteIntegracao.Aula.Aula
 
             await InserirNaBase("parametros_sistema", camposTabelaParametros, valoresCamposTabelaParametros);
 
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 AnoLetivo = anoAtual,
                 Nome = "tipo cal infantil",

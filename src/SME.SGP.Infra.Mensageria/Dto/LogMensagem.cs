@@ -1,4 +1,5 @@
 ﻿using System;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Infra
 {
@@ -13,7 +14,7 @@ namespace SME.SGP.Infra
             Projeto = projeto;
             Rastreamento = rastreamento;
             ExcecaoInterna = excecaoInterna;
-            DataHora = DateTime.Now;
+            DataHora = DateTimeExtension.HorarioBrasilia();
             InnerException = innerException;
         }
         public string Mensagem { get; set; }

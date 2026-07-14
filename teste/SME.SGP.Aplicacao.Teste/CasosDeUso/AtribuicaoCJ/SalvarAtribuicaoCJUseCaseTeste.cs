@@ -50,9 +50,9 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.AtribuicaoCJ
             mediatorMock.Setup(x => x.Send(ObterUsuarioLogadoRFQuery.Instance, It.IsAny<CancellationToken>()))
                 .ReturnsAsync("RF_LOGADO");
             mediatorMock.Setup(x => x.Send(It.IsAny<RemoverChaveCacheCommand>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(Unit.Value);
+                .Returns(Task.CompletedTask);
             mediatorMock.Setup(x => x.Send(It.IsAny<InserirAtribuicaoCJCommand>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(Unit.Value);
+                .Returns(Task.CompletedTask);
             mediatorMock.Setup(x => x.Send(It.IsAny<PublicarFilaGoogleClassroomCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
             mediatorMock.Setup(x => x.Send(It.IsAny<SalvarLogViaRabbitCommand>(), It.IsAny<CancellationToken>()))

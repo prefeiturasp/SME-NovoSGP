@@ -1,5 +1,4 @@
-﻿using System;
-using RabbitMQ.Client;
+﻿using RabbitMQ.Client;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Infra.Interface

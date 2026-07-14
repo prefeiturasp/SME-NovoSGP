@@ -12,6 +12,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
 {
+    [Collection("TesteIntegradoSGP")]
     public class Ao_obter_encaminhamento_atendimento_para_relatorio_dinamico_naapa : EncaminhamentoNAAPATesteBase
     {
         public Ao_obter_encaminhamento_atendimento_para_relatorio_dinamico_naapa(CollectionFixture collectionFixture) : base(collectionFixture)
@@ -396,7 +397,6 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
             retorno.EncaminhamentosNAAPAPaginado.Items.Count().ShouldBe(1);
         }
 
-
         [Fact(DisplayName = "Relatório dinâmico do Encaminhamento NAAPA - Obter informações do relatório dinâmico por atendimento do total do atendimento")]
         public async Task Ao_obter_encaminhamento_relatorio_dinamico_total_atendimento()
         {
@@ -548,16 +548,16 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
             retorno.EncaminhamentosNAAPAPaginado.ShouldNotBeNull();
             retorno.EncaminhamentosNAAPAPaginado.Items.Count().ShouldBe(1);
 
-            //Total atendimento
             retorno.TotalDeAtendimento.ShouldNotBeNull();
             retorno.TotalDeAtendimento.Total.ShouldBe(1);
-            //Aendimento por questão
+
             var questoes = retorno.TotalDeAtendimento.TotalAtendimentoQuestoes;
             questoes.ShouldNotBeNull();
             questoes.Count().ShouldBe(2);
-            var questao1 = questoes.FirstOrDefault();
+
+            // Busca por descrição em vez de posição para garantir ordem independente
+            var questao1 = questoes.FirstOrDefault(q => q.Descricao == "Procedimento de trabalho");
             questao1.ShouldNotBeNull();
-            questao1.Descricao.ShouldBe("Procedimento de trabalho");
             questao1.TotalAtendimentoQuestaoPorRespostas.ShouldNotBeNull();
             questao1.TotalAtendimentoQuestaoPorRespostas.Count().ShouldBe(1);
             var resposta1Questao1 = questao1.TotalAtendimentoQuestaoPorRespostas.FirstOrDefault();
@@ -565,9 +565,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
             resposta1Questao1.Descricao.ShouldBe("Ações Lúdicas");
             resposta1Questao1.Total.ShouldBe(1);
 
-            var questao2 = questoes.LastOrDefault();
+            var questao2 = questoes.FirstOrDefault(q => q.Descricao == "Modalidade de atenção");
             questao2.ShouldNotBeNull();
-            questao2.Descricao.ShouldBe("Modalidade de atenção");
             questao2.TotalAtendimentoQuestaoPorRespostas.ShouldNotBeNull();
             questao2.TotalAtendimentoQuestaoPorRespostas.Count().ShouldBe(1);
             var resposta1Questao2 = questao2.TotalAtendimentoQuestaoPorRespostas.FirstOrDefault();
@@ -595,183 +594,25 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
 
             await CriarDadosBase(filtroNAAPA);
 
-            //Encaminhamento 1
-            await InserirNaBase(new Dominio.EncaminhamentoNAAPA()
-            {
-                TurmaId = TURMA_ID_1,
-                AlunoCodigo = ALUNO_CODIGO_1,
-                Situacao = SituacaoNAAPA.EmAtendimento,
-                AlunoNome = "Nome do aluno 1",
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
+            await InserirNaBase(new Dominio.EncaminhamentoNAAPA() { TurmaId = TURMA_ID_1, AlunoCodigo = ALUNO_CODIGO_1, Situacao = SituacaoNAAPA.EmAtendimento, AlunoNome = "Nome do aluno 1", CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new EncaminhamentoNAAPASecao() { EncaminhamentoNAAPAId = 1, SecaoEncaminhamentoNAAPAId = 1, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new QuestaoEncaminhamentoNAAPA() { EncaminhamentoNAAPASecaoId = 1, QuestaoId = ID_QUESTAO_PRIORIDADE, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new RespostaEncaminhamentoNAAPA() { QuestaoEncaminhamentoId = 1, RespostaId = ID_OPCAO_RESPOSTA_NORMAL, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
 
-            //secao 1
-            await InserirNaBase(new EncaminhamentoNAAPASecao()
-            {
-                EncaminhamentoNAAPAId = 1,
-                SecaoEncaminhamentoNAAPAId = 1,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            //questao 1
-            await InserirNaBase(new QuestaoEncaminhamentoNAAPA()
-            {
-                EncaminhamentoNAAPASecaoId = 1,
-                QuestaoId = ID_QUESTAO_PRIORIDADE,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            await InserirNaBase(new RespostaEncaminhamentoNAAPA()
-            {
-                QuestaoEncaminhamentoId = 1,
-                RespostaId = ID_OPCAO_RESPOSTA_NORMAL,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            //Encaminhamento 2
-            await InserirNaBase(new Dominio.EncaminhamentoNAAPA()
-            {
-                TurmaId = TURMA_ID_1,
-                AlunoCodigo = ALUNO_CODIGO_2,
-                Situacao = SituacaoNAAPA.EmAtendimento,
-                AlunoNome = "Nome do aluno 2",
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            //secao 2
-            await InserirNaBase(new EncaminhamentoNAAPASecao()
-            {
-                EncaminhamentoNAAPAId = 2,
-                SecaoEncaminhamentoNAAPAId = 1,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            //questao 2
-            await InserirNaBase(new QuestaoEncaminhamentoNAAPA()
-            {
-                EncaminhamentoNAAPASecaoId = 2,
-                QuestaoId = ID_QUESTAO_PRIORIDADE,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            await InserirNaBase(new RespostaEncaminhamentoNAAPA()
-            {
-                QuestaoEncaminhamentoId = 2,
-                RespostaId = ID_OPCAO_RESPOSTA_NORMAL,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            //secao 3
-            await InserirNaBase(new EncaminhamentoNAAPASecao()
-            {
-                EncaminhamentoNAAPAId = 2,
-                SecaoEncaminhamentoNAAPAId = 3,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            //questao 3
-            await InserirNaBase(new QuestaoEncaminhamentoNAAPA()
-            {
-                EncaminhamentoNAAPASecaoId = 3,
-                QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            await InserirNaBase(new RespostaEncaminhamentoNAAPA()
-            {
-                QuestaoEncaminhamentoId = 3,
-                RespostaId = ID_OPCAO_RESPOSTA_GRUPO_TRAB_NAAPA,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            //questao 4
-            await InserirNaBase(new QuestaoEncaminhamentoNAAPA()
-            {
-                EncaminhamentoNAAPASecaoId = 3,
-                QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            await InserirNaBase(new RespostaEncaminhamentoNAAPA()
-            {
-                QuestaoEncaminhamentoId = 4,
-                RespostaId = ID_OPCAO_RESPOSTA_ACOES_LUDICAS,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            //secao 4
-            await InserirNaBase(new EncaminhamentoNAAPASecao()
-            {
-                EncaminhamentoNAAPAId = 2,
-                SecaoEncaminhamentoNAAPAId = 3,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            //questao 5
-            await InserirNaBase(new QuestaoEncaminhamentoNAAPA()
-            {
-                EncaminhamentoNAAPASecaoId = 4,
-                QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            await InserirNaBase(new RespostaEncaminhamentoNAAPA()
-            {
-                QuestaoEncaminhamentoId = 5,
-                RespostaId = ID_OPCAO_RESPOSTA_ATENDIMENTO_NAO_PRESENCIAL,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            //questao 6
-            await InserirNaBase(new QuestaoEncaminhamentoNAAPA()
-            {
-                EncaminhamentoNAAPASecaoId = 4,
-                QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            await InserirNaBase(new RespostaEncaminhamentoNAAPA()
-            {
-                QuestaoEncaminhamentoId = 6,
-                RespostaId = ID_OPCAO_RESPOSTA_ACOES_LUDICAS,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
+            await InserirNaBase(new Dominio.EncaminhamentoNAAPA() { TurmaId = TURMA_ID_1, AlunoCodigo = ALUNO_CODIGO_2, Situacao = SituacaoNAAPA.EmAtendimento, AlunoNome = "Nome do aluno 2", CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new EncaminhamentoNAAPASecao() { EncaminhamentoNAAPAId = 2, SecaoEncaminhamentoNAAPAId = 1, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new QuestaoEncaminhamentoNAAPA() { EncaminhamentoNAAPASecaoId = 2, QuestaoId = ID_QUESTAO_PRIORIDADE, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new RespostaEncaminhamentoNAAPA() { QuestaoEncaminhamentoId = 2, RespostaId = ID_OPCAO_RESPOSTA_NORMAL, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new EncaminhamentoNAAPASecao() { EncaminhamentoNAAPAId = 2, SecaoEncaminhamentoNAAPAId = 3, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new QuestaoEncaminhamentoNAAPA() { EncaminhamentoNAAPASecaoId = 3, QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new RespostaEncaminhamentoNAAPA() { QuestaoEncaminhamentoId = 3, RespostaId = ID_OPCAO_RESPOSTA_GRUPO_TRAB_NAAPA, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new QuestaoEncaminhamentoNAAPA() { EncaminhamentoNAAPASecaoId = 3, QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new RespostaEncaminhamentoNAAPA() { QuestaoEncaminhamentoId = 4, RespostaId = ID_OPCAO_RESPOSTA_ACOES_LUDICAS, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new EncaminhamentoNAAPASecao() { EncaminhamentoNAAPAId = 2, SecaoEncaminhamentoNAAPAId = 3, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new QuestaoEncaminhamentoNAAPA() { EncaminhamentoNAAPASecaoId = 4, QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new RespostaEncaminhamentoNAAPA() { QuestaoEncaminhamentoId = 5, RespostaId = ID_OPCAO_RESPOSTA_ATENDIMENTO_NAO_PRESENCIAL, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new QuestaoEncaminhamentoNAAPA() { EncaminhamentoNAAPASecaoId = 4, QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new RespostaEncaminhamentoNAAPA() { QuestaoEncaminhamentoId = 6, RespostaId = ID_OPCAO_RESPOSTA_ACOES_LUDICAS, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
 
             var filtro = new FiltroRelatorioDinamicoNAAPADto()
             {
@@ -782,24 +623,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
                 Anos = new List<string> { ANO_6, ANO_8 },
                 FiltroAvancado = new List<FiltroComponenteRelatorioDinamicoNAAPA>()
                 {
-                    new FiltroComponenteRelatorioDinamicoNAAPA()
-                    {
-                        NomeComponente = QUESTAO_NOME_COMPONENTE_PRIORIDADE,
-                        TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
-                        OrdemResposta = 1
-                    },
-                    new FiltroComponenteRelatorioDinamicoNAAPA()
-                    {
-                        NomeComponente = QUESTAO_NOME_COMPONENTE_TIPO_DO_ATENDIMENTO,
-                        TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
-                        OrdemResposta = 1
-                    },
-                    new FiltroComponenteRelatorioDinamicoNAAPA()
-                    {
-                        NomeComponente = QUESTAO_NOME_COMPONENTE_PROCEDIMENTO_DE_TRABALHO,
-                        TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
-                        OrdemResposta = 1
-                    }
+                    new FiltroComponenteRelatorioDinamicoNAAPA() { NomeComponente = QUESTAO_NOME_COMPONENTE_PRIORIDADE, TipoQuestao = TipoQuestao.ComboMultiplaEscolha, OrdemResposta = 1 },
+                    new FiltroComponenteRelatorioDinamicoNAAPA() { NomeComponente = QUESTAO_NOME_COMPONENTE_TIPO_DO_ATENDIMENTO, TipoQuestao = TipoQuestao.ComboMultiplaEscolha, OrdemResposta = 1 },
+                    new FiltroComponenteRelatorioDinamicoNAAPA() { NomeComponente = QUESTAO_NOME_COMPONENTE_PROCEDIMENTO_DE_TRABALHO, TipoQuestao = TipoQuestao.ComboMultiplaEscolha, OrdemResposta = 1 }
                 }
             };
 
@@ -807,16 +633,15 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
             var retorno = await useCase.Executar(filtro);
             retorno.ShouldNotBeNull();
 
-            //Total atendimento
             retorno.TotalDeAtendimento.ShouldNotBeNull();
             retorno.TotalDeAtendimento.Total.ShouldBe(1);
-            //Aendimento por questão
+
             var questoes = retorno.TotalDeAtendimento.TotalAtendimentoQuestoes;
             questoes.ShouldNotBeNull();
             questoes.Count().ShouldBe(2);
-            var questao1 = questoes.FirstOrDefault();
+
+            var questao1 = questoes.FirstOrDefault(q => q.Descricao == "Procedimento de trabalho");
             questao1.ShouldNotBeNull();
-            questao1.Descricao.ShouldBe("Procedimento de trabalho");
             questao1.TotalAtendimentoQuestaoPorRespostas.ShouldNotBeNull();
             questao1.TotalAtendimentoQuestaoPorRespostas.Count().ShouldBe(1);
             var resposta1Questao1 = questao1.TotalAtendimentoQuestaoPorRespostas.FirstOrDefault();
@@ -824,9 +649,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
             resposta1Questao1.Descricao.ShouldBe("Ações Lúdicas");
             resposta1Questao1.Total.ShouldBe(1);
 
-            var questao2 = questoes.LastOrDefault();
+            var questao2 = questoes.FirstOrDefault(q => q.Descricao == "Modalidade de atenção");
             questao2.ShouldNotBeNull();
-            questao2.Descricao.ShouldBe("Modalidade de atenção");
             questao2.TotalAtendimentoQuestaoPorRespostas.ShouldNotBeNull();
             questao2.TotalAtendimentoQuestaoPorRespostas.Count().ShouldBe(1);
             var resposta1Questao2 = questao2.TotalAtendimentoQuestaoPorRespostas.FirstOrDefault();
@@ -854,183 +678,25 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
 
             await CriarDadosBase(filtroNAAPA);
 
-            //Encaminhamento 1
-            await InserirNaBase(new Dominio.EncaminhamentoNAAPA()
-            {
-                TurmaId = TURMA_ID_1,
-                AlunoCodigo = ALUNO_CODIGO_1,
-                Situacao = SituacaoNAAPA.EmAtendimento,
-                AlunoNome = "Nome do aluno 1",
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
+            await InserirNaBase(new Dominio.EncaminhamentoNAAPA() { TurmaId = TURMA_ID_1, AlunoCodigo = ALUNO_CODIGO_1, Situacao = SituacaoNAAPA.EmAtendimento, AlunoNome = "Nome do aluno 1", CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new EncaminhamentoNAAPASecao() { EncaminhamentoNAAPAId = 1, SecaoEncaminhamentoNAAPAId = 1, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new QuestaoEncaminhamentoNAAPA() { EncaminhamentoNAAPASecaoId = 1, QuestaoId = ID_QUESTAO_PRIORIDADE, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new RespostaEncaminhamentoNAAPA() { QuestaoEncaminhamentoId = 1, RespostaId = ID_OPCAO_RESPOSTA_NORMAL, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
 
-            //secao 1
-            await InserirNaBase(new EncaminhamentoNAAPASecao()
-            {
-                EncaminhamentoNAAPAId = 1,
-                SecaoEncaminhamentoNAAPAId = 1,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            //questao 1
-            await InserirNaBase(new QuestaoEncaminhamentoNAAPA()
-            {
-                EncaminhamentoNAAPASecaoId = 1,
-                QuestaoId = ID_QUESTAO_PRIORIDADE,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            await InserirNaBase(new RespostaEncaminhamentoNAAPA()
-            {
-                QuestaoEncaminhamentoId = 1,
-                RespostaId = ID_OPCAO_RESPOSTA_NORMAL,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            //Encaminhamento 2
-            await InserirNaBase(new Dominio.EncaminhamentoNAAPA()
-            {
-                TurmaId = TURMA_ID_1,
-                AlunoCodigo = ALUNO_CODIGO_2,
-                Situacao = SituacaoNAAPA.EmAtendimento,
-                AlunoNome = "Nome do aluno 2",
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            //secao 2
-            await InserirNaBase(new EncaminhamentoNAAPASecao()
-            {
-                EncaminhamentoNAAPAId = 2,
-                SecaoEncaminhamentoNAAPAId = 1,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            //questao 2
-            await InserirNaBase(new QuestaoEncaminhamentoNAAPA()
-            {
-                EncaminhamentoNAAPASecaoId = 2,
-                QuestaoId = ID_QUESTAO_PRIORIDADE,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            await InserirNaBase(new RespostaEncaminhamentoNAAPA()
-            {
-                QuestaoEncaminhamentoId = 2,
-                RespostaId = ID_OPCAO_RESPOSTA_NORMAL,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            //secao 3
-            await InserirNaBase(new EncaminhamentoNAAPASecao()
-            {
-                EncaminhamentoNAAPAId = 2,
-                SecaoEncaminhamentoNAAPAId = 3,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            //questao 3
-            await InserirNaBase(new QuestaoEncaminhamentoNAAPA()
-            {
-                EncaminhamentoNAAPASecaoId = 3,
-                QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            await InserirNaBase(new RespostaEncaminhamentoNAAPA()
-            {
-                QuestaoEncaminhamentoId = 3,
-                RespostaId = ID_OPCAO_RESPOSTA_GRUPO_TRAB_NAAPA,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            //questao 4
-            await InserirNaBase(new QuestaoEncaminhamentoNAAPA()
-            {
-                EncaminhamentoNAAPASecaoId = 3,
-                QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            await InserirNaBase(new RespostaEncaminhamentoNAAPA()
-            {
-                QuestaoEncaminhamentoId = 4,
-                RespostaId = ID_OPCAO_RESPOSTA_ACOES_LUDICAS,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            //secao 4
-            await InserirNaBase(new EncaminhamentoNAAPASecao()
-            {
-                EncaminhamentoNAAPAId = 2,
-                SecaoEncaminhamentoNAAPAId = 3,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            //questao 5
-            await InserirNaBase(new QuestaoEncaminhamentoNAAPA()
-            {
-                EncaminhamentoNAAPASecaoId = 4,
-                QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            await InserirNaBase(new RespostaEncaminhamentoNAAPA()
-            {
-                QuestaoEncaminhamentoId = 5,
-                RespostaId = ID_OPCAO_RESPOSTA_ATENDIMENTO_NAO_PRESENCIAL,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            //questao 6
-            await InserirNaBase(new QuestaoEncaminhamentoNAAPA()
-            {
-                EncaminhamentoNAAPASecaoId = 4,
-                QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            await InserirNaBase(new RespostaEncaminhamentoNAAPA()
-            {
-                QuestaoEncaminhamentoId = 6,
-                RespostaId = ID_OPCAO_RESPOSTA_ACOES_LUDICAS,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
+            await InserirNaBase(new Dominio.EncaminhamentoNAAPA() { TurmaId = TURMA_ID_1, AlunoCodigo = ALUNO_CODIGO_2, Situacao = SituacaoNAAPA.EmAtendimento, AlunoNome = "Nome do aluno 2", CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new EncaminhamentoNAAPASecao() { EncaminhamentoNAAPAId = 2, SecaoEncaminhamentoNAAPAId = 1, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new QuestaoEncaminhamentoNAAPA() { EncaminhamentoNAAPASecaoId = 2, QuestaoId = ID_QUESTAO_PRIORIDADE, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new RespostaEncaminhamentoNAAPA() { QuestaoEncaminhamentoId = 2, RespostaId = ID_OPCAO_RESPOSTA_NORMAL, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new EncaminhamentoNAAPASecao() { EncaminhamentoNAAPAId = 2, SecaoEncaminhamentoNAAPAId = 3, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new QuestaoEncaminhamentoNAAPA() { EncaminhamentoNAAPASecaoId = 3, QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new RespostaEncaminhamentoNAAPA() { QuestaoEncaminhamentoId = 3, RespostaId = ID_OPCAO_RESPOSTA_GRUPO_TRAB_NAAPA, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new QuestaoEncaminhamentoNAAPA() { EncaminhamentoNAAPASecaoId = 3, QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new RespostaEncaminhamentoNAAPA() { QuestaoEncaminhamentoId = 4, RespostaId = ID_OPCAO_RESPOSTA_ACOES_LUDICAS, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new EncaminhamentoNAAPASecao() { EncaminhamentoNAAPAId = 2, SecaoEncaminhamentoNAAPAId = 3, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new QuestaoEncaminhamentoNAAPA() { EncaminhamentoNAAPASecaoId = 4, QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new RespostaEncaminhamentoNAAPA() { QuestaoEncaminhamentoId = 5, RespostaId = ID_OPCAO_RESPOSTA_ATENDIMENTO_NAO_PRESENCIAL, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new QuestaoEncaminhamentoNAAPA() { EncaminhamentoNAAPASecaoId = 4, QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            await InserirNaBase(new RespostaEncaminhamentoNAAPA() { QuestaoEncaminhamentoId = 6, RespostaId = ID_OPCAO_RESPOSTA_ACOES_LUDICAS, CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
 
             var filtro = new FiltroRelatorioDinamicoNAAPADto()
             {
@@ -1041,12 +707,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
                 Anos = new List<string> { ANO_6, ANO_8 },
                 FiltroAvancado = new List<FiltroComponenteRelatorioDinamicoNAAPA>()
                 {
-                    new FiltroComponenteRelatorioDinamicoNAAPA()
-                    {
-                        NomeComponente = QUESTAO_NOME_COMPONENTE_PRIORIDADE,
-                        TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
-                        OrdemResposta = 1
-                    }
+                    new FiltroComponenteRelatorioDinamicoNAAPA() { NomeComponente = QUESTAO_NOME_COMPONENTE_PRIORIDADE, TipoQuestao = TipoQuestao.ComboMultiplaEscolha, OrdemResposta = 1 }
                 }
             };
 
@@ -1054,16 +715,15 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
             var retorno = await useCase.Executar(filtro);
             retorno.ShouldNotBeNull();
 
-            //Total atendimento
             retorno.TotalDeAtendimento.ShouldNotBeNull();
             retorno.TotalDeAtendimento.Total.ShouldBe(2);
-            //Aendimento por questão
+
             var questoes = retorno.TotalDeAtendimento.TotalAtendimentoQuestoes;
             questoes.ShouldNotBeNull();
             questoes.Count().ShouldBe(2);
-            var questao1 = questoes.FirstOrDefault();
+
+            var questao1 = questoes.FirstOrDefault(q => q.Descricao == "Procedimento de trabalho");
             questao1.ShouldNotBeNull();
-            questao1.Descricao.ShouldBe("Procedimento de trabalho");
             questao1.TotalAtendimentoQuestaoPorRespostas.ShouldNotBeNull();
             questao1.TotalAtendimentoQuestaoPorRespostas.Count().ShouldBe(1);
             var resposta1Questao1 = questao1.TotalAtendimentoQuestaoPorRespostas.FirstOrDefault();
@@ -1071,9 +731,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
             resposta1Questao1.Descricao.ShouldBe("Ações Lúdicas");
             resposta1Questao1.Total.ShouldBe(2);
 
-            var questao2 = questoes.LastOrDefault();
+            var questao2 = questoes.FirstOrDefault(q => q.Descricao == "Modalidade de atenção");
             questao2.ShouldNotBeNull();
-            questao2.Descricao.ShouldBe("Modalidade de atenção");
             questao2.TotalAtendimentoQuestaoPorRespostas.ShouldNotBeNull();
             questao2.TotalAtendimentoQuestaoPorRespostas.Count().ShouldBe(2);
             var resposta1Questao2 = questao2.TotalAtendimentoQuestaoPorRespostas.FirstOrDefault();

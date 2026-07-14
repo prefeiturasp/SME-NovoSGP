@@ -201,7 +201,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
                 DataFim = DateTime.Now,
                 Extinta = false
             });
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Excluido = false,
@@ -300,7 +300,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
                 DataFim = DateTime.Now,
                 Extinta = false
             });
-            await InserirNaBase(new TipoCalendario()
+            await InserirNaBase(new Dominio.TipoCalendario()
             {
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Excluido = false,
