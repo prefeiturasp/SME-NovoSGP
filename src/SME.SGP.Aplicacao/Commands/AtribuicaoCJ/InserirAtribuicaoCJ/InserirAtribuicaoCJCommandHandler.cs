@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao
 {
     public class InserirAtribuicaoCJCommandHandler : IRequestHandler<InserirAtribuicaoCJCommand>
     {
-        private static readonly long[] componentesQueNaoPodemSerSubstituidos = { 1033, 1051, 1052, 1053, 1054, 1030 };
+        private static readonly long[] componentesQueNaoPodemSerSubstituidos = [1033, 1051, 1052, 1053, 1054, 1030];
 
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioAbrangencia repositorioAbrangencia;      
@@ -65,8 +65,6 @@ namespace SME.SGP.Aplicacao
 
             await repositorioAtribuicaoCJ.SalvarAsync(atribuicaoCJ);
             await TratarAbrangencia(atribuicaoCJ, atribuicoesAtuais.ToList(), request.EhHistorico, excluiAbrangencia);
-
-            return;
         }
 
         private async Task TratarAbrangencia(AtribuicaoCJ atribuicaoCJ, List<AtribuicaoCJ> atribuicoesAtuais, bool ehHistorico, bool excluiAbrangencia)
