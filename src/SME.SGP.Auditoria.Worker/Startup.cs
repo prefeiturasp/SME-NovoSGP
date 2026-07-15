@@ -17,6 +17,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.ElasticSearch;
 using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC;
+using System;
 using System.Threading;
 
 namespace SME.SGP.Auditoria.Worker
@@ -33,6 +34,7 @@ namespace SME.SGP.Auditoria.Worker
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
             RegistrarElasticSearch(services);
             RegistrarDependencias(services);
             RegistrarMapeamentos();

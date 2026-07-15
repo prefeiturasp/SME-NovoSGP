@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,9 +30,9 @@ namespace SME.SGP.Aplicacao
 
             var result = await repositorioAbrangencia.ObterTurmasPorTipos(
                 request.CodigoUe, request.Login, request.Perfil,
-                request.Modalidade,
+                new FiltroModalidade(request.Modalidade),
                 request.Tipos != null && request.Tipos.Any() ? request.Tipos : null,
-                request.Periodo, request.ConsideraHistorico, request.AnoLetivo,
+                new FiltroPeriodoLetivo(request.AnoLetivo, request.ConsideraHistorico, request.Periodo),
                 anosInfantilDesconsiderar);
 
             var codigosTurmas = result?.Select(t => t.Codigo.ToString()).ToList();

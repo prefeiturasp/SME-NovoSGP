@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using SME.SGP.Infra;
 using SME.SGP.IoC;
 using SME.SGP.IoC.Extensions;
+using System;
 
 namespace SME.SGP.PainelEducacional.Worker
 {
@@ -24,6 +25,7 @@ namespace SME.SGP.PainelEducacional.Worker
 
         public void ConfigureServices(IServiceCollection services)
         {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
             var registrarDependencias = new RegistrarDependencias();
             registrarDependencias.RegistrarParaWorkers(services, Configuration);
             registrarDependencias.RegistrarCasoDeUsoPainelEducacionalRabbitSgp(services);

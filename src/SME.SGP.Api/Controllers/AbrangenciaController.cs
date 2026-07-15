@@ -160,11 +160,17 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterTurmas([FromServices] IMediator mediator, string codigoUe, [FromQuery] Modalidade modalidade, int periodo = 0, [FromQuery] int anoLetivo = 0, [FromQuery] int[] tipos = null, [FromQuery] bool consideraNovosAnosInfantil = false)
+        public async Task<IActionResult> ObterTurmas([FromServices] IMediator mediator, string codigoUe, [FromQuery] FiltroTurmasPorUeRequestDto request)
         {
-            var turmas = await mediator.Send(
-                new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(codigoUe, modalidade,
-                    periodo, ConsideraHistorico, anoLetivo, tipos, consideraNovosAnosInfantil)); 
+            
+            var dto = new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(
+                codigoUe,
+                new FiltroModalidade(request.Modalidade, request.AnosTurma),
+                new FiltroPeriodoLetivo(request.AnoLetivo, ConsideraHistorico, request.Periodo),
+                request.Tipos,
+                request.ConsideraNovosAnosInfantil);
+            
+            var turmas = await mediator.Send(dto);
 
             if (!turmas.Any())
                 return NoContent();
@@ -185,13 +191,13 @@ namespace SME.SGP.Api.Controllers
             if (!turmasRegulares)
             {
                 turmas = await mediator.Send(
-                    new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(codigoUe, modalidade,
-                        periodo, ConsideraHistorico, anoLetivo, tipos, consideraNovosAnosInfantil)); 
+                    new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(codigoUe, new FiltroModalidade(modalidade),
+                        new FiltroPeriodoLetivo(anoLetivo, ConsideraHistorico, periodo), tipos, consideraNovosAnosInfantil));
 
                 if ((turmas.EhNulo() || !turmas.Any()) && !ConsideraHistorico)
                     turmas = await mediator.Send(
                         new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(codigoUe,
-                            modalidade, periodo, true, anoLetivo, tipos, consideraNovosAnosInfantil)); 
+                            new FiltroModalidade(modalidade), new FiltroPeriodoLetivo(anoLetivo, true, periodo), tipos, consideraNovosAnosInfantil));
             }
             else
             {
@@ -227,22 +233,21 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterUes([FromServices] IObterUEsPorDreUseCase useCase, string codigoDre, [FromQuery] Modalidade? modalidade, [FromQuery] int periodo = 0, [FromQuery] int anoLetivo = 0, [FromQuery] bool consideraNovasUEs = false, [FromQuery] bool filtrarTipoEscolaPorAnoLetivo = false, string filtro = "")
+        public async Task<IActionResult> ObterUes([FromServices] IObterUEsPorDreUseCase useCase, string codigoDre, [FromQuery] FiltroUEsPorDreRequestDto request)
         {
-
-            if (filtro.Length < 3)
-                filtro = "";
+            var filtro = request.Filtro?.Length < 3 ? "" : request.Filtro;
 
             var dto = new UEsPorDreDto()
             {
                 CodigoDre = codigoDre,
-                Modalidade = modalidade,
-                Periodo = periodo,
-                AnoLetivo = anoLetivo,
-                ConsideraNovasUEs = consideraNovasUEs,
-                FiltrarTipoEscolaPorAnoLetivo = filtrarTipoEscolaPorAnoLetivo,
+                Modalidade = request.Modalidade,
+                Periodo = request.Periodo,
+                AnoLetivo = request.AnoLetivo,
+                ConsideraNovasUEs = request.ConsideraNovasUEs,
+                FiltrarTipoEscolaPorAnoLetivo = request.FiltrarTipoEscolaPorAnoLetivo,
                 Filtro = filtro,
-                ConsideraHistorico = ConsideraHistorico
+                ConsideraHistorico = ConsideraHistorico,
+                AnosTurma = request.AnosTurma
             };
 
             var ues = await useCase.Executar(dto);

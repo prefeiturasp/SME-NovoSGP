@@ -164,7 +164,7 @@ namespace SME.SGP.Aplicacao
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
 
-            return (await repositorioAbrangencia.ObterUes(codigoDre, login, perfil, modalidade, periodo, consideraHistorico, anoLetivo)).OrderBy(c => c.Nome).ToList();
+            return (await repositorioAbrangencia.ObterUes(codigoDre, login, perfil, new FiltroModalidade(modalidade ?? 0), new FiltroPeriodoLetivo(anoLetivo, consideraHistorico, periodo))).OrderBy(c => c.Nome).ToList();
         }
 
         public async Task<IEnumerable<long>> ObterCodigoTurmasAbrangencia(string codigoUe, Modalidade modalidade, int periodo, bool consideraHistorico, int anoLetivo, int[] tipos, bool desconsideraNovosAnosInfantil = false)
@@ -173,7 +173,15 @@ namespace SME.SGP.Aplicacao
             var perfil = servicoUsuario.ObterPerfilAtual();
             var anosInfantilDesconsiderar = !desconsideraNovosAnosInfantil ? await mediator.Send(new ObterParametroTurmaFiltroPorAnoLetivoEModalidadeQuery(anoLetivo, Modalidade.EducacaoInfantil)) : null;
 
-            var result = await repositorioAbrangencia.ObterTurmasPorTipos(codigoUe, login, perfil, modalidade, tipos.Any() ? tipos : null, periodo, consideraHistorico, anoLetivo, anosInfantilDesconsiderar);
+            var result = await repositorioAbrangencia.ObterTurmasPorTipos(
+                codigoUe, 
+                login, 
+                perfil, 
+                new FiltroModalidade(modalidade), 
+                tipos.Any() ? tipos : null, 
+                new FiltroPeriodoLetivo(anoLetivo, consideraHistorico, periodo), 
+                anosInfantilDesconsiderar);
+            
             var ordernarTurmasItinerario = OrdernarTurmasItinerario(result);
             return ordernarTurmasItinerario.Select(x => long.Parse(x.Codigo)).ToArray();
         }
