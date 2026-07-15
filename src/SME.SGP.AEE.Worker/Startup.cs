@@ -26,6 +26,7 @@ namespace SME.SGP.AEE.Worker
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
             var registrarDependencias = new RegistrarDependencias();
             registrarDependencias.RegistrarParaWorkers(services, Configuration);
             registrarDependencias.RegistrarCasoDeUsoAEERabbitSgp(services);

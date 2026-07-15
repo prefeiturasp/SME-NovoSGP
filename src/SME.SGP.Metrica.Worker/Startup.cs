@@ -45,6 +45,7 @@ namespace SME.SGP.Metrica.Worker
 
         public void ConfigureServices(IServiceCollection services)
         {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
             RegistrarElasticSearch(services);
             RegistrarDependencias(services);
             RegistrarMapeamentos();

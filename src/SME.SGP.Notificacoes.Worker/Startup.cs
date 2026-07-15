@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC;
+using System;
 using System.Threading;
 
 namespace SME.SGP.Notificacoes.Worker
@@ -25,6 +26,7 @@ namespace SME.SGP.Notificacoes.Worker
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
             services.AddPolicies();
             services.ConfigurarRabbit(Configuration);
             services.ConfigurarTelemetria(Configuration);
