@@ -5,7 +5,7 @@ using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SME.SGP.Dominio;
+using SME.SGP.Dominio; 
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -24,7 +24,7 @@ namespace SME.SGP.Dados.Repositorios
             await using var conn = new NpgsqlConnection(configuration.GetConnectionString("SGP_Postgres"));
             await conn.OpenAsync();
 
-            await using var writer = conn.BeginBinaryImport(@"
+            await using var writer = await conn.BeginBinaryImportAsync(@"
                 COPY painel_educacional_consolidacao_idep 
                     (ano_letivo, codigo_dre, codigo_ue, etapa, faixa, quantidade, media_geral, criado_em) 
                 FROM STDIN (FORMAT BINARY)
@@ -48,7 +48,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task LimparConsolidacao()
         {
-            var sql = "DELETE FROM painel_educacional_consolidacao_idep";
+            const string sql = "DELETE FROM painel_educacional_consolidacao_idep";
             await database.ExecuteAsync(sql);
         }
     }

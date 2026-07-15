@@ -29,24 +29,23 @@ namespace SME.SGP.Dados.Repositorios
                             from
                             stdin (FORMAT binary)";
 
-            using (var writer = ((NpgsqlConnection) database.Conexao).BeginBinaryImport(sql))
-            {
-                foreach (var compensacao in registros)
-                {
-                    writer.StartRow();
-                    writer.Write(compensacao.CompensacaoAusenciaId, NpgsqlDbType.Bigint);
-                    writer.Write(compensacao.CodigoAluno, NpgsqlDbType.Varchar);
-                    writer.Write(compensacao.QuantidadeFaltasCompensadas, NpgsqlDbType.Integer);
-                    writer.Write(compensacao.Notificado);
-                    writer.Write(compensacao.CriadoPor ?? usuarioLogado.Nome);
-                    writer.Write(compensacao.CriadoRF ?? usuarioLogado.Login);
-                    writer.Write(compensacao.CriadoEm);
-                }
 
-                writer.Complete();
+            await using var writer = await ((NpgsqlConnection)database.Conexao).BeginBinaryImportAsync(sql);
+            foreach (var compensacao in registros)
+            {
+                await writer.StartRowAsync();
+                await writer.WriteAsync(compensacao.CompensacaoAusenciaId, NpgsqlDbType.Bigint);
+                await writer.WriteAsync(compensacao.CodigoAluno, NpgsqlDbType.Varchar);
+                await writer.WriteAsync(compensacao.QuantidadeFaltasCompensadas, NpgsqlDbType.Integer);
+                await writer.WriteAsync(compensacao.Notificado);
+                await writer.WriteAsync(compensacao.CriadoPor ?? usuarioLogado.Nome);
+                await writer.WriteAsync(compensacao.CriadoRF ?? usuarioLogado.Login);
+                await writer.WriteAsync(compensacao.CriadoEm);
             }
 
-            return await Task.FromResult(true);
+            await writer.CompleteAsync();
+
+            return true; 
         }
 
         public async Task<bool> AlterarQuantidadeCompensacoesPorCompensacaoAlunoId(long compensacaoAusenciaAlunoId, int quantidade)
