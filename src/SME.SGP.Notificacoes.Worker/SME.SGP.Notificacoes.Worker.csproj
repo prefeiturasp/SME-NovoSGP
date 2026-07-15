@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageReference Include="Elastic.Apm.AspNetCore" Version="1.11.1" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="5.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
