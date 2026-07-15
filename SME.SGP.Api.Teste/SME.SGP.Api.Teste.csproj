@@ -16,6 +16,8 @@
 		</PackageReference>
 		<PackageReference Include="FluentValidation" Version="10.3.3" />
 		<PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.7" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.0" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
 		<PackageReference Include="Moq" Version="4.16.1" />
 		<PackageReference Include="System.Web.Http" Version="4.0.0" />

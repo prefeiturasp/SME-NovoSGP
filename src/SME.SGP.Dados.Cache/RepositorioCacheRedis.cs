@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dados.Cache;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
@@ -123,10 +124,10 @@ namespace SME.SGP.Dados.Repositorios
 
             var chave = MontarChave(nomeChave);
 
-            TimeSpan? expiry =
+            TimeSpan expiry =
                 minutosParaExpirar > 0
                     ? TimeSpan.FromMinutes(minutosParaExpirar)
-                    : null;
+                    : DateTimeExtension.HorarioBrasilia().TimeOfDay;
 
             try
             {
