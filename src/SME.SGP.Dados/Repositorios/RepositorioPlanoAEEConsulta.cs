@@ -306,6 +306,34 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<PlanoAEE>(query, new { situacaoEncerrado = (int)SituacaoPlanoAEE.Encerrado });
         }
 
+        public async Task<IEnumerable<PlanoAEE>> ObterPlanosPorUesESituacoes(string[] uesCodigos, SituacaoPlanoAEE[] situacoes, string responsavelPaaiRf = null)
+        {
+            var query = @"select pa.*, t.*, ue.*
+                            from plano_aee pa
+                           inner join turma t on t.id = pa.turma_id
+                           inner join ue on ue.id = t.ue_id
+                            left join usuario responsavel_paai on responsavel_paai.id = pa.responsavel_paai_id
+                           where not pa.excluido
+                             and ue.ue_id = any(@uesCodigos)
+                             and pa.situacao = any(@situacoes)
+                             and (@responsavelPaaiRf is null or responsavel_paai.rf_codigo = @responsavelPaaiRf)
+                           order by pa.id;";
+
+            return await database.Conexao.QueryAsync<PlanoAEE, Turma, Ue, PlanoAEE>(query,
+                (planoAEE, turma, ue) =>
+                {
+                    turma.Ue = ue;
+                    planoAEE.Turma = turma;
+                    return planoAEE;
+                },
+                new
+                {
+                    uesCodigos,
+                    situacoes = situacoes.Select(situacao => (int)situacao).ToArray(),
+                    responsavelPaaiRf
+                });
+        }
+
         public async Task<IEnumerable<PlanoAEE>> ObterPorDataFinalVigencia(DateTime dataFim, bool desconsiderarPendencias = true, bool desconsiderarNotificados = false, NotificacaoPlanoAEETipo tipoNotificacao = NotificacaoPlanoAEETipo.PlanoCriado)
         {
             var joinPendecias = desconsiderarPendencias ? @"left join pendencia_plano_aee ppa on ppa.plano_aee_id = pa.id
