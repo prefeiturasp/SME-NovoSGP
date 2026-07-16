@@ -27,6 +27,7 @@ namespace SME.SGP.Worker.Rabbbit
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
             var registrarDependencias = new RegistrarDependencias();
             registrarDependencias.RegistrarParaWorkers(services, Configuration);
             registrarDependencias.RegistrarCasoDeUsoRabbitSgp(services);
