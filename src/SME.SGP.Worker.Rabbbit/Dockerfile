@@ -28,6 +28,7 @@ WORKDIR /app
 
 RUN sed -i 's|http://deb.debian.org/debian|http://archive.debian.org/debian|g' /etc/apt/sources.list && \
     sed -i '/security/d' /etc/apt/sources.list \
+    && rm -f /etc/apt/sources.list.d/* \
     echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99no-check-valid-until && \
     apt-get update && \
     apt-get upgrade -y && \
