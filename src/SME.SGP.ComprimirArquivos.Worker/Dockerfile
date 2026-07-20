@@ -1,5 +1,3 @@
-#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 
 RUN sed -i 's|http://deb.debian.org/debian|http://archive.debian.org/debian|g' /etc/apt/sources.list && \
@@ -15,10 +13,10 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["src/SME.SGP.ComprimirArquivos.Worker/SME.SGP.ComprimirArquivos.Worker.csproj", "src/SME.SGP.ComprimirArquivos.Worker/"]
-RUN dotnet restore "src/SME.SGP.ComprimirArquivos.Worker/SME.SGP.ComprimirArquivos.Worker.csproj"
+COPY ["SME.SGP.ComprimirArquivos.Worker.csproj", "SME.SGP.ComprimirArquivos.Worker/"]
+RUN dotnet restore "SME.SGP.ComprimirArquivos.Worker/SME.SGP.ComprimirArquivos.Worker.csproj"
 COPY . .
-WORKDIR "/src/src/SME.SGP.ComprimirArquivos.Worker"
+WORKDIR "/src/SME.SGP.ComprimirArquivos.Worker"
 RUN dotnet build "SME.SGP.ComprimirArquivos.Worker.csproj" -c Release -o /app/build
 
 FROM build AS publish
