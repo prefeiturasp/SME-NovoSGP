@@ -1,8 +1,8 @@
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 
 RUN sed -i 's|http://deb.debian.org/debian|http://archive.debian.org/debian|g' /etc/apt/sources.list && \
-    sed -i '/security/d' /etc/apt/sources.list && \
-    rm -f /etc/apt/sources.list.d/* && \
+    sed -i '/debian-security/d' /etc/apt/sources.list && \
+    sed -i '/bullseye-updates/d' /etc/apt/sources.list && \
     apt update && \
     apt install -y ffmpeg ghostscript && \
     rm -rf /var/lib/apt/lists/*
@@ -13,10 +13,10 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["SME.SGP.ComprimirArquivos.Worker.csproj", "SME.SGP.ComprimirArquivos.Worker/"]
-RUN dotnet restore "SME.SGP.ComprimirArquivos.Worker/SME.SGP.ComprimirArquivos.Worker.csproj"
+COPY ["src/SME.SGP.ComprimirArquivos.Worker/SME.SGP.ComprimirArquivos.Worker.csproj", "src/SME.SGP.ComprimirArquivos.Worker/"]
+RUN dotnet restore "src/SME.SGP.ComprimirArquivos.Worker/SME.SGP.ComprimirArquivos.Worker.csproj"
 COPY . .
-WORKDIR "/src/SME.SGP.ComprimirArquivos.Worker"
+WORKDIR "/src/src/SME.SGP.ComprimirArquivos.Worker"
 RUN dotnet build "SME.SGP.ComprimirArquivos.Worker.csproj" -c Release -o /app/build
 
 FROM build AS publish
