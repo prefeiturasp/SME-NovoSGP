@@ -4,6 +4,9 @@
         <TargetFramework>net6.0</TargetFramework>
         <UserSecretsId>c8244de1-52d8-4649-9aaa-120028661527</UserSecretsId>
         <RootNamespace>SME.SGP.OtimizarArquivos.Worker</RootNamespace>
+        <DockerfileContext>..\..\</DockerfileContext>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <DockerfileBuildArguments></DockerfileBuildArguments>
     </PropertyGroup>
 
     <ItemGroup>
