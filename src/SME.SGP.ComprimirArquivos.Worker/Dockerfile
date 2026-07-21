@@ -20,7 +20,7 @@ WORKDIR "/src/src/SME.SGP.ComprimirArquivos.Worker"
 RUN dotnet build "SME.SGP.ComprimirArquivos.Worker.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "SME.SGP.ComprimirArquivos.Worker.csproj" -c Release -o /app/publish
+RUN dotnet publish "SME.SGP.ComprimirArquivos.Worker.csproj" -c Release -o /app/publish /p:ErrorOnDuplicatePublishOutputFiles=false
 
 FROM base AS final
 WORKDIR /app
