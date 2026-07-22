@@ -28,7 +28,7 @@ namespace SME.SGP.Dominio
         private string Email { get; set; }
 
         public void AtualizaUltimoLogin()
-            => UltimoLogin = DateTime.Now;
+            => UltimoLogin = DateTimeExtension.HorarioBrasilia();
 
         public void DefinirEmail(string novoEmail)
         {
@@ -53,13 +53,16 @@ namespace SME.SGP.Dominio
                 {
                     return (from a in aulas
                             from ccp in componentesUsuario
-                            where ((!ccp.TerritorioSaber && a.DisciplinaId == (ccp.CodigoComponenteCurricularPai ?? ccp.Codigo).ToString()) ||
-                                   (ccp.TerritorioSaber && (a.DisciplinaId == ccp.Codigo.ToString() || a.DisciplinaId == ccp.CodigoComponenteTerritorioSaber.ToString()))) ||
+                            where UsuarioPodeVisualizarAulaPorComponente(a, ccp) ||
                                   a.ProfessorRf == CodigoRf
                             select a).Distinct();
                 }
             }
         }
+
+        private static bool UsuarioPodeVisualizarAulaPorComponente(Aula aula, ComponenteCurricularEol componenteCurricular)
+            => long.TryParse(aula.DisciplinaId, out var disciplinaId) &&
+               componenteCurricular.PossuiCodigoEquivalente(disciplinaId);
 
         public bool EhProfessorInfantilOuCjInfantil()
             => EhProfessorInfantil() || EhProfessorCjInfantil();
@@ -431,7 +434,7 @@ namespace SME.SGP.Dominio
          => (PerfilAtual == Dominio.Perfis.PERFIL_DIRETOR || PerfilAtual == Dominio.Perfis.PERFIL_SUPERVISOR);
 
         public bool TokenRecuperacaoSenhaEstaValido()
-         => ExpiracaoRecuperacaoSenha > DateTime.Now;
+         => ExpiracaoRecuperacaoSenha > DateTimeExtension.HorarioBrasilia();
 
         public void ValidarSenha(string novaSenha)
         {

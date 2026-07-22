@@ -3,6 +3,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoPlanoAEE;
 using SME.SGP.Infra.Dtos.PlanoAEE;
+using SME.SGP.Dominio.Enumerados;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<PlanoAEE> ObterPlanoComTurmaPorId(long planoId);
         Task<IEnumerable<PlanoAEE>> ObterPlanosAtivos();
+        Task<IEnumerable<PlanoAEE>> ObterPlanosPorUesESituacoes(string[] uesCodigos, SituacaoPlanoAEE[] situacoes, string responsavelPaaiRf = null);
         Task<PlanoAEEResumoDto> ObterPlanoPorEstudanteEAno(string codigoEstudante, int anoLetivo);
         Task<IEnumerable<PlanoAEEResumoDto>> ObterPlanosPorAlunosEAno(string[] codigoEstudante, int ano);
         Task<IEnumerable<PlanoAEE>> ObterPorDataFinalVigencia(DateTime dataFim, bool desconsiderarPendencias = true, bool desconsiderarNotificados = false, NotificacaoPlanoAEETipo tipo = NotificacaoPlanoAEETipo.PlanoCriado);

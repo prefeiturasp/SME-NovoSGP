@@ -83,7 +83,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries.Grade.ObterGradeAulasPorTurmaEProfesso
         public async Task Handle_DeveLancarExcecao_QuandoTurmaNaoForLocalizada()
         {
             var turmaCodigo = "123456";
-            var dataAula = DateTime.Now;
+            var dataAula = DateTimeExtension.HorarioBrasilia();
             var componentesCurriculares = new long[] { 1 };
             var request = new ObterGradeAulasPorTurmaEProfessorQuery(turmaCodigo, componentesCurriculares, dataAula);
             mockRepositorioTurma.Setup(r => r.ObterTurmaComUeEDrePorCodigo(It.IsAny<string>()))
@@ -97,7 +97,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries.Grade.ObterGradeAulasPorTurmaEProfesso
         public async Task Handle_DeveRetornarNull_QuandoHorasGradeForZero()
         {
             var turma = CriarTurma();
-            var dataAula = DateTime.Now;
+            var dataAula = DateTimeExtension.HorarioBrasilia();
             var componentesCurriculares = new long[] { 1 };
             var request = new ObterGradeAulasPorTurmaEProfessorQuery(turma.CodigoTurma, componentesCurriculares, dataAula, "1234567", false);
 

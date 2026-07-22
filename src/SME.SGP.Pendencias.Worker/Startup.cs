@@ -7,9 +7,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using SME.SGP.IoC;
 using SME.SGP.Infra;
+using SME.SGP.IoC;
 using SME.SGP.IoC.Extensions;
+using System;
 
 namespace SME.SGP.Pendencias.Worker
 {
@@ -25,6 +26,7 @@ namespace SME.SGP.Pendencias.Worker
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
             var registrarDependencias = new RegistrarDependencias();
             registrarDependencias.RegistrarParaWorkers(services, Configuration);
             registrarDependencias.RegistrarCasoDeUsoPendenciasRabbitSgp(services);

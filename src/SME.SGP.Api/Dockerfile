@@ -1,9 +1,9 @@
-FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 
 COPY ["src/SME.SGP.Api/SME.SGP.Api.csproj", "src/SME.SGP.Api/"]
@@ -31,14 +31,15 @@ ENV TZ=America/Sao_Paulo
 
 # Corrigindo fontes do Debian Buster EOL
 RUN sed -i 's|http://deb.debian.org|http://archive.debian.org|g' /etc/apt/sources.list \
-    && sed -i '/security.debian.org/d' /etc/apt/sources.list \
+    && sed -i '/security/d' /etc/apt/sources.list \
+    && rm -f /etc/apt/sources.list.d/* \
     && apt-get update \
     && apt-get install -y --allow-unauthenticated \
-        tzdata \
-        locales \
-        libc6-dev \
-        libgdiplus \
-        libx11-dev \
+    tzdata \
+    locales \
+    libc6-dev \
+    libgdiplus \
+    libx11-dev \
     && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
     && locale-gen \
     && dpkg-reconfigure --frontend noninteractive tzdata \

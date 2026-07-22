@@ -16,11 +16,11 @@ namespace SME.SGP.Aplicacao
             Formato = formato;
         }
 
-        public byte[] ImagemBytes { get; set; } = Array.Empty<byte>();
-        public string NomeFisico { get; set; } = string.Empty;
-        public string NomeArquivo { get; set; } = string.Empty;
+        public byte[] ImagemBytes { get; set; }
+        public string NomeFisico { get; set; }
+        public string NomeArquivo { get; set; }
         public TipoArquivo TipoArquivo { get; set; } 
-        public string Formato { get; set; } = string.Empty;
+        public string Formato { get; set; }
     }
 
     public class ArmazenarImagemFisicaCommandValidator : AbstractValidator<ArmazenarImagemFisicaCommand>

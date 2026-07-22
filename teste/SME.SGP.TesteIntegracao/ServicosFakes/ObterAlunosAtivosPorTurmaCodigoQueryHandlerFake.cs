@@ -33,7 +33,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioQuery(TIPO_CALENDARIO_1));
             var primeiroBimestre = periodosEscolares.FirstOrDefault(x => x.Bimestre == (int) Bimestre.Primeiro);
 
-            var dataAtual = DateTime.Now;
+            var dataAtual = DateTimeExtension.HorarioBrasilia();
 
             return await Task.FromResult(new List<AlunoPorTurmaResposta>()
             {

@@ -18,7 +18,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task SalvarVariosAsync(IEnumerable<FrequenciaAluno> entidades)
         {
-            var sql = @"copy frequencia_aluno (                                         
+            const string sql = @"copy frequencia_aluno (                                         
                                         codigo_aluno, 
                                         tipo, 
                                         disciplina_id, 
@@ -37,31 +37,31 @@ namespace SME.SGP.Dados.Repositorios
                             from
                             stdin (FORMAT binary)";
 
-            using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
+            await using var writer = await ((NpgsqlConnection)database.Conexao).BeginBinaryImportAsync(sql);
+            foreach (var frequencia in entidades)
             {
-                foreach (var frequencia in entidades)
-                {
-                    writer.StartRow();
-                    writer.Write(frequencia.CodigoAluno, NpgsqlDbType.Varchar);
-                    writer.Write((int)frequencia.Tipo, NpgsqlDbType.Integer);
-                    writer.Write(frequencia.DisciplinaId, NpgsqlDbType.Varchar);
-                    writer.Write(frequencia.PeriodoInicio, NpgsqlDbType.Timestamp);
-                    writer.Write(frequencia.PeriodoFim, NpgsqlDbType.Timestamp);
-                    writer.Write(frequencia.Bimestre, NpgsqlDbType.Integer);
-                    writer.Write(frequencia.TotalAulas, NpgsqlDbType.Integer);
-                    writer.Write(frequencia.TotalAusencias, NpgsqlDbType.Integer);
-                    writer.Write(frequencia.CriadoEm, NpgsqlDbType.Timestamp);
-                    writer.Write(database.UsuarioLogadoNomeCompleto, NpgsqlDbType.Varchar);
-                    writer.Write(database.UsuarioLogadoRF, NpgsqlDbType.Varchar);
-                    writer.Write(frequencia.TotalCompensacoes, NpgsqlDbType.Integer);
-                    writer.Write(frequencia.TurmaId, NpgsqlDbType.Varchar);
-                    writer.Write(frequencia.Professor, NpgsqlDbType.Varchar);
+                await writer.StartRowAsync();
+                await writer.WriteAsync(frequencia.CodigoAluno, NpgsqlDbType.Varchar); 
+                await writer.WriteAsync((int)frequencia.Tipo, NpgsqlDbType.Integer);
+                await writer.WriteAsync(frequencia.DisciplinaId, NpgsqlDbType.Varchar);
+                await writer.WriteAsync(frequencia.PeriodoInicio, NpgsqlDbType.Timestamp);
+                await writer.WriteAsync(frequencia.PeriodoFim, NpgsqlDbType.Timestamp);
+                await writer.WriteAsync(frequencia.Bimestre, NpgsqlDbType.Integer);
+                await writer.WriteAsync(frequencia.TotalAulas, NpgsqlDbType.Integer);
+                await writer.WriteAsync(frequencia.TotalAusencias, NpgsqlDbType.Integer);
+                await writer.WriteAsync(frequencia.CriadoEm, NpgsqlDbType.Timestamp);
+                await writer.WriteAsync(database.UsuarioLogadoNomeCompleto, NpgsqlDbType.Varchar);
+                await writer.WriteAsync(database.UsuarioLogadoRF, NpgsqlDbType.Varchar);
+                await writer.WriteAsync(frequencia.TotalCompensacoes, NpgsqlDbType.Integer);
+                await writer.WriteAsync(frequencia.TurmaId, NpgsqlDbType.Varchar);
+                await writer.WriteAsync(frequencia.Professor, NpgsqlDbType.Varchar);
 
-                    if (frequencia.PeriodoEscolarId.HasValue)
-                        writer.Write((long)frequencia.PeriodoEscolarId, NpgsqlDbType.Bigint);
-                }
-                await Task.FromResult(writer.Complete());
+                if (frequencia.PeriodoEscolarId.HasValue)
+                    await writer.WriteAsync((long)frequencia.PeriodoEscolarId, NpgsqlDbType.Bigint);
+                else
+                    await writer.WriteNullAsync(); 
             }
+            await writer.CompleteAsync();
         }
         public async Task RemoverVariosAsync(long[] ids)
         {
@@ -76,7 +76,7 @@ namespace SME.SGP.Dados.Repositorios
         }
         public async Task RemoverFrequenciaGeralAlunos(string[] alunos, string turmaCodigo, long periodoEscolarId)
         {
-            var query = @"delete from frequencia_aluno 
+            const string query = @"delete from frequencia_aluno 
                         where tipo = 2 
                           and turma_id = @turmaCodigo 
                           and codigo_aluno = any(@alunos) 

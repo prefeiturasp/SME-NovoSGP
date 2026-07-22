@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using Pipelines.Sockets.Unofficial.Arenas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;

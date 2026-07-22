@@ -92,10 +92,7 @@ namespace SME.SGP.Aplicacao
             if (componentes.EhNulo() || !componentes.Any())
                 return false;
 
-            var componente = componentes.FirstOrDefault(c => c.Codigo == aulaRecorrente.ComponenteCurricularId);
-
-            if (componente.EhNulo())
-                componente = componentes.FirstOrDefault(c => c.CodigoComponenteTerritorioSaber == aulaRecorrente.ComponenteCurricularId);
+            var componente = componentes.FirstOrDefault(c => c.PossuiCodigoEquivalente(aulaRecorrente.ComponenteCurricularId));
 
             if (componente.EhNulo()) return false;
 
@@ -115,7 +112,7 @@ namespace SME.SGP.Aplicacao
                                                                     usuarioLogado.Login, 
                                                                     usuarioLogado.PerfilAtual));
             var componenteAtribuicaoEolCorrespondente = componentesAtribuicaoEol?
-                .FirstOrDefault(ca => ca.Codigo.Equals(aulaRecorrente.ComponenteCurricularId) || ca.CodigoComponenteTerritorioSaber.Equals(aulaRecorrente.ComponenteCurricularId));
+                .FirstOrDefault(ca => ca.PossuiCodigoEquivalente(aulaRecorrente.ComponenteCurricularId));
 
             if ((componentes.EhNulo() || !componentes.Any(FilterComponentesCompativeis)) && componenteAtribuicaoEolCorrespondente.EhNulo())
                 throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);

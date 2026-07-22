@@ -10,7 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-
+using SME.SGP.Dominio;
 
 
 namespace SME.SGP.Dados.Repositorios
@@ -31,7 +31,7 @@ namespace SME.SGP.Dados.Repositorios
             await using var conn = new NpgsqlConnection(configuration.GetConnectionString("SGP_Postgres"));
             await conn.OpenAsync();
 
-            await using var writer = conn.BeginBinaryImport(@"
+            await using var writer = await conn.BeginBinaryImportAsync(@"
                 COPY painel_educacional_consolidacao_aprovacao_ue 
                     (codigo_dre, codigo_ue, turma, modalidade_codigo, modalidade, total_promocoes, total_retencoes_ausencias, total_retencoes_notas, ano_letivo, criado_em)
                 FROM STDIN (FORMAT BINARY)
@@ -49,7 +49,7 @@ namespace SME.SGP.Dados.Repositorios
                 await writer.WriteAsync(item.TotalRetencoesAusencias, NpgsqlDbType.Integer);
                 await writer.WriteAsync(item.TotalRetencoesNotas, NpgsqlDbType.Integer);
                 await writer.WriteAsync(item.AnoLetivo, NpgsqlDbType.Integer);
-                await writer.WriteAsync(item.CriadoEm, NpgsqlDbType.TimestampTz);
+                await writer.WriteAsync(DateTimeExtension.EnsureUnspecified(item.CriadoEm), NpgsqlDbType.Timestamp);
             }
 
             await writer.CompleteAsync();

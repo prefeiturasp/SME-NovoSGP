@@ -7,6 +7,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PainelEducacional.ConsolidacaoAprovacao;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -26,7 +27,7 @@ namespace SME.SGP.Dados.Repositorios
             await using var conn = new NpgsqlConnection(configuration.GetConnectionString("SGP_Postgres"));
             await conn.OpenAsync();
 
-            await using var writer = conn.BeginBinaryImport(@"
+            await using var writer = await conn.BeginBinaryImportAsync(@"
                 COPY painel_educacional_consolidacao_aprovacao 
                     (codigo_dre, serie_ano, modalidade, total_promocoes, total_retencoes_ausencias, total_retencoes_notas, ano_letivo, criado_em)
                 FROM STDIN (FORMAT BINARY)
@@ -42,7 +43,7 @@ namespace SME.SGP.Dados.Repositorios
                 await writer.WriteAsync(item.TotalRetencoesAusencias, NpgsqlDbType.Integer);
                 await writer.WriteAsync(item.TotalRetencoesNotas, NpgsqlDbType.Integer);
                 await writer.WriteAsync(item.AnoLetivo, NpgsqlDbType.Integer);
-                await writer.WriteAsync(item.CriadoEm, NpgsqlDbType.TimestampTz);
+                await writer.WriteAsync(DateTimeExtension.EnsureUnspecified(item.CriadoEm), NpgsqlDbType.Timestamp);
             }
 
             await writer.CompleteAsync();
@@ -50,7 +51,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task LimparConsolidacao()
         {
-            var sql = @"TRUNCATE painel_educacional_consolidacao_aprovacao";
+            const string sql = @"TRUNCATE painel_educacional_consolidacao_aprovacao";
 
             await database.ExecuteAsync(sql);
         }
@@ -68,7 +69,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<DadosParaConsolidarAprovacao>> ObterIndicadores(long[] turmasIds)
         {
-            var sql = @"select 
+            const string sql = @"select 
                                 cccat.turma_id as TurmaId,
                                 cccat.aluno_codigo as CodigoAluno,        
                                 cccat.parecer_conclusivo_id as ParecerConclusivoId,
@@ -78,8 +79,7 @@ namespace SME.SGP.Dados.Repositorios
                         where cccat.turma_id = any(@turmasIds)
                         and cccat.excluido = false
                         and cccat.parecer_conclusivo_id is not null 
-                        and cccat.status = 2"
-            ;
+                        and cccat.status = 2";
 
             return await database.QueryAsync<DadosParaConsolidarAprovacao>(sql, new { turmasIds });
         }

@@ -3,6 +3,7 @@ using Moq;
 using SME.SGP.Api.Controllers;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
@@ -186,7 +187,7 @@ namespace SME.SGP.Api.Teste.Controllers
 
             _periodoFechamentoUseCaseMock.Verify(x => x.Executar(
                 turmaCodigo,
-                It.Is<DateTime>(d => d > DateTime.MinValue && d <= DateTime.Now),
+                It.Is<DateTime>(d => d > DateTime.MinValue && d <= DateTimeExtension.HorarioBrasilia()),
                 bimestre), Times.Once);
         }
 

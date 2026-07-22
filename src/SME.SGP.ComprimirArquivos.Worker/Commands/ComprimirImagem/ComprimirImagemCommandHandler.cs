@@ -43,9 +43,21 @@ namespace SME.SGP.ComprimirArquivos.Worker
 
                 using var outputStream = new MemoryStream();
 
-                // Lê os bytes da stream
-                var imagemBytes = new byte[stream.Length];
-                await stream.ReadAsync(imagemBytes, 0, (int)stream.Length, cancellationToken);
+                // Lê os bytes da stream e armazena o número de bytes lidos
+                var imagemBytesBuffer = new byte[stream.Length];
+                var bytesRead = await stream.ReadAsync(imagemBytesBuffer, 0, (int)stream.Length, cancellationToken);
+
+                // Cria um novo array com o tamanho exato dos bytes lidos
+                byte[] imagemBytes;
+                if (bytesRead < imagemBytesBuffer.Length)
+                {
+                    imagemBytes = new byte[bytesRead];
+                    Array.Copy(imagemBytesBuffer, imagemBytes, bytesRead);
+                }
+                else
+                {
+                    imagemBytes = imagemBytesBuffer;
+                }
 
                 // Decodifica a imagem com SkiaSharp
                 using (var skBitmap = SKBitmap.Decode(imagemBytes))
