@@ -14,7 +14,6 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 using PeriodoFechamentoBimestre = SME.SGP.Dominio.PeriodoFechamentoBimestre;
-using SME.SGP.Dominio.Entidades;
 
 namespace SME.SGP.TesteIntegracao
 {
