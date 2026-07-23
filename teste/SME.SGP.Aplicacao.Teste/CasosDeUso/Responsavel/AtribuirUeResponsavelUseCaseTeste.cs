@@ -129,8 +129,13 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Responsavel
                 It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(0);
 
+            // Lista populada, mas sem o responsável da requisição: caso real de "responsável inválido".
+            var responsaveisValidos = new List<SupervisoresRetornoDto>
+            {
+                new SupervisoresRetornoDto { CodigoRf = "OUTRO_RF", NomeServidor = "Servidor Teste" }
+            };
             mediatorMock.Setup(m => m.Send(It.IsAny<ObterSupervisoresPorDreEolQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<SupervisoresRetornoDto>()); // Lista vazia para simular responsável inválido
+                .ReturnsAsync(responsaveisValidos);
 
             repositorioMock.Setup(r => r.ObtemPorDreESupervisor(atribuicaoDto.DreId, atribuicaoDto.ResponsavelId, false))
                            .ReturnsAsync(atribuicoesAtuais);
@@ -144,6 +149,45 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Responsavel
             repositorioMock.Verify(r => r.RemoverLogico(10, null), Times.Once());
             repositorioMock.Verify(r => r.RemoverLogico(11, null), Times.Once());
             repositorioMock.Verify(r => r.RemoverLogico(It.IsAny<long>(), It.IsAny<string>()), Times.Exactly(2));
+        }
+
+        [Fact]
+        public async Task Nao_Deve_Remover_Atribuicoes_Quando_Consulta_Eol_Retorna_Vazia()
+        {
+            // Arrange: lista vazia do EOL deve ser tratada como falha de consulta (instabilidade externa),
+            // não como "responsável inválido" - evita apagar em massa atribuições legítimas quando o
+            // serviço externo falha/está fora do ar.
+            var atribuicaoDto = new AtribuicaoResponsavelUEDto
+            {
+                DreId = "108300",
+                ResponsavelId = "789123",
+                UesIds = new List<string> { "UE-A" },
+                TipoResponsavelAtribuicao = TipoResponsavelAtribuicao.SupervisorEscolar
+            };
+
+            var atribuicoesAtuais = new List<SupervisorEscolasDreDto>
+            {
+                new SupervisorEscolasDreDto { AtribuicaoSupervisorId = 10, EscolaId = "UE-X", AtribuicaoExcluida = false }
+            };
+
+            ConfigurarMocksDeValidacaoEntidadesSucesso(atribuicaoDto);
+            repositorioMock.Setup(r => r.VerificarSeJaExisteAtribuicaoAtivaComOutroResponsavelParaAqueleTipoUe(
+                It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(0);
+
+            mediatorMock.Setup(m => m.Send(It.IsAny<ObterSupervisoresPorDreEolQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<SupervisoresRetornoDto>());
+
+            repositorioMock.Setup(r => r.ObtemPorDreESupervisor(atribuicaoDto.DreId, atribuicaoDto.ResponsavelId, false))
+                           .ReturnsAsync(atribuicoesAtuais);
+
+            // Act
+            var resultado = await atribuirUeResponsavelUseCase.Executar(atribuicaoDto);
+
+            // Assert
+            Assert.False(resultado.AtribuidoComSucesso);
+            Assert.Contains("Não foi possível validar o responsável", resultado.Mensagem);
+            repositorioMock.Verify(r => r.RemoverLogico(It.IsAny<long>(), It.IsAny<string>()), Times.Never());
         }
 
         [Fact]
