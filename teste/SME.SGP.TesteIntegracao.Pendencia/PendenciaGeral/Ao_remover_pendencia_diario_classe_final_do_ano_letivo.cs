@@ -12,7 +12,6 @@ using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.Dados;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.PendenciaGeral

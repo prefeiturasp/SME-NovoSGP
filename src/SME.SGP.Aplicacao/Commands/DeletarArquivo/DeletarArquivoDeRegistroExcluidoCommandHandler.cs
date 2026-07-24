@@ -6,10 +6,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Utilitarios;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao.Commands.DeletarArquivo
 {

@@ -6,7 +6,6 @@ using Xunit;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico

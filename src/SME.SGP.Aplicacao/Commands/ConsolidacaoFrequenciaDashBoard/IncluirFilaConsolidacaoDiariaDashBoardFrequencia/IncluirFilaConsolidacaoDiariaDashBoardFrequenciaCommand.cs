@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Dominio.Enumerados;
 using System;
 using FluentValidation;
 
