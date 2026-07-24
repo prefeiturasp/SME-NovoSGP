@@ -66,10 +66,10 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> RemoverSupervisorSemAtribuicao(IEnumerable<SupervisorEscolasDreDto> responsaveisSGP, IEnumerable<SupervisoresRetornoDto> responsaveisEOL)
         {
-            var responsavelSupervisor = responsaveisSGP;
+            if (responsaveisEOL == null || !responsaveisEOL.Any())
+                throw new Exception("A consulta de supervisores no EOL retornou vazia.");
 
-            if (responsaveisEOL.NaoEhNulo())
-                responsavelSupervisor = responsavelSupervisor.Where(s => s.TipoAtribuicao == (int)TipoResponsavelAtribuicao.SupervisorEscolar && !responsaveisEOL.Select(e => e.CodigoRf).Contains(s.SupervisorId));
+            var responsavelSupervisor = responsaveisSGP.Where(s => s.TipoAtribuicao == (int)TipoResponsavelAtribuicao.SupervisorEscolar && !responsaveisEOL.Select(e => e.CodigoRf).Contains(s.SupervisorId));
 
             foreach (var supervisor in responsavelSupervisor)
                 await RemoverAtribuicaoSupervisor(supervisor);

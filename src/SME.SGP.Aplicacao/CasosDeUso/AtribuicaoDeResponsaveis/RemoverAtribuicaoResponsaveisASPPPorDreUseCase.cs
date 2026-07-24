@@ -57,6 +57,9 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> RemoverASPPCoreSSoSemAtribuicao(IEnumerable<SupervisorEscolasDreDto> responsaveisSGP, IEnumerable<UsuarioEolRetornoDto> responsaveisEol)
         {
+            if (responsaveisEol == null || !responsaveisEol.Any())
+                throw new Exception("A consulta de funcionários (Assistente Social/Psicólogo/Psicopedagogo) no CoreSSO retornou vazia.");
+
             var listaAsspSemAtribuicao = new List<SupervisorEscolasDreDto>();
 
             var assitenteSocialEscolasSemAtribuicao = responsaveisSGP.Where(s => s.TipoAtribuicao == (int) TipoResponsavelAtribuicao.AssistenteSocial && !responsaveisEol.Select(e => e.Login.ToString()).Contains(s.SupervisorId));
