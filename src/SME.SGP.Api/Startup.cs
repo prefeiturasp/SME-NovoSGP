@@ -51,6 +51,7 @@ namespace SME.SGP.Api
             app.UseRequestLocalization();
             app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseSwagger();                                         
@@ -69,8 +70,6 @@ namespace SME.SGP.Api
             app.UseMetricServer();
 
             app.UseHttpMetrics();
-
-            app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>
             {
