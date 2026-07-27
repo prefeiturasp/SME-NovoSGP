@@ -1,19 +1,16 @@
-﻿using Dapper.FluentMap.Dommel.Mapping;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class PeriodoFechamentoBimestreMap : DommelEntityMap<PeriodoFechamentoBimestre>
+    public class PeriodoFechamentoBimestreMap : SimpleEntityMap<PeriodoFechamentoBimestre>
     {
         public PeriodoFechamentoBimestreMap()
         {
             ToTable("periodo_fechamento_bimestre");
-            Map(c => c.PeriodoEscolar).Ignore();
-            Map(c => c.PeriodoFechamentoId).ToColumn("periodo_fechamento_id");
-            Map(c => c.FinalDoFechamento).ToColumn("final_fechamento");
-            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
-            Map(c => c.InicioDoFechamento).ToColumn("inicio_fechamento");
-            Map(c => c.PeriodoEscolarId).ToColumn("periodo_escolar_id");
+            Map(nameof(PeriodoFechamentoBimestre.PeriodoFechamentoId), "periodo_fechamento_id");
+            Map(nameof(PeriodoFechamentoBimestre.FinalDoFechamento), "final_fechamento");
+            Map(nameof(PeriodoFechamentoBimestre.InicioDoFechamento), "inicio_fechamento");
+            Map(nameof(PeriodoFechamentoBimestre.PeriodoEscolarId), "periodo_escolar_id");
         }
     }
 }

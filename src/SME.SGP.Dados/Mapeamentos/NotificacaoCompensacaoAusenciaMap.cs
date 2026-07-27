@@ -1,17 +1,14 @@
-﻿using Dapper.FluentMap.Dommel.Mapping;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class NotificacaoCompensacaoAusenciaMap: DommelEntityMap<NotificacaoCompensacaoAusencia>
+    public class NotificacaoCompensacaoAusenciaMap : SimpleEntityMap<NotificacaoCompensacaoAusencia>
     {
         public NotificacaoCompensacaoAusenciaMap()
         {
             ToTable("notificacao_compensacao_ausencia");
-            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
-            Map(c => c.NotificacaoId).ToColumn("notificacao_id");
-            Map(c => c.CompensacaoAusenciaId).ToColumn("compensacao_ausencia_id");
+            Map(nameof(NotificacaoCompensacaoAusencia.NotificacaoId), "notificacao_id");
+            Map(nameof(NotificacaoCompensacaoAusencia.CompensacaoAusenciaId), "compensacao_ausencia_id");
         }
-
     }
 }

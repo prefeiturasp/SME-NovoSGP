@@ -1,18 +1,16 @@
-﻿using Dapper.FluentMap.Dommel.Mapping;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ItineranciaObjetivoBaseMap : DommelEntityMap<ItineranciaObjetivoBase>
+    public class ItineranciaObjetivoBaseMap : SimpleEntityMap<ItineranciaObjetivoBase>
     {
         public ItineranciaObjetivoBaseMap()
         {
             ToTable("itinerancia_objetivo_base");
-            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
-            Map(c => c.Nome).ToColumn("nome");
-            Map(c => c.TemDescricao).ToColumn("tem_descricao");
-            Map(c => c.Ordem).ToColumn("ordem");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(ItineranciaObjetivoBase.Nome), "nome");
+            Map(nameof(ItineranciaObjetivoBase.TemDescricao), "tem_descricao");
+            Map(nameof(ItineranciaObjetivoBase.Ordem), "ordem");
+            Map(nameof(ItineranciaObjetivoBase.Excluido), "excluido");
         }
     }
 }

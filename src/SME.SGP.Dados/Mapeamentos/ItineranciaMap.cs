@@ -2,18 +2,18 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ItineranciaMap : BaseMap<Itinerancia>
+    public class ItineranciaMap : BaseEntityMap<Itinerancia>
     {
         public ItineranciaMap()
         {
             ToTable("itinerancia");
-            Map(c => c.DreId).ToColumn("dre_id");
-            Map(c => c.UeId).ToColumn("ue_id");
-            Map(c => c.EventoId).ToColumn("evento_id");
-            Map(c => c.DataVisita).ToColumn("data_visita");
-            Map(c => c.AnoLetivo).ToColumn("ano_letivo");
-            Map(c => c.DataRetornoVerificacao).ToColumn("data_retorno_verificacao");
-            Map(c => c.Situacao).ToColumn("situacao");
+            Map(nameof(Itinerancia.DreId), "dre_id");
+            Map(nameof(Itinerancia.UeId), "ue_id");
+            Map(nameof(Itinerancia.EventoId), "evento_id");
+            Map(nameof(Itinerancia.DataVisita), "data_visita");
+            Map(nameof(Itinerancia.AnoLetivo), "ano_letivo");
+            Map(nameof(Itinerancia.DataRetornoVerificacao), "data_retorno_verificacao");
+            Map(nameof(Itinerancia.Situacao), "situacao");
         }
     }
 }

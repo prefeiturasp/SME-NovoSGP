@@ -2,14 +2,14 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class InatividadeAtendimentoNAAPANotificacaoMap : BaseMap<InatividadeAtendimentoNAAPANotificacao>
+    public class InatividadeAtendimentoNAAPANotificacaoMap : BaseEntityMap<InatividadeAtendimentoNAAPANotificacao>
     {
         public InatividadeAtendimentoNAAPANotificacaoMap()
         {
             ToTable("inatividade_atendimento_naapa_notificacao");
-            Map(c => c.EncaminhamentoNAAPAId).ToColumn("encaminhamento_naapa_id");
-            Map(c => c.NotificacaoId).ToColumn("notificacao_id");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(InatividadeAtendimentoNAAPANotificacao.EncaminhamentoNAAPAId), "encaminhamento_naapa_id");
+            Map(nameof(InatividadeAtendimentoNAAPANotificacao.NotificacaoId), "notificacao_id");
+            Map(nameof(InatividadeAtendimentoNAAPANotificacao.Excluido), "excluido");
         }
     }
 }

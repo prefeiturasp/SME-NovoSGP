@@ -1,20 +1,19 @@
 ﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados
-{ 
-    public class EncaminhamentoAEEMap : BaseMap<EncaminhamentoAEE>
+{
+    public class EncaminhamentoAEEMap : BaseEntityMap<EncaminhamentoAEE>
     {
         public EncaminhamentoAEEMap()
         {
             ToTable("encaminhamento_aee");
-
-            Map(c => c.TurmaId).ToColumn("turma_id");
-            Map(c => c.AlunoCodigo).ToColumn("aluno_codigo");
-            Map(c => c.AlunoNome).ToColumn("aluno_nome");
-            Map(c => c.Situacao).ToColumn("situacao");
-            Map(c => c.Excluido).ToColumn("excluido");
-            Map(c => c.MotivoEncerramento).ToColumn("motivo_encerramento");
-            Map(c => c.ResponsavelId).ToColumn("responsavel_id");
+            Map(nameof(EncaminhamentoAEE.TurmaId), "turma_id");
+            Map(nameof(EncaminhamentoAEE.AlunoCodigo), "aluno_codigo");
+            Map(nameof(EncaminhamentoAEE.AlunoNome), "aluno_nome");
+            Map(nameof(EncaminhamentoAEE.Situacao), "situacao");
+            Map(nameof(EncaminhamentoAEE.Excluido), "excluido");
+            Map(nameof(EncaminhamentoAEE.MotivoEncerramento), "motivo_encerramento");
+            Map(nameof(EncaminhamentoAEE.ResponsavelId), "responsavel_id");
         }
     }
 }

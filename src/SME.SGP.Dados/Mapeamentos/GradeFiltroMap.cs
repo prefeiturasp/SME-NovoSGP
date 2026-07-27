@@ -2,15 +2,15 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class GradeFiltroMap : BaseMap<GradeFiltro>
+    public class GradeFiltroMap : BaseEntityMap<GradeFiltro>
     {
         public GradeFiltroMap()
         {
             ToTable("grade_filtro");
-            Map(c => c.GradeId).ToColumn("grade_id");
-            Map(c => c.TipoEscola).ToColumn("tipo_escola");
-            Map(c => c.Modalidade).ToColumn("modalidade");
-            Map(c => c.DuracaoTurno).ToColumn("duracao_turno");
+            Map(nameof(GradeFiltro.GradeId), "grade_id");
+            Map(nameof(GradeFiltro.TipoEscola), "tipo_escola");
+            Map(nameof(GradeFiltro.Modalidade), "modalidade");
+            Map(nameof(GradeFiltro.DuracaoTurno), "duracao_turno");
         }
     }
 }

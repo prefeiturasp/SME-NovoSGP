@@ -2,14 +2,13 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class PeriodoRelatorioPAPMap : BaseMap<PeriodoRelatorioPAP>
+    public class PeriodoRelatorioPAPMap : SimpleEntityMap<PeriodoRelatorioPAP>
     {
-        public PeriodoRelatorioPAPMap() 
+        public PeriodoRelatorioPAPMap()
         {
             ToTable("periodo_relatorio_pap");
-
-            Map(c => c.ConfiguracaoId).ToColumn("configuracao_relatorio_pap_id");
-            Map(c => c.Periodo).ToColumn("periodo");
+            Map(nameof(PeriodoRelatorioPAP.ConfiguracaoId), "configuracao_relatorio_pap_id");
+            Map(nameof(PeriodoRelatorioPAP.Periodo), "periodo");
         }
     }
 }

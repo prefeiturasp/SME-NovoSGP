@@ -2,13 +2,13 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class OcorrenciaTipoMap : BaseMap<OcorrenciaTipo>
+    public class OcorrenciaTipoMap : BaseEntityMap<OcorrenciaTipo>
     {
         public OcorrenciaTipoMap()
         {
             ToTable("ocorrencia_tipo");
-            Map(c => c.Descricao).ToColumn("descricao");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(OcorrenciaTipo.Descricao), "descricao");
+            Map(nameof(OcorrenciaTipo.Excluido), "excluido");
         }
     }
 }

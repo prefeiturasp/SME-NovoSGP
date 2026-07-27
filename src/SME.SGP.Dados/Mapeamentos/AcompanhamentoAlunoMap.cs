@@ -2,14 +2,14 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class AcompanhamentoAlunoMap : BaseMap<AcompanhamentoAluno>
+    public class AcompanhamentoAlunoMap : BaseEntityMap<AcompanhamentoAluno>
     {
         public AcompanhamentoAlunoMap()
         {
             ToTable("acompanhamento_aluno");
-            Map(c => c.TurmaId).ToColumn("turma_id");
-            Map(c => c.AlunoCodigo).ToColumn("aluno_codigo");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(AcompanhamentoAluno.TurmaId), "turma_id");
+            Map(nameof(AcompanhamentoAluno.AlunoCodigo), "aluno_codigo");
+            Map(nameof(AcompanhamentoAluno.Excluido), "excluido");
         }
     }
 }

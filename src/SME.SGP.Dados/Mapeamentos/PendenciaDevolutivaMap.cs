@@ -1,17 +1,15 @@
-﻿using Dapper.FluentMap.Dommel.Mapping;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados
 {
-    public class PendenciaDevolutivaMap : DommelEntityMap<PendenciaDevolutiva>
+    public class PendenciaDevolutivaMap : SimpleEntityMap<PendenciaDevolutiva>
     {
         public PendenciaDevolutivaMap()
         {
             ToTable("pendencia_devolutiva");
-            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
-            Map(c => c.PedenciaId).ToColumn("pendencia_id");
-            Map(c => c.ComponenteCurricularId).ToColumn("componente_curricular_id");
-            Map(c => c.TurmaId).ToColumn("turma_id");
+            Map(nameof(PendenciaDevolutiva.PedenciaId), "pendencia_id");
+            Map(nameof(PendenciaDevolutiva.ComponenteCurricularId), "componente_curricular_id");
+            Map(nameof(PendenciaDevolutiva.TurmaId), "turma_id");
         }
     }
 }

@@ -2,13 +2,13 @@
 
 namespace SME.SGP.Dados
 {
-    public class PendenciaPlanoAEEMap : BaseMap<PendenciaPlanoAEE>
+    public class PendenciaPlanoAEEMap : BaseEntityMap<PendenciaPlanoAEE>
     {
         public PendenciaPlanoAEEMap()
         {
             ToTable("pendencia_plano_aee");
-            Map(c => c.PlanoAEEId).ToColumn("plano_aee_id");
-            Map(c => c.PendenciaId).ToColumn("pendencia_id");
+            Map(nameof(PendenciaPlanoAEE.PlanoAEEId), "plano_aee_id");
+            Map(nameof(PendenciaPlanoAEE.PendenciaId), "pendencia_id");
         }
     }
 }

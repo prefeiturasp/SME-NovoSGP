@@ -2,13 +2,13 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class OcorrenciaServidorMap : BaseMap<OcorrenciaServidor>
+    public class OcorrenciaServidorMap : BaseEntityMap<OcorrenciaServidor>
     {
         public OcorrenciaServidorMap()
         {
             ToTable("ocorrencia_servidor");
-            Map(c => c.CodigoServidor).ToColumn("rf_codigo");
-            Map(c => c.OcorrenciaId).ToColumn("ocorrencia_id");
+            Map(nameof(OcorrenciaServidor.CodigoServidor), "rf_codigo");
+            Map(nameof(OcorrenciaServidor.OcorrenciaId), "ocorrencia_id");
         }
     }
 }

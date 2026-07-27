@@ -2,16 +2,14 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ConfiguracaoRelatorioPAPMap : BaseMap<ConfiguracaoRelatorioPAP>
+    public class ConfiguracaoRelatorioPAPMap : BaseEntityMap<ConfiguracaoRelatorioPAP>
     {
         public ConfiguracaoRelatorioPAPMap()
         {
             ToTable("configuracao_relatorio_pap");
-
-            Map(c => c.InicioVigencia).ToColumn("inicio_vigencia");
-            Map(c => c.FimVigencia).ToColumn("fim_vigencia");
-            Map(c => c.TipoPeriocidade).ToColumn("tipo_periodicidade");
-            Map(c => c.EhSemestre).Ignore();
+            Map(nameof(ConfiguracaoRelatorioPAP.InicioVigencia), "inicio_vigencia");
+            Map(nameof(ConfiguracaoRelatorioPAP.FimVigencia), "fim_vigencia");
+            Map(nameof(ConfiguracaoRelatorioPAP.TipoPeriocidade), "tipo_periodicidade");
         }
     }
 }

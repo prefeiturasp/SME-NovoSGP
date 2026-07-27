@@ -2,14 +2,14 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ObjetivoAprendizagemPlanoMap : BaseMap<ObjetivoAprendizagemPlano>
+    public class ObjetivoAprendizagemPlanoMap : BaseEntityMap<ObjetivoAprendizagemPlano>
     {
         public ObjetivoAprendizagemPlanoMap()
         {
             ToTable("objetivo_aprendizagem_plano");
-            Map(c => c.ComponenteCurricularId).ToColumn("componente_curricular_id");
-            Map(c => c.ObjetivoAprendizagemJuremaId).ToColumn("objetivo_aprendizagem_jurema_id");
-            Map(c => c.PlanoId).ToColumn("plano_id");
+            Map(nameof(ObjetivoAprendizagemPlano.ComponenteCurricularId), "componente_curricular_id");
+            Map(nameof(ObjetivoAprendizagemPlano.ObjetivoAprendizagemJuremaId), "objetivo_aprendizagem_jurema_id");
+            Map(nameof(ObjetivoAprendizagemPlano.PlanoId), "plano_id");
         }
     }
 }

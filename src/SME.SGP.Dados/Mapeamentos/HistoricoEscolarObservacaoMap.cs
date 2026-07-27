@@ -2,14 +2,13 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class HistoricoEscolarObservacaoMap : BaseMap<HistoricoEscolarObservacao>
+    public class HistoricoEscolarObservacaoMap : BaseEntityMap<HistoricoEscolarObservacao>
     {
         public HistoricoEscolarObservacaoMap()
         {
             ToTable("historico_escolar_observacao");
-            Map(a => a.AlunoCodigo).ToColumn("aluno_codigo");
-            Map(a => a.Observacao).ToColumn("observacao");
+            Map(nameof(HistoricoEscolarObservacao.AlunoCodigo), "aluno_codigo");
+            Map(nameof(HistoricoEscolarObservacao.Observacao), "observacao");
         }
     }
 }
-

@@ -2,17 +2,16 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class EventoMatriculaMap : BaseMap<EventoMatricula>
+    public class EventoMatriculaMap : BaseEntityMap<EventoMatricula>
     {
         public EventoMatriculaMap()
         {
             ToTable("evento_matricula");
-            Map(c => c.CodigoAluno).ToColumn("codigo_aluno");
-            Map(c => c.Tipo).ToColumn("tipo");
-            Map(c => c.DataEvento).ToColumn("data_evento");
-            Map(c => c.NomeEscola).ToColumn("nome_escola");
-            Map(c => c.NomeTurma).ToColumn("nome_turma");
-
+            Map(nameof(EventoMatricula.CodigoAluno), "codigo_aluno");
+            Map(nameof(EventoMatricula.Tipo), "tipo");
+            Map(nameof(EventoMatricula.DataEvento), "data_evento");
+            Map(nameof(EventoMatricula.NomeEscola), "nome_escola");
+            Map(nameof(EventoMatricula.NomeTurma), "nome_turma");
         }
     }
 }

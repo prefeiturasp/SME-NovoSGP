@@ -2,16 +2,16 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class CartaIntencoesObservacaoMap : BaseMap<CartaIntencoesObservacao>
+    public class CartaIntencoesObservacaoMap : BaseEntityMap<CartaIntencoesObservacao>
     {
         public CartaIntencoesObservacaoMap()
         {
             ToTable("carta_intencoes_observacao");
-            Map(c => c.Observacao).ToColumn("observacao");
-            Map(c => c.TurmaId).ToColumn("turma_id");
-            Map(c => c.ComponenteCurricularId).ToColumn("componente_curricular_id");
-            Map(c => c.UsuarioId).ToColumn("usuario_id");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(CartaIntencoesObservacao.Observacao), "observacao");
+            Map(nameof(CartaIntencoesObservacao.TurmaId), "turma_id");
+            Map(nameof(CartaIntencoesObservacao.ComponenteCurricularId), "componente_curricular_id");
+            Map(nameof(CartaIntencoesObservacao.UsuarioId), "usuario_id");
+            Map(nameof(CartaIntencoesObservacao.Excluido), "excluido");
         }
     }
 }

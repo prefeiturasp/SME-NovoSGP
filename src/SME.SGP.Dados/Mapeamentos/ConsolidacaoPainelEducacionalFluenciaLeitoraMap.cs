@@ -1,21 +1,19 @@
-﻿using Dapper.FluentMap.Dommel.Mapping;
-using SME.SGP.Dominio.Entidades;
+﻿using SME.SGP.Dominio.Entidades;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ConsolidacaoPainelEducacionalFluenciaLeitoraMap : DommelEntityMap<ConsolidacaoPainelEducacionalFluenciaLeitora>
+    public class ConsolidacaoPainelEducacionalFluenciaLeitoraMap : SimpleEntityMap<ConsolidacaoPainelEducacionalFluenciaLeitora>
     {
         public ConsolidacaoPainelEducacionalFluenciaLeitoraMap()
         {
             ToTable("consolidacao_painel_educacional_fluencia_leitora");
-            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
-            Map(c => c.Fluencia).ToColumn("fluencia");
-            Map(c => c.DescricaoFluencia).ToColumn("descricao_fluencia");
-            Map(c => c.DreCodigo).ToColumn("dre_codigo");
-            Map(c => c.Percentual).ToColumn("percentual");
-            Map(c => c.Ano).ToColumn("ano");
-            Map(c => c.Periodo).ToColumn("periodo");
-            Map(c => c.QuantidadeAlunos).ToColumn("quantidade_alunos");
+            Map(nameof(ConsolidacaoPainelEducacionalFluenciaLeitora.Fluencia), "fluencia");
+            Map(nameof(ConsolidacaoPainelEducacionalFluenciaLeitora.DescricaoFluencia), "descricao_fluencia");
+            Map(nameof(ConsolidacaoPainelEducacionalFluenciaLeitora.DreCodigo), "dre_codigo");
+            Map(nameof(ConsolidacaoPainelEducacionalFluenciaLeitora.Percentual), "percentual");
+            Map(nameof(ConsolidacaoPainelEducacionalFluenciaLeitora.Ano), "ano");
+            Map(nameof(ConsolidacaoPainelEducacionalFluenciaLeitora.Periodo), "periodo");
+            Map(nameof(ConsolidacaoPainelEducacionalFluenciaLeitora.QuantidadeAlunos), "quantidade_alunos");
         }
     }
 }

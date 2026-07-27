@@ -2,30 +2,25 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class FrequenciaAlunoMap : BaseMap<FrequenciaAluno>
+    public class FrequenciaAlunoMap : BaseEntityMap<FrequenciaAluno>
     {
         public FrequenciaAlunoMap()
         {
             ToTable("frequencia_aluno");
-            Map(a => a.PercentualFrequencia).Ignore();
-            Map(a => a.PercentualFrequenciaFormatado).Ignore();
-            Map(a => a.PercentualFrequenciaFinal).Ignore();
-            Map(a => a.PercentualFrequenciaFinalFormatado).Ignore();
-            Map(a => a.NumeroFaltasNaoCompensadas).Ignore();
-            Map(c => c.Bimestre).ToColumn("bimestre");
-            Map(c => c.CodigoAluno).ToColumn("codigo_aluno");
-            Map(c => c.DisciplinaId).ToColumn("disciplina_id");
-            Map(c => c.PeriodoEscolarId).ToColumn("periodo_escolar_id");
-            Map(c => c.PeriodoFim).ToColumn("periodo_fim");
-            Map(c => c.PeriodoInicio).ToColumn("periodo_inicio");
-            Map(c => c.Tipo).ToColumn("tipo");
-            Map(c => c.TotalAulas).ToColumn("total_aulas");
-            Map(c => c.TotalAusencias).ToColumn("total_ausencias");
-            Map(c => c.TotalRemotos).ToColumn("total_remotos");
-            Map(c => c.TotalPresencas).ToColumn("total_presencas");
-            Map(c => c.TotalCompensacoes).ToColumn("total_compensacoes");
-            Map(c => c.TurmaId).ToColumn("turma_id");
-            Map(c => c.Professor).ToColumn("professor_rf");
+            Map(nameof(FrequenciaAluno.Bimestre), "bimestre");
+            Map(nameof(FrequenciaAluno.CodigoAluno), "codigo_aluno");
+            Map(nameof(FrequenciaAluno.DisciplinaId), "disciplina_id");
+            Map(nameof(FrequenciaAluno.PeriodoEscolarId), "periodo_escolar_id");
+            Map(nameof(FrequenciaAluno.PeriodoFim), "periodo_fim");
+            Map(nameof(FrequenciaAluno.PeriodoInicio), "periodo_inicio");
+            Map(nameof(FrequenciaAluno.Tipo), "tipo");
+            Map(nameof(FrequenciaAluno.TotalAulas), "total_aulas");
+            Map(nameof(FrequenciaAluno.TotalAusencias), "total_ausencias");
+            Map(nameof(FrequenciaAluno.TotalRemotos), "total_remotos");
+            Map(nameof(FrequenciaAluno.TotalPresencas), "total_presencas");
+            Map(nameof(FrequenciaAluno.TotalCompensacoes), "total_compensacoes");
+            Map(nameof(FrequenciaAluno.TurmaId), "turma_id");
+            Map(nameof(FrequenciaAluno.Professor), "professor_rf");
         }
     }
 }

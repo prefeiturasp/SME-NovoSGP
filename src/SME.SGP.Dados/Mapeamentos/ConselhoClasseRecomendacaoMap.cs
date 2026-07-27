@@ -2,14 +2,14 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ConselhoClasseRecomendacaoMap : BaseMap<ConselhoClasseRecomendacao>
+    public class ConselhoClasseRecomendacaoMap : BaseEntityMap<ConselhoClasseRecomendacao>
     {
         public ConselhoClasseRecomendacaoMap()
         {
             ToTable("conselho_classe_recomendacao");
-            Map(c => c.Excluido).ToColumn("excluido");
-            Map(c => c.Recomendacao).ToColumn("recomendacao");
-            Map(c => c.Tipo).ToColumn("tipo");
+            Map(nameof(ConselhoClasseRecomendacao.Excluido), "excluido");
+            Map(nameof(ConselhoClasseRecomendacao.Recomendacao), "recomendacao");
+            Map(nameof(ConselhoClasseRecomendacao.Tipo), "tipo");
         }
     }
 }

@@ -1,16 +1,14 @@
-﻿using Dapper.FluentMap.Dommel.Mapping;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados
 {
-    class ConsolidacaoRegistroIndividualMediaMap : DommelEntityMap<ConsolidacaoRegistroIndividualMedia>
+    public class ConsolidacaoRegistroIndividualMediaMap : SimpleEntityMap<ConsolidacaoRegistroIndividualMedia>
     {
         public ConsolidacaoRegistroIndividualMediaMap()
         {
             ToTable("consolidacao_registro_individual_media");
-            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey(); 
-            Map(c => c.TurmaId).ToColumn("turma_id");
-            Map(c => c.Quantidade).ToColumn("quantidade");
+            Map(nameof(ConsolidacaoRegistroIndividualMedia.TurmaId), "turma_id");
+            Map(nameof(ConsolidacaoRegistroIndividualMedia.Quantidade), "quantidade");
         }
     }
 }

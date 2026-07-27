@@ -2,12 +2,12 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class GradeMap : BaseMap<Grade>
+    public class GradeMap : BaseEntityMap<Grade>
     {
         public GradeMap()
         {
             ToTable("grade");
-            Map(a => a.Nome).ToColumn("nome");
+            Map(nameof(Grade.Nome), "nome");
         }
     }
 }

@@ -2,20 +2,20 @@
 
 namespace SME.SGP.Dados
 {
-    public class CompensacaoAusenciaMap : BaseMap<CompensacaoAusencia>
+    public class CompensacaoAusenciaMap : BaseEntityMap<CompensacaoAusencia>
     {
         public CompensacaoAusenciaMap()
         {
             ToTable("compensacao_ausencia");
-            Map(c => c.AnoLetivo).ToColumn("ano_letivo");
-            Map(c => c.Excluido).ToColumn("excluido");
-            Map(c => c.Migrado).ToColumn("migrado");
-            Map(c => c.Bimestre).ToColumn("bimestre");
-            Map(c => c.DisciplinaId).ToColumn("disciplina_id");
-            Map(c => c.TurmaId).ToColumn("turma_id");
-            Map(c => c.Nome).ToColumn("nome");
-            Map(c => c.Descricao).ToColumn("descricao");
-            Map(c => c.ProfessorRf).ToColumn("professor_rf");
+            Map(nameof(CompensacaoAusencia.AnoLetivo), "ano_letivo");
+            Map(nameof(CompensacaoAusencia.Excluido), "excluido");
+            Map(nameof(CompensacaoAusencia.Migrado), "migrado");
+            Map(nameof(CompensacaoAusencia.Bimestre), "bimestre");
+            Map(nameof(CompensacaoAusencia.DisciplinaId), "disciplina_id");
+            Map(nameof(CompensacaoAusencia.TurmaId), "turma_id");
+            Map(nameof(CompensacaoAusencia.Nome), "nome");
+            Map(nameof(CompensacaoAusencia.Descricao), "descricao");
+            Map(nameof(CompensacaoAusencia.ProfessorRf), "professor_rf");
         }
     }
 }

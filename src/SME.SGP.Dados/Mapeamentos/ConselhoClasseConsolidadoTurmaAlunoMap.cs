@@ -2,16 +2,16 @@
 
 namespace SME.SGP.Dados
 {
-    public class ConselhoClasseConsolidadoTurmaAlunoMap : BaseMap<ConselhoClasseConsolidadoTurmaAluno>
+    public class ConselhoClasseConsolidadoTurmaAlunoMap : BaseEntityMap<ConselhoClasseConsolidadoTurmaAluno>
     {
         public ConselhoClasseConsolidadoTurmaAlunoMap()
         {
             ToTable("consolidado_conselho_classe_aluno_turma");
-            Map(c => c.DataAtualizacao).ToColumn("dt_atualizacao");
-            Map(c => c.Status).ToColumn("status");
-            Map(c => c.AlunoCodigo).ToColumn("aluno_codigo");
-            Map(c => c.ParecerConclusivoId).ToColumn("parecer_conclusivo_id");
-            Map(c => c.TurmaId).ToColumn("turma_id");
+            Map(nameof(ConselhoClasseConsolidadoTurmaAluno.DataAtualizacao), "dt_atualizacao");
+            Map(nameof(ConselhoClasseConsolidadoTurmaAluno.Status), "status");
+            Map(nameof(ConselhoClasseConsolidadoTurmaAluno.AlunoCodigo), "aluno_codigo");
+            Map(nameof(ConselhoClasseConsolidadoTurmaAluno.ParecerConclusivoId), "parecer_conclusivo_id");
+            Map(nameof(ConselhoClasseConsolidadoTurmaAluno.TurmaId), "turma_id");
         }
     }
 }

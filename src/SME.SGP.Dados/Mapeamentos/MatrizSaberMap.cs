@@ -2,12 +2,12 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class MatrizSaberMap : BaseMap<MatrizSaber>
+    public class MatrizSaberMap : BaseEntityMap<MatrizSaber>
     {
         public MatrizSaberMap()
         {
             ToTable("matriz_saber");
-            Map(c => c.Descricao).ToColumn("descricao");
+            Map(nameof(MatrizSaber.Descricao), "descricao");
         }
     }
 }

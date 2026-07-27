@@ -2,14 +2,14 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class FechamentoAlunoMap: BaseMap<FechamentoAluno>
+    public class FechamentoAlunoMap : BaseEntityMap<FechamentoAluno>
     {
         public FechamentoAlunoMap()
         {
             ToTable("fechamento_aluno");
-            Map(c => c.FechamentoTurmaDisciplinaId).ToColumn("fechamento_turma_disciplina_id");
-            Map(c => c.AlunoCodigo).ToColumn("aluno_codigo");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(FechamentoAluno.FechamentoTurmaDisciplinaId), "fechamento_turma_disciplina_id");
+            Map(nameof(FechamentoAluno.AlunoCodigo), "aluno_codigo");
+            Map(nameof(FechamentoAluno.Excluido), "excluido");
         }
     }
 }

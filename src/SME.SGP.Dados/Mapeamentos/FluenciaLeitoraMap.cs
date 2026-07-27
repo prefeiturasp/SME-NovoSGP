@@ -2,16 +2,16 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class FluenciaLeitoraMap : BaseMap<FluenciaLeitora>
+    public class FluenciaLeitoraMap : BaseEntityMap<FluenciaLeitora>
     {
         public FluenciaLeitoraMap()
         {
             ToTable("fluencia_leitora");
-            Map(c => c.AnoLetivo).ToColumn("ano_letivo");
-            Map(c => c.CodigoEOLTurma).ToColumn("codigo_eol_turma");
-            Map(c => c.CodigoEOLAluno).ToColumn("codigo_eol_aluno");
-            Map(c => c.Fluencia).ToColumn("fluencia");
-            Map(c => c.TipoAvaliacao).ToColumn("tipo_avaliacao");
+            Map(nameof(FluenciaLeitora.AnoLetivo), "ano_letivo");
+            Map(nameof(FluenciaLeitora.CodigoEOLTurma), "codigo_eol_turma");
+            Map(nameof(FluenciaLeitora.CodigoEOLAluno), "codigo_eol_aluno");
+            Map(nameof(FluenciaLeitora.Fluencia), "fluencia");
+            Map(nameof(FluenciaLeitora.TipoAvaliacao), "tipo_avaliacao");
         }
     }
 }

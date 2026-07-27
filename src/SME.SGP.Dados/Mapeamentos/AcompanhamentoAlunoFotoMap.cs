@@ -2,15 +2,15 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class AcompanhamentoAlunoFotoMap : BaseMap<AcompanhamentoAlunoFoto>
+    public class AcompanhamentoAlunoFotoMap : BaseEntityMap<AcompanhamentoAlunoFoto>
     {
         public AcompanhamentoAlunoFotoMap()
         {
             ToTable("acompanhamento_aluno_foto");
-            Map(c => c.AcompanhamentoAlunoSemestreId).ToColumn("acompanhamento_aluno_semestre_id");
-            Map(c => c.ArquivoId).ToColumn("arquivo_id");
-            Map(c => c.MiniaturaId).ToColumn("miniatura_id");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(AcompanhamentoAlunoFoto.AcompanhamentoAlunoSemestreId), "acompanhamento_aluno_semestre_id");
+            Map(nameof(AcompanhamentoAlunoFoto.ArquivoId), "arquivo_id");
+            Map(nameof(AcompanhamentoAlunoFoto.MiniaturaId), "miniatura_id");
+            Map(nameof(AcompanhamentoAlunoFoto.Excluido), "excluido");
         }
     }
 }

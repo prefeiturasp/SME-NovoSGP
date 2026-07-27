@@ -2,16 +2,16 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class AnotacaoFrequenciaAlunoMap : BaseMap<AnotacaoFrequenciaAluno>
+    public class AnotacaoFrequenciaAlunoMap : BaseEntityMap<AnotacaoFrequenciaAluno>
     {
         public AnotacaoFrequenciaAlunoMap()
         {
             ToTable("anotacao_frequencia_aluno");
-            Map(c => c.MotivoAusenciaId).ToColumn("motivo_ausencia_id");
-            Map(c => c.AulaId).ToColumn("aula_id");
-            Map(c => c.Anotacao).ToColumn("anotacao");
-            Map(c => c.CodigoAluno).ToColumn("codigo_aluno");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(AnotacaoFrequenciaAluno.MotivoAusenciaId), "motivo_ausencia_id");
+            Map(nameof(AnotacaoFrequenciaAluno.AulaId), "aula_id");
+            Map(nameof(AnotacaoFrequenciaAluno.Anotacao), "anotacao");
+            Map(nameof(AnotacaoFrequenciaAluno.CodigoAluno), "codigo_aluno");
+            Map(nameof(AnotacaoFrequenciaAluno.Excluido), "excluido");
         }
     }
 }

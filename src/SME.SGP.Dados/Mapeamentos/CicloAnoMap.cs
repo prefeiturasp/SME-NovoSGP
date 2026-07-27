@@ -1,9 +1,8 @@
-﻿using Dapper.FluentMap.Dommel.Mapping;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class CicloAnoMap : DommelEntityMap<CicloAno>
+    public class CicloAnoMap : SimpleEntityMap<CicloAno>
     {
         public CicloAnoMap()
         {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dapper.Contrib.Extensions;
+using System;
 using System.Collections.Generic;
 
 namespace SME.SGP.Dominio
@@ -9,6 +10,7 @@ namespace SME.SGP.Dominio
         public bool Migrado { get; set; }
         public DateTime PeriodoFim { get; set; }
         public DateTime PeriodoInicio { get; set; }
+        [Write(false)]
         public TipoCalendario TipoCalendario { get; set; }
         public long TipoCalendarioId { get; set; }
 

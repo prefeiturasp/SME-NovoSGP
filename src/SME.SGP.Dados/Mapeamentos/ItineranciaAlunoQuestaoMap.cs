@@ -2,15 +2,15 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ItineranciaAlunoQuestaoMap : BaseMap<ItineranciaAlunoQuestao>
+    public class ItineranciaAlunoQuestaoMap : BaseEntityMap<ItineranciaAlunoQuestao>
     {
         public ItineranciaAlunoQuestaoMap()
         {
             ToTable("itinerancia_aluno_questao");
-            Map(c => c.QuestaoId).ToColumn("questao_id");
-            Map(c => c.Resposta).ToColumn("resposta");
-            Map(c => c.Excluido).ToColumn("excluido");
-            Map(c => c.ItineranciaAlunoId).ToColumn("itinerancia_aluno_id");
+            Map(nameof(ItineranciaAlunoQuestao.QuestaoId), "questao_id");
+            Map(nameof(ItineranciaAlunoQuestao.Resposta), "resposta");
+            Map(nameof(ItineranciaAlunoQuestao.Excluido), "excluido");
+            Map(nameof(ItineranciaAlunoQuestao.ItineranciaAlunoId), "itinerancia_aluno_id");
         }
     }
 }

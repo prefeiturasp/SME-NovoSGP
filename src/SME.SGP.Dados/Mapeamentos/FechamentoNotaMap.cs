@@ -2,18 +2,18 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class FechamentoNotaMap : BaseMap<FechamentoNota>
+    public class FechamentoNotaMap : BaseEntityMap<FechamentoNota>
     {
         public FechamentoNotaMap()
         {
             ToTable("fechamento_nota");
-            Map(c => c.SinteseId).ToColumn("sintese_id");
-            Map(c => c.FechamentoAlunoId).ToColumn("fechamento_aluno_id");
-            Map(c => c.DisciplinaId).ToColumn("disciplina_id");
-            Map(c => c.Nota).ToColumn("nota");
-            Map(c => c.ConceitoId).ToColumn("conceito_id");
-            Map(c => c.Migrado).ToColumn("migrado");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(FechamentoNota.SinteseId), "sintese_id");
+            Map(nameof(FechamentoNota.FechamentoAlunoId), "fechamento_aluno_id");
+            Map(nameof(FechamentoNota.DisciplinaId), "disciplina_id");
+            Map(nameof(FechamentoNota.Nota), "nota");
+            Map(nameof(FechamentoNota.ConceitoId), "conceito_id");
+            Map(nameof(FechamentoNota.Migrado), "migrado");
+            Map(nameof(FechamentoNota.Excluido), "excluido");
         }
     }
 }

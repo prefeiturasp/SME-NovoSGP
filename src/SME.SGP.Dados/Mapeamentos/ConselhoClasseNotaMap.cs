@@ -2,18 +2,18 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ConselhoClasseNotaMap: BaseMap<ConselhoClasseNota>
+    public class ConselhoClasseNotaMap : BaseEntityMap<ConselhoClasseNota>
     {
         public ConselhoClasseNotaMap()
         {
             ToTable("conselho_classe_nota");
-            Map(c => c.ConselhoClasseAlunoId).ToColumn("conselho_classe_aluno_id");
-            Map(c => c.ComponenteCurricularCodigo).ToColumn("componente_curricular_codigo");
-            Map(c => c.Nota).ToColumn("nota");
-            Map(c => c.ConceitoId).ToColumn("conceito_id");
-            Map(c => c.Justificativa).ToColumn("justificativa");
-            Map(c => c.Excluido).ToColumn("excluido");
-            Map(c => c.Migrado).ToColumn("migrado");
+            Map(nameof(ConselhoClasseNota.ConselhoClasseAlunoId), "conselho_classe_aluno_id");
+            Map(nameof(ConselhoClasseNota.ComponenteCurricularCodigo), "componente_curricular_codigo");
+            Map(nameof(ConselhoClasseNota.Nota), "nota");
+            Map(nameof(ConselhoClasseNota.ConceitoId), "conceito_id");
+            Map(nameof(ConselhoClasseNota.Justificativa), "justificativa");
+            Map(nameof(ConselhoClasseNota.Excluido), "excluido");
+            Map(nameof(ConselhoClasseNota.Migrado), "migrado");
         }
     }
 }

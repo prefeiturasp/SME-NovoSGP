@@ -2,16 +2,16 @@
 
 namespace SME.SGP.Dados
 {
-    public class DevolutivaMap: BaseMap<Devolutiva>
+    public class DevolutivaMap : BaseEntityMap<Devolutiva>
     {
         public DevolutivaMap()
         {
             ToTable("devolutiva");
-            Map(c => c.Descricao).ToColumn("descricao");
-            Map(c => c.CodigoComponenteCurricular).ToColumn("componente_curricular_codigo");
-            Map(c => c.PeriodoInicio).ToColumn("periodo_inicio");
-            Map(c => c.PeriodoFim).ToColumn("periodo_fim");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(Devolutiva.Descricao), "descricao");
+            Map(nameof(Devolutiva.CodigoComponenteCurricular), "componente_curricular_codigo");
+            Map(nameof(Devolutiva.PeriodoInicio), "periodo_inicio");
+            Map(nameof(Devolutiva.PeriodoFim), "periodo_fim");
+            Map(nameof(Devolutiva.Excluido), "excluido");
         }
     }
 }

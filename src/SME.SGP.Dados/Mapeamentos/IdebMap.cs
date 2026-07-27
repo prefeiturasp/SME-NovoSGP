@@ -2,15 +2,15 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class IdebMap : BaseMap<Ideb>
+    public class IdebMap : BaseEntityMap<Ideb>
     {
         public IdebMap()
         {
             ToTable("ideb");
-            Map(c => c.AnoLetivo).ToColumn("ano_letivo");
-            Map(c => c.SerieAno).ToColumn("serie_ano");
-            Map(c => c.CodigoEOLEscola).ToColumn("codigo_eol_escola");
-            Map(c => c.Nota).ToColumn("nota");
+            Map(nameof(Ideb.AnoLetivo), "ano_letivo");
+            Map(nameof(Ideb.SerieAno), "serie_ano");
+            Map(nameof(Ideb.CodigoEOLEscola), "codigo_eol_escola");
+            Map(nameof(Ideb.Nota), "nota");
         }
     }
 }

@@ -1,21 +1,20 @@
 ﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados
-{ 
-    public class EncaminhamentoNAAPAMap : BaseMap<EncaminhamentoNAAPA>
+{
+    public class EncaminhamentoNAAPAMap : BaseEntityMap<EncaminhamentoNAAPA>
     {
         public EncaminhamentoNAAPAMap()
         {
             ToTable("encaminhamento_naapa");
-
-            Map(c => c.TurmaId).ToColumn("turma_id");
-            Map(c => c.AlunoCodigo).ToColumn("aluno_codigo");
-            Map(c => c.AlunoNome).ToColumn("aluno_nome");
-            Map(c => c.Situacao).ToColumn("situacao");
-            Map(c => c.Excluido).ToColumn("excluido");
-            Map(c => c.SituacaoMatriculaAluno).ToColumn("situacao_matricula_aluno");
-            Map(c => c.MotivoEncerramento).ToColumn("motivo_encerramento");
-            Map(c => c.DataUltimaNotificacaoSemAtendimento).ToColumn("data_ultima_notificacao_sem_atendimento");
+            Map(nameof(EncaminhamentoNAAPA.TurmaId), "turma_id");
+            Map(nameof(EncaminhamentoNAAPA.AlunoCodigo), "aluno_codigo");
+            Map(nameof(EncaminhamentoNAAPA.AlunoNome), "aluno_nome");
+            Map(nameof(EncaminhamentoNAAPA.Situacao), "situacao");
+            Map(nameof(EncaminhamentoNAAPA.Excluido), "excluido");
+            Map(nameof(EncaminhamentoNAAPA.SituacaoMatriculaAluno), "situacao_matricula_aluno");
+            Map(nameof(EncaminhamentoNAAPA.MotivoEncerramento), "motivo_encerramento");
+            Map(nameof(EncaminhamentoNAAPA.DataUltimaNotificacaoSemAtendimento), "data_ultima_notificacao_sem_atendimento");
         }
     }
 }

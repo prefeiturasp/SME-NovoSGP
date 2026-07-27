@@ -2,14 +2,14 @@
 
 namespace SME.SGP.Dados
 {
-    public class PendenciaCalendarioUeMap : BaseMap<PendenciaCalendarioUe>
+    public class PendenciaCalendarioUeMap : BaseEntityMap<PendenciaCalendarioUe>
     {
         public PendenciaCalendarioUeMap()
         {
             ToTable("pendencia_calendario_ue");
-            Map(c => c.PendenciaId).ToColumn("pendencia_id");
-            Map(c => c.UeId).ToColumn("ue_id");
-            Map(c => c.TipoCalendarioId).ToColumn("tipo_calendario_id");
+            Map(nameof(PendenciaCalendarioUe.PendenciaId), "pendencia_id");
+            Map(nameof(PendenciaCalendarioUe.UeId), "ue_id");
+            Map(nameof(PendenciaCalendarioUe.TipoCalendarioId), "tipo_calendario_id");
         }
     }
 }
