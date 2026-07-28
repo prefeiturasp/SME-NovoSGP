@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Notificacoes.Hub
@@ -23,9 +22,11 @@ namespace SME.SGP.Notificacoes.Hub
         private readonly int limiteConexoes = 2;
         private readonly ILogger<NotificacaoHub> logger;
 
+        private static readonly object listaLock = new object();
         private static readonly List<string> listaUsuarios = new List<string>();
-        private static int _contagemSgp = 0;
-        private static int _contagemSondagem = 0;
+        private static readonly Dictionary<string, string> loginSourcePorConexao = new Dictionary<string, string>();
+        private static int contagemSgp = 0;
+        private static int contagemSondagem = 0;
 
         public NotificacaoHub(
             IEventoNotificacaoCriada eventoCriada,
@@ -131,22 +132,34 @@ namespace SME.SGP.Notificacoes.Hub
         {
             try
             {
-                listaUsuarios.Add(Context.ConnectionId);
+                var loginSource = Context.GetHttpContext()?.Request.Query["loginSource"].FirstOrDefault() ?? "sgp";
 
-                if (listaUsuarios.Count > limiteConexoes)
+                int posicaoFila;
+                int totalConexoes;
+                int contagemSgpAtual;
+                int contagemSondagemAtual;
+
+                lock (listaLock)
                 {
-                    int posicaoFila = listaUsuarios.IndexOf(Context.ConnectionId);
-                    await Clients.Client(Context.ConnectionId).SendAsync("BloqueioUsuario", (posicaoFila + 1) - limiteConexoes);
+                    listaUsuarios.Add(Context.ConnectionId);
+                    loginSourcePorConexao[Context.ConnectionId] = loginSource;
+
+                    if (loginSource == "sondagem")
+                        contagemSondagem++;
+                    else
+                        contagemSgp++;
+
+                    posicaoFila = listaUsuarios.IndexOf(Context.ConnectionId);
+                    totalConexoes = listaUsuarios.Count;
+                    contagemSgpAtual = contagemSgp;
+                    contagemSondagemAtual = contagemSondagem;
                 }
 
-                var loginSource = Context.GetHttpContext()?.Request.Query["loginSource"].FirstOrDefault() ?? "sgp";
-                if (loginSource == "sondagem")
-                    Interlocked.Increment(ref _contagemSondagem);
-                else
-                    Interlocked.Increment(ref _contagemSgp);
+                if (totalConexoes > limiteConexoes)
+                    await Clients.Client(Context.ConnectionId).SendAsync("BloqueioUsuario", (posicaoFila + 1) - limiteConexoes);
 
                 logger.LogWarning("Usuário conectado. ConnectionId: {ConnectionId}. Total de conexões: {TotalConexoes}/{LimiteConexoes}. LoginSource: {LoginSource}. SGP: {ContagemSgp}. Sondagem: {ContagemSondagem}.",
-                    Context.ConnectionId, listaUsuarios.Count, limiteConexoes, loginSource, _contagemSgp, _contagemSondagem);
+                    Context.ConnectionId, totalConexoes, limiteConexoes, loginSource, contagemSgpAtual, contagemSondagemAtual);
             }
             catch (Exception ex)
             {
@@ -158,45 +171,70 @@ namespace SME.SGP.Notificacoes.Hub
         {
             try
             {
-                int posicaoFila = listaUsuarios.IndexOf(Context.ConnectionId);
-                listaUsuarios.Remove(Context.ConnectionId);
+                int posicaoFila;
+                int totalConexoes;
+                int contagemSgpAtual;
+                int contagemSondagemAtual;
+                string proximoFila = null;
+                List<string> conexoesParaBloquear;
+                string loginSource;
 
-                if (posicaoFila < limiteConexoes)
+                lock (listaLock)
                 {
-                    var proximoFila = listaUsuarios.ElementAtOrDefault(limiteConexoes - 1);
+                    posicaoFila = listaUsuarios.IndexOf(Context.ConnectionId);
+                    listaUsuarios.Remove(Context.ConnectionId);
 
-                    if (proximoFila != null)
-                        await Clients.Client(proximoFila).SendAsync("DesbloqueioUsuario");
-
-                    listaUsuarios.Skip(limiteConexoes).ToList().ForEach(async connectionId =>
+                    if (loginSourcePorConexao.TryGetValue(Context.ConnectionId, out var loginSourceRegistrado))
                     {
-                        if (!string.IsNullOrWhiteSpace(connectionId))
-                        {
-                            int novaPosicaoFila = listaUsuarios.IndexOf(connectionId);
-                            await Clients.Client(connectionId).SendAsync("BloqueioUsuario", (novaPosicaoFila + 1) - limiteConexoes);
-                        }
-                    });
+                        loginSourcePorConexao.Remove(Context.ConnectionId);
+                        loginSource = loginSourceRegistrado;
+
+                        if (loginSource == "sondagem")
+                            contagemSondagem--;
+                        else
+                            contagemSgp--;
+                    }
+                    else
+                    {
+                        loginSource = Context.GetHttpContext()?.Request.Query["loginSource"].FirstOrDefault() ?? "sgp";
+                    }
+
+                    if (posicaoFila >= 0 && posicaoFila < limiteConexoes)
+                    {
+                        proximoFila = listaUsuarios.ElementAtOrDefault(limiteConexoes - 1);
+                        conexoesParaBloquear = listaUsuarios.Skip(limiteConexoes).ToList();
+                    }
+                    else if (posicaoFila >= 0)
+                    {
+                        conexoesParaBloquear = listaUsuarios.Skip(posicaoFila).ToList();
+                    }
+                    else
+                    {
+                        conexoesParaBloquear = new List<string>();
+                    }
+
+                    totalConexoes = listaUsuarios.Count;
+                    contagemSgpAtual = contagemSgp;
+                    contagemSondagemAtual = contagemSondagem;
                 }
-                else
+
+                if (proximoFila != null)
+                    await Clients.Client(proximoFila).SendAsync("DesbloqueioUsuario");
+
+                conexoesParaBloquear.ForEach(async connectionId =>
                 {
-                    listaUsuarios.Skip(posicaoFila).ToList().ForEach(async connectionId =>
-                    {
-                        if (!string.IsNullOrWhiteSpace(connectionId))
-                        {
-                            int novaPosicaoFila = listaUsuarios.IndexOf(connectionId);
-                            await Clients.Client(connectionId).SendAsync("BloqueioUsuario", (novaPosicaoFila + 1) - limiteConexoes);
-                        }
-                    });
-                }
+                    if (string.IsNullOrWhiteSpace(connectionId))
+                        return;
 
-                var loginSource = Context.GetHttpContext()?.Request.Query["loginSource"].FirstOrDefault() ?? "sgp";
-                if (loginSource == "sondagem")
-                    Interlocked.Decrement(ref _contagemSondagem);
-                else
-                    Interlocked.Decrement(ref _contagemSgp);
+                    int novaPosicaoFila;
+                    lock (listaLock)
+                        novaPosicaoFila = listaUsuarios.IndexOf(connectionId);
+
+                    await Clients.Client(connectionId).SendAsync("BloqueioUsuario", (novaPosicaoFila + 1) - limiteConexoes);
+                });
 
                 logger.LogWarning("Usuário desconectado. ConnectionId: {ConnectionId}. Total de conexões: {TotalConexoes}/{LimiteConexoes}. LoginSource: {LoginSource}. SGP: {ContagemSgp}. Sondagem: {ContagemSondagem}.",
-                    Context.ConnectionId, listaUsuarios.Count, limiteConexoes, loginSource, _contagemSgp, _contagemSondagem);
+                    Context.ConnectionId, totalConexoes, limiteConexoes, loginSource, contagemSgpAtual, contagemSondagemAtual);
             }
             catch (Exception ex)
             {
