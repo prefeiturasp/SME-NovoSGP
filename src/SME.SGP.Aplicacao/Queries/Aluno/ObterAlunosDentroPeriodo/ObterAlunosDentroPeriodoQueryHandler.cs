@@ -35,7 +35,8 @@ namespace SME.SGP.Aplicacao
                                     SituacaoMatriculaAluno.PendenteRematricula,
                                     SituacaoMatriculaAluno.Rematriculado,
                                     SituacaoMatriculaAluno.SemContinuidade,
-                                    SituacaoMatriculaAluno.Concluido }).Contains(a.CodigoSituacaoMatricula));
+                                    SituacaoMatriculaAluno.Concluido }).Contains(a.CodigoSituacaoMatricula)
+                                    && a.DataMatricula.Date < request.Periodo.dataFim.Date);
 
             return alunosEol
                 .Where(a => ((!a.Inativo && a.DataMatricula.Date < request.Periodo.dataFim.Date) ||
