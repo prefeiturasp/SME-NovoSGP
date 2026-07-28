@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Dominio
+﻿using Dapper.Contrib.Extensions;
+
+namespace SME.SGP.Dominio
 {
     public class PendenciaAula
     {
@@ -10,6 +12,7 @@
         {
             AulaId = aulaId;
         }
+        [Key]
         public long Id { get; set; }
         public long AulaId { get; set; }
         public long PendenciaId { get; set; }

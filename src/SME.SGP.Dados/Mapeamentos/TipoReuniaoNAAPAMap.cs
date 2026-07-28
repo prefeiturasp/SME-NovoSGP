@@ -2,13 +2,14 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class TipoReuniaoNAAPAMap : BaseMap<TipoReuniaoNAAPA>
+    public class TipoReuniaoNAAPAMap : BaseEntityMap<TipoReuniaoNAAPA>
     {
         public TipoReuniaoNAAPAMap()
         {
             ToTable("tipo_reuniao_naapa");
-            Map(c => c.Titulo).ToColumn("titulo");
-            Map(c => c.Excluido).ToColumn("excluido");
+
+            Map(nameof(TipoReuniaoNAAPA.Titulo), "titulo");
+            Map(nameof(TipoReuniaoNAAPA.Excluido), "excluido");
         }
     }
 }

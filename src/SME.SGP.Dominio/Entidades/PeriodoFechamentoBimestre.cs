@@ -23,13 +23,14 @@ namespace SME.SGP.Dominio
         {
         }
 
+        [Computed]
         public PeriodoFechamento PeriodoFechamento { get; set; }
         public long PeriodoFechamentoId { get; set; }
         public DateTime FinalDoFechamento { get; set; }
         public long Id { get; set; }
         public DateTime InicioDoFechamento { get; set; }
 
-        [Write(false)]
+        [Computed]
         public PeriodoEscolar PeriodoEscolar { get; set; }
 
         public long PeriodoEscolarId { get; set; }

@@ -2,13 +2,14 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class InformativoModalidadeMap : BaseEntityMap<InformativoModalidade>
+    public class InformativoNotificacaoMap : BaseEntityMap<InformativoNotificacao>
     {
-        public InformativoModalidadeMap()
+        public InformativoNotificacaoMap()
         {
-            ToTable("informativo_modalidade");
-            Map(nameof(InformativoModalidade.InformativoId), "informativo_id");
-            Map(nameof(InformativoModalidade.Modalidade), "modalidade_codigo");
+            ToTable("informativo_notificacao");
+            Map(nameof(InformativoNotificacao.InformativoId), "informativo_id");
+            Map(nameof(InformativoNotificacao.NotificacaoId), "notificacao_id");
+            Map(nameof(InformativoNotificacao.Excluido), "excluido");
         }
     }
 }

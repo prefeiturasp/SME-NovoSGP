@@ -2,14 +2,14 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class RegistroColetivoAnexoMap : BaseMap<RegistroColetivoAnexo>
+    public class RegistroColetivoAnexoMap : BaseEntityMap<RegistroColetivoAnexo>
     {
         public RegistroColetivoAnexoMap()
         {
             ToTable("registrocoletivo_anexo");
-            Map(c => c.RegistroColetivoId).ToColumn("registrocoletivo_id");
-            Map(c => c.ArquivoId).ToColumn("arquivo_id");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(RegistroColetivoAnexo.RegistroColetivoId), "registrocoletivo_id");
+            Map(nameof(RegistroColetivoAnexo.ArquivoId), "arquivo_id");
+            Map(nameof(RegistroColetivoAnexo.Excluido), "excluido");
         }
     }
 }

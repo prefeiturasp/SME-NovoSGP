@@ -2,14 +2,14 @@
 
 namespace SME.SGP.Dados
 {
-    public class QuestionarioMap : BaseMap<Questionario>
+    public class QuestionarioMap : BaseEntityMap<Questionario>
     {
         public QuestionarioMap()
         {
             ToTable("questionario");
-            Map(c => c.Nome).ToColumn("nome");
-            Map(c => c.Tipo).ToColumn("tipo");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(Questionario.Nome), "nome");
+            Map(nameof(Questionario.Tipo), "tipo");
+            Map(nameof(Questionario.Excluido), "excluido");
         }
     }
 }

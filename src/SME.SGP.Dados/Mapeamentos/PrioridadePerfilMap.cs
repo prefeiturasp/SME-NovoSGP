@@ -2,15 +2,15 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class PrioridadePerfilMap : BaseMap<PrioridadePerfil>
+    public class PrioridadePerfilMap : BaseEntityMap<PrioridadePerfil>
     {
         public PrioridadePerfilMap()
         {
             ToTable("prioridade_perfil");
-            Map(c => c.CodigoPerfil).ToColumn("codigo_perfil");
-            Map(c => c.NomePerfil).ToColumn("nome_perfil");
-            Map(c => c.Ordem).ToColumn("ordem");
-            Map(c => c.Tipo).ToColumn("tipo");
+            Map(nameof(PrioridadePerfil.CodigoPerfil), "codigo_perfil");
+            Map(nameof(PrioridadePerfil.NomePerfil), "nome_perfil");
+            Map(nameof(PrioridadePerfil.Ordem), "ordem");
+            Map(nameof(PrioridadePerfil.Tipo), "tipo");
         }
     }
 }

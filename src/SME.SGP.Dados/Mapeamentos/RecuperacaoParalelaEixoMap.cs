@@ -2,16 +2,16 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class RecuperacaoParalelaEixoMap : BaseMap<RecuperacaoParalelaEixo>
+    public class RecuperacaoParalelaEixoMap : BaseEntityMap<RecuperacaoParalelaEixo>
     {
         public RecuperacaoParalelaEixoMap()
         {
             ToTable("recuperacao_paralela_eixo");
-            Map(c => c.Descricao).ToColumn("descricao");
-            Map(c => c.DtFim).ToColumn("dt_fim");
-            Map(c => c.DtInicio).ToColumn("dt_inicio");
-            Map(c => c.Excluido).ToColumn("excluido");
-            Map(c => c.RecuperacaoParalelaPeriodoId).ToColumn("recuperacao_paralela_periodo_id");
+            Map(nameof(RecuperacaoParalelaEixo.Descricao), "descricao");
+            Map(nameof(RecuperacaoParalelaEixo.DtFim), "dt_fim");
+            Map(nameof(RecuperacaoParalelaEixo.DtInicio), "dt_inicio");
+            Map(nameof(RecuperacaoParalelaEixo.Excluido), "excluido");
+            Map(nameof(RecuperacaoParalelaEixo.RecuperacaoParalelaPeriodoId), "recuperacao_paralela_periodo_id");
         }
     }
 }

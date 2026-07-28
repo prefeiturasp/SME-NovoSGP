@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Dominio
+﻿using Dapper.Contrib.Extensions;
+
+namespace SME.SGP.Dominio
 {
     public class PlanoAula : EntidadeBase
     {
@@ -10,6 +12,7 @@
         public bool Excluido { get; set; }
 
         public long AulaId { get; set; }
+        [Computed]
         public Aula Aula { get; set; }
     }
 }

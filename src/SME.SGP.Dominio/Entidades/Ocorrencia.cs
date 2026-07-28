@@ -1,21 +1,27 @@
-﻿using System;
+﻿using Dapper.Contrib.Extensions;
+using System;
 using System.Collections.Generic;
 
 namespace SME.SGP.Dominio
 {
     public class Ocorrencia : EntidadeBase
     {
+        [Computed]
         public ICollection<OcorrenciaAluno> Alunos { get; set; }
+        [Computed]
         public ICollection<OcorrenciaServidor> Servidores { get; set; }
         public DateTime DataOcorrencia { get; set; }
         public string Descricao { get; set; }
         public bool Excluido { get; set; }
         public TimeSpan? HoraOcorrencia { get; set; }
+        [Computed]
         public OcorrenciaTipo OcorrenciaTipo { get; set; }
         public long OcorrenciaTipoId { get; set; }
         public string Titulo { get; set; }
         public long? TurmaId { get; set; }
+        [Computed]
         public Turma Turma { get; set; }
+        [Computed]
         public Ue Ue { get; set; }
         public long UeId { get; set; }
 

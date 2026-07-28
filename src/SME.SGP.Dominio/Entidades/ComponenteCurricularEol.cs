@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dapper.Contrib.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -20,6 +21,7 @@ namespace SME.SGP.Dominio
         public bool TerritorioSaber { get; set; }
         public bool BaseNacional { get; set; }
         public bool ExibirComponenteEOL { get; set; }
+        [Computed]
         public GrupoMatriz GrupoMatriz { get; set; }
         public string TurmaCodigo { get; set; }
         public string Professor { get; set; }

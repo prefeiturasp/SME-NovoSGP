@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Dapper.Contrib.Extensions;
+using System.Collections.Generic;
 
 namespace SME.SGP.Dominio
 {
@@ -11,7 +12,9 @@ namespace SME.SGP.Dominio
 
         public PerfilUsuario PerfilCodigo { get; set; }
         public long PendenciaId { get; set; }
+        [Computed]
         public Pendencia Pendencia { get; set; }
+        [Computed]
 
         public List<PendenciaPerfilUsuario> PendenciasPerfilUsuarios { get; set; }
 

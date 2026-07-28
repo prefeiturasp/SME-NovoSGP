@@ -1,5 +1,3 @@
-using Dapper.FluentMap;
-using Dapper.FluentMap.Dommel;
 using Elastic.Apm.AspNetCore;
 using Elastic.Apm.DiagnosticSource;
 using Elastic.Apm.SqlClient;
@@ -72,12 +70,7 @@ namespace SME.SGP.Auditoria.Worker
 
         private void RegistrarMapeamentos()
         {
-            FluentMapper.Initialize(config =>
-            {
-                config.AddMap(new AuditoriaMap());
-
-                config.ForDommel();
-            });
+            _ = new AuditoriaMap();
         }
 
         private void RegistrarDependencias(IServiceCollection services)

@@ -2,17 +2,17 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class RelatorioPeriodicoPAPRespostaMap : BaseMap<RelatorioPeriodicoPAPResposta>
+    public class RelatorioPeriodicoPAPRespostaMap : BaseEntityMap<RelatorioPeriodicoPAPResposta>
     {
         public RelatorioPeriodicoPAPRespostaMap()
         {
             ToTable("relatorio_periodico_pap_resposta");
 
-            Map(c => c.RelatorioPeriodicoQuestaoId).ToColumn("relatorio_periodico_pap_questao_id");
-            Map(c => c.RespostaId).ToColumn("resposta_id");
-            Map(c => c.ArquivoId).ToColumn("arquivo_id");
-            Map(c => c.Texto).ToColumn("texto");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(RelatorioPeriodicoPAPResposta.RelatorioPeriodicoQuestaoId), "relatorio_periodico_pap_questao_id");
+            Map(nameof(RelatorioPeriodicoPAPResposta.RespostaId), "resposta_id");
+            Map(nameof(RelatorioPeriodicoPAPResposta.ArquivoId), "arquivo_id");
+            Map(nameof(RelatorioPeriodicoPAPResposta.Texto), "texto");
+            Map(nameof(RelatorioPeriodicoPAPResposta.Excluido), "excluido");
         }
     }
 }

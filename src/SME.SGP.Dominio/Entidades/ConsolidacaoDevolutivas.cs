@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Dominio
+﻿using Dapper.Contrib.Extensions;
+
+namespace SME.SGP.Dominio
 {
     public class ConsolidacaoDevolutivas
     {
@@ -12,7 +14,7 @@
             QuantidadeEstimadaDevolutivas = quantidadeEstimadaDevolutivas;
             QuantidadeRegistradaDevolutivas = quantidadeRegistradaDevolutivas;
         }
-
+        [Key]
         public long Id { get; set; }
         public long TurmaId { get; set; }
 

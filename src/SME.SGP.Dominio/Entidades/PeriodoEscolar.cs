@@ -10,7 +10,7 @@ namespace SME.SGP.Dominio
         public bool Migrado { get; set; }
         public DateTime PeriodoFim { get; set; }
         public DateTime PeriodoInicio { get; set; }
-        [Write(false)]
+        [Computed]
         public TipoCalendario TipoCalendario { get; set; }
         public long TipoCalendarioId { get; set; }
 

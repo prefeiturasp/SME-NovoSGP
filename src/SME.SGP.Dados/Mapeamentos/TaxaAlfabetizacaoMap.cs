@@ -2,14 +2,15 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class TaxaAlfabetizacaoMap : BaseMap<TaxaAlfabetizacao>
+    public class TaxaAlfabetizacaoMap : BaseEntityMap<TaxaAlfabetizacao>
     {
         public TaxaAlfabetizacaoMap()
         {
             ToTable("taxa_alfabetizacao");
-            Map(c => c.AnoLetivo).ToColumn("ano_letivo");
-            Map(c => c.CodigoEOLEscola).ToColumn("codigo_eol_escola");
-            Map(c => c.Taxa).ToColumn("taxa");
+
+            Map(nameof(TaxaAlfabetizacao.AnoLetivo), "ano_letivo");
+            Map(nameof(TaxaAlfabetizacao.CodigoEOLEscola), "codigo_eol_escola");
+            Map(nameof(TaxaAlfabetizacao.Taxa), "taxa");
         }
     }
 }

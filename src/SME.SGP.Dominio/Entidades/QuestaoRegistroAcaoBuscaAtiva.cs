@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Dapper.Contrib.Extensions;
+using System.Collections.Generic;
 
 namespace SME.SGP.Dominio
 {
@@ -9,14 +10,17 @@ namespace SME.SGP.Dominio
             Respostas = new List<RespostaRegistroAcaoBuscaAtiva>();
         }
 
+        [Computed]
         public RegistroAcaoBuscaAtivaSecao RegistroAcaoBuscaAtivaSecao { get; set; }
         public long RegistroAcaoBuscaAtivaSecaoId { get; set; }
 
+        [Computed]
         public Questao Questao { get; set; }
         public long QuestaoId { get; set; }
 
         public bool Excluido { get; set; }
 
+        [Computed]
         public List<RespostaRegistroAcaoBuscaAtiva> Respostas { get; set; }
     }
 }

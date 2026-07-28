@@ -1,5 +1,3 @@
-using Dapper.FluentMap;
-using Dapper.FluentMap.Dommel;
 using Elastic.Apm.AspNetCore;
 using Elastic.Apm.DiagnosticSource;
 using Elastic.Apm.SqlClient;
@@ -11,8 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Polly.Extensions.Http;
 using Polly;
+using Polly.Extensions.Http;
 using SME.SGP.Dados;
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
@@ -27,6 +25,7 @@ using SME.SGP.Metrica.Worker.Repositorios.Interfaces;
 using SME.SGP.Metrica.Worker.UseCases;
 using SME.SGP.Metrica.Worker.UseCases.Interfaces;
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Threading;
@@ -90,11 +89,19 @@ namespace SME.SGP.Metrica.Worker
 
         private void RegistrarMapeamentos()
         {
-            FluentMapper.Initialize(config =>
-            {
+            // Pega o assembly atual
+            var assembly = Assembly.GetExecutingAssembly();
 
-                config.ForDommel();
-            });
+            // Encontra todas as classes concretas que terminam com "Map"
+            var tiposDeMapa = assembly.GetTypes()
+                .Where(t => t.IsClass && !t.IsAbstract && t.Name.EndsWith("Map"))
+                .ToList();
+
+            // Instancia cada uma delas para acionar os construtores
+            foreach (var tipo in tiposDeMapa)
+            {
+                Activator.CreateInstance(tipo);
+            }
         }
 
         private void RegistrarDependencias(IServiceCollection services)

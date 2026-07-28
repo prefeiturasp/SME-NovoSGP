@@ -2,18 +2,18 @@
 
 namespace SME.SGP.Dados
 {
-    public class RegistroIndividualMap : BaseMap<RegistroIndividual>
+    public class RegistroIndividualMap : BaseEntityMap<RegistroIndividual>
     {
         public RegistroIndividualMap()
         {
             ToTable("registro_individual");
-            Map(c => c.TurmaId).ToColumn("turma_id");
-            Map(c => c.AlunoCodigo).ToColumn("aluno_codigo");
-            Map(c => c.ComponenteCurricularId).ToColumn("componente_curricular_id");
-            Map(c => c.DataRegistro).ToColumn("data_registro");
-            Map(c => c.Registro).ToColumn("registro");
-            Map(c => c.Migrado).ToColumn("migrado");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(RegistroIndividual.TurmaId), "turma_id");
+            Map(nameof(RegistroIndividual.AlunoCodigo), "aluno_codigo");
+            Map(nameof(RegistroIndividual.ComponenteCurricularId), "componente_curricular_id");
+            Map(nameof(RegistroIndividual.DataRegistro), "data_registro");
+            Map(nameof(RegistroIndividual.Registro), "registro");
+            Map(nameof(RegistroIndividual.Migrado), "migrado");
+            Map(nameof(RegistroIndividual.Excluido), "excluido");
         }
     }
 }

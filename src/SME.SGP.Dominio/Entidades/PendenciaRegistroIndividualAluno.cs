@@ -1,9 +1,13 @@
-﻿namespace SME.SGP.Dominio
+﻿using Dapper.Contrib.Extensions;
+
+namespace SME.SGP.Dominio
 {
     public class PendenciaRegistroIndividualAluno
     {
+        [Key]
         public long Id { get; set; }
         public long CodigoAluno { get; set; }
+        [Computed]
         public PendenciaRegistroIndividual PendenciaRegistroIndividual { get; set; }
         public long PendenciaRegistroIndividualId { get; set; }
         public SituacaoPendenciaRegistroIndividualAluno Situacao { get; set; }

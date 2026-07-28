@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dapper.Contrib.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -18,6 +19,7 @@ namespace SME.SGP.Dominio
         public string Nome { get; set; }
 
         public Guid PerfilAtual { get; set; }
+        [Computed]
 
         public IEnumerable<PrioridadePerfil> Perfis { get; private set; }
 

@@ -1,20 +1,19 @@
-﻿using Dapper.FluentMap.Dommel.Mapping;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class SecaoRelatorioSemestralPAPMap: DommelEntityMap<SecaoRelatorioSemestralPAP>
+    public class SecaoRelatorioSemestralPAPMap : SimpleEntityMap<SecaoRelatorioSemestralPAP>
     {
         public SecaoRelatorioSemestralPAPMap()
         {
             ToTable("secao_relatorio_semestral_pap");
-            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
-            Map(c => c.Nome).ToColumn("nome");
-            Map(c => c.Descricao).ToColumn("descricao");
-            Map(c => c.Obrigatorio).ToColumn("obrigatorio");
-            Map(c => c.InicioVigencia).ToColumn("inicio_vigencia");
-            Map(c => c.FimVigencia).ToColumn("fim_vigencia");
-            Map(c => c.Ordem).ToColumn("ordem");
+
+            Map(nameof(SecaoRelatorioSemestralPAP.Nome), "nome");
+            Map(nameof(SecaoRelatorioSemestralPAP.Descricao), "descricao");
+            Map(nameof(SecaoRelatorioSemestralPAP.Obrigatorio), "obrigatorio");
+            Map(nameof(SecaoRelatorioSemestralPAP.InicioVigencia), "inicio_vigencia");
+            Map(nameof(SecaoRelatorioSemestralPAP.FimVigencia), "fim_vigencia");
+            Map(nameof(SecaoRelatorioSemestralPAP.Ordem), "ordem");
         }
     }
 }

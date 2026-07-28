@@ -2,17 +2,17 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ProficienciaIdebMap : BaseMap<ProficienciaIdeb>
+    public class ProficienciaIdebMap : BaseEntityMap<ProficienciaIdeb>
     {
         public ProficienciaIdebMap()
         {
             ToTable("proficiencia_ideb");
-            Map(c => c.CodigoUe).ToColumn("codigo_eol_escola");
-            Map(c => c.SerieAno).ToColumn("serie_ano");
-            Map(c => c.ComponenteCurricular).ToColumn("componente_curricular");
-            Map(c => c.Proficiencia).ToColumn("proficiencia");
-            Map(c => c.AnoLetivo).ToColumn("ano_letivo");
-            Map(c => c.Boletim).ToColumn("boletim");
+            Map(nameof(ProficienciaIdeb.CodigoUe), "codigo_eol_escola");
+            Map(nameof(ProficienciaIdeb.SerieAno), "serie_ano");
+            Map(nameof(ProficienciaIdeb.ComponenteCurricular), "componente_curricular");
+            Map(nameof(ProficienciaIdeb.Proficiencia), "proficiencia");
+            Map(nameof(ProficienciaIdeb.AnoLetivo), "ano_letivo");
+            Map(nameof(ProficienciaIdeb.Boletim), "boletim");
         }
     }
 }

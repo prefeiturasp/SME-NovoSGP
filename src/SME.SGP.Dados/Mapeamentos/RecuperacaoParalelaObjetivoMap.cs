@@ -2,19 +2,19 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class RecuperacaoParalelaObjetivoMap : BaseMap<RecuperacaoParalelaObjetivo>
+    public class RecuperacaoParalelaObjetivoMap : BaseEntityMap<RecuperacaoParalelaObjetivo>
     {
         public RecuperacaoParalelaObjetivoMap()
         {
             ToTable("recuperacao_paralela_objetivo");
-            Map(c => c.Descricao).ToColumn("descricao");
-            Map(c => c.DtFim).ToColumn("dt_fim");
-            Map(c => c.DtInicio).ToColumn("dt_inicio");
-            Map(c => c.EhEspecifico).ToColumn("eh_especifico");
-            Map(c => c.EixoId).ToColumn("eixo_id");
-            Map(c => c.Excluido).ToColumn("excluido");
-            Map(c => c.Nome).ToColumn("nome");
-            Map(c => c.Ordem).ToColumn("ordem");
+            Map(nameof(RecuperacaoParalelaObjetivo.Descricao), "descricao");
+            Map(nameof(RecuperacaoParalelaObjetivo.DtFim), "dt_fim");
+            Map(nameof(RecuperacaoParalelaObjetivo.DtInicio), "dt_inicio");
+            Map(nameof(RecuperacaoParalelaObjetivo.EhEspecifico), "eh_especifico");
+            Map(nameof(RecuperacaoParalelaObjetivo.EixoId), "eixo_id");
+            Map(nameof(RecuperacaoParalelaObjetivo.Excluido), "excluido");
+            Map(nameof(RecuperacaoParalelaObjetivo.Nome), "nome");
+            Map(nameof(RecuperacaoParalelaObjetivo.Ordem), "ordem");
         }
     }
 }

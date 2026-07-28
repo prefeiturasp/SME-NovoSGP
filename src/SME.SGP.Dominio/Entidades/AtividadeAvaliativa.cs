@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dapper.Contrib.Extensions;
+using System;
 using System.Collections.Generic;
 
 namespace SME.SGP.Dominio
@@ -10,7 +11,9 @@ namespace SME.SGP.Dominio
             AtividadeAvaliativaRegencia = new List<AtividadeAvaliativaRegencia>();
             Disciplinas = new List<AtividadeAvaliativaDisciplina>();
         }
+        [Computed]
         public List<AtividadeAvaliativaRegencia> AtividadeAvaliativaRegencia { get; set; }
+        [Computed]
         public List<AtividadeAvaliativaDisciplina> Disciplinas { get; set; }
         public CategoriaAtividadeAvaliativa Categoria { get; set; }
         public DateTime DataAvaliacao { get; set; }
@@ -21,6 +24,7 @@ namespace SME.SGP.Dominio
         public bool Excluido { get; set; }
         public string NomeAvaliacao { get; set; }
         public string ProfessorRf { get; set; }
+        [Computed]
         public TipoAvaliacao TipoAvaliacao { get; set; }
         public long TipoAvaliacaoId { get; set; }
         public string TurmaId { get; set; }

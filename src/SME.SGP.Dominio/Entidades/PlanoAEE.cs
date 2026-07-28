@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio.Enumerados;
+﻿using Dapper.Contrib.Extensions;
+using SME.SGP.Dominio.Enumerados;
 using System.Collections.Generic;
 
 namespace SME.SGP.Dominio
@@ -10,6 +11,7 @@ namespace SME.SGP.Dominio
             Questoes = new List<PlanoAEEQuestao>();
         }
 
+        [Computed]
         public Turma Turma { get; set; }
         public long TurmaId { get; set; }
         public int AlunoNumero { get; set; }
@@ -20,6 +22,7 @@ namespace SME.SGP.Dominio
         public string ParecerPAAI { get; set; }
         public long? ResponsavelPaaiId { get; set; }
         public long ResponsavelId { get; set; }
+        [Computed]
         public List<PlanoAEEQuestao> Questoes { get; set; }
 
         public void EncerrarPlanoAEE() {

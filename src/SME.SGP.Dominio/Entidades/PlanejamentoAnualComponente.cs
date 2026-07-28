@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Dapper.Contrib.Extensions;
+using System.Collections.Generic;
 
 namespace SME.SGP.Dominio
 {
@@ -20,6 +21,7 @@ namespace SME.SGP.Dominio
         public long ComponenteCurricularId { get; set; }
         public string Descricao { get; set; }
         public long PlanejamentoAnualPeriodoEscolarId { get; set; }
+        [Computed]
         public List<PlanejamentoAnualObjetivoAprendizagem> ObjetivosAprendizagem { get; set; }
         public bool Excluido { get; set; }
     }

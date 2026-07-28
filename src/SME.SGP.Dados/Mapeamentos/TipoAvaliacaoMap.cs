@@ -2,17 +2,18 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class TipoAvaliacaoMap : BaseMap<TipoAvaliacao>
+    public class TipoAvaliacaoMap : BaseEntityMap<TipoAvaliacao>
     {
         public TipoAvaliacaoMap()
         {
             ToTable("tipo_avaliacao");
-            Map(c => c.AvaliacoesNecessariasPorBimestre).ToColumn("avaliacoes_necessarias_bimestre");
-            Map(c => c.Descricao).ToColumn("descricao");
-            Map(c => c.Excluido).ToColumn("excluido");
-            Map(c => c.Nome).ToColumn("nome");
-            Map(c => c.Situacao).ToColumn("situacao");
-            Map(c => c.Codigo).ToColumn("codigo");
+
+            Map(nameof(TipoAvaliacao.AvaliacoesNecessariasPorBimestre), "avaliacoes_necessarias_bimestre");
+            Map(nameof(TipoAvaliacao.Descricao), "descricao");
+            Map(nameof(TipoAvaliacao.Excluido), "excluido");
+            Map(nameof(TipoAvaliacao.Nome), "nome");
+            Map(nameof(TipoAvaliacao.Situacao), "situacao");
+            Map(nameof(TipoAvaliacao.Codigo), "codigo");
         }
     }
 }

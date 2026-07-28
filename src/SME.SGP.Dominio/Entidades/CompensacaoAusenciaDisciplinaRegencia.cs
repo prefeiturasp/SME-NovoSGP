@@ -1,9 +1,12 @@
-﻿namespace SME.SGP.Dominio
+﻿using Dapper.Contrib.Extensions;
+
+namespace SME.SGP.Dominio
 {
     public class CompensacaoAusenciaDisciplinaRegencia : EntidadeBase
     {
         public bool Excluido { get; set; }
         public long CompensacaoAusenciaId { get; set; }
+        [Computed]
         public CompensacaoAusencia CompensacaoAusencia { get; set; }
         public string DisciplinaId { get; set; }
 

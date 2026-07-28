@@ -1,9 +1,12 @@
-﻿namespace SME.SGP.Dominio
+﻿using Dapper.Contrib.Extensions;
+
+namespace SME.SGP.Dominio
 {
     public class OcorrenciaAluno
     {
         public long Id { get; set; }
         public long CodigoAluno { get; set; }
+        [Computed]
         public Ocorrencia Ocorrencia { get; set; }
         public long OcorrenciaId { get; set; }
 

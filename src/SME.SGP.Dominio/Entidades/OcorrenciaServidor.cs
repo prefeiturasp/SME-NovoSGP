@@ -1,8 +1,11 @@
-﻿namespace SME.SGP.Dominio
+﻿using Dapper.Contrib.Extensions;
+
+namespace SME.SGP.Dominio
 { 
     public class OcorrenciaServidor : EntidadeBase
     {
         public string CodigoServidor { get; set; }
+        [Computed]
         public Ocorrencia Ocorrencia { get; set; }
         public long OcorrenciaId { get; set; }
         

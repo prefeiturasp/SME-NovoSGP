@@ -1,7 +1,10 @@
-﻿namespace SME.SGP.Dominio.Entidades
+﻿using Dapper.Contrib.Extensions;
+
+namespace SME.SGP.Dominio.Entidades
 {
     public class ConsolidacaoAlfabetizacaoNivelEscrita
     {
+        [Key]
         public long Id { get; set; }
         public string DreCodigo { get; set; }
         public string UeCodigo { get; set; }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Dapper.Contrib.Extensions;
+using System.Collections.Generic;
 
 namespace SME.SGP.Dominio
 {
@@ -9,6 +10,7 @@ namespace SME.SGP.Dominio
             OpcoesRespostas = new List<OpcaoResposta>();
         }
 
+        [Computed]
         public Questionario Questionario { get; set; }
         public long QuestionarioId { get; set; }
 
@@ -24,6 +26,7 @@ namespace SME.SGP.Dominio
         public string? Mascara { get; set; }
         public string? PlaceHolder { get; set; }
         public string? NomeComponente { get; set; }
+        [Computed]
         public List<OpcaoResposta> OpcoesRespostas { get; set; }
     }
 }

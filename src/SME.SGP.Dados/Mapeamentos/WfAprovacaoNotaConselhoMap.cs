@@ -2,19 +2,19 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class WfAprovacaoNotaConselhoMap : BaseMap<WFAprovacaoNotaConselho>
+    public class WfAprovacaoNotaConselhoMap : BaseEntityMap<WFAprovacaoNotaConselho>
     {
         public WfAprovacaoNotaConselhoMap()
         {
             ToTable("wf_aprovacao_nota_conselho");
-            Map(c => c.WfAprovacaoId).ToColumn("wf_aprovacao_id");
-            Map(c => c.ConselhoClasseNotaId).ToColumn("conselho_classe_nota_id");
-            Map(c => c.UsuarioSolicitanteId).ToColumn("usuario_solicitante_id");
-            Map(c => c.Nota).ToColumn("nota");
-            Map(c => c.ConceitoId).ToColumn("conceito_id");
-            Map(c => c.NotaAnterior).ToColumn("nota_anterior");
-            Map(c => c.ConceitoIdAnterior).ToColumn("conceito_id_anterior");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(WFAprovacaoNotaConselho.WfAprovacaoId), "wf_aprovacao_id");
+            Map(nameof(WFAprovacaoNotaConselho.ConselhoClasseNotaId), "conselho_classe_nota_id");
+            Map(nameof(WFAprovacaoNotaConselho.UsuarioSolicitanteId), "usuario_solicitante_id");
+            Map(nameof(WFAprovacaoNotaConselho.Nota), "nota");
+            Map(nameof(WFAprovacaoNotaConselho.ConceitoId), "conceito_id");
+            Map(nameof(WFAprovacaoNotaConselho.NotaAnterior), "nota_anterior");
+            Map(nameof(WFAprovacaoNotaConselho.ConceitoIdAnterior), "conceito_id_anterior");
+            Map(nameof(WFAprovacaoNotaConselho.Excluido), "excluido");
         }
     }
 }

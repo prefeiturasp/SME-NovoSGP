@@ -2,16 +2,16 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class RecuperacaoParalelaMap : BaseMap<RecuperacaoParalela>
+    public class RecuperacaoParalelaMap : BaseEntityMap<RecuperacaoParalela>
     {
         public RecuperacaoParalelaMap()
         {
             ToTable("recuperacao_paralela");
-            Map(c => c.Aluno_id).ToColumn("aluno_id");
-            Map(c => c.Excluido).ToColumn("excluido");
-            Map(c => c.TurmaId).ToColumn("turma_id");
-            Map(c => c.TurmaRecuperacaoParalelaId).ToColumn("turma_recuperacao_paralela_id");
-            Map(c => c.AnoLetivo).ToColumn("ano_letivo");
+            Map(nameof(RecuperacaoParalela.Aluno_id), "aluno_id");
+            Map(nameof(RecuperacaoParalela.Excluido), "excluido");
+            Map(nameof(RecuperacaoParalela.TurmaId), "turma_id");
+            Map(nameof(RecuperacaoParalela.TurmaRecuperacaoParalelaId), "turma_recuperacao_paralela_id");
+            Map(nameof(RecuperacaoParalela.AnoLetivo), "ano_letivo");
         }
     }
 }

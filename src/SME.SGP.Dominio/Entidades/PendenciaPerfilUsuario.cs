@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Dominio
+﻿using Dapper.Contrib.Extensions;
+
+namespace SME.SGP.Dominio
 {
     public class PendenciaPerfilUsuario : EntidadeBase
     {
@@ -10,10 +12,12 @@
             PerfilCodigo = perfilCodigo;
         }
 
+        [Computed]
         public PendenciaPerfil PendenciaPerfil { get; set; }
         public long PendenciaPerfilId { get; set; }
         public PerfilUsuario PerfilCodigo { get; set; }
         public long UsuarioId { get; set; }
+        [Computed]
         public Usuario Usuario { get; set; }
     }
 }

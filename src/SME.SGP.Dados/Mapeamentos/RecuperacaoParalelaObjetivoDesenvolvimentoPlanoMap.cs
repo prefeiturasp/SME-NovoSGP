@@ -2,13 +2,13 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class RecuperacaoParalelaObjetivoDesenvolvimentoPlanoMap : BaseMap<RecuperacaoParalelaObjetivoDesenvolvimentoPlano>
+    public class RecuperacaoParalelaObjetivoDesenvolvimentoPlanoMap : BaseEntityMap<RecuperacaoParalelaObjetivoDesenvolvimentoPlano>
     {
         public RecuperacaoParalelaObjetivoDesenvolvimentoPlanoMap()
         {
             ToTable("recuperacao_paralela_objetivo_desenvolvimento_plano");
-            Map(c => c.ObjetivoDesenvolvimentoId).ToColumn("objetivo_desenvolvimento_id");
-            Map(c => c.PlanoId).ToColumn("plano_id");
+            Map(nameof(RecuperacaoParalelaObjetivoDesenvolvimentoPlano.ObjetivoDesenvolvimentoId), "objetivo_desenvolvimento_id");
+            Map(nameof(RecuperacaoParalelaObjetivoDesenvolvimentoPlano.PlanoId), "plano_id");
         }
     }
 }

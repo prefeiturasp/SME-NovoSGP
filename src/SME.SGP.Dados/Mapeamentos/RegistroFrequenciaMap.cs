@@ -2,14 +2,14 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class RegistroFrequenciaMap : BaseMap<RegistroFrequencia>
+    public class RegistroFrequenciaMap : BaseEntityMap<RegistroFrequencia>
     {
         public RegistroFrequenciaMap()
         {
             ToTable("registro_frequencia");
-            Map(c => c.AulaId).ToColumn("aula_id");
-            Map(c => c.Migrado).ToColumn("migrado");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(RegistroFrequencia.AulaId), "aula_id");
+            Map(nameof(RegistroFrequencia.Migrado), "migrado");
+            Map(nameof(RegistroFrequencia.Excluido), "excluido");
         }
     }
 }

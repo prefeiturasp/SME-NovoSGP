@@ -11,7 +11,6 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(nameof(Dre.CodigoDre), "dre_id");
             Map(nameof(Dre.DataAtualizacao), "data_atualizacao");
             Map(nameof(Dre.Nome), "nome");
-            Ignore(nameof(Dre.PrefixoDoNomeAbreviado));
         }
     }
 }

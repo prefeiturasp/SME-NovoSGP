@@ -2,18 +2,19 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class SolicitacaoRelatorioMap : BaseMap<SolicitacaoRelatorio>
+    public class SolicitacaoRelatorioMap : BaseEntityMap<SolicitacaoRelatorio>
     {
         public SolicitacaoRelatorioMap()
         {
             ToTable("solicitacao_relatorio");
-            Map(c => c.FiltrosUsados).ToColumn("filtros_usados");
-            Map(c => c.ExtensaoRelatorio).ToColumn("extensao_relatorio");
-            Map(c => c.Relatorio).ToColumn("relatorio");
-            Map(c => c.UsuarioQueSolicitou).ToColumn("usuario_que_solicitou");
-            Map(c => c.StatusSolicitacao).ToColumn("status_solicitacao");
-            Map(c => c.Excluido).ToColumn("excluido");
-            Map(c => c.SolicitadoEm).ToColumn("solicitado_em");
+
+            Map(nameof(SolicitacaoRelatorio.FiltrosUsados), "filtros_usados");
+            Map(nameof(SolicitacaoRelatorio.ExtensaoRelatorio), "extensao_relatorio");
+            Map(nameof(SolicitacaoRelatorio.Relatorio), "relatorio");
+            Map(nameof(SolicitacaoRelatorio.UsuarioQueSolicitou), "usuario_que_solicitou");
+            Map(nameof(SolicitacaoRelatorio.StatusSolicitacao), "status_solicitacao");
+            Map(nameof(SolicitacaoRelatorio.Excluido), "excluido");
+            Map(nameof(SolicitacaoRelatorio.SolicitadoEm), "solicitado_em");
         }
     }
 }

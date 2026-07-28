@@ -2,14 +2,14 @@
 
 namespace SME.SGP.Dados
 {
-    public class PlanoAEEObservacaoMap : BaseMap<PlanoAEEObservacao>
+    public class PlanoAEEObservacaoMap : BaseEntityMap<PlanoAEEObservacao>
     {
         public PlanoAEEObservacaoMap()
         {
             ToTable("plano_aee_observacao");
-            Map(c => c.PlanoAEEId).ToColumn("plano_aee_id");
-            Map(c => c.Observacao).ToColumn("observacao");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(PlanoAEEObservacao.PlanoAEEId), "plano_aee_id");
+            Map(nameof(PlanoAEEObservacao.Observacao), "observacao");
+            Map(nameof(PlanoAEEObservacao.Excluido), "excluido");
         }
     }
 }

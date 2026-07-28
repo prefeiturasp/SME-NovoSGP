@@ -2,17 +2,17 @@
 
 namespace SME.SGP.Dados
 {
-    public class PlanoAEERespostaMap : BaseMap<PlanoAEEResposta>
+    public class PlanoAEERespostaMap : BaseEntityMap<PlanoAEEResposta>
     {
         public PlanoAEERespostaMap()
         {
             ToTable("plano_aee_resposta");
-            Map(c => c.PlanoAEEQuestaoId).ToColumn("plano_questao_id");
-            Map(c => c.RespostaId).ToColumn("resposta_id");
-            Map(c => c.ArquivoId).ToColumn("arquivo_id");
-            Map(c => c.Texto).ToColumn("texto");
-            Map(c => c.PeriodoInicio).ToColumn("periodo_inicio");
-            Map(c => c.PeriodoFim).ToColumn("periodo_fim");
+            Map(nameof(PlanoAEEResposta.PlanoAEEQuestaoId), "plano_questao_id");
+            Map(nameof(PlanoAEEResposta.RespostaId), "resposta_id");
+            Map(nameof(PlanoAEEResposta.ArquivoId), "arquivo_id");
+            Map(nameof(PlanoAEEResposta.Texto), "texto");
+            Map(nameof(PlanoAEEResposta.PeriodoInicio), "periodo_inicio");
+            Map(nameof(PlanoAEEResposta.PeriodoFim), "periodo_fim");
         }
     }
 }

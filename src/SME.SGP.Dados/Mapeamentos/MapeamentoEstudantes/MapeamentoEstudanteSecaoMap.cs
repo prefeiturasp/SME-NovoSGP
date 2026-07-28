@@ -1,15 +1,17 @@
 ﻿using SME.SGP.Dominio;
+
 namespace SME.SGP.Dados
 {
-    public class MapeamentoEstudanteSecaoMap : BaseMap<MapeamentoEstudanteSecao>
+    public class MapeamentoEstudanteSecaoMap : BaseEntityMap<MapeamentoEstudanteSecao>
     {
         public MapeamentoEstudanteSecaoMap()
         {
             ToTable("mapeamento_estudante_secao");
-            Map(c => c.MapeamentoEstudanteId).ToColumn("mapeamento_estudante_id");
-            Map(c => c.SecaoMapeamentoEstudanteId).ToColumn("secao_mapeamento_estudante_id");
-            Map(c => c.Concluido).ToColumn("concluido");
-            Map(c => c.Excluido).ToColumn("excluido");
+
+            Map(nameof(MapeamentoEstudanteSecao.MapeamentoEstudanteId), "mapeamento_estudante_id");
+            Map(nameof(MapeamentoEstudanteSecao.SecaoMapeamentoEstudanteId), "secao_mapeamento_estudante_id");
+            Map(nameof(MapeamentoEstudanteSecao.Concluido), "concluido");
+            Map(nameof(MapeamentoEstudanteSecao.Excluido), "excluido");
         }
     }
 }

@@ -1,13 +1,18 @@
-﻿namespace SME.SGP.Dominio
+﻿using Dapper.Contrib.Extensions;
+
+namespace SME.SGP.Dominio
 {
     public class RespostaMapeamentoEstudante : EntidadeBase
     {
+        [Computed]
         public QuestaoMapeamentoEstudante QuestaoMapeamentoEstudante { get; set; }
         public long QuestaoMapeamentoEstudanteId { get; set; }
 
+        [Computed]
         public OpcaoResposta Resposta { get; set; }
         public long? RespostaId { get; set; }
 
+        [Computed]
         public Arquivo Arquivo { get; set; }
         public long? ArquivoId { get; set; }
 

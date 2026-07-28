@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio.Constantes.MensagensNegocio;
+﻿using Dapper.Contrib.Extensions;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,11 +8,13 @@ namespace SME.SGP.Dominio
 {
     public class SuporteUsuario
     {
+        [Key]
         public long Id { get; set; }
         public string UsuarioAdministrador { get; set; }
         public string UsuarioSimulado { get; set; }
         public DateTime DataAcesso { get; set; }
         public string TokenAcesso { get; set; }
+        [Computed]
         public Usuario Administrador { get; set; }
 
         public bool UsuarioPodeReceberSuporte(Usuario usuarioSuporte)

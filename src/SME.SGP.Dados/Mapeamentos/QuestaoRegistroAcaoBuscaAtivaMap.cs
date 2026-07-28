@@ -2,14 +2,14 @@
 
 namespace SME.SGP.Dados
 {
-    public class QuestaoRegistroAcaoBuscaAtivaMap : BaseMap<QuestaoRegistroAcaoBuscaAtiva>
+    public class QuestaoRegistroAcaoBuscaAtivaMap : BaseEntityMap<QuestaoRegistroAcaoBuscaAtiva>
     {
         public QuestaoRegistroAcaoBuscaAtivaMap()
         {
             ToTable("registro_acao_busca_ativa_questao");
-            Map(c => c.RegistroAcaoBuscaAtivaSecaoId).ToColumn("registro_acao_busca_ativa_secao_id");
-            Map(c => c.QuestaoId).ToColumn("questao_id");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(QuestaoRegistroAcaoBuscaAtiva.RegistroAcaoBuscaAtivaSecaoId), "registro_acao_busca_ativa_secao_id");
+            Map(nameof(QuestaoRegistroAcaoBuscaAtiva.QuestaoId), "questao_id");
+            Map(nameof(QuestaoRegistroAcaoBuscaAtiva.Excluido), "excluido");
         }
     }
 }

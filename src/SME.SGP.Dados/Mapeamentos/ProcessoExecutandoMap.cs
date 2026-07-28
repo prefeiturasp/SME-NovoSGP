@@ -1,20 +1,18 @@
-﻿using Dapper.FluentMap.Dommel.Mapping;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados
 {
-    public class ProcessoExecutandoMap: DommelEntityMap<ProcessoExecutando>
+    public class ProcessoExecutandoMap : SimpleEntityMap<ProcessoExecutando>
     {
         public ProcessoExecutandoMap()
         {
             ToTable("processo_executando");
-            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
-            Map(c => c.TipoProcesso).ToColumn("tipo_processo");
-            Map(c => c.TurmaId).ToColumn("turma_id");
-            Map(c => c.DisciplinaId).ToColumn("disciplina_id");
-            Map(c => c.Bimestre).ToColumn("bimestre");
-            Map(c => c.AulaId).ToColumn("aula_id");
-            Map(c => c.CriadoEm).ToColumn("criado_em");
+            Map(nameof(ProcessoExecutando.TipoProcesso), "tipo_processo");
+            Map(nameof(ProcessoExecutando.TurmaId), "turma_id");
+            Map(nameof(ProcessoExecutando.DisciplinaId), "disciplina_id");
+            Map(nameof(ProcessoExecutando.Bimestre), "bimestre");
+            Map(nameof(ProcessoExecutando.AulaId), "aula_id");
+            Map(nameof(ProcessoExecutando.CriadoEm), "criado_em");
         }
     }
 }

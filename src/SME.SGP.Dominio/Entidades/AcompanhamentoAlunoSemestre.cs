@@ -1,7 +1,10 @@
-﻿namespace SME.SGP.Dominio
+﻿using Dapper.Contrib.Extensions;
+
+namespace SME.SGP.Dominio
 {
     public class AcompanhamentoAlunoSemestre : EntidadeBase
     {
+        [Computed]
         public AcompanhamentoAluno AcompanhamentoAluno { get; set; }
         public long AcompanhamentoAlunoId { get; set; }
 
