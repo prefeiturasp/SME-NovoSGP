@@ -100,6 +100,36 @@ namespace SME.SGP.Aplicacao.Teste.Queries.Aluno.ObterAlunosDentroPeriodo
             Assert.DoesNotContain(alunoMatriculadoNoSegundoBimestre, retorno);
         }
 
+        [Fact(DisplayName = "ObterAlunosDentroPeriodoQuery - Considerar no fechamento a matrícula a partir do dia posterior")]
+        public async Task DeveConsiderarNoFechamentoMatriculaAPartirDoDiaPosterior()
+        {
+            var periodoEscolar = (new DateTime(anoAtual, 2, 4), new DateTime(anoAtual, 4, 30));
+            var alunoMatriculadoNoDiaAnterior = new AlunoPorTurmaResposta
+            {
+                CodigoAluno = "1",
+                DataMatricula = new DateTime(anoAtual, 4, 29, 23, 59, 59),
+                CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo
+            };
+            var alunoMatriculadoNoUltimoDia = new AlunoPorTurmaResposta
+            {
+                CodigoAluno = "2",
+                DataMatricula = new DateTime(anoAtual, 4, 30, 7, 14, 47),
+                CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo
+            };
+
+            mediator.Setup(x => x.Send(It.IsAny<ObterTodosAlunosNaTurmaQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new[] { alunoMatriculadoNoDiaAnterior, alunoMatriculadoNoUltimoDia });
+
+            var query = new ObterAlunosDentroPeriodoQuery("1", periodoEscolar, false, true);
+
+            var retorno = (await obterAlunosDentroPeriodoQueryHandler
+                .Handle(query, It.IsAny<CancellationToken>())).ToArray();
+
+            Assert.Single(retorno);
+            Assert.Contains(alunoMatriculadoNoDiaAnterior, retorno);
+            Assert.DoesNotContain(alunoMatriculadoNoUltimoDia, retorno);
+        }
+
         [Fact(DisplayName = "ObterAlunosDentroPeriodoQuery - Considerar alunos com período de matrícula condizente com a data única do período e todos alunos ativos no EOL")]
         public async Task ConsiderarAlunosNoPeriodoDataUnicaComListaTodosAlunosAtivos()
         {
