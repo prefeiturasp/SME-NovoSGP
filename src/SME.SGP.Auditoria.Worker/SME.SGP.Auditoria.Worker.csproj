@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <UserSecretsId>d2a89ddc-562c-416a-9daa-1f74dfd82554</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
@@ -13,8 +13,9 @@
     <PackageReference Include="Dommel" Version="2.3.2" />
     <PackageReference Include="Elastic.Apm.AspNetCore" Version="1.11.1" />
     <PackageReference Include="Elastic.Apm.SqlClient" Version="1.11.1" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
-    <PackageReference Include="NEST" Version="7.17.4" />
+    <PackageReference Include="Elastic.Clients.Elasticsearch" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Npgsql" Version="6.0.13" />
   </ItemGroup>

@@ -11,10 +11,10 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPorFechamentosTurmaQueryHandler : IRequestHandler<ObterPorFechamentosTurmaQuery, IEnumerable<FechamentoNotaAlunoAprovacaoDto>>
     {
-        private readonly IRepositorioFechamentoNotaConsulta repositorioFechamentoNota;
+        private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
         private readonly IRepositorioCache repositorioCache;
 
-        public ObterPorFechamentosTurmaQueryHandler(IRepositorioFechamentoNotaConsulta repositorioFechamentoNota,
+        public ObterPorFechamentosTurmaQueryHandler(IRepositorioFechamentoNota repositorioFechamentoNota,
             IRepositorioCache repositorioCache)
         {
             this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new ArgumentNullException(nameof(repositorioFechamentoNota));

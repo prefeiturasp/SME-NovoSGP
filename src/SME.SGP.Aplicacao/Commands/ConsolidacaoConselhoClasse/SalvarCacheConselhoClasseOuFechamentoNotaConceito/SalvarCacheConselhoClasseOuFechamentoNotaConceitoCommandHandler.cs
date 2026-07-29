@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Elasticsearch.Net;
 using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes;
@@ -51,7 +48,7 @@ namespace SME.SGP.Aplicacao
                 retornoCacheMapeado.ConceitoIdConselhoClasse = request.ConceitoId;
             }
 
-            await repositorioCache.SalvarAsync(nomeChaveCache, retornoCacheMapeado, 5);
+            await repositorioCache.SalvarAsync(nomeChaveCache, retornoCacheMapeado, 20);
             return true;
         }
     }

@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.Options;
-using Nest;
+﻿using Elastic.Clients.Elasticsearch;
+using Microsoft.Extensions.Options;
 using SME.SGP.Dados.ElasticSearch;
 using SME.SGP.Infra;
 using SME.SGP.Infra.ElasticSearch;
@@ -10,7 +10,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 {
     public class RepositorioDiariosBordoDiario : RepositorioElasticBase<DiariosBordoDiario>, IRepositorioDiariosBordoDiario
     {
-        public RepositorioDiariosBordoDiario(IElasticClient elasticClient, IServicoTelemetria servicoTelemetria, IOptions<ElasticOptions> elasticOptions) 
+        public RepositorioDiariosBordoDiario(ElasticsearchClient elasticClient, IServicoTelemetria servicoTelemetria, IOptions<ElasticOptions> elasticOptions) 
             : base(elasticClient, servicoTelemetria, elasticOptions, "metricas_sgp_diarios_bordo_diario")
         {
         }

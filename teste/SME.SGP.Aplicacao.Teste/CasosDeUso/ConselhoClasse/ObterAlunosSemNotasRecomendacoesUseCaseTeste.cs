@@ -613,11 +613,12 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
             mediator.Verify(x => x.Send(It.Is<ObterAlunosDentroPeriodoQuery>(y => y.CodigoTurma == "1" &&
                                                                                   y.Periodo.dataInicio == periodoInicio &&
                                                                                   y.Periodo.dataFim == periodoFim &&
-                                                                                  !y.ConsideraSomenteAtivos), It.IsAny<CancellationToken>()), Times.Once);
+                                                                                  !y.ConsideraSomenteAtivos &&
+                                                                                  y.ConsideraSomenteAtivosPeriodoFechamento), It.IsAny<CancellationToken>()), Times.Once);
         }
 
-        [Fact(DisplayName = "ObterAlunosSemNotasRecomendacoesUseCase - Deve considerar a verificação de alunos dentro do período fechamento")]
-        public async Task DeveConsiderarVerificacaoAlunosDentroPeriodoFechamento()
+        [Fact(DisplayName = "ObterAlunosSemNotasRecomendacoesUseCase - Deve respeitar o período escolar mesmo quando o fechamento termina após o bimestre")]
+        public async Task DeveRespeitarPeriodoEscolarQuandoFechamentoTerminaAposBimestre()
         {
             var anoAtual = DateTimeExtension.HorarioBrasilia().Year;
             var periodoInicio = new DateTime(anoAtual, 02, 05);
@@ -675,9 +676,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
             Assert.NotNull(resultado);
 
             mediator.Verify(x => x.Send(It.Is<ObterAlunosDentroPeriodoQuery>(y => y.CodigoTurma == "1" &&
-                                                                                  y.Periodo.dataInicio == periodoFechamentoInicio &&
-                                                                                  y.Periodo.dataFim == periodoFechamentoFim &&
-                                                                                  !y.ConsideraSomenteAtivos), It.IsAny<CancellationToken>()), Times.Once);
+                                                                                  y.Periodo.dataInicio == periodoInicio &&
+                                                                                  y.Periodo.dataFim == periodoFim &&
+                                                                                  !y.ConsideraSomenteAtivos &&
+                                                                                  y.ConsideraSomenteAtivosPeriodoFechamento), It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }

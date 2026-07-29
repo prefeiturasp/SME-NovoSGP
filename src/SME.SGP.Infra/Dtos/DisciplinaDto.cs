@@ -29,6 +29,17 @@ namespace SME.SGP.Infra
 
     public static class DisciplinaExtension
     {
+        public static bool PossuiCodigoEquivalente(this DisciplinaDto disciplina, long codigoComponenteCurricular)
+        {
+            if (disciplina.EhNulo())
+                return false;
+
+            return disciplina.CodigoComponenteCurricular == codigoComponenteCurricular ||
+                   disciplina.Id == codigoComponenteCurricular ||
+                   disciplina.CodigoComponenteCurricularTerritorioSaber == codigoComponenteCurricular ||
+                   disciplina.CdComponenteCurricularPai == codigoComponenteCurricular;
+        }
+
         public static long[] ObterCodigos(this IEnumerable<DisciplinaDto> disciplinas)
         {
             var codigosComponentes = disciplinas.Select(cc => cc.CodigoComponenteCurricular).ToList();

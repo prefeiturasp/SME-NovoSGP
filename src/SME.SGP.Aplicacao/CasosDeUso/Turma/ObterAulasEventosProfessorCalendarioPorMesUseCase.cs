@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Constantes;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
@@ -90,11 +89,7 @@ namespace SME.SGP.Aplicacao
                 aulasParaVisualizar = usuarioLogado
                     .ObterAulasQuePodeVisualizar(aulas, componentesCurricularesEolProfessor);
 
-                // códigos disciplinas normais + regência + território
-                var codigosComponentesUsuario = componentesCurricularesEolProfessor.Select(c => c.Codigo.ToString())
-                    .Concat(componentesCurricularesEolProfessor.Where(c => c.Regencia && c.CodigoComponenteCurricularPai.HasValue && c.CodigoComponenteCurricularPai.Value > 0).Select(c => c.CodigoComponenteCurricularPai.Value.ToString()))
-                    .Concat(componentesCurricularesEolProfessor.Where(c => c.TerritorioSaber).Select(c => c.CodigoComponenteTerritorioSaber.ToString()))                    
-                    .ToArray();
+                var codigosComponentesUsuario = componentesCurricularesEolProfessor.ObterCodigosEquivalentes();
 
                 avaliacoes = usuarioLogado
                     .ObterAtividadesAvaliativasQuePodeVisualizar(avaliacoes, codigosComponentesUsuario);
