@@ -28,6 +28,22 @@ namespace SME.SGP.Notificacoes.Hub
         private static int contagemSgp = 0;
         private static int contagemSondagem = 0;
 
+        private static void IncrementarContagem(string loginSource)
+        {
+            if (loginSource == "sondagem")
+                contagemSondagem++;
+            else
+                contagemSgp++;
+        }
+
+        private static void DecrementarContagem(string loginSource)
+        {
+            if (loginSource == "sondagem")
+                contagemSondagem--;
+            else
+                contagemSgp--;
+        }
+
         public NotificacaoHub(
             IEventoNotificacaoCriada eventoCriada,
             IEventoNotificacaoLida eventoLida,
@@ -144,10 +160,7 @@ namespace SME.SGP.Notificacoes.Hub
                     listaUsuarios.Add(Context.ConnectionId);
                     loginSourcePorConexao[Context.ConnectionId] = loginSource;
 
-                    if (loginSource == "sondagem")
-                        contagemSondagem++;
-                    else
-                        contagemSgp++;
+                    IncrementarContagem(loginSource);
 
                     posicaoFila = listaUsuarios.IndexOf(Context.ConnectionId);
                     totalConexoes = listaUsuarios.Count;
@@ -189,10 +202,7 @@ namespace SME.SGP.Notificacoes.Hub
                         loginSourcePorConexao.Remove(Context.ConnectionId);
                         loginSource = loginSourceRegistrado;
 
-                        if (loginSource == "sondagem")
-                            contagemSondagem--;
-                        else
-                            contagemSgp--;
+                        DecrementarContagem(loginSource);
                     }
                     else
                     {
