@@ -251,14 +251,39 @@ namespace SME.SGP.Aplicacao.Servicos
 
             if (ehSupervisor)
             {
-                var uesIds = await ObterAbrangenciaEolSupervisor(login);
-                if (!uesIds.Any())
+                var (uesIds, dresCobertos) = await ObterAbrangenciaEolSupervisor(login);
+
+                var tarefaAbrangenciaUes = uesIds.Any()
+                    ? mediator.Send(new ObterAbrangenciaParaSupervisorQuery(uesIds.ToArray()))
+                    : Task.FromResult<AbrangenciaRetornoEolDto>(null);
+
+                var tarefaDresLotacaoEol = mediator.Send(new ObterAbrangenciaCompactaVigenteEolPorLoginEPerfilQuery(login, perfil));
+
+                await Task.WhenAll(tarefaAbrangenciaUes, tarefaDresLotacaoEol);
+
+                string[] idUesSupervisor = Array.Empty<string>();
+                AbrangenciaCargoRetornoEolDTO abrangenciaBase = null;
+
+                var abrangenciaSupervisor = tarefaAbrangenciaUes.Result;
+                if (abrangenciaSupervisor != null)
+                {
+                    idUesSupervisor = abrangenciaSupervisor.Dres.SelectMany(x => x.Ues.Select(y => y.Codigo)).ToArray();
+                    abrangenciaBase = abrangenciaSupervisor.Abrangencia;
+                }
+
+                var idDresFaltantes = (tarefaDresLotacaoEol.Result?.IdDres ?? Array.Empty<string>())
+                    .Where(codigo => !dresCobertos.Contains(codigo))
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToArray();
+
+                if (!idUesSupervisor.Any() && !idDresFaltantes.Any())
                     return;
-                var abrangenciaSupervisor = await mediator.Send(new ObterAbrangenciaParaSupervisorQuery(uesIds.ToArray()));
+
                 abrangenciaEol = new AbrangenciaCompactaVigenteRetornoEOLDTO()
                 {
-                    Abrangencia = abrangenciaSupervisor.Abrangencia,
-                    IdUes = abrangenciaSupervisor.Dres.SelectMany(x => x.Ues.Select(y => y.Codigo)).ToArray()
+                    Abrangencia = abrangenciaBase,
+                    IdUes = idUesSupervisor,
+                    IdDres = idDresFaltantes
                 };
             }
             else if (ehProfessorCJ)
@@ -305,7 +330,7 @@ namespace SME.SGP.Aplicacao.Servicos
                 {
                     // sincronizamos as dres, ues e turmas
                     var estrutura = await MaterializarEstruturaInstitucional(abrangenciaEol);
-                    
+
                     // sincronizamos a abrangencia do login + perfil
                     await SincronizarAbrangencia(abrangenciaSintetica, abrangenciaEol?.Abrangencia?.Abrangencia, ehSupervisor, estrutura, login, perfil);
                 }
@@ -354,23 +379,24 @@ namespace SME.SGP.Aplicacao.Servicos
             return (dres, ues, turmas);
         }
 
-        private async Task<string[]> ObterAbrangenciaEolSupervisor(string login)
+        private async Task<(string[] UeIds, HashSet<string> DresCobertos)> ObterAbrangenciaEolSupervisor(string login)
         {
             var listaEscolasDresSupervior = await consultasSupervisor.ObterPorDreESupervisor(login, string.Empty);
 
-            if (listaEscolasDresSupervior.Any())
-                return listaEscolasDresSupervior.Select(escola => escola.UeId).ToArray();
-           
-            return Array.Empty<string>();
+            var ueIds = listaEscolasDresSupervior.Select(escola => escola.UeId).Where(id => !string.IsNullOrWhiteSpace(id)).ToArray();
+            var dresCobertos = listaEscolasDresSupervior.Select(escola => escola.DreId).Where(id => !string.IsNullOrWhiteSpace(id))
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            return (ueIds, dresCobertos);
         }
-
-
+        
+        
         private IEnumerable<AbrangenciaSinteticaDto> RemoverAbrangenciaSinteticaDuplicada(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica)
         {
             var retorno = new List<AbrangenciaSinteticaDto>();
             var abrangencia = abrangenciaSintetica.GroupBy(x => x.CodigoTurma).Select(y => y.OrderBy(a => a.CodigoTurma));
             foreach (var item in abrangencia)
-            { 
+            {
                 retorno.Add(item.FirstOrDefault());
             }
 
@@ -385,7 +411,7 @@ namespace SME.SGP.Aplicacao.Servicos
             var idsParaAtualizar = new List<long>();
 
             if (ehPerfilProfessorInfantil)
-                 turmas = VerificaSeExisteTurmaNaoInfantilEmPerfilProfessorInfantil(turmas);
+                turmas = VerificaSeExisteTurmaNaoInfantilEmPerfilProfessorInfantil(turmas);
 
             if (!turmas.Any() && abrangenciaSintetica.Any())
             {
@@ -407,7 +433,7 @@ namespace SME.SGP.Aplicacao.Servicos
                     }
 
                 }
-            }  
+            }
 
             var novas = turmas.Where(x => !abrangenciaSintetica.Select(y => y.TurmaId).Contains(x.Id));
 
@@ -419,7 +445,7 @@ namespace SME.SGP.Aplicacao.Servicos
             listaAbrangenciaSintetica.AddRange(abrangenciaSintetica.ToList());
             listaParaAtualizar.AddRange(paraAtualizar.ToList());
             var registrosDuplicados = listaAbrangenciaSintetica.Except(listaParaAtualizar);
-            
+
             if(registrosDuplicados.Any())
                 idsParaAtualizar = registrosDuplicados.Select(x => x.Id).ToList();
 
@@ -434,8 +460,8 @@ namespace SME.SGP.Aplicacao.Servicos
         }
 
         private IEnumerable<Turma> VerificaSeExisteTurmaNaoInfantilEmPerfilProfessorInfantil(IEnumerable<Turma> turmasAbrangenciaEol)
-           => (turmasAbrangenciaEol.NaoEhNulo() && turmasAbrangenciaEol.Any()) 
-            ? turmasAbrangenciaEol.Where(t => t.ModalidadeCodigo == Modalidade.EducacaoInfantil)?.ToList() 
+           => (turmasAbrangenciaEol.NaoEhNulo() && turmasAbrangenciaEol.Any())
+            ? turmasAbrangenciaEol.Where(t => t.ModalidadeCodigo == Modalidade.EducacaoInfantil)?.ToList()
             : turmasAbrangenciaEol;
 
         public IEnumerable<long> VerificaTurmasAbrangenciaAtualParaHistorica(IEnumerable<AbrangenciaSinteticaDto> abrangenciaAtual, IEnumerable<Turma> turmasAbrangenciaEol)
@@ -455,7 +481,15 @@ namespace SME.SGP.Aplicacao.Servicos
             try
             {
                 if (ehSupervisor)
-                    await SincronizarAbrangenciaPorUes(abrangenciaSintetica, estrutura.Ues, login, perfil);
+                {
+                    var sinteticaUes = abrangenciaSintetica.Where(a => a.UeId != 0);
+                    var sinteticaDres = abrangenciaSintetica.Where(a => a.UeId == 0 && a.TurmaId == 0 && a.DreId != 0);
+
+                    await SincronizarAbrangenciaPorUes(sinteticaUes, estrutura.Ues, login, perfil);
+
+                    if (estrutura.Dres.Any())
+                        await SincronizarAbrangenciaSupervisorDresAdicional(sinteticaDres, estrutura.Dres, login, perfil);
+                }
                 else
                 {
                     switch (abrangencia)
@@ -470,7 +504,7 @@ namespace SME.SGP.Aplicacao.Servicos
                         case Infra.Enumerados.Abrangencia.UE:
                             if (perfil.EhPerfilPOA())
                                 await SincronizarAbragenciaPorTurmas(abrangenciaSintetica, estrutura.Turmas, login, perfil);
-                            else    
+                            else
                                 await SincronizarAbrangenciaPorUes(abrangenciaSintetica, estrutura.Ues, login, perfil);
                             break;
 
@@ -503,6 +537,17 @@ namespace SME.SGP.Aplicacao.Servicos
             var perfisGestao = paraAtualizar.Where(x => !x.EhPerfilProfessor()).Select(x => x.Id);
 
             await repositorioAbrangencia.ExcluirAbrangencias(perfisGestao);
+        }
+
+        private async Task SincronizarAbrangenciaSupervisorDresAdicional(IEnumerable<AbrangenciaSinteticaDto> sinteticaDresAtuais, IEnumerable<Dre> dresFaltantesMaterializadas, string login, Guid perfil)
+        {
+            var idsJaExistentes = sinteticaDresAtuais.Select(a => a.DreId).ToHashSet();
+            var novas = dresFaltantesMaterializadas.Where(d => !idsJaExistentes.Contains(d.Id));
+
+            if (novas.Any())
+                await repositorioAbrangencia.InserirAbrangencias(
+                    novas.Select(d => new Abrangencia { Perfil = perfil, DreId = d.Id }),
+                    login);
         }
 
         private async Task SincronizarAbrangenciPorDres(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, IEnumerable<Dre> dres, string login, Guid perfil)
