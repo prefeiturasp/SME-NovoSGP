@@ -1534,7 +1534,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Nota
         public void Deve_Incluir_Inativo_Com_Data_Valida_Transferido()
         {
             var filtro = new ListaNotasConceitosDto { TurmaHistorico = true };
-            var alunoMock = CriarAlunoMock(false, SituacaoMatriculaAluno.Transferido, new DateTime(2026, 4, 10));
+            var alunoMock = CriarAlunoMock(false, SituacaoMatriculaAluno.Transferido, DateTime.Today);
             var alunos = new List<AlunoPorTurmaResposta> { alunoMock };
 
             var resultado = FiltrarAlunos(alunos, filtro);
@@ -2403,8 +2403,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Nota
         }
         private IEnumerable<AlunoPorTurmaResposta> FiltrarAlunos(IEnumerable<AlunoPorTurmaResposta> alunos, ListaNotasConceitosDto filtro)
         {
-            DateTime _inicio = new DateTime(2026, 4, 1);
-            DateTime _fim = new DateTime(2026, 4, 30);
+            DateTime _inicio = DateTime.Today.AddDays(-15);
+            DateTime _fim = DateTime.Today.AddDays(15);
 
             if (filtro.TurmaHistorico)
             {
