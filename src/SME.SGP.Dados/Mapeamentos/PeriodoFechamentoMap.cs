@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class PeriodoFechamentoMap : SimpleEntityMap<PeriodoFechamento>
+    public class PeriodoFechamentoMap : BaseMap<PeriodoFechamento>
     {
         public PeriodoFechamentoMap()
         {

@@ -1,4 +1,4 @@
-﻿using Dapper.Contrib.Extensions;
+﻿
 using SME.SGP.Dominio.Entidades;
 using System;
 
@@ -6,7 +6,7 @@ namespace SME.SGP.Dominio
 {
     public class PerfilEventoTipo : EntidadeBase
     {
-        [Computed]
+       
         public EventoTipo EventoTipo { get; set; }
         public long EventoTipoId { get; set; }
 

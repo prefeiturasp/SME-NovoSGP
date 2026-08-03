@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class PlanoAulaMap : BaseEntityMap<PlanoAula>
+    public class PlanoAulaMap : BaseMap<PlanoAula>
     {
         public PlanoAulaMap()
         {

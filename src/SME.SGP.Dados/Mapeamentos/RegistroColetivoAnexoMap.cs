@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class RegistroColetivoAnexoMap : BaseEntityMap<RegistroColetivoAnexo>
+    public class RegistroColetivoAnexoMap : BaseMap<RegistroColetivoAnexo>
     {
         public RegistroColetivoAnexoMap()
         {

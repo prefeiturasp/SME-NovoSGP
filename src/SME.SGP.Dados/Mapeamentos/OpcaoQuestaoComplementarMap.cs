@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class OpcaoQuestaoComplementarMap : BaseEntityMap<OpcaoQuestaoComplementar>
+    public class OpcaoQuestaoComplementarMap : BaseMap<OpcaoQuestaoComplementar>
     {
         public OpcaoQuestaoComplementarMap()
         {

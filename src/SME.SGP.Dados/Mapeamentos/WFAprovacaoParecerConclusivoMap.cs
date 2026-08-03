@@ -1,8 +1,9 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dados.Mapeamentos;
 
 namespace SME.SGP.Dados
 {
-    public class WFAprovacaoParecerConclusivoMap : BaseEntityMap<WFAprovacaoParecerConclusivo>
+    public class WFAprovacaoParecerConclusivoMap : BaseMap<WFAprovacaoParecerConclusivo>
     {
         public WFAprovacaoParecerConclusivoMap()
         {

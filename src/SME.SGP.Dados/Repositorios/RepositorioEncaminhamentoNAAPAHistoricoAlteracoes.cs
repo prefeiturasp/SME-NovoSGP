@@ -18,7 +18,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<long> SalvarAsync(EncaminhamentoNAAPAHistoricoAlteracoes entidade)
         {
-            return (long)(await database.Conexao.InsertAsync(entidade));
+            return (long)(await database.Conexao.InsertMappedAsync(entidade));
         }
 
         public async Task<PaginacaoResultadoDto<EncaminhamentoNAAPAHistoricoDeAlteracaoDto>> ListarPaginadoPorEncaminhamentoNAAPAId(long encaminhamentoNAAPAId, Paginacao paginacao)

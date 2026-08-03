@@ -18,9 +18,9 @@ namespace SME.SGP.Dados.Repositorios
         public virtual async Task<long> SalvarAsync(ComunicadoModalidade comunicadoModalidade)
         {
             if (comunicadoModalidade.Id > 0)
-                await database.Conexao.UpdateAsync(comunicadoModalidade);
+                await database.Conexao.UpdateMappedAsync(comunicadoModalidade);
             else
-                comunicadoModalidade.Id = (long)(await database.Conexao.InsertAsync(comunicadoModalidade));
+                comunicadoModalidade.Id = (long)(await database.Conexao.InsertMappedAsync(comunicadoModalidade));
 
             return comunicadoModalidade.Id;
         }

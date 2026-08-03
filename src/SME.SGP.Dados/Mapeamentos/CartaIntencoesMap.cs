@@ -1,8 +1,9 @@
-﻿using SME.SGP.Dominio;
+﻿using SME.SGP.Dados.Mapeamentos;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados
 {
-    public class CartaIntencoesMap : BaseEntityMap<CartaIntencoes>
+    public class CartaIntencoesMap : BaseMap<CartaIntencoes>
     {
         public CartaIntencoesMap()
         {

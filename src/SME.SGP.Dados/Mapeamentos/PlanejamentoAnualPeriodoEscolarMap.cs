@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class PlanejamentoAnualPeriodoEscolarMap : BaseEntityMap<PlanejamentoAnualPeriodoEscolar>
+    public class PlanejamentoAnualPeriodoEscolarMap : BaseMap<PlanejamentoAnualPeriodoEscolar>
     {
         public PlanejamentoAnualPeriodoEscolarMap()
         {

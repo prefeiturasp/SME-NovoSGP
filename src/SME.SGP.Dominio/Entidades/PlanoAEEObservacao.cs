@@ -1,4 +1,4 @@
-﻿using Dapper.Contrib.Extensions;
+﻿
 
 namespace SME.SGP.Dominio
 {
@@ -11,7 +11,7 @@ namespace SME.SGP.Dominio
             Observacao = observacao;
         }
 
-        [Computed]
+       
         public PlanoAEE PlanoAEE { get; set; }
         public long PlanoAEEId { get; set; }
         public string Observacao { get; set; }

@@ -295,7 +295,7 @@ namespace SME.SGP.TesteIntegracao.Abrangencia
 
             var abrangencias = ObterTodos<Dominio.Abrangencia>();
             abrangencias.ShouldNotBeNull();
-            abrangencias.Count().ShouldBe(1);
+            abrangencias.Count().ShouldBe(2);
             abrangencias.First().TurmaId.ShouldBe(TURMA_ID_1);
             abrangencias.First().Perfil.ShouldBe(perfil);
         }

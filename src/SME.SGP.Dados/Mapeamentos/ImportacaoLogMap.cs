@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ImportacaoLogMap : BaseEntityMap<ImportacaoLog>
+    public class ImportacaoLogMap : BaseMap<ImportacaoLog>
     {
         public ImportacaoLogMap()
         {

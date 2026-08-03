@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class UsuarioMap : BaseEntityMap<Usuario>
+    public class UsuarioMap : BaseMap<Usuario>
     {
         public UsuarioMap()
         {

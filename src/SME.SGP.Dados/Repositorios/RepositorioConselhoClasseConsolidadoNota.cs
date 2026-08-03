@@ -44,11 +44,11 @@ namespace SME.SGP.Dados
             
             if (consolidadoNota.Id > 0)
             {
-                var sucesso = await database.Conexao.UpdateAsync(consolidadoNota);
-                return sucesso ? consolidadoNota.Id : 0;
+                var sucesso = await database.Conexao.UpdateMappedAsync(consolidadoNota);
+                return sucesso > 0 ? consolidadoNota.Id : 0;
             }
             else
-                return (long)(await database.Conexao.InsertAsync(consolidadoNota));
+                return (long)(await database.Conexao.InsertMappedAsync(consolidadoNota));
         }
 
         public async Task<bool> ExcluirConsolidacaoConselhoClasseNotaPorIdsConsolidacaoAlunoEBimestre(long[] idsConsolidacao)

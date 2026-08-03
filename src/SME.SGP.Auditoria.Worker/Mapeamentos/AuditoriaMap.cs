@@ -1,8 +1,10 @@
-﻿using SME.SGP.Auditoria.Worker.Mapeamentos;
+﻿
+
+using SME.SGP.Auditoria.Worker.Mapeamentos;
 
 namespace SME.SGP.Auditoria.Worker
 {
-    public class AuditoriaMap : SimpleEntityMap<Entidade.Auditoria>
+    public class AuditoriaMap : SimpleAuditoriaMap<Entidade.Auditoria>
     {
         public AuditoriaMap()
         {

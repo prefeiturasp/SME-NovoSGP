@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class HistoricoNotaMap : BaseEntityMap<HistoricoNota>
+    public class HistoricoNotaMap : BaseMap<HistoricoNota>
     {
         public HistoricoNotaMap()
         {

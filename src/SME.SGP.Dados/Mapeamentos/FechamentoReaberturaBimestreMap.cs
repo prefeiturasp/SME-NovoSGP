@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class FechamentoReaberturaBimestreMap : BaseEntityMap<FechamentoReaberturaBimestre>
+    public class FechamentoReaberturaBimestreMap : BaseMap<FechamentoReaberturaBimestre>
     {
         public FechamentoReaberturaBimestreMap()
         {

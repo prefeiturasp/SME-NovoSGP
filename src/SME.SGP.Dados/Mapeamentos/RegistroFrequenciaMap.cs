@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class RegistroFrequenciaMap : BaseEntityMap<RegistroFrequencia>
+    public class RegistroFrequenciaMap : BaseMap<RegistroFrequencia>
     {
         public RegistroFrequenciaMap()
         {

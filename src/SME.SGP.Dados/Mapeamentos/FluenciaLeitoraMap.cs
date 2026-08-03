@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class FluenciaLeitoraMap : BaseEntityMap<FluenciaLeitora>
+    public class FluenciaLeitoraMap : BaseMap<FluenciaLeitora>
     {
         public FluenciaLeitoraMap()
         {

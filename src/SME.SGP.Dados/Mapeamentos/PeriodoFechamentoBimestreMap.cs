@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class PeriodoFechamentoBimestreMap : SimpleEntityMap<PeriodoFechamentoBimestre>
+    public class PeriodoFechamentoBimestreMap : SimpleMap<PeriodoFechamentoBimestre>
     {
         public PeriodoFechamentoBimestreMap()
         {

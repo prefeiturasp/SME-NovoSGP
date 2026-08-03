@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class SolicitacaoRelatorioMap : BaseEntityMap<SolicitacaoRelatorio>
+    public class SolicitacaoRelatorioMap : BaseMap<SolicitacaoRelatorio>
     {
         public SolicitacaoRelatorioMap()
         {

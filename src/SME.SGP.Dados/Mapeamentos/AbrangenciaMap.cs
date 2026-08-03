@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class AbrangenciaMap : SimpleEntityMap<Abrangencia>
+    public class AbrangenciaMap : SimpleMap<Abrangencia>
     {
         public AbrangenciaMap()
         {

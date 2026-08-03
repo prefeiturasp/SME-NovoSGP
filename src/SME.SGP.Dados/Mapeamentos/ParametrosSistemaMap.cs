@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ParametrosSistemaMap : BaseEntityMap<ParametrosSistema>
+    public class ParametrosSistemaMap : BaseMap<ParametrosSistema>
     {
         public ParametrosSistemaMap()
         {

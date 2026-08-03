@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class EventoTipoMap : BaseEntityMap<EventoTipo>
+    public class EventoTipoMap : BaseMap<EventoTipo>
     {
         public EventoTipoMap()
         {

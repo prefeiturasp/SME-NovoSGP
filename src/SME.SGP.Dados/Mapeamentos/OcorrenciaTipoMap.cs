@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class OcorrenciaTipoMap : BaseEntityMap<OcorrenciaTipo>
+    public class OcorrenciaTipoMap : BaseMap<OcorrenciaTipo>
     {
         public OcorrenciaTipoMap()
         {

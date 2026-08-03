@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class RecuperacaoParalelaEixoMap : BaseEntityMap<RecuperacaoParalelaEixo>
+    public class RecuperacaoParalelaEixoMap : BaseMap<RecuperacaoParalelaEixo>
     {
         public RecuperacaoParalelaEixoMap()
         {

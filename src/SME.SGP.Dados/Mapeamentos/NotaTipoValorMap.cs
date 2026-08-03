@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class NotaTipoValorMap : BaseEntityMap<NotaTipoValor>
+    public class NotaTipoValorMap : BaseMap<NotaTipoValor>
     {
         public NotaTipoValorMap()
         {

@@ -1,10 +1,10 @@
-﻿using Dapper.Contrib.Extensions;
+﻿
 
 namespace SME.SGP.Dominio
 {
     public class ConsolidacaoFrequenciaAlunoMensal
     {
-        [Key]
+   
         public long Id { get; set; }
         public long TurmaId { get; set; }
         public string AlunoCodigo { get; set; }

@@ -1,4 +1,4 @@
-﻿using Dapper.Contrib.Extensions;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,14 +20,14 @@ namespace SME.SGP.Dominio
             FechamentosBimestre = new List<PeriodoFechamentoBimestre>();
         }
 
-        [Computed]
+       
         public Dre Dre { get; set; }
         public long? DreId { get; set; }
         public bool Migrado { get; set; }
-        [Computed]
+       
         public Ue Ue { get; set; }
         public long? UeId { get; set; }
-        [Computed]
+       
         public List<PeriodoFechamentoBimestre> FechamentosBimestre { get; set; }
         public Aplicacao Aplicacao { get; set; }
         public void AdicionarDre(Dre dre)

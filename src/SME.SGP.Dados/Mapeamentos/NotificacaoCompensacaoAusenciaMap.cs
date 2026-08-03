@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class NotificacaoCompensacaoAusenciaMap : SimpleEntityMap<NotificacaoCompensacaoAusencia>
+    public class NotificacaoCompensacaoAusenciaMap : SimpleMap<NotificacaoCompensacaoAusencia>
     {
         public NotificacaoCompensacaoAusenciaMap()
         {

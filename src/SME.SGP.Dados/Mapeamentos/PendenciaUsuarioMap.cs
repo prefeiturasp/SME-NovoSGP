@@ -1,8 +1,9 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dados.Mapeamentos;
 
 namespace SME.SGP.Dados
 {
-    public class PendenciaUsuarioMap : BaseEntityMap<PendenciaUsuario>
+    public class PendenciaUsuarioMap : BaseMap<PendenciaUsuario>
     {
         public PendenciaUsuarioMap()
         {

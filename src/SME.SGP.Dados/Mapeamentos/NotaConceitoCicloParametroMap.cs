@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class NotaConceitoCicloParametroMap : BaseEntityMap<NotaConceitoCicloParametro>
+    public class NotaConceitoCicloParametroMap : BaseMap<NotaConceitoCicloParametro>
     {
         public NotaConceitoCicloParametroMap()
         {

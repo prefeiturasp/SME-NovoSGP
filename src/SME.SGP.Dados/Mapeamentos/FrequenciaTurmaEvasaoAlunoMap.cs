@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class FrequenciaTurmaEvasaoAlunoMap : SimpleEntityMap<FrequenciaTurmaEvasaoAluno>
+    public class FrequenciaTurmaEvasaoAlunoMap : SimpleMap<FrequenciaTurmaEvasaoAluno>
     {
         public FrequenciaTurmaEvasaoAlunoMap()
         {

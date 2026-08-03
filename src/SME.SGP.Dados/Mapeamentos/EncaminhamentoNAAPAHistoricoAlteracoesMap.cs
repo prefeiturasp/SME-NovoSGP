@@ -1,8 +1,9 @@
-﻿using SME.SGP.Dominio;
+﻿using SME.SGP.Dados.Mapeamentos;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados
 {
-    public class EncaminhamentoNAAPAHistoricoAlteracoesMap : SimpleEntityMap<EncaminhamentoNAAPAHistoricoAlteracoes>
+    public class EncaminhamentoNAAPAHistoricoAlteracoesMap : SimpleMap<EncaminhamentoNAAPAHistoricoAlteracoes>
     {
         public EncaminhamentoNAAPAHistoricoAlteracoesMap()
         {

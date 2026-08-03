@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class RegistroPoaMap : BaseEntityMap<RegistroPoa>
+    public class RegistroPoaMap : BaseMap<RegistroPoa>
     {
         public RegistroPoaMap()
         {

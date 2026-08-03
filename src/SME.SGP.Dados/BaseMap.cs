@@ -1,15 +1,11 @@
 ﻿using SME.SGP.Dominio;
 
-namespace SME.SGP.Dados
+namespace SME.SGP.Dados.Mapeamentos
 {
-    public abstract class BaseEntityMap<T> : EntityMap<T> where T : EntidadeBase
+    public abstract class BaseMap<T> : EntityMap<T>
+        where T : EntidadeBase
     {
-        protected BaseEntityMap()
-        {
-            MapBaseProperties();
-        }
-
-        protected virtual void MapBaseProperties()
+        protected BaseMap()
         {
             Map(nameof(EntidadeBase.Id), "id");
             Map(nameof(EntidadeBase.CriadoEm), "criado_em");

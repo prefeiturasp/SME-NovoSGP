@@ -1,4 +1,4 @@
-﻿using Dapper.Contrib.Extensions;
+﻿
 using SME.SGP.Dominio.Enumerados;
 using System;
 using System.Collections.Generic;
@@ -15,7 +15,7 @@ namespace SME.SGP.Dominio
         public string CodigoTurma { get; set; }
         public TipoTurma TipoTurma { get; set; }
         public DateTime DataAtualizacao { get; set; }
-        [Key]
+   
         public long Id { get; set; }
         public Modalidade ModalidadeCodigo { get; set; }
         public ModalidadeTipoCalendario ModalidadeTipoCalendario
@@ -28,7 +28,7 @@ namespace SME.SGP.Dominio
         public int Semestre { get; set; }
         public int TipoTurno { get; set; }
         public string SerieEnsino { get; set; }
-        [Computed]
+       
         public Ue Ue { get; set; }
         public long UeId { get; set; }
         public string NomeFiltro { get; set; }

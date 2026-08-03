@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class CadastroAcessoABAEMap : BaseEntityMap<CadastroAcessoABAE>
+    public class CadastroAcessoABAEMap : BaseMap<CadastroAcessoABAE>
     {
         public CadastroAcessoABAEMap()
         {

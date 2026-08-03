@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class AulaPrevistaBimestreMap : BaseEntityMap<AulaPrevistaBimestre>
+    public class AulaPrevistaBimestreMap : BaseMap<AulaPrevistaBimestre>
     {
         public AulaPrevistaBimestreMap()
         {

@@ -1,4 +1,4 @@
-﻿using Dapper.Contrib.Extensions;
+﻿
 using System.Collections.Generic;
 
 namespace SME.SGP.Dominio
@@ -10,13 +10,13 @@ namespace SME.SGP.Dominio
             Secoes = new List<RegistroAcaoBuscaAtivaSecao>();
         }
 
-        [Computed]
+       
         public Turma Turma { get; set; }
         public long TurmaId { get; set; }
         public string AlunoCodigo { get; set; }
         public string AlunoNome { get; set; }
         public bool Excluido { get; set; }
-        [Computed]
+       
         public List<RegistroAcaoBuscaAtivaSecao> Secoes { get; set; }
 
         public RegistroAcaoBuscaAtiva Clone()

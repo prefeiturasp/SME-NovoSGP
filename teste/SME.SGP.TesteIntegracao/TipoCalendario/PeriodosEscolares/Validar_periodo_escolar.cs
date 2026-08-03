@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
+using SME.SGP.Dados;
+using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao;

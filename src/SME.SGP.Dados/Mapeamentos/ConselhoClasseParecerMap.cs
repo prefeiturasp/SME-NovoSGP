@@ -2,7 +2,7 @@ using SME.SGP.Dominio.Entidades;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ConselhoClasseParecerMap : BaseEntityMap<ConselhoClasseParecer>
+    public class ConselhoClasseParecerMap : BaseMap<ConselhoClasseParecer>
     {
         public ConselhoClasseParecerMap()
         {

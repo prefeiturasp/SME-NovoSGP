@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class InformativoPerfilMap : BaseEntityMap<InformativoPerfil>
+    public class InformativoPerfilMap : BaseMap<InformativoPerfil>
     {
         public InformativoPerfilMap()
         {

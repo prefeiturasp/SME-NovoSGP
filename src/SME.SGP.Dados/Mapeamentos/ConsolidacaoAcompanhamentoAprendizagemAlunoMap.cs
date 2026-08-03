@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ConsolidacaoAcompanhamentoAprendizagemAlunoMap : SimpleEntityMap<ConsolidacaoAcompanhamentoAprendizagemAluno>
+    public class ConsolidacaoAcompanhamentoAprendizagemAlunoMap : SimpleMap<ConsolidacaoAcompanhamentoAprendizagemAluno>
     {
         public ConsolidacaoAcompanhamentoAprendizagemAlunoMap()
         {

@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ConsolidacaoFrequenciaAlunoMensalMap : SimpleEntityMap<ConsolidacaoFrequenciaAlunoMensal>
+    public class ConsolidacaoFrequenciaAlunoMensalMap : SimpleMap<ConsolidacaoFrequenciaAlunoMensal>
     {
         public ConsolidacaoFrequenciaAlunoMensalMap()
         {

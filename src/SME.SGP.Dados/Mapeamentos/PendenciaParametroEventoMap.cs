@@ -1,8 +1,9 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dados.Mapeamentos;
 
 namespace SME.SGP.Dados
 {
-    public class PendenciaParametroEventoMap : BaseEntityMap<PendenciaParametroEvento>
+    public class PendenciaParametroEventoMap : BaseMap<PendenciaParametroEvento>
     {
         public PendenciaParametroEventoMap()
         {

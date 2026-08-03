@@ -1,8 +1,9 @@
-﻿using SME.SGP.Dominio;
+﻿using SME.SGP.Dados.Mapeamentos;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados
 {
-    public class SecaoMapeamentoEstudanteMap : BaseEntityMap<SecaoMapeamentoEstudante>
+    public class SecaoMapeamentoEstudanteMap : BaseMap<SecaoMapeamentoEstudante>
     {
         public SecaoMapeamentoEstudanteMap()
         {

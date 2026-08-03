@@ -1,4 +1,4 @@
-﻿using Dapper.Contrib.Extensions;
+﻿
 
 namespace SME.SGP.Dominio
 {
@@ -15,7 +15,7 @@ namespace SME.SGP.Dominio
         }
         public long PlanejamentoAnualComponenteId { get; set; }
         public long ObjetivoAprendizagemId { get; set; }
-        [Computed]
+       
         public ObjetivoAprendizagem ObjetivoAprendizagem { get; set; }
         public bool Excluido { get; set; }
     }

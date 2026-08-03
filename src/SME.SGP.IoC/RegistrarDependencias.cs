@@ -90,7 +90,6 @@ namespace SME.SGP.IoC
             RegistrarServicoArmazenamento(services, configuration);
 
 
-            RegistrarMapeamentos.Registrar();
         }
 
         protected virtual void RegistrarServicoArmazenamento(IServiceCollection services, IConfiguration configuration)
@@ -131,7 +130,6 @@ namespace SME.SGP.IoC
             RegistrarAuditoria(services);
             RegistrarServicoArmazenamento(services, configuration);
 
-            RegistrarMapeamentos.Registrar();
         }
 
         private void RegistrarMetricas(IServiceCollection services)

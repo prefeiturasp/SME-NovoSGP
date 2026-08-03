@@ -1,8 +1,9 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dados.Mapeamentos;
 
 namespace SME.SGP.Dados
 {
-    public class HistoricoReinicioSenhaMap : BaseEntityMap<HistoricoReinicioSenha>
+    public class HistoricoReinicioSenhaMap : BaseMap<HistoricoReinicioSenha>
     {
         public HistoricoReinicioSenhaMap()
         {

@@ -1,11 +1,11 @@
-﻿using Dapper.Contrib.Extensions;
+﻿
 
 namespace SME.SGP.Dominio
 {
     public class SecaoRelatorioPeriodicoPAP : EntidadeBase
     {
         public int QuestionarioId { get; set; }
-        [Computed]
+       
         public Questionario Questionario { get; set; }
         public string NomeComponente { get; set; }
         public string Nome { get; set; }

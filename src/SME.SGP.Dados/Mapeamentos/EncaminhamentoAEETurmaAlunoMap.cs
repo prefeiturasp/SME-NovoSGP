@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class EncaminhamentoAEETurmaAlunoMap : BaseEntityMap<EncaminhamentoAEETurmaAluno>
+    public class EncaminhamentoAEETurmaAlunoMap : BaseMap<EncaminhamentoAEETurmaAluno>
     {
         public EncaminhamentoAEETurmaAlunoMap()
         {

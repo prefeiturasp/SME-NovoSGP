@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class HistoricoEmailUsuarioMap : BaseEntityMap<HistoricoEmailUsuario>
+    public class HistoricoEmailUsuarioMap : BaseMap<HistoricoEmailUsuario>
     {
         public HistoricoEmailUsuarioMap()
         {

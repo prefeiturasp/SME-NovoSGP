@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class TipoDocumentoMap : SimpleEntityMap<TipoDocumento>
+    public class TipoDocumentoMap : SimpleMap<TipoDocumento>
     {
         public TipoDocumentoMap()
         {

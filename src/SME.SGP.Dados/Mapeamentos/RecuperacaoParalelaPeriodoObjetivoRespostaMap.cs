@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class RecuperacaoParalelaPeriodoObjetivoRespostaMap : BaseEntityMap<RecuperacaoParalelaPeriodoObjetivoResposta>
+    public class RecuperacaoParalelaPeriodoObjetivoRespostaMap : BaseMap<RecuperacaoParalelaPeriodoObjetivoResposta>
     {
         public RecuperacaoParalelaPeriodoObjetivoRespostaMap()
         {

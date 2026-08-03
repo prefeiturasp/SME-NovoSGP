@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class MotivoAusenciaMap : SimpleEntityMap<MotivoAusencia>
+    public class MotivoAusenciaMap : SimpleMap<MotivoAusencia>
     {
         public MotivoAusenciaMap()
         {

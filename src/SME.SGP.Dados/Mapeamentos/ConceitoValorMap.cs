@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ConceitoValorMap : BaseEntityMap<Conceito>
+    public class ConceitoValorMap : BaseMap<Conceito>
     {
         public ConceitoValorMap()
         {

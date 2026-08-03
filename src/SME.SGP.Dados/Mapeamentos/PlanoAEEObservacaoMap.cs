@@ -1,8 +1,9 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dados.Mapeamentos;
 
 namespace SME.SGP.Dados
 {
-    public class PlanoAEEObservacaoMap : BaseEntityMap<PlanoAEEObservacao>
+    public class PlanoAEEObservacaoMap : BaseMap<PlanoAEEObservacao>
     {
         public PlanoAEEObservacaoMap()
         {

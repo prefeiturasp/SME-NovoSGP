@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class AcompanhamentoAlunoFotoMap : BaseEntityMap<AcompanhamentoAlunoFoto>
+    public class AcompanhamentoAlunoFotoMap : BaseMap<AcompanhamentoAlunoFoto>
     {
         public AcompanhamentoAlunoFotoMap()
         {

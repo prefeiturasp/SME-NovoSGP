@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class RelatorioPeriodicoPAPTurmaMap : BaseEntityMap<RelatorioPeriodicoPAPTurma>
+    public class RelatorioPeriodicoPAPTurmaMap : BaseMap<RelatorioPeriodicoPAPTurma>
     {
         public RelatorioPeriodicoPAPTurmaMap()
         {

@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ConsolidacaoAlfabetizacaoCriticaEscritaMap : SimpleEntityMap<ConsolidacaoAlfabetizacaoCriticaEscrita>
+    public class ConsolidacaoAlfabetizacaoCriticaEscritaMap : SimpleMap<ConsolidacaoAlfabetizacaoCriticaEscrita>
     {
         public ConsolidacaoAlfabetizacaoCriticaEscritaMap()
         {

@@ -3,7 +3,7 @@ using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ConsolidacaoDevolutivasMap : SimpleEntityMap<ConsolidacaoDevolutivas>
+    public class ConsolidacaoDevolutivasMap : SimpleMap<ConsolidacaoDevolutivas>
     {
         public ConsolidacaoDevolutivasMap()
         {

@@ -1,4 +1,4 @@
-﻿using Dapper.Contrib.Extensions;
+﻿
 
 namespace SME.SGP.Dominio
 {
@@ -10,10 +10,10 @@ namespace SME.SGP.Dominio
             PendenciaId = pendenciaId;
             PlanoAEEId = planoAEEId;
         }
-        [Computed]
+       
         public PlanoAEE PlanoAEE { get; set; }
         public long PlanoAEEId { get; set; }
-        [Computed]
+       
         public Pendencia Pendencia { get; set; }
         public long PendenciaId { get; set; }
     }

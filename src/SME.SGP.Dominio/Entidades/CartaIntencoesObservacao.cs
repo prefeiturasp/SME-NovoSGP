@@ -1,4 +1,4 @@
-﻿using Dapper.Contrib.Extensions;
+﻿
 
 namespace SME.SGP.Dominio
 {
@@ -17,7 +17,7 @@ namespace SME.SGP.Dominio
 
         public string Observacao { get; set; }
         public long TurmaId { get; set; }
-        [Computed]
+       
         public Turma Turma { get; set; }
 
         public long ComponenteCurricularId { get; set; }

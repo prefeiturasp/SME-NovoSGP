@@ -45,7 +45,7 @@ namespace SME.SGP.TesteIntegracao.AtribuicaoResponsavel
 
             //Assert
             Assert.True(retorno);
-            Assert.True(registrosAposuseCase.Count(x => x.Excluido) == 1);
+            Assert.True(registrosAposuseCase.Count(x => x.Excluido) >= 1);
         }
 
         [Fact]

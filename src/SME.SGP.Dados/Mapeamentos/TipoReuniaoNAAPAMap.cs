@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class TipoReuniaoNAAPAMap : BaseEntityMap<TipoReuniaoNAAPA>
+    public class TipoReuniaoNAAPAMap : BaseMap<TipoReuniaoNAAPA>
     {
         public TipoReuniaoNAAPAMap()
         {

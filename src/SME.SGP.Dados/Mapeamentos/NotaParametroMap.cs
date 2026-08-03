@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class NotaParametroMap : BaseEntityMap<NotaParametro>
+    public class NotaParametroMap : BaseMap<NotaParametro>
     {
         public NotaParametroMap()
         {

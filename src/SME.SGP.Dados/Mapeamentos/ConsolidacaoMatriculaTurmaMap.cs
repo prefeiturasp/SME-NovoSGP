@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ConsolidacaoMatriculaTurmaMap : SimpleEntityMap<ConsolidacaoMatriculaTurma>
+    public class ConsolidacaoMatriculaTurmaMap : SimpleMap<ConsolidacaoMatriculaTurma>
     {
         public ConsolidacaoMatriculaTurmaMap()
         {

@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class HistoricoNotaConselhoClasseMap : SimpleEntityMap<HistoricoNotaConselhoClasse>
+    public class HistoricoNotaConselhoClasseMap : SimpleMap<HistoricoNotaConselhoClasse>
     {
         public HistoricoNotaConselhoClasseMap()
         {

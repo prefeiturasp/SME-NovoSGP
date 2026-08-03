@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ConsolidadoAtendimentoNAAPAMap : BaseEntityMap<ConsolidadoAtendimentoNAAPA>
+    public class ConsolidadoAtendimentoNAAPAMap : BaseMap<ConsolidadoAtendimentoNAAPA>
     {
         public ConsolidadoAtendimentoNAAPAMap()
         {

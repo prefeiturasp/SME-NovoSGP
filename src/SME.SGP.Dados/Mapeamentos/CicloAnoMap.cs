@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class CicloAnoMap : SimpleEntityMap<CicloAno>
+    public class CicloAnoMap : SimpleMap<CicloAno>
     {
         public CicloAnoMap()
         {

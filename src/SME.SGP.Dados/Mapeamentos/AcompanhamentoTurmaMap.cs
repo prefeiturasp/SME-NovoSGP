@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class AcompanhamentoTurmaMap : BaseEntityMap<AcompanhamentoTurma>
+    public class AcompanhamentoTurmaMap : BaseMap<AcompanhamentoTurma>
     {
         public AcompanhamentoTurmaMap()
         {

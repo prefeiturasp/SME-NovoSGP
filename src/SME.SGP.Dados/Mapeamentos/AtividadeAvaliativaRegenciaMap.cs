@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class AtividadeAvaliativaRegenciaMap : BaseEntityMap<AtividadeAvaliativaRegencia>
+    public class AtividadeAvaliativaRegenciaMap : BaseMap<AtividadeAvaliativaRegencia>
     {
         public AtividadeAvaliativaRegenciaMap()
         {

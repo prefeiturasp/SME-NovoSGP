@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class AnotacaoFrequenciaAlunoMap : BaseEntityMap<AnotacaoFrequenciaAluno>
+    public class AnotacaoFrequenciaAlunoMap : BaseMap<AnotacaoFrequenciaAluno>
     {
         public AnotacaoFrequenciaAlunoMap()
         {

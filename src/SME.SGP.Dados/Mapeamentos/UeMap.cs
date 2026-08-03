@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class UeMap : SimpleEntityMap<Ue>
+    public class UeMap : SimpleMap<Ue>
     {
         public UeMap()
         {

@@ -1,8 +1,9 @@
-﻿using SME.SGP.Dominio;
+﻿using SME.SGP.Dados.Mapeamentos;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados
 {
-    public class EncaminhamentoAEEMap : BaseEntityMap<EncaminhamentoAEE>
+    public class EncaminhamentoAEEMap : BaseMap<EncaminhamentoAEE>
     {
         public EncaminhamentoAEEMap()
         {

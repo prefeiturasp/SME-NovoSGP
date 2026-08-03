@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Dommel;
 using Npgsql;
 using Testcontainers.PostgreSql;
+using SME.SGP.Dados;
 
 namespace SME.SGP.TesteIntegracao.Setup
 {
@@ -37,6 +38,7 @@ namespace SME.SGP.TesteIntegracao.Setup
             Conexao = new NpgsqlConnection(ConnectionString);
             await Conexao.OpenAsync();
 
+            Dados.MapRegistry.Initialize();
             _construtorDeTabelas = new ConstrutorDeTabelas(ConnectionString);
             _construtorDeTabelas.Construir();
         }
@@ -44,34 +46,37 @@ namespace SME.SGP.TesteIntegracao.Setup
         public void Inserir<T>(IEnumerable<T> objetos) where T : class, new()
         {
             foreach (var objeto in objetos)
-                Conexao.Insert(objeto);
+                Conexao.InsertMapped(objeto);
         }
 
         public void Inserir<T>(T objeto) where T : class, new()
         {
-            Conexao.Insert(objeto);
+            Conexao.InsertMapped(objeto);
         }
 
         public async Task<long> InserirAsync<T>(T objeto) where T : class, new()
         {
-            return (long)(await Conexao.InsertAsync(objeto));
+            return (long)(await Conexao.InsertMappedAsync(objeto));
         }
 
         public void Atualizar<T>(T objeto) where T : class, new()
         {
-            Conexao.Update(objeto);
+            Conexao.UpdateMapped(objeto);
         }
 
-        public List<T> ObterTodos<T>() where T : class, new()
+        public List<T> ObterTodos<T>()
+            where T : class, new()
         {
-            return Conexao.GetAll<T>().ToList();
+            return Conexao
+                .GetAllMapped<T>()
+                .ToList();
         }
 
         public T ObterPorId<T, K>(K id)
             where T : class, new()
             where K : struct
         {
-            return Conexao.Get<T>(id);
+            return Conexao.GetMapped<T>(id);
         }
 
         public void ExecutarScripts(List<ScriptCarga> scriptsCarga)

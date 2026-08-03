@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class WfAprovacaoNotaFechamentoMap : BaseEntityMap<WfAprovacaoNotaFechamento>
+    public class WfAprovacaoNotaFechamentoMap : BaseMap<WfAprovacaoNotaFechamento>
     {
         public WfAprovacaoNotaFechamentoMap()
         {

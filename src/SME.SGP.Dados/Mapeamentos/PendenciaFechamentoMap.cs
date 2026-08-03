@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class PendenciaFechamentoMap : BaseEntityMap<PendenciaFechamento>
+    public class PendenciaFechamentoMap : BaseMap<PendenciaFechamento>
     {
         public PendenciaFechamentoMap()
         {

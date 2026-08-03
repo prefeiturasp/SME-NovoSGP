@@ -1,4 +1,4 @@
-﻿using Dapper.Contrib.Extensions;
+﻿
 using System;
 
 namespace SME.SGP.Dominio
@@ -20,10 +20,10 @@ namespace SME.SGP.Dominio
         }
 
         public Guid ExportId { get;  set; }
-        [Key]
+   
         public long Id { get; set; }
         public string JSessionId { get;  set; }
-        [Computed]
+       
         public RelatorioCorrelacao RelatorioCorrelacao { get;  set; }
         public long RelatorioCorrelacaoId { get; set; }
         public Guid RequestId { get;  set; }

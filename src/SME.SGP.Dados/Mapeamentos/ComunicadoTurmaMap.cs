@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ComunicadoTurmaMap : BaseEntityMap<ComunicadoTurma>
+    public class ComunicadoTurmaMap : BaseMap<ComunicadoTurma>
     {
         public ComunicadoTurmaMap()
         {

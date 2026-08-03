@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class RelatorioCorrelacaoJasperMap : SimpleEntityMap<RelatorioCorrelacaoJasper>
+    public class RelatorioCorrelacaoJasperMap : SimpleMap<RelatorioCorrelacaoJasper>
     {
         public RelatorioCorrelacaoJasperMap()
         {

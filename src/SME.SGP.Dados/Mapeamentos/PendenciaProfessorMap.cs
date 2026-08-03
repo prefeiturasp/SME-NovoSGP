@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class PendenciaProfessorMap : SimpleEntityMap<PendenciaProfessor>
+    public class PendenciaProfessorMap : SimpleMap<PendenciaProfessor>
     {
         public PendenciaProfessorMap()
         {

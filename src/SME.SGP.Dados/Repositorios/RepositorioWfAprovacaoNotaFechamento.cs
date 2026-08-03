@@ -32,9 +32,9 @@ namespace SME.SGP.Dados.Repositorios
         public async Task SalvarAsync(WfAprovacaoNotaFechamento entidade)
         {
             if (entidade.Id > 0)
-                await database.Conexao.UpdateAsync(entidade);
+                await database.Conexao.UpdateMappedAsync(entidade);
             else
-                await database.Conexao.InsertAsync(entidade);
+                await database.Conexao.InsertMappedAsync(entidade);
         }
 
         public async Task<IEnumerable<WfAprovacaoNotaFechamentoTurmaDto>> ObterWfAprovacaoNotaFechamentoSemWfAprovacaoId()

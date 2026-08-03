@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class DevolutivaDiarioBordoNotificacaoMap : SimpleEntityMap<NotificacaoDevolutiva>
+    public class DevolutivaDiarioBordoNotificacaoMap : SimpleMap<NotificacaoDevolutiva>
     {
         public DevolutivaDiarioBordoNotificacaoMap()
         {

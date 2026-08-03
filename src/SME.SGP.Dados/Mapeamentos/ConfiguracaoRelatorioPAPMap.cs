@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ConfiguracaoRelatorioPAPMap : BaseEntityMap<ConfiguracaoRelatorioPAP>
+    public class ConfiguracaoRelatorioPAPMap : BaseMap<ConfiguracaoRelatorioPAP>
     {
         public ConfiguracaoRelatorioPAPMap()
         {

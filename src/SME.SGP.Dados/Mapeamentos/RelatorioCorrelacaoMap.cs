@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public partial class RelatorioCorrelacaoMap : BaseEntityMap<RelatorioCorrelacao>
+    public partial class RelatorioCorrelacaoMap : BaseMap<RelatorioCorrelacao>
     {
         public RelatorioCorrelacaoMap()
         {

@@ -1,11 +1,11 @@
-﻿using Dapper.Contrib.Extensions;
+﻿
 using System;
 
 namespace SME.SGP.Dominio
 {
     public class ConsolidacaoDashBoardFrequencia
     {
-        [Key]
+   
         public long Id { get; set; }
         public long TurmaId { get; set; }
         public string TurmaNome { get; set; }

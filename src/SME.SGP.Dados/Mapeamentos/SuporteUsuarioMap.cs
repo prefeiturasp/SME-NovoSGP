@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class SuporteUsuarioMap : SimpleEntityMap<SuporteUsuario>
+    public class SuporteUsuarioMap : SimpleMap<SuporteUsuario>
     {
         public SuporteUsuarioMap()
         {

@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ProficienciaIdepMap : BaseEntityMap<ProficienciaIdep>
+    public class ProficienciaIdepMap : BaseMap<ProficienciaIdep>
     {
         public ProficienciaIdepMap()
         {

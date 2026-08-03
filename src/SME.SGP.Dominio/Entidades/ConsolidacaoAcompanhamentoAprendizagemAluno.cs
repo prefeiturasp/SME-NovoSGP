@@ -1,5 +1,5 @@
 ﻿
-using Dapper.Contrib.Extensions;
+
 
 namespace SME.SGP.Dominio
 {
@@ -12,7 +12,7 @@ namespace SME.SGP.Dominio
             QuantidadeSemAcompanhamento = quantidadeSemAcompanhamento;
             Semestre = semestre;
         }
-        [Key]
+   
         public long Id { get; set; }
         public long TurmaId { get; set; }
         public int QuantidadeComAcompanhamento { get; set; }

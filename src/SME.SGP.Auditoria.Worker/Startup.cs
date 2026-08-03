@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using SME.SGP.Auditoria.Worker.Interfaces;
+using SME.SGP.Auditoria.Worker.Mapeamentos;
 using SME.SGP.Auditoria.Worker.Repositorio;
 using SME.SGP.Auditoria.Worker.Repositorio.Interfaces;
 using SME.SGP.Infra;
@@ -32,6 +33,7 @@ namespace SME.SGP.Auditoria.Worker
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            MapAuditoriaRegistry.Initialize();
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
             RegistrarElasticSearch(services);
             RegistrarDependencias(services);

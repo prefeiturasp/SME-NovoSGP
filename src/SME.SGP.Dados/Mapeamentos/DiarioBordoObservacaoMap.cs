@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class DiarioBordoObservacaoMap : BaseEntityMap<DiarioBordoObservacao>
+    public class DiarioBordoObservacaoMap : BaseMap<DiarioBordoObservacao>
     {
         public DiarioBordoObservacaoMap()
         {

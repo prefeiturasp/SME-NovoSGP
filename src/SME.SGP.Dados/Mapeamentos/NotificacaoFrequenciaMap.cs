@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class NotificacaoFrequenciaMap : BaseEntityMap<NotificacaoFrequencia>
+    public class NotificacaoFrequenciaMap : BaseMap<NotificacaoFrequencia>
     {
         public NotificacaoFrequenciaMap()
         {

@@ -1,4 +1,4 @@
-﻿using Dapper.Contrib.Extensions;
+﻿
 using System;
 
 namespace SME.SGP.Dominio
@@ -8,9 +8,9 @@ namespace SME.SGP.Dominio
         public string CodigoAluno { get; set; }
         public int NumeroAula { get; set; }
         public int Valor { get; set; }
-        [Computed]
+       
         public RegistroFrequencia RegistroFrequencia { get; set; }
-        [Computed]
+       
         public Aula Aula { get; set; }
         public long RegistroFrequenciaId { get; set; }
         public long AulaId { get; set; }

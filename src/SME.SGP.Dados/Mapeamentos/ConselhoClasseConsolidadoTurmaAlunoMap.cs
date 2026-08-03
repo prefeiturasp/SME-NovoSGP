@@ -1,8 +1,9 @@
-﻿using SME.SGP.Dominio;
+﻿using SME.SGP.Dados.Mapeamentos;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados
 {
-    public class ConselhoClasseConsolidadoTurmaAlunoMap : BaseEntityMap<ConselhoClasseConsolidadoTurmaAluno>
+    public class ConselhoClasseConsolidadoTurmaAlunoMap : BaseMap<ConselhoClasseConsolidadoTurmaAluno>
     {
         public ConselhoClasseConsolidadoTurmaAlunoMap()
         {

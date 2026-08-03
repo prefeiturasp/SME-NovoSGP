@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class DocumentoArquivoMap : SimpleEntityMap<DocumentoArquivo>
+    public class DocumentoArquivoMap : SimpleMap<DocumentoArquivo>
     {
         public DocumentoArquivoMap()
         {

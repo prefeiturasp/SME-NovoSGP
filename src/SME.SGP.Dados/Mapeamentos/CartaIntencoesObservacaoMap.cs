@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class CartaIntencoesObservacaoMap : BaseEntityMap<CartaIntencoesObservacao>
+    public class CartaIntencoesObservacaoMap : BaseMap<CartaIntencoesObservacao>
     {
         public CartaIntencoesObservacaoMap()
         {

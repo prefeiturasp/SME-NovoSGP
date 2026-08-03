@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class AtividadeAvaliativaDisciplinaMap : BaseEntityMap<AtividadeAvaliativaDisciplina>
+    public class AtividadeAvaliativaDisciplinaMap : BaseMap<AtividadeAvaliativaDisciplina>
     {
         public AtividadeAvaliativaDisciplinaMap()
         {

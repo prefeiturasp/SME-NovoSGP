@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class TipoAvaliacaoMap : BaseEntityMap<TipoAvaliacao>
+    public class TipoAvaliacaoMap : BaseMap<TipoAvaliacao>
     {
         public TipoAvaliacaoMap()
         {

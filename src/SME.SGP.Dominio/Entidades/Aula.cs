@@ -1,4 +1,4 @@
-﻿using Dapper.Contrib.Extensions;
+﻿
 using SME.SGP.Dominio.Constantes;
 using System;
 using System.Collections.Generic;
@@ -54,30 +54,30 @@ namespace SME.SGP.Dominio
         }
 
         public bool AulaCJ { get; set; }
-        [Computed]
+       
         public Aula AulaPai { get; set; }
         public long? AulaPaiId { get; set; }
-        [Computed]
+       
         public ComponenteCurricularEol ComponenteCurricularEol { get; set; }
         public DateTime DataAula { get; set; }
         public string DisciplinaCompartilhadaId { get; set; }
         public string DisciplinaId { get; set; }
         public string DisciplinaNome { get; set; }
-        [Write(false)]
+      
         public bool EhAEE => ComponentesDeAEEColaborativo.Any(c => c == DisciplinaId);
-        [Write(false)]
+      
         public bool EhAEEContraturno => ComponentesDeAEEContraturno.Any(c => c == DisciplinaId);
-        [Write(false)]
+      
         public bool EhAulaCompartilhada => ComponentesDeAulaCompartilhada.Any(c => c == DisciplinaId);
-        [Write(false)]
+      
         public bool EhRecuperacaoParalela => ComponentesDeRecuperacaoParalela.Any(c => c == DisciplinaId);
-        [Write(false)]
+      
         public bool EhTecnologiaAprendizagem => ComponentesDeTecnologiaAprendizagem.Any(c => c == DisciplinaId);
-        [Write(false)]
+      
         public bool EhTecAprendizagemELeitura => ComponentesDeTecAprendizageELeitura.Any(c => c == DisciplinaId);
-        [Write(false)]
+      
         public bool EhDataSelecionadaFutura => DataAula.Date > DateTime.Now.Date;
-        [Write(false)]
+      
         public bool EhPAP => ComponentesDeAulaPAP.Any(c => c == DisciplinaId);
 
         public bool Excluido { get; set; }
@@ -94,16 +94,16 @@ namespace SME.SGP.Dominio
 
         public TipoAula TipoAula { get; set; }
 
-        [Computed]
+       
         public TipoCalendario TipoCalendario { get; set; }
 
         public long TipoCalendarioId { get; set; }
-        [Computed]
+       
         public Turma Turma { get; set; }
         public string TurmaId { get; set; }
         public string UeId { get; set; }
         public long? WorkflowAprovacaoId { get; set; }
-        [Computed]
+       
         public AulaDadosComplementares DadosComplementares { get; set; }
         public void AdicionarAulaPai(Aula aula)
         {

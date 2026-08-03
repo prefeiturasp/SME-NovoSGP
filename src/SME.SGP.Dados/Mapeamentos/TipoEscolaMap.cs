@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class TipoEscolaMap : BaseEntityMap<TipoEscolaEol>
+    public class TipoEscolaMap : BaseMap<TipoEscolaEol>
     {
         public TipoEscolaMap()
         {

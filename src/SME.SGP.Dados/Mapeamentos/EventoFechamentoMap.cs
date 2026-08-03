@@ -1,8 +1,9 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dados.Mapeamentos;
 
 namespace SME.SGP.Dados
 {
-    public class EventoFechamentoMap : BaseEntityMap<EventoFechamento>
+    public class EventoFechamentoMap : BaseMap<EventoFechamento>
     {
         public EventoFechamentoMap()
         {

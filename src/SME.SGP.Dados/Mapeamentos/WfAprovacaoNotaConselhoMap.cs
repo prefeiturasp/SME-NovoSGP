@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class WfAprovacaoNotaConselhoMap : BaseEntityMap<WFAprovacaoNotaConselho>
+    public class WfAprovacaoNotaConselhoMap : BaseMap<WFAprovacaoNotaConselho>
     {
         public WfAprovacaoNotaConselhoMap()
         {

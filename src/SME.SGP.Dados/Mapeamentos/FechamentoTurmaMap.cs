@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class FechamentoTurmaMap : BaseEntityMap<FechamentoTurma>
+    public class FechamentoTurmaMap : BaseMap<FechamentoTurma>
     {
         public FechamentoTurmaMap()
         {

@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class DreMap : SimpleEntityMap<Dre>
+    public class DreMap : SimpleMap<Dre>
     {
         public DreMap()
         {

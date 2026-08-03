@@ -1,4 +1,4 @@
-﻿using Dapper.Contrib.Extensions;
+﻿
 using System.Collections.Generic;
 
 namespace SME.SGP.Dominio
@@ -11,11 +11,11 @@ namespace SME.SGP.Dominio
         }
 
         public long RelatorioSemestralTurmaPAPId { get; set; }
-        [Computed]
+       
         public RelatorioSemestralTurmaPAP RelatorioSemestralTurmaPAP { get; set; }
         public string AlunoCodigo { get; set; }
 
-        [Computed]
+       
         public List<RelatorioSemestralPAPAlunoSecao> Secoes { get; set; }
 
         public bool Migrado { get; set; }

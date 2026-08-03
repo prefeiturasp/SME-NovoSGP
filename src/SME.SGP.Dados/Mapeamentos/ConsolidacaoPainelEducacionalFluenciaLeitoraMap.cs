@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ConsolidacaoPainelEducacionalFluenciaLeitoraMap : SimpleEntityMap<ConsolidacaoPainelEducacionalFluenciaLeitora>
+    public class ConsolidacaoPainelEducacionalFluenciaLeitoraMap : SimpleMap<ConsolidacaoPainelEducacionalFluenciaLeitora>
     {
         public ConsolidacaoPainelEducacionalFluenciaLeitoraMap()
         {

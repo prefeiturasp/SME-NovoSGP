@@ -1,4 +1,4 @@
-﻿using Dapper.Contrib.Extensions;
+﻿
 
 namespace SME.SGP.Dominio
 {
@@ -12,7 +12,7 @@ namespace SME.SGP.Dominio
         }
 
         public long FechamentoTurmaId { get; set; }
-        [Computed]
+       
         public FechamentoTurma FechamentoTurma { get; set; }
 
         public SituacaoConselhoClasse Situacao { get; set; }

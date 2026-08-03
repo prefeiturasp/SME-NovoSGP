@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class IdepMap : BaseEntityMap<Idep>
+    public class IdepMap : BaseMap<Idep>
     {
         public IdepMap()
         {

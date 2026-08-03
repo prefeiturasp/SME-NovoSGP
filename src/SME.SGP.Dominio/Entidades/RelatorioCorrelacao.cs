@@ -1,4 +1,4 @@
-﻿using Dapper.Contrib.Extensions;
+﻿
 using System;
 
 namespace SME.SGP.Dominio
@@ -18,13 +18,13 @@ namespace SME.SGP.Dominio
         {
 
         }
-        [Computed]
+       
         public RelatorioCorrelacaoJasper CorrelacaoJasper { get; private set; }
         public Guid Codigo { get; set; }
 
         public TipoRelatorio TipoRelatorio { get; set; }
 
-        [Computed]
+       
         public Usuario UsuarioSolicitante { get; set; }
 
         public long UsuarioSolicitanteId { get; set; }

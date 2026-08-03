@@ -1,13 +1,12 @@
-﻿using Dapper.Contrib.Extensions;
+﻿
 using SME.SGP.Dominio.Enumerados;
 using System;
 
 namespace SME.SGP.Dominio.Entidades
 {
-    [Table("painel_educacional_consolidacao_proficiencia_ideb_ue")]
     public class PainelEducacionalConsolidacaoProficienciaIdebUe
     {
-        [Key]
+   
         public int Id { get; set; }
         public int AnoLetivo { get; set; }
         public string CodigoUe { get; set; }

@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class EventoMatriculaMap : BaseEntityMap<EventoMatricula>
+    public class EventoMatriculaMap : BaseMap<EventoMatricula>
     {
         public EventoMatriculaMap()
         {

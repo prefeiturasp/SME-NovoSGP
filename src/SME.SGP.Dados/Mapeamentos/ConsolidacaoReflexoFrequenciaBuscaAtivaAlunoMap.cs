@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ConsolidacaoReflexoFrequenciaBuscaAtivaAlunoMap : BaseEntityMap<ConsolidacaoReflexoFrequenciaBuscaAtivaAluno>
+    public class ConsolidacaoReflexoFrequenciaBuscaAtivaAlunoMap : BaseMap<ConsolidacaoReflexoFrequenciaBuscaAtivaAluno>
     {
         public ConsolidacaoReflexoFrequenciaBuscaAtivaAlunoMap()
         {

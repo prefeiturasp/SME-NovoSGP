@@ -1,9 +1,9 @@
-﻿using Dapper.Contrib.Extensions;
+﻿
 namespace SME.SGP.Dominio.Entidades
 {
     public class ConsolidacaoAlfabetizacaoCriticaEscrita
     {
-        [Key]
+   
         public long Id { get; set; }
         public string DreCodigo { get; set; }
         public string UeCodigo { get; set; }

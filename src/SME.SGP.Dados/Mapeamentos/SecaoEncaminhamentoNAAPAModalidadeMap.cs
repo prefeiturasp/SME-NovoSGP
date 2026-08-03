@@ -1,8 +1,9 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dados.Mapeamentos;
 
 namespace SME.SGP.Dados
 {
-    public class SecaoEncaminhamentoNAAPAModalidadeMap : BaseEntityMap<SecaoEncaminhamentoNAAPAModalidade>
+    public class SecaoEncaminhamentoNAAPAModalidadeMap : BaseMap<SecaoEncaminhamentoNAAPAModalidade>
     {
         public SecaoEncaminhamentoNAAPAModalidadeMap()
         {

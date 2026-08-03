@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class TipoCalendarioMap : BaseEntityMap<TipoCalendario>
+    public class TipoCalendarioMap : BaseMap<TipoCalendario>
     {
         public TipoCalendarioMap()
         {

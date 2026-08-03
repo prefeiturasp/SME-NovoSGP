@@ -1,8 +1,9 @@
-﻿using SME.SGP.Dominio;
+﻿using SME.SGP.Dados.Mapeamentos;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados
 {
-    public class ConsolidacaoRegistroIndividualMediaMap : SimpleEntityMap<ConsolidacaoRegistroIndividualMedia>
+    public class ConsolidacaoRegistroIndividualMediaMap : SimpleMap<ConsolidacaoRegistroIndividualMedia>
     {
         public ConsolidacaoRegistroIndividualMediaMap()
         {

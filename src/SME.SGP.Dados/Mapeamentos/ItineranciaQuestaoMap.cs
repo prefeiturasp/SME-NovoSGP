@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ItineranciaQuestaoMap : BaseEntityMap<ItineranciaQuestao>
+    public class ItineranciaQuestaoMap : BaseMap<ItineranciaQuestao>
     {
         public ItineranciaQuestaoMap()
         {

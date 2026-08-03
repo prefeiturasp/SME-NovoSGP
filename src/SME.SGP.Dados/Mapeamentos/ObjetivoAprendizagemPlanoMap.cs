@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ObjetivoAprendizagemPlanoMap : BaseEntityMap<ObjetivoAprendizagemPlano>
+    public class ObjetivoAprendizagemPlanoMap : BaseMap<ObjetivoAprendizagemPlano>
     {
         public ObjetivoAprendizagemPlanoMap()
         {

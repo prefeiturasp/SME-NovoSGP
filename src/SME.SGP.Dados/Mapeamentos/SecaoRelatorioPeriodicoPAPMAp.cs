@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class SecaoRelatorioPeriodicoPAPMAp : BaseEntityMap<SecaoRelatorioPeriodicoPAP>
+    public class SecaoRelatorioPeriodicoPAPMAp : BaseMap<SecaoRelatorioPeriodicoPAP>
     {
         public SecaoRelatorioPeriodicoPAPMAp()
         {

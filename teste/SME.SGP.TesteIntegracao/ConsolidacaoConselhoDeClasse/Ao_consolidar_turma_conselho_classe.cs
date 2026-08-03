@@ -51,6 +51,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoConselhoDeClasse
                     CriadoRF = "sistema", 
                     CriadoEm = DateTimeExtension.HorarioBrasilia() 
                 });
+            
             await CriarPeriodosEscolares(tipoCalendarioId);
             await CriarConsolidacaoTurmaAluno(turmaId);
             await CriarConsolidacaoTurmaAlunoNota();

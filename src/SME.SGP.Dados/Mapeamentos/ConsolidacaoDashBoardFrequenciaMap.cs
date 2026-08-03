@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ConsolidacaoDashBoardFrequenciaMap : SimpleEntityMap<ConsolidacaoDashBoardFrequencia>
+    public class ConsolidacaoDashBoardFrequenciaMap : SimpleMap<ConsolidacaoDashBoardFrequencia>
     {
         public ConsolidacaoDashBoardFrequenciaMap()
         {

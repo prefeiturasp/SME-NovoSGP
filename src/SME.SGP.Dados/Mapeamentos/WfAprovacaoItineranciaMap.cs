@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class WfAprovacaoItineranciaMap : SimpleEntityMap<WfAprovacaoItinerancia>
+    public class WfAprovacaoItineranciaMap : SimpleMap<WfAprovacaoItinerancia>
     {
         public WfAprovacaoItineranciaMap()
         {

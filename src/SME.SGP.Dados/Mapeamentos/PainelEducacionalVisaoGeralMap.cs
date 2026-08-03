@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class PainelEducacionalVisaoGeralMap : BaseEntityMap<PainelEducacionalVisaoGeral>
+    public class PainelEducacionalVisaoGeralMap : BaseMap<PainelEducacionalVisaoGeral>
     {
         public PainelEducacionalVisaoGeralMap()
         {

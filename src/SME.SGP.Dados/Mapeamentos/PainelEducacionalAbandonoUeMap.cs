@@ -2,7 +2,7 @@ using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class PainelEducacionalAbandonoUeMap : SimpleEntityMap<PainelEducacionalAbandonoUe>
+    public class PainelEducacionalAbandonoUeMap : SimpleMap<PainelEducacionalAbandonoUe>
     {
         public PainelEducacionalAbandonoUeMap()
         {

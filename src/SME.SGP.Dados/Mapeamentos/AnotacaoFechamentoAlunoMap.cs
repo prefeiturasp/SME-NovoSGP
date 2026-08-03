@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class AnotacaoFechamentoAlunoMap : BaseEntityMap<AnotacaoFechamentoAluno>
+    public class AnotacaoFechamentoAlunoMap : BaseMap<AnotacaoFechamentoAluno>
     {
         public AnotacaoFechamentoAlunoMap()
         {

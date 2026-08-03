@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ConselhoClasseParecerConclusivoMap : BaseEntityMap<ConselhoClasseParecerConclusivo>
+    public class ConselhoClasseParecerConclusivoMap : BaseMap<ConselhoClasseParecerConclusivo>
     {
         public ConselhoClasseParecerConclusivoMap()
         {

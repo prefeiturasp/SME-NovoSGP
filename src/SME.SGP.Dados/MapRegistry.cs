@@ -1,79 +1,89 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
-using System.Reflection;
-using Dapper;
+using SME.SGP.Dados.Mapeamentos;
 
 namespace SME.SGP.Dados
 {
     public static class MapRegistry
     {
-        private static Dictionary<Type, IEntityMap> registeredMaps = new Dictionary<Type, IEntityMap>();
-        private static bool initialized = false;
+        private static readonly object SyncRoot = new();
+
+        private static readonly ConcurrentDictionary<Type, IEntityMap>
+            RegisteredMaps = new();
+
+        private static bool initialized;
 
         public static void Initialize()
         {
             if (initialized)
                 return;
 
-            var entityMapOpenType = typeof(EntityMap<>);
-            var assembly = Assembly.GetExecutingAssembly();
-
-            var mapTypes = assembly.GetTypes()
-                .Where(t => !t.IsAbstract && ImplementsEntityMap(t, entityMapOpenType))
-                .ToList();
-
-            foreach (var mapTypeClass in mapTypes)
+            lock (SyncRoot)
             {
-                try
+                if (initialized)
+                    return;
+
+                var assembly = typeof(MapRegistry).Assembly;
+
+                var mapTypes = assembly
+                    .GetTypes()
+                    .Where(type =>
+                        !type.IsAbstract &&
+                        typeof(SME.SGP.Dados.IEntityMap).IsAssignableFrom(type))
+                    .ToList();
+
+                foreach (var mapType in mapTypes)
                 {
-                    var mapInstance = (IEntityMap)Activator.CreateInstance(mapTypeClass);
-                    registeredMaps[mapInstance.EntityType] = mapInstance;
+                    var map = (SME.SGP.Dados.IEntityMap)Activator.CreateInstance(mapType);
 
-                    var method = typeof(SqlMapper)
-                        .GetMethod("SetTypeMap", BindingFlags.Public | BindingFlags.Static);
-
-                    var customMapInstance = new CustomEntityTypeMap(mapInstance.EntityType, mapInstance);
-
-                    method?.Invoke(null, new object[] { mapInstance.EntityType, customMapInstance });
+                    RegisteredMaps[map.EntityType] = map;
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Erro ao registrar map para {mapTypeClass.Name}: {ex.Message}");
-                }
-            }
 
-            initialized = true;
-        }
-
-        private static bool ImplementsEntityMap(Type type, Type entityMapOpenType)
-        {
-            var current = type.BaseType;
-            while (current != null)
-            {
-                if (current.IsGenericType && current.GetGenericTypeDefinition() == entityMapOpenType)
-                    return true;
-                current = current.BaseType;
+                initialized = true;
             }
-            return false;
         }
 
         public static IEntityMap GetMap(Type entityType)
         {
-            registeredMaps.TryGetValue(entityType, out var map);
+            Initialize();
+
+            if (!RegisteredMaps.TryGetValue(
+                    entityType,
+                    out var map))
+            {
+                throw new InvalidOperationException(
+                    $"Mapa não encontrado para a entidade '{entityType.FullName}'.");
+            }
+
             return map;
+        }
+
+        public static IEntityMap Get<T>()
+            where T : class
+        {
+            return GetMap(typeof(T));
         }
 
         public static string GetTableName(Type entityType)
         {
             var map = GetMap(entityType);
-            return map?.TableName ?? entityType.Name.ToLower();
+
+            if (string.IsNullOrWhiteSpace(map.TableName))
+            {
+                throw new InvalidOperationException(
+                    $"O mapa da entidade '{entityType.FullName}' não possui tabela.");
+            }
+
+            return map.TableName;
         }
 
-        public static string GetColumnName(Type entityType, string propertyName)
+        public static string GetColumnName(
+            Type entityType,
+            string propertyName)
         {
-            var map = GetMap(entityType);
-            return map?.GetColumnName(propertyName) ?? propertyName;
+            return GetMap(entityType)
+                .GetColumnName(propertyName);
         }
     }
 }

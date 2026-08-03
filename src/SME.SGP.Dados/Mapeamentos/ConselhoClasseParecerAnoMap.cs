@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ConselhoClasseParecerAnoMap : BaseEntityMap<ConselhoClasseParecerAno>
+    public class ConselhoClasseParecerAnoMap : BaseMap<ConselhoClasseParecerAno>
     {
         public ConselhoClasseParecerAnoMap()
         {

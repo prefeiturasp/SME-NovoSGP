@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class HistoricoEscolarObservacaoMap : BaseEntityMap<HistoricoEscolarObservacao>
+    public class HistoricoEscolarObservacaoMap : BaseMap<HistoricoEscolarObservacao>
     {
         public HistoricoEscolarObservacaoMap()
         {

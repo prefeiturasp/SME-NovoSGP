@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class PlanoAEEQuestaoMap : BaseEntityMap<PlanoAEEQuestao>
+    public class PlanoAEEQuestaoMap : BaseMap<PlanoAEEQuestao>
     {
         public PlanoAEEQuestaoMap()
         {

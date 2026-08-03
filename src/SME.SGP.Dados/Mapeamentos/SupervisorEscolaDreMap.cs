@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class SupervisorEscolaDreMap : BaseEntityMap<SupervisorEscolaDre>
+    public class SupervisorEscolaDreMap : BaseMap<SupervisorEscolaDre>
     {
         public SupervisorEscolaDreMap()
         {

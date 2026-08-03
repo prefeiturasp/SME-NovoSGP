@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class AlunoFotoMap : BaseEntityMap<AlunoFoto>
+    public class AlunoFotoMap : BaseMap<AlunoFoto>
     {
         public AlunoFotoMap()
         {

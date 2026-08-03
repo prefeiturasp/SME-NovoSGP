@@ -1,8 +1,9 @@
-﻿using SME.SGP.Dominio;
+﻿using SME.SGP.Dados.Mapeamentos;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados
 {
-    public class AtividadeInfantilMap : BaseEntityMap<AtividadeInfantil>
+    public class AtividadeInfantilMap : BaseMap<AtividadeInfantil>
     {
         public AtividadeInfantilMap()
         {

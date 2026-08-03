@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class GradeMap : BaseEntityMap<Grade>
+    public class GradeMap : BaseMap<Grade>
     {
         public GradeMap()
         {

@@ -3,23 +3,38 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Dados
 {
-    public abstract class EntityMap<T> : IEntityMap where T : class
+    public abstract class EntityMap<T> : IEntityMap
+        where T : class
     {
-        protected Dictionary<string, string> columnMappings = new Dictionary<string, string>();
-        protected string tableName;
+        private readonly Dictionary<string, string> columns =
+            new(StringComparer.OrdinalIgnoreCase);
 
         public Type EntityType => typeof(T);
-        public string TableName => tableName;
-        public Dictionary<string, string> ColumnMappings => columnMappings;
+
+        public string TableName { get; private set; }
+
+        public Dictionary<string, string> ColumnMappings =>
+            columns;
 
         public string GetColumnName(string propertyName)
         {
-            if (columnMappings.TryGetValue(propertyName, out var columnName))
-                return columnName;
-            return propertyName;
+            return columns.TryGetValue(
+                propertyName,
+                out var columnName)
+                    ? columnName
+                    : propertyName;
         }
 
-        protected void ToTable(string name) => tableName = name;
-        protected void Map(string propertyName, string columnName) => columnMappings[propertyName] = columnName;
+        protected void ToTable(string tableName)
+        {
+            TableName = tableName;
+        }
+
+        protected void Map(
+            string propertyName,
+            string columnName)
+        {
+            columns[propertyName] = columnName;
+        }
     }
 }

@@ -1,8 +1,9 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dados.Mapeamentos;
 
 namespace SME.SGP.Dados
 {
-    public class EncaminhamentoNAAPAObservacaoMap : BaseEntityMap<EncaminhamentoNAAPAObservacao>
+    public class EncaminhamentoNAAPAObservacaoMap : BaseMap<EncaminhamentoNAAPAObservacao>
     {
         public EncaminhamentoNAAPAObservacaoMap()
         {

@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class WorkflowAprovacaoNivelMap : BaseEntityMap<WorkflowAprovacaoNivel>
+    public class WorkflowAprovacaoNivelMap : BaseMap<WorkflowAprovacaoNivel>
     {
         public WorkflowAprovacaoNivelMap()
         {

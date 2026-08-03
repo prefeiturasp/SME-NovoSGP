@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class MatrizSaberMap : BaseEntityMap<MatrizSaber>
+    public class MatrizSaberMap : BaseMap<MatrizSaber>
     {
         public MatrizSaberMap()
         {

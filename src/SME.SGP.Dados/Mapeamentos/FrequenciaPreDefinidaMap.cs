@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class FrequenciaPreDefinidaMap : SimpleEntityMap<FrequenciaPreDefinida>
+    public class FrequenciaPreDefinidaMap : SimpleMap<FrequenciaPreDefinida>
     {
         public FrequenciaPreDefinidaMap()
         {

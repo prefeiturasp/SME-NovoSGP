@@ -1,8 +1,9 @@
-﻿using SME.SGP.Dominio;
+﻿using SME.SGP.Dados.Mapeamentos;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados
 {
-    public class CompensacaoAusenciaDisciplinaRegenciaMap : BaseEntityMap<CompensacaoAusenciaDisciplinaRegencia>
+    public class CompensacaoAusenciaDisciplinaRegenciaMap : BaseMap<CompensacaoAusenciaDisciplinaRegencia>
     {
         public CompensacaoAusenciaDisciplinaRegenciaMap()
         {

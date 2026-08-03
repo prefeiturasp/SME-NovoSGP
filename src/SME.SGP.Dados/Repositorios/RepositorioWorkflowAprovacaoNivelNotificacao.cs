@@ -29,7 +29,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task SalvarAsync(WorkflowAprovacaoNivelNotificacao workflowAprovaNivelNotificacao)
         {
-            await dataBase.Conexao.InsertAsync(workflowAprovaNivelNotificacao);
+            await dataBase.Conexao.InsertMappedAsync(workflowAprovaNivelNotificacao);
         }
     }
 }

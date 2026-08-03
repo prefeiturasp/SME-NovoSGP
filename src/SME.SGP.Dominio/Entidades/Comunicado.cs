@@ -1,4 +1,4 @@
-﻿using Dapper.Contrib.Extensions;
+﻿
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Enumerados;
 using System;
@@ -20,7 +20,7 @@ namespace SME.SGP.Dominio
         public int AnoLetivo { get; set; }
         public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }
-        [Computed]
+       
         public IList<ComunicadoTurma> Turmas { get; set; }
         public bool AlunoEspecificado { get; set; }
         public DateTime DataEnvio { get; set; }
@@ -32,11 +32,11 @@ namespace SME.SGP.Dominio
         public string[] AnosEscolares { get; set; }
         public int? Semestre { get; set; }
         public TipoComunicado TipoComunicado { get; set; }
-        [Computed]
+       
         public IList<GrupoComunicacao> GruposComunicacao { get; set; }
-        [Computed]
+       
         public List<ComunicadoGrupo> Grupos { get; set; }
-        [Computed]
+       
         public IList<ComunicadoAluno> Alunos { get; set; }
         public string Titulo { get; set; }
         public string SeriesResumidas { get; set; }

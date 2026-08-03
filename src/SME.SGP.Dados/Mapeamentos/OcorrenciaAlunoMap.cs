@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class OcorrenciaAlunoMap : SimpleEntityMap<OcorrenciaAluno>
+    public class OcorrenciaAlunoMap : SimpleMap<OcorrenciaAluno>
     {
         public OcorrenciaAlunoMap()
         {

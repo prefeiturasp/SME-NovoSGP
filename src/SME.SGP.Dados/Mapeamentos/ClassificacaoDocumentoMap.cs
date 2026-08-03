@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ClassificacaoDocumentoMap : SimpleEntityMap<ClassificacaoDocumento>
+    public class ClassificacaoDocumentoMap : SimpleMap<ClassificacaoDocumento>
     {
         public ClassificacaoDocumentoMap()
         {

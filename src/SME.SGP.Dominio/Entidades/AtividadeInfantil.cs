@@ -1,11 +1,11 @@
-﻿using Dapper.Contrib.Extensions;
+﻿
 
 namespace SME.SGP.Dominio
 {
     public class AtividadeInfantil : EntidadeBase
     {
         public long AulaId { get; set; }
-        [Computed]
+       
         public Aula Aula { get; set; }
 
         public long AtividadeClassroomId { get; set; }

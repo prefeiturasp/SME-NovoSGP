@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class PlanoAnualTerritorioSaberMap : BaseEntityMap<PlanoAnualTerritorioSaber>
+    public class PlanoAnualTerritorioSaberMap : BaseMap<PlanoAnualTerritorioSaber>
     {
         public PlanoAnualTerritorioSaberMap()
         {

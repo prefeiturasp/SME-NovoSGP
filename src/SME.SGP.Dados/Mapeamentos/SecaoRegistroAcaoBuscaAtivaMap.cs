@@ -1,8 +1,9 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dados.Mapeamentos;
 
 namespace SME.SGP.Dados
 {
-    public class SecaoRegistroAcaoBuscaAtivaMap : BaseEntityMap<SecaoRegistroAcaoBuscaAtiva>
+    public class SecaoRegistroAcaoBuscaAtivaMap : BaseMap<SecaoRegistroAcaoBuscaAtiva>
     {
         public SecaoRegistroAcaoBuscaAtivaMap()
         {

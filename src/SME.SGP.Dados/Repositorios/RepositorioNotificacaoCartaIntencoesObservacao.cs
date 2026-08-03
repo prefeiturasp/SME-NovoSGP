@@ -30,7 +30,7 @@ namespace SME.SGP.Dados
 
         public async Task Salvar(NotificacaoCartaIntencoesObservacao notificacao)
         {
-            await database.Conexao.InsertAsync(notificacao);
+            await database.Conexao.InsertMappedAsync(notificacao);
         }
 
     }

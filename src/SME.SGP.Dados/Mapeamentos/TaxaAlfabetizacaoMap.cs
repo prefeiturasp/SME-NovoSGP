@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class TaxaAlfabetizacaoMap : BaseEntityMap<TaxaAlfabetizacao>
+    public class TaxaAlfabetizacaoMap : BaseMap<TaxaAlfabetizacao>
     {
         public TaxaAlfabetizacaoMap()
         {

@@ -1,4 +1,4 @@
-﻿using Dapper.Contrib.Extensions;
+﻿
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,16 +16,16 @@ namespace SME.SGP.Dominio
         public Cargo? Cargo { get; set; }
 
         public int Nivel { get; set; }
-        [Computed]
+       
         public IEnumerable<Notificacao> Notificacoes { get { return notificacoes; } }
         public string Observacao { get; set; }
         public WorkflowAprovacaoNivelStatus Status { get; set; }
-        [Computed]
+       
         public IEnumerable<Usuario> Usuarios { get { return usuarios; } }
-        [Computed]
+       
         public WorkflowAprovacao Workflow { get; set; }
         public long WorkflowId { get; set; }
-        [Computed]
+       
         private IList<Notificacao> notificacoes { get; set; }
         private IList<Usuario> usuarios { get; set; }
 

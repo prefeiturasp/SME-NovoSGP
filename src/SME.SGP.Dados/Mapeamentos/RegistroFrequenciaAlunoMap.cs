@@ -1,8 +1,9 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dados.Mapeamentos;
 
 namespace SME.SGP.Dados
 {
-    public class RegistroFrequenciaAlunoMap : BaseEntityMap<RegistroFrequenciaAluno>
+    public class RegistroFrequenciaAlunoMap : BaseMap<RegistroFrequenciaAluno>
     {
         public RegistroFrequenciaAlunoMap()
         {

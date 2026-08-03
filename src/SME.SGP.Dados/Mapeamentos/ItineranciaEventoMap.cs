@@ -1,8 +1,9 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dados.Mapeamentos;
 
 namespace SME.SGP.Dados
 {
-    public class ItineranciaEventoMap : BaseEntityMap<ItineranciaEvento>
+    public class ItineranciaEventoMap : BaseMap<ItineranciaEvento>
     {
         public ItineranciaEventoMap()
         {

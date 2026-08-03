@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class FeriadoCalendarioMap : BaseEntityMap<FeriadoCalendario>
+    public class FeriadoCalendarioMap : BaseMap<FeriadoCalendario>
     {
         public FeriadoCalendarioMap()
         {

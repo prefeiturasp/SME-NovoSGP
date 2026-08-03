@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class EventoBimestreMap : BaseEntityMap<EventoBimestre>
+    public class EventoBimestreMap : BaseMap<EventoBimestre>
     {
         public EventoBimestreMap()
         {

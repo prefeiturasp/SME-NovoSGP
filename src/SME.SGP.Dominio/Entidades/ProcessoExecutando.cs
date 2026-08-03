@@ -1,11 +1,11 @@
-﻿using Dapper.Contrib.Extensions;
+﻿
 using System;
 
 namespace SME.SGP.Dominio
 {
     public class ProcessoExecutando
     {
-        [Key]
+   
         public long Id { get; set; }
         public TipoProcesso TipoProcesso { get; set; }
         public string TurmaId { get; set; }

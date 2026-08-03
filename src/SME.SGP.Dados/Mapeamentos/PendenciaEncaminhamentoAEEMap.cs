@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class PendenciaEncaminhamentoAEEMap : BaseEntityMap<PendenciaEncaminhamentoAEE>
+    public class PendenciaEncaminhamentoAEEMap : BaseMap<PendenciaEncaminhamentoAEE>
     {
         public PendenciaEncaminhamentoAEEMap()
         {

@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using FluentAssertions.Common;
 using MediatR;
 using Moq;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
@@ -1534,7 +1535,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Nota
         public void Deve_Incluir_Inativo_Com_Data_Valida_Transferido()
         {
             var filtro = new ListaNotasConceitosDto { TurmaHistorico = true };
-            var alunoMock = CriarAlunoMock(false, SituacaoMatriculaAluno.Transferido, new DateTime(2026, 4, 10));
+            var alunoMock = CriarAlunoMock(false, SituacaoMatriculaAluno.Transferido, DateTimeExtension.HorarioBrasilia());
             var alunos = new List<AlunoPorTurmaResposta> { alunoMock };
 
             var resultado = FiltrarAlunos(alunos, filtro);
@@ -2403,17 +2404,19 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Nota
         }
         private IEnumerable<AlunoPorTurmaResposta> FiltrarAlunos(IEnumerable<AlunoPorTurmaResposta> alunos, ListaNotasConceitosDto filtro)
         {
-            DateTime _inicio = new DateTime(2026, 4, 1);
-            DateTime _fim = new DateTime(2026, 4, 30);
+            var hoje = DateTime.Today;
+            DateTime _inicio = hoje.AddDays(-10);
+            DateTime _fim = hoje.AddMonths(3);
 
             if (filtro.TurmaHistorico)
             {
                 alunos = from a in alunos
                          where a.EstaAtivo(_inicio, _fim) ||
-                              (a.EstaInativo(_inicio, _fim) &&
-                               a.DataSituacao.Date >= _inicio.Date &&
-                               a.DataSituacao.Date <= _fim.Date &&
-                              (a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido || a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Transferido))
+                              (a.EstaInativo(_inicio, _fim) 
+                               && a.DataSituacao.Date >= _inicio.Date 
+                               &&  a.DataSituacao.Date <= _fim.Date 
+                               && (a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido || a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Transferido)
+                             )
                          select a;
             }
 

@@ -1,4 +1,4 @@
-﻿using Dapper.Contrib.Extensions;
+﻿
 
 namespace SME.SGP.Dominio
 {
@@ -6,7 +6,7 @@ namespace SME.SGP.Dominio
     {
         public long AulaPrevistaId { get; set; }
 
-        [Computed]
+       
         public AulaPrevista AulaPrevista { get; set; }
 
         public int Previstas { get; set; }

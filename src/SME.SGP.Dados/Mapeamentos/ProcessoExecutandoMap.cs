@@ -1,8 +1,9 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dados.Mapeamentos;
 
 namespace SME.SGP.Dados
 {
-    public class ProcessoExecutandoMap : SimpleEntityMap<ProcessoExecutando>
+    public class ProcessoExecutandoMap : SimpleMap<ProcessoExecutando>
     {
         public ProcessoExecutandoMap()
         {

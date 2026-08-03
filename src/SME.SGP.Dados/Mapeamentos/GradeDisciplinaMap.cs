@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class GradeDisciplinaMap : BaseEntityMap<GradeDisciplina>
+    public class GradeDisciplinaMap : BaseMap<GradeDisciplina>
     {
         public GradeDisciplinaMap()
         {

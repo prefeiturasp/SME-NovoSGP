@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class RelatorioSemestralPAPAlunoMap : BaseEntityMap<RelatorioSemestralPAPAluno>
+    public class RelatorioSemestralPAPAlunoMap : BaseMap<RelatorioSemestralPAPAluno>
     {
         public RelatorioSemestralPAPAlunoMap()
         {

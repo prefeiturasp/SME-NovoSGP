@@ -184,7 +184,7 @@ namespace SME.SGP.Dados
 
         public async Task<long> Inserir(ConsolidacaoMatriculaTurma consolidacao)
         {
-            consolidacao.Id = (long)(await database.Conexao.InsertAsync(consolidacao));
+            consolidacao.Id = (long)(await database.Conexao.InsertMappedAsync(consolidacao));
             return consolidacao.Id;
         }
 

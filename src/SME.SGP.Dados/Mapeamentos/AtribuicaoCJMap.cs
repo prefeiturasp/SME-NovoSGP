@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class AtribuicaoCJMap : BaseEntityMap<AtribuicaoCJ>
+    public class AtribuicaoCJMap : BaseMap<AtribuicaoCJ>
     {
         public AtribuicaoCJMap()
         {

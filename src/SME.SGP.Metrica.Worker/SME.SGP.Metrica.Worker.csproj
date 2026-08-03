@@ -8,9 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="2.0.123" />
-    <PackageReference Include="Dapper.Contrib" Version="2.0.78" />
-    <PackageReference Include="Dommel" Version="2.3.2" />
+    <PackageReference Include="Dapper" Version="2.1.28" />
+    <PackageReference Include="Dommel" Version="3.3.0" />
     <PackageReference Include="Elastic.Apm.AspNetCore" Version="1.11.1" />
     <PackageReference Include="Elastic.Apm.SqlClient" Version="1.11.1" />
     <PackageReference Include="Elastic.Clients.Elasticsearch" Version="8.0.0" />

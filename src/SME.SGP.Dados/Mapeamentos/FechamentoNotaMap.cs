@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class FechamentoNotaMap : BaseEntityMap<FechamentoNota>
+    public class FechamentoNotaMap : BaseMap<FechamentoNota>
     {
         public FechamentoNotaMap()
         {

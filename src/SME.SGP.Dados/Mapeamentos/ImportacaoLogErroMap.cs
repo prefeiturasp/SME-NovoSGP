@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ImportacaoLogErroMap : BaseEntityMap<ImportacaoLogErro>
+    public class ImportacaoLogErroMap : BaseMap<ImportacaoLogErro>
     {
         public ImportacaoLogErroMap()
         {

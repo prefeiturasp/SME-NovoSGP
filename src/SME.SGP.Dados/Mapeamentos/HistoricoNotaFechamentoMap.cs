@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class HistoricoNotaFechamentoMap : SimpleEntityMap<HistoricoNotaFechamento>
+    public class HistoricoNotaFechamentoMap : SimpleMap<HistoricoNotaFechamento>
     {
         public HistoricoNotaFechamentoMap()
         {

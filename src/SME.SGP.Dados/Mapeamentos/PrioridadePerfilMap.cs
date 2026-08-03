@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class PrioridadePerfilMap : BaseEntityMap<PrioridadePerfil>
+    public class PrioridadePerfilMap : BaseMap<PrioridadePerfil>
     {
         public PrioridadePerfilMap()
         {

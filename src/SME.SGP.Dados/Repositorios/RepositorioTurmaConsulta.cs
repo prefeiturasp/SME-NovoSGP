@@ -69,7 +69,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select
                             t.id,
-                            t.turma_id,
+                            t.turma_id CodigoTurma,
                             t.ue_id,
                             t.nome,
                             t.ano,
@@ -86,8 +86,9 @@ namespace SME.SGP.Dados.Repositorios
                             u.id as UeId,
                             u.id,
                             u.ue_id,
+                            u.ue_id as CodigoUe,
                             u.nome,
-                            u.dre_id,
+                            u.dre_id as DreId,
                             u.tipo_escola,
                             u.data_atualizacao,
                             d.id as DreId,
@@ -117,7 +118,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select
                             t.id,
-                            t.turma_id,
+                            t.turma_id as CodigoTurma,
                             t.ue_id,
                             t.nome,
                             t.ano,
@@ -133,6 +134,7 @@ namespace SME.SGP.Dados.Repositorios
                             u.id as UeId,
                             u.id,
                             u.ue_id,
+                            u.ue_id as CodigoUe,
                             u.nome,
                             u.dre_id,
                             u.tipo_escola,
@@ -163,8 +165,9 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<Turma> ObterTurmaComUeEDrePorId(long turmaId)
         {
             var query = @"select
-                            t.id,
-                            t.turma_id,
+                            t.id,                          
+                            t.id AS TurmaId,
+                            t.turma_id AS CodigoTurma,
                             t.ue_id,
                             t.nome,
                             t.nome_filtro,
@@ -318,7 +321,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<Turma>> ObterTurmasPorAnoLetivo(int anoLetivo)
         {
             var query = @"select 
-                    t.turma_id,
+                    t.turma_id as CodigoTurma,
                     t.modalidade_codigo,
                     t.ano,
                     t.ue_id,

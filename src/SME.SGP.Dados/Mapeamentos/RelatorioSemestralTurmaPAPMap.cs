@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class RelatorioSemestralTurmaPAPMap : SimpleEntityMap<RelatorioSemestralTurmaPAP>
+    public class RelatorioSemestralTurmaPAPMap : SimpleMap<RelatorioSemestralTurmaPAP>
     {
         public RelatorioSemestralTurmaPAPMap()
         {

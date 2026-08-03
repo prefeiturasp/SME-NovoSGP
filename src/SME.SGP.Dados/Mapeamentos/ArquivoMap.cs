@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ArquivoMap : BaseEntityMap<Arquivo>
+    public class ArquivoMap : BaseMap<Arquivo>
     {
         public ArquivoMap()
         {

@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class NotificacaoAulaMap : SimpleEntityMap<NotificacaoAula>
+    public class NotificacaoAulaMap : SimpleMap<NotificacaoAula>
     {
         public NotificacaoAulaMap()
         {

@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ConsolidacaoInformacoesPapMap : SimpleEntityMap<ConsolidacaoInformacoesPap>
+    public class ConsolidacaoInformacoesPapMap : SimpleMap<ConsolidacaoInformacoesPap>
     {
         public ConsolidacaoInformacoesPapMap()
         {

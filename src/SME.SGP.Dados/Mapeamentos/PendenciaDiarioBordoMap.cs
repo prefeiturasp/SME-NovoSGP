@@ -1,8 +1,9 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dados.Mapeamentos;
 
 namespace SME.SGP.Dados
 {
-    public class PendenciaDiarioBordoMap : BaseEntityMap<PendenciaDiarioBordo>
+    public class PendenciaDiarioBordoMap : BaseMap<PendenciaDiarioBordo>
     {
         public PendenciaDiarioBordoMap()
         {

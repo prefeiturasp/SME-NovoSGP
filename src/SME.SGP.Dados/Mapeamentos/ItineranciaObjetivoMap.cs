@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ItineranciaObjetivoMap : BaseEntityMap<ItineranciaObjetivo>
+    public class ItineranciaObjetivoMap : BaseMap<ItineranciaObjetivo>
     {
         public ItineranciaObjetivoMap()
         {

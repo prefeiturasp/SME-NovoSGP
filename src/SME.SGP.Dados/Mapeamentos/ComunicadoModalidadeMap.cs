@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ComunicadoModalidadeMap : SimpleEntityMap<ComunicadoModalidade>
+    public class ComunicadoModalidadeMap : SimpleMap<ComunicadoModalidade>
     {
         public ComunicadoModalidadeMap()
         {

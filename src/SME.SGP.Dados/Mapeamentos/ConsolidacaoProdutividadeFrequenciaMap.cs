@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ConsolidacaoProdutividadeFrequenciaMap : BaseEntityMap<ConsolidacaoProdutividadeFrequencia>
+    public class ConsolidacaoProdutividadeFrequenciaMap : BaseMap<ConsolidacaoProdutividadeFrequencia>
     {
         public ConsolidacaoProdutividadeFrequenciaMap()
         {

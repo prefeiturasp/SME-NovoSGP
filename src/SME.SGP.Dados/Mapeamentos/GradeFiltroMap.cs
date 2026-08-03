@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class GradeFiltroMap : BaseEntityMap<GradeFiltro>
+    public class GradeFiltroMap : BaseMap<GradeFiltro>
     {
         public GradeFiltroMap()
         {

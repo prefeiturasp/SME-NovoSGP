@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class SinteseValorMap : BaseEntityMap<Sintese>
+    public class SinteseValorMap : BaseMap<Sintese>
     {
         public SinteseValorMap()
         {

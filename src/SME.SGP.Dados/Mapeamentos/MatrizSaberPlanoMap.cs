@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class MatrizSaberPlanoMap : BaseEntityMap<MatrizSaberPlano>
+    public class MatrizSaberPlanoMap : BaseMap<MatrizSaberPlano>
     {
         public MatrizSaberPlanoMap()
         {

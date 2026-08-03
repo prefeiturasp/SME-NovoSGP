@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class TurmaMap : SimpleEntityMap<Turma>
+    public class TurmaMap : SimpleMap<Turma>
     {
         public TurmaMap()
         {

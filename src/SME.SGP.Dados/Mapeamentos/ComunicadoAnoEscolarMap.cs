@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ComunicadoAnoEscolarMap : SimpleEntityMap<ComunicadoAnoEscolar>
+    public class ComunicadoAnoEscolarMap : SimpleMap<ComunicadoAnoEscolar>
     {
         public ComunicadoAnoEscolarMap()
         {

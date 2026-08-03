@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class InatividadeAtendimentoNAAPANotificacaoMap : BaseEntityMap<InatividadeAtendimentoNAAPANotificacao>
+    public class InatividadeAtendimentoNAAPANotificacaoMap : BaseMap<InatividadeAtendimentoNAAPANotificacao>
     {
         public InatividadeAtendimentoNAAPANotificacaoMap()
         {

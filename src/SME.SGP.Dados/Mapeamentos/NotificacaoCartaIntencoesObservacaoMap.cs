@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class NotificacaoCartaIntencoesObservacaoMap : SimpleEntityMap<NotificacaoCartaIntencoesObservacao>
+    public class NotificacaoCartaIntencoesObservacaoMap : SimpleMap<NotificacaoCartaIntencoesObservacao>
     {
         public NotificacaoCartaIntencoesObservacaoMap()
         {

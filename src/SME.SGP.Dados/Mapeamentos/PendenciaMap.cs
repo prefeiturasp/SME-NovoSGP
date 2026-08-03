@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class PendenciaMap : BaseEntityMap<Pendencia>
+    public class PendenciaMap : BaseMap<Pendencia>
     {
         public PendenciaMap()
         {
