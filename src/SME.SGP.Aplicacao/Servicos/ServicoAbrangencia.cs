@@ -194,11 +194,12 @@ namespace SME.SGP.Aplicacao.Servicos
 
                     abrangenciaGeralSGP = await repositorioAbrangencia.ObterAbrangenciaGeralPorUsuarioId(usuario.Id);
 
-                    var paraAtualizar = abrangenciaGeralSGP.Where(x => abrangenciaTurmasHistoricasEOL.Any(ath => ath.DreId == x.DreId && ath.UeId == x.UeId && ath.TurmaId == x.TurmaId && ath.UsuarioId == x.UsuarioId));
+                    var turmaInformadaVirouHistorica = turmaId > 0 && await mediator.Send(new VerificaSeTurmaVirouHistoricaQuery(turmaId));
 
-                    if (turmaId > 0 && await mediator.Send(new VerificaSeTurmaVirouHistoricaQuery(turmaId)))
-                        paraAtualizar = paraAtualizar.Concat(abrangenciaGeralSGP.Where(a => a.TurmaId == turmaId && !a.Historico &&
-                                                                                           (a.Perfil == Perfis.PERFIL_CJ || a.Perfil == Perfis.PERFIL_CJ_INFANTIL)));
+                    var paraAtualizar = abrangenciaGeralSGP.Where(x => abrangenciaTurmasHistoricasEOL.Any(ath => ath.DreId == x.DreId && ath.UeId == x.UeId && ath.TurmaId == x.TurmaId && ath.UsuarioId == x.UsuarioId)
+                                                                      || (turmaInformadaVirouHistorica && x.TurmaId == turmaId && !x.Historico &&
+                                                                          (x.Perfil == Perfis.PERFIL_CJ || x.Perfil == Perfis.PERFIL_CJ_INFANTIL))
+                                                                          );
 
                     await repositorioAbrangencia.AtualizaAbrangenciaHistorica(paraAtualizar.Select(x => x.Id));
                 }
