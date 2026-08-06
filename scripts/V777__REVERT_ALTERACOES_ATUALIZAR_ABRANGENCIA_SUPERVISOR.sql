@@ -73,8 +73,4 @@ AS SELECT DISTINCT a.dre_id,
 -- 3) remover v_abrangencia_nivel_dre_completa
 DROP VIEW IF EXISTS public.v_abrangencia_nivel_dre_completa;
 
--- 4) remover migrations flyway
-delete from public.flyway_schema_history
-where version in ('774', '775', '776');
-
 commit;
