@@ -1,6 +1,5 @@
 update abrangencia a
-   set historico      = true,
-       dt_fim_vinculo = coalesce(a.dt_fim_vinculo, t.data_atualizacao::date, now()::date)
+   set historico      = true
   from turma t
  where t.id = a.turma_id
    and a.historico = false
