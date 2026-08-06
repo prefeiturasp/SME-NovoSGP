@@ -196,6 +196,9 @@ namespace SME.SGP.Aplicacao.Servicos
 
                     var paraAtualizar = abrangenciaGeralSGP.Where(x => abrangenciaTurmasHistoricasEOL.Any(ath => ath.DreId == x.DreId && ath.UeId == x.UeId && ath.TurmaId == x.TurmaId && ath.UsuarioId == x.UsuarioId));
 
+                    if (turmaId > 0 && await mediator.Send(new VerificaSeTurmaVirouHistoricaQuery(turmaId)))
+                        paraAtualizar = paraAtualizar.Concat(abrangenciaGeralSGP.Where(a => a.TurmaId == turmaId && !a.Historico &&
+                                                                                           (a.Perfil == Perfis.PERFIL_CJ || a.Perfil == Perfis.PERFIL_CJ_INFANTIL)));
 
                     await repositorioAbrangencia.AtualizaAbrangenciaHistorica(paraAtualizar.Select(x => x.Id));
                 }
