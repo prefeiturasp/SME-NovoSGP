@@ -25,10 +25,13 @@ namespace SME.SGP.Aplicacao
             var questoesBase = await mediator.Send(ObterQuestoesBaseItineranciaEAlunoQuery.Instance);
 
             var verificaWorkflow = await mediator.Send(new ObterWorkflowItineranciaPorItineranciaIdQuery(itinerancia.Id));
-            WorkflowAprovacao workflow = new WorkflowAprovacao();
+            WorkflowAprovacao workflow = null;
 
             if (verificaWorkflow.NaoEhNulo())
                 workflow = await mediator.Send(new ObterWorkflowPorIdQuery(verificaWorkflow.WfAprovacaoId));
+
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
+            var notificacaoPendenteUsuario = workflow?.ObterNotificacaoPendentePorUsuario(usuarioLogado.CodigoRf);
 
             var itineranciaDto = new ItineranciaDto()
             {
@@ -44,7 +47,8 @@ namespace SME.SGP.Aplicacao
                 CriadoRF = itinerancia.CriadoRF,
                 Auditoria = (AuditoriaDto)itinerancia,
                 StatusWorkflow = workflow.NaoEhNulo() ? ObterMensagemStatus(workflow.Niveis, verificaWorkflow.StatusAprovacao) : "",
-                PodeEditar = workflow.NaoEhNulo() ? VerificaPodeEditar(workflow.Niveis) : true
+                PodeEditar = workflow.NaoEhNulo() ? VerificaPodeEditar(workflow.Niveis) : true,
+                NotificacaoIdAnalise = notificacaoPendenteUsuario?.Id
             };
 
             if (itinerancia.Alunos.NaoEhNulo() && itinerancia.Alunos.Any())
