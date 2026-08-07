@@ -19,7 +19,6 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(nameof(Evento.Nome), "nome");
             Map(nameof(Evento.Status), "status");
             Map(nameof(Evento.TipoCalendarioId), "tipo_calendario_id");
-            Map(nameof(Evento.TipoEvento), "tipo_evento");
             Map(nameof(Evento.TipoEventoId), "tipo_evento_id");
             Map(nameof(Evento.TipoPerfilCadastro), "tipo_perfil_cadastro");
             Map(nameof(Evento.UeId), "ue_id");

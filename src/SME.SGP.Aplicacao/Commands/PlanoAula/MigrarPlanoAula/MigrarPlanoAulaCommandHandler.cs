@@ -101,8 +101,8 @@ namespace SME.SGP.Aplicacao
         {
 
             var turmaAula = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
-            Ue ue = repositorioUe.ObterPorId(turmaAula.UeId);
-            turmaAula.AdicionarUe(ue);
+            var ue = turmaAula.Ue;  
+            ue.AdicionarDre(turmaAula.Ue.Dre);
 
             var turmasAbrangencia = await mediator.Send(new ObterTurmasRegularesPorUeModalidadePeriodoAnoLetivoQuery(turmaAula.Ue.CodigoUe, turmaAula.ModalidadeCodigo));
 

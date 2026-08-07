@@ -19,7 +19,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task Excluir(WfAprovacaoNotaFechamento wfAprovacaoNota)
         {
-            await database.Conexao.DeleteAsync(wfAprovacaoNota);
+            await database.Conexao.DeleteMappedAsync(wfAprovacaoNota);
         }
 
         public async Task<IEnumerable<WfAprovacaoNotaFechamento>> ObterPorNotaId(long fechamentoNotaId)

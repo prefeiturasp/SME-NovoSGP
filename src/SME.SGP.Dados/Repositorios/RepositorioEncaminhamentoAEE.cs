@@ -195,24 +195,114 @@ namespace SME.SGP.Dados.Repositorios
             return encaminhamento;
         }
 
-        public async Task<EncaminhamentoAEE> ObterEncaminhamentoComTurmaPorId(long encaminhamentoId)
-        {
-            var query = @" select ea.*, t.*, ue.*, u.*
-                            from encaminhamento_aee ea
-                           inner join turma t on t.id = ea.turma_id
-                            left join usuario u on u.id = ea.responsavel_id
-                            join ue on ue.id = t.ue_id
-                           where ea.id = @encaminhamentoId";
+            public async Task<EncaminhamentoAEE>
+                ObterEncaminhamentoComTurmaPorId(
+                    long encaminhamentoId)
+            {
+                const string queryEncaminhamento = @"
+                    SELECT
+                        ea.id AS Id,
+                        ea.turma_id AS TurmaId,
+                        ea.aluno_codigo AS AlunoCodigo,
+                        ea.aluno_nome AS AlunoNome,
+                        ea.situacao AS Situacao,
+                        ea.excluido AS Excluido,
+                        ea.motivo_encerramento AS MotivoEncerramento,
+                        ea.responsavel_id AS ResponsavelId
+                    FROM encaminhamento_aee ea
+                    WHERE ea.id = @encaminhamentoId;";
 
-            return (await database.Conexao.QueryAsync<EncaminhamentoAEE, Turma, Ue, Usuario, EncaminhamentoAEE>(query,
-                (encaminhamentoAEE, turma, ue, usuario) =>
+                var encaminhamento =
+                    await database.Conexao
+                        .QueryFirstOrDefaultAsync<EncaminhamentoAEE>(
+                            queryEncaminhamento,
+                            new { encaminhamentoId });
+
+                if (encaminhamento == null)
+                    return null;
+
+                const string queryTurma = @"
+                    SELECT
+                        t.id AS Id,
+                        t.turma_id AS CodigoTurma,
+                        t.ano AS Ano,
+                        t.ano_letivo AS AnoLetivo,
+                        t.tipo_turma AS TipoTurma,
+                        t.data_atualizacao AS DataAtualizacao,
+                        t.modalidade_codigo AS ModalidadeCodigo,
+                        t.nome AS Nome,
+                        t.qt_duracao_aula AS QuantidadeDuracaoAula,
+                        t.semestre AS Semestre,
+                        t.tipo_turno AS TipoTurno,
+                        t.serie_ensino AS SerieEnsino,
+                        t.ue_id AS UeId,
+                        t.nome_filtro AS NomeFiltro,
+                        t.historica AS Historica,
+                        t.ensino_especial AS EnsinoEspecial,
+                        t.data_inicio AS DataInicio,
+                        t.dt_fim_eol AS DataFim,
+                        t.etapa_eja AS EtapaEJA
+                    FROM turma t
+                    WHERE t.id = @turmaId;";
+
+                const string queryUe = @"
+                    SELECT
+                        u.id AS Id,
+                        u.ue_id AS CodigoUe,
+                        u.dre_id AS DreId,
+                        u.nome AS Nome,
+                        u.tipo_escola AS TipoEscola,
+                        u.data_atualizacao AS DataAtualizacao
+                    FROM ue u
+                    WHERE u.id = @ueId;";
+
+                const string queryUsuario = @"
+                    SELECT
+                        usr.id AS Id,
+                        usr.rf_codigo AS CodigoRf,
+                        usr.login AS Login,
+                        usr.nome AS Nome,
+                        usr.expiracao_recuperacao_senha
+                            AS ExpiracaoRecuperacaoSenha,
+                        usr.token_recuperacao_senha
+                            AS TokenRecuperacaoSenha,
+                        usr.ultimo_login AS UltimoLogin
+                    FROM usuario usr
+                    WHERE usr.id = @responsavelId;";
+
+                var turma =
+                    await database.Conexao
+                        .QueryFirstOrDefaultAsync<Turma>(
+                            queryTurma,
+                            new { turmaId = encaminhamento.TurmaId });
+
+                if (turma != null)
                 {
-                    encaminhamentoAEE.Turma = turma;
-                    encaminhamentoAEE.Turma.Ue = ue;
-                    encaminhamentoAEE.Responsavel = usuario;
-                    return encaminhamentoAEE;
-                }, new { encaminhamentoId })).FirstOrDefault();
-        }
+                    var ue =
+                        await database.Conexao
+                            .QueryFirstOrDefaultAsync<Ue>(
+                                queryUe,
+                                new { ueId = turma.UeId });
+
+                    turma.Ue = ue;
+                    encaminhamento.Turma = turma;
+                }
+
+                if (encaminhamento.ResponsavelId.HasValue)
+                {
+                    encaminhamento.Responsavel =
+                        await database.Conexao
+                            .QueryFirstOrDefaultAsync<Usuario>(
+                                queryUsuario,
+                                new
+                                {
+                                    responsavelId =
+                                        encaminhamento.ResponsavelId.Value
+                                });
+                }
+
+                return encaminhamento;
+            }
 
         public async Task<EncaminhamentoAEEAlunoTurmaDto> ObterEncaminhamentoPorEstudante(string estudanteCodigo, string ueCodigo)
         {

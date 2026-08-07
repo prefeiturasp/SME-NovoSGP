@@ -16,7 +16,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public void Salvar(WorkflowAprovacaoNivelUsuario workflowAprovaNivelUsuario)
         {
-            dataBase.Conexao.Insert(workflowAprovaNivelUsuario);
+            dataBase.Conexao.InsertMapped(workflowAprovaNivelUsuario);
         }
 
         public async Task SalvarAsync(WorkflowAprovacaoNivelUsuario workflowAprovaNivelUsuario)

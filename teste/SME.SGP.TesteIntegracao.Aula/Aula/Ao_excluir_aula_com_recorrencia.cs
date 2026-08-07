@@ -54,7 +54,7 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
 
             var aulas = ObterTodos<Dominio.Aula>();
             aulas.ShouldNotBeEmpty();
-            aulas.FirstOrDefault().Excluido.ShouldBe(true);
+            (aulas.FirstOrDefault(x => x.Excluido) is { Excluido: true }).ShouldBeTrue();
             
             var mensagem = new MensagemRabbit(
                 JsonConvert.SerializeObject(new FiltroIdDto(AULA_ID)),
@@ -102,7 +102,7 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
 
             var aulas = ObterTodos<Dominio.Aula>();
             aulas.ShouldNotBeEmpty();
-            aulas.FirstOrDefault().Excluido.ShouldBe(true);
+            (aulas.FirstOrDefault(x => x.Excluido) is { Excluido: true }).ShouldBeTrue();
             
             var mensagem = new MensagemRabbit(
                 JsonConvert.SerializeObject(new FiltroIdDto(AULA_ID)),

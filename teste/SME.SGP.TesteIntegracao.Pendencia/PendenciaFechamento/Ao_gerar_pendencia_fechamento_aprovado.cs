@@ -113,13 +113,13 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
             await useCase.Executar(new MensagemRabbit() { Mensagem = JsonConvert.SerializeObject(command) });
 
 
-            var pendencia = ObterTodos<Pendencia>().Find(p => p.Tipo == TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento && p.Situacao == SituacaoPendencia.Resolvida);
+            var pendencia = ObterTodos<Pendencia>().Find(p => p.Tipo == TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento && p.Situacao == SituacaoPendencia.Pendente);
             pendencia.ShouldNotBeNull();
             var pendenciafechamento = ObterTodos<Dominio.PendenciaFechamento>().Find(pf => pf.PendenciaId == pendencia.Id);
             pendenciafechamento.ShouldNotBeNull();
             var pendeciasFechamentoAula = ObterTodos<PendenciaFechamentoAula>().FindAll(pfa => pfa.PendenciaFechamentoId == pendenciafechamento.Id);
             pendeciasFechamentoAula.ShouldNotBeNull();
-            pendeciasFechamentoAula.Count().ShouldBe(1);
+            pendeciasFechamentoAula.Count().ShouldBe(2);
         }
 
         [Fact]

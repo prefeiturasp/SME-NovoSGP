@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class PeriodoRelatorioPAPMap : SimpleMap<PeriodoRelatorioPAP>
+    public class PeriodoRelatorioPAPMap : BaseMap<PeriodoRelatorioPAP>
     {
         public PeriodoRelatorioPAPMap()
         {

@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class PlanejamentoAnualMap : SimpleMap<PlanejamentoAnual>
+    public class PlanejamentoAnualMap : BaseMap<PlanejamentoAnual>
     {
         public PlanejamentoAnualMap()
         {

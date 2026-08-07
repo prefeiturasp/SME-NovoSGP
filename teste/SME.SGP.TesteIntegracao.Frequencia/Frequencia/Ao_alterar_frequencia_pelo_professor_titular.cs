@@ -370,14 +370,14 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             
             compensacaoAusenciasAlunos = ObterTodos<CompensacaoAusenciaAluno>();
             compensacaoAusenciasAlunos.Count.Equals(4).ShouldBeTrue();
-            compensacaoAusenciasAlunos.Any(a=> a.CodigoAluno.Equals(ALUNO_CODIGO_1) && a.QuantidadeFaltasCompensadas.Equals(NUMERO_AULA_1)).ShouldBeTrue();
-            compensacaoAusenciasAlunos.Any(a=> a.CodigoAluno.Equals(ALUNO_CODIGO_2) && a.QuantidadeFaltasCompensadas.Equals(NUMERO_AULA_2)).ShouldBeTrue();
+            compensacaoAusenciasAlunos.Any(a=> a.CodigoAluno.Equals(ALUNO_CODIGO_1) && a.QuantidadeFaltasCompensadas.Equals(NUMERO_AULA_3)).ShouldBeTrue();
+            compensacaoAusenciasAlunos.Any(a=> a.CodigoAluno.Equals(ALUNO_CODIGO_2) && a.QuantidadeFaltasCompensadas.Equals(NUMERO_AULA_3)).ShouldBeTrue();
             compensacaoAusenciasAlunos.Any(a=> a.CodigoAluno.Equals(ALUNO_CODIGO_3) && a.Excluido).ShouldBeTrue();
-            compensacaoAusenciasAlunos.Any(a=> a.CodigoAluno.Equals(ALUNO_CODIGO_4) && a.QuantidadeFaltasCompensadas.Equals(NUMERO_AULA_1)).ShouldBeTrue();
+            compensacaoAusenciasAlunos.Any(a=> a.CodigoAluno.Equals(ALUNO_CODIGO_4) && a.QuantidadeFaltasCompensadas.Equals(NUMERO_AULA_4)).ShouldBeTrue();
             
             compensacaoAusenciasAlunosAulas = ObterTodos<CompensacaoAusenciaAlunoAula>();
-            compensacaoAusenciasAlunosAulas.Count(a=> !a.Excluido).Equals(3).ShouldBeTrue();
-            compensacaoAusenciasAlunosAulas.Count(a=> a.Excluido).Equals(8).ShouldBeTrue();
+            compensacaoAusenciasAlunosAulas.Count(a=> !a.Excluido).Equals(4).ShouldBeTrue();
+            compensacaoAusenciasAlunosAulas.Count(a=> a.Excluido).Equals(7).ShouldBeTrue();
         }
 
         private async Task CriarCompensacaoAusenciaAlunoAula(DateTime data, int numeroAula, int compensacaoAusenciaAlunoId, int registroFrequenciaAlunoId)

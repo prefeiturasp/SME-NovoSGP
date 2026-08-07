@@ -2,16 +2,32 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class WorkflowAprovacaoNivelMap : BaseMap<WorkflowAprovacaoNivel>
+    public class WorkflowAprovacaoNivelMap
+        : BaseMap<WorkflowAprovacaoNivel>
     {
         public WorkflowAprovacaoNivelMap()
         {
             ToTable("wf_aprovacao_nivel");
-            Map(nameof(WorkflowAprovacaoNivel.Cargo), "cargo");
-            Map(nameof(WorkflowAprovacaoNivel.Nivel), "nivel");
-            Map(nameof(WorkflowAprovacaoNivel.Observacao), "observacao");
-            Map(nameof(WorkflowAprovacaoNivel.Status), "status");
-            Map(nameof(WorkflowAprovacaoNivel.WorkflowId), "wf_aprovacao_id");
+
+            Map(
+                nameof(WorkflowAprovacaoNivel.Status),
+                "status");
+
+            Map(
+                nameof(WorkflowAprovacaoNivel.Cargo),
+                "cargo");
+
+            Map(
+                nameof(WorkflowAprovacaoNivel.Nivel),
+                "nivel");
+
+            Map(
+                nameof(WorkflowAprovacaoNivel.WorkflowId),
+                "wf_aprovacao_id");
+
+            Map(
+                nameof(WorkflowAprovacaoNivel.Observacao),
+                "observacao");
         }
     }
 }
