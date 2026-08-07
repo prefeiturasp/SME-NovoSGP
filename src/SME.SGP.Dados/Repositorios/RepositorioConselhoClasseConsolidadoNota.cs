@@ -17,7 +17,7 @@ namespace SME.SGP.Dados
 
         public Task<ConselhoClasseConsolidadoTurmaAlunoNota> ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoNotaAsync(long consolidadoTurmaAlunoId, int? bimestre, long? componenteCurricularId)
         {
-            var query = $@" select id,consolidado_conselho_classe_aluno_turma_id,bimestre,nota,conceito_id,componente_curricular_id    
+            var query = $@" {CAMPOS_TABELA_CONSOLIDADO_CONSELHO_CLASSE_ALUNO_TURMA_NOTA}    
                             from consolidado_conselho_classe_aluno_turma_nota
                             where consolidado_conselho_classe_aluno_turma_id = @consolidadoTurmaAlunoId ";
 
@@ -30,7 +30,7 @@ namespace SME.SGP.Dados
 
         public Task<ConselhoClasseConsolidadoTurmaAlunoNota> ObterConselhoClasseConsolidadoAlunoNotaPorConsolidadoBimestreDisciplinaAsync(long consolidacaoId, int bimestre, long disciplinaId)
         {
-            var query = $@" select id,consolidado_conselho_classe_aluno_turma_id,bimestre,nota,conceito_id,componente_curricular_id    
+            var query = $@" {CAMPOS_TABELA_CONSOLIDADO_CONSELHO_CLASSE_ALUNO_TURMA_NOTA}   
                             from consolidado_conselho_classe_aluno_turma_nota
                             where consolidado_conselho_classe_aluno_turma_id = @consolidacaoId 
                                   and coalesce(bimestre, 0) = @bimestre
@@ -68,5 +68,12 @@ namespace SME.SGP.Dados
             return await database.Conexao.QueryAsync<long>(query, new { consolidacoesAlunoTurmaIds, bimestre });
         }
 
+        private const string CAMPOS_TABELA_CONSOLIDADO_CONSELHO_CLASSE_ALUNO_TURMA_NOTA = @"select
+	                                            id as Id,
+	                                            consolidado_conselho_classe_aluno_turma_id as ConselhoClasseConsolidadoTurmaAlunoId,
+	                                            bimestre as Bimestre,
+	                                            nota as Nota,
+	                                            conceito_id as ConceitoId,
+	                                            componente_curricular_id as ComponenteCurricularId";
     }
 }
