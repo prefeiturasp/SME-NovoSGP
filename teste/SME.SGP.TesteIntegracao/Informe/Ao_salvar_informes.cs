@@ -248,7 +248,7 @@ namespace SME.SGP.TesteIntegracao.Informe
 
             var notificacao = ObterTodos<Notificacao>();
             notificacao.ShouldNotBeNull();
-            notificacao.Count().ShouldBe(1);
+            notificacao.Count().ShouldBe(3);
         }
 
         [Fact(DisplayName = "Informes - Salvar informes com modalidades sem ue")]

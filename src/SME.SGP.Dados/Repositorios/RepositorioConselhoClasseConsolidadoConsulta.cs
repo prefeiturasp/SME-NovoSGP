@@ -44,10 +44,10 @@ namespace SME.SGP.Dados
 	                                turma_id as TurmaId,
 	                                criado_em as CriadoEm,
 	                                criado_por as CriadoPor,
+	                                criado_rf as CriadoRF,
 	                                alterado_em as AlteradoEm,
 	                                alterado_por as AlteradoPor,
-	                                criado_rf as AlteradoRF,
-	                                alterado_rf as CriadoRF,
+	                                alterado_rf as AlteradoRF,
 	                                excluido as Excluido           
                             from consolidado_conselho_classe_aluno_turma 
                             where not excluido 

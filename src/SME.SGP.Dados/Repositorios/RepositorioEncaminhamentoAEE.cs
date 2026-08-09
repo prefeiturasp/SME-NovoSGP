@@ -208,7 +208,13 @@ namespace SME.SGP.Dados.Repositorios
                         ea.situacao AS Situacao,
                         ea.excluido AS Excluido,
                         ea.motivo_encerramento AS MotivoEncerramento,
-                        ea.responsavel_id AS ResponsavelId
+                        ea.responsavel_id AS ResponsavelId,
+                        ea.criado_em as CriadoEm,
+                        ea.criado_por as CriadoPor,
+                        ea.alterado_em as  AlteradoEm,
+                        ea.alterado_por as AlteradoPor,
+                        ea.alterado_rf as AlteradoRF,
+                        ea.criado_rf as CriadoRF
                     FROM encaminhamento_aee ea
                     WHERE ea.id = @encaminhamentoId;";
 
