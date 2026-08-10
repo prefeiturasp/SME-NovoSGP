@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <UserSecretsId>874d00b9-29fa-4e52-be2b-2ea73c09535a</UserSecretsId>
   </PropertyGroup>
@@ -43,7 +43,7 @@
     <PackageReference Include="FluentValidation.AspNetCore" Version="10.3.3" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="10.3.3" />
     <PackageReference Include="MailKit" Version="2.15.0" />
-    <PackageReference Include="MediatR" Version="13.1.0" />
+    <PackageReference Include="MediatR" Version="12.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="5.0.1" />
