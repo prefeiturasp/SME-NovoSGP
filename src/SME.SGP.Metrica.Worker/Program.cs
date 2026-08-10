@@ -113,11 +113,12 @@ public class Program
                 threadPoolOptions.CompletionPortThreads);
         }
 
-        app.Run(async context =>
+        app.MapGet("/", async context =>
         {
             await context.Response.WriteAsync(
                 "WorkerRabbitMetricas!");
         });
+        app.Run();
     }
 
     private static void RegistrarElasticSearch(

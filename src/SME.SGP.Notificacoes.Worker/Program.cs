@@ -91,11 +91,12 @@ public class Program
                 threadPoolOptions.CompletionPortThreads);
         }
 
-        app.Run(async context =>
+        app.MapGet("/",   async context =>
         {
             await context.Response.WriteAsync(
                 "WorkerRabbitNotificacoes!");
         });
+        app.Run();
     }
 
     private static void RegistrarHub(

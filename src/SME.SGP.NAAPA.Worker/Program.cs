@@ -60,10 +60,11 @@ public class Program
             app.UseDeveloperExceptionPage();
         }
 
-        app.Run(async context =>
+        app.MapGet("/", async context =>
         {
             await context.Response.WriteAsync(
                 "WorkerRabbitNAAPA!");
         });
+        app.Run();
     }
 }

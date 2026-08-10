@@ -65,10 +65,11 @@ public class Program
         RegistrarConfigsThreads.Registrar(
             builder.Configuration);
 
-        app.Run(async context =>
+        app.MapGet("/", async context =>
         {
             await context.Response.WriteAsync(
                 "WorkerRabbitMQ!");
         });
+        app.Run();
     }
 }

@@ -89,11 +89,12 @@ public class Program
             app.UseDeveloperExceptionPage();
         }
 
-        app.Run(async context =>
+        app.MapGet("/", async context =>
         {
             await context.Response.WriteAsync(
                 "WorkerRabbitOtimizarArquivos!");
         });
+        app.Run();
     }
 
     private static void RegistrarTelemetria(
@@ -166,9 +167,8 @@ public class Program
                     .Value;
 
                 var provider = serviceProvider
-                    .GetRequiredService<
-                        IOptions<DefaultObjectPoolProvider>>()
-                    .Value;
+                                   .GetService<ObjectPoolProvider>()
+                               ?? new DefaultObjectPoolProvider();
 
                 return new ConexoesRabbitFilasLog(
                     options,

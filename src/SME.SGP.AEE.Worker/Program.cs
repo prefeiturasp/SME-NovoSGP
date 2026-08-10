@@ -15,9 +15,7 @@ namespace SME.SGP.AEE.Worker;
 
 public class Program
 {
-    protected Program()
-    {
-    }
+    protected Program(){}
 
     public static void Main(string[] args)
     {
@@ -67,10 +65,11 @@ public class Program
         RegistrarConfigsThreads.Registrar(
             builder.Configuration);
 
-        app.Run(async context =>
+        app.MapGet("/", async context =>
         {
             await context.Response.WriteAsync(
                 "WorkerRabbitAEE!");
         });
+        app.Run();
     }
 }
