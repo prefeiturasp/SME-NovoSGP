@@ -52,7 +52,6 @@ using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Aplicacao.Servicos.Interfaces;
 using SME.SGP.Dados;
 using SME.SGP.Dados.Contexto;
-using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;

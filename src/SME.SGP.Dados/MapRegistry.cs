@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
-using SME.SGP.Dados.Mapeamentos;
 
 namespace SME.SGP.Dados
 {

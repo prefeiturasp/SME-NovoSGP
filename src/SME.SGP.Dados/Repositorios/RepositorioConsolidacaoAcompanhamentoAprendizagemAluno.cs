@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using Dommel;
 using SME.SGP.Dados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;

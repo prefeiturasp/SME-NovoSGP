@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using FluentAssertions.Common;
 using MediatR;
 using Moq;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
