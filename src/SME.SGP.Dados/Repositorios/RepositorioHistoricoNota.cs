@@ -19,7 +19,7 @@ namespace SME.SGP.Dados.Repositorios
             if (string.IsNullOrEmpty(entidade.CriadoPor))
                 entidade.CriadoPor = database.UsuarioLogadoNomeCompleto;
 
-            entidade.Id = (long)(await database.Conexao.InsertMappedAsync(entidade));
+            entidade.Id = (await database.Conexao.InsertMappedAsync(entidade));
             await AuditarAsync(entidade.Id, "I");
 
             return entidade.Id;

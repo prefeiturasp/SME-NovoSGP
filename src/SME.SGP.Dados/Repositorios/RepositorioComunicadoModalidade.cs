@@ -20,7 +20,7 @@ namespace SME.SGP.Dados.Repositorios
             if (comunicadoModalidade.Id > 0)
                 await database.Conexao.UpdateMappedAsync(comunicadoModalidade);
             else
-                comunicadoModalidade.Id = (long)(await database.Conexao.InsertMappedAsync(comunicadoModalidade));
+                comunicadoModalidade.Id = (await database.Conexao.InsertMappedAsync(comunicadoModalidade));
 
             return comunicadoModalidade.Id;
         }

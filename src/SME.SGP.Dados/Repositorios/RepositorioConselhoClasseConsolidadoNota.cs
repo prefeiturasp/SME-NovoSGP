@@ -48,7 +48,7 @@ namespace SME.SGP.Dados
                 return sucesso > 0 ? consolidadoNota.Id : 0;
             }
             else
-                return (long)(await database.Conexao.InsertMappedAsync(consolidadoNota));
+                return (await database.Conexao.InsertMappedAsync(consolidadoNota));
         }
 
         public async Task<bool> ExcluirConsolidacaoConselhoClasseNotaPorIdsConsolidacaoAlunoEBimestre(long[] idsConsolidacao)

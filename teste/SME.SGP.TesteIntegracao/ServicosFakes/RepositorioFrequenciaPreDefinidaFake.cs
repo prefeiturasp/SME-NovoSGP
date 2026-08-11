@@ -65,7 +65,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                 }
                 else
                 {
-                    entidade.Id = (long)(await database.Conexao.InsertMappedAsync(entidade));
+                    entidade.Id = (await database.Conexao.InsertMappedAsync(entidade));
                 }
             }
 

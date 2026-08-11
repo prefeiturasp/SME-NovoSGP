@@ -18,7 +18,7 @@ namespace SME.SGP.Dominio
 
         public async Task<long> Inserir(ConsolidacaoRegistroIndividualMedia consolidacao)
         {
-            return (long)(await database.Conexao.InsertMappedAsync(consolidacao));
+            return (await database.Conexao.InsertMappedAsync(consolidacao));
         }
 
         public async Task LimparConsolidacaoMediaRegistrosIndividuaisPorAno(int anoLetivo)

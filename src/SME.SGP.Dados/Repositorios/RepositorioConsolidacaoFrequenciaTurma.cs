@@ -20,7 +20,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<long> Inserir(ConsolidacaoFrequenciaTurma consolidacao)
         {
-            return (long)(await database.Conexao.InsertMappedAsync(consolidacao));
+            return (await database.Conexao.InsertMappedAsync(consolidacao));
         }
 
         public async Task LimparConsolidacaoFrequenciasTurmasPorAno(int ano)
@@ -34,7 +34,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<long> InserirConsolidacaoDashBoard(ConsolidacaoDashBoardFrequencia consolidacao)
         {
-            return (long)(await database.Conexao.InsertMappedAsync(consolidacao));
+            return (await database.Conexao.InsertMappedAsync(consolidacao));
         }
 
         public async Task AlterarConsolidacaoDashboardTurmaMesPeriodoAno(long id, int quantidadePresente, int quantidadeAusente, int quantidadeRemoto)
@@ -87,7 +87,7 @@ namespace SME.SGP.Dados.Repositorios
             if (consolidacaoDashBoardFrequencia.Id > 0)
                 await database.Conexao.UpdateMappedAsync(consolidacaoDashBoardFrequencia);
             else
-                consolidacaoDashBoardFrequencia.Id = (long)(await database.Conexao.InsertMappedAsync(consolidacaoDashBoardFrequencia));
+                consolidacaoDashBoardFrequencia.Id = (await database.Conexao.InsertMappedAsync(consolidacaoDashBoardFrequencia));
 
             return consolidacaoDashBoardFrequencia.Id;
         }
@@ -97,7 +97,7 @@ namespace SME.SGP.Dados.Repositorios
             if (consolidacaoFrequenciaTurma.Id > 0)
                 await database.Conexao.UpdateMappedAsync(consolidacaoFrequenciaTurma);
             else
-                consolidacaoFrequenciaTurma.Id = (long)(await database.Conexao.InsertMappedAsync(consolidacaoFrequenciaTurma));
+                consolidacaoFrequenciaTurma.Id = (await database.Conexao.InsertMappedAsync(consolidacaoFrequenciaTurma));
 
             return consolidacaoFrequenciaTurma.Id;
         }

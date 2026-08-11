@@ -24,7 +24,7 @@ namespace SME.SGP.Dados.Repositorios
             }
             else
             {
-                entidade.Id = (long)(await database.Conexao.InsertMappedAsync(entidade));
+                entidade.Id = (await database.Conexao.InsertMappedAsync(entidade));
                 await AuditarAsync(entidade.Id, "I");
             }
 

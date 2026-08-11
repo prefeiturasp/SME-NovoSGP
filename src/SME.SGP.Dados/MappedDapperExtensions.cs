@@ -10,6 +10,10 @@ namespace SME.SGP.Dados
 {
     public static class MappedDapperExtensions
     {
+        private const string WhereClause = "WHERE ";
+        private const string IdParameter = " = @Id";
+        private const string SqlStatementTerminator = ";";
+
         public static long InsertMapped<T>(
             this IDbConnection connection,
             T entity,
@@ -147,10 +151,11 @@ namespace SME.SGP.Dados
                 QuoteIdentifier(map.TableName) +
                 " SET " +
                 assignments +
-                " WHERE " +
+                " " + 
+                WhereClause +
                 QuoteIdentifier(
                     map.GetColumnName(idProperty.Name)) +
-                " = @Id;";
+                IdParameter + SqlStatementTerminator;
 
             return connection.Execute(
                 sql,
@@ -193,10 +198,12 @@ namespace SME.SGP.Dados
                 QuoteIdentifier(map.TableName) +
                 " SET " +
                 assignments +
-                " WHERE " +
+                " " +
+                WhereClause +
                 QuoteIdentifier(
                     map.GetColumnName(idProperty.Name)) +
-                " = @Id;";
+              IdParameter +
+              SqlStatementTerminator;
 
             return await connection.ExecuteAsync(
                 sql,
@@ -255,10 +262,10 @@ namespace SME.SGP.Dados
 
             var sql = BuildSelectSql<T>(
                 map,
-                "WHERE " +
+                 WhereClause +
                 QuoteIdentifier(
                     map.GetColumnName(idProperty.Name)) +
-                " = @Id");
+               IdParameter);
 
             return connection.QuerySingleOrDefault<T>(
                 sql,
@@ -281,10 +288,10 @@ namespace SME.SGP.Dados
 
             var sql = BuildSelectSql<T>(
                 map,
-                "WHERE " +
+                WhereClause +
                 QuoteIdentifier(
                     map.GetColumnName(idProperty.Name)) +
-                " = @Id");
+                IdParameter);
 
             return await connection.QuerySingleOrDefaultAsync<T>(
                 sql,
@@ -307,10 +314,11 @@ namespace SME.SGP.Dados
             var sql =
                 "DELETE FROM " +
                 QuoteIdentifier(map.TableName) +
-                " WHERE " +
+                 WhereClause +
                 QuoteIdentifier(
                     map.GetColumnName(idProperty.Name)) +
-                " = @Id;";
+                IdParameter +
+                SqlStatementTerminator;
 
             return connection.Execute(
                 sql,
@@ -336,10 +344,12 @@ namespace SME.SGP.Dados
             var sql =
                 "DELETE FROM " +
                 QuoteIdentifier(map.TableName) +
-                " WHERE " +
+                " " +
+                WhereClause +
                 QuoteIdentifier(
                     map.GetColumnName(idProperty.Name)) +
-                " = @Id;";
+                IdParameter +
+                SqlStatementTerminator;
 
             return await connection.ExecuteAsync(
                 sql,
