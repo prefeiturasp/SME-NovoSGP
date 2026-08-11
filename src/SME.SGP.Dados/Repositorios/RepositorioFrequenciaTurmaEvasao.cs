@@ -17,7 +17,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<long> Inserir(FrequenciaTurmaEvasao frequenciaTurmaEvasao)
         {
-            return (long)(await database.Conexao.InsertMappedAsync(frequenciaTurmaEvasao));
+            return (await database.Conexao.InsertMappedAsync(frequenciaTurmaEvasao));
         }
 
         public async Task LimparFrequenciaTurmaEvasaoPorTurmasEMeses(long[] turmasIds, int[] meses)

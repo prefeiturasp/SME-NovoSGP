@@ -65,7 +65,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                 {
                     entidade.CriadoPor = database.UsuarioLogadoNomeCompleto;
                     entidade.CriadoRF = database.UsuarioLogadoRF;
-                    entidade.Id = (long)(await database.Conexao.InsertMappedAsync(entidade));
+                    entidade.Id = (await database.Conexao.InsertMappedAsync(entidade));
                     await AuditarAsync(entidade.Id, "I");
                 }
             }

@@ -16,7 +16,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<long> SalvarAsync(HistoricoNotaConselhoClasse historicoNotaConselhoClasse)
         {
-            historicoNotaConselhoClasse.Id = (long)(await database.Conexao.InsertMappedAsync(historicoNotaConselhoClasse));
+            historicoNotaConselhoClasse.Id = (await database.Conexao.InsertMappedAsync(historicoNotaConselhoClasse));
 
             return historicoNotaConselhoClasse.Id;
         }

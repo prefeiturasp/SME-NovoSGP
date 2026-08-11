@@ -26,7 +26,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<bool> SalvarConsolidacaoNivelEscrita(ConsolidacaoAlfabetizacaoNivelEscrita entidade)
         {
-            return (long)(await database.Conexao.InsertMappedAsync(entidade)) > 0;
+            return (await database.Conexao.InsertMappedAsync(entidade)) > 0;
         }
 
         public async Task<IEnumerable<ConsolidacaoAlfabetizacaoNivelEscrita>> ObterNumeroAlunos(int anoLetivo, int periodo, string codigoDre = null, string codigoUe = null)
