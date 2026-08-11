@@ -226,133 +226,377 @@ namespace SME.SGP.Dados.Repositorios
                     sql.AppendLine(" and to_date(qdata.DataAberturaQueixaInicio,'yyyy-mm-dd') <= @dataAberturaQueixaFim");
             }
         }
+        private const string CAMPOSSELECT = $@"
+                    SELECT
+                        -- Encaminhamento NAAPA
+                        ea.id AS Id,
+                        ea.criado_em AS CriadoEm,
+                        ea.criado_por as CriadoPor,
+                        ea.criado_rf as CriadoRf,
+                        ea.alterado_em AS AlteradoEm,
+                        ea.alterado_por as  AlteradoPor,
+                        ea.alterado_rf as AlteradoRf,
+                        ea.turma_id AS TurmaId,
+                        ea.aluno_codigo AS AlunoCodigo,
+                        ea.aluno_nome AS AlunoNome,
+                        ea.situacao AS Situacao,
+                        ea.excluido AS Excluido,
+                        ea.situacao_matricula_aluno
+                            AS SituacaoMatriculaAluno,
+                        ea.motivo_encerramento
+                            AS MotivoEncerramento,
+                        ea.data_ultima_notificacao_sem_atendimento
+                            AS DataUltimaNotificacaoSemAtendimento,
+
+
+                        -- início da seção
+                        eas.id AS SecaoInicio,
+
+                        -- Encaminhamento NAAPA - Seção
+                        eas.id AS Id,
+                        eas.encaminhamento_naapa_id
+                            AS EncaminhamentoNAAPAId,
+                        eas.secao_encaminhamento_id
+                            AS SecaoEncaminhamentoNAAPAId,
+                        eas.concluido AS Concluido,
+                        eas.excluido AS Excluido,
+                        eas.criado_em AS CriadoEm,
+                        eas.alterado_em AS AlteradoEm,
+                        eas.alterado_por as  AlteradoPor,
+                        eas.alterado_rf as AlteradoRf,
+                        eas.criado_rf as CriadoRf,
+                        eas.criado_por as CriadoPor,
+
+                        -- início da questão
+                        qea.id AS QuestaoEncaminhamentoInicio,
+
+                        -- Questão do encaminhamento
+                        qea.id AS Id,
+                        qea.encaminhamento_naapa_secao_id
+                            AS EncaminhamentoNAAPASecaoId,
+                        qea.questao_id AS QuestaoId,
+                        qea.excluido AS Excluido,
+                        qea.criado_em AS CriadoEm,
+	                    qea.alterado_em AS AlteradoEm,
+	                    qea.alterado_por as  AlteradoPor,
+	                    qea.alterado_rf as AlteradoRf,
+	                    qea.criado_rf as CriadoRf,
+	                    qea.criado_por as CriadoPor,
+
+                        -- início da resposta
+                        rea.id AS RespostaInicio,
+
+                        -- Resposta
+                        rea.id AS Id,
+                        rea.questao_encaminhamento_id
+                            AS QuestaoEncaminhamentoId,
+                        rea.resposta_id AS RespostaId,
+                        rea.texto AS Texto,
+                        rea.arquivo_id AS ArquivoId,
+                        rea.excluido AS Excluido,
+                        rea.criado_em AS CriadoEm,
+                        rea.alterado_em AS AlteradoEm,
+                        rea.alterado_por as  AlteradoPor,
+                        rea.alterado_rf as AlteradoRf,
+                        rea.criado_rf as CriadoRf,
+                        rea.criado_por as CriadoPor,
+
+                        -- início da seção configurada
+                        sea.id AS SecaoConfiguradaInicio,
+
+                        -- Seção configurada
+                        sea.id AS Id,
+                        sea.questionario_id AS QuestionarioId,
+                        sea.nome AS Nome,
+                        sea.ordem AS Ordem,
+                        sea.etapa AS Etapa,
+                        sea.excluido AS Excluido,
+                        sea.nome_componente AS NomeComponente,
+                        sea.criado_em AS CriadoEm,
+                        sea.alterado_em AS AlteradoEm,
+                        sea.alterado_por as  AlteradoPor,
+                        sea.alterado_rf as AlteradoRf,
+                        sea.criado_rf as CriadoRf,
+                        sea.criado_por as CriadoPor,
+
+                        -- início da questão
+                        q.id AS QuestaoInicio,
+
+                        -- Questão
+                        q.id AS Id,
+                        q.nome AS Nome,
+                        q.ordem AS Ordem,
+                        q.nome_componente AS NomeComponente,
+                        q.excluido AS Excluido,
+                        q.criado_em AS CriadoEm,
+	                    q.alterado_em AS AlteradoEm,
+	                    q.alterado_por as  AlteradoPor,
+	                    q.alterado_rf as AlteradoRf,
+	                    q.criado_rf as CriadoRf,
+	                    q.criado_por as CriadoPor,
+
+                        -- início da opção
+                        op.id AS OpcaoRespostaInicio,
+
+                    -- Opção de resposta
+                    op.id AS Id,
+                    op.questao_id AS QuestaoId,
+                    op.ordem AS Ordem,
+                    op.nome AS Nome,
+                    op.observacao as Observacao,
+                    op.excluido AS Excluido,
+                    op.criado_em AS CriadoEm,
+                    op.alterado_em AS AlteradoEm,
+                    op.alterado_por as  AlteradoPor,
+                    op.alterado_rf as AlteradoRf,
+                    op.criado_rf as CriadoRf,
+                    op.criado_por as CriadoPor
+
+           ";
         
-        public async Task<EncaminhamentoNAAPA> ObterEncaminhamentoPorId(long id)
+       public async Task<EncaminhamentoNAAPA>
+                ObterEncaminhamentoPorId(long id)
         {
-            const string query = @"select ea.*, eas.*, qea.*, rea.*, sea.*, q.*, op.*
-                                    from encaminhamento_naapa ea
-                                    inner join encaminhamento_naapa_secao eas on eas.encaminhamento_naapa_id = ea.id
-                                        and not eas.excluido
-                                    inner join secao_encaminhamento_naapa sea on sea.id = eas.secao_encaminhamento_id
-                                        and not sea.excluido
-                                    inner join encaminhamento_naapa_questao qea on qea.encaminhamento_naapa_secao_id = eas.id
-                                        and not qea.excluido
-                                    inner join questao q on q.id = qea.questao_id
-                                        and not q.excluido
-                                    inner join encaminhamento_naapa_resposta rea on rea.questao_encaminhamento_id = qea.id
-                                        and not rea.excluido
-                                    left join opcao_resposta op on op.id = rea.resposta_id
-                                        and not op.excluido
-                                    where ea.id = @id
-                                    and not ea.excluido";
+            const string query = $@"
+                {CAMPOSSELECT}
+                FROM encaminhamento_naapa ea
+                INNER JOIN encaminhamento_naapa_secao eas
+                    ON eas.encaminhamento_naapa_id = ea.id
+                   AND NOT eas.excluido
+                INNER JOIN secao_encaminhamento_naapa sea
+                    ON sea.id = eas.secao_encaminhamento_id
+                   AND NOT sea.excluido
+                INNER JOIN encaminhamento_naapa_questao qea
+                    ON qea.encaminhamento_naapa_secao_id = eas.id
+                   AND NOT qea.excluido
+                INNER JOIN questao q
+                    ON q.id = qea.questao_id
+                   AND NOT q.excluido
+                INNER JOIN encaminhamento_naapa_resposta rea
+                    ON rea.questao_encaminhamento_id = qea.id
+                   AND NOT rea.excluido
+                LEFT JOIN opcao_resposta op
+                    ON op.id = rea.resposta_id
+                   AND NOT op.excluido
+                WHERE ea.id = @id
+                  AND NOT ea.excluido;";
 
             var encaminhamento = new EncaminhamentoNAAPA();
 
-            await database.Conexao
-                .QueryAsync<EncaminhamentoNAAPA, EncaminhamentoNAAPASecao, QuestaoEncaminhamentoNAAPA,
-                    RespostaEncaminhamentoNAAPA, SecaoEncaminhamentoNAAPA, Questao, OpcaoResposta, EncaminhamentoNAAPA>(
-                    query, (encaminhamentoNAAPA, encaminhamentoSecao, questaoEncaminhamentoNAAPA, respostaEncaminhamento,
-                        secaoEncaminhamento, questao, opcaoResposta) =>
+            await database.Conexao.QueryAsync<
+                EncaminhamentoNAAPA,
+                EncaminhamentoNAAPASecao,
+                QuestaoEncaminhamentoNAAPA,
+                RespostaEncaminhamentoNAAPA,
+                SecaoEncaminhamentoNAAPA,
+                Questao,
+                OpcaoResposta,
+                EncaminhamentoNAAPA>(
+                    query,
+                    (
+                        encaminhamentoNAAPA,
+                        encaminhamentoSecao,
+                        questaoEncaminhamentoNAAPA,
+                        respostaEncaminhamento,
+                        secaoEncaminhamento,
+                        questao,
+                        opcaoResposta) =>
                     {
                         if (encaminhamento.Id == 0)
+                        {
                             encaminhamento = encaminhamentoNAAPA;
+                        }
 
-                        var secao = encaminhamento.Secoes.FirstOrDefault(c => c.Id == encaminhamentoSecao.Id);
-                        
+                        var secao =
+                            encaminhamento.Secoes
+                                .FirstOrDefault(
+                                    x => x.Id == encaminhamentoSecao.Id);
+
                         if (secao.EhNulo())
                         {
-                            encaminhamentoSecao.SecaoEncaminhamentoNAAPA = secaoEncaminhamento;
+                            encaminhamentoSecao
+                                .SecaoEncaminhamentoNAAPA =
+                                secaoEncaminhamento;
+
                             secao = encaminhamentoSecao;
+
                             encaminhamento.Secoes.Add(secao);
                         }
 
-                        var questaoEncaminhamento = secao.Questoes.FirstOrDefault(c => c.Id == questaoEncaminhamentoNAAPA.Id);
-                        
+                        var questaoEncaminhamento =
+                            secao.Questoes
+                                .FirstOrDefault(
+                                    x => x.Id ==
+                                         questaoEncaminhamentoNAAPA.Id);
+
                         if (questaoEncaminhamento.EhNulo())
                         {
-                            questaoEncaminhamento = questaoEncaminhamentoNAAPA;
-                            questaoEncaminhamento.Questao = questao;
-                            secao.Questoes.Add(questaoEncaminhamento);
+                            questaoEncaminhamento =
+                                questaoEncaminhamentoNAAPA;
+
+                            questaoEncaminhamento.Questao =
+                                questao;
+
+                            secao.Questoes.Add(
+                                questaoEncaminhamento);
                         }
 
-                        var resposta = questaoEncaminhamento.Respostas.FirstOrDefault(c => c.Id == respostaEncaminhamento.Id);
-                        
+                        var resposta =
+                            questaoEncaminhamento.Respostas
+                                .FirstOrDefault(
+                                    x => x.Id ==
+                                         respostaEncaminhamento.Id);
+
                         if (resposta.EhNulo())
                         {
-                            resposta = respostaEncaminhamento;
-                            resposta.Resposta = opcaoResposta;
-                            questaoEncaminhamento.Respostas.Add(resposta);
+                            resposta =
+                                respostaEncaminhamento;
+
+                            resposta.Resposta =
+                                opcaoResposta;
+
+                            questaoEncaminhamento.Respostas
+                                .Add(resposta);
                         }
 
                         return encaminhamento;
-                    }, new { id });
+                    },
+                    new { id },
+                    splitOn:
+                        "SecaoInicio," +
+                        "QuestaoEncaminhamentoInicio," +
+                        "RespostaInicio," +
+                        "SecaoConfiguradaInicio," +
+                        "QuestaoInicio," +
+                        "OpcaoRespostaInicio");
 
             return encaminhamento;
         }
 
-        public async Task<EncaminhamentoNAAPA> ObterEncaminhamentoPorIdESecao(long id, long secaoId)
-        {
-            const string query = @"select ea.*, eas.*, qea.*, rea.*, sea.*, q.*, op.*
-                                    from encaminhamento_naapa ea
-                                    inner join encaminhamento_naapa_secao eas on eas.encaminhamento_naapa_id = ea.id
-                                        and not eas.excluido
-                                    inner join secao_encaminhamento_naapa sea on sea.id = eas.secao_encaminhamento_id
-                                        and not sea.excluido
-                                    inner join encaminhamento_naapa_questao qea on qea.encaminhamento_naapa_secao_id = eas.id
-                                        and not qea.excluido
-                                    inner join questao q on q.id = qea.questao_id
-                                        and not q.excluido
-                                    inner join encaminhamento_naapa_resposta rea on rea.questao_encaminhamento_id = qea.id
-                                        and not rea.excluido
-                                    left join opcao_resposta op on op.id = rea.resposta_id
-                                        and not op.excluido
-                                    where ea.id = @id
-                                    and qea.encaminhamento_naapa_secao_id = @secaoId
-                                    and not ea.excluido";
+       public async Task<EncaminhamentoNAAPA>
+                ObterEncaminhamentoPorIdESecao(
+                    long id,
+                    long secaoId)
+            {
+                const string query = $@"
+                    {CAMPOSSELECT}
 
-            var encaminhamento = new EncaminhamentoNAAPA();
+                    FROM encaminhamento_naapa ea
+                    INNER JOIN encaminhamento_naapa_secao eas
+                        ON eas.encaminhamento_naapa_id = ea.id
+                       AND NOT eas.excluido
+                    INNER JOIN secao_encaminhamento_naapa sea
+                        ON sea.id = eas.secao_encaminhamento_id
+                       AND NOT sea.excluido
+                    INNER JOIN encaminhamento_naapa_questao qea
+                        ON qea.encaminhamento_naapa_secao_id = eas.id
+                       AND NOT qea.excluido
+                    INNER JOIN questao q
+                        ON q.id = qea.questao_id
+                       AND NOT q.excluido
+                    INNER JOIN encaminhamento_naapa_resposta rea
+                        ON rea.questao_encaminhamento_id = qea.id
+                       AND NOT rea.excluido
+                    LEFT JOIN opcao_resposta op
+                        ON op.id = rea.resposta_id
+                       AND NOT op.excluido
+                    WHERE ea.id = @id
+                      AND qea.encaminhamento_naapa_secao_id = @secaoId
+                      AND NOT ea.excluido;";
 
-            await database.Conexao
-                .QueryAsync<EncaminhamentoNAAPA, EncaminhamentoNAAPASecao, QuestaoEncaminhamentoNAAPA,
-                    RespostaEncaminhamentoNAAPA, SecaoEncaminhamentoNAAPA, Questao, OpcaoResposta, EncaminhamentoNAAPA>(
-                    query, (encaminhamentoNAAPA, encaminhamentoSecao, questaoEncaminhamentoNAAPA, respostaEncaminhamento,
-                        secaoEncaminhamento, questao, opcaoResposta) =>
-                    {
-                        if (encaminhamento.Id == 0)
-                            encaminhamento = encaminhamentoNAAPA;
+                var encaminhamento = new EncaminhamentoNAAPA();
 
-                        var secao = encaminhamento.Secoes.FirstOrDefault(c => c.Id == encaminhamentoSecao.Id);
-                        
-                        if (secao.EhNulo())
+                await database.Conexao.QueryAsync<
+                    EncaminhamentoNAAPA,
+                    EncaminhamentoNAAPASecao,
+                    QuestaoEncaminhamentoNAAPA,
+                    RespostaEncaminhamentoNAAPA,
+                    SecaoEncaminhamentoNAAPA,
+                    Questao,
+                    OpcaoResposta,
+                    EncaminhamentoNAAPA>(
+                        query,
+                        (
+                            encaminhamentoNAAPA,
+                            encaminhamentoSecao,
+                            questaoEncaminhamentoNAAPA,
+                            respostaEncaminhamento,
+                            secaoEncaminhamento,
+                            questao,
+                            opcaoResposta) =>
                         {
-                            encaminhamentoSecao.SecaoEncaminhamentoNAAPA = secaoEncaminhamento;
-                            secao = encaminhamentoSecao;
-                            encaminhamento.Secoes.Add(secao);
-                        }
+                            if (encaminhamento.Id == 0)
+                            {
+                                encaminhamento = encaminhamentoNAAPA;
+                            }
 
-                        var questaoEncaminhamento = secao.Questoes.FirstOrDefault(c => c.Id == questaoEncaminhamentoNAAPA.Id);
-                        
-                        if (questaoEncaminhamento.EhNulo())
-                        {
-                            questaoEncaminhamento = questaoEncaminhamentoNAAPA;
-                            questaoEncaminhamento.Questao = questao;
-                            secao.Questoes.Add(questaoEncaminhamento);
-                        }
+                            var secao =
+                                encaminhamento.Secoes
+                                    .FirstOrDefault(
+                                        x => x.Id == encaminhamentoSecao.Id);
 
-                        var resposta = questaoEncaminhamento.Respostas.FirstOrDefault(c => c.Id == respostaEncaminhamento.Id);
+                            if (secao.EhNulo())
+                            {
+                                encaminhamentoSecao
+                                    .SecaoEncaminhamentoNAAPA =
+                                    secaoEncaminhamento;
 
-                        if (resposta.NaoEhNulo()) 
+                                secao = encaminhamentoSecao;
+
+                                encaminhamento.Secoes.Add(secao);
+                            }
+
+                            var questaoEncaminhamento =
+                                secao.Questoes
+                                    .FirstOrDefault(
+                                        x => x.Id ==
+                                             questaoEncaminhamentoNAAPA.Id);
+
+                            if (questaoEncaminhamento.EhNulo())
+                            {
+                                questaoEncaminhamento =
+                                    questaoEncaminhamentoNAAPA;
+
+                                questaoEncaminhamento.Questao =
+                                    questao;
+
+                                secao.Questoes.Add(
+                                    questaoEncaminhamento);
+                            }
+
+                            var resposta =
+                                questaoEncaminhamento.Respostas
+                                    .FirstOrDefault(
+                                        x => x.Id ==
+                                             respostaEncaminhamento.Id);
+
+                            if (resposta.NaoEhNulo())
+                            {
+                                return encaminhamento;
+                            }
+
+                            resposta =
+                                respostaEncaminhamento;
+
+                            resposta.Resposta =
+                                opcaoResposta;
+
+                            questaoEncaminhamento.Respostas
+                                .Add(resposta);
+
                             return encaminhamento;
-                        
-                        resposta = respostaEncaminhamento;
-                        resposta.Resposta = opcaoResposta;
-                        questaoEncaminhamento.Respostas.Add(resposta);
+                        },
+                        new { id, secaoId },
+                        splitOn:
+                            "SecaoInicio," +
+                            "QuestaoEncaminhamentoInicio," +
+                            "RespostaInicio," +
+                            "SecaoConfiguradaInicio," +
+                            "QuestaoInicio," +
+                            "OpcaoRespostaInicio");
 
-                        return encaminhamento;
-                    }, new { id, secaoId });
-
-            return encaminhamento;
-        }
+                return encaminhamento;
+            }
 
         public async Task<IEnumerable<EncaminhamentoNAAPACodigoArquivoDto>> ObterCodigoArquivoPorEncaminhamentoNAAPAId(long encaminhamentoId)
         {
@@ -374,24 +618,109 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<EncaminhamentoNAAPACodigoArquivoDto>(sql.ToString(), new { encaminhamentoId });
         }   
         
-        public async Task<EncaminhamentoNAAPA> ObterEncaminhamentoComTurmaPorId(long encaminhamentoId)
+        public async Task<EncaminhamentoNAAPA>
+            ObterEncaminhamentoComTurmaPorId(long encaminhamentoId)
         {
-            var query = @" select ea.*, t.*, ue.*, dre.*
-                            from encaminhamento_naapa ea
-                           inner join turma t on t.id = ea.turma_id
-                            join ue on ue.id = t.ue_id
-                            join dre on dre.id = ue.dre_id  
-                           where ea.id = @encaminhamentoId";
+            const string query = @"
+                SELECT
+                    -- EncaminhamentoNAAPA
+                    ea.id AS Id,
+                    ea.criado_em AS CriadoEm,
+                    ea.criado_por AS CriadoPor,
+                    ea.alterado_em AS AlteradoEm,
+                    ea.alterado_por AS AlteradoPor,
+                    ea.alterado_rf AS AlteradoRF,
+                    ea.criado_rf AS CriadoRF,
+                    ea.turma_id AS TurmaId,
+                    ea.aluno_codigo AS AlunoCodigo,
+                    ea.aluno_nome AS AlunoNome,
+                    ea.situacao AS Situacao,
+                    ea.excluido AS Excluido,
+                    ea.situacao_matricula_aluno
+                        AS SituacaoMatriculaAluno,
+                    ea.motivo_encerramento
+                        AS MotivoEncerramento,
+                    ea.data_ultima_notificacao_sem_atendimento
+                        AS DataUltimaNotificacaoSemAtendimento,
 
-            return (await database.Conexao.QueryAsync<EncaminhamentoNAAPA, Turma, Ue, Dre,EncaminhamentoNAAPA>(query,
-                (encaminhamentoNAAPA, turma, ue, dre) =>
-                {
-                    encaminhamentoNAAPA.Turma = turma;
-                    encaminhamentoNAAPA.Turma.Ue = ue;
-                    encaminhamentoNAAPA.Turma.Ue.Dre = dre;
-                    
-                    return encaminhamentoNAAPA;
-                }, new { encaminhamentoId })).FirstOrDefault();
+                    -- marcador de início da Turma
+                    t.id AS TurmaInicio,
+
+                    -- Turma
+                    t.id AS Id,
+                    t.ano AS Ano,
+                    t.ano_letivo AS AnoLetivo,
+                    t.turma_id AS CodigoTurma,
+                    t.tipo_turma AS TipoTurma,
+                    t.data_atualizacao AS DataAtualizacao,
+                    t.modalidade_codigo AS ModalidadeCodigo,
+                    t.nome AS Nome,
+                    t.qt_duracao_aula AS QuantidadeDuracaoAula,
+                    t.semestre AS Semestre,
+                    t.tipo_turno AS TipoTurno,
+                    t.serie_ensino AS SerieEnsino,
+                    t.ue_id AS UeId,
+                    t.nome_filtro AS NomeFiltro,
+                    t.historica AS Historica,
+                    t.ensino_especial AS EnsinoEspecial,
+                    t.data_inicio AS DataInicio,
+                    t.dt_fim_eol AS DataFim,
+                    t.etapa_eja AS EtapaEJA,
+
+                    -- marcador de início da UE
+                    u.id AS UeInicio,
+
+                    -- UE
+                    u.id AS Id,
+                    u.ue_id AS CodigoUe,
+                    u.data_atualizacao AS DataAtualizacao,
+                    u.dre_id AS DreId,
+                    u.nome AS Nome,
+                    u.tipo_escola AS TipoEscola,
+
+                    -- marcador de início da DRE
+                    d.id AS DreInicio,
+
+                    -- DRE
+                    d.id AS Id,
+                    d.dre_id AS CodigoDre,
+                    d.abreviacao AS Abreviacao,
+                    d.nome AS Nome,
+                    d.data_atualizacao AS DataAtualizacao
+
+                FROM encaminhamento_naapa ea
+                INNER JOIN turma t
+                    ON t.id = ea.turma_id
+                INNER JOIN ue u
+                    ON u.id = t.ue_id
+                INNER JOIN dre d
+                    ON d.id = u.dre_id
+                WHERE ea.id = @encaminhamentoId;";
+
+            var resultado =
+                await database.Conexao.QueryAsync<
+                    EncaminhamentoNAAPA,
+                    Turma,
+                    Ue,
+                    Dre,
+                    EncaminhamentoNAAPA>(
+                        query,
+                        (
+                            encaminhamentoNAAPA,
+                            turma,
+                            ue,
+                            dre) =>
+                        {
+                            ue.AdicionarDre(dre);
+                            turma.AdicionarUe(ue);
+                            encaminhamentoNAAPA.Turma = turma;
+
+                            return encaminhamentoNAAPA;
+                        },
+                        new { encaminhamentoId },
+                        splitOn: "TurmaInicio,UeInicio,DreInicio");
+
+            return resultado.FirstOrDefault();
         }
 
         public async Task<bool> EncaminhamentoContemAtendimentosItinerancia(long encaminhamentoId)

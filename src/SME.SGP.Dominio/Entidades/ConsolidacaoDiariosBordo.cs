@@ -1,8 +1,12 @@
-﻿namespace SME.SGP.Dominio
+﻿
+
+namespace SME.SGP.Dominio
 {
     public class ConsolidacaoDiariosBordo
     {
+   
         public long Id { get; set; }
+       
         public Turma Turma { get; set; }
         public long TurmaId { get; set; }
         public int AnoLetivo { get; set; }

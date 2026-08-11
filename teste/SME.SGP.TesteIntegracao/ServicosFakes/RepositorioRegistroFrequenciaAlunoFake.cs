@@ -58,14 +58,14 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     entidade.AlteradoEm = DateTimeExtension.HorarioBrasilia();
                     entidade.AlteradoPor = database.UsuarioLogadoNomeCompleto;
                     entidade.AlteradoRF = database.UsuarioLogadoRF;
-                    await database.Conexao.UpdateAsync(entidade);
+                    await database.Conexao.UpdateMappedAsync(entidade);
                     await AuditarAsync(entidade.Id, "A");
                 }
                 else
                 {
                     entidade.CriadoPor = database.UsuarioLogadoNomeCompleto;
                     entidade.CriadoRF = database.UsuarioLogadoRF;
-                    entidade.Id = (long)(await database.Conexao.InsertAsync(entidade));
+                    entidade.Id = (long)(await database.Conexao.InsertMappedAsync(entidade));
                     await AuditarAsync(entidade.Id, "I");
                 }
             }

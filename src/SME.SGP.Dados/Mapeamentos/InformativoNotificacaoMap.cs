@@ -7,9 +7,9 @@ namespace SME.SGP.Dados.Mapeamentos
         public InformativoNotificacaoMap()
         {
             ToTable("informativo_notificacao");
-            Map(c => c.InformativoId).ToColumn("informativo_id");
-            Map(c => c.NotificacaoId).ToColumn("notificacao_id");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(InformativoNotificacao.InformativoId), "informativo_id");
+            Map(nameof(InformativoNotificacao.NotificacaoId), "notificacao_id");
+            Map(nameof(InformativoNotificacao.Excluido), "excluido");
         }
     }
 }

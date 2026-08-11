@@ -1,7 +1,10 @@
-﻿namespace SME.SGP.Dominio
+﻿
+
+namespace SME.SGP.Dominio
 {
     public class ConsolidacaoFrequenciaAlunoMensal
     {
+   
         public long Id { get; set; }
         public long TurmaId { get; set; }
         public string AlunoCodigo { get; set; }

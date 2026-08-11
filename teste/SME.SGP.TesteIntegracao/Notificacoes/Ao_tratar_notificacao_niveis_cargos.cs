@@ -30,16 +30,17 @@ namespace SME.SGP.TesteIntegracao.Notificacoes
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosCargosPorUeCargosQuery, IEnumerable<FuncionarioCargoDTO>>), typeof(ObterFuncionariosCargosPorUeCargosQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
-        [Fact(DisplayName = "Notificações - Tratar notificações por níveis cargos")]
+        [Fact(DisplayName ="Notificações - Tratar notificações por níveis cargos")]
         public async Task Ao_tratar_notificacoes_por_niveis_cargos()
         {
             await CriarDreUePerfil();
+
             CriarClaimUsuario(ObterPerfilCP());
+
             await CriarUsuarios();
 
-            await InserirNaBase(new Notificacao()
+            var notificacao = new Notificacao
             {
-                Id = 1,
                 Codigo = 1,
                 Tipo = NotificacaoTipo.Fechamento,
                 Status = NotificacaoStatus.Pendente,
@@ -48,53 +49,90 @@ namespace SME.SGP.TesteIntegracao.Notificacoes
                 UeId = UE_CODIGO_1,
                 Titulo = "Notificação Titulo",
                 Mensagem = "Notificação mensagem",
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoEm =
+                    DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 UsuarioId = USUARIO_ID_1
-            });
+            };
 
-            await InserirNaBase(new WorkflowAprovacao()
+            await InserirNaBase(notificacao);
+
+            notificacao.Id.ShouldBeGreaterThan(0);
+
+            var workflow = new WorkflowAprovacao
             {
                 UeId = UE_CODIGO_1,
                 DreId = DRE_CODIGO_1,
-                Ano = DateTimeExtension.HorarioBrasilia().Year,
-                NotificacaoTipo = NotificacaoTipo.Fechamento,
-                NotifacaoMensagem = "Mensagem aprovacao",
-                NotifacaoTitulo = "Titulo aprovacao",
+                Ano =
+                    DateTimeExtension
+                        .HorarioBrasilia()
+                        .Year,
+                NotificacaoTipo =
+                    NotificacaoTipo.Fechamento,
+                NotifacaoMensagem =
+                    "Mensagem aprovacao",
+                NotifacaoTitulo =
+                    "Titulo aprovacao",
                 CriadoPor = SISTEMA_NOME,
                 CriadoEm = DateTime.Now,
                 CriadoRF = SISTEMA_NOME,
                 Tipo = WorkflowAprovacaoTipo.Basica
-            });
+            };
 
-            await InserirNaBase(new WorkflowAprovacaoNivel()
+            await InserirNaBase(workflow);
+            workflow.Id.ShouldBeGreaterThan(0);
+
+            var nivel = new WorkflowAprovacaoNivel
             {
-                WorkflowId = 1,
-                Status = WorkflowAprovacaoNivelStatus.SemStatus,
+                WorkflowId = workflow.Id,
+                Status =
+                    WorkflowAprovacaoNivelStatus.SemStatus,
                 Cargo = Cargo.Diretor,
                 Nivel = 1,
                 CriadoPor = SISTEMA_NOME,
                 CriadoEm = DateTime.Now,
-                CriadoRF = SISTEMA_NOME,
-            });
+                CriadoRF = SISTEMA_NOME
+            };
 
-            await InserirNaBase(new WorkflowAprovacaoNivelNotificacao()
-            {
-                NotificacaoId = 1,
-                WorkflowAprovacaoNivelId = 1
-            });
-            
-            var useCase = ServiceProvider.GetService<ITrataNotificacoesNiveisCargosUseCase>();
+            await InserirNaBase(nivel);
+
+            nivel.Id.ShouldBeGreaterThan(0);
+
+            var nivelNotificacao =
+                new WorkflowAprovacaoNivelNotificacao
+                {
+                    NotificacaoId = notificacao.Id,
+                    WorkflowAprovacaoNivelId = nivel.Id
+                };
+
+            await InserirNaBase(nivelNotificacao);
+
+            var useCase =
+                ServiceProvider
+                    .GetService<
+                        ITrataNotificacoesNiveisCargosUseCase>();
 
             await useCase.Executar(new MensagemRabbit());
 
-            var niveis = ObterTodos<WorkflowAprovacaoNivel>();
+            var niveis =
+                ObterTodos<WorkflowAprovacaoNivel>();
+
             niveis.ShouldNotBeNull();
             niveis.Count.ShouldBe(2);
-            niveis.Exists(n => n.Cargo == Cargo.Supervisor).ShouldBeTrue();
-            var nivelDiretor = niveis.Find(n => n.Cargo == Cargo.Diretor);
-            nivelDiretor.Status.ShouldBe(WorkflowAprovacaoNivelStatus.Substituido);
+
+            niveis.Exists(
+                n => n.Cargo == Cargo.Supervisor)
+                .ShouldBeTrue();
+
+            var nivelDiretor =
+                niveis.Find(
+                    n => n.Cargo == Cargo.Diretor);
+
+            nivelDiretor.ShouldNotBeNull();
+
+            nivelDiretor.Status.ShouldBe(
+                WorkflowAprovacaoNivelStatus.Substituido);
         }
     }
 }

@@ -20,9 +20,9 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<long> SalvarAsync(InformativoAnexo informativoAnexo)
         {
             if (informativoAnexo.Id > 0)
-                await database.Conexao.UpdateAsync(informativoAnexo);
+                await database.Conexao.UpdateMappedAsync(informativoAnexo);
             else
-                informativoAnexo.Id = (long)await database.Conexao.InsertAsync(informativoAnexo);
+                informativoAnexo.Id = (long)await database.Conexao.InsertMappedAsync(informativoAnexo);
 
             return informativoAnexo.Id;
         }

@@ -61,11 +61,11 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             {
                 if (entidade.Id > 0)
                 {                
-                    await database.Conexao.UpdateAsync(entidade);
+                    await database.Conexao.UpdateMappedAsync(entidade);
                 }
                 else
                 {
-                    entidade.Id = (long)(await database.Conexao.InsertAsync(entidade));
+                    entidade.Id = (long)(await database.Conexao.InsertMappedAsync(entidade));
                 }
             }
 

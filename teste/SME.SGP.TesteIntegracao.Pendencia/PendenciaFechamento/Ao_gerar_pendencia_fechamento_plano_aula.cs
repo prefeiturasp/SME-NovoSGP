@@ -50,9 +50,9 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
                                         string.Empty);
 
             await useCase.Executar(new MensagemRabbit() { Mensagem = JsonConvert.SerializeObject(command) });
-            var pendeciasSemPlano = ObterTodos<Pendencia>().FindAll(p => p.Tipo == TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento);
+            var pendeciasSemPlano = ObterTodos<Pendencia>().FindAll(p => p.Tipo == TipoPendencia.AulasSemFrequenciaNaDataDoFechamento);
             pendeciasSemPlano.ShouldNotBeNull();
-            var pendeciasFechamento = ObterTodos<Dominio.PendenciaFechamento>().Find(pf => pf.PendenciaId == pendeciasSemPlano.FirstOrDefault().Id);
+            var pendeciasFechamento = ObterTodos<Dominio.PendenciaFechamento>().Find(pf => pf.PendenciaId == pendeciasSemPlano?.FirstOrDefault()?.Id);
             pendeciasFechamento.ShouldNotBeNull();
             var pendenciasAula = ObterTodos<Dominio.PendenciaAula>().Select(pendenciaAula => pendenciaAula.PendenciaId);
             var pendencias = ObterTodos<Dominio.Pendencia>().Where(pendencia => pendenciasAula.Contains(pendencia.Id));

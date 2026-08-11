@@ -35,12 +35,12 @@ namespace SME.SGP.Dados
         {
             if (entidade.Id > 0)
             {
-                await database.Conexao.UpdateAsync(entidade);
+                await database.Conexao.UpdateMappedAsync(entidade);
                 await AuditarAsync(entidade.Id, "A");
             }
             else
             {
-                entidade.Id = (long)(await database.Conexao.InsertAsync(entidade));
+                entidade.Id = (long)(await database.Conexao.InsertMappedAsync(entidade));
                 await AuditarAsync(entidade.Id, "I");
             }
 

@@ -19,12 +19,12 @@ namespace SME.SGP.Dados.Repositorios
         {
             if (entidade.Id > 0)
             {
-                await database.Conexao.UpdateAsync(entidade);
+                await database.Conexao.UpdateMappedAsync(entidade);
                 await AuditarAsync(entidade.Id, "A");
             }
             else
             {
-                entidade.Id = (long)(await database.Conexao.InsertAsync(entidade));
+                entidade.Id = (long)(await database.Conexao.InsertMappedAsync(entidade));
                 await AuditarAsync(entidade.Id, "I");
             }
 
@@ -33,7 +33,7 @@ namespace SME.SGP.Dados.Repositorios
 
         private async Task AuditarAsync(long identificador, string acao)
         {
-            await database.Conexao.InsertAsync(new Auditoria()
+            await database.Conexao.InsertMappedAsync(new Auditoria()
             {
                 Data = DateTime.Now,
                 Entidade = nameof(OcorrenciaAluno).ToLower(),
