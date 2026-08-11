@@ -2,14 +2,15 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class CicloAnoMap : SimpleMap<CicloAno>
+    public class CicloAnoMap : DommelEntityMap<CicloAno>
     {
         public CicloAnoMap()
         {
             ToTable("tipo_ciclo_ano");
-            Map(nameof(CicloAno.CicloId), "tipo_ciclo_id");
-            Map(nameof(CicloAno.Modalidade), "modalidade");
-            Map(nameof(CicloAno.Ano), "ano");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
+            Map(c => c.CicloId).ToColumn("tipo_ciclo_id");
+            Map(c => c.Modalidade).ToColumn("modalidade");
+            Map(c => c.Ano).ToColumn("ano");
         }
     }
 }

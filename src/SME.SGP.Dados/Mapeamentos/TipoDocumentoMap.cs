@@ -2,13 +2,13 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class TipoDocumentoMap : SimpleMap<TipoDocumento>
+    public class TipoDocumentoMap : DommelEntityMap<TipoDocumento>
     {
         public TipoDocumentoMap()
         {
             ToTable("tipo_documento");
-
-            Map(nameof(TipoDocumento.Descricao), "descricao");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
+            Map(c => c.Descricao).ToColumn("descricao");
         }
     }
 }

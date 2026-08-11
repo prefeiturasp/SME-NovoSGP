@@ -21,7 +21,6 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
         
-        private readonly IRepositorioUeConsulta repositorioUe;
 
         public MigrarPlanoAulaCommandHandler(IUnitOfWork unitOfWork, IMediator mediator, IRepositorioPlanoAula repositorioPlanoAula,
             IConsultasAbrangencia consultasAbrangencia, IRepositorioTurmaConsulta repositorioTurmaConsulta, IRepositorioUeConsulta repositorioUe)
@@ -31,7 +30,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioPlanoAula = repositorioPlanoAula ?? throw new ArgumentNullException(nameof(repositorioPlanoAula));
             this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
             this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
-            this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
         }
 
         public async Task<bool> Handle(MigrarPlanoAulaCommand request, CancellationToken cancellationToken)
@@ -39,7 +37,7 @@ namespace SME.SGP.Aplicacao
             try
             {
                 var usuario = request.Usuario;
-                var planoAulaDto = repositorioPlanoAula.ObterPorId(request.PlanoAulaMigrar.PlanoAulaId);
+                var planoAulaDto = repositorioPlanoAula?.ObterPorId(request.PlanoAulaMigrar.PlanoAulaId);
                 var aula = await mediator.Send(new ObterAulaPorIdQuery(planoAulaDto.AulaId));
 
                 await ValidarMigracao(request.PlanoAulaMigrar, usuario.CodigoRf, usuario.EhProfessorCj(), aula.UeId, aula.TurmaId);
@@ -82,7 +80,7 @@ namespace SME.SGP.Aplicacao
                 unitOfWork.PersistirTransacao();
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 unitOfWork.Rollback();
                 throw;
@@ -175,7 +173,7 @@ namespace SME.SGP.Aplicacao
             
         }
 
-        private void ValidaTurmasAno(bool ehProfessorCJ, bool migrarObjetivos,
+        private static void ValidaTurmasAno(bool ehProfessorCJ, bool migrarObjetivos,
                                      IEnumerable<ProfessorTurmaDto> turmasAtribuidasAoProfessor,
                                      IEnumerable<AbrangenciaTurmaRetorno> turmasAbrangencia,
                                      IEnumerable<string> idsTurmasSelecionadas)
@@ -199,7 +197,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private void ValidaTurmasAnoHistorico(bool ehProfessorCJ, bool migrarObjetivos,
+        private static void ValidaTurmasAnoHistorico(bool ehProfessorCJ, bool migrarObjetivos,
                                      IEnumerable<TurmaNaoHistoricaDto> turmasAtribuidasAoProfessor,
                                      IEnumerable<AbrangenciaTurmaRetorno> turmasAbrangencia,
                                      IEnumerable<string> idsTurmasSelecionadas)

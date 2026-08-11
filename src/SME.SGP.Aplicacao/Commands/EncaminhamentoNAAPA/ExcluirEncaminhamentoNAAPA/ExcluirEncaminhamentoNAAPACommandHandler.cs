@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao.Commands
 
                     return idEntidadeExcluida;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     unitOfWork.Rollback();
 

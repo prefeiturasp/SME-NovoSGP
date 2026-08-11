@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao
 
                     return (AuditoriaDto)acompanhamentoSemestre;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     unitOfWork.Rollback();
                     throw;

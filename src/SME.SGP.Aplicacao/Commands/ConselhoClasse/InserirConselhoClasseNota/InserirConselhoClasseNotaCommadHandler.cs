@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
                 await LogarExcecao(ex);
                 throw new ErroInternoException("Erro ao inserir o conselho de classe");
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 unitOfWork.Rollback();
                 throw;

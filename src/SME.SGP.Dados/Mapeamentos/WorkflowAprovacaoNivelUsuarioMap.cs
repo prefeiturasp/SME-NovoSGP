@@ -2,13 +2,16 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class WorkflowAprovacaoNivelUsuarioMap : SimpleMap<WorkflowAprovacaoNivelUsuario>
+    public class WorkflowAprovacaoNivelUsuarioMap : DommelEntityMap<WorkflowAprovacaoNivelUsuario>
     {
         public WorkflowAprovacaoNivelUsuarioMap()
         {
             ToTable("wf_aprovacao_nivel_usuario");
-            Map(nameof(WorkflowAprovacaoNivelUsuario.UsuarioId), "usuario_id");
-            Map(nameof(WorkflowAprovacaoNivelUsuario.WorkflowAprovacaoNivelId), "wf_aprovacao_nivel_id");
+            Map(c => c.Usuario).Ignore();
+            Map(c => c.WorkflowAprovacaoNivel).Ignore();
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
+            Map(c => c.UsuarioId).ToColumn("usuario_id");
+            Map(c => c.WorkflowAprovacaoNivelId).ToColumn("wf_aprovacao_nivel_id");
         }
     }
 }

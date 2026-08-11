@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
 
                     return codigoArquivo;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     unitOfWork.Rollback();
                     throw;

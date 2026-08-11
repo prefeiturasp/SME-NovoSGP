@@ -2,13 +2,14 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class NotificacaoAulaMap : SimpleMap<NotificacaoAula>
+    public class NotificacaoAulaMap : DommelEntityMap<NotificacaoAula>
     {
         public NotificacaoAulaMap()
         {
             ToTable("notificacao_aula");
-            Map(nameof(NotificacaoAula.NotificacaoId), "notificacao_id");
-            Map(nameof(NotificacaoAula.AulaId), "aula_id");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
+            Map(c => c.NotificacaoId).ToColumn("notificacao_id");
+            Map(c => c.AulaId).ToColumn("aula_id");
         }
     }
 }

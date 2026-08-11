@@ -2,14 +2,15 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class WfAprovacaoItineranciaMap : SimpleMap<WfAprovacaoItinerancia>
+    public class WfAprovacaoItineranciaMap : DommelEntityMap<WfAprovacaoItinerancia>
     {
         public WfAprovacaoItineranciaMap()
         {
             ToTable("wf_aprovacao_itinerancia");
-            Map(nameof(WfAprovacaoItinerancia.WfAprovacaoId), "wf_aprovacao_id");
-            Map(nameof(WfAprovacaoItinerancia.ItineranciaId), "itinerancia_id");
-            Map(nameof(WfAprovacaoItinerancia.StatusAprovacao), "status_aprovacao");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
+            Map(c => c.WfAprovacaoId).ToColumn("wf_aprovacao_id");
+            Map(c => c.ItineranciaId).ToColumn("itinerancia_id");
+            Map(c => c.StatusAprovacao).ToColumn("status_aprovacao");
         }
     }
 }

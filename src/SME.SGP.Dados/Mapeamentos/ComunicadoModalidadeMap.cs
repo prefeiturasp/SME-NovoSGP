@@ -2,13 +2,14 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ComunicadoModalidadeMap : SimpleMap<ComunicadoModalidade>
+    public class ComunicadoModalidadeMap : DommelEntityMap<ComunicadoModalidade>
     {
         public ComunicadoModalidadeMap()
         {
             ToTable("comunicado_modalidade");
-            Map(nameof(ComunicadoModalidade.ComunicadoId), "comunicado_id");
-            Map(nameof(ComunicadoModalidade.Modalidade), "modalidade");
+            Map(c => c.ComunicadoId).ToColumn("comunicado_id");
+            Map(c => c.Modalidade).ToColumn("modalidade");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
         }
     }
 }

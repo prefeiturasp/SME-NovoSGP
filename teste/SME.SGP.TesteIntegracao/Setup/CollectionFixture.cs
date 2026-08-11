@@ -53,6 +53,7 @@ namespace SME.SGP.TesteIntegracao.Setup
             Services.AddSingleton<IConfiguration>(config);
 
             Services.AddMemoryCache();
+            FluentMapper.EntityMaps.Clear();
 
             var culture = CultureInfo.CreateSpecificCulture("pt-BR");
             CultureInfo.CurrentCulture = culture;
