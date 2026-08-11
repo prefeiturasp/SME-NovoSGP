@@ -224,7 +224,7 @@ namespace SME.SGP.Infra
                     if (response.IsSuccessStatusCode)
                         return true;
                 }
-                catch (HttpRequestException)
+                catch (HttpRequestException e)
                 {
                     return false;
                 }

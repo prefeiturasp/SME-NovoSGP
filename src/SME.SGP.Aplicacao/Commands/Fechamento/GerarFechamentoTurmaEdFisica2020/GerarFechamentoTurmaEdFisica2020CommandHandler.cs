@@ -83,7 +83,7 @@ namespace SME.SGP.Aplicacao
                     {
                         await repositorioFechamentoNota.SalvarAsync(fechamentoAlunoNota);
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
                         await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao salvar fechamento de aluno - Turma Ed. Física 2020 - Aluno: {aluno} / Turma: {request.TurmaId}", LogNivel.Critico, LogContexto.Fechamento));
                         return false;

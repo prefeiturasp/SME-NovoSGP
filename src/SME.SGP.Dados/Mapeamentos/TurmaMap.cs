@@ -2,39 +2,29 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class TurmaMap : DommelEntityMap<Turma>
+    public class TurmaMap : SimpleMap<Turma>
     {
         public TurmaMap()
         {
             ToTable("turma");
-            Map(c => c.ModalidadeTipoCalendario).Ignore();
-            Map(c => c.Extinta).Ignore();
-            Map(c => c.Ano).ToColumn("ano");
-            Map(c => c.AnoLetivo).ToColumn("ano_letivo");
-            Map(c => c.CodigoTurma).ToColumn("turma_id");
-            Map(c => c.TipoTurma).ToColumn("tipo_turma");
-            Map(c => c.DataAtualizacao).ToColumn("data_atualizacao");
-            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
-            Map(c => c.ModalidadeCodigo).ToColumn("modalidade_codigo");
-            Map(c => c.Nome).ToColumn("nome");
-            Map(c => c.QuantidadeDuracaoAula).ToColumn("qt_duracao_aula");
-            Map(c => c.Semestre).ToColumn("semestre");
-            Map(c => c.TipoTurno).ToColumn("tipo_turno");
-            Map(c => c.SerieEnsino).ToColumn("serie_ensino");
-            Map(c => c.UeId).ToColumn("ue_id");
-            Map(c => c.NomeFiltro).ToColumn("nome_filtro");
-            Map(c => c.Historica).ToColumn("historica");
-            Map(c => c.EnsinoEspecial).ToColumn("ensino_especial");
-            Map(c => c.DataInicio).ToColumn("data_inicio");
-            Map(c => c.DataFim).ToColumn("dt_fim_eol");
-            Map(c => c.EtapaEJA).ToColumn("etapa_eja");
-            Map(c => c.EhTurmaFund1).Ignore();
-            Map(c => c.EhTurmaFund2).Ignore();
-            Map(c => c.EhTurmaEnsinoMedio).Ignore();
-            Map(c => c.EhTurmaInfantil).Ignore();
-            Map(c => c.EhTurmaHistorica).Ignore();
-            Map(c => c.TurnoParaComponentesCurriculares).Ignore();
-            Map(c => c.AnoTurmaInteiro).Ignore();
+            Map(nameof(Turma.Ano), "ano");
+            Map(nameof(Turma.AnoLetivo), "ano_letivo");
+            Map(nameof(Turma.CodigoTurma), "turma_id");
+            Map(nameof(Turma.TipoTurma), "tipo_turma");
+            Map(nameof(Turma.DataAtualizacao), "data_atualizacao");
+            Map(nameof(Turma.ModalidadeCodigo), "modalidade_codigo");
+            Map(nameof(Turma.Nome), "nome");
+            Map(nameof(Turma.QuantidadeDuracaoAula), "qt_duracao_aula");
+            Map(nameof(Turma.Semestre), "semestre");
+            Map(nameof(Turma.TipoTurno), "tipo_turno");
+            Map(nameof(Turma.SerieEnsino), "serie_ensino");
+            Map(nameof(Turma.UeId), "ue_id");
+            Map(nameof(Turma.NomeFiltro), "nome_filtro");
+            Map(nameof(Turma.Historica), "historica");
+            Map(nameof(Turma.EnsinoEspecial), "ensino_especial");
+            Map(nameof(Turma.DataInicio), "data_inicio");
+            Map(nameof(Turma.DataFim), "dt_fim_eol");
+            Map(nameof(Turma.EtapaEJA), "etapa_eja");
         }
     }
 }

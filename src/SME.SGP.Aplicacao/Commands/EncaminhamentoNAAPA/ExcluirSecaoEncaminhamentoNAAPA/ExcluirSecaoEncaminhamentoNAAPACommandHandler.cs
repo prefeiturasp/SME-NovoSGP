@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
                     unitOfWork.PersistirTransacao();
                     return true;
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
                     unitOfWork.Rollback();
                     throw;

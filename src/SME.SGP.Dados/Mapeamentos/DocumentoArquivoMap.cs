@@ -2,14 +2,13 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class DocumentoArquivoMap : DommelEntityMap<DocumentoArquivo>
+    public class DocumentoArquivoMap : SimpleMap<DocumentoArquivo>
     {
         public DocumentoArquivoMap()
         {
             ToTable("documento_arquivo");
-            Map(c => c.Id).ToColumn("id").IsKey();
-            Map(c => c.DocumentoId).ToColumn("documento_id");
-            Map(c => c.ArquivoId).ToColumn("arquivo_id");
+            Map(nameof(DocumentoArquivo.DocumentoId), "documento_id");
+            Map(nameof(DocumentoArquivo.ArquivoId), "arquivo_id");
         }
     }
 }
