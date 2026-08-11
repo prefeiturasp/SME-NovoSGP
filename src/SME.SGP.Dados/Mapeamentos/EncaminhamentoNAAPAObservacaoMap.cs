@@ -1,4 +1,6 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dados.Mapeamentos;
+
 namespace SME.SGP.Dados
 {
     public class EncaminhamentoNAAPAObservacaoMap : BaseMap<EncaminhamentoNAAPAObservacao>
@@ -6,9 +8,9 @@ namespace SME.SGP.Dados
         public EncaminhamentoNAAPAObservacaoMap()
         {
             ToTable("encaminhamento_naapa_observacao");
-            Map(c => c.EncaminhamentoNAAPAId).ToColumn("encaminhamento_naapa_id");
-            Map(c => c.Excluido).ToColumn("excluido");
-            Map(c => c.Observacao).ToColumn("observacao");
+            Map(nameof(EncaminhamentoNAAPAObservacao.EncaminhamentoNAAPAId), "encaminhamento_naapa_id");
+            Map(nameof(EncaminhamentoNAAPAObservacao.Excluido), "excluido");
+            Map(nameof(EncaminhamentoNAAPAObservacao.Observacao), "observacao");
         }
     }
 }

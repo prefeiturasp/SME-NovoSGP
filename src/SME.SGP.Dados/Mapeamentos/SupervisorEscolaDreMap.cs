@@ -7,11 +7,12 @@ namespace SME.SGP.Dados.Mapeamentos
         public SupervisorEscolaDreMap()
         {
             ToTable("supervisor_escola_dre");
-            Map(c => c.DreId).ToColumn("dre_id");
-            Map(c => c.EscolaId).ToColumn("escola_id");
-            Map(c => c.SupervisorId).ToColumn("supervisor_id");
-            Map(c => c.Excluido).ToColumn("excluido");
-            Map(c => c.Tipo).ToColumn("tipo");
+
+            Map(nameof(SupervisorEscolaDre.DreId), "dre_id");
+            Map(nameof(SupervisorEscolaDre.EscolaId), "escola_id");
+            Map(nameof(SupervisorEscolaDre.SupervisorId), "supervisor_id");
+            Map(nameof(SupervisorEscolaDre.Excluido), "excluido");
+            Map(nameof(SupervisorEscolaDre.Tipo), "tipo");
         }
     }
 }

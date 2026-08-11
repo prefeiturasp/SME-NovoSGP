@@ -7,17 +7,17 @@ namespace SME.SGP.Dados.Mapeamentos
         public EventoTipoMap()
         {
             ToTable("evento_tipo");
-            Map(c => c.Ativo).ToColumn("ativo");
-            Map(c => c.Codigo).ToColumn("codigo");
-            Map(c => c.Concomitancia).ToColumn("concomitancia");
-            Map(c => c.Dependencia).ToColumn("dependencia");
-            Map(c => c.Descricao).ToColumn("descricao");
-            Map(c => c.Excluido).ToColumn("excluido");
-            Map(c => c.Letivo).ToColumn("letivo");
-            Map(c => c.LocalOcorrencia).ToColumn("local_ocorrencia");
-            Map(c => c.TipoData).ToColumn("tipo_data");
-            Map(c => c.SomenteLeitura).ToColumn("somente_leitura");
-            Map(c => c.EventoEscolaAqui).ToColumn("evento_escolaaqui");
+            Map(nameof(EventoTipo.Ativo), "ativo");
+            Map(nameof(EventoTipo.Codigo), "codigo");
+            Map(nameof(EventoTipo.Concomitancia), "concomitancia");
+            Map(nameof(EventoTipo.Dependencia), "dependencia");
+            Map(nameof(EventoTipo.Descricao), "descricao");
+            Map(nameof(EventoTipo.Excluido), "excluido");
+            Map(nameof(EventoTipo.Letivo), "letivo");
+            Map(nameof(EventoTipo.LocalOcorrencia), "local_ocorrencia");
+            Map(nameof(EventoTipo.TipoData), "tipo_data");
+            Map(nameof(EventoTipo.SomenteLeitura), "somente_leitura");
+            Map(nameof(EventoTipo.EventoEscolaAqui), "evento_escolaaqui");
         }
     }
 }

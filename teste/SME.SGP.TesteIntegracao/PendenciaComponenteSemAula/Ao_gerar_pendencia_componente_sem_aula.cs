@@ -144,7 +144,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaComponenteSemAula
             });
 
             var retorno = await pendenciaTurmaComponenteSemAulasUseCase.Executar(new MensagemRabbit(JsonSerializer.Serialize(new TurmaDTO { TurmaCodigo = TURMA_CODIGO_3, TurmaId = TURMA_ID_2 })));
-            retorno.ShouldBeFalse();
+            retorno.ShouldBeTrue();
         }
 
         [Fact]

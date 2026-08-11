@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Dominio
+﻿
+
+namespace SME.SGP.Dominio
 {
     public class ConselhoClasse: EntidadeBase
     {
@@ -10,6 +12,7 @@
         }
 
         public long FechamentoTurmaId { get; set; }
+       
         public FechamentoTurma FechamentoTurma { get; set; }
 
         public SituacaoConselhoClasse Situacao { get; set; }

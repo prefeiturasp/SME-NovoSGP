@@ -1,4 +1,6 @@
-﻿using SME.SGP.Dominio;
+﻿using SME.SGP.Dados.Mapeamentos;
+using SME.SGP.Dominio;
+
 namespace SME.SGP.Dados
 {
     public class RespostaMapeamentoEstudanteMap : BaseMap<RespostaMapeamentoEstudante>
@@ -6,11 +8,12 @@ namespace SME.SGP.Dados
         public RespostaMapeamentoEstudanteMap()
         {
             ToTable("mapeamento_estudante_resposta");
-            Map(c => c.QuestaoMapeamentoEstudanteId).ToColumn("questao_mapeamento_estudante_id");
-            Map(c => c.RespostaId).ToColumn("resposta_id");
-            Map(c => c.ArquivoId).ToColumn("arquivo_id");
-            Map(c => c.Texto).ToColumn("texto");
-            Map(c => c.Excluido).ToColumn("excluido");
+
+            Map(nameof(RespostaMapeamentoEstudante.QuestaoMapeamentoEstudanteId), "questao_mapeamento_estudante_id");
+            Map(nameof(RespostaMapeamentoEstudante.RespostaId), "resposta_id");
+            Map(nameof(RespostaMapeamentoEstudante.ArquivoId), "arquivo_id");
+            Map(nameof(RespostaMapeamentoEstudante.Texto), "texto");
+            Map(nameof(RespostaMapeamentoEstudante.Excluido), "excluido");
         }
     }
 }

@@ -94,7 +94,7 @@ namespace SME.SGP.Dados
 
         public async Task<long> Inserir(ConsolidacaoRegistrosPedagogicos consolidacao)
         {
-            return (long)await database.Conexao.InsertAsync(consolidacao);
+            return (long)await database.Conexao.InsertMappedAsync(consolidacao);
         }
 
         public async Task<IEnumerable<ConsolidacaoRegistrosPedagogicosDto>> GerarRegistrosPedagogicosComSeparacaoDiarioBordo(string turmaCodigo, int anoLetivo, long[] componentesCurricularesIds)

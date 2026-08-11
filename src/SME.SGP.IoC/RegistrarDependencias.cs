@@ -52,7 +52,6 @@ using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Aplicacao.Servicos.Interfaces;
 using SME.SGP.Dados;
 using SME.SGP.Dados.Contexto;
-using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -90,7 +89,6 @@ namespace SME.SGP.IoC
             RegistrarServicoArmazenamento(services, configuration);
 
 
-            RegistrarMapeamentos.Registrar();
         }
 
         protected virtual void RegistrarServicoArmazenamento(IServiceCollection services, IConfiguration configuration)
@@ -131,7 +129,6 @@ namespace SME.SGP.IoC
             RegistrarAuditoria(services);
             RegistrarServicoArmazenamento(services, configuration);
 
-            RegistrarMapeamentos.Registrar();
         }
 
         private void RegistrarMetricas(IServiceCollection services)

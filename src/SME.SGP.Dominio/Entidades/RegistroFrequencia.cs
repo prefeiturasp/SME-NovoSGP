@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Dominio
+﻿
+
+namespace SME.SGP.Dominio
 {
     public class RegistroFrequencia : EntidadeBase
     {
@@ -10,6 +12,7 @@
         public RegistroFrequencia()
         {
         }
+       
 
         public Aula Aula { get; set; }
         public long AulaId { get; set; }

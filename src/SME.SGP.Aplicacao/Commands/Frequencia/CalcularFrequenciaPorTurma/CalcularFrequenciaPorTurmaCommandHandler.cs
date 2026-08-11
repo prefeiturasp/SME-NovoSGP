@@ -136,12 +136,31 @@ namespace SME.SGP.Aplicacao
                             .Where(t => t.AlunoCodigo.Equals(codigoAluno) && disciplinasIdsConsideradas.Contains(t.ComponenteCurricularId))?
                             .Sum(t => t.TotalAulas) ?? 0;
         }
-        private PeriodoEscolar ObterPeriodoVigenteDataAula(IEnumerable<PeriodoEscolar> periodos, DateTime dataAula)
+        private PeriodoEscolar ObterPeriodoVigenteDataAula(
+            IEnumerable<PeriodoEscolar> periodos,
+            DateTime dataAula)
         {
-            var periodo = periodos?.SingleOrDefault(p => p.PeriodoInicio.Date <= dataAula && p.PeriodoFim.Date >= dataAula);
-            if (periodo.EhNulo())
-                throw new NegocioException("A data da aula está fora dos períodos escolares da turma");
-            return periodo;
+            var periodosEncontrados = periodos?
+                .Where(p =>
+                    p.PeriodoInicio.Date <= dataAula.Date &&
+                    p.PeriodoFim.Date >= dataAula.Date)
+                .ToList();
+
+            if (periodosEncontrados == null ||
+                periodosEncontrados.Count == 0)
+            {
+                throw new NegocioException(
+                    "A data da aula está fora dos períodos escolares da turma");
+            }
+
+            if (periodosEncontrados.Count > 1)
+            {
+                throw new NegocioException(
+                    $"A data da aula {dataAula:dd/MM/yyyy} " +
+                    "está associada a mais de um período escolar.");
+            }
+
+            return periodosEncontrados[0];
         }
 
         private async Task<string> ObterRfProfessorLogado(CalcularFrequenciaPorTurmaCommand request)

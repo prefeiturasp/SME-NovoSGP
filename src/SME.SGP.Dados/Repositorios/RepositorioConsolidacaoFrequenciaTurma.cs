@@ -20,7 +20,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<long> Inserir(ConsolidacaoFrequenciaTurma consolidacao)
         {
-            return (long)(await database.Conexao.InsertAsync(consolidacao));
+            return (long)(await database.Conexao.InsertMappedAsync(consolidacao));
         }
 
         public async Task LimparConsolidacaoFrequenciasTurmasPorAno(int ano)
@@ -34,7 +34,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<long> InserirConsolidacaoDashBoard(ConsolidacaoDashBoardFrequencia consolidacao)
         {
-            return (long)(await database.Conexao.InsertAsync(consolidacao));
+            return (long)(await database.Conexao.InsertMappedAsync(consolidacao));
         }
 
         public async Task AlterarConsolidacaoDashboardTurmaMesPeriodoAno(long id, int quantidadePresente, int quantidadeAusente, int quantidadeRemoto)
@@ -85,9 +85,9 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<long> SalvarConsolidacaoDashBoardFrequencia(ConsolidacaoDashBoardFrequencia consolidacaoDashBoardFrequencia)
         {
             if (consolidacaoDashBoardFrequencia.Id > 0)
-                await database.Conexao.UpdateAsync(consolidacaoDashBoardFrequencia);
+                await database.Conexao.UpdateMappedAsync(consolidacaoDashBoardFrequencia);
             else
-                consolidacaoDashBoardFrequencia.Id = (long)(await database.Conexao.InsertAsync(consolidacaoDashBoardFrequencia));
+                consolidacaoDashBoardFrequencia.Id = (long)(await database.Conexao.InsertMappedAsync(consolidacaoDashBoardFrequencia));
 
             return consolidacaoDashBoardFrequencia.Id;
         }
@@ -95,9 +95,9 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<long> SalvarConsolidacaoFrequenciaTurma(ConsolidacaoFrequenciaTurma consolidacaoFrequenciaTurma)
         {
             if (consolidacaoFrequenciaTurma.Id > 0)
-                await database.Conexao.UpdateAsync(consolidacaoFrequenciaTurma);
+                await database.Conexao.UpdateMappedAsync(consolidacaoFrequenciaTurma);
             else
-                consolidacaoFrequenciaTurma.Id = (long)(await database.Conexao.InsertAsync(consolidacaoFrequenciaTurma));
+                consolidacaoFrequenciaTurma.Id = (long)(await database.Conexao.InsertMappedAsync(consolidacaoFrequenciaTurma));
 
             return consolidacaoFrequenciaTurma.Id;
         }

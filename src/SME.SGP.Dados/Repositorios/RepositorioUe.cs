@@ -71,19 +71,19 @@ namespace SME.SGP.Dados.Repositorios
                 item.DataAtualizacao = DateTime.Today;
                 item.Dre = dres.First(x => x.CodigoDre == item.Dre.CodigoDre);
                 item.DreId = item.Dre.Id;
-                item.Id = (long)await contexto.Conexao.InsertAsync(item);
+                item.Id = (long)await contexto.Conexao.InsertMappedAsync(item);
                 resultado.Add(item);
             }
         }
 
         public async Task<long> IncluirAsync(Ue ueParaIncluir)
         {
-            return (long)await contexto.Conexao.InsertAsync(ueParaIncluir);
+            return (long)await contexto.Conexao.InsertMappedAsync(ueParaIncluir);
         }
 
         public async Task AtualizarAsync(Ue ueParaAtualizar)
         {
-            await contexto.Conexao.UpdateAsync(ueParaAtualizar);
+            await contexto.Conexao.UpdateMappedAsync(ueParaAtualizar);
         }
 
         public async Task<IEnumerable<string>> ObterCodigoUePorModalidade(string[] codigoUes, Modalidade[] modalidades)
