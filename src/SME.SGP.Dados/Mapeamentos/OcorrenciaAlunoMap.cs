@@ -2,13 +2,14 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class OcorrenciaAlunoMap : SimpleMap<OcorrenciaAluno>
+    public class OcorrenciaAlunoMap : DommelEntityMap<OcorrenciaAluno>
     {
         public OcorrenciaAlunoMap()
         {
             ToTable("ocorrencia_aluno");
-            Map(nameof(OcorrenciaAluno.CodigoAluno), "codigo_aluno");
-            Map(nameof(OcorrenciaAluno.OcorrenciaId), "ocorrencia_id");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
+            Map(c => c.CodigoAluno).ToColumn("codigo_aluno");
+            Map(c => c.OcorrenciaId).ToColumn("ocorrencia_id");
         }
     }
 }

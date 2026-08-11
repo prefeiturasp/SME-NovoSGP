@@ -165,7 +165,7 @@ namespace SME.SGP.Aplicacao
                     await MoverRemoverExcluidos(item.DescricaoNovo, item.DescricaoAtual);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 unitOfWork.Rollback();
                 throw;

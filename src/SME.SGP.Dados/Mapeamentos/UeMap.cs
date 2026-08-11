@@ -2,16 +2,17 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class UeMap : SimpleMap<Ue>
+    public class UeMap : DommelEntityMap<Ue>
     {
         public UeMap()
         {
             ToTable("ue");
-            Map(nameof(Ue.CodigoUe), "ue_id");
-            Map(nameof(Ue.DataAtualizacao), "data_atualizacao");
-            Map(nameof(Ue.DreId), "dre_id");
-            Map(nameof(Ue.Nome), "nome");
-            Map(nameof(Ue.TipoEscola), "tipo_escola");
+            Map(c => c.CodigoUe).ToColumn("ue_id");
+            Map(c => c.DataAtualizacao).ToColumn("data_atualizacao");
+            Map(c => c.DreId).ToColumn("dre_id");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
+            Map(c => c.Nome).ToColumn("nome");
+            Map(c => c.TipoEscola).ToColumn("tipo_escola");
         }
     }
 }

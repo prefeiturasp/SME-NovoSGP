@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
                         Titulo = ocorrencia.Titulo
                     });
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     throw;
                 }

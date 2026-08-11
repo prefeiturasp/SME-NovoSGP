@@ -2,15 +2,16 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class FrequenciaTurmaEvasaoAlunoMap : SimpleMap<FrequenciaTurmaEvasaoAluno>
+    public class FrequenciaTurmaEvasaoAlunoMap : DommelEntityMap<FrequenciaTurmaEvasaoAluno>
     {
         public FrequenciaTurmaEvasaoAlunoMap()
         {
             ToTable("frequencia_turma_evasao_aluno");
-            Map(nameof(FrequenciaTurmaEvasaoAluno.FrequenciaTurmaEvasaoId), "frequencia_turma_evasao_id");
-            Map(nameof(FrequenciaTurmaEvasaoAluno.AlunoCodigo), "codigo_aluno");
-            Map(nameof(FrequenciaTurmaEvasaoAluno.AlunoNome), "nome_aluno");
-            Map(nameof(FrequenciaTurmaEvasaoAluno.PercentualFrequencia), "percentual_frequencia");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
+            Map(c => c.FrequenciaTurmaEvasaoId).ToColumn("frequencia_turma_evasao_id");
+            Map(c => c.AlunoCodigo).ToColumn("codigo_aluno");
+            Map(c => c.AlunoNome).ToColumn("nome_aluno");
+            Map(c => c.PercentualFrequencia).ToColumn("percentual_frequencia");
         }
     }
 }

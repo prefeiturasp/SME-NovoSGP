@@ -2,12 +2,13 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class MotivoAusenciaMap : SimpleMap<MotivoAusencia>
+    public class MotivoAusenciaMap : DommelEntityMap<MotivoAusencia>
     {
         public MotivoAusenciaMap()
         {
             ToTable("motivo_ausencia");
-            Map(nameof(MotivoAusencia.Descricao), "descricao");
-        }
+            Map(e => e.Id).ToColumn("id").IsIdentity().IsKey();
+            Map(e => e.Descricao).ToColumn("descricao");
+        }  
     }
 }

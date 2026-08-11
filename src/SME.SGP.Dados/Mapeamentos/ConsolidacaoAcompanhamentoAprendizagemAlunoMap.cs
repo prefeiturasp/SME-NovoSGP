@@ -2,15 +2,16 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ConsolidacaoAcompanhamentoAprendizagemAlunoMap : SimpleMap<ConsolidacaoAcompanhamentoAprendizagemAluno>
+    public class ConsolidacaoAcompanhamentoAprendizagemAlunoMap : DommelEntityMap<ConsolidacaoAcompanhamentoAprendizagemAluno>
     {
         public ConsolidacaoAcompanhamentoAprendizagemAlunoMap()
         {
             ToTable("consolidacao_acompanhamento_aprendizagem_aluno");
-            Map(nameof(ConsolidacaoAcompanhamentoAprendizagemAluno.TurmaId),"turma_id");
-            Map(nameof(ConsolidacaoAcompanhamentoAprendizagemAluno.QuantidadeComAcompanhamento),"quantidade_com_acompanhamento");
-            Map(nameof(ConsolidacaoAcompanhamentoAprendizagemAluno.QuantidadeSemAcompanhamento),"quantidade_sem_acompanhamento");
-            Map(nameof(ConsolidacaoAcompanhamentoAprendizagemAluno.Semestre),"semestre");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
+            Map(c => c.TurmaId).ToColumn("turma_id");
+            Map(c => c.QuantidadeComAcompanhamento).ToColumn("quantidade_com_acompanhamento");
+            Map(c => c.QuantidadeSemAcompanhamento).ToColumn("quantidade_sem_acompanhamento");
+            Map(c => c.Semestre).ToColumn("semestre");
         }
     }
 }

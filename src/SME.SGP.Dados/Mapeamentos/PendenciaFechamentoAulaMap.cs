@@ -2,13 +2,14 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class PendenciaFechamentoAulaMap : SimpleMap<PendenciaFechamentoAula>
+    public class PendenciaFechamentoAulaMap : DommelEntityMap<PendenciaFechamentoAula>
     {
         public PendenciaFechamentoAulaMap()
         {
             ToTable("pendencia_fechamento_aula");
-            Map(nameof(PendenciaFechamentoAula.AulaId), "aula_id");
-            Map(nameof(PendenciaFechamentoAula.PendenciaFechamentoId), "pendencia_fechamento_id");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
+            Map(c => c.AulaId).ToColumn("aula_id");
+            Map(c => c.PendenciaFechamentoId).ToColumn("pendencia_fechamento_id");
         }
     }
 }

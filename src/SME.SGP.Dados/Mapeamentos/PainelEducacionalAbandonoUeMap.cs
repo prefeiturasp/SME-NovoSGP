@@ -2,19 +2,19 @@ using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class PainelEducacionalAbandonoUeMap : SimpleMap<PainelEducacionalAbandonoUe>
+    public class PainelEducacionalAbandonoUeMap : EntityMap<PainelEducacionalAbandonoUe>
     {
         public PainelEducacionalAbandonoUeMap()
         {
-            ToTable("painel_educacional_consolidacao_abandono_ue");
-            Map(nameof(PainelEducacionalAbandonoUe.AnoLetivo), "ano_letivo");
-            Map(nameof(PainelEducacionalAbandonoUe.CodigoDre), "codigo_dre");
-            Map(nameof(PainelEducacionalAbandonoUe.CodigoUe), "codigo_ue");
-            Map(nameof(PainelEducacionalAbandonoUe.CodigoTurma), "codigo_turma");
-            Map(nameof(PainelEducacionalAbandonoUe.NomeTurma), "nome_turma");
-            Map(nameof(PainelEducacionalAbandonoUe.Modalidade), "modalidade");
-            Map(nameof(PainelEducacionalAbandonoUe.QuantidadeDesistencias), "quantidade_desistencias");
-            Map(nameof(PainelEducacionalAbandonoUe.CriadoEm), "criado_em");
+            Map(p => p.Id).ToColumn("id");
+            Map(p => p.AnoLetivo).ToColumn("ano_letivo");
+            Map(p => p.CodigoDre).ToColumn("codigo_dre");
+            Map(p => p.CodigoUe).ToColumn("codigo_ue");
+            Map(p => p.CodigoTurma).ToColumn("codigo_turma");
+            Map(p => p.NomeTurma).ToColumn("nome_turma");
+            Map(p => p.Modalidade).ToColumn("modalidade");
+            Map(p => p.QuantidadeDesistencias).ToColumn("quantidade_desistencias");
+            Map(p => p.CriadoEm).ToColumn("criado_em");
         }
     }
 }

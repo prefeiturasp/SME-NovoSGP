@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
 
                     return true;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     unitOfWork.Rollback();
                     throw;

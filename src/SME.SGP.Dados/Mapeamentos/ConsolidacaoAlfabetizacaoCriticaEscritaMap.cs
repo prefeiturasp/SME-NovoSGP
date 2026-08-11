@@ -2,18 +2,19 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ConsolidacaoAlfabetizacaoCriticaEscritaMap : SimpleMap<ConsolidacaoAlfabetizacaoCriticaEscrita>
+    public class ConsolidacaoAlfabetizacaoCriticaEscritaMap : DommelEntityMap<ConsolidacaoAlfabetizacaoCriticaEscrita>
     {
         public ConsolidacaoAlfabetizacaoCriticaEscritaMap()
         {
             ToTable("consolidacao_alfabetizacao_critica_escrita");
-            Map(nameof(ConsolidacaoAlfabetizacaoCriticaEscrita.DreCodigo),"dre_codigo");
-            Map(nameof(ConsolidacaoAlfabetizacaoCriticaEscrita.UeCodigo),"ue_codigo");
-            Map(nameof(ConsolidacaoAlfabetizacaoCriticaEscrita.DreNome),"dre_nome");
-            Map(nameof(ConsolidacaoAlfabetizacaoCriticaEscrita.UeNome),"ue_nome");
-            Map(nameof(ConsolidacaoAlfabetizacaoCriticaEscrita.Posicao),"posicao");
-            Map(nameof(ConsolidacaoAlfabetizacaoCriticaEscrita.TotalAlunosNaoAlfabetizados),"total_alunos_nao_alfabetizados");
-            Map(nameof(ConsolidacaoAlfabetizacaoCriticaEscrita.PercentualTotalAlunos),"percentual_total_alunos");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
+            Map(c => c.DreCodigo).ToColumn("dre_codigo");
+            Map(c => c.UeCodigo).ToColumn("ue_codigo");
+            Map(c => c.DreNome).ToColumn("dre_nome");
+            Map(c => c.UeNome).ToColumn("ue_nome");
+            Map(c => c.Posicao).ToColumn("posicao");
+            Map(c => c.TotalAlunosNaoAlfabetizados).ToColumn("total_alunos_nao_alfabetizados");
+            Map(c => c.PercentualTotalAlunos).ToColumn("percentual_total_alunos");
         }
     }
 }

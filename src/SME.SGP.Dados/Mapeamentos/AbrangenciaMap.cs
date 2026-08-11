@@ -2,17 +2,18 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class AbrangenciaMap : SimpleMap<Abrangencia>
+    public class AbrangenciaMap : DommelEntityMap<Abrangencia>
     {
         public AbrangenciaMap()
         {
             ToTable("abrangencia");
-            Map(nameof(Abrangencia.DreId), "dre_id");
-            Map(nameof(Abrangencia.Perfil), "perfil");
-            Map(nameof(Abrangencia.TurmaId), "turma_id");
-            Map(nameof(Abrangencia.UeId), "ue_id");
-            Map(nameof(Abrangencia.UsuarioId), "usuario_id");
-            Map(nameof(Abrangencia.Historico), "historico");
+            Map(c => c.DreId).ToColumn("dre_id");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
+            Map(c => c.Perfil).ToColumn("perfil");
+            Map(c => c.TurmaId).ToColumn("turma_id");
+            Map(c => c.UeId).ToColumn("ue_id");
+            Map(c => c.UsuarioId).ToColumn("usuario_id");
+            Map(c => c.Historico).ToColumn("historico");
         }
     }
 }

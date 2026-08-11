@@ -15,9 +15,6 @@ namespace SME.SGP.Dominio
 {
     public class ServicoUsuario : IServicoUsuario
     {
-        private const string CLAIM_PERFIL_ATUAL = "perfil";
-        private const string CLAIM_PERMISSAO = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
-        private const string CLAIM_RF = "rf";
         private readonly IContextoAplicacao contextoAplicacao;
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IMediator mediator;
@@ -102,12 +99,12 @@ namespace SME.SGP.Dominio
 
         public Guid ObterPerfilAtual()
         {
-            var claimPerfil = ObterClaim(CLAIM_PERFIL_ATUAL);
+            var claimPerfil = ObterClaim(ClaimsConstants.Perfil);
 
             if (string.IsNullOrEmpty(claimPerfil))
                 return Guid.Empty;
 
-            return Guid.Parse(ObterClaim(CLAIM_PERFIL_ATUAL));
+            return Guid.Parse(ObterClaim(ClaimsConstants.Perfil));
         }
 
         public async Task<IEnumerable<PrioridadePerfil>> ObterPerfisUsuario(string login)
@@ -128,7 +125,7 @@ namespace SME.SGP.Dominio
 
         public IEnumerable<Permissao> ObterPermissoes()
         {
-            var claims = contextoAplicacao.ObterVariavel<IEnumerable<InternalClaim>>("Claims").Where(a => a.Type == CLAIM_PERMISSAO);
+            var claims = contextoAplicacao.ObterVariavel<IEnumerable<InternalClaim>>("Claims").Where(a => a.Type == ClaimsConstants.Permissao);
             List<Permissao> retorno = new List<Permissao>();
 
             if (claims.Any())
@@ -144,7 +141,7 @@ namespace SME.SGP.Dominio
 
         public string ObterRf()
         {
-            var rf = ObterClaim(CLAIM_RF);
+            var rf = ObterClaim(ClaimsConstants.Rf);
             return rf;
         }
 

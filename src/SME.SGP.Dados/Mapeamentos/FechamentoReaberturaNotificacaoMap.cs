@@ -1,15 +1,15 @@
 ﻿using SME.SGP.Dominio;
-using SME.SGP.Dados.Mapeamentos;
 
 namespace SME.SGP.Dados
 {
-    public class FechamentoReaberturaNotificacaoMap : SimpleMap<FechamentoReaberturaNotificacao>
+    public class FechamentoReaberturaNotificacaoMap : DommelEntityMap<FechamentoReaberturaNotificacao>
     {
         public FechamentoReaberturaNotificacaoMap()
         {
             ToTable("fechamento_reabertura_notificacao");
-            Map(nameof(FechamentoReaberturaNotificacao.FechamentoReaberturaId), "fechamento_reabertura_id");
-            Map(nameof(FechamentoReaberturaNotificacao.NotificacaoId), "notificacao_id");
+            Map(c => c.FechamentoReaberturaId).ToColumn("fechamento_reabertura_id");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
+            Map(c => c.NotificacaoId).ToColumn("notificacao_id");
         }
     }
 }

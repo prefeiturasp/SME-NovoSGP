@@ -103,7 +103,7 @@ namespace SME.SGP.ComprimirArquivos.Worker
                 {
                     await TratarMensagem(ea);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     canalRabbit.BasicReject(ea.DeliveryTag, false);
                 }

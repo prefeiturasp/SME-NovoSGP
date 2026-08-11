@@ -1,15 +1,15 @@
-﻿using SME.SGP.Dados.Mapeamentos;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados
 {
-    public class ConsolidacaoRegistroIndividualMediaMap : SimpleMap<ConsolidacaoRegistroIndividualMedia>
+    class ConsolidacaoRegistroIndividualMediaMap : DommelEntityMap<ConsolidacaoRegistroIndividualMedia>
     {
         public ConsolidacaoRegistroIndividualMediaMap()
         {
             ToTable("consolidacao_registro_individual_media");
-            Map(nameof(ConsolidacaoRegistroIndividualMedia.TurmaId), "turma_id");
-            Map(nameof(ConsolidacaoRegistroIndividualMedia.Quantidade), "quantidade");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey(); 
+            Map(c => c.TurmaId).ToColumn("turma_id");
+            Map(c => c.Quantidade).ToColumn("quantidade");
         }
     }
 }

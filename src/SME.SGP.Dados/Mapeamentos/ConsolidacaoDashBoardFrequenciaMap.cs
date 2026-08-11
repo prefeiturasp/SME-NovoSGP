@@ -2,32 +2,33 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ConsolidacaoDashBoardFrequenciaMap : SimpleMap<ConsolidacaoDashBoardFrequencia>
+    public class ConsolidacaoDashBoardFrequenciaMap : DommelEntityMap<ConsolidacaoDashBoardFrequencia>
     {
         public ConsolidacaoDashBoardFrequenciaMap()
         {
             ToTable("consolidado_dashboard_frequencia");
-            Map(nameof(ConsolidacaoDashBoardFrequencia.TurmaId),"turma_id");
-            Map(nameof(ConsolidacaoDashBoardFrequencia.TurmaNome),"turma_nome");
-            Map(nameof(ConsolidacaoDashBoardFrequencia.TurmaAno),"turma_ano");
-            Map(nameof(ConsolidacaoDashBoardFrequencia.DataAula),"data_aula");
-            Map(nameof(ConsolidacaoDashBoardFrequencia.DataInicio),"data_inicio_semana");
-            Map(nameof(ConsolidacaoDashBoardFrequencia.DataFim),"data_fim_semana");
-            Map(nameof(ConsolidacaoDashBoardFrequencia.ModalidadeCodigo),"modalidade_codigo");
-            Map(nameof(ConsolidacaoDashBoardFrequencia.AnoLetivo),"ano_letivo");
-            Map(nameof(ConsolidacaoDashBoardFrequencia.DreId),"dre_id");
-            Map(nameof(ConsolidacaoDashBoardFrequencia.DreCodigo),"dre_codigo");
-            Map(nameof(ConsolidacaoDashBoardFrequencia.UeId),"ue_id");
-            Map(nameof(ConsolidacaoDashBoardFrequencia.DreAbreviacao),"dre_abreviacao");
-            Map(nameof(ConsolidacaoDashBoardFrequencia.QuantidadePresencas),"quantidade_presencas");
-            Map(nameof(ConsolidacaoDashBoardFrequencia.QuantidadeAusentes),"quantidade_ausencias");
-            Map(nameof(ConsolidacaoDashBoardFrequencia.QuantidadeRemotos),"quantidade_remotos");
-            Map(nameof(ConsolidacaoDashBoardFrequencia.CriadoEm),"criado_em");
-            Map(nameof(ConsolidacaoDashBoardFrequencia.semestre),"semestre");
-            Map(nameof(ConsolidacaoDashBoardFrequencia.Mes),"mes");
-            Map(nameof(ConsolidacaoDashBoardFrequencia.Tipo),"tipo");
-            Map(nameof(ConsolidacaoDashBoardFrequencia.TotalAulas),"total_aulas");
-            Map(nameof(ConsolidacaoDashBoardFrequencia.TotalFrequencias),"total_frequencias");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
+            Map(c => c.TurmaId).ToColumn("turma_id");
+            Map(c => c.TurmaNome).ToColumn("turma_nome");
+            Map(c => c.TurmaAno).ToColumn("turma_ano");
+            Map(c => c.DataAula).ToColumn("data_aula");
+            Map(c => c.DataInicio).ToColumn("data_inicio_semana");
+            Map(c => c.DataFim).ToColumn("data_fim_semana");
+            Map(c => c.ModalidadeCodigo).ToColumn("modalidade_codigo");
+            Map(c => c.AnoLetivo).ToColumn("ano_letivo");
+            Map(c => c.DreId).ToColumn("dre_id");
+            Map(c => c.DreCodigo).ToColumn("dre_codigo");
+            Map(c => c.UeId).ToColumn("ue_id");
+            Map(c => c.DreAbreviacao).ToColumn("dre_abreviacao");
+            Map(c => c.QuantidadePresencas).ToColumn("quantidade_presencas");
+            Map(c => c.QuantidadeAusentes).ToColumn("quantidade_ausencias");
+            Map(c => c.QuantidadeRemotos).ToColumn("quantidade_remotos");
+            Map(c => c.CriadoEm).ToColumn("criado_em");
+            Map(c => c.semestre).ToColumn("semestre");
+            Map(c => c.Mes).ToColumn("mes");
+            Map(c => c.Tipo).ToColumn("tipo");
+            Map(c => c.TotalAulas).ToColumn("total_aulas");
+            Map(c => c.TotalFrequencias).ToColumn("total_frequencias");
         }
     }
 }

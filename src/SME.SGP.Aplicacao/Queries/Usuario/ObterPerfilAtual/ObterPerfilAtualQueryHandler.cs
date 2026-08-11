@@ -13,7 +13,6 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPerfilAtualQueryHandler : IRequestHandler<ObterPerfilAtualQuery, Guid>
     {
-        private const string CLAIM_PERFIL_ATUAL = "perfil";
         private readonly IMediator mediator;
         private readonly IContextoAplicacao contextoAplicacao;
 
@@ -31,10 +30,10 @@ namespace SME.SGP.Aplicacao
 
             if (!string.IsNullOrEmpty(tokenAtual))
                 perfil = Guid.Parse(ObterClaims(tokenAtual)
-                    .FirstOrDefault(claim => claim.Type == "perfil")?.Value
+                    .FirstOrDefault(claim => claim.Type == ClaimsConstants.Perfil)?.Value
                     ?? string.Empty);
             else
-                perfil = Guid.Parse(ObterClaim(CLAIM_PERFIL_ATUAL) ?? string.Empty);
+                perfil = Guid.Parse(ObterClaim(ClaimsConstants.Perfil) ?? string.Empty);
 
             return perfil;
         }

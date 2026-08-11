@@ -2,15 +2,17 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class RelatorioCorrelacaoJasperMap : SimpleMap<RelatorioCorrelacaoJasper>
+    public class RelatorioCorrelacaoJasperMap : DommelEntityMap<RelatorioCorrelacaoJasper>
     {
         public RelatorioCorrelacaoJasperMap()
         {
             ToTable("relatorio_correlacao_jasper");
-            Map(nameof(RelatorioCorrelacaoJasper.ExportId), "export_id");
-            Map(nameof(RelatorioCorrelacaoJasper.JSessionId), "jsession_id");
-            Map(nameof(RelatorioCorrelacaoJasper.RelatorioCorrelacaoId), "relatorio_correlacao_id");
-            Map(nameof(RelatorioCorrelacaoJasper.RequestId), "request_id");
+            Map(c => c.RelatorioCorrelacao).Ignore();
+            Map(c => c.ExportId).ToColumn("export_id");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
+            Map(c => c.JSessionId).ToColumn("jsession_id");
+            Map(c => c.RelatorioCorrelacaoId).ToColumn("relatorio_correlacao_id");
+            Map(c => c.RequestId).ToColumn("request_id");
         }
     }
 }

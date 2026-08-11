@@ -2,14 +2,16 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class PendenciaRegistroIndividualAlunoMap : SimpleMap<PendenciaRegistroIndividualAluno>
+    public class PendenciaRegistroIndividualAlunoMap : DommelEntityMap<PendenciaRegistroIndividualAluno>
     {
         public PendenciaRegistroIndividualAlunoMap()
         {
             ToTable("pendencia_registro_individual_aluno");
-            Map(nameof(PendenciaRegistroIndividualAluno.CodigoAluno), "codigo_aluno");
-            Map(nameof(PendenciaRegistroIndividualAluno.PendenciaRegistroIndividualId), "pendencia_registro_individual_id");
-            Map(nameof(PendenciaRegistroIndividualAluno.Situacao), "situacao");
+
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
+            Map(c => c.CodigoAluno).ToColumn("codigo_aluno");
+            Map(c => c.PendenciaRegistroIndividualId).ToColumn("pendencia_registro_individual_id");
+            Map(c => c.Situacao).ToColumn("situacao");
         }
     }
 }

@@ -22,21 +22,31 @@ namespace SME.SGP.Infra.Contexto
 
         private void CapturarVariaveis()
         {
-            Variaveis.Add("RF", httpContextAccessor.HttpContext?.User?.FindFirst("RF")?.Value ?? "0");
+            var contextoHttp = httpContextAccessor.HttpContext;
+            var usuario = contextoHttp?.User;
+            var authorizationHeader = contextoHttp?.Request?.Headers["authorization"];
+            var temAuthorizationHeader = authorizationHeader.HasValue && authorizationHeader.Value != StringValues.Empty;
+            var codigoRf = usuario?.FindFirst(ClaimsConstants.Rf)?.Value;
+            var nomeUsuario = usuario?.FindFirst(ClaimsConstants.Nome)?.Value;
+
+            var temTokenBearer = temAuthorizationHeader && authorizationHeader.Value.Any(valor =>
+                valor.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase));
+
+            ValidarClaimsAuditoria(temTokenBearer, codigoRf, nomeUsuario);
+
+            Variaveis.Add("RF", codigoRf ?? "0");
             Variaveis.Add("Claims", GetInternalClaim());
-            Variaveis.Add("login", httpContextAccessor.HttpContext?.User?.Claims?.FirstOrDefault(a => a.Type == "login")?.Value ?? string.Empty);
-            Variaveis.Add("NumeroPagina", httpContextAccessor.HttpContext?.Request?.Query["NumeroPagina"].FirstOrDefault() ?? "0");
-            Variaveis.Add("NumeroRegistros", httpContextAccessor.HttpContext?.Request?.Query["NumeroRegistros"].FirstOrDefault() ?? "0");
+            Variaveis.Add("login", usuario?.FindFirst(ClaimsConstants.Login)?.Value ?? string.Empty);
+            Variaveis.Add("NumeroPagina", contextoHttp?.Request?.Query["NumeroPagina"].FirstOrDefault() ?? "0");
+            Variaveis.Add("NumeroRegistros", contextoHttp?.Request?.Query["NumeroRegistros"].FirstOrDefault() ?? "0");
 
-            Variaveis.Add("UsuarioLogado", httpContextAccessor.HttpContext?.User?.Identity?.Name ?? "Sistema");
-            Variaveis.Add("NomeUsuario", httpContextAccessor.HttpContext?.User?.FindFirst("Nome")?.Value ?? "Sistema");
-            Variaveis.Add("Administrador", httpContextAccessor.HttpContext?.User?.FindFirst("login_adm_suporte")?.Value ?? string.Empty);
-            Variaveis.Add("NomeAdministrador", httpContextAccessor.HttpContext?.User?.FindFirst("nome_adm_suporte")?.Value ?? string.Empty);
+            Variaveis.Add("UsuarioLogado", usuario?.Identity?.Name ?? "Sistema");
+            Variaveis.Add("NomeUsuario", nomeUsuario ?? "Sistema");
+            Variaveis.Add("Administrador", usuario?.FindFirst("login_adm_suporte")?.Value ?? string.Empty);
+            Variaveis.Add("NomeAdministrador", usuario?.FindFirst("nome_adm_suporte")?.Value ?? string.Empty);
             Variaveis.Add("PerfilUsuario", ObterPerfilAtual());
-            
-            var authorizationHeader = httpContextAccessor.HttpContext?.Request?.Headers["authorization"];
 
-            if (!authorizationHeader.HasValue || authorizationHeader.Value == StringValues.Empty)
+            if (!temAuthorizationHeader)
             {
                 Variaveis.Add("TemAuthorizationHeader", false);
                 Variaveis.Add("TokenAtual", string.Empty);
@@ -48,6 +58,12 @@ namespace SME.SGP.Infra.Contexto
             }
         }
 
+        private static void ValidarClaimsAuditoria(bool temTokenBearer, string codigoRf, string nomeUsuario)
+        {
+            if (temTokenBearer && (string.IsNullOrWhiteSpace(codigoRf) || string.IsNullOrWhiteSpace(nomeUsuario)))
+                throw new InvalidOperationException("O token autenticado não contém as claims obrigatórias 'rf' e 'nome' para auditoria.");
+        }
+
         private IEnumerable<InternalClaim> GetInternalClaim()
         {
             return (httpContextAccessor.HttpContext?.User?.Claims ?? Enumerable.Empty<Claim>()).Select(x => new InternalClaim() { Type = x.Type, Value = x.Value }).ToList();
@@ -55,7 +71,7 @@ namespace SME.SGP.Infra.Contexto
 
         private string ObterPerfilAtual()
         {
-            return (httpContextAccessor.HttpContext?.User?.Claims ?? Enumerable.Empty<Claim>()).FirstOrDefault(x => x.Type.ToLower() == "perfil")?.Value;
+            return httpContextAccessor.HttpContext?.User?.FindFirst(ClaimsConstants.Perfil)?.Value;
         }
 
         public override IContextoAplicacao AtribuirContexto(IContextoAplicacao contexto)

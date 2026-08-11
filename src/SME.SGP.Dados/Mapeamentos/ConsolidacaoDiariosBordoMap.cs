@@ -1,17 +1,18 @@
-﻿using SME.SGP.Dados.Mapeamentos;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados
 {
-    public class ConsolidacaoDiariosBordoMap : SimpleMap<ConsolidacaoDiariosBordo>
+    public class ConsolidacaoDiariosBordoMap : DommelEntityMap<ConsolidacaoDiariosBordo>
     {
         public ConsolidacaoDiariosBordoMap()
         {
             ToTable("consolidacao_diarios_bordo");
-            Map(nameof(ConsolidacaoDiariosBordo.TurmaId), "turma_id");
-            Map(nameof(ConsolidacaoDiariosBordo.AnoLetivo), "ano_letivo");
-            Map(nameof(ConsolidacaoDiariosBordo.QuantidadePreenchidos), "quantidade_preenchidos");
-            Map(nameof(ConsolidacaoDiariosBordo.QuantidadePendentes), "quantidade_pendentes");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey(); 
+            Map(c => c.TurmaId).ToColumn("turma_id");
+            Map(c => c.AnoLetivo).ToColumn("ano_letivo");
+            Map(c => c.QuantidadePreenchidos).ToColumn("quantidade_preenchidos");
+            Map(c => c.QuantidadePendentes).ToColumn("quantidade_pendentes");
+
         }
     }
 }
