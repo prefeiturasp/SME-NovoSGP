@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
                     await repositorioPendencia.AtualizarStatusPendenciasPorIds(ids, SituacaoPendencia.Resolvida);
                     unitOfWork.PersistirTransacao();
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
                     unitOfWork.Rollback();
                     throw;

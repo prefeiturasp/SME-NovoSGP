@@ -320,7 +320,7 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     notificacoesFalha.Add($"{novoEvento.DataInicio.ToShortDateString()} - {nex.Message}");
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     notificacoesFalha.Add($"{novoEvento.DataInicio.ToShortDateString()} - Ocorreu um erro interno.");
                 }

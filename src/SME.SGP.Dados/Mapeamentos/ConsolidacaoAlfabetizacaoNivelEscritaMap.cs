@@ -2,18 +2,18 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ConsolidacaoAlfabetizacaoNivelEscritaMap : DommelEntityMap<ConsolidacaoAlfabetizacaoNivelEscrita>
+    public class ConsolidacaoAlfabetizacaoNivelEscritaMap : SimpleMap<ConsolidacaoAlfabetizacaoNivelEscrita>
     {
         public ConsolidacaoAlfabetizacaoNivelEscritaMap()
         {
             ToTable("consolidacao_alfabetizacao_nivel_escrita");
-            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
-            Map(c => c.DreCodigo).ToColumn("dre_codigo");
-            Map(c => c.UeCodigo).ToColumn("ue_codigo");
-            Map(c => c.AnoLetivo).ToColumn("ano_letivo");
-            Map(c => c.Periodo).ToColumn("periodo");
-            Map(c => c.NivelEscrita).ToColumn("nivel_escrita");
-            Map(c => c.Quantidade).ToColumn("quantidade");
+
+            Map(nameof(ConsolidacaoAlfabetizacaoNivelEscrita.DreCodigo),"dre_codigo");
+            Map(nameof(ConsolidacaoAlfabetizacaoNivelEscrita.UeCodigo),"ue_codigo");
+            Map(nameof(ConsolidacaoAlfabetizacaoNivelEscrita.AnoLetivo),"ano_letivo");
+            Map(nameof(ConsolidacaoAlfabetizacaoNivelEscrita.Periodo),"periodo");
+            Map(nameof(ConsolidacaoAlfabetizacaoNivelEscrita.NivelEscrita),"nivel_escrita");
+            Map(nameof(ConsolidacaoAlfabetizacaoNivelEscrita.Quantidade),"quantidade");
         }
     }
 }

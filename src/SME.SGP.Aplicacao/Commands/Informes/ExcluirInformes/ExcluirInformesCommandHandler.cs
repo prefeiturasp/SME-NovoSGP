@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExcluirNotificacaoInformativo, request.Id, Guid.NewGuid()));
                     unitOfWork.PersistirTransacao();
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
                     unitOfWork.Rollback();
                     throw;

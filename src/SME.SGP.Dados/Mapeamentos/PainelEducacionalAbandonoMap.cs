@@ -2,19 +2,19 @@ using SME.SGP.Dominio.Entidades;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class PainelEducacionalAbandonoMap : EntityMap<PainelEducacionalAbandono>
+    public class PainelEducacionalAbandonoMap : SimpleMap<PainelEducacionalAbandono>
     {
         public PainelEducacionalAbandonoMap()
         {
-            Map(p => p.Id).ToColumn("id");
-            Map(p => p.AnoLetivo).ToColumn("ano_letivo");
-            Map(p => p.CodigoDre).ToColumn("codigo_dre");
-            Map(p => p.CodigoUe).ToColumn("codigo_ue");
-            Map(p => p.Ano).ToColumn("ano");
-            Map(p => p.QuantidadeDesistencias).ToColumn("quantidade_desistencias");
-            Map(p => p.Modalidade).ToColumn("modalidade");
-            Map(p => p.Turma).ToColumn("turma");
-            Map(p => p.CriadoEm).ToColumn("criado_em");
+            ToTable("painel_educacional_abandono");
+            Map(nameof(PainelEducacionalAbandono.AnoLetivo), "ano_letivo");
+            Map(nameof(PainelEducacionalAbandono.CodigoDre), "codigo_dre");
+            Map(nameof(PainelEducacionalAbandono.CodigoUe), "codigo_ue");
+            Map(nameof(PainelEducacionalAbandono.Ano), "ano");
+            Map(nameof(PainelEducacionalAbandono.QuantidadeDesistencias), "quantidade_desistencias");
+            Map(nameof(PainelEducacionalAbandono.Modalidade), "modalidade");
+            Map(nameof(PainelEducacionalAbandono.Turma), "turma");
+            Map(nameof(PainelEducacionalAbandono.CriadoEm), "criado_em");
         }
     }
 }

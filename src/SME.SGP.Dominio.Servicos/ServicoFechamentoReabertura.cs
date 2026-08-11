@@ -231,7 +231,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 return await comandosWorkflowAprovacao.Salvar(wfAprovacaoEvento);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }

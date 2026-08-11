@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
                     await ExcluirFotoMinio((fotoAluno.Codigo.ToString() + Path.GetExtension(fotoAluno.Nome)));
                     return true;
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
                     unitOfWork.Rollback();
                     throw;

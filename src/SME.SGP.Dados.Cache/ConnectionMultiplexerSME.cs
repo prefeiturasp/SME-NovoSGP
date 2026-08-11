@@ -24,11 +24,11 @@ namespace SME.SGP.Infra.Contexto
                 this.connectionMultiplexer = ConnectionMultiplexer
                     .Connect(redisConfigurationOptions);
             }
-            catch (RedisConnectionException)
+            catch (RedisConnectionException rcex)
             {
                 //Ignorar exceção
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 //Ignorar exceção
             }

@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao.Commands
                     unitOfWork.PersistirTransacao();
                     return idEntidadeExcluida;
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
                     unitOfWork.Rollback();
                     throw;

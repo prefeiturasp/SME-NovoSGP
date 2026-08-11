@@ -2,14 +2,13 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class DiarioBordoObservacaoNotificacaoMap : DommelEntityMap<DiarioBordoObservacaoNotificacao>
+    public class DiarioBordoObservacaoNotificacaoMap : SimpleMap<DiarioBordoObservacaoNotificacao>
     {
         public DiarioBordoObservacaoNotificacaoMap()
         {
             ToTable("diario_bordo_observacao_notificacao");
-            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
-            Map(c => c.IdObservacao).ToColumn("observacao_id");
-            Map(c => c.IdNotificacao).ToColumn("notificacao_id");
+            Map(nameof(DiarioBordoObservacaoNotificacao.IdObservacao), "observacao_id");
+            Map(nameof(DiarioBordoObservacaoNotificacao.IdNotificacao), "notificacao_id");
         }
-    }    
+    }
 }
