@@ -1511,6 +1511,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Nota
         {
             var filtro = new ListaNotasConceitosDto { TurmaHistorico = true };
             var alunoMock = CriarAlunoMock(ativo: true, situacao: SituacaoMatriculaAluno.Ativo);
+            alunoMock.DataMatricula = new DateTime(2026, 4, 27);
+            alunoMock.DataSituacao = new DateTime(2026, 7, 17);
             var alunos = new List<AlunoPorTurmaResposta> { alunoMock };
 
             var resultado = FiltrarAlunos(alunos, filtro);
