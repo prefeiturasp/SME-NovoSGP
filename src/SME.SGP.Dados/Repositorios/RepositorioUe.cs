@@ -71,14 +71,14 @@ namespace SME.SGP.Dados.Repositorios
                 item.DataAtualizacao = DateTime.Today;
                 item.Dre = dres.First(x => x.CodigoDre == item.Dre.CodigoDre);
                 item.DreId = item.Dre.Id;
-                item.Id = (long)await contexto.Conexao.InsertMappedAsync(item);
+                item.Id = await contexto.Conexao.InsertMappedAsync(item);
                 resultado.Add(item);
             }
         }
 
         public async Task<long> IncluirAsync(Ue ueParaIncluir)
         {
-            return (long)await contexto.Conexao.InsertMappedAsync(ueParaIncluir);
+            return await contexto.Conexao.InsertMappedAsync(ueParaIncluir);
         }
 
         public async Task AtualizarAsync(Ue ueParaAtualizar)

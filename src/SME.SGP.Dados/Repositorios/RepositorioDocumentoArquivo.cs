@@ -21,7 +21,7 @@ namespace SME.SGP.Dados.Repositorios
             if (documentoArquivo.Id > 0)
                 await database.Conexao.UpdateMappedAsync(documentoArquivo);
             else
-                documentoArquivo.Id = (long)await database.Conexao.InsertMappedAsync(documentoArquivo);
+                documentoArquivo.Id = await database.Conexao.InsertMappedAsync(documentoArquivo);
 
             return documentoArquivo.Id;
         }
