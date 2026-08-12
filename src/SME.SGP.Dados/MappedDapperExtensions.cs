@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ namespace SME.SGP.Dados
         private const string IdParameter = " = @Id";
         private const string SqlStatementTerminator = ";";
 
+        [SuppressMessage("Security", "S2077:Formatting SQL queries is security-sensitive")]
         public static long InsertMapped<T>(
             this IDbConnection connection,
             T entity,
@@ -45,7 +47,7 @@ namespace SME.SGP.Dados
                 properties.Select(property =>
                     "@" + property.Name));
 
-            var sql = // NOSONAR
+            var sql = 
                 "INSERT INTO " +
                 QuoteIdentifier(map.TableName) +
                 " (" + columns + ")" +
@@ -54,12 +56,13 @@ namespace SME.SGP.Dados
                 QuoteIdentifier(map.GetColumnName("Id")) +
                 ";";
 
-            var id = connection.ExecuteScalar<long>(sql, entity, transaction); // NOSONAR
+            var id = connection.ExecuteScalar<long>(sql, entity, transaction); 
             SetId(entity, id);
 
             return id;
         }
 
+        [SuppressMessage("Security", "S2077:Formatting SQL queries is security-sensitive")]
         public static async Task<long> InsertMappedAsync<T>(
             this IDbConnection connection,
             T entity,
@@ -91,8 +94,7 @@ namespace SME.SGP.Dados
                 properties.Select(property =>
                     "@" + property.Name));
 
-           
-            var sql =  // NOSONAR
+            var sql =
                 "INSERT INTO " +
                 QuoteIdentifier(map.TableName) +
                 " (" + columns + ")" +
@@ -101,8 +103,7 @@ namespace SME.SGP.Dados
                 QuoteIdentifier(map.GetColumnName("Id")) +
                 ";";
 
-            var id = await connection.ExecuteScalarAsync<long>(sql, entity, transaction); // NOSONAR
-
+            var id = await connection.ExecuteScalarAsync<long>(sql, entity, transaction);
 
             SetId(entity, id);
 

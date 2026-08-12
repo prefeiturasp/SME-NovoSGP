@@ -5,6 +5,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -176,6 +177,9 @@ namespace SME.SGP.Dados.Repositorios
             return entidade.Id;
         }
 
+
+        [SuppressMessage("Security", "S2077:Formatting SQL queries is security-sensitive")]
+
         public virtual async Task<bool> Exists(
             long id,
             string coluna = null)
@@ -194,11 +198,14 @@ namespace SME.SGP.Dados.Repositorios
                 QuoteIdentifier(columnName) +
                 " = @id);";
 
-            return await database.Conexao // NOSONAR
+            return await database.Conexao
                 .ExecuteScalarAsync<bool>(
                     sql,
                     new { id });
         }
+
+
+        [SuppressMessage("Security", "S2077:Formatting SQL queries is security-sensitive")]
 
         public virtual async Task<long>
             RemoverLogico(
@@ -236,7 +243,7 @@ namespace SME.SGP.Dados.Repositorios
                 ";";
 
             
-            return await database.Conexao // NOSONAR
+            return await database.Conexao
                 .ExecuteScalarAsync<long>(
                     sql,
                     new
