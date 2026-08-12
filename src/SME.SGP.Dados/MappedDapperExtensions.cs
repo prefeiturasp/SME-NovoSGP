@@ -45,8 +45,7 @@ namespace SME.SGP.Dados
                 properties.Select(property =>
                     "@" + property.Name));
 
-            // NOSONAR - S2077: identificadores vêm de MapRegistry (fonte confiável) e são escapados por QuoteIdentifier.
-            var sql =
+            var sql = // NOSONAR
                 "INSERT INTO " +
                 QuoteIdentifier(map.TableName) +
                 " (" + columns + ")" +
@@ -55,8 +54,7 @@ namespace SME.SGP.Dados
                 QuoteIdentifier(map.GetColumnName("Id")) +
                 ";";
 
-            // NOSONAR - S2077: a query já está parametrizada; risco de injeção inexistente.
-            var id = connection.ExecuteScalar<long>(sql, entity, transaction);
+            var id = connection.ExecuteScalar<long>(sql, entity, transaction); // NOSONAR
             SetId(entity, id);
 
             return id;
@@ -93,8 +91,8 @@ namespace SME.SGP.Dados
                 properties.Select(property =>
                     "@" + property.Name));
 
-            // NOSONAR - S2077: identificadores vêm de MapRegistry (fonte confiável) e são escapados por QuoteIdentifier.
-            var sql =
+           
+            var sql =  // NOSONAR
                 "INSERT INTO " +
                 QuoteIdentifier(map.TableName) +
                 " (" + columns + ")" +
@@ -103,8 +101,7 @@ namespace SME.SGP.Dados
                 QuoteIdentifier(map.GetColumnName("Id")) +
                 ";";
 
-            // NOSONAR - S2077: a query já está parametrizada; risco de injeção inexistente.
-            var id = await connection.ExecuteScalarAsync<long>(sql, entity, transaction);
+            var id = await connection.ExecuteScalarAsync<long>(sql, entity, transaction); // NOSONAR
 
 
             SetId(entity, id);
