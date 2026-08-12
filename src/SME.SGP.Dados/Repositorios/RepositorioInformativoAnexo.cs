@@ -22,7 +22,7 @@ namespace SME.SGP.Dados.Repositorios
             if (informativoAnexo.Id > 0)
                 await database.Conexao.UpdateMappedAsync(informativoAnexo);
             else
-                informativoAnexo.Id = (long)await database.Conexao.InsertMappedAsync(informativoAnexo);
+                informativoAnexo.Id = await database.Conexao.InsertMappedAsync(informativoAnexo);
 
             return informativoAnexo.Id;
         }

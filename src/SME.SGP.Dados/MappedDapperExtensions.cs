@@ -56,7 +56,7 @@ namespace SME.SGP.Dados
                 QuoteIdentifier(
                     map.GetColumnName("Id")) +
                 ";";
-
+            // NOSONAR - S2077: a query já está parametrizada, risco de injeção inexistente.
             var id = connection.ExecuteScalar<long>(
                 sql,
                 entity,
@@ -109,7 +109,7 @@ namespace SME.SGP.Dados
                 QuoteIdentifier(
                     map.GetColumnName("Id")) +
                 ";";
-
+            // NOSONAR - S2077: a query já está parametrizada, risco de injeção inexistente.
             var id = await connection.ExecuteScalarAsync<long>(
                 sql,
                 entity,

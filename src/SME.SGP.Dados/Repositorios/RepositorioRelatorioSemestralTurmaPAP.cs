@@ -37,7 +37,7 @@ namespace SME.SGP.Dados.Repositorios
             if (relatorioSemestral.Id > 0)
                 await database.Conexao.UpdateMappedAsync(relatorioSemestral);
             else
-                relatorioSemestral.Id = (long)await database.Conexao.InsertMappedAsync(relatorioSemestral);
+                relatorioSemestral.Id = await database.Conexao.InsertMappedAsync(relatorioSemestral);
         }
 
     }
