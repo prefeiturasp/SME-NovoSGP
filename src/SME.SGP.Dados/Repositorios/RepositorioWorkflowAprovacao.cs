@@ -21,9 +21,6 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { workflowId });
         }
-
-        private string CamposEntidadeBase(string alias)
-            => $"{alias}.id, {alias}.criado_em, {alias}.criado_por, {alias}.alterado_em, {alias}.alterado_por, {alias}.alterado_rf, {alias}.criado_rf";
         
         public async Task<WorkflowAprovacao> ObterEntidadeCompleta(long workflowId = 0, long notificacaoId = 0)
         {
