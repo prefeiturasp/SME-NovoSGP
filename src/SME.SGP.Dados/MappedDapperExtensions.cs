@@ -44,7 +44,9 @@ namespace SME.SGP.Dados
                 ", ",
                 properties.Select(property =>
                     "@" + property.Name));
-
+            
+            // NOSONAR - S2077: nomes de tabelas/colunas são obtidos de MapRegistry (fonte confiável)
+            // e escapados por QuoteIdentifier; os valores são parametrizados pelo Dapper.
             var sql =
                 "INSERT INTO " +
                 QuoteIdentifier(map.TableName) +
@@ -96,6 +98,8 @@ namespace SME.SGP.Dados
                 properties.Select(property =>
                     "@" + property.Name));
 
+            // NOSONAR - S2077: nomes de tabelas/colunas são obtidos de MapRegistry (fonte confiável)
+            // e escapados por QuoteIdentifier; os valores são parametrizados pelo Dapper.
             var sql =
                 "INSERT INTO " +
                 QuoteIdentifier(map.TableName) +
