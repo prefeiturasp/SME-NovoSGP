@@ -195,7 +195,6 @@ namespace SME.SGP.Dados.Repositorios
                 " = @id);";
 
             // NOSONAR - S2077: a query é construída em MappedDapperExtensions (QuoteIdentifier + parâmetros Dapper)
-            //  → nomes de tabelas/colunas vêm de MapRegistry (fonte confiável) e são escapados.
             return await database.Conexao
                 .ExecuteScalarAsync<bool>(
                     sql,
@@ -239,7 +238,6 @@ namespace SME.SGP.Dados.Repositorios
 
             
             // NOSONAR - S2077: a query é construída em MappedDapperExtensions (QuoteIdentifier + parâmetros Dapper)
-            // → nomes de tabelas/colunas vêm de MapRegistry (fonte confiável) e são escapados.
             return await database.Conexao
                 .ExecuteScalarAsync<long>(
                     sql,

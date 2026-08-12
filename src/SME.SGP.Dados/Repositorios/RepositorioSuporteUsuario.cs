@@ -14,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public long Salvar(SuporteUsuario entidade)
         {
-            return (long)database.Conexao.InsertMapped(entidade);
+            return database.Conexao.InsertMapped(entidade);
         }
     }
 }

@@ -44,24 +44,19 @@ namespace SME.SGP.Dados
                 ", ",
                 properties.Select(property =>
                     "@" + property.Name));
-            
-            // NOSONAR - S2077: nomes de tabelas/colunas são obtidos de MapRegistry (fonte confiável)
-            // e escapados por QuoteIdentifier; os valores são parametrizados pelo Dapper.
+
+            // NOSONAR - S2077: identificadores vêm de MapRegistry (fonte confiável) e são escapados por QuoteIdentifier.
             var sql =
                 "INSERT INTO " +
                 QuoteIdentifier(map.TableName) +
                 " (" + columns + ")" +
                 " VALUES (" + parameters + ")" +
                 " RETURNING " +
-                QuoteIdentifier(
-                    map.GetColumnName("Id")) +
+                QuoteIdentifier(map.GetColumnName("Id")) +
                 ";";
-            // NOSONAR - S2077: a query já está parametrizada, risco de injeção inexistente.
-            var id = connection.ExecuteScalar<long>(
-                sql,
-                entity,
-                transaction);
 
+            // NOSONAR - S2077: a query já está parametrizada; risco de injeção inexistente.
+            var id = connection.ExecuteScalar<long>(sql, entity, transaction);
             SetId(entity, id);
 
             return id;
@@ -98,22 +93,19 @@ namespace SME.SGP.Dados
                 properties.Select(property =>
                     "@" + property.Name));
 
-            // NOSONAR - S2077: nomes de tabelas/colunas são obtidos de MapRegistry (fonte confiável)
-            // e escapados por QuoteIdentifier; os valores são parametrizados pelo Dapper.
+            // NOSONAR - S2077: identificadores vêm de MapRegistry (fonte confiável) e são escapados por QuoteIdentifier.
             var sql =
                 "INSERT INTO " +
                 QuoteIdentifier(map.TableName) +
                 " (" + columns + ")" +
                 " VALUES (" + parameters + ")" +
                 " RETURNING " +
-                QuoteIdentifier(
-                    map.GetColumnName("Id")) +
+                QuoteIdentifier(map.GetColumnName("Id")) +
                 ";";
-            // NOSONAR - S2077: a query já está parametrizada, risco de injeção inexistente.
-            var id = await connection.ExecuteScalarAsync<long>(
-                sql,
-                entity,
-                transaction);
+
+            // NOSONAR - S2077: a query já está parametrizada; risco de injeção inexistente.
+            var id = await connection.ExecuteScalarAsync<long>(sql, entity, transaction);
+
 
             SetId(entity, id);
 
@@ -155,7 +147,7 @@ namespace SME.SGP.Dados
                 QuoteIdentifier(map.TableName) +
                 " SET " +
                 assignments +
-                " " + 
+                " " +
                 WhereClause +
                 QuoteIdentifier(
                     map.GetColumnName(idProperty.Name)) +
