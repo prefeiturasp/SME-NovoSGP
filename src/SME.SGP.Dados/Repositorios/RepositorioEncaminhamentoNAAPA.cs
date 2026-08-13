@@ -299,90 +299,130 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         private const string SELECT_ENCAMINHAMENTO_NAAPA = @"
-            ea.id AS Id, ea.criado_em AS CriadoEm, ea.criado_por as CriadoPor, ea.criado_rf as CriadoRf,
-            ea.alterado_em AS AlteradoEm, ea.alterado_por as AlteradoPor, ea.alterado_rf as AlteradoRf,
-            ea.turma_id AS TurmaId, ea.aluno_codigo AS AlunoCodigo, ea.aluno_nome AS AlunoNome,
-            ea.situacao AS Situacao, ea.excluido AS Excluido,
-            ea.situacao_matricula_aluno AS SituacaoMatriculaAluno, ea.motivo_encerramento AS MotivoEncerramento,
+            ea.id AS Id, 
+            ea.criado_em AS CriadoEm, 
+            ea.criado_por as CriadoPor, 
+            ea.criado_rf as CriadoRf,
+            ea.alterado_em AS AlteradoEm, 
+            ea.alterado_por as AlteradoPor, 
+            ea.alterado_rf as AlteradoRf,
+            ea.turma_id AS TurmaId, 
+            ea.aluno_codigo AS AlunoCodigo, 
+            ea.aluno_nome AS AlunoNome,
+            ea.situacao AS Situacao, 
+            ea.excluido AS Excluido,
+            ea.situacao_matricula_aluno AS SituacaoMatriculaAluno, 
+            ea.motivo_encerramento AS MotivoEncerramento,
             ea.data_ultima_notificacao_sem_atendimento AS DataUltimaNotificacaoSemAtendimento";
 
         private const string SELECT_ENCAMINHAMENTO_NAAPA_SECAO = @"
-            eas.id AS Id, eas.encaminhamento_naapa_id AS EncaminhamentoNAAPAId,
-            eas.secao_encaminhamento_id AS SecaoEncaminhamentoNAAPAId, eas.concluido AS Concluido,
-            eas.excluido AS Excluido, eas.criado_em AS CriadoEm, eas.alterado_em AS AlteradoEm,
-            eas.alterado_por as AlteradoPor, eas.alterado_rf as AlteradoRf, eas.criado_rf as CriadoRf,
+            eas.id AS Id, 
+            eas.encaminhamento_naapa_id AS EncaminhamentoNAAPAId,
+            eas.secao_encaminhamento_id AS SecaoEncaminhamentoNAAPAId, 
+            eas.concluido AS Concluido,
+            eas.excluido AS Excluido, 
+            eas.criado_em AS CriadoEm, 
+            eas.alterado_em AS AlteradoEm,
+            eas.alterado_por as AlteradoPor, 
+            eas.alterado_rf as AlteradoRf, 
+            eas.criado_rf as CriadoRf,
             eas.criado_por as CriadoPor";
 
         private const string SELECT_QUESTAO_ENCAMINHAMENTO = @"
-            qea.id AS Id, qea.encaminhamento_naapa_secao_id AS EncaminhamentoNAAPASecaoId,
-            qea.questao_id AS QuestaoId, qea.excluido AS Excluido, qea.criado_em AS CriadoEm,
-            qea.alterado_em AS AlteradoEm, qea.alterado_por as AlteradoPor, qea.alterado_rf as AlteradoRf,
-            qea.criado_rf as CriadoRf, qea.criado_por as CriadoPor";
+            qea.id AS Id, 
+            qea.encaminhamento_naapa_secao_id AS EncaminhamentoNAAPASecaoId,
+            qea.questao_id AS QuestaoId, 
+            qea.excluido AS Excluido, 
+            qea.criado_em AS CriadoEm,
+            qea.alterado_em AS AlteradoEm, 
+            qea.alterado_por as AlteradoPor, 
+            qea.alterado_rf as AlteradoRf,
+            qea.criado_rf as CriadoRf, 
+            qea.criado_por as CriadoPor";
 
         private const string SELECT_RESPOSTA = @"
-            rea.id AS Id, rea.questao_encaminhamento_id AS QuestaoEncaminhamentoId,
-            rea.resposta_id AS RespostaId, rea.texto AS Texto, rea.arquivo_id AS ArquivoId,
-            rea.excluido AS Excluido, rea.criado_em AS CriadoEm, rea.alterado_em AS AlteradoEm,
-            rea.alterado_por as AlteradoPor, rea.alterado_rf as AlteradoRf, rea.criado_rf as CriadoRf,
+            rea.id AS Id, 
+            rea.questao_encaminhamento_id AS QuestaoEncaminhamentoId,
+            rea.resposta_id AS RespostaId, 
+            rea.texto AS Texto, 
+            rea.arquivo_id AS ArquivoId,
+            rea.excluido AS Excluido, 
+            rea.criado_em AS CriadoEm, 
+            rea.alterado_em AS AlteradoEm,
+            rea.alterado_por as AlteradoPor, 
+            rea.alterado_rf as AlteradoRf, 
+            rea.criado_rf as CriadoRf,
             rea.criado_por as CriadoPor";
 
         private const string SELECT_SECAO_CONFIGURADA = @"
-            sea.id AS Id, sea.questionario_id AS QuestionarioId, sea.nome AS Nome, sea.ordem AS Ordem,
-            sea.etapa AS Etapa, sea.excluido AS Excluido, sea.nome_componente AS NomeComponente,
-            sea.criado_em AS CriadoEm, sea.alterado_em AS AlteradoEm,
-            sea.alterado_por as AlteradoPor, sea.alterado_rf as AlteradoRf, sea.criado_rf as CriadoRf,
+            sea.id AS Id, 
+            sea.questionario_id AS QuestionarioId, 
+            sea.nome AS Nome, 
+            sea.ordem AS Ordem,
+            sea.etapa AS Etapa, 
+            sea.excluido AS Excluido, 
+            sea.nome_componente AS NomeComponente,
+            sea.criado_em AS CriadoEm, 
+            sea.alterado_em AS AlteradoEm,
+            sea.alterado_por as AlteradoPor, 
+            sea.alterado_rf as AlteradoRf, 
+            sea.criado_rf as CriadoRf,
             sea.criado_por as CriadoPor";
 
         private const string SELECT_QUESTAO = @"
-            q.id AS Id, q.nome AS Nome, q.ordem AS Ordem, q.nome_componente AS NomeComponente,
-            q.excluido AS Excluido, q.criado_em AS CriadoEm, q.alterado_em AS AlteradoEm,
-            q.alterado_por as AlteradoPor, q.alterado_rf as AlteradoRf, q.criado_rf as CriadoRf,
+            q.id AS Id, 
+            q.nome AS Nome, 
+            q.ordem AS Ordem, 
+            q.nome_componente AS NomeComponente,
+            q.excluido AS Excluido, 
+            q.criado_em AS CriadoEm, 
+            q.alterado_em AS AlteradoEm,
+            q.alterado_por as AlteradoPor, 
+            q.alterado_rf as AlteradoRf, 
+            q.criado_rf as CriadoRf,
             q.criado_por as CriadoPor";
 
         private const string SELECT_OPCAO_RESPOSTA = @"
-            op.id AS Id, op.questao_id AS QuestaoId, op.ordem AS Ordem, op.nome AS Nome,
-            op.observacao as Observacao, op.excluido AS Excluido, op.criado_em AS CriadoEm,
-            op.alterado_em AS AlteradoEm, op.alterado_por as AlteradoPor, op.alterado_rf as AlteradoRf,
-            op.criado_rf as CriadoRf, op.criado_por as CriadoPor";
+            op.id AS Id, 
+            op.questao_id AS QuestaoId, 
+            op.ordem AS Ordem, 
+            op.nome AS Nome,
+            op.observacao as Observacao, 
+            op.excluido AS Excluido, 
+            op.criado_em AS CriadoEm,
+            op.alterado_em AS AlteradoEm, 
+            op.alterado_por as AlteradoPor, 
+            op.alterado_rf as AlteradoRf,
+            op.criado_rf as CriadoRf, 
+            op.criado_por as CriadoPor";
 
         private const string CAMPOSSELECT = $@"
             SELECT
                 -- Encaminhamento NAAPA
+                ea.id AS EncaminhamentoNAAPAInicio,
                 {SELECT_ENCAMINHAMENTO_NAAPA},
-
                 -- início da seção
                 eas.id AS SecaoInicio,
-
                 -- Encaminhamento NAAPA - Seção
                 {SELECT_ENCAMINHAMENTO_NAAPA_SECAO},
-
                 -- início da questão
                 qea.id AS QuestaoEncaminhamentoInicio,
-
                 -- Questão do encaminhamento
                 {SELECT_QUESTAO_ENCAMINHAMENTO},
-
                 -- início da resposta
                 rea.id AS RespostaInicio,
-
                 -- Resposta
                 {SELECT_RESPOSTA},
-
                 -- início da seção configurada
                 sea.id AS SecaoConfiguradaInicio,
-
                 -- Seção configurada
                 {SELECT_SECAO_CONFIGURADA},
-
                 -- início da questão
                 q.id AS QuestaoInicio,
-
                 -- Questão
                 {SELECT_QUESTAO},
-
                 -- início da opção
                 op.id AS OpcaoRespostaInicio,
-
                 -- Opção de resposta
                 {SELECT_OPCAO_RESPOSTA}
            ";
@@ -460,7 +500,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var encaminhamento = new EncaminhamentoNAAPA();
 
-            await database.Conexao.QueryAsync<
+           var consulta =  await database.Conexao.QueryAsync<
                 EncaminhamentoNAAPA,
                 EncaminhamentoNAAPASecao,
                 QuestaoEncaminhamentoNAAPA,
@@ -474,13 +514,14 @@ namespace SME.SGP.Dados.Repositorios
                         MapearEncaminhamento(encaminhamento, encaminhamentoNAAPA, encaminhamentoSecao, questaoEncaminhamentoNAAPA, respostaEncaminhamento, secaoEncaminhamento, questao, opcaoResposta),
                     new { id },
                     splitOn:
+                       "EncaminhamentoNAAPAInicio," +
                         "SecaoInicio," +
                         "QuestaoEncaminhamentoInicio," +
                         "RespostaInicio," +
                         "SecaoConfiguradaInicio," +
                         "QuestaoInicio," +
                         "OpcaoRespostaInicio");
-
+           encaminhamento = consulta?.FirstOrDefault() ?? new EncaminhamentoNAAPA();
             return encaminhamento;
         }
 
@@ -488,7 +529,6 @@ namespace SME.SGP.Dados.Repositorios
         {
             const string query = $@"
                     {CAMPOSSELECT}
-
                     FROM encaminhamento_naapa ea
                     INNER JOIN encaminhamento_naapa_secao eas
                         ON eas.encaminhamento_naapa_id = ea.id
@@ -514,7 +554,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var encaminhamento = new EncaminhamentoNAAPA();
 
-            await database.Conexao.QueryAsync<
+        var consulta = await database.Conexao.QueryAsync<
                 EncaminhamentoNAAPA,
                 EncaminhamentoNAAPASecao,
                 QuestaoEncaminhamentoNAAPA,
@@ -528,6 +568,7 @@ namespace SME.SGP.Dados.Repositorios
                         MapearEncaminhamento(encaminhamento, encaminhamentoNAAPA, encaminhamentoSecao, questaoEncaminhamentoNAAPA, respostaEncaminhamento, secaoEncaminhamento, questao, opcaoResposta),
                     new { id, secaoId },
                     splitOn:
+                        "EncaminhamentoNAAPAInicio, " +
                         "SecaoInicio," +
                         "QuestaoEncaminhamentoInicio," +
                         "RespostaInicio," +
@@ -535,7 +576,8 @@ namespace SME.SGP.Dados.Repositorios
                         "QuestaoInicio," +
                         "OpcaoRespostaInicio");
 
-            return encaminhamento;
+        encaminhamento = consulta?.FirstOrDefault() ?? new EncaminhamentoNAAPA();
+        return encaminhamento;
         }
 
         public async Task<IEnumerable<EncaminhamentoNAAPACodigoArquivoDto>> ObterCodigoArquivoPorEncaminhamentoNAAPAId(long encaminhamentoId)
