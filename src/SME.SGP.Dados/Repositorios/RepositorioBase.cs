@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
+    [ExcludeFromCodeCoverage]
     public abstract class RepositorioBase<T>
         : IRepositorioBase<T>
         where T : EntidadeBase

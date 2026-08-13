@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
 {
+    [ExcludeFromCodeCoverage]
     public static class MappedDapperExtensions
     {
         private const string WhereClause = "WHERE ";
