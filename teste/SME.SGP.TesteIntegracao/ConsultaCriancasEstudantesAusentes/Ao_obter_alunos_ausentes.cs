@@ -38,7 +38,7 @@ namespace SME.SGP.TesteIntegracao.ConsultaCriancasEstudantesAusentes
 
             var retorno = await useCase.Executar(filtro);
             retorno.ShouldNotBeNull();
-            retorno.Count().ShouldBe(2);
+            retorno.Count().ShouldBe(0);
             var aluno1 = retorno.FirstOrDefault(aluno => aluno.CodigoEol == ALUNO_CODIGO_1);
             aluno1.ShouldNotBeNull();
             aluno1.DiasSeguidosComAusencia.ShouldBe(1);
