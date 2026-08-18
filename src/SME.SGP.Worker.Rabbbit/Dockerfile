@@ -1,11 +1,11 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["src/SME.SGP.Worker.Rabbbit/SME.SGP.Worker.Rabbbit.csproj", "src/SME.SGP.Worker.Rabbbit/"]
 COPY ["src/SME.SGP.Infra/SME.SGP.Infra.csproj", "src/SME.SGP.Infra/"]
@@ -27,7 +27,8 @@ FROM base AS final
 WORKDIR /app
 
 RUN sed -i 's|http://deb.debian.org/debian|http://archive.debian.org/debian|g' /etc/apt/sources.list && \
-    sed -i 's|http://security.debian.org/debian-security|http://archive.debian.org/debian-security|g' /etc/apt/sources.list && \
+    sed -i '/security/d' /etc/apt/sources.list \
+    && rm -f /etc/apt/sources.list.d/* \
     echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99no-check-valid-until && \
     apt-get update && \
     apt-get upgrade -y && \
