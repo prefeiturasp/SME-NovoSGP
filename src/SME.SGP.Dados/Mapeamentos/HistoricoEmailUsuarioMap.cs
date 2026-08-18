@@ -7,9 +7,9 @@ namespace SME.SGP.Dados.Mapeamentos
         public HistoricoEmailUsuarioMap()
         {
             ToTable("historico_email_usuario");
-            Map(c => c.UsuarioId).ToColumn("usuario_id");
-            Map(c => c.Email).ToColumn("email");
-            Map(c => c.Acao).ToColumn("tipo_acao");
+            Map(nameof(HistoricoEmailUsuario.UsuarioId), "usuario_id");
+            Map(nameof(HistoricoEmailUsuario.Email), "email");
+            Map(nameof(HistoricoEmailUsuario.Acao), "tipo_acao");
         }
     }
 }

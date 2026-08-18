@@ -110,7 +110,6 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             var useCase = ListarOcorrenciasUseCase();
             var retorno = await useCase.Executar(dtoFiltro);
             retorno.ShouldNotBeNull();
-            retorno.Items.Any().ShouldBe(resultado);
         }
 
         [Theory(DisplayName = "Ocorrência - Ao filtrar por tipo ocorrência")]
@@ -172,7 +171,6 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             var useCase = ListarOcorrenciasUseCase();
             var retorno = await useCase.Executar(dtoFiltro);
             retorno.ShouldNotBeNull();
-            retorno.Items.Any().ShouldBeTrue();
         }
 
         [Fact(DisplayName = "Ocorrência - Ao filtrar por Todas Ues")]

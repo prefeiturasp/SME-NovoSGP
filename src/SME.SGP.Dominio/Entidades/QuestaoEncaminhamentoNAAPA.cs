@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿
+using System.Collections.Generic;
 
 namespace SME.SGP.Dominio
 {
@@ -9,14 +10,17 @@ namespace SME.SGP.Dominio
             Respostas = new List<RespostaEncaminhamentoNAAPA>();
         }
 
+       
         public EncaminhamentoAEESecao EncaminhamentoNAAPASecao { get; set; }
         public long EncaminhamentoNAAPASecaoId { get; set; }
 
+       
         public Questao Questao { get; set; }
         public long QuestaoId { get; set; }
 
         public bool Excluido { get; set; }
 
+       
         public List<RespostaEncaminhamentoNAAPA> Respostas { get; set; }
     }
 }

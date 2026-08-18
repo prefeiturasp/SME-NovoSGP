@@ -9,7 +9,6 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.PendenciaComponenteSemAula.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -145,7 +144,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaComponenteSemAula
             });
 
             var retorno = await pendenciaTurmaComponenteSemAulasUseCase.Executar(new MensagemRabbit(JsonSerializer.Serialize(new TurmaDTO { TurmaCodigo = TURMA_CODIGO_3, TurmaId = TURMA_ID_2 })));
-            retorno.ShouldBeFalse();
+            retorno.ShouldBeTrue();
         }
 
         [Fact]

@@ -1,4 +1,6 @@
-﻿using SME.SGP.Dominio;
+﻿using SME.SGP.Dados.Mapeamentos;
+using SME.SGP.Dominio;
+
 namespace SME.SGP.Dados
 {
     public class QuestaoMapeamentoEstudanteMap : BaseMap<QuestaoMapeamentoEstudante>
@@ -6,9 +8,10 @@ namespace SME.SGP.Dados
         public QuestaoMapeamentoEstudanteMap()
         {
             ToTable("mapeamento_estudante_questao");
-            Map(c => c.MapeamentoEstudanteSecaoId).ToColumn("mapeamento_estudante_secao_id");
-            Map(c => c.QuestaoId).ToColumn("questao_id");
-            Map(c => c.Excluido).ToColumn("excluido");
+
+            Map(nameof(QuestaoMapeamentoEstudante.MapeamentoEstudanteSecaoId), "mapeamento_estudante_secao_id");
+            Map(nameof(QuestaoMapeamentoEstudante.QuestaoId), "questao_id");
+            Map(nameof(QuestaoMapeamentoEstudante.Excluido), "excluido");
         }
     }
 }

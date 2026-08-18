@@ -71,7 +71,7 @@ namespace SME.SGP.Dados.Repositorios
                     item.DataAtualizacao = DateTime.Today;
                     item.Ue = ues.First(x => x.CodigoUe == item.Ue.CodigoUe);
                     item.UeId = item.Ue.Id;
-                    item.Id = (long)await contexto.Conexao.InsertAsync(item);
+                    item.Id = await contexto.Conexao.InsertMappedAsync(item);
                     resultado.Add(item);
                 }
 

@@ -1,23 +1,19 @@
-﻿using Dapper.FluentMap.Dommel.Mapping;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ObjetivoAprendizagemMap : DommelEntityMap<ObjetivoAprendizagem>
+    public class ObjetivoAprendizagemMap : SimpleMap<ObjetivoAprendizagem>
     {
         public ObjetivoAprendizagemMap()
         {
             ToTable("objetivo_aprendizagem");
-            Map(c => c.Ano).Ignore();
-            Map(c => c.AnoTurma).ToColumn("ano_turma");
-            Map(c => c.AtualizadoEm).ToColumn("atualizado_em");
-            Map(c => c.CodigoCompleto).ToColumn("codigo");
-            Map(c => c.Codigo).Ignore();
-            Map(c => c.ComponenteCurricularId).ToColumn("componente_curricular_id");
-            Map(c => c.CriadoEm).ToColumn("criado_em");
-            Map(c => c.Descricao).ToColumn("descricao");
-            Map(c => c.Excluido).ToColumn("excluido");
-            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
+            Map(nameof(ObjetivoAprendizagem.AnoTurma), "ano_turma");
+            Map(nameof(ObjetivoAprendizagem.AtualizadoEm), "atualizado_em");
+            Map(nameof(ObjetivoAprendizagem.CodigoCompleto), "codigo");
+            Map(nameof(ObjetivoAprendizagem.ComponenteCurricularId), "componente_curricular_id");
+            Map(nameof(ObjetivoAprendizagem.CriadoEm), "criado_em");
+            Map(nameof(ObjetivoAprendizagem.Descricao), "descricao");
+            Map(nameof(ObjetivoAprendizagem.Excluido), "excluido");
         }
     }
 }

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes;
 using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao

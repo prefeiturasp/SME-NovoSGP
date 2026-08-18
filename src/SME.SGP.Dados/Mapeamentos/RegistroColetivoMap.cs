@@ -7,16 +7,16 @@ namespace SME.SGP.Dados.Mapeamentos
         public RegistroColetivoMap()
         {
             ToTable("registrocoletivo");
-            Map(c => c.DreId).ToColumn("dre_id");
-            Map(c => c.TipoReuniaoId).ToColumn("tipo_reuniao_id");
-            Map(c => c.DataRegistro).ToColumn("data_registro");
-            Map(c => c.QuantidadeParticipantes).ToColumn("quantidade_participantes");
-            Map(c => c.QuantidadeEducadores).ToColumn("quantidade_educadores");
-            Map(c => c.QuantidadeEducandos).ToColumn("quantidade_educandos");
-            Map(c => c.QuantidadeCuidadores).ToColumn("quantidade_cuidadores");
-            Map(c => c.Descricao).ToColumn("descricao");
-            Map(c => c.Observacao).ToColumn("observacao");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(RegistroColetivo.DreId), "dre_id");
+            Map(nameof(RegistroColetivo.TipoReuniaoId), "tipo_reuniao_id");
+            Map(nameof(RegistroColetivo.DataRegistro), "data_registro");
+            Map(nameof(RegistroColetivo.QuantidadeParticipantes), "quantidade_participantes");
+            Map(nameof(RegistroColetivo.QuantidadeEducadores), "quantidade_educadores");
+            Map(nameof(RegistroColetivo.QuantidadeEducandos), "quantidade_educandos");
+            Map(nameof(RegistroColetivo.QuantidadeCuidadores), "quantidade_cuidadores");
+            Map(nameof(RegistroColetivo.Descricao), "descricao");
+            Map(nameof(RegistroColetivo.Observacao), "observacao");
+            Map(nameof(RegistroColetivo.Excluido), "excluido");
         }
     }
 }

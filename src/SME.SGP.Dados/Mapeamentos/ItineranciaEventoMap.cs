@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dados.Mapeamentos;
 
 namespace SME.SGP.Dados
 {
@@ -7,9 +8,9 @@ namespace SME.SGP.Dados
         public ItineranciaEventoMap()
         {
             ToTable("itinerancia_evento");
-            Map(c => c.ItineranciaId).ToColumn("itinerancia_id");
-            Map(c => c.EventoId).ToColumn("evento_id");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(ItineranciaEvento.ItineranciaId), "itinerancia_id");
+            Map(nameof(ItineranciaEvento.EventoId), "evento_id");
+            Map(nameof(ItineranciaEvento.Excluido), "excluido");
         }
     }
 }
