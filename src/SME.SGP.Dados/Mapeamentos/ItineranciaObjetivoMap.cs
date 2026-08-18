@@ -7,10 +7,10 @@ namespace SME.SGP.Dados.Mapeamentos
         public ItineranciaObjetivoMap()
         {
             ToTable("itinerancia_objetivo");
-            Map(c => c.ItineranciaObjetivosBaseId).ToColumn("itinerancia_base_id");
-            Map(c => c.ItineranciaId).ToColumn("itinerancia_id");
-            Map(c => c.Descricao).ToColumn("descricao");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(ItineranciaObjetivo.ItineranciaObjetivosBaseId), "itinerancia_base_id");
+            Map(nameof(ItineranciaObjetivo.ItineranciaId), "itinerancia_id");
+            Map(nameof(ItineranciaObjetivo.Descricao), "descricao");
+            Map(nameof(ItineranciaObjetivo.Excluido), "excluido");
         }
     }
 }

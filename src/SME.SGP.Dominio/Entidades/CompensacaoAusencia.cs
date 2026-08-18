@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿
+using System.Collections.Generic;
 
 namespace SME.SGP.Dominio
 {
@@ -15,6 +16,7 @@ namespace SME.SGP.Dominio
         public int Bimestre { get; set; }
         public string DisciplinaId { get; set; }
         public long TurmaId { get; set; }
+       
         public Turma Turma { get; set; }
         public string Nome { get; set; }
         public string Descricao { get; set; }

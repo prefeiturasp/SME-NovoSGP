@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using SME.SGP.Dados.Mapeamentos;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados
 {
@@ -7,14 +8,14 @@ namespace SME.SGP.Dados
         public AtribuicaoEsporadicaMap()
         {
             ToTable("atribuicao_esporadica");
-            Map(c => c.DataFim).ToColumn("data_fim");
-            Map(c => c.DataInicio).ToColumn("data_inicio");
-            Map(c => c.DreId).ToColumn("dre_id");
-            Map(c => c.Excluido).ToColumn("excluido");
-            Map(c => c.Migrado).ToColumn("migrado");
-            Map(c => c.ProfessorRf).ToColumn("professor_rf");
-            Map(c => c.UeId).ToColumn("ue_id");
-            Map(c => c.AnoLetivo).ToColumn("ano_letivo");
+            Map(nameof(AtribuicaoEsporadica.DataFim), "data_fim");
+            Map(nameof(AtribuicaoEsporadica.DataInicio), "data_inicio");
+            Map(nameof(AtribuicaoEsporadica.DreId), "dre_id");
+            Map(nameof(AtribuicaoEsporadica.Excluido), "excluido");
+            Map(nameof(AtribuicaoEsporadica.Migrado), "migrado");
+            Map(nameof(AtribuicaoEsporadica.ProfessorRf), "professor_rf");
+            Map(nameof(AtribuicaoEsporadica.UeId), "ue_id");
+            Map(nameof(AtribuicaoEsporadica.AnoLetivo), "ano_letivo");
         }
     }
 }

@@ -1,15 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Shouldly;
-using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
 {

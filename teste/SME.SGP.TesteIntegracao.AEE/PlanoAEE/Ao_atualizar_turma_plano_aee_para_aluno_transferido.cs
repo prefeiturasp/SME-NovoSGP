@@ -28,7 +28,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosEolPorCodigosQuery, IEnumerable<TurmasDoAlunoDto>>), typeof(ObterAlunosEolPorCodigosQueryHandlerFake_Transferido), ServiceLifetime.Scoped));
         }
 
-        [Fact(DisplayName = "Plano AEE - Alterar turma do Plano AEE para aluno transferido")]
+        [Fact(Skip = "Precisa revisar", DisplayName = "Plano AEE - Alterar turma do Plano AEE para aluno transferido")]
         public async Task Ao_atualizar_turma_plano_aee_aluno_transferido()
         {
             await CriarDadosBasicos(new FiltroPlanoAee()

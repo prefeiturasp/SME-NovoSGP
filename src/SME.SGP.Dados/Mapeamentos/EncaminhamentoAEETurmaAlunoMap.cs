@@ -7,9 +7,9 @@ namespace SME.SGP.Dados.Mapeamentos
         public EncaminhamentoAEETurmaAlunoMap()
         {
             ToTable("encaminhamento_aee_turma_aluno");
-            Map(c => c.EncaminhamentoAEEId).ToColumn("encaminhamento_aee_id");
-            Map(c => c.TurmaId).ToColumn("turma_id");
-            Map(c => c.AlunoCodigo).ToColumn("aluno_codigo");
+            Map(nameof(EncaminhamentoAEETurmaAluno.EncaminhamentoAEEId), "encaminhamento_aee_id");
+            Map(nameof(EncaminhamentoAEETurmaAluno.TurmaId), "turma_id");
+            Map(nameof(EncaminhamentoAEETurmaAluno.AlunoCodigo), "aluno_codigo");
         }
     }
 }
