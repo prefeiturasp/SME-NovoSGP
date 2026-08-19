@@ -279,7 +279,8 @@ namespace SME.SGP.Metrica.Worker.Repositorios
                                                                                  and tmp.bimestre = coalesce(cccatn.bimestre, 0) and tmp.disciplina_id::int8 = cccatn.componente_curricular_id
                 where tmp.sequencia = 1
                       and coalesce(coalesce(tmp.nota_conselho_classe_fechamento, tmp.conceito_id_conselho_classe_fechamento), 0)
-                          <> coalesce(coalesce(cccatn.nota, cccatn.conceito_id), 0);", new { ueId });
+                          <> coalesce(coalesce(cccatn.nota, cccatn.conceito_id), 0);", new { ueId },
+                commandTimeout: 300);
 
         public Task<IEnumerable<FrequenciaAlunoInconsistente>> ObterFrequenciaAlunoInconsistente(long turmaId)
             => database.Conexao.QueryAsync<FrequenciaAlunoInconsistente>(

@@ -37,38 +37,69 @@ namespace SME.SGP.Aplicacao
 
             foreach (var id in request.Ids)
             {
-                var componenteUsuarioTurma = componentesCurricularesUsuarioTurma.FirstOrDefault(d => d.Codigo.Equals(id) || 
-                                                                                 d.CodigoComponenteTerritorioSaber.Equals(id));
+                var disciplinaPorId = disciplinasPorIds.FirstOrDefault(d => d.CodigoComponenteCurricular.Equals(id));
+                var componenteUsuarioTurma = ObterComponenteUsuarioTurma(componentesCurricularesUsuarioTurma, id, disciplinaPorId);
 
                 if (componenteUsuarioTurma.EhNulo())
-                { 
+                {
                     if (usuarioLogado.EhProfessorCjInfantil() &&
                         !componentesCurricularesDoProfessorCJInfantil.Any(c => c.DisciplinaId == id))
                         continue;
 
-                    disciplinasRetorno.Add(disciplinasPorIds.FirstOrDefault(d => d.CodigoComponenteCurricular.Equals(id)));
+                    if (disciplinaPorId.NaoEhNulo())
+                        disciplinasRetorno.Add(disciplinaPorId);
                 }
                 else
-                    disciplinasRetorno.Add(new DisciplinaDto()
-                    {
-                        Id = componenteUsuarioTurma.Codigo,
-                        CodigoComponenteCurricular = componenteUsuarioTurma.Codigo,
-                        CdComponenteCurricularPai = componenteUsuarioTurma.CodigoComponenteCurricularPai,
-                        CodigoComponenteCurricularTerritorioSaber = componenteUsuarioTurma.CodigoComponenteTerritorioSaber,
-                        Compartilhada = componenteUsuarioTurma.Compartilhada,
-                        Nome = componenteUsuarioTurma.Descricao,
-                        NomeComponenteInfantil = turma.ModalidadeCodigo == Modalidade.EducacaoInfantil ? componenteUsuarioTurma.DescricaoComponenteInfantil : componenteUsuarioTurma.Descricao,
-                        PossuiObjetivos = componenteUsuarioTurma.PossuiObjetivos,
-                        Regencia = componenteUsuarioTurma.Regencia,
-                        RegistraFrequencia = componenteUsuarioTurma.RegistraFrequencia,
-                        TerritorioSaber = componenteUsuarioTurma.TerritorioSaber,
-                        LancaNota = componenteUsuarioTurma.LancaNota,
-                        TurmaCodigo = componenteUsuarioTurma.TurmaCodigo,
-                        GrupoMatrizId = componenteUsuarioTurma.GrupoMatriz?.Id ?? 0,
-                        GrupoMatrizNome = componenteUsuarioTurma.GrupoMatriz?.Nome ?? ""
-                    });
+                    disciplinasRetorno.Add(MapearParaDto(componenteUsuarioTurma, turma, id));
             }
             return disciplinasRetorno;
         }
+
+        private ComponenteCurricularEol ObterComponenteUsuarioTurma(IEnumerable<ComponenteCurricularEol> componentesCurricularesUsuarioTurma, long id, DisciplinaDto disciplinaPorId)
+        {
+            var componenteUsuarioTurma = componentesCurricularesUsuarioTurma
+                .FirstOrDefault(d => d.PossuiCodigoEquivalente(id));
+
+            if (componenteUsuarioTurma.NaoEhNulo())
+                return componenteUsuarioTurma;
+
+            if (disciplinaPorId.NaoEhNulo() && disciplinaPorId.CodigoComponenteCurricularTerritorioSaber > 0)
+            {
+                componenteUsuarioTurma = componentesCurricularesUsuarioTurma
+                    .FirstOrDefault(d => d.PossuiCodigoEquivalente(disciplinaPorId.CodigoComponenteCurricularTerritorioSaber));
+
+                if (componenteUsuarioTurma.NaoEhNulo())
+                    return componenteUsuarioTurma;
+            }
+
+            var componentesTerritorioSaber = componentesCurricularesUsuarioTurma
+                .Where(d => d.TerritorioSaber)
+                .ToList();
+
+            if (disciplinaPorId.NaoEhNulo() && disciplinaPorId.TerritorioSaber && componentesTerritorioSaber.Count == 1)
+                return componentesTerritorioSaber.First();
+
+            return null;
+        }
+
+        private static DisciplinaDto MapearParaDto(ComponenteCurricularEol componenteUsuarioTurma, Turma turma, long idAula)
+            => new DisciplinaDto()
+            {
+                Id = idAula,
+                CodigoComponenteCurricular = componenteUsuarioTurma.Codigo,
+                CdComponenteCurricularPai = componenteUsuarioTurma.CodigoComponenteCurricularPai,
+                CodigoComponenteCurricularTerritorioSaber = componenteUsuarioTurma.CodigoComponenteTerritorioSaber,
+                Compartilhada = componenteUsuarioTurma.Compartilhada,
+                Nome = componenteUsuarioTurma.Descricao,
+                NomeComponenteInfantil = turma.ModalidadeCodigo == Modalidade.EducacaoInfantil ? componenteUsuarioTurma.DescricaoComponenteInfantil : componenteUsuarioTurma.Descricao,
+                PossuiObjetivos = componenteUsuarioTurma.PossuiObjetivos,
+                Regencia = componenteUsuarioTurma.Regencia,
+                RegistraFrequencia = componenteUsuarioTurma.RegistraFrequencia,
+                TerritorioSaber = componenteUsuarioTurma.TerritorioSaber,
+                LancaNota = componenteUsuarioTurma.LancaNota,
+                TurmaCodigo = componenteUsuarioTurma.TurmaCodigo,
+                GrupoMatrizId = componenteUsuarioTurma.GrupoMatriz?.Id ?? 0,
+                GrupoMatrizNome = componenteUsuarioTurma.GrupoMatriz?.Nome ?? ""
+            };
     }
 }
