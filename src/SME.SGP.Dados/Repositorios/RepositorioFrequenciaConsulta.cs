@@ -958,14 +958,18 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<ComponenteCurricularSugeridoDto> ObterPrimeiroRegistroFrequenciaPorDataETurma(string turmaId, DateTime dataAula)
         {
-            var query = $@"select 
-                                t1.aula_id
-                              , t2.quantidade as quantidadeAulas
-                              , t3.descricao_sgp as componenteCurricularSugerido
+            var query = $@"select
+                                t1.aula_id as AulaId
+                              , t2.quantidade as QuantidadeAulas
+                              , t3.descricao_sgp as ComponenteCurricularSugerido
                             from registro_frequencia t1
                             inner join aula t2 on t2.id = t1.aula_id
                             inner join componente_curricular t3 on (t3.id = CAST(t2.disciplina_id AS INT))
-                            where t2.turma_id = @turmaId and DATE(t2.data_aula) = @dataAula";
+                            where not t1.excluido
+                              and not t2.excluido
+                              and t2.turma_id = @turmaId
+                              and DATE(t2.data_aula) = @dataAula
+                            order by t1.criado_em, t1.id";
 
             var parametros = new
             {
