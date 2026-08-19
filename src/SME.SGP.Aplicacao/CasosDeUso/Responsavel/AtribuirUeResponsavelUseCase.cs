@@ -94,6 +94,10 @@ namespace SME.SGP.Aplicacao
         private async Task ValidarResponsavel(AtribuicaoResponsavelUEDto atribuicaoDto)
         {
             var responsaveisValidos = await ObterResponsaveisEolOuCoreSSO(atribuicaoDto.DreId, atribuicaoDto.TipoResponsavelAtribuicao);
+
+            if (responsaveisValidos == null || !responsaveisValidos.Any())
+                throw new NegocioException("Não foi possível validar o responsável no momento. Tente novamente.");
+
             if (!responsaveisValidos.Any(r => r.CodigoRfOuLogin.Equals(atribuicaoDto.ResponsavelId)))
             {
                 // Apenas lança a exceção. A responsabilidade de remover as atribuições foi movida para o método 'Executar'.
