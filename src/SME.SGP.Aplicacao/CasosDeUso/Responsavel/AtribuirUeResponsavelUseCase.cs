@@ -114,7 +114,7 @@ namespace SME.SGP.Aplicacao
             // Executa as operações de persistência de forma clara.
             AdicionarNovasAtribuicoes(uesParaAdicionar, atribuicaoDto);
             await ReativarAtribuicoes(uesParaReativar);
-            RemoverAtribuicoes(uesParaRemover);
+            await RemoverAtribuicoes(uesParaRemover);
         }
 
         private void AdicionarNovasAtribuicoes(List<string> uesParaAdicionar, AtribuicaoResponsavelUEDto atribuicaoDto)
@@ -145,18 +145,18 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private void RemoverAtribuicoes(List<SupervisorEscolasDreDto> uesParaRemover)
+        private async Task RemoverAtribuicoes(List<SupervisorEscolasDreDto> uesParaRemover)
         {
             foreach (var atribuicao in uesParaRemover)
             {
-                repositorioSupervisorEscolaDre.Remover(atribuicao.AtribuicaoSupervisorId);
+                await repositorioSupervisorEscolaDre.RemoverLogico(atribuicao.AtribuicaoSupervisorId);
             }
         }
 
         private async Task RemoverTodasAtribuicoesDoResponsavel(AtribuicaoResponsavelUEDto atribuicaoDto)
         {
             var atribuicoesExistentes = await repositorioSupervisorEscolaDre.ObtemPorDreESupervisor(atribuicaoDto.DreId, atribuicaoDto.ResponsavelId, false);
-            RemoverAtribuicoes(atribuicoesExistentes.ToList());
+            await RemoverAtribuicoes(atribuicoesExistentes.ToList());
         }
 
         private async Task<IEnumerable<ResponsavelRetornoDto>> ObterResponsaveisEolOuCoreSSO(string dreCodigo, TipoResponsavelAtribuicao tipoResponsavelAtribuicao)
