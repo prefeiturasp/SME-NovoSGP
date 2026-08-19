@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
                                         ObterTurmasComMatriculaValidasParaValidarConselhoQuery request)
         {
             var existeMatricula = matriculasAluno.Any(m => m.CodigoSituacaoMatricula != SituacaoMatriculaAluno.VinculoIndevido &&
-                                                           ((m.PossuiSituacaoAtiva() && m.DataMatricula <= request.PeriodoFim) ||
+                                                           ((m.PossuiSituacaoAtiva() && m.DataMatricula.Date < request.PeriodoFim.Date) ||
                                                             (!m.PossuiSituacaoAtiva() && m.DataSituacao >= request.PeriodoInicio && m.DataSituacao <= request.PeriodoFim) ||
                                                             (!m.PossuiSituacaoAtiva() && m.DataMatricula <= request.PeriodoFim && m.DataSituacao > request.PeriodoFim)));
             if (existeMatricula)

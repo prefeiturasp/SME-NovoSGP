@@ -85,5 +85,53 @@ namespace SME.SGP.Aplicacao.Teste.Queries.EOL.Aluno.Turmas.ObterTurmasComMatricu
             Assert.Single(retorno);
             Assert.Contains(turma.CodigoTurma, retorno);
         }
+
+        [Fact(DisplayName = "ObterTurmasComMatriculaValidasParaValidarConselhoQuery - Considerar matrícula a partir do dia posterior")]
+        public async Task DeveConsiderarMatriculaAPartirDoDiaPosterior()
+        {
+            var anoAtual = DateTime.Now.Year;
+            var turma = new SME.SGP.Dominio.Turma { CodigoTurma = "1", TipoTurma = TipoTurma.Regular };
+            var periodoInicio = new DateTime(anoAtual, 2, 4);
+            var periodoFim = new DateTime(anoAtual, 4, 30);
+
+            mediator.Setup(x => x.Send(It.IsAny<ObterTurmaPorCodigoQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(turma);
+
+            var query = new ObterTurmasComMatriculaValidasParaValidarConselhoQuery(
+                "1",
+                new[] { turma.CodigoTurma },
+                periodoInicio,
+                periodoFim);
+
+            mediator.Setup(x => x.Send(It.IsAny<ObterMatriculasAlunoNaTurmaQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new[]
+                {
+                    new AlunoPorTurmaResposta
+                    {
+                        CodigoAluno = "1",
+                        DataMatricula = new DateTime(anoAtual, 4, 29, 23, 59, 59),
+                        CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo
+                    }
+                });
+
+            var retornoMatriculaDiaAnterior = (await queryHandler.Handle(query, CancellationToken.None)).ToArray();
+
+            mediator.Setup(x => x.Send(It.IsAny<ObterMatriculasAlunoNaTurmaQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new[]
+                {
+                    new AlunoPorTurmaResposta
+                    {
+                        CodigoAluno = "1",
+                        DataMatricula = new DateTime(anoAtual, 4, 30, 7, 14, 47),
+                        CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo
+                    }
+                });
+
+            var retornoMatriculaUltimoDia = (await queryHandler.Handle(query, CancellationToken.None)).ToArray();
+
+            Assert.Single(retornoMatriculaDiaAnterior);
+            Assert.Contains(turma.CodigoTurma, retornoMatriculaDiaAnterior);
+            Assert.Empty(retornoMatriculaUltimoDia);
+        }
     }
 }
