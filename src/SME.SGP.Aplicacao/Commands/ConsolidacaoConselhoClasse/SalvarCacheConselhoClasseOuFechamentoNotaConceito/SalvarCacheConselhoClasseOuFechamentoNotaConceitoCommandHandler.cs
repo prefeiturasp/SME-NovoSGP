@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
 
             var retornoCacheMapeado =
                 await repositorioCache.ObterObjetoAsync<ConsolidadoConselhoClasseAlunoNotaCacheDto>(nomeChaveCache,
-                    "Obter nota/conceito cache consolidação conselho classe turma/componente/bimestre/aluno");
+                    "Obter nota/conceito cache consolidaï¿½ï¿½o conselho classe turma/componente/bimestre/aluno");
 
             if (retornoCacheMapeado.EhNulo())
                 retornoCacheMapeado = new ConsolidadoConselhoClasseAlunoNotaCacheDto() { AlunoCodigo = request.AlunoCodigo,
@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
                 retornoCacheMapeado.ConceitoIdConselhoClasse = request.ConceitoId;
             }
 
-            await repositorioCache.SalvarAsync(nomeChaveCache, retornoCacheMapeado, 5);
+            await repositorioCache.SalvarAsync(nomeChaveCache, retornoCacheMapeado, 20);
             return true;
         }
     }
