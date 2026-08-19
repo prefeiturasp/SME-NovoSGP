@@ -42,9 +42,10 @@ namespace SME.SGP.Aplicacao
                                         Turma turma,
                                         ObterTurmasComMatriculaValidasParaValidarConselhoQuery request)
         {
-            var existeMatricula = matriculasAluno.Any(m => m.PossuiSituacaoAtiva() || (m.CodigoSituacaoMatricula != SituacaoMatriculaAluno.VinculoIndevido &&
-                                                           (!m.PossuiSituacaoAtiva() && m.DataSituacao >= request.PeriodoInicio && m.DataSituacao <= request.PeriodoFim) ||
-                                                           (!m.PossuiSituacaoAtiva() && m.DataMatricula <= request.PeriodoFim && m.DataSituacao > request.PeriodoFim)));
+            var existeMatricula = matriculasAluno.Any(m => m.CodigoSituacaoMatricula != SituacaoMatriculaAluno.VinculoIndevido &&
+                                                           ((m.PossuiSituacaoAtiva() && m.DataMatricula <= request.PeriodoFim) ||
+                                                            (!m.PossuiSituacaoAtiva() && m.DataSituacao >= request.PeriodoInicio && m.DataSituacao <= request.PeriodoFim) ||
+                                                            (!m.PossuiSituacaoAtiva() && m.DataMatricula <= request.PeriodoFim && m.DataSituacao > request.PeriodoFim)));
             if (existeMatricula)
                 return turma.TipoTurma != TipoTurma.EdFisica ||
                        turma.TipoTurma == TipoTurma.EdFisica &&
