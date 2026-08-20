@@ -208,12 +208,13 @@ namespace SME.SGP.Aplicacao.Servicos
 
                     if (turmaId > 0)
                     {
-                        var abragenciaSGP = abrangenciaGeralSGP.FirstOrDefault(a => a.TurmaId == turmaId && !a.Historico);
-                        if (abragenciaSGP.NaoEhNulo())
+
+                        var abrangenciasSGP = abrangenciaGeralSGP.Where(a => a.TurmaId == turmaId && !a.Historico);
+                        if (abrangenciasSGP.Any())
                         {
-                            var virouHistorica = await mediator.Send(new VerificaSeTurmaVirouHistoricaQuery(abragenciaSGP.TurmaId.Value));
-                            if (virouHistorica && !abragenciaSGP.Historico)
-                                paraAtualizarAbrangencia.Add(abragenciaSGP);
+                            var virouHistorica = await mediator.Send(new VerificaSeTurmaVirouHistoricaQuery(turmaId));
+                            if (virouHistorica)
+                                paraAtualizarAbrangencia.AddRange(abrangenciasSGP);
                         }
 
                         await repositorioAbrangencia.AtualizaAbrangenciaHistoricaAnosAnteriores(paraAtualizarAbrangencia.Select(x => x.Id), anoLetivo);
