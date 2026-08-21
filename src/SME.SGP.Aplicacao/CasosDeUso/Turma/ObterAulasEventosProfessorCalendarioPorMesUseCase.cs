@@ -88,7 +88,7 @@ namespace SME.SGP.Aplicacao
                 }
 
                 aulasParaVisualizar = usuarioLogado
-                    .ObterAulasQuePodeVisualizar(aulas, componentesCurricularesEolProfessor);
+                    .ObterAulasQuePodeVisualizar(aulas, componentesCurricularesEolProfessor, considerarVigenciaAtribuicao: true);
 
                 // códigos disciplinas normais + regência + território
                 var codigosComponentesUsuario = componentesCurricularesEolProfessor.Select(c => c.Codigo.ToString())

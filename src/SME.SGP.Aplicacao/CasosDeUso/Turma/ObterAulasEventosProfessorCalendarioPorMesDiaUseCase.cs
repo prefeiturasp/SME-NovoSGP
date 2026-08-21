@@ -92,7 +92,7 @@ namespace SME.SGP.Aplicacao
                 if (usuarioLogado.EhSomenteProfessorCj())
                     componentesCurricularesEolProfessor.AddRange(await ObterComponentesCurricularesProfessorCJ(usuarioLogado.Login));               
 
-                aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesEolProfessor);
+                aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesEolProfessor, considerarVigenciaAtribuicao: true);
             }
 
             IEnumerable<DisciplinaDto> componentesCurriculares = Enumerable.Empty<DisciplinaDto>();

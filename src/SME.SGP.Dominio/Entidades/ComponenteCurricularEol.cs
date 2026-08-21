@@ -25,6 +25,21 @@ namespace SME.SGP.Dominio
         public string Professor { get; set; }
         public long[] CodigosTerritoriosAgrupamento { get; set; }
 
+        public bool AtribuicaoAtiva { get; set; }
+        public DateTime? InicioAtribuicao { get; set; }
+        public DateTime? FimAtribuicao { get; set; }
+
+        public bool AtribuicaoAlcancaData(DateTime data)
+        {
+            if (AtribuicaoAtiva || (!InicioAtribuicao.HasValue && !FimAtribuicao.HasValue))
+                return true;
+
+            var dataReferencia = data.Date;
+
+            return (!InicioAtribuicao.HasValue || InicioAtribuicao.Value.Date <= dataReferencia)
+                && (!FimAtribuicao.HasValue || FimAtribuicao.Value.Date >= dataReferencia);
+        }
+
         public bool PossuiObjetivosDeAprendizagem(IEnumerable<ComponenteCurricularJurema> componentesCurricularesJurema, Modalidade turmaModalidade)
         => turmaModalidade.PossuiObjetivosAprendizagem()
            && componentesCurricularesJurema.Any(x => x.CodigoEOL == Codigo);
