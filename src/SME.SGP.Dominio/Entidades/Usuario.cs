@@ -55,14 +55,17 @@ namespace SME.SGP.Dominio
                 {
                     return (from a in aulas
                             from ccp in componentesUsuario
-                            where (((!ccp.TerritorioSaber && a.DisciplinaId == (ccp.CodigoComponenteCurricularPai ?? ccp.Codigo).ToString()) ||
-                                    (ccp.TerritorioSaber && (a.DisciplinaId == ccp.Codigo.ToString() || a.DisciplinaId == ccp.CodigoComponenteTerritorioSaber.ToString())))
+                            where (UsuarioPodeVisualizarAulaPorComponente(a, ccp)
                                    && (!considerarVigenciaAtribuicao || ccp.AtribuicaoAlcancaData(a.DataAula))) ||
-                                  a.ProfessorRf == CodigoRf
+                                   a.ProfessorRf == CodigoRf
                             select a).Distinct();
                 }
             }
         }
+
+        private static bool UsuarioPodeVisualizarAulaPorComponente(Aula aula, ComponenteCurricularEol componenteCurricular)
+            => long.TryParse(aula.DisciplinaId, out var disciplinaId) &&
+               componenteCurricular.PossuiCodigoEquivalente(disciplinaId);
 
         public bool EhProfessorInfantilOuCjInfantil()
             => EhProfessorInfantil() || EhProfessorCjInfantil();

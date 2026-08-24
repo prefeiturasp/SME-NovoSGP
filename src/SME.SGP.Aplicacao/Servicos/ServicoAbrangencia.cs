@@ -194,8 +194,12 @@ namespace SME.SGP.Aplicacao.Servicos
 
                     abrangenciaGeralSGP = await repositorioAbrangencia.ObterAbrangenciaGeralPorUsuarioId(usuario.Id);
 
-                    var paraAtualizar = abrangenciaGeralSGP.Where(x => abrangenciaTurmasHistoricasEOL.Any(ath => ath.DreId == x.DreId && ath.UeId == x.UeId && ath.TurmaId == x.TurmaId && ath.UsuarioId == x.UsuarioId));
+                    var turmaInformadaVirouHistorica = turmaId > 0 && await mediator.Send(new VerificaSeTurmaVirouHistoricaQuery(turmaId));
 
+                    var paraAtualizar = abrangenciaGeralSGP.Where(x => abrangenciaTurmasHistoricasEOL.Any(ath => ath.DreId == x.DreId && ath.UeId == x.UeId && ath.TurmaId == x.TurmaId && ath.UsuarioId == x.UsuarioId)
+                                                                      || (turmaInformadaVirouHistorica && x.TurmaId == turmaId && !x.Historico &&
+                                                                          (x.Perfil == Perfis.PERFIL_CJ || x.Perfil == Perfis.PERFIL_CJ_INFANTIL))
+                                                                          );
 
                     await repositorioAbrangencia.AtualizaAbrangenciaHistorica(paraAtualizar.Select(x => x.Id));
                 }
@@ -205,12 +209,13 @@ namespace SME.SGP.Aplicacao.Servicos
 
                     if (turmaId > 0)
                     {
-                        var abragenciaSGP = abrangenciaGeralSGP.FirstOrDefault(a => a.TurmaId == turmaId && !a.Historico);
-                        if (abragenciaSGP.NaoEhNulo())
+
+                        var abrangenciasSGP = abrangenciaGeralSGP.Where(a => a.TurmaId == turmaId && !a.Historico);
+                        if (abrangenciasSGP.Any())
                         {
-                            var virouHistorica = await mediator.Send(new VerificaSeTurmaVirouHistoricaQuery(abragenciaSGP.TurmaId.Value));
-                            if (virouHistorica && !abragenciaSGP.Historico)
-                                paraAtualizarAbrangencia.Add(abragenciaSGP);
+                            var virouHistorica = await mediator.Send(new VerificaSeTurmaVirouHistoricaQuery(turmaId));
+                            if (virouHistorica)
+                                paraAtualizarAbrangencia.AddRange(abrangenciasSGP);
                         }
 
                         await repositorioAbrangencia.AtualizaAbrangenciaHistoricaAnosAnteriores(paraAtualizarAbrangencia.Select(x => x.Id), anoLetivo);
@@ -270,20 +275,23 @@ namespace SME.SGP.Aplicacao.Servicos
                 if (usuario.NaoEhNulo())
                 {
                     //se for usuário ABAE, o CPF e o login serão os mesmos
-                    var cadastroABAE = await mediator.Send(new ObterCadastroAcessoABAEPorCpfQuery(login));
+                    var cadastrosABAE = await mediator.Send(new ObterCadastroAcessoABAEPorCpfQuery(login));
 
-                    if (cadastroABAE.NaoEhNulo() && cadastroABAE.UeId.NaoEhNulo())
+                    var uesIdsABAE = cadastrosABAE.Select(c => c.UeId).ToArray();
+
+                    if (uesIdsABAE.Any())
                     {
-                        // Obter informações da UE e DRE baseadas no cadastro ABAE
-                        var ue = await mediator.Send(new ObterUePorIdQuery(cadastroABAE.UeId));
+                        // Obter informações das UEs e DREs baseadas nos cadastros ABAE
+                        var ues = (await mediator.Send(new ObterUesPorIdsQuery(uesIdsABAE))).ToList();
 
-                        if (ue.NaoEhNulo() && ue.Dre.NaoEhNulo())
+                        if (ues.Any())
                         {
                             abrangenciaEol = new AbrangenciaCompactaVigenteRetornoEOLDTO()
                             {
                                 Abrangencia = new AbrangenciaCargoRetornoEolDTO { Abrangencia = Infra.Enumerados.Abrangencia.UE },
-                                IdDres = new[] { ue.Dre.CodigoDre },
-                                IdUes = new[] { ue.CodigoUe }
+                                //uma mesma DRE pode se repetir entre as UEs, diferente do código da UE que já vem único
+                                IdDres = ues.Select(ue => ue.Dre.CodigoDre).ToArray(),
+                                IdUes = ues.Select(ue => ue.CodigoUe).ToArray()
                             };
                         }
                     }

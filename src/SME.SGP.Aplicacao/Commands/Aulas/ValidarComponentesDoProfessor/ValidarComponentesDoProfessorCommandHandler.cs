@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
                 
                 if(componentesCurricularesDoProfessor.NaoEhNulo() && componentesCurricularesDoProfessor.Any())
                 {
-                    var componenteCurricularFiltrado = componentesCurricularesDoProfessor.FirstOrDefault(x => x.Codigo == request.ComponenteCurricularCodigo);
+                    var componenteCurricularFiltrado = componentesCurricularesDoProfessor.FirstOrDefault(x => x.PossuiCodigoEquivalente(request.ComponenteCurricularCodigo));
                     if (componenteCurricularFiltrado.NaoEhNulo())
                     {
                         var componenteEhVigente = await ValidaVigenciaComponenteTerritorioSaberDoProfessor(request.Usuario, request.TurmaCodigo, request.Data, componenteCurricularFiltrado);
@@ -95,16 +95,21 @@ namespace SME.SGP.Aplicacao
                                                               long componenteCurricularCodigo,
                                                               long? componenteCurricularTerritorioSaberCodigo)
         => componentesCurricularesDoProfessor.NaoEhNulo() &&
-           (componentesCurricularesDoProfessor.Any(c => !c.Regencia && !c.TerritorioSaber && c.Codigo == componenteCurricularCodigo) ||
-            componentesCurricularesDoProfessor.Any(c => !c.Regencia && c.TerritorioSaber && (c.CodigoComponenteTerritorioSaber == componenteCurricularTerritorioSaberCodigo || c.Codigo == componenteCurricularCodigo)) ||
-            componentesCurricularesDoProfessor.Any(r => r.Regencia && (r.CodigoComponenteCurricularPai == componenteCurricularCodigo || r.Codigo == componenteCurricularCodigo)));
+           componentesCurricularesDoProfessor.Any(c => PossuiComponenteEquivalente(c, componenteCurricularCodigo, componenteCurricularTerritorioSaberCodigo));
 
         private async Task<bool> ProfessorCJPodeCriarAulasTurma(IEnumerable<AtribuicaoCJ> componentesCurricularesDoProfessorCJ,
                                                                 IEnumerable<ComponenteCurricularEol> componentesCurricularesDoProfessor,
                                                                 long componenteCurricularCodigo, string turmaCodigo,
                                                                 long? componenteCurricularTerritorioSaberCodigo)
         => componentesCurricularesDoProfessorCJ.Any(c => c.TurmaId == turmaCodigo && (c.DisciplinaId == componenteCurricularCodigo || (componenteCurricularTerritorioSaberCodigo.HasValue && componenteCurricularTerritorioSaberCodigo.Value > 0 && c.DisciplinaId.Equals(componenteCurricularTerritorioSaberCodigo)))) ||
-           componentesCurricularesDoProfessor.Any(c => c.Codigo.Equals(componenteCurricularCodigo) || c.CodigoComponenteTerritorioSaber.Equals(componenteCurricularCodigo));
+           componentesCurricularesDoProfessor.Any(c => PossuiComponenteEquivalente(c, componenteCurricularCodigo, componenteCurricularTerritorioSaberCodigo));
+
+        private static bool PossuiComponenteEquivalente(ComponenteCurricularEol componenteCurricular,
+                                                        long componenteCurricularCodigo,
+                                                        long? componenteCurricularTerritorioSaberCodigo)
+            => componenteCurricular.PossuiCodigoEquivalente(componenteCurricularCodigo) ||
+               (componenteCurricularTerritorioSaberCodigo.HasValue &&
+                componenteCurricular.PossuiCodigoEquivalente(componenteCurricularTerritorioSaberCodigo.Value));
 
         public async Task<IEnumerable<ComponenteCurricularEol>> VerificaPossibilidadeDeTurmaComMotivoErroDeCadastroNoUsuario(string turmaCodigo, string login, Guid perfilAtual, bool realizaAgrupamento)
          => await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turmaCodigo, login, perfilAtual, realizaAgrupamento, false));
