@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Moq;
+using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
@@ -49,8 +50,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PlanoAEE
             await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(filtro));
         }
 
-        [Fact]
-        public async Task Deve_Retornar_Plano_Quando_Encontrado()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task Deve_Atualizar_Informacoes_Srm_Ao_Preparar_Nova_Versao(bool eolRetornaDadosSrm)
         {
             // Arrange
             var filtro = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(1, "123", 1);
@@ -99,10 +102,29 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PlanoAEE
                 new PlanoAEEVersaoDto { Id = 100, Numero = 1 }
             };
 
-                    // Questões
-                    var questoes = new List<QuestaoDto>
+            // Questões
+            var questoes = new List<QuestaoDto>
             {
-                new QuestaoDto { Id = 1, TipoQuestao = TipoQuestao.Texto }
+                new QuestaoDto { Id = 1, TipoQuestao = TipoQuestao.Texto },
+                new QuestaoDto
+                {
+                    Id = 2,
+                    TipoQuestao = TipoQuestao.InformacoesSrm,
+                    Resposta = new List<RespostaQuestaoDto>
+                    {
+                        new RespostaQuestaoDto { Texto = "informação da versão anterior" }
+                    }
+                }
+            };
+
+            var dadosSrmAtualizados = new List<SrmPaeeColaborativoSgpDto>
+            {
+                new SrmPaeeColaborativoSgpDto
+                {
+                    DreUe = "DRE Teste - EMEF Teste",
+                    TurmaTurno = "SG - Tarde",
+                    ComponenteCurricular = "SRM Complementar DI"
+                }
             };
 
             // Período escolar
@@ -137,6 +159,9 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PlanoAEE
             mediator.Setup(x => x.Send(It.IsAny<ObterQuestoesPlanoAEEPorVersaoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(questoes);
 
+            mediator.Setup(x => x.Send(It.IsAny<ObterDadosSrmPaeeColaborativoEolQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(eolRetornaDadosSrm ? dadosSrmAtualizados : new List<SrmPaeeColaborativoSgpDto>());
+
             mediator.Setup(x => x.Send(It.IsAny<ObterTurmaPorCodigoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(planoDominio.Turma);
 
@@ -160,6 +185,90 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PlanoAEE
             Assert.NotNull(resultado.Turma);
             Assert.NotNull(resultado.Questoes);
             Assert.NotEmpty(resultado.Questoes);
+
+            var questaoInformacoesSrm = Assert.Single(resultado.Questoes, q => q.TipoQuestao == TipoQuestao.InformacoesSrm);
+
+            if (eolRetornaDadosSrm)
+            {
+                var respostaSrm = Assert.Single(questaoInformacoesSrm.Resposta);
+                Assert.Equal(JsonConvert.SerializeObject(dadosSrmAtualizados), respostaSrm.Texto);
+            }
+            else
+                Assert.Empty(questaoInformacoesSrm.Resposta);
+
+            mediator.Verify(x => x.Send(
+                It.Is<ObterDadosSrmPaeeColaborativoEolQuery>(q => q.CodigoAluno == filtro.CodigoAluno),
+                It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task Deve_Buscar_Informacoes_Srm_Ao_Preparar_Primeira_Versao()
+        {
+            // Arrange
+            const long codigoAluno = 123;
+            var filtro = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(null, "1", codigoAluno);
+            var turma = new Turma
+            {
+                Id = 1,
+                CodigoTurma = "1",
+                AnoLetivo = DateTime.Now.Year,
+                ModalidadeCodigo = Modalidade.Fundamental,
+                UeId = 10,
+                TipoTurma = TipoTurma.Regular,
+                Ue = new Ue { CodigoUe = "UE01" }
+            };
+            var aluno = new AlunoReduzidoDto
+            {
+                CodigoAluno = codigoAluno.ToString(),
+                Nome = "Aluno Teste"
+            };
+            var questaoInformacoesSrm = new QuestaoDto
+            {
+                Id = 2,
+                TipoQuestao = TipoQuestao.InformacoesSrm,
+                Resposta = new List<RespostaQuestaoDto>()
+            };
+            var dadosSrm = new List<SrmPaeeColaborativoSgpDto>
+            {
+                new SrmPaeeColaborativoSgpDto
+                {
+                    DreUe = "DRE Teste - EMEF Teste",
+                    TurmaTurno = "SB - Manhã",
+                    ComponenteCurricular = "SRM"
+                }
+            };
+            var usuarioLogado = new Usuario
+            {
+                Nome = "Usuário Teste",
+                CodigoRf = "123456"
+            };
+
+            mediator.Setup(x => x.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(usuarioLogado);
+            mediator.Setup(x => x.Send(It.IsAny<ObterTurmaPorCodigoQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(turma);
+            mediator.Setup(x => x.Send(It.IsAny<ObterAlunoPorCodigoEAnoQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(aluno);
+            mediator.Setup(x => x.Send(It.IsAny<ObterQuestionarioPlanoAEEIdQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(999);
+            mediator.Setup(x => x.Send(It.IsAny<ObterQuestoesPlanoAEEPorVersaoQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<QuestaoDto> { questaoInformacoesSrm });
+            mediator.Setup(x => x.Send(It.IsAny<ObterDadosSrmPaeeColaborativoEolQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(dadosSrm);
+            consultasPeriodoEscolar
+                .Setup(x => x.ObterPeriodoAtualPorModalidade((Modalidade)It.IsAny<int>()))
+                .ReturnsAsync((PeriodoEscolar)null);
+
+            // Act
+            var resultado = await useCase.Executar(filtro);
+
+            // Assert
+            var questaoSrmRetornada = Assert.Single(resultado.Questoes, q => q.TipoQuestao == TipoQuestao.InformacoesSrm);
+            var respostaSrm = Assert.Single(questaoSrmRetornada.Resposta);
+            Assert.Equal(JsonConvert.SerializeObject(dadosSrm), respostaSrm.Texto);
+            mediator.Verify(x => x.Send(
+                It.Is<ObterDadosSrmPaeeColaborativoEolQuery>(q => q.CodigoAluno == codigoAluno),
+                It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]

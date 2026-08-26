@@ -24,7 +24,6 @@ namespace SME.SGP.Aplicacao
         {
             var plano = new PlanoAEEDto();
             bool verificaMatriculaAnoVigente = false; 
-            bool novaVersao = false;
             var alunoCodigo = 0;
 
             PlanoAEEVersaoDto ultimaVersao = null;
@@ -153,7 +152,6 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                novaVersao = true;
                 plano.Responsavel = await ObterResponsavel();
                 turma = await ObterTurma(filtro.TurmaCodigo);
                 var alunoTurma = await ObterAlunoReduzido(filtro.CodigoAluno.ToString(), turma.AnoLetivo);
@@ -193,7 +191,7 @@ namespace SME.SGP.Aplicacao
             plano.RegistroCadastradoEmOutraUE = !await VerificarUsuarioLogadoPertenceMesmaUEPlano(usuarioLogado, turma);
             plano.PermitirEncerramentoManual = PermitirEncerramentoManual(plano);
 
-            await BuscarDadosSrmPaee((filtro.CodigoAluno > 0 ?  filtro.CodigoAluno :alunoCodigo),plano,novaVersao);
+            await BuscarDadosSrmPaee(filtro.CodigoAluno > 0 ? filtro.CodigoAluno : alunoCodigo, plano);
 
             return plano;
         }
@@ -229,22 +227,21 @@ namespace SME.SGP.Aplicacao
             return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
         }
 
-        private async Task BuscarDadosSrmPaee(long codigoAluno,PlanoAEEDto plano,bool novaVersao)
+        private async Task BuscarDadosSrmPaee(long codigoAluno, PlanoAEEDto plano)
         {
-            if (novaVersao)
-            {
-                var resposta = new List<RespostaQuestaoDto>();
-                var dadoSrm = (await mediator.Send(new ObterDadosSrmPaeeColaborativoEolQuery(codigoAluno))).ToList();
+            var questaoInformacoesSrm = plano.Questoes?
+                .FirstOrDefault(q => q.TipoQuestao == TipoQuestao.InformacoesSrm);
 
-                if (dadoSrm.Count > 0)
-                {
-                    var json = JsonConvert.SerializeObject(dadoSrm); 
-                    resposta.Add(new RespostaQuestaoDto() {Texto = json});
-                    
-                    plano.Questoes.FirstOrDefault(q => q.TipoQuestao == TipoQuestao.InformacoesSrm)!.Resposta = resposta;
-                }
-            }
-            
+            if (questaoInformacoesSrm.EhNulo())
+                return;
+
+            var dadosSrm = (await mediator.Send(new ObterDadosSrmPaeeColaborativoEolQuery(codigoAluno))).ToList();
+            var resposta = new List<RespostaQuestaoDto>();
+
+            if (dadosSrm.Any())
+                resposta.Add(new RespostaQuestaoDto { Texto = JsonConvert.SerializeObject(dadosSrm) });
+
+            questaoInformacoesSrm.Resposta = resposta;
         }
         
         public void CriarRespostaPeriodoEscolarParaPlanoASerCriado(PlanoAEEDto plano, PeriodoEscolar periodoAtual, bool planoEstaAtivo)
