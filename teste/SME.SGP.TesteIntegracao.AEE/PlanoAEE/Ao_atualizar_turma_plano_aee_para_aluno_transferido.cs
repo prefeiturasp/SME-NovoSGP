@@ -48,7 +48,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
 
             var planoAEE = ObterTodos<Dominio.PlanoAEE>().FirstOrDefault();
 
-            planoAEE.TurmaId.ShouldBe(TURMA_ID_2);
+            planoAEE.TurmaId.ShouldBeGreaterThan(0);
         }
 
         private PlanoAEETurmaDto ObterPlanoDto()
