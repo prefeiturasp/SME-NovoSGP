@@ -146,9 +146,9 @@ namespace SME.SGP.Aplicacao
             var planos = await mediator.Send(new ObterPlanosAEEPorUesESituacoesQuery(uesCodigos, situacoes, responsavelRf))
                          ?? Enumerable.Empty<PlanoAEE>();
 
-            foreach (var plano in planos)
-                if (!await mediator.Send(new RemoverResponsavelPlanoAEECommand(plano.Id)))
-                    throw new NegocioException($"Não foi possível remover o PAAI responsável pelo Plano AEE {plano.Id}.");
+            foreach (var planoId in planos.Select(plano => plano.Id))
+                if (!await mediator.Send(new RemoverResponsavelPlanoAEECommand(planoId)))
+                    throw new NegocioException($"Não foi possível remover o PAAI responsável pelo Plano AEE {planoId}.");
         }
 
         private async Task AtribuirResponsavelPlanosAEE(string responsavelRf, List<string> uesAtribuidas)
