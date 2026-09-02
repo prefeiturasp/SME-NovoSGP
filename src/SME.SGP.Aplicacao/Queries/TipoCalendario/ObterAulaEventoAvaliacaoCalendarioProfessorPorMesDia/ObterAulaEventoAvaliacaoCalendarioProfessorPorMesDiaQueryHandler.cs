@@ -32,10 +32,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var discplinaIdAula = long.Parse(aulaParaVisualizar.DisciplinaId);
                     var componenteCurricular = request.ComponentesCurricularesParaVisualizacao
-                        .FirstOrDefault(a => a.CodigoComponenteCurricular == discplinaIdAula ||
-                                             a.Id == discplinaIdAula ||
-                                             a.CodigoComponenteCurricularTerritorioSaber == discplinaIdAula ||
-                                             (a.CdComponenteCurricularPai.HasValue && a.CdComponenteCurricularPai.Value == discplinaIdAula));
+                        .FirstOrDefault(a => a.PossuiCodigoEquivalente(discplinaIdAula));
 
                     if (componenteCurricular.NaoEhNulo() && !componenteCurricular.RegistraFrequencia)
                     {
