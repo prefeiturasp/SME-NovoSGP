@@ -115,6 +115,67 @@ namespace SME.SGP.Aplicacao
             AdicionarNovasAtribuicoes(uesParaAdicionar, atribuicaoDto);
             await ReativarAtribuicoes(uesParaReativar);
             await RemoverAtribuicoes(uesParaRemover);
+
+            await SincronizarPlanosAEE(atribuicaoDto, uesNovasIds, uesParaRemover);
+        }
+
+        private async Task SincronizarPlanosAEE(AtribuicaoResponsavelUEDto atribuicaoDto,
+            List<string> uesAtribuidas,
+            List<SupervisorEscolasDreDto> uesRemovidas)
+        {
+            if (atribuicaoDto.TipoResponsavelAtribuicao != TipoResponsavelAtribuicao.PAAI)
+                return;
+
+            await RemoverResponsavelPlanosAEE(atribuicaoDto.ResponsavelId, uesRemovidas);
+            await AtribuirResponsavelPlanosAEE(atribuicaoDto.ResponsavelId, uesAtribuidas);
+        }
+
+        private async Task RemoverResponsavelPlanosAEE(string responsavelRf, List<SupervisorEscolasDreDto> uesRemovidas)
+        {
+            var uesCodigos = uesRemovidas.Select(ue => ue.EscolaId).Distinct().ToArray();
+            if (!uesCodigos.Any())
+                return;
+
+            var situacoes = new[]
+            {
+                SituacaoPlanoAEE.ParecerPAAI,
+                SituacaoPlanoAEE.Validado,
+                SituacaoPlanoAEE.Expirado
+            };
+
+            var planos = await mediator.Send(new ObterPlanosAEEPorUesESituacoesQuery(uesCodigos, situacoes, responsavelRf))
+                         ?? Enumerable.Empty<PlanoAEE>();
+
+            foreach (var plano in planos)
+                if (!await mediator.Send(new RemoverResponsavelPlanoAEECommand(plano.Id)))
+                    throw new NegocioException($"Não foi possível remover o PAAI responsável pelo Plano AEE {plano.Id}.");
+        }
+
+        private async Task AtribuirResponsavelPlanosAEE(string responsavelRf, List<string> uesAtribuidas)
+        {
+            var uesCodigos = uesAtribuidas.Distinct().ToArray();
+            if (!uesCodigos.Any())
+                return;
+
+            var situacoes = new[]
+            {
+                SituacaoPlanoAEE.AtribuicaoPAAI,
+                SituacaoPlanoAEE.ParecerPAAI,
+                SituacaoPlanoAEE.Validado,
+                SituacaoPlanoAEE.Expirado
+            };
+
+            var planos = await mediator.Send(new ObterPlanosAEEPorUesESituacoesQuery(uesCodigos, situacoes))
+                         ?? Enumerable.Empty<PlanoAEE>();
+            var planosParaAtribuir = planos.ToList();
+            if (!planosParaAtribuir.Any())
+                return;
+
+            var responsavelId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(responsavelRf));
+
+            foreach (var plano in planosParaAtribuir.Where(plano => plano.ResponsavelPaaiId != responsavelId))
+                if (!await mediator.Send(new AtribuirResponsavelPlanoAEECommand(plano, responsavelRf, plano.Turma)))
+                    throw new NegocioException($"Não foi possível atribuir o PAAI responsável pelo Plano AEE {plano.Id}.");
         }
 
         private void AdicionarNovasAtribuicoes(List<string> uesParaAdicionar, AtribuicaoResponsavelUEDto atribuicaoDto)
