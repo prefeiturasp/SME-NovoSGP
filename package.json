@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "semantic-release": "^17.2.3",
-    "semantic-release-cli": "^5.2.3"
+    "semantic-release-cli": "^5.4.6"
   },
   "devDependencies": {},
   "scripts": {
