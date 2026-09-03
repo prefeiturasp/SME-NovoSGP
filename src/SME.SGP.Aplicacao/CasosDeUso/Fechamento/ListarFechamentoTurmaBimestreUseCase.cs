@@ -159,6 +159,31 @@ namespace SME.SGP.Aplicacao
         {
             return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
         }
+
+        private async Task<Dictionary<string, FrequenciaAluno>> ObterFrequenciaAlunosPorPeriodoEscolar(ListagemAlunosFechamentoDto dto, PeriodoEscolar periodoAtual)
+        {
+            var frequenciasAlunos = await mediator.Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(dto.Turma, new long[] { long.Parse(dto.ComponenteCurricularCodigo) }, periodoAtual.Id));
+
+            return frequenciasAlunos
+                .GroupBy(f => f.CodigoAluno)
+                .ToDictionary(g => g.Key, g => g.OrderByDescending(f => f.Id).First());
+        }
+
+        private async Task<Dictionary<string, FrequenciaAluno>> ObterFrequenciaGeralAlunos(IEnumerable<AlunoPorTurmaResposta> alunos, ListagemAlunosFechamentoDto dto)
+        {
+            var codigosAlunos = alunos.Select(a => a.CodigoAluno)
+                                      .Where(codigo => codigo.NaoEhNulo())
+                                      .ToArray();
+
+            if (!codigosAlunos.Any())
+                return new Dictionary<string, FrequenciaAluno>();
+
+            var frequenciasAlunos = await mediator.Send(new ObterFrequenciaGeralPorAlunosTurmaEComponenteQuery(codigosAlunos, dto.Turma.CodigoTurma, dto.ComponenteCurricularCodigo));
+
+            return frequenciasAlunos
+                .GroupBy(f => f.CodigoAluno)
+                .ToDictionary(g => g.Key, g => g.First());
+        }
         
         public async Task<IList<AlunosFechamentoNotaConceitoTurmaDto>> RetornaListagemAlunosFechamentoBimestreEspecifico(IEnumerable<AlunoPorTurmaResposta> alunos,
                                                                                                                          PeriodoEscolar periodoAtual,
@@ -169,6 +194,7 @@ namespace SME.SGP.Aplicacao
             var usuarioEPeriodoPodeEditar = await PodeEditarNotaOuConceitoPeriodoUsuario(dto.UsuarioAtual, periodoAtual, dto.Turma, dto.ComponenteCurricularCodigo.ToString(), periodoAtual.PeriodoInicio);
             var exigeAprovacao = await mediator.Send(new ExigeAprovacaoDeNotaQuery(dto.Turma));
             var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(alunos.Select(x => x.CodigoAluno).ToArray(), dto.Turma.AnoLetivo);
+            var frequenciaPorAluno = await ObterFrequenciaAlunosPorPeriodoEscolar(dto, periodoAtual);
             PeriodoFechamentoVigenteDto periodoFechamentoBimestre = null;
 
             if (dto.Turma.AnoLetivo >= DateTime.Now.Year)
@@ -195,8 +221,7 @@ namespace SME.SGP.Aplicacao
                 alunoDto.Marcador = await mediator.Send(new ObterMarcadorAlunoQuery(aluno, periodoAtual.PeriodoInicio, dto.Turma.EhTurmaInfantil));
                 alunoDto.PodeEditar = usuarioEPeriodoPodeEditar ? AlunoEstaAtivoLancamentoNotaFechamento(aluno, periodoFechamentoBimestre, periodoAtual) : false;
 
-                var frequenciaAluno = await mediator.Send(new ObterFrequenciaAlunosPorAlunoDisciplinaPeriodoEscolarTipoTurmaQuery(aluno.CodigoAluno, dto.ComponenteCurricularCodigo, periodoAtual.Id, TipoFrequenciaAluno.PorDisciplina, dto.Turma.CodigoTurma));
-                if (frequenciaAluno.NaoEhNulo())
+                if (aluno.CodigoAluno.NaoEhNulo() && frequenciaPorAluno.TryGetValue(aluno.CodigoAluno, out var frequenciaAluno))
                     alunoDto.Frequencia = frequenciaAluno.PercentualFrequenciaFormatado;
 
                 if (aluno.CodigoAluno.NaoEhNulo())
@@ -330,9 +355,10 @@ namespace SME.SGP.Aplicacao
             if (dto.FechamentosTurma.NaoEhNulo() && dto.FechamentosTurma.Any())
                 notasFechamentosFinais = await mediator.Send(new ObterPorFechamentosTurmaQuery(dto.FechamentosTurma.Select(ftd => ftd.Id).ToArray(), dto.Turma.CodigoTurma, dto.ComponenteCurricularCodigo));
             var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(alunos.Select(x => x.CodigoAluno).ToArray(), dto.Turma.AnoLetivo);
+            var frequenciaPorAluno = await ObterFrequenciaGeralAlunos(alunos, dto);
             foreach (var aluno in alunos)
             {
-                AlunosFechamentoNotaConceitoTurmaDto fechamentoFinalAluno = await TrataFrequenciaAluno(dto.ComponenteCurricularCodigo, aluno, dto.Turma, matriculadosTurmaPAP);
+                AlunosFechamentoNotaConceitoTurmaDto fechamentoFinalAluno = await TrataFrequenciaAluno(aluno, dto.Turma, matriculadosTurmaPAP, frequenciaPorAluno);
 
                 fechamentoFinalAluno.Marcador = await mediator.Send(new ObterMarcadorAlunoQuery(aluno, ultimoPeriodoEscolar.PeriodoInicio, dto.Turma.EhTurmaInfantil));
 
@@ -467,11 +493,14 @@ namespace SME.SGP.Aplicacao
             return listaRetorno;
         }
 
-        private async Task<AlunosFechamentoNotaConceitoTurmaDto> TrataFrequenciaAluno(string componenteCurricularCodigo, AlunoPorTurmaResposta aluno, Turma turma, IEnumerable<AlunosTurmaProgramaPapDto> matriculadosTurmaPAP)
+        private async Task<AlunosFechamentoNotaConceitoTurmaDto> TrataFrequenciaAluno(AlunoPorTurmaResposta aluno, Turma turma, IEnumerable<AlunosTurmaProgramaPapDto> matriculadosTurmaPAP, Dictionary<string, FrequenciaAluno> frequenciaPorAluno)
         {
             var percentualFrequencia = FrequenciaAluno.FormatarPercentual(0);
-            
-            var frequenciaAluno = await mediator.Send(new ObterFrequenciaGeralAlunoPorTurmaEComponenteQuery(aluno.CodigoAluno, turma.CodigoTurma, componenteCurricularCodigo));
+
+            FrequenciaAluno frequenciaAluno = null;
+            if (aluno.CodigoAluno.NaoEhNulo())
+                frequenciaPorAluno.TryGetValue(aluno.CodigoAluno, out frequenciaAluno);
+
             if (frequenciaAluno.NaoEhNulo())
             {
                 percentualFrequencia = turma.AnoLetivo.Equals(2020) ? frequenciaAluno.PercentualFrequenciaFinalFormatado : frequenciaAluno.PercentualFrequenciaFormatado;
