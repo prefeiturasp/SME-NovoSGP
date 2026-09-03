@@ -143,6 +143,28 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         }
 
         [Fact]
+        public async Task Nao_deve_considerar_registro_excluido_mais_recente_nas_notas_do_fechamento()
+        {
+            var periodoEscolar = await CriarDadosBaseFrequencia();
+
+            // O aluno tem registro válido E registro excluído. O excluído é o mais recente: sem o
+            // filtro lógico ele venceria o row_number da consulta e o aluno apareceria com 100%
+            // de frequência e nenhuma falta.
+            await CriarFrequenciaComponente(periodoEscolar, CODIGO_ALUNO_1, totalAusencias: 4, totalCompensacoes: 0);
+            await CriarFrequenciaComponenteExcluida(periodoEscolar, CODIGO_ALUNO_1, totalAusencias: 0, totalCompensacoes: 0, diasDeslocamento: 1);
+
+            await CriarFechamentoTurmaDisciplina(periodoEscolar);
+
+            var consultas = ServiceProvider.GetService<IConsultasFechamentoTurmaDisciplina>();
+            var retorno = await consultas.ObterNotasFechamentoTurmaDisciplina(TURMA_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, BIMESTRE_1, SEMESTRE_0);
+
+            var aluno1 = ObterAlunoDoFechamento(retorno, CODIGO_ALUNO_1);
+            aluno1.PercentualFrequencia.ShouldBe(Dominio.FrequenciaAluno.FormatarPercentual(80));
+            aluno1.QuantidadeFaltas.ShouldBe(4);
+            aluno1.QuantidadeCompensacoes.ShouldBe(0);
+        }
+
+        [Fact]
         public async Task Deve_somar_a_frequencia_de_todos_os_bimestres_no_fechamento_final()
         {
             var primeiroBimestre = await CriarDadosBaseFrequencia();
@@ -180,6 +202,21 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             var retorno = await ExecutarTesteFechamentoFinal();
 
             ObterFrequenciaDoAluno(retorno, CODIGO_ALUNO_3).ShouldBe(Dominio.FrequenciaAluno.FormatarPercentual(0));
+        }
+
+        [Fact]
+        public async Task Nao_deve_somar_registro_excluido_na_frequencia_do_fechamento_final()
+        {
+            var primeiroBimestre = await CriarDadosBaseFrequencia();
+
+            // O fechamento final SOMA todas as linhas do aluno, em vez de escolher uma. Se o registro
+            // excluído entrasse na soma o total viraria 40 aulas e 14 ausências (65%), e não 20 e 4 (80%).
+            await CriarFrequenciaComponente(primeiroBimestre, CODIGO_ALUNO_1, totalAusencias: 4, totalCompensacoes: 0);
+            await CriarFrequenciaComponenteExcluida(primeiroBimestre, CODIGO_ALUNO_1, totalAusencias: 10, totalCompensacoes: 0, diasDeslocamento: 1);
+
+            var retorno = await ExecutarTesteFechamentoFinal();
+
+            ObterFrequenciaDoAluno(retorno, CODIGO_ALUNO_1).ShouldBe(Dominio.FrequenciaAluno.FormatarPercentual(80));
         }
 
         private static NotaConceitoAlunoBimestreDto ObterAlunoDoFechamento(FechamentoTurmaDisciplinaBimestreDto retorno, string codigoAluno)
