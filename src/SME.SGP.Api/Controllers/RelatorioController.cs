@@ -282,7 +282,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [Permissao(Permissao.RESON_C, Policy = "Bearer")]
         public async Task<IActionResult> Gerar(FiltroRelatorioAnaliticoSondagemDto filtroRelatorioAnaliticoSondagemDto, [FromServices] IRelatorioAnaliticoSondagemUseCase relatorioAnaliticoSondagemUseCase)
         {
             return Ok(await relatorioAnaliticoSondagemUseCase.Executar(filtroRelatorioAnaliticoSondagemDto));

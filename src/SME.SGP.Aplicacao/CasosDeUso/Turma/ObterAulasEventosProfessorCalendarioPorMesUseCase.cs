@@ -88,7 +88,7 @@ namespace SME.SGP.Aplicacao
                 }
 
                 aulasParaVisualizar = usuarioLogado
-                    .ObterAulasQuePodeVisualizar(aulas, componentesCurricularesEolProfessor);
+                    .ObterAulasQuePodeVisualizar(aulas, componentesCurricularesEolProfessor, considerarVigenciaAtribuicao: true);
 
                 var codigosComponentesUsuario = componentesCurricularesEolProfessor.ObterCodigosEquivalentes();
 
