@@ -62,5 +62,35 @@ namespace SME.SGP.Aplicacao.Teste.Repositorios.ConselhoClasse
                 DapperExtensionMethods.Init(null);
             }
         }
+
+        [Fact]
+        public async Task Consulta_em_lote_deve_filtrar_excluidos_e_usar_array_de_ids()
+        {
+            string sqlCapturado = null;
+            var telemetria = new Mock<IServicoTelemetria>(MockBehavior.Strict);
+            telemetria.Setup(t => t.RegistrarComRetornoAsync<ConselhoClasseNotaAprovacaoDto>(
+                    It.IsAny<Func<Task<object>>>(), "Postgres", It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Callback<Func<Task<object>>, string, string, string, string>((acao, nome, operacao, sql, parametros) => sqlCapturado = sql)
+                .ReturnsAsync((object)Array.Empty<ConselhoClasseNotaAprovacaoDto>());
+
+            DapperExtensionMethods.Init(telemetria.Object);
+            try
+            {
+                var repositorio = new RepositorioConselhoClasseNotaConsulta(Mock.Of<ISgpContextConsultas>(), Mock.Of<IServicoAuditoria>());
+                var retorno = await repositorio.ObterNotasConselhoEmAprovacaoPorIds(new long[] { 1001, 1002, 1002 });
+
+                var sqlNormalizado = Regex.Replace(sqlCapturado, @"\s+", " ").Trim().ToLowerInvariant();
+                Assert.Equal("select wf.conselho_classe_nota_id as id, coalesce(coalesce(wf.nota, wf.conceito_id), -1) as notaemaprovacao " +
+                    "from wf_aprovacao_nota_conselho wf where wf.conselho_classe_nota_id = any(@idsconselhoclassenota) and not wf.excluido", sqlNormalizado);
+                Assert.Empty(retorno);
+                telemetria.Verify(t => t.RegistrarComRetornoAsync<ConselhoClasseNotaAprovacaoDto>(
+                    It.IsAny<Func<Task<object>>>(), "Postgres", It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+                output.WriteLine("SQL em lote: " + sqlCapturado);
+            }
+            finally
+            {
+                DapperExtensionMethods.Init(null);
+            }
+        }
     }
 }

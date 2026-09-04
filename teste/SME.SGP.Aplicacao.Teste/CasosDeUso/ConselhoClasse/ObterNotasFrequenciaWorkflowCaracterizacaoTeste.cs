@@ -16,8 +16,8 @@ using Xunit.Abstractions;
 
 namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
 {
-    // Referência da US 155457 antes da consulta em lote. Os testes de quantidade
-    // descrevem o custo atual e deverão ser ajustados quando o lote for implementado.
+    // Referência funcional da US 155457. Os cenários preservam a resposta registrada
+    // antes da melhoria e agora também protegem a quantidade de consultas do lote.
     public class ObterNotasFrequenciaWorkflowCaracterizacaoTeste
     {
         private readonly Mock<IMediator> mediator = new Mock<IMediator>();
@@ -126,7 +126,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
             var nota = Assert.Single(NotasPosConselho(retorno));
             Assert.Equal(NotaId, nota.Id);
             Assert.Equal(8, nota.Nota);
-            mediator.Verify(m => m.Send(It.Is<ObterNotaConselhoEmAprovacaoQuery>(q => q.ConselhoClasseNotaId == NotaId),
+            mediator.Verify(m => m.Send(It.Is<ObterNotasConselhoEmAprovacaoPorIdsQuery>(q => q.IdsConselhoClasseNota.SequenceEqual(new[] { NotaId })),
                 It.IsAny<CancellationToken>()), Times.Once);
             VerificarConsultas(1);
         }
@@ -138,7 +138,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
         [InlineData(true, 1)]
         [InlineData(true, 8)]
         [InlineData(true, 16)]
-        public async Task Referencia_atual_realiza_uma_consulta_por_nota(bool regencia, int quantidade)
+        public async Task Consulta_em_lote_realiza_uma_consulta_para_todas_as_notas(bool regencia, int quantidade)
         {
             Preparar(regencia, quantidade);
             for (var i = 0; i < quantidade; i++)
@@ -156,9 +156,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
                 Assert.Equal(NotaId + i, notas[i].Id);
                 Assert.Equal(i % 2 == 0 ? 0 : 6, notas[i].Nota);
                 Assert.Equal(i % 2 == 0, notas[i].EmAprovacao);
-                mediator.Verify(m => m.Send(It.Is<ObterNotaConselhoEmAprovacaoQuery>(q => q.ConselhoClasseNotaId == NotaId + i),
-                    It.IsAny<CancellationToken>()), Times.Once);
             }
+            mediator.Verify(m => m.Send(It.Is<ObterNotasConselhoEmAprovacaoPorIdsQuery>(q =>
+                    q.IdsConselhoClasseNota.SequenceEqual(Enumerable.Range(0, quantidade).Select(i => NotaId + i))),
+                It.IsAny<CancellationToken>()), Times.Once);
             VerificarConsultas(quantidade);
         }
 
@@ -222,8 +223,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
             Responder<ObterConselhoClasseAlunoIdQuery, long>(1);
             Responder<VerificaSePodeEditarNotaQuery, bool>(true);
             Responder<ObterParametrosArredondamentoNotaPorDataAvaliacaoQuery, NotaParametroDto>(new NotaParametroDto { Minima = 0, Maxima = 10, Incremento = 0.5 });
-            mediator.Setup(m => m.Send(It.IsAny<ObterNotaConselhoEmAprovacaoQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((ObterNotaConselhoEmAprovacaoQuery q, CancellationToken _) => workflows.TryGetValue(q.ConselhoClasseNotaId, out var valor) ? valor : null);
+            mediator.Setup(m => m.Send(It.IsAny<ObterNotasConselhoEmAprovacaoPorIdsQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((ObterNotasConselhoEmAprovacaoPorIdsQuery q, CancellationToken _) =>
+                    q.IdsConselhoClasseNota
+                        .Where(id => workflows.TryGetValue(id, out var valor) && valor.HasValue)
+                        .Select(id => new ConselhoClasseNotaAprovacaoDto { Id = id, NotaEmAprovacao = workflows[id].Value }));
         }
 
         private void Responder<TQuery, TResponse>(TResponse resposta) where TQuery : IRequest<TResponse>
@@ -288,8 +292,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
 
         private void VerificarConsultas(int quantidade)
         {
-            mediator.Verify(m => m.Send(It.IsAny<ObterNotaConselhoEmAprovacaoQuery>(), It.IsAny<CancellationToken>()), Times.Exactly(quantidade));
-            output.WriteLine($"Referência atual: {quantidade} consulta(s) escalar(es) de workflow pelo MediatR; sem acesso ao banco.");
+            var consultasEsperadas = quantidade > 0 ? 1 : 0;
+            mediator.Verify(m => m.Send(It.IsAny<ObterNotasConselhoEmAprovacaoPorIdsQuery>(), It.IsAny<CancellationToken>()), Times.Exactly(consultasEsperadas));
+            mediator.Verify(m => m.Send(It.IsAny<ObterNotaConselhoEmAprovacaoQuery>(), It.IsAny<CancellationToken>()), Times.Never);
+            output.WriteLine($"Após a melhoria: {quantidade} nota(s), {consultasEsperadas} consulta(s) em lote e zero consulta escalar pelo MediatR; sem acesso ao banco.");
         }
     }
 }
