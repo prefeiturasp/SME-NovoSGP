@@ -7,10 +7,10 @@ namespace SME.SGP.Dados.Mapeamentos
         public IdepMap()
         {
             ToTable("idep");
-            Map(c => c.AnoLetivo).ToColumn("ano_letivo");
-            Map(c => c.SerieAno).ToColumn("serie_ano");
-            Map(c => c.CodigoEOLEscola).ToColumn("codigo_eol_escola");
-            Map(c => c.Nota).ToColumn("nota");
+            Map(nameof(Idep.AnoLetivo), "ano_letivo");
+            Map(nameof(Idep.SerieAno), "serie_ano");
+            Map(nameof(Idep.CodigoEOLEscola), "codigo_eol_escola");
+            Map(nameof(Idep.Nota), "nota");
         }
     }
 }

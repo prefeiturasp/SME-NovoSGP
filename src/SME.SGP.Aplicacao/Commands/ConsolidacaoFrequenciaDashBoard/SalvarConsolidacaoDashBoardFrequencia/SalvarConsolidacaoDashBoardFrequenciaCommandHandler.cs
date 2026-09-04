@@ -1,9 +1,7 @@
 ﻿using MediatR;
-using SME.SGP.Infra;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.Aplicacao

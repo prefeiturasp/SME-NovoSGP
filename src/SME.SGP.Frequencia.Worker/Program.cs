@@ -1,36 +1,74 @@
-using Microsoft.AspNetCore.Hosting;
+using Elastic.Apm.AspNetCore;
+using Elastic.Apm.DiagnosticSource;
+using Elastic.Apm.SqlClient;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SME.SGP.Infra;
+using SME.SGP.IoC;
+using SME.SGP.IoC.Extensions;
+using System;
 
-namespace SME.SGP.Frequencia.Worker
+namespace SME.SGP.Frequencia.Worker;
+
+public class Program
 {
-    public class Program
+    protected Program() { }
+    public static void Main(string[] args)
     {
-        protected Program() { }
+        var builder = WebApplication.CreateBuilder(args);
 
-        public static void Main(string[] args)
+        // Configurações
+        builder.Configuration.AddEnvironmentVariables();
+        builder.Configuration.AddUserSecrets<Program>();
+
+        // Serviços originalmente registrados no Startup
+        AppContext.SetSwitch(
+            "Npgsql.EnableLegacyTimestampBehavior",
+            true);
+
+        var registrarDependencias = new RegistrarDependencias();
+
+        registrarDependencias.RegistrarParaWorkers(
+            builder.Services,
+            builder.Configuration);
+
+        registrarDependencias.RegistrarCasoDeUsoFrequenciaRabbitSgp(
+            builder.Services);
+
+        // Serviços originalmente registrados no Program
+        builder.Services.AddHostedService<WorkerRabbitFrequencia>();
+
+        builder.Services.AddHealthChecks();
+        builder.Services.AddHealthChecksUiSgp();
+
+        var app = builder.Build();
+
+        // Elastic APM
+        app.UseElasticApm(
+            builder.Configuration,
+            new SqlClientDiagnosticSubscriber(),
+            new HttpDiagnosticsSubscriber());
+
+        // Health checks
+        app.UseHealthChecksSgp();
+        app.UseHealthCheckPrometheusSgp();
+
+        if (app.Environment.IsDevelopment())
         {
-            CreateHostBuilder(args).Build().Run();
+            app.UseDeveloperExceptionPage();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((hostingContext, config) =>
-                {
-                    config.AddEnvironmentVariables();
-                    config.AddUserSecrets<Program>();
-                })
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                })
-                .ConfigureServices(services =>
-                {
-                    services.AddHostedService<WorkerRabbitFrequencia>();
-                    services.AddHealthChecks();
-                    services.AddHealthChecksUiSgp();
-                });
+        RegistrarConfigsThreads.Registrar(
+            builder.Configuration);
+
+        app.MapGet("/", async context =>
+        {
+            await context.Response.WriteAsync(
+                "WorkerRabbitFrequencia!");
+        });
+        app.Run();
     }
 }

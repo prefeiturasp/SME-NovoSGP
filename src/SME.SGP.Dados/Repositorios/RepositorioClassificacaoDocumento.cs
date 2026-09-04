@@ -26,7 +26,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<ClassificacaoDocumento> ObterPorIdAsync(long id)
         {
-            return await database.Conexao.GetAsync<ClassificacaoDocumento>(id);
+            return await database.Conexao.GetMappedAsync<ClassificacaoDocumento>(id);
         }
     }
 }

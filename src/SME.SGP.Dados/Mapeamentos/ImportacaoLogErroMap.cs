@@ -7,9 +7,9 @@ namespace SME.SGP.Dados.Mapeamentos
         public ImportacaoLogErroMap()
         {
             ToTable("importacao_log_erro");
-            Map(c => c.ImportacaoLogId).ToColumn("importacao_log_id");
-            Map(c => c.LinhaArquivo).ToColumn("linha_arquivo");
-            Map(c => c.MotivoFalha).ToColumn("motivo_falha");
+            Map(nameof(ImportacaoLogErro.ImportacaoLogId), "importacao_log_id");
+            Map(nameof(ImportacaoLogErro.LinhaArquivo), "linha_arquivo");
+            Map(nameof(ImportacaoLogErro.MotivoFalha), "motivo_falha");
         }
     }
 }

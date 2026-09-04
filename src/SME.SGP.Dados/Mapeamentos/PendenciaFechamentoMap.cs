@@ -7,8 +7,8 @@ namespace SME.SGP.Dados.Mapeamentos
         public PendenciaFechamentoMap()
         {
             ToTable("pendencia_fechamento");
-            Map(c => c.FechamentoTurmaDisciplinaId).ToColumn("fechamento_turma_disciplina_id");
-            Map(c => c.PendenciaId).ToColumn("pendencia_id");
+            Map(nameof(PendenciaFechamento.FechamentoTurmaDisciplinaId), "fechamento_turma_disciplina_id");
+            Map(nameof(PendenciaFechamento.PendenciaId), "pendencia_id");
         }
     }
 }

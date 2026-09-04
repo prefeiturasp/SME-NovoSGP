@@ -7,11 +7,11 @@ namespace SME.SGP.Dados.Mapeamentos
         public NotificacaoAulaPrevistaMap()
         {
             ToTable("notificacao_aula_prevista");
-            Map(c => c.NotificacaoCodigo).ToColumn("notificacao_id");
-            Map(c => c.DisciplinaId).ToColumn("disciplina_id");
-            Map(c => c.TurmaId).ToColumn("turma_id");
-            Map(c => c.Bimestre).ToColumn("bimestre");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(NotificacaoAulaPrevista.NotificacaoCodigo), "notificacao_id");
+            Map(nameof(NotificacaoAulaPrevista.DisciplinaId), "disciplina_id");
+            Map(nameof(NotificacaoAulaPrevista.TurmaId), "turma_id");
+            Map(nameof(NotificacaoAulaPrevista.Bimestre), "bimestre");
+            Map(nameof(NotificacaoAulaPrevista.Excluido), "excluido");
         }
     }
 }

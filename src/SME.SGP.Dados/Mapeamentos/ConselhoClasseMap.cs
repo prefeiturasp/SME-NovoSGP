@@ -2,15 +2,15 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ConselhoClasseMap: BaseMap<ConselhoClasse>
+    public class ConselhoClasseMap : BaseMap<ConselhoClasse>
     {
         public ConselhoClasseMap()
         {
             ToTable("conselho_classe");
-            Map(c => c.FechamentoTurmaId).ToColumn("fechamento_turma_id");
-            Map(c => c.Situacao).ToColumn("situacao");
-            Map(c => c.Excluido).ToColumn("excluido");
-            Map(c => c.Migrado).ToColumn("migrado");
+            Map(nameof(ConselhoClasse.FechamentoTurmaId), "fechamento_turma_id");
+            Map(nameof(ConselhoClasse.Situacao), "situacao");
+            Map(nameof(ConselhoClasse.Excluido), "excluido");
+            Map(nameof(ConselhoClasse.Migrado), "migrado");
         }
     }
 }

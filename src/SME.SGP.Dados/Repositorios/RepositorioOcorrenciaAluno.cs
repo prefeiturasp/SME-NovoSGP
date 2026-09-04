@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Dapper; // Adicionado para ExecuteAsync e QueryAsync
 
 namespace SME.SGP.Dados
 {
@@ -36,12 +35,12 @@ namespace SME.SGP.Dados
         {
             if (entidade.Id > 0)
             {
-                await database.Conexao.UpdateAsync(entidade);
+                await database.Conexao.UpdateMappedAsync(entidade);
                 await AuditarAsync(entidade.Id, "A");
             }
             else
             {
-                entidade.Id = (long)(await database.Conexao.InsertAsync(entidade));
+                entidade.Id = (await database.Conexao.InsertMappedAsync(entidade));
                 await AuditarAsync(entidade.Id, "I");
             }
 

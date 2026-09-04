@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepcional;
 using SME.SGP.Dominio;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 

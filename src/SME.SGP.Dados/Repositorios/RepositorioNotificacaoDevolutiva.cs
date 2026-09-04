@@ -31,7 +31,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task Salvar(NotificacaoDevolutiva notificacao)
         {
-            await database.Conexao.InsertAsync(notificacao);
+            await database.Conexao.InsertMappedAsync(notificacao);
         }
 
     }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿
+using System.Collections.Generic;
 
 namespace SME.SGP.Dominio
 {
@@ -10,9 +11,11 @@ namespace SME.SGP.Dominio
         }
 
         public long RelatorioSemestralTurmaPAPId { get; set; }
+       
         public RelatorioSemestralTurmaPAP RelatorioSemestralTurmaPAP { get; set; }
         public string AlunoCodigo { get; set; }
 
+       
         public List<RelatorioSemestralPAPAlunoSecao> Secoes { get; set; }
 
         public bool Migrado { get; set; }
