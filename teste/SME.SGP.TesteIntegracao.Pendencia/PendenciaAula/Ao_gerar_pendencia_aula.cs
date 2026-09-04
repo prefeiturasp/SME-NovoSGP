@@ -1,7 +1,5 @@
 ﻿using SME.SGP.TesteIntegracao.Setup;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using SME.SGP.Aplicacao.Interfaces;

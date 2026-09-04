@@ -19,7 +19,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<CompensacaoAusenciaAluno>> ObterPorCompensacao(long compensacaoId)
         {
-            var query = @"select * 
+            var query = @"select qtd_faltas_compensadas as QuantidadeFaltasCompensadas,*  
                             from compensacao_ausencia_aluno 
                         where not excluido 
                           and compensacao_ausencia_id = @compensacaoId";

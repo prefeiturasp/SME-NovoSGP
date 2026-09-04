@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 
 namespace SME.SGP.Dominio
 {
@@ -21,7 +22,9 @@ namespace SME.SGP.Dominio
             PeriodoFim = periodoFim;
         }
 
+   
         public long Id { get; set; }
+
         public long TurmaId { get; set; }
 
         public int QuantidadeAcimaMinimoFrequencia { get; set; }

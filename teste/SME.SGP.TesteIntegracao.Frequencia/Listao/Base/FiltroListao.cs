@@ -1,4 +1,3 @@
-using System;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 

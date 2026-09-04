@@ -1,7 +1,10 @@
-﻿namespace SME.SGP.Dominio
+﻿
+
+namespace SME.SGP.Dominio
 {
     public class AcompanhamentoAlunoSemestre : EntidadeBase
     {
+       
         public AcompanhamentoAluno AcompanhamentoAluno { get; set; }
         public long AcompanhamentoAlunoId { get; set; }
 

@@ -22,7 +22,7 @@ namespace SME.SGP.Dados.Repositorios
             var sqlQuery = new StringBuilder();
 
             if (comunicadoTipoEscola.Id > 0)
-                await database.Conexao.UpdateAsync(comunicadoTipoEscola);
+                await database.Conexao.UpdateMappedAsync(comunicadoTipoEscola);
             else
             {
                 sqlQuery.AppendLine("insert into comunicado_tipo_escola (comunicado_id, tipo_escola, excluido)");

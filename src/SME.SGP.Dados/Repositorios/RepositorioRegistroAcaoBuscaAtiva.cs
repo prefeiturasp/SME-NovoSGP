@@ -286,24 +286,97 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<string>(sql.ToString(), new { id });
         }
 
-        public async Task<RegistroAcaoBuscaAtiva> ObterRegistroAcaoComTurmaPorId(long id)
+        public async Task<RegistroAcaoBuscaAtiva>ObterRegistroAcaoComTurmaPorId(long id)
         {
-            var query = @" select raba.*, t.*, ue.*, dre.*
-                            from registro_acao_busca_ativa raba
-                           inner join turma t on t.id = raba.turma_id
-                            join ue on ue.id = t.ue_id
-                            join dre on dre.id = ue.dre_id  
-                           where raba.id = @id";
+            const string query = @"
+                SELECT
+                    -- RegistroAcaoBuscaAtiva
+                    raba.id AS Id,
+                    raba.criado_em AS CriadoEm,
+                    raba.criado_por AS CriadoPor,
+                    raba.alterado_em AS AlteradoEm,
+                    raba.alterado_por AS AlteradoPor,
+                    raba.criado_rf AS CriadoRF,
+                    raba.alterado_rf AS AlteradoRF,
+                    raba.turma_id AS TurmaId,
 
-            return (await database.Conexao.QueryAsync<RegistroAcaoBuscaAtiva, Turma, Ue, Dre, RegistroAcaoBuscaAtiva>(query,
+                    -- Demais campos de RegistroAcaoBuscaAtiva
+                    raba.aluno_codigo AS AlunoCodigo,
+                    raba.aluno_nome AS AlunoNome,
+                    raba.excluido AS Excluido,
+
+                    -- marcador de início da Turma
+                    t.id AS TurmaInicio,
+
+                    -- Turma
+                    t.id AS Id,
+                    t.ano AS Ano,
+                    t.ano_letivo AS AnoLetivo,
+                    t.turma_id AS CodigoTurma,
+                    t.tipo_turma AS TipoTurma,
+                    t.data_atualizacao AS DataAtualizacao,
+                    t.modalidade_codigo AS ModalidadeCodigo,
+                    t.nome AS Nome,
+                    t.qt_duracao_aula AS QuantidadeDuracaoAula,
+                    t.semestre AS Semestre,
+                    t.tipo_turno AS TipoTurno,
+                    t.serie_ensino AS SerieEnsino,
+                    t.ue_id AS UeId,
+                    t.nome_filtro AS NomeFiltro,
+                    t.historica AS Historica,
+                    t.ensino_especial AS EnsinoEspecial,
+                    t.data_inicio AS DataInicio,
+                    t.dt_fim_eol AS DataFim,
+                    t.etapa_eja AS EtapaEJA,
+
+                    -- marcador de início da UE
+                    ue.id AS UeInicio,
+
+                    -- Ue
+                    ue.id AS Id,
+                    ue.ue_id AS CodigoUe,
+                    ue.data_atualizacao AS DataAtualizacao,
+                    ue.dre_id AS DreId,
+                    ue.nome AS Nome,
+                    ue.tipo_escola AS TipoEscola,
+
+                    -- marcador de início da DRE
+                    dre.id AS DreInicio,
+
+                    -- Dre
+                    dre.id AS Id,
+                    dre.abreviacao AS Abreviacao,
+                    dre.dre_id AS CodigoDre,
+                    dre.data_atualizacao AS DataAtualizacao,
+                    dre.nome AS Nome
+
+                FROM registro_acao_busca_ativa raba
+                INNER JOIN turma t
+                    ON t.id = raba.turma_id
+                INNER JOIN ue
+                    ON ue.id = t.ue_id
+                INNER JOIN dre
+                    ON dre.id = ue.dre_id
+                WHERE raba.id = @id;";
+
+            return (await database.Conexao.QueryAsync<
+                RegistroAcaoBuscaAtiva,
+                Turma,
+                Ue,
+                Dre,
+                RegistroAcaoBuscaAtiva>(
+                query,
                 (registroAcao, turma, ue, dre) =>
                 {
+                    ue.AdicionarDre(dre);
+                    turma.AdicionarUe(ue);
                     registroAcao.Turma = turma;
-                    registroAcao.Turma.Ue = ue;
-                    registroAcao.Turma.Ue.Dre = dre;
 
                     return registroAcao;
-                }, new { id })).FirstOrDefault();
+                },
+                new { id },
+                splitOn: "TurmaInicio,UeInicio,DreInicio"))
+                .FirstOrDefault();
         }
 
         public async Task<RegistroAcaoBuscaAtiva> ObterRegistroAcaoPorId(long id)

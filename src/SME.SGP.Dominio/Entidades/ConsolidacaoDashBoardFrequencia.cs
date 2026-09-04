@@ -1,9 +1,11 @@
-﻿using System;
+﻿
+using System;
 
 namespace SME.SGP.Dominio
 {
     public class ConsolidacaoDashBoardFrequencia
     {
+   
         public long Id { get; set; }
         public long TurmaId { get; set; }
         public string TurmaNome { get; set; }

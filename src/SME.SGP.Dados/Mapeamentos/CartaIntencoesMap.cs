@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using SME.SGP.Dados.Mapeamentos;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados
 {
@@ -7,11 +8,11 @@ namespace SME.SGP.Dados
         public CartaIntencoesMap()
         {
             ToTable("carta_intencoes");
-            Map(c => c.TurmaId).ToColumn("turma_id");
-            Map(c => c.PeriodoEscolarId).ToColumn("periodo_escolar_id");
-            Map(c => c.ComponenteCurricularId).ToColumn("componente_curricular_id");
-            Map(c => c.Planejamento).ToColumn("planejamento");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(CartaIntencoes.TurmaId), "turma_id");
+            Map(nameof(CartaIntencoes.PeriodoEscolarId), "periodo_escolar_id");
+            Map(nameof(CartaIntencoes.ComponenteCurricularId), "componente_curricular_id");
+            Map(nameof(CartaIntencoes.Planejamento), "planejamento");
+            Map(nameof(CartaIntencoes.Excluido), "excluido");
         }
     }
 }

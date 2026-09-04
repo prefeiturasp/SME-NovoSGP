@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System.Linq;
 using System.Threading.Tasks;

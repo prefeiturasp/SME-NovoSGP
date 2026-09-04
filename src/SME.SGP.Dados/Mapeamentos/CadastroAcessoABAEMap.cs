@@ -7,20 +7,20 @@ namespace SME.SGP.Dados.Mapeamentos
         public CadastroAcessoABAEMap()
         {
             ToTable("cadastro_acesso_abae");
-            Map(c => c.Nome).ToColumn("nome");
-            Map(c => c.UeId).ToColumn("ue_id");
-            Map(c => c.Cpf).ToColumn("cpf");
-            Map(c => c.Email).ToColumn("email");
-            Map(c => c.Telefone).ToColumn("telefone");
-            Map(c => c.Situacao).ToColumn("situacao");
-            Map(c => c.Cep).ToColumn("cep");
-            Map(c => c.Endereco).ToColumn("endereco");
-            Map(c => c.Excluido).ToColumn("excluido");
-            Map(c => c.Numero).ToColumn("numero");
-            Map(c => c.Complemento).ToColumn("complemento");
-            Map(c => c.Bairro).ToColumn("bairro");
-            Map(c => c.Cidade).ToColumn("cidade");
-            Map(c => c.Estado).ToColumn("estado");
+            Map(nameof(CadastroAcessoABAE.Nome), "nome");
+            Map(nameof(CadastroAcessoABAE.UeId), "ue_id");
+            Map(nameof(CadastroAcessoABAE.Cpf), "cpf");
+            Map(nameof(CadastroAcessoABAE.Email), "email");
+            Map(nameof(CadastroAcessoABAE.Telefone), "telefone");
+            Map(nameof(CadastroAcessoABAE.Situacao), "situacao");
+            Map(nameof(CadastroAcessoABAE.Cep), "cep");
+            Map(nameof(CadastroAcessoABAE.Endereco), "endereco");
+            Map(nameof(CadastroAcessoABAE.Excluido), "excluido");
+            Map(nameof(CadastroAcessoABAE.Numero), "numero");
+            Map(nameof(CadastroAcessoABAE.Complemento), "complemento");
+            Map(nameof(CadastroAcessoABAE.Bairro), "bairro");
+            Map(nameof(CadastroAcessoABAE.Cidade), "cidade");
+            Map(nameof(CadastroAcessoABAE.Estado), "estado");
         }
     }
 }

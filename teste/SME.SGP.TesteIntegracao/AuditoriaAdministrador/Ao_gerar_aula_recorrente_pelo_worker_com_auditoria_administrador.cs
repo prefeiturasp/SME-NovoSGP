@@ -17,7 +17,6 @@ using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Text;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace SME.SGP.TesteIntegracao.AulaUnica
 {

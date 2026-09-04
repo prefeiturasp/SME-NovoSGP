@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -41,13 +42,14 @@ namespace SME.SGP.Dominio
             NomeDificuldadeTop1 = nomeDificuldadeTop1;
             NomeDificuldadeTop2 = nomeDificuldadeTop2;
         }
-
+   
         public int Id { get; set; }
 
         [NotMapped]
         public TipoPap TipoPap { get; set; }
 
         [Column("tipo_pap")]
+      
         public string TipoPapNome
         {
             get => TipoPap.ObterNome();
