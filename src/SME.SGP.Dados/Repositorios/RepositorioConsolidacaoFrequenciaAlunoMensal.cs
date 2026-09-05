@@ -20,6 +20,15 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.InsertMappedAsync(consolidacao));
         }
 
+        public async Task BloquearConsolidacaoFrequenciaAlunoMensalPorTurmaEMes(long turmaId, int mes)
+        {
+            const string query = @"select pg_advisory_xact_lock(
+                                            hashtext('consolidacao_frequencia_aluno_mensal'),
+                                            hashtext(concat(@turmaId, ':', @mes)))";
+
+            await database.Conexao.ExecuteAsync(query, new { turmaId, mes });
+        }
+
         public async Task LimparConsolidacaoFrequenciasAlunosPorTurmasEMeses(long[] turmaIds, int[] meses)
         {
             string query = @"delete from consolidacao_frequencia_aluno_mensal

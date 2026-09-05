@@ -26,11 +26,13 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi possível localizar a turma informada!");
 
             var frequenciasAlunosTurmaEMes = await mediator.Send(new ObterFrequenciaAlunosPorTurmaEMesQuery(turma.CodigoTurma, filtro.Mes));
-            var consolidacoesExistentesDaTurma = await mediator.Send(new ObterConsolidacoesFrequenciaAlunoMensalPorTurmaEMesQuery(turma.Id, filtro.Mes));
 
             unitOfWork.IniciarTransacao();
             try
             {
+                await mediator.Send(new BloquearConsolidacaoFrequenciaAlunoMensalPorTurmaEMesCommand(turma.Id, filtro.Mes));
+                var consolidacoesExistentesDaTurma = await mediator.Send(new ObterConsolidacoesFrequenciaAlunoMensalPorTurmaEMesQuery(turma.Id, filtro.Mes));
+
                 await AtualizaAlunos(consolidacoesExistentesDaTurma, frequenciasAlunosTurmaEMes, filtro.Mes, turma.Id);
 
                 unitOfWork.PersistirTransacao();
@@ -53,7 +55,7 @@ namespace SME.SGP.Aplicacao
         {
             foreach (var frequencia in frequenciasAtuais)
             {
-                var dadosAlteradosAluno = consolidacoesExistentes.FirstOrDefault(a => a.AlunoCodigo.Contains(frequencia.AlunoCodigo) &&
+                var dadosAlteradosAluno = consolidacoesExistentes.FirstOrDefault(a => a.AlunoCodigo == frequencia.AlunoCodigo &&
                     (a.QuantidadeAulas != frequencia.QuantidadeAulas || a.QuantidadeAusencias != frequencia.QuantidadeAusencias || a.QuantidadeCompensacoes != frequencia.QuantidadeCompensacoes)
                 );
 
@@ -62,7 +64,7 @@ namespace SME.SGP.Aplicacao
                     await mediator.Send(new AlterarConsolidacaoFrequenciaAlunoMensalCommand(dadosAlteradosAluno.Id, frequencia.Percentual, frequencia.QuantidadeAulas,
                         frequencia.QuantidadeAusencias, frequencia.QuantidadeCompensacoes));
                 }
-                else if (!consolidacoesExistentes.Any(a => a.AlunoCodigo.Contains(frequencia.AlunoCodigo)) || !consolidacoesExistentes.Any())
+                else if (!consolidacoesExistentes.Any(a => a.AlunoCodigo == frequencia.AlunoCodigo))
                 {
                     await mediator.Send(new RegistrarConsolidacaoFrequenciaAlunoMensalCommand(turmaId, frequencia.AlunoCodigo, mes, frequencia.Percentual, frequencia.QuantidadeAulas,
                         frequencia.QuantidadeAusencias, frequencia.QuantidadeCompensacoes));

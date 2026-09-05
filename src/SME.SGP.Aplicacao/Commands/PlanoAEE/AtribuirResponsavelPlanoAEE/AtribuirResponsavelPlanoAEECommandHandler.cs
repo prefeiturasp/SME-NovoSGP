@@ -26,10 +26,18 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(AtribuirResponsavelPlanoAEECommand request, CancellationToken cancellationToken)
         {
+            ValidarDadosTurma(request.Turma);
+
             request.PlanoAEE.Situacao = request.PlanoAEE.ObterSituacaoAoAtribuirResponsavelPAAI();
             request.PlanoAEE.ResponsavelPaaiId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(request.ResponsavelRF));
 
             return await SalvarGerarPendenciaPaai(request, request.PlanoAEE);
+        }
+
+        private static void ValidarDadosTurma(Turma turma)
+        {
+            if (turma?.Ue?.Dre == null)
+                throw new NegocioException("Não foi possível atribuir o responsável pelo Plano AEE porque os dados da turma, UE ou DRE não foram localizados.");
         }
 
         private async Task<bool> SalvarGerarPendenciaPaai(AtribuirResponsavelPlanoAEECommand request, PlanoAEE planoAEE)

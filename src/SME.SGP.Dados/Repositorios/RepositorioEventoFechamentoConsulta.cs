@@ -1,4 +1,4 @@
-﻿using SME.SGP.Dominio;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra.Consts;
 using SME.SGP.Infra.Interface;
@@ -46,9 +46,12 @@ namespace SME.SGP.Dados.Repositorios
                     on pe.id = pfb.periodo_escolar_id
                 join tipo_calendario tc
                     on pe.tipo_calendario_id = tc.id
+                join periodo_fechamento pf
+                    on pf.id = pfb.periodo_fechamento_id
                 where pfb.inicio_fechamento <= @dataReferencia
                   and pfb.final_fechamento >= @dataReferencia
                   and tc.ano_letivo = @anoLetivo
+                  and COALESCE(pf.aplicacao, 1) = 1
 
                 union all
 
@@ -204,6 +207,7 @@ namespace SME.SGP.Dados.Repositorios
                 where pe.tipo_calendario_id = @tipoCalendarioId
                   and pf.ue_id is null
                   and pf.dre_id is null
+                  and COALESCE(pf.aplicacao, 1) = 1
                   and to_date(pfb.inicio_fechamento::text, 'yyyy/mm/dd')
                         <= to_date(@dataReferencia, 'yyyy/mm/dd')
                   and to_date(pfb.final_fechamento::text, 'yyyy/mm/dd')
@@ -219,6 +223,8 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine(
                     $"and pe.bimestre = {consultaObterBimestreFinal}");
             }
+
+            query.AppendLine("order by COALESCE(pf.alterado_em, pf.criado_em) desc, pf.id desc, pfb.id desc");
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoFechamentoBimestre>(
                 query.ToString(),
@@ -261,7 +267,8 @@ namespace SME.SGP.Dados.Repositorios
                     on pe.id = pfb.periodo_escolar_id
                 where pe.tipo_calendario_id = @tipoCalendarioId
                   and pf.ue_id is null
-                  and pf.dre_id is null");
+                  and pf.dre_id is null
+                  and COALESCE(pf.aplicacao, 1) = 1");
 
             if (bimestre > 0)
             {
@@ -273,6 +280,8 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine(
                     $"and pe.bimestre = {consultaObterBimestreFinal}");
             }
+
+            query.AppendLine("order by COALESCE(pf.alterado_em, pf.criado_em) desc, pf.id desc, pfb.id desc");
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoFechamentoBimestre>(
                 query.ToString(),
@@ -312,7 +321,8 @@ namespace SME.SGP.Dados.Repositorios
                     on pe.id = pfb.periodo_escolar_id
                 where pe.tipo_calendario_id = @tipoCalendarioId
                   and pf.ue_id is null
-                  and pf.dre_id is null");
+                  and pf.dre_id is null
+                  and COALESCE(pf.aplicacao, 1) = 1");
 
             if (bimestre > 0)
             {
@@ -374,6 +384,8 @@ namespace SME.SGP.Dados.Repositorios
                         on pe.id = pfb.periodo_escolar_id
                     join tipo_calendario tc
                         on pe.tipo_calendario_id = tc.id
+                    join periodo_fechamento pf
+                        on pf.id = pfb.periodo_fechamento_id
                     inner join turma t
                         on t.ano_letivo = tc.ano_letivo
                     where pfb.inicio_fechamento <= @dataReferencia
@@ -381,6 +393,7 @@ namespace SME.SGP.Dados.Repositorios
                       and t.turma_id = @codigoTurma
                       and tc.modalidade = @modalidade
                       and not tc.excluido
+                      and COALESCE(pf.aplicacao, 1) = 1
 
                     union all
 
