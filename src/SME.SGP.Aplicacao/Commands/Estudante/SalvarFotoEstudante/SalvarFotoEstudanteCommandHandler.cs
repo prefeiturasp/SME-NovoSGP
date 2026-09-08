@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using SME.SGP.Aplicacao.Servicos.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -60,6 +61,7 @@ namespace SME.SGP.Aplicacao
                 }
                 catch (Exception e)
                 {
+                    await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao salvar foto do Aluno SalvarFotoEstudanteCommand: {e}, {e.StackTrace?.ToString()}, {e.InnerException}", LogNivel.Critico, LogContexto.Arquivos));
                     unitOfWork.Rollback();
                     throw;
                 }
