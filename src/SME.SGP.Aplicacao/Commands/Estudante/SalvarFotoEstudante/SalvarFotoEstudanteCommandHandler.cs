@@ -4,11 +4,13 @@ using SME.SGP.Aplicacao.Servicos.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
+    [ExcludeFromCodeCoverage]
     public class SalvarFotoEstudanteCommandHandler : IRequestHandler<SalvarFotoEstudanteCommand, Guid>
     {
         private readonly IMediator mediator;
