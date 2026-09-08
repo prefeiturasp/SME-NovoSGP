@@ -90,7 +90,7 @@ namespace SME.SGP.Aplicacao
         private bool ContemComponenteCurricularProfTurmaDisciplina(IEnumerable<ComponenteCurricularEol> componentesCurricularesDoProfessor, long componenteCurricularId)
         {
             return componentesCurricularesDoProfessor.NaoEhNulo() &&
-                   componentesCurricularesDoProfessor.Any(c => c.Codigo == componenteCurricularId || c.CodigoComponenteTerritorioSaber == componenteCurricularId);
+                   componentesCurricularesDoProfessor.Any(c => c.PossuiCodigoEquivalente(componenteCurricularId));
         }
 
         private bool ContemComponenteCurricularProfCJTurmaDisciplina(IEnumerable<AtribuicaoCJ> atribuicoesProfessorCJ, string codigoTurma, long componenteCurricularId)

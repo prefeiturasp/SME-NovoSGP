@@ -139,6 +139,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<FechamentoDto> ObterPorTipoCalendarioSme(long tipoCalendarioId, Aplicacao aplicacao)
         {
+            aplicacao = NormalizarAplicacao(aplicacao);
             var fechamentoSME = repositorioPeriodoFechamento.ObterPorFiltros(tipoCalendarioId, null, aplicacao);
             DateTime periodoInicio, periodoFim;
 
@@ -198,10 +199,18 @@ namespace SME.SGP.Dominio.Servicos
             var fechamento = await MapearParaDominioAsync(fechamentoDto);
 
             unitOfWork.IniciarTransacao();
-            var id = repositorioPeriodoFechamento.Salvar(fechamento);
-            repositorioPeriodoFechamento.SalvarBimestres(fechamento.FechamentosBimestre, id);
-            unitOfWork.PersistirTransacao();
-            await CriarEventoFechamento(fechamento);
+            try
+            {
+                var id = repositorioPeriodoFechamento.Salvar(fechamento);
+                repositorioPeriodoFechamento.SalvarBimestres(fechamento.FechamentosBimestre, id);
+                await CriarEventoFechamento(fechamento);
+                unitOfWork.PersistirTransacao();
+            }
+            catch
+            {
+                unitOfWork.Rollback();
+                throw;
+            }
         }
 
         private static Notificacao MontaNotificacao(string nomeEntidade, string tipoEntidade, IEnumerable<PeriodoFechamentoBimestre> fechamentosBimestre, string codigoUe, string codigoDre)
@@ -382,6 +391,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<PeriodoFechamento> MapearParaDominioAsync(FechamentoDto fechamentoDto)
         {
+            fechamentoDto.Aplicacao = NormalizarAplicacao(fechamentoDto.Aplicacao);
             var fechamento = repositorioPeriodoFechamento.ObterPorFiltros(fechamentoDto.TipoCalendarioId.Value, null, fechamentoDto.Aplicacao);
             if (fechamento.EhNulo())
                 fechamento = new PeriodoFechamento();
@@ -429,6 +439,17 @@ namespace SME.SGP.Dominio.Servicos
                 }
             }
             return fechamento;
+        }
+
+        private static Aplicacao NormalizarAplicacao(Aplicacao aplicacao)
+        {
+            if ((int)aplicacao == 0)
+                return Aplicacao.SGP;
+
+            if (!Enum.IsDefined(typeof(Aplicacao), aplicacao))
+                throw new NegocioException("Aplicação inválida para o período de fechamento.");
+
+            return aplicacao;
         }
 
         private FechamentoDto MapearParaDto(PeriodoFechamento fechamento)

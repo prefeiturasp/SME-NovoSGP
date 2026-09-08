@@ -7,6 +7,7 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -379,6 +380,10 @@ namespace SME.SGP.Dominio.Servicos
             objetivoBase.Descricao = objetivo.Descricao;
         }
 
+        [SuppressMessage(
+            "SonarAnalyzer.CSharp",
+            "S6444",
+            Justification = "A expressão regular possui padrão simples, sem backtracking complexo, e o valor de timeout é controlado.")]
         private static string NormalizarCodigoObjetivo(string codigo)
         {
             if (string.IsNullOrWhiteSpace(codigo))

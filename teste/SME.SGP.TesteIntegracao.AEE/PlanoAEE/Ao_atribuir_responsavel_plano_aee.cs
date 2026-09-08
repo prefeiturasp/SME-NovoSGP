@@ -141,6 +141,31 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             pendencias.Count(x => x.Situacao == SituacaoPendencia.Pendente && x.Excluido).ShouldBeEquivalentTo(2);
             
         }
+
+        [Fact(DisplayName = "Plano AEE - Consultar planos por UE e situação deve carregar Turma, UE e DRE.")]
+        public async Task Consultar_planos_por_ue_e_situacao_deve_carregar_dre()
+        {
+            await CriarDadosBasicos(new FiltroPlanoAee()
+            {
+                Modalidade = Modalidade.Fundamental,
+                Perfil = ObterPerfilCoordenadorCefai(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+            });
+
+            var planoId = await CriarPlanoAeePorSituacao(SituacaoPlanoAEE.AtribuicaoPAAI);
+            var mediator = ServiceProvider.GetService<IMediator>();
+
+            var planos = await mediator.Send(new ObterPlanosAEEPorUesESituacoesQuery(
+                new[] { UE_CODIGO_1 },
+                new[] { SituacaoPlanoAEE.AtribuicaoPAAI }));
+
+            var plano = planos.Single(p => p.Id == planoId);
+            plano.Turma.ShouldNotBeNull();
+            plano.Turma.Ue.ShouldNotBeNull();
+            plano.Turma.Ue.Dre.ShouldNotBeNull();
+            plano.Turma.Ue.Dre.Abreviacao.ShouldNotBeNullOrWhiteSpace();
+        }
+
         private List<PlanoAEEQuestaoDto> ObterQuestoes()
         {
             return new List<PlanoAEEQuestaoDto>()
