@@ -151,7 +151,7 @@ namespace SME.SGP.Aplicacao
                 .ExisteFrequenciaRegistradaPorTurmaComponenteCurricularEBimestres(turma.CodigoTurma,
                     new string[] { filtros.DisciplinaCodigo.ToString() }, periodosEscolares.Select(c => c.Id).ToArray());
 
-            var frequenciaPorAluno = await ObterFrequenciaGeralAlunos(alunosValidosOrdenados, turma, filtros.DisciplinaCodigo.ToString());
+            var frequenciaPorAluno = await FrequenciaAlunoConsulta.ObterFrequenciaGeralPorAlunos(mediator, alunosValidosOrdenados.Select(a => a.CodigoAluno), turma.CodigoTurma, filtros.DisciplinaCodigo.ToString());
 
             foreach (var aluno in alunosValidosOrdenados)
             {
@@ -269,27 +269,9 @@ namespace SME.SGP.Aplicacao
             return temPeriodoAberto;
         }
 
-        private async Task<Dictionary<string, FrequenciaAluno>> ObterFrequenciaGeralAlunos(IEnumerable<AlunoPorTurmaResposta> alunos, Turma turma, string componenteCurricularCodigo)
-        {
-            var codigosAlunos = alunos.Select(a => a.CodigoAluno)
-                                      .Where(codigo => codigo.NaoEhNulo())
-                                      .ToArray();
-
-            if (!codigosAlunos.Any())
-                return new Dictionary<string, FrequenciaAluno>();
-
-            var frequenciasAlunos = await mediator.Send(new ObterFrequenciaGeralPorAlunosTurmaEComponenteQuery(codigosAlunos, turma.CodigoTurma, componenteCurricularCodigo));
-
-            return frequenciasAlunos
-                .GroupBy(f => f.CodigoAluno)
-                .ToDictionary(g => g.Key, g => g.First());
-        }
-
         private async Task<FechamentoFinalConsultaRetornoAlunoDto> TrataFrequenciaAluno(AlunoPorTurmaResposta aluno, Turma turma, Dictionary<string, FrequenciaAluno> frequenciaPorAluno, bool existeFrequenciaComponenteCurricular)
         {
-            FrequenciaAluno frequenciaAluno = null;
-            if (aluno.CodigoAluno.NaoEhNulo())
-                frequenciaPorAluno.TryGetValue(aluno.CodigoAluno, out frequenciaAluno);
+            var frequenciaAluno = frequenciaPorAluno.ObterFrequenciaAlunoOuNulo(aluno.CodigoAluno);
 
             var percentualFrequencia = frequenciaAluno?.PercentualFrequencia;
 

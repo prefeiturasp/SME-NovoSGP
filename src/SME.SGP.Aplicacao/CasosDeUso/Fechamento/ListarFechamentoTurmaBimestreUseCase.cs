@@ -164,27 +164,9 @@ namespace SME.SGP.Aplicacao
         {
             var frequenciasAlunos = await mediator.Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(dto.Turma, new long[] { long.Parse(dto.ComponenteCurricularCodigo) }, periodoAtual.Id));
 
-            return frequenciasAlunos
-                .GroupBy(f => f.CodigoAluno)
-                .ToDictionary(g => g.Key, g => g.OrderByDescending(f => f.Id).First());
+            return frequenciasAlunos.ToDicionarioPorAluno();
         }
 
-        private async Task<Dictionary<string, FrequenciaAluno>> ObterFrequenciaGeralAlunos(IEnumerable<AlunoPorTurmaResposta> alunos, ListagemAlunosFechamentoDto dto)
-        {
-            var codigosAlunos = alunos.Select(a => a.CodigoAluno)
-                                      .Where(codigo => codigo.NaoEhNulo())
-                                      .ToArray();
-
-            if (!codigosAlunos.Any())
-                return new Dictionary<string, FrequenciaAluno>();
-
-            var frequenciasAlunos = await mediator.Send(new ObterFrequenciaGeralPorAlunosTurmaEComponenteQuery(codigosAlunos, dto.Turma.CodigoTurma, dto.ComponenteCurricularCodigo));
-
-            return frequenciasAlunos
-                .GroupBy(f => f.CodigoAluno)
-                .ToDictionary(g => g.Key, g => g.First());
-        }
-        
         public async Task<IList<AlunosFechamentoNotaConceitoTurmaDto>> RetornaListagemAlunosFechamentoBimestreEspecifico(IEnumerable<AlunoPorTurmaResposta> alunos,
                                                                                                                          PeriodoEscolar periodoAtual,
                                                                                                                          IEnumerable<DisciplinaDto> disciplinasRegencia,
@@ -221,7 +203,8 @@ namespace SME.SGP.Aplicacao
                 alunoDto.Marcador = await mediator.Send(new ObterMarcadorAlunoQuery(aluno, periodoAtual.PeriodoInicio, dto.Turma.EhTurmaInfantil));
                 alunoDto.PodeEditar = usuarioEPeriodoPodeEditar ? AlunoEstaAtivoLancamentoNotaFechamento(aluno, periodoFechamentoBimestre, periodoAtual) : false;
 
-                if (aluno.CodigoAluno.NaoEhNulo() && frequenciaPorAluno.TryGetValue(aluno.CodigoAluno, out var frequenciaAluno))
+                var frequenciaAluno = frequenciaPorAluno.ObterFrequenciaAlunoOuNulo(aluno.CodigoAluno);
+                if (frequenciaAluno.NaoEhNulo())
                     alunoDto.Frequencia = frequenciaAluno.PercentualFrequenciaFormatado;
 
                 if (aluno.CodigoAluno.NaoEhNulo())
@@ -355,7 +338,7 @@ namespace SME.SGP.Aplicacao
             if (dto.FechamentosTurma.NaoEhNulo() && dto.FechamentosTurma.Any())
                 notasFechamentosFinais = await mediator.Send(new ObterPorFechamentosTurmaQuery(dto.FechamentosTurma.Select(ftd => ftd.Id).ToArray(), dto.Turma.CodigoTurma, dto.ComponenteCurricularCodigo));
             var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(alunos.Select(x => x.CodigoAluno).ToArray(), dto.Turma.AnoLetivo);
-            var frequenciaPorAluno = await ObterFrequenciaGeralAlunos(alunos, dto);
+            var frequenciaPorAluno = await FrequenciaAlunoConsulta.ObterFrequenciaGeralPorAlunos(mediator, alunos.Select(a => a.CodigoAluno), dto.Turma.CodigoTurma, dto.ComponenteCurricularCodigo);
             foreach (var aluno in alunos)
             {
                 AlunosFechamentoNotaConceitoTurmaDto fechamentoFinalAluno = await TrataFrequenciaAluno(aluno, dto.Turma, matriculadosTurmaPAP, frequenciaPorAluno);
@@ -497,9 +480,7 @@ namespace SME.SGP.Aplicacao
         {
             var percentualFrequencia = FrequenciaAluno.FormatarPercentual(0);
 
-            FrequenciaAluno frequenciaAluno = null;
-            if (aluno.CodigoAluno.NaoEhNulo())
-                frequenciaPorAluno.TryGetValue(aluno.CodigoAluno, out frequenciaAluno);
+            var frequenciaAluno = frequenciaPorAluno.ObterFrequenciaAlunoOuNulo(aluno.CodigoAluno);
 
             if (frequenciaAluno.NaoEhNulo())
             {

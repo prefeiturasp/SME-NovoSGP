@@ -238,9 +238,7 @@ namespace SME.SGP.Aplicacao
                 var frequenciasAlunos = await mediator
                     .Send(new ObterFrequenciasPorAlunosTurmaCCDataQuery(codigosAlunos, periodoAtual.PeriodoFim, TipoFrequenciaAluno.PorDisciplina, turmaId, disciplinaId.ToString()));
 
-                var frequenciaPorAluno = frequenciasAlunos
-                    .GroupBy(f => f.CodigoAluno)
-                    .ToDictionary(g => g.Key, g => g.OrderByDescending(f => f.Id).First());
+                var frequenciaPorAluno = frequenciasAlunos.ToDicionarioPorAluno();
 
                 foreach (var aluno in alunosValidosComOrdenacao)
                 {
@@ -267,9 +265,7 @@ namespace SME.SGP.Aplicacao
                     if (marcador.NaoEhNulo())
                         alunoDto.Informacao = marcador.Descricao;                    
 
-                    FrequenciaAluno frequenciaAluno = null;
-                    if (aluno.CodigoAluno.NaoEhNulo())
-                        frequenciaPorAluno.TryGetValue(aluno.CodigoAluno, out frequenciaAluno);
+                    var frequenciaAluno = frequenciaPorAluno.ObterFrequenciaAlunoOuNulo(aluno.CodigoAluno);
 
                     if (frequenciaAluno.NaoEhNulo())
                     {
