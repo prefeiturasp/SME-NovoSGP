@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception e)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"=========== Erro ao salvar foto do Aluno SalvarFotoEstudanteUseCase: {e.Message}, {e.StackTrace?.ToString()}, {e.InnerException} , {e}", LogNivel.Critico, LogContexto.Geral));
+                await mediator.Send(new SalvarLogViaRabbitCommand($"=========== Erro ao salvar foto do Aluno SalvarFotoEstudanteUseCase: Aluno {dto.AlunoCodigo} {e.Message}, {e.StackTrace?.ToString()}, {e.InnerException} , {e}", LogNivel.Critico, LogContexto.Geral));
                 throw;
             }
         }
