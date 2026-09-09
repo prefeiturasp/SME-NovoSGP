@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Moq;
-using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
@@ -53,7 +52,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PlanoAEE
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task Deve_Atualizar_Informacoes_Srm_Ao_Preparar_Nova_Versao(bool eolRetornaDadosSrm)
+        public async Task Deve_Preservar_Informacoes_Srm_Salvas_Ao_Abrir_Plano(bool eolRetornaDadosSrm)
         {
             // Arrange
             var filtro = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(1, "123", 1);
@@ -188,21 +187,16 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PlanoAEE
 
             var questaoInformacoesSrm = Assert.Single(resultado.Questoes, q => q.TipoQuestao == TipoQuestao.InformacoesSrm);
 
-            if (eolRetornaDadosSrm)
-            {
-                var respostaSrm = Assert.Single(questaoInformacoesSrm.Resposta);
-                Assert.Equal(JsonConvert.SerializeObject(dadosSrmAtualizados), respostaSrm.Texto);
-            }
-            else
-                Assert.Empty(questaoInformacoesSrm.Resposta);
+            var respostaSrm = Assert.Single(questaoInformacoesSrm.Resposta);
+            Assert.Equal("informação da versão anterior", respostaSrm.Texto);
 
             mediator.Verify(x => x.Send(
                 It.Is<ObterDadosSrmPaeeColaborativoEolQuery>(q => q.CodigoAluno == filtro.CodigoAluno),
-                It.IsAny<CancellationToken>()), Times.Once);
+                It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Fact]
-        public async Task Deve_Buscar_Informacoes_Srm_Ao_Preparar_Primeira_Versao()
+        public async Task Nao_Deve_Buscar_Informacoes_Srm_Ao_Preparar_Primeira_Versao()
         {
             // Arrange
             const long codigoAluno = 123;
@@ -264,11 +258,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.PlanoAEE
 
             // Assert
             var questaoSrmRetornada = Assert.Single(resultado.Questoes, q => q.TipoQuestao == TipoQuestao.InformacoesSrm);
-            var respostaSrm = Assert.Single(questaoSrmRetornada.Resposta);
-            Assert.Equal(JsonConvert.SerializeObject(dadosSrm), respostaSrm.Texto);
+            Assert.Empty(questaoSrmRetornada.Resposta);
             mediator.Verify(x => x.Send(
                 It.Is<ObterDadosSrmPaeeColaborativoEolQuery>(q => q.CodigoAluno == codigoAluno),
-                It.IsAny<CancellationToken>()), Times.Once);
+                It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Fact]
