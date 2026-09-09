@@ -176,6 +176,10 @@ namespace SME.SGP.Aplicacao
             else
                 periodoFechamentoBimestre = await mediator.Send(new ObterPeriodoFechamentoAnoAnteriorPorTurmaBimestreQuery(dto.Turma, periodoAtual.Bimestre));
 
+            var notasEmAprovacao = (await mediator.Send(new ObterNotasEmAprovacaoQuery(
+                    alunos.Select(a => a.CodigoAluno).ToArray(),
+                    dto.FechamentosTurma.Select(ft => ft.FechamentoTurmaId).Distinct().ToArray()))).ToList();
+
             foreach (var aluno in alunos)
             {
                 var fechamentoTurma = (from ft in dto.FechamentosTurma
@@ -234,7 +238,7 @@ namespace SME.SGP.Aplicacao
                             };
 
                             if (exigeAprovacao)
-                                await VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, nota.DisciplinaCodigo, nota);
+                                VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, nota.DisciplinaCodigo, nota, notasEmAprovacao);
 
                             ((List<FechamentoConsultaNotaConceitoTurmaListaoDto>)alunoDto.NotasConceitoBimestre).Add(nota);
                         }
@@ -274,7 +278,7 @@ namespace SME.SGP.Aplicacao
                                 };
 
                                 if (fechamentoTurma.NaoEhNulo() && nota.DisciplinaCodigo > 0)
-                                    await VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, nota.DisciplinaCodigo, nota);
+                                    VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, nota.DisciplinaCodigo, nota, notasEmAprovacao);
 
                                 ((List<FechamentoConsultaNotaConceitoTurmaListaoDto>)alunoDto.NotasConceitoBimestre).Add(nota);
                             }
@@ -289,7 +293,7 @@ namespace SME.SGP.Aplicacao
                             };
 
                             if (fechamentoTurma.NaoEhNulo() && nota.DisciplinaCodigo > 0)
-                                await VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, nota.DisciplinaCodigo, nota);
+                                VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, nota.DisciplinaCodigo, nota, notasEmAprovacao);
 
                             ((List<FechamentoConsultaNotaConceitoTurmaListaoDto>)alunoDto.NotasConceitoBimestre).Add(nota);
                         }
@@ -488,9 +492,14 @@ namespace SME.SGP.Aplicacao
             return fechamentoFinalAluno;
         }
 
-        private async Task VerificaNotaEmAprovacao(string codigoAluno, long turmaFechamentoId, long disciplinaId, FechamentoConsultaNotaConceitoTurmaListaoDto notasConceito)
+        private static void VerificaNotaEmAprovacao(string codigoAluno, long turmaFechamentoId, long disciplinaId, FechamentoConsultaNotaConceitoTurmaListaoDto notasConceito, List<NotaEmAprovacaoFechamentoDto> notasEmAprovacao)
         {
-            double nota = await mediator.Send(new ObterNotaEmAprovacaoQuery(codigoAluno, turmaFechamentoId, disciplinaId));
+            var registro = notasEmAprovacao.FirstOrDefault(x => x.CodigoAluno == codigoAluno &&
+                                                               x.TurmaFechamentoId == turmaFechamentoId &&
+                                                               x.DisciplinaId == disciplinaId);
+
+            // Ausência de registro reproduz o default(double) do QueryFirstOrDefault<double> da consulta unitária (0 => EmAprovacao).
+            double nota = registro?.Nota ?? 0d;
 
             if (nota >= 0)
             {
