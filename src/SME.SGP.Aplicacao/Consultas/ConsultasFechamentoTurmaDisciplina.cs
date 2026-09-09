@@ -234,6 +234,12 @@ namespace SME.SGP.Aplicacao
 
                 var planosAEE = await mediator.Send(new VerificaPlanosAEEPorCodigosAlunosEAnoQuery(codigosAlunos, turma.AnoLetivo));
                 var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(codigosAlunos, turma.AnoLetivo);
+
+                var frequenciasAlunos = await mediator
+                    .Send(new ObterFrequenciasPorAlunosTurmaCCDataQuery(codigosAlunos, periodoAtual.PeriodoFim, TipoFrequenciaAluno.PorDisciplina, turmaId, disciplinaId.ToString()));
+
+                var frequenciaPorAluno = frequenciasAlunos.ToDicionarioPorAluno();
+
                 foreach (var aluno in alunosValidosComOrdenacao)
                 {
                     var fechamentoTurma = fechamentosTurmasAlunos.FirstOrDefault(c => c.AlunoCodigo == aluno.CodigoAluno);
@@ -259,8 +265,7 @@ namespace SME.SGP.Aplicacao
                     if (marcador.NaoEhNulo())
                         alunoDto.Informacao = marcador.Descricao;                    
 
-                    var frequenciaAluno = await mediator
-                        .Send(new ObterPorAlunoDisciplinaDataQuery(aluno.CodigoAluno, codigosDisciplinas.ToArray(), periodoAtual.PeriodoFim, turmaId));
+                    var frequenciaAluno = frequenciaPorAluno.ObterFrequenciaAlunoOuNulo(aluno.CodigoAluno);
 
                     if (frequenciaAluno.NaoEhNulo())
                     {
