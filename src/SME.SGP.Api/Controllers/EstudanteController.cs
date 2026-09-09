@@ -77,6 +77,9 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpPost("{codigoAluno}/foto")]
+        [ProducesResponseType(typeof(ArquivoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         public async Task<IActionResult> SalvarFotoAluno(string codigoAluno, [FromForm] IFormFile file, [FromServices] ISalvarFotoEstudanteUseCase useCase)
         {
             try
