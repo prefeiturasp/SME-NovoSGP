@@ -234,6 +234,11 @@ namespace SME.SGP.Aplicacao
 
                 var planosAEE = await mediator.Send(new VerificaPlanosAEEPorCodigosAlunosEAnoQuery(codigosAlunos, turma.AnoLetivo));
                 var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(codigosAlunos, turma.AnoLetivo);
+
+                var notasEmAprovacao = exigeAprovacao
+                    ? (await mediator.Send(new ObterNotasEmAprovacaoQuery(codigosAlunos, fechamentosTurmasAlunos.Select(x => x.FechamentoTurmaId).Distinct().ToArray()))).ToList()
+                    : new List<NotaEmAprovacaoFechamentoDto>();
+
                 foreach (var aluno in alunosValidosComOrdenacao)
                 {
                     var fechamentoTurma = fechamentosTurmasAlunos.FirstOrDefault(c => c.AlunoCodigo == aluno.CodigoAluno);
@@ -340,7 +345,7 @@ namespace SME.SGP.Aplicacao
                                     };
 
                                     if (exigeAprovacao)
-                                        await VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, fechamentoTurma.DisciplinaId, nota);
+                                        VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, fechamentoTurma.DisciplinaId, nota, notasEmAprovacao);
 
                                     ((List<FechamentoNotaRetornoDto>)alunoDto.Notas).Add(nota);
                                 }
@@ -370,9 +375,14 @@ namespace SME.SGP.Aplicacao
             return await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
         }
 
-        private async Task VerificaNotaEmAprovacao(string codigoAluno, long turmaFechamentoId, long disciplinaId, FechamentoNotaRetornoDto notasConceito)
+        private static void VerificaNotaEmAprovacao(string codigoAluno, long turmaFechamentoId, long disciplinaId, FechamentoNotaRetornoDto notasConceito, List<NotaEmAprovacaoFechamentoDto> notasEmAprovacao)
         {
-            double nota = await mediator.Send(new ObterNotaEmAprovacaoQuery(codigoAluno, turmaFechamentoId, disciplinaId));
+            var registro = notasEmAprovacao.FirstOrDefault(x => x.CodigoAluno == codigoAluno &&
+                                                               x.TurmaFechamentoId == turmaFechamentoId &&
+                                                               x.DisciplinaId == disciplinaId);
+
+            // Ausência de registro reproduz o default(double) do QueryFirstOrDefault<double> da consulta unitária (0 => EmAprovacao).
+            double nota = registro?.Nota ?? 0d;
 
             if (nota >= 0)
             {
