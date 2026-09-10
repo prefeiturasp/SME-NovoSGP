@@ -1,7 +1,11 @@
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Linq;
@@ -24,8 +28,46 @@ namespace SME.SGP.TesteIntegracao.NotaEmAprovacaoFechamento
         private const string ALUNO_1 = "1111";
         private const string ALUNO_2 = "2222";
 
+        private const string TRECHO_SQL_NOTA_EM_APROVACAO = "wf_aprovacao_nota_fechamento";
+
         public Ao_obter_notas_em_aprovacao_em_lote(CollectionFixture collectionFixture) : base(collectionFixture)
         {
+        }
+
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+            services.Replace(new ServiceDescriptor(typeof(IServicoTelemetria), typeof(ContadorQueriesTelemetriaFake), ServiceLifetime.Singleton));
+        }
+
+        [Fact]
+        public async Task Deve_disparar_uma_unica_consulta_para_toda_a_turma()
+        {
+            await CarregarDados();
+
+            var repositorio = ServiceProvider.GetService<IRepositorioNotasConceitosConsulta>();
+
+            var chavesNota = new[]
+            {
+                (ALUNO_1, DISCIPLINA_1),
+                (ALUNO_1, DISCIPLINA_2),
+                (ALUNO_2, DISCIPLINA_1),
+                (ALUNO_2, DISCIPLINA_2),
+            };
+
+            // Abordagem antiga: 1 consulta por nota (N idas ao banco)
+            ContadorQueriesTelemetriaFake.Limpar();
+            foreach (var (aluno, disciplina) in chavesNota)
+                await repositorio.ObterNotaEmAprovacao(aluno, disciplina, FECHAMENTO_TURMA_ID);
+            var consultasAbordagemAntiga = ContadorQueriesTelemetriaFake.ContarPorTrecho(TRECHO_SQL_NOTA_EM_APROVACAO);
+
+            // Abordagem nova: 1 consulta em lote para toda a turma
+            ContadorQueriesTelemetriaFake.Limpar();
+            await repositorio.ObterNotasEmAprovacao(new[] { ALUNO_1, ALUNO_2 }, new[] { FECHAMENTO_TURMA_ID });
+            var consultasAbordagemNova = ContadorQueriesTelemetriaFake.ContarPorTrecho(TRECHO_SQL_NOTA_EM_APROVACAO);
+
+            consultasAbordagemAntiga.ShouldBe(chavesNota.Length); // N
+            consultasAbordagemNova.ShouldBe(1);                   // 1
         }
 
         [Fact]
