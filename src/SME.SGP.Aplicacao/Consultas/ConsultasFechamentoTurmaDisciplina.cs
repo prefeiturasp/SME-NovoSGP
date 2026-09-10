@@ -238,6 +238,10 @@ namespace SME.SGP.Aplicacao
                 var notasEmAprovacao = exigeAprovacao
                     ? (await mediator.Send(new ObterNotasEmAprovacaoQuery(codigosAlunos, fechamentosTurmasAlunos.Select(x => x.FechamentoTurmaId).Distinct().ToArray()))).ToList()
                     : new List<NotaEmAprovacaoFechamentoDto>();
+                var frequenciasAlunos = await mediator
+                    .Send(new ObterFrequenciasPorAlunosTurmaCCDataQuery(codigosAlunos, periodoAtual.PeriodoFim, TipoFrequenciaAluno.PorDisciplina, turmaId, disciplinaId.ToString()));
+
+                var frequenciaPorAluno = frequenciasAlunos.ToDicionarioPorAluno();
 
                 foreach (var aluno in alunosValidosComOrdenacao)
                 {
@@ -264,8 +268,7 @@ namespace SME.SGP.Aplicacao
                     if (marcador.NaoEhNulo())
                         alunoDto.Informacao = marcador.Descricao;                    
 
-                    var frequenciaAluno = await mediator
-                        .Send(new ObterPorAlunoDisciplinaDataQuery(aluno.CodigoAluno, codigosDisciplinas.ToArray(), periodoAtual.PeriodoFim, turmaId));
+                    var frequenciaAluno = frequenciaPorAluno.ObterFrequenciaAlunoOuNulo(aluno.CodigoAluno);
 
                     if (frequenciaAluno.NaoEhNulo())
                     {

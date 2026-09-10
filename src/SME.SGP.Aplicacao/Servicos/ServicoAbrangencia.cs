@@ -194,8 +194,12 @@ namespace SME.SGP.Aplicacao.Servicos
 
                     abrangenciaGeralSGP = await repositorioAbrangencia.ObterAbrangenciaGeralPorUsuarioId(usuario.Id);
 
-                    var paraAtualizar = abrangenciaGeralSGP.Where(x => abrangenciaTurmasHistoricasEOL.Any(ath => ath.DreId == x.DreId && ath.UeId == x.UeId && ath.TurmaId == x.TurmaId && ath.UsuarioId == x.UsuarioId));
+                    var turmaInformadaVirouHistorica = turmaId > 0 && await mediator.Send(new VerificaSeTurmaVirouHistoricaQuery(turmaId));
 
+                    var paraAtualizar = abrangenciaGeralSGP.Where(x => abrangenciaTurmasHistoricasEOL.Any(ath => ath.DreId == x.DreId && ath.UeId == x.UeId && ath.TurmaId == x.TurmaId && ath.UsuarioId == x.UsuarioId)
+                                                                      || (turmaInformadaVirouHistorica && x.TurmaId == turmaId && !x.Historico &&
+                                                                          (x.Perfil == Perfis.PERFIL_CJ || x.Perfil == Perfis.PERFIL_CJ_INFANTIL))
+                                                                          );
 
                     await repositorioAbrangencia.AtualizaAbrangenciaHistorica(paraAtualizar.Select(x => x.Id));
                 }
@@ -205,12 +209,13 @@ namespace SME.SGP.Aplicacao.Servicos
 
                     if (turmaId > 0)
                     {
-                        var abragenciaSGP = abrangenciaGeralSGP.FirstOrDefault(a => a.TurmaId == turmaId && !a.Historico);
-                        if (abragenciaSGP.NaoEhNulo())
+
+                        var abrangenciasSGP = abrangenciaGeralSGP.Where(a => a.TurmaId == turmaId && !a.Historico);
+                        if (abrangenciasSGP.Any())
                         {
-                            var virouHistorica = await mediator.Send(new VerificaSeTurmaVirouHistoricaQuery(abragenciaSGP.TurmaId.Value));
-                            if (virouHistorica && !abragenciaSGP.Historico)
-                                paraAtualizarAbrangencia.Add(abragenciaSGP);
+                            var virouHistorica = await mediator.Send(new VerificaSeTurmaVirouHistoricaQuery(turmaId));
+                            if (virouHistorica)
+                                paraAtualizarAbrangencia.AddRange(abrangenciasSGP);
                         }
 
                         await repositorioAbrangencia.AtualizaAbrangenciaHistoricaAnosAnteriores(paraAtualizarAbrangencia.Select(x => x.Id), anoLetivo);

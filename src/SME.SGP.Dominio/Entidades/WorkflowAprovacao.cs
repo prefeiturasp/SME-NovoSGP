@@ -122,6 +122,23 @@ namespace SME.SGP.Dominio
             return niveis.FirstOrDefault(a => a.Notificacoes.Any(b => b.Id == notificacaoId));
         }
 
+        public Notificacao ObterNotificacaoPendentePorUsuario(string usuarioRf)
+        {
+            if (string.IsNullOrWhiteSpace(usuarioRf))
+                return null;
+
+            return niveis
+                .Where(nivel => nivel.Status == WorkflowAprovacaoNivelStatus.AguardandoAprovacao)
+                .SelectMany(nivel => nivel.Notificacoes)
+                .Where(notificacao => notificacao.Usuario.NaoEhNulo()
+                                      && notificacao.Usuario.CodigoRf == usuarioRf
+                                      && notificacao.Categoria == NotificacaoCategoria.Workflow_Aprovacao
+                                      && notificacao.Status == NotificacaoStatus.Pendente
+                                      && !notificacao.Excluida)
+                .OrderByDescending(notificacao => notificacao.Id)
+                .FirstOrDefault();
+        }
+
         private NotificacaoStatus RetornaStatusPorNivelStatus(WorkflowAprovacaoNivelStatus status)
         {
             switch (status)
