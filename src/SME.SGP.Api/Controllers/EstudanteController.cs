@@ -14,6 +14,7 @@ using AlunoDto = SME.SGP.Infra.Dtos.Relatorios.HistoricoEscolar.AlunoDto;
 
 namespace SME.SGP.Api.Controllers
 {
+
     [ApiController]
     [Route("api/v1/estudante")]
     [Authorize("Bearer")]
@@ -79,11 +80,10 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         public async Task<IActionResult> SalvarFotoAluno(string codigoAluno, [FromForm] IFormFile file, [FromServices] ISalvarFotoEstudanteUseCase useCase)
         {
-            if (file.Length > 0)
-                return Ok(await useCase.Executar(new EstudanteFotoDto() { AlunoCodigo = codigoAluno, File = file }));
+                if (file.Length > 0)
+                    return Ok(await useCase.Executar(new EstudanteFotoDto() { AlunoCodigo = codigoAluno, File = file }));
 
-            return BadRequest();
-
+                return BadRequest();
         }
 
         [HttpDelete("{codigoAluno}/foto")]

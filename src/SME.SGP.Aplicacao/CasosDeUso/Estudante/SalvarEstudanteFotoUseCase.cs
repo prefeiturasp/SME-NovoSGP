@@ -2,10 +2,12 @@
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
+    [ExcludeFromCodeCoverage]
     public class SalvarFotoEstudanteUseCase : AbstractUseCase, ISalvarFotoEstudanteUseCase
     {
         public SalvarFotoEstudanteUseCase(IMediator mediator) : base(mediator)
@@ -13,6 +15,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<Guid> Executar(EstudanteFotoDto dto)
-            => await mediator.Send(new SalvarFotoEstudanteCommand(dto.File, dto.AlunoCodigo));
+            =>await mediator.Send(new SalvarFotoEstudanteCommand(dto.File, dto.AlunoCodigo));
     }
 }
