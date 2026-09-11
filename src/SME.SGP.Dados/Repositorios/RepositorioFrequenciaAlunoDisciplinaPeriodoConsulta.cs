@@ -147,6 +147,27 @@ namespace SME.SGP.Dados
                 });
         }
 
+        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralPorAlunosTurmaEComponente(string[] alunosCodigos, string turmaCodigo, string componenteCurricularCodigo = "")
+        {
+            var query = new StringBuilder($@"select * 
+                            from frequencia_aluno
+                           where tipo = {(string.IsNullOrWhiteSpace(componenteCurricularCodigo) ? "2" : "1")}
+                            and codigo_aluno = any(@alunosCodigos)
+                            and turma_id = @turmaCodigo 
+                            and not excluido ");
+
+            if (!string.IsNullOrEmpty(componenteCurricularCodigo))
+                query.AppendLine(" and disciplina_id = @componenteCurricularCodigo");
+
+            return await database.Conexao
+                .QueryAsync<FrequenciaAluno>(query.ToString(), new
+                {
+                    alunosCodigos,
+                    turmaCodigo,
+                    componenteCurricularCodigo
+                });
+        }
+
         public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralPorAlunosETurmas(string[] alunosCodigos, string turmaCodigo)
         {
             var query = new StringBuilder($@"select * 
@@ -381,7 +402,8 @@ namespace SME.SGP.Dados
                                         turma_id = @codigoTurma and 
                                         disciplina_id = any(@componentesCurricularesId) and 
                                         tipo = @tipoFrequencia and
-                                        periodo_escolar_id = any(@periodosEscolaresIds)
+                                        periodo_escolar_id = any(@periodosEscolaresIds) and
+                                        not fa.excluido
                                         {(!string.IsNullOrEmpty(professor) ? " and (professor_rf = @professor or professor_rf is null)" : string.Empty)}
                                 )rf
                             where rf.sequencia = 1";
@@ -775,6 +797,7 @@ namespace SME.SGP.Dados
                                     and pe.periodo_fim >= @dataAtual
                                     and fa.turma_id = @codigoTurma
                                     and fa.disciplina_id = @componenteCurricularId
+                                    and not fa.excluido
                           )tb where    tb.sequencia = 1";
 
             return await database.Conexao.QueryAsync<FrequenciaAluno>(query, new { alunosCodigo, dataAtual, tipoFrequencia, codigoTurma, componenteCurricularId });
