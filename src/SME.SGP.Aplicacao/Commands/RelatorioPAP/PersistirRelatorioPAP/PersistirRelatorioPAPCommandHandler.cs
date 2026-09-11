@@ -64,8 +64,6 @@ namespace SME.SGP.Aplicacao
                 new List<QuestaoObrigatoriaNaoRespondidaDto>();
             var secoesEtapa = await mediator.Send(new ObterSecoesPAPQuery(turmaCodigo, relatorioPAPDto.AlunoCodigo,
                 relatorioPAPDto.periodoRelatorioPAPId));
-            IEnumerable<RespostaQuestaoObrigatoriaDto> respostasPersistidas = null;
-
             foreach (var secao in secoesEtapa.Secoes)
             {
                 var secaoPresenteDto = relatorioPAPDto.Secoes.FirstOrDefault(secaoDto => secaoDto.SecaoId == secao.Id);
@@ -83,9 +81,7 @@ namespace SME.SGP.Aplicacao
                 }
                 else
                 {
-                    if (respostasPersistidas.EhNulo())
-                        respostasPersistidas = await ObterRespostasPersistidas(secao.PAPSecaoId);
-                    respostasSecao = respostasPersistidas;
+                    respostasSecao = await ObterRespostasPersistidas(secao.PAPSecaoId);
                 }
 
                 var secaoQuestionario = new SecaoQuestionarioDto()

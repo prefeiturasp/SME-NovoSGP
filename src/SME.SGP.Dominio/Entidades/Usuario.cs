@@ -41,7 +41,9 @@ namespace SME.SGP.Dominio
         public void DefinirPerfilAtual(Guid perfilAtual)
             => PerfilAtual = perfilAtual;
 
-        public IEnumerable<Aula> ObterAulasQuePodeVisualizar(IEnumerable<Aula> aulas, IList<ComponenteCurricularEol> componentesUsuario)
+        public IEnumerable<Aula> ObterAulasQuePodeVisualizar(IEnumerable<Aula> aulas,
+                                                             IList<ComponenteCurricularEol> componentesUsuario,
+                                                             bool considerarVigenciaAtribuicao = false)
         {
             if (TemPerfilGestaoUes() || TemPerfilAdmUE())
                 return aulas;
@@ -53,8 +55,9 @@ namespace SME.SGP.Dominio
                 {
                     return (from a in aulas
                             from ccp in componentesUsuario
-                            where UsuarioPodeVisualizarAulaPorComponente(a, ccp) ||
-                                  a.ProfessorRf == CodigoRf
+                            where (UsuarioPodeVisualizarAulaPorComponente(a, ccp)
+                                   && (!considerarVigenciaAtribuicao || ccp.AtribuicaoAlcancaData(a.DataAula))) ||
+                                   a.ProfessorRf == CodigoRf
                             select a).Distinct();
                 }
             }
