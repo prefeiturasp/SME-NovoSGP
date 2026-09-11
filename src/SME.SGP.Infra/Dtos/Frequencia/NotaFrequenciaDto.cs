@@ -15,7 +15,8 @@ namespace SME.SGP.Infra
                                 bool componenteLancaNota, 
                                 bool visualizaNotas, 
                                 string[] codigosTurma, 
-                                FrequenciaAluno frequenciaAlunoRegenciaPai)
+                                FrequenciaAluno frequenciaAlunoRegenciaPai,
+                                IReadOnlyDictionary<long, double> notasConselhoEmAprovacao)
         {
             ComponenteCurricularCodigo = componenteCurricularCodigo;
             FrequenciaAluno = frequenciaAluno;
@@ -27,6 +28,7 @@ namespace SME.SGP.Infra
             VisualizaNotas = visualizaNotas;
             CodigosTurma = codigosTurma;
             FrequenciaAlunoRegenciaPai = frequenciaAlunoRegenciaPai;
+            NotasConselhoEmAprovacao = notasConselhoEmAprovacao;
         }
 
         public long ComponenteCurricularCodigo { get; set; }
@@ -39,5 +41,6 @@ namespace SME.SGP.Infra
         public bool VisualizaNotas { get; set; }
         public string[] CodigosTurma { get; set; }
         public FrequenciaAluno FrequenciaAlunoRegenciaPai { get; set; }
+        public IReadOnlyDictionary<long, double> NotasConselhoEmAprovacao { get; set; }
     }
 }
