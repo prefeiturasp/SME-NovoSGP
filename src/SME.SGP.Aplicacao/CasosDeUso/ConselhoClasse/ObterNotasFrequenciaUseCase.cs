@@ -489,7 +489,7 @@ namespace SME.SGP.Aplicacao
             return notaPosConselho;
         }
 
-        private void VerificaNotaEmAprovacao(long conselhoClasseNotaId, NotaPosConselhoDto nota,
+        private static void VerificaNotaEmAprovacao(long conselhoClasseNotaId, NotaPosConselhoDto nota,
             IReadOnlyDictionary<long, double> notasConselhoEmAprovacao)
         {
             if (notasConselhoEmAprovacao.TryGetValue(conselhoClasseNotaId, out var notaConselhoEmAprovacao) && notaConselhoEmAprovacao >= 0)
