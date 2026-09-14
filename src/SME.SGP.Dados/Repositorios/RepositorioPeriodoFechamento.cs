@@ -19,10 +19,20 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioPeriodoFechamento(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
-         
+
         public PeriodoFechamento ObterPorFiltros(long? tipoCalendarioId, long? turmaId, Dominio.Aplicacao aplicacao)
         {
-            var query = new StringBuilder("select f.*,fb.*,p.*, t.* ");
+            var query = new StringBuilder(@"
+        SELECT 
+            f.id as Id, f.dre_id as DreId, f.migrado as Migrado, f.ue_id as UeId, f.aplicacao as Aplicacao,
+            f.criado_em as CriadoEm, f.criado_por as CriadoPor, f.alterado_em as AlteradoEm, f.alterado_por as AlteradoPor, f.alterado_rf as AlteradoRF, f.criado_rf as CriadoRF,
+            fb.id as Id, fb.periodo_fechamento_id as PeriodoFechamentoId, fb.final_fechamento as FinalDoFechamento, fb.inicio_fechamento as InicioDoFechamento, fb.periodo_escolar_id as PeriodoEscolarId,
+            p.id as Id, p.bimestre as Bimestre, p.migrado as Migrado, p.periodo_fim as PeriodoFim, p.periodo_inicio as PeriodoInicio, p.tipo_calendario_id as TipoCalendarioId,
+            p.criado_em as CriadoEm, p.criado_por as CriadoPor, p.alterado_em as AlteradoEm, p.alterado_por as AlteradoPor, p.alterado_rf as AlteradoRF, p.criado_rf as CriadoRF,
+            t.id as Id, t.ano_letivo as AnoLetivo, t.excluido as Excluido, t.migrado as Migrado, t.modalidade as Modalidade, t.nome as Nome, t.periodo as Periodo, t.situacao as Situacao, t.semestre as Semestre,
+            t.criado_em as CriadoEm, t.criado_por as CriadoPor, t.alterado_em as AlteradoEm, t.alterado_por as AlteradoPor, t.alterado_rf as AlteradoRF, t.criado_rf as CriadoRF
+        ");
+
             query.AppendLine("from");
             query.AppendLine("periodo_fechamento f");
             query.AppendLine("inner join periodo_fechamento_bimestre fb on");
@@ -31,13 +41,14 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("fb.periodo_escolar_id = p.id");
             query.AppendLine("inner join tipo_calendario t on");
             query.AppendLine("p.tipo_calendario_id = t.id");
+
             if (turmaId.HasValue)
                 query.AppendLine(@"join turma tu on t.modalidade = (case when tu.modalidade_codigo = 5 then 1
-                                                                         when tu.modalidade_codigo = 6 then 1
-                                                                         when tu.modalidade_codigo = 3 then 2
-                                                                         when tu.modalidade_codigo = 1 then 3
-                                                                    end)");
-           
+                                                                 when tu.modalidade_codigo = 6 then 1
+                                                                 when tu.modalidade_codigo = 3 then 2
+                                                                 when tu.modalidade_codigo = 1 then 3
+                                                            end)");
+
             query.AppendLine("where 1=1");
 
             if (tipoCalendarioId.HasValue)
@@ -51,25 +62,31 @@ namespace SME.SGP.Dados.Repositorios
 
             var lookup = new Dictionary<long, PeriodoFechamento>();
 
-            var lista = database.Conexao.Query<PeriodoFechamento, PeriodoFechamentoBimestre, PeriodoEscolar, TipoCalendario, PeriodoFechamento>(query.ToString(), (fechamento, fechamentoBimestre, periodoEscolar, tipoCalendario) =>
-               {
-                   PeriodoFechamento periodoFechamento;
-                   if (!lookup.TryGetValue(fechamento.Id, out periodoFechamento))
-                   {
-                       periodoFechamento = fechamento;
-                       lookup.Add(fechamento.Id, periodoFechamento);
-                   }
+            var lista = database.Conexao.Query<PeriodoFechamento, PeriodoFechamentoBimestre, PeriodoEscolar, TipoCalendario, PeriodoFechamento>(
+                query.ToString(),
+                (fechamento, fechamentoBimestre, periodoEscolar, tipoCalendario) =>
+                {
+                    if (!lookup.TryGetValue(fechamento.Id, out PeriodoFechamento periodoFechamento))
+                    {
+                        periodoFechamento = fechamento;
+                        lookup.Add(fechamento.Id, periodoFechamento);
+                    }
 
-                   periodoEscolar.AdicionarTipoCalendario(tipoCalendario);
-                   fechamentoBimestre.AdicionarPeriodoEscolar(periodoEscolar);
-                   periodoFechamento.AdicionarFechamentoBimestre(fechamentoBimestre);
-                   return periodoFechamento;
-               }, new
-               {
-                   tipoCalendarioId,
-                   turmaId,
-                   aplicacao
-               });
+                    periodoEscolar.AdicionarTipoCalendario(tipoCalendario);
+                    fechamentoBimestre.AdicionarPeriodoEscolar(periodoEscolar);
+                    periodoFechamento.AdicionarFechamentoBimestre(fechamentoBimestre);
+
+                    return periodoFechamento;
+                },
+                new
+                {
+                    tipoCalendarioId,
+                    turmaId,
+                    aplicacao
+                },
+                splitOn: "Id"
+            );
+
             return lookup.Values
                 .OrderByDescending(periodoFechamento => periodoFechamento.AlteradoEm ?? periodoFechamento.CriadoEm)
                 .ThenByDescending(periodoFechamento => periodoFechamento.Id)
