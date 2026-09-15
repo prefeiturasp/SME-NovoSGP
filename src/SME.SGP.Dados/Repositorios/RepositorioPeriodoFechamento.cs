@@ -95,7 +95,16 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PeriodoFechamento> ObterPorFiltrosAsync(long? tipoCalendarioId, long? turmaId)
         {
-            var query = new StringBuilder("select f.*,fb.*,p.*, t.* ");
+            var query = new StringBuilder(@"
+                SELECT 
+                    f.id as Id, f.dre_id as DreId, f.migrado as Migrado, f.ue_id as UeId, f.aplicacao as Aplicacao,
+                    f.criado_em as CriadoEm, f.criado_por as CriadoPor, f.alterado_em as AlteradoEm, f.alterado_por as AlteradoPor, f.alterado_rf as AlteradoRF, f.criado_rf as CriadoRF,
+                    fb.id as Id, fb.periodo_fechamento_id as PeriodoFechamentoId, fb.final_fechamento as FinalDoFechamento, fb.inicio_fechamento as InicioDoFechamento, fb.periodo_escolar_id as PeriodoEscolarId,
+                    p.id as Id, p.bimestre as Bimestre, p.migrado as Migrado, p.periodo_fim as PeriodoFim, p.periodo_inicio as PeriodoInicio, p.tipo_calendario_id as TipoCalendarioId,
+                    p.criado_em as CriadoEm, p.criado_por as CriadoPor, p.alterado_em as AlteradoEm, p.alterado_por as AlteradoPor, p.alterado_rf as AlteradoRF, p.criado_rf as CriadoRF,
+                    t.id as Id, t.ano_letivo as AnoLetivo, t.excluido as Excluido, t.migrado as Migrado, t.modalidade as Modalidade, t.nome as Nome, t.periodo as Periodo, t.situacao as Situacao, t.semestre as Semestre,
+                    t.criado_em as CriadoEm, t.criado_por as CriadoPor, t.alterado_em as AlteradoEm, t.alterado_por as AlteradoPor, t.alterado_rf as AlteradoRF, t.criado_rf as CriadoRF
+                ");
             query.AppendLine("from");
             query.AppendLine("periodo_fechamento f");
             query.AppendLine("inner join periodo_fechamento_bimestre fb on");
@@ -143,7 +152,7 @@ namespace SME.SGP.Dados.Repositorios
             {
                 tipoCalendarioId,
                 turmaId
-            });
+            },splitOn: "Id");
             return lookup.Values
                 .OrderByDescending(periodoFechamento => periodoFechamento.AlteradoEm ?? periodoFechamento.CriadoEm)
                 .ThenByDescending(periodoFechamento => periodoFechamento.Id)
