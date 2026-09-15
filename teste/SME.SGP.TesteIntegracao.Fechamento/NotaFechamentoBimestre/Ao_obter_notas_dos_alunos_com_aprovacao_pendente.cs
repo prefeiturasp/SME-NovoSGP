@@ -97,9 +97,9 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         [Fact]
         public async Task Deve_manter_uma_unica_consulta_de_fechamento_nota_com_aprovacao_ativa()
         {
-            // Vermelho de propósito, mesma razão dos demais round-trip guards: aqui o cenário exige
-            // aprovação ativa (exigeAprovacao = true), garantindo que a troca para o lote não
-            // reintroduz uma consulta por aluno quando o workflow de aprovação também está em jogo.
+            // Aqui o cenário exige aprovação ativa (exigeAprovacao = true) — confirma que a busca de
+            // notas em lote continua em 1 consulta mesmo quando o workflow de aprovação também está
+            // em jogo.
             var periodoEscolar = await CriarDadosBaseNotaAnoAnterior();
 
             await CriarFechamentoTurmaDisciplina(periodoEscolar);
@@ -110,7 +110,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             ContadorQueriesTelemetriaFake.Limpar();
             await ExecutarTeste(BIMESTRE_3);
-            var consultas = ContadorQueriesTelemetriaFake.ContarPorTrecho(TRECHO_SQL_FECHAMENTO_NOTA);
+            var consultas = ContadorQueriesTelemetriaFake.ContarPorTrecho(TRECHO_SQL_LOTE_NOTAS_BIMESTRE);
 
             consultas.ShouldBe(1);
         }

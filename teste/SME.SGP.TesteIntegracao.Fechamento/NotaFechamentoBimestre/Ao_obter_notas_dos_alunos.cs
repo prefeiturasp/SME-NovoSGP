@@ -95,10 +95,10 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         [Fact]
         public async Task Nao_deve_disparar_uma_consulta_de_fechamento_nota_por_aluno()
         {
-            // Vermelho de propósito: hoje ObterNotasBimestre roda uma vez por aluno dentro do foreach
-            // (ListarFechamentoTurmaBimestreUseCase.cs:216). Só passa depois de trocar pela versão em
-            // lote ObterNotasBimestrePorCodigosAlunosIdsFechamentos, já existente e usada pelo endpoint
-            // irmão fechamento/turma (ConsultasFechamentoTurmaDisciplina.cs:233).
+            // ListarFechamentoTurmaBimestreUseCase.cs:216 buscava a nota do bimestre uma vez por
+            // aluno dentro do foreach; agora usa ObterNotasBimestrePorCodigosAlunosIdsFechamentos
+            // (já existente, já usada pelo endpoint irmão fechamento/turma), carregada uma única vez
+            // antes do foreach.
             var periodoEscolar = await CriarDadosBaseNota();
 
             await CriarFechamentoTurmaDisciplina(periodoEscolar);
@@ -108,7 +108,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             ContadorQueriesTelemetriaFake.Limpar();
             await ExecutarTeste();
-            var consultas = ContadorQueriesTelemetriaFake.ContarPorTrecho(TRECHO_SQL_FECHAMENTO_NOTA);
+            var consultas = ContadorQueriesTelemetriaFake.ContarPorTrecho(TRECHO_SQL_LOTE_NOTAS_BIMESTRE);
 
             consultas.ShouldBe(1);
         }
@@ -141,9 +141,8 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         [Fact]
         public async Task Nao_deve_crescer_consultas_de_fechamento_nota_por_quantidade_de_notas()
         {
-            // Vermelho de propósito, mesma razão do teste de round-trip por aluno: aqui o aluno tem
-            // 2 notas (2 disciplinas) no mesmo fechamento, e a consulta em lote deve continuar sendo
-            // UMA só — não uma por nota.
+            // Aqui o aluno tem 2 notas (2 disciplinas) no mesmo fechamento — a consulta em lote deve
+            // continuar sendo UMA só, não uma por nota.
             var periodoEscolar = await CriarDadosBaseNota();
 
             await CriarFechamentoTurmaDisciplina(periodoEscolar);
@@ -153,7 +152,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             ContadorQueriesTelemetriaFake.Limpar();
             await ExecutarTeste();
-            var consultas = ContadorQueriesTelemetriaFake.ContarPorTrecho(TRECHO_SQL_FECHAMENTO_NOTA);
+            var consultas = ContadorQueriesTelemetriaFake.ContarPorTrecho(TRECHO_SQL_LOTE_NOTAS_BIMESTRE);
 
             consultas.ShouldBe(1);
         }

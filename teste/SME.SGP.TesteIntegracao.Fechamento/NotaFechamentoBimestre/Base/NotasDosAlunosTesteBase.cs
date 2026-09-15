@@ -18,7 +18,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
     {
         protected const long FECHAMENTO_TURMA_ID_1 = 1;
         protected const long FECHAMENTO_TURMA_DISCIPLINA_ID_1 = 1;
-        protected const string TRECHO_SQL_FECHAMENTO_NOTA = "fechamento_nota";
+        protected const string TRECHO_SQL_LOTE_NOTAS_BIMESTRE = "as FechamentoId";
 
         protected NotasDosAlunosTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
