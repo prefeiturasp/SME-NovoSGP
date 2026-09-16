@@ -24,7 +24,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     {
                         UsuarioId = 2,
                         CodigoFuncaoAtividade = 6,
-                        CodigoRf = "2",
+                        CodigoRf = "PAEE_1",
                         NomeServidor = "Usuario PAEE"
                     }
                 });
