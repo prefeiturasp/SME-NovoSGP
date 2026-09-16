@@ -233,7 +233,7 @@ namespace SME.SGP.Aplicacao
                 var notasConceitoBimestreRetorno = await mediator.Send(new ObterNotaBimestrePorCodigosAlunosIdsFechamentoQuery(codigosAlunos, fechamentosIds));
 
                 var conceitoIds = notasConceitoBimestreRetorno.Where(n => n.ConceitoId.HasValue).Select(n => n.ConceitoId.Value).Distinct().ToArray();
-                var conceitos = conceitoIds.Any() ? await repositorioConceito.ObterPorIds(conceitoIds) : Enumerable.Empty<Conceito>();
+                var conceitos = (conceitoIds.Any() ? await repositorioConceito.ObterPorIds(conceitoIds) : Enumerable.Empty<Conceito>()).ToDicionarioPorId();
 
                 var planosAEE = await mediator.Send(new VerificaPlanosAEEPorCodigosAlunosEAnoQuery(codigosAlunos, turma.AnoLetivo));
                 var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(codigosAlunos, turma.AnoLetivo);
@@ -412,15 +412,15 @@ namespace SME.SGP.Aplicacao
             else return periodoEscolar.Bimestre;
         }
 
-        private double ObterConceito(long id, IEnumerable<Conceito> conceitos)
+        private double ObterConceito(long id, IDictionary<long, Conceito> conceitos)
         {
-            var conceito = conceitos.FirstOrDefault(c => c.Id == id);
+            var conceito = conceitos.ObterConceitoOuNulo(id);
             return conceito.NaoEhNulo() ? conceito.Id : 0;
         }
 
-        private string ObterConceitoDescricao(long id, IEnumerable<Conceito> conceitos)
+        private string ObterConceitoDescricao(long id, IDictionary<long, Conceito> conceitos)
         {
-            var conceito = conceitos.FirstOrDefault(c => c.Id == id);
+            var conceito = conceitos.ObterConceitoOuNulo(id);
             return conceito.NaoEhNulo() ? conceito.Valor : "";
         }
 

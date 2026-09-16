@@ -198,7 +198,7 @@ namespace SME.SGP.Aplicacao
                     dto.Turma.AnoLetivo));
 
             var conceitoIds = notasConceitoBimestreRetorno.Where(n => n.ConceitoId.HasValue).Select(n => n.ConceitoId.Value).Distinct().ToArray();
-            var conceitos = conceitoIds.Any() ? await mediator.Send(new ObterConceitosPorIdsQuery(conceitoIds)) : Enumerable.Empty<Conceito>();
+            var conceitos = (conceitoIds.Any() ? await mediator.Send(new ObterConceitosPorIdsQuery(conceitoIds)) : Enumerable.Empty<Conceito>()).ToDicionarioPorId();
 
             foreach (var aluno in alunos)
             {
@@ -534,9 +534,9 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private double ObterConceito(long id, IEnumerable<Conceito> conceitos)
+        private double ObterConceito(long id, IDictionary<long, Conceito> conceitos)
         {
-            var conceito = conceitos.FirstOrDefault(c => c.Id == id);
+            var conceito = conceitos.ObterConceitoOuNulo(id);
             return conceito.NaoEhNulo() ? conceito.Id : 0;
         }
 
