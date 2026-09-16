@@ -11,6 +11,9 @@ namespace SME.SGP.Dominio.Constantes.MensagensNegocio
 
         public const string NAO_FORAM_ENCONTRADOS_DADOS_DE_NECESSIDADE_ESPECIAL = "Não foram encontrados dados de necessidades especiais para o aluno no EOL";
         public const string ENCAMINHAMENTO_NAO_ENCONTRADO = "Encaminhamento não encontrado";
+        public const string ENCAMINHAMENTO_NAO_PERMITE_ENVIO_PARA_ANALISE = "A situação do encaminhamento não permite o envio para análise";
+        public const string ENCAMINHAMENTO_JA_POSSUI_RESPONSAVEL = "O encaminhamento já possui um responsável atribuído";
+        public const string RESPONSAVEL_ATRIBUIDO_DEVE_SER_PAEE_DA_UE = "O responsável informado deve ser um PAEE da unidade educacional";
         public const string ENCAMINHAMENTO_NAO_PODE_SER_EXCLUIDO_NESSA_SITUACAO = "Encaminhamento só podem ser excluídos nas situações: 'Rascunho' ou 'Encaminhado'";
         public const string ENCAMINHAMENTO_NAO_PODE_SER_EXCLUIDO_PELO_USUARIO_LOGADO = "Encaminhamento só podem ser excluídos pelos gestores da ue ou pelo professor criador do encaminhamento";
         public const string ENCAMINHAMENTO_SO_PODEM_SER_DEVOLVIDO_PELA_GESTAO = "Encaminhamento só podem ser devolvidos por gestores da escola";

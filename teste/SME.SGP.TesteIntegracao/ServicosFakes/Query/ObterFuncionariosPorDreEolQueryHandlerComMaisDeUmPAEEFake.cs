@@ -24,14 +24,14 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     {
                         UsuarioId = 2,
                         CodigoFuncaoAtividade = 6,
-                        CodigoRf = "2",
+                        CodigoRf = "PAEE_1",
                         NomeServidor = "Usuario PAEE 1"
                     },
                     new UsuarioEolRetornoDto()
                     {
                         UsuarioId = 3,
                         CodigoFuncaoAtividade = 6,
-                        CodigoRf = "2",
+                        CodigoRf = "PAEE_2",
                         NomeServidor = "Usuario PAEE 2"
                     }
                 });
