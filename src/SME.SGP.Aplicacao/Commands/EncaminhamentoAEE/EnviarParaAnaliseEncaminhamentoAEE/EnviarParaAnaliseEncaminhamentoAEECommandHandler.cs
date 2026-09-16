@@ -53,9 +53,9 @@ namespace SME.SGP.Aplicacao
             var funcionariosPAAI = NormalizarFuncionarios(await mediator.Send(new ObterResponsavelAtribuidoUePorUeTipoQuery(turma.Ue.CodigoUe, TipoResponsavelAtribuicao.PAAI), cancellationToken));
 
             if (funcionariosPAEE.Count == 1)
-                await AtribuirResponsavelPAEEPAAI(encaminhamentoAEE, funcionariosPAEE.First().CodigoRf);
+                await AtribuirResponsavelPAEEPAAI(encaminhamentoAEE, funcionariosPAEE[0].CodigoRf);
             else if (funcionariosPAEE.Count == 0 && funcionariosPAAI.Count == 1)
-                await AtribuirResponsavelPAEEPAAI(encaminhamentoAEE, funcionariosPAAI.First().CodigoRf);
+                await AtribuirResponsavelPAEEPAAI(encaminhamentoAEE, funcionariosPAAI[0].CodigoRf);
 
             var idEntidadeEncaminhamento = await repositorioEncaminhamentoAEE.SalvarAsync(encaminhamentoAEE);
 
