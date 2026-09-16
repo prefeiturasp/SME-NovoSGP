@@ -151,7 +151,8 @@ namespace SME.SGP.Aplicacao
                 .ExisteFrequenciaRegistradaPorTurmaComponenteCurricularEBimestres(turma.CodigoTurma,
                     new string[] { filtros.DisciplinaCodigo.ToString() }, periodosEscolares.Select(c => c.Id).ToArray());
 
-            var frequenciaPorAluno = await FrequenciaAlunoConsulta.ObterFrequenciaGeralPorAlunos(mediator, alunosValidosOrdenados.Select(a => a.CodigoAluno), turma.CodigoTurma, filtros.DisciplinaCodigo.ToString());
+            var frequenciaPorAluno = await mediator.Send(new ObterFrequenciaGeralIndexadaPorAlunosQuery(
+                alunosValidosOrdenados.Select(a => a.CodigoAluno).ToArray(), turma.CodigoTurma, filtros.DisciplinaCodigo.ToString()));
 
             var planosAEE = await mediator.Send(new VerificaPlanosAEEPorCodigosAlunosEAnoQuery(
                     alunosValidosOrdenados.Select(a => a.CodigoAluno).ToArray(),

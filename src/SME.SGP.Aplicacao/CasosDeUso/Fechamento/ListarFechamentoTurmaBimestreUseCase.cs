@@ -354,7 +354,9 @@ namespace SME.SGP.Aplicacao
             if (dto.FechamentosTurma.NaoEhNulo() && dto.FechamentosTurma.Any())
                 notasFechamentosFinais = await mediator.Send(new ObterPorFechamentosTurmaQuery(dto.FechamentosTurma.Select(ftd => ftd.Id).ToArray(), dto.Turma.CodigoTurma, dto.ComponenteCurricularCodigo));
             var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(alunos.Select(x => x.CodigoAluno).ToArray(), dto.Turma.AnoLetivo);
-            var frequenciaPorAluno = await FrequenciaAlunoConsulta.ObterFrequenciaGeralPorAlunos(mediator, alunos.Select(a => a.CodigoAluno), dto.Turma.CodigoTurma, dto.ComponenteCurricularCodigo);
+            var frequenciaPorAluno = await mediator.Send(new ObterFrequenciaGeralIndexadaPorAlunosQuery(
+                alunos.Select(a => a.CodigoAluno).ToArray(), dto.Turma.CodigoTurma, dto.ComponenteCurricularCodigo));
+
             foreach (var aluno in alunos)
             {
                 AlunosFechamentoNotaConceitoTurmaDto fechamentoFinalAluno = await TrataFrequenciaAluno(aluno, dto.Turma, matriculadosTurmaPAP, frequenciaPorAluno);
