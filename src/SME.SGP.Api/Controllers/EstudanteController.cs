@@ -82,19 +82,10 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         public async Task<IActionResult> SalvarFotoAluno(string codigoAluno, [FromForm] IFormFile file, [FromServices] ISalvarFotoEstudanteUseCase useCase)
         {
-            try
-            {
-                if (file.Length > 0)
-                    return Ok(await useCase.Executar(new EstudanteFotoDto() { AlunoCodigo = codigoAluno, File = file }));
+            if (file.Length > 0)
+                return Ok(await useCase.Executar(new EstudanteFotoDto() { AlunoCodigo = codigoAluno, File = file }));
 
-                return BadRequest();
-            }
-
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-
+            return BadRequest();
         }
 
         [HttpDelete("{codigoAluno}/foto")]
