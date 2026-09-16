@@ -26,5 +26,14 @@ namespace SME.SGP.Dados.Repositorios
             return database.QueryAsync<Conceito>(sql, parametros);
         }
 
+        public Task<IEnumerable<Conceito>> ObterPorIds(long[] ids)
+        {
+            const string sql = @"select id, valor, descricao, aprovado, ativo, inicio_vigencia, fim_vigencia,
+                    criado_em, criado_por, criado_rf, alterado_em, alterado_por, alterado_rf
+                    from conceito_valores where id = any(@ids)";
+
+            return database.QueryAsync<Conceito>(sql, new { ids });
+        }
+
     }
 }

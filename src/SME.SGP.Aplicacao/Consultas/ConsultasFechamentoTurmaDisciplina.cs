@@ -232,6 +232,9 @@ namespace SME.SGP.Aplicacao
 
                 var notasConceitoBimestreRetorno = await mediator.Send(new ObterNotaBimestrePorCodigosAlunosIdsFechamentoQuery(codigosAlunos, fechamentosIds));
 
+                var conceitoIds = notasConceitoBimestreRetorno.Where(n => n.ConceitoId.HasValue).Select(n => n.ConceitoId.Value).Distinct().ToArray();
+                var conceitos = conceitoIds.Any() ? await repositorioConceito.ObterPorIds(conceitoIds) : Enumerable.Empty<Conceito>();
+
                 var planosAEE = await mediator.Send(new VerificaPlanosAEEPorCodigosAlunosEAnoQuery(codigosAlunos, turma.AnoLetivo));
                 var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(codigosAlunos, turma.AnoLetivo);
 
@@ -342,9 +345,9 @@ namespace SME.SGP.Aplicacao
                                     {
                                         DisciplinaId = notaConceitoBimestre.DisciplinaId,
                                         Disciplina = nomeDisciplina,
-                                        NotaConceito = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceito(notaConceitoBimestre.ConceitoId.Value) : notaConceitoBimestre.Nota,
+                                        NotaConceito = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceito(notaConceitoBimestre.ConceitoId.Value, conceitos) : notaConceitoBimestre.Nota,
                                         EhConceito = notaConceitoBimestre.ConceitoId.HasValue,
-                                        ConceitoDescricao = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceitoDescricao(notaConceitoBimestre.ConceitoId.Value) : string.Empty,
+                                        ConceitoDescricao = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceitoDescricao(notaConceitoBimestre.ConceitoId.Value, conceitos) : string.Empty,
                                     };
 
                                     if (exigeAprovacao)
@@ -409,15 +412,15 @@ namespace SME.SGP.Aplicacao
             else return periodoEscolar.Bimestre;
         }
 
-        private double ObterConceito(long id)
+        private double ObterConceito(long id, IEnumerable<Conceito> conceitos)
         {
-            var conceito = repositorioConceito.ObterPorId(id);
+            var conceito = conceitos.FirstOrDefault(c => c.Id == id);
             return conceito.NaoEhNulo() ? conceito.Id : 0;
         }
 
-        private string ObterConceitoDescricao(long id)
+        private string ObterConceitoDescricao(long id, IEnumerable<Conceito> conceitos)
         {
-            var conceito = repositorioConceito.ObterPorId(id);
+            var conceito = conceitos.FirstOrDefault(c => c.Id == id);
             return conceito.NaoEhNulo() ? conceito.Valor : "";
         }
 

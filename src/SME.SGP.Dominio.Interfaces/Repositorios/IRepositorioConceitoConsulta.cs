@@ -7,5 +7,6 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IRepositorioConceitoConsulta : IRepositorioBase<Conceito>
     {
        Task<IEnumerable<Conceito>> ObterPorData(DateTime dataAvaliacao);
+       Task<IEnumerable<Conceito>> ObterPorIds(long[] ids);
     }
 }

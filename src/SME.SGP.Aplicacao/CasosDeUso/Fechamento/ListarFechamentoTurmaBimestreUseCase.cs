@@ -193,6 +193,13 @@ namespace SME.SGP.Aplicacao
                     alunos.Select(a => a.CodigoAluno).ToArray(),
                     fechamentosTurmaDisciplinaIds));
 
+            var planosAEE = await mediator.Send(new VerificaPlanosAEEPorCodigosAlunosEAnoQuery(
+                    alunos.Select(a => a.CodigoAluno).ToArray(),
+                    dto.Turma.AnoLetivo));
+
+            var conceitoIds = notasConceitoBimestreRetorno.Where(n => n.ConceitoId.HasValue).Select(n => n.ConceitoId.Value).Distinct().ToArray();
+            var conceitos = conceitoIds.Any() ? await mediator.Send(new ObterConceitosPorIdsQuery(conceitoIds)) : Enumerable.Empty<Conceito>();
+
             foreach (var aluno in alunos)
             {
                 var fechamentoTurma = (from ft in dto.FechamentosTurma
@@ -205,7 +212,7 @@ namespace SME.SGP.Aplicacao
                     CodigoAluno = aluno.CodigoAluno,
                     NumeroChamada = aluno.ObterNumeroAlunoChamada(),
                     Nome = aluno.NomeAluno,
-                    EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, dto.Turma.AnoLetivo)),
+                    EhAtendidoAEE = planosAEE.Any(x => x.CodigoAluno == aluno.CodigoAluno),
                     EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == aluno.CodigoAluno)
                 };
 
@@ -236,7 +243,7 @@ namespace SME.SGP.Aplicacao
 
                             if (notaConceitoBimestre.ConceitoId.HasValue)
                             {
-                                var valorConceito = await ObterConceito(notaConceitoBimestre.ConceitoId.Value);
+                                var valorConceito = ObterConceito(notaConceitoBimestre.ConceitoId.Value, conceitos);
                                 notaConceito = valorConceito;
                             }
                             else
@@ -527,9 +534,9 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<double> ObterConceito(long id)
+        private double ObterConceito(long id, IEnumerable<Conceito> conceitos)
         {
-            var conceito = await mediator.Send(new ObterConceitoPorIdQuery(id));
+            var conceito = conceitos.FirstOrDefault(c => c.Id == id);
             return conceito.NaoEhNulo() ? conceito.Id : 0;
         }
 
