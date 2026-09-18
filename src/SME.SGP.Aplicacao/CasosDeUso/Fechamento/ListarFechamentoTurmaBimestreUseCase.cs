@@ -184,9 +184,11 @@ namespace SME.SGP.Aplicacao
             else
                 periodoFechamentoBimestre = await mediator.Send(new ObterPeriodoFechamentoAnoAnteriorPorTurmaBimestreQuery(dto.Turma, periodoAtual.Bimestre));
 
-            var notasEmAprovacao = (await mediator.Send(new ObterNotasEmAprovacaoQuery(
+            var notasEmAprovacao = exigeAprovacao
+                ? (await mediator.Send(new ObterNotasEmAprovacaoQuery(
                     alunos.Select(a => a.CodigoAluno).ToArray(),
-                    dto.FechamentosTurma.Select(ft => ft.FechamentoTurmaId).Distinct().ToArray()))).ToList();
+                    dto.FechamentosTurma.Select(ft => ft.FechamentoTurmaId).Distinct().ToArray()))).ToList()
+                : new List<NotaEmAprovacaoFechamentoDto>();
 
             var fechamentosTurmaDisciplinaIds = dto.FechamentosTurma.Select(ft => ft.Id).Distinct().ToArray();
             var notasConceitoBimestreRetorno = await mediator.Send(new ObterNotaBimestrePorCodigosAlunosIdsFechamentoQuery(
