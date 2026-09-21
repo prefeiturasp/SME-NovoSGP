@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
@@ -21,7 +22,6 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
         
-        private readonly IRepositorioUeConsulta repositorioUe;
 
         public MigrarPlanoAulaCommandHandler(IUnitOfWork unitOfWork, IMediator mediator, IRepositorioPlanoAula repositorioPlanoAula,
             IConsultasAbrangencia consultasAbrangencia, IRepositorioTurmaConsulta repositorioTurmaConsulta, IRepositorioUeConsulta repositorioUe)
@@ -31,7 +31,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioPlanoAula = repositorioPlanoAula ?? throw new ArgumentNullException(nameof(repositorioPlanoAula));
             this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
             this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
-            this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
         }
 
         public async Task<bool> Handle(MigrarPlanoAulaCommand request, CancellationToken cancellationToken)
@@ -39,7 +38,7 @@ namespace SME.SGP.Aplicacao
             try
             {
                 var usuario = request.Usuario;
-                var planoAulaDto = repositorioPlanoAula.ObterPorId(request.PlanoAulaMigrar.PlanoAulaId);
+                var planoAulaDto = await repositorioPlanoAula.ObterPorIdAsync(request.PlanoAulaMigrar.PlanoAulaId);
                 var aula = await mediator.Send(new ObterAulaPorIdQuery(planoAulaDto.AulaId));
 
                 await ValidarMigracao(request.PlanoAulaMigrar, usuario.CodigoRf, usuario.EhProfessorCj(), aula.UeId, aula.TurmaId);
@@ -82,7 +81,7 @@ namespace SME.SGP.Aplicacao
                 unitOfWork.PersistirTransacao();
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 unitOfWork.Rollback();
                 throw;
@@ -101,8 +100,8 @@ namespace SME.SGP.Aplicacao
         {
 
             var turmaAula = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
-            Ue ue = repositorioUe.ObterPorId(turmaAula.UeId);
-            turmaAula.AdicionarUe(ue);
+            var ue = turmaAula.Ue;  
+            ue.AdicionarDre(turmaAula.Ue.Dre);
 
             var turmasAbrangencia = await mediator.Send(new ObterTurmasRegularesPorUeModalidadePeriodoAnoLetivoQuery(turmaAula.Ue.CodigoUe, turmaAula.ModalidadeCodigo));
 
@@ -175,7 +174,7 @@ namespace SME.SGP.Aplicacao
             
         }
 
-        private void ValidaTurmasAno(bool ehProfessorCJ, bool migrarObjetivos,
+        private static void ValidaTurmasAno(bool ehProfessorCJ, bool migrarObjetivos,
                                      IEnumerable<ProfessorTurmaDto> turmasAtribuidasAoProfessor,
                                      IEnumerable<AbrangenciaTurmaRetorno> turmasAbrangencia,
                                      IEnumerable<string> idsTurmasSelecionadas)
@@ -187,19 +186,19 @@ namespace SME.SGP.Aplicacao
                     var turmasAtribuidasSelecionadas = turmasAtribuidasAoProfessor.Where(t => idsTurmasSelecionadas.Contains(t.CodTurma.ToString()));
                     var anoTurma = turmasAtribuidasSelecionadas.First().Ano;
                     if (!turmasAtribuidasSelecionadas.All(x => x.Ano == anoTurma))
-                        throw new NegocioException("Somente é possível migrar o plano de aula para turmas dentro do mesmo ano");
+                        throw new NegocioException(MensagemNegocioComuns.SOMENTE_POSSIVEL_MIGRAR_PLANO_DE_AULA);
                 }
                 else
                 {
                     var turmasAbrangenciaSelecionadas = turmasAbrangencia.Where(t => idsTurmasSelecionadas.Contains(t.Codigo));
                     var anoTurma = turmasAbrangenciaSelecionadas.First().Ano;
                     if (!turmasAbrangenciaSelecionadas.All(x => x.Ano == anoTurma))
-                        throw new NegocioException("Somente é possível migrar o plano de aula para turmas dentro do mesmo ano");
+                        throw new NegocioException(MensagemNegocioComuns.SOMENTE_POSSIVEL_MIGRAR_PLANO_DE_AULA);
                 }
             }
         }
 
-        private void ValidaTurmasAnoHistorico(bool ehProfessorCJ, bool migrarObjetivos,
+        private static void ValidaTurmasAnoHistorico(bool ehProfessorCJ, bool migrarObjetivos,
                                      IEnumerable<TurmaNaoHistoricaDto> turmasAtribuidasAoProfessor,
                                      IEnumerable<AbrangenciaTurmaRetorno> turmasAbrangencia,
                                      IEnumerable<string> idsTurmasSelecionadas)
@@ -211,14 +210,14 @@ namespace SME.SGP.Aplicacao
                     var turmasAtribuidasSelecionadas = turmasAtribuidasAoProfessor.Where(t => idsTurmasSelecionadas.Contains(t.Codigo.ToString()));
                     var anoTurma = turmasAtribuidasSelecionadas.First().AnoTurma;
                     if (!turmasAtribuidasSelecionadas.All(x => x.AnoTurma == anoTurma))
-                        throw new NegocioException("Somente é possível migrar o plano de aula para turmas dentro do mesmo ano");
+                        throw new NegocioException(MensagemNegocioComuns.SOMENTE_POSSIVEL_MIGRAR_PLANO_DE_AULA);
                 }
                 else
                 {
                     var turmasAbrangenciaSelecionadas = turmasAbrangencia.Where(t => idsTurmasSelecionadas.Contains(t.Codigo));
                     var anoTurma = turmasAbrangenciaSelecionadas.First().Ano;
                     if (!turmasAbrangenciaSelecionadas.All(x => x.Ano == anoTurma))
-                        throw new NegocioException("Somente é possível migrar o plano de aula para turmas dentro do mesmo ano");
+                        throw new NegocioException(MensagemNegocioComuns.SOMENTE_POSSIVEL_MIGRAR_PLANO_DE_AULA);
                 }
             }
         }

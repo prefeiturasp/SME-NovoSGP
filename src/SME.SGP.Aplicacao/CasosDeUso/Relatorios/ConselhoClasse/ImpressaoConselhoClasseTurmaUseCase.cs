@@ -3,7 +3,6 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.Relatorios;
-using SME.SGP.Infra.Enumerados;
 using System;
 using System.Threading.Tasks;
 

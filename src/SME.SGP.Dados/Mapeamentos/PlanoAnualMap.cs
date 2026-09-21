@@ -7,14 +7,14 @@ namespace SME.SGP.Dados.Mapeamentos
         public PlanoAnualMap()
         {
             ToTable("plano_anual");
-            Map(c => c.Ano).ToColumn("ano");
-            Map(c => c.Bimestre).ToColumn("bimestre");
-            Map(c => c.ComponenteCurricularEolId).ToColumn("componente_curricular_eol_id");
-            Map(c => c.Descricao).ToColumn("descricao");
-            Map(c => c.EscolaId).ToColumn("escola_id");
-            Map(c => c.Migrado).ToColumn("migrado");
-            Map(c => c.TurmaId).ToColumn("turma_id");
-            Map(c => c.ObjetivosAprendizagemOpcionais).ToColumn("objetivos_opcionais");
+            Map(nameof(PlanoAnual.Ano), "ano");
+            Map(nameof(PlanoAnual.Bimestre), "bimestre");
+            Map(nameof(PlanoAnual.ComponenteCurricularEolId), "componente_curricular_eol_id");
+            Map(nameof(PlanoAnual.Descricao), "descricao");
+            Map(nameof(PlanoAnual.EscolaId), "escola_id");
+            Map(nameof(PlanoAnual.Migrado), "migrado");
+            Map(nameof(PlanoAnual.TurmaId), "turma_id");
+            Map(nameof(PlanoAnual.ObjetivosAprendizagemOpcionais), "objetivos_opcionais");
         }
     }
 }

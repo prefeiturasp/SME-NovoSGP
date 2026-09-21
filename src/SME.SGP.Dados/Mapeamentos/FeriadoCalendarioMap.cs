@@ -7,12 +7,12 @@ namespace SME.SGP.Dados.Mapeamentos
         public FeriadoCalendarioMap()
         {
             ToTable("feriado_calendario");
-            Map(c => c.Abrangencia).ToColumn("abrangencia");
-            Map(c => c.Ativo).ToColumn("ativo");
-            Map(c => c.DataFeriado).ToColumn("data_feriado");
-            Map(c => c.Excluido).ToColumn("excluido");
-            Map(c => c.Nome).ToColumn("nome");
-            Map(c => c.Tipo).ToColumn("tipo");
+            Map(nameof(FeriadoCalendario.Abrangencia), "abrangencia");
+            Map(nameof(FeriadoCalendario.Ativo), "ativo");
+            Map(nameof(FeriadoCalendario.DataFeriado), "data_feriado");
+            Map(nameof(FeriadoCalendario.Excluido), "excluido");
+            Map(nameof(FeriadoCalendario.Nome), "nome");
+            Map(nameof(FeriadoCalendario.Tipo), "tipo");
         }
     }
 }

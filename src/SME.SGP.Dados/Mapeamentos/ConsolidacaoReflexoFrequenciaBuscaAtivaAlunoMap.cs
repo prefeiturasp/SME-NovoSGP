@@ -7,16 +7,16 @@ namespace SME.SGP.Dados.Mapeamentos
         public ConsolidacaoReflexoFrequenciaBuscaAtivaAlunoMap()
         {
             ToTable("consolidacao_reflexo_frequencia_busca_ativa");
-            Map(c => c.TurmaCodigo).ToColumn("turma_id");
-            Map(c => c.UeCodigo).ToColumn("ue_id");
-            Map(c => c.AnoLetivo).ToColumn("ano_letivo");
-            Map(c => c.Modalidade).ToColumn("modalidade_codigo");
-            Map(c => c.AlunoCodigo).ToColumn("aluno_codigo");
-            Map(c => c.AlunoNome).ToColumn("aluno_nome");
-            Map(c => c.DataBuscaAtiva).ToColumn("data_acao");           
-            Map(c => c.Mes).ToColumn("mes");
-            Map(c => c.PercFrequenciaAntesAcao).ToColumn("percentual_frequencia_anterior_acao");
-            Map(c => c.PercFrequenciaAposAcao).ToColumn("percentual_frequencia_atual");
+            Map(nameof(ConsolidacaoReflexoFrequenciaBuscaAtivaAluno.TurmaCodigo), "turma_id");
+            Map(nameof(ConsolidacaoReflexoFrequenciaBuscaAtivaAluno.UeCodigo), "ue_id");
+            Map(nameof(ConsolidacaoReflexoFrequenciaBuscaAtivaAluno.AnoLetivo), "ano_letivo");
+            Map(nameof(ConsolidacaoReflexoFrequenciaBuscaAtivaAluno.Modalidade), "modalidade_codigo");
+            Map(nameof(ConsolidacaoReflexoFrequenciaBuscaAtivaAluno.AlunoCodigo), "aluno_codigo");
+            Map(nameof(ConsolidacaoReflexoFrequenciaBuscaAtivaAluno.AlunoNome), "aluno_nome");
+            Map(nameof(ConsolidacaoReflexoFrequenciaBuscaAtivaAluno.DataBuscaAtiva), "data_acao");
+            Map(nameof(ConsolidacaoReflexoFrequenciaBuscaAtivaAluno.Mes), "mes");
+            Map(nameof(ConsolidacaoReflexoFrequenciaBuscaAtivaAluno.PercFrequenciaAntesAcao), "percentual_frequencia_anterior_acao");
+            Map(nameof(ConsolidacaoReflexoFrequenciaBuscaAtivaAluno.PercFrequenciaAposAcao), "percentual_frequencia_atual");
         }
     }
 }

@@ -4,12 +4,12 @@ namespace SME.SGP.Dados.Mapeamentos
 {
     public class ComunicadoTurmaMap : BaseMap<ComunicadoTurma>
     {
-        public ComunicadoTurmaMap() : base()
+        public ComunicadoTurmaMap()
         {
             ToTable("comunicado_turma");
-            Map(c => c.CodigoTurma).ToColumn("turma_codigo");
-            Map(c => c.ComunicadoId).ToColumn("comunicado_id");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(ComunicadoTurma.CodigoTurma), "turma_codigo");
+            Map(nameof(ComunicadoTurma.ComunicadoId), "comunicado_id");
+            Map(nameof(ComunicadoTurma.Excluido), "excluido");
         }
     }
 }

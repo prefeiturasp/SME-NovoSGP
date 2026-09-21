@@ -7,12 +7,12 @@ namespace SME.SGP.Dados.Mapeamentos
         public PainelEducacionalVisaoGeralMap()
         {
             ToTable("painel_educacional_visao_geral");
-            Map(c => c.CodigoDre).ToColumn("codigo_dre");
-            Map(c => c.CodigoUe).ToColumn("codigo_ue");
-            Map(c => c.AnoLetivo).ToColumn("ano_letivo");
-            Map(c => c.Indicador).ToColumn("indicador");
-            Map(c => c.Serie).ToColumn("serie");
-            Map(c => c.Valor).ToColumn("valor");
+            Map(nameof(PainelEducacionalVisaoGeral.CodigoDre), "codigo_dre");
+            Map(nameof(PainelEducacionalVisaoGeral.CodigoUe), "codigo_ue");
+            Map(nameof(PainelEducacionalVisaoGeral.AnoLetivo), "ano_letivo");
+            Map(nameof(PainelEducacionalVisaoGeral.Indicador), "indicador");
+            Map(nameof(PainelEducacionalVisaoGeral.Serie), "serie");
+            Map(nameof(PainelEducacionalVisaoGeral.Valor), "valor");
         }
     }
 }

@@ -7,12 +7,12 @@ namespace SME.SGP.Dados.Mapeamentos
         public ConceitoValorMap()
         {
             ToTable("conceito_valores");
-            Map(c => c.Aprovado).ToColumn("aprovado");
-            Map(c => c.Ativo).ToColumn("ativo");
-            Map(c => c.Descricao).ToColumn("descricao");
-            Map(c => c.FimVigencia).ToColumn("fim_vigencia");
-            Map(c => c.InicioVigencia).ToColumn("inicio_vigencia");
-            Map(c => c.Valor).ToColumn("valor");
+            Map(nameof(Conceito.Aprovado), "aprovado");
+            Map(nameof(Conceito.Ativo), "ativo");
+            Map(nameof(Conceito.Descricao), "descricao");
+            Map(nameof(Conceito.FimVigencia), "fim_vigencia");
+            Map(nameof(Conceito.InicioVigencia), "inicio_vigencia");
+            Map(nameof(Conceito.Valor), "valor");
         }
     }
 }

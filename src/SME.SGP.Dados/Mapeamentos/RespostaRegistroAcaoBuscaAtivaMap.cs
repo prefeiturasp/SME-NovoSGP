@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dados.Mapeamentos;
 
 namespace SME.SGP.Dados
 {
@@ -7,11 +8,12 @@ namespace SME.SGP.Dados
         public RespostaRegistroAcaoBuscaAtivaMap()
         {
             ToTable("registro_acao_busca_ativa_resposta");
-            Map(c => c.QuestaoRegistroAcaoBuscaAtivaId).ToColumn("questao_registro_acao_id");
-            Map(c => c.RespostaId).ToColumn("resposta_id");
-            Map(c => c.ArquivoId).ToColumn("arquivo_id");
-            Map(c => c.Texto).ToColumn("texto");
-            Map(c => c.Excluido).ToColumn("excluido");
+
+            Map(nameof(RespostaRegistroAcaoBuscaAtiva.QuestaoRegistroAcaoBuscaAtivaId), "questao_registro_acao_id");
+            Map(nameof(RespostaRegistroAcaoBuscaAtiva.RespostaId), "resposta_id");
+            Map(nameof(RespostaRegistroAcaoBuscaAtiva.ArquivoId), "arquivo_id");
+            Map(nameof(RespostaRegistroAcaoBuscaAtiva.Texto), "texto");
+            Map(nameof(RespostaRegistroAcaoBuscaAtiva.Excluido), "excluido");
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using SME.SGP.Dados.Mapeamentos;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados
 {
@@ -7,11 +8,11 @@ namespace SME.SGP.Dados
         public AvisoMap()
         {
             ToTable("aviso");
-            Map(c => c.AulaId).ToColumn("aula_id");
-            Map(c => c.AvisoClassroomId).ToColumn("aviso_classroom_id");
-            Map(c => c.Mensagem).ToColumn("mensagem");
-            Map(c => c.Email).ToColumn("email");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(Aviso.AulaId), "aula_id");
+            Map(nameof(Aviso.AvisoClassroomId), "aviso_classroom_id");
+            Map(nameof(Aviso.Mensagem), "mensagem");
+            Map(nameof(Aviso.Email), "email");
+            Map(nameof(Aviso.Excluido), "excluido");
         }
     }
 }

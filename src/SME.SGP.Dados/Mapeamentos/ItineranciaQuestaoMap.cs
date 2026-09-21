@@ -7,11 +7,11 @@ namespace SME.SGP.Dados.Mapeamentos
         public ItineranciaQuestaoMap()
         {
             ToTable("itinerancia_questao");
-            Map(c => c.QuestaoId).ToColumn("questao_id");
-            Map(c => c.ArquivoId).ToColumn("arquivo_id");
-            Map(c => c.Resposta).ToColumn("resposta");
-            Map(c => c.Excluido).ToColumn("excluido");
-            Map(c => c.ItineranciaId).ToColumn("itinerancia_id");
+            Map(nameof(ItineranciaQuestao.QuestaoId), "questao_id");
+            Map(nameof(ItineranciaQuestao.ArquivoId), "arquivo_id");
+            Map(nameof(ItineranciaQuestao.Resposta), "resposta");
+            Map(nameof(ItineranciaQuestao.Excluido), "excluido");
+            Map(nameof(ItineranciaQuestao.ItineranciaId), "itinerancia_id");
         }
     }
 }

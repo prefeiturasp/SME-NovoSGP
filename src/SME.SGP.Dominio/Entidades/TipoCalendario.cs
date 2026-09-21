@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Dominio
+﻿
+
+namespace SME.SGP.Dominio
 {
     public class TipoCalendario : EntidadeBase
     {

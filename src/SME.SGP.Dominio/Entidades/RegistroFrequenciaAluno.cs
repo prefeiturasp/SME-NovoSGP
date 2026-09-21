@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 
 namespace SME.SGP.Dominio
 {
@@ -7,7 +8,9 @@ namespace SME.SGP.Dominio
         public string CodigoAluno { get; set; }
         public int NumeroAula { get; set; }
         public int Valor { get; set; }
+       
         public RegistroFrequencia RegistroFrequencia { get; set; }
+       
         public Aula Aula { get; set; }
         public long RegistroFrequenciaId { get; set; }
         public long AulaId { get; set; }

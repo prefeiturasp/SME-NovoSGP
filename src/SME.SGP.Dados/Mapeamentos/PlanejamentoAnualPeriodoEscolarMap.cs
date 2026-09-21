@@ -7,9 +7,9 @@ namespace SME.SGP.Dados.Mapeamentos
         public PlanejamentoAnualPeriodoEscolarMap()
         {
             ToTable("planejamento_anual_periodo_escolar");
-            Map(c => c.PeriodoEscolarId).ToColumn("periodo_escolar_id");
-            Map(c => c.PlanejamentoAnualId).ToColumn("planejamento_anual_id");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(PlanejamentoAnualPeriodoEscolar.PeriodoEscolarId), "periodo_escolar_id");
+            Map(nameof(PlanejamentoAnualPeriodoEscolar.PlanejamentoAnualId), "planejamento_anual_id");
+            Map(nameof(PlanejamentoAnualPeriodoEscolar.Excluido), "excluido");
         }
     }
 }

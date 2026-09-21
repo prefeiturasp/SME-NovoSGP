@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SME.SGP.Dominio
@@ -13,6 +14,7 @@ namespace SME.SGP.Dominio
         public int Ano { get; set; }
         public bool Excluido { get; set; }
         public string DreId { get; set; }
+       
         public IEnumerable<WorkflowAprovacaoNivel> Niveis { get { return niveis; } }
         public string NotifacaoMensagem { get; set; }
         public string NotifacaoTitulo { get; set; }
@@ -21,6 +23,7 @@ namespace SME.SGP.Dominio
         public WorkflowAprovacaoTipo Tipo { get; set; }
         public string TurmaId { get; set; }
         public string UeId { get; set; }
+       
         private List<WorkflowAprovacaoNivel> niveis { get; set; }
 
         public void Adicionar(WorkflowAprovacaoNivel nivel)

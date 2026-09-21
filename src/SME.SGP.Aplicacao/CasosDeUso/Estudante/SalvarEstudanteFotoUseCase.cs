@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -16,16 +15,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<Guid> Executar(EstudanteFotoDto dto)
-        {
-            try
-            {
-                return await mediator.Send(new SalvarFotoEstudanteCommand(dto.File, dto.AlunoCodigo));
-            }
-            catch (Exception e)
-            {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"=========== Erro ao salvar foto do Aluno SalvarFotoEstudanteUseCase: Aluno {dto.AlunoCodigo} {e.Message}, {e.StackTrace?.ToString()}, {e.InnerException} , {e}", LogNivel.Critico, LogContexto.Geral));
-                throw;
-            }
-        }
+            =>await mediator.Send(new SalvarFotoEstudanteCommand(dto.File, dto.AlunoCodigo));
     }
 }

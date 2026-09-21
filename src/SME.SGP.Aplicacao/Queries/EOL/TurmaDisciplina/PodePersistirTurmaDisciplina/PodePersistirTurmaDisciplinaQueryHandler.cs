@@ -1,5 +1,4 @@
-﻿using Elasticsearch.Net;
-using MediatR;
+﻿using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;

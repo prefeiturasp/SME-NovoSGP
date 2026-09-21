@@ -7,12 +7,12 @@ namespace SME.SGP.Dados.Mapeamentos
         public DocumentoMap()
         {
             ToTable("documento");
-            Map(c => c.ClassificacaoDocumentoId).ToColumn("classificacao_documento_id");
-            Map(c => c.UsuarioId).ToColumn("usuario_id");
-            Map(c => c.UeId).ToColumn("ue_id");
-            Map(c => c.AnoLetivo).ToColumn("ano_letivo");
-            Map(c => c.TurmaId).ToColumn("turma_id");
-            Map(c => c.ComponenteCurricularId).ToColumn("componente_curricular_id");
+            Map(nameof(Documento.ClassificacaoDocumentoId), "classificacao_documento_id");
+            Map(nameof(Documento.UsuarioId), "usuario_id");
+            Map(nameof(Documento.UeId), "ue_id");
+            Map(nameof(Documento.AnoLetivo), "ano_letivo");
+            Map(nameof(Documento.TurmaId), "turma_id");
+            Map(nameof(Documento.ComponenteCurricularId), "componente_curricular_id");
         }
     }
 }

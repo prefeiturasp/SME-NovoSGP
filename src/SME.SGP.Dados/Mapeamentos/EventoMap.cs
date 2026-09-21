@@ -7,23 +7,22 @@ namespace SME.SGP.Dados.Mapeamentos
         public EventoMap()
         {
             ToTable("evento");
-            Map(c => c.DataFim).ToColumn("data_fim");
-            Map(c => c.DataInicio).ToColumn("data_inicio");
-            Map(c => c.Descricao).ToColumn("descricao");
-            Map(c => c.DreId).ToColumn("dre_id");
-            Map(c => c.EventoPaiId).ToColumn("evento_pai_id");
-            Map(c => c.Excluido).ToColumn("excluido");
-            Map(c => c.FeriadoId).ToColumn("feriado_id");
-            Map(c => c.Letivo).ToColumn("letivo");
-            Map(c => c.Migrado).ToColumn("migrado");
-            Map(c => c.Nome).ToColumn("nome");
-            Map(c => c.Status).ToColumn("status");
-            Map(c => c.TipoCalendarioId).ToColumn("tipo_calendario_id");
-            Map(c => c.TipoEvento).ToColumn("tipo_evento");
-            Map(c => c.TipoEventoId).ToColumn("tipo_evento_id");
-            Map(c => c.TipoPerfilCadastro).ToColumn("tipo_perfil_cadastro");
-            Map(c => c.UeId).ToColumn("ue_id");
-            Map(c => c.WorkflowAprovacaoId).ToColumn("wf_aprovacao_id");
+            Map(nameof(Evento.DataFim), "data_fim");
+            Map(nameof(Evento.DataInicio), "data_inicio");
+            Map(nameof(Evento.Descricao), "descricao");
+            Map(nameof(Evento.DreId), "dre_id");
+            Map(nameof(Evento.EventoPaiId), "evento_pai_id");
+            Map(nameof(Evento.Excluido), "excluido");
+            Map(nameof(Evento.FeriadoId), "feriado_id");
+            Map(nameof(Evento.Letivo), "letivo");
+            Map(nameof(Evento.Migrado), "migrado");
+            Map(nameof(Evento.Nome), "nome");
+            Map(nameof(Evento.Status), "status");
+            Map(nameof(Evento.TipoCalendarioId), "tipo_calendario_id");
+            Map(nameof(Evento.TipoEventoId), "tipo_evento_id");
+            Map(nameof(Evento.TipoPerfilCadastro), "tipo_perfil_cadastro");
+            Map(nameof(Evento.UeId), "ue_id");
+            Map(nameof(Evento.WorkflowAprovacaoId), "wf_aprovacao_id");
         }
     }
 }

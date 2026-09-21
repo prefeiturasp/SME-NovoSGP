@@ -60,7 +60,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task Salvar(DiarioBordoObservacaoNotificacao notificacao)
         {
-            await database.Conexao.InsertAsync(notificacao);
+            await database.Conexao.InsertMappedAsync(notificacao);
         }
 
         public async Task<DiarioBordoObservacaoNotificacao> ObterPorObservacaoUsuarioId(long diarioBordoObservacaoId, long usuarioId)

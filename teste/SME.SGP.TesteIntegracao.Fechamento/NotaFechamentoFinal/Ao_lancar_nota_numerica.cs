@@ -15,7 +15,6 @@ using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.Fechamento.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.Fechamento.NotaFechamentoBimestre.ServicosFakes;
-using Microsoft.CodeAnalysis.CSharp;
 using System;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal

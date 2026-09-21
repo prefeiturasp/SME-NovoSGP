@@ -26,7 +26,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task Salvar(long aulaId, string motivo, long pendenciaId)
         {
-            await database.Conexao.InsertAsync(new PendenciaAula()
+            await database.Conexao.InsertMappedAsync(new PendenciaAula()
             {
                 AulaId = aulaId,
                 Motivo = motivo,

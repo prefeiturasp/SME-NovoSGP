@@ -17,9 +17,9 @@ namespace SME.SGP.Dados.Repositorios
         public async Task Salvar(ConsolidacaoDevolutivas consolidacaoDevolutivas)
         {
             if (consolidacaoDevolutivas.Id > 0)
-                await database.Conexao.UpdateAsync(consolidacaoDevolutivas);
+                await database.Conexao.UpdateMappedAsync(consolidacaoDevolutivas);
             else
-                await database.Conexao.InsertAsync(consolidacaoDevolutivas);
+                await database.Conexao.InsertMappedAsync(consolidacaoDevolutivas);
         }
     }
 }

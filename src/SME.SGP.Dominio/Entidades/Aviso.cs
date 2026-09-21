@@ -1,8 +1,11 @@
-﻿namespace SME.SGP.Dominio
+﻿
+
+namespace SME.SGP.Dominio
 {
     public class Aviso : EntidadeBase
     {
         public long AulaId { get; set; }
+       
         public Aula Aula { get; set; }
 
         public long AvisoClassroomId { get; set; }

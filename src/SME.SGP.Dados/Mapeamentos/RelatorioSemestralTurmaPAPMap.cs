@@ -1,16 +1,15 @@
-﻿using Dapper.FluentMap.Dommel.Mapping;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class RelatorioSemestralTurmaPAPMap: DommelEntityMap<RelatorioSemestralTurmaPAP>
+    public class RelatorioSemestralTurmaPAPMap : SimpleMap<RelatorioSemestralTurmaPAP>
     {
         public RelatorioSemestralTurmaPAPMap()
         {
             ToTable("relatorio_semestral_turma_pap");
-            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
-            Map(c => c.TurmaId).ToColumn("turma_id");
-            Map(c => c.Semestre).ToColumn("semestre");
+
+            Map(nameof(RelatorioSemestralTurmaPAP.TurmaId), "turma_id");
+            Map(nameof(RelatorioSemestralTurmaPAP.Semestre), "semestre");
         }
     }
 }

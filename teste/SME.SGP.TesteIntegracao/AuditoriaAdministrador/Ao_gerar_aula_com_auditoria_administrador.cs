@@ -9,7 +9,6 @@ using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Threading.Tasks;
 using Shouldly;
-using Xunit;
 
 namespace SME.SGP.TesteIntegracao.AulaUnica
 {

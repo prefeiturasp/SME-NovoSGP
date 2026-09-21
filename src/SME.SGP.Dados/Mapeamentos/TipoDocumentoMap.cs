@@ -1,15 +1,14 @@
-﻿using Dapper.FluentMap.Dommel.Mapping;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class TipoDocumentoMap : DommelEntityMap<TipoDocumento>
+    public class TipoDocumentoMap : SimpleMap<TipoDocumento>
     {
         public TipoDocumentoMap()
         {
             ToTable("tipo_documento");
-            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
-            Map(c => c.Descricao).ToColumn("descricao");
+
+            Map(nameof(TipoDocumento.Descricao), "descricao");
         }
     }
 }

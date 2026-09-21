@@ -7,9 +7,9 @@ namespace SME.SGP.Dados.Mapeamentos
         public AulaPrevistaMap()
         {
             ToTable("aula_prevista");
-            Map(c => c.TipoCalendarioId).ToColumn("tipo_calendario_id");
-            Map(c => c.DisciplinaId).ToColumn("disciplina_id");
-            Map(c => c.TurmaId).ToColumn("turma_id");
+            Map(nameof(AulaPrevista.TipoCalendarioId), "tipo_calendario_id");
+            Map(nameof(AulaPrevista.DisciplinaId), "disciplina_id");
+            Map(nameof(AulaPrevista.TurmaId), "turma_id");
         }
     }
 }

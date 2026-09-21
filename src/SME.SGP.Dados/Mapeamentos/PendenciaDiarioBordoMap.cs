@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dados.Mapeamentos;
 
 namespace SME.SGP.Dados
 {
@@ -7,10 +8,10 @@ namespace SME.SGP.Dados
         public PendenciaDiarioBordoMap()
         {
             ToTable("pendencia_diario_bordo");
-            Map(c => c.AulaId).ToColumn("aula_id");
-            Map(c => c.PendenciaId).ToColumn("pendencia_id");
-            Map(c => c.ComponenteId).ToColumn("componente_curricular_id");
-            Map(c => c.ProfessorRf).ToColumn("professor_rf");
+            Map(nameof(PendenciaDiarioBordo.AulaId), "aula_id");
+            Map(nameof(PendenciaDiarioBordo.PendenciaId), "pendencia_id");
+            Map(nameof(PendenciaDiarioBordo.ComponenteId), "componente_curricular_id");
+            Map(nameof(PendenciaDiarioBordo.ProfessorRf), "professor_rf");
         }
     }
 }

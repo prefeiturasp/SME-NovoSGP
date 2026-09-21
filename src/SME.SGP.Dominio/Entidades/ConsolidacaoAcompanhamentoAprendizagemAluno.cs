@@ -1,4 +1,7 @@
-﻿namespace SME.SGP.Dominio
+﻿
+
+
+namespace SME.SGP.Dominio
 {
     public class ConsolidacaoAcompanhamentoAprendizagemAluno
     {
@@ -9,7 +12,7 @@
             QuantidadeSemAcompanhamento = quantidadeSemAcompanhamento;
             Semestre = semestre;
         }
-
+   
         public long Id { get; set; }
         public long TurmaId { get; set; }
         public int QuantidadeComAcompanhamento { get; set; }

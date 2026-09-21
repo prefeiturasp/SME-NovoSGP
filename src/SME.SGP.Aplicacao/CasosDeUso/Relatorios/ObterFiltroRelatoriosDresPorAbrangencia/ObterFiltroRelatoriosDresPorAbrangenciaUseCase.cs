@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Queries.Relatorios.ObterFiltroRelatoriosDresPorAbrangencia;
 using SME.SGP.Dto;
 using System.Collections.Generic;
 using System.Threading.Tasks;

@@ -164,11 +164,11 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             var registroAcaoSecao = ObterTodos<RegistroAcaoBuscaAtivaSecao>();
             registroAcaoSecao.ShouldNotBeNull();
             registroAcaoSecao.FirstOrDefault()?.SecaoRegistroAcaoBuscaAtivaId.ShouldBe(ConstantesQuestionarioBuscaAtiva.SECAO_REGISTRO_ACAO_ID_1);
-            registroAcaoSecao.FirstOrDefault()?.Concluido.ShouldBeTrue();
+            registroAcaoSecao[1]?.Concluido.ShouldBeTrue();
 
             questaoregistroAcao = ObterTodos<QuestaoRegistroAcaoBuscaAtiva>();
             questaoregistroAcao.ShouldNotBeNull();
-            questaoregistroAcao.Where(r => !r.Excluido).Count().ShouldBe(6);
+            questaoregistroAcao.Where(r => !r.Excluido).Count().ShouldBe(8);
             questaoregistroAcao.Any(a => a.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_1_ID_DATA_REGISTRO_ACAO).ShouldBeTrue();
             questaoregistroAcao.Any(a => a.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP).ShouldBeTrue();
             questaoregistroAcao.Any(a => a.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_3_ID_JUSTIFICATIVA_MOTIVO_FALTA).ShouldBeTrue();
@@ -178,7 +178,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
 
             respostaregistroAcao = ObterTodos<RespostaRegistroAcaoBuscaAtiva>();
             respostaregistroAcao.ShouldNotBeNull();
-            respostaregistroAcao.Where(r => !r.Excluido).Count().ShouldBe(8);
+            respostaregistroAcao.Where(r => !r.Excluido).Count().ShouldBe(10);
             respostaregistroAcao.Any(a => a.QuestaoRegistroAcaoBuscaAtivaId == questaoregistroAcao.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_1_ID_DATA_REGISTRO_ACAO).FirstOrDefault().Id
                                           && a.Texto.Equals(data.ToString("yyyy-MM-dd"))).ShouldBeTrue();
             respostaregistroAcao.Any(a => a.QuestaoRegistroAcaoBuscaAtivaId == questaoregistroAcao.Where(q => q.QuestaoId == ConstantesQuestionarioBuscaAtiva.QUESTAO_2_5_ID_OBS_GERAL).FirstOrDefault().Id

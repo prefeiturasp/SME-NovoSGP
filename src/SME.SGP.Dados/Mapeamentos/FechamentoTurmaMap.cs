@@ -2,15 +2,15 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class FechamentoTurmaMap: BaseMap<FechamentoTurma>
+    public class FechamentoTurmaMap : BaseMap<FechamentoTurma>
     {
         public FechamentoTurmaMap()
         {
             ToTable("fechamento_turma");
-            Map(c => c.PeriodoEscolarId).ToColumn("periodo_escolar_id");
-            Map(c => c.TurmaId).ToColumn("turma_id");
-            Map(c => c.Migrado).ToColumn("migrado");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(FechamentoTurma.PeriodoEscolarId), "periodo_escolar_id");
+            Map(nameof(FechamentoTurma.TurmaId), "turma_id");
+            Map(nameof(FechamentoTurma.Migrado), "migrado");
+            Map(nameof(FechamentoTurma.Excluido), "excluido");
         }
     }
 }

@@ -1,7 +1,10 @@
-﻿namespace SME.SGP.Dominio
+﻿
+
+namespace SME.SGP.Dominio
 {
     public class PlanoAEEReestruturacao : EntidadeBase
     {
+       
         public PlanoAEEVersao PlanoAEEVersao { get; set; }
         public long PlanoAEEVersaoId { get; set; }
         public int Semestre { get; set; }

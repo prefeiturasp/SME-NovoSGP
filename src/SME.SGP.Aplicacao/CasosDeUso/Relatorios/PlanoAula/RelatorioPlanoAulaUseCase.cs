@@ -1,11 +1,9 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio;
 using System;
 using System.Threading.Tasks;
 using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.Relatorios;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
 {
