@@ -1,7 +1,9 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -31,8 +33,11 @@ namespace SME.SGP.Aplicacao
              || encaminhamentoAEE.Situacao == Dominio.Enumerados.SituacaoAEE.Encerrado)
                 throw new NegocioException("A situação do encaminhamento não permite a remoção do responsável");
 
+            var rfResponsavel = request.RfResponsavel.Trim();
+            await ValidarResponsavelPAEE(encaminhamentoAEE, rfResponsavel, cancellationToken);
+
             encaminhamentoAEE.Situacao = Dominio.Enumerados.SituacaoAEE.Analise;
-            encaminhamentoAEE.ResponsavelId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(request.RfResponsavel));
+            encaminhamentoAEE.ResponsavelId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(rfResponsavel));
 
             var idEntidadeEncaminhamento = await repositorioEncaminhamentoAEE.SalvarAsync(encaminhamentoAEE);
 
@@ -45,6 +50,25 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new GerarPendenciaPAEEEncaminhamentoAEECommand(encaminhamentoAEE));
 
             return idEntidadeEncaminhamento != 0;
+        }
+
+        private async Task ValidarResponsavelPAEE(EncaminhamentoAEE encaminhamentoAEE, string rfResponsavel, CancellationToken cancellationToken)
+        {
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(encaminhamentoAEE.TurmaId), cancellationToken);
+
+            if (turma.EhNulo())
+                throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
+
+            var funcionariosPAEE = await mediator.Send(new ObterPAEETurmaQuery(turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe), cancellationToken);
+            var rfsPAEE = funcionariosPAEE?
+                .Where(funcionario => !string.IsNullOrWhiteSpace(funcionario.CodigoRf))
+                .Select(funcionario => funcionario.CodigoRf.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            if (rfsPAEE.NaoEhNulo() && rfsPAEE.Any()
+                && !rfsPAEE.Contains(rfResponsavel.Trim(), StringComparer.OrdinalIgnoreCase))
+                throw new NegocioException(MensagemNegocioEncaminhamentoAee.RESPONSAVEL_ATRIBUIDO_DEVE_SER_PAEE_DA_UE);
         }
 
         private async Task<bool> ParametroGeracaoPendenciaAtivo()
