@@ -19,9 +19,9 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<long> SalvarAsync(DocumentoArquivo documentoArquivo)
         {
             if (documentoArquivo.Id > 0)
-                await database.Conexao.UpdateAsync(documentoArquivo);
+                await database.Conexao.UpdateMappedAsync(documentoArquivo);
             else
-                documentoArquivo.Id = (long)await database.Conexao.InsertAsync(documentoArquivo);
+                documentoArquivo.Id = await database.Conexao.InsertMappedAsync(documentoArquivo);
 
             return documentoArquivo.Id;
         }

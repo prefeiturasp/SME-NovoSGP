@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 

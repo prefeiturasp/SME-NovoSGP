@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Dominio
+﻿
+
+namespace SME.SGP.Dominio
 {
     public class PendenciaPlanoAEE : EntidadeBase
     {
@@ -8,10 +10,10 @@
             PendenciaId = pendenciaId;
             PlanoAEEId = planoAEEId;
         }
-
+       
         public PlanoAEE PlanoAEE { get; set; }
         public long PlanoAEEId { get; set; }
-
+       
         public Pendencia Pendencia { get; set; }
         public long PendenciaId { get; set; }
     }

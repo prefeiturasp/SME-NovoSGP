@@ -2,7 +2,6 @@
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Constantes;
 using SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva;

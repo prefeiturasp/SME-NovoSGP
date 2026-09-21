@@ -35,9 +35,9 @@ namespace SME.SGP.Dados.Repositorios
         public async Task SalvarAsync(RelatorioSemestralTurmaPAP relatorioSemestral)
         {
             if (relatorioSemestral.Id > 0)
-                await database.Conexao.UpdateAsync(relatorioSemestral);
+                await database.Conexao.UpdateMappedAsync(relatorioSemestral);
             else
-                relatorioSemestral.Id = (long)await database.Conexao.InsertAsync(relatorioSemestral);
+                relatorioSemestral.Id = await database.Conexao.InsertMappedAsync(relatorioSemestral);
         }
 
     }

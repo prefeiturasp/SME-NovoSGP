@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dados.Mapeamentos;
 
 namespace SME.SGP.Dados
 {
@@ -7,9 +8,10 @@ namespace SME.SGP.Dados
         public SecaoEncaminhamentoNAAPAModalidadeMap()
         {
             ToTable("secao_encaminhamento_naapa_modalidade");
-            Map(c => c.SecaoEncaminhamentoNAAPAId).ToColumn("secao_encaminhamento_id");
-            Map(c => c.Modalidade).ToColumn("modalidade_codigo");
-            Map(c => c.Excluido).ToColumn("excluido");
+
+            Map(nameof(SecaoEncaminhamentoNAAPAModalidade.SecaoEncaminhamentoNAAPAId), "secao_encaminhamento_id");
+            Map(nameof(SecaoEncaminhamentoNAAPAModalidade.Modalidade), "modalidade_codigo");
+            Map(nameof(SecaoEncaminhamentoNAAPAModalidade.Excluido), "excluido");
         }
     }
 }

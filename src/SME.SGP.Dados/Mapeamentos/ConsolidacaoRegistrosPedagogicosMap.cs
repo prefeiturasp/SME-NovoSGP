@@ -1,28 +1,26 @@
-﻿using Dapper.FluentMap.Dommel.Mapping;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ConsolidacaoRegistrosPedagogicosMap : DommelEntityMap<ConsolidacaoRegistrosPedagogicos>
+    public class ConsolidacaoRegistrosPedagogicosMap : SimpleMap<ConsolidacaoRegistrosPedagogicos>
     {
         public ConsolidacaoRegistrosPedagogicosMap()
         {
             ToTable("consolidacao_registros_pedagogicos");
-            Map(a => a.Id).ToColumn("id").IsIdentity().IsKey();
-            Map(a => a.TurmaId).ToColumn("turma_id");
-            Map(a => a.AnoLetivo).ToColumn("ano_letivo");
-            Map(a => a.ComponenteCurricularId).ToColumn("componente_curricular_id");
-            Map(a => a.NomeProfessor).ToColumn("nome_professor");
-            Map(a => a.RFProfessor).ToColumn("rf_professor");
-            Map(a => a.FrequenciasPendentes).ToColumn("frequencias_pendentes");
-            Map(a => a.DataUltimaFrequencia).ToColumn("data_ultima_frequencia");
-            Map(a => a.DataUltimoDiarioBordo).ToColumn("data_ultimo_diariobordo");
-            Map(a => a.DataUltimoPlanoAula).ToColumn("data_ultimo_planoaula");
-            Map(a => a.DiarioBordoPendentes).ToColumn("diario_bordo_pendentes");
-            Map(a => a.PlanoAulaPendentes).ToColumn("planos_aula_pendentes");
-            Map(a => a.PeriodoEscolarId).ToColumn("periodo_escolar_id");
-            Map(a => a.QuantidadeAulas).ToColumn("quantidade_aulas");
-            Map(a => a.CJ).ToColumn("cj");
+            Map(nameof(ConsolidacaoRegistrosPedagogicos.TurmaId), "turma_id");
+            Map(nameof(ConsolidacaoRegistrosPedagogicos.AnoLetivo), "ano_letivo");
+            Map(nameof(ConsolidacaoRegistrosPedagogicos.ComponenteCurricularId), "componente_curricular_id");
+            Map(nameof(ConsolidacaoRegistrosPedagogicos.NomeProfessor), "nome_professor");
+            Map(nameof(ConsolidacaoRegistrosPedagogicos.RFProfessor), "rf_professor");
+            Map(nameof(ConsolidacaoRegistrosPedagogicos.FrequenciasPendentes), "frequencias_pendentes");
+            Map(nameof(ConsolidacaoRegistrosPedagogicos.DataUltimaFrequencia), "data_ultima_frequencia");
+            Map(nameof(ConsolidacaoRegistrosPedagogicos.DataUltimoDiarioBordo), "data_ultimo_diariobordo");
+            Map(nameof(ConsolidacaoRegistrosPedagogicos.DataUltimoPlanoAula), "data_ultimo_planoaula");
+            Map(nameof(ConsolidacaoRegistrosPedagogicos.DiarioBordoPendentes), "diario_bordo_pendentes");
+            Map(nameof(ConsolidacaoRegistrosPedagogicos.PlanoAulaPendentes), "planos_aula_pendentes");
+            Map(nameof(ConsolidacaoRegistrosPedagogicos.PeriodoEscolarId), "periodo_escolar_id");
+            Map(nameof(ConsolidacaoRegistrosPedagogicos.QuantidadeAulas), "quantidade_aulas");
+            Map(nameof(ConsolidacaoRegistrosPedagogicos.CJ), "cj");
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using Dapper;
-using Dommel;
+using SME.SGP.Dados;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Text;
@@ -18,7 +18,7 @@ namespace SME.SGP.Dominio
 
         public async Task<long> Inserir(ConsolidacaoRegistroIndividualMedia consolidacao)
         {
-            return (long)(await database.Conexao.InsertAsync(consolidacao));
+            return (await database.Conexao.InsertMappedAsync(consolidacao));
         }
 
         public async Task LimparConsolidacaoMediaRegistrosIndividuaisPorAno(int anoLetivo)
@@ -55,7 +55,7 @@ namespace SME.SGP.Dominio
             query.AppendLine(@"group by t.ano, t.modalidade_codigo
                                order by t.ano, t.modalidade_codigo");
 
-            return await database.Conexao.QueryAsync<RegistroIndividualMediaPorAnoDto>(query.ToString(), new { anoLetivo, dreId, modalidade });
+            return await SqlMapper.QueryAsync<RegistroIndividualMediaPorAnoDto>(database.Conexao, query.ToString(), new { anoLetivo, dreId, modalidade });
         }
 
         public async Task<IEnumerable<GraficoBaseQuantidadeDoubleDto>> ObterRegistrosItineranciasMediaPorTurmaAsync(int anoLetivo, long ueId, Modalidade modalidade)
@@ -69,7 +69,7 @@ namespace SME.SGP.Dominio
                               and t.ue_id = @ueId 
                               order by t.nome";
 
-            return await database.Conexao.QueryAsync<GraficoBaseQuantidadeDoubleDto>(query, new { anoLetivo, ueId, modalidade });
+            return await SqlMapper.QueryAsync<GraficoBaseQuantidadeDoubleDto>(database.Conexao, query, new { anoLetivo, ueId, modalidade });
         }
     }
 }

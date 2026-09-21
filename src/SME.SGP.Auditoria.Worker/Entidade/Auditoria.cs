@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 
 namespace SME.SGP.Auditoria.Worker.Entidade
 {
@@ -8,6 +9,7 @@ namespace SME.SGP.Auditoria.Worker.Entidade
         public long Chave { get; set; }
         public DateTime Data { get; set; }
         public string Entidade { get; set; }
+   
         public Guid? Id { get; set; }
         public string RF { get; set; }
         public string Usuario { get; set; }

@@ -233,12 +233,12 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task SalvarBimestreAsync(FechamentoReaberturaBimestre fechamentoReabertura)
         {
-            await database.Conexao.InsertAsync(fechamentoReabertura);
+            await database.Conexao.InsertMappedAsync(fechamentoReabertura);
         }
 
         public async Task SalvarNotificacaoAsync(FechamentoReaberturaNotificacao fechamentoReaberturaNotificacao)
         {
-            await database.Conexao.InsertAsync(fechamentoReaberturaNotificacao);
+            await database.Conexao.InsertMappedAsync(fechamentoReaberturaNotificacao);
         }
 
         private void MontaQueryCabecalhoCompleto(StringBuilder query)

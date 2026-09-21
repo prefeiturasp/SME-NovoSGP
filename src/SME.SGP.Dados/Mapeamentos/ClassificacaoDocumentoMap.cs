@@ -1,17 +1,15 @@
-﻿using Dapper.FluentMap.Dommel.Mapping;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ClassificacaoDocumentoMap : DommelEntityMap<ClassificacaoDocumento>
+    public class ClassificacaoDocumentoMap : SimpleMap<ClassificacaoDocumento>
     {
         public ClassificacaoDocumentoMap()
         {
             ToTable("classificacao_documento");
-            Map(c => c.Id).ToColumn("id").IsKey();
-            Map(c => c.TipoDocumentoId).ToColumn("tipo_documento_id");
-            Map(c => c.Descricao).ToColumn("descricao");
-            Map(c => c.EhRegistroMultiplo).ToColumn("ehregistromultiplo");
+            Map(nameof(ClassificacaoDocumento.TipoDocumentoId), "tipo_documento_id");
+            Map(nameof(ClassificacaoDocumento.Descricao), "descricao");
+            Map(nameof(ClassificacaoDocumento.EhRegistroMultiplo), "ehregistromultiplo");
         }
     }
 }

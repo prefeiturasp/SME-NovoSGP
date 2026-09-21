@@ -21,7 +21,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<Usuario> ObterPorCodigoRfLogin(string codigoRf, string login)
         {
             var query = new StringBuilder();
-            query.AppendLine("select * from usuario");
+            query.AppendLine("select rf_codigo as CodigoRf,* from usuario");
             query.AppendLine("where 1=1");
 
             if (!string.IsNullOrEmpty(codigoRf))

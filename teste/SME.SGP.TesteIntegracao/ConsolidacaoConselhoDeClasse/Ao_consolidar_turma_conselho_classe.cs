@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Nest;
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
@@ -52,6 +51,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoConselhoDeClasse
                     CriadoRF = "sistema", 
                     CriadoEm = DateTimeExtension.HorarioBrasilia() 
                 });
+            
             await CriarPeriodosEscolares(tipoCalendarioId);
             await CriarConsolidacaoTurmaAluno(turmaId);
             await CriarConsolidacaoTurmaAlunoNota();

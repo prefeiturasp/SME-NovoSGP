@@ -7,10 +7,10 @@ namespace SME.SGP.Dados.Mapeamentos
         public ItineranciaAlunoMap()
         {
             ToTable("itinerancia_aluno");
-            Map(c => c.CodigoAluno).ToColumn("codigo_aluno");
-            Map(c => c.ItineranciaId).ToColumn("itinerancia_id");
-            Map(c => c.TurmaId).ToColumn("turma_id");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(ItineranciaAluno.CodigoAluno), "codigo_aluno");
+            Map(nameof(ItineranciaAluno.ItineranciaId), "itinerancia_id");
+            Map(nameof(ItineranciaAluno.TurmaId), "turma_id");
+            Map(nameof(ItineranciaAluno.Excluido), "excluido");
         }
     }
 }

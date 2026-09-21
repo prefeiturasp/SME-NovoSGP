@@ -4,9 +4,6 @@ using SME.SGP.Dominio.Interfaces;
 using System.Threading;
 using System.Threading.Tasks;
 using System;
-using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
-using Minio.DataModel;
 
 namespace SME.SGP.Aplicacao
 {

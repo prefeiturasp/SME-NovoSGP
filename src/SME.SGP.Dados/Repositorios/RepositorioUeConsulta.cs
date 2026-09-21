@@ -98,17 +98,41 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<Ue> ObterUeComDrePorId(long ueId)
         {
-            var query = @"select ue.*, dre.*
-                            from ue
-                           inner join dre on dre.id = ue.dre_id
-                           where ue.id = @ueId";
+            const string query = @"
+                                    SELECT
+                                        u.id AS Id,
+                                        u.ue_id AS CodigoUe,
+                                        u.dre_id AS DreId,
+                                        u.nome AS Nome,
+                                        u.tipo_escola AS TipoEscola,
+                                        u.data_atualizacao AS DataAtualizacao,
 
-            return (await contexto.Conexao.QueryAsync<Ue, Dre, Ue>(query, (ue, dre) =>
-            {
-                ue.AdicionarDre(dre);
-                return ue;
-            },
-            new { ueId })).FirstOrDefault();
+                                        d.id AS DreInicio,
+                                        d.id AS Id,
+                                        d.dre_id AS CodigoDre,
+                                        d.nome AS Nome,
+                                        d.abreviacao AS Abreviacao,
+                                        d.data_atualizacao AS DataAtualizacao
+
+                                    FROM ue u
+                                    INNER JOIN dre d
+                                        ON d.id = u.dre_id
+                                    WHERE u.id = @ueId;";   
+
+            return (
+                    await contexto.Conexao.QueryAsync<
+                        Ue,
+                        Dre,
+                        Ue>(
+                        query,
+                        (ue, dre) =>
+                        {
+                            ue.AdicionarDre(dre);
+                            return ue;
+                        },
+                        new { ueId },
+                        splitOn: "DreInicio"))
+                .FirstOrDefault();
         }
 
         public async Task<IEnumerable<string>> ObterCodigosUEs()
@@ -136,8 +160,8 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select
                             id,
-                            ue_id,
-                            dre_id,
+                            ue_id as CodigoUe,
+                            dre_id as DreId,
                             nome,
                             tipo_escola,
                             data_atualizacao
@@ -248,20 +272,59 @@ namespace SME.SGP.Dados.Repositorios
             return contexto.Conexao.QueryAsync<long>(query, new { modalidades, anoLetivo });
         }
 
-        public async Task<IEnumerable<Ue>> ObterUesComDrePorDreEModalidade(string dreCodigo, Modalidade[] modalidades)
+        public async Task<IEnumerable<Ue>> ObterUesComDrePorDreEModalidade(string dreCodigo,Modalidade[] modalidades)
         {
-            var query = @"select ue.*, dre.*
-                            from ue
-                           inner join dre on dre.id = ue.dre_id
-                           where dre.dre_id = @dreCodigo
-                             and exists (select 1 from turma where modalidade_codigo = any(@modalidadesIds))";
+            const string query = @"
+                    SELECT
+                        -- Ue
+                        ue.id AS Id,
+                        ue.ue_id AS CodigoUe,
+                        ue.data_atualizacao AS DataAtualizacao,
+                        ue.dre_id AS DreId,
+                        ue.nome AS Nome,
+                        ue.tipo_escola AS TipoEscola,
 
-            return (await contexto.Conexao.QueryAsync<Ue, Dre, Ue>(query, (ue, dre) =>
-            {
-                ue.AdicionarDre(dre);
-                return ue;
-            },
-            new { dreCodigo, modalidadesIds = modalidades.Cast<int>().ToArray() }));
+                        -- marcador de início da Dre
+                        dre.id AS DreInicio,
+
+                        -- Dre
+                        dre.id AS Id,
+                        dre.abreviacao AS Abreviacao,
+                        dre.dre_id AS CodigoDre,
+                        dre.data_atualizacao AS DataAtualizacao,
+                        dre.nome AS Nome
+
+                    FROM public.ue ue
+                    INNER JOIN public.dre dre
+                        ON dre.id = ue.dre_id
+                    WHERE dre.dre_id = @dreCodigo
+                      AND EXISTS
+                      (
+                          SELECT 1
+                          FROM public.turma t
+                          WHERE t.ue_id = ue.id
+                            AND t.modalidade_codigo = ANY(@modalidadesIds)
+                      );";
+
+            var modalidadesIds =
+                modalidades?
+                    .Cast<int>()
+                    .ToArray()
+                ?? Array.Empty<int>();
+
+            return await contexto.Conexao.QueryAsync<Ue, Dre, Ue>(
+                query,
+                (ue, dre) =>
+                {
+                    ue.AdicionarDre(dre);
+                    return ue;
+                },
+                new
+                {
+                    dreCodigo,
+                    modalidadesIds
+                },
+                splitOn: "DreInicio");
         }
 
         public async Task<IEnumerable<Ue>> ObterUEsSemPeriodoFechamento(long periodoEscolarId, int ano, int[] modalidades, DateTime dataReferencia)
@@ -303,19 +366,43 @@ namespace SME.SGP.Dados.Repositorios
             return await contexto.QueryAsync<Ue>(query, new { ids });
         }
 
-        public async Task<IEnumerable<Ue>> ObterUEsComDREsPorIds(long[] ids)
+        public async Task<IEnumerable<Ue>>
+            ObterUEsComDREsPorIds(long[] ids)
         {
-            var query = @"select ue.*, dre.*
-                            from ue
-                           inner join dre on dre.id = ue.dre_id
-                           where ue.id = ANY(@ids)";
+            const string query = @"
+        SELECT
+            -- Ue
+            u.id AS Id,
+            u.ue_id AS CodigoUe,
+            u.data_atualizacao AS DataAtualizacao,
+            u.dre_id AS DreId,
+            u.nome AS Nome,
+            u.tipo_escola AS TipoEscola,
 
-            return await contexto.QueryAsync<Ue, Dre, Ue>(query, (ue, dre) =>
-            {
-                ue.Dre = dre;
+            -- marcador de início da Dre
+            d.id AS DreInicio,
 
-                return ue;
-            }, new { ids });
+            -- Dre
+            d.id AS Id,
+            d.abreviacao AS Abreviacao,
+            d.dre_id AS CodigoDre,
+            d.data_atualizacao AS DataAtualizacao,
+            d.nome AS Nome
+
+        FROM public.ue u
+        INNER JOIN public.dre d
+            ON d.id = u.dre_id
+        WHERE u.id = ANY(@ids);";
+
+            return await contexto.QueryAsync<Ue, Dre, Ue>(
+                query,
+                (ue, dre) =>
+                {
+                    ue.AdicionarDre(dre);
+                    return ue;
+                },
+                new { ids },
+                splitOn: "DreInicio");
         }
 
         public async Task<Ue> ObterUePorId(long id)

@@ -7,9 +7,9 @@ namespace SME.SGP.Dados.Mapeamentos
         public NotificacaoPlanoAEEMap()
         {
             ToTable("notificacao_plano_aee");
-            Map(c => c.Tipo).ToColumn("tipo");
-            Map(c => c.NotificacaoId).ToColumn("notificacao_id");
-            Map(c => c.PlanoAEEId).ToColumn("plano_aee_id");
+            Map(nameof(NotificacaoPlanoAEE.Tipo), "tipo");
+            Map(nameof(NotificacaoPlanoAEE.NotificacaoId), "notificacao_id");
+            Map(nameof(NotificacaoPlanoAEE.PlanoAEEId), "plano_aee_id");
         }
     }
 }

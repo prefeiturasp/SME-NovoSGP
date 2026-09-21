@@ -7,11 +7,11 @@ namespace SME.SGP.Dados.Mapeamentos
         public AcompanhamentoAlunoSemestreMap()
         {
             ToTable("acompanhamento_aluno_semestre");
-            Map(c => c.AcompanhamentoAlunoId).ToColumn("acompanhamento_aluno_id");
-            Map(c => c.Semestre).ToColumn("semestre");
-            Map(c => c.Observacoes).ToColumn("observacoes");
-            Map(c => c.PercursoIndividual).ToColumn("percurso_individual");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(AcompanhamentoAlunoSemestre.AcompanhamentoAlunoId), "acompanhamento_aluno_id");
+            Map(nameof(AcompanhamentoAlunoSemestre.Semestre), "semestre");
+            Map(nameof(AcompanhamentoAlunoSemestre.Observacoes), "observacoes");
+            Map(nameof(AcompanhamentoAlunoSemestre.PercursoIndividual), "percurso_individual");
+            Map(nameof(AcompanhamentoAlunoSemestre.Excluido), "excluido");
         }
     }
 }

@@ -12,7 +12,6 @@ using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
 using ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake = SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes.ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake;
-using SME.SGP.Dominio.Entidades;
 using System.Linq;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasse

@@ -7,9 +7,8 @@ namespace SME.SGP.Dados.Mapeamentos
         public EventoBimestreMap()
         {
             ToTable("evento_bimestre");
-            Map(c => c.EventoId).ToColumn("evento_id");
-            Map(c => c.Bimestre).ToColumn("bimestre");
+            Map(nameof(EventoBimestre.EventoId), "evento_id");
+            Map(nameof(EventoBimestre.Bimestre), "bimestre");
         }
     }
 }
-

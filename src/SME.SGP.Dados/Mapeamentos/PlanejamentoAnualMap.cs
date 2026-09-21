@@ -7,9 +7,9 @@ namespace SME.SGP.Dados.Mapeamentos
         public PlanejamentoAnualMap()
         {
             ToTable("planejamento_anual");
-            Map(c => c.ComponenteCurricularId).ToColumn("componente_curricular_id");
-            Map(c => c.Migrado).ToColumn("migrado");
-            Map(c => c.TurmaId).ToColumn("turma_id");
+            Map(nameof(PlanejamentoAnual.ComponenteCurricularId), "componente_curricular_id");
+            Map(nameof(PlanejamentoAnual.Migrado), "migrado");
+            Map(nameof(PlanejamentoAnual.TurmaId), "turma_id");
         }
     }
 }

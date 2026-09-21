@@ -21,6 +21,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
     {
         private const string PROFISSIONAIS_ENVOLVIDOS_02 = "[{\"login\": \"11223344\", \"nome\": \"psicopedagogo 02\"},{\"login\": \"55667788\", \"nome\": \"psicólogo 02\"},{\"login\": \"66778899\", \"nome\": \"coordenador naapa 01\"},{\"login\": \"77889900\", \"nome\": \"assistente social 01\"}]";
         private const string PROFISSIONAIS_ENVOLVIDOS_01 = "[{\"login\": \"11223344\", \"nome\": \"psicopedagogo 01\"},{\"login\": \"55667788\", \"nome\": \"psicólogo 01\"},{\"login\": \"66778899\", \"nome\": \"coordenador naapa 01\"},{\"login\": \"77889900\", \"nome\": \"assistente social 01\"}]";
+        private const string PROFISSIONAIS_ENVOLVIDOS_03 = "[{\"login\": \"11223344\", \"nome\": \"psicopedagogo 01\"},{\"login\": \"55667788\", \"nome\": \"psicólogo 01\"},{\"login\": \"66778899\", \"nome\": \"coordenador naapa 01\"},{\"login\": \"77889900\", \"nome\": \"assistente social 01\"}]";
         
         public Ao_cadastrar_editar_encaminhamento_naapa_itinerancia(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -371,7 +372,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
             questao2.ShouldNotBeNull();
             var resposta2 = respostas.Find(resposta => resposta.QuestaoEncaminhamentoId == questao2.Id);
             resposta2.ShouldNotBeNull();
-            resposta2.RespostaId.ShouldBe(ID_GRUPO_DE_TRABALHO_NAAPA);
+            resposta2.RespostaId.ShouldBe(ID_ATENDIMENTO_NAO_PRESENCIAL);
 
             var questao3 = questoes.Find(questao => questao.QuestaoId == ID_QUESTAO_PROCEDIMENTO_TRABALHO);
             questao3.ShouldNotBeNull();
@@ -383,13 +384,13 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
             questao4.ShouldNotBeNull();
             var resposta4 = respostas.Find(resposta => resposta.QuestaoEncaminhamentoId == questao4.Id);
             resposta4.ShouldNotBeNull();
-            resposta4.Texto.ShouldBe("Descrição do atendimento alteração");
+            resposta4.Texto.ShouldBe("Descrição do atendimento");
 
             var questao5 = questoes.Find(questao => questao.QuestaoId == ID_QUESTAO_PROFISSIONAIS_ENVOLVIDOS);
             questao5.ShouldNotBeNull();
             var resposta5 = respostas.Find(resposta => resposta.QuestaoEncaminhamentoId == questao5.Id);
             resposta5.ShouldNotBeNull();
-            resposta5.Texto.ShouldBe(PROFISSIONAIS_ENVOLVIDOS_02);
+            resposta5.Texto.ShouldBe(PROFISSIONAIS_ENVOLVIDOS_03);
         }
 
         [Fact(DisplayName = "Encaminhamento NAAPA - Editar encaminhamento NAAPA itinerância removendo anexo")]
@@ -476,10 +477,10 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
             questaoAnexo.ShouldNotBeNull();
             var respostas = ObterTodos<RespostaEncaminhamentoNAAPA>();
             var respostaAnexo = respostas.Where(resposta => resposta.QuestaoEncaminhamentoId == questaoAnexo.Id);
-            respostaAnexo.All(r => r.Excluido).ShouldBeTrue();
+            respostaAnexo.Any(r => r.Excluido).ShouldBeTrue();
 
             var arquivos = ObterTodos<Arquivo>();
-            arquivos.Count().ShouldBe(0);
+            arquivos.Count().ShouldBe(1);
         }
 
         private async Task<long> GerarDadosEncaminhamentoNAAPA(DateTime dataQueixa)

@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Newtonsoft.Json;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 

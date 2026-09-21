@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using FluentValidation;
 using MediatR;
 using SME.SGP.Infra;
 

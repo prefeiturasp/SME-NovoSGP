@@ -2,20 +2,20 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ConselhoClasseAlunoMap: BaseMap<ConselhoClasseAluno>
+    public class ConselhoClasseAlunoMap : BaseMap<ConselhoClasseAluno>
     {
         public ConselhoClasseAlunoMap()
         {
             ToTable("conselho_classe_aluno");
-            Map(c => c.ConselhoClasseId).ToColumn("conselho_classe_id");
-            Map(c => c.AlunoCodigo).ToColumn("aluno_codigo");
-            Map(c => c.RecomendacoesAluno).ToColumn("recomendacoes_aluno");
-            Map(c => c.RecomendacoesFamilia).ToColumn("recomendacoes_familia");
-            Map(c => c.AnotacoesPedagogicas).ToColumn("anotacoes_pedagogicas");
-            Map(c => c.ConselhoClasseParecerId).ToColumn("conselho_classe_parecer_id");
-            Map(c => c.Excluido).ToColumn("excluido");
-            Map(c => c.Migrado).ToColumn("migrado");
-            Map(c => c.ParecerAlteradoManual).ToColumn("parecer_alterado_manual");
+            Map(nameof(ConselhoClasseAluno.ConselhoClasseId), "conselho_classe_id");
+            Map(nameof(ConselhoClasseAluno.AlunoCodigo), "aluno_codigo");
+            Map(nameof(ConselhoClasseAluno.RecomendacoesAluno), "recomendacoes_aluno");
+            Map(nameof(ConselhoClasseAluno.RecomendacoesFamilia), "recomendacoes_familia");
+            Map(nameof(ConselhoClasseAluno.AnotacoesPedagogicas), "anotacoes_pedagogicas");
+            Map(nameof(ConselhoClasseAluno.ConselhoClasseParecerId), "conselho_classe_parecer_id");
+            Map(nameof(ConselhoClasseAluno.Excluido), "excluido");
+            Map(nameof(ConselhoClasseAluno.Migrado), "migrado");
+            Map(nameof(ConselhoClasseAluno.ParecerAlteradoManual), "parecer_alterado_manual");
         }
     }
 }

@@ -6,7 +6,6 @@ using System.Linq;
 using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Options;
-using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao

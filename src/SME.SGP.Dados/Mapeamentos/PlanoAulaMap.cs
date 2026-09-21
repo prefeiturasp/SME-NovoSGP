@@ -7,12 +7,12 @@ namespace SME.SGP.Dados.Mapeamentos
         public PlanoAulaMap()
         {
             ToTable("plano_aula");
-            Map(c => c.AulaId).ToColumn("aula_id");
-            Map(c => c.Descricao).ToColumn("descricao");
-            Map(c => c.RecuperacaoAula).ToColumn("recuperacao_aula");
-            Map(c => c.LicaoCasa).ToColumn("licao_casa");
-            Map(c => c.Migrado).ToColumn("migrado");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(PlanoAula.AulaId), "aula_id");
+            Map(nameof(PlanoAula.Descricao), "descricao");
+            Map(nameof(PlanoAula.RecuperacaoAula), "recuperacao_aula");
+            Map(nameof(PlanoAula.LicaoCasa), "licao_casa");
+            Map(nameof(PlanoAula.Migrado), "migrado");
+            Map(nameof(PlanoAula.Excluido), "excluido");
         }
     }
 }

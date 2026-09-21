@@ -2,17 +2,14 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Newtonsoft.Json;
-using Org.BouncyCastle.Asn1.Ocsp;
 using Shouldly;
 using SME.SGP.Aplicacao;
-using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.PendenciaFechamento.Base;
 using SME.SGP.TesteIntegracao.PendenciaFechamento.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;

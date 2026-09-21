@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Aplicacao.Queries.Funcionario;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;

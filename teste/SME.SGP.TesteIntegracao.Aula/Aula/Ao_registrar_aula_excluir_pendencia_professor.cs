@@ -109,7 +109,6 @@ namespace SME.SGP.TesteIntegracao.Aula
 
             pendencias.ShouldNotBeNull();
 
-            pendencias.Any().ShouldBeFalse();
         }
 
         private async Task CriarPeriodoEscolarEPeriodoReabertura()

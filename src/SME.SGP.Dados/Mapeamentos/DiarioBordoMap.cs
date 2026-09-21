@@ -1,20 +1,21 @@
-﻿using SME.SGP.Dominio;
+﻿using SME.SGP.Dados.Mapeamentos;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados
 {
-    public class DiarioBordoMap: BaseMap<DiarioBordo>
+    public class DiarioBordoMap : BaseMap<DiarioBordo>
     {
         public DiarioBordoMap()
         {
             ToTable("diario_bordo");
-            Map(a => a.AulaId).ToColumn("aula_id");
-            Map(a => a.DevolutivaId).ToColumn("devolutiva_id");
-            Map(a => a.ComponenteCurricularId).ToColumn("componente_curricular_id");
-            Map(a => a.TurmaId).ToColumn("turma_id");
-            Map(a => a.InseridoCJ).ToColumn("inserido_cj");
-            Map(a => a.Excluido).ToColumn("excluido");
-            Map(a => a.Migrado).ToColumn("migrado");
-            Map(c => c.Planejamento).ToColumn("planejamento");
+            Map(nameof(DiarioBordo.AulaId), "aula_id");
+            Map(nameof(DiarioBordo.DevolutivaId), "devolutiva_id");
+            Map(nameof(DiarioBordo.ComponenteCurricularId), "componente_curricular_id");
+            Map(nameof(DiarioBordo.TurmaId), "turma_id");
+            Map(nameof(DiarioBordo.InseridoCJ), "inserido_cj");
+            Map(nameof(DiarioBordo.Excluido), "excluido");
+            Map(nameof(DiarioBordo.Migrado), "migrado");
+            Map(nameof(DiarioBordo.Planejamento), "planejamento");
         }
     }
 }

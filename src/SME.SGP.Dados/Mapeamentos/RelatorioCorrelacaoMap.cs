@@ -7,15 +7,11 @@ namespace SME.SGP.Dados.Mapeamentos
         public RelatorioCorrelacaoMap()
         {
             ToTable("relatorio_correlacao");
-            Map(c => c.Formato).ToColumn("tipo_formato");
-            Map(c => c.UsuarioSolicitante).Ignore();
-            Map(c => c.CorrelacaoJasper).Ignore();
-            Map(c => c.Codigo).ToColumn("codigo");
-            Map(c => c.TipoRelatorio).ToColumn("tipo_relatorio");
-            Map(c => c.UsuarioSolicitanteId).ToColumn("usuario_solicitante_id");
-            Map(c => c.UrlRelatorio).ToColumn("url_relatorio");
-            Map(c => c.EhRelatorioJasper).Ignore();
-            Map(c => c.PrazoDownloadExpirado).Ignore();
+            Map(nameof(RelatorioCorrelacao.Formato), "tipo_formato");
+            Map(nameof(RelatorioCorrelacao.Codigo), "codigo");
+            Map(nameof(RelatorioCorrelacao.TipoRelatorio), "tipo_relatorio");
+            Map(nameof(RelatorioCorrelacao.UsuarioSolicitanteId), "usuario_solicitante_id");
+            Map(nameof(RelatorioCorrelacao.UrlRelatorio), "url_relatorio");
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dados.Mapeamentos;
 
 namespace SME.SGP.Dados
 {
@@ -7,9 +8,9 @@ namespace SME.SGP.Dados
         public PendenciaCalendarioUeMap()
         {
             ToTable("pendencia_calendario_ue");
-            Map(c => c.PendenciaId).ToColumn("pendencia_id");
-            Map(c => c.UeId).ToColumn("ue_id");
-            Map(c => c.TipoCalendarioId).ToColumn("tipo_calendario_id");
+            Map(nameof(PendenciaCalendarioUe.PendenciaId), "pendencia_id");
+            Map(nameof(PendenciaCalendarioUe.UeId), "ue_id");
+            Map(nameof(PendenciaCalendarioUe.TipoCalendarioId), "tipo_calendario_id");
         }
     }
 }

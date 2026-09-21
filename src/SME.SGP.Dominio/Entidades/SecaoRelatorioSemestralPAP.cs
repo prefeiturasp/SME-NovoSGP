@@ -1,9 +1,11 @@
-﻿using System;
+﻿
+using System;
 
 namespace SME.SGP.Dominio
 {
     public class SecaoRelatorioSemestralPAP
     {
+   
         public long Id { get; set; }
         public string Nome { get; set; }
         public string Descricao { get; set; }

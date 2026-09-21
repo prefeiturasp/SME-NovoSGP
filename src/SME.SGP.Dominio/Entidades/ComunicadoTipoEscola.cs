@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Dominio
+﻿
+
+namespace SME.SGP.Dominio
 {
     public class ComunicadoTipoEscola
     {
@@ -7,6 +9,7 @@
         }
         public long ComunicadoId { get; set; }
         public long TipoEscola { get; set; }
+   
         public long Id { get; set; }
     }
 }

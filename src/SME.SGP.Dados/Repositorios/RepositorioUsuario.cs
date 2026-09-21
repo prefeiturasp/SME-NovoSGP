@@ -24,7 +24,21 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<Usuario>> ObterPorIdsAsync(long[] ids)
         {
-            var query = "select * from usuario where id = any(@ids)";
+            var query = @"select
+							id as Id,
+							rf_codigo as CodigoRf,
+							criado_em as CriadoEm,
+							criado_por as CriadoPor,
+							alterado_em as AlteradoEm,
+							alterado_por as AlteradoPor,
+							criado_rf as CriadoRF,
+							alterado_rf as AlteradoRF,
+							login as Login,
+							ultimo_login as UltimoLogin,
+							nome as Nome,
+							expiracao_recuperacao_senha as ExpiracaoRecuperacaoSenha,
+							token_recuperacao_senha as TokenRecuperacaoSenha 
+				          from usuario where id = any(@ids)";
 
             return await database.Conexao.QueryAsync<Usuario>(query, new { ids });
         }

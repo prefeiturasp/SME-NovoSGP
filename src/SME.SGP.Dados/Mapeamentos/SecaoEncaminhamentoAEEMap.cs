@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dados.Mapeamentos;
 
 namespace SME.SGP.Dados
 {
@@ -7,12 +8,13 @@ namespace SME.SGP.Dados
         public SecaoEncaminhamentoAEEMap()
         {
             ToTable("secao_encaminhamento_aee");
-            Map(c => c.QuestionarioId).ToColumn("questionario_id");
-            Map(c => c.Nome).ToColumn("nome");
-            Map(c => c.Ordem).ToColumn("ordem");
-            Map(c => c.Etapa).ToColumn("etapa");
-            Map(c => c.Excluido).ToColumn("excluido");
-            Map(c => c.NomeComponente).ToColumn("nome_componente");
+
+            Map(nameof(SecaoEncaminhamentoAEE.QuestionarioId), "questionario_id");
+            Map(nameof(SecaoEncaminhamentoAEE.Nome), "nome");
+            Map(nameof(SecaoEncaminhamentoAEE.Ordem), "ordem");
+            Map(nameof(SecaoEncaminhamentoAEE.Etapa), "etapa");
+            Map(nameof(SecaoEncaminhamentoAEE.Excluido), "excluido");
+            Map(nameof(SecaoEncaminhamentoAEE.NomeComponente), "nome_componente");
         }
     }
 }

@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.Options;
-using Nest;
+﻿using Elastic.Clients.Elasticsearch;
+using Microsoft.Extensions.Options;
 using SME.SGP.Dados.ElasticSearch;
 using SME.SGP.Infra;
 using SME.SGP.Infra.ElasticSearch;
@@ -10,7 +10,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 {
     public class RepositorioFechamentoNotaDuplicado : RepositorioElasticBase<FechamentoNotaDuplicado>, IRepositorioFechamentoNotaDuplicado
     {
-        public RepositorioFechamentoNotaDuplicado(IElasticClient elasticClient, IServicoTelemetria servicoTelemetria, IOptions<ElasticOptions> elasticOptions) 
+        public RepositorioFechamentoNotaDuplicado(ElasticsearchClient elasticClient, IServicoTelemetria servicoTelemetria, IOptions<ElasticOptions> elasticOptions) 
             : base(elasticClient, servicoTelemetria, elasticOptions, "metricas_sgp_fechamento_nota_duplicado")
         {
         }

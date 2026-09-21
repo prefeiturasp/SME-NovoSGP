@@ -7,9 +7,9 @@ namespace SME.SGP.Dados.Mapeamentos
         public RegistroColetivoAnexoMap()
         {
             ToTable("registrocoletivo_anexo");
-            Map(c => c.RegistroColetivoId).ToColumn("registrocoletivo_id");
-            Map(c => c.ArquivoId).ToColumn("arquivo_id");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(RegistroColetivoAnexo.RegistroColetivoId), "registrocoletivo_id");
+            Map(nameof(RegistroColetivoAnexo.ArquivoId), "arquivo_id");
+            Map(nameof(RegistroColetivoAnexo.Excluido), "excluido");
         }
     }
 }

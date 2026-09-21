@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.EscolaAqui.ComunicadosFiltro;
 using System;
 using System.Collections.Generic;
 

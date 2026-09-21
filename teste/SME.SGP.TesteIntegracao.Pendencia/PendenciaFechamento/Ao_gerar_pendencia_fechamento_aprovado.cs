@@ -49,7 +49,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
                                         string.Empty);
 
             await useCase.Executar(new MensagemRabbit() { Mensagem = JsonConvert.SerializeObject(command) });
-            var pendencia = ObterTodos<Pendencia>().Find(p => p.Tipo == TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento);
+            var pendencia = ObterTodos<Pendencia>().Find(p => p.Tipo == TipoPendencia.AulasSemFrequenciaNaDataDoFechamento);
             pendencia.ShouldNotBeNull();
             var pendenciafechamento = ObterTodos<Dominio.PendenciaFechamento>().Find(pf => pf.PendenciaId == pendencia.Id);
             pendenciafechamento.ShouldNotBeNull();
@@ -71,18 +71,35 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
             var dataReferencia = DateTimeExtension.HorarioBrasilia().AddDays(1);
 
             await CriarDadosBasicos(dto);
-            await CriaPendenciaPorTipo(TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento, SituacaoPendencia.Aprovada);
-            await CriarPendenciaFechamento(FECHAMENTO_TURMA_DISCIPLINA_ID_1, PENDENCIA_ID_1);
+            await InserirNaBase(new Pendencia()
+            {
+                Tipo = TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento,
+                Situacao = SituacaoPendencia.Aprovada,
+                Descricao = "pendência",
+                Titulo = "pendência",
+                CriadoPor = "",
+                CriadoRF = "",
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
+            });
+
+            await InserirNaBase(new Dominio.PendenciaFechamento()
+            {
+                PendenciaId = FECHAMENTO_TURMA_DISCIPLINA_ID_1,
+                FechamentoTurmaDisciplinaId = FECHAMENTO_TURMA_DISCIPLINA_ID_1,
+                CriadoPor = "",
+                CriadoRF = "",
+                CriadoEm = DateTimeExtension.HorarioBrasilia().AddMonths(2)
+            });
             await CriarPendenciaFechamentoAula(AULA_ID, PENDENCIA_FECHAMENTO_ID_1);
-            await CriarAula(DateTimeExtension.HorarioBrasilia().AddDays(-1), RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_2222222, TURMA_CODIGO_1, UE_CODIGO_1, dto.ComponenteCurricularCodigo, TIPO_CALENDARIO_1);
-            await CriarAula(DateTimeExtension.HorarioBrasilia().AddDays(-1), RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_2222222, TURMA_CODIGO_1, UE_CODIGO_1, dto.ComponenteCurricularCodigo, TIPO_CALENDARIO_1);
+            await CriarAula(DateTimeExtension.HorarioBrasilia().AddDays(-10), RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_2222222, TURMA_CODIGO_1, UE_CODIGO_1, dto.ComponenteCurricularCodigo, TIPO_CALENDARIO_1);
+            await CriarAula(DateTimeExtension.HorarioBrasilia().AddDays(-10), RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_2222222, TURMA_CODIGO_1, UE_CODIGO_1, dto.ComponenteCurricularCodigo, TIPO_CALENDARIO_1);
 
             var useCase = ObterUseCaseGerarPendencia();
             var command = new GerarPendenciasFechamentoCommand(
                                         long.Parse(dto.ComponenteCurricularCodigo),
                                         TURMA_CODIGO_1,
                                         TURMA_NOME_1,
-                                        dataReferencia.AddDays(-20),
+                                        dataReferencia.AddDays(-200),
                                         dataReferencia,
                                         BIMESTRE_2,
                                         USUARIO_ID_1,
@@ -94,6 +111,8 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
                                         string.Empty);
 
             await useCase.Executar(new MensagemRabbit() { Mensagem = JsonConvert.SerializeObject(command) });
+
+
             var pendencia = ObterTodos<Pendencia>().Find(p => p.Tipo == TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento && p.Situacao == SituacaoPendencia.Pendente);
             pendencia.ShouldNotBeNull();
             var pendenciafechamento = ObterTodos<Dominio.PendenciaFechamento>().Find(pf => pf.PendenciaId == pendencia.Id);

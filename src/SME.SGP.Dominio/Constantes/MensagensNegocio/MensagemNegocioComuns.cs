@@ -1,3 +1,5 @@
+using System.Numerics;
+
 namespace SME.SGP.Dominio.Constantes.MensagensNegocio
 {
     public class MensagemNegocioComuns
@@ -37,5 +39,6 @@ namespace SME.SGP.Dominio.Constantes.MensagensNegocio
         public const string ARQUIVO_IMPORTADO_COM_SUCESSO = "Arquivo importado com sucesso";
         public const string CONTENT_TYPE_EXCEL = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
         public const string ARQUIVO_NUMERO_COLUNAS_INVALIDO = "A planilha não possui o mínimo colunas necessárias.";
+        public const string SOMENTE_POSSIVEL_MIGRAR_PLANO_DE_AULA = "Somente é possível migrar o plano de aula para turmas dentro do mesmo ano";
     }
 }
