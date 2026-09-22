@@ -17,6 +17,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<DisciplinaDto> Handle(ObterComponenteCurricularPorIdQuery request, CancellationToken cancellationToken)
-            => (await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { request.ComponenteCurricularId }))).FirstOrDefault();
+            => (await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { request.ComponenteCurricularId }), cancellationToken)).FirstOrDefault();
     }
 }
