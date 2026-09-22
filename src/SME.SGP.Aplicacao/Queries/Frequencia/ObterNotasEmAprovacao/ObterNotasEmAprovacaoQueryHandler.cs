@@ -11,20 +11,11 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterNotasEmAprovacaoQueryHandler : IRequestHandler<ObterNotasEmAprovacaoQuery, IEnumerable<NotaEmAprovacaoFechamentoDto>>
     {
-        private readonly IRepositorioNotasConceitosConsulta repositorioNotasConceitos;
+        private readonly IRepositorioNotasConceitosConsulta repositorio;
+        public ObterNotasEmAprovacaoQueryHandler(IRepositorioNotasConceitosConsulta repositorio)
+            => this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
 
-        public ObterNotasEmAprovacaoQueryHandler(IRepositorioNotasConceitosConsulta repositorioNotasConceitos)
-        {
-            this.repositorioNotasConceitos = repositorioNotasConceitos ?? throw new ArgumentNullException(nameof(repositorioNotasConceitos));
-        }
-
-        public async Task<IEnumerable<NotaEmAprovacaoFechamentoDto>> Handle(ObterNotasEmAprovacaoQuery request, CancellationToken cancellationToken)
-        {
-            if (request.CodigosAlunos == null || !request.CodigosAlunos.Any() ||
-                request.TurmaFechamentoIds == null || !request.TurmaFechamentoIds.Any())
-                return Enumerable.Empty<NotaEmAprovacaoFechamentoDto>();
-
-            return await repositorioNotasConceitos.ObterNotasEmAprovacao(request.CodigosAlunos, request.TurmaFechamentoIds);
-        }
+        public Task<IEnumerable<NotaEmAprovacaoFechamentoDto>> Handle(ObterNotasEmAprovacaoQuery request, CancellationToken cancellationToken)
+            => repositorio.ObterNotasEmAprovacaoAsync(request.Filtros);
     }
 }
