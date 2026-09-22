@@ -4,6 +4,7 @@ using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -12,6 +13,17 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioConceitoConsulta(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
+        }
+
+        public Task<IEnumerable<Conceito>> ObterPorIdsAsync(long[] ids)
+        {
+            if (ids == null || ids.Length == 0)
+                return Task.FromResult(Enumerable.Empty<Conceito>());
+
+            const string sql = @"select id, valor, descricao, aprovado, ativo, inicio_vigencia, fim_vigencia,
+                    criado_em, criado_por, criado_rf, alterado_em, alterado_por, alterado_rf
+                    from conceito_valores where id = any(@ids)";
+            return database.QueryAsync<Conceito>(sql, new { ids });
         }
 
         public Task<IEnumerable<Conceito>> ObterPorData(DateTime dataAvaliacao)

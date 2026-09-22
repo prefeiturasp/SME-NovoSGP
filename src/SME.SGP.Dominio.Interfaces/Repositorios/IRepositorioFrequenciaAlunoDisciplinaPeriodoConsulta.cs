@@ -22,6 +22,7 @@ namespace SME.SGP.Dominio.Interfaces
         FrequenciaAluno ObterPorAlunoData(string codigoAluno, DateTime dataAtual, TipoFrequenciaAluno tipoFrequencia, string disciplinaId = "", string codigoTurma = "");
         Task<FrequenciaAluno> ObterPorAlunoDataAsync(string codigoAluno, DateTime dataAtual, TipoFrequenciaAluno tipoFrequencia, string disciplinaId = "", string codigoTurma = "");
         FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string[] disciplinasId, DateTime dataAtual, string turmaCodigo = "", string professor = null);
+        Task<IEnumerable<FrequenciaAluno>> ObterUltimasFrequenciasPorAlunosDisciplinasDataAsync(string[] codigosAlunos, string[] disciplinasId, DateTime dataAtual, string turmaCodigo = null, string professor = null);
         FrequenciaAluno ObterPorAlunoDisciplinaPeriodo(string codigoAluno, string[] disciplinaIds, long periodoEscolarId, string turmaCodigo = "", string professor = null);
         Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaPorListaDeAlunosDisciplinaData(string[] codigosAlunos,string[] disciplinaId, long periodoEscolarId, string turmaCodigo = "", string professor = null);
         Task<IEnumerable<FrequenciaAluno>> ObterPorAlunosDisciplinasDataAsync(string[] codigosAlunos, string[] disciplinasIds, DateTime dataAtual, string turmaCodigo = "");
