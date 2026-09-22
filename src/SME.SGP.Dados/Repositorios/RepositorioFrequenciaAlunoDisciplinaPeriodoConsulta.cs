@@ -583,19 +583,20 @@ namespace SME.SGP.Dados
 
         public async Task<bool> ExisteFrequenciaRegistradaPorTurmaComponenteCurricular(string codigoTurma, string[] componentesCurricularesId, long periodoEscolarId, string professor = null)
         {
-            var sql = @$"select distinct(1)
-                         from registro_frequencia_aluno rfa
-                         inner join registro_frequencia rf on rfa.registro_frequencia_id = rf.id     
-                         inner join aula a on a.id = rf.aula_id 
-                         inner join tipo_calendario tc on tc.id = a.tipo_calendario_id
-                         inner join periodo_escolar pe on pe.tipo_calendario_id = tc.id
-                         where pe.id = @periodoEscolarId
-                           and not rf.excluido
-                           and not rfa.excluido
-                           and a.turma_id = @codigoTurma
-                           and a.disciplina_id = any(@componentesCurricularesId)
-                           and a.data_aula between pe.periodo_inicio and pe.periodo_fim 
-                           {(!string.IsNullOrWhiteSpace(professor) ? " and a.professorRf = @professor" : string.Empty)}";
+            var sql = @$"select exists (
+                                select 1
+                                  from registro_frequencia_aluno rfa
+                                 inner join registro_frequencia rf on rfa.registro_frequencia_id = rf.id
+                                 inner join aula a on a.id = rf.aula_id
+                                 inner join tipo_calendario tc on tc.id = a.tipo_calendario_id
+                                 inner join periodo_escolar pe on pe.tipo_calendario_id = tc.id
+                                 where pe.id = @periodoEscolarId
+                                   and not rf.excluido
+                                   and not rfa.excluido
+                                   and a.turma_id = @codigoTurma
+                                   and a.disciplina_id = any(@componentesCurricularesId)
+                                   and a.data_aula between pe.periodo_inicio and pe.periodo_fim
+                                   {(!string.IsNullOrWhiteSpace(professor) ? " and a.professor_rf = @professor" : string.Empty)})";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { codigoTurma, componentesCurricularesId, periodoEscolarId, professor });
         }
