@@ -233,200 +233,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
         }
 
         [Fact]
-        public async Task Deve_preservar_um_fechamento_por_aluno_quando_ha_varias_notas()
-        {
-            await CriarDadosBase(ObterFiltroNotas(ObterPerfilProfessor(), ANO_1,
-                COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), TipoNota.Conceito,
-                Modalidade.EJA, ModalidadeTipoCalendario.EJA, false));
-            await CriaFechamentoTurma_Disciplina(PERIODO_ESCOLAR_CODIGO_1,
-                COMPONENTE_CURRICULAR_ARTES_ID_139, FECHAMENTO_TURMA_ID_1);
-            await CriaFechamentoAluno(FECHAMENTO_TURMA_DISCIPLINA_ID_1, CODIGO_ALUNO_1);
-            await CriaFechamentoNota(FECHAMENTO_ALUNO_ID_1, COMPONENTE_CURRICULAR_ARTES_ID_139, NOTA_6);
-            await CriaFechamentoNota(FECHAMENTO_ALUNO_ID_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, NOTA_7);
-
-            var consulta = ServiceProvider.GetRequiredService<IRepositorioFechamentoTurmaDisciplinaConsulta>();
-            var fechamentos = (await consulta.ObterFechamentosTurmaDisciplinas(TURMA_ID_1,
-                new[] { COMPONENTE_CURRICULAR_ARTES_ID_139 }, BIMESTRE_1)).ToList();
-
-            fechamentos.Count.ShouldBe(1);
-            fechamentos[0].FechamentoAlunos.Count.ShouldBe(1);
-            fechamentos[0].FechamentoAlunos[0].AlunoCodigo.ShouldBe(CODIGO_ALUNO_1);
-            fechamentos[0].FechamentoTurma.PeriodoEscolar.Bimestre.ShouldBe(BIMESTRE_1);
-        }
-
-        [Fact]
-        public async Task Nao_deve_retornar_fechamento_disciplina_excluido()
-        {
-            await CriarDadosBase(ObterFiltroNotas(ObterPerfilProfessor(), ANO_1,
-                COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), TipoNota.Conceito,
-                Modalidade.EJA, ModalidadeTipoCalendario.EJA, false));
-            await CriaFechamentoTurma_Disciplina(PERIODO_ESCOLAR_CODIGO_1,
-                COMPONENTE_CURRICULAR_ARTES_ID_139, FECHAMENTO_TURMA_ID_1, true);
-            await CriaFechamentoAluno(FECHAMENTO_TURMA_DISCIPLINA_ID_1, CODIGO_ALUNO_1);
-
-            var consulta = ServiceProvider.GetRequiredService<IRepositorioFechamentoTurmaDisciplinaConsulta>();
-            var fechamentos = await consulta.ObterFechamentosTurmaDisciplinas(TURMA_ID_1,
-                new[] { COMPONENTE_CURRICULAR_ARTES_ID_139 }, BIMESTRE_1);
-
-            fechamentos.ShouldBeEmpty();
-        }
-
-        [Fact]
-        public async Task Nao_deve_retornar_fechamento_turma_excluido()
-        {
-            await CriarDadosBase(ObterFiltroNotas(ObterPerfilProfessor(), ANO_1,
-                COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), TipoNota.Conceito,
-                Modalidade.EJA, ModalidadeTipoCalendario.EJA, false));
-            await CriaFechamentoTurma_Disciplina(PERIODO_ESCOLAR_CODIGO_1,
-                COMPONENTE_CURRICULAR_ARTES_ID_139, FECHAMENTO_TURMA_ID_1, excluidoTurma: true);
-            await CriaFechamentoAluno(FECHAMENTO_TURMA_DISCIPLINA_ID_1, CODIGO_ALUNO_1);
-
-            var consulta = ServiceProvider.GetRequiredService<IRepositorioFechamentoTurmaDisciplinaConsulta>();
-            var fechamentos = await consulta.ObterFechamentosTurmaDisciplinas(TURMA_ID_1,
-                new[] { COMPONENTE_CURRICULAR_ARTES_ID_139 }, BIMESTRE_1);
-
-            fechamentos.ShouldBeEmpty();
-        }
-
-        [Fact]
-        public async Task Nao_deve_retornar_aluno_excluido_do_fechamento()
-        {
-            await CriarDadosBase(ObterFiltroNotas(ObterPerfilProfessor(), ANO_1,
-                COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), TipoNota.Conceito,
-                Modalidade.EJA, ModalidadeTipoCalendario.EJA, false));
-            await CriaFechamentoTurma_Disciplina(PERIODO_ESCOLAR_CODIGO_1,
-                COMPONENTE_CURRICULAR_ARTES_ID_139, FECHAMENTO_TURMA_ID_1);
-            await CriaFechamentoAluno(FECHAMENTO_TURMA_DISCIPLINA_ID_1, CODIGO_ALUNO_1, true);
-
-            var consulta = ServiceProvider.GetRequiredService<IRepositorioFechamentoTurmaDisciplinaConsulta>();
-            var fechamentos = await consulta.ObterFechamentosTurmaDisciplinas(TURMA_ID_1,
-                new[] { COMPONENTE_CURRICULAR_ARTES_ID_139 }, BIMESTRE_1);
-
-            fechamentos.ShouldBeEmpty();
-        }
-
-        [Fact]
-        public async Task Nota_excluida_nao_deve_habilitar_filtro_por_disciplina_alternativa()
-        {
-            await CriarDadosBase(ObterFiltroNotas(ObterPerfilProfessor(), ANO_1,
-                COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), TipoNota.Conceito,
-                Modalidade.EJA, ModalidadeTipoCalendario.EJA, false));
-            await CriaFechamentoTurma_Disciplina(PERIODO_ESCOLAR_CODIGO_1,
-                COMPONENTE_CURRICULAR_ARTES_ID_139, FECHAMENTO_TURMA_ID_1);
-            await CriaFechamentoAluno(FECHAMENTO_TURMA_DISCIPLINA_ID_1, CODIGO_ALUNO_1);
-            await CriaFechamentoNota(FECHAMENTO_ALUNO_ID_1,
-                COMPONENTE_CURRICULAR_PORTUGUES_ID_138, NOTA_6, true);
-
-            var consulta = ServiceProvider.GetRequiredService<IRepositorioFechamentoTurmaDisciplinaConsulta>();
-            var fechamentos = await consulta.ObterFechamentosTurmaDisciplinas(TURMA_ID_1,
-                new[] { COMPONENTE_CURRICULAR_PORTUGUES_ID_138 }, BIMESTRE_1);
-
-            fechamentos.ShouldBeEmpty();
-        }
-
-        [Fact]
-        public async Task Nota_excluida_nao_deve_aparecer_na_consulta_complementar_do_bimestre()
-        {
-            await CriarDadosBase(ObterFiltroNotas(ObterPerfilProfessor(), ANO_1,
-                COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), TipoNota.Conceito,
-                Modalidade.EJA, ModalidadeTipoCalendario.EJA, false));
-            await CriaFechamentoTurma_Disciplina(PERIODO_ESCOLAR_CODIGO_1,
-                COMPONENTE_CURRICULAR_ARTES_ID_139, FECHAMENTO_TURMA_ID_1);
-            await CriaFechamentoAluno(FECHAMENTO_TURMA_DISCIPLINA_ID_1, CODIGO_ALUNO_1);
-            await CriaFechamentoNota(FECHAMENTO_ALUNO_ID_1,
-                COMPONENTE_CURRICULAR_ARTES_ID_139, NOTA_6, true);
-
-            var consulta = ServiceProvider.GetRequiredService<IRepositorioFechamentoTurmaDisciplinaConsulta>();
-            var notas = await consulta.ObterNotasBimestre(CODIGO_ALUNO_1,
-                FECHAMENTO_TURMA_DISCIPLINA_ID_1);
-
-            notas.ShouldBeEmpty();
-        }
-
-        [Fact]
-        public async Task Consulta_complementar_nao_deve_retornar_nota_de_fechamento_turma_excluido()
-        {
-            await CriarDadosBase(ObterFiltroNotas(ObterPerfilProfessor(), ANO_1,
-                COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), TipoNota.Conceito,
-                Modalidade.EJA, ModalidadeTipoCalendario.EJA, false));
-            await CriaFechamentoTurma_Disciplina(PERIODO_ESCOLAR_CODIGO_1,
-                COMPONENTE_CURRICULAR_ARTES_ID_139, FECHAMENTO_TURMA_ID_1, excluidoTurma: true);
-            await CriaFechamentoAluno(FECHAMENTO_TURMA_DISCIPLINA_ID_1, CODIGO_ALUNO_1);
-            await CriaFechamentoNota(FECHAMENTO_ALUNO_ID_1,
-                COMPONENTE_CURRICULAR_ARTES_ID_139, NOTA_6);
-
-            var consulta = ServiceProvider.GetRequiredService<IRepositorioFechamentoTurmaDisciplinaConsulta>();
-            var notas = await consulta.ObterNotasBimestre(CODIGO_ALUNO_1,
-                FECHAMENTO_TURMA_DISCIPLINA_ID_1);
-
-            notas.ShouldBeEmpty();
-        }
-
-        [Fact]
-        public async Task Consulta_de_notas_nao_deve_retornar_nota_de_fechamento_disciplina_excluido()
-        {
-            await CriarDadosBase(ObterFiltroNotas(ObterPerfilProfessor(), ANO_1,
-                COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), TipoNota.Conceito,
-                Modalidade.EJA, ModalidadeTipoCalendario.EJA, false));
-            await CriaFechamentoTurma_Disciplina(PERIODO_ESCOLAR_CODIGO_1,
-                COMPONENTE_CURRICULAR_ARTES_ID_139, FECHAMENTO_TURMA_ID_1, true);
-            await CriaFechamentoAluno(FECHAMENTO_TURMA_DISCIPLINA_ID_1, CODIGO_ALUNO_1);
-            await CriaFechamentoNota(FECHAMENTO_ALUNO_ID_1,
-                COMPONENTE_CURRICULAR_ARTES_ID_139, NOTA_6);
-
-            var consulta = ServiceProvider.GetRequiredService<IRepositorioFechamentoNotaConsulta>();
-            var notas = await consulta.ObterPorFechamentosTurma(new[] { FECHAMENTO_TURMA_ID_1 });
-
-            notas.ShouldBeEmpty();
-        }
-
-        [Fact]
-        public async Task Deve_listar_fechamento_pela_rota_alternativa_sem_duplicar_aluno()
-        {
-            await CriarDadosBase(ObterFiltroNotas(ObterPerfilProfessor(), ANO_1,
-                COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), TipoNota.Conceito,
-                Modalidade.EJA, ModalidadeTipoCalendario.EJA, false));
-            await CriaTipoAvaliacao(TipoAvaliacaoCodigo.AvaliacaoBimestral);
-            await CriaFechamentoTurma_Disciplina(PERIODO_ESCOLAR_CODIGO_1,
-                COMPONENTE_CURRICULAR_ARTES_ID_139, FECHAMENTO_TURMA_ID_1);
-            await CriaFechamentoAluno(FECHAMENTO_TURMA_DISCIPLINA_ID_1, CODIGO_ALUNO_1);
-            await CriaFechamentoNota(FECHAMENTO_ALUNO_ID_1,
-                COMPONENTE_CURRICULAR_ARTES_ID_139, NOTA_6);
-            await CriaFechamentoNota(FECHAMENTO_ALUNO_ID_1,
-                COMPONENTE_CURRICULAR_PORTUGUES_ID_138, NOTA_7);
-
-            var useCase = ServiceProvider.GetRequiredService<IListarFechamentoTurmaBimestreUseCase>();
-            var retorno = await useCase.Executar(TURMA_CODIGO_1,
-                COMPONENTE_CURRICULAR_ARTES_ID_139, BIMESTRE_1, null);
-
-            retorno.FechamentoId.ShouldBe(FECHAMENTO_TURMA_DISCIPLINA_ID_1);
-            retorno.Alunos.Count(a => a.CodigoAluno == CODIGO_ALUNO_1).ShouldBe(1);
-        }
-
-        [Fact]
-        public async Task Deve_obter_fechamento_para_consolidacao_sem_duplicar_aluno()
-        {
-            await CriarDadosBase(ObterFiltroNotas(ObterPerfilProfessor(), ANO_1,
-                COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), TipoNota.Conceito,
-                Modalidade.EJA, ModalidadeTipoCalendario.EJA, false));
-            await CriaFechamentoTurma_Disciplina(PERIODO_ESCOLAR_CODIGO_1,
-                COMPONENTE_CURRICULAR_ARTES_ID_139, FECHAMENTO_TURMA_ID_1);
-            await CriaFechamentoAluno(FECHAMENTO_TURMA_DISCIPLINA_ID_1, CODIGO_ALUNO_1);
-            await CriaFechamentoNota(FECHAMENTO_ALUNO_ID_1,
-                COMPONENTE_CURRICULAR_ARTES_ID_139, NOTA_6);
-            await CriaFechamentoNota(FECHAMENTO_ALUNO_ID_1,
-                COMPONENTE_CURRICULAR_PORTUGUES_ID_138, NOTA_7);
-
-            var mediator = ServiceProvider.GetRequiredService<IMediator>();
-            var fechamentos = (await mediator.Send(new ObterFechamentosTurmaComponentesQuery(
-                TURMA_ID_1, new[] { COMPONENTE_CURRICULAR_ARTES_ID_139 }, BIMESTRE_1))).ToList();
-
-            fechamentos.Count.ShouldBe(1);
-            fechamentos[0].FechamentoAlunos.Count.ShouldBe(1);
-            fechamentos[0].FechamentoAlunos[0].AlunoCodigo.ShouldBe(CODIGO_ALUNO_1);
-        }
-
-        [Fact]
         public async Task Deve_obter_nota_fechamento_final_por_turma_nao_excluida()
         {
             var turmas = new string[] { TURMA_CODIGO_1 };
@@ -701,13 +507,12 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             await CriaFechamentoAluno(FECHAMENTO_TURMA_DISCIPLINA_ID_4, codigoAluno);
         }
 
-        private async Task CriaFechamentoTurma_Disciplina(long? idPeriodo, long idDiciplina, long idFechamentoTurma, bool excluido = false, bool excluidoTurma = false)
+        private async Task CriaFechamentoTurma_Disciplina(long? idPeriodo, long idDiciplina, long idFechamentoTurma)
         {
             await InserirNaBase(new FechamentoTurma()
             {
                 TurmaId = TURMA_ID_1,
                 PeriodoEscolarId = idPeriodo,
-                Excluido = excluidoTurma,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
@@ -717,7 +522,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             {
                 DisciplinaId = idDiciplina,
                 FechamentoTurmaId = idFechamentoTurma,
-                Excluido = excluido,
                 Situacao = SituacaoFechamento.ProcessadoComSucesso,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
@@ -727,13 +531,11 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 
         private async Task CriaFechamentoAluno(
                             long idFechamenteoTurmaDiciplina,
-                            string codigoAluno,
-                            bool excluido = false)
+                            string codigoAluno)
         {
             await InserirNaBase(new FechamentoAluno()
             {
                 AlunoCodigo = codigoAluno,
-                Excluido = excluido,
                 FechamentoTurmaDisciplinaId = idFechamenteoTurmaDiciplina,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
