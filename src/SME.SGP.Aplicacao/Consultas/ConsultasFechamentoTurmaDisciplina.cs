@@ -232,9 +232,6 @@ namespace SME.SGP.Aplicacao
 
                 var notasConceitoBimestreRetorno = await mediator.Send(new ObterNotaBimestrePorCodigosAlunosIdsFechamentoQuery(codigosAlunos, fechamentosIds));
 
-                var conceitoIds = notasConceitoBimestreRetorno.Where(n => n.ConceitoId.HasValue).Select(n => n.ConceitoId.Value).Distinct().ToArray();
-                var conceitos = (conceitoIds.Any() ? await repositorioConceito.ObterPorIds(conceitoIds) : Enumerable.Empty<Conceito>()).ToDicionarioPorId();
-
                 var planosAEE = await mediator.Send(new VerificaPlanosAEEPorCodigosAlunosEAnoQuery(codigosAlunos, turma.AnoLetivo));
                 var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(codigosAlunos, turma.AnoLetivo);
                 var frequenciasAlunos = await mediator.Send(new ObterUltimasFrequenciasPorAlunosDisciplinasDataQuery(
