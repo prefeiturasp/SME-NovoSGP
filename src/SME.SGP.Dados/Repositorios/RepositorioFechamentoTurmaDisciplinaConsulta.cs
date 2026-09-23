@@ -54,37 +54,19 @@ namespace SME.SGP.Dados.Repositorios
             long[] disciplinasId, int bimestre = 0, long? tipoCalendario = null)
         {
             var query = new StringBuilder(@"with lista as (
-                        select f.id, f.fechamento_turma_id, f.disciplina_id, f.situacao,
-                               f.justificativa, f.migrado, f.excluido,
-                               f.criado_em, f.criado_por, f.criado_rf,
-                               f.alterado_em, f.alterado_por, f.alterado_rf,
-                               fa.id, fa.fechamento_turma_disciplina_id, fa.aluno_codigo, fa.excluido,
-                               fa.criado_em, fa.criado_por, fa.criado_rf,
-                               fa.alterado_em, fa.alterado_por, fa.alterado_rf,
-                               ft.id, ft.periodo_escolar_id, ft.turma_id, ft.migrado, ft.excluido,
-                               ft.criado_em, ft.criado_por, ft.criado_rf,
-                               ft.alterado_em, ft.alterado_por, ft.alterado_rf,
-                               p.id, p.bimestre, p.migrado, p.periodo_fim, p.periodo_inicio, p.tipo_calendario_id,
-                               p.criado_em, p.criado_por, p.criado_rf,
-                               p.alterado_em, p.alterado_por, p.alterado_rf,
-                               row_number() over (partition by t.id, fa.aluno_codigo, p.id, f.disciplina_id order by f.id desc) sequencia
+                        select f.*, fa.*, ft.*, p.*,
+                            row_number() over (partition by t.id, fa.aluno_codigo, p.id, f.disciplina_id order by f.id desc) sequencia
                          from fechamento_turma_disciplina f
                         inner join fechamento_turma ft on ft.id = f.fechamento_turma_id
                          left join periodo_escolar p on p.id = ft.periodo_escolar_id 
                         inner join turma t on t.id = ft.turma_id
                         inner join fechamento_aluno fa on f.id = fa.fechamento_turma_disciplina_id
-                        where t.id = @turmaId
-                          and not f.excluido
-                          and not ft.excluido
-                          and not fa.excluido ");
+                        left join fechamento_nota fn on fn.fechamento_aluno_id = fa.id
+                        left join componente_curricular cc on cc.id = fn.disciplina_id
+                        where t.id = @turmaId ");
 
             if (disciplinasId.NaoEhNulo() && disciplinasId.Length > 0)
-                query.AppendLine(@"and (f.disciplina_id = ANY(@disciplinasId)
-                                  or exists (select 1
-                                               from fechamento_nota fn
-                                              where fn.fechamento_aluno_id = fa.id
-                                                and not fn.excluido
-                                                and fn.disciplina_id = ANY(@disciplinasId)))");
+                query.AppendLine("and (f.disciplina_id = ANY(@disciplinasId) or cc.id = ANY(@disciplinasId))");
 
             if (bimestre > 0)
                 query.AppendLine("and p.bimestre = @bimestre");
@@ -118,7 +100,7 @@ namespace SME.SGP.Dados.Repositorios
 
                     fechamentoTurmaDisciplinaLista.FechamentoAlunos.Add(fechamentoAluno);
                     return fechamentoTurmaDiscplina;
-                }, new { turmaId, disciplinasId, bimestre, tipoCalendario }, splitOn: "Id,Id,Id");
+                }, new { turmaId, disciplinasId, bimestre, tipoCalendario });
 
             return fechammentosTurmaDisciplina;
         }
@@ -186,14 +168,8 @@ namespace SME.SGP.Dados.Repositorios
                                  n.alterado_por AlteradoPor
                          from fechamento_nota n
                         inner join fechamento_aluno fa on fa.id = n.fechamento_aluno_id
-                        inner join fechamento_turma_disciplina ftd on ftd.id = fa.fechamento_turma_disciplina_id
-                        inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id
                         where fa.fechamento_turma_disciplina_id = @fechamentoTurmaDisciplinaId
-                          and fa.aluno_codigo = @codigoAluno
-                          and not ft.excluido
-                          and not ftd.excluido
-                          and not fa.excluido
-                          and not n.excluido ";
+                          and fa.aluno_codigo = @codigoAluno ";
 
             return await database.Conexao.QueryAsync<FechamentoNotaDto>(query,
                 new { codigoAluno, fechamentoTurmaDisciplinaId });
@@ -214,14 +190,8 @@ namespace SME.SGP.Dados.Repositorios
                                  fa.fechamento_turma_disciplina_id as FechamentoId
                         from fechamento_nota n
                         inner join fechamento_aluno fa on fa.id = n.fechamento_aluno_id
-                        inner join fechamento_turma_disciplina ftd on ftd.id = fa.fechamento_turma_disciplina_id
-                        inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id
                         where fa.fechamento_turma_disciplina_id = any(@fechamentoTurmaDisciplinaId)
-                          and fa.aluno_codigo = any(@codigoAluno)
-                          and not ft.excluido
-                          and not ftd.excluido
-                          and not fa.excluido
-                          and not n.excluido ";
+                          and fa.aluno_codigo = any(@codigoAluno) ";
 
             return await database.Conexao.QueryAsync<FechamentoNotaDto>(query,
                 new { codigoAluno, fechamentoTurmaDisciplinaId });

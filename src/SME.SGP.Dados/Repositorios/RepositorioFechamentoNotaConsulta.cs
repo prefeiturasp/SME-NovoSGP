@@ -25,11 +25,7 @@ namespace SME.SGP.Dados.Repositorios
                                         inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id 
                                          left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
                                          left join wf_aprovacao_nota_fechamento wf on wf.fechamento_nota_id = n.id and not wf.excluido
-                                        where fa.fechamento_turma_disciplina_id = ANY(@fechamentosTurmaDisciplinaId)
-                                          and not ft.excluido
-                                          and not ftd.excluido
-                                          and not fa.excluido
-                                          and not n.excluido";
+                                        where fa.fechamento_turma_disciplina_id = ANY(@fechamentosTurmaDisciplinaId) and not n.excluido";
 
         const string queryNotasFechamento = @"with lista as (
                         select  fn.disciplina_id as ComponenteCurricularCodigo, 
@@ -46,10 +42,7 @@ namespace SME.SGP.Dados.Repositorios
                          inner join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id
                          inner join fechamento_nota fn on fn.fechamento_aluno_id = fa.id
                          inner join componente_curricular cc on cc.id = fn.disciplina_id
-                         where not ft.excluido
-                               and not ftd.excluido
-                               and not fa.excluido
-                               and not fn.excluido
+                         where not fn.excluido
                                and cc.permite_lancamento_nota ";
 
         public RepositorioFechamentoNotaConsulta(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)

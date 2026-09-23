@@ -1,13 +1,11 @@
 ﻿using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioNotasConceitosConsulta : IRepositorioBase<NotaConceito>
     {
-        Task<IEnumerable<NotaEmAprovacaoFechamentoDto>> ObterNotasEmAprovacaoAsync(NotaEmAprovacaoFechamentoDto[] filtros);
         IEnumerable<NotaConceito> ObterNotasPorAlunosAtividadesAvaliativas(IEnumerable<long> atividadesAvaliativas, IEnumerable<string> alunosIds, string disciplinaId);
         Task<IEnumerable<NotaConceito>> ObterNotasPorAlunosAtividadesAvaliativasAsync(long[] atividadesAvaliativasId, string[] alunosIds, string componenteCurricularId);
         Task<IEnumerable<NotaConceito>> ObterNotasPorAlunosAtividadesAvaliativasPorTurmaAsync(string codigoTurma);

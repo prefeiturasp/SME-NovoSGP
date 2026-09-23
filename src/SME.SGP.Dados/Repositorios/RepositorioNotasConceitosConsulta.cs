@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using SME.SGP.Dominio;
-using SME.SGP.Infra;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
@@ -93,37 +92,6 @@ namespace SME.SGP.Dados.Repositorios
             return await database.QuerySingleOrDefaultAsync<NotaConceito>(sql, new { id });
         }
 
-        public Task<IEnumerable<NotaEmAprovacaoFechamentoDto>> ObterNotasEmAprovacaoAsync(NotaEmAprovacaoFechamentoDto[] filtros)
-        {
-            if (filtros == null || filtros.Length == 0)
-                return Task.FromResult(Enumerable.Empty<NotaEmAprovacaoFechamentoDto>());
-
-            var chaves = filtros.Select(f => new { f.CodigoAluno, f.TurmaFechamentoId, f.DisciplinaId }).Distinct().ToArray();
-            const string sql = @"select f.codigo_aluno as CodigoAluno, f.fechamento_id as TurmaFechamentoId,
-                                       f.disciplina_id as DisciplinaId, coalesce(n.nota, 0) as Nota
-                from unnest(@alunos::text[], @fechamentos::bigint[], @disciplinas::bigint[])
-                     as f(codigo_aluno, fechamento_id, disciplina_id)
-                left join lateral (
-                    select coalesce(w.nota, w.conceito_id, -1) as nota
-                    from fechamento_turma ft
-                    inner join fechamento_turma_disciplina ftd on ftd.fechamento_turma_id = ft.id
-                    inner join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id
-                    inner join fechamento_nota fn on fn.fechamento_aluno_id = fa.id
-                    left join wf_aprovacao_nota_fechamento w on w.fechamento_nota_id = fn.id and not w.excluido
-                    where ft.id = f.fechamento_id and fn.disciplina_id = f.disciplina_id
-                      and fa.aluno_codigo = f.codigo_aluno
-                      and not ft.excluido and not ftd.excluido and not fa.excluido and not fn.excluido
-                    order by w.id desc nulls first
-                    limit 1
-                ) n on true";
-            return database.QueryAsync<NotaEmAprovacaoFechamentoDto>(sql, new
-            {
-                alunos = chaves.Select(f => f.CodigoAluno).ToArray(),
-                fechamentos = chaves.Select(f => f.TurmaFechamentoId).ToArray(),
-                disciplinas = chaves.Select(f => f.DisciplinaId).ToArray()
-            });
-        }
-
         public Task<double> ObterNotaEmAprovacao(string codigoAluno, long disciplinaId, long turmaFechamentoId)
         {
             var sql = $@"select coalesce(coalesce(w.nota, w.conceito_id),-1)
@@ -132,13 +100,7 @@ namespace SME.SGP.Dados.Repositorios
                             inner join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id
                             inner join fechamento_nota fn on fn.fechamento_aluno_id = fa.id
                             left join wf_aprovacao_nota_fechamento w on w.fechamento_nota_id = fn.id and not w.excluido
-                            where ft.id = @turmaFechamentoId
-                              and fn.disciplina_id = @disciplinaId
-                              and fa.aluno_codigo = @codigoAluno
-                              and not ft.excluido
-                              and not ftd.excluido
-                              and not fa.excluido
-                              and not fn.excluido
+                            where ft.id = @turmaFechamentoId and fn.disciplina_id = @disciplinaId and fa.aluno_codigo = @codigoAluno
                         order by w.id desc";
 
             return database.QueryFirstOrDefaultAsync<double>(sql, new { turmaFechamentoId, disciplinaId, codigoAluno });
