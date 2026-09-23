@@ -320,19 +320,20 @@ namespace SME.SGP.Dados
                 return Enumerable.Empty<FrequenciaAluno>();
 
             var query = new StringBuilder(@"select distinct on (fa.codigo_aluno)
-                                  fa.id, fa.codigo_aluno, fa.disciplina_id, fa.periodo_escolar_id,
-                                  fa.periodo_inicio, fa.periodo_fim, fa.bimestre, fa.tipo, fa.turma_id,
-                                  fa.total_aulas, fa.total_ausencias, fa.total_compensacoes,
-                                  fa.total_remotos, fa.total_presencas, fa.professor_rf,
-                                  fa.criado_em, fa.criado_por, fa.criado_rf,
-                                  fa.alterado_em, fa.alterado_por, fa.alterado_rf
-                             from frequencia_aluno fa
-                       inner join periodo_escolar pe on fa.periodo_escolar_id = pe.id
-                            where fa.codigo_aluno = any(@codigosAlunos)
-                              and fa.disciplina_id = any(@disciplinasId)
-                              and fa.tipo = 1
-                              and pe.periodo_inicio <= @dataAtual
-                              and pe.periodo_fim >= @dataAtual");
+                                                fa.id, fa.codigo_aluno, fa.disciplina_id, fa.periodo_escolar_id,
+                                                fa.periodo_inicio, fa.periodo_fim, fa.bimestre, fa.tipo, fa.turma_id,
+                                                fa.total_aulas, fa.total_ausencias, fa.total_compensacoes,
+                                                fa.total_remotos, fa.total_presencas, fa.professor_rf,
+                                                fa.criado_em, fa.criado_por, fa.criado_rf,
+                                                fa.alterado_em, fa.alterado_por, fa.alterado_rf
+                                            from frequencia_aluno fa
+                                                inner join periodo_escolar pe on fa.periodo_escolar_id = pe.id
+                                            where fa.codigo_aluno = any(@codigosAlunos)
+                                                and not fa.excluido
+                                                and fa.disciplina_id = any(@disciplinasId)
+                                                and fa.tipo = 1
+                                                and pe.periodo_inicio <= @dataAtual
+                                                and pe.periodo_fim >= @dataAtual");
 
             if (!string.IsNullOrEmpty(turmaCodigo))
                 query.AppendLine(" and fa.turma_id = @turmaCodigo");
