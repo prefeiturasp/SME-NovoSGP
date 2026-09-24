@@ -54,19 +54,33 @@ namespace SME.SGP.Dados.Repositorios
             long[] disciplinasId, int bimestre = 0, long? tipoCalendario = null)
         {
             var query = new StringBuilder(@"with lista as (
-                        select f.*, fa.*, ft.*, p.*,
+                        select f.id, f.fechamento_turma_id, f.disciplina_id, f.situacao,
+                               f.justificativa, f.migrado, f.criado_em, f.criado_por,
+                               f.criado_rf, f.alterado_em, f.alterado_por, f.alterado_rf,
+                               fa.id, fa.fechamento_turma_disciplina_id, fa.aluno_codigo,
+                               fa.criado_em, fa.alterado_em,
+                               ft.id, ft.turma_id, ft.periodo_escolar_id, ft.migrado,
+                               ft.criado_em, ft.alterado_em,
+                               p.id, p.tipo_calendario_id, p.bimestre, p.periodo_inicio,
+                               p.periodo_fim, p.migrado, p.criado_em, p.alterado_em,
                             row_number() over (partition by t.id, fa.aluno_codigo, p.id, f.disciplina_id order by f.id desc) sequencia
                          from fechamento_turma_disciplina f
                         inner join fechamento_turma ft on ft.id = f.fechamento_turma_id
                          left join periodo_escolar p on p.id = ft.periodo_escolar_id 
                         inner join turma t on t.id = ft.turma_id
                         inner join fechamento_aluno fa on f.id = fa.fechamento_turma_disciplina_id
-                        left join fechamento_nota fn on fn.fechamento_aluno_id = fa.id
-                        left join componente_curricular cc on cc.id = fn.disciplina_id
-                        where t.id = @turmaId ");
+                        where t.id = @turmaId
+                          and not f.excluido
+                          and not ft.excluido
+                          and not fa.excluido ");
 
             if (disciplinasId.NaoEhNulo() && disciplinasId.Length > 0)
-                query.AppendLine("and (f.disciplina_id = ANY(@disciplinasId) or cc.id = ANY(@disciplinasId))");
+                query.AppendLine(@"and (f.disciplina_id = ANY(@disciplinasId)
+                                  or exists (select 1 from fechamento_nota fn
+                                              inner join componente_curricular cc on cc.id = fn.disciplina_id
+                                              where fn.fechamento_aluno_id = fa.id
+                                                and not fn.excluido
+                                                and cc.id = ANY(@disciplinasId)))");
 
             if (bimestre > 0)
                 query.AppendLine("and p.bimestre = @bimestre");
@@ -100,7 +114,7 @@ namespace SME.SGP.Dados.Repositorios
 
                     fechamentoTurmaDisciplinaLista.FechamentoAlunos.Add(fechamentoAluno);
                     return fechamentoTurmaDiscplina;
-                }, new { turmaId, disciplinasId, bimestre, tipoCalendario });
+                }, new { turmaId, disciplinasId, bimestre, tipoCalendario }, splitOn: "Id,Id,Id");
 
             return fechammentosTurmaDisciplina;
         }
@@ -191,7 +205,9 @@ namespace SME.SGP.Dados.Repositorios
                         from fechamento_nota n
                         inner join fechamento_aluno fa on fa.id = n.fechamento_aluno_id
                         where fa.fechamento_turma_disciplina_id = any(@fechamentoTurmaDisciplinaId)
-                          and fa.aluno_codigo = any(@codigoAluno) ";
+                           and fa.aluno_codigo = any(@codigoAluno)
+                           and not fa.excluido
+                           and not n.excluido ";
 
             return await database.Conexao.QueryAsync<FechamentoNotaDto>(query,
                 new { codigoAluno, fechamentoTurmaDisciplinaId });
