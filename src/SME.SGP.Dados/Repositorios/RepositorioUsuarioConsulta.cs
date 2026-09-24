@@ -32,6 +32,7 @@ namespace SME.SGP.Dados.Repositorios
             else
                 query.AppendLine("or login = @codigoRf");
 
+            query.AppendLine("order by (login is null), id");
             query.AppendLine("limit 1");
 
             var usuarios = await database.Conexao.QueryAsync<Usuario>(query.ToString(), new { codigoRf, login });
@@ -52,6 +53,9 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and login = @login");
             else
                 query.AppendLine("or login = @codigoRf");
+
+            query.AppendLine("order by (login is null), id");
+            query.AppendLine("limit 1");
 
             var usuarios = await database.Conexao.QueryAsync<Usuario>(query.ToString(), new { codigoRf, login });
             return usuarios.FirstOrDefault();
