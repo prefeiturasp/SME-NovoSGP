@@ -1,0 +1,153 @@
+{
+    "metrics": {
+        "http_req_waiting": {
+            "avg": 9718.171030326595,
+            "min": 6055.4883,
+            "med": 8496.0274,
+            "max": 35104.2806,
+            "p(90)": 13530.534900000112,
+            "p(95)": 24271.75459
+        },
+        "vus": {
+            "value": 1,
+            "min": 0,
+            "max": 15
+        },
+        "http_req_failed": {
+            "passes": 0,
+            "fails": 643,
+            "thresholds": {
+                "rate<0.01": false
+            },
+            "value": 0
+        },
+        "http_req_sending": {
+            "avg": 0.045041057542768256,
+            "min": 0,
+            "med": 0,
+            "max": 1.2968,
+            "p(90)": 0,
+            "p(95)": 0.47379999999999944
+        },
+        "vus_max": {
+            "max": 15,
+            "value": 15,
+            "min": 15
+        },
+        "iteration_duration": {
+            "avg": 10825.517860436123,
+            "min": 8098.8465,
+            "med": 8917.616,
+            "max": 35306.0971,
+            "p(90)": 14870.7769,
+            "p(95)": 24990.7554
+        },
+        "http_req_duration{expected_response:true}": {
+            "avg": 9718.577859720075,
+            "min": 6056.1287,
+            "med": 8496.9308,
+            "max": 35104.8788,
+            "p(90)": 13531.284960000112,
+            "p(95)": 24272.51371
+        },
+        "http_req_tls_handshaking": {
+            "p(95)": 0,
+            "avg": 0,
+            "min": 0,
+            "med": 0,
+            "max": 0,
+            "p(90)": 0
+        },
+        "duration_fechamentos_turmas": {
+            "avg": 10551.039395638629,
+            "min": 7898.7755,
+            "med": 8700.4181,
+            "max": 32748.3079,
+            "p(90)": 14281.0207,
+            "p(95)": 24596.7672
+        },
+        "checks": {
+            "passes": 642,
+            "fails": 0,
+            "value": 1
+        },
+        "http_req_duration": {
+            "avg": 9718.577859720075,
+            "min": 6056.1287,
+            "med": 8496.9308,
+            "max": 35104.8788,
+            "p(90)": 13531.284960000112,
+            "p(95)": 24272.51371
+        },
+        "http_req_receiving": {
+            "max": 1.7461,
+            "p(90)": 0.92032,
+            "p(95)": 0.99484,
+            "avg": 0.3617883359253499,
+            "min": 0,
+            "med": 0.3285
+        },
+        "data_sent": {
+            "count": 1004962,
+            "rate": 3349.860641827982
+        },
+        "http_req_blocked": {
+            "p(95)": 0.508,
+            "avg": 0.0686357698289269,
+            "min": 0,
+            "med": 0,
+            "max": 2.9901,
+            "p(90)": 0
+        },
+        "http_reqs": {
+            "count": 643,
+            "rate": 2.143325212988543
+        },
+        "data_received": {
+            "rate": 57573.94520484627,
+            "count": 17272249
+        },
+        "duration_fechamentos_turmas_listar": {
+            "avg": 8897.525822741434,
+            "min": 6160.4118,
+            "med": 6745.7006,
+            "max": 35104.8788,
+            "p(90)": 9864.5045,
+            "p(95)": 22558.9743
+        },
+        "http_req_connecting": {
+            "p(95)": 0,
+            "avg": 0.05054090202177295,
+            "min": 0,
+            "med": 0,
+            "max": 2.7467,
+            "p(90)": 0
+        },
+        "iterations": {
+            "count": 321,
+            "rate": 1.0699959461420254
+        }
+    },
+    "root_group": {
+        "checks": {
+            "fechamentos/turmas -> status 200": {
+                "fails": 0,
+                "name": "fechamentos/turmas -> status 200",
+                "path": "::fechamentos/turmas -> status 200",
+                "id": "fdd9745779438c52aed8d7336dca5983",
+                "passes": 321
+            },
+            "fechamentos/turmas/listar -> status 200": {
+                "id": "459fc27f7bb55dba962d73bfd8797223",
+                "passes": 321,
+                "fails": 0,
+                "name": "fechamentos/turmas/listar -> status 200",
+                "path": "::fechamentos/turmas/listar -> status 200"
+            }
+        },
+        "name": "",
+        "path": "",
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {}
+    }
+}

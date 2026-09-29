@@ -1,0 +1,153 @@
+{
+    "root_group": {
+        "name": "",
+        "path": "",
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {},
+        "checks": {
+                "fechamentos/turmas -> status 200": {
+                    "name": "fechamentos/turmas -> status 200",
+                    "path": "::fechamentos/turmas -> status 200",
+                    "id": "fdd9745779438c52aed8d7336dca5983",
+                    "passes": 381,
+                    "fails": 0
+                },
+                "fechamentos/turmas/listar -> status 200": {
+                    "name": "fechamentos/turmas/listar -> status 200",
+                    "path": "::fechamentos/turmas/listar -> status 200",
+                    "id": "459fc27f7bb55dba962d73bfd8797223",
+                    "passes": 381,
+                    "fails": 0
+                }
+            }
+    },
+    "metrics": {
+        "iteration_duration": {
+            "min": 7978.2934,
+            "med": 9102.0617,
+            "max": 10513.0647,
+            "p(90)": 9589.5297,
+            "p(95)": 9802.1645,
+            "avg": 9128.37961732284
+        },
+        "duration_fechamentos_turmas_listar": {
+            "avg": 7288.492885039372,
+            "min": 6237.7996,
+            "med": 7048.4282,
+            "max": 10312.467,
+            "p(90)": 8215.8157,
+            "p(95)": 8715.9847
+        },
+        "http_req_duration": {
+            "med": 8439.8621,
+            "max": 10312.467,
+            "p(90)": 9195.85535,
+            "p(95)": 9407.796445,
+            "avg": 8094.03961256544,
+            "min": 6196.8782
+        },
+        "http_req_tls_handshaking": {
+            "med": 0,
+            "max": 0,
+            "p(90)": 0,
+            "p(95)": 0,
+            "avg": 0,
+            "min": 0
+        },
+        "iterations": {
+            "rate": 1.269993883709456,
+            "count": 381
+        },
+        "http_req_blocked": {
+            "med": 0,
+            "max": 30.3608,
+            "p(90)": 0,
+            "p(95)": 0.5272100000000003,
+            "avg": 0.121311387434555,
+            "min": 0
+        },
+        "data_sent": {
+            "count": 1195343,
+            "rate": 3984.457477519455
+        },
+        "vus": {
+            "value": 2,
+            "min": 0,
+            "max": 15
+        },
+        "http_req_waiting": {
+            "avg": 8093.409523036656,
+            "min": 6196.8782,
+            "med": 8439.39125,
+            "max": 10312.467,
+            "p(90)": 9194.97955,
+            "p(95)": 9407.342205
+        },
+        "http_req_connecting": {
+            "p(90)": 0,
+            "p(95)": 0,
+            "avg": 0.09346623036649214,
+            "min": 0,
+            "med": 0,
+            "max": 30.3608
+        },
+        "http_req_receiving": {
+            "max": 8.9102,
+            "p(90)": 1.0278500000000002,
+            "p(95)": 1.914195000000001,
+            "avg": 0.5765226439790575,
+            "min": 0,
+            "med": 0.42775
+        },
+        "vus_max": {
+            "value": 15,
+            "min": 15,
+            "max": 15
+        },
+        "http_req_duration{expected_response:true}": {
+            "min": 6196.8782,
+            "med": 8439.8621,
+            "max": 10312.467,
+            "p(90)": 9195.85535,
+            "p(95)": 9407.796445,
+            "avg": 8094.03961256544
+        },
+        "http_req_failed": {
+            "passes": 0,
+            "fails": 764,
+            "thresholds": {
+                "rate<0.01": false
+            },
+            "value": 0
+        },
+        "data_received": {
+            "count": 20520968,
+            "rate": 68402.89723831357
+        },
+        "http_req_sending": {
+            "avg": 0.05356688481675393,
+            "min": 0,
+            "med": 0,
+            "max": 1.2665,
+            "p(90)": 0,
+            "p(95)": 0.53317
+        },
+        "http_reqs": {
+            "rate": 2.5466544019790667,
+            "count": 764
+        },
+        "duration_fechamentos_turmas": {
+            "min": 7774.3924,
+            "med": 8861.0387,
+            "max": 10197.5227,
+            "p(90)": 9372.5045,
+            "p(95)": 9584.5368,
+            "avg": 8909.402705249346
+        },
+        "checks": {
+            "passes": 762,
+            "fails": 0,
+            "value": 1
+        }
+    }
+}
