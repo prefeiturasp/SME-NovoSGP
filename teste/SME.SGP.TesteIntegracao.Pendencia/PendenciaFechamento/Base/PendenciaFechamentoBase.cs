@@ -86,7 +86,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento.Base
             var dataReferencia = DateTimeExtension.HorarioBrasilia();
 
             await InserirNaBase(new PeriodoFechamento()
-            { CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            { CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, Aplicacao = Dominio.Aplicacao.SGP, CriadoRF = SISTEMA_CODIGO_RF });
 
             await InserirNaBase(new PeriodoFechamentoBimestre()
             {

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Minio;
+using SME.SGP.Dominio;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Utilitarios;
 using System;
@@ -127,11 +128,11 @@ namespace SME.SGP.Infra
             }
             catch (Minio.Exceptions.ObjectNotFoundException)
             {
-                return null;
+                throw new FileNotFoundException("Arquivo não encontrado.", nameof(nomeArquivo));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return null;
+                throw new NegocioException(ex.Message);
             }
         }
         public async Task<string> Mover(string nomeArquivo)

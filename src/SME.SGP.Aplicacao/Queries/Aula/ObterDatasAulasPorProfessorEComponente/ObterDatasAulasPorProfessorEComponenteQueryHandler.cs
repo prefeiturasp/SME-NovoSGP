@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
                     componentesCurricularesDoProfessorCJ.ToList().ForEach(ccj =>
                     {
                         var componenteListaProfessor = componentesCurricularesEolProfessor
-                            .Any(ccp => ccp.Codigo == ccj.DisciplinaId || ccp.CodigoComponenteTerritorioSaber == ccj.DisciplinaId);
+                            .Any(ccp => ccp.PossuiCodigoEquivalente(ccj.DisciplinaId));
 
                         var codigoComponenteEquivalente = (long?)null;
 
@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao
             }
 
             componentesCurricularesEolProfessor = componentesCurricularesEolProfessor
-                .Where(c => c.Codigo == componenteCurricularId || (c.CodigoComponenteCurricularPai.HasValue && c.CodigoComponenteCurricularPai.Value == componenteCurricularId) || c.CodigoComponenteTerritorioSaber == componenteCurricularId)
+                .Where(c => c.PossuiCodigoEquivalente(componenteCurricularId))
                 .ToList();
 
             if (componenteCurricularId.EhIdComponenteCurricularTerritorioSaberAgrupado())
@@ -77,10 +77,7 @@ namespace SME.SGP.Aplicacao
 
 
             // códigos disciplinas normais + regência + território
-            var codigosComponentesUsuario = componentesCurricularesEolProfessor.Select(c => c.Codigo.ToString())
-                .Concat(componentesCurricularesEolProfessor.Where(c => c.Regencia && c.CodigoComponenteCurricularPai.HasValue && c.CodigoComponenteCurricularPai.Value > 0).Select(c => c.CodigoComponenteCurricularPai.Value.ToString()))
-                .Concat(componentesCurricularesEolProfessor.Where(c => c.TerritorioSaber).Select(c => c.CodigoComponenteTerritorioSaber.ToString()))
-                .Distinct().ToArray();
+            var codigosComponentesUsuario = componentesCurricularesEolProfessor.ObterCodigosEquivalentes();
 
             var datasAulas = await ObterAulasNosPeriodos(periodosEscolares, turma.AnoLetivo, turma.CodigoTurma, codigosComponentesUsuario);
 

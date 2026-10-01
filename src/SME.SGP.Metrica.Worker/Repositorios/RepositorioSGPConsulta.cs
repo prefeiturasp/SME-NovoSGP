@@ -205,10 +205,10 @@ namespace SME.SGP.Metrica.Worker.Repositorios
                            inner join conselho_classe cc on ft.id = cc.fechamento_turma_id and not cc.excluido
                            inner join conselho_classe_aluno cca on cc.id = cca.conselho_classe_id and not cca.excluido
                            inner join fechamento_aluno fa on ftd.id = fa.fechamento_turma_disciplina_id and fa.aluno_codigo = cca.aluno_codigo and not fa.excluido
-                           inner join fechamento_nota fn on fa.id = fn.fechamento_aluno_id and not fn.excluido 
+                           inner join fechamento_nota fn on fa.id = fn.fechamento_aluno_id and not fn.excluido
                            where t.ano_letivo >= extract(year from NOW()) -1
                                                    and u.id = @ueId
-                           union                       
+                           union all                       
                            select cca.id as conselho_classe_aluno_id,
                            ccn.componente_curricular_codigo as disciplina_id
                            from fechamento_turma ft
@@ -221,7 +221,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios
                            where t.ano_letivo >= extract(year from NOW()) -1
                                                    and u.id = @ueId),
                   vw_notas_conceitos_ue as
-                      (select distinct t.id turma_id,
+                      (select t.id turma_id,
                         t.turma_id codigo_turma,
                         coalesce(cca.aluno_codigo, fa.aluno_codigo) aluno_codigo,
                         coalesce(pe.bimestre, 0) as bimestre,
@@ -279,7 +279,8 @@ namespace SME.SGP.Metrica.Worker.Repositorios
                                                                                  and tmp.bimestre = coalesce(cccatn.bimestre, 0) and tmp.disciplina_id::int8 = cccatn.componente_curricular_id
                 where tmp.sequencia = 1
                       and coalesce(coalesce(tmp.nota_conselho_classe_fechamento, tmp.conceito_id_conselho_classe_fechamento), 0)
-                          <> coalesce(coalesce(cccatn.nota, cccatn.conceito_id), 0);", new { ueId });
+                          <> coalesce(coalesce(cccatn.nota, cccatn.conceito_id), 0);", new { ueId },
+                commandTimeout: 300);
 
         public Task<IEnumerable<FrequenciaAlunoInconsistente>> ObterFrequenciaAlunoInconsistente(long turmaId)
             => database.Conexao.QueryAsync<FrequenciaAlunoInconsistente>(

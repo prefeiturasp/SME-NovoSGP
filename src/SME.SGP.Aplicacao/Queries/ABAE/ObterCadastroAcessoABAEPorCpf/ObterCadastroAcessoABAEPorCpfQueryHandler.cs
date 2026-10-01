@@ -2,12 +2,13 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterCadastroAcessoABAEPorCpfUsuarioQueryHandler : IRequestHandler<ObterCadastroAcessoABAEPorCpfQuery, CadastroAcessoABAE>
+    public class ObterCadastroAcessoABAEPorCpfUsuarioQueryHandler : IRequestHandler<ObterCadastroAcessoABAEPorCpfQuery, IEnumerable<CadastroAcessoABAE>>
     {
         private readonly IRepositorioCadastroAcessoABAEConsulta repositorioCadastroAcessoABAEConsulta;
 
@@ -16,9 +17,9 @@ namespace SME.SGP.Aplicacao
             this.repositorioCadastroAcessoABAEConsulta = repositorioCadastroAcessoABAEConsulta ?? throw new ArgumentNullException(nameof(repositorioCadastroAcessoABAEConsulta));
         }
 
-        public Task<CadastroAcessoABAE> Handle(ObterCadastroAcessoABAEPorCpfQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<CadastroAcessoABAE>> Handle(ObterCadastroAcessoABAEPorCpfQuery request, CancellationToken cancellationToken)
         {
-            return repositorioCadastroAcessoABAEConsulta.ObterCadastroABAEPorCpf(request.Cpf);
+            return repositorioCadastroAcessoABAEConsulta.ObterCadastrosABAEPorCpf(request.Cpf);
         }
     }
 }

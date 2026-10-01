@@ -141,7 +141,7 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<CadastroAcessoABAE> ObterCadastroABAEPorCpf(string cpf)
+        public async Task<IEnumerable<CadastroAcessoABAE>> ObterCadastrosABAEPorCpf(string cpf)
         {
             var sql = new StringBuilder();
             cpf = cpf.FormatarCPF();
@@ -151,8 +151,9 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(" WHERE not a.excluido ");
             sql.AppendLine(" AND a.situacao ");
             sql.AppendLine(" AND a.cpf = @cpf ");
+            sql.AppendLine(" ORDER BY a.id ");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<CadastroAcessoABAE>(sql.ToString(), new
+            return await database.Conexao.QueryAsync<CadastroAcessoABAE>(sql.ToString(), new
             {
                 cpf
             });

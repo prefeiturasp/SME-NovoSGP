@@ -39,6 +39,47 @@ namespace SME.SGP.Dominio
 
     public static class ComponenteCurricularEolExtension
     {
+        public static bool PossuiCodigoEquivalente(this ComponenteCurricularEol componenteCurricular, long codigoComponenteCurricular)
+        {
+            if (componenteCurricular.EhNulo())
+                return false;
+
+            return componenteCurricular.ObterCodigosEquivalentes()
+                .Contains(codigoComponenteCurricular);
+        }
+
+        public static IEnumerable<long> ObterCodigosEquivalentes(this ComponenteCurricularEol componenteCurricular)
+        {
+            if (componenteCurricular.EhNulo())
+                return Enumerable.Empty<long>();
+
+            var codigos = new List<long> { componenteCurricular.Codigo };
+
+            if (componenteCurricular.CodigoComponenteCurricularPai.HasValue &&
+                componenteCurricular.CodigoComponenteCurricularPai.Value > 0)
+                codigos.Add(componenteCurricular.CodigoComponenteCurricularPai.Value);
+
+            if (componenteCurricular.CodigoComponenteTerritorioSaber > 0)
+                codigos.Add(componenteCurricular.CodigoComponenteTerritorioSaber);
+
+            if (componenteCurricular.CodigosTerritoriosAgrupamento.NaoEhNulo())
+                codigos.AddRange(componenteCurricular.CodigosTerritoriosAgrupamento.Where(codigo => codigo > 0));
+
+            return codigos.Distinct();
+        }
+
+        public static string[] ObterCodigosEquivalentes(this IEnumerable<ComponenteCurricularEol> componentesCurriculares)
+        {
+            if (componentesCurriculares.EhNulo())
+                return Array.Empty<string>();
+
+            return componentesCurriculares
+                .SelectMany(componenteCurricular => componenteCurricular.ObterCodigosEquivalentes())
+                .Distinct()
+                .Select(codigo => codigo.ToString())
+                .ToArray();
+        }
+
         public static long[] ObterCodigos(this IEnumerable<ComponenteCurricularEol> componentesCurriculares)
         {
             var codigosComponentes = componentesCurriculares.Select(cc => cc.Codigo).ToList();

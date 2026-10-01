@@ -306,6 +306,81 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<PlanoAEE>(query, new { situacaoEncerrado = (int)SituacaoPlanoAEE.Encerrado });
         }
 
+        public async Task<IEnumerable<PlanoAEE>> ObterPlanosPorUesESituacoes(string[] uesCodigos, SituacaoPlanoAEE[] situacoes, string responsavelPaaiRf = null)
+        {
+            var query = @"select pa.id,
+                                 pa.turma_id,
+                                 pa.aluno_codigo,
+                                 pa.aluno_nome,
+                                 pa.aluno_numero,
+                                 pa.situacao,
+                                 pa.parecer_coordenacao,
+                                 pa.parecer_paai,
+                                 pa.responsavel_paai_id,
+                                 pa.responsavel_id,
+                                 pa.criado_em,
+                                 pa.criado_por,
+                                 pa.criado_rf,
+                                 pa.alterado_em,
+                                 pa.alterado_por,
+                                 pa.alterado_rf,
+                                 t.id as TurmaId,
+                                 t.id,
+                                 t.turma_id,
+                                 t.ue_id,
+                                 t.nome,
+                                 t.ano,
+                                 t.ano_letivo,
+                                 t.modalidade_codigo,
+                                 t.semestre,
+                                 t.qt_duracao_aula,
+                                 t.tipo_turno,
+                                 t.data_atualizacao,
+                                 t.tipo_turma,
+                                 t.data_inicio,
+                                 t.historica,
+                                 t.etapa_eja,
+                                 ue.id as UeId,
+                                 ue.id,
+                                 ue.ue_id,
+                                 ue.nome,
+                                 ue.dre_id,
+                                 ue.tipo_escola,
+                                 ue.data_atualizacao,
+                                 dre.id as DreId,
+                                 dre.id,
+                                 dre.nome,
+                                 dre.dre_id,
+                                 dre.abreviacao,
+                                 dre.data_atualizacao
+                            from plano_aee pa
+                           inner join turma t on t.id = pa.turma_id
+                           inner join ue on ue.id = t.ue_id
+                           inner join dre on dre.id = ue.dre_id
+                            left join usuario responsavel_paai on responsavel_paai.id = pa.responsavel_paai_id
+                           where not pa.excluido
+                             and ue.ue_id = any(@uesCodigos)
+                             and pa.situacao = any(@situacoes)
+                             and (@responsavelPaaiRf is null or responsavel_paai.rf_codigo = @responsavelPaaiRf)
+                           order by pa.id;";
+
+            return await database.Conexao.QueryAsync<PlanoAEE, Turma, Ue, Dre, PlanoAEE>(query,
+                (planoAEE, turma, ue, dre) =>
+                {
+                    ue.AdicionarDre(dre);
+                    turma.AdicionarUe(ue);
+                    planoAEE.Turma = turma;
+                    return planoAEE;
+                },
+                new
+                {
+                    uesCodigos,
+                    situacoes = situacoes.Select(situacao => (int)situacao).ToArray(),
+                    responsavelPaaiRf
+                },
+                splitOn: "TurmaId, UeId, DreId");
+        }
+
         public async Task<IEnumerable<PlanoAEE>> ObterPorDataFinalVigencia(DateTime dataFim, bool desconsiderarPendencias = true, bool desconsiderarNotificados = false, NotificacaoPlanoAEETipo tipoNotificacao = NotificacaoPlanoAEETipo.PlanoCriado)
         {
             var joinPendecias = desconsiderarPendencias ? @"left join pendencia_plano_aee ppa on ppa.plano_aee_id = pa.id
