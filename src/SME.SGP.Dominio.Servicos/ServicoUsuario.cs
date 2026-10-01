@@ -183,7 +183,7 @@ namespace SME.SGP.Dominio
         public async Task<Usuario> ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "", string nome = "", string email = "", bool buscaLogin = false)
         {
             var eNumero = long.TryParse(codigoRf, out long n);
-            var ehCpf = codigoRf.SomenteNumeros().Length == 11;
+            var ehCpf = (codigoRf ?? string.Empty).SomenteNumeros().Length == 11;
             
             codigoRf = eNumero || (!eNumero && ehCpf) ? codigoRf.SomenteNumeros() : null;
             var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(buscaLogin ? null : codigoRf, login));
