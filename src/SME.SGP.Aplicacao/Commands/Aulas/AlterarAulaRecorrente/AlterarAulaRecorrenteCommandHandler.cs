@@ -1,19 +1,21 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
+    [ExcludeFromCodeCoverage]
     public class AlterarAulaRecorrenteCommandHandler : IRequestHandler<AlterarAulaRecorrenteCommand, bool>
     {
         private readonly IMediator mediator;
