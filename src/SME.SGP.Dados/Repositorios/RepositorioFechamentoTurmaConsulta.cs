@@ -4,12 +4,14 @@ using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
+    [ExcludeFromCodeCoverage]
     public class RepositorioFechamentoTurmaConsulta : RepositorioBase<FechamentoTurma>, IRepositorioFechamentoTurmaConsulta
     {
         public RepositorioFechamentoTurmaConsulta(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)

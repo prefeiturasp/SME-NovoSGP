@@ -3,11 +3,13 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra.Interfaces;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
+    [ExcludeFromCodeCoverage]
     public class RepositorioDreConsulta
         : IRepositorioDreConsulta
     {

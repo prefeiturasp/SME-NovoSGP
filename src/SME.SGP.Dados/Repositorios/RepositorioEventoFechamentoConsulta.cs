@@ -5,6 +5,7 @@ using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,8 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
+    
+    [ExcludeFromCodeCoverage]
     public class RepositorioEventoFechamentoConsulta
         : RepositorioBase<EventoFechamento>, IRepositorioEventoFechamentoConsulta
     {
