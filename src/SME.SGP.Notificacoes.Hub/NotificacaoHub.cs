@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using SME.SGP.Notificacoes.Hub.Interface;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 namespace SME.SGP.Notificacoes.Hub
 {
     //[Authorize(AuthenticationSchemes = Startup.CustomTokenScheme)]
+    [ExcludeFromCodeCoverage]
     public class NotificacaoHub : Microsoft.AspNetCore.SignalR.Hub, IEventosNotificacao
     {
         private readonly IConfiguration configuration;

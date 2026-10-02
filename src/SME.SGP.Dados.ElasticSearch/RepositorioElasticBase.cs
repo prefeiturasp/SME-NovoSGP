@@ -7,12 +7,14 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.ElasticSearch;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.ElasticSearch
 {
+    [ExcludeFromCodeCoverage]
     public abstract class RepositorioElasticBase<TEntidade> : IRepositorioElasticBase<TEntidade> where TEntidade : class
     {
         private const int QUANTIDADE_RETORNO = 200;

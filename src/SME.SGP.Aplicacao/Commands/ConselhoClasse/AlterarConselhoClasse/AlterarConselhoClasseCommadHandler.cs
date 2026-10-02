@@ -5,11 +5,13 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
+    [ExcludeFromCodeCoverage]
     public class AlterarConselhoClasseCommadHandler : InserirAlterarConselhoClasseAbstrato, IRequestHandler<AlterarConselhoClasseCommad, ConselhoClasseNotaRetornoDto>
     {
         private readonly IUnitOfWork unitOfWork;
