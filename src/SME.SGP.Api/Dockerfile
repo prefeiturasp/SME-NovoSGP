@@ -29,12 +29,8 @@ RUN mkdir Imagens
 
 ENV TZ=America/Sao_Paulo
 
-# Corrigindo fontes do Debian Buster EOL
-RUN sed -i 's|http://deb.debian.org|http://archive.debian.org|g' /etc/apt/sources.list \
-    && sed -i '/security/d' /etc/apt/sources.list \
-    && rm -f /etc/apt/sources.list.d/* \
-    && apt-get update \
-    && apt-get install -y --allow-unauthenticated \
+RUN apt-get update \
+    && apt-get install -y \
     tzdata \
     locales \
     libc6-dev \
