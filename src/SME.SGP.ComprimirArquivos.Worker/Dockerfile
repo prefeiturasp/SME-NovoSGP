@@ -1,10 +1,7 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 
-RUN sed -i 's|http://deb.debian.org/debian|http://archive.debian.org/debian|g' /etc/apt/sources.list && \
-    sed -i '/debian-security/d' /etc/apt/sources.list && \
-    sed -i '/bullseye-updates/d' /etc/apt/sources.list && \
-    apt update && \
-    apt install -y ffmpeg ghostscript && \
+RUN apt-get update && \
+    apt-get install -y ffmpeg ghostscript && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

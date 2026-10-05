@@ -26,13 +26,10 @@ RUN dotnet publish "SME.SGP.Worker.Rabbbit.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 
-RUN sed -i 's|http://deb.debian.org/debian|http://archive.debian.org/debian|g' /etc/apt/sources.list && \
-    sed -i '/security/d' /etc/apt/sources.list \
-    && rm -f /etc/apt/sources.list.d/* \
-    echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99no-check-valid-until && \
-    apt-get update && \
+RUN apt-get update && \
     apt-get upgrade -y && \
-    update-ca-certificates --fresh
+    update-ca-certificates --fresh && \
+    rm -rf /var/lib/apt/lists/*
 
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "SME.SGP.Worker.Rabbbit.dll"]
