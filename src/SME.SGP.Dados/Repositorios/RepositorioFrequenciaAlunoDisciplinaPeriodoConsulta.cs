@@ -649,36 +649,57 @@ namespace SME.SGP.Dados
         public async Task<IEnumerable<TurmaComponenteQntAulasDto>> ObterTotalAulasPorDisciplinaETurmaEBimestre(string[] turmasCodigo, string[] componentesCurricularesId, long tipoCalendarioId, int[] bimestres, DateTime? dataMatriculaAluno = null, DateTime? dataSituacaoAluno = null)
         {
             var query = new StringBuilder();
-            query.AppendLine(@"with aulasRegFrequencias as (
-                                        select distinct a.id, a.disciplina_id, a.turma_id, 
-                                               p.bimestre, p.periodo_inicio, p.periodo_fim,
-                                               a.quantidade, a.professor_rf
-                                        from aula a 
-                                        inner join registro_frequencia rf on rf.aula_id = a.id and not rf.excluido 
-                                        inner join periodo_escolar p on a.tipo_calendario_id = p.tipo_calendario_id 
-                                        where not a.excluido  
-                                        and not rf.excluido
+            query.AppendLine(@"with periodos as (
+                                        select distinct tipo_calendario_id, bimestre, periodo_inicio, periodo_fim
+                                        from periodo_escolar
+                                        where tipo_calendario_id = @tipoCalendarioId
+                                    )
+                                    select a.disciplina_id as ComponenteCurricularCodigo,
+                                           a.turma_id as TurmaCodigo,
+                                           p.bimestre as Bimestre,
+                                           p.periodo_inicio as PeriodoInicio,
+                                           p.periodo_fim as PeriodoFim,
+                                           COALESCE(SUM(a.quantidade), 0) as AulasQuantidade,
+                                           a.professor_rf as Professor
+                                    from aula a
+                                    inner join periodos p on p.tipo_calendario_id = a.tipo_calendario_id
+                                        and a.data_aula >= case
+                                            when p.periodo_inicio = p.periodo_inicio::date then p.periodo_inicio
+                                            else p.periodo_inicio::date + interval '1 day'
+                                        end
+                                        and a.data_aula < p.periodo_fim::date + interval '1 day'
+                                    where not a.excluido
                                         and a.tipo_calendario_id = @tipoCalendarioId
-                                        and a.data_aula::date between p.periodo_inicio and p.periodo_fim ");
+                                        and exists (
+                                            select 1 from registro_frequencia rf
+                                            where rf.aula_id = a.id and not rf.excluido
+                                        ) ");
 
             if (componentesCurricularesId.Length > 0)
                 query.AppendLine("and a.disciplina_id = any(@componentesCurricularesId) ");
             if (bimestres.Length > 0)
                 query.AppendLine(" and p.bimestre = any(@bimestres) ");
 
-            if (dataMatriculaAluno.HasValue && dataSituacaoAluno.HasValue)
-                query.AppendLine("and a.data_aula::date between @dataMatriculaAluno and @dataSituacaoAluno");
-            else if (dataMatriculaAluno.HasValue)
-                query.AppendLine("and a.data_aula::date >= @dataMatriculaAluno");
-            else if (dataSituacaoAluno.HasValue)
-                query.AppendLine("and a.data_aula::date < @dataSituacaoAluno");
+            if (dataMatriculaAluno.HasValue)
+                query.AppendLine(@"and a.data_aula >= case
+                                       when @dataMatriculaAluno = @dataMatriculaAluno::date then @dataMatriculaAluno
+                                       else @dataMatriculaAluno::date + interval '1 day'
+                                   end");
 
-            query.AppendLine(" and a.turma_id = any(@turmasCodigo)");
-            query.AppendLine(@") select a.disciplina_id as ComponenteCurricularCodigo, a.turma_id as TurmaCodigo, 
-                                        a.bimestre as Bimestre, a.periodo_inicio as PeriodoInicio, a.periodo_fim as PeriodoFim,
-                                        COALESCE(SUM(a.quantidade), 0) AS AulasQuantidade, a.professor_rf Professor from
-                                        aulasRegFrequencias a
-                                group by a.disciplina_id, a.turma_id, a.bimestre, a.periodo_inicio, a.periodo_fim, a.professor_rf");
+            if (dataSituacaoAluno.HasValue)
+            {
+                if (dataMatriculaAluno.HasValue)
+                    query.AppendLine("and a.data_aula < @dataSituacaoAluno::date + interval '1 day'");
+                else
+                    query.AppendLine(@"and a.data_aula < case
+                                           when @dataSituacaoAluno = @dataSituacaoAluno::date then @dataSituacaoAluno
+                                           else @dataSituacaoAluno::date + interval '1 day'
+                                       end");
+            }
+
+            query.AppendLine("and a.turma_id = any(@turmasCodigo)");
+            query.AppendLine(@"group by a.disciplina_id, a.turma_id, p.bimestre,
+                                         p.periodo_inicio, p.periodo_fim, a.professor_rf");
 
             return await database.Conexao.QueryAsync<TurmaComponenteQntAulasDto>(query.ToString(),
            new { turmasCodigo, componentesCurricularesId, tipoCalendarioId, bimestres, dataMatriculaAluno, dataSituacaoAluno });
