@@ -76,7 +76,7 @@ namespace SME.SGP.Dados.Repositorios
                             t.ano_letivo,
                             t.modalidade_codigo,
                             t.semestre,
-                            t.qt_duracao_aula,
+                            t.qt_duracao_aula as QuantidadeDuracaoAula,
                             t.tipo_turno,
                             t.data_atualizacao,
                             t.tipo_turma,
@@ -126,7 +126,7 @@ namespace SME.SGP.Dados.Repositorios
                             t.ano_letivo,
                             t.modalidade_codigo,
                             t.semestre,
-                            t.qt_duracao_aula,
+                            t.qt_duracao_aula as QuantidadeDuracaoAula,
                             t.tipo_turno,
                             t.data_atualizacao,
                             t.tipo_turma,
@@ -144,6 +144,7 @@ namespace SME.SGP.Dados.Repositorios
                             d.id,
                             d.nome,
                             d.dre_id,
+                            d.dre_id as CodigoDre,
                             d.abreviacao,
                             d.data_atualizacao
                         from

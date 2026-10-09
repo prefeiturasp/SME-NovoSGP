@@ -228,7 +228,7 @@ namespace SME.SGP.Dados.Repositorios
                             t.data_atualizacao      as DataAtualizacao,
                             t.modalidade_codigo,
                             t.nome                   as Nome,
-                            t.qt_duracao_aula,
+                            t.qt_duracao_aula       as QuantidadeDuracaoAula,
                             t.semestre,
                             t.tipo_turno,
                             t.serie_ensino,
