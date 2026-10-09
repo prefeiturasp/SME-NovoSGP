@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SME.SGP.Dados
@@ -83,6 +84,14 @@ namespace SME.SGP.Dados
         {
             return GetMap(entityType)
                 .GetColumnName(propertyName);
+        }
+
+        public static IReadOnlyCollection<IEntityMap> GetAllMaps()
+        {
+            Initialize();
+
+            return RegisteredMaps.Values
+                .ToArray();
         }
     }
 }
